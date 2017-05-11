@@ -1,0 +1,7 @@
+@font-face {
+  font-family: 'WindsongRegular';
+  src: url("Windsong.ttf") format("truetype");
+}
+h1 {
+  font: 90px/98px "WindsongRegular", Arial, sans-serif;
+}

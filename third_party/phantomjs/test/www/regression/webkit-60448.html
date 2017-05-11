@@ -1,0 +1,15 @@
+<html>
+<body onload="runTest()">
+Test passes if it does not crash.
+<script>
+    function runTest()
+    {
+        document.body.offsetTop;
+        child = document.getElementById('test');
+        child.parentNode.removeChild(child);
+    }
+</script>
+<br>
+<span id="test"></span>
+</body>
+</html>

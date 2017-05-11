@@ -1,0 +1,1 @@
+exports.stubbed = require('stubbed');

@@ -1,0 +1,3 @@
+Tests in this directory are named for their bug number.
+pjs-NNNN corresponds to https://github.com/ariya/phantomjs/issues/NNNN.
+webkit-NNNN corresponds to ​https://bugs.webkit.org/show_bug.cgi?id=NNNN.

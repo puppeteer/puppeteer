@@ -1,0 +1,23 @@
+<!doctype html>
+<meta charset="utf-8">
+<script>
+    function createIframe () {
+        var ifrm = document.createElement("iframe");
+        ifrm.setAttribute("src", "child1.html");
+        ifrm.setAttribute("id", "target");
+        document.body.appendChild(ifrm);
+    }
+    function receiveMessage (event) {
+        if (event.data == "execute") {
+            var element = document.getElementById("target");
+            element.parentNode.removeChild(element);
+            window.callPhantom(2);
+        }
+    }
+    window.addEventListener("message", receiveMessage, false);
+    window.onload = function () {
+        document.getElementById("prepare").onclick = createIframe;
+        window.callPhantom(0);
+    }
+</script>
+<button id="prepare">Prepare the iframe</button>

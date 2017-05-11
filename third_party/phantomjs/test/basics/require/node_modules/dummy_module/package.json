@@ -1,0 +1,4 @@
+{
+    "name": "dummy",
+    "main": "./libdir/dummy_module.js"
+}

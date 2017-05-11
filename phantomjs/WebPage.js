@@ -1,0 +1,327 @@
+/**
+ * Copyright 2017 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+var await = require('./utilities').await;
+var EventEmitter = require('events');
+var fs = require('fs');
+var path = require('path');
+var mime = require('mime');
+
+var PageEvents = require('../lib/Page').Events;
+var ScreenshotTypes = require('../lib/Page').ScreenshotTypes;
+
+var noop = function() { };
+
+class WebPage {
+    /**
+     * @param {!Browser} browser
+     * @param {string} scriptPath
+     * @param {!Object=} options
+     */
+    constructor(browser, scriptPath, options) {
+        this._page = await(browser.newPage());
+        this.settings = new WebPageSettings(this._page);
+
+        options = options || {};
+        options.settings = options.settings || {};
+        if (options.settings.userAgent)
+            this.settings.userAgent = options.settings.userAgent;
+        if (options.viewportSize)
+            await(this._page.setSize(options.viewportSize));
+
+        await(this._page.setInPageCallback('callPhantom', (...args) => {
+            return this.onCallback.apply(null, args);
+        }));
+
+        this.clipRect = options.clipRect || {left: 0, top: 0, width: 0, height: 0};
+        this.onCallback = null;
+        this.onConsoleMessage = null;
+        this.onLoadFinished = null;
+        this.onResourceError = null;
+        this.onResourceReceived = null;
+        this.libraryPath = path.dirname(scriptPath);
+
+        this._onConfirm = undefined;
+        this._onError = noop;
+
+        this._pageEvents = new AsyncEmitter(this._page);
+        this._pageEvents.on(PageEvents.ResponseReceived, response => this._onResponseReceived(response));
+        this._pageEvents.on(PageEvents.ResourceLoadingFailed, event => (this.onResourceError || noop).call(null, event));
+        this._pageEvents.on(PageEvents.ConsoleMessageAdded, msg => (this.onConsoleMessage || noop).call(null, msg));
+        this._pageEvents.on(PageEvents.DialogOpened, dialog => this._onDialog(dialog));
+        this._pageEvents.on(PageEvents.ExceptionThrown, (exception, stack) => (this._onError || noop).call(null, exception, stack));
+    }
+
+    _onResponseReceived(response) {
+        if (!this.onResourceReceived)
+            return;
+        var headers = [];
+        for (var key in response.headers) {
+            headers.push({
+                name: key,
+                value: response.headers[key]
+            });
+        }
+        response.headers = headers;
+        this.onResourceReceived.call(null, response);
+    }
+
+    /**
+     * @param {string} url
+     * @param {function()} callback
+     */
+    includeJs(url, callback) {
+        this._page.evaluateAsync(include, url).then(callback);
+
+        function include(url) {
+            var script = document.createElement('script');
+            script.src = url;
+            var promise = new Promise(x => script.onload = x);
+            document.head.appendChild(script);
+            return promise;
+        }
+    }
+
+    /**
+     * @return {!{width: number, height: number}}
+     */
+    get viewportSize() {
+        return this._page.size();
+    }
+
+    /**
+     * @return {!Object}
+     */
+    get customHeaders() {
+        return this._page.extraHTTPHeaders();
+    }
+
+    /**
+     * @param {!Object} value
+     */
+    set customHeaders(value) {
+        await(this._page.setExtraHTTPHeaders(value));
+    }
+
+    /**
+     * @param {string} filePath
+     */
+    injectJs(filePath) {
+        if (!fs.existsSync(filePath))
+            filePath = path.resolve(this.libraryPath, filePath);
+        if (!fs.existsSync(filePath))
+            return;
+        var code = fs.readFileSync(filePath, 'utf8');
+        this.evaluate(code);
+    }
+
+    /**
+     * @return {string}
+     */
+    get plainText() {
+        return await(this._page.plainText());
+    }
+
+    /**
+     * @return {string}
+     */
+    get title() {
+        return await(this._page.title());
+    }
+
+    /**
+     * @return {(function()|undefined)}
+     */
+    get onError() {
+        return this._onError;
+    }
+
+    /**
+     * @param {(function()|undefined)} handler
+     */
+    set onError(handler) {
+        if (typeof handler !== 'function')
+            handler = undefined;
+        this._onError = handler;
+    }
+
+    /**
+     * @return {(function()|undefined)}
+     */
+    get onConfirm() {
+        return this._onConfirm;
+    }
+
+    /**
+     * @param {function()} handler
+     */
+    set onConfirm(handler) {
+        if (typeof handler !== 'function')
+            handler = undefined;
+        this._onConfirm = handler;
+    }
+
+    _onDialog(dialog) {
+        if (!this._onConfirm)
+            return;
+        var accept = this._onConfirm.call(null);
+        await(this._page.handleDialog(accept));
+    }
+
+    /**
+     * @return {string}
+     */
+    get url() {
+        return await(this._page.url());
+    }
+
+    /**
+     * @param {string} html
+     */
+    set content(html) {
+        await(this._page.setContent(html));
+    }
+
+    /**
+     * @param {string} html
+     * @param {function()=} callback
+     */
+    open(url, callback) {
+        console.assert(arguments.length <= 2, 'WebPage.open does not support METHOD and DATA arguments');
+        this._page.navigate(url).then(result => {
+            var status = result ? 'success' : 'fail';
+            if (!result) {
+                this.onResourceError.call(null, {
+                    url,
+                    errorString: 'SSL handshake failed'
+                });
+            }
+            if (this.onLoadFinished)
+                this.onLoadFinished.call(null, status);
+            if (callback)
+                callback.call(null, status);
+        });
+    }
+
+    /**
+     * @param {!{width: number, height: number}} options
+     */
+    set viewportSize(options) {
+        await(this._page.setSize(options));
+    }
+
+    /**
+     * @param {function()} fun
+     * @param {!Array<!Object>} args
+     */
+    evaluate(fun, ...args) {
+        return await(this._page.evaluate(fun, ...args));
+    }
+
+    /**
+     * {string} fileName
+     */
+    render(fileName) {
+        var mimeType = mime.lookup(fileName);
+        var screenshotType = null;
+        if (mimeType === 'image/png')
+            screenshotType = ScreenshotTypes.PNG;
+        else if (mimeType === 'image/jpeg')
+            screenshotType = ScreenshotTypes.JPG;
+        if (!screenshotType)
+            throw new Error(`Cannot render to file ${fileName} - unsupported mimeType ${mimeType}`);
+        var clipRect = null;
+        if (this.clipRect && (this.clipRect.left || this.clipRect.top || this.clipRect.width || this.clipRect.height)) {
+            clipRect = {
+                x: this.clipRect.left,
+                y: this.clipRect.top,
+                width: this.clipRect.width,
+                height: this.clipRect.height
+            };
+        }
+        var imageBuffer = await(this._page.screenshot(screenshotType, clipRect));
+        fs.writeFileSync(fileName, imageBuffer);
+    }
+
+    release() {
+        this._page.close();
+    }
+
+    close() {
+        this._page.close();
+    }
+}
+
+class WebPageSettings {
+    /**
+     * @param {!Page} page
+     */
+    constructor(page) {
+        this._page = page;
+    }
+
+    /**
+     * @param {string} value
+     */
+    set userAgent(value) {
+        await(this._page.setUserAgentOverride(value));
+    }
+
+    /**
+     * @return {string}
+     */
+    get userAgent() {
+        return this._page.userAgentOverride();
+    }
+}
+
+// To prevent reenterability, eventemitters should emit events
+// only being in a consistent state.
+// This is not the case for 'ws' npm module: https://goo.gl/sy3dJY
+//
+// Since out phantomjs environment uses nested event loops, we
+// exploit this condition in 'ws', which probably never happens
+// in case of regular I/O.
+//
+// This class is a wrapper around EventEmitter which re-emits events asynchronously,
+// helping to overcome the issue.
+class AsyncEmitter extends EventEmitter {
+    /**
+     * @param {!Page} page
+     */
+    constructor(page) {
+        super();
+        this._page = page;
+        this._symbol = Symbol('AsyncEmitter');
+        this.on('newListener', this._onListenerAdded);
+        this.on('removeListener', this._onListenerRemoved);
+    }
+
+    _onListenerAdded(event, listener) {
+        // Async listener calls original listener on next tick.
+        var asyncListener = (...args) => {
+            process.nextTick(() => listener.apply(null, args));
+        };
+        listener[this._symbol] = asyncListener;
+        this._page.on(event, asyncListener);
+    }
+
+    _onListenerRemoved(event, listener) {
+        this._page.removeListener(event, listener[this._symbol]);
+    }
+}
+
+module.exports = WebPage;

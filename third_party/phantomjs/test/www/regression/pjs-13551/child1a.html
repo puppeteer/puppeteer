@@ -1,0 +1,12 @@
+<!doctype html>
+<meta charset="utf-8">
+<script>
+    function execute() {
+        window.top.postMessage("execute", "*");
+    }
+    window.onload = function () {
+        document.getElementById("execute").onclick = execute;
+        window.callPhantom(1);
+    }
+</script>
+<button id="execute">Execute test</button>
