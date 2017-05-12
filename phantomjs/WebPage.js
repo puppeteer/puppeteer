@@ -52,6 +52,9 @@ class WebPage {
         this.onLoadFinished = null;
         this.onResourceError = null;
         this.onResourceReceived = null;
+        this.onInitialized = null;
+        this._deferEvaluate = false;
+
         this.libraryPath = path.dirname(scriptPath);
 
         this._onConfirm = undefined;
@@ -192,6 +195,10 @@ class WebPage {
      */
     open(url, callback) {
         console.assert(arguments.length <= 2, 'WebPage.open does not support METHOD and DATA arguments');
+        this._deferEvaluate = true;
+        if (typeof this.onInitialized === 'function')
+            this.onInitialized();
+        this._deferEvaluate = false;
         this._page.navigate(url).then(result => {
             var status = result ? 'success' : 'fail';
             if (!result) {
@@ -219,6 +226,8 @@ class WebPage {
      * @param {!Array<!Object>} args
      */
     evaluate(fun, ...args) {
+        if (this._deferEvaluate)
+            return await(this._page.evaluateOnInitialized(fun, ...args));
         return await(this._page.evaluate(fun, ...args));
     }
 
