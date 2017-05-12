@@ -84,15 +84,7 @@ class WebPage {
      * @param {function()} callback
      */
     includeJs(url, callback) {
-        this._page.evaluateAsync(include, url).then(callback);
-
-        function include(url) {
-            var script = document.createElement('script');
-            script.src = url;
-            var promise = new Promise(x => script.onload = x);
-            document.head.appendChild(script);
-            return promise;
-        }
+        this._page.addScript(url).then(callback);
     }
 
     /**
