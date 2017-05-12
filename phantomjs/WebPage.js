@@ -226,14 +226,6 @@ class WebPage {
      * {string} fileName
      */
     render(fileName) {
-        var mimeType = mime.lookup(fileName);
-        var screenshotType = null;
-        if (mimeType === 'image/png')
-            screenshotType = ScreenshotTypes.PNG;
-        else if (mimeType === 'image/jpeg')
-            screenshotType = ScreenshotTypes.JPG;
-        if (!screenshotType)
-            throw new Error(`Cannot render to file ${fileName} - unsupported mimeType ${mimeType}`);
         var clipRect = null;
         if (this.clipRect && (this.clipRect.left || this.clipRect.top || this.clipRect.width || this.clipRect.height)) {
             clipRect = {
@@ -243,8 +235,7 @@ class WebPage {
                 height: this.clipRect.height
             };
         }
-        var imageBuffer = await(this._page.screenshot(screenshotType, clipRect));
-        fs.writeFileSync(fileName, imageBuffer);
+        var imageBuffer = await(this._page.saveScreenshot(fileName, clipRect));
     }
 
     release() {
