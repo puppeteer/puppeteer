@@ -84,7 +84,7 @@ class WebPage {
      * @param {function()} callback
      */
     includeJs(url, callback) {
-        this._page.addScript(url).then(callback);
+        this._page.addScriptTag(url).then(callback);
     }
 
     /**
@@ -116,8 +116,7 @@ class WebPage {
             filePath = path.resolve(this.libraryPath, filePath);
         if (!fs.existsSync(filePath))
             return;
-        var code = fs.readFileSync(filePath, 'utf8');
-        this.evaluate(code);
+        await(this._page.injectFile(filePath));
     }
 
     /**
