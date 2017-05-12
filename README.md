@@ -30,7 +30,17 @@ node examples/screenshot.js
 
 ### Tests
 
+Run all tests:
+```
+npm test
+```
+
 Run phantom.js tests using puppeteer:
 ```
-./third_party/phantomjs/test/run-tests.py
+npm run test-phantom
+```
+
+Run puppeteer tests:
+```
+npm run test-puppeteer
 ```

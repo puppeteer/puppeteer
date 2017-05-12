@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "python third_party/phantomjs/test/run-tests.py",
+    "test-puppeteer": "jasmine test/test.js",
+    "test-phantom": "python third_party/phantomjs/test/run-tests.py",
+    "test": "npm run test-puppeteer && npm run test-phantom",
     "install": "node install.js"
   },
   "author": "The Chromium Authors",
@@ -24,5 +26,8 @@
   },
   "puppeteer": {
     "chromium_revision": "468266"
+  },
+  "devDependencies": {
+    "jasmine": "^2.6.0"
   }
 }
