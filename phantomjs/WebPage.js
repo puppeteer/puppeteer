@@ -57,14 +57,16 @@ class WebPage {
 
         this.libraryPath = path.dirname(scriptPath);
 
-        this._onConfirm = undefined;
+        this._onConfirmCallback = undefined;
+        this._onAlertCallback = undefined;
         this._onError = noop;
 
         this._pageEvents = new AsyncEmitter(this._page);
         this._pageEvents.on(PageEvents.ResponseReceived, response => this._onResponseReceived(response));
         this._pageEvents.on(PageEvents.ResourceLoadingFailed, event => (this.onResourceError || noop).call(null, event));
         this._pageEvents.on(PageEvents.ConsoleMessage, msg => (this.onConsoleMessage || noop).call(null, msg));
-        this._pageEvents.on(PageEvents.Dialog, dialog => this._onDialog(dialog));
+        this._pageEvents.on(PageEvents.Confirm, message => this._onConfirm(message));
+        this._pageEvents.on(PageEvents.Alert, message => this._onAlert(message));
         this._pageEvents.on(PageEvents.Exception, (exception, stack) => (this._onError || noop).call(null, exception, stack));
     }
 
@@ -156,7 +158,7 @@ class WebPage {
      * @return {(function()|undefined)}
      */
     get onConfirm() {
-        return this._onConfirm;
+        return this._onConfirmCallback;
     }
 
     /**
@@ -165,14 +167,43 @@ class WebPage {
     set onConfirm(handler) {
         if (typeof handler !== 'function')
             handler = undefined;
-        this._onConfirm = handler;
+        this._onConfirmCallback = handler;
     }
 
-    _onDialog(dialog) {
-        if (!this._onConfirm)
+    /**
+     * @param {string} message
+     */
+    _onConfirm(message) {
+        if (!this._onConfirmCallback)
             return;
-        var accept = this._onConfirm.call(null);
+        var accept = this._onConfirmCallback.call(null, message);
         await(this._page.handleDialog(accept));
+    }
+
+    /**
+     * @return {(function()|undefined)}
+     */
+    get onAlert() {
+        return this._onAlertCallback;
+    }
+
+    /**
+     * @param {function()} handler
+     */
+    set onAlert(handler) {
+        if (typeof handler !== 'function')
+            handler = undefined;
+        this._onAlertCallback = handler;
+    }
+
+    /**
+     * @param {string} message
+     */
+    _onAlert(message) {
+        if (!this._onAlertCallback)
+            return;
+        this._onAlertCallback.call(null, message);
+        await(this._page.handleDialog(true));
     }
 
     /**
