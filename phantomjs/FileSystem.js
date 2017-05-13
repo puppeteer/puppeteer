@@ -106,6 +106,7 @@ class FileSystem {
 
     /**
      * @param {string} filePath
+     * @return {boolean}
      */
     lastModified(filePath) {
         return fs.statSync(filePath).mtime;
@@ -113,6 +114,7 @@ class FileSystem {
 
     /**
      * @param {string} dirPath
+     * @return {boolean}
      */
     makeDirectory(dirPath) {
         try {
@@ -121,6 +123,14 @@ class FileSystem {
         } catch (e) {
             return false;
         }
+    }
+
+    /**
+     * @param {string} dirPath
+     * @return {boolean}
+     */
+    makeTree(dirPath) {
+        return this.makeDirectory(dirPath);
     }
 
     /**
