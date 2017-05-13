@@ -21,7 +21,7 @@ var browser = new Browser();
 browser.newPage().then(async page => {
     var modernizrPath = path.join('..', 'third_party', 'phantomjs', 'examples', 'modernizr.js');
     await page.injectFile(modernizrPath);
-    page.on('Page.Events.ConsoleMessage', console.log);
+    page.on('ConsoleMessage', console.log);
     await page.evaluate(detectFeatures);
     browser.close();
 });
