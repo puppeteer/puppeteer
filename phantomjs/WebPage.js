@@ -120,8 +120,9 @@ class WebPage {
         if (!fs.existsSync(filePath))
             filePath = path.resolve(this.libraryPath, filePath);
         if (!fs.existsSync(filePath))
-            return;
+            return false;
         await(this._page.injectFile(filePath));
+        return true;
     }
 
     /**
