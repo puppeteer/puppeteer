@@ -35,7 +35,7 @@ describe('Puppeteer', function() {
 
     it('Page Events: ConsoleMessage', SX(async function() {
         var msgs = [];
-        page.on('ConsoleMessage', msg => msgs.push(msg));
+        page.on('consolemessage', msg => msgs.push(msg));
         await page.evaluate(() => console.log('Message!'));
         expect(msgs).toEqual(['Message!']);
     }));

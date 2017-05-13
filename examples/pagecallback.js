@@ -18,7 +18,7 @@ var Browser = require('../lib/Browser');
 var browser = new Browser();
 
 browser.newPage().then(async page => {
-    page.on('ConsoleMessage', console.log);
+    page.on('consolemessage', console.log);
     await page.setInPageCallback('callPhantom', msg => {
         console.log("Received by the 'phantom' main context: "+msg);
         return "Hello there, I'm coming to you from the 'phantom' context instead";
