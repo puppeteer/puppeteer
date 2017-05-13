@@ -33,6 +33,13 @@ describe('Puppeteer', function() {
         expect(result).toBe(56);
     }));
 
+    it('Page.Events.ConsoleMessage', SX(async function() {
+        var msgs = [];
+        page.on('Page.Events.ConsoleMessage', msg => msgs.push(msg));
+        await page.evaluate(() => console.log('Message!'));
+        expect(msgs).toEqual(['Message!']);
+    }));
+
     describe('Page.setInPageCallback', function() {
         it('should work', SX(async function() {
             await page.setInPageCallback('callController', function(a, b) {

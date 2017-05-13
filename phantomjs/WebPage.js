@@ -63,7 +63,7 @@ class WebPage {
         this._pageEvents = new AsyncEmitter(this._page);
         this._pageEvents.on(PageEvents.ResponseReceived, response => this._onResponseReceived(response));
         this._pageEvents.on(PageEvents.ResourceLoadingFailed, event => (this.onResourceError || noop).call(null, event));
-        this._pageEvents.on(PageEvents.ConsoleMessageAdded, msg => (this.onConsoleMessage || noop).call(null, msg));
+        this._pageEvents.on(PageEvents.ConsoleMessage, msg => (this.onConsoleMessage || noop).call(null, msg));
         this._pageEvents.on(PageEvents.DialogOpened, dialog => this._onDialog(dialog));
         this._pageEvents.on(PageEvents.ExceptionThrown, (exception, stack) => (this._onError || noop).call(null, exception, stack));
     }
