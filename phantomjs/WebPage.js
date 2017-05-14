@@ -276,7 +276,18 @@ class WebPage {
                 height: this.clipRect.height
             };
         }
-        var imageBuffer = await(this._page.saveScreenshot(fileName, clipRect));
+        if (fileName.endsWith('pdf')) {
+            var options = {};
+            var paperSize = this.paperSize || {};
+            options.margin = paperSize.margin;
+            options.format = paperSize.format;
+            options.landscape = paperSize.orientation === 'landscape';
+            options.width = paperSize.width;
+            options.height = paperSize.height;
+            await(this._page.printToPDF(fileName, options));
+        } else {
+            await(this._page.saveScreenshot(fileName, clipRect));
+        }
     }
 
     release() {
