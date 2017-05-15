@@ -25,7 +25,7 @@
     "puppeteer": "index.js"
   },
   "puppeteer": {
-    "chromium_revision": "468266"
+    "chromium_revision": "471584"
   },
   "devDependencies": {
     "jasmine": "^2.6.0"
