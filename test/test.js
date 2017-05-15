@@ -40,6 +40,17 @@ describe('Puppeteer', function() {
         expect(msgs).toEqual(['Message!']);
     }));
 
+    describe('Page.navigate', function() {
+        it('should fail when navigating to bad url', SX(async function() {
+            var success = await page.navigate('asdfasdf');
+            expect(success).toBe(false);
+        }));
+        it('should succeed when navigating to good url', SX(async function() {
+            var success = await page.navigate(EMPTY_PAGE);
+            expect(success).toBe(true);
+        }));
+    });
+
     describe('Page.setInPageCallback', function() {
         it('should work', SX(async function() {
             await page.setInPageCallback('callController', function(a, b) {
