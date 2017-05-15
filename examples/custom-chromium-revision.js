@@ -15,13 +15,13 @@
  */
 
 var Browser = require('../lib/Browser');
-var Downloader = require('../lib/Downloader');
+var Downloader = require('../utils/ChromiumDownloader');
 
 var revision = "464642";
 console.log('Downloading custom chromium revision - ' + revision);
-Downloader.downloadChromium(revision).then(async () => {
+Downloader.downloadRevision(Downloader.currentPlatform(), revision).then(async () => {
     console.log('Done.');
-    var executablePath = Downloader.executablePath(revision);
+    var executablePath = Downloader.revisionInfo(Downloader.currentPlatform(), revision).executablePath;
     var browser1 = new Browser({
         remoteDebuggingPort: 9228,
         executablePath,

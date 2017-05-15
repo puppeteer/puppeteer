@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-var Downloader = require('./lib/Downloader');
+var Downloader = require('./utils/ChromiumDownloader');
 var revision = require('./package').puppeteer.chromium_revision;
 var fs = require('fs');
 var ProgressBar = require('progress');
 
-var executable = Downloader.executablePath(revision);
-if (fs.existsSync(executable))
+// Do nothing if the revision is already downloaded.
+if (Downloader.revisionInfo(Downloader.currentPlatform(), revision))
     return;
 
-Downloader.downloadChromium(revision, onProgress)
+Downloader.downloadRevision(Downloader.currentPlatform(), revision, onProgress)
     .catch(error => {
         console.error('Download failed: ' + error.message);
     });
