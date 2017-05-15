@@ -29,5 +29,5 @@ browser.newPage().then(async page => {
     var success = await page.navigate(address);
     if (!success)
         console.log('Unable to load the address!');
-//    browser.close();
+    browser.close();
 });
