@@ -22,7 +22,7 @@
     "rimraf": "^2.6.1"
   },
   "bin": {
-    "puppeteer": "index.js"
+    "puppeteer": "./bin/puppeteer.js"
   },
   "puppeteer": {
     "chromium_revision": "471584"
