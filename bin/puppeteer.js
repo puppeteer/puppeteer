@@ -18,7 +18,9 @@
 var vm = require('vm');
 var fs = require('fs');
 var path = require('path');
-var Puppeteer = require('..').Browser;
+var Browser = require('..').Browser;
+var PhatomJs = require('../phantomjs');
+var version = require('../package.json').version;
 var argv = require('minimist')(process.argv.slice(2), {
     alias: { v: 'version' },
     boolean: ['headless'],
@@ -26,7 +28,7 @@ var argv = require('minimist')(process.argv.slice(2), {
 });
 
 if (argv.version) {
-    console.log('Puppeteer v' + require('./package.json').version);
+    console.log('Puppeteer v' + version);
     return;
 }
 
@@ -54,7 +56,6 @@ var browser = new Browser({
         headless: argv.headless,
 });
 
-var PhatomJs = require('./phantomjs');
 var context = PhatomJs.createContext(browser, scriptPath, argv);
 var scriptContent = fs.readFileSync(scriptPath, 'utf8');
 vm.runInContext(scriptContent, context);
