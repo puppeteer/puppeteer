@@ -121,13 +121,13 @@ module.exports.create = function(context, scriptPath) {
          */
         loadModule: function(moduleSource, filename) {
             var code = [
-                "(function(require, exports, module) {\n",
+                '(function(require, exports, module) {\n',
                 moduleSource,
-                "\n}.call({},",
-                "require.cache['" + filename + "']._getRequire(),",
-                "require.cache['" + filename + "'].exports,",
-                "require.cache['" + filename + "']",
-                "));"
+                '\n}.call({},',
+                'require.cache[\'' + filename + '\']._getRequire(),',
+                'require.cache[\'' + filename + '\'].exports,',
+                'require.cache[\'' + filename + '\']',
+                '));'
             ].join('');
             vm.runInContext(code, context, {
                 filename: filename,
@@ -136,4 +136,4 @@ module.exports.create = function(context, scriptPath) {
         },
     };
     return phantom;
-}
+};

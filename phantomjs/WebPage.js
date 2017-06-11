@@ -18,10 +18,7 @@ var await = require('./utilities').await;
 var EventEmitter = require('events');
 var fs = require('fs');
 var path = require('path');
-var mime = require('mime');
-
 var PageEvents = require('../lib/Page').Events;
-var ScreenshotTypes = require('../lib/Page').ScreenshotTypes;
 
 var noop = function() { };
 
@@ -42,9 +39,7 @@ class WebPage {
         if (options.viewportSize)
             await(this._page.setSize(options.viewportSize));
 
-        await(this._page.setInPageCallback('callPhantom', (...args) => {
-            return this.onCallback.apply(null, args);
-        }));
+        await(this._page.setInPageCallback('callPhantom', (...args) => this.onCallback.apply(null, args)));
 
         this.clipRect = options.clipRect || {left: 0, top: 0, width: 0, height: 0};
         this.onCallback = null;

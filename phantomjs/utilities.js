@@ -29,5 +29,4 @@ module.exports = {
             throw error;
         return result;
     }
-}
-
+};

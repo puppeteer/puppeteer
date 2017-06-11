@@ -44,7 +44,7 @@ module.exports = {
         context.phantom = Phantom.create(context, scriptPath);
         context.console = console;
         context.window = context;
-        context.WebPage = (options) => new WebPage(browser, scriptPath, options);
+        context.WebPage = options => new WebPage(browser, scriptPath, options);
 
         vm.createContext(context);
 
@@ -67,5 +67,5 @@ module.exports = {
         })(nativeExports);
         return context;
     }
-}
+};
 

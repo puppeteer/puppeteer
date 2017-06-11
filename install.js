@@ -16,7 +16,6 @@
 
 var Downloader = require('./utils/ChromiumDownloader');
 var revision = require('./package').puppeteer.chromium_revision;
-var fs = require('fs');
 var ProgressBar = require('progress');
 
 // Do nothing if the revision is already downloaded.

@@ -22,7 +22,7 @@ class WebServer {
         this._server = http.createServer();
         this.objectName = 'WebServer';
         this.listenOnPort = this.listen;
-        this.newRequest = function(req, res) { }
+        this.newRequest = function(req, res) { };
         Object.defineProperty(this, 'port', {
             get: () => {
                 if (!this._server.listening)
@@ -64,10 +64,10 @@ class WebServer {
                 });
             }
             res.header = res.getHeader;
-            res.setHeaders = (headers) => {
+            res.setHeaders = headers => {
                 for (var key in headers)
                     res.setHeader(key, headers[key]);
-            }
+            };
             Object.defineProperty(res, 'statusCode', {
                 enumerable: true,
                 configurable: true,

@@ -29,7 +29,7 @@ class System {
         this.stdin = new StandardInput(process.stdin);
         this.stdout = new StandardOutput(process.stdout);
         this.stderr = new StandardOutput(process.stderr);
-        this.platform = "phantomjs";
+        this.platform = 'phantomjs';
         this.pid = process.pid;
         this.isSSLSupported = false;
         this.os = {
