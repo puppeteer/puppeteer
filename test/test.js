@@ -73,6 +73,16 @@ describe('Puppeteer', function() {
             });
             expect(result).toBe(36);
         }));
+        it('should await returned promise', SX(async function() {
+            await page.setInPageCallback('callController', function(a, b) {
+                return Promise.resolve(a * b);
+            });
+
+            var result = await page.evaluate(function() {
+                return callController(3, 5);
+            });
+            expect(result).toBe(15);
+        }));
     });
 });
 
