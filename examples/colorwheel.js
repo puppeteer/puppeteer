@@ -18,7 +18,7 @@ var Browser = require('../lib/Browser');
 var browser = new Browser();
 
 browser.newPage().then(async page => {
-    await page.setSize({width: 400, height: 400});
+    await page.setViewportSize({width: 400, height: 400});
     await page.setContent('<html><body><canvas id="surface"></canvas></body></html>');
     await page.evaluate(drawColorWheel);
     await page.saveScreenshot('colorwheel.png');

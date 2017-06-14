@@ -19,8 +19,8 @@
     - [page.url()](#pageurl)
     - [page.setContent(html)](#pagesetcontenthtml)
     - [page.navigate(url)](#pagenavigateurl)
-    - [page.setSize(size)](#pagesetsizesize)
-    - [page.size()](#pagesize)
+    - [page.setViewportSize(size)](#pagesetsizesize)
+    - [page.viewportSize()](#pagesize)
     - [page.evaluate(fun, args)](#pageevaluatefun-args)
     - [page.evaluateAsync(fun, args)](#pageevaluateasyncfun-args)
     - [page.evaluateOnInitialized(fun, args)](#pageevaluateoninitializedfun-args)
@@ -136,14 +136,14 @@ Pages could be closed by `page.close()` method.
 	- `true` if the navigation succeeds and page's `load` event is fired.
 	- `false` if the navigation fails due to bad URL or SSL errors.
 
-#### page.setSize(size)
+#### page.setViewportSize(size)
 
 - `size` [&lt;Object&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)  An object with two fields:
 	- `width` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) Specify page's width in pixels.
 	- `height` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) Specify page's height in pixels.
 - returns: [&lt;Promise&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves when the dimensions are updated.
 
-#### page.size()
+#### page.viewportSize()
 
 - returns: [&lt;Object&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)  An object with two fields:
 	- `width` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) Page's width in pixels.
