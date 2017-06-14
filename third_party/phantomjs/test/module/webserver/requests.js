@@ -19,7 +19,7 @@ setup(function () {
     }
     assert_unreached("unable to find a free TCP port for server tests");
 },
-      { "test_timeout": 1000 });
+      { "test_timeout": 3000 });
 
 function arm_check_request (test, expected_postdata, expected_bindata,
                             expected_mimetype) {
