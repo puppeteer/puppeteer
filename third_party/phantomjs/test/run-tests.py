@@ -977,7 +977,7 @@ class TestRunner(object):
 
 def init():
     base_path = os.path.normpath(os.path.dirname(os.path.abspath(__file__)))
-    phantomjs_exe = os.path.normpath(base_path + '/../../../bin/puppeteer.js')
+    phantomjs_exe = os.path.normpath(base_path + '/../../../phantom_shim/runner.js')
     if not os.path.isfile(phantomjs_exe):
         sys.stdout.write("{} is unavailable, cannot run tests.\n"
                          .format(phantomjs_exe))
