@@ -25,7 +25,12 @@ var address = process.argv[2];
 
 var browser = new Browser({headless: false});
 browser.newPage().then(async page => {
-    await page.setBlockedURLs(['*.css']);
+    page.setRequestInterceptor(request => {
+        if (request.url().endsWith('.css'))
+            request.abort();
+        else
+            request.continue();
+    });
     var success = await page.navigate(address);
     if (!success)
         console.log('Unable to load the address!');

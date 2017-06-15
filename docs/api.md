@@ -7,7 +7,6 @@
     - [browser.version()](#browserversion)
     - [browser.close()](#browserclose)
 - [class: Page](#class-page)
-    - [page.setBlockedURLs(patterns)](#pagesetblockedurlspatterns)
     - [page.addScriptTag(url)](#pageaddscripttagurl)
     - [page.injectFile(filePath)](#pageinjectfilefilepath)
     - [page.setInPageCallback(name, callback)](#pagesetinpagecallbackname-callback)
@@ -74,11 +73,6 @@ browser.newPage().then(page => {
 });
 ```
 Pages could be closed by `page.close()` method.
-
-#### page.setBlockedURLs(patterns)
-
-- `patterns` [&lt;Array&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array)
-- returns: [&lt;Promise&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves when blocked URLs have been successfully set.
 
 #### page.addScriptTag(url)
 
