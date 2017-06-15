@@ -45,15 +45,26 @@ describe('Puppeteer', function() {
         page.close();
     });
 
-    it('Page.evaluate', SX(async function() {
-        var result = await page.evaluate(() => 7 * 3);
-        expect(result).toBe(21);
-    }));
-
-    it('Page.evaluateAsync', SX(async function() {
-        var result = await page.evaluateAsync(() => Promise.resolve(8 * 7));
-        expect(result).toBe(56);
-    }));
+    describe('Page.evaluate', function() {
+        it('should work', SX(async function() {
+            var result = await page.evaluate(() => 7 * 3);
+            expect(result).toBe(21);
+        }));
+        it('should await promise', SX(async function() {
+            var result = await page.evaluate(() => Promise.resolve(8 * 7));
+            expect(result).toBe(56);
+        }));
+        it('should work from-inside inPageCallback', SX(async function() {
+            // Setup inpage callback, which calls Page.evaluate
+            await page.setInPageCallback('callController', async function(a, b) {
+                return await page.evaluate((a, b) => a * b, a, b);
+            });
+            var result = await page.evaluate(function() {
+                return callController(9, 3);
+            });
+            expect(result).toBe(27);
+        }));
+    });
 
     it('Page Events: ConsoleMessage', SX(async function() {
         var msgs = [];

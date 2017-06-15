@@ -21,7 +21,6 @@
     - [page.setViewportSize(size)](#pagesetsizesize)
     - [page.viewportSize()](#pagesize)
     - [page.evaluate(fun, args)](#pageevaluatefun-args)
-    - [page.evaluateAsync(fun, args)](#pageevaluateasyncfun-args)
     - [page.evaluateOnInitialized(fun, args)](#pageevaluateoninitializedfun-args)
     - [page.screenshot(type[, clipRect])](#pagescreenshottype-cliprect)
     - [page.saveScreenshot(filePath[, clipRect])](#pagesavescreenshotfilepath-cliprect)
@@ -148,12 +147,6 @@ Pages could be closed by `page.close()` method.
 - `fun` [&lt;Function&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function) Function to be evaluated in browser context
 - `args` [&lt;Array&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) Arguments to pass to  `fun`
 - returns: [&lt;Promise&lt;Object&gt;&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves to function return value
-
-#### page.evaluateAsync(fun, args)
-
-- `fun` [&lt;Function&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function) Function to be evaluated in browser context
-- `args` [&lt;Array&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) Arguments to pass to  `fun`
-- returns: [&lt;Promise&lt;Object&gt;&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves to function
 
 #### page.evaluateOnInitialized(fun, args)
 
