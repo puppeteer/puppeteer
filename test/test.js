@@ -1,18 +1,40 @@
+/**
+ * Copyright 2017 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 var path = require('path');
 var Browser = require('../lib/Browser');
+var StaticServer = require('./StaticServer');
 
-var EMPTY_PAGE = 'file://' + path.join(__dirname, 'assets', 'empty.html');
+var PORT = 8907;
+var STATIC_PREFIX = 'http://localhost:' + PORT;
+var EMPTY_PAGE = STATIC_PREFIX + '/empty.html';
 
 describe('Puppeteer', function() {
     var browser;
+    var staticServer;
     var page;
 
     beforeAll(function() {
         browser = new Browser();
+        staticServer = new StaticServer(path.join(__dirname, 'assets'), PORT);
     });
 
     afterAll(function() {
         browser.close();
+        staticServer.stop();
     });
 
     beforeEach(SX(async function() {
@@ -86,7 +108,7 @@ describe('Puppeteer', function() {
     });
 
     describe('Page.setRequestInterceptor', function() {
-        it('should work', SX(async function() {
+        it('should intercept', SX(async function() {
             page.setRequestInterceptor(request => {
                 expect(request.url()).toContain('empty.html');
                 expect(request.headers()['User-Agent']).toBeTruthy();
@@ -95,6 +117,7 @@ describe('Puppeteer', function() {
                 request.continue();
             });
             var success = await page.navigate(EMPTY_PAGE);
+            expect(success).toBe(true);
         }));
         it('should show extraHTTPHeaders', SX(async function() {
             await page.setExtraHTTPHeaders({
@@ -105,6 +128,20 @@ describe('Puppeteer', function() {
                 request.continue();
             });
             var success = await page.navigate(EMPTY_PAGE);
+            expect(success).toBe(true);
+        }));
+        it('should be abortable', SX(async function() {
+            page.setRequestInterceptor(request => {
+                if (request.url().endsWith('.css'))
+                    request.abort();
+                else
+                    request.continue();
+            });
+            var failedResources = 0;
+            page.on('resourceloadingfailed', event => ++failedResources);
+            var success = await page.navigate(STATIC_PREFIX + '/one-style.html');
+            expect(success).toBe(true);
+            expect(failedResources).toBe(1);
         }));
     });
 });
