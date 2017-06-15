@@ -52,6 +52,7 @@ class WebPage {
 
         this.libraryPath = path.dirname(scriptPath);
 
+        this._onResourceRequestedCallback = undefined;
         this._onConfirmCallback = undefined;
         this._onAlertCallback = undefined;
         this._onError = noop;
@@ -63,6 +64,34 @@ class WebPage {
         this._pageEvents.on(PageEvents.Confirm, message => this._onConfirm(message));
         this._pageEvents.on(PageEvents.Alert, message => this._onAlert(message));
         this._pageEvents.on(PageEvents.Exception, (exception, stack) => (this._onError || noop).call(null, exception, stack));
+    }
+
+    /**
+     * @return {?function(!Object, !Request)}
+     */
+    get onResourceRequested() {
+        return this._onResourceRequestedCallback;
+    }
+
+    /**
+     * @return {?function(!Object, !Request)} callback
+     */
+    set onResourceRequested(callback) {
+        this._onResourceRequestedCallback = callback;
+        this._page.setRequestInterceptor(callback ? resourceInterceptor : null);
+
+        /**
+         * @param {!Request} request
+         */
+        function resourceInterceptor(request) {
+            var requestData = {
+                url: request.url(),
+                headers: request.headers()
+            };
+            callback(requestData, request);
+            if (!request.handled())
+                request.continue();
+        }
     }
 
     _onResponseReceived(response) {

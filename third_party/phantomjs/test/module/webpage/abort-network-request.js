@@ -1,4 +1,3 @@
-//! unsupported
 var webpage = require('webpage');
 
 async_test(function () {

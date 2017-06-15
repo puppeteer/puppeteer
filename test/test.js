@@ -84,6 +84,29 @@ describe('Puppeteer', function() {
             expect(result).toBe(15);
         }));
     });
+
+    describe('Page.setRequestInterceptor', function() {
+        it('should work', SX(async function() {
+            page.setRequestInterceptor(request => {
+                expect(request.url()).toContain('empty.html');
+                expect(request.headers()['User-Agent']).toBeTruthy();
+                expect(request.method()).toBe('GET');
+                expect(request.postData()).toBe(undefined);
+                request.continue();
+            });
+            var success = await page.navigate(EMPTY_PAGE);
+        }));
+        it('should show extraHTTPHeaders', SX(async function() {
+            await page.setExtraHTTPHeaders({
+                foo: 'bar'
+            });
+            page.setRequestInterceptor(request => {
+                expect(request.headers()['foo']).toBe('bar');
+                request.continue();
+            });
+            var success = await page.navigate(EMPTY_PAGE);
+        }));
+    });
 });
 
 // Since Jasmine doesn't like async functions, they should be wrapped
