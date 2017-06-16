@@ -64,7 +64,7 @@ class WebPage {
         this._pageEvents.on(PageEvents.Confirm, message => this._onConfirm(message));
         this._pageEvents.on(PageEvents.Alert, message => this._onAlert(message));
         this._pageEvents.on(PageEvents.Dialog, dialog => this._onDialog(dialog));
-        this._pageEvents.on(PageEvents.Exception, (exception, stack) => (this._onError || noop).call(null, exception, stack));
+        this._pageEvents.on(PageEvents.Error, error => (this._onError || noop).call(null, error.message, error.stack));
     }
 
     /**

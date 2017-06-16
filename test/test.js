@@ -72,7 +72,7 @@ describe('Puppeteer', function() {
                 error = e;
             }
             expect(error).toBeTruthy();
-            expect(error.message).toContain('ReferenceError');
+            expect(error.message).toContain('not is not defined');
         }));
     });
 
@@ -185,6 +185,16 @@ describe('Puppeteer', function() {
             var result = await page.evaluate(() => prompt('question?'));
             expect(result).toBe('answer!');
         }));
+    });
+
+    describe('Page.Events.Error', function() {
+        it('should fire', function(done) {
+            page.on('error', error => {
+                expect(error.message).toContain('Fancy');
+                done();
+            });
+            page.navigate(STATIC_PREFIX + '/error.html');
+        });
     });
 });
 
