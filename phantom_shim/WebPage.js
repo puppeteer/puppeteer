@@ -63,6 +63,7 @@ class WebPage {
         this._pageEvents.on(PageEvents.ConsoleMessage, msg => (this.onConsoleMessage || noop).call(null, msg));
         this._pageEvents.on(PageEvents.Confirm, message => this._onConfirm(message));
         this._pageEvents.on(PageEvents.Alert, message => this._onAlert(message));
+        this._pageEvents.on(PageEvents.Dialog, dialog => this._onDialog(dialog));
         this._pageEvents.on(PageEvents.Exception, (exception, stack) => (this._onError || noop).call(null, exception, stack));
     }
 
@@ -196,16 +197,6 @@ class WebPage {
     }
 
     /**
-     * @param {string} message
-     */
-    _onConfirm(message) {
-        if (!this._onConfirmCallback)
-            return;
-        var accept = this._onConfirmCallback.call(null, message);
-        await(this._page.handleDialog(accept));
-    }
-
-    /**
      * @return {(function()|undefined)}
      */
     get onAlert() {
@@ -222,13 +213,16 @@ class WebPage {
     }
 
     /**
-     * @param {string} message
+     * @param {!Dialog} dialog
      */
-    _onAlert(message) {
-        if (!this._onAlertCallback)
-            return;
-        this._onAlertCallback.call(null, message);
-        await(this._page.handleDialog(true));
+    _onDialog(dialog) {
+        if (dialog.type === 'alert' && this._onAlertCallback) {
+            this._onAlertCallback.call(null, dialog.message());
+            await(dialog.accept());
+        } else if (dialog.type === 'confirm' && this._onConfirmCallback) {
+            var result = this._onConfirmCallback.call(null, dialog.message());
+            await(result ? dialog.accept() : dialog.dismiss());
+        }
     }
 
     /**

@@ -155,6 +155,27 @@ describe('Puppeteer', function() {
             expect(failedResources).toBe(1);
         }));
     });
+
+    describe('Page.Events.Dialog', function() {
+        it('should fire', function(done) {
+            page.on('dialog', dialog => {
+                expect(dialog.type).toBe('alert');
+                expect(dialog.message()).toBe('yo');
+                done();
+            });
+            page.evaluate(() => alert('yo'));
+        });
+        // TODO Enable this when crbug.com/718235 is fixed.
+        xit('should allow accepting prompts', SX(async function(done) {
+            page.on('dialog', dialog => {
+                expect(dialog.type).toBe('prompt');
+                expect(dialog.message()).toBe('question?');
+                dialog.accept('answer!');
+            });
+            var result = await page.evaluate(() => prompt('question?'));
+            expect(result).toBe('answer!');
+        }));
+    });
 });
 
 // Since Jasmine doesn't like async functions, they should be wrapped
