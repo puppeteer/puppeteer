@@ -9,11 +9,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     var palette = generatePalette(100);
-    for (var i = 0; i < 1000; ++i) {
+    for (var i = 0; i < 200; ++i) {
         var box = document.createElement('div');
         box.classList.add('box');
-        box.textContent = i;
         box.style.setProperty('background-color', palette[i % palette.length]);
+        var x = i;
+        do {
+            var digit = x % 10;
+            x = (x / 10)|0;
+            var img = document.createElement('img');
+            img.src = `./digits/${digit}.png`;
+            box.insertBefore(img, box.firstChild);
+        } while (x);
         document.body.appendChild(box);
     }
 });
@@ -33,7 +40,9 @@ body {
 
 .box {
     font-family: arial;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     margin: 0;
     padding: 0;
     width: 50px;
