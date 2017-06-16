@@ -1,4 +1,5 @@
 /node_modules/
+/test/output
 /.local-chromium/
 /.dev_profile*
 .DS_Store

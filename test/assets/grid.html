@@ -1,0 +1,44 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function generatePalette(amount) {
+        var result = [];
+        var hueStep = 360 / amount;
+        for (var i = 0; i < amount; ++i)
+            result.push('hsl(' + (hueStep * i) + ', 100%, 90%)');
+        return result;
+    }
+
+    var palette = generatePalette(100);
+    for (var i = 0; i < 1000; ++i) {
+        var box = document.createElement('div');
+        box.classList.add('box');
+        box.textContent = i;
+        box.style.setProperty('background-color', palette[i % palette.length]);
+        document.body.appendChild(box);
+    }
+});
+</script>
+
+<style>
+
+/* Hide scrollbar so that it is not captured on screenshots */
+::-webkit-scrollbar {
+    display: none;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.box {
+    font-family: arial;
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    width: 50px;
+    height: 50px;
+    box-sizing: border-box;
+    border: 1px solid darkgray;
+}
+</style>

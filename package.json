@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test-puppeteer": "jasmine test/test.js",
+    "test-golden": "jasmine test/goldentest.js",
     "test-phantom": "python third_party/phantomjs/test/run-tests.py",
-    "test": "npm run test-puppeteer && npm run test-phantom",
+    "test": "npm run test-puppeteer && npm run test-golden && npm run test-phantom",
     "install": "node install.js"
   },
   "author": "The Chromium Authors",
@@ -22,9 +23,10 @@
     "chromium_revision": "478524"
   },
   "devDependencies": {
-    "ncp": "^2.0.0",
-    "minimist": "^1.2.0",
     "deasync": "^0.1.9",
-    "jasmine": "^2.6.0"
+    "jasmine": "^2.6.0",
+    "minimist": "^1.2.0",
+    "ncp": "^2.0.0",
+    "pixelmatch": "^4.0.2"
   }
 }
