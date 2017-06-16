@@ -64,6 +64,16 @@ describe('Puppeteer', function() {
             });
             expect(result).toBe(27);
         }));
+        it('should reject promise with exception', SX(async function() {
+            var error = null;
+            try {
+                await page.evaluate(() => not.existing.object.property);
+            } catch (e) {
+                error = e;
+            }
+            expect(error).toBeTruthy();
+            expect(error.message).toContain('ReferenceError');
+        }));
     });
 
     it('Page Events: ConsoleMessage', SX(async function() {
