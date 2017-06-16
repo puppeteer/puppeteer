@@ -14,7 +14,6 @@
     - [page.extraHTTPHeaders()](#pageextrahttpheaders)
     - [page.setUserAgentOverride(userAgent)](#pagesetuseragentoverrideuseragent)
     - [page.userAgentOverride()](#pageuseragentoverride)
-    - [page.handleDialog(accept, promptText)](#pagehandledialogaccept-prompttext)
     - [page.url()](#pageurl)
     - [page.setContent(html)](#pagesetcontenthtml)
     - [page.navigate(url)](#pagenavigateurl)
@@ -107,13 +106,7 @@ Pages could be closed by `page.close()` method.
 
 - returns: [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) Returns user agent override, if any.
 
-#### page.handleDialog(accept, promptText)
-
-- `accept` [&lt;boolean&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type) Wether accept or discard the dialog.
-- `promptText` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) Optional text to put inside the text prompt.
-- returns: [&lt;Promise&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves when the dialog is handled.
-
-#### page.url() 
+#### page.url()
 
 - returns: [&lt;Promise&lt;string&gt;&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) Promise which resolves with the current page url.
 
