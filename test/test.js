@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
+var fs = require('fs');
 var path = require('path');
+var rm = require('rimraf').sync;
 var Browser = require('../lib/Browser');
 var StaticServer = require('./StaticServer');
+var PNG = require('pngjs').PNG;
+var pixelmatch = require('pixelmatch');
 
 var PORT = 8907;
 var STATIC_PREFIX = 'http://localhost:' + PORT;
 var EMPTY_PAGE = STATIC_PREFIX + '/empty.html';
+
+var GOLDEN_DIR = path.join(__dirname, 'golden');
+var OUTPUT_DIR = path.join(__dirname, 'output');
+var PROJECT_DIR = path.join(__dirname, '..');
 
 describe('Puppeteer', function() {
     var browser;
@@ -30,6 +38,8 @@ describe('Puppeteer', function() {
     beforeAll(function() {
         browser = new Browser();
         staticServer = new StaticServer(path.join(__dirname, 'assets'), PORT);
+        if (fs.existsSync(OUTPUT_DIR))
+            rm(OUTPUT_DIR);
     });
 
     afterAll(function() {
@@ -39,6 +49,7 @@ describe('Puppeteer', function() {
 
     beforeEach(SX(async function() {
         page = await browser.newPage();
+        jasmine.addMatchers(customMatchers);
     }));
 
     afterEach(function() {
@@ -196,7 +207,128 @@ describe('Puppeteer', function() {
             page.navigate(STATIC_PREFIX + '/error.html');
         });
     });
+
+    describe('Page.screenshot', function() {
+        it('should work', SX(async function() {
+            await page.setViewportSize({width: 500, height: 500});
+            await page.navigate(STATIC_PREFIX + '/grid.html');
+            var screenshot = await page.screenshot();
+            expect(screenshot).toBeGolden('screenshot-sanity.png');
+        }));
+
+        it('should clip rect', SX(async function() {
+            await page.setViewportSize({width: 500, height: 500});
+            await page.navigate(STATIC_PREFIX + '/grid.html');
+            var screenshot = await page.screenshot({
+                clip: {
+                    x: 50,
+                    y: 100,
+                    width: 150,
+                    height: 100
+                }
+            });
+            expect(screenshot).toBeGolden('screenshot-clip-rect.png');
+        }));
+
+        it('should run in parallel', SX(async function() {
+            await page.setViewportSize({width: 500, height: 500});
+            await page.navigate(STATIC_PREFIX + '/grid.html');
+            var promises = [];
+            for (var i = 0; i < 3; ++i) {
+                promises.push(page.screenshot({
+                    clip: {
+                        x: 50 * i,
+                        y: 0,
+                        width: 50,
+                        height: 50
+                    }
+                }));
+            }
+            var screenshot = await promises[1];
+            expect(screenshot).toBeGolden('screenshot-parallel-calls.png');
+        }));
+    });
 });
+
+var customMatchers = {
+    toBeGolden: function(util, customEqualityTesters) {
+        return {
+            compare: function(actual, expected) {
+                return compareImageToGolden(actual, expected);
+            }
+        }
+    }
+}
+
+/**
+ * @param {?Buffer} imageBuffer
+ * @param {string} goldenName
+ * @return {!{pass: boolean, message: (undefined|string)}}
+ */
+function compareImageToGolden(imageBuffer, goldenName) {
+    if (!imageBuffer || !(imageBuffer instanceof Buffer)) {
+        return {
+            pass: false,
+            message: 'Test did not return Buffer with image.'
+        };
+    }
+    var expectedPath = path.join(GOLDEN_DIR, goldenName);
+    var actualPath = path.join(OUTPUT_DIR, goldenName);
+    var diffPath = addSuffix(path.join(OUTPUT_DIR, goldenName), '-diff');
+    var helpMessage = 'Output is saved in ' + path.relative(PROJECT_DIR, OUTPUT_DIR);
+
+    if (!fs.existsSync(expectedPath)) {
+        ensureOutputDir();
+        fs.writeFileSync(actualPath, imageBuffer);
+        return {
+            pass: false,
+            message: goldenName + ' is missing in golden results. ' + helpMessage
+        };
+    }
+    var actual = PNG.sync.read(imageBuffer);
+    var expected = PNG.sync.read(fs.readFileSync(expectedPath));
+    if (expected.width !== actual.width || expected.height !== actual.height) {
+        ensureOutputDir();
+        fs.writeFileSync(actualPath, imageBuffer);
+        var message = `Sizes differ: expected image ${expected.width}px X ${expected.height}px, but got ${actual.width}px X ${actual.height}px. `;
+        return {
+            pass: false,
+            message: message + helpMessage
+        };
+    }
+    var diff = new PNG({width: expected.width, height: expected.height});
+    var count = pixelmatch(expected.data, actual.data, diff.data, expected.width, expected.height, {threshold: 0.1});
+    if (count > 0) {
+        ensureOutputDir();
+        fs.writeFileSync(actualPath, imageBuffer);
+        fs.writeFileSync(diffPath, PNG.sync.write(diff));
+        return {
+            pass: false,
+            message: goldenName + ' mismatch! ' + helpMessage
+        };
+    }
+    return {
+        pass: true
+    };
+}
+
+function ensureOutputDir() {
+    if (!fs.existsSync(OUTPUT_DIR))
+        fs.mkdirSync(OUTPUT_DIR);
+}
+
+/**
+ * @param {string} filePath
+ * @param {string} suffix
+ * @return {string}
+ */
+function addSuffix(filePath, suffix) {
+    var dirname = path.dirname(filePath);
+    var ext = path.extname(filePath);
+    var name = path.basename(filePath, ext);
+    return path.join(dirname, name + suffix + ext);
+}
+
 
 // Since Jasmine doesn't like async functions, they should be wrapped
 // in a SX function.

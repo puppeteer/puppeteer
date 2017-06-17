@@ -5,9 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test-puppeteer": "jasmine test/test.js",
-    "test-golden": "jasmine test/goldentest.js",
     "test-phantom": "python third_party/phantomjs/test/run-tests.py",
-    "test": "npm run test-puppeteer && npm run test-golden && npm run test-phantom",
+    "test": "npm run test-puppeteer && npm run test-phantom",
     "install": "node install.js"
   },
   "author": "The Chromium Authors",
