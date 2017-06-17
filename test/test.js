@@ -258,6 +258,14 @@ describe('Puppeteer', function() {
             var screenshot = await promises[1];
             expect(screenshot).toBeGolden('screenshot-parallel-calls.png');
         }));
+        it('should take fullPage screenshots', SX(async function() {
+            await page.setViewportSize({width: 500, height: 500});
+            await page.navigate(STATIC_PREFIX + '/grid.html');
+            var screenshot = await page.screenshot({
+                fullPage: true
+            });
+            expect(screenshot).toBeGolden('screenshot-grid-fullpage.png');
+        }));
     });
 });
 
