@@ -20,7 +20,9 @@ var rm = require('rimraf').sync;
 var Browser = require('../lib/Browser');
 var StaticServer = require('./StaticServer');
 var PNG = require('pngjs').PNG;
+var mime = require('mime');
 var pixelmatch = require('pixelmatch');
+var Diff = require('text-diff');
 
 var PORT = 8907;
 var STATIC_PREFIX = 'http://localhost:' + PORT;
@@ -268,85 +270,191 @@ describe('Puppeteer', function() {
             expect(screenshot).toBeGolden('screenshot-grid-fullpage.png');
         }));
     });
+
+    describe('Frame Management', function() {
+        var FrameUtils = require('./frame-utils');
+        it('should handle nested frames', SX(async function() {
+            await page.navigate(STATIC_PREFIX + '/frames/nested-frames.html');
+            expect(FrameUtils.dumpFrames(page.mainFrame())).toBeGolden('nested-frames.txt');
+        }));
+        it('should send events when frames are manipulated dynamically', SX(async function() {
+            await page.navigate(EMPTY_PAGE);
+            // validate frameattached events
+            var attachedFrames = [];
+            page.on('frameattached', frame => attachedFrames.push(frame));
+            await FrameUtils.attachFrame(page, 'frame1', './assets/frame.html');
+            expect(attachedFrames.length).toBe(1);
+            expect(attachedFrames[0].url()).toContain('/assets/frame.html');
+
+            // validate framenavigated events
+            var navigatedFrames = [];
+            page.on('framenavigated', frame => navigatedFrames.push(frame));
+            await FrameUtils.navigateFrame(page, 'frame1', './empty.html');
+            expect(navigatedFrames.length).toBe(1);
+            expect(navigatedFrames[0].url()).toContain('/empty.html');
+
+            // validate framedetached events
+            var detachedFrames = [];
+            page.on('framedetached', frame => detachedFrames.push(frame));
+            await FrameUtils.detachFrame(page, 'frame1');
+            expect(detachedFrames.length).toBe(1);
+            expect(detachedFrames[0].isDetached()).toBe(true);
+        }));
+        it('should persist mainFrame on cross-process navigation', SX(async function() {
+            await page.navigate(EMPTY_PAGE);
+            var mainFrame = page.mainFrame();
+            await page.navigate('http://127.0.0.1:' + PORT + '/empty.html');
+            expect(page.mainFrame() === mainFrame).toBeTruthy();
+        }));
+        it('should not send attach/detach events for main frame', SX(async function() {
+            var hasEvents = false;
+            page.on('frameattached', frame => hasEvents = true);
+            page.on('framedetached', frame => hasEvents = true);
+            await page.navigate(EMPTY_PAGE);
+            expect(hasEvents).toBe(false);
+        }));
+        it('should detach child frames on navigation', SX(async function() {
+            var attachedFrames = [];
+            var detachedFrames = [];
+            var navigatedFrames = [];
+            page.on('frameattached', frame => attachedFrames.push(frame));
+            page.on('framedetached', frame => detachedFrames.push(frame));
+            page.on('framenavigated', frame => navigatedFrames.push(frame));
+            await page.navigate(STATIC_PREFIX + '/frames/nested-frames.html');
+            expect(attachedFrames.length).toBe(4);
+            expect(detachedFrames.length).toBe(0);
+            expect(navigatedFrames.length).toBe(5);
+
+            var attachedFrames = [];
+            var detachedFrames = [];
+            var navigatedFrames = [];
+            await page.navigate(EMPTY_PAGE);
+            expect(attachedFrames.length).toBe(0);
+            expect(detachedFrames.length).toBe(4);
+            expect(navigatedFrames.length).toBe(1);
+        }));
+    });
 });
 
-var customMatchers = {
-    toBeGolden: function(util, customEqualityTesters) {
-        return {
-            compare: function(actual, expected) {
-                return compareImageToGolden(actual, expected);
-            }
-        };
-    }
+var GoldenComparators = {
+    'image/png': compareImages,
+    'text/plain': compareText
 };
 
 /**
- * @param {?Buffer} imageBuffer
- * @param {string} goldenName
- * @return {!{pass: boolean, message: (undefined|string)}}
+ * @param {?Object} actualBuffer
+ * @param {!Buffer} expectedBuffer
+ * @return {?{diff: (!Object:undefined), errorMessage: (string|undefined)}}
  */
-function compareImageToGolden(imageBuffer, goldenName) {
-    if (!imageBuffer || !(imageBuffer instanceof Buffer)) {
-        return {
-            pass: false,
-            message: 'Test did not return Buffer with image.'
-        };
-    }
-    var expectedPath = path.join(GOLDEN_DIR, goldenName);
-    var actualPath = path.join(OUTPUT_DIR, goldenName);
-    var diffPath = addSuffix(path.join(OUTPUT_DIR, goldenName), '-diff');
-    var helpMessage = 'Output is saved in ' + path.relative(PROJECT_DIR, OUTPUT_DIR);
+function compareImages(actualBuffer, expectedBuffer) {
+    if (!actualBuffer || !(actualBuffer instanceof Buffer))
+        return { errorMessage: 'Actual result should be Buffer.' };
 
-    if (!fs.existsSync(expectedPath)) {
-        ensureOutputDir();
-        fs.writeFileSync(actualPath, imageBuffer);
-        return {
-            pass: false,
-            message: goldenName + ' is missing in golden results. ' + helpMessage
-        };
-    }
-    var actual = PNG.sync.read(imageBuffer);
-    var expected = PNG.sync.read(fs.readFileSync(expectedPath));
+    var actual = PNG.sync.read(actualBuffer);
+    var expected = PNG.sync.read(expectedBuffer);
     if (expected.width !== actual.width || expected.height !== actual.height) {
-        ensureOutputDir();
-        fs.writeFileSync(actualPath, imageBuffer);
-        var message = `Sizes differ: expected image ${expected.width}px X ${expected.height}px, but got ${actual.width}px X ${actual.height}px. `;
         return {
-            pass: false,
-            message: message + helpMessage
+            errorMessage: `Sizes differ: expected image ${expected.width}px X ${expected.height}px, but got ${actual.width}px X ${actual.height}px. `
         };
     }
     var diff = new PNG({width: expected.width, height: expected.height});
     var count = pixelmatch(expected.data, actual.data, diff.data, expected.width, expected.height, {threshold: 0.1});
-    if (count > 0) {
-        ensureOutputDir();
-        fs.writeFileSync(actualPath, imageBuffer);
-        fs.writeFileSync(diffPath, PNG.sync.write(diff));
-        return {
-            pass: false,
-            message: goldenName + ' mismatch! ' + helpMessage
-        };
-    }
+    return count > 0 ? { diff: PNG.sync.write(diff) } : null;
+}
+
+/**
+ * @param {?Object} actual
+ * @param {!Buffer} expectedBuffer
+ * @return {?{diff: (!Object:undefined), errorMessage: (string|undefined)}}
+ */
+function compareText(actual, expectedBuffer) {
+    if (typeof actual !== 'string')
+        return { errorMessage: 'Actual result should be string' };
+    var expected = expectedBuffer.toString('utf-8');
+    if (expected === actual)
+        return null;
+    var diff = new Diff();
+    var result = diff.main(expected, actual);
+    diff.cleanupSemantic(result);
+    var html = diff.prettyHtml(result);
+    var diffStylePath = path.join(__dirname, 'diffstyle.css');
+    html = `<link rel="stylesheet" href="file://${diffStylePath}">` + html;
     return {
-        pass: true
+        diff: html,
+        diffExtension: '.html'
     };
 }
 
-function ensureOutputDir() {
-    if (!fs.existsSync(OUTPUT_DIR))
-        fs.mkdirSync(OUTPUT_DIR);
-}
+var customMatchers = {
+    toBeGolden: function(util, customEqualityTesters) {
+        return {
+            /**
+             * @param {?Object} actual
+             * @param {string} goldenName
+             * @return {!{pass: boolean, message: (undefined|string)}}
+             */
+            compare: function(actual, goldenName) {
+                var expectedPath = path.join(GOLDEN_DIR, goldenName);
+                var actualPath = path.join(OUTPUT_DIR, goldenName);
+
+                var messageSuffix = 'Output is saved in ' + path.relative(PROJECT_DIR, OUTPUT_DIR);
+
+                if (!fs.existsSync(expectedPath)) {
+                    ensureOutputDir();
+                    fs.writeFileSync(actualPath, actual);
+                    return {
+                        pass: false,
+                        message: goldenName + ' is missing in golden results. ' + messageSuffix
+                    };
+                }
+                var expected = fs.readFileSync(expectedPath);
+                var comparator = GoldenComparators[mime.lookup(goldenName)];
+                if (!comparator) {
+                    return {
+                        pass: false,
+                        message: 'Failed to find comparator with type ' + mime.lookup(goldenName) + ': '  + goldenName
+                    };
+                }
+                var result = comparator(actual, expected);
+                if (!result)
+                    return { pass: true };
+                ensureOutputDir();
+                fs.writeFileSync(actualPath, actual);
+                // Copy expected to the output/ folder for convenience.
+                fs.writeFileSync(addSuffix(actualPath, '-expected'), expected);
+                if (result.diff) {
+                    var diffPath = addSuffix(actualPath, '-diff', result.diffExtension);
+                    fs.writeFileSync(diffPath, result.diff);
+                }
+
+                var message = goldenName + ' mismatch!';
+                if (result.errorMessage)
+                    message += ' ' + result.errorMessage;
+                return {
+                    pass: false,
+                    message: message + ' ' + messageSuffix
+                };
+
+                function ensureOutputDir() {
+                    if (!fs.existsSync(OUTPUT_DIR))
+                        fs.mkdirSync(OUTPUT_DIR);
+                }
+            }
+        };
+    },
+};
 
 /**
  * @param {string} filePath
  * @param {string} suffix
+ * @param {string=} customExtension
  * @return {string}
  */
-function addSuffix(filePath, suffix) {
+function addSuffix(filePath, suffix, customExtension) {
     var dirname = path.dirname(filePath);
     var ext = path.extname(filePath);
     var name = path.basename(filePath, ext);
-    return path.join(dirname, name + suffix + ext);
+    return path.join(dirname, name + suffix + (customExtension || ext));
 }
 
 
