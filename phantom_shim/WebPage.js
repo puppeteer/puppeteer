@@ -285,15 +285,6 @@ class WebPage {
      * {string} fileName
      */
     render(fileName) {
-        var clipRect = null;
-        if (this.clipRect && (this.clipRect.left || this.clipRect.top || this.clipRect.width || this.clipRect.height)) {
-            clipRect = {
-                x: this.clipRect.left,
-                y: this.clipRect.top,
-                width: this.clipRect.width,
-                height: this.clipRect.height
-            };
-        }
         if (fileName.endsWith('pdf')) {
             var options = {};
             var paperSize = this.paperSize || {};
@@ -304,6 +295,16 @@ class WebPage {
             options.height = paperSize.height;
             await(this._page.printToPDF(fileName, options));
         } else {
+            var options = {};
+            if (this.clipRect && (this.clipRect.left || this.clipRect.top || this.clipRect.width || this.clipRect.height)) {
+                options.clipRect = {
+                    x: this.clipRect.left,
+                    y: this.clipRect.top,
+                    width: this.clipRect.width,
+                    height: this.clipRect.height
+                };
+            }
+            options.path = fileName;
             await(this._page.saveScreenshot(fileName, clipRect));
         }
     }

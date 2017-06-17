@@ -22,7 +22,6 @@
     - [page.evaluate(fun, args)](#pageevaluatefun-args)
     - [page.evaluateOnInitialized(fun, args)](#pageevaluateoninitializedfun-args)
     - [page.screenshot(type[, clipRect])](#pagescreenshottype-cliprect)
-    - [page.saveScreenshot(filePath[, clipRect])](#pagesavescreenshotfilepath-cliprect)
     - [page.printToPDF(filePath[, options])](#pageprinttopdffilepath-options)
     - [page.plainText()](#pageplaintext)
     - [page.title()](#pagetitle)
@@ -156,11 +155,6 @@ Pages could be closed by `page.close()` method.
 	- `width` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) width of clipping area
 	- `height` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) height of clipping area
 - returns: [&lt;Promise&lt;Buffer&gt;&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves to buffer with captured screenshot
-
-#### page.saveScreenshot(filePath[, clipRect])
-
-- `filePath` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) The file path to save image to. The screenshot type will be inferred from file extension
-- `clipRect` [&lt;Object&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) Clip rect object which will be passed over to `page.screenshot` method.
 
 #### page.printToPDF(filePath[, options])
 

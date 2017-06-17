@@ -55,17 +55,19 @@ describe('GoldenTests', function() {
     imageTest('screenshot-sanity.png', async function() {
         await page.setViewportSize({width: 500, height: 500});
         await page.navigate(STATIC_PREFIX + '/grid.html');
-        return page.screenshot('png');
+        return await page.screenshot();
     });
 
     imageTest('screenshot-clip-rect.png', async function() {
         await page.setViewportSize({width: 500, height: 500});
         await page.navigate(STATIC_PREFIX + '/grid.html');
-        return page.screenshot('png', {
-            x: 50,
-            y: 100,
-            width: 150,
-            height: 100
+        return await page.screenshot({
+            clip: {
+                x: 50,
+                y: 100,
+                width: 150,
+                height: 100
+            }
         });
     });
 });
