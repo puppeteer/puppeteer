@@ -215,7 +215,6 @@ describe('Puppeteer', function() {
             var screenshot = await page.screenshot();
             expect(screenshot).toBeGolden('screenshot-sanity.png');
         }));
-
         it('should clip rect', SX(async function() {
             await page.setViewportSize({width: 500, height: 500});
             await page.navigate(STATIC_PREFIX + '/grid.html');
@@ -229,7 +228,19 @@ describe('Puppeteer', function() {
             });
             expect(screenshot).toBeGolden('screenshot-clip-rect.png');
         }));
-
+        it('should work for offscreen clip', SX(async function() {
+            await page.setViewportSize({width: 500, height: 500});
+            await page.navigate(STATIC_PREFIX + '/grid.html');
+            var screenshot = await page.screenshot({
+                clip: {
+                    x: 50,
+                    y: 600,
+                    width: 100,
+                    height: 100
+                }
+            });
+            expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
+        }));
         it('should run in parallel', SX(async function() {
             await page.setViewportSize({width: 500, height: 500});
             await page.navigate(STATIC_PREFIX + '/grid.html');
