@@ -70,6 +70,23 @@ describe('GoldenTests', function() {
             }
         });
     });
+
+    imageTest('screenshot-parallel-calls.png', async function() {
+        await page.setViewportSize({width: 500, height: 500});
+        await page.navigate(STATIC_PREFIX + '/grid.html');
+        var promises = [];
+        for (var i = 0; i < 3; ++i) {
+            promises.push(page.screenshot({
+                clip: {
+                    x: 50 * i,
+                    y: 0,
+                    width: 50,
+                    height: 50
+                }
+            }));
+        }
+        return await promises[1];
+    });
 });
 
 /**
