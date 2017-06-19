@@ -1,7 +1,7 @@
 # How to Contribute
 
-We'd love to accept your patches and contributions to this project. There are
-just a few small guidelines you need to follow.
+First of all, thank you for your interest in Puppeteer!
+We'd love to accept your patches and contributions!
 
 ## Contributor License Agreement
 
@@ -21,3 +21,35 @@ All submissions, including submissions by project members, require review. We
 use GitHub pull requests for this purpose. Consult
 [GitHub Help](https://help.github.com/articles/about-pull-requests/) for more
 information on using pull requests.
+
+## Code Style
+
+The coding style is fully defined in [.eslintrc](https://github.com/GoogleChrome/puppeteer/blob/master/.eslintrc.js).
+Please make sure to run `npm lint` before submitting PR.
+
+We use JSDoc along with closure annotations. Annotations are encouraged for
+all contributions.
+
+## Testing
+
+All new features should be accompanied by tests. Puppeteer tests are located in [test/test.js](https://github.com/GoogleChrome/puppeteer/blob/master/test/test.js)
+and are written using [Jasmine](https://jasmine.github.io/) testing framework.
+
+There are also phantomjs tests located under [third_party/phantomjs/test](https://github.com/GoogleChrome/puppeteer/tree/master/third_party/phantomjs). These
+are used to test `phantom_shim`.
+
+To run puppeteer tests, use:
+```
+npm run test-puppeteer
+```
+
+To run phantom-shim against phantomjs tests, use:
+```
+npm run test-phantom
+```
+
+To run both puppeteer and phantom_shim tests, use:
+```
+npm test
+```
+
