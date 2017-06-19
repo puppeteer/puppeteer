@@ -297,7 +297,7 @@ class WebPage {
         } else {
             var options = {};
             if (this.clipRect && (this.clipRect.left || this.clipRect.top || this.clipRect.width || this.clipRect.height)) {
-                options.clipRect = {
+                options.clip = {
                     x: this.clipRect.left,
                     y: this.clipRect.top,
                     width: this.clipRect.width,
@@ -305,7 +305,7 @@ class WebPage {
                 };
             }
             options.path = fileName;
-            await(this._page.saveScreenshot(fileName, clipRect));
+            await(this._page.screenshot(options));
         }
     }
 

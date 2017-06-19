@@ -21,7 +21,7 @@ browser.newPage().then(async page => {
     await page.setViewportSize({width: 400, height: 400});
     await page.setContent('<html><body><canvas id="surface"></canvas></body></html>');
     await page.evaluate(drawColorWheel);
-    await page.saveScreenshot('colorwheel.png');
+    await page.screenshot({path: 'colorwheel.png'});
     browser.close();
 });
 
