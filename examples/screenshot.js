@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-var Browser = require('../lib/Browser');
-var browser = new Browser();
+const Browser = require('../lib/Browser');
+const browser = new Browser();
 
 browser.newPage().then(async page => {
     await page.navigate('http://example.com');
-    await page.saveScreenshot('example.png');
+    const screenshot = await page.screenshot({path: 'example.png'});
     browser.close();
 });
