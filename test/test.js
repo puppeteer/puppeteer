@@ -275,9 +275,9 @@ var customMatchers = {
             compare: function(actual, expected) {
                 return compareImageToGolden(actual, expected);
             }
-        }
+        };
     }
-}
+};
 
 /**
  * @param {?Buffer} imageBuffer
