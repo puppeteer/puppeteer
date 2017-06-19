@@ -21,7 +21,7 @@
     - [page.viewportSize()](#pagesize)
     - [page.evaluate(fun, args)](#pageevaluatefun-args)
     - [page.evaluateOnInitialized(fun, args)](#pageevaluateoninitializedfun-args)
-    - [page.screenshot(type[, clipRect])](#pagescreenshottype-cliprect)
+    - [page.screenshot([options])](#pagescreenshottype-cliprect)
     - [page.printToPDF(filePath[, options])](#pageprinttopdffilepath-options)
     - [page.plainText()](#pageplaintext)
     - [page.title()](#pagetitle)
@@ -146,19 +146,23 @@ Pages could be closed by `page.close()` method.
 - `args` [&lt;Array&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) Arguments to pass to  `fun`
 - returns: [&lt;Promise&lt;Object&gt;&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves to function
 
-#### page.screenshot(type[, clipRect])
+#### page.screenshot([options])
 
-- `type` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) Specify screenshot type, could be either `jpeg` or `png`.
-- `clipRect` [&lt;Object&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) An object which specifies clipping region of the page. Should have the following fields:
-	- `x` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) x-coordinate of top-left corner of clip area
-	- `y` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) y-coordinate of top-left corner of clip area
-	- `width` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) width of clipping area
-	- `height` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) height of clipping area
+- `options` [&lt;Object&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) Options object which might have the following properties:
+    - `path` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) The file path to save the image to. The screenshot type will be inferred from file extension.
+    - `type` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) Specify screenshot type, could be either `jpeg` or `png`.
+    - `quality` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) The quality of the image, between 0-100. Not applicable to `.jpg` images.
+    - `fullPage` [&lt;boolean&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type) When true, takes a screenshot of the full scrollable page.
+    - `clip` [&lt;Object&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) An object which specifies clipping region of the page. Should have the following fields:
+        - `x` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) x-coordinate of top-left corner of clip area
+        - `y` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) y-coordinate of top-left corner of clip area
+        - `width` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) width of clipping area
+        - `height` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) height of clipping area
 - returns: [&lt;Promise&lt;Buffer&gt;&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves to buffer with captured screenshot
 
 #### page.printToPDF(filePath[, options])
 
-- `filePath` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) The file path to save image to. The screenshot type will be inferred from file extension
+- `filePath` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) The file path to save the image to. The screenshot type will be inferred from file extension
 - `options` [&lt;Object&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) Options object which might have the following properties:
 	- `scale` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)
 	- `displayHeaderFooter` [&lt;boolean&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)

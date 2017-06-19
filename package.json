@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
+  "engines": {
+    "node": ">=7.10.0"
+  },
   "scripts": {
     "test-puppeteer": "jasmine test/test.js",
     "test-phantom": "python third_party/phantomjs/test/run-tests.py",
