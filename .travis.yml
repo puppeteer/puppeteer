@@ -1,0 +1,24 @@
+language: node_js
+matrix:
+  include:
+    - node_js: "7"
+    - node_js: "8"
+dist: trusty
+env:
+cache:
+  yarn: true
+  directories:
+    - node_modules
+install:
+  - yarn
+before_script:
+  - export DISPLAY=:99.0
+  - export LIGHTHOUSE_CHROMIUM_PATH="$(pwd)/chrome-linux/chrome"
+  - sh -e /etc/init.d/xvfb start
+  - sleep 3 # wait for xvfb to boot
+script:
+  - yarn run lint
+  - yarn run test-puppeteer
+  - yarn run test-phantom
+addons:
+  chrome: stable
