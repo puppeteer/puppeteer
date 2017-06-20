@@ -70,8 +70,8 @@ describe('Puppeteer', function() {
             await page.setInPageCallback('callController', async function(a, b) {
                 return await page.evaluate((a, b) => a * b, a, b);
             });
-            var result = await page.evaluate(function() {
-                return callController(9, 3);
+            var result = await page.evaluate(async function() {
+                return await callController(9, 3);
             });
             expect(result).toBe(27);
         }));
@@ -110,9 +110,8 @@ describe('Puppeteer', function() {
             await page.setInPageCallback('callController', function(a, b) {
                 return a * b;
             });
-
-            var result = await page.evaluate(function() {
-                return callController(9, 4);
+            var result = await page.evaluate(async function() {
+                return await callController(9, 4);
             });
             expect(result).toBe(36);
         }));
@@ -122,8 +121,8 @@ describe('Puppeteer', function() {
             });
 
             await page.navigate(EMPTY_PAGE);
-            var result = await page.evaluate(function() {
-                return callController(9, 4);
+            var result = await page.evaluate(async function() {
+                return await callController(9, 4);
             });
             expect(result).toBe(36);
         }));
@@ -132,8 +131,8 @@ describe('Puppeteer', function() {
                 return Promise.resolve(a * b);
             });
 
-            var result = await page.evaluate(function() {
-                return callController(3, 5);
+            var result = await page.evaluate(async function() {
+                return await callController(3, 5);
             });
             expect(result).toBe(15);
         }));

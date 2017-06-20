@@ -19,14 +19,26 @@ var browser = new Browser();
 
 browser.newPage().then(async page => {
     page.on('consolemessage', console.log);
+
+
     await page.setInPageCallback('callPhantom', msg => {
-        console.log("Received by the 'phantom' main context: "+msg);
-        return "Hello there, I'm coming to you from the 'phantom' context instead";
+        console.log("Page is saying: '" + msg + "'");
+        return "Hello, page";
     });
-    await page.evaluate(function() {
+
+
+
+
+    await page.evaluate(async function() {
+
+
+
         // Return-value of the "onCallback" handler arrive here
-        var callbackResponse = window.callPhantom("Hello, I'm coming to you from the 'page' context");
-        console.log("Received by the 'page' context: "+callbackResponse);
+        var callbackResponse = await window.callPhantom("Hello, driver");
+        console.log("Driver is saying: '" + callbackResponse + "'");
+
+
+
     });
     browser.close();
 });
