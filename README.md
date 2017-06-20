@@ -99,9 +99,8 @@ browser.newPage().then(async page => {
 #### Q: What is the "Phantom Shim"?
 
 "Phantom Shim" is a layer built atop the Puppeteer API that simulates Phantom's environment.
-It was developed to run Phantom's tests and estimate the comprehensiveness Puppeteer's API.
 
-At the moment, the shim employs unhealthy approaches (e.g. in-process code execution is emulated via [nested event loops](https://github.com/abbr/deasync)) to mimic Phantom's environment.
+Puppeteer's process model is different than Phantom's. Puppeteer runs out-of-process to the browser, whereas  Phantom runs in-process. To simulate in-process behavior, phantom_shim hacks Node's runtime with [nested event loops](https://github.com/abbr/deasync)) to simulate in-process operation. This might result in unpredictable side-effects and makes the shim unreliable for certain use cases situations.
 
 # Migration Guide
 
