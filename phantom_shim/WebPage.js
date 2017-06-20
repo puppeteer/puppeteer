@@ -39,10 +39,7 @@ class WebPage {
         if (options.viewportSize)
             await(this._page.setViewportSize(options.viewportSize));
 
-        await(this._page.setInPageCallback('callPhantom', (...args) => this.onCallback.apply(null, args)));
-
         this.clipRect = options.clipRect || {left: 0, top: 0, width: 0, height: 0};
-        this.onCallback = null;
         this.onConsoleMessage = null;
         this.onLoadFinished = null;
         this.onResourceError = null;

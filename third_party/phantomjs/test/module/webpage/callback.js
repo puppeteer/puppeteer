@@ -13,4 +13,4 @@ test(function () {
     }, msgA, msgB);
 
     assert_equals(result, expected);
-}, "page.onCallback");
+}, "page.onCallback", { expected_fail : true });
