@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "deasync": "^0.1.9",
+    "eslint": "^4.0.0",
     "jasmine": "^2.6.0",
     "minimist": "^1.2.0",
     "ncp": "^2.0.0",
