@@ -28,7 +28,7 @@ npm install
 
 ## Getting Started
 
-The following script navigates to https://example.com and saves a screenshot to *example.jpg*:
+The following script navigates to https://example.com and saves a screenshot to *example.png*:
 
 ```javascript
 const Browser = require('Puppeteer').Browser;
@@ -36,7 +36,7 @@ const browser = new Browser();
 
 browser.newPage().then(async page => {
   await page.navigate('https://example.com');
-  await page.screenshot({path: 'example.jpg'});
+  await page.screenshot({path: 'example.png'});
   browser.close();
 });
 ```
