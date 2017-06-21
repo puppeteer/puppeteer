@@ -19,100 +19,100 @@ var await = require('./utilities').await;
 var os = require('os');
 
 class System {
-  /**
-   * @param {!Array<string>} args
-   */
-  constructor(args) {
-    this.args = args;
-    this.env = {};
-    Object.assign(this.env, process.env);
-    this.stdin = new StandardInput(process.stdin);
-    this.stdout = new StandardOutput(process.stdout);
-    this.stderr = new StandardOutput(process.stderr);
-    this.platform = 'phantomjs';
-    this.pid = process.pid;
-    this.isSSLSupported = false;
-    this.os = {
-      architecture: os.arch(),
-      name: os.type(),
-      version: os.release()
-    };
-  }
+    /**
+     * @param {!Array<string>} args
+     */
+    constructor(args) {
+        this.args = args;
+        this.env = {};
+        Object.assign(this.env, process.env);
+        this.stdin = new StandardInput(process.stdin);
+        this.stdout = new StandardOutput(process.stdout);
+        this.stderr = new StandardOutput(process.stderr);
+        this.platform = 'phantomjs';
+        this.pid = process.pid;
+        this.isSSLSupported = false;
+        this.os = {
+            architecture: os.arch(),
+            name: os.type(),
+            version: os.release()
+        };
+    }
 }
 
 class StandardInput {
-  /**
-   * @param {!Readable} readableStream
-   */
-  constructor(readableStream) {
-    this._readline = readline.createInterface({
-      input: readableStream
-    });
-    this._lines = [];
-    this._closed = false;
-    this._readline.on('line', line => this._lines.push(line));
-    this._readline.on('close', () => this._closed = true);
-  }
-
-  /**
-   * @return {string}
-   */
-  readLine() {
-    if (this._closed && !this._lines.length)
-      return '';
-    if (!this._lines.length) {
-      var linePromise = new Promise(fulfill => this._readline.once('line', fulfill));
-      await(linePromise);
+    /**
+     * @param {!Readable} readableStream
+     */
+    constructor(readableStream) {
+        this._readline = readline.createInterface({
+            input: readableStream
+        });
+        this._lines = [];
+        this._closed = false;
+        this._readline.on('line', line => this._lines.push(line));
+        this._readline.on('close', () => this._closed = true);
     }
-    return this._lines.shift();
-  }
 
-  /**
-   * @return {string}
-   */
-  read() {
-    if (!this._closed) {
-      var closePromise = new Promise(fulfill => this._readline.once('close', fulfill));
-      await(closePromise);
+    /**
+     * @return {string}
+     */
+    readLine() {
+        if (this._closed && !this._lines.length)
+            return '';
+        if (!this._lines.length) {
+            var linePromise = new Promise(fulfill => this._readline.once('line', fulfill));
+            await(linePromise);
+        }
+        return this._lines.shift();
     }
-    var text = this._lines.join('\n');
-    this._lines = [];
-    return text;
-  }
 
-  close() {
-    this._readline.close();
-  }
+    /**
+     * @return {string}
+     */
+    read() {
+        if (!this._closed) {
+            var closePromise = new Promise(fulfill => this._readline.once('close', fulfill));
+            await(closePromise);
+        }
+        var text = this._lines.join('\n');
+        this._lines = [];
+        return text;
+    }
+
+    close() {
+        this._readline.close();
+    }
 }
 
 class StandardOutput {
-  /**
-   * @param {!Writable} writableStream
-   */
-  constructor(writableStream) {
-    this._stream = writableStream;
-  }
+    /**
+     * @param {!Writable} writableStream
+     */
+    constructor(writableStream) {
+        this._stream = writableStream;
+    }
 
-  /**
-   * @param {string} data
-   */
-  write(data) {
-    this._stream.write(data);
-  }
+    /**
+     * @param {string} data
+     */
+    write(data) {
+        this._stream.write(data);
+    }
 
-  /**
-   * @param {string} data
-   */
-  writeLine(data) {
-    this._stream.write(data + '\n');
-  }
+    /**
+     * @param {string} data
+     */
+    writeLine(data) {
+        this._stream.write(data + '\n');
+    }
 
-  flush() {
-  }
+    flush() {
+    }
 
-  close() {
-    this._stream.end();
-  }
+    close() {
+        this._stream.end();
+    }
 }
 
 module.exports = System;
