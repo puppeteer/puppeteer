@@ -17,16 +17,16 @@
 var loopWhile = require('deasync').loopWhile;
 
 module.exports = {
-    await: function(promise) {
-        var error;
-        var result;
-        var done = false;
-        promise.then(r => result = r)
-            .catch(err => error = err)
-            .then(() => done = true);
-        loopWhile(() => !done);
-        if (error)
-            throw error;
-        return result;
-    }
+  await: function(promise) {
+    var error;
+    var result;
+    var done = false;
+    promise.then(r => result = r)
+        .catch(err => error = err)
+        .then(() => done = true);
+    loopWhile(() => !done);
+    if (error)
+      throw error;
+    return result;
+  }
 };
