@@ -22,9 +22,9 @@ var mime = require('mime');
 
 class StaticServer {
   /**
-     * @param {string} dirPath
-     * @param {number} port
-     */
+   * @param {string} dirPath
+   * @param {number} port
+   */
   constructor(dirPath, port) {
     this._server = http.createServer(this._onRequest.bind(this));
     this._server.listen(port);

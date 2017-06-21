@@ -1,10 +1,10 @@
 var utils = module.exports = {
   /**
-     * @param {!Page} page
-     * @param {string} frameId
-     * @param {string} url
-     * @return {!Promise}
-     */
+   * @param {!Page} page
+   * @param {string} frameId
+   * @param {string} url
+   * @return {!Promise}
+   */
   attachFrame: async function(page, frameId, url) {
     await page.evaluate(attachFrame, frameId, url);
 
@@ -18,10 +18,10 @@ var utils = module.exports = {
   },
 
   /**
-     * @param {!Page} page
-     * @param {string} frameId
-     * @return {!Promise}
-     */
+   * @param {!Page} page
+   * @param {string} frameId
+   * @return {!Promise}
+   */
   detachFrame: async function(page, frameId) {
     await page.evaluate(detachFrame, frameId);
 
@@ -32,11 +32,11 @@ var utils = module.exports = {
   },
 
   /**
-     * @param {!Page} page
-     * @param {string} frameId
-     * @param {string} url
-     * @return {!Promise}
-     */
+   * @param {!Page} page
+   * @param {string} frameId
+   * @param {string} url
+   * @return {!Promise}
+   */
   navigateFrame: async function(page, frameId, url) {
     await page.evaluate(navigateFrame, frameId, url);
 
@@ -48,10 +48,10 @@ var utils = module.exports = {
   },
 
   /**
-     * @param {!Frame} frame
-     * @param {string=} indentation
-     * @return {string}
-     */
+   * @param {!Frame} frame
+   * @param {string=} indentation
+   * @return {string}
+   */
   dumpFrames: function(frame, indentation) {
     indentation = indentation || '';
     var result = indentation + frame.url();
