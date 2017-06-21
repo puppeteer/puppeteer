@@ -11,7 +11,7 @@
     "test-phantom": "python third_party/phantomjs/test/run-tests.py",
     "test": "npm run lint --silent && npm run test-puppeteer && npm run test-phantom",
     "install": "node install.js",
-    "lint": "eslint --quiet -f codeframe . || eslint ."
+    "lint": "[ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint ."
   },
   "author": "The Chromium Authors",
   "license": "SEE LICENSE IN LICENSE",
@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "deasync": "^0.1.9",
+    "eslint": "^4.0.0",
     "jasmine": "^2.6.0",
     "minimist": "^1.2.0",
     "ncp": "^2.0.0",
