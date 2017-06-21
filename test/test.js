@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-var fs = require('fs');
 var path = require('path');
-var rm = require('rimraf').sync;
 var Browser = require('../lib/Browser');
 var StaticServer = require('./StaticServer');
-var PNG = require('pngjs').PNG;
-var mime = require('mime');
-var pixelmatch = require('pixelmatch');
-var Diff = require('text-diff');
+var GoldenUtils = require('./golden-utils');
 
 var PORT = 8907;
 var STATIC_PREFIX = 'http://localhost:' + PORT;
 var EMPTY_PAGE = STATIC_PREFIX + '/empty.html';
-
-var GOLDEN_DIR = path.join(__dirname, 'golden');
-var OUTPUT_DIR = path.join(__dirname, 'output');
-var PROJECT_DIR = path.join(__dirname, '..');
 
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
 
@@ -42,8 +33,7 @@ describe('Puppeteer', function() {
     beforeAll(function() {
         browser = new Browser();
         staticServer = new StaticServer(path.join(__dirname, 'assets'), PORT);
-        if (fs.existsSync(OUTPUT_DIR))
-            rm(OUTPUT_DIR);
+        GoldenUtils.removeOutputDir();
     });
 
     afterAll(function() {
@@ -53,7 +43,7 @@ describe('Puppeteer', function() {
 
     beforeEach(SX(async function() {
         page = await browser.newPage();
-        jasmine.addMatchers(customMatchers);
+        GoldenUtils.addMatchers(jasmine);
     }));
 
     afterEach(function() {
@@ -335,128 +325,6 @@ describe('Puppeteer', function() {
         }));
     });
 });
-
-var GoldenComparators = {
-    'image/png': compareImages,
-    'text/plain': compareText
-};
-
-/**
- * @param {?Object} actualBuffer
- * @param {!Buffer} expectedBuffer
- * @return {?{diff: (!Object:undefined), errorMessage: (string|undefined)}}
- */
-function compareImages(actualBuffer, expectedBuffer) {
-    if (!actualBuffer || !(actualBuffer instanceof Buffer))
-        return { errorMessage: 'Actual result should be Buffer.' };
-
-    var actual = PNG.sync.read(actualBuffer);
-    var expected = PNG.sync.read(expectedBuffer);
-    if (expected.width !== actual.width || expected.height !== actual.height) {
-        return {
-            errorMessage: `Sizes differ: expected image ${expected.width}px X ${expected.height}px, but got ${actual.width}px X ${actual.height}px. `
-        };
-    }
-    var diff = new PNG({width: expected.width, height: expected.height});
-    var count = pixelmatch(expected.data, actual.data, diff.data, expected.width, expected.height, {threshold: 0.1});
-    return count > 0 ? { diff: PNG.sync.write(diff) } : null;
-}
-
-/**
- * @param {?Object} actual
- * @param {!Buffer} expectedBuffer
- * @return {?{diff: (!Object:undefined), errorMessage: (string|undefined)}}
- */
-function compareText(actual, expectedBuffer) {
-    if (typeof actual !== 'string')
-        return { errorMessage: 'Actual result should be string' };
-    var expected = expectedBuffer.toString('utf-8');
-    if (expected === actual)
-        return null;
-    var diff = new Diff();
-    var result = diff.main(expected, actual);
-    diff.cleanupSemantic(result);
-    var html = diff.prettyHtml(result);
-    var diffStylePath = path.join(__dirname, 'diffstyle.css');
-    html = `<link rel="stylesheet" href="file://${diffStylePath}">` + html;
-    return {
-        diff: html,
-        diffExtension: '.html'
-    };
-}
-
-var customMatchers = {
-    toBeGolden: function(util, customEqualityTesters) {
-        return {
-            /**
-             * @param {?Object} actual
-             * @param {string} goldenName
-             * @return {!{pass: boolean, message: (undefined|string)}}
-             */
-            compare: function(actual, goldenName) {
-                var expectedPath = path.join(GOLDEN_DIR, goldenName);
-                var actualPath = path.join(OUTPUT_DIR, goldenName);
-
-                var messageSuffix = 'Output is saved in ' + path.relative(PROJECT_DIR, OUTPUT_DIR);
-
-                if (!fs.existsSync(expectedPath)) {
-                    ensureOutputDir();
-                    fs.writeFileSync(actualPath, actual);
-                    return {
-                        pass: false,
-                        message: goldenName + ' is missing in golden results. ' + messageSuffix
-                    };
-                }
-                var expected = fs.readFileSync(expectedPath);
-                var comparator = GoldenComparators[mime.lookup(goldenName)];
-                if (!comparator) {
-                    return {
-                        pass: false,
-                        message: 'Failed to find comparator with type ' + mime.lookup(goldenName) + ': '  + goldenName
-                    };
-                }
-                var result = comparator(actual, expected);
-                if (!result)
-                    return { pass: true };
-                ensureOutputDir();
-                fs.writeFileSync(actualPath, actual);
-                // Copy expected to the output/ folder for convenience.
-                fs.writeFileSync(addSuffix(actualPath, '-expected'), expected);
-                if (result.diff) {
-                    var diffPath = addSuffix(actualPath, '-diff', result.diffExtension);
-                    fs.writeFileSync(diffPath, result.diff);
-                }
-
-                var message = goldenName + ' mismatch!';
-                if (result.errorMessage)
-                    message += ' ' + result.errorMessage;
-                return {
-                    pass: false,
-                    message: message + ' ' + messageSuffix
-                };
-
-                function ensureOutputDir() {
-                    if (!fs.existsSync(OUTPUT_DIR))
-                        fs.mkdirSync(OUTPUT_DIR);
-                }
-            }
-        };
-    },
-};
-
-/**
- * @param {string} filePath
- * @param {string} suffix
- * @param {string=} customExtension
- * @return {string}
- */
-function addSuffix(filePath, suffix, customExtension) {
-    var dirname = path.dirname(filePath);
-    var ext = path.extname(filePath);
-    var name = path.basename(filePath, ext);
-    return path.join(dirname, name + suffix + (customExtension || ext));
-}
-
 
 // Since Jasmine doesn't like async functions, they should be wrapped
 // in a SX function.
