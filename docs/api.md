@@ -21,7 +21,7 @@
     - [page.viewportSize()](#pagesize)
     - [page.evaluate(fun, args)](#pageevaluatefun-args)
     - [page.evaluateOnInitialized(fun, args)](#pageevaluateoninitializedfun-args)
-    - [page.screenshot([options])](#pagescreenshottype-cliprect)
+    - [page.screenshot(\[options\])](#pagescreenshottype-cliprect)
     - [page.printToPDF(filePath[, options])](#pageprinttopdffilepath-options)
     - [page.plainText()](#pageplaintext)
     - [page.title()](#pagetitle)
@@ -35,25 +35,25 @@ not necessarily result in launching browser; the instance will be launched when 
 
 #### new Browser([options])
 
-- `options` [&lt;Object&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)  Set of configurable options to set on the browser. Can have the following fields:
-	- `headless` [&lt;boolean&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type) Wether to run chromium in headless mode. Defaults to `true`.
-	- `remoteDebuggingPort` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) Specify a remote debugging port to open on chromium instance. Defaults to `9229`.
-	- `executablePath` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) Path to a chromium executable to run instead of bundled chromium.
-	- `args` [&lt;Array&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) Additional arguments to pass to the chromium instance. List of chromium flags could be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
+- `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
+	- `headless` <[boolean]> Wether to run chromium in headless mode. Defaults to `true`.
+	- `remoteDebuggingPort` <[number]> Specify a remote debugging port to open on chromium instance. Defaults to `9229`.
+	- `executablePath` <[string]> Path to a chromium executable to run instead of bundled chromium.
+	- `args` <[Array]<[string]>> Additional arguments to pass to the chromium instance. List of chromium flags could be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
 
 #### browser.newPage()
 
-- returns: [&lt;Promise&lt;Page&gt;&gt;](http://todo)
+- returns: <[Promise]<[Page]>>
 
 Create a new page in browser and returns a promise which gets resolved with a Page object.
 
 #### browser.closePage()
 
-- returns: [&lt;Promise&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise)
+- returns: <[Promise]>
 
 #### browser.version()
 
-- returns: [&lt;Promise&lt;string&gt;&gt;]((https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type))
+- returns: <[Promise]<[string]>>
 
 #### browser.close()
 
@@ -73,115 +73,125 @@ Pages could be closed by `page.close()` method.
 
 #### page.addScriptTag(url)
 
-- `url` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) Url of a script to be added
-- returns: [&lt;Promise&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves as the script gets added and loads.
+- `url` <[string]> Url of a script to be added
+- returns: <[Promise]> Promise which resolves as the script gets added and loads.
 
 #### page.injectFile(filePath)
 
-- `url` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) Path to the javascript file to be injected into page.
-- returns: [&lt;Promise&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves when file gets successfully evaluated in page.
+- `url` <[string]> Path to the javascript file to be injected into page.
+- returns: <[Promise]> Promise which resolves when file gets successfully evaluated in page.
 
 #### page.setInPageCallback(name, callback)
 
-- `url` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) Name of the callback to be assigned on window object
-- `callback` [&lt;Function&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function) Callback function which will be called in node.js
-- returns: [&lt;Promise&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves when callback is successfully initialized
+- `url` <[string]> Name of the callback to be assigned on window object
+- `callback` <[function]> Callback function which will be called in node.js
+- returns: <[Promise]> Promise which resolves when callback is successfully initialized
 
 #### page.setExtraHTTPHeaders(headers)
 
-- `headers` [&lt;Object&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) Key-value set of additional http headers to be sent with every request.
-- returns: [&lt;Promise&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves when additional headers are installed
+- `headers` <[Object]> Key-value set of additional http headers to be sent with every request.
+- returns: <[Promise]> Promise which resolves when additional headers are installed
 
 #### page.extraHTTPHeaders()
 
-- returns: [&lt;Object&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) Key-value set of additional http headers, which will be sent with every request.
+- returns: <[Object]> Key-value set of additional http headers, which will be sent with every request.
 
 #### page.setUserAgentOverride(userAgent)
 
-- `userAgent` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) Specific user agent to use in this page
-- returns: [&lt;Promise&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves when the user agent is set.
+- `userAgent` <[string]> Specific user agent to use in this page
+- returns: <[Promise]> Promise which resolves when the user agent is set.
 
 #### page.userAgentOverride()
 
-- returns: [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) Returns user agent override, if any.
+- returns: <[string]> Returns user agent override, if any.
 
 #### page.url()
 
-- returns: [&lt;Promise&lt;string&gt;&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) Promise which resolves with the current page url.
+- returns: <[Promise]<[string]>> Promise which resolves with the current page url.
 
 #### page.setContent(html)
 
-- `html` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) HTML markup to assign to the page.
-- returns: [&lt;Promise&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves when the content is successfully assigned.
+- `html` <[string]> HTML markup to assign to the page.
+- returns: <[Promise]> Promise which resolves when the content is successfully assigned.
 
 #### page.navigate(url)
 
-- `url` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) URL to navigate page to
-- returns: [&lt;Promise&lt;boolean&gt;&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type) Promise which resolves when the page is navigated. The promise resolves to:
+- `url` <[string]> URL to navigate page to
+- returns: <[Promise]<[boolean]>> Promise which resolves when the page is navigated. The promise resolves to:
 	- `true` if the navigation succeeds and page's `load` event is fired.
 	- `false` if the navigation fails due to bad URL or SSL errors.
 
 #### page.setViewportSize(size)
 
-- `size` [&lt;Object&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)  An object with two fields:
-	- `width` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) Specify page's width in pixels.
-	- `height` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) Specify page's height in pixels.
-- returns: [&lt;Promise&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves when the dimensions are updated.
+- `size` <[Object]>  An object with two fields:
+	- `width` <[number]> Specify page's width in pixels.
+	- `height` <[number]> Specify page's height in pixels.
+- returns: <[Promise]> Promise which resolves when the dimensions are updated.
 
 #### page.viewportSize()
 
-- returns: [&lt;Object&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object)  An object with two fields:
-	- `width` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) Page's width in pixels.
-	- `height` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) Page's height in pixels.
+- returns: <[Object]>  An object with two fields:
+	- `width` <[number]> Page's width in pixels.
+	- `height` <[number]> Page's height in pixels.
 
 #### page.evaluate(fun, args)
 
-- `fun` [&lt;Function&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function) Function to be evaluated in browser context
-- `args` [&lt;Array&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) Arguments to pass to  `fun`
-- returns: [&lt;Promise&lt;Object&gt;&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves to function return value
+- `fun` <[function]> Function to be evaluated in browser context
+- `args` <[Array]<[string]>> Arguments to pass to  `fun`
+- returns: <[Promise]<[Object]>> Promise which resolves to function return value
 
 #### page.evaluateOnInitialized(fun, args)
 
-- `fun` [&lt;Function&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function) Function to be evaluated in browser context
-- `args` [&lt;Array&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array) Arguments to pass to  `fun`
-- returns: [&lt;Promise&lt;Object&gt;&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves to function
+- `fun` <[function]> Function to be evaluated in browser context
+- `args` <[Array]<[string]>> Arguments to pass to  `fun`
+- returns: <[Promise]<[Object]>> Promise which resolves to function
 
 #### page.screenshot([options])
 
-- `options` [&lt;Object&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) Options object which might have the following properties:
-    - `path` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) The file path to save the image to. The screenshot type will be inferred from file extension.
-    - `type` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) Specify screenshot type, could be either `jpeg` or `png`.
-    - `quality` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) The quality of the image, between 0-100. Not applicable to `.jpg` images.
-    - `fullPage` [&lt;boolean&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type) When true, takes a screenshot of the full scrollable page.
-    - `clip` [&lt;Object&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) An object which specifies clipping region of the page. Should have the following fields:
-        - `x` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) x-coordinate of top-left corner of clip area
-        - `y` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) y-coordinate of top-left corner of clip area
-        - `width` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) width of clipping area
-        - `height` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type) height of clipping area
-- returns: [&lt;Promise&lt;Buffer&gt;&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves to buffer with captured screenshot
+- `options` <[Object]> Options object which might have the following properties:
+    - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension.
+    - `type` <[string]> Specify screenshot type, could be either `jpeg` or `png`.
+    - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `.jpg` images.
+    - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page.
+    - `clip` <[Object]> An object which specifies clipping region of the page. Should have the following fields:
+        - `x` <[number]> x-coordinate of top-left corner of clip area
+        - `y` <[number]> y-coordinate of top-left corner of clip area
+        - `width` <[number]> width of clipping area
+        - `height` <[number]> height of clipping area
+- returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot
 
 #### page.printToPDF(filePath[, options])
 
-- `filePath` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) The file path to save the image to. The screenshot type will be inferred from file extension
-- `options` [&lt;Object&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object) Options object which might have the following properties:
-	- `scale` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)
-	- `displayHeaderFooter` [&lt;boolean&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)
-	- `printBackground` [&lt;boolean&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)
-	- `landscape` [&lt;boolean&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type)
-	- `pageRanges` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)
-	- `format` [&lt;string&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type)
-	- `width` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)
-	- `height` [&lt;number&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type)
-- returns: [&lt;Promise&gt;](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Promise) Promise which resolves when the PDF is saved.
+- `filePath` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension
+- `options` <[Object]> Options object which might have the following properties:
+	- `scale` <[number]>
+	- `displayHeaderFooter` <[boolean]>
+	- `printBackground` <[boolean]>
+	- `landscape` <[boolean]>
+	- `pageRanges` <[string]>
+	- `format` <[string]>
+	- `width` <[number]>
+	- `height` <[number]>
+- returns: <[Promise]> Promise which resolves when the PDF is saved.
 
 #### page.plainText()
 
-- returns: [&lt;Promise&lt;string&gt;&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) Returns page's inner text.
+- returns:  <[Promise]<[string]>> Returns page's inner text.
 
 #### page.title()
 
-- returns: [&lt;Promise&lt;string&gt;&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) Returns page's title.
+- returns: <[Promise]<[string]>> Returns page's title.
 
 #### page.close()
 
-- returns: [&lt;Promise&gt;](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type) Returns promise which resolves when page gets closed.
+- returns: <[Promise]> Returns promise which resolves when page gets closed.
+
+[Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
+[boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
+[Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer "Buffer"
+[function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function "Function"
+[number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type "Number"
+[Object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object "Object"
+[Page]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-page "Page"
+[Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
+[string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
