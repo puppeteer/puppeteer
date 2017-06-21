@@ -33,4 +33,4 @@ async_test(function () {
                   assert_equals(errorCount, 1);
               }));
 
-}, "can abort network requests");
+}, "can abort network requests", { timeout: 5000 });
