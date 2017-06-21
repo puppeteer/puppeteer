@@ -7,9 +7,9 @@
     "node": ">=7.10.0"
   },
   "scripts": {
-    "test-puppeteer": "jasmine test/test.js",
+    "unit": "jasmine test/test.js",
     "test-phantom": "python third_party/phantomjs/test/run-tests.py",
-    "test": "npm run lint --silent && npm run test-puppeteer && npm run test-phantom",
+    "test": "npm run lint --silent && npm run unit && npm run test-phantom",
     "install": "node install.js",
     "lint": "[ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint ."
   },

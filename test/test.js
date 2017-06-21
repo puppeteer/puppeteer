@@ -30,6 +30,8 @@ var GOLDEN_DIR = path.join(__dirname, 'golden');
 var OUTPUT_DIR = path.join(__dirname, 'output');
 var PROJECT_DIR = path.join(__dirname, '..');
 
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
+
 describe('Puppeteer', function() {
     var browser;
     var staticServer;
