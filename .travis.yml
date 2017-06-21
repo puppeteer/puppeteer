@@ -3,7 +3,6 @@ node_js:
   - "7"
 dist: trusty
 env:
-  - DISABLE_CHROMIUM_SANDBOX=true
 cache:
   yarn: true
   directories:

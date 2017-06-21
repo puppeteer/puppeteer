@@ -59,6 +59,7 @@ if (!fs.existsSync(scriptPath)) {
 var browser = new Browser({
         remoteDebuggingPort: 9229,
         headless: argv.headless,
+        args: ['--no-sandbox']
 });
 
 var context = createPhantomContext(browser, scriptPath, argv);
