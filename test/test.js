@@ -31,7 +31,7 @@ describe('Puppeteer', function() {
     var page;
 
     beforeAll(function() {
-        browser = new Browser();
+        browser = new Browser({args: ['--no-sandbox']});
         staticServer = new StaticServer(path.join(__dirname, 'assets'), PORT);
         GoldenUtils.removeOutputDir();
     });
