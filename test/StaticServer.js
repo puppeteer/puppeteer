@@ -21,35 +21,35 @@ var path = require('path');
 var mime = require('mime');
 
 class StaticServer {
-    /**
+  /**
      * @param {string} dirPath
      * @param {number} port
      */
-    constructor(dirPath, port) {
-        this._server = http.createServer(this._onRequest.bind(this));
-        this._server.listen(port);
-        this._dirPath = dirPath;
-    }
+  constructor(dirPath, port) {
+    this._server = http.createServer(this._onRequest.bind(this));
+    this._server.listen(port);
+    this._dirPath = dirPath;
+  }
 
-    stop() {
-        this._server.close();
-    }
+  stop() {
+    this._server.close();
+  }
 
-    _onRequest(request, response) {
-        var pathName = url.parse(request.url).path;
-        if (pathName === '/')
-            pathName = '/index.html';
-        pathName = path.join(this._dirPath, pathName.substring(1));
-        fs.readFile(pathName, function(err, data) {
-            if (err) {
-                response.statusCode = 404;
-                response.end(`File not found: ${pathName}`);
-                return;
-            }
-            response.setHeader('Content-Type', mime.lookup(pathName));
-            response.end(data);
-        });
-    }
+  _onRequest(request, response) {
+    var pathName = url.parse(request.url).path;
+    if (pathName === '/')
+      pathName = '/index.html';
+    pathName = path.join(this._dirPath, pathName.substring(1));
+    fs.readFile(pathName, function(err, data) {
+      if (err) {
+        response.statusCode = 404;
+        response.end(`File not found: ${pathName}`);
+        return;
+      }
+      response.setHeader('Content-Type', mime.lookup(pathName));
+      response.end(data);
+    });
+  }
 }
 
 module.exports = StaticServer;

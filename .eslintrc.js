@@ -104,7 +104,7 @@ module.exports = {
          * Disabled, aspirational rules
          */
 
-        "indent": [0, 4, { "SwitchCase": 1, "CallExpression": {"arguments": 2}, "MemberExpression": 2 }],
+        "indent": [2, 2, { "SwitchCase": 1, "CallExpression": {"arguments": 2}, "MemberExpression": 2 }],
 
         // brace-style is disabled, as eslint cannot enforce 1tbs as default, but allman for functions
         "brace-style": [0, "allman", { "allowSingleLine": true }],
