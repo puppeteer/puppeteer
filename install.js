@@ -20,28 +20,26 @@ var ProgressBar = require('progress');
 
 // Do nothing if the revision is already downloaded.
 if (Downloader.revisionInfo(Downloader.currentPlatform(), revision))
-    return;
+  return;
 
 Downloader.downloadRevision(Downloader.currentPlatform(), revision, onProgress)
-    .catch(error => {
-        console.error('Download failed: ' + error.message);
-    });
+    .catch(error => console.error('Download failed: ' + error.message));
 
 var progressBar = null;
 function onProgress(bytesTotal, delta) {
-    if (!progressBar) {
-        progressBar = new ProgressBar(`Downloading Chromium - ${toMegabytes(bytesTotal)} [:bar] :percent :etas `, {
-            complete: '=',
-            incomplete: ' ',
-            width: 20,
-            total: bytesTotal,
-        });
-    }
-    progressBar.tick(delta);
+  if (!progressBar) {
+    progressBar = new ProgressBar(`Downloading Chromium - ${toMegabytes(bytesTotal)} [:bar] :percent :etas `, {
+      complete: '=',
+      incomplete: ' ',
+      width: 20,
+      total: bytesTotal,
+    });
+  }
+  progressBar.tick(delta);
 }
 
 function toMegabytes(bytes) {
-    var mb = bytes / 1024 / 1024;
-    return (Math.round(mb * 10) / 10) + ' Mb';
+  var mb = bytes / 1024 / 1024;
+  return (Math.round(mb * 10) / 10) + ' Mb';
 }
 

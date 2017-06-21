@@ -27,39 +27,39 @@ var child_process = require('child_process');
 var Browser = require('..').Browser;
 var version = require('../package.json').version;
 var argv = require('minimist')(process.argv.slice(2), {
-    alias: { v: 'version' },
-    boolean: ['headless'],
-    default: {'headless': true },
+  alias: { v: 'version' },
+  boolean: ['headless'],
+  default: {'headless': true },
 });
 
 if (argv.version) {
-    console.log('Puppeteer v' + version);
-    return;
+  console.log('Puppeteer v' + version);
+  return;
 }
 
 if (argv['ssl-certificates-path']) {
-    console.error('Flag --ssl-certificates-path is not supported.');
-    process.exit(1);
-    return;
+  console.error('Flag --ssl-certificates-path is not supported.');
+  process.exit(1);
+  return;
 }
 
 var scriptArguments = argv._;
 if (!scriptArguments.length) {
-    console.log(__filename.split('/').pop() + ' [scriptfile]');
-    return;
+  console.log(__filename.split('/').pop() + ' [scriptfile]');
+  return;
 }
 
 var scriptPath = path.resolve(process.cwd(), scriptArguments[0]);
 if (!fs.existsSync(scriptPath)) {
-    console.error(`script not found: ${scriptPath}`);
-    process.exit(1);
-    return;
+  console.error(`script not found: ${scriptPath}`);
+  process.exit(1);
+  return;
 }
 
 var browser = new Browser({
-        remoteDebuggingPort: 9229,
-        headless: argv.headless,
-        args: ['--no-sandbox']
+  remoteDebuggingPort: 9229,
+  headless: argv.headless,
+  args: ['--no-sandbox']
 });
 
 var context = createPhantomContext(browser, scriptPath, argv);
@@ -73,38 +73,38 @@ vm.runInContext(scriptContent, context);
  * @return {!Object}
  */
 function createPhantomContext(browser, scriptPath, argv) {
-    var context = {};
-    context.setInterval = setInterval;
-    context.setTimeout = setTimeout;
-    context.clearInterval = clearInterval;
-    context.clearTimeout = clearTimeout;
+  var context = {};
+  context.setInterval = setInterval;
+  context.setTimeout = setTimeout;
+  context.clearInterval = clearInterval;
+  context.clearTimeout = clearTimeout;
 
-    context.phantom = Phantom.create(context, scriptPath);
-    context.console = console;
-    context.window = context;
-    context.WebPage = options => new WebPage(browser, scriptPath, options);
+  context.phantom = Phantom.create(context, scriptPath);
+  context.console = console;
+  context.window = context;
+  context.WebPage = options => new WebPage(browser, scriptPath, options);
 
-    vm.createContext(context);
+  vm.createContext(context);
 
-    var nativeExports = {
-        fs: new FileSystem(),
-        system: new System(argv._),
-        webpage: {
-            create: context.WebPage,
-        },
-        webserver: {
-            create: () => new WebServer(),
-        },
-        cookiejar: {
-            create: () => {},
-        },
-        child_process: child_process
-    };
-    var bootstrapPath = path.join(__dirname, '..', 'third_party', 'phantomjs', 'bootstrap.js');
-    var bootstrapCode = fs.readFileSync(bootstrapPath, 'utf8');
-    vm.runInContext(bootstrapCode, context, {
-        filename: 'bootstrap.js'
-    })(nativeExports);
-    return context;
+  var nativeExports = {
+    fs: new FileSystem(),
+    system: new System(argv._),
+    webpage: {
+      create: context.WebPage,
+    },
+    webserver: {
+      create: () => new WebServer(),
+    },
+    cookiejar: {
+      create: () => {},
+    },
+    child_process: child_process
+  };
+  var bootstrapPath = path.join(__dirname, '..', 'third_party', 'phantomjs', 'bootstrap.js');
+  var bootstrapCode = fs.readFileSync(bootstrapPath, 'utf8');
+  vm.runInContext(bootstrapCode, context, {
+    filename: 'bootstrap.js'
+  })(nativeExports);
+  return context;
 }
 
