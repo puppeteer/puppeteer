@@ -18,66 +18,66 @@ var http = require('http');
 var await = require('./utilities').await;
 
 class WebServer {
-  constructor() {
-    this._server = http.createServer();
-    this.objectName = 'WebServer';
-    this.listenOnPort = this.listen;
-    this.newRequest = function(req, res) { };
-    Object.defineProperty(this, 'port', {
-      get: () => {
-        if (!this._server.listening)
-          return '';
-        return this._server.address().port + '';
-      },
-      enumerable: true,
-      configurable: false
-    });
-  }
-
-  close() {
-    this._server.close();
-  }
-
-  /**
-   * @param {nubmer} port
-   * @return {boolean}
-   */
-  listen(port, callback) {
-    if (this._server.listening)
-      return false;
-    this.newRequest = callback;
-    this._server.listen(port);
-    var errorPromise = new Promise(x => this._server.once('error', x));
-    var successPromise = new Promise(x => this._server.once('listening', x));
-    await(Promise.race([errorPromise, successPromise]));
-    if (!this._server.listening)
-      return false;
-
-    this._server.on('request', (req, res) => {
-      res.close = res.end.bind(res);
-      var headers = res.getHeaders();
-      res.headers = [];
-      for (var key in headers) {
-        res.headers.push({
-          name: key,
-          value: headers[key]
+    constructor() {
+        this._server = http.createServer();
+        this.objectName = 'WebServer';
+        this.listenOnPort = this.listen;
+        this.newRequest = function(req, res) { };
+        Object.defineProperty(this, 'port', {
+            get: () => {
+                if (!this._server.listening)
+                    return '';
+                return this._server.address().port + '';
+            },
+            enumerable: true,
+            configurable: false
         });
-      }
-      res.header = res.getHeader;
-      res.setHeaders = headers => {
-        for (var key in headers)
-          res.setHeader(key, headers[key]);
-      };
-      Object.defineProperty(res, 'statusCode', {
-        enumerable: true,
-        configurable: true,
-        writable: true,
-        value: res.statusCode
-      });
-      this.newRequest.call(null, req, res);
-    });
-    return true;
-  }
+    }
+
+    close() {
+        this._server.close();
+    }
+
+    /**
+     * @param {nubmer} port
+     * @return {boolean}
+     */
+    listen(port, callback) {
+        if (this._server.listening)
+            return false;
+        this.newRequest = callback;
+        this._server.listen(port);
+        var errorPromise = new Promise(x => this._server.once('error', x));
+        var successPromise = new Promise(x => this._server.once('listening', x));
+        await(Promise.race([errorPromise, successPromise]));
+        if (!this._server.listening)
+            return false;
+
+        this._server.on('request', (req, res) => {
+            res.close = res.end.bind(res);
+            var headers = res.getHeaders();
+            res.headers = [];
+            for (var key in headers) {
+                res.headers.push({
+                    name: key,
+                    value: headers[key]
+                });
+            }
+            res.header = res.getHeader;
+            res.setHeaders = headers => {
+                for (var key in headers)
+                    res.setHeader(key, headers[key]);
+            };
+            Object.defineProperty(res, 'statusCode', {
+                enumerable: true,
+                configurable: true,
+                writable: true,
+                value: res.statusCode
+            });
+            this.newRequest.call(null, req, res);
+        });
+        return true;
+    }
 }
 
 module.exports = WebServer;
