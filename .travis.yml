@@ -1,0 +1,16 @@
+language: node_js
+node_js:
+  - "7"
+dist: trusty
+env:
+cache:
+  yarn: true
+  directories:
+    - node_modules
+install:
+  - yarn install
+  # puppeteer's install script downloads Chrome
+script:
+  - yarn run lint
+  - yarn run test-puppeteer
+  - yarn run test-phantom
