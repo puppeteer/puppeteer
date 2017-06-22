@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-var await = require('./utilities').await;
-var EventEmitter = require('events');
-var fs = require('fs');
-var path = require('path');
-var PageEvents = require('../lib/Page').Events;
+let await = require('./utilities').await;
+let EventEmitter = require('events');
+let fs = require('fs');
+let path = require('path');
+let PageEvents = require('../lib/Page').Events;
 
-var noop = function() { };
+let noop = function() { };
 
 class WebPage {
   /**
@@ -82,7 +82,7 @@ class WebPage {
          * @param {!Request} request
          */
     function resourceInterceptor(request) {
-      var requestData = {
+      let requestData = {
         url: request.url(),
         headers: request.headers()
       };
@@ -95,8 +95,8 @@ class WebPage {
   _onResponseReceived(response) {
     if (!this.onResourceReceived)
       return;
-    var headers = [];
-    for (var key in response.headers) {
+    let headers = [];
+    for (let key in response.headers) {
       headers.push({
         name: key,
         value: response.headers[key]
@@ -217,7 +217,7 @@ class WebPage {
       this._onAlertCallback.call(null, dialog.message());
       await(dialog.accept());
     } else if (dialog.type === 'confirm' && this._onConfirmCallback) {
-      var result = this._onConfirmCallback.call(null, dialog.message());
+      let result = this._onConfirmCallback.call(null, dialog.message());
       await(result ? dialog.accept() : dialog.dismiss());
     }
   }
@@ -247,7 +247,7 @@ class WebPage {
       this.onInitialized();
     this._deferEvaluate = false;
     this._page.navigate(url).then(result => {
-      var status = result ? 'success' : 'fail';
+      let status = result ? 'success' : 'fail';
       if (!result) {
         this.onResourceError.call(null, {
           url,
@@ -283,8 +283,8 @@ class WebPage {
      */
   render(fileName) {
     if (fileName.endsWith('pdf')) {
-      var options = {};
-      var paperSize = this.paperSize || {};
+      let options = {};
+      let paperSize = this.paperSize || {};
       options.margin = paperSize.margin;
       options.format = paperSize.format;
       options.landscape = paperSize.orientation === 'landscape';
@@ -292,7 +292,7 @@ class WebPage {
       options.height = paperSize.height;
       await(this._page.printToPDF(fileName, options));
     } else {
-      var options = {};
+      let options = {};
       if (this.clipRect && (this.clipRect.left || this.clipRect.top || this.clipRect.width || this.clipRect.height)) {
         options.clip = {
           x: this.clipRect.left,
@@ -362,7 +362,7 @@ class AsyncEmitter extends EventEmitter {
 
   _onListenerAdded(event, listener) {
     // Async listener calls original listener on next tick.
-    var asyncListener = (...args) => {
+    let asyncListener = (...args) => {
       process.nextTick(() => listener.apply(null, args));
     };
     listener[this._symbol] = asyncListener;

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-var fs = require('fs');
-var path = require('path');
-var vm = require('vm');
-var url = require('url');
+let fs = require('fs');
+let path = require('path');
+let vm = require('vm');
+let url = require('url');
 
 /**
  * @param {!Object} context
  * @param {string} scriptPath
  */
 module.exports.create = function(context, scriptPath) {
-  var phantom = {
+  const phantom = {
     page: {
       onConsoleMessage: null,
     },
@@ -82,7 +82,7 @@ module.exports.create = function(context, scriptPath) {
          * @return {!{major: number, minor: number, patch: number}}
          */
     get version() {
-      var versionParts = require('../package.json').version.split('.');
+      let versionParts = require('../package.json').version.split('.');
       return {
         major: parseInt(versionParts[0], 10),
         minor: parseInt(versionParts[1], 10),
@@ -105,7 +105,7 @@ module.exports.create = function(context, scriptPath) {
       filePath = path.resolve(phantom.libraryPath, filePath);
       if (!fs.existsSync(filePath))
         return false;
-      var code = fs.readFileSync(filePath, 'utf8');
+      let code = fs.readFileSync(filePath, 'utf8');
       if (code.startsWith('#!'))
         code = code.substring(code.indexOf('\n'));
       vm.runInContext(code, context, {
@@ -120,7 +120,7 @@ module.exports.create = function(context, scriptPath) {
          * @param {string} filename
          */
     loadModule: function(moduleSource, filename) {
-      var code = [
+      let code = [
         '(function(require, exports, module) {\n',
         moduleSource,
         '\n}.call({},',

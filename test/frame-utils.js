@@ -1,4 +1,4 @@
-var utils = module.exports = {
+const utils = module.exports = {
   /**
    * @param {!Page} page
    * @param {string} frameId
@@ -9,7 +9,7 @@ var utils = module.exports = {
     await page.evaluate(attachFrame, frameId, url);
 
     function attachFrame(frameId, url) {
-      var frame = document.createElement('iframe');
+      let frame = document.createElement('iframe');
       frame.src = url;
       frame.id = frameId;
       document.body.appendChild(frame);
@@ -26,7 +26,7 @@ var utils = module.exports = {
     await page.evaluate(detachFrame, frameId);
 
     function detachFrame(frameId) {
-      var frame = document.getElementById(frameId);
+      let frame = document.getElementById(frameId);
       frame.remove();
     }
   },
@@ -41,7 +41,7 @@ var utils = module.exports = {
     await page.evaluate(navigateFrame, frameId, url);
 
     function navigateFrame(frameId, url) {
-      var frame = document.getElementById(frameId);
+      let frame = document.getElementById(frameId);
       frame.src = url;
       return new Promise(x => frame.onload = x);
     }
@@ -54,8 +54,8 @@ var utils = module.exports = {
    */
   dumpFrames: function(frame, indentation) {
     indentation = indentation || '';
-    var result = indentation + frame.url();
-    for (var child of frame.childFrames())
+    let result = indentation + frame.url();
+    for (let child of frame.childFrames())
       result += '\n' + utils.dumpFrames(child, '    ' + indentation);
     return result;
   },

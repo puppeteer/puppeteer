@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-var os = require('os');
-var https = require('https');
-var fs = require('fs');
-var path = require('path');
-var extract = require('extract-zip');
-var util = require('util');
-var URL = require('url');
+let os = require('os');
+let https = require('https');
+let fs = require('fs');
+let path = require('path');
+let extract = require('extract-zip');
+let util = require('util');
+let URL = require('url');
 
-var CHROMIUM_PATH = path.join(__dirname, '..', '.local-chromium');
+let CHROMIUM_PATH = path.join(__dirname, '..', '.local-chromium');
 
-var downloadURLs = {
+let downloadURLs = {
   linux: 'https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/%d/chrome-linux.zip',
   mac: 'https://storage.googleapis.com/chromium-browser-snapshots/Mac/%d/chrome-mac.zip',
   win32: 'https://storage.googleapis.com/chromium-browser-snapshots/Win/%d/chrome-win32.zip',
@@ -43,7 +43,7 @@ module.exports = {
      * @return {string}
      */
   currentPlatform: function() {
-    var platform = os.platform();
+    let platform = os.platform();
     if (platform === 'darwin')
       return 'mac';
     if (platform === 'linux')
@@ -60,15 +60,15 @@ module.exports = {
      */
   canDownloadRevision: function(platform, revision) {
     console.assert(downloadURLs[platform], 'Unknown platform: ' + platform);
-    var url = URL.parse(util.format(downloadURLs[platform], revision));
-    var options = {
+    let url = URL.parse(util.format(downloadURLs[platform], revision));
+    let options = {
       method: 'HEAD',
       host: url.host,
       path: url.pathname,
     };
-    var resolve;
-    var promise = new Promise(x => resolve = x);
-    var request = https.request(options, response => {
+    let resolve;
+    let promise = new Promise(x => resolve = x);
+    let request = https.request(options, response => {
       resolve(response.statusCode === 200);
     });
     request.on('error', error => {
@@ -86,11 +86,11 @@ module.exports = {
      * @return {!Promise}
      */
   downloadRevision: async function(platform, revision, progressCallback) {
-    var url = downloadURLs[platform];
+    let url = downloadURLs[platform];
     console.assert(url, `Unsupported platform: ${platform}`);
     url = util.format(url, revision);
-    var zipPath = path.join(CHROMIUM_PATH, `download-${platform}-${revision}.zip`);
-    var folderPath = getFolderPath(platform, revision);
+    let zipPath = path.join(CHROMIUM_PATH, `download-${platform}-${revision}.zip`);
+    let folderPath = getFolderPath(platform, revision);
     if (fs.existsSync(folderPath))
       return;
     try {
@@ -110,10 +110,10 @@ module.exports = {
      * @return {?{executablePath: string}}
      */
   revisionInfo: function(platform, revision) {
-    var folderPath = getFolderPath(platform, revision);
+    let folderPath = getFolderPath(platform, revision);
     if (!fs.existsSync(folderPath))
       return null;
-    var executablePath = '';
+    let executablePath = '';
     if (platform === 'mac')
       executablePath = path.join(folderPath, 'chrome-mac', 'Chromium.app', 'Contents', 'MacOS', 'Chromium');
     else if (platform === 'linux')
@@ -144,21 +144,21 @@ function getFolderPath(platform, revision) {
  * @return {!Promise}
  */
 function downloadFile(url, destinationPath, progressCallback) {
-  var fulfill, reject;
-  var promise = new Promise((x, y) => { fulfill = x; reject = y; });
-  var request = https.get(url, response => {
+  let fulfill, reject;
+  let promise = new Promise((x, y) => { fulfill = x; reject = y; });
+  let request = https.get(url, response => {
     if (response.statusCode !== 200) {
-      var error = new Error(`Download failed: server returned code ${response.statusCode}. URL: ${url}`);
+      let error = new Error(`Download failed: server returned code ${response.statusCode}. URL: ${url}`);
       // consume response data to free up memory
       response.resume();
       reject(error);
       return;
     }
-    var file = fs.createWriteStream(destinationPath);
+    let file = fs.createWriteStream(destinationPath);
     file.on('finish', () => fulfill());
     file.on('error', error => reject(error));
     response.pipe(file);
-    var totalBytes = parseInt(response.headers['content-length'], 10);
+    let totalBytes = parseInt(response.headers['content-length'], 10);
     if (progressCallback)
       response.on('data', onData.bind(null, totalBytes));
   });

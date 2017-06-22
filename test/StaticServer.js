@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-var http = require('http');
-var url = require('url');
-var fs = require('fs');
-var path = require('path');
-var mime = require('mime');
+let http = require('http');
+let url = require('url');
+let fs = require('fs');
+let path = require('path');
+let mime = require('mime');
 
 class StaticServer {
   /**
@@ -36,7 +36,7 @@ class StaticServer {
   }
 
   _onRequest(request, response) {
-    var pathName = url.parse(request.url).path;
+    let pathName = url.parse(request.url).path;
     if (pathName === '/')
       pathName = '/index.html';
     pathName = path.join(this._dirPath, pathName.substring(1));

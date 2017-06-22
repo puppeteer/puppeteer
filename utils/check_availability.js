@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-var Downloader = require('./ChromiumDownloader');
-var https = require('https');
-var OMAHA_PROXY = 'https://omahaproxy.appspot.com/all.json';
+let Downloader = require('./ChromiumDownloader');
+let https = require('https');
+let OMAHA_PROXY = 'https://omahaproxy.appspot.com/all.json';
 
-var colors = {
+let colors = {
   reset: '\x1b[0m',
   red: '\x1b[31m',
   green: '\x1b[32m',
@@ -39,8 +39,8 @@ class Table {
      */
   drawRow(values) {
     console.assert(values.length === this.widths.length);
-    var row = '';
-    for (var i = 0; i < values.length; ++i)
+    let row = '';
+    for (let i = 0; i < values.length; ++i)
       row += padCenter(values[i], this.widths[i]);
     console.log(row);
   }
@@ -59,8 +59,8 @@ Running command without arguments will check against omahaproxy revisions.`);
   return;
 }
 
-var fromRevision = parseInt(process.argv[2], 10);
-var toRevision = parseInt(process.argv[3], 10);
+let fromRevision = parseInt(process.argv[2], 10);
+let toRevision = parseInt(process.argv[3], 10);
 checkRangeAvailability(fromRevision, toRevision);
 
 /**
@@ -68,23 +68,23 @@ checkRangeAvailability(fromRevision, toRevision);
  */
 async function checkOmahaProxyAvailability() {
   console.log('Fetching revisions from ' + OMAHA_PROXY);
-  var platforms = await loadJSON(OMAHA_PROXY);
+  let platforms = await loadJSON(OMAHA_PROXY);
   if (!platforms) {
     console.error('ERROR: failed to fetch chromium revisions from omahaproxy.');
     return;
   }
-  var table = new Table([27, 7, 7, 7, 7]);
+  let table = new Table([27, 7, 7, 7, 7]);
   table.drawRow([''].concat(Downloader.supportedPlatforms()));
-  for (var platform of platforms) {
+  for (let platform of platforms) {
     // Trust only to the main platforms.
     if (platform.os !== 'mac' && platform.os !== 'win' && platform.os !== 'win64' && platform.os !== 'linux')
       continue;
-    var osName = platform.os === 'win' ? 'win32' : platform.os;
-    for (var version of platform.versions) {
+    let osName = platform.os === 'win' ? 'win32' : platform.os;
+    for (let version of platform.versions) {
       if (version.channel !== 'dev' && version.channel !== 'beta' && version.channel !== 'canary' && version.channel !== 'stable')
         continue;
-      var revisionName = padLeft('[' + osName + ' ' + version.channel + ']', 15);
-      var revision = parseInt(version.branch_base_position, 10);
+      let revisionName = padLeft('[' + osName + ' ' + version.channel + ']', 15);
+      let revision = parseInt(version.branch_base_position, 10);
       await checkAndDrawRevisionAvailability(table, revisionName, revision);
     }
   }
@@ -96,10 +96,10 @@ async function checkOmahaProxyAvailability() {
  * @return {!Promise}
  */
 async function checkRangeAvailability(fromRevision, toRevision) {
-  var table = new Table([10, 7, 7, 7, 7]);
+  let table = new Table([10, 7, 7, 7, 7]);
   table.drawRow([''].concat(Downloader.supportedPlatforms()));
-  var inc = fromRevision < toRevision ? 1 : -1;
-  for (var revision = fromRevision; revision !== toRevision; revision += inc)
+  let inc = fromRevision < toRevision ? 1 : -1;
+  for (let revision = fromRevision; revision !== toRevision; revision += inc)
     await checkAndDrawRevisionAvailability(table, '', revision);
 }
 
@@ -110,15 +110,15 @@ async function checkRangeAvailability(fromRevision, toRevision) {
  * @return {!Promise}
  */
 async function checkAndDrawRevisionAvailability(table, name, revision) {
-  var promises = [];
-  for (var platform of Downloader.supportedPlatforms())
+  let promises = [];
+  for (let platform of Downloader.supportedPlatforms())
     promises.push(Downloader.canDownloadRevision(platform, revision));
-  var availability = await Promise.all(promises);
-  var allAvailable = availability.every(e => !!e);
-  var values = [name + ' ' + (allAvailable ? colors.green + revision + colors.reset : revision)];
-  for (var i = 0; i < availability.length; ++i) {
-    var decoration = availability[i] ? '+' : '-';
-    var color = availability[i] ? colors.green : colors.red;
+  let availability = await Promise.all(promises);
+  let allAvailable = availability.every(e => !!e);
+  let values = [name + ' ' + (allAvailable ? colors.green + revision + colors.reset : revision)];
+  for (let i = 0; i < availability.length; ++i) {
+    let decoration = availability[i] ? '+' : '-';
+    let color = availability[i] ? colors.green : colors.red;
     values.push(color + decoration + colors.reset);
   }
   table.drawRow(values);
@@ -129,19 +129,19 @@ async function checkAndDrawRevisionAvailability(table, name, revision) {
  * @return {!Promise<?Object>}
  */
 function loadJSON(url) {
-  var resolve;
-  var promise = new Promise(x => resolve = x);
+  let resolve;
+  let promise = new Promise(x => resolve = x);
   https.get(url, response => {
     if (response.statusCode !== 200) {
       resolve(null);
       return;
     }
-    var body = '';
+    let body = '';
     response.on('data', function(chunk){
       body += chunk;
     });
     response.on('end', function(){
-      var json = JSON.parse(body);
+      let json = JSON.parse(body);
       resolve(json);
     });
   }).on('error', function(e){
@@ -164,8 +164,8 @@ function spaceString(size) {
  * @return {string}
  */
 function filterOutColors(text) {
-  for (var colorName in colors) {
-    var color = colors[colorName];
+  for (let colorName in colors) {
+    let color = colors[colorName];
     text = text.replace(color, '');
   }
   return text;
@@ -177,7 +177,7 @@ function filterOutColors(text) {
  * @return {string}
  */
 function padLeft(text, length) {
-  var printableCharacters = filterOutColors(text);
+  let printableCharacters = filterOutColors(text);
   return printableCharacters.length >= length ? text : spaceString(length - text.length) + text;
 }
 
@@ -187,10 +187,10 @@ function padLeft(text, length) {
  * @return {string}
  */
 function padCenter(text, length) {
-  var printableCharacters = filterOutColors(text);
+  let printableCharacters = filterOutColors(text);
   if (printableCharacters.length >= length)
     return text;
-  var left = Math.floor((length - printableCharacters.length) / 2);
-  var right = Math.ceil((length - printableCharacters.length) / 2);
+  let left = Math.floor((length - printableCharacters.length) / 2);
+  let right = Math.ceil((length - printableCharacters.length) / 2);
   return spaceString(left) + text + spaceString(right);
 }

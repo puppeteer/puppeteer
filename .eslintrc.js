@@ -49,6 +49,7 @@ module.exports = {
         "arrow-parens": [2, "as-needed"],
 
         // anti-patterns
+        "no-var": 2,
         "no-with": 2,
         "no-multi-str": 2,
         "no-caller": 2,
@@ -99,13 +100,11 @@ module.exports = {
         "no-mixed-spaces-and-tabs": 2,
         "no-trailing-spaces": 2,
         "linebreak-style": [ 2, "unix" ],
+        "indent": [2, 2, { "SwitchCase": 1, "CallExpression": {"arguments": 2}, "MemberExpression": 2 }],
 
         /**
          * Disabled, aspirational rules
          */
-
-        "indent": [2, 2, { "SwitchCase": 1, "CallExpression": {"arguments": 2}, "MemberExpression": 2 }],
-
         // brace-style is disabled, as eslint cannot enforce 1tbs as default, but allman for functions
         "brace-style": [0, "allman", { "allowSingleLine": true }],
 

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-var http = require('http');
-var await = require('./utilities').await;
+let http = require('http');
+let await = require('./utilities').await;
 
 class WebServer {
   constructor() {
@@ -47,17 +47,17 @@ class WebServer {
       return false;
     this.newRequest = callback;
     this._server.listen(port);
-    var errorPromise = new Promise(x => this._server.once('error', x));
-    var successPromise = new Promise(x => this._server.once('listening', x));
+    let errorPromise = new Promise(x => this._server.once('error', x));
+    let successPromise = new Promise(x => this._server.once('listening', x));
     await(Promise.race([errorPromise, successPromise]));
     if (!this._server.listening)
       return false;
 
     this._server.on('request', (req, res) => {
       res.close = res.end.bind(res);
-      var headers = res.getHeaders();
+      let headers = res.getHeaders();
       res.headers = [];
-      for (var key in headers) {
+      for (let key in headers) {
         res.headers.push({
           name: key,
           value: headers[key]
@@ -65,7 +65,7 @@ class WebServer {
       }
       res.header = res.getHeader;
       res.setHeaders = headers => {
-        for (var key in headers)
+        for (let key in headers)
           res.setHeader(key, headers[key]);
       };
       Object.defineProperty(res, 'statusCode', {

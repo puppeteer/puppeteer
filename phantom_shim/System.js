@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-var readline = require('readline');
-var await = require('./utilities').await;
-var os = require('os');
+let readline = require('readline');
+let await = require('./utilities').await;
+let os = require('os');
 
 class System {
   /**
@@ -61,7 +61,7 @@ class StandardInput {
     if (this._closed && !this._lines.length)
       return '';
     if (!this._lines.length) {
-      var linePromise = new Promise(fulfill => this._readline.once('line', fulfill));
+      let linePromise = new Promise(fulfill => this._readline.once('line', fulfill));
       await(linePromise);
     }
     return this._lines.shift();
@@ -72,10 +72,10 @@ class StandardInput {
      */
   read() {
     if (!this._closed) {
-      var closePromise = new Promise(fulfill => this._readline.once('close', fulfill));
+      let closePromise = new Promise(fulfill => this._readline.once('close', fulfill));
       await(closePromise);
     }
-    var text = this._lines.join('\n');
+    let text = this._lines.join('\n');
     this._lines = [];
     return text;
   }

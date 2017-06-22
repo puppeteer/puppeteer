@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-var Downloader = require('./utils/ChromiumDownloader');
-var revision = require('./package').puppeteer.chromium_revision;
-var ProgressBar = require('progress');
+let Downloader = require('./utils/ChromiumDownloader');
+let revision = require('./package').puppeteer.chromium_revision;
+let ProgressBar = require('progress');
 
 // Do nothing if the revision is already downloaded.
 if (Downloader.revisionInfo(Downloader.currentPlatform(), revision))
@@ -27,7 +27,7 @@ Downloader.downloadRevision(Downloader.currentPlatform(), revision, onProgress)
       console.error('Download failed: ' + error.message);
     });
 
-var progressBar = null;
+let progressBar = null;
 function onProgress(bytesTotal, delta) {
   if (!progressBar) {
     progressBar = new ProgressBar(`Downloading Chromium - ${toMegabytes(bytesTotal)} [:bar] :percent :etas `, {
@@ -41,7 +41,7 @@ function onProgress(bytesTotal, delta) {
 }
 
 function toMegabytes(bytes) {
-  var mb = bytes / 1024 / 1024;
+  let mb = bytes / 1024 / 1024;
   return (Math.round(mb * 10) / 10) + ' Mb';
 }
 

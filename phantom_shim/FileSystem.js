@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-var path = require('path');
-var fs = require('fs');
-var deasync = require('deasync');
-var removeRecursive = require('rimraf').sync;
-var copyRecursive = deasync(require('ncp').ncp);
+let path = require('path');
+let fs = require('fs');
+let deasync = require('deasync');
+let removeRecursive = require('rimraf').sync;
+let copyRecursive = deasync(require('ncp').ncp);
 
 class FileSystem {
   constructor() {
@@ -68,7 +68,7 @@ class FileSystem {
      * @param {string} toPath
      */
   copy(fromPath, toPath) {
-    var content = fs.readFileSync(fromPath);
+    let content = fs.readFileSync(fromPath);
     fs.writeFileSync(toPath, content);
   }
 
@@ -77,7 +77,7 @@ class FileSystem {
      * @param {string} toPath
      */
   move(fromPath, toPath) {
-    var content = fs.readFileSync(fromPath);
+    let content = fs.readFileSync(fromPath);
     fs.writeFileSync(toPath, content);
     fs.unlinkSync(fromPath);
   }
@@ -170,7 +170,7 @@ class FileSystem {
      * @param {string} mode
      */
   write(filePath, data, mode) {
-    var fd = new FileDescriptor(filePath, mode, 'utf8');
+    let fd = new FileDescriptor(filePath, mode, 'utf8');
     fd.write(data);
     fd.close();
   }
@@ -288,8 +288,8 @@ class FileSystem {
   }
 }
 
-var fdwrite = deasync(fs.write);
-var fdread = deasync(fs.read);
+let fdwrite = deasync(fs.write);
+let fdread = deasync(fs.read);
 
 class FileDescriptor {
   /**
@@ -318,8 +318,8 @@ class FileDescriptor {
      * @param {string} data
      */
   write(data) {
-    var buffer = Buffer.from(data, this._encoding);
-    var written = fdwrite(this._fd, buffer, 0, buffer.length, this._position);
+    let buffer = Buffer.from(data, this._encoding);
+    let written = fdwrite(this._fd, buffer, 0, buffer.length, this._position);
     this._position += written;
   }
 
@@ -339,13 +339,13 @@ class FileDescriptor {
      * @return {string}
      */
   read(size) {
-    var position = this._position;
+    let position = this._position;
     if (!size) {
       size = fs.fstatSync(this._fd).size;
       position = 0;
     }
-    var buffer = new Buffer(size);
-    var bytesRead = fdread(this._fd, buffer, 0, size, position);
+    let buffer = new Buffer(size);
+    let bytesRead = fdread(this._fd, buffer, 0, size, position);
     this._position += bytesRead;
     return buffer.toString(this._encoding);
   }

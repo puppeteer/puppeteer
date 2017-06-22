@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-var vm = require('vm');
-var path = require('path');
-var fs = require('fs');
-var Phantom = require('./Phantom');
-var FileSystem = require('./FileSystem');
-var System = require('./System');
-var WebPage = require('./WebPage');
-var WebServer = require('./WebServer');
-var child_process = require('child_process');
-var Browser = require('..').Browser;
-var version = require('../package.json').version;
-var argv = require('minimist')(process.argv.slice(2), {
+let vm = require('vm');
+let path = require('path');
+let fs = require('fs');
+let Phantom = require('./Phantom');
+let FileSystem = require('./FileSystem');
+let System = require('./System');
+let WebPage = require('./WebPage');
+let WebServer = require('./WebServer');
+let child_process = require('child_process');
+let Browser = require('..').Browser;
+let version = require('../package.json').version;
+let argv = require('minimist')(process.argv.slice(2), {
   alias: { v: 'version' },
   boolean: ['headless'],
   default: {'headless': true },
@@ -43,27 +43,27 @@ if (argv['ssl-certificates-path']) {
   return;
 }
 
-var scriptArguments = argv._;
+let scriptArguments = argv._;
 if (!scriptArguments.length) {
   console.log(__filename.split('/').pop() + ' [scriptfile]');
   return;
 }
 
-var scriptPath = path.resolve(process.cwd(), scriptArguments[0]);
+let scriptPath = path.resolve(process.cwd(), scriptArguments[0]);
 if (!fs.existsSync(scriptPath)) {
   console.error(`script not found: ${scriptPath}`);
   process.exit(1);
   return;
 }
 
-var browser = new Browser({
+let browser = new Browser({
   remoteDebuggingPort: 9229,
   headless: argv.headless,
   args: ['--no-sandbox']
 });
 
-var context = createPhantomContext(browser, scriptPath, argv);
-var scriptContent = fs.readFileSync(scriptPath, 'utf8');
+let context = createPhantomContext(browser, scriptPath, argv);
+let scriptContent = fs.readFileSync(scriptPath, 'utf8');
 vm.runInContext(scriptContent, context);
 
 /**
@@ -73,7 +73,7 @@ vm.runInContext(scriptContent, context);
  * @return {!Object}
  */
 function createPhantomContext(browser, scriptPath, argv) {
-  var context = {};
+  let context = {};
   context.setInterval = setInterval;
   context.setTimeout = setTimeout;
   context.clearInterval = clearInterval;
@@ -86,7 +86,7 @@ function createPhantomContext(browser, scriptPath, argv) {
 
   vm.createContext(context);
 
-  var nativeExports = {
+  let nativeExports = {
     fs: new FileSystem(),
     system: new System(argv._),
     webpage: {
@@ -100,8 +100,8 @@ function createPhantomContext(browser, scriptPath, argv) {
     },
     child_process: child_process
   };
-  var bootstrapPath = path.join(__dirname, '..', 'third_party', 'phantomjs', 'bootstrap.js');
-  var bootstrapCode = fs.readFileSync(bootstrapPath, 'utf8');
+  let bootstrapPath = path.join(__dirname, '..', 'third_party', 'phantomjs', 'bootstrap.js');
+  let bootstrapCode = fs.readFileSync(bootstrapPath, 'utf8');
   vm.runInContext(bootstrapCode, context, {
     filename: 'bootstrap.js'
   })(nativeExports);

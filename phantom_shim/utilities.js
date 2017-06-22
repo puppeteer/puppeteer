@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-var loopWhile = require('deasync').loopWhile;
+let loopWhile = require('deasync').loopWhile;
 
 module.exports = {
   await: function(promise) {
-    var error;
-    var result;
-    var done = false;
+    let error;
+    let result;
+    let done = false;
     promise.then(r => result = r)
         .catch(err => error = err)
         .then(() => done = true);
