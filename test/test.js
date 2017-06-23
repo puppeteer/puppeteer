@@ -94,7 +94,7 @@ describe('Puppeteer', function() {
       expect(success).toBe(false);
     }));
     it('should succeed when navigating to good url', SX(async function() {
-      let success = await page.navigate(EMPTY_PAGE);
+      let success = await page.navigate(EMPTY_PAGE, {idleTime: 0});
       expect(success).toBe(true);
     }));
   });
@@ -114,7 +114,7 @@ describe('Puppeteer', function() {
         return a * b;
       });
 
-      await page.navigate(EMPTY_PAGE);
+      await page.navigate(EMPTY_PAGE, {idleTime: 0});
       let result = await page.evaluate(async function() {
         return await callController(9, 4);
       });
@@ -141,7 +141,7 @@ describe('Puppeteer', function() {
         expect(request.postData()).toBe(undefined);
         request.continue();
       });
-      let success = await page.navigate(EMPTY_PAGE);
+      let success = await page.navigate(EMPTY_PAGE, {idleTime: 0});
       expect(success).toBe(true);
     }));
     it('should show extraHTTPHeaders', SX(async function() {
@@ -152,7 +152,7 @@ describe('Puppeteer', function() {
         expect(request.headers()['foo']).toBe('bar');
         request.continue();
       });
-      let success = await page.navigate(EMPTY_PAGE);
+      let success = await page.navigate(EMPTY_PAGE, {idleTime: 0});
       expect(success).toBe(true);
     }));
     it('should be abortable', SX(async function() {
@@ -164,7 +164,7 @@ describe('Puppeteer', function() {
       });
       let failedResources = 0;
       page.on('resourceloadingfailed', event => ++failedResources);
-      let success = await page.navigate(STATIC_PREFIX + '/one-style.html');
+      let success = await page.navigate(STATIC_PREFIX + '/one-style.html', {idleTime: 0});
       expect(success).toBe(true);
       expect(failedResources).toBe(1);
     }));
@@ -197,7 +197,7 @@ describe('Puppeteer', function() {
         expect(error.message).toContain('Fancy');
         done();
       });
-      page.navigate(STATIC_PREFIX + '/error.html');
+      page.navigate(STATIC_PREFIX + '/error.html', {idleTime: 0});
     });
   });
 
@@ -210,7 +210,7 @@ describe('Puppeteer', function() {
     }));
     it('should clip rect', SX(async function() {
       await page.setViewportSize({width: 500, height: 500});
-      await page.navigate(STATIC_PREFIX + '/grid.html');
+      await page.navigate(STATIC_PREFIX + '/grid.html', {idleTime: 0});
       let screenshot = await page.screenshot({
         clip: {
           x: 50,
@@ -223,7 +223,7 @@ describe('Puppeteer', function() {
     }));
     it('should work for offscreen clip', SX(async function() {
       await page.setViewportSize({width: 500, height: 500});
-      await page.navigate(STATIC_PREFIX + '/grid.html');
+      await page.navigate(STATIC_PREFIX + '/grid.html', {idleTime: 0});
       let screenshot = await page.screenshot({
         clip: {
           x: 50,
@@ -236,7 +236,7 @@ describe('Puppeteer', function() {
     }));
     it('should run in parallel', SX(async function() {
       await page.setViewportSize({width: 500, height: 500});
-      await page.navigate(STATIC_PREFIX + '/grid.html');
+      await page.navigate(STATIC_PREFIX + '/grid.html', {idleTime: 0});
       let promises = [];
       for (let i = 0; i < 3; ++i) {
         promises.push(page.screenshot({
@@ -253,7 +253,7 @@ describe('Puppeteer', function() {
     }));
     it('should take fullPage screenshots', SX(async function() {
       await page.setViewportSize({width: 500, height: 500});
-      await page.navigate(STATIC_PREFIX + '/grid.html');
+      await page.navigate(STATIC_PREFIX + '/grid.html', {idleTime: 0});
       let screenshot = await page.screenshot({
         fullPage: true
       });
@@ -264,11 +264,11 @@ describe('Puppeteer', function() {
   describe('Frame Management', function() {
     let FrameUtils = require('./frame-utils');
     it('should handle nested frames', SX(async function() {
-      await page.navigate(STATIC_PREFIX + '/frames/nested-frames.html');
+      await page.navigate(STATIC_PREFIX + '/frames/nested-frames.html', {idleTime: 0});
       expect(FrameUtils.dumpFrames(page.mainFrame())).toBeGolden('nested-frames.txt');
     }));
     it('should send events when frames are manipulated dynamically', SX(async function() {
-      await page.navigate(EMPTY_PAGE);
+      await page.navigate(EMPTY_PAGE, {idleTime: 0});
       // validate frameattached events
       let attachedFrames = [];
       page.on('frameattached', frame => attachedFrames.push(frame));
@@ -291,16 +291,16 @@ describe('Puppeteer', function() {
       expect(detachedFrames[0].isDetached()).toBe(true);
     }));
     it('should persist mainFrame on cross-process navigation', SX(async function() {
-      await page.navigate(EMPTY_PAGE);
+      await page.navigate(EMPTY_PAGE, {idleTime: 0});
       let mainFrame = page.mainFrame();
-      await page.navigate('http://127.0.0.1:' + PORT + '/empty.html');
+      await page.navigate('http://127.0.0.1:' + PORT + '/empty.html', {idleTime: 0});
       expect(page.mainFrame() === mainFrame).toBeTruthy();
     }));
     it('should not send attach/detach events for main frame', SX(async function() {
       let hasEvents = false;
       page.on('frameattached', frame => hasEvents = true);
       page.on('framedetached', frame => hasEvents = true);
-      await page.navigate(EMPTY_PAGE);
+      await page.navigate(EMPTY_PAGE, {idleTime: 0});
       expect(hasEvents).toBe(false);
     }));
     it('should detach child frames on navigation', SX(async function() {
@@ -310,7 +310,7 @@ describe('Puppeteer', function() {
       page.on('frameattached', frame => attachedFrames.push(frame));
       page.on('framedetached', frame => detachedFrames.push(frame));
       page.on('framenavigated', frame => navigatedFrames.push(frame));
-      await page.navigate(STATIC_PREFIX + '/frames/nested-frames.html');
+      await page.navigate(STATIC_PREFIX + '/frames/nested-frames.html', {idleTime: 0});
       expect(attachedFrames.length).toBe(4);
       expect(detachedFrames.length).toBe(0);
       expect(navigatedFrames.length).toBe(5);
@@ -318,7 +318,7 @@ describe('Puppeteer', function() {
       attachedFrames = [];
       detachedFrames = [];
       navigatedFrames = [];
-      await page.navigate(EMPTY_PAGE);
+      await page.navigate(EMPTY_PAGE, {idleTime: 0});
       expect(attachedFrames.length).toBe(0);
       expect(detachedFrames.length).toBe(4);
       expect(navigatedFrames.length).toBe(1);
