@@ -28,7 +28,9 @@
   "devDependencies": {
     "deasync": "^0.1.9",
     "eslint": "^4.0.0",
+    "esprima": "^4.0.0",
     "jasmine": "^2.6.0",
+    "marked": "^0.3.6",
     "minimist": "^1.2.0",
     "ncp": "^2.0.0",
     "pixelmatch": "^4.0.2",
