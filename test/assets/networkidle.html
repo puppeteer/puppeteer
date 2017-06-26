@@ -1,0 +1,28 @@
+<script>
+  function addScript(src) {
+    const script = document.createElement('script');
+    script.src = src;
+    document.body.appendChild(script);
+  }
+
+  // Timeline
+  // 0 ms == 3 inflight
+  // 500 ms == 2 inflight - Network idle request count reached, timer started
+  // 750 ms == 4 inflight - Network idle request count exceeded, timer cancelled
+  // 1000 ms == 3 inflight
+  // 1250 ms == 1 inflight - Network idle request count reached, timer started
+  // 1500 ms == 3 inflight - Network idle request count exceeded, timer cancelled
+  // 2000 ms == 2 inflight - Network idle request count reached, timer started
+  // 2500 ms == 1 inflight - Network idle fired
+  // 4000 ms == 0 inflight
+
+  setTimeout(() => addScript('delayed.js?delay=500'), 0);
+  setTimeout(() => addScript('delayed.js?delay=1000'), 0);
+  setTimeout(() => addScript('delayed.js?delay=4000'), 0);
+
+  setTimeout(() => addScript('delayed.js?delay=500'), 750);
+  setTimeout(() => addScript('delayed.js?delay=500'), 750);
+
+  setTimeout(() => addScript('delayed.js?delay=500'), 1500);
+  setTimeout(() => addScript('delayed.js?delay=1000'), 1500);
+</script>

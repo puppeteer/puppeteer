@@ -88,7 +88,7 @@ describe('Puppeteer', function() {
     expect(msgs).toEqual(['Message!']);
   }));
 
-  describe('Page.navigate', function() {
+  fdescribe('Page.navigate', function() {
     it('should fail when navigating to bad url', SX(async function() {
       let success = await page.navigate('asdfasdf');
       expect(success).toBe(false);
@@ -96,6 +96,18 @@ describe('Puppeteer', function() {
     it('should succeed when navigating to good url', SX(async function() {
       let success = await page.navigate(EMPTY_PAGE);
       expect(success).toBe(true);
+    }));
+    it('should wait for network idle when requested', SX(async function() {
+      const startTime = Date.now();
+      let success = await page.navigate(STATIC_PREFIX + '/networkidle.html', {waitFor: 'networkidle'});
+      expect(success).toBe(true);
+      expect(Date.now() - startTime).toBeGreaterThan(2000);
+    }));
+    it('should handle websockets', SX(async function() {
+      const startTime = Date.now();
+      let success = await page.navigate(STATIC_PREFIX + '/websocket.html', {waitFor: 'networkidle'});
+      expect(success).toBe(true);
+      expect(Date.now() - startTime).toBeGreaterThan(2000);
     }));
   });
 

@@ -19,6 +19,7 @@ let url = require('url');
 let fs = require('fs');
 let path = require('path');
 let mime = require('mime');
+let WebSocketServer = require('websocket').server;
 
 class StaticServer {
   /**
@@ -27,6 +28,8 @@ class StaticServer {
    */
   constructor(dirPath, port) {
     this._server = http.createServer(this._onRequest.bind(this));
+    this._wsServer = new WebSocketServer({httpServer: this._server});
+    this._wsServer.on('request', this._onWebSocketRequest.bind(this));
     this._server.listen(port);
     this._dirPath = dirPath;
   }
@@ -35,11 +38,7 @@ class StaticServer {
     this._server.close();
   }
 
-  _onRequest(request, response) {
-    let pathName = url.parse(request.url).path;
-    if (pathName === '/')
-      pathName = '/index.html';
-    pathName = path.join(this._dirPath, pathName.substring(1));
+  _finishFileRequest(response, pathName) {
     fs.readFile(pathName, function(err, data) {
       if (err) {
         response.statusCode = 404;
@@ -49,6 +48,24 @@ class StaticServer {
       response.setHeader('Content-Type', mime.lookup(pathName));
       response.end(data);
     });
+  }
+
+  _onRequest(request, response) {
+    const parsedUrl = url.parse(request.url);
+    let pathName = parsedUrl.path;
+    if (pathName === '/')
+      pathName = '/index.html';
+    pathName = path.join(this._dirPath, pathName.substring(1));
+    if (parsedUrl.query && /delay=\d/.test(parsedUrl.query)) {
+      const delay = Number(parsedUrl.query.match(/delay=(\d+)/)[1]);
+      setTimeout(() => this._finishFileRequest(response, pathName), delay);
+    } else {
+      this._finishFileRequest(response, pathName);
+    }
+  }
+
+  _onWebSocketRequest(request) {
+    request.accept();
   }
 }
 
