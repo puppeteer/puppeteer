@@ -19,7 +19,7 @@ let url = require('url');
 let fs = require('fs');
 let path = require('path');
 let mime = require('mime');
-let WebSocketServer = require('websocket').server;
+let WebSocketServer = require('ws').Server;
 
 class StaticServer {
   /**
@@ -28,8 +28,8 @@ class StaticServer {
    */
   constructor(dirPath, port) {
     this._server = http.createServer(this._onRequest.bind(this));
-    this._wsServer = new WebSocketServer({httpServer: this._server});
-    this._wsServer.on('request', this._onWebSocketRequest.bind(this));
+    this._wsServer = new WebSocketServer({server: this._server});
+    this._wsServer.on('connection', this._onWebSocketConnection.bind(this));
     this._server.listen(port);
     this._dirPath = dirPath;
   }
@@ -64,8 +64,8 @@ class StaticServer {
     }
   }
 
-  _onWebSocketRequest(request) {
-    request.accept();
+  _onWebSocketConnection(connection) {
+    connection.send('hello world!');
   }
 }
 
