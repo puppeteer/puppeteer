@@ -324,6 +324,20 @@ describe('Puppeteer', function() {
       expect(navigatedFrames.length).toBe(1);
     }));
   });
+
+  describe('input', function() {
+    it('should click the button', SX(async function() {
+      await page.navigate(STATIC_PREFIX + '/input/button.html');
+      await page.click('button');
+      expect(await page.evaluate(() => result)).toBe('Clicked');
+    }));
+    it('should type into the textarea', SX(async function() {
+      await page.navigate(STATIC_PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      await page.type('Type in this text!');
+      expect(await page.evaluate(() => result)).toBe('Type in this text!');
+    }));
+  });
 });
 
 // Since Jasmine doesn't like async functions, they should be wrapped
