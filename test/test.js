@@ -88,7 +88,7 @@ describe('Puppeteer', function() {
     expect(msgs).toEqual(['Message!']);
   }));
 
-  fdescribe('Page.navigate', function() {
+  describe('Page.navigate', function() {
     it('should fail when navigating to bad url', SX(async function() {
       let success = await page.navigate('asdfasdf');
       expect(success).toBe(false);
