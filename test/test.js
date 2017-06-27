@@ -129,6 +129,7 @@ describe('Puppeteer', function() {
       return await Promise.all([loadPromise, navigationPromise]);
     }));
     it('should handle websockets', SX(async function() {
+      let startTime = Date.now();
       let fetchRequestFinished = false;
 
       page.setRequestInterceptor(request => {
@@ -150,6 +151,7 @@ describe('Puppeteer', function() {
 
       expect(success).toBe(true);
       expect(fetchRequestFinished).toBe(true);
+      expect(Date.now() - startTime).toBeGreaterThan(400);
     }));
   });
 
