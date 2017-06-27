@@ -81,6 +81,21 @@ describe('Puppeteer', function() {
     }));
   });
 
+  describe('Frame.evaluate', function() {
+    let FrameUtils = require('./frame-utils');
+    it('should have different execution contexts', SX(async function() {
+      await page.navigate(EMPTY_PAGE);
+      await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
+      expect(page.frames().length).toBe(2);
+      let frame1 = page.frames()[0];
+      let frame2 = page.frames()[1];
+      await frame1.evaluate(() => window.FOO = 'foo');
+      await frame2.evaluate(() => window.FOO = 'bar');
+      expect(await frame1.evaluate(() => window.FOO)).toBe('foo');
+      expect(await frame2.evaluate(() => window.FOO)).toBe('bar');
+    }));
+  });
+
   it('Page Events: ConsoleMessage', SX(async function() {
     let msgs = [];
     page.on('consolemessage', msg => msgs.push(msg));

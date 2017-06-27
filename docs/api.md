@@ -37,6 +37,7 @@
   - [dialog.message()](#dialogmessage)
 + [class: Frame](#class-frame)
   - [frame.childFrames()](#framechildframes)
+  - [frame.evaluate(fun, args)](#frameevaluatefun-args)
   - [frame.isDetached()](#frameisdetached)
   - [frame.isMainFrame()](#frameismainframe)
   - [frame.name()](#framename)
@@ -238,6 +239,12 @@ Pages could be closed by `page.close()` method.
 ### class: Frame
 
 #### frame.childFrames()
+
+#### frame.evaluate(fun, args)
+
+- `fun` <[function]> Function to be evaluated in browser context
+- `args` <[Array]<[string]>> Arguments to pass to  `fun`
+- returns: <[Promise]<[Object]>> Promise which resolves to function return value
 
 #### frame.isDetached()
 
