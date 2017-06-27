@@ -98,8 +98,12 @@ describe('Puppeteer', function() {
       expect(success).toBe(true);
     }));
     it('should wait for network idle when requested', SX(async function() {
+      let success = await page.navigate(STATIC_PREFIX + '/networkidle-simple.html', {waitFor: 'networkidle'});
+      expect(success).toBe(true);
+    }));
+    it('should wait for network idle when requested', SX(async function() {
       const startTime = Date.now();
-      let success = await page.navigate(STATIC_PREFIX + '/networkidle.html', {waitFor: 'networkidle'});
+      let success = await page.navigate(STATIC_PREFIX + '/networkidle-complex.html', {waitFor: 'networkidle'});
       expect(success).toBe(true);
       expect(Date.now() - startTime).toBeGreaterThan(2000);
     }));
@@ -107,7 +111,7 @@ describe('Puppeteer', function() {
       const startTime = Date.now();
       let success = await page.navigate(STATIC_PREFIX + '/websocket.html', {waitFor: 'networkidle'});
       expect(success).toBe(true);
-      expect(Date.now() - startTime).toBeGreaterThan(2000);
+      expect(Date.now() - startTime).toBeGreaterThan(1200);
     }));
   });
 
