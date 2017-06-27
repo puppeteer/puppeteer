@@ -98,20 +98,58 @@ describe('Puppeteer', function() {
       expect(success).toBe(true);
     }));
     it('should wait for network idle when requested', SX(async function() {
-      let success = await page.navigate(STATIC_PREFIX + '/networkidle-simple.html', {waitFor: 'networkidle'});
-      expect(success).toBe(true);
-    }));
-    it('should wait for network idle when requested', SX(async function() {
-      const startTime = Date.now();
-      let success = await page.navigate(STATIC_PREFIX + '/networkidle-complex.html', {waitFor: 'networkidle'});
-      expect(success).toBe(true);
-      expect(Date.now() - startTime).toBeGreaterThan(2000);
+      let openRequests = [];
+
+      page.setRequestInterceptor(request => {
+        if (request.url().endsWith('html'))
+          request.continue();
+        else
+          openRequests.push(request);
+      });
+
+      let loadPromise = new Promise(fulfill => page.on('load', fulfill)).then(() => {
+        expect(openRequests.length).toBe(3);
+        for (const request of openRequests) {
+          setTimeout(() => {
+            openRequests = openRequests.filter(item => item !== request);
+            request.continue();
+          }, 50);
+        }
+      });
+
+      let navigationPromise = page.navigate(STATIC_PREFIX + '/networkidle.html', {
+        waitFor: 'networkidle',
+        networkIdleTimeout: 50,
+        networkIdleInflight: 0,
+      }).then(success => {
+        expect(success).toBe(true);
+        expect(openRequests.length).toBe(0);
+      });
+
+      return await Promise.all([loadPromise, navigationPromise]);
     }));
     it('should handle websockets', SX(async function() {
-      const startTime = Date.now();
-      let success = await page.navigate(STATIC_PREFIX + '/websocket.html', {waitFor: 'networkidle'});
+      let fetchRequestFinished = false;
+
+      page.setRequestInterceptor(request => {
+        if (request.url().endsWith('fetch-request.js')) {
+          setTimeout(() => {
+            fetchRequestFinished = true;
+            request.continue();
+          }, 500);
+        } else {
+          request.continue();
+        }
+      });
+
+      let success = await page.navigate(STATIC_PREFIX + '/websocket.html', {
+        waitFor: 'networkidle',
+        networkIdleTimeout: 100,
+        networkIdleInflight: 0,
+      });
+
       expect(success).toBe(true);
-      expect(Date.now() - startTime).toBeGreaterThan(1200);
+      expect(fetchRequestFinished).toBe(true);
     }));
   });
 

@@ -6,17 +6,14 @@
     return client;
   }
 
-  function createAndDestroyClientAfterDelay(delay = 100) {
+  function createAndDestroyClientAfterDelay(delay = 50) {
     const client = createClient();
     setTimeout(() => client.close(), delay);
   }
 
+  fetch('fetch-request.js');
   setTimeout(createAndDestroyClientAfterDelay, 0);
+  setTimeout(createAndDestroyClientAfterDelay, 100);
   setTimeout(createAndDestroyClientAfterDelay, 200);
-  setTimeout(createAndDestroyClientAfterDelay, 400);
-  setTimeout(createAndDestroyClientAfterDelay, 600);
+  setTimeout(createAndDestroyClientAfterDelay, 300);
 </script>
-
-<script src="delayed-request-1.js?delay=1250"></script>
-<script src="delayed-request-2.js?delay=1250"></script>
-<script src="delayed-request-3.js?delay=1250"></script>

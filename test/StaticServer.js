@@ -32,27 +32,18 @@ class StaticServer {
     this._wsServer.on('connection', this._onWebSocketConnection.bind(this));
     this._server.listen(port);
     this._dirPath = dirPath;
-    this._pendingRequests = new Map();
   }
 
   stop() {
     this._server.close();
   }
 
-  flushAllPending() {
-    for (const response of this._pendingRequests.keys()) {
-      response.statusCode = 500;
-      response.end('Server terminated request');
-      this._pendingRequests.delete(response);
-    }
-  }
+  _onRequest(request, response) {
+    let pathName = url.parse(request.url).path;
+    if (pathName === '/')
+      pathName = '/index.html';
+    pathName = path.join(this._dirPath, pathName.substring(1));
 
-  _finishFileRequest(response, pathName) {
-    pathName = pathName || this._pendingRequests.get(response);
-    if (!pathName)
-      return;
-
-    this._pendingRequests.delete(response);
     fs.readFile(pathName, function(err, data) {
       if (err) {
         response.statusCode = 404;
@@ -64,23 +55,8 @@ class StaticServer {
     });
   }
 
-  _onRequest(request, response) {
-    const parsedUrl = url.parse(request.url);
-    let pathName = parsedUrl.path;
-    if (pathName === '/')
-      pathName = '/index.html';
-    pathName = path.join(this._dirPath, pathName.substring(1));
-    if (parsedUrl.query && /delay=\d/.test(parsedUrl.query)) {
-      const delay = Number(parsedUrl.query.match(/delay=(\d+)/)[1]);
-      this._pendingRequests.set(response, pathName);
-      setTimeout(() => this._finishFileRequest(response), delay);
-    } else {
-      this._finishFileRequest(response, pathName);
-    }
-  }
-
   _onWebSocketConnection(connection) {
-    connection.send('hello world!');
+    connection.send('opened');
   }
 }
 
