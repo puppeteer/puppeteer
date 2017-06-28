@@ -72,7 +72,7 @@ class StaticServer {
 
   reset() {
     this._routes.clear();
-    let error = new Error('Static Server is reset');
+    let error = new Error('Static Server has been reset');
     for (let subscriber of this._requestSubscribers.values())
       subscriber[rejectSymbol].call(null, error);
     this._requestSubscribers.clear();
