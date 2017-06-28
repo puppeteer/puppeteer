@@ -56,10 +56,10 @@ class StaticServer {
    * @return {!Promise}
    */
   waitForHit(path) {
-    var promise = this._hitSubscribers.get(path);
+    let promise = this._hitSubscribers.get(path);
     if (promise)
       return promise;
-    var fulfill, reject;
+    let fulfill, reject;
     promise = new Promise((f, r) => {
       fulfill = f;
       reject = r;
@@ -72,8 +72,8 @@ class StaticServer {
 
   reset() {
     this._routes.clear();
-    var error = new Error('Static Server is reset');
-    for (var subscriber of this._hitSubscribers.values())
+    let error = new Error('Static Server is reset');
+    for (let subscriber of this._hitSubscribers.values())
       subscriber[rejectSymbol].call(null, error);
     this._hitSubscribers.clear();
   }
@@ -82,7 +82,7 @@ class StaticServer {
     let pathName = url.parse(request.url).path;
     // Mark path as hit.
     this.waitForHit(pathName)[fulfillSymbol].call(null);
-    var handler = this._routes.get(pathName);
+    let handler = this._routes.get(pathName);
     if (handler)
       handler.call(null, request, response);
     else
