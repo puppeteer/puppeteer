@@ -269,6 +269,16 @@ describe('Puppeteer', function() {
     });
   });
 
+  describe('Page.Events.Request', function() {
+    it('should fire', SX(async function(done) {
+      let requests = [];
+      page.on('request', request => requests.push(request));
+      await page.navigate(EMPTY_PAGE);
+      expect(requests.length).toBe(1);
+      expect(requests[0].url).toContain('empty.html');
+    }));
+  });
+
   describe('Page.screenshot', function() {
     it('should work', SX(async function() {
       await page.setViewportSize({width: 500, height: 500});
