@@ -20,6 +20,9 @@ let fs = require('fs');
 let path = require('path');
 let mime = require('mime');
 
+const fulfillSymbol = Symbol('fullfill callback');
+const rejectSymbol = Symbol('reject callback');
+
 class StaticServer {
   /**
    * @param {string} dirPath
@@ -29,13 +32,68 @@ class StaticServer {
     this._server = http.createServer(this._onRequest.bind(this));
     this._server.listen(port);
     this._dirPath = dirPath;
+
+    /** @type {!Map<string, function(!IncomingMessage, !ServerResponse)>} */
+    this._routes = new Map();
+    /** @type {!Map<string, !Promise>} */
+    this._hitSubscribers = new Map();
   }
 
   stop() {
     this._server.close();
   }
 
+  /**
+   * @param {string} path
+   * @param {function(!IncomingMessage, !ServerResponse)} handler
+   */
+  setRoute(path, handler) {
+    this._routes.set(path, handler);
+  }
+
+  /**
+   * @param {string} path
+   * @return {!Promise}
+   */
+  waitForHit(path) {
+    var promise = this._hitSubscribers.get(path);
+    if (promise)
+      return promise;
+    var fulfill, reject;
+    promise = new Promise((f, r) => {
+      fulfill = f;
+      reject = r;
+    });
+    promise[fulfillSymbol] = fulfill;
+    promise[rejectSymbol] = reject;
+    this._hitSubscribers.set(path, promise);
+    return promise;
+  }
+
+  reset() {
+    this._routes.clear();
+    var error = new Error('Static Server is reset');
+    for (var subscriber of this._hitSubscribers.values())
+      subscriber[rejectSymbol].call(null, error);
+    this._hitSubscribers.clear();
+  }
+
   _onRequest(request, response) {
+    let pathName = url.parse(request.url).path;
+    // Mark path as hit.
+    this.waitForHit(pathName)[fulfillSymbol].call(null);
+    var handler = this._routes.get(pathName);
+    if (handler)
+      handler.call(null, request, response);
+    else
+      this.defaultHandler(request, response);
+  }
+
+  /**
+   * @param {!IncomingMessage} request
+   * @param {!ServerResponse} response
+   */
+  defaultHandler(request, response) {
     let pathName = url.parse(request.url).path;
     if (pathName === '/')
       pathName = '/index.html';

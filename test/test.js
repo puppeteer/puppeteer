@@ -43,6 +43,7 @@ describe('Puppeteer', function() {
 
   beforeEach(SX(async function() {
     page = await browser.newPage();
+    staticServer.reset();
     GoldenUtils.addMatchers(jasmine);
   }));
 
@@ -110,6 +111,43 @@ describe('Puppeteer', function() {
     }));
     it('should succeed when navigating to good url', SX(async function() {
       let success = await page.navigate(EMPTY_PAGE);
+      expect(success).toBe(true);
+    }));
+    it('should wait for network idle to succeed navigation', SX(async function() {
+      var responses = [];
+      // Hold on a bunch of requests without answering.
+      staticServer.setRoute('/fetch-request-a.js', (req, res) => responses.push(res));
+      staticServer.setRoute('/fetch-request-b.js', (req, res) => responses.push(res));
+      staticServer.setRoute('/fetch-request-c.js', (req, res) => responses.push(res));
+      // Navigate to a page which loads immediately and then does a bunch of
+      // requests via javascript's fetch method.
+      var navigationPromise = page.navigate(STATIC_PREFIX + '/networkidle.html', {
+        minTime: 50 // Give page time to request more resources dynamically.
+      });
+      // Track when the navigation gets completed.
+      var navigationFinished = false;
+      navigationPromise.then(() => navigationFinished = true);
+
+      // Wait for the page's 'load' event.
+      await new Promise(fulfill => page.once('load', fulfill));
+      expect(navigationFinished).toBe(false);
+
+      // Wait for all three resources to be requested.
+      await Promise.all([
+        staticServer.waitForHit('/fetch-request-a.js'),
+        staticServer.waitForHit('/fetch-request-b.js'),
+        staticServer.waitForHit('/fetch-request-c.js'),
+      ]);
+      // Expect navigation to be not finished.
+      expect(navigationFinished).toBe(false);
+
+      // Respond to all requests.
+      for (var response of responses) {
+        response.statusCode = 404;
+        response.end(`File not found`);
+      }
+      var success = await navigationPromise;
+      // Expect navigation to succeed.
       expect(success).toBe(true);
     }));
   });
