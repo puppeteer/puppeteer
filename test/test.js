@@ -43,6 +43,7 @@ describe('Puppeteer', function() {
 
   beforeEach(SX(async function() {
     page = await browser.newPage();
+    staticServer.reset();
     GoldenUtils.addMatchers(jasmine);
   }));
 
@@ -81,6 +82,21 @@ describe('Puppeteer', function() {
     }));
   });
 
+  describe('Frame.evaluate', function() {
+    let FrameUtils = require('./frame-utils');
+    it('should have different execution contexts', SX(async function() {
+      await page.navigate(EMPTY_PAGE);
+      await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
+      expect(page.frames().length).toBe(2);
+      let frame1 = page.frames()[0];
+      let frame2 = page.frames()[1];
+      await frame1.evaluate(() => window.FOO = 'foo');
+      await frame2.evaluate(() => window.FOO = 'bar');
+      expect(await frame1.evaluate(() => window.FOO)).toBe('foo');
+      expect(await frame2.evaluate(() => window.FOO)).toBe('bar');
+    }));
+  });
+
   it('Page Events: ConsoleMessage', SX(async function() {
     let msgs = [];
     page.on('consolemessage', msg => msgs.push(msg));
@@ -97,61 +113,44 @@ describe('Puppeteer', function() {
       let success = await page.navigate(EMPTY_PAGE);
       expect(success).toBe(true);
     }));
-    it('should wait for network idle when requested', SX(async function() {
-      let openRequests = [];
-
-      page.setRequestInterceptor(request => {
-        if (request.url().endsWith('html'))
-          request.continue();
-        else
-          openRequests.push(request);
-      });
-
-      let loadPromise = new Promise(fulfill => page.on('load', fulfill)).then(() => {
-        expect(openRequests.length).toBe(3);
-        for (const request of openRequests) {
-          setTimeout(() => {
-            openRequests = openRequests.filter(item => item !== request);
-            request.continue();
-          }, 50);
-        }
-      });
-
+    it('should wait for network idle to succeed navigation', SX(async function() {
+      let responses = [];
+      // Hold on a bunch of requests without answering.
+      staticServer.setRoute('/fetch-request-a.js', (req, res) => responses.push(res));
+      staticServer.setRoute('/fetch-request-b.js', (req, res) => responses.push(res));
+      staticServer.setRoute('/fetch-request-c.js', (req, res) => responses.push(res));
+      let fetchResourcesRequested = Promise.all([
+        staticServer.waitForRequest('/fetch-request-a.js'),
+        staticServer.waitForRequest('/fetch-request-b.js'),
+        staticServer.waitForRequest('/fetch-request-c.js'),
+      ]);
+      // Navigate to a page which loads immediately and then does a bunch of
+      // requests via javascript's fetch method.
       let navigationPromise = page.navigate(STATIC_PREFIX + '/networkidle.html', {
-        waitFor: 'networkidle',
-        networkIdleTimeout: 50,
-        networkIdleInflight: 0,
-      }).then(success => {
-        expect(success).toBe(true);
-        expect(openRequests.length).toBe(0);
+        minTime: 50 // Give page time to request more resources dynamically.
       });
+      // Track when the navigation gets completed.
+      let navigationFinished = false;
+      navigationPromise.then(() => navigationFinished = true);
 
-      return await Promise.all([loadPromise, navigationPromise]);
-    }));
-    it('should handle websockets', SX(async function() {
-      let startTime = Date.now();
-      let fetchRequestFinished = false;
+      // Wait for the page's 'load' event.
+      await new Promise(fulfill => page.once('load', fulfill));
+      expect(navigationFinished).toBe(false);
 
-      page.setRequestInterceptor(request => {
-        if (request.url().endsWith('fetch-request.js')) {
-          setTimeout(() => {
-            fetchRequestFinished = true;
-            request.continue();
-          }, 500);
-        } else {
-          request.continue();
-        }
-      });
+      // Wait for all three resources to be requested.
+      await fetchResourcesRequested;
 
-      let success = await page.navigate(STATIC_PREFIX + '/websocket.html', {
-        waitFor: 'networkidle',
-        networkIdleTimeout: 100,
-        networkIdleInflight: 0,
-      });
+      // Expect navigation still to be not finished.
+      expect(navigationFinished).toBe(false);
 
+      // Respond to all requests.
+      for (let response of responses) {
+        response.statusCode = 404;
+        response.end(`File not found`);
+      }
+      let success = await navigationPromise;
+      // Expect navigation to succeed.
       expect(success).toBe(true);
-      expect(fetchRequestFinished).toBe(true);
-      expect(Date.now() - startTime).toBeGreaterThan(400);
     }));
   });
 
@@ -191,10 +190,10 @@ describe('Puppeteer', function() {
   describe('Page.setRequestInterceptor', function() {
     it('should intercept', SX(async function() {
       page.setRequestInterceptor(request => {
-        expect(request.url()).toContain('empty.html');
-        expect(request.headers()['User-Agent']).toBeTruthy();
-        expect(request.method()).toBe('GET');
-        expect(request.postData()).toBe(undefined);
+        expect(request.url).toContain('empty.html');
+        expect(request.headers.has('User-Agent')).toBeTruthy();
+        expect(request.method).toBe('GET');
+        expect(request.postData).toBe(undefined);
         request.continue();
       });
       let success = await page.navigate(EMPTY_PAGE);
@@ -205,7 +204,7 @@ describe('Puppeteer', function() {
         foo: 'bar'
       });
       page.setRequestInterceptor(request => {
-        expect(request.headers()['foo']).toBe('bar');
+        expect(request.headers.get('foo')).toBe('bar');
         request.continue();
       });
       let success = await page.navigate(EMPTY_PAGE);
@@ -213,7 +212,7 @@ describe('Puppeteer', function() {
     }));
     it('should be abortable', SX(async function() {
       page.setRequestInterceptor(request => {
-        if (request.url().endsWith('.css'))
+        if (request.url.endsWith('.css'))
           request.abort();
         else
           request.continue();
@@ -223,6 +222,19 @@ describe('Puppeteer', function() {
       let success = await page.navigate(STATIC_PREFIX + '/one-style.html');
       expect(success).toBe(true);
       expect(failedResources).toBe(1);
+    }));
+    it('should amend HTTP headers', SX(async function() {
+      await page.navigate(EMPTY_PAGE);
+      page.setRequestInterceptor(request => {
+        request.headers.set('foo', 'bar');
+        request.continue();
+      });
+      let serverRequest = staticServer.waitForRequest('/sleep.zzz');
+      page.evaluate(() => {
+        fetch('/sleep.zzz');
+      });
+      let request = await serverRequest;
+      expect(request.headers['foo']).toBe('bar');
     }));
   });
 
@@ -255,6 +267,16 @@ describe('Puppeteer', function() {
       });
       page.navigate(STATIC_PREFIX + '/error.html');
     });
+  });
+
+  describe('Page.Events.Request', function() {
+    it('should fire', SX(async function(done) {
+      let requests = [];
+      page.on('request', request => requests.push(request));
+      await page.navigate(EMPTY_PAGE);
+      expect(requests.length).toBe(1);
+      expect(requests[0].url).toContain('empty.html');
+    }));
   });
 
   describe('Page.screenshot', function() {
@@ -378,6 +400,27 @@ describe('Puppeteer', function() {
       expect(attachedFrames.length).toBe(0);
       expect(detachedFrames.length).toBe(4);
       expect(navigatedFrames.length).toBe(1);
+    }));
+  });
+
+  describe('input', function() {
+    it('should click the button', SX(async function() {
+      await page.navigate(STATIC_PREFIX + '/input/button.html');
+      await page.click('button');
+      expect(await page.evaluate(() => result)).toBe('Clicked');
+    }));
+    it('should type into the textarea', SX(async function() {
+      await page.navigate(STATIC_PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      await page.type('Type in this text!');
+      expect(await page.evaluate(() => result)).toBe('Type in this text!');
+    }));
+    it('should click the button after navigation ', SX(async function() {
+      await page.navigate(STATIC_PREFIX + '/input/button.html');
+      await page.click('button');
+      await page.navigate(STATIC_PREFIX + '/input/button.html');
+      await page.click('button');
+      expect(await page.evaluate(() => result)).toBe('Clicked');
     }));
   });
 });
