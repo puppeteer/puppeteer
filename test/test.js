@@ -119,7 +119,7 @@ describe('Puppeteer', function() {
       staticServer.setRoute('/fetch-request-a.js', (req, res) => responses.push(res));
       staticServer.setRoute('/fetch-request-b.js', (req, res) => responses.push(res));
       staticServer.setRoute('/fetch-request-c.js', (req, res) => responses.push(res));
-      let resourceRequests = Promise.all([
+      let fetchResourcesRequested = Promise.all([
         staticServer.waitForRequest('/fetch-request-a.js'),
         staticServer.waitForRequest('/fetch-request-b.js'),
         staticServer.waitForRequest('/fetch-request-c.js'),
@@ -138,7 +138,7 @@ describe('Puppeteer', function() {
       expect(navigationFinished).toBe(false);
 
       // Wait for all three resources to be requested.
-      await resourceRequests;
+      await fetchResourcesRequested;
 
       // Expect navigation still to be not finished.
       expect(navigationFinished).toBe(false);

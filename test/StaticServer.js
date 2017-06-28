@@ -36,7 +36,7 @@ class StaticServer {
     /** @type {!Map<string, function(!IncomingMessage, !ServerResponse)>} */
     this._routes = new Map();
     /** @type {!Map<string, !Promise>} */
-    this._hitSubscribers = new Map();
+    this._requestSubscribers = new Map();
   }
 
   stop() {
@@ -56,7 +56,7 @@ class StaticServer {
    * @return {!Promise<!IncomingMessage>}
    */
   waitForRequest(path) {
-    let promise = this._hitSubscribers.get(path);
+    let promise = this._requestSubscribers.get(path);
     if (promise)
       return promise;
     let fulfill, reject;
@@ -66,23 +66,23 @@ class StaticServer {
     });
     promise[fulfillSymbol] = fulfill;
     promise[rejectSymbol] = reject;
-    this._hitSubscribers.set(path, promise);
+    this._requestSubscribers.set(path, promise);
     return promise;
   }
 
   reset() {
     this._routes.clear();
     let error = new Error('Static Server is reset');
-    for (let subscriber of this._hitSubscribers.values())
+    for (let subscriber of this._requestSubscribers.values())
       subscriber[rejectSymbol].call(null, error);
-    this._hitSubscribers.clear();
+    this._requestSubscribers.clear();
   }
 
   _onRequest(request, response) {
     let pathName = url.parse(request.url).path;
-    // Mark path as hit.
-    if (this._hitSubscribers.has(pathName))
-      this._hitSubscribers.get(pathName)[fulfillSymbol].call(null, request);
+    // Notify request subscriber.
+    if (this._requestSubscribers.has(pathName))
+      this._requestSubscribers.get(pathName)[fulfillSymbol].call(null, request);
     let handler = this._routes.get(pathName);
     if (handler)
       handler.call(null, request, response);
