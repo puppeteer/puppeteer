@@ -79,15 +79,15 @@ class WebPage {
     this._page.setRequestInterceptor(callback ? resourceInterceptor : null);
 
     /**
-         * @param {!Request} request
+         * @param {!InterceptedRequest} request
          */
     function resourceInterceptor(request) {
-      let requestData = {
-        url: request.url(),
-        headers: request.headers()
-      };
-      callback(requestData, request);
-      if (!request.handled())
+      let requestData = new RequestData(request);
+      let phantomRequest = new PhantomRequest(request);
+      callback(requestData, phantomRequest);
+      if (phantomRequest._aborted)
+        request.abort();
+      else
         request.continue();
     }
   }
@@ -335,6 +335,46 @@ class WebPageSettings {
      */
   get userAgent() {
     return this._page.userAgentOverride();
+  }
+}
+
+class PhantomRequest {
+  /**
+   * @param {!InterceptedRequest} request
+   */
+  constructor(request) {
+    this._request = request;
+  }
+
+  /**
+   * @param {string} key
+   * @param {string} value
+   */
+  setHeader(key, value) {
+    this._request.headers.set(key, value);
+  }
+
+  abort() {
+    this._aborted = true;
+  }
+
+  /**
+   * @param {string} url
+   */
+  changeUrl(newUrl) {
+    this._request.url = newUrl;
+  }
+}
+
+class RequestData {
+  /**
+   * @param {!InterceptedRequest} request
+   */
+  constructor(request) {
+    this.url = request.url,
+    this.headers = {};
+    for (let entry in request.headers.entries())
+      this.headers[entry[0]] = entry[1];
   }
 }
 

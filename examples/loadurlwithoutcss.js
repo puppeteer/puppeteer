@@ -26,7 +26,7 @@ var address = process.argv[2];
 var browser = new Browser({headless: false});
 browser.newPage().then(async page => {
     page.setRequestInterceptor(request => {
-        if (request.url().endsWith('.css'))
+        if (request.url.endsWith('.css'))
             request.abort();
         else
             request.continue();

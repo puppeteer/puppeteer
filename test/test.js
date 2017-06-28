@@ -190,10 +190,10 @@ describe('Puppeteer', function() {
   describe('Page.setRequestInterceptor', function() {
     it('should intercept', SX(async function() {
       page.setRequestInterceptor(request => {
-        expect(request.url()).toContain('empty.html');
-        expect(request.headers()['User-Agent']).toBeTruthy();
-        expect(request.method()).toBe('GET');
-        expect(request.postData()).toBe(undefined);
+        expect(request.url).toContain('empty.html');
+        expect(request.headers.has('User-Agent')).toBeTruthy();
+        expect(request.method).toBe('GET');
+        expect(request.postData).toBe(undefined);
         request.continue();
       });
       let success = await page.navigate(EMPTY_PAGE);
@@ -204,7 +204,7 @@ describe('Puppeteer', function() {
         foo: 'bar'
       });
       page.setRequestInterceptor(request => {
-        expect(request.headers()['foo']).toBe('bar');
+        expect(request.headers.get('foo')).toBe('bar');
         request.continue();
       });
       let success = await page.navigate(EMPTY_PAGE);
@@ -212,7 +212,7 @@ describe('Puppeteer', function() {
     }));
     it('should be abortable', SX(async function() {
       page.setRequestInterceptor(request => {
-        if (request.url().endsWith('.css'))
+        if (request.url.endsWith('.css'))
           request.abort();
         else
           request.continue();
@@ -222,6 +222,19 @@ describe('Puppeteer', function() {
       let success = await page.navigate(STATIC_PREFIX + '/one-style.html');
       expect(success).toBe(true);
       expect(failedResources).toBe(1);
+    }));
+    it('should amend HTTP headers', SX(async function() {
+      await page.navigate(EMPTY_PAGE);
+      page.setRequestInterceptor(request => {
+        request.headers.set('foo', 'bar');
+        request.continue();
+      });
+      let serverRequest = staticServer.waitForRequest('/sleep.zzz');
+      page.evaluate(() => {
+        fetch('/sleep.zzz');
+      });
+      let request = await serverRequest;
+      expect(request.headers['foo']).toBe('bar');
     }));
   });
 
