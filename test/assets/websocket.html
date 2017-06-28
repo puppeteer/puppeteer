@@ -8,12 +8,21 @@
 
   function createAndDestroyClientAfterDelay(delay = 50) {
     const client = createClient();
-    setTimeout(() => client.close(), delay);
+    return new Promise(resolve => {
+      setTimeout(() => {
+        client.close();
+        resolve();
+      }, delay);
+    });
   }
 
-  fetch('fetch-request.js');
-  setTimeout(createAndDestroyClientAfterDelay, 0);
-  setTimeout(createAndDestroyClientAfterDelay, 100);
-  setTimeout(createAndDestroyClientAfterDelay, 200);
-  setTimeout(createAndDestroyClientAfterDelay, 300);
+  async function main() {
+    await createAndDestroyClientAfterDelay();
+    await createAndDestroyClientAfterDelay();
+    await createAndDestroyClientAfterDelay();
+    await createAndDestroyClientAfterDelay();
+    await fetch('fetch-request.js');
+  }
+
+  main().then(() => console.log('done!'));
 </script>
