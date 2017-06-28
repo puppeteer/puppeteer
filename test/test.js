@@ -337,6 +337,13 @@ describe('Puppeteer', function() {
       await page.type('Type in this text!');
       expect(await page.evaluate(() => result)).toBe('Type in this text!');
     }));
+    it('should click the button after navigation ', SX(async function() {
+      await page.navigate(STATIC_PREFIX + '/input/button.html');
+      await page.click('button');
+      await page.navigate(STATIC_PREFIX + '/input/button.html');
+      await page.click('button');
+      expect(await page.evaluate(() => result)).toBe('Clicked');
+    }));
   });
 });
 
