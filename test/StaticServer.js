@@ -19,6 +19,7 @@ let url = require('url');
 let fs = require('fs');
 let path = require('path');
 let mime = require('mime');
+let WebSocketServer = require('ws').Server;
 
 const fulfillSymbol = Symbol('fullfill callback');
 const rejectSymbol = Symbol('reject callback');
@@ -30,6 +31,8 @@ class StaticServer {
    */
   constructor(dirPath, port) {
     this._server = http.createServer(this._onRequest.bind(this));
+    this._wsServer = new WebSocketServer({server: this._server});
+    this._wsServer.on('connection', this._onWebSocketConnection.bind(this));
     this._server.listen(port);
     this._dirPath = dirPath;
 
@@ -99,6 +102,7 @@ class StaticServer {
     if (pathName === '/')
       pathName = '/index.html';
     pathName = path.join(this._dirPath, pathName.substring(1));
+
     fs.readFile(pathName, function(err, data) {
       if (err) {
         response.statusCode = 404;
@@ -108,6 +112,10 @@ class StaticServer {
       response.setHeader('Content-Type', mime.lookup(pathName));
       response.end(data);
     });
+  }
+
+  _onWebSocketConnection(connection) {
+    connection.send('opened');
   }
 }
 

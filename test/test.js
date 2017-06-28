@@ -115,19 +115,24 @@ describe('Puppeteer', function() {
     }));
     it('should wait for network idle to succeed navigation', SX(async function() {
       let responses = [];
-      // Hold on a bunch of requests without answering.
+      // Hold on to a bunch of requests without answering.
       staticServer.setRoute('/fetch-request-a.js', (req, res) => responses.push(res));
       staticServer.setRoute('/fetch-request-b.js', (req, res) => responses.push(res));
       staticServer.setRoute('/fetch-request-c.js', (req, res) => responses.push(res));
-      let fetchResourcesRequested = Promise.all([
+      staticServer.setRoute('/fetch-request-d.js', (req, res) => responses.push(res));
+      let initialFetchResourcesRequested = Promise.all([
         staticServer.waitForRequest('/fetch-request-a.js'),
         staticServer.waitForRequest('/fetch-request-b.js'),
         staticServer.waitForRequest('/fetch-request-c.js'),
       ]);
+      let secondFetchResourceRequested = staticServer.waitForRequest('/fetch-request-d.js');
+
       // Navigate to a page which loads immediately and then does a bunch of
       // requests via javascript's fetch method.
       let navigationPromise = page.navigate(STATIC_PREFIX + '/networkidle.html', {
-        minTime: 50 // Give page time to request more resources dynamically.
+        waitFor: 'networkidle',
+        networkIdleTimeout: 100,
+        networkIdleInflight: 0, // Only be idle when there are 0 inflight requests
       });
       // Track when the navigation gets completed.
       let navigationFinished = false;
@@ -137,13 +142,63 @@ describe('Puppeteer', function() {
       await new Promise(fulfill => page.once('load', fulfill));
       expect(navigationFinished).toBe(false);
 
-      // Wait for all three resources to be requested.
-      await fetchResourcesRequested;
+      // Wait for the initial three resources to be requested.
+      await initialFetchResourcesRequested;
 
       // Expect navigation still to be not finished.
       expect(navigationFinished).toBe(false);
 
-      // Respond to all requests.
+      // Respond to initial requests.
+      for (let response of responses) {
+        response.statusCode = 404;
+        response.end(`File not found`);
+      }
+
+      // Reset responses array
+      responses = [];
+
+      // Wait for the second round to be requested.
+      await secondFetchResourceRequested;
+      // Expect navigation still to be not finished.
+      expect(navigationFinished).toBe(false);
+
+      // Respond to requests.
+      for (let response of responses) {
+        response.statusCode = 404;
+        response.end(`File not found`);
+      }
+
+      let success = await navigationPromise;
+      // Expect navigation to succeed.
+      expect(success).toBe(true);
+    }));
+    it('should wait for websockets to succeed navigation', SX(async function() {
+      let responses = [];
+      // Hold on to the fetch request without answering.
+      staticServer.setRoute('/fetch-request.js', (req, res) => responses.push(res));
+      let fetchResourceRequested = staticServer.waitForRequest('/fetch-request.js');
+      // Navigate to a page which loads immediately and then opens a bunch of
+      // websocket connections and then a fetch request.
+      let navigationPromise = page.navigate(STATIC_PREFIX + '/websocket.html', {
+        waitFor: 'networkidle',
+        networkIdleTimeout: 100,
+        networkIdleInflight: 0, // Only be idle when there are 0 inflight requests/connections
+      });
+      // Track when the navigation gets completed.
+      let navigationFinished = false;
+      navigationPromise.then(() => navigationFinished = true);
+
+      // Wait for the page's 'load' event.
+      await new Promise(fulfill => page.once('load', fulfill));
+      expect(navigationFinished).toBe(false);
+
+      // Wait for the resource to be requested.
+      await fetchResourceRequested;
+
+      // Expect navigation still to be not finished.
+      expect(navigationFinished).toBe(false);
+
+      // Respond to the request.
       for (let response of responses) {
         response.statusCode = 404;
         response.end(`File not found`);
