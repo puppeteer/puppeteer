@@ -84,7 +84,7 @@ class StaticServer {
     this.waitForHit(pathName)[fulfillSymbol].call(null);
     let handler = this._routes.get(pathName);
     if (handler)
-      handler.call(null, request, response);
+      handler(request, response);
     else
       this.defaultHandler(request, response);
   }
