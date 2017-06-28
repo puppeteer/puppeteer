@@ -119,6 +119,11 @@ describe('Puppeteer', function() {
       staticServer.setRoute('/fetch-request-a.js', (req, res) => responses.push(res));
       staticServer.setRoute('/fetch-request-b.js', (req, res) => responses.push(res));
       staticServer.setRoute('/fetch-request-c.js', (req, res) => responses.push(res));
+      let resourceRequests = Promise.all([
+        staticServer.waitForRequest('/fetch-request-a.js'),
+        staticServer.waitForRequest('/fetch-request-b.js'),
+        staticServer.waitForRequest('/fetch-request-c.js'),
+      ]);
       // Navigate to a page which loads immediately and then does a bunch of
       // requests via javascript's fetch method.
       let navigationPromise = page.navigate(STATIC_PREFIX + '/networkidle.html', {
@@ -133,12 +138,9 @@ describe('Puppeteer', function() {
       expect(navigationFinished).toBe(false);
 
       // Wait for all three resources to be requested.
-      await Promise.all([
-        staticServer.waitForHit('/fetch-request-a.js'),
-        staticServer.waitForHit('/fetch-request-b.js'),
-        staticServer.waitForHit('/fetch-request-c.js'),
-      ]);
-      // Expect navigation to be not finished.
+      await resourceRequests;
+
+      // Expect navigation still to be not finished.
       expect(navigationFinished).toBe(false);
 
       // Respond to all requests.

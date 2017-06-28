@@ -53,9 +53,9 @@ class StaticServer {
 
   /**
    * @param {string} path
-   * @return {!Promise}
+   * @return {!Promise<!IncomingMessage>}
    */
-  waitForHit(path) {
+  waitForRequest(path) {
     let promise = this._hitSubscribers.get(path);
     if (promise)
       return promise;
@@ -81,10 +81,11 @@ class StaticServer {
   _onRequest(request, response) {
     let pathName = url.parse(request.url).path;
     // Mark path as hit.
-    this.waitForHit(pathName)[fulfillSymbol].call(null);
+    if (this._hitSubscribers.has(pathName))
+      this._hitSubscribers.get(pathName)[fulfillSymbol].call(null, request);
     let handler = this._routes.get(pathName);
     if (handler)
-      handler(request, response);
+      handler.call(null, request, response);
     else
       this.defaultHandler(request, response);
   }
