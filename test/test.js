@@ -254,8 +254,8 @@ describe('Puppeteer', function() {
       let success = await page.navigate(EMPTY_PAGE);
       expect(success).toBe(true);
     }));
-    it('should show extraHTTPHeaders', SX(async function() {
-      await page.setExtraHTTPHeaders({
+    it('should show custom HTTP headers', SX(async function() {
+      await page.setHTTPHeaders({
         foo: 'bar'
       });
       page.setRequestInterceptor(request => {
@@ -272,11 +272,11 @@ describe('Puppeteer', function() {
         else
           request.continue();
       });
-      let failedResources = 0;
-      page.on('resourceloadingfailed', event => ++failedResources);
+      let failedRequests = 0;
+      page.on('requestfailed', event => ++failedRequests);
       let success = await page.navigate(STATIC_PREFIX + '/one-style.html');
       expect(success).toBe(true);
-      expect(failedResources).toBe(1);
+      expect(failedRequests).toBe(1);
     }));
     it('should amend HTTP headers', SX(async function() {
       await page.navigate(EMPTY_PAGE);
@@ -476,6 +476,76 @@ describe('Puppeteer', function() {
       await page.navigate(STATIC_PREFIX + '/input/button.html');
       await page.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
+    }));
+  });
+  describe('Page.setUserAgent', function() {
+    it('should work', SX(async function() {
+      expect(page.userAgent()).toContain('Mozilla');
+      page.setUserAgent('foobar');
+      page.navigate(EMPTY_PAGE);
+      let request = await staticServer.waitForRequest('/empty.html');
+      expect(request.headers['user-agent']).toBe('foobar');
+    }));
+  });
+  describe('Page.setHTTPHeaders', function() {
+    it('should work', SX(async function() {
+      expect(page.httpHeaders()).toEqual({});
+      page.setHTTPHeaders({'foo': 'bar'});
+      expect(page.httpHeaders()).toEqual({'foo': 'bar'});
+      page.navigate(EMPTY_PAGE);
+      let request = await staticServer.waitForRequest('/empty.html');
+      expect(request.headers['foo']).toBe('bar');
+    }));
+  });
+  describe('Network Events', function() {
+    it('Page.Events.Request', SX(async function() {
+      let requests = [];
+      page.on('request', request => requests.push(request));
+      await page.navigate(EMPTY_PAGE);
+      expect(requests.length).toBe(1);
+      expect(requests[0].url).toBe(EMPTY_PAGE);
+      expect(requests[0].method).toBe('GET');
+      expect(requests[0].response()).toBeTruthy();
+    }));
+    it('Page.Events.Response', SX(async function() {
+      let responses = [];
+      page.on('response', response => responses.push(response));
+      await page.navigate(EMPTY_PAGE);
+      expect(responses.length).toBe(1);
+      expect(responses[0].url).toBe(EMPTY_PAGE);
+      expect(responses[0].status).toBe(200);
+      expect(responses[0].ok).toBe(true);
+      expect(responses[0].request()).toBeTruthy();
+    }));
+    it('Page.Events.RequestFailed', SX(async function() {
+      page.setRequestInterceptor(request => {
+        if (request.url.endsWith('css'))
+          request.abort();
+        else
+          request.continue();
+      });
+      let failedRequests = [];
+      page.on('requestfailed', request => failedRequests.push(request));
+      await page.navigate(STATIC_PREFIX + '/one-style.html');
+      expect(failedRequests.length).toBe(1);
+      expect(failedRequests[0].url).toContain('one-style.css');
+      expect(failedRequests[0].response()).toBe(null);
+    }));
+    it('Page.Events.RequestFinished', SX(async function() {
+      let requests = [];
+      page.on('requestfinished', request => requests.push(request));
+      await page.navigate(EMPTY_PAGE);
+      expect(requests.length).toBe(1);
+      expect(requests[0].url).toBe(EMPTY_PAGE);
+      expect(requests[0].response()).toBeTruthy();
+    }));
+    it('should fire events in proper order', SX(async function() {
+      let events = [];
+      page.on('request', request => events.push('request'));
+      page.on('response', response => events.push('response'));
+      page.on('requestfinished', request => events.push('requestfinished'));
+      await page.navigate(EMPTY_PAGE);
+      expect(events).toEqual(['request', 'response', 'requestfinished']);
     }));
   });
 });

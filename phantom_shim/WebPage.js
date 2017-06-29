@@ -55,8 +55,8 @@ class WebPage {
     this._onError = noop;
 
     this._pageEvents = new AsyncEmitter(this._page);
-    this._pageEvents.on(PageEvents.ResponseReceived, response => this._onResponseReceived(response));
-    this._pageEvents.on(PageEvents.ResourceLoadingFailed, event => (this.onResourceError || noop).call(null, event));
+    this._pageEvents.on(PageEvents.Response, response => this._onResponseReceived(response));
+    this._pageEvents.on(PageEvents.RequestFailed, event => (this.onResourceError || noop).call(null, event));
     this._pageEvents.on(PageEvents.ConsoleMessage, msg => (this.onConsoleMessage || noop).call(null, msg));
     this._pageEvents.on(PageEvents.Confirm, message => this._onConfirm(message));
     this._pageEvents.on(PageEvents.Alert, message => this._onAlert(message));
@@ -95,15 +95,8 @@ class WebPage {
   _onResponseReceived(response) {
     if (!this.onResourceReceived)
       return;
-    let headers = [];
-    for (let key in response.headers) {
-      headers.push({
-        name: key,
-        value: response.headers[key]
-      });
-    }
-    response.headers = headers;
-    this.onResourceReceived.call(null, response);
+    let phantomResponse = new PhantomResponse(response);
+    this.onResourceReceived.call(null, phantomResponse);
   }
 
   /**
@@ -125,14 +118,14 @@ class WebPage {
      * @return {!Object}
      */
   get customHeaders() {
-    return this._page.extraHTTPHeaders();
+    return this._page.httpHeaders();
   }
 
   /**
      * @param {!Object} value
      */
   set customHeaders(value) {
-    await(this._page.setExtraHTTPHeaders(value));
+    await(this._page.setHTTPHeaders(value));
   }
 
   /**
@@ -327,14 +320,14 @@ class WebPageSettings {
      * @param {string} value
      */
   set userAgent(value) {
-    await(this._page.setUserAgentOverride(value));
+    await(this._page.setUserAgent(value));
   }
 
   /**
      * @return {string}
      */
   get userAgent() {
-    return this._page.userAgentOverride();
+    return this._page.userAgent();
   }
 }
 
@@ -366,6 +359,24 @@ class PhantomRequest {
   }
 }
 
+class PhantomResponse {
+  /**
+   * @param {!Response} response
+   */
+  constructor(response) {
+    this.url = response.url;
+    this.status = response.status;
+    this.statusText = response.statusText;
+    this.headers = [];
+    for (let entry of response.headers.entries()) {
+      this.headers.push({
+        name: entry[0],
+        value: entry[1]
+      });
+    }
+  }
+}
+
 class RequestData {
   /**
    * @param {!InterceptedRequest} request
@@ -373,7 +384,7 @@ class RequestData {
   constructor(request) {
     this.url = request.url,
     this.headers = {};
-    for (let entry in request.headers.entries())
+    for (let entry of request.headers.entries())
       this.headers[entry[0]] = entry[1];
   }
 }

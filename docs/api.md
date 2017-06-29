@@ -13,7 +13,7 @@
   - [page.close()](#pageclose)
   - [page.evaluate(fun, args)](#pageevaluatefun-args)
   - [page.evaluateOnInitialized(fun, args)](#pageevaluateoninitializedfun-args)
-  - [page.extraHTTPHeaders()](#pageextrahttpheaders)
+  - [page.httpHeaders()](#pagehttpheaders)
   - [page.frames()](#pageframes)
   - [page.injectFile(filePath)](#pageinjectfilefilepath)
   - [page.mainFrame()](#pagemainframe)
@@ -22,14 +22,14 @@
   - [page.printToPDF(filePath[, options])](#pageprinttopdffilepath-options)
   - [page.screenshot([options])](#pagescreenshotoptions)
   - [page.setContent(html)](#pagesetcontenthtml)
-  - [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
+  - [page.setHTTPHeaders(headers)](#pagesethttpheadersheaders)
   - [page.setInPageCallback(name, callback)](#pagesetinpagecallbackname-callback)
   - [page.setRequestInterceptor()](#pagesetrequestinterceptor)
-  - [page.setUserAgentOverride(userAgent)](#pagesetuseragentoverrideuseragent)
+  - [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
   - [page.setViewportSize(size)](#pagesetviewportsizesize)
   - [page.title()](#pagetitle)
   - [page.url()](#pageurl)
-  - [page.userAgentOverride()](#pageuseragentoverride)
+  - [page.userAgent()](#pageuseragent)
   - [page.viewportSize()](#pageviewportsize)
 + [class: Dialog](#class-dialog)
   - [dialog.accept()](#dialogaccept)
@@ -125,7 +125,7 @@ Pages could be closed by `page.close()` method.
 - `args` <[Array]<[string]>> Arguments to pass to  `fun`
 - returns: <[Promise]<[Object]>> Promise which resolves to function
 
-#### page.extraHTTPHeaders()
+#### page.httpHeaders()
 
 - returns: <[Object]> Key-value set of additional http headers, which will be sent with every request.
 
@@ -183,7 +183,7 @@ Pages could be closed by `page.close()` method.
 - `html` <[string]> HTML markup to assign to the page.
 - returns: <[Promise]> Promise which resolves when the content is successfully assigned.
 
-#### page.setExtraHTTPHeaders(headers)
+#### page.setHTTPHeaders(headers)
 
 - `headers` <[Object]> Key-value set of additional http headers to be sent with every request.
 - returns: <[Promise]> Promise which resolves when additional headers are installed
@@ -196,7 +196,7 @@ Pages could be closed by `page.close()` method.
 
 #### page.setRequestInterceptor()
 
-#### page.setUserAgentOverride(userAgent)
+#### page.setUserAgent(userAgent)
 
 - `userAgent` <[string]> Specific user agent to use in this page
 - returns: <[Promise]> Promise which resolves when the user agent is set.
@@ -217,9 +217,9 @@ Pages could be closed by `page.close()` method.
 
 - returns: <[Promise]<[string]>> Promise which resolves with the current page url.
 
-#### page.userAgentOverride()
+#### page.userAgent()
 
-- returns: <[string]> Returns user agent override, if any.
+- returns: <[string]> Returns user agent.
 
 #### page.viewportSize()
 
