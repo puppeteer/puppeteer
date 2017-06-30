@@ -547,6 +547,24 @@ describe('Puppeteer', function() {
       await page.navigate(EMPTY_PAGE);
       expect(events).toEqual(['request', 'response', 'requestfinished']);
     }));
+    it('should support redirects', SX(async function() {
+      let events = [];
+      page.on('request', request => events.push(`${request.method} ${request.url}`));
+      page.on('response', response => events.push(`${response.status} ${response.url}`));
+      page.on('requestfinished', request => events.push(`DONE ${request.url}`));
+      page.on('requestfailed', request => events.push(`FAIL ${request.url}`));
+      staticServer.setRedirect('/foo.html', '/empty.html');
+      const FOO_URL = STATIC_PREFIX + '/foo.html';
+      await page.navigate(FOO_URL);
+      expect(events).toEqual([
+        `GET ${FOO_URL}`,
+        `302 ${FOO_URL}`,
+        `DONE ${FOO_URL}`,
+        `GET ${EMPTY_PAGE}`,
+        `200 ${EMPTY_PAGE}`,
+        `DONE ${EMPTY_PAGE}`
+      ]);
+    }));
   });
 });
 

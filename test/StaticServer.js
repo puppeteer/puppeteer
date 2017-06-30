@@ -55,6 +55,17 @@ class StaticServer {
   }
 
   /**
+   * @param {string} fromPath
+   * @param {string} toPath
+   */
+  setRedirect(from, to) {
+    this.setRoute(from, (req, res) => {
+      res.writeHead(302, { location: to });
+      res.end();
+    });
+  }
+
+  /**
    * @param {string} path
    * @return {!Promise<!IncomingMessage>}
    */
