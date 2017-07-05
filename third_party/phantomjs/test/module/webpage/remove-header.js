@@ -1,4 +1,3 @@
-//! unsupported
 var webpage = require('webpage');
 
 // NOTE: HTTP header names are case-insensitive. Our test server

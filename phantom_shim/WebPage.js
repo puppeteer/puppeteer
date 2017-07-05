@@ -39,12 +39,14 @@ class WebPage {
     if (options.viewportSize)
       await(this._page.setViewportSize(options.viewportSize));
 
+    this.loading = false;
+    this.loadingProgress = 0;
     this.clipRect = options.clipRect || {left: 0, top: 0, width: 0, height: 0};
     this.onConsoleMessage = null;
     this.onLoadFinished = null;
     this.onResourceError = null;
     this.onResourceReceived = null;
-    this.onInitialized = null;
+    this._onInitialized = undefined;
     this._deferEvaluate = false;
 
     this.libraryPath = path.dirname(scriptPath);
@@ -56,12 +58,24 @@ class WebPage {
 
     this._pageEvents = new AsyncEmitter(this._page);
     this._pageEvents.on(PageEvents.Response, response => this._onResponseReceived(response));
+    this._pageEvents.on(PageEvents.RequestFinished, request => this._onRequestFinished(request));
     this._pageEvents.on(PageEvents.RequestFailed, event => (this.onResourceError || noop).call(null, event));
     this._pageEvents.on(PageEvents.ConsoleMessage, msg => (this.onConsoleMessage || noop).call(null, msg));
     this._pageEvents.on(PageEvents.Confirm, message => this._onConfirm(message));
     this._pageEvents.on(PageEvents.Alert, message => this._onAlert(message));
     this._pageEvents.on(PageEvents.Dialog, dialog => this._onDialog(dialog));
     this._pageEvents.on(PageEvents.Error, error => (this._onError || noop).call(null, error.message, error.stack));
+  }
+
+  get onInitialized() {
+    return this._onInitialized;
+  }
+
+  set onInitialized(value) {
+    if (typeof value !== 'function')
+      this._onInitialized = undefined;
+    else
+      this._onInitialized = value;
   }
 
   /**
@@ -95,7 +109,14 @@ class WebPage {
   _onResponseReceived(response) {
     if (!this.onResourceReceived)
       return;
-    let phantomResponse = new PhantomResponse(response);
+    let phantomResponse = new PhantomResponse(response, false /* isResponseFinished */);
+    this.onResourceReceived.call(null, phantomResponse);
+  }
+
+  _onRequestFinished(request) {
+    if (!this.onResourceReceived)
+      return;
+    let phantomResponse = new PhantomResponse(request.response(), true /* isResponseFinished */);
     this.onResourceReceived.call(null, phantomResponse);
   }
 
@@ -236,10 +257,14 @@ class WebPage {
   open(url, callback) {
     console.assert(arguments.length <= 2, 'WebPage.open does not support METHOD and DATA arguments');
     this._deferEvaluate = true;
-    if (typeof this.onInitialized === 'function')
-      this.onInitialized();
+    if (typeof this._onInitialized === 'function')
+      this._onInitialized();
     this._deferEvaluate = false;
+    this.loading = true;
+    this.loadingProgress = 50;
     this._page.navigate(url).then(result => {
+      this.loadingProgress = 100;
+      this.loading = false;
       let status = result ? 'success' : 'fail';
       if (!result) {
         this.onResourceError.call(null, {
@@ -251,6 +276,7 @@ class WebPage {
         this.onLoadFinished.call(null, status);
       if (callback)
         callback.call(null, status);
+      this.loadingProgress = 0;
     });
   }
 
@@ -362,11 +388,13 @@ class PhantomRequest {
 class PhantomResponse {
   /**
    * @param {!Response} response
+   * @param {boolean} isResponseFinished
    */
-  constructor(response) {
+  constructor(response, isResponseFinished) {
     this.url = response.url;
     this.status = response.status;
     this.statusText = response.statusText;
+    this.stage = isResponseFinished ? 'end' : 'start';
     this.headers = [];
     for (let entry of response.headers.entries()) {
       this.headers.push({

@@ -1,4 +1,3 @@
-//! unsupported
 test(function () {
     var page = require('webpage').create();
 
