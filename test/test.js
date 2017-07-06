@@ -336,9 +336,9 @@ describe('Puppeteer', function() {
     }));
   });
 
-  describe('Page.Events.Error', function() {
+  describe('Page.Events.PageError', function() {
     it('should fire', function(done) {
-      page.on('error', error => {
+      page.on('pageerror', error => {
         expect(error.message).toContain('Fancy');
         done();
       });
