@@ -104,6 +104,15 @@ describe('Puppeteer', function() {
     }));
   });
 
+  describe('Page.injectFile', function() {
+    it('should fail when navigating to bad url', SX(async function() {
+      const helloPath = path.join(__dirname, './assets/injectedfile.js');
+      await page.injectFile(helloPath);
+      const result = await page.evaluate(() => __injected);
+      expect(result).toBe(42);
+    }));
+  });
+
   describe('Frame.evaluate', function() {
     let FrameUtils = require('./frame-utils');
     it('should have different execution contexts', SX(async function() {
