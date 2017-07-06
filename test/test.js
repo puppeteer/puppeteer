@@ -37,8 +37,8 @@ describe('Puppeteer', function() {
   });
 
   afterAll(function() {
-    browser.close();
     staticServer.stop();
+    browser.close();
   });
 
   beforeEach(SX(async function() {
@@ -524,6 +524,32 @@ describe('Puppeteer', function() {
       await page.setContent('<div>hello</div>');
       let result = await page.evaluate(() => document.body.innerHTML);
       expect(result).toBe('<div>hello</div>');
+    }));
+  });
+  describe('Request implements Body', function() {
+    it('should work', SX(async function() {
+      await page.navigate(EMPTY_PAGE);
+      staticServer.setRoute('/post', (req, res) => res.end());
+      let request = null;
+      page.on('request', r => request = r);
+      await page.evaluate(() => fetch('./post', { method: 'POST', body: JSON.stringify({foo: 'bar'})}));
+      expect(request).toBeTruthy();
+      expect(request.bodyUsed).toBe(false);
+      expect(await request.text()).toBe('{"foo":"bar"}');
+      expect(await request.json()).toEqual({foo: 'bar'});
+      expect(request.bodyUsed).toBe(true);
+    }));
+  });
+  describe('Response implements Body', function() {
+    it('should work', SX(async function() {
+      let response = null;
+      page.on('response', r => response = r);
+      await page.navigate(STATIC_PREFIX + '/simple.json');
+      expect(response).toBeTruthy();
+      expect(response.bodyUsed).toBe(false);
+      expect(await response.text()).toBe('{"foo": "bar"}\n');
+      expect(await response.json()).toEqual({foo: 'bar'});
+      expect(response.bodyUsed).toBe(true);
     }));
   });
   describe('Network Events', function() {
