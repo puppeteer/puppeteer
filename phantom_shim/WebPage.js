@@ -49,6 +49,8 @@ class WebPage {
     this._onInitialized = undefined;
     this._deferEvaluate = false;
 
+    this._currentFrame = this._page.mainFrame();
+
     this.libraryPath = path.dirname(scriptPath);
 
     this._onResourceRequestedCallback = undefined;
@@ -65,6 +67,86 @@ class WebPage {
     this._pageEvents.on(PageEvents.Alert, message => this._onAlert(message));
     this._pageEvents.on(PageEvents.Dialog, dialog => this._onDialog(dialog));
     this._pageEvents.on(PageEvents.PageError, error => (this._onError || noop).call(null, error.message, error.stack));
+  }
+
+  /**
+   * @return {string}
+   */
+  get frameName() {
+    return this._currentFrame.name();
+  }
+
+  /**
+   * @return {number}
+   */
+  get framesCount() {
+    return this._currentFrame.childFrames().length;
+  }
+
+  /**
+   * @return {!Array<string>}
+   */
+  get framesName() {
+    return this._currentFrame.childFrames().map(frame => frame.name());
+  }
+
+  /**
+   * @return {string}
+   */
+  get focusedFrameName() {
+    let focusedFrame = this._focusedFrame();
+    return focusedFrame ? focusedFrame.name() : '';
+  }
+
+  /**
+   * @return {?Frame}
+   */
+  _focusedFrame() {
+    let frames = this._currentFrame.childFrames().slice();
+    frames.push(this._currentFrame);
+    let promises = frames.map(frame => frame.evaluate(() => document.hasFocus()));
+    let result = await(Promise.all(promises));
+    for (let i = 0; i < result.length; ++i) {
+      if (result[i])
+        return frames[i];
+    }
+    return null;
+  }
+
+  switchToFocusedFrame() {
+    let frame = this._focusedFrame();
+    this._currentFrame = frame;
+  }
+
+  /**
+   * @param {(string|number)} frameName
+   * @return {boolean}
+   */
+  switchToFrame(frameName) {
+    let frame = null;
+    if (typeof frameName === 'string')
+      frame = this._currentFrame.childFrames().find(frame => frame.name() === frameName);
+    else if (typeof frameName === 'number')
+      frame = this._currentFrame.childFrames()[frameName];
+    if (!frame)
+      return false;
+    this._currentFrame = frame;
+    return true;
+  }
+
+  /**
+   * @return {boolean}
+   */
+  switchToParentFrame() {
+    let frame = this._currentFrame.parentFrame();
+    if (!frame)
+      return false;
+    this._currentFrame = frame;
+    return true;
+  }
+
+  switchToMainFrame() {
+    this._currentFrame = this._page.mainFrame();
   }
 
   get onInitialized() {
@@ -294,7 +376,7 @@ class WebPage {
   evaluate(fun, ...args) {
     if (this._deferEvaluate)
       return await(this._page.evaluateOnInitialized(fun, ...args));
-    return await(this._page.evaluate(fun, ...args));
+    return await(this._currentFrame.evaluate(fun, ...args));
   }
 
   /**

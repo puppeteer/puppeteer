@@ -1,4 +1,3 @@
-//! unsupported
 async_test(function () {
     var p = require("webpage").create();
 
