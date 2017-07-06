@@ -497,6 +497,13 @@ describe('Puppeteer', function() {
       expect(request.headers['foo']).toBe('bar');
     }));
   });
+  describe('Page.setContent', function() {
+    it('should work', SX(async function() {
+      await page.setContent('<div>hello</div>');
+      let result = await page.evaluate(() => document.body.innerHTML);
+      expect(result).toBe('<div>hello</div>');
+    }));
+  });
   describe('Network Events', function() {
     it('Page.Events.Request', SX(async function() {
       let requests = [];
