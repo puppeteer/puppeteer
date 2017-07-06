@@ -5,14 +5,25 @@ const Browser = require('../../lib/Browser');
 class MDOutline {
   constructor(text) {
     this.classes = [];
-    this.html = compile(text);
+    this.html = MDOutline.compile(text);
+  }
+
+  static compile(text) {
+    const reader = new commonmark.Parser();
+    const writer = new commonmark.HtmlRenderer();
+    const parsed = reader.parse(text);
+    return writer.render(parsed);
   }
 
   async collectHeadings() {
     const browser = new Browser({args: ['--no-sandbox']});
     const page = await browser.newPage();
+
+    // await page.setContent(this.html); // would prefer to use this but it fails.
     await page.evaluate(new Function(`document.body.innerHTML = \`${this.html}\`;`));
+
     this.headings = await page.evaluate(getTOCHeadings);
+    await browser.close();
   }
 
   buildClasses() {
@@ -57,13 +68,6 @@ class MDOutline {
       currentClassMethods = [];
     }
   }
-}
-
-function compile(text) {
-  const reader = new commonmark.Parser();
-  const writer = new commonmark.HtmlRenderer();
-  const parsed = reader.parse(text);
-  return writer.render(parsed); // result is a String
 }
 
 function getTOCHeadings(){
