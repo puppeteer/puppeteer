@@ -12,6 +12,7 @@
     "test": "npm run lint --silent && npm run unit && npm run test-phantom",
     "install": "node install.js",
     "lint": "[ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .",
+    "generate-toc": "markdown-toc -i docs/api.md",
     "doc": "jasmine test/doclint/lint.js"
   },
   "author": "The Chromium Authors",
@@ -32,6 +33,7 @@
     "eslint": "^4.0.0",
     "esprima": "^4.0.0",
     "jasmine": "^2.6.0",
+    "markdown-toc": "^1.1.0",
     "marked": "^0.3.6",
     "minimist": "^1.2.0",
     "ncp": "^2.0.0",
