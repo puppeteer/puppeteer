@@ -48,7 +48,6 @@ let mdOutline;
 let mdClassesArray;
 let mdOutline2;
 
-// FIXME: an async beforeAll doesn't appear to work...
 beforeAll(SX(async function() {
   // Build up documentation from MD sources.
   mdOutline = new MDOutline(fs.readFileSync(path.join(PROJECT_DIR, 'docs', 'api.md'), 'utf8'));
@@ -59,9 +58,11 @@ beforeAll(SX(async function() {
   mdOutline2.buildClasses();
 }));
 
+it('HTML AST should be equal to MD AST', SX(async function() {
+  assert.deepStrictEqual(mdOutline.classes, mdOutline2.classes);
+}));
 
 describe('table of contents', function() {
-  assert.deepStrictEqual(mdOutline.classes, mdOutline2.classes);
   let tableOfContents;
   beforeAll(() => {
     let section = mdOutline.ast.find(token => token.type === 'section' && token.title.toLowerCase() === 'table of contents');
