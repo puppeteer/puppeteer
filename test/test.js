@@ -80,6 +80,28 @@ describe('Puppeteer', function() {
       expect(error).toBeTruthy();
       expect(error.message).toContain('not is not defined');
     }));
+    it('should return complex objects', SX(async function() {
+      const object = {foo: 'bar!'};
+      let result = await page.evaluate(a => a, object);
+      expect(result).not.toBe(object);
+      expect(result).toEqual(object);
+    }));
+    it('should return NaN', SX(async function() {
+      let result = await page.evaluate(() => NaN);
+      expect(Object.is(result, NaN)).toBe(true);
+    }));
+    it('should return -0', SX(async function() {
+      let result = await page.evaluate(() => -0);
+      expect(Object.is(result, -0)).toBe(true);
+    }));
+    it('should return Infinity', SX(async function() {
+      let result = await page.evaluate(() => Infinity);
+      expect(Object.is(result, Infinity)).toBe(true);
+    }));
+    it('should return -Infinity', SX(async function() {
+      let result = await page.evaluate(() => -Infinity);
+      expect(Object.is(result, -Infinity)).toBe(true);
+    }));
   });
 
   describe('Frame.evaluate', function() {
