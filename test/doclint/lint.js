@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
+const assert = require('assert');
 const JSOutline = require('./JSOutline');
 const MDOutline = require('./MDOutline');
+const MDOutlineNew = require('./MDOutline2');
 const Documentation = require('./Documentation');
 
 let PROJECT_DIR = path.join(__dirname, '..', '..');
@@ -42,11 +44,24 @@ for (let file of files) {
   }
 }
 
-// Build up documentation from MD sources.
-let mdOutline = new MDOutline(fs.readFileSync(path.join(PROJECT_DIR, 'docs', 'api.md'), 'utf8'));
-let mdClassesArray = mdOutline.classes;
+let mdOutline;
+let mdClassesArray;
+let mdOutline2;
+
+// FIXME: an async beforeAll doesn't appear to work...
+beforeAll(SX(async function() {
+  // Build up documentation from MD sources.
+  mdOutline = new MDOutline(fs.readFileSync(path.join(PROJECT_DIR, 'docs', 'api.md'), 'utf8'));
+  mdClassesArray = mdOutline.classes;
+
+  mdOutline2 = new MDOutlineNew(fs.readFileSync(path.join(PROJECT_DIR, 'docs', 'api.md'), 'utf8'));
+  await mdOutline2.collectHeadings();
+  mdOutline2.buildClasses();
+}));
+
 
 describe('table of contents', function() {
+  assert.deepStrictEqual(mdOutline.classes, mdOutline2.classes);
   let tableOfContents;
   beforeAll(() => {
     let section = mdOutline.ast.find(token => token.type === 'section' && token.title.toLowerCase() === 'table of contents');
@@ -135,4 +150,10 @@ describe('api.md', function() {
     }
   });
 });
+
+// Since Jasmine doesn't like async functions, they should be wrapped
+// in a SX function.
+function SX(fun) {
+  return done => Promise.resolve(fun()).then(done).catch(done.fail);
+}
 
