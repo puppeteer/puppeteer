@@ -1,9 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const assert = require('assert');
 const JSOutline = require('./JSOutline');
 const MDOutline = require('./MDOutline');
-const MDOutlineNew = require('./MDOutline2');
 const Documentation = require('./Documentation');
 
 let PROJECT_DIR = path.join(__dirname, '..', '..');
@@ -44,22 +42,14 @@ for (let file of files) {
   }
 }
 
-let mdOutline;
 let mdClassesArray;
-let mdOutline2;
 
 beforeAll(SX(async function() {
   // Build up documentation from MD sources.
-  mdOutline = new MDOutline(fs.readFileSync(path.join(PROJECT_DIR, 'docs', 'api.md'), 'utf8'));
-  mdOutline2 = new MDOutlineNew(fs.readFileSync(path.join(PROJECT_DIR, 'docs', 'api.md'), 'utf8'));
-
-  await mdOutline2.collectHeadings();
-  mdOutline2.buildClasses();
-  mdClassesArray = mdOutline2.classes;
-}));
-
-it('OLD markdown results should match puppeteer\'d markdown results', SX(async function() {
-  assert.deepStrictEqual(mdOutline.classes, mdOutline2.classes);
+  let mdOutline = new MDOutline(fs.readFileSync(path.join(PROJECT_DIR, 'docs', 'api.md'), 'utf8'));
+  await mdOutline.collectHeadings();
+  mdOutline.buildClasses();
+  mdClassesArray = mdOutline.classes;
 }));
 
 // describe('table of contents', function() {

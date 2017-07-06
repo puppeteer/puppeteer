@@ -18,10 +18,7 @@ class MDOutline {
   async collectHeadings() {
     const browser = new Browser({args: ['--no-sandbox']});
     const page = await browser.newPage();
-
-    // await page.setContent(this.html); // would prefer to use this but it fails.
-    await page.evaluate(new Function(`document.body.innerHTML = \`${this.html}\`;`));
-
+    await page.setContent(this.html);
     this.headings = await page.evaluate(getTOCHeadings);
     await browser.close();
   }
@@ -82,7 +79,6 @@ function getTOCHeadings(){
     headings[domainEl.textContent] = methods;
   });
   return headings;
-
 }
 
 module.exports = MDOutline;
