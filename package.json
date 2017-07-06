@@ -23,7 +23,7 @@
     "ws": "^3.0.0"
   },
   "puppeteer": {
-    "chromium_revision": "478524"
+    "chromium_revision": "484159"
   },
   "devDependencies": {
     "deasync": "^0.1.9",
