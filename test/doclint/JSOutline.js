@@ -1,5 +1,5 @@
 const esprima = require('esprima');
-const ESTreeWalker = require('./ESTreeWalker');
+const ESTreeWalker = require('../../third_party/chromium/ESTreeWalker');
 const Documentation = require('./Documentation');
 
 class JSOutline {
