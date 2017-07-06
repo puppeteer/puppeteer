@@ -19,7 +19,7 @@ var Browser = require('../lib/Browser');
 var browser = new Browser();
 
 browser.newPage().then(async page => {
-    var modernizrPath = path.join('..', 'third_party', 'phantomjs', 'examples', 'modernizr.js');
+    var modernizrPath = path.join(__dirname, '../third_party/phantomjs/examples/modernizr.js');
     await page.injectFile(modernizrPath);
     page.on('consolemessage', console.log);
     await page.evaluate(detectFeatures);
