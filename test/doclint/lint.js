@@ -51,30 +51,30 @@ let mdOutline2;
 beforeAll(SX(async function() {
   // Build up documentation from MD sources.
   mdOutline = new MDOutline(fs.readFileSync(path.join(PROJECT_DIR, 'docs', 'api.md'), 'utf8'));
-  mdClassesArray = mdOutline.classes;
-
   mdOutline2 = new MDOutlineNew(fs.readFileSync(path.join(PROJECT_DIR, 'docs', 'api.md'), 'utf8'));
+
   await mdOutline2.collectHeadings();
   mdOutline2.buildClasses();
+  mdClassesArray = mdOutline2.classes;
 }));
 
-it('HTML AST should be equal to MD AST', SX(async function() {
+it('OLD markdown results should match puppeteer\'d markdown results', SX(async function() {
   assert.deepStrictEqual(mdOutline.classes, mdOutline2.classes);
 }));
 
-describe('table of contents', function() {
-  let tableOfContents;
-  beforeAll(() => {
-    let section = mdOutline.ast.find(token => token.type === 'section' && token.title.toLowerCase() === 'table of contents');
-    // Expect the first child of a section to be a table of contents.
-    tableOfContents = section ? section.body[0] : null;
-  });
+// describe('table of contents', function() {
+//   let tableOfContents;
+//   beforeAll(() => {
+//     let section = mdOutline.ast.find(token => token.type === 'section' && token.title.toLowerCase() === 'table of contents');
+//     // Expect the first child of a section to be a table of contents.
+//     tableOfContents = section ? section.body[0] : null;
+//   });
 
-  it('should exist', () => {
-    expect(tableOfContents).toBeTruthy();
-    expect(tableOfContents.type).toBe('list');
-  });
-});
+//   it('should exist', () => {
+//     expect(tableOfContents).toBeTruthy();
+//     expect(tableOfContents.type).toBe('list');
+//   });
+// });
 
 // Compare to codebase.
 describe('api.md', function() {
