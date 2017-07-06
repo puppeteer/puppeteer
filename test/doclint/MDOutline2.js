@@ -1,5 +1,5 @@
 const Documentation = require('./Documentation');
-const marked = require('marked');
+const commonmark = require('commonmark');
 const Browser = require('../../lib/Browser');
 
 class MDOutline {
@@ -60,16 +60,10 @@ class MDOutline {
 }
 
 function compile(text) {
-  marked.setOptions({
-    gfm: true,
-    tables: true,
-    breaks: false,
-    pedantic: false,
-    sanitize: false,
-    smartLists: true,
-    smartypants: true
-  });
-  return marked(text);
+  const reader = new commonmark.Parser();
+  const writer = new commonmark.HtmlRenderer();
+  const parsed = reader.parse(text);
+  return writer.render(parsed); // result is a String
 }
 
 function getTOCHeadings(){
