@@ -10,9 +10,10 @@ class MDOutline {
 
   static compile(text) {
     const reader = new commonmark.Parser();
-    const writer = new commonmark.HtmlRenderer();
     const parsed = reader.parse(text);
-    return writer.render(parsed);
+    const writer = new commonmark.HtmlRenderer();
+    const html = writer.render(parsed);
+    return html;
   }
 
   async collectHeadings() {

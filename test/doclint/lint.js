@@ -3,8 +3,10 @@ const path = require('path');
 const JSOutline = require('./JSOutline');
 const MDOutline = require('./MDOutline');
 const Documentation = require('./Documentation');
+const markdownToc = require('markdown-toc');
 
-let PROJECT_DIR = path.join(__dirname, '..', '..');
+const PROJECT_DIR = path.join(__dirname, '..', '..');
+const apiMdText = fs.readFileSync(path.join(PROJECT_DIR, 'docs', 'api.md'), 'utf8');
 
 let EXCLUDE_CLASSES = new Set([
   'Helper',
@@ -46,25 +48,18 @@ let mdClassesArray;
 
 beforeAll(SX(async function() {
   // Build up documentation from MD sources.
-  let mdOutline = new MDOutline(fs.readFileSync(path.join(PROJECT_DIR, 'docs', 'api.md'), 'utf8'));
+  let mdOutline = new MDOutline(apiMdText);
   await mdOutline.collectHeadings();
   mdOutline.buildClasses();
   mdClassesArray = mdOutline.classes;
 }));
 
-// describe('table of contents', function() {
-//   let tableOfContents;
-//   beforeAll(() => {
-//     let section = mdOutline.ast.find(token => token.type === 'section' && token.title.toLowerCase() === 'table of contents');
-//     // Expect the first child of a section to be a table of contents.
-//     tableOfContents = section ? section.body[0] : null;
-//   });
-
-//   it('should exist', () => {
-//     expect(tableOfContents).toBeTruthy();
-//     expect(tableOfContents.type).toBe('list');
-//   });
-// });
+describe('table of contents', function() {
+  it('should match markdown-toc\'s output', () => {
+    const newApiMdText = markdownToc.insert(apiMdText);
+    expect(apiMdText === newApiMdText).toBe(true, 'markdown TOC is outdated, run `yarn generate-toc`');
+  });
+});
 
 // Compare to codebase.
 describe('api.md', function() {
