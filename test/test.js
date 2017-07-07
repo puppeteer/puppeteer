@@ -822,6 +822,7 @@ describe('Puppeteer', function() {
       await page.navigate(PREFIX + '/input/button.html');
       expect(await page.title()).toBe('Button test');
     }));
+  });
 
   describe('Query selector', function() {
     it('Page.$', SX(async function() {
