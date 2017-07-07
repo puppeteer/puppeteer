@@ -11,6 +11,8 @@
   * [browser.newPage()](#browsernewpage)
   * [browser.version()](#browserversion)
 - [class: Page](#class-page)
+  * [page.$(querySelector, fun, args)](#pagequeryselector-fun-args)
+  * [page.$$(querySelector, fun, args)](#pagequeryselector-fun-args-1)
   * [page.addScriptTag(url)](#pageaddscripttagurl)
   * [page.click()](#pageclick)
   * [page.close()](#pageclose)
@@ -119,6 +121,20 @@ browser.newPage().then(page => {
 });
 ```
 Pages could be closed by `page.close()` method.
+
+#### page.$(querySelector, fun, args)
+
+- `querySelector` <[string]> Query selector to be run on the page
+- `fun` <[function<[Element]>]> Function to be evaluated with first element matching `querySelector`
+- `args` <[Array]<[string]>> Arguments to pass to `fun`
+- returns: <[Promise<[Object]]> Promise which resolves to function return value.
+
+#### page.$$(querySelector, fun, args)
+
+- `querySelector` <[string]> Query selector to be run on the page
+- `fun` <[function<[Element]>]> Function to be evaluted for every element matching `querySelector`.
+- `args` <[Array]<[string]>> Arguments to pass to `fun`
+- returns: <[Promise<[Array<[Object]>]>]> Promise which resolves to array of function return values.
 
 #### page.addScriptTag(url)
 
@@ -306,3 +322,4 @@ Pages could be closed by `page.close()` method.
 [Page]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-page "Page"
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
+[Element]: https://developer.mozilla.org/en-US/docs/Web/API/element "Element"
