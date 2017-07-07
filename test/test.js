@@ -36,10 +36,10 @@ describe('Puppeteer', function() {
     GoldenUtils.removeOutputDir();
   }));
 
-  afterAll(function() {
-    server.stop();
+  afterAll(SX(async function() {
+    await server.stop();
     browser.close();
-  });
+  }));
 
   beforeEach(SX(async function() {
     page = await browser.newPage();
@@ -105,7 +105,7 @@ describe('Puppeteer', function() {
   });
 
   describe('Page.injectFile', function() {
-    it('should fail when navigating to bad url', SX(async function() {
+    it('should work', SX(async function() {
       const helloPath = path.join(__dirname, './assets/injectedfile.js');
       await page.injectFile(helloPath);
       const result = await page.evaluate(() => __injected);

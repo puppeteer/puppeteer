@@ -42,10 +42,14 @@ class SimpleServer {
    */
   constructor(dirPath, port) {
     this._server = http.createServer(this._onRequest.bind(this));
+    this._server.on('connection', socket => this._onSocket(socket));
     this._wsServer = new WebSocketServer({server: this._server});
     this._wsServer.on('connection', this._onWebSocketConnection.bind(this));
     this._server.listen(port);
     this._dirPath = dirPath;
+
+    /** @type {!Set<!net.Socket>} */
+    this._sockets = new Set();
 
     /** @type {!Map<string, function(!IncomingMessage, !ServerResponse)>} */
     this._routes = new Map();
@@ -53,8 +57,20 @@ class SimpleServer {
     this._requestSubscribers = new Map();
   }
 
-  stop() {
-    this._server.close();
+  _onSocket(socket) {
+    this._sockets.add(socket);
+    socket.once('close', () => this._sockets.delete(socket));
+  }
+
+  /**
+   * @return {!Promise}
+   */
+  async stop() {
+    this.reset();
+    for (let socket of this._sockets)
+      socket.destroy();
+    this._sockets.clear();
+    await new Promise(x => this._server.close(x));
   }
 
   /**
