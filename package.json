@@ -8,6 +8,7 @@
   },
   "scripts": {
     "unit": "jasmine test/test.js",
+    "debug-unit": "DEBUG_TEST=true node --inspect-brk ./node_modules/.bin/jasmine test/test.js",
     "test-phantom": "python third_party/phantomjs/test/run-tests.py",
     "test": "npm run lint --silent && npm run unit && npm run test-phantom",
     "install": "node install.js",

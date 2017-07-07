@@ -23,7 +23,10 @@ let PORT = 8907;
 let STATIC_PREFIX = 'http://localhost:' + PORT;
 let EMPTY_PAGE = STATIC_PREFIX + '/empty.html';
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
+if (process.env.DEBUG_TEST)
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 1000 * 1000;
+else
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
 
 describe('Puppeteer', function() {
   let browser;
