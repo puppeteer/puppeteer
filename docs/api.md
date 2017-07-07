@@ -36,6 +36,7 @@
   * [page.url()](#pageurl)
   * [page.userAgent()](#pageuseragent)
   * [page.viewportSize()](#pageviewportsize)
+  * [page.waitFor(selector)](#pagewaitforselector)
 - [class: Dialog](#class-dialog)
   * [dialog.accept()](#dialogaccept)
   * [dialog.dismiss()](#dialogdismiss)
@@ -49,6 +50,7 @@
   * [frame.parentFrame()](#frameparentframe)
   * [frame.securityOrigin()](#framesecurityorigin)
   * [frame.url()](#frameurl)
+  * [frame.waitFor(selector)](#framewaitforselector)
 - [class: Request](#class-request)
   * [request.response()](#requestresponse)
 - [class: Response](#class-response)
@@ -248,6 +250,9 @@ Pages could be closed by `page.close()` method.
 	- `width` <[number]> Page's width in pixels.
 	- `height` <[number]> Page's height in pixels.
 
+#### page.waitFor(selector)
+
+Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 
 ### class: Dialog
 #### dialog.accept()
@@ -268,6 +273,11 @@ Pages could be closed by `page.close()` method.
 #### frame.parentFrame()
 #### frame.securityOrigin()
 #### frame.url()
+#### frame.waitFor(selector)
+
+- `selector` <[string]> CSS selector of awaited element,
+- returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
+
 
 ### class: Request
 #### request.response()
