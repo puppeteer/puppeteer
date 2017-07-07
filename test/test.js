@@ -128,6 +128,51 @@ describe('Puppeteer', function() {
     }));
   });
 
+  describe('Frame.waitFor', function() {
+    let FrameUtils = require('./frame-utils');
+    let addElement = tag => document.body.appendChild(document.createElement(tag));
+
+    it('should immediately resolve promise if node exists', SX(async function() {
+      await page.navigate(EMPTY_PAGE);
+      let frame = page.mainFrame();
+      let added = false;
+      await frame.waitFor('*').then(() => added = true);
+      expect(added).toBe(true);
+
+      added = false;
+      await frame.evaluate(addElement, 'div');
+      await frame.waitFor('div').then(() => added = true);
+      expect(added).toBe(true);
+    }));
+
+    it('should resolve promise when node is added', SX(async function() {
+      await page.navigate(EMPTY_PAGE);
+      let frame = page.mainFrame();
+      let added = false;
+      frame.waitFor('div').then(() => added = true);
+      // run nop function..
+      await frame.evaluate(() => 42);
+      // .. to be sure that waitFor promise is not resolved yet.
+      expect(added).toBe(false);
+      await frame.evaluate(addElement, 'br');
+      expect(added).toBe(false);
+      await frame.evaluate(addElement, 'div');
+      expect(added).toBe(true);
+    }));
+
+    it('Page.waitFor is shortcut for main frame', SX(async function() {
+      await page.navigate(EMPTY_PAGE);
+      await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
+      let otherFrame = page.frames()[1];
+      let added = false;
+      page.waitFor('div').then(() => added = true);
+      await otherFrame.evaluate(addElement, 'div');
+      expect(added).toBe(false);
+      await page.evaluate(addElement, 'div');
+      expect(added).toBe(true);
+    }));
+  });
+
   it('Page Events: ConsoleMessage', SX(async function() {
     let msgs = [];
     page.on('consolemessage', msg => msgs.push(msg));
