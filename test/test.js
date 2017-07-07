@@ -16,7 +16,7 @@
 
 let path = require('path');
 let Browser = require('../lib/Browser');
-let StaticServer = require('./StaticServer');
+let SimpleServer = require('./SimpleServer');
 let GoldenUtils = require('./golden-utils');
 
 let PORT = 8907;
@@ -27,23 +27,23 @@ jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
 
 describe('Puppeteer', function() {
   let browser;
-  let staticServer;
+  let server;
   let page;
 
   beforeAll(SX(async function() {
     browser = new Browser({args: ['--no-sandbox']});
-    staticServer = await StaticServer.create(path.join(__dirname, 'assets'), PORT);
+    server = await SimpleServer.create(path.join(__dirname, 'assets'), PORT);
     GoldenUtils.removeOutputDir();
   }));
 
   afterAll(function() {
-    staticServer.stop();
+    server.stop();
     browser.close();
   });
 
   beforeEach(SX(async function() {
     page = await browser.newPage();
-    staticServer.reset();
+    server.reset();
     GoldenUtils.addMatchers(jasmine);
   }));
 
@@ -147,16 +147,16 @@ describe('Puppeteer', function() {
     it('should wait for network idle to succeed navigation', SX(async function() {
       let responses = [];
       // Hold on to a bunch of requests without answering.
-      staticServer.setRoute('/fetch-request-a.js', (req, res) => responses.push(res));
-      staticServer.setRoute('/fetch-request-b.js', (req, res) => responses.push(res));
-      staticServer.setRoute('/fetch-request-c.js', (req, res) => responses.push(res));
-      staticServer.setRoute('/fetch-request-d.js', (req, res) => responses.push(res));
+      server.setRoute('/fetch-request-a.js', (req, res) => responses.push(res));
+      server.setRoute('/fetch-request-b.js', (req, res) => responses.push(res));
+      server.setRoute('/fetch-request-c.js', (req, res) => responses.push(res));
+      server.setRoute('/fetch-request-d.js', (req, res) => responses.push(res));
       let initialFetchResourcesRequested = Promise.all([
-        staticServer.waitForRequest('/fetch-request-a.js'),
-        staticServer.waitForRequest('/fetch-request-b.js'),
-        staticServer.waitForRequest('/fetch-request-c.js'),
+        server.waitForRequest('/fetch-request-a.js'),
+        server.waitForRequest('/fetch-request-b.js'),
+        server.waitForRequest('/fetch-request-c.js'),
       ]);
-      let secondFetchResourceRequested = staticServer.waitForRequest('/fetch-request-d.js');
+      let secondFetchResourceRequested = server.waitForRequest('/fetch-request-d.js');
 
       // Navigate to a page which loads immediately and then does a bunch of
       // requests via javascript's fetch method.
@@ -206,8 +206,8 @@ describe('Puppeteer', function() {
     it('should wait for websockets to succeed navigation', SX(async function() {
       let responses = [];
       // Hold on to the fetch request without answering.
-      staticServer.setRoute('/fetch-request.js', (req, res) => responses.push(res));
-      let fetchResourceRequested = staticServer.waitForRequest('/fetch-request.js');
+      server.setRoute('/fetch-request.js', (req, res) => responses.push(res));
+      let fetchResourceRequested = server.waitForRequest('/fetch-request.js');
       // Navigate to a page which loads immediately and then opens a bunch of
       // websocket connections and then a fetch request.
       let navigationPromise = page.navigate(STATIC_PREFIX + '/websocket.html', {
@@ -315,7 +315,7 @@ describe('Puppeteer', function() {
         request.headers.set('foo', 'bar');
         request.continue();
       });
-      let serverRequest = staticServer.waitForRequest('/sleep.zzz');
+      let serverRequest = server.waitForRequest('/sleep.zzz');
       page.evaluate(() => {
         fetch('/sleep.zzz');
       });
@@ -514,7 +514,7 @@ describe('Puppeteer', function() {
       expect(page.userAgent()).toContain('Mozilla');
       page.setUserAgent('foobar');
       page.navigate(EMPTY_PAGE);
-      let request = await staticServer.waitForRequest('/empty.html');
+      let request = await server.waitForRequest('/empty.html');
       expect(request.headers['user-agent']).toBe('foobar');
     }));
   });
@@ -524,7 +524,7 @@ describe('Puppeteer', function() {
       page.setHTTPHeaders({'foo': 'bar'});
       expect(page.httpHeaders()).toEqual({'foo': 'bar'});
       page.navigate(EMPTY_PAGE);
-      let request = await staticServer.waitForRequest('/empty.html');
+      let request = await server.waitForRequest('/empty.html');
       expect(request.headers['foo']).toBe('bar');
     }));
   });
@@ -538,7 +538,7 @@ describe('Puppeteer', function() {
   describe('Request implements Body', function() {
     it('should work', SX(async function() {
       await page.navigate(EMPTY_PAGE);
-      staticServer.setRoute('/post', (req, res) => res.end());
+      server.setRoute('/post', (req, res) => res.end());
       let request = null;
       page.on('request', r => request = r);
       await page.evaluate(() => fetch('./post', { method: 'POST', body: JSON.stringify({foo: 'bar'})}));
@@ -617,7 +617,7 @@ describe('Puppeteer', function() {
       page.on('response', response => events.push(`${response.status} ${response.url}`));
       page.on('requestfinished', request => events.push(`DONE ${request.url}`));
       page.on('requestfailed', request => events.push(`FAIL ${request.url}`));
-      staticServer.setRedirect('/foo.html', '/empty.html');
+      server.setRedirect('/foo.html', '/empty.html');
       const FOO_URL = STATIC_PREFIX + '/foo.html';
       await page.navigate(FOO_URL);
       expect(events).toEqual([

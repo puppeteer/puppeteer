@@ -24,14 +24,14 @@ let WebSocketServer = require('ws').Server;
 const fulfillSymbol = Symbol('fullfill callback');
 const rejectSymbol = Symbol('reject callback');
 
-class StaticServer {
+class SimpleServer {
   /**
    * @param {string} dirPath
    * @param {number} port
-   * @return {!StaticServer}
+   * @return {!SimpleServer}
    */
   static async create(dirPath, port) {
-    let server = new StaticServer(dirPath, port);
+    let server = new SimpleServer(dirPath, port);
     await new Promise(x => server._server.once('listening', x));
     return server;
   }
@@ -141,4 +141,4 @@ class StaticServer {
   }
 }
 
-module.exports = StaticServer;
+module.exports = SimpleServer;
