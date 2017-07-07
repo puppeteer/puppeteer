@@ -12,11 +12,13 @@
   * [browser.version()](#browserversion)
 - [class: Page](#class-page)
   * [page.addScriptTag(url)](#pageaddscripttagurl)
+  * [page.click()](#pageclick)
   * [page.close()](#pageclose)
   * [page.evaluate(fun, args)](#pageevaluatefun-args)
   * [page.evaluateOnInitialized(fun, args)](#pageevaluateoninitializedfun-args)
-  * [page.httpHeaders()](#pagehttpheaders)
+  * [page.focus()](#pagefocus)
   * [page.frames()](#pageframes)
+  * [page.httpHeaders()](#pagehttpheaders)
   * [page.injectFile(filePath)](#pageinjectfilefilepath)
   * [page.mainFrame()](#pagemainframe)
   * [page.navigate(url)](#pagenavigateurl)
@@ -30,6 +32,7 @@
   * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
   * [page.setViewportSize(size)](#pagesetviewportsizesize)
   * [page.title()](#pagetitle)
+  * [page.type()](#pagetype)
   * [page.url()](#pageurl)
   * [page.userAgent()](#pageuseragent)
   * [page.viewportSize()](#pageviewportsize)
@@ -47,19 +50,28 @@
   * [frame.securityOrigin()](#framesecurityorigin)
   * [frame.url()](#frameurl)
 - [class: Request](#class-request)
-  * [new Request()](#new-request)
-  * [request.abort()](#requestabort)
-  * [request.continue()](#requestcontinue)
-  * [request.handled()](#requesthandled)
-  * [request.headers()](#requestheaders)
-  * [request.method()](#requestmethod)
-  * [request.method()](#requestmethod-1)
-  * [request.postData()](#requestpostdata)
-  * [request.setHeader()](#requestsetheader)
-  * [request.setMethod()](#requestsetmethod)
-  * [request.setPostData()](#requestsetpostdata)
-  * [request.setUrl()](#requestseturl)
-  * [request.url()](#requesturl)
+  * [request.response()](#requestresponse)
+- [class: Response](#class-response)
+  * [response.request()](#responserequest)
+- [class: InterceptedRequest](#class-interceptedrequest)
+  * [interceptedRequest.abort()](#interceptedrequestabort)
+  * [interceptedRequest.continue()](#interceptedrequestcontinue)
+  * [interceptedRequest.isHandled()](#interceptedrequestishandled)
+- [class: Headers](#class-headers)
+  * [headers.append()](#headersappend)
+  * [headers.delete()](#headersdelete)
+  * [headers.entries()](#headersentries)
+  * [headers.get()](#headersget)
+  * [headers.has()](#headershas)
+  * [headers.keys()](#headerskeys)
+  * [headers.set()](#headersset)
+  * [headers.values()](#headersvalues)
+- [class: Body](#class-body)
+  * [body.arrayBuffer()](#bodyarraybuffer)
+  * [body.bodyUsed()](#bodybodyused)
+  * [body.buffer()](#bodybuffer)
+  * [body.json()](#bodyjson)
+  * [body.text()](#bodytext)
 
 <!-- tocstop -->
 
@@ -113,6 +125,8 @@ Pages could be closed by `page.close()` method.
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
 
+#### page.click()
+
 #### page.close()
 
 - returns: <[Promise]> Returns promise which resolves when page gets closed.
@@ -129,12 +143,14 @@ Pages could be closed by `page.close()` method.
 - `args` <[Array]<[string]>> Arguments to pass to  `fun`
 - returns: <[Promise]<[Object]>> Promise which resolves to function
 
+#### page.focus()
+
+#### page.frames()
+
 #### page.httpHeaders()
 
 - returns: <[Object]> Key-value set of additional http headers, which will be sent with every request.
 
-
-#### page.frames()
 
 #### page.injectFile(filePath)
 
@@ -216,6 +232,7 @@ Pages could be closed by `page.close()` method.
 
 - returns: <[Promise]<[string]>> Returns page's title.
 
+#### page.type()
 
 #### page.url()
 
@@ -233,17 +250,12 @@ Pages could be closed by `page.close()` method.
 
 
 ### class: Dialog
-
 #### dialog.accept()
-
 #### dialog.dismiss()
-
 #### dialog.message()
 
 ### class: Frame
-
 #### frame.childFrames()
-
 #### frame.evaluate(fun, args)
 
 - `fun` <[function]> Function to be evaluated in browser context
@@ -251,44 +263,39 @@ Pages could be closed by `page.close()` method.
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
 
 #### frame.isDetached()
-
 #### frame.isMainFrame()
-
 #### frame.name()
-
 #### frame.parentFrame()
-
 #### frame.securityOrigin()
-
 #### frame.url()
 
 ### class: Request
+#### request.response()
 
-#### new Request()
+### class: Response
+#### response.request()
 
-#### request.abort()
+### class: InterceptedRequest
+#### interceptedRequest.abort()
+#### interceptedRequest.continue()
+#### interceptedRequest.isHandled()
 
-#### request.continue()
+### class: Headers
+#### headers.append()
+#### headers.delete()
+#### headers.entries()
+#### headers.get()
+#### headers.has()
+#### headers.keys()
+#### headers.set()
+#### headers.values()
 
-#### request.handled()
-
-#### request.headers()
-
-#### request.method()
-
-#### request.method()
-
-#### request.postData()
-
-#### request.setHeader()
-
-#### request.setMethod()
-
-#### request.setPostData()
-
-#### request.setUrl()
-
-#### request.url()
+### class: Body
+#### body.arrayBuffer()
+#### body.bodyUsed()
+#### body.buffer()
+#### body.json()
+#### body.text()
 
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"

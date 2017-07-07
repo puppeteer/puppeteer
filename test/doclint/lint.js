@@ -12,14 +12,21 @@ let EXCLUDE_CLASSES = new Set([
   'Helper',
   'FrameManager',
   'Navigator',
+  'NetworkManager',
   'Connection'
 ]);
 
 let EXCLUDE_METHODS = new Set([
-  'frame.constructor',
-  'dialog.constructor',
-  'page.create',
-  'page.constructor'
+  'Body.constructor',
+  'Dialog.constructor',
+  'Frame.constructor',
+  'Headers.constructor',
+  'Headers.fromPayload',
+  'InterceptedRequest.constructor',
+  'Page.constructor',
+  'Page.create',
+  'Request.constructor',
+  'Response.constructor',
 ]);
 
 // Build up documentation from JS sources.
@@ -37,7 +44,7 @@ for (let file of files) {
     let methodsArray = cls.methodsArray.filter(method => {
       if (method.name.startsWith('_'))
         return false;
-      let shorthand = `${cls.name}.${method.name}`.toLowerCase();
+      let shorthand = `${cls.name}.${method.name}`;
       return !EXCLUDE_METHODS.has(shorthand);
     });
     jsClassesArray.push(new Documentation.Class(cls.name, methodsArray));
