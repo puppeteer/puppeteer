@@ -11,7 +11,7 @@
     "test-phantom": "python third_party/phantomjs/test/run-tests.py",
     "test": "npm run lint --silent && npm run unit && npm run test-phantom",
     "install": "node install.js",
-    "lint": "[ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .",
+    "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .) && npm run doc",
     "generate-toc": "markdown-toc -i docs/api.md",
     "doc": "jasmine test/doclint/lint.js"
   },
