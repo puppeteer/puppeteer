@@ -28,6 +28,17 @@ class StaticServer {
   /**
    * @param {string} dirPath
    * @param {number} port
+   * @return {!StaticServer}
+   */
+  static async create(dirPath, port) {
+    let server = new StaticServer(dirPath, port);
+    await new Promise(x => server._server.once('listening', x));
+    return server;
+  }
+
+  /**
+   * @param {string} dirPath
+   * @param {number} port
    */
   constructor(dirPath, port) {
     this._server = http.createServer(this._onRequest.bind(this));

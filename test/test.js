@@ -30,11 +30,11 @@ describe('Puppeteer', function() {
   let staticServer;
   let page;
 
-  beforeAll(function() {
+  beforeAll(SX(async function() {
     browser = new Browser({args: ['--no-sandbox']});
-    staticServer = new StaticServer(path.join(__dirname, 'assets'), PORT);
+    staticServer = await StaticServer.create(path.join(__dirname, 'assets'), PORT);
     GoldenUtils.removeOutputDir();
-  });
+  }));
 
   afterAll(function() {
     staticServer.stop();
