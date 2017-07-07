@@ -11,7 +11,9 @@
     "test-phantom": "python third_party/phantomjs/test/run-tests.py",
     "test": "npm run lint --silent && npm run unit && npm run test-phantom",
     "install": "node install.js",
-    "lint": "[ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint ."
+    "lint": "[ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .",
+    "generate-toc": "markdown-toc -i docs/api.md",
+    "doc": "jasmine test/doclint/lint.js"
   },
   "author": "The Chromium Authors",
   "license": "SEE LICENSE IN LICENSE",
@@ -26,9 +28,12 @@
     "chromium_revision": "484159"
   },
   "devDependencies": {
+    "commonmark": "^0.27.0",
     "deasync": "^0.1.9",
     "eslint": "^4.0.0",
+    "esprima": "^4.0.0",
     "jasmine": "^2.6.0",
+    "markdown-toc": "^1.1.0",
     "minimist": "^1.2.0",
     "ncp": "^2.0.0",
     "pixelmatch": "^4.0.2",
