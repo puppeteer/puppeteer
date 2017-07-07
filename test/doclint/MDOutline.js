@@ -3,29 +3,39 @@ const commonmark = require('commonmark');
 const Browser = require('../../lib/Browser');
 
 class MDOutline {
-  constructor(text) {
-    this.classes = [];
-    this.html = MDOutline.compile(text);
-  }
-
-  static compile(text) {
+  /**
+   * @return {!MDOutline}
+   */
+  static async create(text) {
+    // Render markdown as HTML.
     const reader = new commonmark.Parser();
     const parsed = reader.parse(text);
     const writer = new commonmark.HtmlRenderer();
     const html = writer.render(parsed);
-    return html;
-  }
 
-  async collectHeadings() {
+    // Extract headings.
     const browser = new Browser({args: ['--no-sandbox']});
     const page = await browser.newPage();
-    await page.setContent(this.html);
-    this.headings = await page.evaluate(getTOCHeadings);
+    await page.setContent(html);
+    const headings = await page.evaluate(() => {
+      let headings = {};
+      let methods = [];
+      for (let header of document.body.querySelectorAll('h3,h4')) {
+        if (header.matches('h3')) {
+          methods = [];
+          headings[header.textContent] = methods;
+        } else {
+          methods.push(header.textContent);
+        }
+      }
+      return headings;
+    });
     await browser.close();
+    return new MDOutline(headings);
   }
 
-  buildClasses() {
-    const headings = this.headings;
+  constructor(headings) {
+    this.classes = [];
     const classHeading = /^class: (\w+)$/;
     const constructorRegex = /^new (\w+)\((.*)\)$/;
     const methodRegex = /^(\w+)\.(\w+)\((.*)\)$/;
@@ -66,20 +76,6 @@ class MDOutline {
       currentClassMethods = [];
     }
   }
-}
-
-function getTOCHeadings(){
-  const headings = {};
-  document.querySelectorAll('h3').forEach((domainEl, i) => {
-    const methods = [];
-    let currElem = domainEl;
-    while ((currElem = currElem.nextElementSibling) && !currElem.matches('h3')) {
-      if (currElem.matches('h4'))
-        methods.push(currElem.textContent);
-    }
-    headings[domainEl.textContent] = methods;
-  });
-  return headings;
 }
 
 module.exports = MDOutline;

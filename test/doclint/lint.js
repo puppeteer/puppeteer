@@ -9,11 +9,12 @@ const PROJECT_DIR = path.join(__dirname, '..', '..');
 const apiMdText = fs.readFileSync(path.join(PROJECT_DIR, 'docs', 'api.md'), 'utf8');
 
 let EXCLUDE_CLASSES = new Set([
-  'Helper',
+  'Connection',
   'FrameManager',
+  'Helper',
   'Navigator',
   'NetworkManager',
-  'Connection'
+  'ProxyStream'
 ]);
 
 let EXCLUDE_METHODS = new Set([
@@ -55,16 +56,15 @@ let mdClassesArray;
 
 beforeAll(SX(async function() {
   // Build up documentation from MD sources.
-  let mdOutline = new MDOutline(apiMdText);
-  await mdOutline.collectHeadings();
-  mdOutline.buildClasses();
+  let mdOutline = await MDOutline.create(apiMdText);
   mdClassesArray = mdOutline.classes;
 }));
 
 describe('table of contents', function() {
   it('should match markdown-toc\'s output', () => {
     const newApiMdText = markdownToc.insert(apiMdText);
-    expect(apiMdText === newApiMdText).toBe(true, 'markdown TOC is outdated, run `yarn generate-toc`');
+    if (apiMdText !== newApiMdText)
+      fail('markdown TOC is outdated, run `yarn generate-toc`');
   });
 });
 
