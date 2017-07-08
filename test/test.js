@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+let fs = require('fs');
 let path = require('path');
 let Browser = require('../lib/Browser');
 let SimpleServer = require('./SimpleServer');
@@ -676,6 +677,71 @@ describe('Puppeteer', function() {
         `200 ${EMPTY_PAGE}`,
         `DONE ${EMPTY_PAGE}`
       ]);
+    }));
+  });
+
+  describe('Page.addScriptTag', function() {
+    it('should work', SX(async function() {
+      await page.navigate(EMPTY_PAGE);
+      await page.addScriptTag('/injectedfile.js');
+      expect(await page.evaluate(() => __injected)).toBe(42);
+    }));
+  });
+
+  describe('Page.url', function() {
+    it('should work', SX(async function() {
+      expect(await page.url()).toBe('about:blank');
+      await page.navigate(EMPTY_PAGE);
+      expect(await page.url()).toBe(EMPTY_PAGE);
+    }));
+  });
+
+  describe('Page.viewportSize', function() {
+    it('should get the proper viewport size', SX(async function() {
+      expect(page.viewportSize()).toEqual({width: 400, height: 300});
+      await page.setViewportSize({width: 123, height: 456});
+      expect(page.viewportSize()).toEqual({width: 123, height: 456});
+    }));
+  });
+
+  describe('Page.evaluateOnInitialized', function() {
+    it('should evaluate before anything else on the page', SX(async function() {
+      await page.evaluateOnInitialized(function(){
+        window.injected = 123;
+      });
+      await page.navigate(STATIC_PREFIX + '/tamperable.html');
+      expect(await page.evaluate(() => window.result)).toBe(123);
+    }));
+  });
+
+  describe('Page.printToPDF', function() {
+    let outputFile = __dirname + '/assets/output.pdf';
+    afterEach(function() {
+      fs.unlinkSync(outputFile);
+    });
+
+    it('should print to pdf', SX(async function() {
+      await page.navigate(STATIC_PREFIX + '/grid.html');
+      await page.printToPDF(outputFile);
+      expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
+    }));
+  });
+
+  describe('Page.plainText', function() {
+    it('should return the page text', SX(async function(){
+      await page.evaluate(function(){
+        let element = document.createElement('div');
+        document.body.appendChild(element);
+        element.textContent = 'the result text';
+      });
+      expect(await page.plainText()).toBe('the result text');
+    }));
+  });
+
+  describe('Page.title', function() {
+    it('should return the page title', SX(async function(){
+      await page.navigate(STATIC_PREFIX + '/input/button.html');
+      expect(await page.title()).toBe('Button test');
     }));
   });
 });
