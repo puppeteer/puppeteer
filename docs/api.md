@@ -33,7 +33,7 @@
   * [page.setViewportSize(size)](#pagesetviewportsizesize)
   * [page.title()](#pagetitle)
   * [page.type()](#pagetype)
-  * [page.uploadFile(selector, ...files)](#pageuploadfileselector-files)
+  * [page.uploadFile(selector, ...filePaths)](#pageuploadfileselector-filepaths)
   * [page.url()](#pageurl)
   * [page.userAgent()](#pageuseragent)
   * [page.viewportSize()](#pageviewportsize)
@@ -237,9 +237,9 @@ Pages could be closed by `page.close()` method.
 
 #### page.type()
 
-#### page.uploadFile(selector, ...files)
+#### page.uploadFile(selector, ...filePaths)
 - `selector` <[string]> A query selector to a file input
-- `...files` <[string]> Sets the value of the file input these files
+- `...filePaths` <[string]> Sets the value of the file input these paths
 - returns: <[Promise]> Promise which resolves when the value is set.
 
 #### page.url()
