@@ -556,6 +556,21 @@ describe('Puppeteer', function() {
       await page.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     }));
+    it('should upload the file', SX(async function(){
+      await page.navigate(STATIC_PREFIX + '/input/fileupload.html');
+      await page.uploadFile('input', __dirname + '/assets/file-to-upload.txt');
+      expect(await page.evaluate(() => {
+        let input = document.querySelector('input');
+        return input.files[0].name;
+      })).toBe('file-to-upload.txt');
+      expect(await page.evaluate(() => {
+        let input = document.querySelector('input');
+        let reader = new FileReader();
+        let promise = new Promise(fulfill => reader.onload = fulfill);
+        reader.readAsText(input.files[0]);
+        return promise.then(() => reader.result);
+      })).toBe('contents of the file');
+    }));
   });
   describe('Page.setUserAgent', function() {
     it('should work', SX(async function() {
