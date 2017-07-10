@@ -355,22 +355,25 @@ class WebPage {
     this._deferEvaluate = false;
     this.loading = true;
     this.loadingProgress = 50;
-    this._page.navigate(url).then(result => {
+
+    const handleNavigation = (error, response) => {
       this.loadingProgress = 100;
       this.loading = false;
-      let status = result ? 'success' : 'fail';
-      if (!result) {
+      if (error) {
         this.onResourceError.call(null, {
           url,
           errorString: 'SSL handshake failed'
         });
       }
+      let status = error ? 'fail' : 'success';
       if (this.onLoadFinished)
         this.onLoadFinished.call(null, status);
       if (callback)
         callback.call(null, status);
       this.loadingProgress = 0;
-    });
+    };
+    this._page.navigate(url).then(response => handleNavigation(null, response))
+        .catch(e => handleNavigation(e, null));
   }
 
   /**

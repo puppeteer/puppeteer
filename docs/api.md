@@ -21,7 +21,7 @@
   * [page.httpHeaders()](#pagehttpheaders)
   * [page.injectFile(filePath)](#pageinjectfilefilepath)
   * [page.mainFrame()](#pagemainframe)
-  * [page.navigate(url)](#pagenavigateurl)
+  * [page.navigate(url, options)](#pagenavigateurl-options)
   * [page.plainText()](#pageplaintext)
   * [page.printToPDF(filePath[, options])](#pageprinttopdffilepath-options)
   * [page.screenshot([options])](#pagescreenshotoptions)
@@ -162,12 +162,22 @@ Pages could be closed by `page.close()` method.
 
 #### page.mainFrame()
 
-#### page.navigate(url)
+#### page.navigate(url, options)
 
 - `url` <[string]> URL to navigate page to
-- returns: <[Promise]<[boolean]>> Promise which resolves when the page is navigated. The promise resolves to:
-	- `true` if the navigation succeeds and page's `load` event is fired.
-	- `false` if the navigation fails due to bad URL or SSL errors.
+- `options` <[Object]> Navigation parameters which might have the following properties:
+  - `maxTime` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
+  - `waitFor` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
+    - `load` - consider navigation to be finished when the `load` event is fired.
+    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout`ms.
+  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitFor: 'networkidle'` parameter.
+  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitFor: 'networkidle'` parameter.
+- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
+
+The `page.navigate` will throw an error if:
+- there's an SSL error (e.g. in case of self-signed certificates).
+- target URL is invalid.
+- the `maxTime` is exceeded during navigation.
 
 #### page.plainText()
 

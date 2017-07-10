@@ -15,6 +15,7 @@
  */
 
 let http = require('http');
+let https = require('https');
 let url = require('url');
 let fs = require('fs');
 let path = require('path');
@@ -39,9 +40,28 @@ class SimpleServer {
   /**
    * @param {string} dirPath
    * @param {number} port
+   * @return {!SimpleServer}
    */
-  constructor(dirPath, port) {
-    this._server = http.createServer(this._onRequest.bind(this));
+  static async createHTTPS(dirPath, port) {
+    let server = new SimpleServer(dirPath, port, {
+      key: fs.readFileSync(path.join(__dirname, 'key.pem')),
+      cert: fs.readFileSync(path.join(__dirname, 'cert.pem')),
+      passphrase: 'aaaa',
+    });
+    await new Promise(x => server._server.once('listening', x));
+    return server;
+  }
+
+  /**
+   * @param {string} dirPath
+   * @param {number} port
+   * @param {!Object=} sslOptions
+   */
+  constructor(dirPath, port, sslOptions) {
+    if (sslOptions)
+      this._server = https.createServer(sslOptions, this._onRequest.bind(this));
+    else
+      this._server = http.createServer(this._onRequest.bind(this));
     this._server.on('connection', socket => this._onSocket(socket));
     this._wsServer = new WebSocketServer({server: this._server});
     this._wsServer.on('connection', this._onWebSocketConnection.bind(this));

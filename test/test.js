@@ -17,12 +17,14 @@
 let fs = require('fs');
 let path = require('path');
 let Browser = require('../lib/Browser');
-let SimpleServer = require('./SimpleServer');
+let SimpleServer = require('./server/SimpleServer');
 let GoldenUtils = require('./golden-utils');
 
 let PORT = 8907;
-let STATIC_PREFIX = 'http://localhost:' + PORT;
-let EMPTY_PAGE = STATIC_PREFIX + '/empty.html';
+let PREFIX = 'http://localhost:' + PORT;
+let EMPTY_PAGE = PREFIX + '/empty.html';
+let HTTPS_PORT = 8908;
+let HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
 
 if (process.env.DEBUG_TEST)
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 1000 * 1000;
@@ -32,22 +34,29 @@ else
 describe('Puppeteer', function() {
   let browser;
   let server;
+  let httpsServer;
   let page;
 
   beforeAll(SX(async function() {
     browser = new Browser({args: ['--no-sandbox']});
-    server = await SimpleServer.create(path.join(__dirname, 'assets'), PORT);
+    const assetsPath = path.join(__dirname, 'assets');
+    server = await SimpleServer.create(assetsPath, PORT);
+    httpsServer = await SimpleServer.createHTTPS(assetsPath, HTTPS_PORT);
     GoldenUtils.removeOutputDir();
   }));
 
   afterAll(SX(async function() {
-    await server.stop();
+    await Promise.all([
+      server.stop(),
+      httpsServer.stop(),
+    ]);
     browser.close();
   }));
 
   beforeEach(SX(async function() {
     page = await browser.newPage();
     server.reset();
+    httpsServer.reset();
     GoldenUtils.addMatchers(jasmine);
   }));
 
@@ -186,12 +195,54 @@ describe('Puppeteer', function() {
 
   describe('Page.navigate', function() {
     it('should fail when navigating to bad url', SX(async function() {
-      let success = await page.navigate('asdfasdf');
-      expect(success).toBe(false);
+      let error = null;
+      try {
+        await page.navigate('asdfasdf');
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toContain('Cannot navigate to invalid URL');
     }));
-    it('should succeed when navigating to good url', SX(async function() {
-      let success = await page.navigate(EMPTY_PAGE);
-      expect(success).toBe(true);
+    it('should fail when navigating to bad SSL', SX(async function() {
+      let error = null;
+      try {
+        await page.navigate(HTTPS_PREFIX + '/empty.html');
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toContain('SSL Certiciate error');
+    }));
+    it('should fail when exceeding maximum navigation timeout', SX(async function() {
+      let error = null;
+      // Hang for request to the empty.html
+      server.setRoute('/empty.html', (req, res) => { });
+      try {
+        await page.navigate(PREFIX + '/empty.html', {maxTime: 59});
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toContain('Navigation Timeout Exceeded: 59ms');
+    }));
+    it('should work when navigating to valid url', SX(async function() {
+      const response = await page.navigate(EMPTY_PAGE);
+      expect(response.ok).toBe(true);
+    }));
+    it('should work when navigating to data url', SX(async function() {
+      const response = await page.navigate('data:text/html,hello');
+      expect(response.ok).toBe(true);
+    }));
+    it('should work when navigating to 404', SX(async function() {
+      const response = await page.navigate(PREFIX + '/not-found');
+      expect(response.ok).toBe(false);
+      expect(response.status).toBe(404);
+    }));
+    it('should return last response in redirect chain', SX(async function() {
+      server.setRedirect('/redirect/1.html', '/redirect/2.html');
+      server.setRedirect('/redirect/2.html', '/redirect/3.html');
+      server.setRedirect('/redirect/3.html', EMPTY_PAGE);
+      const response = await page.navigate(PREFIX + '/redirect/1.html');
+      expect(response.ok).toBe(true);
+      expect(response.url).toBe(EMPTY_PAGE);
     }));
     it('should wait for network idle to succeed navigation', SX(async function() {
       let responses = [];
@@ -209,7 +260,7 @@ describe('Puppeteer', function() {
 
       // Navigate to a page which loads immediately and then does a bunch of
       // requests via javascript's fetch method.
-      let navigationPromise = page.navigate(STATIC_PREFIX + '/networkidle.html', {
+      let navigationPromise = page.navigate(PREFIX + '/networkidle.html', {
         waitFor: 'networkidle',
         networkIdleTimeout: 100,
         networkIdleInflight: 0, // Only be idle when there are 0 inflight requests
@@ -248,9 +299,9 @@ describe('Puppeteer', function() {
         response.end(`File not found`);
       }
 
-      let success = await navigationPromise;
+      const response = await navigationPromise;
       // Expect navigation to succeed.
-      expect(success).toBe(true);
+      expect(response.ok).toBe(true);
     }));
     it('should wait for websockets to succeed navigation', SX(async function() {
       let responses = [];
@@ -259,7 +310,7 @@ describe('Puppeteer', function() {
       let fetchResourceRequested = server.waitForRequest('/fetch-request.js');
       // Navigate to a page which loads immediately and then opens a bunch of
       // websocket connections and then a fetch request.
-      let navigationPromise = page.navigate(STATIC_PREFIX + '/websocket.html', {
+      let navigationPromise = page.navigate(PREFIX + '/websocket.html', {
         waitFor: 'networkidle',
         networkIdleTimeout: 100,
         networkIdleInflight: 0, // Only be idle when there are 0 inflight requests/connections
@@ -283,9 +334,9 @@ describe('Puppeteer', function() {
         response.statusCode = 404;
         response.end(`File not found`);
       }
-      let success = await navigationPromise;
+      const response = await navigationPromise;
       // Expect navigation to succeed.
-      expect(success).toBe(true);
+      expect(response.ok).toBe(true);
     }));
   });
 
@@ -331,8 +382,8 @@ describe('Puppeteer', function() {
         expect(request.postData).toBe(undefined);
         request.continue();
       });
-      let success = await page.navigate(EMPTY_PAGE);
-      expect(success).toBe(true);
+      const response = await page.navigate(EMPTY_PAGE);
+      expect(response.ok).toBe(true);
     }));
     it('should show custom HTTP headers', SX(async function() {
       await page.setHTTPHeaders({
@@ -342,8 +393,8 @@ describe('Puppeteer', function() {
         expect(request.headers.get('foo')).toBe('bar');
         request.continue();
       });
-      let success = await page.navigate(EMPTY_PAGE);
-      expect(success).toBe(true);
+      const response = await page.navigate(EMPTY_PAGE);
+      expect(response.ok).toBe(true);
     }));
     it('should be abortable', SX(async function() {
       page.setRequestInterceptor(request => {
@@ -354,8 +405,8 @@ describe('Puppeteer', function() {
       });
       let failedRequests = 0;
       page.on('requestfailed', event => ++failedRequests);
-      let success = await page.navigate(STATIC_PREFIX + '/one-style.html');
-      expect(success).toBe(true);
+      const response = await page.navigate(PREFIX + '/one-style.html');
+      expect(response.ok).toBe(true);
       expect(failedRequests).toBe(1);
     }));
     it('should amend HTTP headers', SX(async function() {
@@ -400,7 +451,7 @@ describe('Puppeteer', function() {
         expect(error.message).toContain('Fancy');
         done();
       });
-      page.navigate(STATIC_PREFIX + '/error.html');
+      page.navigate(PREFIX + '/error.html');
     });
   });
 
@@ -417,13 +468,13 @@ describe('Puppeteer', function() {
   describe('Page.screenshot', function() {
     it('should work', SX(async function() {
       await page.setViewportSize({width: 500, height: 500});
-      await page.navigate(STATIC_PREFIX + '/grid.html');
+      await page.navigate(PREFIX + '/grid.html');
       let screenshot = await page.screenshot();
       expect(screenshot).toBeGolden('screenshot-sanity.png');
     }));
     it('should clip rect', SX(async function() {
       await page.setViewportSize({width: 500, height: 500});
-      await page.navigate(STATIC_PREFIX + '/grid.html');
+      await page.navigate(PREFIX + '/grid.html');
       let screenshot = await page.screenshot({
         clip: {
           x: 50,
@@ -436,7 +487,7 @@ describe('Puppeteer', function() {
     }));
     it('should work for offscreen clip', SX(async function() {
       await page.setViewportSize({width: 500, height: 500});
-      await page.navigate(STATIC_PREFIX + '/grid.html');
+      await page.navigate(PREFIX + '/grid.html');
       let screenshot = await page.screenshot({
         clip: {
           x: 50,
@@ -449,7 +500,7 @@ describe('Puppeteer', function() {
     }));
     it('should run in parallel', SX(async function() {
       await page.setViewportSize({width: 500, height: 500});
-      await page.navigate(STATIC_PREFIX + '/grid.html');
+      await page.navigate(PREFIX + '/grid.html');
       let promises = [];
       for (let i = 0; i < 3; ++i) {
         promises.push(page.screenshot({
@@ -466,7 +517,7 @@ describe('Puppeteer', function() {
     }));
     it('should take fullPage screenshots', SX(async function() {
       await page.setViewportSize({width: 500, height: 500});
-      await page.navigate(STATIC_PREFIX + '/grid.html');
+      await page.navigate(PREFIX + '/grid.html');
       let screenshot = await page.screenshot({
         fullPage: true
       });
@@ -477,7 +528,7 @@ describe('Puppeteer', function() {
   describe('Frame Management', function() {
     let FrameUtils = require('./frame-utils');
     it('should handle nested frames', SX(async function() {
-      await page.navigate(STATIC_PREFIX + '/frames/nested-frames.html');
+      await page.navigate(PREFIX + '/frames/nested-frames.html');
       expect(FrameUtils.dumpFrames(page.mainFrame())).toBeGolden('nested-frames.txt');
     }));
     it('should send events when frames are manipulated dynamically', SX(async function() {
@@ -523,7 +574,7 @@ describe('Puppeteer', function() {
       page.on('frameattached', frame => attachedFrames.push(frame));
       page.on('framedetached', frame => detachedFrames.push(frame));
       page.on('framenavigated', frame => navigatedFrames.push(frame));
-      await page.navigate(STATIC_PREFIX + '/frames/nested-frames.html');
+      await page.navigate(PREFIX + '/frames/nested-frames.html');
       expect(attachedFrames.length).toBe(4);
       expect(detachedFrames.length).toBe(0);
       expect(navigatedFrames.length).toBe(5);
@@ -540,12 +591,12 @@ describe('Puppeteer', function() {
 
   describe('input', function() {
     it('should click the button', SX(async function() {
-      await page.navigate(STATIC_PREFIX + '/input/button.html');
+      await page.navigate(PREFIX + '/input/button.html');
       await page.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     }));
     it('should fail to click a missing button', SX(async function() {
-      await page.navigate(STATIC_PREFIX + '/input/button.html');
+      await page.navigate(PREFIX + '/input/button.html');
       try {
         await page.click('button.does-not-exist');
         fail('Clicking the button did not throw.');
@@ -554,20 +605,20 @@ describe('Puppeteer', function() {
       }
     }));
     it('should type into the textarea', SX(async function() {
-      await page.navigate(STATIC_PREFIX + '/input/textarea.html');
+      await page.navigate(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       await page.type('Type in this text!');
       expect(await page.evaluate(() => result)).toBe('Type in this text!');
     }));
     it('should click the button after navigation ', SX(async function() {
-      await page.navigate(STATIC_PREFIX + '/input/button.html');
+      await page.navigate(PREFIX + '/input/button.html');
       await page.click('button');
-      await page.navigate(STATIC_PREFIX + '/input/button.html');
+      await page.navigate(PREFIX + '/input/button.html');
       await page.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     }));
     it('should upload the file', SX(async function(){
-      await page.navigate(STATIC_PREFIX + '/input/fileupload.html');
+      await page.navigate(PREFIX + '/input/fileupload.html');
       await page.uploadFile('input', __dirname + '/assets/file-to-upload.txt');
       expect(await page.evaluate(() => {
         let input = document.querySelector('input');
@@ -626,7 +677,7 @@ describe('Puppeteer', function() {
     it('should work', SX(async function() {
       let response = null;
       page.on('response', r => response = r);
-      await page.navigate(STATIC_PREFIX + '/simple.json');
+      await page.navigate(PREFIX + '/simple.json');
       expect(response).toBeTruthy();
       expect(response.bodyUsed).toBe(false);
       expect(await response.text()).toBe('{"foo": "bar"}\n');
@@ -663,7 +714,7 @@ describe('Puppeteer', function() {
       });
       let failedRequests = [];
       page.on('requestfailed', request => failedRequests.push(request));
-      await page.navigate(STATIC_PREFIX + '/one-style.html');
+      await page.navigate(PREFIX + '/one-style.html');
       expect(failedRequests.length).toBe(1);
       expect(failedRequests[0].url).toContain('one-style.css');
       expect(failedRequests[0].response()).toBe(null);
@@ -691,7 +742,7 @@ describe('Puppeteer', function() {
       page.on('requestfinished', request => events.push(`DONE ${request.url}`));
       page.on('requestfailed', request => events.push(`FAIL ${request.url}`));
       server.setRedirect('/foo.html', '/empty.html');
-      const FOO_URL = STATIC_PREFIX + '/foo.html';
+      const FOO_URL = PREFIX + '/foo.html';
       await page.navigate(FOO_URL);
       expect(events).toEqual([
         `GET ${FOO_URL}`,
@@ -733,7 +784,7 @@ describe('Puppeteer', function() {
       await page.evaluateOnInitialized(function(){
         window.injected = 123;
       });
-      await page.navigate(STATIC_PREFIX + '/tamperable.html');
+      await page.navigate(PREFIX + '/tamperable.html');
       expect(await page.evaluate(() => window.result)).toBe(123);
     }));
   });
@@ -745,7 +796,7 @@ describe('Puppeteer', function() {
     });
 
     it('should print to pdf', SX(async function() {
-      await page.navigate(STATIC_PREFIX + '/grid.html');
+      await page.navigate(PREFIX + '/grid.html');
       await page.printToPDF(outputFile);
       expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
     }));
@@ -760,7 +811,7 @@ describe('Puppeteer', function() {
 
   describe('Page.title', function() {
     it('should return the page title', SX(async function(){
-      await page.navigate(STATIC_PREFIX + '/input/button.html');
+      await page.navigate(PREFIX + '/input/button.html');
       expect(await page.title()).toBe('Button test');
     }));
   });
