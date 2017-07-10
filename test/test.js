@@ -729,11 +729,7 @@ describe('Puppeteer', function() {
 
   describe('Page.plainText', function() {
     it('should return the page text', SX(async function(){
-      await page.evaluate(function(){
-        let element = document.createElement('div');
-        document.body.appendChild(element);
-        element.textContent = 'the result text';
-      });
+      await page.setContent('<div>the result text</div>');
       expect(await page.plainText()).toBe('the result text');
     }));
   });
