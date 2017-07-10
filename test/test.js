@@ -27,7 +27,7 @@ let EMPTY_PAGE = STATIC_PREFIX + '/empty.html';
 if (process.env.DEBUG_TEST)
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 1000 * 1000;
 else
-  jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
+  jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000 * 1000;
 
 describe('Puppeteer', function() {
   let browser;
@@ -580,6 +580,29 @@ describe('Puppeteer', function() {
         reader.readAsText(input.files[0]);
         return promise.then(() => reader.result);
       })).toBe('contents of the file');
+    }));
+    it('should resize the text area', SX(async function(){
+      await page.navigate(STATIC_PREFIX + '/input/textarea.html');
+      let {x, y, width, height} = await page.evaluate(dimensions);
+      let mouse = page.mouse();
+      await mouse.move(x - 4, y - 4);
+      await mouse.press();
+      await mouse.move(x + 100, y + 100);
+      await mouse.release();
+      let newDimensions = await page.evaluate(dimensions);
+      expect(newDimensions.x).toBe(x + 104);
+      expect(newDimensions.width).toBe(width + 104);
+      expect(newDimensions.y).toBe(y + 104);
+      expect(newDimensions.height).toBe(height + 104);
+      function dimensions() {
+        let rect = document.querySelector('textarea').getBoundingClientRect();
+        return {
+          x: rect.right,
+          y: rect.bottom,
+          width: rect.width,
+          height: rect.height
+        };
+      }
     }));
   });
   describe('Page.setUserAgent', function() {
