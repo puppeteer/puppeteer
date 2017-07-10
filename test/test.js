@@ -547,8 +547,8 @@ describe('Puppeteer', function() {
       await page.navigate(STATIC_PREFIX + '/input/button.html');
       try {
         await page.click('button.does-not-exist');
-        fail('Clicking the button did not throw.')
-      } catch(error) {
+        fail('Clicking the button did not throw.');
+      } catch (error) {
         expect(error.message).toBe('No node found for selector: button.does-not-exist');
       }
     }));
