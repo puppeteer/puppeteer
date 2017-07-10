@@ -120,6 +120,12 @@ class SimpleServer {
   }
 
   _onRequest(request, response) {
+    request.on('error', error => {
+      if (error.code === 'ECONNRESET')
+        response.end();
+      else
+        throw error;
+    });
     let pathName = url.parse(request.url).path;
     // Notify request subscriber.
     if (this._requestSubscribers.has(pathName))
