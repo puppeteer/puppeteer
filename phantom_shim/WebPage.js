@@ -333,6 +333,17 @@ class WebPage {
   }
 
   /**
+   * @param {string} selector
+   * @param {(string|!Array<string>)} files
+   */
+  uploadFile(selector, files) {
+    if (typeof files === 'string')
+      await(this._page.uploadFile(selector, files));
+    else
+      await(this._page.uploadFile(selector, ...files));
+  }
+
+  /**
      * @param {string} html
      * @param {function()=} callback
      */

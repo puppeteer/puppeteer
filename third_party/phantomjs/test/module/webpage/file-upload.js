@@ -1,11 +1,9 @@
-//! unsupported
-
 // Note: uses various files in module/webpage as things to be uploaded.
 // Which files they are doesn't matter.
 
 var page;
 setup(function () {
-    page = new WebPage();
+    page = require('webpage').create();
     page.content =
         '<input type="file" id="file">\n' +
         '<input type="file" id="file2" multiple>\n' +
@@ -21,7 +19,7 @@ function test_one_elt(id, names) {
         var elt = document.getElementById(id);
         var rv = [];
         for (var i = 0; i < elt.files.length; i++) {
-            rv.push(elt.files[i].fileName);
+            rv.push(elt.files[i].name);
         }
         return rv;
     }, id);
@@ -32,7 +30,7 @@ generate_tests(test_one_elt, [
     ["single upload single file", "file", ["file-upload.js"]],
     ["multiple upload single file", "file2", ["file-upload.js"]],
     ["multiple upload multiple file", "file3", ["file-upload.js", "object.js"]],
-], { expected_fail: true });
+], { expected_fail: false });
 
 async_test(function () {
     page.onFilePicker = this.step_func(function (oldFile) {
