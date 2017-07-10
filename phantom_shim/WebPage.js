@@ -334,7 +334,7 @@ class WebPage {
 
   /**
    * @param {string} selector
-   * @param {string|!Array<string>} files
+   * @param {(string|!Array<string>)} files
    */
   uploadFile(selector, files) {
     if (typeof files === 'string')
