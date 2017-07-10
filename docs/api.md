@@ -191,7 +191,7 @@ Pages could be closed by `page.close()` method.
 - `options` <[Object]> Options object which might have the following properties:
     - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension.
     - `type` <[string]> Specify screenshot type, could be either `jpeg` or `png`.
-    - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `.jpg` images.
+    - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `.png` images.
     - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page.
     - `clip` <[Object]> An object which specifies clipping region of the page. Should have the following fields:
         - `x` <[number]> x-coordinate of top-left corner of clip area
