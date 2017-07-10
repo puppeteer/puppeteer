@@ -543,6 +543,15 @@ describe('Puppeteer', function() {
       await page.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     }));
+    it('should fail to click a missing button', SX(async function() {
+      await page.navigate(STATIC_PREFIX + '/input/button.html');
+      try {
+        await page.click('button.does-not-exist');
+        fail('Clicking the button did not throw.')
+      } catch(error) {
+        expect(error.message).toBe('No node found for selector: button.does-not-exist');
+      }
+    }));
     it('should type into the textarea', SX(async function() {
       await page.navigate(STATIC_PREFIX + '/input/textarea.html');
       await page.focus('textarea');
