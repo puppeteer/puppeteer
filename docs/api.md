@@ -21,6 +21,7 @@
   * [page.httpHeaders()](#pagehttpheaders)
   * [page.injectFile(filePath)](#pageinjectfilefilepath)
   * [page.mainFrame()](#pagemainframe)
+  * [page.mouse()](#pagemouse)
   * [page.navigate(url)](#pagenavigateurl)
   * [page.plainText()](#pageplaintext)
   * [page.printToPDF(filePath[, options])](#pageprinttopdffilepath-options)
@@ -38,6 +39,11 @@
   * [page.userAgent()](#pageuseragent)
   * [page.viewportSize()](#pageviewportsize)
   * [page.waitFor(selector)](#pagewaitforselector)
+- [class: Mouse](#class-mouse)
+  * [mouse.click(button)](#mouseclickbutton)
+  * [mouse.move(x, y)](#mousemovex-y)
+  * [mouse.press(button)](#mousepressbutton)
+  * [mouse.release(button)](#mousereleasebutton)
 - [class: Dialog](#class-dialog)
   * [dialog.accept()](#dialogaccept)
   * [dialog.dismiss()](#dialogdismiss)
@@ -162,6 +168,10 @@ Pages could be closed by `page.close()` method.
 
 #### page.mainFrame()
 
+#### page.mouse()
+
+- returns: <[Mouse]>
+
 #### page.navigate(url)
 
 - `url` <[string]> URL to navigate page to
@@ -260,6 +270,29 @@ Pages could be closed by `page.close()` method.
 
 Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 
+### class: Mouse
+
+#### mouse.click(button)
+
+- `button` <[string]> `"left"`, `"middle"`, or `"right"`, defaults to `"left"`
+- returns: <[Promise]>
+
+#### mouse.move(x, y)
+
+- `x` <[number]>
+- `y` <[number]>
+- returns: <[Promise]>
+
+#### mouse.press(button)
+
+- `button` <[string]> `"left"`, `"middle"`, or `"right"`, defaults to `"left"`
+- returns: <[Promise]>
+
+#### mouse.release(button)
+
+- `button` <[string]> `"left"`, `"middle"`, or `"right"`, defaults to `"left"`
+- returns: <[Promise]>
+
 ### class: Dialog
 #### dialog.accept()
 #### dialog.dismiss()
@@ -322,3 +355,4 @@ Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 [Page]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-page "Page"
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
+[Mouse]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-mouse "Mouse"

@@ -28,6 +28,7 @@ let EXCLUDE_METHODS = new Set([
   'Page.create',
   'Request.constructor',
   'Response.constructor',
+  'Mouse.constructor'
 ]);
 
 // Build up documentation from JS sources.
