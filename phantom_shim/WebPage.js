@@ -37,7 +37,7 @@ class WebPage {
     if (options.settings.userAgent)
       this.settings.userAgent = options.settings.userAgent;
     if (options.viewportSize)
-      await(this._page.setViewportSize(options.viewportSize));
+      await(this._page.setViewport(options.viewportSize));
 
     this.loading = false;
     this.loadingProgress = 0;
@@ -214,7 +214,7 @@ class WebPage {
      * @return {!{width: number, height: number}}
      */
   get viewportSize() {
-    return this._page.viewportSize();
+    return this._page.viewport();
   }
 
   /**
@@ -380,7 +380,7 @@ class WebPage {
      * @param {!{width: number, height: number}} options
      */
   set viewportSize(options) {
-    await(this._page.setViewportSize(options));
+    await(this._page.setViewport(options));
   }
 
   /**

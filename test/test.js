@@ -507,13 +507,13 @@ describe('Puppeteer', function() {
 
   describe('Page.screenshot', function() {
     it('should work', SX(async function() {
-      await page.setViewportSize({width: 500, height: 500});
+      await page.setViewport({width: 500, height: 500});
       await page.navigate(PREFIX + '/grid.html');
       let screenshot = await page.screenshot();
       expect(screenshot).toBeGolden('screenshot-sanity.png');
     }));
     it('should clip rect', SX(async function() {
-      await page.setViewportSize({width: 500, height: 500});
+      await page.setViewport({width: 500, height: 500});
       await page.navigate(PREFIX + '/grid.html');
       let screenshot = await page.screenshot({
         clip: {
@@ -526,7 +526,7 @@ describe('Puppeteer', function() {
       expect(screenshot).toBeGolden('screenshot-clip-rect.png');
     }));
     it('should work for offscreen clip', SX(async function() {
-      await page.setViewportSize({width: 500, height: 500});
+      await page.setViewport({width: 500, height: 500});
       await page.navigate(PREFIX + '/grid.html');
       let screenshot = await page.screenshot({
         clip: {
@@ -539,7 +539,7 @@ describe('Puppeteer', function() {
       expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
     }));
     it('should run in parallel', SX(async function() {
-      await page.setViewportSize({width: 500, height: 500});
+      await page.setViewport({width: 500, height: 500});
       await page.navigate(PREFIX + '/grid.html');
       let promises = [];
       for (let i = 0; i < 3; ++i) {
@@ -556,7 +556,7 @@ describe('Puppeteer', function() {
       expect(screenshot).toBeGolden('screenshot-parallel-calls.png');
     }));
     it('should take fullPage screenshots', SX(async function() {
-      await page.setViewportSize({width: 500, height: 500});
+      await page.setViewport({width: 500, height: 500});
       await page.navigate(PREFIX + '/grid.html');
       let screenshot = await page.screenshot({
         fullPage: true
@@ -811,11 +811,11 @@ describe('Puppeteer', function() {
     }));
   });
 
-  describe('Page.viewportSize', function() {
+  describe('Page.viewport', function() {
     it('should get the proper viewport size', SX(async function() {
-      expect(page.viewportSize()).toEqual({width: 400, height: 300});
-      await page.setViewportSize({width: 123, height: 456});
-      expect(page.viewportSize()).toEqual({width: 123, height: 456});
+      expect(page.viewport()).toEqual({width: 400, height: 300});
+      await page.setViewport({width: 123, height: 456});
+      expect(page.viewport()).toEqual({width: 123, height: 456});
     }));
   });
 

@@ -27,6 +27,8 @@
   * [page.addScriptTag(url)](#pageaddscripttagurl)
   * [page.click(selector)](#pageclickselector)
   * [page.close()](#pageclose)
+  * [page.emulate(name, options)](#pageemulatename-options)
+  * [page.emulatedDevices()](#pageemulateddevices)
   * [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
   * [page.evaluateOnInitialized(pageFunction, ...args)](#pageevaluateoninitializedpagefunction-args)
   * [page.focus(selector)](#pagefocusselector)
@@ -37,19 +39,20 @@
   * [page.navigate(url, options)](#pagenavigateurl-options)
   * [page.pdf(options)](#pagepdfoptions)
   * [page.plainText()](#pageplaintext)
+  * [page.reload()](#pagereload)
   * [page.screenshot([options])](#pagescreenshotoptions)
   * [page.setContent(html)](#pagesetcontenthtml)
   * [page.setHTTPHeaders(headers)](#pagesethttpheadersheaders)
   * [page.setInPageCallback(name, callback)](#pagesetinpagecallbackname-callback)
   * [page.setRequestInterceptor(interceptor)](#pagesetrequestinterceptorinterceptor)
   * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
-  * [page.setViewportSize(size)](#pagesetviewportsizesize)
+  * [page.setViewport(viewport)](#pagesetviewportviewport)
   * [page.title()](#pagetitle)
   * [page.type(text)](#pagetypetext)
   * [page.uploadFile(selector, ...filePaths)](#pageuploadfileselector-filepaths)
   * [page.url()](#pageurl)
   * [page.userAgent()](#pageuseragent)
-  * [page.viewportSize()](#pageviewportsize)
+  * [page.viewport()](#pageviewport)
   * [page.waitFor(selector)](#pagewaitforselector)
 - [class: Dialog](#class-dialog)
   * [dialog.accept([promptText])](#dialogacceptprompttext)
@@ -257,6 +260,15 @@ Adds a `<script></script>` tag to the page with the desired url. Alternatively, 
 #### page.close()
 - returns: <[Promise]> Returns promise which resolves when page gets closed.
 
+#### page.emulate(name, options)
+- `name` <[string]> A name of the device to be emulated. Get the full list of emulated devices via `page.emulatedDevices()`.
+- `options` <[Object]> Emulation parameters which might have the following properties:
+  - `landscape` <[boolean]> Emulates device in the landscape mode, defaults to `false`.
+- returns: <[Promise]> Returns promise which resolves when device is emulated. Can reload the page if switching between mobile and desktop devices.
+
+#### page.emulatedDevices()
+- returns: <[Array]<[String]>> Returns array of device names that can be used with `page.emulate()`.
+
 #### page.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]> Function to be evaluated in browser context
 - `...args` <...[string]> Arguments to pass to  `pageFunction`
@@ -354,6 +366,9 @@ The `format` options are:
 #### page.plainText()
 - returns:  <[Promise]<[string]>> Returns page's inner text.
 
+#### page.reload()
+- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
+
 #### page.screenshot([options])
 - `options` <[Object]> Options object which might have the following properties:
     - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension.
@@ -423,8 +438,8 @@ browser.newPage().then(async page =>
 - `userAgent` <[string]> Specific user agent to use in this page
 - returns: <[Promise]> Promise which resolves when the user agent is set.
 
-#### page.setViewportSize(size)
-- `size` <[Object]>  An object with two fields:
+#### page.setViewport(viewport)
+- `viewport` <[Object]>  An object with two fields:
 	- `width` <[number]> Specify page's width in pixels.
 	- `height` <[number]> Specify page's height in pixels.
 - returns: <[Promise]> Promise which resolves when the dimensions are updated.
@@ -454,7 +469,7 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 #### page.userAgent()
 - returns: <[string]> Returns user agent.
 
-#### page.viewportSize()
+#### page.viewport()
 - returns: <[Object]>  An object with two fields:
 	- `width` <[number]> Page's width in pixels.
 	- `height` <[number]> Page's height in pixels.
