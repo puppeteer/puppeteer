@@ -2,6 +2,11 @@
 
 Puppeteer is a Node library which provides a high-level API to control Chromium over the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/). Puppeteer is inspired by [PhantomJS](http://phantomjs.org/). Check our [FAQ](#faq) to learn more.
 
+## Use Cases
+* Up-to-date testing environment that supports the latest Javascript features.
+* Crawl your site to generate pre-rendered content for your SPA.
+* Scrape content from websites.
+
 ## Installation
 
 Get the source:
@@ -101,6 +106,12 @@ browser.newPage().then(async page => {
 "Phantom Shim" is a layer built atop the Puppeteer API that simulates Phantom's environment.
 
 Puppeteer's process model is different than Phantom's. Puppeteer runs out-of-process to the browser, whereas  Phantom runs in-process. To simulate in-process behavior, phantom_shim hacks Node's runtime with [nested event loops](https://github.com/abbr/deasync)) to simulate in-process operation. This might result in unpredictable side-effects and makes the shim unreliable for certain use cases situations.
+
+#### Q: What is the difference between Puppeteer and Selenium / WebDriver?
+
+Selenium (which will be used to refer to WebDriver) is a well-established cross-browser API that's useful for testing cross-browser compatibility.
+
+Puppeteer is useful when cross-browser testing isn't critical. For example, many teams only run unit tests with a single browser (e.g. Phantom). In non-testing use cases, Puppeteer provides a powerful but simpler API (because it's only targeting one browser) that enables you to rapidly develop automation script.
 
 # Migration Guide
 
