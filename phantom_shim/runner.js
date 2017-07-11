@@ -57,7 +57,6 @@ if (!fs.existsSync(scriptPath)) {
 }
 
 let browser = new Browser({
-  remoteDebuggingPort: 9229,
   headless: argv.headless,
   args: ['--no-sandbox']
 });

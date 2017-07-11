@@ -88,7 +88,6 @@ not necessarily result in launching browser; the instance will be launched when 
 
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
 	- `headless` <[boolean]> Wether to run chromium in headless mode. Defaults to `true`.
-	- `remoteDebuggingPort` <[number]> Specify a remote debugging port to open on chromium instance. Defaults to `9229`.
 	- `executablePath` <[string]> Path to a chromium executable to run instead of bundled chromium.
 	- `args` <[Array]<[string]>> Additional arguments to pass to the chromium instance. List of chromium flags could be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
 

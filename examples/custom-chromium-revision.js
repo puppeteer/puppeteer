@@ -17,18 +17,13 @@
 var Browser = require('../lib/Browser');
 var Downloader = require('../utils/ChromiumDownloader');
 
-var revision = "464642";
+var revision = '483012';
 console.log('Downloading custom chromium revision - ' + revision);
 Downloader.downloadRevision(Downloader.currentPlatform(), revision).then(async () => {
     console.log('Done.');
     var executablePath = Downloader.revisionInfo(Downloader.currentPlatform(), revision).executablePath;
-    var browser1 = new Browser({
-        remoteDebuggingPort: 9228,
-        executablePath,
-    });
-    var browser2 = new Browser({
-        remoteDebuggingPort: 9229,
-    });
+    var browser1 = new Browser({ executablePath });
+    var browser2 = new Browser();
     var [version1, version2] = await Promise.all([
         browser1.version(),
         browser2.version()
