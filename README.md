@@ -111,7 +111,7 @@ Puppeteer's process model is different than Phantom's. Puppeteer runs out-of-pro
 
 Selenium / WebDriver is a well-established cross-browser API that is useful for testing cross-browser support.
 
-Puppeteer is useful when cross-browser testing isn't critical. For example, many teams only run unit tests with a single browser (e.g. Phantom). In non-testing use cases, Puppeteer provides a powerful but simple API because it's only targeting one browser that enables you to rapidly develop automation scripts.
+Puppeteer is useful for single-browser testing. For example, many teams only run unit tests with a single browser (e.g. Phantom). In non-testing use cases, Puppeteer provides a powerful but simple API because it's only targeting one browser that enables you to rapidly develop automation scripts.
 
 # Migration Guide
 
