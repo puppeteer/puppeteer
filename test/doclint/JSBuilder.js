@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const esprima = require('esprima');
 const ESTreeWalker = require('../../third_party/chromium/ESTreeWalker');
 const Documentation = require('./Documentation');
@@ -22,13 +24,17 @@ class JSOutline {
 
   _onClassDeclaration(node) {
     this._flushClassIfNeeded();
-    this._currentClassName = this._getIdentifier(node.id);
+    this._currentClassName = this._extractText(node.id);
   }
 
   _onMethodDefinition(node) {
     console.assert(this._currentClassName !== null);
-    let methodName = this._getIdentifier(node.key);
-    let method = new Documentation.Method(methodName);
+    console.assert(node.value.type === 'FunctionExpression');
+    const args = [];
+    for (let param of node.value.params)
+      args.push(new Documentation.Argument(this._extractText(param)));
+    let methodName = this._extractText(node.key);
+    let method = new Documentation.Method(methodName, args);
     this._currentClassMethods.push(method);
   }
 
@@ -41,12 +47,27 @@ class JSOutline {
     this._currentClassMethods = [];
   }
 
-  _getIdentifier(node) {
+  _extractText(node) {
     if (!node)
       return null;
     let text = this._text.substring(node.range[0], node.range[1]).trim();
-    return /^[$A-Z_][0-9A-Z_$]*$/i.test(text) ? text : null;
+    return text;
   }
 }
 
-module.exports = JSOutline;
+/**
+ * @param {!Array<string>} dirPath
+ * @return {!Promise<!Documentation>}
+ */
+module.exports = async function(dirPath) {
+  let filePaths = fs.readdirSync(dirPath)
+      .filter(fileName => fileName.endsWith('.js'))
+      .map(fileName => path.join(dirPath, fileName));
+  let classes = [];
+  for (let filePath of filePaths) {
+    let outline = new JSOutline(fs.readFileSync(filePath, 'utf8'));
+    classes.push(...outline.classes);
+  }
+  return new Documentation(classes);
+};
+

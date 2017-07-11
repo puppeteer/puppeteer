@@ -1,12 +1,9 @@
-const fs = require('fs');
 const path = require('path');
-const JSOutline = require('./JSOutline');
-const MDOutline = require('./MDOutline');
+const jsBuilder = require('./JSBuilder');
+const mdBuilder = require('./MDBuilder');
 const Documentation = require('./Documentation');
-const markdownToc = require('markdown-toc');
 
 const PROJECT_DIR = path.join(__dirname, '..', '..');
-const apiMdText = fs.readFileSync(path.join(PROJECT_DIR, 'docs', 'api.md'), 'utf8');
 
 let EXCLUDE_CLASSES = new Set([
   'Connection',
@@ -30,64 +27,65 @@ let EXCLUDE_METHODS = new Set([
   'Response.constructor',
 ]);
 
-// Build up documentation from JS sources.
-let jsClassesArray = [];
-let files = fs.readdirSync(path.join(PROJECT_DIR, 'lib'));
-for (let file of files) {
-  if (!file.endsWith('.js'))
-    continue;
-  let filePath = path.join(PROJECT_DIR, 'lib', file);
-  let outline = new JSOutline(fs.readFileSync(filePath, 'utf8'));
-  // Filter out private classes and methods.
-  for (let cls of outline.classes) {
+/**
+ * @param {!Documentation} jsDocumentation
+ * @return {!Documentation}
+ */
+function filterJSDocumentation(jsDocumentation) {
+  // Filter classes and methods.
+  let classes = [];
+  for (let cls of jsDocumentation.classesArray) {
     if (EXCLUDE_CLASSES.has(cls.name))
       continue;
-    let methodsArray = cls.methodsArray.filter(method => {
+    let methods = cls.methodsArray.filter(method => {
       if (method.name.startsWith('_'))
         return false;
-      let shorthand = `${cls.name}.${method.name}`;
-      return !EXCLUDE_METHODS.has(shorthand);
+      return !EXCLUDE_METHODS.has(`${cls.name}.${method.name}`);
     });
-    jsClassesArray.push(new Documentation.Class(cls.name, methodsArray));
+    classes.push(new Documentation.Class(cls.name, methods));
   }
+  return new Documentation(classes);
 }
 
-let mdClassesArray;
+let jsDocumentation;
+let mdDocumentation;
+let mdParseErrors;
+let diff;
 
 beforeAll(SX(async function() {
-  // Build up documentation from MD sources.
-  let mdOutline = await MDOutline.create(apiMdText);
-  mdClassesArray = mdOutline.classes;
+  jsDocumentation = filterJSDocumentation(await jsBuilder(path.join(PROJECT_DIR, 'lib')));
+  let mdDoc = await mdBuilder(path.join(PROJECT_DIR, 'docs'));
+  mdDocumentation = mdDoc.documentation;
+  mdParseErrors = mdDoc.errors;
+  diff = Documentation.diff(mdDocumentation, jsDocumentation);
 }));
 
-describe('table of contents', function() {
-  it('should match markdown-toc\'s output', () => {
-    const newApiMdText = markdownToc.insert(apiMdText);
-    if (apiMdText !== newApiMdText)
-      fail('markdown TOC is outdated, run `yarn generate-toc`');
-  });
-});
-
-// Compare to codebase.
-describe('api.md', function() {
-  let mdClasses = new Map();
-  let jsClasses = new Map();
-  it('MarkDown should not contain any duplicate classes', () => {
-    for (let mdClass of mdClassesArray) {
-      if (mdClasses.has(mdClass.name))
-        fail(`Documentation has duplicate declaration of ${mdClass.name}`);
-      mdClasses.set(mdClass.name, mdClass);
-    }
-  });
-  it('JavaScript should not contain any duplicate classes (probably error in parsing!)', () => {
-    for (let jsClass of jsClassesArray) {
+describe('JavaScript documentation parser', function() {
+  it('should not contain any duplicate classes (probably error in parsing!)', () => {
+    let jsClasses = new Map();
+    for (let jsClass of jsDocumentation.classesArray) {
       if (jsClasses.has(jsClass.name))
         fail(`JavaScript has duplicate declaration of ${jsClass.name}. (This probably means that this linter has an error)`);
       jsClasses.set(jsClass.name, jsClass);
     }
   });
+});
+
+describe('Markdown Documentation', function() {
+  it('should not have any parse errors', () => {
+    for (let error of mdParseErrors)
+      fail(error);
+  });
+  it('should not contain any duplicate classes', () => {
+    let mdClasses = new Map();
+    for (let mdClass of mdDocumentation.classesArray) {
+      if (mdClasses.has(mdClass.name))
+        fail(`Documentation has duplicate declaration of class ${mdClass.name}`);
+      mdClasses.set(mdClass.name, mdClass);
+    }
+  });
   it('class constructors should be defined before other methods', () => {
-    for (let mdClass of mdClasses.values()) {
+    for (let mdClass of mdDocumentation.classesArray) {
       let constructorMethod = mdClass.methods.get('constructor');
       if (!constructorMethod)
         continue;
@@ -96,7 +94,7 @@ describe('api.md', function() {
     }
   });
   it('methods should be sorted alphabetically', () => {
-    for (let mdClass of mdClasses.values()) {
+    for (let mdClass of mdDocumentation.classesArray) {
       for (let i = 0; i < mdClass.methodsArray.length - 1; ++i) {
         // Constructor should always go first.
         if (mdClass.methodsArray[i].name === 'constructor')
@@ -109,37 +107,29 @@ describe('api.md', function() {
     }
   });
   it('should not contain any non-existing class', () => {
-    for (let mdClass of mdClasses.values()) {
-      if (!jsClasses.has(mdClass.name))
-        fail(`Documentation describes non-existing class ${mdClass.name}`);
-    }
+    for (let className of diff.extraClasses)
+      fail(`Documentation describes non-existing class ${className}`);
   });
   it('should describe all existing classes', () => {
-    for (let jsClass of jsClasses.values()) {
-      if (!mdClasses.has(jsClass.name))
-        fail(`Documentation lacks description of class ${jsClass.name}`);
-    }
+    for (let className of diff.missingClasses)
+      fail(`Documentation lacks description of class ${className}`);
   });
   it('should not contain any non-existing methods', () => {
-    for (let mdClass of mdClasses.values()) {
-      let jsClass = jsClasses.get(mdClass.name);
-      if (!jsClass)
-        continue;
-      for (let method of mdClass.methods.values()) {
-        if (!jsClass.methods.has(method.name))
-          fail(`Documentation describes non-existing method: ${jsClass.name}.${method.name}()`);
-      }
-    }
+    for (let methodName of diff.extraMethods)
+      fail(`Documentation describes non-existing method: ${methodName}`);
   });
   it('should describe all existing methods', () => {
-    for (let jsClass of jsClasses.values()) {
-      let mdClass = mdClasses.get(jsClass.name);
-      if (!mdClass)
-        continue;
-      for (let method of jsClass.methods.values()) {
-        if (!mdClass.methods.has(method.name))
-          fail(`Documentation lacks ${jsClass.name}.${method.name}()`);
-      }
+    for (let methodName of diff.missingMethods)
+      fail(`Documentation lacks method ${methodName}`);
+  });
+  it('should describe all arguments propertly', () => {
+    for (let badArgument of diff.badArguments) {
+      let text = [`Method ${badArgument.method} fails to describe its parameters:`];
+      for (let missing of badArgument.missingArgs)
+        text.push(`- Missing description for "${missing}"`);
+      for (let extra of badArgument.extraArgs)
+        text.push(`- Described non-existing parameter "${extra}"`);
+      fail(text.join('\n'));
     }
   });
 });

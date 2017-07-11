@@ -14,8 +14,8 @@
   * [page.addScriptTag(url)](#pageaddscripttagurl)
   * [page.click()](#pageclick)
   * [page.close()](#pageclose)
-  * [page.evaluate(fun, args)](#pageevaluatefun-args)
-  * [page.evaluateOnInitialized(fun, args)](#pageevaluateoninitializedfun-args)
+  * [page.evaluate(fun, ...args)](#pageevaluatefun-args)
+  * [page.evaluateOnInitialized(fun, ...args)](#pageevaluateoninitializedfun-args)
   * [page.focus()](#pagefocus)
   * [page.frames()](#pageframes)
   * [page.httpHeaders()](#pagehttpheaders)
@@ -44,7 +44,7 @@
   * [dialog.message()](#dialogmessage)
 - [class: Frame](#class-frame)
   * [frame.childFrames()](#framechildframes)
-  * [frame.evaluate(fun, args)](#frameevaluatefun-args)
+  * [frame.evaluate(fun, ...args)](#frameevaluatefun-args)
   * [frame.isDetached()](#frameisdetached)
   * [frame.isMainFrame()](#frameismainframe)
   * [frame.name()](#framename)
@@ -133,16 +133,16 @@ Pages could be closed by `page.close()` method.
 
 - returns: <[Promise]> Returns promise which resolves when page gets closed.
 
-#### page.evaluate(fun, args)
+#### page.evaluate(fun, ...args)
 
 - `fun` <[function]> Function to be evaluated in browser context
-- `args` <[Array]<[string]>> Arguments to pass to  `fun`
+- `...args` <...[string]> Arguments to pass to  `fun`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
 
-#### page.evaluateOnInitialized(fun, args)
+#### page.evaluateOnInitialized(fun, ...args)
 
 - `fun` <[function]> Function to be evaluated in browser context
-- `args` <[Array]<[string]>> Arguments to pass to  `fun`
+- `...args` <...[string]> Arguments to pass to `fun`
 - returns: <[Promise]<[Object]>> Promise which resolves to function
 
 #### page.focus()
@@ -156,7 +156,7 @@ Pages could be closed by `page.close()` method.
 
 #### page.injectFile(filePath)
 
-- `url` <[string]> Path to the javascript file to be injected into page.
+- `filePath` <[string]> Path to the javascript file to be injected into page.
 - returns: <[Promise]> Promise which resolves when file gets successfully evaluated in page.
 
 #### page.mainFrame()
@@ -222,7 +222,7 @@ The `page.navigate` will throw an error if:
 
 #### page.setInPageCallback(name, callback)
 
-- `url` <[string]> Name of the callback to be assigned on window object
+- `name` <[string]> Name of the callback to be assigned on window object
 - `callback` <[function]> Callback function which will be called in node.js
 - returns: <[Promise]> Promise which resolves when callback is successfully initialized
 
@@ -267,6 +267,12 @@ The `page.navigate` will throw an error if:
 
 #### page.waitFor(selector)
 
+- `selector` <[string]> A query selector to wait for on the page.
+
+Wait for the `selector` to appear in page. If at the moment of calling
+the method the `selector` already exists, the method will return
+immediately.
+
 Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 
 ### class: Dialog
@@ -276,10 +282,10 @@ Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 
 ### class: Frame
 #### frame.childFrames()
-#### frame.evaluate(fun, args)
+#### frame.evaluate(fun, ...args)
 
 - `fun` <[function]> Function to be evaluated in browser context
-- `args` <[Array]<[string]>> Arguments to pass to  `fun`
+- `...args` <[Array]<[string]>> Arguments to pass to  `fun`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
 
 #### frame.isDetached()
