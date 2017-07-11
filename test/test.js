@@ -221,7 +221,7 @@ describe('Puppeteer', function() {
         await page.waitFor('*');
         fail('Failed waitFor did not throw.');
       } catch (e) {
-        expect(e.message).toBe('Evaluation failed: document.querySelector is not a function');
+        expect(e.message).toContain('Evaluation failed: document.querySelector is not a function');
       }
     }));
   });
