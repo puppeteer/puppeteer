@@ -31,6 +31,14 @@ if (process.env.DEBUG_TEST)
 else
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
 
+// Make sure the `npm install` was run after the chromium roll.
+{
+  const Downloader = require('../utils/ChromiumDownloader');
+  const chromiumRevision = require('../package.json').puppeteer.chromium_revision;
+  const revisionInfo = Downloader.revisionInfo(Downloader.currentPlatform(), chromiumRevision);
+  console.assert(revisionInfo, `Chromium r${chromiumRevision} is not downloaded. Run 'npm install' and try to re-run tests.`);
+}
+
 describe('Puppeteer', function() {
   let browser;
   let server;
