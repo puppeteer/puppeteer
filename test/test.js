@@ -826,7 +826,7 @@ describe('Puppeteer', function() {
 
   describe('Query selector', function() {
     it('Page.$', SX(async function() {
-      await page.navigate(STATIC_PREFIX + '/playground.html');
+      await page.navigate(PREFIX + '/playground.html');
       expect(await page.$('#first', element => element.textContent)).toBe('First div');
       expect(await page.$('#second span', element => element.textContent)).toBe('Inner span');
       expect(await page.$('#first', (element, arg1) => arg1, 'value1')).toBe('value1');
@@ -840,8 +840,9 @@ describe('Puppeteer', function() {
         return element.textContent;
       })).toBe('new button text');
     }));
+
     it('Page.$$', SX(async function() {
-      await page.navigate(STATIC_PREFIX + '/playground.html');
+      await page.navigate(PREFIX + '/playground.html');
       expect((await page.$$('div', element => element.textContent)).length).toBe(2);
       expect((await page.$$('div', (element, index) => index))[0]).toBe(0);
       expect((await page.$$('div', (element, index) => index))[1]).toBe(1);
