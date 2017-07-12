@@ -25,6 +25,8 @@ class Documentation {
     result.extraMethods = [];
     result.missingMethods = [];
     result.badArguments = [];
+    result.extraProperties = [];
+    result.missingProperties = [];
     for (let className of classesDiff.equal) {
       const actualClass = actual.classes.get(className);
       const expectedClass = expected.classes.get(className);
@@ -47,6 +49,11 @@ class Documentation {
           });
         }
       }
+      const actualProperties = actualClass.propertiesArray.slice().sort();
+      const expectedProperties = expectedClass.propertiesArray.slice().sort();
+      const propertyDiff = diff(actualProperties, expectedProperties);
+      result.extraProperties.push(...(propertyDiff.extra.map(propertyName => className + '.' + propertyName)));
+      result.missingProperties.push(...(propertyDiff.missing.map(propertyName => className + '.' + propertyName)));
     }
     return result;
   }
@@ -56,13 +63,16 @@ Documentation.Class = class {
   /**
    * @param {string} name
    * @param {!Array<!Documentation.Method>} methodsArray
+   * @param {!Array<string>} propertiesArray
    */
-  constructor(name, methodsArray) {
+  constructor(name, methodsArray, propertiesArray) {
     this.name = name;
     this.methodsArray = methodsArray;
     this.methods = new Map();
     for (let method of methodsArray)
       this.methods.set(method.name, method);
+    this.propertiesArray = propertiesArray;
+    this.properties = new Set(propertiesArray);
   }
 };
 

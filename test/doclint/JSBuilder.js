@@ -9,6 +9,7 @@ class JSOutline {
     this.classes = [];
     this._currentClassName = null;
     this._currentClassMethods = [];
+    this._currentClassProperties = [];
 
     this._text = text;
     let ast = esprima.parseScript(this._text, {loc: true, range: true});
@@ -36,15 +37,34 @@ class JSOutline {
     let methodName = this._extractText(node.key);
     let method = new Documentation.Method(methodName, args);
     this._currentClassMethods.push(method);
+    // Extract properties from constructor.
+    if (node.kind === 'constructor') {
+      let walker = new ESTreeWalker(node => {
+        if (node.type !== 'AssignmentExpression')
+          return;
+        node = node.left;
+        if (node.type === 'MemberExpression' && node.object &&
+            node.object.type === 'ThisExpression' && node.property &&
+            node.property.type === 'Identifier')
+          this._currentClassProperties.push(node.property.name);
+      });
+      walker.walk(node);
+    }
+    return ESTreeWalker.SkipSubtree;
+  }
+
+  _onMemberExpression(node) {
+
   }
 
   _flushClassIfNeeded() {
     if (this._currentClassName === null)
       return;
-    let jsClass = new Documentation.Class(this._currentClassName, this._currentClassMethods);
+    let jsClass = new Documentation.Class(this._currentClassName, this._currentClassMethods, this._currentClassProperties);
     this.classes.push(jsClass);
     this._currentClassName = null;
     this._currentClassMethods = [];
+    this._currentClassProperties = [];
   }
 
   _extractText(node) {

@@ -10,6 +10,8 @@
   * [browser.closePage(page)](#browserclosepagepage)
   * [browser.newPage()](#browsernewpage)
   * [browser.version()](#browserversion)
+  * [browser.stderr](#browserstderr)
+  * [browser.stdout](#browserstdout)
 - [class: Page](#class-page)
   * [page.addScriptTag(url)](#pageaddscripttagurl)
   * [page.click(selector)](#pageclickselector)
@@ -42,6 +44,7 @@
   * [dialog.accept([promptText])](#dialogacceptprompttext)
   * [dialog.dismiss()](#dialogdismiss)
   * [dialog.message()](#dialogmessage)
+  * [dialog.type](#dialogtype)
 - [class: Frame](#class-frame)
   * [frame.childFrames()](#framechildframes)
   * [frame.evaluate(fun, ...args)](#frameevaluatefun-args)
@@ -54,9 +57,21 @@
   * [frame.waitFor(selector)](#framewaitforselector)
 - [class: Request](#class-request)
   * [request.response()](#requestresponse)
+  * [request.headers](#requestheaders)
+  * [request.method](#requestmethod)
+  * [request.url](#requesturl)
 - [class: Response](#class-response)
+  * [response.headers](#responseheaders)
+  * [response.ok](#responseok)
+  * [response.status](#responsestatus)
+  * [response.statusText](#responsestatustext)
+  * [response.url](#responseurl)
   * [response.request()](#responserequest)
 - [class: InterceptedRequest](#class-interceptedrequest)
+  * [interceptedRequest.headers](#interceptedrequestheaders)
+  * [interceptedRequest.method](#interceptedrequestmethod)
+  * [interceptedRequest.url](#interceptedrequesturl)
+  * [interceptedRequest.postData](#interceptedrequestpostdata)
   * [interceptedRequest.abort()](#interceptedrequestabort)
   * [interceptedRequest.continue()](#interceptedrequestcontinue)
   * [interceptedRequest.isHandled()](#interceptedrequestishandled)
@@ -108,8 +123,18 @@ Closes chromium application with all the pages (if any were opened). The browser
 Create a new page in browser and returns a promise which gets resolved with a Page object.
 
 #### browser.version()
-
 - returns: <[Promise]<[string]>>
+
+
+#### browser.stderr
+- <[stream.Readable]>
+
+A Readable Stream that represents the browser process's stderr.
+
+#### browser.stdout
+- <[stream.Readable]>
+
+A Readable Stream that represents the browser process's stdout.
 
 ### class: Page
 
@@ -285,7 +310,13 @@ Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 - `promptText` <[string]> A text to enter in prompt. Does not cause any effects if the dialog type is not prompt.
 
 #### dialog.dismiss()
+
 #### dialog.message()
+
+#### dialog.type
+- <[string]>
+
+Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `prompt`.
 
 ### class: Frame
 #### frame.childFrames()
@@ -309,11 +340,74 @@ Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 
 ### class: Request
 #### request.response()
+#### request.headers
+- <[Headers]>
+
+Contains the associated [Headers] object of the request.
+
+#### request.method
+- <[string]>
+
+Contains the request's method (GET, POST, etc.)
+
+#### request.url
+- <[string]>
+
+Contains the URL of the request.
 
 ### class: Response
+
+#### response.headers
+- <[Headers]>
+
+Contains the [Headers] object associated with the response.
+
+#### response.ok
+- <[boolean]>
+
+Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
+
+#### response.status
+- <[number]>
+
+Contains the status code of the response (e.g., 200 for a success).
+
+
+#### response.statusText
+- <[string]>
+
+Contains the status message corresponding to the status code (e.g., OK for 200).
+
+#### response.url
+- <[string]>
+
+Contains the URL of the response.
+
 #### response.request()
 
 ### class: InterceptedRequest
+
+#### interceptedRequest.headers
+- <[Headers]>
+
+Contains the [Headers] object associated with the request.
+
+#### interceptedRequest.method
+- <[string]>
+
+Contains the request's method (GET, POST, etc.)
+
+#### interceptedRequest.url
+- <[string]>
+
+Contains the URL of the request.
+
+
+#### interceptedRequest.postData
+- <[string]>
+
+In case of a `POST` request, contains `POST` data.
+
 #### interceptedRequest.abort()
 #### interceptedRequest.continue()
 #### interceptedRequest.isHandled()
@@ -360,6 +454,8 @@ If there's already a header with name `name`, the header gets overwritten.
 [number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type "Number"
 [Object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object "Object"
 [Page]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-page "Page"
+[Headers]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-headers "Headers"
 [InterceptedRequest]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-interceptedrequest "Page"
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
+[stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable

@@ -24,22 +24,22 @@ class MDOutline {
     const classes = await page.evaluate(() => {
       let classes = [];
       let currentClass = {};
-      let method = {};
+      let member = {};
       for (let element of document.body.querySelectorAll('h3, h4, h4 + ul > li')) {
         if (element.matches('h3')) {
           currentClass = {
             name: element.textContent,
-            methods: [],
+            members: [],
           };
           classes.push(currentClass);
         } else if (element.matches('h4')) {
-          method = {
+          member = {
             name: element.textContent,
             args: []
           };
-          currentClass.methods.push(method);
+          currentClass.members.push(member);
         } else if (element.matches('li') && element.firstChild.matches && element.firstChild.matches('code')) {
-          method.args.push(element.firstChild.textContent);
+          member.args.push(element.firstChild.textContent);
         }
       }
       return classes;
@@ -53,48 +53,56 @@ class MDOutline {
     const classHeading = /^class: (\w+)$/;
     const constructorRegex = /^new (\w+)\((.*)\)$/;
     const methodRegex = /^(\w+)\.(\w+)\((.*)\)$/;
+    const propertyRegex = /^(\w+)\.(\w+)$/;
     let currentClassName = null;
     let currentClassMethods = [];
+    let currentClassProperties = [];
     for (const cls of classes) {
       let match = cls.name.match(classHeading);
       currentClassName = match[1];
-      for (let mdMethod of cls.methods) {
-        let className = null;
-        let methodName = null;
-        let parameters = null;
-        let title = mdMethod.name;
-        if (constructorRegex.test(title)) {
-          let match = title.match(constructorRegex);
-          className = match[1];
-          parameters = match[2];
-          methodName = 'constructor';
-        } else if (methodRegex.test(title)) {
-          let match = title.match(methodRegex);
-          className = match[1];
-          methodName = match[2];
-          parameters = match[3];
+      for (let member of cls.members) {
+        if (constructorRegex.test(member.name)) {
+          let match = member.name.match(constructorRegex);
+          handleMethod.call(this, member, match[1], 'constructor', match[2]);
+        } else if (methodRegex.test(member.name)) {
+          let match = member.name.match(methodRegex);
+          handleMethod.call(this, member, match[1], match[2], match[3]);
+        } else if (propertyRegex.test(member.name)) {
+          let match = member.name.match(propertyRegex);
+          handleProperty.call(this, member, match[1], match[2]);
         }
-
-        if (!currentClassName || !className || !methodName || className.toLowerCase() !== currentClassName.toLowerCase()) {
-          console.warn('failed to process header as method: ' + mdMethod.name);
-          continue;
-        }
-        parameters = parameters.trim().replace(/[\[\]]/g, '');
-        if (parameters !== mdMethod.args.join(', '))
-          this.errors.push(`Heading arguments for "${mdMethod.name}" do not match described ones, i.e. "${parameters}" != "${mdMethod.args.join(', ')}"`);
-        let args = mdMethod.args.map(arg => new Documentation.Argument(arg));
-        let method = new Documentation.Method(methodName, args);
-        currentClassMethods.push(method);
       }
       flushClassIfNeeded.call(this);
+    }
+
+    function handleMethod(member, className, methodName, parameters) {
+      if (!currentClassName || !className || !methodName || className.toLowerCase() !== currentClassName.toLowerCase()) {
+        this.errors.push(`Failed to process header as method: ${member.name}`);
+        return;
+      }
+      parameters = parameters.trim().replace(/[\[\]]/g, '');
+      if (parameters !== member.args.join(', '))
+        this.errors.push(`Heading arguments for "${member.name}" do not match described ones, i.e. "${parameters}" != "${member.args.join(', ')}"`);
+      let args = member.args.map(arg => new Documentation.Argument(arg));
+      let method = new Documentation.Method(methodName, args);
+      currentClassMethods.push(method);
+    }
+
+    function handleProperty(member, className, propertyName) {
+      if (!currentClassName || !className || !propertyName || className.toLowerCase() !== currentClassName.toLowerCase()) {
+        this.errors.push(`Failed to process header as property: ${member.name}`);
+        return;
+      }
+      currentClassProperties.push(propertyName);
     }
 
     function flushClassIfNeeded() {
       if (currentClassName === null)
         return;
-      this.classes.push(new Documentation.Class(currentClassName, currentClassMethods));
+      this.classes.push(new Documentation.Class(currentClassName, currentClassMethods, currentClassProperties));
       currentClassName = null;
       currentClassMethods = [];
+      currentClassProperties = [];
     }
   }
 }

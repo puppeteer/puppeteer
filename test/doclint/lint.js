@@ -42,7 +42,8 @@ function filterJSDocumentation(jsDocumentation) {
         return false;
       return !EXCLUDE_METHODS.has(`${cls.name}.${method.name}`);
     });
-    classes.push(new Documentation.Class(cls.name, methods));
+    let properties = cls.propertiesArray.filter(property => !property.startsWith('_'));
+    classes.push(new Documentation.Class(cls.name, methods, properties));
   }
   return new Documentation(classes);
 }
@@ -131,6 +132,14 @@ describe('Markdown Documentation', function() {
         text.push(`- Described non-existing parameter "${extra}"`);
       fail(text.join('\n'));
     }
+  });
+  it('should not contain any non-existing properties', () => {
+    for (let propertyName of diff.extraProperties)
+      fail(`Documentation describes non-existing property: ${propertyName}`);
+  });
+  it('should describe all existing properties', () => {
+    for (let propertyName of diff.missingProperties)
+      fail(`Documentation lacks property ${propertyName}`);
   });
 });
 
