@@ -39,7 +39,7 @@ class Documentation {
         const actualArgs = actualMethod.args.map(arg => arg.name);
         const expectedArgs = expectedMethod.args.map(arg => arg.name);
         const argDiff = diff(actualArgs, expectedArgs);
-        if (argDiff.extra.length || argDiff.missing.diff) {
+        if (argDiff.extra.length || argDiff.missing.length) {
           result.badArguments.push({
             method: `${className}.${methodName}`,
             missingArgs: argDiff.missing,

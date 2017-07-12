@@ -7,16 +7,16 @@
 - [class: Browser](#class-browser)
   * [new Browser([options])](#new-browseroptions)
   * [browser.close()](#browserclose)
-  * [browser.closePage()](#browserclosepage)
+  * [browser.closePage(page)](#browserclosepagepage)
   * [browser.newPage()](#browsernewpage)
   * [browser.version()](#browserversion)
 - [class: Page](#class-page)
   * [page.addScriptTag(url)](#pageaddscripttagurl)
-  * [page.click()](#pageclick)
+  * [page.click(selector)](#pageclickselector)
   * [page.close()](#pageclose)
   * [page.evaluate(fun, ...args)](#pageevaluatefun-args)
   * [page.evaluateOnInitialized(fun, ...args)](#pageevaluateoninitializedfun-args)
-  * [page.focus()](#pagefocus)
+  * [page.focus(selector)](#pagefocusselector)
   * [page.frames()](#pageframes)
   * [page.httpHeaders()](#pagehttpheaders)
   * [page.injectFile(filePath)](#pageinjectfilefilepath)
@@ -28,18 +28,18 @@
   * [page.setContent(html)](#pagesetcontenthtml)
   * [page.setHTTPHeaders(headers)](#pagesethttpheadersheaders)
   * [page.setInPageCallback(name, callback)](#pagesetinpagecallbackname-callback)
-  * [page.setRequestInterceptor()](#pagesetrequestinterceptor)
+  * [page.setRequestInterceptor(interceptor)](#pagesetrequestinterceptorinterceptor)
   * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
   * [page.setViewportSize(size)](#pagesetviewportsizesize)
   * [page.title()](#pagetitle)
-  * [page.type()](#pagetype)
+  * [page.type(text)](#pagetypetext)
   * [page.uploadFile(selector, ...filePaths)](#pageuploadfileselector-filepaths)
   * [page.url()](#pageurl)
   * [page.userAgent()](#pageuseragent)
   * [page.viewportSize()](#pageviewportsize)
   * [page.waitFor(selector)](#pagewaitforselector)
 - [class: Dialog](#class-dialog)
-  * [dialog.accept()](#dialogaccept)
+  * [dialog.accept([promptText])](#dialogacceptprompttext)
   * [dialog.dismiss()](#dialogdismiss)
   * [dialog.message()](#dialogmessage)
 - [class: Frame](#class-frame)
@@ -61,13 +61,13 @@
   * [interceptedRequest.continue()](#interceptedrequestcontinue)
   * [interceptedRequest.isHandled()](#interceptedrequestishandled)
 - [class: Headers](#class-headers)
-  * [headers.append()](#headersappend)
-  * [headers.delete()](#headersdelete)
+  * [headers.append(name, value)](#headersappendname-value)
+  * [headers.delete(name)](#headersdeletename)
   * [headers.entries()](#headersentries)
-  * [headers.get()](#headersget)
-  * [headers.has()](#headershas)
+  * [headers.get(name)](#headersgetname)
+  * [headers.has(name)](#headershasname)
   * [headers.keys()](#headerskeys)
-  * [headers.set()](#headersset)
+  * [headers.set(name, value)](#headerssetname-value)
   * [headers.values()](#headersvalues)
 - [class: Body](#class-body)
   * [body.arrayBuffer()](#bodyarraybuffer)
@@ -96,9 +96,10 @@ not necessarily result in launching browser; the instance will be launched when 
 
 Closes chromium application with all the pages (if any were opened). The browser object itself is considered to be disposed and could not be used anymore.
 
-#### browser.closePage()
+#### browser.closePage(page)
 
-- returns: <[Promise]>
+- `page` <[Page]> A page to be closed.
+- returns: <[Promise]> Promise which resolves when the page is closed.
 
 #### browser.newPage()
 
@@ -127,7 +128,8 @@ Pages could be closed by `page.close()` method.
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
 
-#### page.click()
+#### page.click(selector)
+- `selector` <[string]> A query selector of element to click. If there are multiple elements satisfying the selector, the first will be clicked.
 
 #### page.close()
 
@@ -145,7 +147,8 @@ Pages could be closed by `page.close()` method.
 - `...args` <...[string]> Arguments to pass to `fun`
 - returns: <[Promise]<[Object]>> Promise which resolves to function
 
-#### page.focus()
+#### page.focus(selector)
+- `selector` <[string]> A query selector of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
 
 #### page.frames()
 
@@ -226,7 +229,8 @@ The `page.navigate` will throw an error if:
 - `callback` <[function]> Callback function which will be called in node.js
 - returns: <[Promise]> Promise which resolves when callback is successfully initialized
 
-#### page.setRequestInterceptor()
+#### page.setRequestInterceptor(interceptor)
+- `interceptor` <[function]> Callback function which accepts a single argument of type <[InterceptedRequest]>.
 
 #### page.setUserAgent(userAgent)
 
@@ -244,7 +248,8 @@ The `page.navigate` will throw an error if:
 
 - returns: <[Promise]<[string]>> Returns page's title.
 
-#### page.type()
+#### page.type(text)
+- `text` <[string]> A text to type into a focused element.
 
 #### page.uploadFile(selector, ...filePaths)
 - `selector` <[string]> A query selector to a file input
@@ -276,7 +281,9 @@ immediately.
 Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 
 ### class: Dialog
-#### dialog.accept()
+#### dialog.accept([promptText])
+- `promptText` <[string]> A text to enter in prompt. Does not cause any effects if the dialog type is not prompt.
+
 #### dialog.dismiss()
 #### dialog.message()
 
@@ -312,13 +319,31 @@ Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 #### interceptedRequest.isHandled()
 
 ### class: Headers
-#### headers.append()
-#### headers.delete()
+#### headers.append(name, value)
+- `name` <[string]> Case-insensetive header name.
+- `value` <[string]> Header value
+
+If there's already a header with name `name`, the header gets overwritten.
+
+#### headers.delete(name)
+- `name` <[string]> Case-insensetive name of the header to be deleted. If there's no header with such name, the method does nothing.
+
 #### headers.entries()
-#### headers.get()
-#### headers.has()
+#### headers.get(name)
+- `name` <[string]> Case-insensetive name of the header.
+- returns: <[string]> Header value of `null`, if there's no such header.
+
+#### headers.has(name)
+- `name` <[string]> Case-insensetive name of the header.
+- returns: <[boolean]> Returns `true` if the header with such name exists, or `false` otherwise.
+
 #### headers.keys()
-#### headers.set()
+#### headers.set(name, value)
+- `name` <[string]> Case-insensetive header name.
+- `value` <[string]> Header value
+
+If there's already a header with name `name`, the header gets overwritten.
+
 #### headers.values()
 
 ### class: Body
