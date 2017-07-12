@@ -360,5 +360,6 @@ If there's already a header with name `name`, the header gets overwritten.
 [number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type "Number"
 [Object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object "Object"
 [Page]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-page "Page"
+[InterceptedRequest]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-interceptedrequest "Page"
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
