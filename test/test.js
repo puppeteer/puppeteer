@@ -645,6 +645,24 @@ describe('Puppeteer', function() {
         return promise.then(() => reader.result);
       })).toBe('contents of the file');
     }));
+    it('should press the right keys', SX(async function(){
+      await page.navigate(PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      let keyboard = page.keyboard();
+      await keyboard.type('Hello World!');
+      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
+      for (let i = 0; i < 'World!'.length; i++) {
+        keyboard.press('ArrowLeft');
+        keyboard.release('ArrowLeft');
+      }
+      await keyboard.type('inserted ');
+      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello inserted World!');
+      for (let i = 0; i < 'inserted '.length; i++) {
+        keyboard.press('Backspace');
+        keyboard.release('Backspace');
+      }
+      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
+    }));
   });
   describe('Page.setUserAgent', function() {
     it('should work', SX(async function() {

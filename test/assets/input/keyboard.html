@@ -1,0 +1,19 @@
+<textarea></textarea>
+<script>
+  window.result = "hi";
+  let textarea = document.querySelector('textarea');
+  textarea.focus();
+  textarea.addEventListener('keydown', event => {
+    log('Keydown:', event.key, event.which, event.keyCode, event.charCode);
+  });
+  textarea.addEventListener('keypress', event => {
+    log('Keypress:', event.key, event.which, event.keyCode, event.charCode);
+  });
+  textarea.addEventListener('keyup', event => {
+    log('Keyup:', event.key, event.which, event.keyCode, event.charCode);
+  });
+  function log(...args) {
+    console.log.apply(console, args);
+    result += args.join(' ') + '\n';
+  }
+</script>
