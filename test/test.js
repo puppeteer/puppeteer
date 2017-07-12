@@ -645,7 +645,7 @@ describe('Puppeteer', function() {
         return promise.then(() => reader.result);
       })).toBe('contents of the file');
     }));
-    it('should press the right keys', SX(async function(){
+    it('should move with the arrow keys', SX(async function(){
       await page.navigate(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       let keyboard = page.keyboard();
@@ -657,11 +657,49 @@ describe('Puppeteer', function() {
       }
       await keyboard.type('inserted ');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello inserted World!');
+      keyboard.press('Shift');
       for (let i = 0; i < 'inserted '.length; i++) {
-        keyboard.press('Backspace');
-        keyboard.release('Backspace');
+        keyboard.press('ArrowLeft');
+        keyboard.release('ArrowLeft');
       }
+      keyboard.release('Shift');
+      keyboard.press('Backspace');
+      await keyboard.release('Backspace');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
+    }));
+    it('should report modifier keys', SX(async function(){
+      await page.navigate(PREFIX + '/input/keyboard.html');
+      let keyboard = page.keyboard();
+      await keyboard.press('Shift');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: Shift 16 8');
+      await keyboard.press('!');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: ! 49 8');
+      await keyboard.release('!');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: ! 49 8');
+      await keyboard.release('Shift');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: Shift 16 0');
+
+      await keyboard.press('Alt');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: Alt 18 1');
+      await keyboard.press('a');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: a 65 1');
+      await keyboard.release('a');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: a 65 1');
+      await keyboard.release('Alt');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: Alt 18 0');
+
+      await keyboard.press('Control');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: Control 17 2');
+      await keyboard.press('Meta');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: Meta 91 6');
+      await keyboard.press(';');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: ; 186 6');
+      await keyboard.release(';');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: ; 186 6');
+      await keyboard.release('Control');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: Control 17 4');
+      await keyboard.release('Meta');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: Meta 91 0');
     }));
   });
   describe('Page.setUserAgent', function() {
