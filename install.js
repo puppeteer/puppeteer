@@ -22,15 +22,16 @@ let ProgressBar = require('progress');
 if (Downloader.revisionInfo(Downloader.currentPlatform(), revision))
   return;
 
+let allRevisions = Downloader.downloadedRevisions();
 Downloader.downloadRevision(Downloader.currentPlatform(), revision, onProgress)
-    .catch(error => {
-      console.error('Download failed: ' + error.message);
-    });
+    // Remove previous chromium revisions.
+    .then(() => Promise.all(allRevisions.map(({platform, revision}) => Downloader.removeRevision(platform, revision))))
+    .catch(error => console.error('Download failed: ' + error.message));
 
 let progressBar = null;
 function onProgress(bytesTotal, delta) {
   if (!progressBar) {
-    progressBar = new ProgressBar(`Downloading Chromium - ${toMegabytes(bytesTotal)} [:bar] :percent :etas `, {
+    progressBar = new ProgressBar(`Downloading Chromium r${revision} - ${toMegabytes(bytesTotal)} [:bar] :percent :etas `, {
       complete: '=',
       incomplete: ' ',
       width: 20,

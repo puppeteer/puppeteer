@@ -21,8 +21,9 @@ let path = require('path');
 let extract = require('extract-zip');
 let util = require('util');
 let URL = require('url');
+let removeRecursive = require('rimraf');
 
-let CHROMIUM_PATH = path.join(__dirname, '..', '.local-chromium');
+let DOWNLOADS_FOLDER = path.join(__dirname, '..', '.local-chromium');
 
 let downloadURLs = {
   linux: 'https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/%d/chrome-linux.zip',
@@ -33,15 +34,15 @@ let downloadURLs = {
 
 module.exports = {
   /**
-     * @return {!Array<string>}
-     */
+   * @return {!Array<string>}
+   */
   supportedPlatforms: function() {
     return Object.keys(downloadURLs);
   },
 
   /**
-     * @return {string}
-     */
+   * @return {string}
+   */
   currentPlatform: function() {
     let platform = os.platform();
     if (platform === 'darwin')
@@ -54,10 +55,10 @@ module.exports = {
   },
 
   /**
-     * @param {string} platform
-     * @param {string} revision
-     * @return {!Promise<boolean>}
-     */
+   * @param {string} platform
+   * @param {string} revision
+   * @return {!Promise<boolean>}
+   */
   canDownloadRevision: function(platform, revision) {
     console.assert(downloadURLs[platform], 'Unknown platform: ' + platform);
     let url = URL.parse(util.format(downloadURLs[platform], revision));
@@ -80,22 +81,22 @@ module.exports = {
   },
 
   /**
-     * @param {string} platform
-     * @param {string} revision
-     * @param {?function(number, number)} progressCallback
-     * @return {!Promise}
-     */
+   * @param {string} platform
+   * @param {string} revision
+   * @param {?function(number, number)} progressCallback
+   * @return {!Promise}
+   */
   downloadRevision: async function(platform, revision, progressCallback) {
     let url = downloadURLs[platform];
     console.assert(url, `Unsupported platform: ${platform}`);
     url = util.format(url, revision);
-    let zipPath = path.join(CHROMIUM_PATH, `download-${platform}-${revision}.zip`);
+    let zipPath = path.join(DOWNLOADS_FOLDER, `download-${platform}-${revision}.zip`);
     let folderPath = getFolderPath(platform, revision);
     if (fs.existsSync(folderPath))
       return;
     try {
-      if (!fs.existsSync(CHROMIUM_PATH))
-        fs.mkdirSync(CHROMIUM_PATH);
+      if (!fs.existsSync(DOWNLOADS_FOLDER))
+        fs.mkdirSync(DOWNLOADS_FOLDER);
       await downloadFile(url, zipPath, progressCallback);
       await extractZip(zipPath, folderPath);
     } finally {
@@ -105,11 +106,31 @@ module.exports = {
   },
 
   /**
-     * @param {string} platform
-     * @param {string} revision
-     * @return {?{executablePath: string}}
-     */
+   * @return {!Array<!{platform:string, revision: string}>}
+   */
+  downloadedRevisions: function() {
+    let fileNames = fs.readdirSync(DOWNLOADS_FOLDER);
+    return fileNames.map(fileName => parseFolderPath(fileName)).filter(revision => !!revision);
+  },
+
+  /**
+   * @param {string} platform
+   * @param {string} revision
+   */
+  removeRevision: async function(platform, revision) {
+    console.assert(downloadURLs[platform], `Unsupported platform: ${platform}`);
+    const folderPath = getFolderPath(platform, revision);
+    console.assert(fs.existsSync(folderPath));
+    await new Promise(fulfill => removeRecursive(folderPath, fulfill));
+  },
+
+  /**
+   * @param {string} platform
+   * @param {string} revision
+   * @return {?{executablePath: string}}
+   */
   revisionInfo: function(platform, revision) {
+    console.assert(downloadURLs[platform], `Unsupported platform: ${platform}`);
     let folderPath = getFolderPath(platform, revision);
     if (!fs.existsSync(folderPath))
       return null;
@@ -130,11 +151,26 @@ module.exports = {
 
 /**
  * @param {string} platform
- * @param {number} revision
+ * @param {string} revision
  * @return {string}
  */
 function getFolderPath(platform, revision) {
-  return path.join(CHROMIUM_PATH, platform + '-' + revision);
+  return path.join(DOWNLOADS_FOLDER, platform + '-' + revision);
+}
+
+/**
+ * @param {string} folderPath
+ * @return {?{platform: string, revision: string}}
+ */
+function parseFolderPath(folderPath) {
+  let name = path.basename(folderPath);
+  let splits = name.split('-');
+  if (splits.length !== 2)
+    return null;
+  let [platform, revision] = splits;
+  if (!downloadURLs[platform])
+    return null;
+  return {platform, revision};
 }
 
 /**
