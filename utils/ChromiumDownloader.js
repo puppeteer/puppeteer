@@ -109,6 +109,8 @@ module.exports = {
    * @return {!Array<!{platform:string, revision: string}>}
    */
   downloadedRevisions: function() {
+    if (!fs.existsSync(DOWNLOADS_FOLDER))
+      return [];
     let fileNames = fs.readdirSync(DOWNLOADS_FOLDER);
     return fileNames.map(fileName => parseFolderPath(fileName)).filter(revision => !!revision);
   },
