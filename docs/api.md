@@ -13,6 +13,8 @@
   * [browser.stderr](#browserstderr)
   * [browser.stdout](#browserstdout)
 - [class: Page](#class-page)
+  * [page.$(selector, fun, ...args)](#pageselector-fun-args)
+  * [page.$$(selector, fun, ...args)](#pageselector-fun-args-1)
   * [page.addScriptTag(url)](#pageaddscripttagurl)
   * [page.click(selector)](#pageclickselector)
   * [page.close()](#pageclose)
@@ -46,6 +48,8 @@
   * [dialog.message()](#dialogmessage)
   * [dialog.type](#dialogtype)
 - [class: Frame](#class-frame)
+  * [frame.$(selector, fun, ...args)](#frameselector-fun-args)
+  * [frame.$$(selector, fun, ...args)](#frameselector-fun-args)
   * [frame.childFrames()](#framechildframes)
   * [frame.evaluate(fun, ...args)](#frameevaluatefun-args)
   * [frame.isDetached()](#frameisdetached)
@@ -147,6 +151,24 @@ browser.newPage().then(page => {
 });
 ```
 Pages could be closed by `page.close()` method.
+
+#### page.$(selector, fun, ...args)
+
+- `selector` <[string]> Query selector to be run on the page
+- `fun` <[function<[Element]>]> Function to be evaluated with first element matching `selector`
+- `...args` <[Array]<[string]>> Arguments to pass to `fun`
+- returns: <[Promise<[Object]]> Promise which resolves to function return value.
+
+Shortcut for [page.mainFrame().$(selector, fun, ...args)](#pageselector-fun-args).
+
+#### page.$$(selector, fun, ...args)
+
+- `selector` <[string]> Query selector to be run on the page
+- `fun` <[function<[Element]>]> Function to be evaluted for every element matching `selector`.
+- `...args` <[Array]<[string]>> Arguments to pass to `fun`
+- returns: <[Promise<[Array<[Object]>]>]> Promise which resolves to array of function return values.
+
+Shortcut for [page.mainFrame().$$(selector, fun, ...args)](#pageselector-fun-args-1).
 
 #### page.addScriptTag(url)
 
@@ -319,6 +341,18 @@ Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `prompt`.
 
 ### class: Frame
+#### frame.$(selector, fun, ...args)
+- `selector` <[string]> Query selector to be run on the page
+- `fun` <[function<[Element]>]> Function to be evaluated with first element matching `selector`
+- `...args` <[Array]<[string]>> Arguments to pass to `fun`
+- returns: <[Promise<[Object]]> Promise which resolves to function return value.
+
+#### frame.$$(selector, fun, ...args)
+- `selector` <[string]> Query selector to be run on the page
+- `fun` <[function<[Element]>]> Function to be evaluted for every element matching `selector`.
+- `...args` <[Array]<[string]>> Arguments to pass to `fun`
+- returns: <[Promise<[Array<[Object]>]>]> Promise which resolves to array of function return values.
+
 #### frame.childFrames()
 #### frame.evaluate(fun, ...args)
 
@@ -459,3 +493,4 @@ If there's already a header with name `name`, the header gets overwritten.
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
 [stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable
+[Element]: https://developer.mozilla.org/en-US/docs/Web/API/element "Element"
