@@ -828,6 +828,34 @@ describe('Puppeteer', function() {
       expect(await page.title()).toBe('Button test');
     }));
   });
+
+  describe('Query selector', function() {
+    it('Page.$', SX(async function() {
+      await page.navigate(PREFIX + '/playground.html');
+      expect(await page.$('#first', element => element.textContent)).toBe('First div');
+      expect(await page.$('#second span', element => element.textContent)).toBe('Inner span');
+      expect(await page.$('#first', (element, arg1) => arg1, 'value1')).toBe('value1');
+      expect(await page.$('#first', (element, arg1, arg2) => arg2, 'value1', 'value2')).toBe('value2');
+      expect(await page.$('doesnot-exist', element => 5)).toBe(null);
+      expect(await page.$('button', function(element, arg1) {
+        element.textContent = arg1;
+        return true;
+      }, 'new button text')).toBe(true);
+      expect(await page.$('button', function(element) {
+        return element.textContent;
+      })).toBe('new button text');
+    }));
+
+    it('Page.$$', SX(async function() {
+      await page.navigate(PREFIX + '/playground.html');
+      expect((await page.$$('div', element => element.textContent)).length).toBe(2);
+      expect((await page.$$('div', (element, index) => index))[0]).toBe(0);
+      expect((await page.$$('div', (element, index) => index))[1]).toBe(1);
+      expect((await page.$$('doesnotexist', function(){})).length).toBe(0);
+      expect((await page.$$('div', element => element.textContent))[0]).toBe('First div');
+      expect((await page.$$('span', (element, index, arg1) => arg1, 'value1'))[0]).toBe('value1');
+    }));
+  });
 });
 
 // Since Jasmine doesn't like async functions, they should be wrapped

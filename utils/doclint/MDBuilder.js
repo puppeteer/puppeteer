@@ -53,7 +53,7 @@ class MDOutline {
     this.errors = [];
     const classHeading = /^class: (\w+)$/;
     const constructorRegex = /^new (\w+)\((.*)\)$/;
-    const methodRegex = /^(\w+)\.(\w+)\((.*)\)$/;
+    const methodRegex = /^(\w+)\.([\w$]+)\((.*)\)$/;
     const propertyRegex = /^(\w+)\.(\w+)$/;
     let currentClassName = null;
     let currentClassMembers = [];

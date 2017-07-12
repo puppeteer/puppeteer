@@ -13,6 +13,8 @@
   * [browser.stdout](#browserstdout)
   * [browser.version()](#browserversion)
 - [class: Page](#class-page)
+  * [page.$(selector, fun, ...args)](#pageselector-fun-args)
+  * [page.$$(selector, fun, ...args)](#pageselector-fun-args)
   * [page.addScriptTag(url)](#pageaddscripttagurl)
   * [page.click(selector)](#pageclickselector)
   * [page.close()](#pageclose)
@@ -46,6 +48,8 @@
   * [dialog.message()](#dialogmessage)
   * [dialog.type](#dialogtype)
 - [class: Frame](#class-frame)
+  * [frame.$(selector, fun, ...args)](#frameselector-fun-args)
+  * [frame.$$(selector, fun, ...args)](#frameselector-fun-args)
   * [frame.childFrames()](#framechildframes)
   * [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
   * [frame.isDetached()](#frameisdetached)
@@ -172,13 +176,32 @@ An example of creating a page, navigating it to a URL and saving screenshot as `
 ```js
 const {Browser} = require('puppeteer');
 const browser = new Browser();
-browser.newPage().then(async page => 
+browser.newPage().then(async page =>
   await page.navigate('https://example.com');
   await page.screenshot({path: 'screenshot.png'});
   browser.close();
 });
 ```
 
+#### page.$(selector, fun, ...args)
+
+- `selector` <[string]> Query selector to be run on the page
+- `fun` <[function<[Element]>]> Function to be evaluated with first element matching `selector`
+- `...args` <[Array]<[string]>> Arguments to pass to `fun`
+- returns: <[Promise<[Object]]> Promise which resolves to function return value.
+
+Shortcut for [page.mainFrame().$(selector, fun, ...args)](#pageselector-fun-args).
+
+#### page.$$(selector, fun, ...args)
+
+- `selector` <[string]> Query selector to be run on the page
+- `fun` <[function<[Element]>]> Function to be evaluted for every element matching `selector`.
+- `...args` <[Array]<[string]>> Arguments to pass to `fun`
+- returns: <[Promise<[Array<[Object]>]>]> Promise which resolves to array of function return values.
+
+Shortcut for [page.mainFrame().$$(selector, fun, ...args)](#pageselector-fun-args).
+
+#### page.addScriptTag(url)
 
 #### page.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
@@ -286,7 +309,7 @@ The `page.navigate` will throw an error if:
 - `callback` <[function]> Callback function which will be called in puppeteer's context.
 - returns: <[Promise]> Promise which resolves when callback is successfully initialized
 
-The in-page callback allows page to asynchronously reach back to the Puppeteer. 
+The in-page callback allows page to asynchronously reach back to the Puppeteer.
 An example of a page showing amount of CPU's:
 ```js
 const os = require('os');
@@ -389,6 +412,18 @@ Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `prompt`.
 
 ### class: Frame
+#### frame.$(selector, fun, ...args)
+- `selector` <[string]> Query selector to be run on the page
+- `fun` <[function<[Element]>]> Function to be evaluated with first element matching `selector`
+- `...args` <[Array]<[string]>> Arguments to pass to `fun`
+- returns: <[Promise<[Object]]> Promise which resolves to function return value.
+
+#### frame.$$(selector, fun, ...args)
+- `selector` <[string]> Query selector to be run on the page
+- `fun` <[function<[Element]>]> Function to be evaluted for every element matching `selector`.
+- `...args` <[Array]<[string]>> Arguments to pass to `fun`
+- returns: <[Promise<[Array<[Object]>]>]> Promise which resolves to array of function return values.
+
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
 
@@ -403,7 +438,7 @@ If the function, passed to the `page.evaluate`, returns a [Promise], then `page.
 ```js
 const {Browser} = require('puppeteer');
 const browser = new Browser();
-browser.newPage().then(async page => 
+browser.newPage().then(async page =>
   const result = await page.evaluate(() => {
     return Promise.resolve().then(() => 8 * 7);
   });
@@ -518,7 +553,7 @@ Continues request.
 #### interceptedRequest.headers
 - <[Headers]>
 
-Contains the [Headers] object associated with the request. 
+Contains the [Headers] object associated with the request.
 
 Headers could be mutated with the `headers.append`, `headers.set` and other
 methods. Must not be changed in response to an authChallenge.
@@ -529,7 +564,7 @@ methods. Must not be changed in response to an authChallenge.
 #### interceptedRequest.method
 - <[string]>
 
-Contains the request's method (GET, POST, etc.) 
+Contains the request's method (GET, POST, etc.)
 
 If set this allows the request method to be overridden. Must not be changed in response to an authChallenge.
 
@@ -616,3 +651,5 @@ If there's already a header with name `name`, the header gets overwritten.
 [Request]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-request  "Request"
 [Browser]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-browser  "Browser"
 [Body]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-body  "Body"
+[stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable
+[Element]: https://developer.mozilla.org/en-US/docs/Web/API/element "Element"
