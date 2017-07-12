@@ -10,11 +10,12 @@
     "unit": "jasmine test/test.js",
     "debug-unit": "DEBUG_TEST=true node --inspect-brk ./node_modules/.bin/jasmine test/test.js",
     "test-phantom": "python third_party/phantomjs/test/run-tests.py",
-    "test": "npm run lint --silent && npm run unit && npm run test-phantom",
+    "test-doclint": "jasmine utils/doclint/test/test.js",
+    "test": "npm run lint --silent && npm run unit && npm run test-phantom && npm run test-doclint",
     "install": "node install.js",
     "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .) && npm run doc",
     "generate-toc": "markdown-toc -i docs/api.md",
-    "doc": "jasmine test/doclint/lint.js"
+    "doc": "node utils/doclint/lint.js"
   },
   "author": "The Chromium Authors",
   "license": "SEE LICENSE IN LICENSE",

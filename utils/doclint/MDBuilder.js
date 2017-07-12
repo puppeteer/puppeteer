@@ -3,15 +3,14 @@ const markdownToc = require('markdown-toc');
 const path = require('path');
 const Documentation = require('./Documentation');
 const commonmark = require('commonmark');
-const Browser = require('../../lib/Browser');
 
 class MDOutline {
   /**
-   * @param {!Browser} browser
+   * @param {!Page} page
    * @param {string} text
    * @return {!MDOutline}
    */
-  static async create(browser, text) {
+  static async create(page, text) {
     // Render markdown as HTML.
     const reader = new commonmark.Parser();
     const parsed = reader.parse(text);
@@ -19,7 +18,6 @@ class MDOutline {
     const html = writer.render(parsed);
 
     // Extract headings.
-    const page = await browser.newPage();
     await page.setContent(html);
     const classes = await page.evaluate(() => {
       let classes = [];
@@ -59,6 +57,8 @@ class MDOutline {
     let currentClassProperties = [];
     for (const cls of classes) {
       let match = cls.name.match(classHeading);
+      if (!match)
+        continue;
       currentClassName = match[1];
       for (let member of cls.members) {
         if (constructorRegex.test(member.name)) {
@@ -108,26 +108,25 @@ class MDOutline {
 }
 
 /**
+ * @param {!Page} page
  * @param {!Array<string>} dirPath
  * @return {!Promise<{documentation: !Documentation, errors: !Array<string>}>}
  */
-module.exports = async function(dirPath) {
+module.exports = async function(page, dirPath) {
   let filePaths = fs.readdirSync(dirPath)
       .filter(fileName => fileName.endsWith('.md'))
       .map(fileName => path.join(dirPath, fileName));
   let classes = [];
   let errors = [];
-  const browser = new Browser({args: ['--no-sandbox']});
   for (let filePath of filePaths) {
     const markdownText = fs.readFileSync(filePath, 'utf8');
     const newMarkdownText = markdownToc.insert(markdownText);
     if (markdownText !== newMarkdownText)
       errors.push('Markdown TOC is outdated, run `yarn generate-toc`');
-    let outline = await MDOutline.create(browser, markdownText);
+    let outline = await MDOutline.create(page, markdownText);
     classes.push(...outline.classes);
     errors.push(...outline.errors);
   }
-  await browser.close();
   const documentation = new Documentation(classes);
   return { documentation, errors };
 };

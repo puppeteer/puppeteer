@@ -1,2 +1,3 @@
 third_party/*
 examples/*
+utils/doclint/test/

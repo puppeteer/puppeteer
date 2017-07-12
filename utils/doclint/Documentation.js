@@ -14,19 +14,22 @@ class Documentation {
    * @param {!Documentation} expected
    */
   static diff(actual, expected) {
-    const result = {};
     // Diff classes.
+    const result = {
+      extraClasses: [],
+      missingClasses: [],
+      extraMethods: [],
+      missingMethods: [],
+      extraProperties: [],
+      missingProperties: [],
+      badArguments: [],
+    };
     const actualClasses = Array.from(actual.classes.keys()).sort();
     const expectedClasses = Array.from(expected.classes.keys()).sort();
     let classesDiff = diff(actualClasses, expectedClasses);
-    result.extraClasses = classesDiff.extra;
-    result.missingClasses = classesDiff.missing;
+    result.extraClasses.push(...classesDiff.extra);
+    result.missingClasses.push(...classesDiff.missing);
 
-    result.extraMethods = [];
-    result.missingMethods = [];
-    result.badArguments = [];
-    result.extraProperties = [];
-    result.missingProperties = [];
     for (let className of classesDiff.equal) {
       const actualClass = actual.classes.get(className);
       const expectedClass = expected.classes.get(className);

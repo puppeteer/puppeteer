@@ -1,0 +1,4 @@
+### class: Foo
+
+#### foo.bar()
+
