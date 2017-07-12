@@ -14,7 +14,7 @@
   * [browser.stdout](#browserstdout)
 - [class: Page](#class-page)
   * [page.$(selector, fun, ...args)](#pageselector-fun-args)
-  * [page.$$(selector, fun, ...args)](#pageselector-fun-args)
+  * [page.$$(selector, fun, ...args)](#pageselector-fun-args-1)
   * [page.addScriptTag(url)](#pageaddscripttagurl)
   * [page.click(selector)](#pageclickselector)
   * [page.close()](#pageclose)
