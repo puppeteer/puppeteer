@@ -384,11 +384,13 @@ Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 ### class: Keyboard
 
 #### keyboard.press(key)
-- `key` <[string]> Name of key to press, such as `ArrowLeft`
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
 - returns <[Promise]>
 
+This does not send input events. To type characters into a text field, use [keyboard.type(text)](#keyboardtypetext)
+
 #### keyboard.release(key)
-- `key` <[string]> Name of key to release, such as `ArrowLeft`
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
 - returns <[Promise]>
 
 #### keyboard.type(text)
