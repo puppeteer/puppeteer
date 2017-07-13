@@ -1,4 +1,3 @@
-const {describe, it, fail, runSpecs} = require('./specRunner');
 const path = require('path');
 const jsBuilder = require('./JSBuilder');
 const mdBuilder = require('./MDBuilder');
@@ -29,101 +28,88 @@ let EXCLUDE_METHODS = new Set([
   'Response.constructor',
 ]);
 
-const browser = new Browser({args: ['--no-sandbox']});
-browser.newPage()
-    .then(initializeSpecs)
-    .then(runSpecs)
-    .catch(console.error)
-    .then(() => browser.close());
-
-async function initializeSpecs(page) {
-  let jsResult = await jsBuilder(path.join(PROJECT_DIR, 'lib'));
-  let mdResult = await mdBuilder(page, path.join(PROJECT_DIR, 'docs'));
+/**
+ * @param {!Page} page
+ * @param {string} docsFolderPath
+ * @param {string} jsFolderPath
+ * @return {!Promise<!Array<string>>}
+ */
+async function lint(page, docsFolderPath, jsFolderPath) {
+  let mdResult = await mdBuilder(page, docsFolderPath);
+  let jsResult = await jsBuilder(jsFolderPath);
   let jsDocumentation = filterJSDocumentation(jsResult);
   let mdDocumentation = mdResult.documentation;
   let diff = Documentation.diff(mdDocumentation, jsDocumentation);
 
-  describe('JavaScript documentation parser', function() {
-    it('should not contain any duplicate classes (probably error in parsing!)', () => {
-      let jsClasses = new Map();
-      for (let jsClass of jsDocumentation.classesArray) {
-        if (jsClasses.has(jsClass.name))
-          fail(`JavaScript has duplicate declaration of ${jsClass.name}. (This probably means that this linter has an error)`);
-        jsClasses.set(jsClass.name, jsClass);
-      }
-    });
-  });
+  let jsErrors = [];
+  let mdErrors = [];
 
-  describe('Markdown Documentation', function() {
-    it('should not have any parse errors', () => {
-      for (let error of mdResult.errors)
-        fail(error);
-    });
-    it('should not contain any duplicate classes', () => {
-      let mdClasses = new Map();
-      for (let mdClass of mdDocumentation.classesArray) {
-        if (mdClasses.has(mdClass.name))
-          fail(`Documentation has duplicate declaration of class ${mdClass.name}`);
-        mdClasses.set(mdClass.name, mdClass);
-      }
-    });
-    it('class constructors should be defined before other methods', () => {
-      for (let mdClass of mdDocumentation.classesArray) {
-        let constructorMethod = mdClass.methods.get('constructor');
-        if (!constructorMethod)
+  // Report all markdown parse errors.
+  mdErrors.push(...mdResult.errors);
+  {
+    // Report duplicate JavaScript classes.
+    let jsClasses = new Map();
+    for (let jsClass of jsDocumentation.classesArray) {
+      if (jsClasses.has(jsClass.name))
+        jsErrors.push(`Duplicate declaration of class ${jsClass.name}`);
+      jsClasses.set(jsClass.name, jsClass);
+    }
+  }
+  {
+    // Report duplicate MarkDown classes.
+    let mdClasses = new Map();
+    for (let mdClass of mdDocumentation.classesArray) {
+      if (mdClasses.has(mdClass.name))
+        mdErrors.push(`Duplicate declaration of class ${mdClass.name}`);
+      mdClasses.set(mdClass.name, mdClass);
+    }
+  }
+  {
+    // Make sure class constructors are defined before other methods.
+    for (let mdClass of mdDocumentation.classesArray) {
+      let constructorMethod = mdClass.methods.get('constructor');
+      if (!constructorMethod)
+        continue;
+      if (mdClass.methodsArray[0] !== constructorMethod)
+        mdErrors.push(`Constructor of ${mdClass.name} should go before other methods`);
+    }
+  }
+  {
+    // Methods should be sorted alphabetically.
+    for (let mdClass of mdDocumentation.classesArray) {
+      for (let i = 0; i < mdClass.methodsArray.length - 1; ++i) {
+        // Constructor should always go first.
+        if (mdClass.methodsArray[i].name === 'constructor')
           continue;
-        if (mdClass.methodsArray[0] !== constructorMethod)
-          fail(`Method 'new ${mdClass.name}' should go before other methods of class ${mdClass.name}`);
+        let method1 = mdClass.methodsArray[i];
+        let method2 = mdClass.methodsArray[i + 1];
+        if (method1.name > method2.name)
+          mdErrors.push(`${mdClass.name}.${method1.name} breaks alphabetic sorting inside class ${mdClass.name}`);
       }
-    });
-    it('methods should be sorted alphabetically', () => {
-      for (let mdClass of mdDocumentation.classesArray) {
-        for (let i = 0; i < mdClass.methodsArray.length - 1; ++i) {
-          // Constructor should always go first.
-          if (mdClass.methodsArray[i].name === 'constructor')
-            continue;
-          let method1 = mdClass.methodsArray[i];
-          let method2 = mdClass.methodsArray[i + 1];
-          if (method1.name > method2.name)
-            fail(`${mdClass.name}.${method1.name} breaks alphabetic sorting inside class ${mdClass.name}`);
-        }
-      }
-    });
-    it('should not contain any non-existing class', () => {
-      for (let className of diff.extraClasses)
-        fail(`Documentation describes non-existing class ${className}`);
-    });
-    it('should describe all existing classes', () => {
-      for (let className of diff.missingClasses)
-        fail(`Documentation lacks description of class ${className}`);
-    });
-    it('should not contain any non-existing methods', () => {
-      for (let methodName of diff.extraMethods)
-        fail(`Documentation describes non-existing method: ${methodName}`);
-    });
-    it('should describe all existing methods', () => {
-      for (let methodName of diff.missingMethods)
-        fail(`Documentation lacks method ${methodName}`);
-    });
-    it('should describe all arguments propertly', () => {
-      for (let badArgument of diff.badArguments) {
-        let text = [`Method ${badArgument.method} fails to describe its parameters:`];
-        for (let missing of badArgument.missingArgs)
-          text.push(`- Missing description for "${missing}"`);
-        for (let extra of badArgument.extraArgs)
-          text.push(`- Described non-existing parameter "${extra}"`);
-        fail(text.join('\n'));
-      }
-    });
-    it('should not contain any non-existing properties', () => {
-      for (let propertyName of diff.extraProperties)
-        fail(`Documentation describes non-existing property: ${propertyName}`);
-    });
-    it('should describe all existing properties', () => {
-      for (let propertyName of diff.missingProperties)
-        fail(`Documentation lacks property ${propertyName}`);
-    });
-  });
+    }
+  }
+  // Report non-existing and missing classes.
+  mdErrors.push(...diff.extraClasses.map(className => `Non-existing class found: ${className}`));
+  mdErrors.push(...diff.missingClasses.map(className => `Class not found: ${className}`));
+  mdErrors.push(...diff.extraMethods.map(methodName => `Non-existing method found: ${methodName}`));
+  mdErrors.push(...diff.missingMethods.map(methodName => `Method not found: ${methodName}`));
+  mdErrors.push(...diff.extraProperties.map(propertyName => `Non-existing property found: ${propertyName}`));
+  mdErrors.push(...diff.missingProperties.map(propertyName => `Property not found: ${propertyName}`));
+  {
+    // Report badly described arguments.
+    for (let badArgument of diff.badArguments) {
+      let text = [`Method ${badArgument.method} fails to describe its parameters:`];
+      for (let missing of badArgument.missingArgs)
+        text.push(`- Missing description for "${missing}"`);
+      for (let extra of badArgument.extraArgs)
+        text.push(`- Described non-existing parameter "${extra}"`);
+      mdErrors.push(text.join('\n'));
+    }
+  }
+  // Push all errors with proper prefixes
+  let errors = jsErrors.map(error => '[JavaScript] ' + error);
+  errors.push(...mdErrors.map(error => '[MarkDown] ' + error));
+  return errors;
 }
 
 /**
@@ -145,4 +131,31 @@ function filterJSDocumentation(jsDocumentation) {
     classes.push(new Documentation.Class(cls.name, methods, properties));
   }
   return new Documentation(classes);
+}
+
+module.exports = lint;
+
+const RED_COLOR = '\x1b[31m';
+const RESET_COLOR = '\x1b[0m';
+
+// Handle CLI invocation.
+if (!module.parent) {
+  const startTime = Date.now();
+  const browser = new Browser({args: ['--no-sandbox']});
+  browser.newPage().then(async page => {
+    const errors = await lint(page, path.join(PROJECT_DIR, 'docs'), path.join(PROJECT_DIR, 'lib'));
+    await browser.close();
+    if (errors.length) {
+      console.log('Documentation Failures:');
+      for (let i = 0; i < errors.length; ++i) {
+        let error = errors[i];
+        error = error.split('\n').join('\n    ');
+        console.log(`${i + 1}) ${RED_COLOR}${error}${RESET_COLOR}`);
+      }
+    }
+    console.log(`${errors.length} failures`);
+    const runningTime = Date.now() - startTime;
+    console.log(`Finished in ${runningTime / 1000} seconds`);
+    process.exit(errors.length > 0 ? 1 : 0);
+  });
 }

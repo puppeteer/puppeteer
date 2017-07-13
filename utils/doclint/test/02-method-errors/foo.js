@@ -1,0 +1,7 @@
+class Foo {
+  start() {
+  }
+
+  stop() {
+  }
+}

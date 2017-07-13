@@ -1,0 +1,3 @@
+[MarkDown] Method not found: Foo.constructor
+[MarkDown] Non-existing property found: Foo.c
+[MarkDown] Property not found: Foo.b

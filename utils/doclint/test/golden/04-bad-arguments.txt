@@ -1,0 +1,4 @@
+[MarkDown] Heading arguments for "foo.test(fileNames)" do not match described ones, i.e. "fileNames" != "filePaths"
+[MarkDown] Method Foo.constructor fails to describe its parameters:
+- Missing description for "arg3"
+- Described non-existing parameter "arg2"
