@@ -19,19 +19,14 @@ let Diff = require('text-diff');
 let mime = require('mime');
 let PNG = require('pngjs').PNG;
 let pixelmatch = require('pixelmatch');
-let rm = require('rimraf').sync;
-
-let GOLDEN_DIR = path.join(__dirname, 'golden');
-let OUTPUT_DIR = path.join(__dirname, 'output');
 
 module.exports = {
-  addMatchers: function(jasmine) {
-    jasmine.addMatchers(customMatchers);
-  },
-
-  removeOutputDir: function() {
-    if (fs.existsSync(OUTPUT_DIR))
-      rm(OUTPUT_DIR);
+  addMatchers: function(jasmine, goldenPath, outputPath) {
+    jasmine.addMatchers({
+      toBeGolden: function(util, customEqualityTesters) {
+        return { compare: compare.bind(null, goldenPath, outputPath) };
+      }
+    });
   },
 };
 
@@ -84,64 +79,58 @@ function compareText(actual, expectedBuffer) {
   };
 }
 
-let customMatchers = {
-  toBeGolden: function(util, customEqualityTesters) {
+/**
+ * @param {?Object} actual
+ * @param {string} goldenName
+ * @return {!{pass: boolean, message: (undefined|string)}}
+ */
+function compare(goldenPath, outputPath, actual, goldenName) {
+  let expectedPath = path.join(goldenPath, goldenName);
+  let actualPath = path.join(outputPath, goldenName);
+
+  let messageSuffix = 'Output is saved in "' + path.basename(outputPath + '" directory');
+
+  if (!fs.existsSync(expectedPath)) {
+    ensureOutputDir();
+    fs.writeFileSync(actualPath, actual);
     return {
-      /**
-             * @param {?Object} actual
-             * @param {string} goldenName
-             * @return {!{pass: boolean, message: (undefined|string)}}
-             */
-      compare: function(actual, goldenName) {
-        let expectedPath = path.join(GOLDEN_DIR, goldenName);
-        let actualPath = path.join(OUTPUT_DIR, goldenName);
-
-        let messageSuffix = 'Output is saved in "' + path.basename(OUTPUT_DIR + '" directory');
-
-        if (!fs.existsSync(expectedPath)) {
-          ensureOutputDir();
-          fs.writeFileSync(actualPath, actual);
-          return {
-            pass: false,
-            message: goldenName + ' is missing in golden results. ' + messageSuffix
-          };
-        }
-        let expected = fs.readFileSync(expectedPath);
-        let comparator = GoldenComparators[mime.lookup(goldenName)];
-        if (!comparator) {
-          return {
-            pass: false,
-            message: 'Failed to find comparator with type ' + mime.lookup(goldenName) + ': '  + goldenName
-          };
-        }
-        let result = comparator(actual, expected);
-        if (!result)
-          return { pass: true };
-        ensureOutputDir();
-        fs.writeFileSync(actualPath, actual);
-        // Copy expected to the output/ folder for convenience.
-        fs.writeFileSync(addSuffix(actualPath, '-expected'), expected);
-        if (result.diff) {
-          let diffPath = addSuffix(actualPath, '-diff', result.diffExtension);
-          fs.writeFileSync(diffPath, result.diff);
-        }
-
-        let message = goldenName + ' mismatch!';
-        if (result.errorMessage)
-          message += ' ' + result.errorMessage;
-        return {
-          pass: false,
-          message: message + ' ' + messageSuffix
-        };
-
-        function ensureOutputDir() {
-          if (!fs.existsSync(OUTPUT_DIR))
-            fs.mkdirSync(OUTPUT_DIR);
-        }
-      }
+      pass: false,
+      message: goldenName + ' is missing in golden results. ' + messageSuffix
     };
-  },
-};
+  }
+  let expected = fs.readFileSync(expectedPath);
+  let comparator = GoldenComparators[mime.lookup(goldenName)];
+  if (!comparator) {
+    return {
+      pass: false,
+      message: 'Failed to find comparator with type ' + mime.lookup(goldenName) + ': '  + goldenName
+    };
+  }
+  let result = comparator(actual, expected);
+  if (!result)
+    return { pass: true };
+  ensureOutputDir();
+  fs.writeFileSync(actualPath, actual);
+  // Copy expected to the output/ folder for convenience.
+  fs.writeFileSync(addSuffix(actualPath, '-expected'), expected);
+  if (result.diff) {
+    let diffPath = addSuffix(actualPath, '-diff', result.diffExtension);
+    fs.writeFileSync(diffPath, result.diff);
+  }
+
+  let message = goldenName + ' mismatch!';
+  if (result.errorMessage)
+    message += ' ' + result.errorMessage;
+  return {
+    pass: false,
+    message: message + ' ' + messageSuffix
+  };
+
+  function ensureOutputDir() {
+    if (!fs.existsSync(outputPath))
+      fs.mkdirSync(outputPath);
+  }
+}
 
 /**
  * @param {string} filePath

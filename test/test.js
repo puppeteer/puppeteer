@@ -15,10 +15,14 @@
  */
 
 let fs = require('fs');
+let rm = require('rimraf').sync;
 let path = require('path');
 let Browser = require('../lib/Browser');
 let SimpleServer = require('./server/SimpleServer');
 let GoldenUtils = require('./golden-utils');
+
+let GOLDEN_DIR = path.join(__dirname, 'golden');
+let OUTPUT_DIR = path.join(__dirname, 'output');
 
 let PORT = 8907;
 let PREFIX = 'http://localhost:' + PORT;
@@ -50,7 +54,8 @@ describe('Puppeteer', function() {
     const assetsPath = path.join(__dirname, 'assets');
     server = await SimpleServer.create(assetsPath, PORT);
     httpsServer = await SimpleServer.createHTTPS(assetsPath, HTTPS_PORT);
-    GoldenUtils.removeOutputDir();
+    if (fs.existsSync(OUTPUT_DIR))
+      rm(OUTPUT_DIR);
   }));
 
   afterAll(SX(async function() {
@@ -65,7 +70,7 @@ describe('Puppeteer', function() {
     page = await browser.newPage();
     server.reset();
     httpsServer.reset();
-    GoldenUtils.addMatchers(jasmine);
+    GoldenUtils.addMatchers(jasmine, GOLDEN_DIR, OUTPUT_DIR);
   }));
 
   afterEach(function() {
