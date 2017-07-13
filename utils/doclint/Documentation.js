@@ -12,23 +12,18 @@ class Documentation {
   /**
    * @param {!Documentation} actual
    * @param {!Documentation} expected
+   * @return {!Array<string>}
    */
   static diff(actual, expected) {
-    // Diff classes.
-    const result = {
-      extraClasses: [],
-      missingClasses: [],
-      extraMethods: [],
-      missingMethods: [],
-      extraProperties: [],
-      missingProperties: [],
-      badArguments: [],
-    };
+    const errors = [];
+
     const actualClasses = Array.from(actual.classes.keys()).sort();
     const expectedClasses = Array.from(expected.classes.keys()).sort();
     let classesDiff = diff(actualClasses, expectedClasses);
-    result.extraClasses.push(...classesDiff.extra);
-    result.missingClasses.push(...classesDiff.missing);
+    for (let className of classesDiff.extra)
+      errors.push(`Non-existing class found: ${className}`);
+    for (let className of classesDiff.missing)
+      errors.push(`Class not found: ${className}`);
 
     for (let className of classesDiff.equal) {
       const actualClass = actual.classes.get(className);
@@ -36,29 +31,63 @@ class Documentation {
       const actualMethods = Array.from(actualClass.methods.keys()).sort();
       const expectedMethods = Array.from(expectedClass.methods.keys()).sort();
       const methodDiff = diff(actualMethods, expectedMethods);
-      result.extraMethods.push(...(methodDiff.extra.map(methodName => className + '.' + methodName)));
-      result.missingMethods.push(...(methodDiff.missing.map(methodName => className + '.' + methodName)));
+      for (let methodName of methodDiff.extra)
+        errors.push(`Non-existing method found: ${className}.${methodName}()`);
+      for (let methodName of methodDiff.missing)
+        errors.push(`Method not found: ${className}.${methodName}()`);
+
       for (let methodName of methodDiff.equal) {
         const actualMethod = actualClass.methods.get(methodName);
         const expectedMethod = expectedClass.methods.get(methodName);
-        const actualArgs = actualMethod.args.map(arg => arg.name);
-        const expectedArgs = expectedMethod.args.map(arg => arg.name);
+        const actualArgs = Array.from(actualMethod.args.keys());
+        const expectedArgs = Array.from(expectedMethod.args.keys());
         const argDiff = diff(actualArgs, expectedArgs);
         if (argDiff.extra.length || argDiff.missing.length) {
-          result.badArguments.push({
-            method: `${className}.${methodName}`,
-            missingArgs: argDiff.missing,
-            extraArgs: argDiff.extra
-          });
+          let text = [`Method ${className}.${methodName}() fails to describe its parameters:`];
+          for (let arg of argDiff.missing)
+            text.push(`- Argument not found: ${arg}`);
+          for (let arg of argDiff.extra)
+            text.push(`- Non-existing argument found: ${arg}`);
+          errors.push(text.join('\n'));
         }
       }
-      const actualProperties = actualClass.propertiesArray.slice().sort();
-      const expectedProperties = expectedClass.propertiesArray.slice().sort();
+      const actualProperties = Array.from(actualClass.properties.keys()).sort();
+      const expectedProperties = Array.from(expectedClass.properties.keys()).sort();
       const propertyDiff = diff(actualProperties, expectedProperties);
-      result.extraProperties.push(...(propertyDiff.extra.map(propertyName => className + '.' + propertyName)));
-      result.missingProperties.push(...(propertyDiff.missing.map(propertyName => className + '.' + propertyName)));
+      for (let propertyName of propertyDiff.extra)
+        errors.push(`Non-existing property found: ${className}.${propertyName}`);
+      for (let propertyName of propertyDiff.missing)
+        errors.push(`Property not found: ${className}.${propertyName}`);
     }
-    return result;
+    return errors;
+  }
+
+  /**
+   * @param {!Documentation} doc
+   * @return {!Array<string>}
+   */
+  static validate(doc) {
+    const errors = [];
+    let classes = new Set();
+    // Report duplicates.
+    for (let cls of doc.classesArray) {
+      if (classes.has(cls.name))
+        errors.push(`Duplicate declaration of class ${cls.name}`);
+      classes.add(cls.name);
+      let methods = new Set();
+      for (let method of cls.methodsArray) {
+        if (methods.has(method.name))
+          errors.push(`Duplicate declaration of method ${cls.name}.${method.name}()`);
+        methods.add(method.name);
+        let args = new Set();
+        for (let arg of method.argsArray) {
+          if (args.has(arg.name))
+            errors.push(`Duplicate declaration of argument ${cls.name}.${method.name} "${arg.name}"`);
+          args.add(arg.name);
+        }
+      }
+    }
+    return errors;
   }
 }
 
@@ -82,11 +111,14 @@ Documentation.Class = class {
 Documentation.Method = class {
   /**
    * @param {string} name
-   * @param {!Array<!Documentation.Argument>} args
+   * @param {!Array<!Documentation.Argument>} argsArray
    */
-  constructor(name, args) {
+  constructor(name, argsArray) {
     this.name = name;
-    this.args = args;
+    this.argsArray = argsArray;
+    this.args = new Map();
+    for (let arg of argsArray)
+      this.args.set(arg.name, arg);
   }
 };
 

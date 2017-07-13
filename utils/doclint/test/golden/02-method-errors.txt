@@ -1,2 +1,2 @@
-[MarkDown] Non-existing method found: Foo.proceed
-[MarkDown] Method not found: Foo.stop
+[MarkDown] Non-existing method found: Foo.proceed()
+[MarkDown] Method not found: Foo.stop()

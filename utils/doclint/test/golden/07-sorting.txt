@@ -1,0 +1,2 @@
+[MarkDown] Constructor of Foo should go before other methods
+[MarkDown] Foo.ccc breaks alphabetic methods sorting inside class Foo

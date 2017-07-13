@@ -36,6 +36,8 @@ describe('doclint', function() {
   it('03-property-errors', SX(test));
   it('04-bad-arguments', SX(test));
   it('05-outdated-toc', SX(test));
+  it('06-duplicates', SX(test));
+  it('07-sorting', SX(test));
 });
 
 async function test() {

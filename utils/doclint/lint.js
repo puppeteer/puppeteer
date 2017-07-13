@@ -39,76 +39,43 @@ async function lint(page, docsFolderPath, jsFolderPath) {
   let jsResult = await jsBuilder(jsFolderPath);
   let jsDocumentation = filterJSDocumentation(jsResult);
   let mdDocumentation = mdResult.documentation;
-  let diff = Documentation.diff(mdDocumentation, jsDocumentation);
 
   let jsErrors = [];
-  let mdErrors = [];
-
+  let mdErrors = Documentation.diff(mdDocumentation, jsDocumentation);
   // Report all markdown parse errors.
   mdErrors.push(...mdResult.errors);
-  {
-    // Report duplicate JavaScript classes.
-    let jsClasses = new Map();
-    for (let jsClass of jsDocumentation.classesArray) {
-      if (jsClasses.has(jsClass.name))
-        jsErrors.push(`Duplicate declaration of class ${jsClass.name}`);
-      jsClasses.set(jsClass.name, jsClass);
-    }
-  }
-  {
-    // Report duplicate MarkDown classes.
-    let mdClasses = new Map();
-    for (let mdClass of mdDocumentation.classesArray) {
-      if (mdClasses.has(mdClass.name))
-        mdErrors.push(`Duplicate declaration of class ${mdClass.name}`);
-      mdClasses.set(mdClass.name, mdClass);
-    }
-  }
-  {
-    // Make sure class constructors are defined before other methods.
-    for (let mdClass of mdDocumentation.classesArray) {
-      let constructorMethod = mdClass.methods.get('constructor');
-      if (!constructorMethod)
-        continue;
-      if (mdClass.methodsArray[0] !== constructorMethod)
-        mdErrors.push(`Constructor of ${mdClass.name} should go before other methods`);
-    }
-  }
-  {
-    // Methods should be sorted alphabetically.
-    for (let mdClass of mdDocumentation.classesArray) {
-      for (let i = 0; i < mdClass.methodsArray.length - 1; ++i) {
-        // Constructor should always go first.
-        if (mdClass.methodsArray[i].name === 'constructor')
-          continue;
-        let method1 = mdClass.methodsArray[i];
-        let method2 = mdClass.methodsArray[i + 1];
-        if (method1.name > method2.name)
-          mdErrors.push(`${mdClass.name}.${method1.name} breaks alphabetic sorting inside class ${mdClass.name}`);
-      }
-    }
-  }
-  // Report non-existing and missing classes.
-  mdErrors.push(...diff.extraClasses.map(className => `Non-existing class found: ${className}`));
-  mdErrors.push(...diff.missingClasses.map(className => `Class not found: ${className}`));
-  mdErrors.push(...diff.extraMethods.map(methodName => `Non-existing method found: ${methodName}`));
-  mdErrors.push(...diff.missingMethods.map(methodName => `Method not found: ${methodName}`));
-  mdErrors.push(...diff.extraProperties.map(propertyName => `Non-existing property found: ${propertyName}`));
-  mdErrors.push(...diff.missingProperties.map(propertyName => `Property not found: ${propertyName}`));
-  {
-    // Report badly described arguments.
-    for (let badArgument of diff.badArguments) {
-      let text = [`Method ${badArgument.method} fails to describe its parameters:`];
-      for (let missing of badArgument.missingArgs)
-        text.push(`- Missing description for "${missing}"`);
-      for (let extra of badArgument.extraArgs)
-        text.push(`- Described non-existing parameter "${extra}"`);
-      mdErrors.push(text.join('\n'));
-    }
-  }
+
+  jsErrors.push(...Documentation.validate(jsDocumentation));
+  mdErrors.push(...Documentation.validate(mdDocumentation));
+  mdErrors.push(...lintMarkdown(mdDocumentation));
+
   // Push all errors with proper prefixes
   let errors = jsErrors.map(error => '[JavaScript] ' + error);
   errors.push(...mdErrors.map(error => '[MarkDown] ' + error));
+  return errors;
+}
+
+/**
+ * @param {!Documentation} doc
+ * @return {!Array<string>}
+ */
+function lintMarkdown(doc) {
+  const errors = [];
+  // Methods should be sorted alphabetically.
+  for (let cls of doc.classesArray) {
+    for (let i = 0; i < cls.methodsArray.length - 1; ++i) {
+      // Constructor always goes first.
+      if (cls.methodsArray[i].name === 'constructor') {
+        if (i > 0)
+          errors.push(`Constructor of ${cls.name} should go before other methods`);
+        continue;
+      }
+      let method1 = cls.methodsArray[i];
+      let method2 = cls.methodsArray[i + 1];
+      if (method1.name > method2.name)
+        errors.push(`${cls.name}.${method1.name} breaks alphabetic methods sorting inside class ${cls.name}`);
+    }
+  }
   return errors;
 }
 
