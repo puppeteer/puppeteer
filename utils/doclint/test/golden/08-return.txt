@@ -1,0 +1,3 @@
+[MarkDown] Async method Foo.asyncFunction should describe return type Promise
+[MarkDown] Method Foo.return42 is missing return type description
+[MarkDown] Method Foo.returnNothing has unneeded description of return type

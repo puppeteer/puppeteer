@@ -36,13 +36,11 @@ class JSOutline {
       this._currentClassMembers.push(property);
       return;
     }
-    const args = [];
-    for (let param of node.value.params)
-      args.push(new Documentation.Argument(this._extractText(param)));
-    let method = Documentation.Member.createMethod(methodName, args);
-    this._currentClassMembers.push(method);
+    // Async functions have return value.
+    let hasReturn = node.value.async;
     // Extract properties from constructor.
     if (node.kind === 'constructor') {
+      // Extract properties from constructor.
       let walker = new ESTreeWalker(node => {
         if (node.type !== 'AssignmentExpression')
           return;
@@ -53,12 +51,21 @@ class JSOutline {
           this._currentClassMembers.push(Documentation.Member.createProperty(node.property.name));
       });
       walker.walk(node);
+    } else if (!hasReturn) {
+      let walker = new ESTreeWalker(node => {
+        if (node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration' || node.type === 'ArrowFunctionExpression')
+          return ESTreeWalker.SkipSubtree;
+        if (node.type === 'ReturnStatement')
+          hasReturn = hasReturn || !!node.argument;
+      });
+      walker.walk(node.value.body);
     }
+    const args = [];
+    for (let param of node.value.params)
+      args.push(new Documentation.Argument(this._extractText(param)));
+    let method = Documentation.Member.createMethod(methodName, args, hasReturn, node.value.async);
+    this._currentClassMembers.push(method);
     return ESTreeWalker.SkipSubtree;
-  }
-
-  _onMemberExpression(node) {
-
   }
 
   _flushClassIfNeeded() {

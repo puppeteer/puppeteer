@@ -38,6 +38,7 @@ describe('doclint', function() {
   it('05-outdated-toc', SX(test));
   it('06-duplicates', SX(test));
   it('07-sorting', SX(test));
+  it('08-return', SX(test));
 });
 
 async function test() {

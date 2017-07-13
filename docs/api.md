@@ -52,7 +52,6 @@
   * [frame.isMainFrame()](#frameismainframe)
   * [frame.name()](#framename)
   * [frame.parentFrame()](#frameparentframe)
-  * [frame.securityOrigin()](#framesecurityorigin)
   * [frame.url()](#frameurl)
   * [frame.waitFor(selector)](#framewaitforselector)
 - [class: Request](#class-request)
@@ -99,8 +98,17 @@ Browser manages a browser instance, creating it with a predefined
 settings, opening and closing pages. Instantiating Browser class does
 not necessarily result in launching browser; the instance will be launched when the need will arise.
 
-#### new Browser([options])
+A typical scenario of using [Browser] is opening a new page and navigating it to a desired URL:
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+browser.newPage().then(async page => {
+  await page.navigate('https://example.com');
+  browser.close();
+})
+```
 
+#### new Browser([options])
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
 	- `headless` <[boolean]> Wether to run chromium in headless mode. Defaults to `true`.
 	- `executablePath` <[string]> Path to a chromium executable to run instead of bundled chromium.
@@ -109,87 +117,118 @@ not necessarily result in launching browser; the instance will be launched when 
 
 #### browser.close()
 
-Closes chromium application with all the pages (if any were opened). The browser object itself is considered to be disposed and could not be used anymore.
+Closes browser with all the pages (if any were opened). The browser object itself is considered to be disposed and could not be used anymore.
 
 #### browser.closePage(page)
-
 - `page` <[Page]> A page to be closed.
 - returns: <[Promise]> Promise which resolves when the page is closed.
 
+This is an alias for the `page.close()` method.
+
 #### browser.newPage()
+- returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.
 
-- returns: <[Promise]<[Page]>>
-
-Create a new page in browser and returns a promise which gets resolved with a Page object.
 
 #### browser.stderr
 - <[stream.Readable]>
 
 A Readable Stream that represents the browser process's stderr.
+For example, `stderr` could be piped into `process.stderr`:
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+browser.stderr.pipe(process.stderr);
+browser.version().then(version => {
+  console.log(version);
+  browser.close();
+});
+```
 
 #### browser.stdout
 - <[stream.Readable]>
 
 A Readable Stream that represents the browser process's stdout.
+For example, `stdout` could be piped into `process.stdout`:
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+browser.stdout.pipe(process.stdout);
+browser.version().then(version => {
+  console.log(version);
+  browser.close();
+});
+```
 
 #### browser.version()
-- returns: <[Promise]<[string]>>
+- returns: <[Promise]<[string]>> String describing browser version. For headless chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is `Chrome/61.0.3153.0`.
+
+> **NOTE** the format of browser.version() is not fixed and might change with future releases of the library.
 
 ### class: Page
 
-Page provides interface to interact with a tab in a browser. Pages are created by browser:
+Page provides methods to interact with browser page. Page could be thought about as a browser tab, so one [Browser] instance might have multiple [Page] instances.
 
-```javascript
-var browser = new Browser();
-browser.newPage().then(page => {
-	...
+An example of creating a page, navigating it to a URL and saving screenshot as `screenshot.png`:
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+browser.newPage().then(async page => 
+  await page.navigate('https://example.com');
+  await page.screenshot({path: 'screenshot.png'});
+  browser.close();
 });
 ```
-Pages could be closed by `page.close()` method.
+
 
 #### page.addScriptTag(url)
-
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
 
+Adds a `<script></script>` tag to the page with the desired url. Alternatively, javascript could be injected to the page via `page.injectFile` method.
+
 #### page.click(selector)
-- `selector` <[string]> A query selector of element to click. If there are multiple elements satisfying the selector, the first will be clicked.
+- `selector` <[string]> A query selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
+- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. Promise gets rejected if there's no element matching `selector`.
 
 #### page.close()
-
 - returns: <[Promise]> Returns promise which resolves when page gets closed.
 
 #### page.evaluate(fun, ...args)
-
 - `fun` <[function]> Function to be evaluated in browser context
 - `...args` <...[string]> Arguments to pass to  `fun`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
 
-#### page.evaluateOnInitialized(fun, ...args)
+This is a shortcut for [page.mainFrame().evaluate()](#frameevaluatefun-args) method.
 
+#### page.evaluateOnInitialized(fun, ...args)
 - `fun` <[function]> Function to be evaluated in browser context
 - `...args` <...[string]> Arguments to pass to `fun`
 - returns: <[Promise]<[Object]>> Promise which resolves to function
 
+`page.evaluateOnInitialized` adds a function which would run on every page navigation before any page's javascript. This is useful to amend javascript environment, e.g. to seed [Math.random](https://github.com/GoogleChrome/puppeteer/blob/master/examples/unrandomize.js)
+
 #### page.focus(selector)
 - `selector` <[string]> A query selector of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
+- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. Promise gets rejected if there's no element matching `selector`.
 
 #### page.frames()
+- returns: <[Array]<[Frame]>> An array of all frames attached to the page.
+
 
 #### page.httpHeaders()
-
-- returns: <[Object]> Key-value set of additional http headers, which will be sent with every request.
+- returns: <[Object]> Key-value set of additional http headers which will be sent with every request.
 
 
 #### page.injectFile(filePath)
-
 - `filePath` <[string]> Path to the javascript file to be injected into page.
 - returns: <[Promise]> Promise which resolves when file gets successfully evaluated in page.
 
 #### page.mainFrame()
+- returns: <[Frame]> returns page's main frame.
+
+Page is guaranteed to have a main frame which persists during navigations.
 
 #### page.navigate(url, options)
-
 - `url` <[string]> URL to navigate page to
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `maxTime` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
@@ -206,11 +245,9 @@ The `page.navigate` will throw an error if:
 - the `maxTime` is exceeded during navigation.
 
 #### page.plainText()
-
 - returns:  <[Promise]<[string]>> Returns page's inner text.
 
 #### page.printToPDF(filePath[, options])
-
 - `filePath` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension
 - `options` <[Object]> Options object which might have the following properties:
 	- `scale` <[number]>
@@ -224,7 +261,6 @@ The `page.navigate` will throw an error if:
 - returns: <[Promise]> Promise which resolves when the PDF is saved.
 
 #### page.screenshot([options])
-
 - `options` <[Object]> Options object which might have the following properties:
     - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension.
     - `type` <[string]> Specify screenshot type, could be either `jpeg` or `png`.
@@ -238,42 +274,78 @@ The `page.navigate` will throw an error if:
 - returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot
 
 #### page.setContent(html)
-
 - `html` <[string]> HTML markup to assign to the page.
 - returns: <[Promise]> Promise which resolves when the content is successfully assigned.
 
 #### page.setHTTPHeaders(headers)
-
 - `headers` <[Object]> Key-value set of additional http headers to be sent with every request.
 - returns: <[Promise]> Promise which resolves when additional headers are installed
 
 #### page.setInPageCallback(name, callback)
-
 - `name` <[string]> Name of the callback to be assigned on window object
-- `callback` <[function]> Callback function which will be called in node.js
+- `callback` <[function]> Callback function which will be called in puppeteer's context.
 - returns: <[Promise]> Promise which resolves when callback is successfully initialized
+
+The in-page callback allows page to asynchronously reach back to the Puppeteer. 
+An example of a page showing amount of CPU's:
+```js
+const os = require('os');
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+
+browser.newPage().then(async page =>
+  await page.setInPageCallback('getCPUCount', () => os.cpus().length);
+  await page.evaluate(async () => {
+    alert(await window.getCPUCount());
+  });
+  browser.close();
+});
+```
 
 #### page.setRequestInterceptor(interceptor)
 - `interceptor` <[function]> Callback function which accepts a single argument of type <[InterceptedRequest]>.
+- returns: <[Promise]> Promise which resolves when request interceptor is successfully installed on the page.
+
+After the request interceptor is installed on the page, every request will be reported to the interceptor. The [InterceptedRequest] could be modified and then either continued via the `continue()` method, or aborted via the `abort()` method.
+
+En example of a naive request interceptor which aborts all image requests:
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+
+browser.newPage().then(async page =>
+  await page.setRequestInterceptor(interceptedRequest => {
+    if (interceptedRequest.url.endsWith('.png') || interceptedRequest.url.endsWith('.jpg'))
+      interceptedRequest.abort();
+    else
+      interceptedRequest.continue();
+  });
+  await page.navigate('https://example.com');
+  browser.close();
+});
+```
 
 #### page.setUserAgent(userAgent)
-
 - `userAgent` <[string]> Specific user agent to use in this page
 - returns: <[Promise]> Promise which resolves when the user agent is set.
 
 #### page.setViewportSize(size)
-
 - `size` <[Object]>  An object with two fields:
 	- `width` <[number]> Specify page's width in pixels.
 	- `height` <[number]> Specify page's height in pixels.
 - returns: <[Promise]> Promise which resolves when the dimensions are updated.
 
-#### page.title()
+The page's viewport size defines page's dimensions, observable from page via `window.innerWidth / window.innerHeight`. The viewport size defines a size of page
+screenshot (unless a `fullPage` option is given).
 
+In case of multiple pages in one browser, each page can have its own viewport size.
+
+#### page.title()
 - returns: <[Promise]<[string]>> Returns page's title.
 
 #### page.type(text)
 - `text` <[string]> A text to type into a focused element.
+- returns: <[Promise]> Promise which resolves when the text has been successfully typed.
 
 #### page.uploadFile(selector, ...filePaths)
 - `selector` <[string]> A query selector to a file input
@@ -281,36 +353,33 @@ The `page.navigate` will throw an error if:
 - returns: <[Promise]> Promise which resolves when the value is set.
 
 #### page.url()
-
 - returns: <[Promise]<[string]>> Promise which resolves with the current page url.
 
 #### page.userAgent()
-
 - returns: <[string]> Returns user agent.
 
 #### page.viewportSize()
-
 - returns: <[Object]>  An object with two fields:
 	- `width` <[number]> Page's width in pixels.
 	- `height` <[number]> Page's height in pixels.
 
+
 #### page.waitFor(selector)
-
 - `selector` <[string]> A query selector to wait for on the page.
-
-Wait for the `selector` to appear in page. If at the moment of calling
-the method the `selector` already exists, the method will return
-immediately.
+- returns: <[Promise]> Promise which resolves when the element matching `selector` appears in the page.
 
 Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 
 ### class: Dialog
 #### dialog.accept([promptText])
-- `promptText` <[string]> A text to enter in prompt. Does not cause any effects if the dialog type is not prompt.
+- `promptText` <[string]> A text to enter in prompt. Does not cause any effects if the dialog's `type` is not prompt.
+- returns: <[Promise]> Promise which resolves when the dialog has being accepted.
 
 #### dialog.dismiss()
+- returns: <[Promise]> Promise which resolves when the dialog has being dismissed.
 
 #### dialog.message()
+- returns: <[string]> A message displayed in the dialog.
 
 #### dialog.type
 - <[string]>
@@ -319,25 +388,64 @@ Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `promp
 
 ### class: Frame
 #### frame.childFrames()
-#### frame.evaluate(fun, ...args)
+- returns: <[Array]<[Frame]>>
 
+
+#### frame.evaluate(fun, ...args)
 - `fun` <[function]> Function to be evaluated in browser context
 - `...args` <[Array]<[string]>> Arguments to pass to  `fun`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
 
-#### frame.isDetached()
-#### frame.isMainFrame()
-#### frame.name()
-#### frame.parentFrame()
-#### frame.securityOrigin()
-#### frame.url()
-#### frame.waitFor(selector)
+If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
 
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+browser.newPage().then(async page => 
+  const result = await page.evaluate(() => {
+    return Promise.resolve().then(() => 8 * 7);
+  });
+  console.log(result); // prints "56"
+  browser.close();
+});
+```
+
+#### frame.isDetached()
+- returns: <[boolean]>
+
+Returns `true` if the frame has being detached, or `false` otherwise.
+
+#### frame.isMainFrame()
+- returns: <[boolean]>
+
+Returns `true` is the frame is page's main frame, or `false` otherwise.
+
+#### frame.name()
+- returns: <[string]>
+
+Returns frame's name as specified in the tag.
+
+#### frame.parentFrame()
+- returns: <[Frame]> Returns parent frame, if any. Detached frames and main frames return `null`.
+
+#### frame.url()
+- returns: <[string]>
+
+Returns frame's url.
+
+#### frame.waitFor(selector)
 - `selector` <[string]> CSS selector of awaited element,
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
 
+Wait for the `selector` to appear in page. If at the moment of calling
+the method the `selector` already exists, the method will return
+immediately.
+
 
 ### class: Request
+
+[Request] class represents requests which are sent by page. [Request] implements [Body] mixin, which in case of HTTP POST requests allows clients to call `request.json()` or `request.text()` to get different representations of request's body.
+
 #### request.headers
 - <[Headers]>
 
@@ -350,6 +458,7 @@ Contains the request's method (GET, POST, etc.)
 
 
 #### request.response()
+- returns: <[Response]> A matching [Response] object, or `null` if the response has not been received yet.
 
 #### request.url
 - <[string]>
@@ -357,6 +466,8 @@ Contains the request's method (GET, POST, etc.)
 Contains the URL of the request.
 
 ### class: Response
+
+[Response] class represents responses which are received by page. [Response] implements [Body] mixin, which allows clients to call `response.json()` or `response.text()` to get different representations of response body.
 
 #### response.headers
 - <[Headers]>
@@ -369,6 +480,9 @@ Contains the [Headers] object associated with the response.
 Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
 
 #### response.request()
+- returns: <[Request]> A matching [Request] object.
+
+
 #### response.status
 - <[number]>
 
@@ -381,43 +495,53 @@ Contains the status code of the response (e.g., 200 for a success).
 Contains the status message corresponding to the status code (e.g., OK for 200).
 
 
-
-
 #### response.url
 - <[string]>
 
 Contains the URL of the response.
 
 
-
 ### class: InterceptedRequest
 
+[InterceptedRequest] represents an intercepted request, which can be mutated and either continued or aborted. [InterceptedRequest] which is not continued or aborted will be in a 'hanging' state.
+
 #### interceptedRequest.abort()
+
+Aborts request.
+
 #### interceptedRequest.continue()
+
+Continues request.
+
 #### interceptedRequest.headers
 - <[Headers]>
 
-Contains the [Headers] object associated with the request.
+Contains the [Headers] object associated with the request. 
+
+Headers could be mutated with the `headers.append`, `headers.set` and other
+methods. Must not be changed in response to an authChallenge.
 
 #### interceptedRequest.isHandled()
+- returns: <[boolean]> returns `true` if either `abort` or `continue` was called on the object. Otherwise, returns `false`.
 
 #### interceptedRequest.method
 - <[string]>
 
-Contains the request's method (GET, POST, etc.)
+Contains the request's method (GET, POST, etc.) 
 
+If set this allows the request method to be overridden. Must not be changed in response to an authChallenge.
 
 #### interceptedRequest.postData
 - <[string]>
 
-In case of a `POST` request, contains `POST` data.
+Contains `POST` data for `POST` requests.
+
+`request.postData` is mutable and could be written to. Must not be changed in response to an authChallenge.
 
 #### interceptedRequest.url
 - <[string]>
 
-Contains the URL of the request.
-
-
+If changed, the request url will be modified in a way that's not observable by page. Must not be changed in response to an authChallenge.
 
 ### class: Headers
 #### headers.append(name, value)
@@ -430,6 +554,9 @@ If there's already a header with name `name`, the header gets overwritten.
 - `name` <[string]> Case-insensetive name of the header to be deleted. If there's no header with such name, the method does nothing.
 
 #### headers.entries()
+- returns: <[iterator]> An iterator allowing to go through all key/value pairs contained in this object. Both the key and value of each pairs are [string] objects.
+
+
 #### headers.get(name)
 - `name` <[string]> Case-insensetive name of the header.
 - returns: <[string]> Header value of `null`, if there's no such header.
@@ -439,6 +566,9 @@ If there's already a header with name `name`, the header gets overwritten.
 - returns: <[boolean]> Returns `true` if the header with such name exists, or `false` otherwise.
 
 #### headers.keys()
+- returns: <[iterator]> an iterator allowing to go through all keys contained in this object. The keys are [string] objects.
+
+
 #### headers.set(name, value)
 - `name` <[string]> Case-insensetive header name.
 - `value` <[string]> Header value
@@ -446,15 +576,27 @@ If there's already a header with name `name`, the header gets overwritten.
 If there's already a header with name `name`, the header gets overwritten.
 
 #### headers.values()
+- returns: <[iterator]<[string]>> Returns an iterator allowing to go through all values contained in this object. The values are [string] objects.
 
 ### class: Body
 #### body.arrayBuffer()
+- returns: <Promise<[ArrayBuffer]>>
+
+
 #### body.bodyUsed
+- returns: <[boolean]>
+
 #### body.buffer()
+- returns: <Promise<[Buffer]>>
+
 #### body.json()
+- returns: <Promise<[Object]>>
+
 #### body.text()
+- returns: <Promise<[text]>>
 
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
+[ArrayBuffer]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer "ArrayBuffer"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
 [Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer "Buffer"
 [function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function "Function"
@@ -465,4 +607,10 @@ If there's already a header with name `name`, the header gets overwritten.
 [InterceptedRequest]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-interceptedrequest "Page"
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
-[stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable
+[stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable "stream.Readable"
+[Frame]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-frame "Frame"
+[iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols "Iterator"
+[Response]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-response  "Response"
+[Request]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-request  "Request"
+[Browser]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-browser  "Browser"
+[Body]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-body  "Body"

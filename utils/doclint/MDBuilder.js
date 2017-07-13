@@ -33,11 +33,14 @@ class MDOutline {
         } else if (element.matches('h4')) {
           member = {
             name: element.textContent,
-            args: []
+            args: [],
+            hasReturn: false
           };
           currentClass.members.push(member);
         } else if (element.matches('li') && element.firstChild.matches && element.firstChild.matches('code')) {
           member.args.push(element.firstChild.textContent);
+        } else if (element.matches('li') && element.firstChild.nodeType === Element.TEXT_NODE && element.firstChild.textContent.startsWith('returns: ')) {
+          member.hasReturn = true;
         }
       }
       return classes;
@@ -83,7 +86,7 @@ class MDOutline {
       if (parameters !== member.args.join(', '))
         this.errors.push(`Heading arguments for "${member.name}" do not match described ones, i.e. "${parameters}" != "${member.args.join(', ')}"`);
       let args = member.args.map(arg => new Documentation.Argument(arg));
-      let method = Documentation.Member.createMethod(methodName, args);
+      let method = Documentation.Member.createMethod(methodName, args, member.hasReturn, false);
       currentClassMembers.push(method);
     }
 

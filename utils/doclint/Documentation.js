@@ -39,6 +39,14 @@ class Documentation {
       for (let methodName of methodDiff.equal) {
         const actualMethod = actualClass.methods.get(methodName);
         const expectedMethod = expectedClass.methods.get(methodName);
+        if (actualMethod.hasReturn !== expectedMethod.hasReturn) {
+          if (actualMethod.hasReturn)
+            errors.push(`Method ${className}.${methodName} has unneeded description of return type`);
+          else if (!expectedMethod.async)
+            errors.push(`Method ${className}.${methodName} is missing return type description`);
+          else
+            errors.push(`Async method ${className}.${methodName} should describe return type Promise`);
+        }
         const actualArgs = Array.from(actualMethod.args.keys());
         const expectedArgs = Array.from(expectedMethod.args.keys());
         const argDiff = diff(actualArgs, expectedArgs);
@@ -117,12 +125,16 @@ Documentation.Member = class {
    * @param {string} type
    * @param {string} name
    * @param {!Array<!Documentation.Argument>} argsArray
+   * @param {boolean} hasReturn
+   * @param {boolean} async
    */
-  constructor(type, name, argsArray) {
+  constructor(type, name, argsArray, hasReturn, async) {
     this.type = type;
     this.name = name;
     this.argsArray = argsArray;
     this.args = new Map();
+    this.hasReturn = hasReturn;
+    this.async = async;
     for (let arg of argsArray)
       this.args.set(arg.name, arg);
   }
@@ -130,10 +142,11 @@ Documentation.Member = class {
   /**
    * @param {string} name
    * @param {!Array<!Documentation.Argument>} argsArray
+   * @param {boolean} hasReturn
    * @return {!Documentation.Member}
    */
-  static createMethod(name, argsArray) {
-    return new Documentation.Member('method', name, argsArray);
+  static createMethod(name, argsArray, hasReturn, async) {
+    return new Documentation.Member('method', name, argsArray, hasReturn, async);
   }
 
   /**
@@ -141,7 +154,7 @@ Documentation.Member = class {
    * @return {!Documentation.Member}
    */
   static createProperty(name) {
-    return new Documentation.Member('property', name, []);
+    return new Documentation.Member('property', name, [], false, false);
   }
 };
 
