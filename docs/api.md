@@ -13,8 +13,8 @@
   * [browser.stdout](#browserstdout)
   * [browser.version()](#browserversion)
 - [class: Page](#class-page)
-  * [page.$(selector, pageFunction, ...args)](#pageselector-fun-args)
-  * [page.$$(selector, pageFunction, ...args)](#pageselector-fun-args)
+  * [page.$(selector, pageFunction, ...args)](#pageselector-pagefunction-args)
+  * [page.$$(selector, pageFunction, ...args)](#pageselector-pagefunction-args)
   * [page.addScriptTag(url)](#pageaddscripttagurl)
   * [page.click(selector)](#pageclickselector)
   * [page.close()](#pageclose)
@@ -48,8 +48,8 @@
   * [dialog.message()](#dialogmessage)
   * [dialog.type](#dialogtype)
 - [class: Frame](#class-frame)
-  * [frame.$(selector, pageFunction, ...args)](#frameselector-fun-args)
-  * [frame.$$(selector, pageFunction, ...args)](#frameselector-fun-args)
+  * [frame.$(selector, pageFunction, ...args)](#frameselector-pagefunction-args)
+  * [frame.$$(selector, pageFunction, ...args)](#frameselector-pagefunction-args)
   * [frame.childFrames()](#framechildframes)
   * [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
   * [frame.isDetached()](#frameisdetached)
@@ -211,8 +211,6 @@ for (const heading of headings) console.log(heading);
 ```
 
 Shortcut for [page.mainFrame().$$(selector, pageFunction, ...args)](#pageselector-fun-args).
-
-#### page.addScriptTag(url)
 
 #### page.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
