@@ -707,6 +707,32 @@ describe('Puppeteer', function() {
       await keyboard.release('Meta');
       expect(await page.evaluate(() => getResult())).toBe('Keyup: Meta 91 0');
     }));
+    it('should send propery codes while typing', SX(async function(){
+      await page.navigate(PREFIX + '/input/keyboard.html');
+      let keyboard = page.keyboard();
+      await keyboard.type('!');
+      expect(await page.evaluate(() => getResult())).toBe(
+          [ 'Keydown: ! 49 0',
+            'Keypress: ! 33 33 33 0',
+            'Keyup: ! 49 0'].join('\n'));
+      await keyboard.type('^');
+      expect(await page.evaluate(() => getResult())).toBe(
+          [ 'Keydown: ^ 54 0',
+            'Keypress: ^ 94 94 94 0',
+            'Keyup: ^ 54 0'].join('\n'));
+    }));
+    it('should send propery codes while typing with shift', SX(async function(){
+      await page.navigate(PREFIX + '/input/keyboard.html');
+      let keyboard = page.keyboard();
+      await keyboard.press('Shift');
+      await keyboard.type('~');
+      expect(await page.evaluate(() => getResult())).toBe(
+          [ 'Keydown: Shift 16 8',
+            'Keydown: ~ 192 8',
+            'Keypress: ~ 126 126 126 8',
+            'Keyup: ~ 192 8'].join('\n'));
+      await keyboard.release('Shift');
+    }));
     it('should not type canceled events', SX(async function(){
       await page.navigate(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
