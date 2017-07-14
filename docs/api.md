@@ -16,8 +16,8 @@
   * [page.addScriptTag(url)](#pageaddscripttagurl)
   * [page.click(selector)](#pageclickselector)
   * [page.close()](#pageclose)
-  * [page.evaluate(fun, ...args)](#pageevaluatefun-args)
-  * [page.evaluateOnInitialized(fun, ...args)](#pageevaluateoninitializedfun-args)
+  * [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
+  * [page.evaluateOnInitialized(pageFunction, ...args)](#pageevaluateoninitializedpagefunction-args)
   * [page.focus(selector)](#pagefocusselector)
   * [page.frames()](#pageframes)
   * [page.httpHeaders()](#pagehttpheaders)
@@ -47,7 +47,7 @@
   * [dialog.type](#dialogtype)
 - [class: Frame](#class-frame)
   * [frame.childFrames()](#framechildframes)
-  * [frame.evaluate(fun, ...args)](#frameevaluatefun-args)
+  * [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
   * [frame.isDetached()](#frameisdetached)
   * [frame.isMainFrame()](#frameismainframe)
   * [frame.name()](#framename)
@@ -193,16 +193,16 @@ Adds a `<script></script>` tag to the page with the desired url. Alternatively, 
 #### page.close()
 - returns: <[Promise]> Returns promise which resolves when page gets closed.
 
-#### page.evaluate(fun, ...args)
-- `fun` <[function]> Function to be evaluated in browser context
-- `...args` <...[string]> Arguments to pass to  `fun`
+#### page.evaluate(pageFunction, ...args)
+- `pageFunction` <[function]> Function to be evaluated in browser context
+- `...args` <...[string]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
 
 This is a shortcut for [page.mainFrame().evaluate()](#frameevaluatefun-args) method.
 
-#### page.evaluateOnInitialized(fun, ...args)
-- `fun` <[function]> Function to be evaluated in browser context
-- `...args` <...[string]> Arguments to pass to `fun`
+#### page.evaluateOnInitialized(pageFunction, ...args)
+- `pageFunction` <[function]> Function to be evaluated in browser context
+- `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function
 
 `page.evaluateOnInitialized` adds a function which would run on every page navigation before any page's javascript. This is useful to amend javascript environment, e.g. to seed [Math.random](https://github.com/GoogleChrome/puppeteer/blob/master/examples/unrandomize.js)
@@ -391,9 +391,9 @@ Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `promp
 - returns: <[Array]<[Frame]>>
 
 
-#### frame.evaluate(fun, ...args)
-- `fun` <[function]> Function to be evaluated in browser context
-- `...args` <[Array]<[string]>> Arguments to pass to  `fun`
+#### frame.evaluate(pageFunction, ...args)
+- `pageFunction` <[function]> Function to be evaluated in browser context
+- `...args` <[Array]<[string]>> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
 
 If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
