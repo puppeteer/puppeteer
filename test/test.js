@@ -671,55 +671,55 @@ describe('Puppeteer', function() {
       await page.navigate(PREFIX + '/input/keyboard.html');
       let keyboard = page.keyboard();
       await keyboard.press('Shift');
-      expect(await page.evaluate(() => getResult())).toBe('Keydown: Shift 16 8');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: Shift 16 [Shift]');
       await keyboard.press('!');
-      expect(await page.evaluate(() => getResult())).toBe('Keydown: ! 49 8');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: ! 49 [Shift]');
       await keyboard.release('!');
-      expect(await page.evaluate(() => getResult())).toBe('Keyup: ! 49 8');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: ! 49 [Shift]');
       await keyboard.release('Shift');
-      expect(await page.evaluate(() => getResult())).toBe('Keyup: Shift 16 0');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: Shift 16 []');
     }));
     it('should report altKey', SX(async function(){
       await page.navigate(PREFIX + '/input/keyboard.html');
       let keyboard = page.keyboard();
       await keyboard.press('Alt');
-      expect(await page.evaluate(() => getResult())).toBe('Keydown: Alt 18 1');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: Alt 18 [Alt]');
       await keyboard.press('a');
-      expect(await page.evaluate(() => getResult())).toBe('Keydown: a 65 1');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: a 65 [Alt]');
       await keyboard.release('a');
-      expect(await page.evaluate(() => getResult())).toBe('Keyup: a 65 1');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: a 65 [Alt]');
       await keyboard.release('Alt');
-      expect(await page.evaluate(() => getResult())).toBe('Keyup: Alt 18 0');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: Alt 18 []');
     }));
     it('should report multiple modifiers', SX(async function(){
       await page.navigate(PREFIX + '/input/keyboard.html');
       let keyboard = page.keyboard();
       await keyboard.press('Control');
-      expect(await page.evaluate(() => getResult())).toBe('Keydown: Control 17 2');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: Control 17 [Ctrl]');
       await keyboard.press('Meta');
-      expect(await page.evaluate(() => getResult())).toBe('Keydown: Meta 91 6');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: Meta 91 [Ctrl Meta]');
       await keyboard.press(';');
-      expect(await page.evaluate(() => getResult())).toBe('Keydown: ; 186 6');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: ; 186 [Ctrl Meta]');
       await keyboard.release(';');
-      expect(await page.evaluate(() => getResult())).toBe('Keyup: ; 186 6');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: ; 186 [Ctrl Meta]');
       await keyboard.release('Control');
-      expect(await page.evaluate(() => getResult())).toBe('Keyup: Control 17 4');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: Control 17 [Meta]');
       await keyboard.release('Meta');
-      expect(await page.evaluate(() => getResult())).toBe('Keyup: Meta 91 0');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: Meta 91 []');
     }));
     it('should send propery codes while typing', SX(async function(){
       await page.navigate(PREFIX + '/input/keyboard.html');
       let keyboard = page.keyboard();
       await keyboard.type('!');
       expect(await page.evaluate(() => getResult())).toBe(
-          [ 'Keydown: ! 49 0',
-            'Keypress: ! 33 33 33 0',
-            'Keyup: ! 49 0'].join('\n'));
+          [ 'Keydown: ! 49 []',
+            'Keypress: ! 33 33 33 []',
+            'Keyup: ! 49 []'].join('\n'));
       await keyboard.type('^');
       expect(await page.evaluate(() => getResult())).toBe(
-          [ 'Keydown: ^ 54 0',
-            'Keypress: ^ 94 94 94 0',
-            'Keyup: ^ 54 0'].join('\n'));
+          [ 'Keydown: ^ 54 []',
+            'Keypress: ^ 94 94 94 []',
+            'Keyup: ^ 54 []'].join('\n'));
     }));
     it('should send propery codes while typing with shift', SX(async function(){
       await page.navigate(PREFIX + '/input/keyboard.html');
@@ -727,10 +727,10 @@ describe('Puppeteer', function() {
       await keyboard.press('Shift');
       await keyboard.type('~');
       expect(await page.evaluate(() => getResult())).toBe(
-          [ 'Keydown: Shift 16 8',
-            'Keydown: ~ 192 8',
-            'Keypress: ~ 126 126 126 8',
-            'Keyup: ~ 192 8'].join('\n'));
+          [ 'Keydown: Shift 16 [Shift]',
+            'Keydown: ~ 192 [Shift]',
+            'Keypress: ~ 126 126 126 [Shift]',
+            'Keyup: ~ 192 [Shift]'].join('\n'));
       await keyboard.release('Shift');
     }));
     it('should not type canceled events', SX(async function(){

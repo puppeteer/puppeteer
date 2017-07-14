@@ -19,16 +19,16 @@
         log('Keyup:', event.key, event.which, modifiers(event));
       });
       function modifiers(event) {
-        let m = 0;
+        let m = [];
         if (event.altKey)
-          m += 1;
+          m.push('Alt')
         if (event.ctrlKey)
-          m += 2;
+          m.push('Ctrl');
         if (event.metaKey)
-          m += 4;
+          m.push('Meta')
         if (event.shiftKey)
-          m += 8;
-        return m;
+          m.push('Shift')
+        return '[' + m.join(' ') + ']';
       }
       function log(...args) {
         console.log.apply(console, args);
