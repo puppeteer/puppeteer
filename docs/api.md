@@ -13,6 +13,17 @@
   * [browser.stdout](#browserstdout)
   * [browser.version()](#browserversion)
 - [class: Page](#class-page)
+  * [event: 'consolemessage'](#event-consolemessage)
+  * [event: 'dialog'](#event-dialog)
+  * [event: 'frameattached'](#event-frameattached)
+  * [event: 'framedetached'](#event-framedetached)
+  * [event: 'framenavigated'](#event-framenavigated)
+  * [event: 'load'](#event-load)
+  * [event: 'pageerror'](#event-pageerror)
+  * [event: 'request'](#event-request)
+  * [event: 'requestfailed'](#event-requestfailed)
+  * [event: 'requestfinished'](#event-requestfinished)
+  * [event: 'response'](#event-response)
   * [page.addScriptTag(url)](#pageaddscripttagurl)
   * [page.click(selector)](#pageclickselector)
   * [page.close()](#pageclose)
@@ -179,6 +190,59 @@ browser.newPage().then(async page =>
 });
 ```
 
+#### event: 'consolemessage'
+- <[string]>
+
+Emitted when a page calls one of console API methods, e.g. `console.log`.
+
+#### event: 'dialog'
+- <[Dialog]>
+
+Emitted when a javascript dialog, such as `alert`, `prompt`, `confirm` or `beforeunload`, gets opened on the page. Puppeteer can take action to the dialog via dialog's [accept](#dialogacceptprompttext) or [dismiss](#dialogdismiss) methods.
+
+#### event: 'frameattached'
+- <[Frame]>
+
+Emitted when a frame gets attached.
+
+#### event: 'framedetached'
+- <[Frame]>
+
+Emitted when a frame gets detached.
+
+#### event: 'framenavigated'
+- <[Frame]>
+
+Emitted when a frame committed navigation.
+
+#### event: 'load'
+
+Emitted when a page's `load` event was dispatched.
+
+#### event: 'pageerror'
+- <[string]>
+
+Emitted when an unhandled exception happens on the page. The only argument of the event holds the exception message.
+
+#### event: 'request'
+- <[Request]>
+
+Emitted when a page issues a request. The [request] object is a read-only object. In order to intercept and mutate requests, see [page.setRequestInterceptor](#pagesetrequestinterceptorinterceptor)
+
+#### event: 'requestfailed'
+- <[Request]>
+
+Emitted when a request is failed.
+
+#### event: 'requestfinished'
+- <[Request]>
+
+Emitted when a request is successfully finished.
+
+#### event: 'response'
+- <[Response]>
+
+Emitted when a [response] is received.
 
 #### page.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
@@ -373,6 +437,9 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 
 ### class: Dialog
+
+[Dialog] objects are dispatched by page via the ['dialog'](#event-dialog) event.
+
 #### dialog.accept([promptText])
 - `promptText` <[string]> A text to enter in prompt. Does not cause any effects if the dialog's `type` is not prompt.
 - returns: <[Promise]> Promise which resolves when the dialog has being accepted.
@@ -389,6 +456,14 @@ Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `prompt`.
 
 ### class: Frame
+
+At every point of time, page exposes its current frame tree via the [page.mainFrame()](#pagemainframe) and [frame.childFrames()](#framechildframes) methods.
+
+[Frame] object's lifecycle is controlled by three events, dispatched on the page object:
+- ['frameattached'](#event-frameattached) - fired when the frame gets attached to the page. Frame could be attached to the page only once.
+- ['framenavigated'](#event-framenavigated) - fired when the frame commits navigation to a different URL.
+- ['framedetached'](#event-framedetached) - fired when the frame gets detached from the page.  Frame could be detached from the page only once.
+
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
 
@@ -445,6 +520,15 @@ immediately.
 
 
 ### class: Request
+
+Whenever the page sends a request, the following events are emitted by puppeteer's page:
+- ['request'](#event-request) emitted when the request is issued by the page.
+- ['response'](#event-response) emitted when/if the response is received for the request.
+- ['requestfinished'](#event-requestfinished) emitted when the response body is downloaded and the request is complete.
+
+If request fails at some point, then instead of 'requestfinished' event (and possibly instead of 'response' event), the  ['requestfailed'](#event-requestfailed) event is emitted.
+
+If request gets a 'redirect' response, the request is successfully finished with the 'requestfinished' event, and a new request is  issued to a redirected url.
 
 [Request] class represents requests which are sent by page. [Request] implements [Body] mixin, which in case of HTTP POST requests allows clients to call `request.json()` or `request.text()` to get different representations of request's body.
 
@@ -616,3 +700,4 @@ If there's already a header with name `name`, the header gets overwritten.
 [Request]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-request  "Request"
 [Browser]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-browser  "Browser"
 [Body]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-body  "Body"
+[Dialog]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-dialog  "Dialog"

@@ -55,6 +55,7 @@ class MDOutline {
     const constructorRegex = /^new (\w+)\((.*)\)$/;
     const methodRegex = /^(\w+)\.(\w+)\((.*)\)$/;
     const propertyRegex = /^(\w+)\.(\w+)$/;
+    const eventRegex = /^event: '(\w+)'$/;
     let currentClassName = null;
     let currentClassMembers = [];
     for (const cls of classes) {
@@ -72,6 +73,9 @@ class MDOutline {
         } else if (propertyRegex.test(member.name)) {
           let match = member.name.match(propertyRegex);
           handleProperty.call(this, member, match[1], match[2]);
+        } else if (eventRegex.test(member.name)) {
+          let match = member.name.match(eventRegex);
+          handleEvent.call(this, member, match[1]);
         }
       }
       flushClassIfNeeded.call(this);
@@ -96,6 +100,14 @@ class MDOutline {
         return;
       }
       currentClassMembers.push(Documentation.Member.createProperty(propertyName));
+    }
+
+    function handleEvent(member, eventName) {
+      if (!currentClassName || !eventName) {
+        this.errors.push(`Failed to process header as event: ${member.name}`);
+        return;
+      }
+      currentClassMembers.push(Documentation.Member.createEvent(eventName));
     }
 
     function flushClassIfNeeded() {
