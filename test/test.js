@@ -212,16 +212,28 @@ describe('Puppeteer', function() {
       expect(added).toBe(true);
     }));
 
-    it('should throw if evaluation failed', SX(async function() {
+    it('should not throw if document.querySelector is redefined', SX(async function() {
       await page.evaluateOnInitialized(function() {
         document.querySelector = null;
       });
       await page.navigate(EMPTY_PAGE);
       try {
         await page.waitFor('*');
+      } catch (e) {
+        fail('Failed waitFor threw.');
+      }
+    }));
+
+    it('should throw if evaluation failed', SX(async function() {
+      await page.evaluateOnInitialized(function() {
+        window.MutationObserver = null;
+      });
+      await page.navigate(EMPTY_PAGE);
+      try {
+        await page.waitFor('div');
         fail('Failed waitFor did not throw.');
       } catch (e) {
-        expect(e.message).toBe('Evaluation failed: document.querySelector is not a function');
+        expect(e.message).toBe('Evaluation failed: MutationObserver is not a constructor');
       }
     }));
   });
