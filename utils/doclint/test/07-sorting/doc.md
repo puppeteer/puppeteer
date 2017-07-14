@@ -4,6 +4,8 @@
 
 #### new Foo()
 
+#### foo.ddd
+
 #### foo.ccc()
 
 #### foo.bbb()

@@ -53,8 +53,7 @@ class MDOutline {
     const methodRegex = /^(\w+)\.(\w+)\((.*)\)$/;
     const propertyRegex = /^(\w+)\.(\w+)$/;
     let currentClassName = null;
-    let currentClassMethods = [];
-    let currentClassProperties = [];
+    let currentClassMembers = [];
     for (const cls of classes) {
       let match = cls.name.match(classHeading);
       if (!match)
@@ -84,8 +83,8 @@ class MDOutline {
       if (parameters !== member.args.join(', '))
         this.errors.push(`Heading arguments for "${member.name}" do not match described ones, i.e. "${parameters}" != "${member.args.join(', ')}"`);
       let args = member.args.map(arg => new Documentation.Argument(arg));
-      let method = new Documentation.Method(methodName, args);
-      currentClassMethods.push(method);
+      let method = Documentation.Member.createMethod(methodName, args);
+      currentClassMembers.push(method);
     }
 
     function handleProperty(member, className, propertyName) {
@@ -93,16 +92,15 @@ class MDOutline {
         this.errors.push(`Failed to process header as property: ${member.name}`);
         return;
       }
-      currentClassProperties.push(propertyName);
+      currentClassMembers.push(Documentation.Member.createProperty(propertyName));
     }
 
     function flushClassIfNeeded() {
       if (currentClassName === null)
         return;
-      this.classes.push(new Documentation.Class(currentClassName, currentClassMethods, currentClassProperties));
+      this.classes.push(new Documentation.Class(currentClassName, currentClassMembers));
       currentClassName = null;
-      currentClassMethods = [];
-      currentClassProperties = [];
+      currentClassMembers = [];
     }
   }
 }

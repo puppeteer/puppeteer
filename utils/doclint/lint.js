@@ -63,17 +63,19 @@ function lintMarkdown(doc) {
   const errors = [];
   // Methods should be sorted alphabetically.
   for (let cls of doc.classesArray) {
-    for (let i = 0; i < cls.methodsArray.length - 1; ++i) {
+    for (let i = 0; i < cls.membersArray.length - 1; ++i) {
       // Constructor always goes first.
-      if (cls.methodsArray[i].name === 'constructor') {
+      if (cls.membersArray[i].name === 'constructor') {
         if (i > 0)
           errors.push(`Constructor of ${cls.name} should go before other methods`);
         continue;
       }
-      let method1 = cls.methodsArray[i];
-      let method2 = cls.methodsArray[i + 1];
-      if (method1.name > method2.name)
-        errors.push(`${cls.name}.${method1.name} breaks alphabetic methods sorting inside class ${cls.name}`);
+      let member1 = cls.membersArray[i];
+      let member2 = cls.membersArray[i + 1];
+      if (member1.name > member2.name) {
+        let memberName = `${cls.name}.${member1.name}` + (member1.type === 'method' ? '()' : '');
+        errors.push(`${memberName} breaks alphabetic member sorting inside class ${cls.name}`);
+      }
     }
   }
   return errors;
@@ -89,13 +91,12 @@ function filterJSDocumentation(jsDocumentation) {
   for (let cls of jsDocumentation.classesArray) {
     if (EXCLUDE_CLASSES.has(cls.name))
       continue;
-    let methods = cls.methodsArray.filter(method => {
-      if (method.name.startsWith('_'))
+    let members = cls.membersArray.filter(member => {
+      if (member.name.startsWith('_'))
         return false;
-      return !EXCLUDE_METHODS.has(`${cls.name}.${method.name}`);
+      return !EXCLUDE_METHODS.has(`${cls.name}.${member.name}`);
     });
-    let properties = cls.propertiesArray.filter(property => !property.startsWith('_'));
-    classes.push(new Documentation.Class(cls.name, methods, properties));
+    classes.push(new Documentation.Class(cls.name, members));
   }
   return new Documentation(classes);
 }

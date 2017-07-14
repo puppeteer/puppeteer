@@ -1,2 +1,3 @@
 [MarkDown] Constructor of Foo should go before other methods
-[MarkDown] Foo.ccc breaks alphabetic methods sorting inside class Foo
+[MarkDown] Foo.ddd breaks alphabetic member sorting inside class Foo
+[MarkDown] Foo.ccc() breaks alphabetic member sorting inside class Foo

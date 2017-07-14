@@ -74,15 +74,15 @@ class Documentation {
       if (classes.has(cls.name))
         errors.push(`Duplicate declaration of class ${cls.name}`);
       classes.add(cls.name);
-      let methods = new Set();
-      for (let method of cls.methodsArray) {
-        if (methods.has(method.name))
-          errors.push(`Duplicate declaration of method ${cls.name}.${method.name}()`);
-        methods.add(method.name);
+      let members = new Set();
+      for (let member of cls.membersArray) {
+        if (members.has(member.name))
+          errors.push(`Duplicate declaration of method ${cls.name}.${member.name}()`);
+        members.add(member.name);
         let args = new Set();
-        for (let arg of method.argsArray) {
+        for (let arg of member.argsArray) {
           if (args.has(arg.name))
-            errors.push(`Duplicate declaration of argument ${cls.name}.${method.name} "${arg.name}"`);
+            errors.push(`Duplicate declaration of argument ${cls.name}.${member.name} "${arg.name}"`);
           args.add(arg.name);
         }
       }
@@ -94,31 +94,54 @@ class Documentation {
 Documentation.Class = class {
   /**
    * @param {string} name
-   * @param {!Array<!Documentation.Method>} methodsArray
-   * @param {!Array<string>} propertiesArray
+   * @param {!Array<!Documentation.Member>} membersArray
    */
-  constructor(name, methodsArray, propertiesArray) {
+  constructor(name, membersArray) {
     this.name = name;
-    this.methodsArray = methodsArray;
+    this.membersArray = membersArray;
+    this.members = new Map();
+    this.properties = new Map();
     this.methods = new Map();
-    for (let method of methodsArray)
-      this.methods.set(method.name, method);
-    this.propertiesArray = propertiesArray;
-    this.properties = new Set(propertiesArray);
+    for (let member of membersArray) {
+      this.members.set(member.name, member);
+      if (member.type === 'method')
+        this.methods.set(member.name, member);
+      else if (member.type === 'property')
+        this.properties.set(member.name, member);
+    }
   }
 };
 
-Documentation.Method = class {
+Documentation.Member = class {
   /**
+   * @param {string} type
    * @param {string} name
    * @param {!Array<!Documentation.Argument>} argsArray
    */
-  constructor(name, argsArray) {
+  constructor(type, name, argsArray) {
+    this.type = type;
     this.name = name;
     this.argsArray = argsArray;
     this.args = new Map();
     for (let arg of argsArray)
       this.args.set(arg.name, arg);
+  }
+
+  /**
+   * @param {string} name
+   * @param {!Array<!Documentation.Argument>} argsArray
+   * @return {!Documentation.Member}
+   */
+  static createMethod(name, argsArray) {
+    return new Documentation.Member('method', name, argsArray);
+  }
+
+  /**
+   * @param {string} name
+   * @return {!Documentation.Member}
+   */
+  static createProperty(name) {
+    return new Documentation.Member('property', name, []);
   }
 };
 

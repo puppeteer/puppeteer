@@ -8,8 +8,7 @@ class JSOutline {
   constructor(text) {
     this.classes = [];
     this._currentClassName = null;
-    this._currentClassMethods = [];
-    this._currentClassProperties = [];
+    this._currentClassMembers = [];
 
     this._text = text;
     let ast = esprima.parseScript(this._text, {loc: true, range: true});
@@ -35,8 +34,8 @@ class JSOutline {
     for (let param of node.value.params)
       args.push(new Documentation.Argument(this._extractText(param)));
     let methodName = this._extractText(node.key);
-    let method = new Documentation.Method(methodName, args);
-    this._currentClassMethods.push(method);
+    let method = Documentation.Member.createMethod(methodName, args);
+    this._currentClassMembers.push(method);
     // Extract properties from constructor.
     if (node.kind === 'constructor') {
       let walker = new ESTreeWalker(node => {
@@ -46,7 +45,7 @@ class JSOutline {
         if (node.type === 'MemberExpression' && node.object &&
             node.object.type === 'ThisExpression' && node.property &&
             node.property.type === 'Identifier')
-          this._currentClassProperties.push(node.property.name);
+          this._currentClassMembers.push(Documentation.Member.createProperty(node.property.name));
       });
       walker.walk(node);
     }
@@ -60,11 +59,10 @@ class JSOutline {
   _flushClassIfNeeded() {
     if (this._currentClassName === null)
       return;
-    let jsClass = new Documentation.Class(this._currentClassName, this._currentClassMethods, this._currentClassProperties);
+    let jsClass = new Documentation.Class(this._currentClassName, this._currentClassMembers);
     this.classes.push(jsClass);
     this._currentClassName = null;
-    this._currentClassMethods = [];
-    this._currentClassProperties = [];
+    this._currentClassMembers = [];
   }
 
   _extractText(node) {

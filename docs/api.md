@@ -9,9 +9,9 @@
   * [browser.close()](#browserclose)
   * [browser.closePage(page)](#browserclosepagepage)
   * [browser.newPage()](#browsernewpage)
-  * [browser.version()](#browserversion)
   * [browser.stderr](#browserstderr)
   * [browser.stdout](#browserstdout)
+  * [browser.version()](#browserversion)
 - [class: Page](#class-page)
   * [page.addScriptTag(url)](#pageaddscripttagurl)
   * [page.click(selector)](#pageclickselector)
@@ -56,25 +56,25 @@
   * [frame.url()](#frameurl)
   * [frame.waitFor(selector)](#framewaitforselector)
 - [class: Request](#class-request)
-  * [request.response()](#requestresponse)
   * [request.headers](#requestheaders)
   * [request.method](#requestmethod)
+  * [request.response()](#requestresponse)
   * [request.url](#requesturl)
 - [class: Response](#class-response)
   * [response.headers](#responseheaders)
   * [response.ok](#responseok)
+  * [response.request()](#responserequest)
   * [response.status](#responsestatus)
   * [response.statusText](#responsestatustext)
   * [response.url](#responseurl)
-  * [response.request()](#responserequest)
 - [class: InterceptedRequest](#class-interceptedrequest)
-  * [interceptedRequest.headers](#interceptedrequestheaders)
-  * [interceptedRequest.method](#interceptedrequestmethod)
-  * [interceptedRequest.url](#interceptedrequesturl)
-  * [interceptedRequest.postData](#interceptedrequestpostdata)
   * [interceptedRequest.abort()](#interceptedrequestabort)
   * [interceptedRequest.continue()](#interceptedrequestcontinue)
+  * [interceptedRequest.headers](#interceptedrequestheaders)
   * [interceptedRequest.isHandled()](#interceptedrequestishandled)
+  * [interceptedRequest.method](#interceptedrequestmethod)
+  * [interceptedRequest.postData](#interceptedrequestpostdata)
+  * [interceptedRequest.url](#interceptedrequesturl)
 - [class: Headers](#class-headers)
   * [headers.append(name, value)](#headersappendname-value)
   * [headers.delete(name)](#headersdeletename)
@@ -122,10 +122,6 @@ Closes chromium application with all the pages (if any were opened). The browser
 
 Create a new page in browser and returns a promise which gets resolved with a Page object.
 
-#### browser.version()
-- returns: <[Promise]<[string]>>
-
-
 #### browser.stderr
 - <[stream.Readable]>
 
@@ -135,6 +131,9 @@ A Readable Stream that represents the browser process's stderr.
 - <[stream.Readable]>
 
 A Readable Stream that represents the browser process's stdout.
+
+#### browser.version()
+- returns: <[Promise]<[string]>>
 
 ### class: Page
 
@@ -339,7 +338,6 @@ Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `promp
 
 
 ### class: Request
-#### request.response()
 #### request.headers
 - <[Headers]>
 
@@ -349,6 +347,9 @@ Contains the associated [Headers] object of the request.
 - <[string]>
 
 Contains the request's method (GET, POST, etc.)
+
+
+#### request.response()
 
 #### request.url
 - <[string]>
@@ -367,6 +368,7 @@ Contains the [Headers] object associated with the response.
 
 Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
 
+#### response.request()
 #### response.status
 - <[number]>
 
@@ -378,29 +380,31 @@ Contains the status code of the response (e.g., 200 for a success).
 
 Contains the status message corresponding to the status code (e.g., OK for 200).
 
+
+
+
 #### response.url
 - <[string]>
 
 Contains the URL of the response.
 
-#### response.request()
+
 
 ### class: InterceptedRequest
 
+#### interceptedRequest.abort()
+#### interceptedRequest.continue()
 #### interceptedRequest.headers
 - <[Headers]>
 
 Contains the [Headers] object associated with the request.
 
+#### interceptedRequest.isHandled()
+
 #### interceptedRequest.method
 - <[string]>
 
 Contains the request's method (GET, POST, etc.)
-
-#### interceptedRequest.url
-- <[string]>
-
-Contains the URL of the request.
 
 
 #### interceptedRequest.postData
@@ -408,9 +412,12 @@ Contains the URL of the request.
 
 In case of a `POST` request, contains `POST` data.
 
-#### interceptedRequest.abort()
-#### interceptedRequest.continue()
-#### interceptedRequest.isHandled()
+#### interceptedRequest.url
+- <[string]>
+
+Contains the URL of the request.
+
+
 
 ### class: Headers
 #### headers.append(name, value)
