@@ -1,4 +1,3 @@
-//! unsupported
 test(function () {
     var webpage = require('webpage');
 
@@ -7,7 +6,7 @@ test(function () {
     page.evaluate(function() {
         window.addEventListener('keypress', function(event) {
             window.loggedEvent = window.loggedEvent || [];
-            window.loggedEvent.push(event);
+            window.loggedEvent.push(event.which);
         }, false);
     });
 
@@ -17,7 +16,7 @@ test(function () {
     });
 
     assert_equals(loggedEvent.length, 1);
-    assert_equals(loggedEvent[0].which, page.event.key.C);
+    assert_equals(loggedEvent[0], page.event.key.C);
 
 
     // Send keypress events to an input element and observe the effect.
@@ -54,13 +53,15 @@ test(function () {
     page.sendEvent('keypress', page.event.key.Delete);
     assert_equals(getText(), '');
 
+
+    // Joel: This works, but it causes you to lose your clipboard when running the tests.
     // Cut and Paste
     // 0x04000000 is the Control modifier.
-    page.sendEvent('keypress', 'ABCD');
-    assert_equals(getText(), 'ABCD');
-    page.sendEvent('keypress', page.event.key.Home, null, null,  0x02000000);
-    page.sendEvent('keypress', 'x', null, null, 0x04000000);
-    assert_equals(getText(), '');
-    page.sendEvent('keypress', 'v', null, null, 0x04000000);
-    assert_equals(getText(), 'ABCD');
+    // page.sendEvent('keypress', 'ABCD');
+    // assert_equals(getText(), 'ABCD');
+    // page.sendEvent('keypress', page.event.key.Home, null, null,  0x02000000);
+    // page.sendEvent('keypress', page.event.key.Cut);
+    // assert_equals(getText(), '');
+    // page.sendEvent('keypress', page.event.key.Paste);
+    // assert_equals(getText(), 'ABCD');
 }, "key press events");

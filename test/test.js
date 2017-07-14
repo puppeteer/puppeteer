@@ -667,7 +667,7 @@ describe('Puppeteer', function() {
       await keyboard.release('Backspace');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
     }));
-    it('should report modifier keys', SX(async function(){
+    it('should report shiftKey', SX(async function(){
       await page.navigate(PREFIX + '/input/keyboard.html');
       let keyboard = page.keyboard();
       await keyboard.press('Shift');
@@ -678,7 +678,8 @@ describe('Puppeteer', function() {
       expect(await page.evaluate(() => getResult())).toBe('Keyup: ! 49 8');
       await keyboard.release('Shift');
       expect(await page.evaluate(() => getResult())).toBe('Keyup: Shift 16 0');
-
+    }));
+    it('should report altKey', SX(async function(){
       await keyboard.press('Alt');
       expect(await page.evaluate(() => getResult())).toBe('Keydown: Alt 18 1');
       await keyboard.press('a');
@@ -687,7 +688,8 @@ describe('Puppeteer', function() {
       expect(await page.evaluate(() => getResult())).toBe('Keyup: a 65 1');
       await keyboard.release('Alt');
       expect(await page.evaluate(() => getResult())).toBe('Keyup: Alt 18 0');
-
+    }));
+    it('should report multiple modifiers', SX(async function(){
       await keyboard.press('Control');
       expect(await page.evaluate(() => getResult())).toBe('Keydown: Control 17 2');
       await keyboard.press('Meta');
@@ -700,6 +702,23 @@ describe('Puppeteer', function() {
       expect(await page.evaluate(() => getResult())).toBe('Keyup: Control 17 4');
       await keyboard.release('Meta');
       expect(await page.evaluate(() => getResult())).toBe('Keyup: Meta 91 0');
+    }));
+    it('should not type canceled events', SX(async function(){
+      await page.navigate(PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      await page.evaluate(() => {
+        window.addEventListener('keydown', event => {
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          if (event.key === 'l')
+            event.preventDefault();
+          if (event.key === 'o')
+            Promise.resolve().then(() => event.preventDefault());
+        }, false);
+      });
+      let keyboard = page.keyboard();
+      await keyboard.type('Hello World!');
+      expect(await page.evaluate(() => textarea.value)).toBe('He Wrd!');
     }));
   });
   describe('Page.setUserAgent', function() {
