@@ -274,7 +274,7 @@ describe('Puppeteer', function() {
       // Navigate to a page which loads immediately and then does a bunch of
       // requests via javascript's fetch method.
       let navigationPromise = page.navigate(PREFIX + '/networkidle.html', {
-        waitFor: 'networkidle',
+        waitUntil: 'networkidle',
         networkIdleTimeout: 100,
         networkIdleInflight: 0, // Only be idle when there are 0 inflight requests
       });
@@ -324,7 +324,7 @@ describe('Puppeteer', function() {
       // Navigate to a page which loads immediately and then opens a bunch of
       // websocket connections and then a fetch request.
       let navigationPromise = page.navigate(PREFIX + '/websocket.html', {
-        waitFor: 'networkidle',
+        waitUntil: 'networkidle',
         networkIdleTimeout: 100,
         networkIdleInflight: 0, // Only be idle when there are 0 inflight requests/connections
       });
