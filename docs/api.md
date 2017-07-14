@@ -13,8 +13,8 @@
   * [browser.stdout](#browserstdout)
   * [browser.version()](#browserversion)
 - [class: Page](#class-page)
-  * [page.$(selector, fun, ...args)](#pageselector-fun-args)
-  * [page.$$(selector, fun, ...args)](#pageselector-fun-args)
+  * [page.$(selector, pageFunction, ...args)](#pageselector-fun-args)
+  * [page.$$(selector, pageFunction, ...args)](#pageselector-fun-args)
   * [page.addScriptTag(url)](#pageaddscripttagurl)
   * [page.click(selector)](#pageclickselector)
   * [page.close()](#pageclose)
@@ -48,8 +48,8 @@
   * [dialog.message()](#dialogmessage)
   * [dialog.type](#dialogtype)
 - [class: Frame](#class-frame)
-  * [frame.$(selector, fun, ...args)](#frameselector-fun-args)
-  * [frame.$$(selector, fun, ...args)](#frameselector-fun-args)
+  * [frame.$(selector, pageFunction, ...args)](#frameselector-fun-args)
+  * [frame.$$(selector, pageFunction, ...args)](#frameselector-fun-args)
   * [frame.childFrames()](#framechildframes)
   * [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
   * [frame.isDetached()](#frameisdetached)
@@ -183,26 +183,26 @@ browser.newPage().then(async page =>
 });
 ```
 
-#### page.$(selector, fun, ...args)
+#### page.$(selector, pageFunction, ...args)
 
 - `selector` <[string]> A selector to be matched in the page
-- `fun` <[function<[Element]>]> Function to be evaluated in-page with first element matching `selector`
-- `...args` <...[string]> Arguments to pass to `fun`
-- returns: <[Promise<[Object]]> Promise which resolves to function return value.
+- `pageFunction` <[function]\([Element]\)> Function to be evaluated in-page with first element matching `selector`
+- `...args` <...[string]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Object]>> Promise which resolves to function return value.
 
 Example:
 ```js
 const outerhtml = await page.$('#box', e => e.outerHTML);
 ```
 
-Shortcut for [page.mainFrame().$(selector, fun, ...args)](#pageselector-fun-args).
+Shortcut for [page.mainFrame().$(selector, pageFunction, ...args)](#pageselector-fun-args).
 
-#### page.$$(selector, fun, ...args)
+#### page.$$(selector, pageFunction, ...args)
 
 - `selector` <[string]> A selector to be matched in the page
-- `fun` <[function<[Element]>]> Function to be evaluated in-page for every matching element.
-- `...args` <...[string]> Arguments to pass to `fun`
-- returns: <[Promise<[Array<[Object]>]>]> Promise which resolves to array of function return values.
+- `pageFunction` <[function]\([Element]\)> Function to be evaluated in-page for every matching element.
+- `...args` <...[string]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Array]<[Object]>>> Promise which resolves to array of function return values.
 
 Example:
 ```js
@@ -210,7 +210,7 @@ const headings = await page.$$('h1,h2,h3,h4', el => el.textContent);
 for (const heading of headings) console.log(heading);
 ```
 
-Shortcut for [page.mainFrame().$$(selector, fun, ...args)](#pageselector-fun-args).
+Shortcut for [page.mainFrame().$$(selector, pageFunction, ...args)](#pageselector-fun-args).
 
 #### page.addScriptTag(url)
 
@@ -423,22 +423,20 @@ Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `prompt`.
 
 ### class: Frame
-#### frame.$(selector, fun, ...args)
+#### frame.$(selector, pageFunction, ...args)
 - `selector` <[string]> A selector to be matched in the page
-- `fun` <[function<[Element]>]> Function to be evaluated with first element matching `selector`
-- `...args` <...[string]> Arguments to pass to `fun`
-- returns: <[Promise<[Object]]> Promise which resolves to function return value.
+- `pageFunction` <[function]\([Element]\)> Function to be evaluated with first element matching `selector`
+- `...args` <...[string]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Object]>> Promise which resolves to function return value.
 
-#### frame.$$(selector, fun, ...args)
+#### frame.$$(selector, pageFunction, ...args)
 - `selector` <[string]> A selector to be matched in the page
-- `fun` <[function<[Element]>]> Function to be evaluted for every element matching `selector`.
-- `...args` <...[string]> Arguments to pass to `fun`
-- returns: <[Promise<[Array<[Object]>]>]> Promise which resolves to array of function return values.
+- `pageFunction` <[function]\([Element]\)> Function to be evaluted for every element matching `selector`.
+- `...args` <...[string]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Array]<[Object]>>> Promise which resolves to array of function return values.
 
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
-
-<<<<<<< HEAD
 
 #### frame.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]> Function to be evaluated in browser context
