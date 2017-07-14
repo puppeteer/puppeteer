@@ -7,4 +7,10 @@ class Foo {
 
   get zzz() {
   }
+
+  $() {
+  }
+
+  money$$money() {
+  }
 }
