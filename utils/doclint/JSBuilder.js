@@ -30,10 +30,15 @@ class JSOutline {
   _onMethodDefinition(node) {
     console.assert(this._currentClassName !== null);
     console.assert(node.value.type === 'FunctionExpression');
+    let methodName = this._extractText(node.key);
+    if (node.kind === 'get') {
+      let property = Documentation.Member.createProperty(methodName);
+      this._currentClassMembers.push(property);
+      return;
+    }
     const args = [];
     for (let param of node.value.params)
       args.push(new Documentation.Argument(this._extractText(param)));
-    let methodName = this._extractText(node.key);
     let method = Documentation.Member.createMethod(methodName, args);
     this._currentClassMembers.push(method);
     // Extract properties from constructor.

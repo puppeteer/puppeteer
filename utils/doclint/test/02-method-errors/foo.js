@@ -4,4 +4,7 @@ class Foo {
 
   stop() {
   }
+
+  get zzz() {
+  }
 }

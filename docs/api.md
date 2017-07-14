@@ -86,7 +86,7 @@
   * [headers.values()](#headersvalues)
 - [class: Body](#class-body)
   * [body.arrayBuffer()](#bodyarraybuffer)
-  * [body.bodyUsed()](#bodybodyused)
+  * [body.bodyUsed](#bodybodyused)
   * [body.buffer()](#bodybuffer)
   * [body.json()](#bodyjson)
   * [body.text()](#bodytext)
@@ -449,7 +449,7 @@ If there's already a header with name `name`, the header gets overwritten.
 
 ### class: Body
 #### body.arrayBuffer()
-#### body.bodyUsed()
+#### body.bodyUsed
 #### body.buffer()
 #### body.json()
 #### body.text()
