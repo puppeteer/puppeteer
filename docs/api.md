@@ -353,7 +353,9 @@ In case of multiple pages in one browser, each page can have its own viewport si
 - returns: <[Promise]> Promise which resolves when the value is set.
 
 #### page.url()
-- returns: <[Promise]<[string]>> Promise which resolves with the current page url.
+- returns: <[string]> Current page url.
+
+This is a shortcut for [page.mainFrame().url()](#frameurl)
 
 #### page.userAgent()
 - returns: <[string]> Returns user agent.

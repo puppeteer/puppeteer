@@ -778,9 +778,9 @@ describe('Puppeteer', function() {
 
   describe('Page.url', function() {
     it('should work', SX(async function() {
-      expect(await page.url()).toBe('about:blank');
+      expect(page.url()).toBe('about:blank');
       await page.navigate(EMPTY_PAGE);
-      expect(await page.url()).toBe(EMPTY_PAGE);
+      expect(page.url()).toBe(EMPTY_PAGE);
     }));
   });
 
