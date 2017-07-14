@@ -365,7 +365,6 @@ class WebPage {
   }
 
   /**
-   *
    * @param {string} eventType
    * @param {string} keyOrKeys
    * @param {null} nop1

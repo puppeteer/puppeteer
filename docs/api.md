@@ -654,5 +654,4 @@ If there's already a header with name `name`, the header gets overwritten.
 [Request]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-request  "Request"
 [Browser]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-browser  "Browser"
 [Body]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-body  "Body"
-[stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable
 [Keyboard]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-keyboard "Keyboard"
