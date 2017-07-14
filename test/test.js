@@ -680,6 +680,8 @@ describe('Puppeteer', function() {
       expect(await page.evaluate(() => getResult())).toBe('Keyup: Shift 16 0');
     }));
     it('should report altKey', SX(async function(){
+      await page.navigate(PREFIX + '/input/keyboard.html');
+      let keyboard = page.keyboard();
       await keyboard.press('Alt');
       expect(await page.evaluate(() => getResult())).toBe('Keydown: Alt 18 1');
       await keyboard.press('a');
@@ -690,6 +692,8 @@ describe('Puppeteer', function() {
       expect(await page.evaluate(() => getResult())).toBe('Keyup: Alt 18 0');
     }));
     it('should report multiple modifiers', SX(async function(){
+      await page.navigate(PREFIX + '/input/keyboard.html');
+      let keyboard = page.keyboard();
       await keyboard.press('Control');
       expect(await page.evaluate(() => getResult())).toBe('Keydown: Control 17 2');
       await keyboard.press('Meta');

@@ -44,6 +44,7 @@
 - [class: Keyboard](#class-keyboard)
   * [keyboard.press(key)](#keyboardpresskey)
   * [keyboard.release(key)](#keyboardreleasekey)
+  * [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
   * [keyboard.type(text)](#keyboardtypetext)
 - [class: Dialog](#class-dialog)
   * [dialog.accept([promptText])](#dialogacceptprompttext)
@@ -387,15 +388,27 @@ Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 - `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
 - returns <[Promise]>
 
+Dispatches a `keydown` event.
 This does not send input events. To type characters into a text field, use [keyboard.type(text)](#keyboardtypetext)
 
 #### keyboard.release(key)
-- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `key` <[string]> Name of key to release, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
 - returns <[Promise]>
+
+Dispatches a `keyup` event.
+
+#### keyboard.sendCharacter(char)
+- `char` <[string]> Character to send into the page.
+- returns <[Promise]>
+
+Dispatches a `keypress` and `input` event. This does not send a `keydown` or `keyup` event.
 
 #### keyboard.type(text)
 - `text` <[string]> Text to type into the page
 - returns <[Promise]>
+
+Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
+This is the suggested way to type printable characters.
 
 ### class: Dialog
 #### dialog.accept([promptText])
