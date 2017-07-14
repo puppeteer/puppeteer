@@ -197,6 +197,33 @@ describe('Puppeteer', function() {
       await page.evaluate(addElement, 'div');
       expect(added).toBe(true);
     }));
+
+    it('should run in specified frame', SX(async function() {
+      await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
+      await FrameUtils.attachFrame(page, 'frame2', EMPTY_PAGE);
+      let frame1 = page.frames()[1];
+      let frame2 = page.frames()[2];
+      let added = false;
+      frame2.waitFor('div').then(() => added = true);
+      expect(added).toBe(false);
+      await frame1.evaluate(addElement, 'div');
+      expect(added).toBe(false);
+      await frame2.evaluate(addElement, 'div');
+      expect(added).toBe(true);
+    }));
+
+    it('should throw if evaluation failed', SX(async function() {
+      await page.evaluateOnInitialized(function() {
+        document.querySelector = null;
+      });
+      await page.navigate(EMPTY_PAGE);
+      try {
+        await page.waitFor('*');
+        fail('Failed waitFor did not throw.');
+      } catch (e) {
+        expect(e.message).toBe('Evaluation failed: document.querySelector is not a function');
+      }
+    }));
   });
 
   it('Page Events: ConsoleMessage', SX(async function() {
