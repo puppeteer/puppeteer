@@ -185,19 +185,30 @@ browser.newPage().then(async page =>
 
 #### page.$(selector, fun, ...args)
 
-- `selector` <[string]> Query selector to be run on the page
-- `fun` <[function<[Element]>]> Function to be evaluated with first element matching `selector`
+- `selector` <[string]> A selector to be matched in the page
+- `fun` <[function<[Element]>]> Function to be evaluated in-page with first element matching `selector`
 - `...args` <...[string]> Arguments to pass to `fun`
 - returns: <[Promise<[Object]]> Promise which resolves to function return value.
+
+Example:
+```js
+const outerhtml = await page.$('#box', e => e.outerHTML);
+```
 
 Shortcut for [page.mainFrame().$(selector, fun, ...args)](#pageselector-fun-args).
 
 #### page.$$(selector, fun, ...args)
 
-- `selector` <[string]> Query selector to be run on the page
-- `fun` <[function<[Element]>]> Function to be evaluted for every element matching `selector`.
+- `selector` <[string]> A selector to be matched in the page
+- `fun` <[function<[Element]>]> Function to be evaluated in-page for every matching element.
 - `...args` <...[string]> Arguments to pass to `fun`
 - returns: <[Promise<[Array<[Object]>]>]> Promise which resolves to array of function return values.
+
+Example:
+```js
+const headings = await page.$$('h1,h2,h3,h4', el => el.textContent);
+for (const heading of headings) console.log(heading);
+```
 
 Shortcut for [page.mainFrame().$$(selector, fun, ...args)](#pageselector-fun-args).
 
@@ -413,13 +424,13 @@ Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `promp
 
 ### class: Frame
 #### frame.$(selector, fun, ...args)
-- `selector` <[string]> Query selector to be run on the page
+- `selector` <[string]> A selector to be matched in the page
 - `fun` <[function<[Element]>]> Function to be evaluated with first element matching `selector`
 - `...args` <...[string]> Arguments to pass to `fun`
 - returns: <[Promise<[Object]]> Promise which resolves to function return value.
 
 #### frame.$$(selector, fun, ...args)
-- `selector` <[string]> Query selector to be run on the page
+- `selector` <[string]> A selector to be matched in the page
 - `fun` <[function<[Element]>]> Function to be evaluted for every element matching `selector`.
 - `...args` <...[string]> Arguments to pass to `fun`
 - returns: <[Promise<[Array<[Object]>]>]> Promise which resolves to array of function return values.
