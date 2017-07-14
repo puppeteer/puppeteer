@@ -187,7 +187,7 @@ browser.newPage().then(async page =>
 
 - `selector` <[string]> Query selector to be run on the page
 - `fun` <[function<[Element]>]> Function to be evaluated with first element matching `selector`
-- `...args` <[Array]<[string]>> Arguments to pass to `fun`
+- `...args` <...[string]> Arguments to pass to `fun`
 - returns: <[Promise<[Object]]> Promise which resolves to function return value.
 
 Shortcut for [page.mainFrame().$(selector, fun, ...args)](#pageselector-fun-args).
@@ -196,7 +196,7 @@ Shortcut for [page.mainFrame().$(selector, fun, ...args)](#pageselector-fun-args
 
 - `selector` <[string]> Query selector to be run on the page
 - `fun` <[function<[Element]>]> Function to be evaluted for every element matching `selector`.
-- `...args` <[Array]<[string]>> Arguments to pass to `fun`
+- `...args` <...[string]> Arguments to pass to `fun`
 - returns: <[Promise<[Array<[Object]>]>]> Promise which resolves to array of function return values.
 
 Shortcut for [page.mainFrame().$$(selector, fun, ...args)](#pageselector-fun-args).
@@ -415,22 +415,23 @@ Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `promp
 #### frame.$(selector, fun, ...args)
 - `selector` <[string]> Query selector to be run on the page
 - `fun` <[function<[Element]>]> Function to be evaluated with first element matching `selector`
-- `...args` <[Array]<[string]>> Arguments to pass to `fun`
+- `...args` <...[string]> Arguments to pass to `fun`
 - returns: <[Promise<[Object]]> Promise which resolves to function return value.
 
 #### frame.$$(selector, fun, ...args)
 - `selector` <[string]> Query selector to be run on the page
 - `fun` <[function<[Element]>]> Function to be evaluted for every element matching `selector`.
-- `...args` <[Array]<[string]>> Arguments to pass to `fun`
+- `...args` <...[string]> Arguments to pass to `fun`
 - returns: <[Promise<[Array<[Object]>]>]> Promise which resolves to array of function return values.
 
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
 
+<<<<<<< HEAD
 
 #### frame.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]> Function to be evaluated in browser context
-- `...args` <[Array]<[string]>> Arguments to pass to  `pageFunction`
+- `...args` <...[string]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
 
 If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
