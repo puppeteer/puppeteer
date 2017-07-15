@@ -19,10 +19,11 @@ class MDOutline {
 
     // Extract headings.
     await page.setContent(html);
-    const classes = await page.evaluate(() => {
+    const {classes, errors} = await page.evaluate(() => {
       let classes = [];
       let currentClass = {};
       let member = {};
+      let errors = [];
       for (let element of document.body.querySelectorAll('h3, h4, h4 + ul > li')) {
         if (element.matches('h3')) {
           currentClass = {
@@ -39,18 +40,27 @@ class MDOutline {
           currentClass.members.push(member);
         } else if (element.matches('li') && element.firstChild.matches && element.firstChild.matches('code')) {
           member.args.push(element.firstChild.textContent);
-        } else if (element.matches('li') && element.firstChild.nodeType === Element.TEXT_NODE && element.firstChild.textContent.startsWith('returns: ')) {
+        } else if (element.matches('li') && element.firstChild.nodeType === Element.TEXT_NODE && element.firstChild.textContent.toLowerCase().startsWith('retur')) {
           member.hasReturn = true;
+          const expectedText = 'returns: ';
+          let actualText = element.firstChild.textContent;
+          let angleIndex = actualText.indexOf('<');
+          let spaceIndex = actualText.indexOf(' ');
+          angleIndex = angleIndex === -1 ? angleText.length : angleIndex;
+          spaceIndex = spaceIndex === -1 ? spaceIndex.length : spaceIndex + 1;
+          actualText = actualText.substring(0, Math.min(angleIndex, spaceIndex));
+          if (actualText !== expectedText)
+            errors.push(`${member.name} has mistyped 'return' type declaration: expected exactly '${expectedText}', found '${actualText}'.`);
         }
       }
-      return classes;
+      return {classes, errors};
     });
-    return new MDOutline(classes);
+    return new MDOutline(classes, errors);
   }
 
-  constructor(classes) {
+  constructor(classes, errors) {
     this.classes = [];
-    this.errors = [];
+    this.errors = errors;
     const classHeading = /^class: (\w+)$/;
     const constructorRegex = /^new (\w+)\((.*)\)$/;
     const methodRegex = /^(\w+)\.(\w+)\((.*)\)$/;
