@@ -226,12 +226,37 @@ describe('Puppeteer', function() {
     }));
   });
 
-  it('Page Events: ConsoleMessage', SX(async function() {
-    let msgs = [];
-    page.on('consolemessage', msg => msgs.push(msg));
-    await page.evaluate(() => console.log('Message!'));
-    expect(msgs).toEqual(['Message!']);
-  }));
+  describe('Page.Events.ConsoleMessage', function() {
+    it('should work', SX(async function() {
+      let commandArgs = [];
+      page.once('consolemessage', (...args) => commandArgs = args);
+      page.evaluate(() => console.log(5, 'hello', {foo: 'bar'}));
+      await waitForEvents(page, 'consolemessage');
+      expect(commandArgs).toEqual([5, 'hello', {foo: 'bar'}]);
+    }));
+    it('should work for different console API calls', SX(async function() {
+      let messages = [];
+      page.on('consolemessage', msg => messages.push(msg));
+      page.evaluate(() => {
+        // A pair of time/timeEnd generates only one Console API call.
+        console.time('calling console.time');
+        console.timeEnd('calling console.time');
+        console.trace('calling console.trace');
+        console.dir('calling console.dir');
+        console.warn('calling console.warn');
+        console.error('calling console.error');
+      });
+      // Wait for 5 events to hit.
+      await waitForEvents(page, 'consolemessage', 5);
+      expect(messages[0]).toContain('calling console.time');
+      expect(messages.slice(1)).toEqual([
+        'calling console.trace',
+        'calling console.dir',
+        'calling console.warn',
+        'calling console.error',
+      ]);
+    }));
+  });
 
   describe('Page.navigate', function() {
     it('should fail when navigating to bad url', SX(async function() {
@@ -989,6 +1014,27 @@ describe('Puppeteer', function() {
     }));
   });
 });
+
+/**
+ * @param {!EventEmitter} emitter
+ * @param {string} eventName
+ * @param {number=} eventCount
+ * @return {!Promise}
+ */
+function waitForEvents(emitter, eventName, eventCount = 1) {
+  let fulfill;
+  let promise = new Promise(x => fulfill = x);
+  emitter.on(eventName, onEvent);
+  return promise;
+
+  function onEvent() {
+    --eventCount;
+    if (eventCount)
+      return;
+    emitter.removeListener(eventName, onEvent);
+    fulfill();
+  }
+}
 
 // Since Jasmine doesn't like async functions, they should be wrapped
 // in a SX function.

@@ -62,7 +62,7 @@ class WebPage {
     this._pageEvents.on(PageEvents.Response, response => this._onResponseReceived(response));
     this._pageEvents.on(PageEvents.RequestFinished, request => this._onRequestFinished(request));
     this._pageEvents.on(PageEvents.RequestFailed, event => (this.onResourceError || noop).call(null, event));
-    this._pageEvents.on(PageEvents.ConsoleMessage, msg => (this.onConsoleMessage || noop).call(null, msg));
+    this._pageEvents.on(PageEvents.ConsoleMessage, (...args) => this._onConsoleMessage(...args));
     this._pageEvents.on(PageEvents.Confirm, message => this._onConfirm(message));
     this._pageEvents.on(PageEvents.Alert, message => this._onAlert(message));
     this._pageEvents.on(PageEvents.Dialog, dialog => this._onDialog(dialog));
@@ -79,6 +79,16 @@ class WebPage {
         Paste: ['Paste']
       }
     };
+  }
+
+  /**
+   * @param {!Array<!Object>} args
+   */
+  _onConsoleMessage(...args) {
+    if (!this.onConsoleMessage)
+      return;
+    const text = args.join(' ');
+    this.onConsoleMessage(text);
   }
 
   /**
