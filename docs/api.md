@@ -35,8 +35,8 @@
   * [page.injectFile(filePath)](#pageinjectfilefilepath)
   * [page.mainFrame()](#pagemainframe)
   * [page.navigate(url, options)](#pagenavigateurl-options)
+  * [page.pdf(options)](#pagepdfoptions)
   * [page.plainText()](#pageplaintext)
-  * [page.printToPDF(filePath[, options])](#pageprinttopdffilepath-options)
   * [page.screenshot([options])](#pagescreenshotoptions)
   * [page.setContent(html)](#pagesetcontenthtml)
   * [page.setHTTPHeaders(headers)](#pagesethttpheadersheaders)
@@ -308,28 +308,58 @@ The `page.navigate` will throw an error if:
 - target URL is invalid.
 - the `maxTime` is exceeded during navigation.
 
+#### page.pdf(options)
+- `options` <[Object]> Options object which might have the following properties:
+  - `path` <[string]> The file path to save the PDF to.
+  - `scale` <[number]> Scale of the webpage rendering. Defaults to `1`.
+  - `displayHeaderFooter` <[boolean]> Display header and footer. Defaults to `false`.
+  - `printBackground` <[boolean]> Print background graphics. Defaults to `false`.
+  - `landscape` <[boolean]> Paper orientation. Defaults to `false`.
+  - `pageRanges` <[string]> Paper ranges to print, e.g., '1-5, 8, 11-13'. Defaults to the empty string, which means print all pages.
+  - `format` <[string]> Paper format. If set, takes priority over `width` or `height` options. Defaults to 'Letter'.
+  - `width` <[string]> Paper width, accepts values labeled with units.
+  - `height` <[string]> Paper height, accepts values labeled with units.
+  - `margin` <[Object]> Paper margins, defaults to none.
+    - `top` <[string]> Top margin, accepts values labeled with units.
+    - `right` <[string]> Right margin, accepts values labeled with units.
+    - `bottom` <[string]> Bottom margin, accepts values labeled with units.
+    - `left` <[string]> Left margin, accepts values labeled with units.
+- returns: <[Promise]<[Buffer]>> Promise which resolves with PDF buffer.
+
+The `width`, `height`, and `margin` options accept values labeled with units. Unlabeled values are treated as pixels.
+
+A few examples:
+- `page.pdf({width: 100})` - prints with width set to 100 pixels
+- `page.pdf({width: '100px'})` - prints with width set to 100 pixels
+- `page.pdf({width: '10cm'})` - prints with width set to 10 centimeters.
+
+All possible units are:
+- `px` - pixel
+- `in` - inch
+- `cm` - centimeter
+- `mm` - millimeter
+
+The `format` options are:
+- `Letter`: 8.5in x 11in
+- `Legal`: 8.5in x 14in
+- `Tabloid`: 11in x 17in
+- `Ledger`: 17in x 11in
+- `A0`: 33.1in x 46.8in
+- `A1`: 23.4in x 33.1in
+- `A2`: 16.5in x 23.4in
+- `A3`: 11.7in x 16.5in
+- `A4`: 8.27in x 11.7in
+- `A5`: 5.83in x 8.27in
+
 #### page.plainText()
 - returns:  <[Promise]<[string]>> Returns page's inner text.
-
-#### page.printToPDF(filePath[, options])
-- `filePath` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension
-- `options` <[Object]> Options object which might have the following properties:
-	- `scale` <[number]>
-	- `displayHeaderFooter` <[boolean]>
-	- `printBackground` <[boolean]>
-	- `landscape` <[boolean]>
-	- `pageRanges` <[string]>
-	- `format` <[string]>
-	- `width` <[number]>
-	- `height` <[number]>
-- returns: <[Promise]> Promise which resolves when the PDF is saved.
 
 #### page.screenshot([options])
 - `options` <[Object]> Options object which might have the following properties:
     - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension.
-    - `type` <[string]> Specify screenshot type, could be either `jpeg` or `png`.
-    - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `.png` images.
-    - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page.
+    - `type` <[string]> Specify screenshot type, could be either `jpeg` or `png`. Defaults to 'png'.
+    - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
+    - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
     - `clip` <[Object]> An object which specifies clipping region of the page. Should have the following fields:
         - `x` <[number]> x-coordinate of top-left corner of clip area
         - `y` <[number]> y-coordinate of top-left corner of clip area

@@ -829,7 +829,7 @@ describe('Puppeteer', function() {
     }));
   });
 
-  describe('Page.printToPDF', function() {
+  describe('Page.pdf', function() {
     let outputFile = __dirname + '/assets/output.pdf';
     afterEach(function() {
       fs.unlinkSync(outputFile);
@@ -837,7 +837,7 @@ describe('Puppeteer', function() {
 
     it('should print to pdf', SX(async function() {
       await page.navigate(PREFIX + '/grid.html');
-      await page.printToPDF(outputFile);
+      await page.pdf({path: outputFile});
       expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
     }));
   });
