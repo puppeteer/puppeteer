@@ -66,6 +66,14 @@ class Documentation {
         errors.push(`Non-existing property found: ${className}.${propertyName}`);
       for (let propertyName of propertyDiff.missing)
         errors.push(`Property not found: ${className}.${propertyName}`);
+
+      const actualEvents = Array.from(actualClass.events.keys()).sort();
+      const expectedEvents = Array.from(expectedClass.events.keys()).sort();
+      const eventsDiff = diff(actualEvents, expectedEvents);
+      for (let eventName of eventsDiff.extra)
+        errors.push(`Non-existing event found in class ${className}: '${eventName}'`);
+      for (let eventName of eventsDiff.missing)
+        errors.push(`Event not found in class ${className}: '${eventName}'`);
     }
     return errors;
   }
@@ -110,12 +118,15 @@ Documentation.Class = class {
     this.members = new Map();
     this.properties = new Map();
     this.methods = new Map();
+    this.events = new Map();
     for (let member of membersArray) {
       this.members.set(member.name, member);
       if (member.type === 'method')
         this.methods.set(member.name, member);
       else if (member.type === 'property')
         this.properties.set(member.name, member);
+      else if (member.type === 'event')
+        this.events.set(member.name, member);
     }
   }
 };
@@ -155,6 +166,14 @@ Documentation.Member = class {
    */
   static createProperty(name) {
     return new Documentation.Member('property', name, [], false, false);
+  }
+
+  /**
+   * @param {string} name
+   * @return {!Documentation.Member}
+   */
+  static createEvent(name) {
+    return new Documentation.Member('event', name, [], false, false);
   }
 };
 

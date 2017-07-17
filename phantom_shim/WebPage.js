@@ -405,7 +405,8 @@ class WebPage {
       options.landscape = paperSize.orientation === 'landscape';
       options.width = paperSize.width;
       options.height = paperSize.height;
-      await(this._page.printToPDF(fileName, options));
+      options.path = fileName;
+      await(this._page.pdf(options));
     } else {
       let options = {};
       if (this.clipRect && (this.clipRect.left || this.clipRect.top || this.clipRect.width || this.clipRect.height)) {

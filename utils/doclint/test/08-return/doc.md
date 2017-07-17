@@ -7,3 +7,5 @@
 #### foo.returnNothing()
 - returns: <[number]>
 
+#### foo.www()
+- returns <[string]>
