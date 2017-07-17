@@ -42,7 +42,8 @@
   * [page.viewportSize()](#pageviewportsize)
   * [page.waitFor(selector)](#pagewaitforselector)
 - [class: Keyboard](#class-keyboard)
-  * [keyboard.press(key)](#keyboardpresskey)
+  * [keyboard.press(key[, options])](#keyboardpresskey-options)
+  * [keyboard.pressAndRelease(key)](#keyboardpressandreleasekey)
   * [keyboard.release(key)](#keyboardreleasekey)
   * [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
   * [keyboard.type(text)](#keyboardtypetext)
@@ -384,12 +385,46 @@ Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 
 ### class: Keyboard
 
-#### keyboard.press(key)
+Keyboard provides an api for managing a virtual keyboard. The high level api is [`keyboard.type`](#keyboardtypetext), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
+
+For finer control, you can use press, release, and sendCharacter to manually fire events as if they were generated from a real keyboard.
+
+Typing some text and fixing a typo:
+```js
+keyboard.type('Hello Morld!');
+for (let i = 0; i = 0; i < 5; i++)
+  keyboard.pressAndRelease('ArrowLeft');
+keyboard.pressAndRelease('Backspace');
+keyboard.type('W');
+```
+
+Holding down `Shift` in order to select and delete some text:
+```js
+keyboard.type('this');
+keyboard.press('Shift');
+for (let i = 0; i = 0; i < 4; i++)
+  keyboard.pressAndRelease('ArrowLeft');
+keyboard.release('Shift');
+keyboard.pressAndRelease('Backspace');
+```
+
+#### keyboard.press(key[, options])
 - `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `options` <[Object]>
+  - `text` <[string]> If specified, generates an input event with this text.
 - returns: <[Promise]>
 
 Dispatches a `keydown` event.
-This does not send input events. To type characters into a text field, use [keyboard.type(text)](#keyboardtypetext)
+
+This will not send input events unless `text` is specified.
+
+If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key presses will be sent with that modifier active. To release the modifier key, use [`keyboard.release`](#keyboardreleasekey).
+
+#### keyboard.pressAndRelease(key)
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- returns: <[Promise]>
+
+Shortcut for [`keyboard.press`](#keyboardpresskey) and [`keyboard.release`](#keyboardreleasekey).
 
 #### keyboard.release(key)
 - `key` <[string]> Name of key to release, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
@@ -403,12 +438,20 @@ Dispatches a `keyup` event.
 
 Dispatches a `keypress` and `input` event. This does not send a `keydown` or `keyup` event.
 
+```js
+keyboard.sendCharacter('嗨');
+```
+
 #### keyboard.type(text)
 - `text` <[string]> Text to type into the page
 - returns: <[Promise]>
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
 This is the suggested way to type printable characters.
+
+```js
+keyboard.type('Hello World!');
+```
 
 ### class: Dialog
 #### dialog.accept([promptText])
