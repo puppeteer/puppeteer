@@ -470,6 +470,22 @@ Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 
 [Dialog] objects are dispatched by page via the ['dialog'](#event-dialog) event.
 
+An example of using `Dialog` class:
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser({headless: false});
+browser.newPage().then(async page => {
+  page.on('dialog', dialog => {
+    console.log(dialog.message());
+    dialog.dismiss();
+    browser.close();
+  });
+  page.evaluate(() => alert('1'));
+});
+```
+
+> NOTE: Chrome Headless currently has issues with managing javascript dialogs, see [issue 13](https://github.com/GoogleChrome/puppeteer/issues/13)
+
 #### dialog.accept([promptText])
 - `promptText` <[string]> A text to enter in prompt. Does not cause any effects if the dialog's `type` is not prompt.
 - returns: <[Promise]> Promise which resolves when the dialog has being accepted.
@@ -493,6 +509,25 @@ At every point of time, page exposes its current frame tree via the [page.mainFr
 - ['frameattached'](#event-frameattached) - fired when the frame gets attached to the page. Frame could be attached to the page only once.
 - ['framenavigated'](#event-framenavigated) - fired when the frame commits navigation to a different URL.
 - ['framedetached'](#event-framedetached) - fired when the frame gets detached from the page.  Frame could be detached from the page only once.
+
+An example of dumping frame tree:
+
+```js
+const {Browser} = new require('.');
+const browser = new Browser({headless: true});
+
+browser.newPage().then(async page => {
+  await page.navigate('https://www.google.com/chrome/browser/canary.html');
+  dumpFrameTree(page.mainFrame(), '');
+  browser.close();
+
+  function dumpFrameTree(frame, indent) {
+    console.log(indent + frame.url());
+    for (let child of frame.childFrames())
+      dumpFrameTree(child, indent + '  ');
+  }
+});
+```
 
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
