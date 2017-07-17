@@ -42,6 +42,7 @@
   * [page.viewportSize()](#pageviewportsize)
   * [page.waitFor(selector)](#pagewaitforselector)
 - [class: Keyboard](#class-keyboard)
+  * [keyboard.modifiers()](#keyboardmodifiers)
   * [keyboard.press(key[, options])](#keyboardpresskey-options)
   * [keyboard.pressAndRelease(key)](#keyboardpressandreleasekey)
   * [keyboard.release(key)](#keyboardreleasekey)
@@ -407,6 +408,15 @@ for (let i = 0; i = 0; i < 4; i++)
 keyboard.release('Shift');
 keyboard.pressAndRelease('Backspace');
 ```
+
+#### keyboard.modifiers()
+- returns: <[Object]>
+  - `Shift` <[boolean]>
+  - `Meta` <[boolean]>
+  - `Control` <[boolean]>
+  - `Alt` <[boolean]>
+
+ Returns which modifier keys are currently active. Use [`keyboard.press`](#keyboardpresskey) to activate a modifier key.
 
 #### keyboard.press(key[, options])
 - `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)

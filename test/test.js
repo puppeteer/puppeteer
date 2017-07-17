@@ -651,17 +651,13 @@ describe('Puppeteer', function() {
       let keyboard = page.keyboard();
       await keyboard.type('Hello World!');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
-      for (let i = 0; i < 'World!'.length; i++) {
-        keyboard.press('ArrowLeft');
-        keyboard.release('ArrowLeft');
-      }
+      for (let i = 0; i < 'World!'.length; i++)
+        keyboard.pressAndRelease('ArrowLeft');
       await keyboard.type('inserted ');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello inserted World!');
       keyboard.press('Shift');
-      for (let i = 0; i < 'inserted '.length; i++) {
-        keyboard.press('ArrowLeft');
-        keyboard.release('ArrowLeft');
-      }
+      for (let i = 0; i < 'inserted '.length; i++)
+        keyboard.pressAndRelease('ArrowLeft');
       keyboard.release('Shift');
       keyboard.press('Backspace');
       await keyboard.release('Backspace');
@@ -749,6 +745,19 @@ describe('Puppeteer', function() {
       let keyboard = page.keyboard();
       await keyboard.type('Hello World!');
       expect(await page.evaluate(() => textarea.value)).toBe('He Wrd!');
+    }));
+    it('keyboard.modifiers()', SX(async function(){
+      let keyboard = page.keyboard();
+      expect(keyboard.modifiers().Shift).toBe(false);
+      expect(keyboard.modifiers().Meta).toBe(false);
+      expect(keyboard.modifiers().Alt).toBe(false);
+      expect(keyboard.modifiers().Control).toBe(false);
+      keyboard.press('Shift');
+      expect(keyboard.modifiers().Shift).toBe(true);
+      expect(keyboard.modifiers().Alt).toBe(false);
+      keyboard.release('Shift');
+      expect(keyboard.modifiers().Shift).toBe(false);
+      expect(keyboard.modifiers().Alt).toBe(false);
     }));
   });
   describe('Page.setUserAgent', function() {
