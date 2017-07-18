@@ -13,7 +13,7 @@
   * [browser.stdout](#browserstdout)
   * [browser.version()](#browserversion)
 - [class: Page](#class-page)
-  * [event: 'consolemessage'](#event-consolemessage)
+  * [event: 'console'](#event-console)
   * [event: 'dialog'](#event-dialog)
   * [event: 'frameattached'](#event-frameattached)
   * [event: 'framedetached'](#event-framedetached)
@@ -205,10 +205,21 @@ browser.newPage().then(async page =>
 });
 ```
 
-#### event: 'consolemessage'
+#### event: 'console'
 - <[string]>
 
-Emitted when a page calls one of console API methods, e.g. `console.log`.
+Emitted when a page calls one of console API methods, e.g. `console.log` or `console.dir`.
+
+If multiple arguments are passed over to the console API call, these arguments are dispatched in an event.
+
+An example of handling `console` event:
+```js
+page.on('console', (...args) => {
+  for (let i =0; i < args.length; ++i)
+    console.log(`${i}: ${args[i]}`);
+});
+page.evaluate(() => console.log(5, 'hello', {foo: 'bar'}));
+```
 
 #### event: 'dialog'
 - <[Dialog]>

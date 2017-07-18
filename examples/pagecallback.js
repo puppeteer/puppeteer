@@ -18,7 +18,7 @@ var Browser = require('../lib/Browser');
 var browser = new Browser();
 
 browser.newPage().then(async page => {
-    page.on('consolemessage', console.log);
+    page.on('console', console.log);
 
 
     await page.setInPageCallback('callPhantom', msg => {

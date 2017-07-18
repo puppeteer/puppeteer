@@ -226,17 +226,17 @@ describe('Puppeteer', function() {
     }));
   });
 
-  describe('Page.Events.ConsoleMessage', function() {
+  describe('Page.Events.Console', function() {
     it('should work', SX(async function() {
       let commandArgs = [];
-      page.once('consolemessage', (...args) => commandArgs = args);
+      page.once('console', (...args) => commandArgs = args);
       page.evaluate(() => console.log(5, 'hello', {foo: 'bar'}));
-      await waitForEvents(page, 'consolemessage');
+      await waitForEvents(page, 'console');
       expect(commandArgs).toEqual([5, 'hello', {foo: 'bar'}]);
     }));
     it('should work for different console API calls', SX(async function() {
       let messages = [];
-      page.on('consolemessage', msg => messages.push(msg));
+      page.on('console', msg => messages.push(msg));
       page.evaluate(() => {
         // A pair of time/timeEnd generates only one Console API call.
         console.time('calling console.time');
@@ -247,7 +247,7 @@ describe('Puppeteer', function() {
         console.error('calling console.error');
       });
       // Wait for 5 events to hit.
-      await waitForEvents(page, 'consolemessage', 5);
+      await waitForEvents(page, 'console', 5);
       expect(messages[0]).toContain('calling console.time');
       expect(messages.slice(1)).toEqual([
         'calling console.trace',
