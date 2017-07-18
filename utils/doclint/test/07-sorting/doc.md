@@ -1,10 +1,16 @@
 ### class: Foo
 
+#### event: 'c'
+
+#### event: 'a'
+
 #### foo.aaa()
 
-#### new Foo()
+#### event: 'b'
 
 #### foo.ddd
+
+#### new Foo()
 
 #### foo.ccc()
 

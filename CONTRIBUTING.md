@@ -40,7 +40,7 @@ are used to test `phantom_shim`.
 
 To run puppeteer tests, use:
 ```
-npm run test-puppeteer
+npm run unit
 ```
 
 To run phantom-shim against phantomjs tests, use:
@@ -53,3 +53,15 @@ To run both puppeteer and phantom_shim tests, use:
 npm test
 ```
 
+## DEBUG module
+Puppeteer uses [debug](https://github.com/visionmedia/debug) module to expose some of it's inner guts under the `puppeteer` namespace.
+Try putting the following script in the `script.js` and running it via `DEBUG=* node script.js`:
+
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+browser.newPage().then(async page => {
+  await page.navigate('https://example.com');
+  browser.close();
+});
+```

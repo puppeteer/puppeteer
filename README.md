@@ -96,7 +96,7 @@ However, if you're using Node 8 or higher, `async/await` make life easier:
 ```javascript
 browser.newPage().then(async page => {
   await page.setViewportSize({width: 1000, height: 1000});
-  await page.printToPDF('blank.pdf');
+  await page.pdf({path: 'blank.pdf'});
   browser.close();
 });
 ```

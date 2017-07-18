@@ -61,20 +61,44 @@ async function lint(page, docsFolderPath, jsFolderPath) {
  */
 function lintMarkdown(doc) {
   const errors = [];
-  // Methods should be sorted alphabetically.
   for (let cls of doc.classesArray) {
-    for (let i = 0; i < cls.membersArray.length - 1; ++i) {
-      // Constructor always goes first.
-      if (cls.membersArray[i].name === 'constructor') {
-        if (i > 0)
-          errors.push(`Constructor of ${cls.name} should go before other methods`);
-        continue;
-      }
+    let members = cls.membersArray;
+
+    // Events should go first.
+    let eventIndex = 0;
+    for (; eventIndex < members.length && members[eventIndex].type === 'event'; ++eventIndex);
+    for (; eventIndex < members.length && members[eventIndex].type !== 'event'; ++eventIndex);
+    if (eventIndex < members.length)
+      errors.push(`Events should go first. Event '${members[eventIndex].name}' in class ${cls.name} breaks order`);
+
+    // Constructor should be right after events and before all other members.
+    let constructorIndex = members.findIndex(member => member.type === 'method' && member.name === 'constructor');
+    if (constructorIndex > 0 && members[constructorIndex - 1].type !== 'event')
+      errors.push(`Constructor of ${cls.name} should go before other methods`);
+
+    // Events should be sorted alphabetically.
+    for (let i = 0; i < members.length - 1; ++i) {
       let member1 = cls.membersArray[i];
       let member2 = cls.membersArray[i + 1];
+      if (member1.type !== 'event' || member2.type !== 'event')
+        continue;
+      if (member1.name > member2.name)
+        errors.push(`Event '${member1.name}' in class ${cls.name} breaks alphabetic ordering of events`);
+    }
+
+    // All other members should be sorted alphabetically.
+    for (let i = 0; i < members.length - 1; ++i) {
+      let member1 = cls.membersArray[i];
+      let member2 = cls.membersArray[i + 1];
+      if (member1.type === 'event' || member2.type === 'event')
+        continue;
+      if (member1.type === 'method' && member1.name === 'constructor')
+        continue;
       if (member1.name > member2.name) {
-        let memberName = `${cls.name}.${member1.name}` + (member1.type === 'method' ? '()' : '');
-        errors.push(`${memberName} breaks alphabetic member sorting inside class ${cls.name}`);
+        let memberName = `${cls.name}.${member1.name}`;
+        if (member1.type === 'method')
+          memberName += '()';
+        errors.push(`${memberName} breaks alphabetic ordering of class members.`);
       }
     }
   }

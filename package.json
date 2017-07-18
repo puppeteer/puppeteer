@@ -20,6 +20,7 @@
   "author": "The Chromium Authors",
   "license": "SEE LICENSE IN LICENSE",
   "dependencies": {
+    "debug": "^2.6.8",
     "extract-zip": "^1.6.5",
     "mime": "^1.3.4",
     "progress": "^2.0.0",
@@ -27,7 +28,7 @@
     "ws": "^3.0.0"
   },
   "puppeteer": {
-    "chromium_revision": "485143"
+    "chromium_revision": "486981"
   },
   "devDependencies": {
     "commonmark": "^0.27.0",

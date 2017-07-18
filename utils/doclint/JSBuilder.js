@@ -7,6 +7,8 @@ const Documentation = require('./Documentation');
 class JSOutline {
   constructor(text) {
     this.classes = [];
+    this.errors = [];
+    this._eventsByClassName = new Map();
     this._currentClassName = null;
     this._currentClassMembers = [];
 
@@ -17,9 +19,12 @@ class JSOutline {
         this._onClassDeclaration(node);
       else if (node.type === 'MethodDefinition')
         this._onMethodDefinition(node);
+      else if (node.type === 'AssignmentExpression')
+        this._onAssignmentExpression(node);
     });
     walker.walk(ast);
     this._flushClassIfNeeded();
+    this._recreateClassesWithEvents();
   }
 
   _onClassDeclaration(node) {
@@ -68,6 +73,24 @@ class JSOutline {
     return ESTreeWalker.SkipSubtree;
   }
 
+  _onAssignmentExpression(node) {
+    if (node.left.type !== 'MemberExpression' || node.right.type !== 'ObjectExpression')
+      return;
+    if (node.left.object.type !== 'Identifier' || node.left.property.type !== 'Identifier' || node.left.property.name !== 'Events')
+      return;
+    const className = node.left.object.name;
+    let events = this._eventsByClassName.get(className);
+    if (!events) {
+      events = [];
+      this._eventsByClassName.set(className, events);
+    }
+    for (let property of node.right.properties) {
+      if (property.type !== 'Property' || property.key.type !== 'Identifier' || property.value.type !== 'Literal')
+        continue;
+      events.push(Documentation.Member.createEvent(property.value.value));
+    }
+  }
+
   _flushClassIfNeeded() {
     if (this._currentClassName === null)
       return;
@@ -75,6 +98,14 @@ class JSOutline {
     this.classes.push(jsClass);
     this._currentClassName = null;
     this._currentClassMembers = [];
+  }
+
+  _recreateClassesWithEvents() {
+    this.classes = this.classes.map(cls => {
+      let events = this._eventsByClassName.get(cls.name) || [];
+      let members = cls.membersArray.concat(events);
+      return new Documentation.Class(cls.name, members);
+    });
   }
 
   _extractText(node) {
