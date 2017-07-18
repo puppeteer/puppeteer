@@ -438,6 +438,24 @@ describe('Puppeteer', function() {
     }));
   });
 
+  describe('Page.goBack', function() {
+    it('should work', SX(async function() {
+      await page.navigate(EMPTY_PAGE);
+      await page.navigate(PREFIX + '/grid.html');
+
+      let response = await page.goBack();
+      expect(response.ok).toBe(true);
+      expect(response.url).toContain(EMPTY_PAGE);
+
+      response = await page.goForward();
+      expect(response.ok).toBe(true);
+      expect(response.url).toContain('/grid.html');
+
+      response = await page.goForward();
+      expect(response).toBe(null);
+    }));
+  });
+
   describe('Page.setInPageCallback', function() {
     it('should work', SX(async function() {
       await page.setInPageCallback('callController', function(a, b) {
