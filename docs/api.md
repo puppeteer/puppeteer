@@ -55,7 +55,7 @@
 - [class: Keyboard](#class-keyboard)
   * [keyboard.hold(key[, options])](#keyboardholdkey-options)
   * [keyboard.modifiers()](#keyboardmodifiers)
-  * [keyboard.press(key)](#keyboardpresskey)
+  * [keyboard.press(key[, options])](#keyboardpresskey-options)
   * [keyboard.release(key)](#keyboardreleasekey)
   * [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
   * [keyboard.type(text)](#keyboardtypetext)
@@ -519,8 +519,10 @@ If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key
 
  Returns which modifier keys are currently active. Use [`keyboard.hold`](#keyboardholdkey) to activate a modifier key.
 
-#### keyboard.press(key)
+#### keyboard.press(key[, options])
 - `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `options` <[Object]>
+  - `text` <[string]> If specified, generates an input event with this text.
 - returns: <[Promise]>
 
 Shortcut for [`keyboard.hold`](#keyboardholdkey) and [`keyboard.release`](#keyboardreleasekey).
