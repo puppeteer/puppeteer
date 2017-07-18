@@ -11,7 +11,7 @@ let EXCLUDE_CLASSES = new Set([
   'EmulationManager',
   'FrameManager',
   'Helper',
-  'Navigator',
+  'NavigatorWatcher',
   'NetworkManager',
   'ProxyStream'
 ]);

@@ -427,6 +427,17 @@ describe('Puppeteer', function() {
     }));
   });
 
+  describe('Page.waitForNavigation', function() {
+    it('should work', SX(async function() {
+      await page.navigate(EMPTY_PAGE);
+      const result = page.waitForNavigation();
+      page.evaluate(url => window.location.href = url, PREFIX + '/grid.html');
+      const response = await result;
+      expect(response.ok).toBe(true);
+      expect(response.url).toContain('grid.html');
+    }));
+  });
+
   describe('Page.setInPageCallback', function() {
     it('should work', SX(async function() {
       await page.setInPageCallback('callController', function(a, b) {
