@@ -33,7 +33,7 @@ npm install
 
 ## Getting Started
 
-The following script navigates to https://example.com and saves a screenshot to *example.png*:
+To navigate to https://example.com and save a screenshot as *example.png*, save the following script as `example.js` and run it using `node example.js`:
 
 ```javascript
 const Browser = require('Puppeteer').Browser;
