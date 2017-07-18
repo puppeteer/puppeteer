@@ -879,6 +879,33 @@ describe('Puppeteer', function() {
       expect(keyboard.modifiers().Shift).toBe(false);
       expect(keyboard.modifiers().Alt).toBe(false);
     }));
+    it('should resize the textarea', SX(async function(){
+      await page.navigate(PREFIX + '/input/textarea.html');
+      let {x, y, width, height} = await page.evaluate(dimensions);
+      let mouse = page.mouse;
+      await mouse.move(x - 4, y - 4);
+      await mouse.hold();
+      await mouse.move(x + 100, y + 100);
+      await mouse.release();
+      let newDimensions = await page.evaluate(dimensions);
+      expect(newDimensions.x).toBe(x + 104);
+      expect(newDimensions.width).toBe(width + 104);
+      expect(newDimensions.y).toBe(y + 104);
+      expect(newDimensions.height).toBe(height + 104);
+      function dimensions() {
+        let rect = document.querySelector('textarea').getBoundingClientRect();
+        return {
+          x: rect.right,
+          y: rect.bottom,
+          width: rect.width,
+          height: rect.height
+        };
+      }
+    }));
+    it('should scroll and click the button', SX(async function(){
+      await page.navigate(PREFIX + '/input/scrollable.html');
+      page.click('#button-5');
+    }));
   });
 
   // FIXME: remove this when crbug.com/741689 is fixed.

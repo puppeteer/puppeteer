@@ -22,6 +22,7 @@ const EXCLUDE_METHODS = new Set([
   'Headers.fromPayload',
   'InterceptedRequest.constructor',
   'Keyboard.constructor',
+  'Mouse.constructor',
   'Page.constructor',
   'Page.create',
   'Request.constructor',
