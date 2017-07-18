@@ -128,6 +128,10 @@ describe('Puppeteer', function() {
       let result = await page.evaluate(() => -Infinity);
       expect(Object.is(result, -Infinity)).toBe(true);
     }));
+    it('should not fail for window object', SX(async function() {
+      let result = await page.evaluate(() => window);
+      expect(result).toBe('Window');
+    }));
   });
 
   describe('Page.injectFile', function() {
@@ -255,6 +259,13 @@ describe('Puppeteer', function() {
         'calling console.warn',
         'calling console.error',
       ]);
+    }));
+    it('should not fail for window object', SX(async function() {
+      let windowObj = null;
+      page.once('console', arg => windowObj = arg);
+      page.evaluate(() => console.error(window));
+      await waitForEvents(page, 'console');
+      expect(windowObj).toBe('Window');
     }));
   });
 
