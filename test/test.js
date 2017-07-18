@@ -186,6 +186,17 @@ describe('Puppeteer', function() {
       expect(added).toBe(true);
     }));
 
+    it('should work when node is added through innerHTML', SX(async function() {
+      await page.navigate(EMPTY_PAGE);
+      let frame = page.mainFrame();
+      let added = false;
+      frame.waitFor('h3 div').then(() => added = true);
+      expect(added).toBe(false);
+      await frame.evaluate(addElement, 'span');
+      await page.$('span', span => span.innerHTML = '<h3><div></div></h3>');
+      expect(added).toBe(true);
+    }));
+
     it('Page.waitFor is shortcut for main frame', SX(async function() {
       await page.navigate(EMPTY_PAGE);
       await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
