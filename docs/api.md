@@ -22,7 +22,7 @@
   * [page.frames()](#pageframes)
   * [page.httpHeaders()](#pagehttpheaders)
   * [page.injectFile(filePath)](#pageinjectfilefilepath)
-  * [page.keyboard()](#pagekeyboard)
+  * [page.keyboard](#pagekeyboard)
   * [page.mainFrame()](#pagemainframe)
   * [page.navigate(url, options)](#pagenavigateurl-options)
   * [page.plainText()](#pageplaintext)
@@ -42,9 +42,9 @@
   * [page.viewportSize()](#pageviewportsize)
   * [page.waitFor(selector)](#pagewaitforselector)
 - [class: Keyboard](#class-keyboard)
+  * [keyboard.hold(key[, options])](#keyboardholdkey-options)
   * [keyboard.modifiers()](#keyboardmodifiers)
-  * [keyboard.press(key[, options])](#keyboardpresskey-options)
-  * [keyboard.pressAndRelease(key)](#keyboardpressandreleasekey)
+  * [keyboard.press(key)](#keyboardpresskey)
   * [keyboard.release(key)](#keyboardreleasekey)
   * [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
   * [keyboard.type(text)](#keyboardtypetext)
@@ -231,7 +231,7 @@ This is a shortcut for [page.mainFrame().evaluate()](#frameevaluatefun-args) met
 - `filePath` <[string]> Path to the javascript file to be injected into page.
 - returns: <[Promise]> Promise which resolves when file gets successfully evaluated in page.
 
-#### page.keyboard()
+#### page.keyboard
 
 - returns: <[Keyboard]>
 
@@ -390,35 +390,21 @@ Keyboard provides an api for managing a virtual keyboard. The high level api is 
 
 For finer control, you can use press, release, and sendCharacter to manually fire events as if they were generated from a real keyboard.
 
-Typing some text and fixing a typo:
+An example of holding down `Shift` in order to select and delete some text:
 ```js
-keyboard.type('Hello Morld!');
-for (let i = 0; i = 0; i < 5; i++)
-  keyboard.pressAndRelease('ArrowLeft');
-keyboard.pressAndRelease('Backspace');
-keyboard.type('W');
+page.keyboard.type('Hello World!');
+page.keyboard.press('ArrowLeft');
+
+page.keyboard.hold('Shift');
+for (let i = 0; i = 0; i < ' World'.length; i++)
+  page.keyboard.press('ArrowLeft');
+page.keyboard.release('Shift');
+
+page.keyboard.press('Backspace');
+// Result text up saying 'Hello!'
 ```
 
-Holding down `Shift` in order to select and delete some text:
-```js
-keyboard.type('this');
-keyboard.press('Shift');
-for (let i = 0; i = 0; i < 4; i++)
-  keyboard.pressAndRelease('ArrowLeft');
-keyboard.release('Shift');
-keyboard.pressAndRelease('Backspace');
-```
-
-#### keyboard.modifiers()
-- returns: <[Object]>
-  - `Shift` <[boolean]>
-  - `Meta` <[boolean]>
-  - `Control` <[boolean]>
-  - `Alt` <[boolean]>
-
- Returns which modifier keys are currently active. Use [`keyboard.press`](#keyboardpresskey) to activate a modifier key.
-
-#### keyboard.press(key[, options])
+#### keyboard.hold(key[, options])
 - `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
 - `options` <[Object]>
   - `text` <[string]> If specified, generates an input event with this text.
@@ -430,11 +416,20 @@ This will not send input events unless `text` is specified.
 
 If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key presses will be sent with that modifier active. To release the modifier key, use [`keyboard.release`](#keyboardreleasekey).
 
-#### keyboard.pressAndRelease(key)
+#### keyboard.modifiers()
+- returns: <[Object]>
+  - `Shift` <[boolean]>
+  - `Meta` <[boolean]>
+  - `Control` <[boolean]>
+  - `Alt` <[boolean]>
+
+ Returns which modifier keys are currently active. Use [`keyboard.hold`](#keyboardholdkey) to activate a modifier key.
+
+#### keyboard.press(key)
 - `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
 - returns: <[Promise]>
 
-Shortcut for [`keyboard.press`](#keyboardpresskey) and [`keyboard.release`](#keyboardreleasekey).
+Shortcut for [`keyboard.hold`](#keyboardholdkey) and [`keyboard.release`](#keyboardreleasekey).
 
 #### keyboard.release(key)
 - `key` <[string]> Name of key to release, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
@@ -449,7 +444,7 @@ Dispatches a `keyup` event.
 Dispatches a `keypress` and `input` event. This does not send a `keydown` or `keyup` event.
 
 ```js
-keyboard.sendCharacter('嗨');
+page.keyboard.sendCharacter('嗨');
 ```
 
 #### keyboard.type(text)
@@ -460,7 +455,7 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 This is the suggested way to type printable characters.
 
 ```js
-keyboard.type('Hello World!');
+page.keyboard.type('Hello World!');
 ```
 
 ### class: Dialog

@@ -375,37 +375,37 @@ class WebPage {
     switch (eventType) {
       case 'keyup':
         if (typeof keyOrKeys === 'number') {
-          await(this._page.keyboard().release(String.fromCharCode(keyOrKeys)));
+          await(this._page.keyboard.release(String.fromCharCode(keyOrKeys)));
           break;
         }
         for (let key of keyOrKeys)
-          await(this._page.keyboard().release(key));
+          await(this._page.keyboard.release(key));
         break;
       case 'keypress':
         if (modifier & 0x04000000)
-          this._page.keyboard().press('Control');
+          this._page.keyboard.hold('Control');
         if (modifier & 0x02000000)
-          this._page.keyboard().press('Shift');
+          this._page.keyboard.hold('Shift');
         if (keyOrKeys instanceof Array) {
-          this._page.keyboard().press(keyOrKeys[0]);
-          await(this._page.keyboard().release(keyOrKeys[0]));
+          this._page.keyboard.hold(keyOrKeys[0]);
+          await(this._page.keyboard.release(keyOrKeys[0]));
         } else if (typeof keyOrKeys === 'number') {
           await(this._page.type(String.fromCharCode(keyOrKeys)));
         } else {
           await(this._page.type(keyOrKeys));
         }
         if (modifier & 0x02000000)
-          this._page.keyboard().release('Shift');
+          this._page.keyboard.release('Shift');
         if (modifier & 0x04000000)
-          this._page.keyboard().release('Control');
+          this._page.keyboard.release('Control');
         break;
       case 'keydown':
         if (typeof keyOrKeys === 'number') {
-          await(this._page.keyboard().press(String.fromCharCode(keyOrKeys)));
+          await(this._page.keyboard.hold(String.fromCharCode(keyOrKeys)));
           break;
         }
         for (let key of keyOrKeys)
-          await(this._page.keyboard().press(key));
+          await(this._page.keyboard.hold(key));
         break;
     }
   }
