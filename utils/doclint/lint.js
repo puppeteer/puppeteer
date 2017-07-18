@@ -27,6 +27,7 @@ let EXCLUDE_METHODS = new Set([
   'Page.create',
   'Request.constructor',
   'Response.constructor',
+  'Keyboard.constructor',
 ]);
 
 /**

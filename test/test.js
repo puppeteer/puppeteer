@@ -672,6 +672,111 @@ describe('Puppeteer', function() {
         return promise.then(() => reader.result);
       })).toBe('contents of the file');
     }));
+    it('should move with the arrow keys', SX(async function(){
+      await page.navigate(PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      let keyboard = page.keyboard;
+      await keyboard.type('Hello World!');
+      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
+      for (let i = 0; i < 'World!'.length; i++)
+        keyboard.press('ArrowLeft');
+      await keyboard.type('inserted ');
+      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello inserted World!');
+      keyboard.hold('Shift');
+      for (let i = 0; i < 'inserted '.length; i++)
+        keyboard.press('ArrowLeft');
+      keyboard.release('Shift');
+      keyboard.hold('Backspace');
+      await keyboard.release('Backspace');
+      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
+    }));
+    it('should report shiftKey', SX(async function(){
+      await page.navigate(PREFIX + '/input/keyboard.html');
+      let keyboard = page.keyboard;
+      let codeForKey = {'Shift': 16, 'Alt': 18, 'Meta': 91, 'Control': 17};
+      for (let modifierKey in codeForKey) {
+        await keyboard.hold(modifierKey);
+        expect(await page.evaluate(() => getResult())).toBe('Keydown: ' + modifierKey + ' ' + codeForKey[modifierKey] + ' [' + modifierKey + ']');
+        await keyboard.hold('!');
+        expect(await page.evaluate(() => getResult())).toBe('Keydown: ! 49 [' + modifierKey + ']');
+        await keyboard.release('!');
+        expect(await page.evaluate(() => getResult())).toBe('Keyup: ! 49 [' + modifierKey + ']');
+        await keyboard.release(modifierKey);
+        expect(await page.evaluate(() => getResult())).toBe('Keyup: ' + modifierKey + ' ' + codeForKey[modifierKey] + ' []');
+      }
+    }));
+    it('should report multiple modifiers', SX(async function(){
+      await page.navigate(PREFIX + '/input/keyboard.html');
+      let keyboard = page.keyboard;
+      await keyboard.hold('Control');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: Control 17 [Control]');
+      await keyboard.hold('Meta');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: Meta 91 [Control Meta]');
+      await keyboard.hold(';');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: ; 186 [Control Meta]');
+      await keyboard.release(';');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: ; 186 [Control Meta]');
+      await keyboard.release('Control');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: Control 17 [Meta]');
+      await keyboard.release('Meta');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: Meta 91 []');
+    }));
+    it('should send proper codes while typing', SX(async function(){
+      await page.navigate(PREFIX + '/input/keyboard.html');
+      let keyboard = page.keyboard;
+      await keyboard.type('!');
+      expect(await page.evaluate(() => getResult())).toBe(
+          [ 'Keydown: ! 49 []',
+            'Keypress: ! 33 33 33 []',
+            'Keyup: ! 49 []'].join('\n'));
+      await keyboard.type('^');
+      expect(await page.evaluate(() => getResult())).toBe(
+          [ 'Keydown: ^ 54 []',
+            'Keypress: ^ 94 94 94 []',
+            'Keyup: ^ 54 []'].join('\n'));
+    }));
+    it('should send propery codes while typing with shift', SX(async function(){
+      await page.navigate(PREFIX + '/input/keyboard.html');
+      let keyboard = page.keyboard;
+      await keyboard.hold('Shift');
+      await keyboard.type('~');
+      expect(await page.evaluate(() => getResult())).toBe(
+          [ 'Keydown: Shift 16 [Shift]',
+            'Keydown: ~ 192 [Shift]', // 192 is ` keyCode
+            'Keypress: ~ 126 126 126 [Shift]', // 126 is ~ charCode
+            'Keyup: ~ 192 [Shift]'].join('\n'));
+      await keyboard.release('Shift');
+    }));
+    it('should not type canceled events', SX(async function(){
+      await page.navigate(PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      await page.evaluate(() => {
+        window.addEventListener('keydown', event => {
+          event.stopPropagation();
+          event.stopImmediatePropagation();
+          if (event.key === 'l')
+            event.preventDefault();
+          if (event.key === 'o')
+            Promise.resolve().then(() => event.preventDefault());
+        }, false);
+      });
+      let keyboard = page.keyboard;
+      await keyboard.type('Hello World!');
+      expect(await page.evaluate(() => textarea.value)).toBe('He Wrd!');
+    }));
+    it('keyboard.modifiers()', SX(async function(){
+      let keyboard = page.keyboard;
+      expect(keyboard.modifiers().Shift).toBe(false);
+      expect(keyboard.modifiers().Meta).toBe(false);
+      expect(keyboard.modifiers().Alt).toBe(false);
+      expect(keyboard.modifiers().Control).toBe(false);
+      keyboard.hold('Shift');
+      expect(keyboard.modifiers().Shift).toBe(true);
+      expect(keyboard.modifiers().Alt).toBe(false);
+      keyboard.release('Shift');
+      expect(keyboard.modifiers().Shift).toBe(false);
+      expect(keyboard.modifiers().Alt).toBe(false);
+    }));
   });
   describe('Page.setUserAgent', function() {
     it('should work', SX(async function() {

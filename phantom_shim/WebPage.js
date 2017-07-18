@@ -67,6 +67,18 @@ class WebPage {
     this._pageEvents.on(PageEvents.Alert, message => this._onAlert(message));
     this._pageEvents.on(PageEvents.Dialog, dialog => this._onDialog(dialog));
     this._pageEvents.on(PageEvents.PageError, error => (this._onError || noop).call(null, error.message, error.stack));
+    this.event = {
+      key: {
+        A: 65,
+        B: 66,
+        C: 67,
+        Home: ['Home'],
+        Delete: ['Delete'],
+        Backspace: ['Backspace'],
+        Cut: ['Cut'],
+        Paste: ['Paste']
+      }
+    };
   }
 
   /**
@@ -341,6 +353,61 @@ class WebPage {
       await(this._page.uploadFile(selector, files));
     else
       await(this._page.uploadFile(selector, ...files));
+  }
+
+  /**
+   * @param {string} eventType
+   * @param {!Array<*>} args
+   */
+  sendEvent(eventType, ...args) {
+    if (eventType.startsWith('key'))
+      this._sendKeyboardEvent.apply(this, arguments);
+  }
+
+  /**
+   * @param {string} eventType
+   * @param {string} keyOrKeys
+   * @param {null} nop1
+   * @param {null} nop2
+   * @param {number} modifier
+   */
+  _sendKeyboardEvent(eventType, keyOrKeys, nop1, nop2, modifier) {
+    switch (eventType) {
+      case 'keyup':
+        if (typeof keyOrKeys === 'number') {
+          await(this._page.keyboard.release(String.fromCharCode(keyOrKeys)));
+          break;
+        }
+        for (let key of keyOrKeys)
+          await(this._page.keyboard.release(key));
+        break;
+      case 'keypress':
+        if (modifier & 0x04000000)
+          this._page.keyboard.hold('Control');
+        if (modifier & 0x02000000)
+          this._page.keyboard.hold('Shift');
+        if (keyOrKeys instanceof Array) {
+          this._page.keyboard.hold(keyOrKeys[0]);
+          await(this._page.keyboard.release(keyOrKeys[0]));
+        } else if (typeof keyOrKeys === 'number') {
+          await(this._page.type(String.fromCharCode(keyOrKeys)));
+        } else {
+          await(this._page.type(keyOrKeys));
+        }
+        if (modifier & 0x02000000)
+          this._page.keyboard.release('Shift');
+        if (modifier & 0x04000000)
+          this._page.keyboard.release('Control');
+        break;
+      case 'keydown':
+        if (typeof keyOrKeys === 'number') {
+          await(this._page.keyboard.hold(String.fromCharCode(keyOrKeys)));
+          break;
+        }
+        for (let key of keyOrKeys)
+          await(this._page.keyboard.hold(key));
+        break;
+    }
   }
 
   /**

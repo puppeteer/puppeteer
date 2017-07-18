@@ -35,6 +35,7 @@
   * [page.frames()](#pageframes)
   * [page.httpHeaders()](#pagehttpheaders)
   * [page.injectFile(filePath)](#pageinjectfilefilepath)
+  * [page.keyboard](#pagekeyboard)
   * [page.mainFrame()](#pagemainframe)
   * [page.navigate(url, options)](#pagenavigateurl-options)
   * [page.pdf(options)](#pagepdfoptions)
@@ -54,6 +55,13 @@
   * [page.userAgent()](#pageuseragent)
   * [page.viewport()](#pageviewport)
   * [page.waitFor(selector)](#pagewaitforselector)
+- [class: Keyboard](#class-keyboard)
+  * [keyboard.hold(key[, options])](#keyboardholdkey-options)
+  * [keyboard.modifiers()](#keyboardmodifiers)
+  * [keyboard.press(key[, options])](#keyboardpresskey-options)
+  * [keyboard.release(key)](#keyboardreleasekey)
+  * [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
+  * [keyboard.type(text)](#keyboardtypetext)
 - [class: Dialog](#class-dialog)
   * [dialog.accept([promptText])](#dialogacceptprompttext)
   * [dialog.dismiss()](#dialogdismiss)
@@ -186,7 +194,7 @@ An example of creating a page, navigating it to a URL and saving screenshot as `
 ```js
 const {Browser} = require('puppeteer');
 const browser = new Browser();
-browser.newPage().then(async page => 
+browser.newPage().then(async page =>
   await page.navigate('https://example.com');
   await page.screenshot({path: 'screenshot.png'});
   browser.close();
@@ -299,6 +307,10 @@ This is a shortcut for [page.mainFrame().evaluate()](#frameevaluatefun-args) met
 - `filePath` <[string]> Path to the javascript file to be injected into page.
 - returns: <[Promise]> Promise which resolves when file gets successfully evaluated in page.
 
+#### page.keyboard
+
+- returns: <[Keyboard]>
+
 #### page.mainFrame()
 - returns: <[Frame]> returns page's main frame.
 
@@ -395,7 +407,7 @@ The `format` options are:
 - `callback` <[function]> Callback function which will be called in puppeteer's context.
 - returns: <[Promise]> Promise which resolves when callback is successfully initialized
 
-The in-page callback allows page to asynchronously reach back to the Puppeteer. 
+The in-page callback allows page to asynchronously reach back to the Puppeteer.
 An example of a page showing amount of CPU's:
 ```js
 const os = require('os');
@@ -481,6 +493,82 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 
 Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 
+### class: Keyboard
+
+Keyboard provides an api for managing a virtual keyboard. The high level api is [`keyboard.type`](#keyboardtypetext), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
+
+For finer control, you can use press, release, and sendCharacter to manually fire events as if they were generated from a real keyboard.
+
+An example of holding down `Shift` in order to select and delete some text:
+```js
+page.keyboard.type('Hello World!');
+page.keyboard.press('ArrowLeft');
+
+page.keyboard.hold('Shift');
+for (let i = 0; i = 0; i < ' World'.length; i++)
+  page.keyboard.press('ArrowLeft');
+page.keyboard.release('Shift');
+
+page.keyboard.press('Backspace');
+// Result text will end up saying 'Hello!'
+```
+
+#### keyboard.hold(key[, options])
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `options` <[Object]>
+  - `text` <[string]> If specified, generates an input event with this text.
+- returns: <[Promise]>
+
+Dispatches a `keydown` event.
+
+This will not send input events unless `text` is specified.
+
+If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key presses will be sent with that modifier active. To release the modifier key, use [`keyboard.release`](#keyboardreleasekey).
+
+#### keyboard.modifiers()
+- returns: <[Object]>
+  - `Shift` <[boolean]>
+  - `Meta` <[boolean]>
+  - `Control` <[boolean]>
+  - `Alt` <[boolean]>
+
+ Returns which modifier keys are currently active. Use [`keyboard.hold`](#keyboardholdkey) to activate a modifier key.
+
+#### keyboard.press(key[, options])
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `options` <[Object]>
+  - `text` <[string]> If specified, generates an input event with this text.
+- returns: <[Promise]>
+
+Shortcut for [`keyboard.hold`](#keyboardholdkey) and [`keyboard.release`](#keyboardreleasekey).
+
+#### keyboard.release(key)
+- `key` <[string]> Name of key to release, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- returns: <[Promise]>
+
+Dispatches a `keyup` event.
+
+#### keyboard.sendCharacter(char)
+- `char` <[string]> Character to send into the page.
+- returns: <[Promise]>
+
+Dispatches a `keypress` and `input` event. This does not send a `keydown` or `keyup` event.
+
+```js
+page.keyboard.sendCharacter('嗨');
+```
+
+#### keyboard.type(text)
+- `text` <[string]> Text to type into the page
+- returns: <[Promise]>
+
+Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
+This is the suggested way to type printable characters.
+
+```js
+page.keyboard.type('Hello World!');
+```
+
 ### class: Dialog
 
 [Dialog] objects are dispatched by page via the ['dialog'](#event-dialog) event.
@@ -558,7 +646,7 @@ If the function, passed to the `page.evaluate`, returns a [Promise], then `page.
 ```js
 const {Browser} = require('puppeteer');
 const browser = new Browser();
-browser.newPage().then(async page => 
+browser.newPage().then(async page =>
   const result = await page.evaluate(() => {
     return Promise.resolve().then(() => 8 * 7);
   });
@@ -682,7 +770,7 @@ Continues request.
 #### interceptedRequest.headers
 - <[Headers]>
 
-Contains the [Headers] object associated with the request. 
+Contains the [Headers] object associated with the request.
 
 Headers could be mutated with the `headers.append`, `headers.set` and other
 methods. Must not be changed in response to an authChallenge.
@@ -693,7 +781,7 @@ methods. Must not be changed in response to an authChallenge.
 #### interceptedRequest.method
 - <[string]>
 
-Contains the request's method (GET, POST, etc.) 
+Contains the request's method (GET, POST, etc.)
 
 If set this allows the request method to be overridden. Must not be changed in response to an authChallenge.
 
@@ -780,4 +868,5 @@ If there's already a header with name `name`, the header gets overwritten.
 [Request]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-request  "Request"
 [Browser]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-browser  "Browser"
 [Body]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-body  "Body"
+[Keyboard]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-keyboard "Keyboard"
 [Dialog]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-dialog  "Dialog"
