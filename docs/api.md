@@ -495,7 +495,7 @@ for (let i = 0; i = 0; i < ' World'.length; i++)
 page.keyboard.release('Shift');
 
 page.keyboard.press('Backspace');
-// Result text up saying 'Hello!'
+// Result text will end up saying 'Hello!'
 ```
 
 #### keyboard.hold(key[, options])
