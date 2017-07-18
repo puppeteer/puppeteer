@@ -13,6 +13,17 @@
   * [browser.stdout](#browserstdout)
   * [browser.version()](#browserversion)
 - [class: Page](#class-page)
+  * [event: 'consolemessage'](#event-consolemessage)
+  * [event: 'dialog'](#event-dialog)
+  * [event: 'frameattached'](#event-frameattached)
+  * [event: 'framedetached'](#event-framedetached)
+  * [event: 'framenavigated'](#event-framenavigated)
+  * [event: 'load'](#event-load)
+  * [event: 'pageerror'](#event-pageerror)
+  * [event: 'request'](#event-request)
+  * [event: 'requestfailed'](#event-requestfailed)
+  * [event: 'requestfinished'](#event-requestfinished)
+  * [event: 'response'](#event-response)
   * [page.addScriptTag(url)](#pageaddscripttagurl)
   * [page.click(selector)](#pageclickselector)
   * [page.close()](#pageclose)
@@ -25,8 +36,8 @@
   * [page.keyboard](#pagekeyboard)
   * [page.mainFrame()](#pagemainframe)
   * [page.navigate(url, options)](#pagenavigateurl-options)
+  * [page.pdf(options)](#pagepdfoptions)
   * [page.plainText()](#pageplaintext)
-  * [page.printToPDF(filePath[, options])](#pageprinttopdffilepath-options)
   * [page.screenshot([options])](#pagescreenshotoptions)
   * [page.setContent(html)](#pagesetcontenthtml)
   * [page.setHTTPHeaders(headers)](#pagesethttpheadersheaders)
@@ -187,6 +198,59 @@ browser.newPage().then(async page =>
 });
 ```
 
+#### event: 'consolemessage'
+- <[string]>
+
+Emitted when a page calls one of console API methods, e.g. `console.log`.
+
+#### event: 'dialog'
+- <[Dialog]>
+
+Emitted when a javascript dialog, such as `alert`, `prompt`, `confirm` or `beforeunload`, gets opened on the page. Puppeteer can take action to the dialog via dialog's [accept](#dialogacceptprompttext) or [dismiss](#dialogdismiss) methods.
+
+#### event: 'frameattached'
+- <[Frame]>
+
+Emitted when a frame gets attached.
+
+#### event: 'framedetached'
+- <[Frame]>
+
+Emitted when a frame gets detached.
+
+#### event: 'framenavigated'
+- <[Frame]>
+
+Emitted when a frame committed navigation.
+
+#### event: 'load'
+
+Emitted when a page's `load` event was dispatched.
+
+#### event: 'pageerror'
+- <[string]>
+
+Emitted when an unhandled exception happens on the page. The only argument of the event holds the exception message.
+
+#### event: 'request'
+- <[Request]>
+
+Emitted when a page issues a request. The [request] object is a read-only object. In order to intercept and mutate requests, see [page.setRequestInterceptor](#pagesetrequestinterceptorinterceptor)
+
+#### event: 'requestfailed'
+- <[Request]>
+
+Emitted when a request is failed.
+
+#### event: 'requestfinished'
+- <[Request]>
+
+Emitted when a request is successfully finished.
+
+#### event: 'response'
+- <[Response]>
+
+Emitted when a [response] is received.
 
 #### page.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
@@ -256,28 +320,58 @@ The `page.navigate` will throw an error if:
 - target URL is invalid.
 - the `maxTime` is exceeded during navigation.
 
+#### page.pdf(options)
+- `options` <[Object]> Options object which might have the following properties:
+  - `path` <[string]> The file path to save the PDF to.
+  - `scale` <[number]> Scale of the webpage rendering. Defaults to `1`.
+  - `displayHeaderFooter` <[boolean]> Display header and footer. Defaults to `false`.
+  - `printBackground` <[boolean]> Print background graphics. Defaults to `false`.
+  - `landscape` <[boolean]> Paper orientation. Defaults to `false`.
+  - `pageRanges` <[string]> Paper ranges to print, e.g., '1-5, 8, 11-13'. Defaults to the empty string, which means print all pages.
+  - `format` <[string]> Paper format. If set, takes priority over `width` or `height` options. Defaults to 'Letter'.
+  - `width` <[string]> Paper width, accepts values labeled with units.
+  - `height` <[string]> Paper height, accepts values labeled with units.
+  - `margin` <[Object]> Paper margins, defaults to none.
+    - `top` <[string]> Top margin, accepts values labeled with units.
+    - `right` <[string]> Right margin, accepts values labeled with units.
+    - `bottom` <[string]> Bottom margin, accepts values labeled with units.
+    - `left` <[string]> Left margin, accepts values labeled with units.
+- returns: <[Promise]<[Buffer]>> Promise which resolves with PDF buffer.
+
+The `width`, `height`, and `margin` options accept values labeled with units. Unlabeled values are treated as pixels.
+
+A few examples:
+- `page.pdf({width: 100})` - prints with width set to 100 pixels
+- `page.pdf({width: '100px'})` - prints with width set to 100 pixels
+- `page.pdf({width: '10cm'})` - prints with width set to 10 centimeters.
+
+All possible units are:
+- `px` - pixel
+- `in` - inch
+- `cm` - centimeter
+- `mm` - millimeter
+
+The `format` options are:
+- `Letter`: 8.5in x 11in
+- `Legal`: 8.5in x 14in
+- `Tabloid`: 11in x 17in
+- `Ledger`: 17in x 11in
+- `A0`: 33.1in x 46.8in
+- `A1`: 23.4in x 33.1in
+- `A2`: 16.5in x 23.4in
+- `A3`: 11.7in x 16.5in
+- `A4`: 8.27in x 11.7in
+- `A5`: 5.83in x 8.27in
+
 #### page.plainText()
 - returns:  <[Promise]<[string]>> Returns page's inner text.
-
-#### page.printToPDF(filePath[, options])
-- `filePath` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension
-- `options` <[Object]> Options object which might have the following properties:
-	- `scale` <[number]>
-	- `displayHeaderFooter` <[boolean]>
-	- `printBackground` <[boolean]>
-	- `landscape` <[boolean]>
-	- `pageRanges` <[string]>
-	- `format` <[string]>
-	- `width` <[number]>
-	- `height` <[number]>
-- returns: <[Promise]> Promise which resolves when the PDF is saved.
 
 #### page.screenshot([options])
 - `options` <[Object]> Options object which might have the following properties:
     - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension.
-    - `type` <[string]> Specify screenshot type, could be either `jpeg` or `png`.
-    - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `.png` images.
-    - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page.
+    - `type` <[string]> Specify screenshot type, could be either `jpeg` or `png`. Defaults to 'png'.
+    - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
+    - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
     - `clip` <[Object]> An object which specifies clipping region of the page. Should have the following fields:
         - `x` <[number]> x-coordinate of top-left corner of clip area
         - `y` <[number]> y-coordinate of top-left corner of clip area
@@ -459,6 +553,25 @@ page.keyboard.type('Hello World!');
 ```
 
 ### class: Dialog
+
+[Dialog] objects are dispatched by page via the ['dialog'](#event-dialog) event.
+
+An example of using `Dialog` class:
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser({headless: false});
+browser.newPage().then(async page => {
+  page.on('dialog', dialog => {
+    console.log(dialog.message());
+    dialog.dismiss();
+    browser.close();
+  });
+  page.evaluate(() => alert('1'));
+});
+```
+
+> NOTE: Chrome Headless currently has issues with managing javascript dialogs, see [issue 13](https://github.com/GoogleChrome/puppeteer/issues/13)
+
 #### dialog.accept([promptText])
 - `promptText` <[string]> A text to enter in prompt. Does not cause any effects if the dialog's `type` is not prompt.
 - returns: <[Promise]> Promise which resolves when the dialog has being accepted.
@@ -475,6 +588,33 @@ page.keyboard.type('Hello World!');
 Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `prompt`.
 
 ### class: Frame
+
+At every point of time, page exposes its current frame tree via the [page.mainFrame()](#pagemainframe) and [frame.childFrames()](#framechildframes) methods.
+
+[Frame] object's lifecycle is controlled by three events, dispatched on the page object:
+- ['frameattached'](#event-frameattached) - fired when the frame gets attached to the page. Frame could be attached to the page only once.
+- ['framenavigated'](#event-framenavigated) - fired when the frame commits navigation to a different URL.
+- ['framedetached'](#event-framedetached) - fired when the frame gets detached from the page.  Frame could be detached from the page only once.
+
+An example of dumping frame tree:
+
+```js
+const {Browser} = new require('.');
+const browser = new Browser({headless: true});
+
+browser.newPage().then(async page => {
+  await page.navigate('https://www.google.com/chrome/browser/canary.html');
+  dumpFrameTree(page.mainFrame(), '');
+  browser.close();
+
+  function dumpFrameTree(frame, indent) {
+    console.log(indent + frame.url());
+    for (let child of frame.childFrames())
+      dumpFrameTree(child, indent + '  ');
+  }
+});
+```
+
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
 
@@ -531,6 +671,15 @@ immediately.
 
 
 ### class: Request
+
+Whenever the page sends a request, the following events are emitted by puppeteer's page:
+- ['request'](#event-request) emitted when the request is issued by the page.
+- ['response'](#event-response) emitted when/if the response is received for the request.
+- ['requestfinished'](#event-requestfinished) emitted when the response body is downloaded and the request is complete.
+
+If request fails at some point, then instead of 'requestfinished' event (and possibly instead of 'response' event), the  ['requestfailed'](#event-requestfailed) event is emitted.
+
+If request gets a 'redirect' response, the request is successfully finished with the 'requestfinished' event, and a new request is  issued to a redirected url.
 
 [Request] class represents requests which are sent by page. [Request] implements [Body] mixin, which in case of HTTP POST requests allows clients to call `request.json()` or `request.text()` to get different representations of request's body.
 
@@ -703,3 +852,4 @@ If there's already a header with name `name`, the header gets overwritten.
 [Browser]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-browser  "Browser"
 [Body]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-body  "Body"
 [Keyboard]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-keyboard "Keyboard"
+[Dialog]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-dialog  "Dialog"

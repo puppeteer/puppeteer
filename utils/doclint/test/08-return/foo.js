@@ -10,6 +10,11 @@ class Foo {
     e();
   }
 
+  www() {
+    if (1 === 1)
+      return 'df';
+  }
+
   async asyncFunction() {
   }
 }
