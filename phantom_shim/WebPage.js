@@ -94,6 +94,35 @@ class WebPage {
   /**
    * @return {string}
    */
+  currentFrameName() {
+    return this.frameName;
+  }
+
+  /**
+   * @return {number}
+   */
+  childFramesCount() {
+    return this.framesCount;
+  }
+
+  /**
+   * @return {!Array<string>}
+   */
+  childFramesName() {
+    return this.framesName;
+  }
+
+  /**
+   * @param {(string|number)} frameName
+   * @return {boolean}
+   */
+  switchToChildFrame(frame) {
+    return this.switchToFrame(frame);
+  }
+
+  /**
+   * @return {string}
+   */
   get frameName() {
     return this._currentFrame.name();
   }
