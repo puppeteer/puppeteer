@@ -29,30 +29,41 @@
   * [page.addScriptTag(url)](#pageaddscripttagurl)
   * [page.click(selector)](#pageclickselector)
   * [page.close()](#pageclose)
+  * [page.emulate(name, options)](#pageemulatename-options)
+  * [page.emulatedDevices()](#pageemulateddevices)
   * [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
   * [page.evaluateOnInitialized(pageFunction, ...args)](#pageevaluateoninitializedpagefunction-args)
   * [page.focus(selector)](#pagefocusselector)
   * [page.frames()](#pageframes)
   * [page.httpHeaders()](#pagehttpheaders)
   * [page.injectFile(filePath)](#pageinjectfilefilepath)
+  * [page.keyboard](#pagekeyboard)
   * [page.mainFrame()](#pagemainframe)
   * [page.navigate(url, options)](#pagenavigateurl-options)
   * [page.pdf(options)](#pagepdfoptions)
   * [page.plainText()](#pageplaintext)
+  * [page.reload()](#pagereload)
   * [page.screenshot([options])](#pagescreenshotoptions)
   * [page.setContent(html)](#pagesetcontenthtml)
   * [page.setHTTPHeaders(headers)](#pagesethttpheadersheaders)
   * [page.setInPageCallback(name, callback)](#pagesetinpagecallbackname-callback)
   * [page.setRequestInterceptor(interceptor)](#pagesetrequestinterceptorinterceptor)
   * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
-  * [page.setViewportSize(size)](#pagesetviewportsizesize)
+  * [page.setViewport(viewport)](#pagesetviewportviewport)
   * [page.title()](#pagetitle)
   * [page.type(text)](#pagetypetext)
   * [page.uploadFile(selector, ...filePaths)](#pageuploadfileselector-filepaths)
   * [page.url()](#pageurl)
   * [page.userAgent()](#pageuseragent)
-  * [page.viewportSize()](#pageviewportsize)
+  * [page.viewport()](#pageviewport)
   * [page.waitFor(selector)](#pagewaitforselector)
+- [class: Keyboard](#class-keyboard)
+  * [keyboard.hold(key[, options])](#keyboardholdkey-options)
+  * [keyboard.modifiers()](#keyboardmodifiers)
+  * [keyboard.press(key[, options])](#keyboardpresskey-options)
+  * [keyboard.release(key)](#keyboardreleasekey)
+  * [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
+  * [keyboard.type(text)](#keyboardtypetext)
 - [class: Dialog](#class-dialog)
   * [dialog.accept([promptText])](#dialogacceptprompttext)
   * [dialog.dismiss()](#dialogdismiss)
@@ -290,6 +301,15 @@ Adds a `<script></script>` tag to the page with the desired url. Alternatively, 
 #### page.close()
 - returns: <[Promise]> Returns promise which resolves when page gets closed.
 
+#### page.emulate(name, options)
+- `name` <[string]> A name of the device to be emulated. Get the full list of emulated devices via `page.emulatedDevices()`.
+- `options` <[Object]> Emulation parameters which might have the following properties:
+  - `landscape` <[boolean]> Emulates device in the landscape mode, defaults to `false`.
+- returns: <[Promise]> Returns promise which resolves when device is emulated. Can reload the page if switching between mobile and desktop devices.
+
+#### page.emulatedDevices()
+- returns: <[Array]<[String]>> Returns array of device names that can be used with `page.emulate()`.
+
 #### page.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]> Function to be evaluated in browser context
 - `...args` <...[string]> Arguments to pass to  `pageFunction`
@@ -319,6 +339,10 @@ This is a shortcut for [page.mainFrame().evaluate()](#frameevaluatefun-args) met
 #### page.injectFile(filePath)
 - `filePath` <[string]> Path to the javascript file to be injected into page.
 - returns: <[Promise]> Promise which resolves when file gets successfully evaluated in page.
+
+#### page.keyboard
+
+- returns: <[Keyboard]>
 
 #### page.mainFrame()
 - returns: <[Frame]> returns page's main frame.
@@ -386,6 +410,9 @@ The `format` options are:
 
 #### page.plainText()
 - returns:  <[Promise]<[string]>> Returns page's inner text.
+
+#### page.reload()
+- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.screenshot([options])
 - `options` <[Object]> Options object which might have the following properties:
@@ -456,8 +483,8 @@ browser.newPage().then(async page =>
 - `userAgent` <[string]> Specific user agent to use in this page
 - returns: <[Promise]> Promise which resolves when the user agent is set.
 
-#### page.setViewportSize(size)
-- `size` <[Object]>  An object with two fields:
+#### page.setViewport(viewport)
+- `viewport` <[Object]>  An object with two fields:
 	- `width` <[number]> Specify page's width in pixels.
 	- `height` <[number]> Specify page's height in pixels.
 - returns: <[Promise]> Promise which resolves when the dimensions are updated.
@@ -487,7 +514,7 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 #### page.userAgent()
 - returns: <[string]> Returns user agent.
 
-#### page.viewportSize()
+#### page.viewport()
 - returns: <[Object]>  An object with two fields:
 	- `width` <[number]> Page's width in pixels.
 	- `height` <[number]> Page's height in pixels.
@@ -498,6 +525,82 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - returns: <[Promise]> Promise which resolves when the element matching `selector` appears in the page.
 
 Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
+
+### class: Keyboard
+
+Keyboard provides an api for managing a virtual keyboard. The high level api is [`keyboard.type`](#keyboardtypetext), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
+
+For finer control, you can use press, release, and sendCharacter to manually fire events as if they were generated from a real keyboard.
+
+An example of holding down `Shift` in order to select and delete some text:
+```js
+page.keyboard.type('Hello World!');
+page.keyboard.press('ArrowLeft');
+
+page.keyboard.hold('Shift');
+for (let i = 0; i = 0; i < ' World'.length; i++)
+  page.keyboard.press('ArrowLeft');
+page.keyboard.release('Shift');
+
+page.keyboard.press('Backspace');
+// Result text will end up saying 'Hello!'
+```
+
+#### keyboard.hold(key[, options])
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `options` <[Object]>
+  - `text` <[string]> If specified, generates an input event with this text.
+- returns: <[Promise]>
+
+Dispatches a `keydown` event.
+
+This will not send input events unless `text` is specified.
+
+If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key presses will be sent with that modifier active. To release the modifier key, use [`keyboard.release`](#keyboardreleasekey).
+
+#### keyboard.modifiers()
+- returns: <[Object]>
+  - `Shift` <[boolean]>
+  - `Meta` <[boolean]>
+  - `Control` <[boolean]>
+  - `Alt` <[boolean]>
+
+ Returns which modifier keys are currently active. Use [`keyboard.hold`](#keyboardholdkey) to activate a modifier key.
+
+#### keyboard.press(key[, options])
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `options` <[Object]>
+  - `text` <[string]> If specified, generates an input event with this text.
+- returns: <[Promise]>
+
+Shortcut for [`keyboard.hold`](#keyboardholdkey) and [`keyboard.release`](#keyboardreleasekey).
+
+#### keyboard.release(key)
+- `key` <[string]> Name of key to release, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- returns: <[Promise]>
+
+Dispatches a `keyup` event.
+
+#### keyboard.sendCharacter(char)
+- `char` <[string]> Character to send into the page.
+- returns: <[Promise]>
+
+Dispatches a `keypress` and `input` event. This does not send a `keydown` or `keyup` event.
+
+```js
+page.keyboard.sendCharacter('嗨');
+```
+
+#### keyboard.type(text)
+- `text` <[string]> Text to type into the page
+- returns: <[Promise]>
+
+Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
+This is the suggested way to type printable characters.
+
+```js
+page.keyboard.type('Hello World!');
+```
 
 ### class: Dialog
 
@@ -810,4 +913,5 @@ If there's already a header with name `name`, the header gets overwritten.
 [Browser]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-browser  "Browser"
 [Body]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-body  "Body"
 [Element]: https://developer.mozilla.org/en-US/docs/Web/API/element "Element"
+[Keyboard]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-keyboard "Keyboard"
 [Dialog]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-dialog  "Dialog"

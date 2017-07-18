@@ -8,6 +8,7 @@ const PROJECT_DIR = path.join(__dirname, '..', '..');
 
 let EXCLUDE_CLASSES = new Set([
   'Connection',
+  'EmulationManager',
   'FrameManager',
   'Helper',
   'Navigator',
@@ -26,6 +27,7 @@ let EXCLUDE_METHODS = new Set([
   'Page.create',
   'Request.constructor',
   'Response.constructor',
+  'Keyboard.constructor',
 ]);
 
 /**

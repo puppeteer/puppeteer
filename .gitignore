@@ -5,3 +5,4 @@
 .DS_Store
 *.swp
 *.pyc
+.vscode

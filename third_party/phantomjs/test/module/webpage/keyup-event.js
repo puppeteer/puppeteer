@@ -1,4 +1,3 @@
-//! unsupported
 test(function () {
     var webpage = require('webpage');
 
@@ -7,7 +6,7 @@ test(function () {
     page.evaluate(function() {
         window.addEventListener('keyup', function(event) {
             window.loggedEvent = window.loggedEvent || [];
-            window.loggedEvent.push(event);
+            window.loggedEvent.push(event.which);
         }, false);
     });
 
@@ -17,5 +16,5 @@ test(function () {
     });
 
     assert_equals(loggedEvent.length, 1);
-    assert_equals(loggedEvent[0].which, page.event.key.B);
+    assert_equals(loggedEvent[0], page.event.key.B);
 }, "key-up events");
