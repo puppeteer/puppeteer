@@ -42,7 +42,7 @@
   * [page.navigate(url, options)](#pagenavigateurl-options)
   * [page.pdf(options)](#pagepdfoptions)
   * [page.plainText()](#pageplaintext)
-  * [page.reload()](#pagereload)
+  * [page.reload(options)](#pagereloadoptions)
   * [page.screenshot([options])](#pagescreenshotoptions)
   * [page.setContent(html)](#pagesetcontenthtml)
   * [page.setHTTPHeaders(headers)](#pagesethttpheadersheaders)
@@ -57,6 +57,7 @@
   * [page.userAgent()](#pageuseragent)
   * [page.viewport()](#pageviewport)
   * [page.waitFor(selector)](#pagewaitforselector)
+  * [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
 - [class: Keyboard](#class-keyboard)
   * [keyboard.hold(key[, options])](#keyboardholdkey-options)
   * [keyboard.modifiers()](#keyboardmodifiers)
@@ -422,7 +423,8 @@ The `format` options are:
 #### page.plainText()
 - returns:  <[Promise]<[string]>> Returns page's inner text.
 
-#### page.reload()
+#### page.reload(options)
+- `options` <[Object]> Navigation parameters, same as in [page.navigate](#pagenavigateurl-options).
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.screenshot([options])
@@ -534,6 +536,10 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 #### page.waitFor(selector)
 - `selector` <[string]> A query selector to wait for on the page.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` appears in the page.
+
+#### page.waitForNavigation(options)
+- `options` <[Object]> Navigation parameters, same as in [page.navigate](#pagenavigateurl-options).
+- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 
