@@ -65,3 +65,8 @@ browser.newPage().then(async page => {
   browser.close();
 });
 ```
+
+Tips-n-tricks:
+- `DEBUG=*,-*:protocol node script.js` - dump everything BUT protocol messages
+- `DEBUG=*:page node script.js` - dump only Page's API calls
+- `DEBUG=*:mouse,*:keyboard node script.js` - dump only Mouse and Keyboard API calls
