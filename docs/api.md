@@ -444,7 +444,7 @@ The `format` options are:
   - `text` <[string]> If specified, generates an input event with this text.
 - returns: <[Promise]>
 
-Shortcut for [`keyboard.hold`](#keyboardholdkey) and [`keyboard.release`](#keyboardreleasekey).
+Shortcut for [`keyboard.down`](#keyboarddownkey) and [`keyboard.up`](#keyboardupkey).
 
 #### page.reload(options)
 - `options` <[Object]> Navigation parameters, same as in [page.navigate](#pagenavigateurl-options).
