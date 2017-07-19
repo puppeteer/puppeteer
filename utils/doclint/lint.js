@@ -13,7 +13,8 @@ let EXCLUDE_CLASSES = new Set([
   'Helper',
   'NavigatorWatcher',
   'NetworkManager',
-  'ProxyStream'
+  'ProxyStream',
+  'TaskQueue',
 ]);
 
 let EXCLUDE_METHODS = new Set([
@@ -23,11 +24,11 @@ let EXCLUDE_METHODS = new Set([
   'Headers.constructor',
   'Headers.fromPayload',
   'InterceptedRequest.constructor',
+  'Keyboard.constructor',
   'Page.constructor',
   'Page.create',
   'Request.constructor',
   'Response.constructor',
-  'Keyboard.constructor',
 ]);
 
 /**

@@ -50,7 +50,7 @@ describe('Puppeteer', function() {
   let page;
 
   beforeAll(SX(async function() {
-    browser = new Browser({args: ['--no-sandbox']});
+    browser = new Browser({headless: true, args: ['--no-sandbox']});
     const assetsPath = path.join(__dirname, 'assets');
     server = await SimpleServer.create(assetsPath, PORT);
     httpsServer = await SimpleServer.createHTTPS(assetsPath, HTTPS_PORT);
@@ -73,9 +73,9 @@ describe('Puppeteer', function() {
     GoldenUtils.addMatchers(jasmine, GOLDEN_DIR, OUTPUT_DIR);
   }));
 
-  afterEach(function() {
-    page.close();
-  });
+  afterEach(SX(async function() {
+    await page.close();
+  }));
 
   describe('Page.evaluate', function() {
     it('should work', SX(async function() {
@@ -581,66 +581,6 @@ describe('Puppeteer', function() {
     }));
   });
 
-  describe('Page.screenshot', function() {
-    it('should work', SX(async function() {
-      await page.setViewport({width: 500, height: 500});
-      await page.navigate(PREFIX + '/grid.html');
-      let screenshot = await page.screenshot();
-      expect(screenshot).toBeGolden('screenshot-sanity.png');
-    }));
-    it('should clip rect', SX(async function() {
-      await page.setViewport({width: 500, height: 500});
-      await page.navigate(PREFIX + '/grid.html');
-      let screenshot = await page.screenshot({
-        clip: {
-          x: 50,
-          y: 100,
-          width: 150,
-          height: 100
-        }
-      });
-      expect(screenshot).toBeGolden('screenshot-clip-rect.png');
-    }));
-    it('should work for offscreen clip', SX(async function() {
-      await page.setViewport({width: 500, height: 500});
-      await page.navigate(PREFIX + '/grid.html');
-      let screenshot = await page.screenshot({
-        clip: {
-          x: 50,
-          y: 600,
-          width: 100,
-          height: 100
-        }
-      });
-      expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
-    }));
-    it('should run in parallel', SX(async function() {
-      await page.setViewport({width: 500, height: 500});
-      await page.navigate(PREFIX + '/grid.html');
-      let promises = [];
-      for (let i = 0; i < 3; ++i) {
-        promises.push(page.screenshot({
-          clip: {
-            x: 50 * i,
-            y: 0,
-            width: 50,
-            height: 50
-          }
-        }));
-      }
-      let screenshots = await Promise.all(promises);
-      expect(screenshots[1]).toBeGolden('screenshot-parallel-calls.png');
-    }));
-    it('should take fullPage screenshots', SX(async function() {
-      await page.setViewport({width: 500, height: 500});
-      await page.navigate(PREFIX + '/grid.html');
-      let screenshot = await page.screenshot({
-        fullPage: true
-      });
-      expect(screenshot).toBeGolden('screenshot-grid-fullpage.png');
-    }));
-  });
-
   describe('Frame Management', function() {
     let FrameUtils = require('./frame-utils');
     it('should handle nested frames', SX(async function() {
@@ -1062,6 +1002,81 @@ describe('Puppeteer', function() {
       expect((await page.$$('doesnotexist', function(){})).length).toBe(0);
       expect((await page.$$('div', element => element.textContent))[0]).toBe('First div');
       expect((await page.$$('span', (element, index, arg1) => arg1, 'value1'))[0]).toBe('value1');
+    }));
+  });
+
+  describe('Page.screenshot', function() {
+    it('should work', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.navigate(PREFIX + '/grid.html');
+      let screenshot = await page.screenshot();
+      expect(screenshot).toBeGolden('screenshot-sanity.png');
+    }));
+    it('should clip rect', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.navigate(PREFIX + '/grid.html');
+      let screenshot = await page.screenshot({
+        clip: {
+          x: 50,
+          y: 100,
+          width: 150,
+          height: 100
+        }
+      });
+      expect(screenshot).toBeGolden('screenshot-clip-rect.png');
+    }));
+    it('should work for offscreen clip', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.navigate(PREFIX + '/grid.html');
+      let screenshot = await page.screenshot({
+        clip: {
+          x: 50,
+          y: 600,
+          width: 100,
+          height: 100
+        }
+      });
+      expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
+    }));
+    it('should run in parallel', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.navigate(PREFIX + '/grid.html');
+      let promises = [];
+      for (let i = 0; i < 3; ++i) {
+        promises.push(page.screenshot({
+          clip: {
+            x: 50 * i,
+            y: 0,
+            width: 50,
+            height: 50
+          }
+        }));
+      }
+      let screenshots = await Promise.all(promises);
+      expect(screenshots[1]).toBeGolden('grid-cell-1.png');
+    }));
+    it('should take fullPage screenshots', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.navigate(PREFIX + '/grid.html');
+      let screenshot = await page.screenshot({
+        fullPage: true
+      });
+      expect(screenshot).toBeGolden('screenshot-grid-fullpage.png');
+    }));
+    it('should run in parallel in multiple pages', SX(async function() {
+      const N = 2;
+      let pages = await Promise.all(Array(N).fill(0).map(async() => {
+        let page = await browser.newPage();
+        await page.navigate(PREFIX + '/grid.html');
+        return page;
+      }));
+      let promises = [];
+      for (let i = 0; i < N; ++i)
+        promises.push(pages[i].screenshot({ clip: { x: 50 * i, y: 0, width: 50, height: 50 } }));
+      let screenshots = await Promise.all(promises);
+      for (let i = 0; i < N; ++i)
+        expect(screenshots[i]).toBeGolden(`grid-cell-${i}.png`);
+      await Promise.all(pages.map(page => page.close()));
     }));
   });
 });
