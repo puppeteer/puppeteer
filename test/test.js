@@ -705,6 +705,26 @@ describe('Puppeteer', function() {
       await keyboard.press('Backspace');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
     }));
+    it('should send a character with Page.press', SX(async function() {
+      await page.navigate(PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      await page.press('a', {text: 'f'});
+      expect(await page.$('textarea', t => t.value)).toBe('f');
+
+      await page.evaluate(() => window.addEventListener('keydown', e => e.preventDefault(), true));
+
+      await page.press('a', {text: 'y'});
+      expect(await page.$('textarea', t => t.value)).toBe('f');
+    }));
+    it('should send a character with sendCharacter', SX(async function() {
+      await page.navigate(PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      await page.keyboard.sendCharacter('嗨');
+      expect(await page.$('textarea', t => t.value)).toBe('嗨');
+      await page.evaluate(() => window.addEventListener('keydown', e => e.preventDefault(), true));
+      await page.keyboard.sendCharacter('a');
+      expect(await page.$('textarea', t => t.value)).toBe('嗨a');
+    }));
     it('should report shiftKey', SX(async function(){
       await page.navigate(PREFIX + '/input/keyboard.html');
       let keyboard = page.keyboard;
