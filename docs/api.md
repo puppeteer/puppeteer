@@ -35,6 +35,8 @@
   * [page.evaluateOnInitialized(pageFunction, ...args)](#pageevaluateoninitializedpagefunction-args)
   * [page.focus(selector)](#pagefocusselector)
   * [page.frames()](#pageframes)
+  * [page.goBack(options)](#pagegobackoptions)
+  * [page.goForward(options)](#pagegoforwardoptions)
   * [page.httpHeaders()](#pagehttpheaders)
   * [page.injectFile(filePath)](#pageinjectfilefilepath)
   * [page.keyboard](#pagekeyboard)
@@ -343,10 +345,22 @@ This is a shortcut for [page.mainFrame().evaluate()](#frameevaluatefun-args) met
 #### page.frames()
 - returns: <[Array]<[Frame]>> An array of all frames attached to the page.
 
+#### page.goBack(options)
+- `options` <[Object]> Navigation parameters, same as in [page.navigate](#pagenavigateurl-options).
+- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
+can not go back, resolves to null.
+
+Navigate to the previous page in history.
+
+#### page.goForward(options)
+- `options` <[Object]> Navigation parameters, same as in [page.navigate](#pagenavigateurl-options).
+- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
+can not go back, resolves to null.
+
+Navigate to the next page in history.
 
 #### page.httpHeaders()
 - returns: <[Object]> Key-value set of additional http headers which will be sent with every request.
-
 
 #### page.injectFile(filePath)
 - `filePath` <[string]> Path to the javascript file to be injected into page.
