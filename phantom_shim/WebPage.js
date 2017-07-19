@@ -24,10 +24,10 @@ let noop = function() { };
 
 class WebPage {
   /**
-     * @param {!Browser} browser
-     * @param {string} scriptPath
-     * @param {!Object=} options
-     */
+   * @param {!Browser} browser
+   * @param {string} scriptPath
+   * @param {!Object=} options
+   */
   constructor(browser, scriptPath, options) {
     this._page = await(browser.newPage());
     this.settings = new WebPageSettings(this._page);
@@ -212,22 +212,22 @@ class WebPage {
   }
 
   /**
-     * @return {?function(!Object, !Request)}
-     */
+   * @return {?function(!Object, !Request)}
+   */
   get onResourceRequested() {
     return this._onResourceRequestedCallback;
   }
 
   /**
-     * @return {?function(!Object, !Request)} callback
-     */
+   * @return {?function(!Object, !Request)} callback
+   */
   set onResourceRequested(callback) {
     this._onResourceRequestedCallback = callback;
     this._page.setRequestInterceptor(callback ? resourceInterceptor : null);
 
     /**
-         * @param {!InterceptedRequest} request
-         */
+       * @param {!InterceptedRequest} request
+       */
     function resourceInterceptor(request) {
       let requestData = new RequestData(request);
       let phantomRequest = new PhantomRequest(request);
@@ -254,37 +254,37 @@ class WebPage {
   }
 
   /**
-     * @param {string} url
-     * @param {function()} callback
-     */
+   * @param {string} url
+   * @param {function()} callback
+   */
   includeJs(url, callback) {
     this._page.addScriptTag(url).then(callback);
   }
 
   /**
-     * @return {!{width: number, height: number}}
-     */
+   * @return {!{width: number, height: number}}
+   */
   get viewportSize() {
     return this._page.viewport();
   }
 
   /**
-     * @return {!Object}
-     */
+   * @return {!Object}
+   */
   get customHeaders() {
     return this._page.httpHeaders();
   }
 
   /**
-     * @param {!Object} value
-     */
+   * @param {!Object} value
+   */
   set customHeaders(value) {
     await(this._page.setHTTPHeaders(value));
   }
 
   /**
-     * @param {string} filePath
-     */
+   * @param {string} filePath
+   */
   injectJs(filePath) {
     if (!fs.existsSync(filePath))
       filePath = path.resolve(this.libraryPath, filePath);
@@ -295,29 +295,29 @@ class WebPage {
   }
 
   /**
-     * @return {string}
-     */
+   * @return {string}
+   */
   get plainText() {
     return await(this._page.plainText());
   }
 
   /**
-     * @return {string}
-     */
+   * @return {string}
+   */
   get title() {
     return await(this._page.title());
   }
 
   /**
-     * @return {(function()|undefined)}
-     */
+   * @return {(function()|undefined)}
+   */
   get onError() {
     return this._onError;
   }
 
   /**
-     * @param {(function()|undefined)} handler
-     */
+   * @param {(function()|undefined)} handler
+   */
   set onError(handler) {
     if (typeof handler !== 'function')
       handler = undefined;
@@ -325,15 +325,15 @@ class WebPage {
   }
 
   /**
-     * @return {(function()|undefined)}
-     */
+   * @return {(function()|undefined)}
+   */
   get onConfirm() {
     return this._onConfirmCallback;
   }
 
   /**
-     * @param {function()} handler
-     */
+   * @param {function()} handler
+   */
   set onConfirm(handler) {
     if (typeof handler !== 'function')
       handler = undefined;
@@ -341,15 +341,15 @@ class WebPage {
   }
 
   /**
-     * @return {(function()|undefined)}
-     */
+   * @return {(function()|undefined)}
+   */
   get onAlert() {
     return this._onAlertCallback;
   }
 
   /**
-     * @param {function()} handler
-     */
+   * @param {function()} handler
+   */
   set onAlert(handler) {
     if (typeof handler !== 'function')
       handler = undefined;
@@ -357,8 +357,8 @@ class WebPage {
   }
 
   /**
-     * @param {!Dialog} dialog
-     */
+   * @param {!Dialog} dialog
+   */
   _onDialog(dialog) {
     if (dialog.type === 'alert' && this._onAlertCallback) {
       this._onAlertCallback.call(null, dialog.message());
@@ -370,15 +370,15 @@ class WebPage {
   }
 
   /**
-     * @return {string}
-     */
+   * @return {string}
+   */
   get url() {
     return await(this._page.url());
   }
 
   /**
-     * @param {string} html
-     */
+   * @param {string} html
+   */
   set content(html) {
     await(this._page.setContent(html));
   }
@@ -450,9 +450,9 @@ class WebPage {
   }
 
   /**
-     * @param {string} html
-     * @param {function()=} callback
-     */
+   * @param {string} html
+   * @param {function()=} callback
+   */
   open(url, callback) {
     console.assert(arguments.length <= 2, 'WebPage.open does not support METHOD and DATA arguments');
     this._deferEvaluate = true;
@@ -483,16 +483,16 @@ class WebPage {
   }
 
   /**
-     * @param {!{width: number, height: number}} options
-     */
+   * @param {!{width: number, height: number}} options
+   */
   set viewportSize(options) {
     await(this._page.setViewport(options));
   }
 
   /**
-     * @param {function()} fun
-     * @param {!Array<!Object>} args
-     */
+   * @param {function()} fun
+   * @param {!Array<!Object>} args
+   */
   evaluate(fun, ...args) {
     if (this._deferEvaluate)
       return await(this._page.evaluateOnInitialized(fun, ...args));
@@ -500,8 +500,8 @@ class WebPage {
   }
 
   /**
-     * {string} fileName
-     */
+   * {string} fileName
+   */
   render(fileName) {
     if (fileName.endsWith('pdf')) {
       let options = {};
@@ -539,22 +539,22 @@ class WebPage {
 
 class WebPageSettings {
   /**
-     * @param {!Page} page
-     */
+   * @param {!Page} page
+   */
   constructor(page) {
     this._page = page;
   }
 
   /**
-     * @param {string} value
-     */
+   * @param {string} value
+   */
   set userAgent(value) {
     await(this._page.setUserAgent(value));
   }
 
   /**
-     * @return {string}
-     */
+   * @return {string}
+   */
   get userAgent() {
     return this._page.userAgent();
   }
@@ -632,8 +632,8 @@ class RequestData {
 // helping to overcome the issue.
 class AsyncEmitter extends EventEmitter {
   /**
-     * @param {!Page} page
-     */
+   * @param {!Page} page
+   */
   constructor(page) {
     super();
     this._page = page;
