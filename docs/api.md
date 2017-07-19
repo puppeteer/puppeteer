@@ -44,6 +44,7 @@
   * [page.navigate(url, options)](#pagenavigateurl-options)
   * [page.pdf(options)](#pagepdfoptions)
   * [page.plainText()](#pageplaintext)
+  * [page.press(key[, options])](#pagepresskey-options)
   * [page.reload(options)](#pagereloadoptions)
   * [page.screenshot([options])](#pagescreenshotoptions)
   * [page.setContent(html)](#pagesetcontenthtml)
@@ -436,6 +437,14 @@ The `format` options are:
 
 #### page.plainText()
 - returns:  <[Promise]<[string]>> Returns page's inner text.
+
+#### page.press(key[, options])
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `options` <[Object]>
+  - `text` <[string]> If specified, generates an input event with this text.
+- returns: <[Promise]>
+
+Shortcut for [`keyboard.down`](#keyboarddownkey) and [`keyboard.up`](#keyboardupkey).
 
 #### page.reload(options)
 - `options` <[Object]> Navigation parameters, same as in [page.navigate](#pagenavigateurl-options).
