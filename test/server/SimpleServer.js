@@ -79,6 +79,12 @@ class SimpleServer {
 
   _onSocket(socket) {
     this._sockets.add(socket);
+    // ECONNRESET is a legit error given
+    // that tab closing simply kills process.
+    socket.on('error', error => {
+      if (error.code !== 'ECONNRESET')
+        throw error;
+    });
     socket.once('close', () => this._sockets.delete(socket));
   }
 

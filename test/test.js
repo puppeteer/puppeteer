@@ -628,8 +628,8 @@ describe('Puppeteer', function() {
           }
         }));
       }
-      let screenshot = await promises[1];
-      expect(screenshot).toBeGolden('screenshot-parallel-calls.png');
+      let screenshots = await Promise.all(promises);
+      expect(screenshots[1]).toBeGolden('screenshot-parallel-calls.png');
     }));
     it('should take fullPage screenshots', SX(async function() {
       await page.setViewport({width: 500, height: 500});
