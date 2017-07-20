@@ -247,6 +247,7 @@ describe('Puppeteer', function() {
       await FrameUtils.detachFrame(page, 'frame1');
       await waitPromise;
       expect(waitError).toBeTruthy();
+      expect(waitError.message).toContain('waitForSelector failed: frame got detached.');
     }));
     it('should survive navigation', SX(async function() {
       let boxFound = false;
