@@ -1046,6 +1046,31 @@ describe('Puppeteer', function() {
     }));
   });
 
+  describe('Page.emulate', function() {
+    it('should respect viewport meta tag', SX(async function() {
+      await page.navigate(PREFIX + '/mobile.html');
+      expect(await page.evaluate(() => window.innerWidth)).toBe(400);
+      await page.emulate('iPhone 6');
+      expect(await page.evaluate(() => window.innerWidth)).toBe(375);
+      await page.setViewport({width: 400, height: 300});
+      expect(await page.evaluate(() => window.innerWidth)).toBe(400);
+    }));
+    it('should enable/disable touch', SX(async function() {
+      await page.navigate(PREFIX + '/mobile.html');
+      expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(false);
+      await page.emulate('iPhone 6');
+      expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(true);
+      await page.setViewport({width: 100, height: 100});
+      expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(false);
+    }));
+    it('should emulate UA', SX(async function() {
+      await page.navigate(PREFIX + '/mobile.html');
+      expect(await page.evaluate(() => navigator.userAgent)).toContain('Chrome');
+      await page.emulate('iPhone 6');
+      expect(await page.evaluate(() => navigator.userAgent)).toContain('Safari');
+    }));
+  });
+
   describe('Page.screenshot', function() {
     it('should work', SX(async function() {
       await page.setViewport({width: 500, height: 500});
