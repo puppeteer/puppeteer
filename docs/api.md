@@ -560,6 +560,20 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - `selector` <[string]> A query selector to wait for on the page.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` appears in the page.
 
+The `page.waitFor` successfully survives page navigations:
+```js
+const {Browser} = new require('puppeteer');
+const browser = new Browser();
+
+browser.newPage().then(async page => {
+  let currentURL;
+  page.waitFor('img').then(() => console.log('First URL with image: ' + currentURL));
+  for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
+    await page.navigate(currentURL);
+  browser.close();
+});
+```
+
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters, same as in [page.navigate](#pagenavigateurl-options).
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.

@@ -239,6 +239,27 @@ describe('Puppeteer', function() {
         expect(e.message).toContain('Evaluation failed: document.querySelector is not a function');
       }
     }));
+    it('should throw when frame is detached', SX(async function() {
+      await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
+      let frame = page.frames()[1];
+      let waitError = null;
+      let waitPromise = frame.waitFor('.box').catch(e => waitError = e);
+      await FrameUtils.detachFrame(page, 'frame1');
+      await waitPromise;
+      expect(waitError).toBeTruthy();
+      expect(waitError.message).toContain('waitForSelector failed: frame got detached.');
+    }));
+    it('should survive navigation', SX(async function() {
+      let boxFound = false;
+      let waitFor = page.waitFor('.box').then(() => boxFound = true);
+      await page.navigate(EMPTY_PAGE);
+      expect(boxFound).toBe(false);
+      await page.reload();
+      expect(boxFound).toBe(false);
+      await page.navigate(PREFIX + '/grid.html');
+      await waitFor;
+      expect(boxFound).toBe(true);
+    }));
   });
 
   describe('Page.Events.Console', function() {

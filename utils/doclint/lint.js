@@ -7,6 +7,7 @@ const Browser = require('../../lib/Browser');
 const PROJECT_DIR = path.join(__dirname, '..', '..');
 
 let EXCLUDE_CLASSES = new Set([
+  'AwaitedElement',
   'Connection',
   'EmulationManager',
   'FrameManager',
