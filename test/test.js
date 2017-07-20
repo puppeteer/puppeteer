@@ -30,6 +30,7 @@ let EMPTY_PAGE = PREFIX + '/empty.html';
 let HTTPS_PORT = 8908;
 let HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
 
+const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
 if (process.env.DEBUG_TEST)
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 1000 * 1000;
 else
@@ -50,7 +51,7 @@ describe('Puppeteer', function() {
   let page;
 
   beforeAll(SX(async function() {
-    browser = new Browser({headless: true, args: ['--no-sandbox']});
+    browser = new Browser({headless, args: ['--no-sandbox']});
     const assetsPath = path.join(__dirname, 'assets');
     server = await SimpleServer.create(assetsPath, PORT);
     httpsServer = await SimpleServer.createHTTPS(assetsPath, HTTPS_PORT);

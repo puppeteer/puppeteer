@@ -43,14 +43,19 @@ To run puppeteer tests, use:
 npm run unit
 ```
 
-To run phantom-shim against phantomjs tests, use:
-```
-npm run test-phantom
-```
-
-To run both puppeteer and phantom_shim tests, use:
+To run all tests, including lints:
 ```
 npm test
+```
+
+To debug unit tests:
+```
+npm run debug-unit
+```
+
+To run unit tests in non-headless mode:
+```
+HEADLESS=false npm run unit
 ```
 
 ## DEBUG module
