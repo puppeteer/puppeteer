@@ -20,18 +20,23 @@
     transition: background .2s, border-radius .2s, border-color .2s;
   }
   .mouse-helper.button-1 {
+    transition: none;
     background: rgba(0,0,0,0.9);
   }
   .mouse-helper.button-2 {
+    transition: none;
     border-color: rgba(0,0,255,0.9);
   }
   .mouse-helper.button-3 {
+    transition: none;
     border-radius: 4px;
   }
   .mouse-helper.button-4 {
+    transition: none;
     border-color: rgba(255,0,0,0.9);
   }
   .mouse-helper.button-5 {
+    transition: none;
     border-color: rgba(0,255,0,0.9);
   }
   `;
