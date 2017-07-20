@@ -29,7 +29,7 @@
   * [page.addScriptTag(url)](#pageaddscripttagurl)
   * [page.click(selector)](#pageclickselector)
   * [page.close()](#pageclose)
-  * [page.emulate(name, options)](#pageemulatename-options)
+  * [page.emulate(name)](#pageemulatename)
   * [page.emulatedDevices()](#pageemulateddevices)
   * [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
   * [page.evaluateOnInitialized(pageFunction, ...args)](#pageevaluateoninitializedpagefunction-args)
@@ -316,10 +316,8 @@ Adds a `<script></script>` tag to the page with the desired url. Alternatively, 
 #### page.close()
 - returns: <[Promise]> Returns promise which resolves when page gets closed.
 
-#### page.emulate(name, options)
+#### page.emulate(name)
 - `name` <[string]> A name of the device to be emulated. Get the full list of emulated devices via `page.emulatedDevices()`.
-- `options` <[Object]> Emulation parameters which might have the following properties:
-  - `landscape` <[boolean]> Emulates device in the landscape mode, defaults to `false`.
 - returns: <[Promise]> Returns promise which resolves when device is emulated. Can reload the page if switching between mobile and desktop devices.
 
 #### page.emulatedDevices()
