@@ -240,7 +240,7 @@ describe('Puppeteer', function() {
         await page.waitFor('*');
         fail('Failed waitFor did not throw.');
       } catch (e) {
-        expect(e.message).toContain('Evaluation failed: document.querySelector is not a function');
+        expect(e.message).toContain('document.querySelector is not a function');
       }
     }));
     it('should throw when frame is detached', SX(async function() {
