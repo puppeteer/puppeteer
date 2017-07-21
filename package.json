@@ -14,8 +14,7 @@
     "test": "npm run lint --silent && npm run unit && npm run test-phantom && npm run test-doclint",
     "install": "node install.js",
     "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .) && npm run doc",
-    "generate-toc": "markdown-toc -i docs/api.md",
-    "doc": "node utils/doclint/lint.js"
+    "doc": "node utils/doclint/cli.js"
   },
   "author": "The Chromium Authors",
   "license": "SEE LICENSE IN LICENSE",

@@ -1,5 +1,4 @@
 const fs = require('fs');
-const markdownToc = require('markdown-toc');
 const path = require('path');
 const Documentation = require('./Documentation');
 const commonmark = require('commonmark');
@@ -142,11 +141,7 @@ module.exports = async function(page, dirPath) {
   let classes = [];
   let errors = [];
   for (let filePath of filePaths) {
-    const markdownText = fs.readFileSync(filePath, 'utf8');
-    const newMarkdownText = markdownToc.insert(markdownText);
-    if (markdownText !== newMarkdownText)
-      errors.push('Markdown TOC is outdated, run `yarn generate-toc`');
-    let outline = await MDOutline.create(page, markdownText);
+    let outline = await MDOutline.create(page, fs.readFileSync(filePath, 'utf8'));
     classes.push(...outline.classes);
     errors.push(...outline.errors);
   }

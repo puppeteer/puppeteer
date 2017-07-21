@@ -74,7 +74,7 @@ class JSOutline {
       else if (param.type === 'Identifier')
         args.push(new Documentation.Argument(param.name));
       else
-        this.errors.push('JS Parsing issue: cannot support parameter of type ' + param.type + ' in method ' + methodName);
+        this.errors.push(`JS Parsing issue: unsupported syntax to define parameter in ${this._currentClassName}.${methodName}(): ${this._extractText(param)}`);
     }
     let method = Documentation.Member.createMethod(methodName, args, hasReturn, node.value.async);
     this._currentClassMembers.push(method);
@@ -126,17 +126,20 @@ class JSOutline {
 
 /**
  * @param {!Array<string>} dirPath
- * @return {!Promise<!Documentation>}
+ * @return {!Promise<{documentation: !Documentation, errors: !Array<string>}>}
  */
 module.exports = async function(dirPath) {
   let filePaths = fs.readdirSync(dirPath)
       .filter(fileName => fileName.endsWith('.js'))
       .map(fileName => path.join(dirPath, fileName));
   let classes = [];
+  let errors = [];
   for (let filePath of filePaths) {
     let outline = new JSOutline(fs.readFileSync(filePath, 'utf8'));
     classes.push(...outline.classes);
+    errors.push(...outline.errors);
   }
-  return new Documentation(classes);
+  const documentation = new Documentation(classes);
+  return { documentation, errors };
 };
 

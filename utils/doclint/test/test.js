@@ -35,11 +35,10 @@ describe('doclint', function() {
   it('02-method-errors', SX(test));
   it('03-property-errors', SX(test));
   it('04-bad-arguments', SX(test));
-  it('05-outdated-toc', SX(test));
+  it('05-event-errors', SX(test));
   it('06-duplicates', SX(test));
   it('07-sorting', SX(test));
   it('08-return', SX(test));
-  it('09-event-errors', SX(test));
 });
 
 async function test() {

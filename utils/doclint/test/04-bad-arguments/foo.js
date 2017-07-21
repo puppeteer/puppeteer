@@ -4,4 +4,7 @@ class Foo {
 
   test(...filePaths) {
   }
+
+  bar({visibility}) {
+  }
 }

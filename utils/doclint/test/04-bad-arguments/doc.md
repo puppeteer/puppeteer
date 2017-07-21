@@ -3,5 +3,9 @@
 - `arg1` <[string]>
 - `arg2` <[string]>
 
+#### foo.bar(options)
+- `options` <[Object]>
+
 #### foo.test(...files)
 - `...filePaths` <[string]>
+

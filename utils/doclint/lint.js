@@ -1,12 +1,8 @@
-const path = require('path');
 const jsBuilder = require('./JSBuilder');
 const mdBuilder = require('./MDBuilder');
 const Documentation = require('./Documentation');
-const Browser = require('../../lib/Browser');
 
-const PROJECT_DIR = path.join(__dirname, '..', '..');
-
-let EXCLUDE_CLASSES = new Set([
+const EXCLUDE_CLASSES = new Set([
   'AwaitedElement',
   'Connection',
   'EmulationManager',
@@ -18,7 +14,7 @@ let EXCLUDE_CLASSES = new Set([
   'TaskQueue',
 ]);
 
-let EXCLUDE_METHODS = new Set([
+const EXCLUDE_METHODS = new Set([
   'Body.constructor',
   'Dialog.constructor',
   'Frame.constructor',
@@ -41,15 +37,14 @@ let EXCLUDE_METHODS = new Set([
 async function lint(page, docsFolderPath, jsFolderPath) {
   let mdResult = await mdBuilder(page, docsFolderPath);
   let jsResult = await jsBuilder(jsFolderPath);
-  let jsDocumentation = filterJSDocumentation(jsResult);
+  let jsDocumentation = filterJSDocumentation(jsResult.documentation);
   let mdDocumentation = mdResult.documentation;
 
-  let jsErrors = [];
-  let mdErrors = Documentation.diff(mdDocumentation, jsDocumentation);
-  // Report all markdown parse errors.
-  mdErrors.push(...mdResult.errors);
-
+  let jsErrors = jsResult.errors;
   jsErrors.push(...Documentation.validate(jsDocumentation));
+
+  let mdErrors = mdResult.errors;
+  mdErrors.push(...Documentation.diff(mdDocumentation, jsDocumentation));
   mdErrors.push(...Documentation.validate(mdDocumentation));
   mdErrors.push(...lintMarkdown(mdDocumentation));
 
@@ -130,28 +125,3 @@ function filterJSDocumentation(jsDocumentation) {
 }
 
 module.exports = lint;
-
-const RED_COLOR = '\x1b[31m';
-const RESET_COLOR = '\x1b[0m';
-
-// Handle CLI invocation.
-if (!module.parent) {
-  const startTime = Date.now();
-  const browser = new Browser({args: ['--no-sandbox']});
-  browser.newPage().then(async page => {
-    const errors = await lint(page, path.join(PROJECT_DIR, 'docs'), path.join(PROJECT_DIR, 'lib'));
-    await browser.close();
-    if (errors.length) {
-      console.log('Documentation Failures:');
-      for (let i = 0; i < errors.length; ++i) {
-        let error = errors[i];
-        error = error.split('\n').join('\n    ');
-        console.log(`${i + 1}) ${RED_COLOR}${error}${RESET_COLOR}`);
-      }
-    }
-    console.log(`${errors.length} failures`);
-    const runningTime = Date.now() - startTime;
-    console.log(`Finished in ${runningTime / 1000} seconds`);
-    process.exit(errors.length > 0 ? 1 : 0);
-  });
-}

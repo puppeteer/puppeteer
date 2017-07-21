@@ -1,4 +1,7 @@
+[JavaScript] JS Parsing issue: unsupported syntax to define parameter in Foo.bar(): {visibility}
+[MarkDown] Heading arguments for "foo.test(...files)" do not match described ones, i.e. "...files" != "...filePaths"
+[MarkDown] Method Foo.bar() fails to describe its parameters:
+- Non-existing argument found: options
 [MarkDown] Method Foo.constructor() fails to describe its parameters:
 - Argument not found: arg3
 - Non-existing argument found: arg2
-[MarkDown] Heading arguments for "foo.test(...files)" do not match described ones, i.e. "...files" != "...filePaths"
