@@ -29,7 +29,7 @@
     + [page.$(selector, pageFunction, ...args)](#pageselector-pagefunction-args)
     + [page.$$(selector, pageFunction, ...args)](#pageselector-pagefunction-args)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
-    + [page.click(selector)](#pageclickselector)
+    + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
     + [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
     + [page.evaluateOnInitialized(pageFunction, ...args)](#pageevaluateoninitializedpagefunction-args)
@@ -37,10 +37,12 @@
     + [page.frames()](#pageframes)
     + [page.goBack(options)](#pagegobackoptions)
     + [page.goForward(options)](#pagegoforwardoptions)
+    + [page.hover(selector)](#pagehoverselector)
     + [page.httpHeaders()](#pagehttpheaders)
     + [page.injectFile(filePath)](#pageinjectfilefilepath)
     + [page.keyboard](#pagekeyboard)
     + [page.mainFrame()](#pagemainframe)
+    + [page.mouse](#pagemouse)
     + [page.navigate(url, options)](#pagenavigateurl-options)
     + [page.pdf(options)](#pagepdfoptions)
     + [page.plainText()](#pageplaintext)
@@ -69,6 +71,11 @@
     + [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
     + [keyboard.type(text)](#keyboardtypetext)
     + [keyboard.up(key)](#keyboardupkey)
+  * [class: Mouse](#class-mouse)
+    + [mouse.down([options])](#mousedownoptions)
+    + [mouse.move(x, y)](#mousemovex-y)
+    + [mouse.press([options])](#mousepressoptions)
+    + [mouse.up([options])](#mouseupoptions)
   * [class: Dialog](#class-dialog)
     + [dialog.accept([promptText])](#dialogacceptprompttext)
     + [dialog.dismiss()](#dialogdismiss)
@@ -78,7 +85,9 @@
     + [frame.$(selector, pageFunction, ...args)](#frameselector-pagefunction-args)
     + [frame.$$(selector, pageFunction, ...args)](#frameselector-pagefunction-args)
     + [frame.childFrames()](#framechildframes)
+    + [frame.click(selector[, options])](#frameclickselector-options)
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
+    + [frame.hover(selector)](#framehoverselector)
     + [frame.isDetached()](#frameisdetached)
     + [frame.isMainFrame()](#frameismainframe)
     + [frame.name()](#framename)
@@ -353,8 +362,11 @@ Shortcut for [page.mainFrame().$$(selector, pageFunction, ...args)](#pageselecto
 
 Adds a `<script></script>` tag to the page with the desired url. Alternatively, javascript could be injected to the page via `page.injectFile` method.
 
-#### page.click(selector)
+#### page.click(selector[, options])
 - `selector` <[string]> A query selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
+- `options` <[Object]>
+  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
+  - `clickCount` <[number]> defaults to 1
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. Promise gets rejected if there's no element matching `selector`.
 
 #### page.close()
@@ -395,6 +407,10 @@ can not go back, resolves to null.
 
 Navigate to the next page in history.
 
+#### page.hover(selector)
+- `selector` <[string]> A query selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
+- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
+
 #### page.httpHeaders()
 - returns: <[Object]> Key-value set of additional http headers which will be sent with every request.
 
@@ -410,6 +426,10 @@ Navigate to the next page in history.
 - returns: <[Frame]> returns page's main frame.
 
 Page is guaranteed to have a main frame which persists during navigations.
+
+#### page.mouse
+
+- returns: <[Mouse]>
 
 #### page.navigate(url, options)
 - `url` <[string]> URL to navigate page to
@@ -688,6 +708,39 @@ page.keyboard.type('Hello World!');
 
 Dispatches a `keyup` event.
 
+### class: Mouse
+
+#### mouse.down([options])
+- `options` <[Object]>
+  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
+  - `clickCount` <[number]> defaults to 1
+- returns: <[Promise]>
+
+Dispatches a `mousedown` event.
+
+#### mouse.move(x, y)
+- `x` <[number]>
+- `y` <[number]>
+- returns: <[Promise]>
+
+Dispatches a `mousemove` event.
+
+#### mouse.press([options])
+- `options` <[Object]>
+  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
+  - `clickCount` <[number]> defaults to 1
+- returns: <[Promise]>
+
+Shortcut for [`mouse.down`](#mousedownkey) and [`mouse.up`](#mouseupkey).
+
+#### mouse.up([options])
+- `options` <[Object]>
+  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
+  - `clickCount` <[number]> defaults to 1
+- returns: <[Promise]>
+
+Dispatches a `mouseup` event.
+
 ### class: Dialog
 
 [Dialog] objects are dispatched by page via the ['dialog'](#event-dialog) event.
@@ -766,6 +819,13 @@ browser.newPage().then(async page => {
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
 
+#### frame.click(selector[, options])
+- `selector` <[string]> A query selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
+- `options` <[Object]>
+  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
+  - `clickCount` <[number]> defaults to 1
+- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. Promise gets rejected if there's no element matching `selector`.
+
 #### frame.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]> Function to be evaluated in browser context
 - `...args` <...[string]> Arguments to pass to  `pageFunction`
@@ -784,6 +844,10 @@ browser.newPage().then(async page =>
   browser.close();
 });
 ```
+
+#### frame.hover(selector)
+- `selector` <[string]> A query selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
+- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
 
 #### frame.isDetached()
 - returns: <[boolean]>
@@ -1028,3 +1092,4 @@ If there's already a header with name `name`, the header gets overwritten.
 [Element]: https://developer.mozilla.org/en-US/docs/Web/API/element "Element"
 [Keyboard]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-keyboard "Keyboard"
 [Dialog]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-dialog  "Dialog"
+[Mouse]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-mouse "Mouse"

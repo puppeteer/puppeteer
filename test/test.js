@@ -713,7 +713,7 @@ describe('Puppeteer', function() {
   });
 
   describe('input', function() {
-    it('should click the buttos', SX(async function() {
+    it('should click the button', SX(async function() {
       await page.navigate(PREFIX + '/input/button.html');
       await page.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
@@ -893,7 +893,6 @@ describe('Puppeteer', function() {
     }));
     it('should scroll and click the button', SX(async function(){
       await page.navigate(PREFIX + '/input/scrollable.html');
-
       await page.click('#button-5');
       expect(await page.$('#button-5', button => button.textContent)).toBe('clicked');
       await page.click('#button-80');
@@ -923,12 +922,17 @@ describe('Puppeteer', function() {
     }));
     it('should trigger hover state', SX(async function(){
       await page.navigate(PREFIX + '/input/scrollable.html');
-      await page.mainFrame().hover('#button-6');
+      await page.hover('#button-6');
       expect(await page.$('button:hover', button => button.id)).toBe('button-6');
-      await page.mainFrame().hover('#button-2');
+      await page.hover('#button-2');
       expect(await page.$('button:hover', button => button.id)).toBe('button-2');
-      await page.mainFrame().hover('#button-91');
+      await page.hover('#button-91');
       expect(await page.$('button:hover', button => button.id)).toBe('button-91');
+    }));
+    it('should fire contextmenu event on right click', SX(async function(){
+      await page.navigate(PREFIX + '/input/scrollable.html');
+      await page.click('#button-8', {button: 'right'});
+      expect(await page.$('#button-8', button => button.textContent)).toBe('context menu');
     }));
     function dimensions() {
       let rect = document.querySelector('textarea').getBoundingClientRect();
