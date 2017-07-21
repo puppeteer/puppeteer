@@ -934,6 +934,23 @@ describe('Puppeteer', function() {
       await page.click('#button-8', {button: 'right'});
       expect(await page.$('#button-8', button => button.textContent)).toBe('context menu');
     }));
+    it('should set modifier keys on click', SX(async function(){
+      await page.navigate(PREFIX + '/input/scrollable.html');
+      await page.$('#button-3', button => button.addEventListener('mousedown', e => window.lastEvent = e, true));
+      let modifiers = {'Shift': 'shiftKey', 'Control': 'ctrlKey', 'Alt': 'altKey', 'Meta': 'metaKey'};
+      for (let modifier in modifiers) {
+        await page.keyboard.down(modifier);
+        await page.click('#button-3');
+        if (!(await page.evaluate(mod => window.lastEvent[mod], modifiers[modifier])))
+          fail(modifiers[modifier] + ' should be true');
+        await page.keyboard.up(modifier);
+      }
+      await page.click('#button-3');
+      for (let modifier in modifiers) {
+        if ((await page.evaluate(mod => window.lastEvent[mod], modifiers[modifier])))
+          fail(modifiers[modifier] + ' should be false');
+      }
+    }));
     function dimensions() {
       let rect = document.querySelector('textarea').getBoundingClientRect();
       return {
