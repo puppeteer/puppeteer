@@ -595,8 +595,7 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 
 #### page.waitFor(selector[, options])
 - `selector` <[string]> A query selector to wait for on the page.
-- `options` <[Object]> Optional waiting parameters
-  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties.
+- `options` <[Object]> Optional waiting parameters. Same as options for the [frame.waitFor](#framewaitforselector)
 - returns: <[Promise]> Promise which resolves when the element matching `selector` appears in the page.
 
 Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
