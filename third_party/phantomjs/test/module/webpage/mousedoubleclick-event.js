@@ -1,4 +1,3 @@
-//! unsupported
 test(function () {
     var page = require('webpage').create();
 
@@ -19,7 +18,7 @@ test(function () {
     page.evaluate(function() {
         window.addEventListener('dblclick', function(event) {
             window.loggedEvent = window.loggedEvent || {};
-            window.loggedEvent.dblclick = event;
+            window.loggedEvent.dblclick = {clientX: event.clientX, clientY: event.clientY, shiftKey: event.shiftKey};
         }, false);
     });
     page.sendEvent('doubleclick', 100, 100, 'left', page.event.modifier.shift);

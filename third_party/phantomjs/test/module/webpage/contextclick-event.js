@@ -1,11 +1,10 @@
-//! unsupported
 test(function () {
     var page = require('webpage').create();
 
     page.evaluate(function() {
         window.addEventListener('contextmenu', function(event) {
             window.loggedEvent = window.loggedEvent || {};
-            window.loggedEvent.contextmenu = event;
+            window.loggedEvent.contextmenu = {clientX: event.clientX, clientY: event.clientY, shiftKey: event.shiftKey};
         }, false);
     });
     page.sendEvent('contextmenu', 42, 217);
@@ -20,7 +19,7 @@ test(function () {
     page.evaluate(function() {
         window.addEventListener('contextmenu', function(event) {
             window.loggedEvent = window.loggedEvent || {};
-            window.loggedEvent.contextmenu = event;
+            window.loggedEvent.contextmenu = {clientX: event.clientX, clientY: event.clientY, shiftKey: event.shiftKey};
         }, false);
     });
     page.sendEvent('contextmenu', 100, 100, 'left', page.event.modifier.shift);

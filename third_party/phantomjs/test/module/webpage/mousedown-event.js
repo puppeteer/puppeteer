@@ -1,11 +1,10 @@
-//! unsupported
 test(function () {
     var page = require('webpage').create();
 
     page.evaluate(function() {
         window.addEventListener('mousedown', function(event) {
             window.loggedEvent = window.loggedEvent || [];
-            window.loggedEvent.push(event);
+            window.loggedEvent.push({clientX: event.clientX, clientY: event.clientY, shiftKey: event.shiftKey});
         }, false);
     });
 

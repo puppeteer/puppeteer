@@ -77,6 +77,9 @@ class WebPage {
         Backspace: ['Backspace'],
         Cut: ['Cut'],
         Paste: ['Paste']
+      },
+      modifier: {
+        shift: 'Shift'
       }
     };
   }
@@ -401,6 +404,8 @@ class WebPage {
   sendEvent(eventType, ...args) {
     if (eventType.startsWith('key'))
       this._sendKeyboardEvent.apply(this, arguments);
+    else
+      this._sendMouseEvent.apply(this, arguments);
   }
 
   /**
@@ -449,6 +454,40 @@ class WebPage {
     }
   }
 
+  /**
+   * @param {string} eventType
+   * @param {number} x
+   * @param {number} y
+   * @param {string|undefined} button
+   * @param {number|undefined} modifier
+   */
+  _sendMouseEvent(eventType, x, y, button, modifier) {
+    if (modifier)
+      await(this._page.keyboard.down(modifier));
+    await(this._page.mouse.move(x, y));
+    switch (eventType) {
+      case 'mousemove':
+        break;
+      case 'mousedown':
+        await(this._page.mouse.down({button}));
+        break;
+      case 'mouseup':
+        await(this._page.mouse.up({button}));
+        break;
+      case 'doubleclick':
+        await(this._page.mouse.press({button}));
+        await(this._page.mouse.press({button, clickCount: 2}));
+        break;
+      case 'click':
+        await(this._page.mouse.press({button}));
+        break;
+      case 'contextmenu':
+        await(this._page.mouse.press({button: 'right'}));
+        break;
+    }
+    if (modifier)
+      await(this._page.keyboard.up(modifier));
+  }
   /**
    * @param {string} html
    * @param {function()=} callback
