@@ -264,6 +264,16 @@ describe('Puppeteer', function() {
       await waitFor;
       expect(boxFound).toBe(true);
     }));
+    it('should wait for visible', SX(async function() {
+      let divFound = false;
+      let waitFor = page.waitFor('div', {visible: true}).then(() => divFound = true);
+      await page.setContent(`<div style='display: none;visibility: hidden'></div>`);
+      expect(divFound).toBe(false);
+      await page.evaluate(() => document.querySelector('div').style.removeProperty('display'));
+      expect(divFound).toBe(false);
+      await page.evaluate(() => document.querySelector('div').style.removeProperty('visibility'));
+      expect(await waitFor).toBe(true);
+    }));
   });
 
   describe('Page.Events.Console', function() {

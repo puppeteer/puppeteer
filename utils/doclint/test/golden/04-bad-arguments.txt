@@ -1,4 +1,4 @@
 [MarkDown] Method Foo.constructor() fails to describe its parameters:
 - Argument not found: arg3
 - Non-existing argument found: arg2
-[MarkDown] Heading arguments for "foo.test(fileNames)" do not match described ones, i.e. "fileNames" != "filePaths"
+[MarkDown] Heading arguments for "foo.test(...files)" do not match described ones, i.e. "...files" != "...filePaths"

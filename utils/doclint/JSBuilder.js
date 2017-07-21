@@ -66,8 +66,16 @@ class JSOutline {
       walker.walk(node.value.body);
     }
     const args = [];
-    for (let param of node.value.params)
-      args.push(new Documentation.Argument(this._extractText(param)));
+    for (let param of node.value.params) {
+      if (param.type === 'AssignmentPattern')
+        args.push(new Documentation.Argument(param.left.name));
+      else if (param.type === 'RestElement')
+        args.push(new Documentation.Argument('...' + param.argument.name));
+      else if (param.type === 'Identifier')
+        args.push(new Documentation.Argument(param.name));
+      else
+        this.errors.push('JS Parsing issue: cannot support parameter of type ' + param.type + ' in method ' + methodName);
+    }
     let method = Documentation.Member.createMethod(methodName, args, hasReturn, node.value.async);
     this._currentClassMembers.push(method);
     return ESTreeWalker.SkipSubtree;

@@ -3,5 +3,5 @@
 - `arg1` <[string]>
 - `arg2` <[string]>
 
-#### foo.test(fileNames)
-- `filePaths` <[Array]>
+#### foo.test(...files)
+- `...filePaths` <[string]>

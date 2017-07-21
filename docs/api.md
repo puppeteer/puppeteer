@@ -59,7 +59,7 @@
     + [page.url()](#pageurl)
     + [page.userAgent()](#pageuseragent)
     + [page.viewport()](#pageviewport)
-    + [page.waitFor(selector)](#pagewaitforselector)
+    + [page.waitFor(selector[, options])](#pagewaitforselector-options)
     + [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
   * [class: Keyboard](#class-keyboard)
     + [keyboard.down(key[, options])](#keyboarddownkey-options)
@@ -83,7 +83,7 @@
     + [frame.name()](#framename)
     + [frame.parentFrame()](#frameparentframe)
     + [frame.url()](#frameurl)
-    + [frame.waitFor(selector)](#framewaitforselector)
+    + [frame.waitFor(selector[, options])](#framewaitforselector-options)
   * [class: Request](#class-request)
     + [request.headers](#requestheaders)
     + [request.method](#requestmethod)
@@ -593,29 +593,17 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - returns: <[Object]>  An object with the save fields as described in [page.setViewport](#pagesetviewportviewport)
 
 
-#### page.waitFor(selector)
+#### page.waitFor(selector[, options])
 - `selector` <[string]> A query selector to wait for on the page.
+- `options` <[Object]> Optional waiting parameters
+  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` appears in the page.
 
-The `page.waitFor` successfully survives page navigations:
-```js
-const {Browser} = new require('puppeteer');
-const browser = new Browser();
-
-browser.newPage().then(async page => {
-  let currentURL;
-  page.waitFor('img').then(() => console.log('First URL with image: ' + currentURL));
-  for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
-    await page.navigate(currentURL);
-  browser.close();
-});
-```
+Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters, same as in [page.navigate](#pagenavigateurl-options).
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
-
-Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
 
 ### class: Keyboard
 
@@ -813,13 +801,29 @@ Returns frame's name as specified in the tag.
 
 Returns frame's url.
 
-#### frame.waitFor(selector)
+#### frame.waitFor(selector[, options])
 - `selector` <[string]> CSS selector of awaited element,
+- `options` <[Object]> Optional waiting parameters
+  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties.
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
 
 Wait for the `selector` to appear in page. If at the moment of calling
 the method the `selector` already exists, the method will return
 immediately.
+
+This method works across navigations:
+```js
+const {Browser} = new require('puppeteer');
+const browser = new Browser();
+
+browser.newPage().then(async page => {
+  let currentURL;
+  page.waitFor('img').then(() => console.log('First URL with image: ' + currentURL));
+  for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
+    await page.navigate(currentURL);
+  browser.close();
+});
+```
 
 
 ### class: Request
