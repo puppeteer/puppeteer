@@ -903,6 +903,7 @@ describe('Puppeteer', function() {
       await page.focus('textarea');
       let text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
       await page.type(text);
+      await page.$('textarea', textarea => textarea.scrollTop = 0);
       let {x, y} = await page.evaluate(dimensions);
       await page.mouse.move(x + 2,y + 2);
       await page.mouse.down();
