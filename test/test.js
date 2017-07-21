@@ -162,7 +162,7 @@ describe('Puppeteer', function() {
     }));
   });
 
-  describe('Frame.waitFor', function() {
+  describe('Frame.waitForSelector', function() {
     let FrameUtils = require('./frame-utils');
     let addElement = tag => document.body.appendChild(document.createElement(tag));
 
@@ -170,12 +170,12 @@ describe('Puppeteer', function() {
       await page.navigate(EMPTY_PAGE);
       let frame = page.mainFrame();
       let added = false;
-      await frame.waitFor('*').then(() => added = true);
+      await frame.waitForSelector('*').then(() => added = true);
       expect(added).toBe(true);
 
       added = false;
       await frame.evaluate(addElement, 'div');
-      await frame.waitFor('div').then(() => added = true);
+      await frame.waitForSelector('div').then(() => added = true);
       expect(added).toBe(true);
     }));
 
@@ -183,10 +183,10 @@ describe('Puppeteer', function() {
       await page.navigate(EMPTY_PAGE);
       let frame = page.mainFrame();
       let added = false;
-      frame.waitFor('div').then(() => added = true);
+      frame.waitForSelector('div').then(() => added = true);
       // run nop function..
       await frame.evaluate(() => 42);
-      // .. to be sure that waitFor promise is not resolved yet.
+      // .. to be sure that waitForSelector promise is not resolved yet.
       expect(added).toBe(false);
       await frame.evaluate(addElement, 'br');
       expect(added).toBe(false);
@@ -198,19 +198,19 @@ describe('Puppeteer', function() {
       await page.navigate(EMPTY_PAGE);
       let frame = page.mainFrame();
       let added = false;
-      frame.waitFor('h3 div').then(() => added = true);
+      frame.waitForSelector('h3 div').then(() => added = true);
       expect(added).toBe(false);
       await frame.evaluate(addElement, 'span');
       await page.$('span', span => span.innerHTML = '<h3><div></div></h3>');
       expect(added).toBe(true);
     }));
 
-    it('Page.waitFor is shortcut for main frame', SX(async function() {
+    it('Page.waitForSelector is shortcut for main frame', SX(async function() {
       await page.navigate(EMPTY_PAGE);
       await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
       let otherFrame = page.frames()[1];
       let added = false;
-      page.waitFor('div').then(() => added = true);
+      page.waitForSelector('div').then(() => added = true);
       await otherFrame.evaluate(addElement, 'div');
       expect(added).toBe(false);
       await page.evaluate(addElement, 'div');
@@ -223,7 +223,7 @@ describe('Puppeteer', function() {
       let frame1 = page.frames()[1];
       let frame2 = page.frames()[2];
       let added = false;
-      frame2.waitFor('div').then(() => added = true);
+      frame2.waitForSelector('div').then(() => added = true);
       expect(added).toBe(false);
       await frame1.evaluate(addElement, 'div');
       expect(added).toBe(false);
@@ -237,8 +237,8 @@ describe('Puppeteer', function() {
       });
       await page.navigate(EMPTY_PAGE);
       try {
-        await page.waitFor('*');
-        fail('Failed waitFor did not throw.');
+        await page.waitForSelector('*');
+        fail('Failed waitForSelector did not throw.');
       } catch (e) {
         expect(e.message).toContain('document.querySelector is not a function');
       }
@@ -247,7 +247,7 @@ describe('Puppeteer', function() {
       await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
       let frame = page.frames()[1];
       let waitError = null;
-      let waitPromise = frame.waitFor('.box').catch(e => waitError = e);
+      let waitPromise = frame.waitForSelector('.box').catch(e => waitError = e);
       await FrameUtils.detachFrame(page, 'frame1');
       await waitPromise;
       expect(waitError).toBeTruthy();
@@ -255,30 +255,56 @@ describe('Puppeteer', function() {
     }));
     it('should survive navigation', SX(async function() {
       let boxFound = false;
-      let waitFor = page.waitFor('.box').then(() => boxFound = true);
+      let waitForSelector = page.waitForSelector('.box').then(() => boxFound = true);
       await page.navigate(EMPTY_PAGE);
       expect(boxFound).toBe(false);
       await page.reload();
       expect(boxFound).toBe(false);
       await page.navigate(PREFIX + '/grid.html');
-      await waitFor;
+      await waitForSelector;
       expect(boxFound).toBe(true);
     }));
     it('should wait for visible', SX(async function() {
       let divFound = false;
-      let waitFor = page.waitFor('div', {visible: true}).then(() => divFound = true);
+      let waitForSelector = page.waitForSelector('div', {visible: true}).then(() => divFound = true);
       await page.setContent(`<div style='display: none;visibility: hidden'></div>`);
       expect(divFound).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.removeProperty('display'));
       expect(divFound).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.removeProperty('visibility'));
-      expect(await waitFor).toBe(true);
+      expect(await waitForSelector).toBe(true);
     }));
     it('should respect timeout', SX(async function() {
       let error = null;
-      await page.waitFor('div', {timeout: 10}).catch(e => error = e);
+      await page.waitForSelector('div', {timeout: 10}).catch(e => error = e);
       expect(error).toBeTruthy();
-      expect(error.message).toContain('waitFor failed: timeout');
+      expect(error.message).toContain('waitForSelector failed: timeout');
+    }));
+  });
+
+  describe('Page.waitFor', function() {
+    it('should wait for selector', SX(async function() {
+      let found = false;
+      let waitFor = page.waitFor('div').then(() => found = true);
+      await page.navigate(EMPTY_PAGE);
+      expect(found).toBe(false);
+      await page.navigate(PREFIX + '/grid.html');
+      await waitFor;
+      expect(found).toBe(true);
+    }));
+    it('should timeout', SX(async function() {
+      startTime = Date.now();
+      const timeout = 42;
+      await page.waitFor(timeout);
+      expect(Date.now() - startTime).not.toBeLessThan(timeout);
+    }));
+    it('should throw when unknown type', SX(async function() {
+      try {
+        await page.waitFor({foo: 'bar'});
+        fail('Failed to throw exception');
+      } catch (e) {
+        expect(e.message).toContain('Unsupported target type');
+      }
     }));
   });
 

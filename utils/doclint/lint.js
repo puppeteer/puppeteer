@@ -94,10 +94,13 @@ function lintMarkdown(doc) {
       if (member1.type === 'method' && member1.name === 'constructor')
         continue;
       if (member1.name > member2.name) {
-        let memberName = `${cls.name}.${member1.name}`;
+        let memberName1 = `${cls.name}.${member1.name}`;
         if (member1.type === 'method')
-          memberName += '()';
-        errors.push(`${memberName} breaks alphabetic ordering of class members.`);
+          memberName1 += '()';
+        let memberName2 = `${cls.name}.${member2.name}`;
+        if (member2.type === 'method')
+          memberName2 += '()';
+        errors.push(`Bad alphabetic ordering of ${cls.name} members: ${memberName1} should go after ${memberName2}`);
       }
     }
   }

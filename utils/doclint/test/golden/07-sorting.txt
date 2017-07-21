@@ -1,5 +1,5 @@
 [MarkDown] Events should go first. Event 'b' in class Foo breaks order
 [MarkDown] Constructor of Foo should go before other methods
 [MarkDown] Event 'c' in class Foo breaks alphabetic ordering of events
-[MarkDown] Foo.ddd breaks alphabetic ordering of class members.
-[MarkDown] Foo.ccc() breaks alphabetic ordering of class members.
+[MarkDown] Bad alphabetic ordering of Foo members: Foo.ddd should go after Foo.constructor()
+[MarkDown] Bad alphabetic ordering of Foo members: Foo.ccc() should go after Foo.bbb()

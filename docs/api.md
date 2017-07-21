@@ -59,8 +59,9 @@
     + [page.url()](#pageurl)
     + [page.userAgent()](#pageuseragent)
     + [page.viewport()](#pageviewport)
-    + [page.waitFor(selector[, options])](#pagewaitforselector-options)
+    + [page.waitFor(target[, options])](#pagewaitfortarget-options)
     + [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
+    + [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [class: Keyboard](#class-keyboard)
     + [keyboard.down(key[, options])](#keyboarddownkey-options)
     + [keyboard.modifiers()](#keyboardmodifiers)
@@ -83,7 +84,8 @@
     + [frame.name()](#framename)
     + [frame.parentFrame()](#frameparentframe)
     + [frame.url()](#frameurl)
-    + [frame.waitFor(selector[, options])](#framewaitforselector-options)
+    + [frame.waitFor(target[, options])](#framewaitfortarget-options)
+    + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
   * [class: Request](#class-request)
     + [request.headers](#requestheaders)
     + [request.method](#requestmethod)
@@ -592,17 +594,23 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 #### page.viewport()
 - returns: <[Object]>  An object with the save fields as described in [page.setViewport](#pagesetviewportviewport)
 
+#### page.waitFor(target[, options])
+- `target` <[string]|[number]> A target to wait for.
+- `options` <[Object]> Optional waiting parameters.
+- returns: <[Promise]>
 
-#### page.waitFor(selector[, options])
-- `selector` <[string]> A query selector to wait for on the page.
-- `options` <[Object]> Optional waiting parameters. Same as options for the [frame.waitFor](#framewaitforselector)
-- returns: <[Promise]> Promise which resolves when the element matching `selector` appears in the page.
-
-Shortcut for [page.mainFrame().waitFor(selector)](#framewaitforselector).
+Shortcut for [page.mainFrame().waitFor()](#framewaitfortargetoptions).
 
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters, same as in [page.navigate](#pagenavigateurl-options).
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
+
+#### page.waitForSelector(selector[, options])
+- `selector` <[string]> A query selector to wait for on the page.
+- `options` <[Object]> Optional waiting parameters. Same as options for the [frame.waitFor](#framewaitforselector)
+- returns: <[Promise]> Promise which resolves when the element matching `selector` appears in the page.
+
+Shortcut for [page.mainFrame().waitForSelector()](#framewaitforselectorselectoroptions).
 
 ### class: Keyboard
 
@@ -800,7 +808,17 @@ Returns frame's name as specified in the tag.
 
 Returns frame's url.
 
-#### frame.waitFor(selector[, options])
+#### frame.waitFor(target[, options])
+- `target` <[string]|[number]> A target to wait for
+- `options` <[Object]> Optional waiting parameters
+- returns: <[Promise]>
+
+This method behaves differently wrt the type of the first parameter:
+- if `target` is a `string`, than target is treated as a selector to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselectoroptions)
+- if `target` is a `number`, than target is treated as timeout in milliseconds and the method returns a promise which resolves after the timeout
+- otherwise, an exception is thrown
+
+#### frame.waitForSelector(selector[, options])
 - `selector` <[string]> CSS selector of awaited element,
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
@@ -818,7 +836,7 @@ const browser = new Browser();
 
 browser.newPage().then(async page => {
   let currentURL;
-  page.waitFor('img').then(() => console.log('First URL with image: ' + currentURL));
+  page.waitForSelector('img').then(() => console.log('First URL with image: ' + currentURL));
   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
     await page.navigate(currentURL);
   browser.close();
