@@ -804,12 +804,13 @@ Returns frame's url.
 #### frame.waitFor(selector[, options])
 - `selector` <[string]> CSS selector of awaited element,
 - `options` <[Object]> Optional waiting parameters
-  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties.
+  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
 
 Wait for the `selector` to appear in page. If at the moment of calling
 the method the `selector` already exists, the method will return
-immediately.
+immediately. If the selector doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
 
 This method works across navigations:
 ```js

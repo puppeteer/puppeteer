@@ -274,6 +274,12 @@ describe('Puppeteer', function() {
       await page.evaluate(() => document.querySelector('div').style.removeProperty('visibility'));
       expect(await waitFor).toBe(true);
     }));
+    it('should respect timeout', SX(async function() {
+      let error = null;
+      await page.waitFor('div', {timeout: 10}).catch(e => error = e);
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('waitFor failed: timeout');
+    }));
   });
 
   describe('Page.Events.Console', function() {
