@@ -576,6 +576,10 @@ In case of multiple pages in one browser, each page can have its own viewport si
 - `text` <[string]> A text to type into a focused element.
 - returns: <[Promise]> Promise which resolves when the text has been successfully typed.
 
+Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
+
+To press a special key, use [`page.press`](#pagepresskey-options).
+
 #### page.uploadFile(selector, ...filePaths)
 - `selector` <[string]> A query selector to a file input
 - `...filePaths` <[string]> Sets the value of the file input these paths
