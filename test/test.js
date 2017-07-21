@@ -30,6 +30,9 @@ let EMPTY_PAGE = PREFIX + '/empty.html';
 let HTTPS_PORT = 8908;
 let HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
 
+const iPhone = require('../DeviceDescriptors')['iPhone 6'];
+const iPhoneLandscape = require('../DeviceDescriptors')['iPhone 6 landscape'];
+
 const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
 if (process.env.DEBUG_TEST)
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 1000 * 1000;
@@ -851,6 +854,12 @@ describe('Puppeteer', function() {
       let request = await server.waitForRequest('/empty.html');
       expect(request.headers['user-agent']).toBe('foobar');
     }));
+    it('should emulate device user-agent', SX(async function() {
+      await page.navigate(PREFIX + '/mobile.html');
+      expect(await page.evaluate(() => navigator.userAgent)).toContain('Chrome');
+      await page.setUserAgent(iPhone.userAgent);
+      expect(await page.evaluate(() => navigator.userAgent)).toContain('Safari');
+    }));
   });
   describe('Page.setHTTPHeaders', function() {
     it('should work', SX(async function() {
@@ -987,6 +996,30 @@ describe('Puppeteer', function() {
       await page.setViewport({width: 123, height: 456});
       expect(page.viewport()).toEqual({width: 123, height: 456});
     }));
+    it('should support mobile emulation', SX(async function() {
+      await page.navigate(PREFIX + '/mobile.html');
+      expect(await page.evaluate(() => window.innerWidth)).toBe(400);
+      await page.setViewport(iPhone.viewport);
+      expect(await page.evaluate(() => window.innerWidth)).toBe(375);
+      await page.setViewport({width: 400, height: 300});
+      expect(await page.evaluate(() => window.innerWidth)).toBe(400);
+    }));
+    it('should support touch emulation', SX(async function() {
+      await page.navigate(PREFIX + '/mobile.html');
+      expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(false);
+      await page.setViewport(iPhone.viewport);
+      expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(true);
+      await page.setViewport({width: 100, height: 100});
+      expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(false);
+    }));
+    it('should support landscape emulation', SX(async function() {
+      await page.navigate(PREFIX + '/mobile.html');
+      expect(await page.evaluate(() => screen.orientation.type)).toBe('portrait-primary');
+      await page.setViewport(iPhoneLandscape.viewport);
+      expect(await page.evaluate(() => screen.orientation.type)).toBe('landscape-primary');
+      await page.setViewport({width: 100, height: 100});
+      expect(await page.evaluate(() => screen.orientation.type)).toBe('portrait-primary');
+    }));
   });
 
   describe('Page.evaluateOnInitialized', function() {
@@ -1051,31 +1084,6 @@ describe('Puppeteer', function() {
       expect((await page.$$('doesnotexist', function(){})).length).toBe(0);
       expect((await page.$$('div', element => element.textContent))[0]).toBe('First div');
       expect((await page.$$('span', (element, index, arg1) => arg1, 'value1'))[0]).toBe('value1');
-    }));
-  });
-
-  describe('Page.emulate', function() {
-    it('should respect viewport meta tag', SX(async function() {
-      await page.navigate(PREFIX + '/mobile.html');
-      expect(await page.evaluate(() => window.innerWidth)).toBe(400);
-      await page.emulate('iPhone 6');
-      expect(await page.evaluate(() => window.innerWidth)).toBe(375);
-      await page.setViewport({width: 400, height: 300});
-      expect(await page.evaluate(() => window.innerWidth)).toBe(400);
-    }));
-    it('should enable/disable touch', SX(async function() {
-      await page.navigate(PREFIX + '/mobile.html');
-      expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(false);
-      await page.emulate('iPhone 6');
-      expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(true);
-      await page.setViewport({width: 100, height: 100});
-      expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(false);
-    }));
-    it('should emulate UA', SX(async function() {
-      await page.navigate(PREFIX + '/mobile.html');
-      expect(await page.evaluate(() => navigator.userAgent)).toContain('Chrome');
-      await page.emulate('iPhone 6');
-      expect(await page.evaluate(() => navigator.userAgent)).toContain('Safari');
     }));
   });
 

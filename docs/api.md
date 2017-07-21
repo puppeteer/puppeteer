@@ -4,123 +4,165 @@
 
 <!-- toc -->
 
-- [class: Browser](#class-browser)
-  * [new Browser([options])](#new-browseroptions)
-  * [browser.close()](#browserclose)
-  * [browser.closePage(page)](#browserclosepagepage)
-  * [browser.newPage()](#browsernewpage)
-  * [browser.stderr](#browserstderr)
-  * [browser.stdout](#browserstdout)
-  * [browser.version()](#browserversion)
-- [class: Page](#class-page)
-  * [event: 'console'](#event-console)
-  * [event: 'dialog'](#event-dialog)
-  * [event: 'frameattached'](#event-frameattached)
-  * [event: 'framedetached'](#event-framedetached)
-  * [event: 'framenavigated'](#event-framenavigated)
-  * [event: 'load'](#event-load)
-  * [event: 'pageerror'](#event-pageerror)
-  * [event: 'request'](#event-request)
-  * [event: 'requestfailed'](#event-requestfailed)
-  * [event: 'requestfinished'](#event-requestfinished)
-  * [event: 'response'](#event-response)
-  * [page.$(selector, pageFunction, ...args)](#pageselector-pagefunction-args)
-  * [page.$$(selector, pageFunction, ...args)](#pageselector-pagefunction-args)
-  * [page.addScriptTag(url)](#pageaddscripttagurl)
-  * [page.click(selector)](#pageclickselector)
-  * [page.close()](#pageclose)
-  * [page.emulate(name)](#pageemulatename)
-  * [page.emulatedDevices()](#pageemulateddevices)
-  * [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
-  * [page.evaluateOnInitialized(pageFunction, ...args)](#pageevaluateoninitializedpagefunction-args)
-  * [page.focus(selector)](#pagefocusselector)
-  * [page.frames()](#pageframes)
-  * [page.goBack(options)](#pagegobackoptions)
-  * [page.goForward(options)](#pagegoforwardoptions)
-  * [page.httpHeaders()](#pagehttpheaders)
-  * [page.injectFile(filePath)](#pageinjectfilefilepath)
-  * [page.keyboard](#pagekeyboard)
-  * [page.mainFrame()](#pagemainframe)
-  * [page.navigate(url, options)](#pagenavigateurl-options)
-  * [page.pdf(options)](#pagepdfoptions)
-  * [page.plainText()](#pageplaintext)
-  * [page.press(key[, options])](#pagepresskey-options)
-  * [page.reload(options)](#pagereloadoptions)
-  * [page.screenshot([options])](#pagescreenshotoptions)
-  * [page.setContent(html)](#pagesetcontenthtml)
-  * [page.setHTTPHeaders(headers)](#pagesethttpheadersheaders)
-  * [page.setInPageCallback(name, callback)](#pagesetinpagecallbackname-callback)
-  * [page.setRequestInterceptor(interceptor)](#pagesetrequestinterceptorinterceptor)
-  * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
-  * [page.setViewport(viewport)](#pagesetviewportviewport)
-  * [page.title()](#pagetitle)
-  * [page.type(text)](#pagetypetext)
-  * [page.uploadFile(selector, ...filePaths)](#pageuploadfileselector-filepaths)
-  * [page.url()](#pageurl)
-  * [page.userAgent()](#pageuseragent)
-  * [page.viewport()](#pageviewport)
-  * [page.waitFor(selector)](#pagewaitforselector)
-  * [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
-- [class: Keyboard](#class-keyboard)
-  * [keyboard.down(key[, options])](#keyboarddownkey-options)
-  * [keyboard.modifiers()](#keyboardmodifiers)
-  * [keyboard.press(key[, options])](#keyboardpresskey-options)
-  * [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
-  * [keyboard.type(text)](#keyboardtypetext)
-  * [keyboard.up(key)](#keyboardupkey)
-- [class: Dialog](#class-dialog)
-  * [dialog.accept([promptText])](#dialogacceptprompttext)
-  * [dialog.dismiss()](#dialogdismiss)
-  * [dialog.message()](#dialogmessage)
-  * [dialog.type](#dialogtype)
-- [class: Frame](#class-frame)
-  * [frame.$(selector, pageFunction, ...args)](#frameselector-pagefunction-args)
-  * [frame.$$(selector, pageFunction, ...args)](#frameselector-pagefunction-args)
-  * [frame.childFrames()](#framechildframes)
-  * [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
-  * [frame.isDetached()](#frameisdetached)
-  * [frame.isMainFrame()](#frameismainframe)
-  * [frame.name()](#framename)
-  * [frame.parentFrame()](#frameparentframe)
-  * [frame.url()](#frameurl)
-  * [frame.waitFor(selector)](#framewaitforselector)
-- [class: Request](#class-request)
-  * [request.headers](#requestheaders)
-  * [request.method](#requestmethod)
-  * [request.response()](#requestresponse)
-  * [request.url](#requesturl)
-- [class: Response](#class-response)
-  * [response.headers](#responseheaders)
-  * [response.ok](#responseok)
-  * [response.request()](#responserequest)
-  * [response.status](#responsestatus)
-  * [response.statusText](#responsestatustext)
-  * [response.url](#responseurl)
-- [class: InterceptedRequest](#class-interceptedrequest)
-  * [interceptedRequest.abort()](#interceptedrequestabort)
-  * [interceptedRequest.continue()](#interceptedrequestcontinue)
-  * [interceptedRequest.headers](#interceptedrequestheaders)
-  * [interceptedRequest.isHandled()](#interceptedrequestishandled)
-  * [interceptedRequest.method](#interceptedrequestmethod)
-  * [interceptedRequest.postData](#interceptedrequestpostdata)
-  * [interceptedRequest.url](#interceptedrequesturl)
-- [class: Headers](#class-headers)
-  * [headers.append(name, value)](#headersappendname-value)
-  * [headers.delete(name)](#headersdeletename)
-  * [headers.entries()](#headersentries)
-  * [headers.get(name)](#headersgetname)
-  * [headers.has(name)](#headershasname)
-  * [headers.keys()](#headerskeys)
-  * [headers.set(name, value)](#headerssetname-value)
-  * [headers.values()](#headersvalues)
-- [class: Body](#class-body)
-  * [body.arrayBuffer()](#bodyarraybuffer)
-  * [body.bodyUsed](#bodybodyused)
-  * [body.buffer()](#bodybuffer)
-  * [body.json()](#bodyjson)
-  * [body.text()](#bodytext)
+- [Puppeteer](#puppeteer)
+  * [Emulation](#emulation)
+  * [class: Browser](#class-browser)
+    + [new Browser([options])](#new-browseroptions)
+    + [browser.close()](#browserclose)
+    + [browser.closePage(page)](#browserclosepagepage)
+    + [browser.newPage()](#browsernewpage)
+    + [browser.stderr](#browserstderr)
+    + [browser.stdout](#browserstdout)
+    + [browser.version()](#browserversion)
+  * [class: Page](#class-page)
+    + [event: 'console'](#event-console)
+    + [event: 'dialog'](#event-dialog)
+    + [event: 'frameattached'](#event-frameattached)
+    + [event: 'framedetached'](#event-framedetached)
+    + [event: 'framenavigated'](#event-framenavigated)
+    + [event: 'load'](#event-load)
+    + [event: 'pageerror'](#event-pageerror)
+    + [event: 'request'](#event-request)
+    + [event: 'requestfailed'](#event-requestfailed)
+    + [event: 'requestfinished'](#event-requestfinished)
+    + [event: 'response'](#event-response)
+    + [page.$(selector, pageFunction, ...args)](#pageselector-pagefunction-args)
+    + [page.$$(selector, pageFunction, ...args)](#pageselector-pagefunction-args)
+    + [page.addScriptTag(url)](#pageaddscripttagurl)
+    + [page.click(selector)](#pageclickselector)
+    + [page.close()](#pageclose)
+    + [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
+    + [page.evaluateOnInitialized(pageFunction, ...args)](#pageevaluateoninitializedpagefunction-args)
+    + [page.focus(selector)](#pagefocusselector)
+    + [page.frames()](#pageframes)
+    + [page.goBack(options)](#pagegobackoptions)
+    + [page.goForward(options)](#pagegoforwardoptions)
+    + [page.httpHeaders()](#pagehttpheaders)
+    + [page.injectFile(filePath)](#pageinjectfilefilepath)
+    + [page.keyboard](#pagekeyboard)
+    + [page.mainFrame()](#pagemainframe)
+    + [page.navigate(url, options)](#pagenavigateurl-options)
+    + [page.pdf(options)](#pagepdfoptions)
+    + [page.plainText()](#pageplaintext)
+    + [page.press(key[, options])](#pagepresskey-options)
+    + [page.reload(options)](#pagereloadoptions)
+    + [page.screenshot([options])](#pagescreenshotoptions)
+    + [page.setContent(html)](#pagesetcontenthtml)
+    + [page.setHTTPHeaders(headers)](#pagesethttpheadersheaders)
+    + [page.setInPageCallback(name, callback)](#pagesetinpagecallbackname-callback)
+    + [page.setRequestInterceptor(interceptor)](#pagesetrequestinterceptorinterceptor)
+    + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
+    + [page.setViewport(viewport)](#pagesetviewportviewport)
+    + [page.title()](#pagetitle)
+    + [page.type(text)](#pagetypetext)
+    + [page.uploadFile(selector, ...filePaths)](#pageuploadfileselector-filepaths)
+    + [page.url()](#pageurl)
+    + [page.userAgent()](#pageuseragent)
+    + [page.viewport()](#pageviewport)
+    + [page.waitFor(selector)](#pagewaitforselector)
+    + [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
+  * [class: Keyboard](#class-keyboard)
+    + [keyboard.down(key[, options])](#keyboarddownkey-options)
+    + [keyboard.modifiers()](#keyboardmodifiers)
+    + [keyboard.press(key[, options])](#keyboardpresskey-options)
+    + [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
+    + [keyboard.type(text)](#keyboardtypetext)
+    + [keyboard.up(key)](#keyboardupkey)
+  * [class: Dialog](#class-dialog)
+    + [dialog.accept([promptText])](#dialogacceptprompttext)
+    + [dialog.dismiss()](#dialogdismiss)
+    + [dialog.message()](#dialogmessage)
+    + [dialog.type](#dialogtype)
+  * [class: Frame](#class-frame)
+    + [frame.$(selector, pageFunction, ...args)](#frameselector-pagefunction-args)
+    + [frame.$$(selector, pageFunction, ...args)](#frameselector-pagefunction-args)
+    + [frame.childFrames()](#framechildframes)
+    + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
+    + [frame.isDetached()](#frameisdetached)
+    + [frame.isMainFrame()](#frameismainframe)
+    + [frame.name()](#framename)
+    + [frame.parentFrame()](#frameparentframe)
+    + [frame.url()](#frameurl)
+    + [frame.waitFor(selector)](#framewaitforselector)
+  * [class: Request](#class-request)
+    + [request.headers](#requestheaders)
+    + [request.method](#requestmethod)
+    + [request.response()](#requestresponse)
+    + [request.url](#requesturl)
+  * [class: Response](#class-response)
+    + [response.headers](#responseheaders)
+    + [response.ok](#responseok)
+    + [response.request()](#responserequest)
+    + [response.status](#responsestatus)
+    + [response.statusText](#responsestatustext)
+    + [response.url](#responseurl)
+  * [class: InterceptedRequest](#class-interceptedrequest)
+    + [interceptedRequest.abort()](#interceptedrequestabort)
+    + [interceptedRequest.continue()](#interceptedrequestcontinue)
+    + [interceptedRequest.headers](#interceptedrequestheaders)
+    + [interceptedRequest.isHandled()](#interceptedrequestishandled)
+    + [interceptedRequest.method](#interceptedrequestmethod)
+    + [interceptedRequest.postData](#interceptedrequestpostdata)
+    + [interceptedRequest.url](#interceptedrequesturl)
+  * [class: Headers](#class-headers)
+    + [headers.append(name, value)](#headersappendname-value)
+    + [headers.delete(name)](#headersdeletename)
+    + [headers.entries()](#headersentries)
+    + [headers.get(name)](#headersgetname)
+    + [headers.has(name)](#headershasname)
+    + [headers.keys()](#headerskeys)
+    + [headers.set(name, value)](#headerssetname-value)
+    + [headers.values()](#headersvalues)
+  * [class: Body](#class-body)
+    + [body.arrayBuffer()](#bodyarraybuffer)
+    + [body.bodyUsed](#bodybodyused)
+    + [body.buffer()](#bodybuffer)
+    + [body.json()](#bodyjson)
+    + [body.text()](#bodytext)
 
 <!-- tocstop -->
+
+## Puppeteer
+
+Puppeteer is a Node library which provides a high-level API to control Chromium over the DevTools Protocol.
+
+Puppeteer provides a top-level require which has a [Browser](#class-browser) class.
+The following is a typical example of using a Browser class to drive automation:
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+browser.newPage().then(async page => {
+  await page.navigate('https://google.com');
+  // other actions...
+  browser.close();
+});
+```
+
+### Emulation
+
+Puppeteer supports device emulation with two primitives:
+- [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
+- [page.setViewport(viewport)](#pagesetviewportviewport)
+
+To aid emulation, puppeteer provides a list of device descriptors which could be obtained via the `require('puppeteer/DeviceDescriptors')` command.
+Below is an example of emulating iPhone 6 in puppeteer:
+```js
+const {Browser} = require('puppeteer');
+const devices = require('puppeteer/DeviceDescriptors');
+const iPhone = devices['iPhone 6'];
+const browser = new Browser();
+browser.newPage().then(async page => {
+  await Promise.all([
+    page.setUserAgent(iPhone.userAgent),
+    page.setViewport(iPhone.viewport)
+  ]);
+  await page.navigate('https://google.com');
+  // other actions...
+  browser.close();
+});
+```
+
+List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js).
 
 ### class: Browser
 
@@ -315,13 +357,6 @@ Adds a `<script></script>` tag to the page with the desired url. Alternatively, 
 
 #### page.close()
 - returns: <[Promise]> Returns promise which resolves when page gets closed.
-
-#### page.emulate(name)
-- `name` <[string]> A name of the device to be emulated. Get the full list of emulated devices via `page.emulatedDevices()`.
-- returns: <[Promise]> Returns promise which resolves when device is emulated. Can reload the page if switching between mobile and desktop devices.
-
-#### page.emulatedDevices()
-- returns: <[Array]<[String]>> Returns array of device names that can be used with `page.emulate()`.
 
 #### page.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]> Function to be evaluated in browser context
@@ -521,7 +556,13 @@ browser.newPage().then(async page =>
 - `viewport` <[Object]>  An object with two fields:
 	- `width` <[number]> Specify page's width in pixels.
 	- `height` <[number]> Specify page's height in pixels.
+	- `deviceScaleFactor` <[number]> Specify device scale factor (could be though of as dpr). Defaults to `1`.
+	- `isMobile` <[boolean]> Weather the `meta viewport` tag is taken into account. Defaults to `false`.
+	- `hasTouch`<[boolean]> Specify if viewport supports touch events. Defaults to `false`
+	- `isLandscape` <[boolean]> Specify if viewport is in the landscape mode. Defaults to `false`.
 - returns: <[Promise]> Promise which resolves when the dimensions are updated.
+
+Note: in certain cases, setting viewport will reload the page so that the `isMobile` or `hasTouch` options will be able to interfere in project loading.
 
 The page's viewport size defines page's dimensions, observable from page via `window.innerWidth / window.innerHeight`. The viewport size defines a size of page
 screenshot (unless a `fullPage` option is given).
@@ -549,9 +590,7 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - returns: <[string]> Returns user agent.
 
 #### page.viewport()
-- returns: <[Object]>  An object with two fields:
-	- `width` <[number]> Page's width in pixels.
-	- `height` <[number]> Page's height in pixels.
+- returns: <[Object]>  An object with the save fields as described in [page.setViewport](#pagesetviewportviewport)
 
 
 #### page.waitFor(selector)
