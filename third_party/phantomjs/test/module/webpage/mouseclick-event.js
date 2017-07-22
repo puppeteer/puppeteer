@@ -1,15 +1,14 @@
-//! unsupported
 test(function () {
     var page = require('webpage').create();
 
     page.evaluate(function() {
         window.addEventListener('mousedown', function(event) {
             window.loggedEvent = window.loggedEvent || {};
-            window.loggedEvent.mousedown = event;
+            window.loggedEvent.mousedown = {clientX: event.clientX, clientY: event.clientY, shiftKey: event.shiftKey};
         }, false);
         window.addEventListener('mouseup', function(event) {
             window.loggedEvent = window.loggedEvent || {};
-            window.loggedEvent.mouseup = event;
+            window.loggedEvent.mouseup = {clientX: event.clientX, clientY: event.clientY, shiftKey: event.shiftKey};
         }, false);
     });
     page.sendEvent('click', 42, 217);
@@ -26,7 +25,7 @@ test(function () {
     page.evaluate(function() {
         window.addEventListener('click', function(event) {
             window.loggedEvent = window.loggedEvent || {};
-            window.loggedEvent.click = event;
+            window.loggedEvent.click = {clientX: event.clientX, clientY: event.clientY, shiftKey: event.shiftKey};
         }, false);
     });
     page.sendEvent('click', 100, 100, 'left', page.event.modifier.shift);

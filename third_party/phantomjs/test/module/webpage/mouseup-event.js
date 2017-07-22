@@ -1,4 +1,3 @@
-//! unsupported
 test(function () {
     var webpage = require('webpage');
     var page = webpage.create();
@@ -6,7 +5,7 @@ test(function () {
     page.evaluate(function() {
         window.addEventListener('mouseup', function(event) {
             window.loggedEvent = window.loggedEvent || [];
-            window.loggedEvent.push(event);
+            window.loggedEvent.push({clientX: event.clientX, clientY: event.clientY, shiftKey: event.shiftKey});
         }, false);
     });
 

@@ -877,6 +877,88 @@ describe('Puppeteer', function() {
       expect(keyboard.modifiers().Shift).toBe(false);
       expect(keyboard.modifiers().Alt).toBe(false);
     }));
+    it('should resize the textarea', SX(async function(){
+      await page.navigate(PREFIX + '/input/textarea.html');
+      let {x, y, width, height} = await page.evaluate(dimensions);
+      let mouse = page.mouse;
+      await mouse.move(x + width - 4, y + height - 4);
+      await mouse.down();
+      await mouse.move(x + width + 100, y + height + 100);
+      await mouse.up();
+      let newDimensions = await page.evaluate(dimensions);
+      expect(newDimensions.width).toBe(width + 104);
+      expect(newDimensions.height).toBe(height + 104);
+    }));
+    it('should scroll and click the button', SX(async function(){
+      await page.navigate(PREFIX + '/input/scrollable.html');
+      await page.click('#button-5');
+      expect(await page.$('#button-5', button => button.textContent)).toBe('clicked');
+      await page.click('#button-80');
+      expect(await page.$('#button-80', button => button.textContent)).toBe('clicked');
+    }));
+    it('should select the text with mouse', SX(async function(){
+      await page.navigate(PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      let text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
+      await page.type(text);
+      await page.$('textarea', textarea => textarea.scrollTop = 0);
+      let {x, y} = await page.evaluate(dimensions);
+      await page.mouse.move(x + 2,y + 2);
+      await page.mouse.down();
+      await page.mouse.move(100,100);
+      await page.mouse.up();
+      expect(await page.evaluate(() => window.getSelection().toString())).toBe(text);
+    }));
+    it('should select the text by triple clicking', SX(async function(){
+      await page.navigate(PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      let text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
+      await page.type(text);
+      await page.click('textarea');
+      await page.click('textarea', {clickCount: 2});
+      await page.click('textarea', {clickCount: 3});
+      expect(await page.evaluate(() => window.getSelection().toString())).toBe(text);
+    }));
+    it('should trigger hover state', SX(async function(){
+      await page.navigate(PREFIX + '/input/scrollable.html');
+      await page.hover('#button-6');
+      expect(await page.$('button:hover', button => button.id)).toBe('button-6');
+      await page.hover('#button-2');
+      expect(await page.$('button:hover', button => button.id)).toBe('button-2');
+      await page.hover('#button-91');
+      expect(await page.$('button:hover', button => button.id)).toBe('button-91');
+    }));
+    it('should fire contextmenu event on right click', SX(async function(){
+      await page.navigate(PREFIX + '/input/scrollable.html');
+      await page.click('#button-8', {button: 'right'});
+      expect(await page.$('#button-8', button => button.textContent)).toBe('context menu');
+    }));
+    it('should set modifier keys on click', SX(async function(){
+      await page.navigate(PREFIX + '/input/scrollable.html');
+      await page.$('#button-3', button => button.addEventListener('mousedown', e => window.lastEvent = e, true));
+      let modifiers = {'Shift': 'shiftKey', 'Control': 'ctrlKey', 'Alt': 'altKey', 'Meta': 'metaKey'};
+      for (let modifier in modifiers) {
+        await page.keyboard.down(modifier);
+        await page.click('#button-3');
+        if (!(await page.evaluate(mod => window.lastEvent[mod], modifiers[modifier])))
+          fail(modifiers[modifier] + ' should be true');
+        await page.keyboard.up(modifier);
+      }
+      await page.click('#button-3');
+      for (let modifier in modifiers) {
+        if ((await page.evaluate(mod => window.lastEvent[mod], modifiers[modifier])))
+          fail(modifiers[modifier] + ' should be false');
+      }
+    }));
+    function dimensions() {
+      let rect = document.querySelector('textarea').getBoundingClientRect();
+      return {
+        x: rect.left,
+        y: rect.top,
+        width: rect.width,
+        height: rect.height
+      };
+    }
   });
 
   // FIXME: remove this when crbug.com/741689 is fixed.
