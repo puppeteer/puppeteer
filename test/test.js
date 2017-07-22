@@ -371,7 +371,7 @@ describe('Puppeteer', function() {
       // Hang for request to the empty.html
       server.setRoute('/empty.html', (req, res) => { });
       try {
-        await page.navigate(PREFIX + '/empty.html', {maxTime: 59});
+        await page.navigate(PREFIX + '/empty.html', {timeout: 59});
       } catch (e) {
         error = e;
       }

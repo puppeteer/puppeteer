@@ -432,7 +432,7 @@ Page is guaranteed to have a main frame which persists during navigations.
 #### page.navigate(url, options)
 - `url` <[string]> URL to navigate page to
 - `options` <[Object]> Navigation parameters which might have the following properties:
-  - `maxTime` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout`ms.
@@ -443,7 +443,7 @@ Page is guaranteed to have a main frame which persists during navigations.
 The `page.navigate` will throw an error if:
 - there's an SSL error (e.g. in case of self-signed certificates).
 - target URL is invalid.
-- the `maxTime` is exceeded during navigation.
+- the `timeout` is exceeded during navigation.
 
 #### page.pdf(options)
 - `options` <[Object]> Options object which might have the following properties:
