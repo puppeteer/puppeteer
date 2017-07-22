@@ -35,31 +35,31 @@ const EXCLUDE_METHODS = new Set([
  * @param {string} jsFolderPath
  * @return {!Promise<!Array<string>>}
  */
-async function lint(page, docsFolderPath, jsFolderPath) {
+module.exports = async function lint(page, docsFolderPath, jsFolderPath) {
   let mdResult = await mdBuilder(page, docsFolderPath);
   let jsResult = await jsBuilder(jsFolderPath);
   let jsDocumentation = filterJSDocumentation(jsResult.documentation);
   let mdDocumentation = mdResult.documentation;
 
   let jsErrors = jsResult.errors;
-  jsErrors.push(...Documentation.validate(jsDocumentation));
+  jsErrors.push(...checkDuplicates(jsDocumentation));
 
   let mdErrors = mdResult.errors;
-  mdErrors.push(...Documentation.diff(mdDocumentation, jsDocumentation));
-  mdErrors.push(...Documentation.validate(mdDocumentation));
-  mdErrors.push(...lintMarkdown(mdDocumentation));
+  mdErrors.push(...compareDocumentations(mdDocumentation, jsDocumentation));
+  mdErrors.push(...checkDuplicates(mdDocumentation));
+  mdErrors.push(...checkSorting(mdDocumentation));
 
   // Push all errors with proper prefixes
   let errors = jsErrors.map(error => '[JavaScript] ' + error);
   errors.push(...mdErrors.map(error => '[MarkDown] ' + error));
   return errors;
-}
+};
 
 /**
  * @param {!Documentation} doc
  * @return {!Array<string>}
  */
-function lintMarkdown(doc) {
+function checkSorting(doc) {
   const errors = [];
   for (let cls of doc.classesArray) {
     let members = cls.membersArray;
@@ -128,4 +128,173 @@ function filterJSDocumentation(jsDocumentation) {
   return new Documentation(classes);
 }
 
-module.exports = lint;
+/**
+ * @param {!Documentation} doc
+ * @return {!Array<string>}
+ */
+function checkDuplicates(doc) {
+  const errors = [];
+  let classes = new Set();
+  // Report duplicates.
+  for (let cls of doc.classesArray) {
+    if (classes.has(cls.name))
+      errors.push(`Duplicate declaration of class ${cls.name}`);
+    classes.add(cls.name);
+    let members = new Set();
+    for (let member of cls.membersArray) {
+      if (members.has(member.name))
+        errors.push(`Duplicate declaration of method ${cls.name}.${member.name}()`);
+      members.add(member.name);
+      let args = new Set();
+      for (let arg of member.argsArray) {
+        if (args.has(arg.name))
+          errors.push(`Duplicate declaration of argument ${cls.name}.${member.name} "${arg.name}"`);
+        args.add(arg.name);
+      }
+    }
+  }
+  return errors;
+}
+
+/**
+ * @param {!Documentation} actual
+ * @param {!Documentation} expected
+ * @return {!Array<string>}
+ */
+function compareDocumentations(actual, expected) {
+  const errors = [];
+
+  const actualClasses = Array.from(actual.classes.keys()).sort();
+  const expectedClasses = Array.from(expected.classes.keys()).sort();
+  let classesDiff = diff(actualClasses, expectedClasses);
+  for (let className of classesDiff.extra)
+    errors.push(`Non-existing class found: ${className}`);
+  for (let className of classesDiff.missing)
+    errors.push(`Class not found: ${className}`);
+
+  for (let className of classesDiff.equal) {
+    const actualClass = actual.classes.get(className);
+    const expectedClass = expected.classes.get(className);
+    const actualMethods = Array.from(actualClass.methods.keys()).sort();
+    const expectedMethods = Array.from(expectedClass.methods.keys()).sort();
+    const methodDiff = diff(actualMethods, expectedMethods);
+    for (let methodName of methodDiff.extra)
+      errors.push(`Non-existing method found: ${className}.${methodName}()`);
+    for (let methodName of methodDiff.missing)
+      errors.push(`Method not found: ${className}.${methodName}()`);
+
+    for (let methodName of methodDiff.equal) {
+      const actualMethod = actualClass.methods.get(methodName);
+      const expectedMethod = expectedClass.methods.get(methodName);
+      if (actualMethod.hasReturn !== expectedMethod.hasReturn) {
+        if (actualMethod.hasReturn)
+          errors.push(`Method ${className}.${methodName} has unneeded description of return type`);
+        else if (!expectedMethod.async)
+          errors.push(`Method ${className}.${methodName} is missing return type description`);
+        else
+          errors.push(`Async method ${className}.${methodName} should describe return type Promise`);
+      }
+      const actualArgs = Array.from(actualMethod.args.keys());
+      const expectedArgs = Array.from(expectedMethod.args.keys());
+      const argDiff = diff(actualArgs, expectedArgs);
+      if (argDiff.extra.length || argDiff.missing.length) {
+        let text = [`Method ${className}.${methodName}() fails to describe its parameters:`];
+        for (let arg of argDiff.missing)
+          text.push(`- Argument not found: ${arg}`);
+        for (let arg of argDiff.extra)
+          text.push(`- Non-existing argument found: ${arg}`);
+        errors.push(text.join('\n'));
+      }
+    }
+    const actualProperties = Array.from(actualClass.properties.keys()).sort();
+    const expectedProperties = Array.from(expectedClass.properties.keys()).sort();
+    const propertyDiff = diff(actualProperties, expectedProperties);
+    for (let propertyName of propertyDiff.extra)
+      errors.push(`Non-existing property found: ${className}.${propertyName}`);
+    for (let propertyName of propertyDiff.missing)
+      errors.push(`Property not found: ${className}.${propertyName}`);
+
+    const actualEvents = Array.from(actualClass.events.keys()).sort();
+    const expectedEvents = Array.from(expectedClass.events.keys()).sort();
+    const eventsDiff = diff(actualEvents, expectedEvents);
+    for (let eventName of eventsDiff.extra)
+      errors.push(`Non-existing event found in class ${className}: '${eventName}'`);
+    for (let eventName of eventsDiff.missing)
+      errors.push(`Event not found in class ${className}: '${eventName}'`);
+  }
+  return errors;
+}
+
+/**
+ * @param {!Array<string>} actual
+ * @param {!Array<string>} expected
+ * @return {{extra: !Array<string>, missing: !Array<string>, equal: !Array<string>}}
+ */
+function diff(actual, expected) {
+  const N = actual.length;
+  const M = expected.length;
+  if (N === 0 && M === 0)
+    return { extra: [], missing: [], equal: []};
+  if (N === 0)
+    return {extra: [], missing: expected.slice(), equal: []};
+  if (M === 0)
+    return {extra: actual.slice(), missing: [], equal: []};
+  let d = new Array(N);
+  let bt = new Array(N);
+  for (let i = 0; i < N; ++i) {
+    d[i] = new Array(M);
+    bt[i] = new Array(M);
+    for (let j = 0; j < M; ++j) {
+      const top = val(i - 1, j);
+      const left = val(i, j - 1);
+      if (top > left) {
+        d[i][j] = top;
+        bt[i][j] = 'extra';
+      } else {
+        d[i][j] = left;
+        bt[i][j] = 'missing';
+      }
+      let diag = val(i - 1, j - 1);
+      if (actual[i] === expected[j] && d[i][j] < diag + 1) {
+        d[i][j] = diag + 1;
+        bt[i][j] = 'eq';
+      }
+    }
+  }
+  // Backtrack results.
+  let i = N - 1;
+  let j = M - 1;
+  let missing = [];
+  let extra = [];
+  let equal = [];
+  while (i >= 0 && j >= 0) {
+    switch (bt[i][j]) {
+      case 'extra':
+        extra.push(actual[i]);
+        i -= 1;
+        break;
+      case 'missing':
+        missing.push(expected[j]);
+        j -= 1;
+        break;
+      case 'eq':
+        equal.push(actual[i]);
+        i -= 1;
+        j -= 1;
+        break;
+    }
+  }
+  while (i >= 0)
+    extra.push(actual[i--]);
+  while (j >= 0)
+    missing.push(expected[j--]);
+  extra.reverse();
+  missing.reverse();
+  equal.reverse();
+  return {extra, missing, equal};
+
+  function val(i, j) {
+    return i < 0 || j < 0 ? 0 : d[i][j];
+  }
+}
+
