@@ -759,17 +759,17 @@ describe('Puppeteer', function() {
       await page.navigate(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       let keyboard = page.keyboard;
-      await keyboard.type('Hello World!');
+      await page.type('Hello World!');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
       for (let i = 0; i < 'World!'.length; i++)
-        keyboard.press('ArrowLeft');
-      await keyboard.type('inserted ');
+        page.press('ArrowLeft');
+      await page.type('inserted ');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello inserted World!');
       keyboard.down('Shift');
       for (let i = 0; i < 'inserted '.length; i++)
-        keyboard.press('ArrowLeft');
+        page.press('ArrowLeft');
       keyboard.up('Shift');
-      await keyboard.press('Backspace');
+      await page.press('Backspace');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
     }));
     it('should send a character with Page.press', SX(async function() {
@@ -825,13 +825,12 @@ describe('Puppeteer', function() {
     }));
     it('should send proper codes while typing', SX(async function(){
       await page.navigate(PREFIX + '/input/keyboard.html');
-      let keyboard = page.keyboard;
-      await keyboard.type('!');
+      await page.type('!');
       expect(await page.evaluate(() => getResult())).toBe(
           [ 'Keydown: ! 49 []',
             'Keypress: ! 33 33 33 []',
             'Keyup: ! 49 []'].join('\n'));
-      await keyboard.type('^');
+      await page.type('^');
       expect(await page.evaluate(() => getResult())).toBe(
           [ 'Keydown: ^ 54 []',
             'Keypress: ^ 94 94 94 []',
@@ -841,7 +840,7 @@ describe('Puppeteer', function() {
       await page.navigate(PREFIX + '/input/keyboard.html');
       let keyboard = page.keyboard;
       await keyboard.down('Shift');
-      await keyboard.type('~');
+      await page.type('~');
       expect(await page.evaluate(() => getResult())).toBe(
           [ 'Keydown: Shift 16 [Shift]',
             'Keydown: ~ 192 [Shift]', // 192 is ` keyCode
@@ -862,8 +861,7 @@ describe('Puppeteer', function() {
             Promise.resolve().then(() => event.preventDefault());
         }, false);
       });
-      let keyboard = page.keyboard;
-      await keyboard.type('Hello World!');
+      await page.type('Hello World!');
       expect(await page.evaluate(() => textarea.value)).toBe('He Wrd!');
     }));
     it('keyboard.modifiers()', SX(async function(){

@@ -65,9 +65,7 @@
   * [class: Keyboard](#class-keyboard)
     + [keyboard.down(key[, options])](#keyboarddownkey-options)
     + [keyboard.modifiers()](#keyboardmodifiers)
-    + [keyboard.press(key[, options])](#keyboardpresskey-options)
     + [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
-    + [keyboard.type(text)](#keyboardtypetext)
     + [keyboard.up(key)](#keyboardupkey)
   * [class: Dialog](#class-dialog)
     + [dialog.accept([promptText])](#dialogacceptprompttext)
@@ -578,6 +576,10 @@ In case of multiple pages in one browser, each page can have its own viewport si
 - `text` <[string]> A text to type into a focused element.
 - returns: <[Promise]> Promise which resolves when the text has been successfully typed.
 
+Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
+
+To press a special key, use [`page.press`](#pagepresskey-options).
+
 #### page.uploadFile(selector, ...filePaths)
 - `selector` <[string]> A query selector to a file input
 - `...filePaths` <[string]> Sets the value of the file input these paths
@@ -614,21 +616,21 @@ Shortcut for [page.mainFrame().waitForSelector()](#framewaitforselectorselectoro
 
 ### class: Keyboard
 
-Keyboard provides an api for managing a virtual keyboard. The high level api is [`keyboard.type`](#keyboardtypetext), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
+Keyboard provides an api for managing a virtual keyboard. The high level api is [`page.type`](#pageypetext), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
 
 For finer control, you can use [`keyboard.down`](#keyboarddownkey-options), [`keyboard.up`](#keyboardupkey), and [`keyboard.sendCharacter`](#keyboardsendcharacterchar) to manually fire events as if they were generated from a real keyboard.
 
 An example of holding down `Shift` in order to select and delete some text:
 ```js
-page.keyboard.type('Hello World!');
-page.keyboard.press('ArrowLeft');
+page.type('Hello World!');
+page.press('ArrowLeft');
 
 page.keyboard.down('Shift');
-for (let i = 0; i = 0; i < ' World'.length; i++)
-  page.keyboard.press('ArrowLeft');
+for (let i = 0; i < ' World'.length; i++)
+  page.press('ArrowLeft');
 page.keyboard.up('Shift');
 
-page.keyboard.press('Backspace');
+page.press('Backspace');
 // Result text will end up saying 'Hello!'
 ```
 
@@ -651,15 +653,7 @@ If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key
   - `Control` <[boolean]>
   - `Alt` <[boolean]>
 
- Returns which modifier keys are currently active. Use [`keyboard.down`](#keyboarddownkey) to activate a modifier key.
-
-#### keyboard.press(key[, options])
-- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
-- `options` <[Object]>
-  - `text` <[string]> If specified, generates an input event with this text.
-- returns: <[Promise]>
-
-Shortcut for [`keyboard.down`](#keyboarddownkey) and [`keyboard.up`](#keyboardupkey).
+Returns which modifier keys are currently active. Use [`keyboard.down`](#keyboarddownkey) to activate a modifier key.
 
 #### keyboard.sendCharacter(char)
 - `char` <[string]> Character to send into the page.
@@ -669,17 +663,6 @@ Dispatches a `keypress` and `input` event. This does not send a `keydown` or `ke
 
 ```js
 page.keyboard.sendCharacter('嗨');
-```
-
-#### keyboard.type(text)
-- `text` <[string]> Text to type into the page
-- returns: <[Promise]>
-
-Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
-This is the suggested way to type printable characters.
-
-```js
-page.keyboard.type('Hello World!');
 ```
 
 #### keyboard.up(key)
