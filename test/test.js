@@ -364,7 +364,7 @@ describe('Puppeteer', function() {
       } catch (e) {
         error = e;
       }
-      expect(error.message).toContain('SSL Certiciate error');
+      expect(error.message).toContain('SSL Certificate error');
     }));
     it('should fail when exceeding maximum navigation timeout', SX(async function() {
       let error = null;
@@ -491,6 +491,15 @@ describe('Puppeteer', function() {
       const response = await navigationPromise;
       // Expect navigation to succeed.
       expect(response.ok).toBe(true);
+    }));
+    it('should not leak listeners durint navigation', SX(async function() {
+      let warning = null;
+      const warningHandler = w => warning = w;
+      process.on('warning', warningHandler);
+      for (let i = 0; i < 20; ++i)
+        await page.navigate(EMPTY_PAGE);
+      process.removeListener('warning', warningHandler);
+      expect(warning).toBe(null);
     }));
   });
 
