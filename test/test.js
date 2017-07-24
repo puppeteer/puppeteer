@@ -284,7 +284,7 @@ describe('Puppeteer', function() {
       let error = null;
       await page.waitForSelector('div', {timeout: 10}).catch(e => error = e);
       expect(error).toBeTruthy();
-      expect(error.message).toContain('waitForSelector failed: timeout');
+      expect(error.message).toContain('waiting failed: timeout');
     }));
   });
 

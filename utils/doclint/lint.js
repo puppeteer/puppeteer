@@ -3,7 +3,6 @@ const mdBuilder = require('./MDBuilder');
 const Documentation = require('./Documentation');
 
 const EXCLUDE_CLASSES = new Set([
-  'AwaitedElement',
   'Connection',
   'EmulationManager',
   'FrameManager',
@@ -12,6 +11,7 @@ const EXCLUDE_CLASSES = new Set([
   'NetworkManager',
   'ProxyStream',
   'TaskQueue',
+  'WaitTask',
 ]);
 
 const EXCLUDE_METHODS = new Set([
