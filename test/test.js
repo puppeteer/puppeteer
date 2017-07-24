@@ -911,6 +911,16 @@ describe('Puppeteer', function() {
       await page.click('#button-80');
       expect(await page.$('#button-80', button => button.textContent)).toBe('clicked');
     }));
+    it('should click a partially obscured button', SX(async function() {
+      await page.navigate(PREFIX + '/input/button.html');
+      await page.$('button', button => {
+        button.textContent = 'Some really long text that will go offscreen';
+        button.style.position = 'absolute';
+        button.style.left = '368px';
+      });
+      await page.click('button');
+      expect(await page.evaluate(() => window.result)).toBe('Clicked');
+    }));
     it('should select the text with mouse', SX(async function(){
       await page.navigate(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
