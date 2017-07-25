@@ -466,25 +466,27 @@ class WebPage {
   _sendMouseEvent(eventType, x, y, button, modifier) {
     if (modifier)
       await(this._page.keyboard.down(modifier));
-    await(this._page.mouse.move(x, y));
     switch (eventType) {
       case 'mousemove':
+        await(this._page.mouse.move(x, y));
         break;
       case 'mousedown':
+        await(this._page.mouse.move(x, y));
         await(this._page.mouse.down({button}));
         break;
       case 'mouseup':
+        await(this._page.mouse.move(x, y));
         await(this._page.mouse.up({button}));
         break;
       case 'doubleclick':
-        await(this._page.mouse.press({button}));
-        await(this._page.mouse.press({button, clickCount: 2}));
+        await(this._page.mouse.click(x, y, {button}));
+        await(this._page.mouse.click(x, y, {button, clickCount: 2}));
         break;
       case 'click':
-        await(this._page.mouse.press({button}));
+        await(this._page.mouse.click(x, y, {button}));
         break;
       case 'contextmenu':
-        await(this._page.mouse.press({button: 'right'}));
+        await(this._page.mouse.click(x, y, {button: 'right'}));
         break;
     }
     if (modifier)
