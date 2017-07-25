@@ -9,7 +9,6 @@
   * [class: Browser](#class-browser)
     + [new Browser([options])](#new-browseroptions)
     + [browser.close()](#browserclose)
-    + [browser.closePage(page)](#browserclosepagepage)
     + [browser.newPage()](#browsernewpage)
     + [browser.stderr](#browserstderr)
     + [browser.stdout](#browserstdout)
@@ -196,12 +195,6 @@ browser.newPage().then(async page => {
 #### browser.close()
 
 Closes browser with all the pages (if any were opened). The browser object itself is considered to be disposed and could not be used anymore.
-
-#### browser.closePage(page)
-- `page` <[Page]> A page to be closed.
-- returns: <[Promise]> Promise which resolves when the page is closed.
-
-This is an alias for the `page.close()` method.
 
 #### browser.newPage()
 - returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.
