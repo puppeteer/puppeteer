@@ -87,7 +87,6 @@
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
     + [frame.hover(selector)](#framehoverselector)
     + [frame.isDetached()](#frameisdetached)
-    + [frame.isMainFrame()](#frameismainframe)
     + [frame.name()](#framename)
     + [frame.parentFrame()](#frameparentframe)
     + [frame.url()](#frameurl)
@@ -836,11 +835,6 @@ browser.newPage().then(async page =>
 - returns: <[boolean]>
 
 Returns `true` if the frame has being detached, or `false` otherwise.
-
-#### frame.isMainFrame()
-- returns: <[boolean]>
-
-Returns `true` is the frame is page's main frame, or `false` otherwise.
 
 #### frame.name()
 - returns: <[string]>
