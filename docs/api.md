@@ -63,7 +63,6 @@
     + [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [class: Keyboard](#class-keyboard)
     + [keyboard.down(key[, options])](#keyboarddownkey-options)
-    + [keyboard.modifiers()](#keyboardmodifiers)
     + [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
     + [keyboard.up(key)](#keyboardupkey)
   * [class: Mouse](#class-mouse)
@@ -661,15 +660,6 @@ Dispatches a `keydown` event.
 This will not send input events unless `text` is specified.
 
 If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key presses will be sent with that modifier active. To release the modifier key, use [`keyboard.up`](#keyboardupkey).
-
-#### keyboard.modifiers()
-- returns: <[Object]>
-  - `Shift` <[boolean]>
-  - `Meta` <[boolean]>
-  - `Control` <[boolean]>
-  - `Alt` <[boolean]>
-
-Returns which modifier keys are currently active. Use [`keyboard.down`](#keyboarddownkey) to activate a modifier key.
 
 #### keyboard.sendCharacter(char)
 - `char` <[string]> Character to send into the page.

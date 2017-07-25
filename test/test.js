@@ -888,16 +888,14 @@ describe('Puppeteer', function() {
     }));
     it('keyboard.modifiers()', SX(async function(){
       let keyboard = page.keyboard;
-      expect(keyboard.modifiers().Shift).toBe(false);
-      expect(keyboard.modifiers().Meta).toBe(false);
-      expect(keyboard.modifiers().Alt).toBe(false);
-      expect(keyboard.modifiers().Control).toBe(false);
+      expect(keyboard._modifiers).toBe(0);
       keyboard.down('Shift');
-      expect(keyboard.modifiers().Shift).toBe(true);
-      expect(keyboard.modifiers().Alt).toBe(false);
+      expect(keyboard._modifiers).toBe(8);
+      keyboard.down('Alt');
+      expect(keyboard._modifiers).toBe(9);
       keyboard.up('Shift');
-      expect(keyboard.modifiers().Shift).toBe(false);
-      expect(keyboard.modifiers().Alt).toBe(false);
+      keyboard.up('Alt');
+      expect(keyboard._modifiers).toBe(0);
     }));
     it('should resize the textarea', SX(async function(){
       await page.navigate(PREFIX + '/input/textarea.html');
