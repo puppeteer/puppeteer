@@ -57,7 +57,6 @@
     + [page.type(text)](#pagetypetext)
     + [page.uploadFile(selector, ...filePaths)](#pageuploadfileselector-filepaths)
     + [page.url()](#pageurl)
-    + [page.userAgent()](#pageuseragent)
     + [page.viewport()](#pageviewport)
     + [page.waitFor(target[, options])](#pagewaitfortarget-options)
     + [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
@@ -600,9 +599,6 @@ To press a special key, use [`page.press`](#pagepresskey-options).
 - returns: <[string]> Current page url.
 
 This is a shortcut for [page.mainFrame().url()](#frameurl)
-
-#### page.userAgent()
-- returns: <[string]> Returns user agent.
 
 #### page.viewport()
 - returns: <[Object]>  An object with the save fields as described in [page.setViewport](#pagesetviewportviewport)

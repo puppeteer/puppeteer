@@ -988,7 +988,7 @@ describe('Puppeteer', function() {
 
   describe('Page.setUserAgent', function() {
     it('should work', SX(async function() {
-      expect(page.userAgent()).toContain('Mozilla');
+      expect(await page.evaluate(() => navigator.userAgent)).toContain('Mozilla');
       page.setUserAgent('foobar');
       page.navigate(EMPTY_PAGE);
       let request = await server.waitForRequest('/empty.html');
