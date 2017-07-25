@@ -597,7 +597,7 @@ class WebPageSettings {
    * @return {string}
    */
   get userAgent() {
-    return this._page.userAgent();
+    return await(this._page.evaluate(() => window.navigator.userAgent));
   }
 }
 

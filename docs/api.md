@@ -9,7 +9,6 @@
   * [class: Browser](#class-browser)
     + [new Browser([options])](#new-browseroptions)
     + [browser.close()](#browserclose)
-    + [browser.closePage(page)](#browserclosepagepage)
     + [browser.newPage()](#browsernewpage)
     + [browser.stderr](#browserstderr)
     + [browser.stdout](#browserstdout)
@@ -58,9 +57,8 @@
     + [page.type(text)](#pagetypetext)
     + [page.uploadFile(selector, ...filePaths)](#pageuploadfileselector-filepaths)
     + [page.url()](#pageurl)
-    + [page.userAgent()](#pageuseragent)
     + [page.viewport()](#pageviewport)
-    + [page.waitFor(target[, options])](#pagewaitfortarget-options)
+    + [page.waitFor(selectorOrTimeout[, options])](#pagewaitforselectorortimeout-options)
     + [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
     + [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [class: Keyboard](#class-keyboard)
@@ -93,7 +91,7 @@
     + [frame.parentFrame()](#frameparentframe)
     + [frame.title()](#frametitle)
     + [frame.url()](#frameurl)
-    + [frame.waitFor(target[, options])](#framewaitfortarget-options)
+    + [frame.waitFor(selectorOrTimeout[, options])](#framewaitforselectorortimeout-options)
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
   * [class: Request](#class-request)
     + [request.headers](#requestheaders)
@@ -200,12 +198,6 @@ browser.newPage().then(async page => {
 #### browser.close()
 
 Closes browser with all the pages (if any were opened). The browser object itself is considered to be disposed and could not be used anymore.
-
-#### browser.closePage(page)
-- `page` <[Page]> A page to be closed.
-- returns: <[Promise]> Promise which resolves when the page is closed.
-
-This is an alias for the `page.close()` method.
 
 #### browser.newPage()
 - returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.
@@ -612,18 +604,20 @@ To press a special key, use [`page.press`](#pagepresskey-options).
 
 This is a shortcut for [page.mainFrame().url()](#frameurl)
 
-#### page.userAgent()
-- returns: <[string]> Returns user agent.
-
 #### page.viewport()
 - returns: <[Object]>  An object with the save fields as described in [page.setViewport](#pagesetviewportviewport)
 
-#### page.waitFor(target[, options])
-- `target` <[string]|[number]> A target to wait for.
-- `options` <[Object]> Optional waiting parameters.
+#### page.waitFor(selectorOrTimeout[, options])
+- `selectorOrTimeout` <[string]|[number]> A selector or timeout to wait for
+- `options` <[Object]> Optional waiting parameters
 - returns: <[Promise]>
 
-Shortcut for [page.mainFrame().waitFor()](#framewaitfortargetoptions).
+This method behaves differently with respect to the type of the first parameter:
+- if `selectorOrTimeout` is a `string`, than the first argument is treated as a selector to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselectoroptions)
+- if `selectorOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
+- otherwise, an exception is thrown
+
+The method is a shortcut for [page.mainFrame().waitFor()](#framewaitfortargetoptions).
 
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters, same as in [page.navigate](#pagenavigateurl-options).
@@ -869,14 +863,14 @@ Returns frame's name as specified in the tag.
 
 Returns frame's url.
 
-#### frame.waitFor(target[, options])
-- `target` <[string]|[number]> A target to wait for
+#### frame.waitFor(selectorOrTimeout[, options])
+- `selectorOrTimeout` <[string]|[number]> A selector or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
 - returns: <[Promise]>
 
-This method behaves differently wrt the type of the first parameter:
-- if `target` is a `string`, than target is treated as a selector to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselectoroptions)
-- if `target` is a `number`, than target is treated as timeout in milliseconds and the method returns a promise which resolves after the timeout
+This method behaves differently with respect to the type of the first parameter:
+- if `selectorOrTimeout` is a `string`, than the first argument is treated as a selector to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselectoroptions)
+- if `selectorOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
 #### frame.waitForSelector(selector[, options])
