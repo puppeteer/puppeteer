@@ -986,13 +986,6 @@ describe('Puppeteer', function() {
     }
   });
 
-  // FIXME: remove this when crbug.com/741689 is fixed.
-  it('RESTART BROWSER crbug.com/741689', SX(async function() {
-    page.close();
-    browser = new Browser({headless, args: ['--no-sandbox']});
-    page = await browser.newPage();
-  }));
-
   describe('Page.setUserAgent', function() {
     it('should work', SX(async function() {
       expect(page.userAgent()).toContain('Mozilla');
