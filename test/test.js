@@ -166,6 +166,13 @@ describe('Puppeteer', function() {
       expect(await frame1.evaluate(() => window.FOO)).toBe('foo');
       expect(await frame2.evaluate(() => window.FOO)).toBe('bar');
     }));
+    it('should execute after cross-site navigation', SX(async function() {
+      await page.navigate(EMPTY_PAGE);
+      let mainFrame = page.mainFrame();
+      expect(await mainFrame.evaluate(() => window.location.href)).toContain('localhost');
+      await page.navigate('http://127.0.0.1:' + PORT + '/empty.html');
+      expect(await mainFrame.evaluate(() => window.location.href)).toContain('127');
+    }));
   });
 
   describe('Frame.waitForSelector', function() {
