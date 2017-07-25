@@ -66,9 +66,9 @@
     + [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
     + [keyboard.up(key)](#keyboardupkey)
   * [class: Mouse](#class-mouse)
+    + [mouse.click(x, y, [options])](#mouseclickx-y-options)
     + [mouse.down([options])](#mousedownoptions)
     + [mouse.move(x, y)](#mousemovex-y)
-    + [mouse.press([options])](#mousepressoptions)
     + [mouse.up([options])](#mouseupoptions)
   * [class: Dialog](#class-dialog)
     + [dialog.accept([promptText])](#dialogacceptprompttext)
@@ -679,6 +679,16 @@ Dispatches a `keyup` event.
 
 ### class: Mouse
 
+#### mouse.click(x, y, [options])
+- `x` <[number]>
+- `y` <[number]>
+- `options` <[Object]>
+  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
+  - `clickCount` <[number]> defaults to 1
+- returns: <[Promise]>
+
+Shortcut for [`mouse.move`](#mousemovexy), [`mouse.down`](#mousedownkey) and [`mouse.up`](#mouseupkey).
+
 #### mouse.down([options])
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
@@ -693,14 +703,6 @@ Dispatches a `mousedown` event.
 - returns: <[Promise]>
 
 Dispatches a `mousemove` event.
-
-#### mouse.press([options])
-- `options` <[Object]>
-  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
-  - `clickCount` <[number]> defaults to 1
-- returns: <[Promise]>
-
-Shortcut for [`mouse.down`](#mousedownkey) and [`mouse.up`](#mouseupkey).
 
 #### mouse.up([options])
 - `options` <[Object]>
