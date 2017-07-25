@@ -144,6 +144,18 @@ describe('Puppeteer', function() {
       let result = await page.evaluate(() => window);
       expect(result).toBe('Window');
     }));
+    it('should accept a string', SX(async function() {
+      let result = await page.evaluate('1 + 2');
+      expect(result).toBe(3);
+    }));
+    it('should accept a string with semi colons', SX(async function() {
+      let result = await page.evaluate('1 + 5;');
+      expect(result).toBe(6);
+    }));
+    it('should accept a string with comments', SX(async function() {
+      let result = await page.evaluate('2 + 5;\n// do some math!');
+      expect(result).toBe(7);
+    }));
   });
 
   describe('Page.injectFile', function() {

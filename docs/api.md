@@ -354,14 +354,14 @@ Adds a `<script></script>` tag to the page with the desired url. Alternatively, 
 - returns: <[Promise]> Returns promise which resolves when page gets closed.
 
 #### page.evaluate(pageFunction, ...args)
-- `pageFunction` <[function]> Function to be evaluated in browser context
+- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `...args` <...[string]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
 
 This is a shortcut for [page.mainFrame().evaluate()](#frameevaluatefun-args) method.
 
 #### page.evaluateOnNewDocument(pageFunction, ...args)
-- `pageFunction` <[function]> Function to be evaluated in browser context
+- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function
 
@@ -825,7 +825,7 @@ Adds a `<script></script>` tag to the frame with the desired url. Alternatively,
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. Promise gets rejected if there's no element matching `selector`.
 
 #### frame.evaluate(pageFunction, ...args)
-- `pageFunction` <[function]> Function to be evaluated in browser context
+- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `...args` <...[string]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
 
