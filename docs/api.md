@@ -32,7 +32,7 @@
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
     + [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
-    + [page.evaluateOnInitialized(pageFunction, ...args)](#pageevaluateoninitializedpagefunction-args)
+    + [page.evaluateOnNewDocument(pageFunction, ...args)](#pageevaluateonnewdocumentpagefunction-args)
     + [page.focus(selector)](#pagefocusselector)
     + [page.frames()](#pageframes)
     + [page.goBack(options)](#pagegobackoptions)
@@ -374,12 +374,16 @@ Adds a `<script></script>` tag to the page with the desired url. Alternatively, 
 
 This is a shortcut for [page.mainFrame().evaluate()](#frameevaluatefun-args) method.
 
-#### page.evaluateOnInitialized(pageFunction, ...args)
+#### page.evaluateOnNewDocument(pageFunction, ...args)
 - `pageFunction` <[function]> Function to be evaluated in browser context
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function
 
-`page.evaluateOnInitialized` adds a function which would run on every page navigation before any page's javascript. This is useful to amend javascript environment, e.g. to seed [Math.random](https://github.com/GoogleChrome/puppeteer/blob/master/examples/unrandomize.js)
+Adds a function which would be invoked in one of the following scenarios:
+- whenever the page gets navigated
+- whenever the child frame gets attached or navigated. In this case, the function gets invoked in the context of the newly attached frame
+
+The function is invoked after the document was created but before any of its scripts were run. This is useful to amend javascript environment, e.g. to seed [Math.random](https://github.com/GoogleChrome/puppeteer/blob/master/examples/unrandomize.js)
 
 #### page.focus(selector)
 - `selector` <[string]> A query selector of element to focus. If there are multiple elements satisfying the selector, the first will be focused.

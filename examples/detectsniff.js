@@ -26,7 +26,7 @@ console.log('Checking ' + address + '...');
 
 var browser = new Browser();
 browser.newPage().then(async page => {
-    await page.evaluateOnInitialized(function() {
+    await page.evaluateOnNewDocument(function() {
         (function () {
             var userAgent = window.navigator.userAgent,
                 platform = window.navigator.platform;

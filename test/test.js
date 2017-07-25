@@ -238,7 +238,7 @@ describe('Puppeteer', function() {
     }));
 
     it('should throw if evaluation failed', SX(async function() {
-      await page.evaluateOnInitialized(function() {
+      await page.evaluateOnNewDocument(function() {
         document.querySelector = null;
       });
       await page.navigate(EMPTY_PAGE);
@@ -1160,9 +1160,9 @@ describe('Puppeteer', function() {
     }));
   });
 
-  describe('Page.evaluateOnInitialized', function() {
+  describe('Page.evaluateOnNewDocument', function() {
     it('should evaluate before anything else on the page', SX(async function() {
-      await page.evaluateOnInitialized(function(){
+      await page.evaluateOnNewDocument(function(){
         window.injected = 123;
       });
       await page.navigate(PREFIX + '/tamperable.html');

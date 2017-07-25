@@ -18,7 +18,7 @@ var Browser = require('../lib/Browser');
 var browser = new Browser();
 
 browser.newPage().then(async page => {
-    await page.evaluateOnInitialized(function() {
+    await page.evaluateOnNewDocument(function() {
         Math.random = () => 42 / 100;
     });
     var result = await page.navigate('http://ariya.github.com/js/random/');

@@ -536,7 +536,7 @@ class WebPage {
    */
   evaluate(fun, ...args) {
     if (this._deferEvaluate)
-      return await(this._page.evaluateOnInitialized(fun, ...args));
+      return await(this._page.evaluateOnNewDocument(fun, ...args));
     return await(this._currentFrame.evaluate(fun, ...args));
   }
 
