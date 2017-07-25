@@ -107,7 +107,6 @@
     + [interceptedRequest.abort()](#interceptedrequestabort)
     + [interceptedRequest.continue()](#interceptedrequestcontinue)
     + [interceptedRequest.headers](#interceptedrequestheaders)
-    + [interceptedRequest.isHandled()](#interceptedrequestishandled)
     + [interceptedRequest.method](#interceptedrequestmethod)
     + [interceptedRequest.postData](#interceptedrequestpostdata)
     + [interceptedRequest.url](#interceptedrequesturl)
@@ -968,9 +967,6 @@ Contains the [Headers] object associated with the request.
 
 Headers could be mutated with the `headers.append`, `headers.set` and other
 methods. Must not be changed in response to an authChallenge.
-
-#### interceptedRequest.isHandled()
-- returns: <[boolean]> returns `true` if either `abort` or `continue` was called on the object. Otherwise, returns `false`.
 
 #### interceptedRequest.method
 - <[string]>
