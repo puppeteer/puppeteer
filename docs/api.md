@@ -81,13 +81,17 @@
   * [class: Frame](#class-frame)
     + [frame.$(selector, pageFunction, ...args)](#frameselector-pagefunction-args)
     + [frame.$$(selector, pageFunction, ...args)](#frameselector-pagefunction-args)
+    + [frame.addScriptTag(url)](#frameaddscripttagurl)
     + [frame.childFrames()](#framechildframes)
     + [frame.click(selector[, options])](#frameclickselector-options)
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
+    + [frame.focus(selector)](#framefocusselector)
     + [frame.hover(selector)](#framehoverselector)
+    + [frame.injectFile(filePath)](#frameinjectfilefilepath)
     + [frame.isDetached()](#frameisdetached)
     + [frame.name()](#framename)
     + [frame.parentFrame()](#frameparentframe)
+    + [frame.title()](#frametitle)
     + [frame.url()](#frameurl)
     + [frame.waitFor(target[, options])](#framewaitfortarget-options)
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
@@ -355,7 +359,7 @@ Shortcut for [page.mainFrame().$$(selector, pageFunction, ...args)](#pageselecto
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
 
-Adds a `<script></script>` tag to the page with the desired url. Alternatively, javascript could be injected to the page via `page.injectFile` method.
+Adds a `<script></script>` tag to the page with the desired url. Alternatively, javascript could be injected to the page via [`page.injectFile`](#pageinjectfilefilepath) method.
 
 #### page.click(selector[, options])
 - `selector` <[string]> A query selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
@@ -797,6 +801,12 @@ browser.newPage().then(async page => {
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Array]<[Object]>>> Promise which resolves to array of function return values.
 
+#### frame.addScriptTag(url)
+- `url` <[string]> Url of a script to be added
+- returns: <[Promise]> Promise which resolves as the script gets added and loads.
+
+Adds a `<script></script>` tag to the frame with the desired url. Alternatively, javascript could be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
+
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
 
@@ -826,9 +836,17 @@ browser.newPage().then(async page =>
 });
 ```
 
+#### frame.focus(selector)
+- `selector` <[string]> A query selector of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
+- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. Promise gets rejected if there's no element matching `selector`.
+
 #### frame.hover(selector)
 - `selector` <[string]> A query selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
+
+#### frame.injectFile(filePath)
+- `filePath` <[string]> Path to the javascript file to be injected into frame.
+- returns: <[Promise]> Promise which resolves when file gets successfully evaluated in frame.
 
 #### frame.isDetached()
 - returns: <[boolean]>
@@ -842,6 +860,9 @@ Returns frame's name as specified in the tag.
 
 #### frame.parentFrame()
 - returns: <[Frame]> Returns parent frame, if any. Detached frames and main frames return `null`.
+
+#### frame.title()
+- returns: <[Promise]<[string]>> Returns page's title.
 
 #### frame.url()
 - returns: <[string]>
