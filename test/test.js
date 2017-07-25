@@ -1003,9 +1003,7 @@ describe('Puppeteer', function() {
   });
   describe('Page.setHTTPHeaders', function() {
     it('should work', SX(async function() {
-      expect(page.httpHeaders()).toEqual({});
       page.setHTTPHeaders({'foo': 'bar'});
-      expect(page.httpHeaders()).toEqual({'foo': 'bar'});
       page.navigate(EMPTY_PAGE);
       let request = await server.waitForRequest('/empty.html');
       expect(request.headers['foo']).toBe('bar');

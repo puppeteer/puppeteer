@@ -38,7 +38,6 @@
     + [page.goBack(options)](#pagegobackoptions)
     + [page.goForward(options)](#pagegoforwardoptions)
     + [page.hover(selector)](#pagehoverselector)
-    + [page.httpHeaders()](#pagehttpheaders)
     + [page.injectFile(filePath)](#pageinjectfilefilepath)
     + [page.keyboard](#pagekeyboard)
     + [page.mainFrame()](#pagemainframe)
@@ -407,9 +406,6 @@ Navigate to the next page in history.
 #### page.hover(selector)
 - `selector` <[string]> A query selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
-
-#### page.httpHeaders()
-- returns: <[Object]> Key-value set of additional http headers which will be sent with every request.
 
 #### page.injectFile(filePath)
 - `filePath` <[string]> Path to the javascript file to be injected into page.

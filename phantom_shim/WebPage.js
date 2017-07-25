@@ -48,6 +48,7 @@ class WebPage {
     this.onResourceReceived = null;
     this._onInitialized = undefined;
     this._deferEvaluate = false;
+    this._customHeaders = {};
 
     this._currentFrame = this._page.mainFrame();
 
@@ -275,13 +276,14 @@ class WebPage {
    * @return {!Object}
    */
   get customHeaders() {
-    return this._page.httpHeaders();
+    return this._customHeaders;
   }
 
   /**
    * @param {!Object} value
    */
   set customHeaders(value) {
+    this._customHeaders = value;
     await(this._page.setHTTPHeaders(value));
   }
 
