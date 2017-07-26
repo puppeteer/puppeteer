@@ -502,7 +502,7 @@ The `format` options are:
   - `text` <[string]> If specified, generates an input event with this text.
 - returns: <[Promise]>
 
-Shortcut for [`keyboard.down`](#keyboarddownkey) and [`keyboard.up`](#keyboardupkey).
+Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#keyboardupkey).
 
 #### page.reload(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
@@ -632,7 +632,7 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - returns: <[Promise]>
 
 This method behaves differently with respect to the type of the first parameter:
-- if `selectorOrTimeout` is a `string`, than the first argument is treated as a selector to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselectoroptions)
+- if `selectorOrTimeout` is a `string`, than the first argument is treated as a selector to wait for and the method is a shortcut for [frame.waitForSelector](#pagewaitforselectorselector-options)
 - if `selectorOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
