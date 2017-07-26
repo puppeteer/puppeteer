@@ -306,7 +306,7 @@ describe('Puppeteer', function() {
       expect(found).toBe(true);
     }));
     it('should timeout', SX(async function() {
-      startTime = Date.now();
+      let startTime = Date.now();
       const timeout = 42;
       await page.waitFor(timeout);
       expect(Date.now() - startTime).not.toBeLessThan(timeout / 2);
