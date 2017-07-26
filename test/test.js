@@ -17,6 +17,9 @@
 let fs = require('fs');
 let rm = require('rimraf').sync;
 let path = require('path');
+let helper = require('../lib/helper');
+if (process.env.COVERAGE)
+  helper.toggleCoverage(true);
 let Browser = require('../lib/Browser');
 let SimpleServer = require('./server/SimpleServer');
 let GoldenUtils = require('./golden-utils');
@@ -68,6 +71,13 @@ describe('Puppeteer', function() {
       httpsServer.stop(),
     ]);
     browser.close();
+    if (process.env.COVERAGE) {
+      let methods = Array.from(helper.methodsNotRun());
+      if (methods.length)
+        console.log('\n\x1b[33mThese public methods were not run:\x1b[0m\n' + methods.map(x => ' ' + x).join('\n'));
+      else
+        console.log('All public methods covered!');
+    }
   }));
 
   beforeEach(SX(async function() {

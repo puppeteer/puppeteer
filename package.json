@@ -14,7 +14,8 @@
     "test": "npm run lint --silent && npm run unit && npm run test-phantom && npm run test-doclint",
     "install": "node install.js",
     "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .) && npm run doc",
-    "doc": "node utils/doclint/cli.js"
+    "doc": "node utils/doclint/cli.js",
+    "coverage": "COVERAGE=true npm run unit"
   },
   "author": "The Chromium Authors",
   "license": "SEE LICENSE IN LICENSE",
