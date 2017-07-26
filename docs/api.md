@@ -632,11 +632,11 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - returns: <[Promise]>
 
 This method behaves differently with respect to the type of the first parameter:
-- if `selectorOrTimeout` is a `string`, than the first argument is treated as a selector to wait for and the method is a shortcut for [frame.waitForSelector](#pagewaitforselectorselector-options)
+- if `selectorOrTimeout` is a `string`, than the first argument is treated as a selector to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
 - if `selectorOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
-The method is a shortcut for [page.mainFrame().waitFor()](#framewaitfortargetoptions).
+The method is a shortcut for [page.mainFrame().waitFor()](#framewaitforselectorortimeout-options).
 
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
