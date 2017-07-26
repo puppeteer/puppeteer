@@ -388,14 +388,26 @@ The function is invoked after the document was created but before any of its scr
 - returns: <[Array]<[Frame]>> An array of all frames attached to the page.
 
 #### page.goBack(options)
-- `options` <[Object]> Navigation parameters, same as in [page.navigate](#pagenavigateurl-options).
+- `options` <[Object]> Navigation parameters which might have the following properties:
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
+  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
+    - `load` - consider navigation to be finished when the `load` event is fired.
+    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout`ms.
+  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
+  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
 can not go back, resolves to null.
 
 Navigate to the previous page in history.
 
 #### page.goForward(options)
-- `options` <[Object]> Navigation parameters, same as in [page.navigate](#pagenavigateurl-options).
+- `options` <[Object]> Navigation parameters which might have the following properties:
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
+  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
+    - `load` - consider navigation to be finished when the `load` event is fired.
+    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout`ms.
+  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
+  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
 can not go back, resolves to null.
 
@@ -493,7 +505,13 @@ The `format` options are:
 Shortcut for [`keyboard.down`](#keyboarddownkey) and [`keyboard.up`](#keyboardupkey).
 
 #### page.reload(options)
-- `options` <[Object]> Navigation parameters, same as in [page.navigate](#pagenavigateurl-options).
+- `options` <[Object]> Navigation parameters which might have the following properties:
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
+  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
+    - `load` - consider navigation to be finished when the `load` event is fired.
+    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout`ms.
+  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
+  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.screenshot([options])
@@ -609,6 +627,8 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 #### page.waitFor(selectorOrTimeout[, options])
 - `selectorOrTimeout` <[string]|[number]> A selector or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
+  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]>
 
 This method behaves differently with respect to the type of the first parameter:
@@ -619,12 +639,20 @@ This method behaves differently with respect to the type of the first parameter:
 The method is a shortcut for [page.mainFrame().waitFor()](#framewaitfortargetoptions).
 
 #### page.waitForNavigation(options)
-- `options` <[Object]> Navigation parameters, same as in [page.navigate](#pagenavigateurl-options).
+- `options` <[Object]> Navigation parameters which might have the following properties:
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
+  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
+    - `load` - consider navigation to be finished when the `load` event is fired.
+    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout`ms.
+  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
+  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.waitForSelector(selector[, options])
 - `selector` <[string]> A query selector to wait for on the page.
-- `options` <[Object]> Optional waiting parameters. Same as options for the [frame.waitFor](#framewaitforselector)
+- `options` <[Object]> Optional waiting parameters
+  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]> Promise which resolves when the element matching `selector` appears in the page.
 
 Shortcut for [page.mainFrame().waitForSelector()](#framewaitforselectorselectoroptions).
@@ -858,6 +886,8 @@ Returns frame's url.
 #### frame.waitFor(selectorOrTimeout[, options])
 - `selectorOrTimeout` <[string]|[number]> A selector or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
+  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]>
 
 This method behaves differently with respect to the type of the first parameter:
