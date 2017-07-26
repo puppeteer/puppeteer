@@ -537,6 +537,8 @@ class WebPage {
    * @param {!Array<!Object>} args
    */
   evaluate(fun, ...args) {
+    if (typeof fun === 'string')
+      fun = `(${fun})()`;
     if (this._deferEvaluate)
       return await(this._page.evaluateOnNewDocument(fun, ...args));
     return await(this._currentFrame.evaluate(fun, ...args));
