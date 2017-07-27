@@ -1071,10 +1071,8 @@ describe('Puppeteer', function() {
       page.on('request', r => request = r);
       await page.evaluate(() => fetch('./post', { method: 'POST', body: JSON.stringify({foo: 'bar'})}));
       expect(request).toBeTruthy();
-      expect(request.bodyUsed).toBe(false);
       expect(await request.text()).toBe('{"foo":"bar"}');
       expect(await request.json()).toEqual({foo: 'bar'});
-      expect(request.bodyUsed).toBe(true);
     }));
   });
   describe('Response implements Body', function() {
@@ -1083,10 +1081,8 @@ describe('Puppeteer', function() {
       page.on('response', r => response = r);
       await page.navigate(PREFIX + '/simple.json');
       expect(response).toBeTruthy();
-      expect(response.bodyUsed).toBe(false);
       expect(await response.text()).toBe('{"foo": "bar"}\n');
       expect(await response.json()).toEqual({foo: 'bar'});
-      expect(response.bodyUsed).toBe(true);
     }));
   });
   describe('Network Events', function() {

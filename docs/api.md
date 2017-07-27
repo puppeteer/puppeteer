@@ -112,8 +112,6 @@
     + [interceptedRequest.postData](#interceptedrequestpostdata)
     + [interceptedRequest.url](#interceptedrequesturl)
   * [class: Body](#class-body)
-    + [body.arrayBuffer()](#bodyarraybuffer)
-    + [body.bodyUsed](#bodybodyused)
     + [body.buffer()](#bodybuffer)
     + [body.json()](#bodyjson)
     + [body.text()](#bodytext)
@@ -1031,12 +1029,6 @@ Contains `POST` data for `POST` requests.
 If changed, the request url will be modified in a way that's not observable by page. Must not be changed in response to an authChallenge.
 
 ### class: Body
-#### body.arrayBuffer()
-- returns: <Promise<[ArrayBuffer]>>
-
-
-#### body.bodyUsed
-- returns: <[boolean]>
 
 #### body.buffer()
 - returns: <Promise<[Buffer]>>
@@ -1048,7 +1040,6 @@ If changed, the request url will be modified in a way that's not observable by p
 - returns: <Promise<[text]>>
 
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
-[ArrayBuffer]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer "ArrayBuffer"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
 [Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer "Buffer"
 [function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function "Function"
