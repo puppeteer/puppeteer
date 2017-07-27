@@ -81,6 +81,14 @@ describe('Puppeteer', function() {
     await page.close();
   }));
 
+  describe('Browser.version', function() {
+    it('should return whether we are in headless', SX(async function() {
+      let version = await browser.version();
+      expect(version.length).toBeGreaterThan(0);
+      expect(version.startsWith('Headless')).toBe(headless);
+    }));
+  });
+
   describe('Page.evaluate', function() {
     it('should work', SX(async function() {
       let result = await page.evaluate(() => 7 * 3);
