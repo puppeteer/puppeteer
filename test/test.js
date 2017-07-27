@@ -1181,7 +1181,8 @@ describe('Puppeteer', function() {
       fs.unlinkSync(outputFile);
     });
 
-    it('should print to pdf', SX(async function() {
+    // Printing to pdf is currently only supported in headless
+    (headless ? it : xit)('should print to pdf', SX(async function() {
       await page.navigate(PREFIX + '/grid.html');
       await page.pdf({path: outputFile});
       expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
