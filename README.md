@@ -56,9 +56,9 @@ A few notes:
 
 [API documentation](docs/api.md) is a work in progress.
 
-## Contributing
+## Contributing to Puppeteer
 
-Check out our [contributing guide](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md)
+Check out [contributing guide](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md) to get an overview of puppeteer development. 
 
 # FAQ
 

@@ -24,42 +24,72 @@ information on using pull requests.
 
 ## Code Style
 
-The coding style is fully defined in [.eslintrc](https://github.com/GoogleChrome/puppeteer/blob/master/.eslintrc.js).
-Please make sure to run `npm lint` before submitting PR.
+- coding style is fully defined in [.eslintrc](https://github.com/GoogleChrome/puppeteer/blob/master/.eslintrc.js). Please make sure to run `npm run lint` before submitting PR
+- code should be annotated with [closure annotations](https://github.com/google/closure-compiler/wiki/Annotating-JavaScript-for-the-Closure-Compiler)
+- comments should be generally avoided. If the code would not be understood without comments, consider re-writing the code to make it self-explanatory
 
-We use JSDoc along with closure annotations. Annotations are encouraged for
-all contributions.
+## Documentation
 
-## Testing
+All public API should have a descriptive entry in the [docs/api.md](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md). There's a [documentation linter](https://github.com/GoogleChrome/puppeteer/tree/master/utils/doclint) that:
+- makes sure documentation is aligned with the codebase
+- generates up-to-date table-of-contents
 
-All new features should be accompanied by tests. Puppeteer tests are located in [test/test.js](https://github.com/GoogleChrome/puppeteer/blob/master/test/test.js)
+To run the linter, use
+```
+npm run doc
+```
+
+## Dependencies
+
+For all dependencies (both installation and development):
+- **Do not add** a dependency if the desired functionality is easily implementable in scope of the project
+- if adding a dependency, it should be well-maintained and trustworthy
+
+For installation dependencies:
+- **do not add** installation dependency unless it's critical to project success
+
+## Tests
+
+- every feature should be accompanied by a test
+- every public api event/method should be accompanied by a test
+- tests should be *hermetic*. They should not require internet connection or depend on external services.
+- tests should work on all three platforms: Mac, Linux and Win. This is especially important for screenshot tests.
+
+Puppeteer tests are located in [test/test.js](https://github.com/GoogleChrome/puppeteer/blob/master/test/test.js)
 and are written using [Jasmine](https://jasmine.github.io/) testing framework.
 
-There are also phantomjs tests located under [third_party/phantomjs/test](https://github.com/GoogleChrome/puppeteer/tree/master/third_party/phantomjs). These
-are used to test `phantom_shim`.
-
-To run puppeteer tests, use:
+- To run all tests:
 ```
 npm run unit
 ```
-
-To run all tests, including lints:
+- To filter tests by name:
 ```
-npm test
+npm run unit -- --filter=waitFor
 ```
-
-To debug unit tests:
+- To run a specific test, substitute the `it` with `fit` (mnemonic rule: '*focus it*'):
+```js
+  ...
+  // Using "fit" to run specific test
+  fit('should work', SX(function() {
+    await response = page.navigate(EMPTY_PAGE);
+    expect(response.ok).toBe(true);
+  }))
+```
+- To run tests in non-headless mode:
+```
+HEADLESS=false npm run unit
+```
+- To debug a test, "focus" a test first and then run
 ```
 npm run debug-unit
 ```
 
-To run unit tests in non-headless mode:
-```
-HEADLESS=false npm run unit
-```
+There are also phantomjs tests located under [third_party/phantomjs/test](https://github.com/GoogleChrome/puppeteer/tree/master/third_party/phantomjs). These
+are used to test `phantom_shim`.
 
-## DEBUG module
-Puppeteer uses [debug](https://github.com/visionmedia/debug) module to expose some of it's inner guts under the `puppeteer` namespace.
+
+## Debugging
+Puppeteer uses [DEBUG](https://github.com/visionmedia/debug) module to expose some of it's inner guts under the `puppeteer` namespace.
 Try putting the following script in the `script.js` and running it via `DEBUG=* node script.js`:
 
 ```js
