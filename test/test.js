@@ -17,6 +17,9 @@
 let fs = require('fs');
 let rm = require('rimraf').sync;
 let path = require('path');
+let helper = require('../lib/helper');
+if (process.env.COVERAGE)
+  helper.recordPublicAPICoverage();
 let Browser = require('../lib/Browser');
 let SimpleServer = require('./server/SimpleServer');
 let GoldenUtils = require('./golden-utils');
@@ -1345,6 +1348,24 @@ describe('Puppeteer', function() {
   });
 });
 
+if (process.env.COVERAGE) {
+  describe('API', function(){
+    let coverage = helper.publicAPICoverage();
+    let disabled = new Set();
+    if (headless) {
+      disabled.add('dialog.accept');
+      disabled.add('dialog.dismiss');
+    } else {
+      disabled.add('page.pdf');
+    }
+
+    for (let method of coverage.keys()) {
+      (disabled.has(method) ? xit : it)(`public method '${method}' was tested`, SX(async function(){
+        expect(publicAPICoverage.get(method)).toBe(true);
+      }));
+    }
+  });
+}
 /**
  * @param {!EventEmitter} emitter
  * @param {string} eventName
