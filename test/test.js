@@ -639,7 +639,7 @@ describe('Puppeteer', function() {
       page.evaluate(() => alert('yo'));
     });
     // TODO Enable this when crbug.com/718235 is fixed.
-    xit('should allow accepting prompts', SX(async function(done) {
+    (headless ? xit : it)('should allow accepting prompts', SX(async function(done) {
       page.on('dialog', dialog => {
         expect(dialog.type).toBe('prompt');
         expect(dialog.message()).toBe('question?');
