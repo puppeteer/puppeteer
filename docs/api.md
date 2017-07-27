@@ -111,15 +111,6 @@
     + [interceptedRequest.method](#interceptedrequestmethod)
     + [interceptedRequest.postData](#interceptedrequestpostdata)
     + [interceptedRequest.url](#interceptedrequesturl)
-  * [class: Headers](#class-headers)
-    + [headers.append(name, value)](#headersappendname-value)
-    + [headers.delete(name)](#headersdeletename)
-    + [headers.entries()](#headersentries)
-    + [headers.get(name)](#headersgetname)
-    + [headers.has(name)](#headershasname)
-    + [headers.keys()](#headerskeys)
-    + [headers.set(name, value)](#headerssetname-value)
-    + [headers.values()](#headersvalues)
   * [class: Body](#class-body)
     + [body.arrayBuffer()](#bodyarraybuffer)
     + [body.bodyUsed](#bodybodyused)
@@ -935,9 +926,7 @@ If request gets a 'redirect' response, the request is successfully finished with
 [Request] class represents requests which are sent by page. [Request] implements [Body] mixin, which in case of HTTP POST requests allows clients to call `request.json()` or `request.text()` to get different representations of request's body.
 
 #### request.headers
-- <[Headers]>
-
-Contains the associated [Headers] object of the request.
+- <[Map]> A map of HTTP headers associated with the request.
 
 #### request.method
 - <[string]>
@@ -958,9 +947,7 @@ Contains the URL of the request.
 [Response] class represents responses which are received by page. [Response] implements [Body] mixin, which allows clients to call `response.json()` or `response.text()` to get different representations of response body.
 
 #### response.headers
-- <[Headers]>
-
-Contains the [Headers] object associated with the response.
+- <[Map]> A map of HTTP headers associated with the response.
 
 #### response.ok
 - <[boolean]>
@@ -1002,12 +989,9 @@ Aborts request.
 Continues request.
 
 #### interceptedRequest.headers
-- <[Headers]>
+- <[Map]> A map of HTTP headers associated with the request.
 
-Contains the [Headers] object associated with the request.
-
-Headers could be mutated with the `headers.append`, `headers.set` and other
-methods. Must not be changed in response to an authChallenge.
+Headers could be mutated. Must not be changed in response to an authChallenge.
 
 #### interceptedRequest.method
 - <[string]>
@@ -1027,41 +1011,6 @@ Contains `POST` data for `POST` requests.
 - <[string]>
 
 If changed, the request url will be modified in a way that's not observable by page. Must not be changed in response to an authChallenge.
-
-### class: Headers
-#### headers.append(name, value)
-- `name` <[string]> Case-insensetive header name.
-- `value` <[string]> Header value
-
-If there's already a header with name `name`, the header gets overwritten.
-
-#### headers.delete(name)
-- `name` <[string]> Case-insensetive name of the header to be deleted. If there's no header with such name, the method does nothing.
-
-#### headers.entries()
-- returns: <[iterator]> An iterator allowing to go through all key/value pairs contained in this object. Both the key and value of each pairs are [string] objects.
-
-
-#### headers.get(name)
-- `name` <[string]> Case-insensetive name of the header.
-- returns: <[string]> Header value of `null`, if there's no such header.
-
-#### headers.has(name)
-- `name` <[string]> Case-insensetive name of the header.
-- returns: <[boolean]> Returns `true` if the header with such name exists, or `false` otherwise.
-
-#### headers.keys()
-- returns: <[iterator]> an iterator allowing to go through all keys contained in this object. The keys are [string] objects.
-
-
-#### headers.set(name, value)
-- `name` <[string]> Case-insensetive header name.
-- `value` <[string]> Header value
-
-If there's already a header with name `name`, the header gets overwritten.
-
-#### headers.values()
-- returns: <[iterator]<[string]>> Returns an iterator allowing to go through all values contained in this object. The values are [string] objects.
 
 ### class: Body
 #### body.arrayBuffer()
@@ -1088,7 +1037,6 @@ If there's already a header with name `name`, the header gets overwritten.
 [number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type "Number"
 [Object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object "Object"
 [Page]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-page "Page"
-[Headers]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-headers "Headers"
 [InterceptedRequest]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-interceptedrequest "Page"
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
@@ -1103,3 +1051,4 @@ If there's already a header with name `name`, the header gets overwritten.
 [Keyboard]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-keyboard "Keyboard"
 [Dialog]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-dialog  "Dialog"
 [Mouse]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-mouse "Mouse"
+[Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map "Map"
