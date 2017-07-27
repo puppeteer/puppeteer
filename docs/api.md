@@ -354,14 +354,34 @@ Adds a `<script></script>` tag to the page with the desired url. Alternatively, 
 - returns: <[Promise]> Returns promise which resolves when page gets closed.
 
 #### page.evaluate(pageFunction, ...args)
-- `pageFunction` <[function]> Function to be evaluated in browser context
+- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `...args` <...[string]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
+
+If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
+
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+browser.newPage().then(async page =>
+  const result = await page.evaluate(() => {
+    return Promise.resolve().then(() => 8 * 7);
+  });
+  console.log(result); // prints "56"
+  browser.close();
+});
+```
+
+A string can also be passed in instead of a function.
+
+```js
+console.log(await page.evaluate('1 + 2')); // prints "3"
+```
 
 This is a shortcut for [page.mainFrame().evaluate()](#frameevaluatefun-args) method.
 
 #### page.evaluateOnNewDocument(pageFunction, ...args)
-- `pageFunction` <[function]> Function to be evaluated in browser context
+- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function
 
@@ -825,23 +845,11 @@ Adds a `<script></script>` tag to the frame with the desired url. Alternatively,
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. Promise gets rejected if there's no element matching `selector`.
 
 #### frame.evaluate(pageFunction, ...args)
-- `pageFunction` <[function]> Function to be evaluated in browser context
+- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `...args` <...[string]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
 
-If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
-
-```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
-browser.newPage().then(async page =>
-  const result = await page.evaluate(() => {
-    return Promise.resolve().then(() => 8 * 7);
-  });
-  console.log(result); // prints "56"
-  browser.close();
-});
-```
+If the function, passed to the `frame.evaluate`, returns a [Promise], then `frame.evaluate` would wait for the promise to resolve and return it's value.
 
 #### frame.focus(selector)
 - `selector` <[string]> A query selector of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
