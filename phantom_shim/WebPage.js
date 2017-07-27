@@ -533,7 +533,7 @@ class WebPage {
   }
 
   /**
-   * @param {function()} fun
+   * @param {function()|string} fun
    * @param {!Array<!Object>} args
    */
   evaluate(fun, ...args) {
