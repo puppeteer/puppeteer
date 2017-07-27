@@ -647,7 +647,7 @@ describe('Puppeteer', function() {
       page.evaluate(() => alert('yo'));
     });
     // TODO Enable this when crbug.com/718235 is fixed.
-    xit('should allow accepting prompts', SX(async function(done) {
+    (headless ? xit : it)('should allow accepting prompts', SX(async function(done) {
       page.on('dialog', dialog => {
         expect(dialog.type).toBe('prompt');
         expect(dialog.message()).toBe('question?');
@@ -1209,7 +1209,8 @@ describe('Puppeteer', function() {
       fs.unlinkSync(outputFile);
     });
 
-    it('should print to pdf', SX(async function() {
+    // Printing to pdf is currently only supported in headless
+    (headless ? it : xit)('should print to pdf', SX(async function() {
       await page.navigate(PREFIX + '/grid.html');
       await page.pdf({path: outputFile});
       expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);

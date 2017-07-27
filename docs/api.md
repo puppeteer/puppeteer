@@ -484,6 +484,8 @@ The `format` options are:
 - `A4`: 8.27in x 11.7in
 - `A5`: 5.83in x 8.27in
 
+> **NOTE** Generating a pdf is currently only supported in Chrome headless.
+
 #### page.plainText()
 - returns:  <[Promise]<[string]>> Returns page's inner text.
 
@@ -584,7 +586,7 @@ browser.newPage().then(async page =>
 	- `isLandscape` <[boolean]> Specify if viewport is in the landscape mode. Defaults to `false`.
 - returns: <[Promise]> Promise which resolves when the dimensions are updated.
 
-Note: in certain cases, setting viewport will reload the page so that the `isMobile` or `hasTouch` options will be able to interfere in project loading.
+> **NOTE** in certain cases, setting viewport will reload the page so that the `isMobile` or `hasTouch` options will be able to interfere in project loading.
 
 The page's viewport size defines page's dimensions, observable from page via `window.innerWidth / window.innerHeight`. The viewport size defines a size of page
 screenshot (unless a `fullPage` option is given).
@@ -749,7 +751,7 @@ browser.newPage().then(async page => {
 });
 ```
 
-> NOTE: Chrome Headless currently has issues with managing javascript dialogs, see [issue 13](https://github.com/GoogleChrome/puppeteer/issues/13)
+> **NOTE** Chrome Headless currently has issues with managing javascript dialogs, see [issue 13](https://github.com/GoogleChrome/puppeteer/issues/13)
 
 #### dialog.accept([promptText])
 - `promptText` <[string]> A text to enter in prompt. Does not cause any effects if the dialog's `type` is not prompt.
