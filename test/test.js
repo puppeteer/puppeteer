@@ -740,6 +740,26 @@ describe('Puppeteer', function() {
       expect(detachedFrames.length).toBe(4);
       expect(navigatedFrames.length).toBe(1);
     }));
+    it('should report frame.name()', SX(async function() {
+      await FrameUtils.attachFrame(page, 'theFrameId', EMPTY_PAGE);
+      await page.evaluate(url => {
+        let frame = document.createElement('iframe');
+        frame.name = 'theFrameName';
+        frame.src = url;
+        document.body.appendChild(frame);
+        return new Promise(x => frame.onload = x);
+      }, EMPTY_PAGE);
+      expect(page.frames()[0].name()).toBe('');
+      expect(page.frames()[1].name()).toBe('theFrameId');
+      expect(page.frames()[2].name()).toBe('theFrameName');
+    }));
+    it('should report frame.parent()', SX(async function() {
+      await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
+      await FrameUtils.attachFrame(page, 'frame2', EMPTY_PAGE);
+      expect(page.frames()[0].parentFrame()).toBe(null);
+      expect(page.frames()[1].parentFrame()).toBe(page.mainFrame());
+      expect(page.frames()[2].parentFrame()).toBe(page.mainFrame());
+    }));
   });
 
   describe('input', function() {

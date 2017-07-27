@@ -861,7 +861,11 @@ Returns `true` if the frame has being detached, or `false` otherwise.
 #### frame.name()
 - returns: <[string]>
 
-Returns frame's name as specified in the tag.
+Returns frame's name attribute as specified in the tag.
+
+If the name is empty, returns the id attribute instead.
+
+Note: This value is calculated once when the frame is created, and will not update if the attribute is changed later.
 
 #### frame.parentFrame()
 - returns: <[Frame]> Returns parent frame, if any. Detached frames and main frames return `null`.
