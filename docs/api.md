@@ -59,6 +59,7 @@
     + [page.url()](#pageurl)
     + [page.viewport()](#pageviewport)
     + [page.waitFor(selectorOrTimeout[, options])](#pagewaitforselectorortimeout-options)
+    + [page.waitForFunction(pageFunction[, options], ...args)](#pagewaitforfunctionpagefunction-options-args)
     + [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
     + [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [class: Keyboard](#class-keyboard)
@@ -91,6 +92,7 @@
     + [frame.title()](#frametitle)
     + [frame.url()](#frameurl)
     + [frame.waitFor(selectorOrTimeout[, options])](#framewaitforselectorortimeout-options)
+    + [frame.waitForFunction(pageFunction[, options], ...args)](#framewaitforfunctionpagefunction-options-args)
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
   * [class: Request](#class-request)
     + [request.headers](#requestheaders)
@@ -653,6 +655,18 @@ This method behaves differently with respect to the type of the first parameter:
 
 The method is a shortcut for [page.mainFrame().waitFor()](#framewaitforselectorortimeout-options).
 
+#### page.waitForFunction(pageFunction[, options], ...args)
+- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
+- `options` <[Object]> Optional waiting parameters
+  - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it could be one of the following values:
+    - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
+    - `mutation` - to execute `pageFunction` on every DOM mutation.
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+- `...args` <...[Object]> Arguments to pass to  `pageFunction`
+- returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
+
+Shortcut for [page.mainFrame().waitForFunction()](#framewaitforfunctionpagefunction-options-args).
+
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
@@ -901,6 +915,29 @@ This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselectoroptions)
 - if `selectorOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
+
+#### frame.waitForFunction(pageFunction[, options], ...args)
+- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
+- `options` <[Object]> Optional waiting parameters
+  - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it could be one of the following values:
+    - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
+    - `mutation` - to execute `pageFunction` on every DOM mutation.
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+- `...args` <...[Object]> Arguments to pass to  `pageFunction`
+- returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
+
+The `waitForFunction` could be used to observe viewport size change:
+```js
+const {Browser} = require('.');
+const browser = new Browser();
+
+browser.newPage().then(async page => {
+  const watchDog = page.waitForFunction('window.innerWidth < 100);
+  page.setViewport({width: 50, height: 50});
+  await watchDog;
+  browser.close();
+});
+```
 
 #### frame.waitForSelector(selector[, options])
 - `selector` <[string]> CSS selector of awaited element,

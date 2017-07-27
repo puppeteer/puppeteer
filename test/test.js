@@ -198,6 +198,60 @@ describe('Puppeteer', function() {
     }));
   });
 
+  describe('Frame.waitForFunction', function() {
+    it('should accept a string', SX(async function() {
+      const watchdog = page.waitForFunction('window.__FOO === 1');
+      await page.evaluate(() => window.__FOO = 1);
+      await watchdog;
+    }));
+    it('should poll on interval', SX(async function() {
+      let success = false;
+      const startTime = Date.now();
+      const polling = 100;
+      const watchdog = page.waitForFunction(() => window.__FOO === 'hit', {polling})
+          .then(() => success = true);
+      await page.evaluate(() => window.__FOO = 'hit');
+      expect(success).toBe(false);
+      await page.evaluate(() => document.body.appendChild(document.createElement('div')));
+      await watchdog;
+      expect(Date.now() - startTime).not.toBeLessThan(polling / 2);
+    }));
+    it('should poll on mutation', SX(async function() {
+      let success = false;
+      const watchdog = page.waitForFunction(() => window.__FOO === 'hit', {polling: 'mutation'})
+          .then(() => success = true);
+      await page.evaluate(() => window.__FOO = 'hit');
+      expect(success).toBe(false);
+      await page.evaluate(() => document.body.appendChild(document.createElement('div')));
+      await watchdog;
+    }));
+    it('should poll on raf', SX(async function() {
+      const watchdog = page.waitForFunction(() => window.__FOO === 'hit', {polling: 'raf'});
+      await page.evaluate(() => window.__FOO = 'hit');
+      await watchdog;
+    }));
+    it('should throw on bad polling value', SX(async function() {
+      let error = null;
+      try {
+        await page.waitForFunction(() => !!document.body, {polling: 'unknown'});
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('polling');
+    }));
+    it('should throw negative polling interval', SX(async function() {
+      let error = null;
+      try {
+        await page.waitForFunction(() => !!document.body, {polling: -10});
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('Cannot poll with non-positive interval');
+    }));
+  });
+
   describe('Frame.waitForSelector', function() {
     let FrameUtils = require('./frame-utils');
     let addElement = tag => document.body.appendChild(document.createElement(tag));
