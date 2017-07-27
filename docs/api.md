@@ -310,7 +310,7 @@ Emitted when a [response] is received.
 
 #### page.$(selector, pageFunction, ...args)
 
-- `selector` <[string]> A selector to be matched in the page
+- `selector` <[string]> A [selector] to be matched in the page
 - `pageFunction` <[function]\([Element]\)> Function to be evaluated in-page with first element matching `selector`
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value.
@@ -324,7 +324,7 @@ Shortcut for [page.mainFrame().$(selector, pageFunction, ...args)](#pageselector
 
 #### page.$$(selector, pageFunction, ...args)
 
-- `selector` <[string]> A selector to be matched in the page
+- `selector` <[string]> A [selector] to be matched in the page
 - `pageFunction` <[function]\([Element]\)> Function to be evaluated in-page for every matching element.
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Array]<[Object]>>> Promise which resolves to array of function return values.
@@ -344,7 +344,7 @@ Shortcut for [page.mainFrame().$$(selector, pageFunction, ...args)](#pageselecto
 Adds a `<script></script>` tag to the page with the desired url. Alternatively, javascript could be injected to the page via [`page.injectFile`](#pageinjectfilefilepath) method.
 
 #### page.click(selector[, options])
-- `selector` <[string]> A query selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
+- `selector` <[string]> A query [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
   - `clickCount` <[number]> defaults to 1
@@ -372,7 +372,7 @@ Adds a function which would be invoked in one of the following scenarios:
 The function is invoked after the document was created but before any of its scripts were run. This is useful to amend javascript environment, e.g. to seed [Math.random](https://github.com/GoogleChrome/puppeteer/blob/master/examples/unrandomize.js)
 
 #### page.focus(selector)
-- `selector` <[string]> A query selector of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
+- `selector` <[string]> A query [selector] of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. Promise gets rejected if there's no element matching `selector`.
 
 #### page.frames()
@@ -405,7 +405,7 @@ can not go back, resolves to null.
 Navigate to the next page in history.
 
 #### page.hover(selector)
-- `selector` <[string]> A query selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
+- `selector` <[string]> A query [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
 
 #### page.injectFile(filePath)
@@ -605,7 +605,7 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 To press a special key, use [`page.press`](#pagepresskey-options).
 
 #### page.uploadFile(selector, ...filePaths)
-- `selector` <[string]> A query selector to a file input
+- `selector` <[string]> A query [selector] to a file input
 - `...filePaths` <[string]> Sets the value of the file input these paths
 - returns: <[Promise]> Promise which resolves when the value is set.
 
@@ -618,14 +618,14 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - returns: <[Object]>  An object with the save fields as described in [page.setViewport](#pagesetviewportviewport)
 
 #### page.waitFor(selectorOrTimeout[, options])
-- `selectorOrTimeout` <[string]|[number]> A selector or timeout to wait for
+- `selectorOrTimeout` <[string]|[number]> A [selector] or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]>
 
 This method behaves differently with respect to the type of the first parameter:
-- if `selectorOrTimeout` is a `string`, than the first argument is treated as a selector to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
+- if `selectorOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
 - if `selectorOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
@@ -642,7 +642,7 @@ The method is a shortcut for [page.mainFrame().waitFor()](#framewaitforselectoro
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.waitForSelector(selector[, options])
-- `selector` <[string]> A query selector to wait for on the page.
+- `selector` <[string]> A query [selector] to wait for on the page.
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
@@ -797,13 +797,13 @@ browser.newPage().then(async page => {
 ```
 
 #### frame.$(selector, pageFunction, ...args)
-- `selector` <[string]> A selector to be matched in the page
+- `selector` <[string]> A [selector] to be matched in the page
 - `pageFunction` <[function]\([Element]\)> Function to be evaluated with first element matching `selector`
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value.
 
 #### frame.$$(selector, pageFunction, ...args)
-- `selector` <[string]> A selector to be matched in the page
+- `selector` <[string]> A [selector] to be matched in the page
 - `pageFunction` <[function]\([Element]\)> Function to be evaluted for every element matching `selector`.
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Array]<[Object]>>> Promise which resolves to array of function return values.
@@ -818,7 +818,7 @@ Adds a `<script></script>` tag to the frame with the desired url. Alternatively,
 - returns: <[Array]<[Frame]>>
 
 #### frame.click(selector[, options])
-- `selector` <[string]> A query selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
+- `selector` <[string]> A query [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
   - `clickCount` <[number]> defaults to 1
@@ -844,11 +844,11 @@ browser.newPage().then(async page =>
 ```
 
 #### frame.focus(selector)
-- `selector` <[string]> A query selector of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
+- `selector` <[string]> A query [selector] of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. Promise gets rejected if there's no element matching `selector`.
 
 #### frame.hover(selector)
-- `selector` <[string]> A query selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
+- `selector` <[string]> A query [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
 
 #### frame.injectFile(filePath)
@@ -881,14 +881,14 @@ Note: This value is calculated once when the frame is created, and will not upda
 Returns frame's url.
 
 #### frame.waitFor(selectorOrTimeout[, options])
-- `selectorOrTimeout` <[string]|[number]> A selector or timeout to wait for
+- `selectorOrTimeout` <[string]|[number]> A [selector] or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]>
 
 This method behaves differently with respect to the type of the first parameter:
-- if `selectorOrTimeout` is a `string`, than the first argument is treated as a selector to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselectoroptions)
+- if `selectorOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselectoroptions)
 - if `selectorOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
@@ -1058,3 +1058,4 @@ If changed, the request url will be modified in a way that's not observable by p
 [Dialog]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-dialog  "Dialog"
 [Mouse]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-mouse "Mouse"
 [Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map "Map"
+[selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors "selector"
