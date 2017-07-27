@@ -87,6 +87,10 @@ npm run debug-unit
 There are also phantomjs tests located under [third_party/phantomjs/test](https://github.com/GoogleChrome/puppeteer/tree/master/third_party/phantomjs). These
 are used to test `phantom_shim`.
 
+## Public API Coverage
+
+Every public API method should be called at least once during `npm run unit` command.
+To ensure this, there's a `npm run coverage` command which tracks public API usage and reports back if some methods were not called.
 
 ## Debugging
 Puppeteer uses [DEBUG](https://github.com/visionmedia/debug) module to expose some of it's inner guts under the `puppeteer` namespace.

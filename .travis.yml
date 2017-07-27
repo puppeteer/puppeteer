@@ -17,5 +17,5 @@ install:
   # puppeteer's install script downloads Chrome
 script:
   - yarn run lint
-  - yarn run unit
+  - yarn run coverage
   - yarn run test-phantom

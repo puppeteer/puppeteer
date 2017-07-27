@@ -1361,7 +1361,7 @@ if (process.env.COVERAGE) {
 
     for (let method of coverage.keys()) {
       (disabled.has(method) ? xit : it)(`public method '${method}' was tested`, SX(async function(){
-        expect(publicAPICoverage.get(method)).toBe(true);
+        expect(coverage.get(method)).toBe(true);
       }));
     }
   });
