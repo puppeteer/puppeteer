@@ -48,7 +48,7 @@
     + [page.reload(options)](#pagereloadoptions)
     + [page.screenshot([options])](#pagescreenshotoptions)
     + [page.setContent(html)](#pagesetcontenthtml)
-    + [page.setHTTPHeaders(headers)](#pagesethttpheadersheaders)
+    + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
     + [page.setInPageCallback(name, callback)](#pagesetinpagecallbackname-callback)
     + [page.setRequestInterceptor(interceptor)](#pagesetrequestinterceptorinterceptor)
     + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
@@ -544,9 +544,13 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 - `html` <[string]> HTML markup to assign to the page.
 - returns: <[Promise]> Promise which resolves when the content is successfully assigned.
 
-#### page.setHTTPHeaders(headers)
-- `headers` <[Object]> Key-value set of additional http headers to be sent with every request.
+#### page.setExtraHTTPHeaders(headers)
+- `headers` <[Map]> A map of additional http headers to be sent with every request.
 - returns: <[Promise]> Promise which resolves when additional headers are installed
+
+The extra HTTP headers will be sent with every request the page initiates.
+
+> **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
 #### page.setInPageCallback(name, callback)
 - `name` <[string]> Name of the callback to be assigned on window object

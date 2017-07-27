@@ -284,7 +284,7 @@ class WebPage {
    */
   set customHeaders(value) {
     this._customHeaders = value;
-    await(this._page.setHTTPHeaders(value));
+    await(this._page.setExtraHTTPHeaders(new Map(Object.entries(value))));
   }
 
   /**

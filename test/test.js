@@ -611,9 +611,9 @@ describe('Puppeteer', function() {
       expect(response.ok).toBe(true);
     }));
     it('should show custom HTTP headers', SX(async function() {
-      await page.setHTTPHeaders({
+      await page.setExtraHTTPHeaders(new Map(Object.entries({
         foo: 'bar'
-      });
+      })));
       page.setRequestInterceptor(request => {
         expect(request.headers.get('foo')).toBe('bar');
         request.continue();
@@ -1046,9 +1046,11 @@ describe('Puppeteer', function() {
       expect(await page.evaluate(() => navigator.userAgent)).toContain('Safari');
     }));
   });
-  describe('Page.setHTTPHeaders', function() {
+  describe('Page.setExtraHTTPHeaders', function() {
     it('should work', SX(async function() {
-      page.setHTTPHeaders({'foo': 'bar'});
+      await page.setExtraHTTPHeaders(new Map(Object.entries({
+        foo: 'bar'
+      })));
       page.navigate(EMPTY_PAGE);
       let request = await server.waitForRequest('/empty.html');
       expect(request.headers['foo']).toBe('bar');
