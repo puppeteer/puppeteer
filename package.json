@@ -11,7 +11,7 @@
     "debug-unit": "DEBUG_TEST=true node --inspect-brk ./node_modules/.bin/jasmine test/test.js",
     "test-phantom": "python third_party/phantomjs/test/run-tests.py",
     "test-doclint": "jasmine utils/doclint/test/test.js",
-    "test": "npm run lint --silent && npm run unit && npm run test-phantom && npm run test-doclint",
+    "test": "npm run lint --silent && npm run coverage && npm run test-phantom && npm run test-doclint",
     "install": "node install.js",
     "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .) && npm run doc",
     "doc": "node utils/doclint/cli.js",

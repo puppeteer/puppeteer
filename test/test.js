@@ -71,13 +71,6 @@ describe('Puppeteer', function() {
       httpsServer.stop(),
     ]);
     browser.close();
-    if (process.env.COVERAGE) {
-      let methods = Array.from(helper.methodsNotRun());
-      if (methods.length)
-        console.log('\n\x1b[33mThese public methods were not run:\x1b[0m\n' + methods.map(x => ' ' + x).join('\n'));
-      else
-        console.log('All public methods covered!');
-    }
   }));
 
   beforeEach(SX(async function() {
@@ -1355,6 +1348,24 @@ describe('Puppeteer', function() {
   });
 });
 
+if (process.env.COVERAGE) {
+  describe('API', function(){
+    let methods = helper.publicAPIMethods();
+    let disabled = new Set();
+    if (headless) {
+      disabled.add('dialog.accept');
+      disabled.add('dialog.dismiss');
+    } else {
+      disabled.add('page.pdf');
+    }
+
+    for (let method of methods) {
+      (disabled.has(method) ? xit : it)(`public method '${method}' was tested`, SX(async function(){
+        expect(helper.wasPublicAPIMethodCovered(method)).toBe(true);
+      }));
+    }
+  });
+}
 /**
  * @param {!EventEmitter} emitter
  * @param {string} eventName
