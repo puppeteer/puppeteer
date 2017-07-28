@@ -59,7 +59,7 @@
     + [page.url()](#pageurl)
     + [page.viewport()](#pageviewport)
     + [page.waitFor(selectorOrFunctionOrTimeout[, options])](#pagewaitforselectororfunctionortimeout-options)
-    + [page.waitForFunction(pageFunction[, options], ...args)](#pagewaitforfunctionpagefunction-options-args)
+    + [page.waitForFunction(pageFunction[, options, ...args])](#pagewaitforfunctionpagefunction-options-args)
     + [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
     + [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [class: Keyboard](#class-keyboard)
@@ -92,7 +92,7 @@
     + [frame.title()](#frametitle)
     + [frame.url()](#frameurl)
     + [frame.waitFor(selectorOrFunctionOrTimeout[, options])](#framewaitforselectororfunctionortimeout-options)
-    + [frame.waitForFunction(pageFunction[, options], ...args)](#framewaitforfunctionpagefunction-options-args)
+    + [frame.waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args)
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
   * [class: Request](#class-request)
     + [request.headers](#requestheaders)
@@ -181,7 +181,7 @@ browser.newPage().then(async page => {
 #### new Browser([options])
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
 	- `headless` <[boolean]> Wether to run chromium in headless mode. Defaults to `true`.
-	- `executablePath` <[string]> Path to a chromium executable to run instead of bundled chromium.
+	- `executablePath` <[string]> Path to a chromium executable to run instead of bundled chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 	- `args` <[Array]<[string]>> Additional arguments to pass to the chromium instance. List of chromium flags could be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
 
 
@@ -429,7 +429,7 @@ Navigate to the next page in history.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
 
 #### page.injectFile(filePath)
-- `filePath` <[string]> Path to the javascript file to be injected into page.
+- `filePath` <[string]> Path to the javascript file to be injected into page. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]> Promise which resolves when file gets successfully evaluated in page.
 
 #### page.keyboard
@@ -463,7 +463,7 @@ The `page.navigate` will throw an error if:
 
 #### page.pdf(options)
 - `options` <[Object]> Options object which might have the following properties:
-  - `path` <[string]> The file path to save the PDF to.
+  - `path` <[string]> The file path to save the PDF to. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `scale` <[number]> Scale of the webpage rendering. Defaults to `1`.
   - `displayHeaderFooter` <[boolean]> Display header and footer. Defaults to `false`.
   - `printBackground` <[boolean]> Print background graphics. Defaults to `false`.
@@ -529,7 +529,7 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 
 #### page.screenshot([options])
 - `options` <[Object]> Options object which might have the following properties:
-    - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension.
+    - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
     - `type` <[string]> Specify screenshot type, could be either `jpeg` or `png`. Defaults to 'png'.
     - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
     - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
@@ -656,7 +656,7 @@ This method behaves differently with respect to the type of the first parameter:
 
 The method is a shortcut for [page.mainFrame().waitFor()](#framewaitforselectorortimeout-options).
 
-#### page.waitForFunction(pageFunction[, options], ...args)
+#### page.waitForFunction(pageFunction[, options, ...args])
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
   - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it could be one of the following values:
@@ -875,9 +875,9 @@ If the function, passed to the `frame.evaluate`, returns a [Promise], then `fram
 #### frame.hover(selector)
 - `selector` <[string]> A query [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
-
+ 
 #### frame.injectFile(filePath)
-- `filePath` <[string]> Path to the javascript file to be injected into frame.
+- `filePath` <[string]> Path to the javascript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]> Promise which resolves when file gets successfully evaluated in frame.
 
 #### frame.isDetached()
@@ -918,7 +918,7 @@ This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
-#### frame.waitForFunction(pageFunction[, options], ...args)
+#### frame.waitForFunction(pageFunction[, options, ...args])
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
   - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it could be one of the following values:
