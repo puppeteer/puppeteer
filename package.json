@@ -29,7 +29,7 @@
     "ws": "^3.0.0"
   },
   "puppeteer": {
-    "chromium_revision": "488994"
+    "chromium_revision": "490379"
   },
   "devDependencies": {
     "commonmark": "^0.27.0",
