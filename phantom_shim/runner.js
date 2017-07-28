@@ -25,7 +25,6 @@ let WebPage = require('./WebPage');
 let WebServer = require('./WebServer');
 let child_process = require('child_process');
 let Browser = require('..').Browser;
-let version = require('../package.json').version;
 let argv = require('minimist')(process.argv.slice(2), {
   alias: { v: 'version' },
   boolean: ['headless'],
@@ -33,7 +32,7 @@ let argv = require('minimist')(process.argv.slice(2), {
 });
 
 if (argv.version) {
-  console.log('Puppeteer v' + version);
+  console.log('PhantomShim v' + Phantom.version.join('.'));
   return;
 }
 

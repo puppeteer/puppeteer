@@ -19,6 +19,10 @@ let path = require('path');
 let vm = require('vm');
 let url = require('url');
 
+const VERSION = [0, 0, 1];
+
+module.exports.version = VERSION;
+
 /**
  * @param {!Object} context
  * @param {string} scriptPath
@@ -30,18 +34,18 @@ module.exports.create = function(context, scriptPath) {
     },
 
     /**
-         * @param {string} relative
-         * @param {string} base
-         * @return {string}
-         */
+     * @param {string} relative
+     * @param {string} base
+     * @return {string}
+     */
     resolveRelativeUrl: function(relative, base) {
       return url.resolve(base, relative);
     },
 
     /**
-         * @param {string} url
-         * @return {string}
-         */
+     * @param {string} url
+     * @return {string}
+     */
     fullyDecodeUrl: function(url) {
       return decodeURI(url);
     },
@@ -51,56 +55,55 @@ module.exports.create = function(context, scriptPath) {
     onError: null,
 
     /**
-         * @return {string}
-         */
+     * @return {string}
+     */
     get outputEncoding() {
       return 'UTF-8';
     },
 
     /**
-         * @param {string} value
-         */
+     * @param {string} value
+     */
     set outputEncoding(value) {
       throw new Error('Phantom.outputEncoding setter is not implemented');
     },
 
     /**
-         * @return {boolean}
-         */
+     * @return {boolean}
+     */
     get cookiesEnabled() {
       return true;
     },
 
     /**
-         * @param {boolean} value
-         */
+     * @param {boolean} value
+     */
     set cookiesEnabled(value) {
       throw new Error('Phantom.cookiesEnabled setter is not implemented');
     },
 
     /**
-         * @return {!{major: number, minor: number, patch: number}}
-         */
+     * @return {!{major: number, minor: number, patch: number}}
+     */
     get version() {
-      let versionParts = require('../package.json').version.split('.');
       return {
-        major: parseInt(versionParts[0], 10),
-        minor: parseInt(versionParts[1], 10),
-        patch: parseInt(versionParts[2], 10),
+        major: VERSION[0],
+        minor: VERSION[1],
+        patch: VERSION[2],
       };
     },
 
     /**
-         * @param {number=} code
-         */
+     * @param {number=} code
+     */
     exit: function(code) {
       process.exit(code);
     },
 
     /**
-         * @param {string} filePath
-         * @return {boolean}
-         */
+     * @param {string} filePath
+     * @return {boolean}
+     */
     injectJs: function(filePath) {
       filePath = path.resolve(phantom.libraryPath, filePath);
       if (!fs.existsSync(filePath))
@@ -116,9 +119,9 @@ module.exports.create = function(context, scriptPath) {
     },
 
     /**
-         * @param {string} moduleSource
-         * @param {string} filename
-         */
+     * @param {string} moduleSource
+     * @param {string} filename
+     */
     loadModule: function(moduleSource, filename) {
       let code = [
         '(function(require, exports, module) {\n',
