@@ -443,6 +443,10 @@ describe('Puppeteer', function() {
   });
 
   describe('Page.navigate', function() {
+    it('should navigate to about:blank', SX(async function() {
+      let response = await page.navigate('about:blank');
+      expect(response).toBe(null);
+    }));
     it('should fail when navigating to bad url', SX(async function() {
       let error = null;
       try {

@@ -461,6 +461,9 @@ The `page.navigate` will throw an error if:
 - there's an SSL error (e.g. in case of self-signed certificates).
 - target URL is invalid.
 - the `timeout` is exceeded during navigation.
+- the main resource failed to load.
+
+> **NOTE** `page.navigate` either throw or return a main resource response. The only exception is navigation to `about:blank`, which would succeed and return `null`.
 
 #### page.pdf(options)
 - `options` <[Object]> Options object which might have the following properties:
