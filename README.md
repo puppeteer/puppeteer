@@ -31,7 +31,7 @@ yarn # or 'npm install'
 To navigate to https://example.com and save a screenshot as *example.png*, save the following script as `example.js` and run it using `node example.js`:
 
 ```js
-const Browser = require('puppeteer').Browser;
+const {Browser} = require('puppeteer');
 const browser = new Browser();
 
 browser.newPage().then(async page => {
@@ -78,6 +78,9 @@ Since Puppeteer's code is run by Node, it exists out-of-process to the controlle
 
 It is recommended to use `async/await` to consume asynchronous api:
 ```js
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+
 browser.newPage().then(async page => {
   await page.setViewport({width: 1000, height: 1000});
   await page.pdf({path: 'blank.pdf'});
