@@ -1407,7 +1407,7 @@ describe('Puppeteer', function() {
 });
 
 if (process.env.COVERAGE) {
-  describe('API', function(){
+  describe('COVERAGE', function(){
     let coverage = helper.publicAPICoverage();
     let disabled = new Set();
     if (headless) {
@@ -1418,7 +1418,7 @@ if (process.env.COVERAGE) {
     }
 
     for (let method of coverage.keys()) {
-      (disabled.has(method) ? xit : it)(`public method '${method}' was tested`, SX(async function(){
+      (disabled.has(method) ? xit : it)(`public method '${method}' should be called`, SX(async function(){
         expect(coverage.get(method)).toBe(true);
       }));
     }
