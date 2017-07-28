@@ -163,16 +163,16 @@ describe('Puppeteer', function() {
 
   describe('Page.injectFile', function() {
     it('should work', SX(async function() {
-      const helloPath = path.join(__dirname, './assets/injectedfile.js');
+      const helloPath = path.resolve(__dirname, 'assets', 'injectedfile.js');
       await page.injectFile(helloPath);
       const result = await page.evaluate(() => __injected);
       expect(result).toBe(42);
     }));
     it('should include sourcemap', SX(async function() {
-      const helloPath = path.join(__dirname, './assets/injectedfile.js');
+      const helloPath = path.resolve(__dirname, 'assets', 'injectedfile.js');
       await page.injectFile(helloPath);
       const result = await page.evaluate(() => __injectedError.stack);
-      expect(result).toContain('assets/injectedfile.js');
+      expect(result).toContain(path.resolve(__dirname, 'assets', 'injectedfile.js'));
     }));
   });
 
