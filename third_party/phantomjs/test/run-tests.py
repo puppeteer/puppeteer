@@ -768,13 +768,13 @@ class TestRunner(object):
 
     def get_base_command(self, debugger):
         if debugger is None:
-            return [self.phantomjs_exe]
+            return ["node", self.phantomjs_exe]
         elif debugger == "gdb":
-            return ["gdb", "--args", self.phantomjs_exe]
+            return ["gdb", "--args", "node", self.phantomjs_exe]
         elif debugger == "lldb":
-            return ["lldb", "--", self.phantomjs_exe]
+            return ["lldb", "--", "node", self.phantomjs_exe]
         elif debugger == "valgrind":
-            return ["valgrind", self.phantomjs_exe]
+            return ["valgrind", "node", self.phantomjs_exe]
         else:
             raise RuntimeError("Don't know how to invoke " + self.debugger)
 
