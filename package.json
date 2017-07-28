@@ -1,8 +1,9 @@
 {
   "name": "puppeteer",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
+  "repository": "github:GoogleChrome/puppeteer",
   "engines": {
     "node": ">=7.10.0"
   },
