@@ -1423,7 +1423,7 @@ if (process.env.COVERAGE) {
     }
 
     for (let method of coverage.keys()) {
-      (disabled.has(method) ? xit : it)(`public method '${method}' should be called`, SX(async function(){
+      (disabled.has(method) ? xit : it)(`public api '${method}' should be called`, SX(async function(){
         expect(coverage.get(method)).toBe(true);
       }));
     }
