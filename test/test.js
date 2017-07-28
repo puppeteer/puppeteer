@@ -461,6 +461,15 @@ describe('Puppeteer', function() {
       }
       expect(error.message).toContain('SSL Certificate error');
     }));
+    it('should fail when main resources failed to load', SX(async function() {
+      let error = null;
+      try {
+        await page.navigate('chrome-devtools://devtools/bundled/inspector.html');
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toContain('Failed to navigate');
+    }));
     it('should fail when exceeding maximum navigation timeout', SX(async function() {
       let error = null;
       // Hang for request to the empty.html
