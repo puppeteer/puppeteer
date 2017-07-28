@@ -875,7 +875,8 @@ describe('Puppeteer', function() {
     }));
     it('should upload the file', SX(async function(){
       await page.navigate(PREFIX + '/input/fileupload.html');
-      await page.uploadFile('input', __dirname + '/assets/file-to-upload.txt');
+      const filePath = path.relative(process.cwd(), __dirname + '/assets/file-to-upload.txt');
+      await page.uploadFile('input', filePath);
       expect(await page.evaluate(() => {
         let input = document.querySelector('input');
         return input.files[0].name;

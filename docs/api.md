@@ -90,6 +90,7 @@
     + [frame.name()](#framename)
     + [frame.parentFrame()](#frameparentframe)
     + [frame.title()](#frametitle)
+    + [frame.uploadFile(selector, ...filePaths)](#frameuploadfileselector-filepaths)
     + [frame.url()](#frameurl)
     + [frame.waitFor(selectorOrFunctionOrTimeout[, options])](#framewaitforselectororfunctionortimeout-options)
     + [frame.waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args)
@@ -630,7 +631,7 @@ To press a special key, use [`page.press`](#pagepresskey-options).
 
 #### page.uploadFile(selector, ...filePaths)
 - `selector` <[string]> A query [selector] to a file input
-- `...filePaths` <[string]> Sets the value of the file input these paths
+- `...filePaths` <[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]> Promise which resolves when the value is set.
 
 #### page.url()
@@ -899,6 +900,11 @@ Note: This value is calculated once when the frame is created, and will not upda
 
 #### frame.title()
 - returns: <[Promise]<[string]>> Returns page's title.
+
+#### frame.uploadFile(selector, ...filePaths)
+- `selector` <[string]> A query [selector] to a file input
+- `...filePaths` <[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+- returns: <[Promise]> Promise which resolves when the value is set.
 
 #### frame.url()
 - returns: <[string]>
