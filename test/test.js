@@ -733,17 +733,17 @@ describe('Puppeteer', function() {
   });
 
   describe('Page.Events.PageError', function() {
-    it('should fire', function(done) {
-      page.on('pageerror', error => {
-        expect(error.message).toContain('Fancy');
-        done();
-      });
+    it('should fire', SX(async function() {
+      let error = null;
+      page.once('pageerror', e => error = e);
       page.navigate(PREFIX + '/error.html');
-    });
+      await waitForEvents(page, 'pageerror');
+      expect(error.message).toContain('Fancy');
+    }));
   });
 
   describe('Page.Events.Request', function() {
-    it('should fire', SX(async function(done) {
+    it('should fire', SX(async function() {
       let requests = [];
       page.on('request', request => requests.push(request));
       await page.navigate(EMPTY_PAGE);
@@ -882,17 +882,16 @@ describe('Puppeteer', function() {
     it('should move with the arrow keys', SX(async function(){
       await page.navigate(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
-      let keyboard = page.keyboard;
       await page.type('Hello World!');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
       for (let i = 0; i < 'World!'.length; i++)
         page.press('ArrowLeft');
       await page.type('inserted ');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello inserted World!');
-      keyboard.down('Shift');
+      page.keyboard.down('Shift');
       for (let i = 0; i < 'inserted '.length; i++)
         page.press('ArrowLeft');
-      keyboard.up('Shift');
+      page.keyboard.up('Shift');
       await page.press('Backspace');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
     }));
@@ -991,12 +990,12 @@ describe('Puppeteer', function() {
     it('keyboard.modifiers()', SX(async function(){
       let keyboard = page.keyboard;
       expect(keyboard._modifiers).toBe(0);
-      keyboard.down('Shift');
+      await keyboard.down('Shift');
       expect(keyboard._modifiers).toBe(8);
-      keyboard.down('Alt');
+      await keyboard.down('Alt');
       expect(keyboard._modifiers).toBe(9);
-      keyboard.up('Shift');
-      keyboard.up('Alt');
+      await keyboard.up('Shift');
+      await keyboard.up('Alt');
       expect(keyboard._modifiers).toBe(0);
     }));
     it('should resize the textarea', SX(async function(){
