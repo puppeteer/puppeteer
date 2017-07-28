@@ -1,6 +1,8 @@
-# Puppeteer [![Build Status](https://travis-ci.com/GoogleChrome/puppeteer.svg?token=8jabovWqb8afz5RDcYqx&branch=master)](https://travis-ci.com/GoogleChrome/puppeteer) | [API](docs/api.md) | [FAQ](#faq)
+# Puppeteer [![Build Status](https://travis-ci.com/GoogleChrome/puppeteer.svg?token=8jabovWqb8afz5RDcYqx&branch=master)](https://travis-ci.com/GoogleChrome/puppeteer) 
+###### [API](docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md)
 
 Puppeteer is a node library which provides a high-level API to control Chromium over the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
+
 
 ## Use Cases
 * Up-to-date testing environment that supports the latest Javascript features.
