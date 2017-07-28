@@ -940,7 +940,7 @@ const {Browser} = require('.');
 const browser = new Browser();
 
 browser.newPage().then(async page => {
-  const watchDog = page.waitForFunction('window.innerWidth < 100);
+  const watchDog = page.waitForFunction('window.innerWidth < 100');
   page.setViewport({width: 50, height: 50});
   await watchDog;
   browser.close();
