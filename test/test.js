@@ -388,6 +388,11 @@ describe('Puppeteer', function() {
       await page.waitFor(timeout);
       expect(Date.now() - startTime).not.toBeLessThan(timeout / 2);
     }));
+    it('should wait for predicate', SX(async function() {
+      const watchdog = page.waitFor(() => window.innerWidth < 100);
+      page.setViewport({width: 10, height: 10});
+      await watchdog;
+    }));
     it('should throw when unknown type', SX(async function() {
       try {
         await page.waitFor({foo: 'bar'});

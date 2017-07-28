@@ -58,7 +58,7 @@
     + [page.uploadFile(selector, ...filePaths)](#pageuploadfileselector-filepaths)
     + [page.url()](#pageurl)
     + [page.viewport()](#pageviewport)
-    + [page.waitFor(selectorOrTimeout[, options])](#pagewaitforselectorortimeout-options)
+    + [page.waitFor(selectorOrFunctionOrTimeout[, options])](#pagewaitforselectororfunctionortimeout-options)
     + [page.waitForFunction(pageFunction[, options], ...args)](#pagewaitforfunctionpagefunction-options-args)
     + [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
     + [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
@@ -91,7 +91,7 @@
     + [frame.parentFrame()](#frameparentframe)
     + [frame.title()](#frametitle)
     + [frame.url()](#frameurl)
-    + [frame.waitFor(selectorOrTimeout[, options])](#framewaitforselectorortimeout-options)
+    + [frame.waitFor(selectorOrFunctionOrTimeout[, options])](#framewaitforselectororfunctionortimeout-options)
     + [frame.waitForFunction(pageFunction[, options], ...args)](#framewaitforfunctionpagefunction-options-args)
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
   * [class: Request](#class-request)
@@ -641,16 +641,17 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 #### page.viewport()
 - returns: <[Object]>  An object with the save fields as described in [page.setViewport](#pagesetviewportviewport)
 
-#### page.waitFor(selectorOrTimeout[, options])
-- `selectorOrTimeout` <[string]|[number]> A [selector] or timeout to wait for
+#### page.waitFor(selectorOrFunctionOrTimeout[, options])
+- `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
-  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]>
 
+This is a shortcut method for [frame.waitForSelector](#framewaitforselectorselector-options) or [page.mainFrame().waitForFunction()](#framewaitforfunctionpagefunction-options-args).
+
 This method behaves differently with respect to the type of the first parameter:
-- if `selectorOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
-- if `selectorOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
+- if `selectorOrFunctionOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
+- if `selectorOrFunctionOrTimeout` is a `function`, than the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
+- if `selectorOrFunctionOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
 The method is a shortcut for [page.mainFrame().waitFor()](#framewaitforselectorortimeout-options).
@@ -904,16 +905,17 @@ Note: This value is calculated once when the frame is created, and will not upda
 
 Returns frame's url.
 
-#### frame.waitFor(selectorOrTimeout[, options])
-- `selectorOrTimeout` <[string]|[number]> A [selector] or timeout to wait for
+#### frame.waitFor(selectorOrFunctionOrTimeout[, options])
+- `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
-  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]>
 
+This is a shortcut method for [frame.waitForSelector](#framewaitforselectorselector-options) or [page.mainFrame().waitForFunction()](#framewaitforfunctionpagefunction-options-args).
+
 This method behaves differently with respect to the type of the first parameter:
-- if `selectorOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselectoroptions)
-- if `selectorOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
+- if `selectorOrFunctionOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
+- if `selectorOrFunctionOrTimeout` is a `function`, than the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
+- if `selectorOrFunctionOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
 #### frame.waitForFunction(pageFunction[, options], ...args)
