@@ -1133,28 +1133,6 @@ describe('Puppeteer', function() {
       expect(result).toBe('<div>hello</div>');
     }));
   });
-  describe('Request implements Body', function() {
-    it('should work', SX(async function() {
-      await page.navigate(EMPTY_PAGE);
-      server.setRoute('/post', (req, res) => res.end());
-      let request = null;
-      page.on('request', r => request = r);
-      await page.evaluate(() => fetch('./post', { method: 'POST', body: JSON.stringify({foo: 'bar'})}));
-      expect(request).toBeTruthy();
-      expect(await request.text()).toBe('{"foo":"bar"}');
-      expect(await request.json()).toEqual({foo: 'bar'});
-    }));
-  });
-  describe('Response implements Body', function() {
-    it('should work', SX(async function() {
-      let response = null;
-      page.on('response', r => response = r);
-      await page.navigate(PREFIX + '/simple.json');
-      expect(response).toBeTruthy();
-      expect(await response.text()).toBe('{"foo": "bar"}\n');
-      expect(await response.json()).toEqual({foo: 'bar'});
-    }));
-  });
   describe('Network Events', function() {
     it('Page.Events.Request', SX(async function() {
       let requests = [];
@@ -1165,6 +1143,15 @@ describe('Puppeteer', function() {
       expect(requests[0].method).toBe('GET');
       expect(requests[0].response()).toBeTruthy();
     }));
+    it('Page.Events.Request should report post data', SX(async function() {
+      await page.navigate(EMPTY_PAGE);
+      server.setRoute('/post', (req, res) => res.end());
+      let request = null;
+      page.on('request', r => request = r);
+      await page.evaluate(() => fetch('./post', { method: 'POST', body: JSON.stringify({foo: 'bar'})}));
+      expect(request).toBeTruthy();
+      expect(request.postData).toBe('{"foo":"bar"}');
+    }));
     it('Page.Events.Response', SX(async function() {
       let responses = [];
       page.on('response', response => responses.push(response));
@@ -1174,6 +1161,14 @@ describe('Puppeteer', function() {
       expect(responses[0].status).toBe(200);
       expect(responses[0].ok).toBe(true);
       expect(responses[0].request()).toBeTruthy();
+    }));
+    it('Page.Events.Response should provide body', SX(async function() {
+      let response = null;
+      page.on('response', r => response = r);
+      await page.navigate(PREFIX + '/simple.json');
+      expect(response).toBeTruthy();
+      expect(await response.text()).toBe('{"foo": "bar"}\n');
+      expect(await response.json()).toEqual({foo: 'bar'});
     }));
     it('Page.Events.RequestFailed', SX(async function() {
       page.setRequestInterceptor(request => {

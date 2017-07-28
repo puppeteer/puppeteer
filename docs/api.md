@@ -97,14 +97,18 @@
   * [class: Request](#class-request)
     + [request.headers](#requestheaders)
     + [request.method](#requestmethod)
+    + [request.postData](#requestpostdata)
     + [request.response()](#requestresponse)
     + [request.url](#requesturl)
   * [class: Response](#class-response)
+    + [response.buffer()](#responsebuffer)
     + [response.headers](#responseheaders)
+    + [response.json()](#responsejson)
     + [response.ok](#responseok)
     + [response.request()](#responserequest)
     + [response.status](#responsestatus)
     + [response.statusText](#responsestatustext)
+    + [response.text()](#responsetext)
     + [response.url](#responseurl)
   * [class: InterceptedRequest](#class-interceptedrequest)
     + [interceptedRequest.abort()](#interceptedrequestabort)
@@ -113,10 +117,6 @@
     + [interceptedRequest.method](#interceptedrequestmethod)
     + [interceptedRequest.postData](#interceptedrequestpostdata)
     + [interceptedRequest.url](#interceptedrequesturl)
-  * [class: Body](#class-body)
-    + [body.buffer()](#bodybuffer)
-    + [body.json()](#bodyjson)
-    + [body.text()](#bodytext)
 
 <!-- tocstop -->
 
@@ -988,6 +988,10 @@ If request gets a 'redirect' response, the request is successfully finished with
 
 Contains the request's method (GET, POST, etc.)
 
+#### request.postData
+- <[string]>
+
+Contains the request's post body, if any.
 
 #### request.response()
 - returns: <[Response]> A matching [Response] object, or `null` if the response has not been received yet.
@@ -1001,8 +1005,16 @@ Contains the URL of the request.
 
 [Response] class represents responses which are received by page. [Response] implements [Body] mixin, which allows clients to call `response.json()` or `response.text()` to get different representations of response body.
 
+#### response.buffer()
+- returns: <Promise<[Buffer]>> Promise which resolves to a buffer with response body.
+
 #### response.headers
 - <[Map]> A map of HTTP headers associated with the response.
+
+#### response.json()
+- returns: <Promise<[Object]>> Promise which resolves to a JSON representation of response body.
+
+This method will throw if the response body is not parsable via `JSON.parse`.
 
 #### response.ok
 - <[boolean]>
@@ -1012,18 +1024,18 @@ Contains a boolean stating whether the response was successful (status in the ra
 #### response.request()
 - returns: <[Request]> A matching [Request] object.
 
-
 #### response.status
 - <[number]>
 
 Contains the status code of the response (e.g., 200 for a success).
-
 
 #### response.statusText
 - <[string]>
 
 Contains the status message corresponding to the status code (e.g., OK for 200).
 
+#### response.text()
+- returns: <Promise<[text]>> Promise which resolves to a text representation of response body.
 
 #### response.url
 - <[string]>
@@ -1067,16 +1079,6 @@ Contains `POST` data for `POST` requests.
 
 If changed, the request url will be modified in a way that's not observable by page. Must not be changed in response to an authChallenge.
 
-### class: Body
-
-#### body.buffer()
-- returns: <Promise<[Buffer]>>
-
-#### body.json()
-- returns: <Promise<[Object]>>
-
-#### body.text()
-- returns: <Promise<[text]>>
 
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
