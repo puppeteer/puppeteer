@@ -11,18 +11,11 @@ Puppeteer is a node library which provides a high-level API to control Chromium 
 
 ## Installation
 
-Get the source:
-
+To add Puppeteer to your project, run:
 ```
-git clone https://github.com/GoogleChrome/puppeteer
-cd puppeteer
+yarn add puppeteer
 ```
 
-Install the dependencies:
-
-```sh
-yarn # or 'npm install'
-```
 > **NOTE** Puppeteer bundles Chromium (~90Mb) which it is guaranteed to work with. However, you're free to point Puppeteer to any Chromium executable ([example](https://github.com/GoogleChrome/puppeteer/blob/master/examples/custom-chromium-revision.js))
 
 

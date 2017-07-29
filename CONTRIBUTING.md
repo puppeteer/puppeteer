@@ -15,6 +15,18 @@ You generally only need to submit a CLA once, so if you've already submitted one
 (even if it was for a different project), you probably don't need to do it
 again.
 
+## Getting the Code
+
+1. Clone repository
+```bash
+git clone https://github.com/GoogleChrome/puppeteer
+cd puppeteer
+```
+2.  Install dependencies
+```bash
+yarn # or 'npm install'
+```
+
 ## Code reviews
 
 All submissions, including submissions by project members, require review. We
@@ -24,39 +36,42 @@ information on using pull requests.
 
 ## Code Style
 
-- coding style is fully defined in [.eslintrc](https://github.com/GoogleChrome/puppeteer/blob/master/.eslintrc.js). Please make sure to run `npm run lint` before submitting PR
+- coding style is fully defined in [.eslintrc](https://github.com/GoogleChrome/puppeteer/blob/master/.eslintrc.js)
 - code should be annotated with [closure annotations](https://github.com/google/closure-compiler/wiki/Annotating-JavaScript-for-the-Closure-Compiler)
 - comments should be generally avoided. If the code would not be understood without comments, consider re-writing the code to make it self-explanatory
 
-## Documentation
+To run code linter, use:
+```
+npm run lint
+```
 
-All public API should have a descriptive entry in the [docs/api.md](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md). There's a [documentation linter](https://github.com/GoogleChrome/puppeteer/tree/master/utils/doclint) that:
-- makes sure documentation is aligned with the codebase
-- generates up-to-date table-of-contents
+## Writing Documentation
 
-To run the linter, use
+All public API should have a descriptive entry in the [docs/api.md](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md). There's a [documentation linter](https://github.com/GoogleChrome/puppeteer/tree/master/utils/doclint) which makes sure documentation is aligned with the codebase.
+
+To run documentation linter, use
 ```
 npm run doc
 ```
 
-## Dependencies
+## Adding New Dependencies
 
 For all dependencies (both installation and development):
-- **Do not add** a dependency if the desired functionality is easily implementable in scope of the project
+- **Do not add** a dependency if the desired functionality is easily implementable
 - if adding a dependency, it should be well-maintained and trustworthy
 
-For installation dependencies:
+A barrier for introducing new installation dependencies is especially high:
 - **do not add** installation dependency unless it's critical to project success
 
-## Tests
+## Writing Tests
 
 - every feature should be accompanied by a test
 - every public api event/method should be accompanied by a test
-- tests should be *hermetic*. They should not require internet connection or depend on external services.
+- tests should be *hermetic*. Tests should not depend on external services.
 - tests should work on all three platforms: Mac, Linux and Win. This is especially important for screenshot tests.
 
 Puppeteer tests are located in [test/test.js](https://github.com/GoogleChrome/puppeteer/blob/master/test/test.js)
-and are written using [Jasmine](https://jasmine.github.io/) testing framework.
+and are written using [Jasmine](https://jasmine.github.io/) testing framework. Despite being named 'unit', these are integration tests, making sure public API methods and events work as expected.
 
 - To run all tests:
 ```
@@ -70,7 +85,16 @@ npm run unit -- --filter=waitFor
 ```js
   ...
   // Using "fit" to run specific test
-  fit('should work', SX(function() {
+  fit('should work', SX(async function() {
+    await response = page.navigate(EMPTY_PAGE);
+    expect(response.ok).toBe(true);
+  }))
+```
+- To disable a specific test, substitute the `it` with `xit` (mnemonic rule: '*cross it*'):
+```js
+  ...
+  // Using "xit" to skip specific test
+  xit('should work', SX(async function() {
     await response = page.navigate(EMPTY_PAGE);
     expect(response.ok).toBe(true);
   }))
@@ -79,7 +103,7 @@ npm run unit -- --filter=waitFor
 ```
 HEADLESS=false npm run unit
 ```
-- To debug a test, "focus" a test first and then run
+- To debug a test, "focus" a test first and then run:
 ```
 npm run debug-unit
 ```
@@ -89,10 +113,14 @@ are used to test `phantom_shim`.
 
 ## Public API Coverage
 
-Every public API method should be called at least once during `npm run unit` command.
-To ensure this, there's a `npm run coverage` command which tracks public API usage and reports back if some methods were not called.
+Every public API method or event should be called at least once in tests. To ensure this, there's a coverage command which tracks calls to public API and reports back if some methods/events were not called.
 
-## Debugging
+- To run coverage:
+```
+npm run coverage
+```
+
+## Debugging Puppeteer
 Puppeteer uses [DEBUG](https://github.com/visionmedia/debug) module to expose some of it's inner guts under the `puppeteer` namespace.
 Try putting the following script in the `script.js` and running it via `DEBUG=* node script.js`:
 
