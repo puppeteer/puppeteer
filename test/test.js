@@ -457,6 +457,9 @@ describe('Puppeteer', function() {
       expect(error.message).toContain('Cannot navigate to invalid URL');
     }));
     it('should fail when navigating to bad SSL', SX(async function() {
+      page.on('request', request => expect(request).toBeTruthy());
+      page.on('requestfinished', request => expect(request).toBeTruthy());
+      page.on('requestfailed', request => expect(request).toBeTruthy());
       let error = null;
       try {
         await page.navigate(HTTPS_PREFIX + '/empty.html');
