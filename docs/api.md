@@ -176,14 +176,14 @@ const browser = new Browser();
 browser.newPage().then(async page => {
   await page.navigate('https://example.com');
   browser.close();
-})
+});
 ```
 
 #### new Browser([options])
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
-	- `headless` <[boolean]> Wether to run chromium in headless mode. Defaults to `true`.
+	- `headless` <[boolean]> Whether to run chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true`.
 	- `executablePath` <[string]> Path to a chromium executable to run instead of bundled chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-	- `args` <[Array]<[string]>> Additional arguments to pass to the chromium instance. List of chromium flags could be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
+	- `args` <[Array]<[string]>> Additional arguments to pass to the chromium instance. List of chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
 
 
 #### browser.close()
@@ -263,7 +263,7 @@ page.evaluate(() => console.log(5, 'hello', {foo: 'bar'}));
 #### event: 'dialog'
 - <[Dialog]>
 
-Emitted when a javascript dialog, such as `alert`, `prompt`, `confirm` or `beforeunload`, gets opened on the page. Puppeteer can take action to the dialog via dialog's [accept](#dialogacceptprompttext) or [dismiss](#dialogdismiss) methods.
+Emitted when a JavaScript dialog, such as `alert`, `prompt`, `confirm` or `beforeunload`, gets opened on the page. Puppeteer can take action to the dialog via dialog's [accept](#dialogacceptprompttext) or [dismiss](#dialogdismiss) methods.
 
 #### event: 'frameattached'
 - <[Frame]>
@@ -342,7 +342,7 @@ Shortcut for [page.mainFrame().$$(selector, pageFunction, ...args)](#pageselecto
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
 
-Adds a `<script></script>` tag to the page with the desired url. Alternatively, javascript could be injected to the page via [`page.injectFile`](#pageinjectfilefilepath) method.
+Adds a `<script>` tag to the page with the desired url. Alternatively, JavaScript could be injected to the page via [`page.injectFile`](#pageinjectfilefilepath) method.
 
 #### page.click(selector[, options])
 - `selector` <[string]> A query [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
@@ -366,7 +366,7 @@ const {Browser} = require('puppeteer');
 const browser = new Browser();
 browser.newPage().then(async page =>
   const result = await page.evaluate(() => {
-    return Promise.resolve().then(() => 8 * 7);
+    return Promise.resolve(8 * 7);
   });
   console.log(result); // prints "56"
   browser.close();
@@ -390,7 +390,7 @@ Adds a function which would be invoked in one of the following scenarios:
 - whenever the page gets navigated
 - whenever the child frame gets attached or navigated. In this case, the function gets invoked in the context of the newly attached frame
 
-The function is invoked after the document was created but before any of its scripts were run. This is useful to amend javascript environment, e.g. to seed [Math.random](https://github.com/GoogleChrome/puppeteer/blob/master/examples/unrandomize.js)
+The function is invoked after the document was created but before any of its scripts were run. This is useful to amend JavaScript environment, e.g. to seed [Math.random](https://github.com/GoogleChrome/puppeteer/blob/master/examples/unrandomize.js)
 
 #### page.focus(selector)
 - `selector` <[string]> A query [selector] of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
@@ -430,7 +430,7 @@ Navigate to the next page in history.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
 
 #### page.injectFile(filePath)
-- `filePath` <[string]> Path to the javascript file to be injected into page. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+- `filePath` <[string]> Path to the JavaScript file to be injected into page. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]> Promise which resolves when file gets successfully evaluated in page.
 
 #### page.keyboard
@@ -792,7 +792,7 @@ browser.newPage().then(async page => {
 });
 ```
 
-> **NOTE** Chrome Headless currently has issues with managing javascript dialogs, see [issue 13](https://github.com/GoogleChrome/puppeteer/issues/13)
+> **NOTE** Chrome Headless currently has issues with managing JavaScript dialogs, see [issue 13](https://github.com/GoogleChrome/puppeteer/issues/13)
 
 #### dialog.accept([promptText])
 - `promptText` <[string]> A text to enter in prompt. Does not cause any effects if the dialog's `type` is not prompt.
@@ -853,7 +853,7 @@ browser.newPage().then(async page => {
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
 
-Adds a `<script></script>` tag to the frame with the desired url. Alternatively, javascript could be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
+Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScript could be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
 
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
@@ -879,9 +879,9 @@ If the function, passed to the `frame.evaluate`, returns a [Promise], then `fram
 #### frame.hover(selector)
 - `selector` <[string]> A query [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
- 
+
 #### frame.injectFile(filePath)
-- `filePath` <[string]> Path to the javascript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+- `filePath` <[string]> Path to the JavaScript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]> Promise which resolves when file gets successfully evaluated in frame.
 
 #### frame.isDetached()
