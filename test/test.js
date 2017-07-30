@@ -1178,6 +1178,35 @@ describe('Puppeteer', function() {
       expect(await response.text()).toBe('{"foo": "bar"}\n');
       expect(await response.json()).toEqual({foo: 'bar'});
     }));
+    it('Page.Events.Response should not report body unless request is finished', SX(async() => {
+      await page.navigate(EMPTY_PAGE);
+      // Setup server to trap request.
+      let serverResponse = null;
+      server.setRoute('/get', (req, res) => {
+        serverResponse = res;
+        res.write('hello ');
+      });
+      // Setup page to trap response.
+      let pageResponse = null;
+      let requestFinished = false;
+      page.on('response', r => pageResponse = r);
+      page.on('requestfinished', () => requestFinished = true);
+      // send request and wait for server response
+      page.evaluate(() => fetch('./get', { method: 'GET'}));
+      await waitForEvents(page, 'response');
+
+      expect(serverResponse).toBeTruthy();
+      expect(pageResponse).toBeTruthy();
+      expect(pageResponse.status).toBe(200);
+      expect(requestFinished).toBe(false);
+
+      let responseText = pageResponse.text();
+      // Write part of the response and wait for it to be flushed.
+      await new Promise(x => serverResponse.write('wor', x));
+      // Finish response.
+      await new Promise(x => serverResponse.end('ld!', x));
+      expect(await responseText).toBe('hello world!');
+    }));
     it('Page.Events.RequestFailed', SX(async function() {
       page.setRequestInterceptor(request => {
         if (request.url.endsWith('css'))
