@@ -1098,6 +1098,15 @@ describe('Puppeteer', function() {
           fail(modifiers[modifier] + ' should be false');
       }
     }));
+    it('should specify repeat property', SX(async function(){
+      await page.navigate(PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      await page.$('textarea', textarea => textarea.addEventListener('keydown', e => window.lastEvent = e, true));
+      await page.keyboard.down('a', {text: 'a'});
+      expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(false);
+      await page.press('a');
+      expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(true);
+    }));
     function dimensions() {
       let rect = document.querySelector('textarea').getBoundingClientRect();
       return {
