@@ -16,7 +16,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const {promisify} = require('util');
+
 const readFileAsync = promisify(fs.readFile);
 const readdirAsync = promisify(fs.readdir);
 const writeFileAsync = promisify(fs.writeFile);
@@ -126,6 +126,29 @@ class SourceFactory {
     const filePaths = fileNames.filter(fileName => fileName.endsWith(extension)).map(fileName => path.join(dirPath, fileName));
     return Promise.all(filePaths.map(filePath => this.readFile(filePath)));
   }
+}
+
+/**
+ * @param {function(?)} nodeFunction
+ * @return {function(?):!Promise<?>}
+ */
+function promisify(nodeFunction) {
+  /**
+   * @param {!Array<?>} options
+   * @return {!Promise<?>}
+   */
+  return function(...options) {
+    return new Promise(function(fulfill, reject) {
+      options.push(callback);
+      nodeFunction.call(null, ...options);
+      function callback(err, result) {
+        if (err)
+          reject(err);
+        else
+          fulfill(result);
+      }
+    });
+  };
 }
 
 module.exports = SourceFactory;
