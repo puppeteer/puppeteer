@@ -316,8 +316,12 @@ Emitted when a [response] is received.
 - `pageFunction` <[function]\([Element]\)> Function to be evaluated with first element matching `selector`
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value.
+Example:
+```js
+const outerhtml = await page.$('#box', e => e.outerHTML);
+```
 <!-- gen:stop -->
-Shortcut for [page.mainFrame().$(selector, pageFunction, ...args)](#pageselector-fun-args).
+Shortcut for [page.mainFrame().$(selector, pageFunction, ...args)](#frameselector-pagefunction-args).
 
 #### page.$$(selector, pageFunction, ...args)
 <!-- gen:paste('frame.$$') -->
@@ -326,15 +330,22 @@ Shortcut for [page.mainFrame().$(selector, pageFunction, ...args)](#pageselector
 - `pageFunction` <[function]\([Element]\)> Function to be evaluted for every element matching `selector`.
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Array]<[Object]>>> Promise which resolves to array of function return values.
+Example:
+```js
+const headings = await page.$$('h1,h2,h3,h4', el => el.textContent);
+for (const heading of headings) console.log(heading);
+```
 <!-- gen:stop -->
 
-Shortcut for [page.mainFrame().$$(selector, pageFunction, ...args)](#pageselector-fun-args).
+Shortcut for [page.mainFrame().$$(selector, pageFunction, ...args)](#frameselector-pagefunction-args-1).
 
 #### page.addScriptTag(url)
 <!-- gen:paste('frame.addScriptTag') -->
 <!-- Text below is automatically copied from "gen:copy('frame.addScriptTag')" -->
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
+
+Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScript could be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
 <!-- gen:stop -->
 
 Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
@@ -361,9 +372,29 @@ Shortcut for [page.mainFrame().click(selector[, options])](#frameclickselector-o
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `...args` <...[string]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
+
+If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
+
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+browser.newPage().then(async page =>
+  const result = await page.evaluate(() => {
+    return Promise.resolve(8 * 7);
+  });
+  console.log(result); // prints "56"
+  browser.close();
+});
+```
+
+A string can also be passed in instead of a function.
+
+```js
+console.log(await page.evaluate('1 + 2')); // prints "3"
+```
 <!-- gen:stop -->
 
-Shortcut for [page.mainFrame().evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args) method.
+Shortcut for [page.mainFrame().evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args).
 
 #### page.evaluateOnNewDocument(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
@@ -663,6 +694,12 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
 - returns: <[Promise]>
+
+This method behaves differently with respect to the type of the first parameter:
+- if `selectorOrFunctionOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
+- if `selectorOrFunctionOrTimeout` is a `function`, than the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
+- if `selectorOrFunctionOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
+- otherwise, an exception is thrown
 <!-- gen:stop -->
 
 Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options])](#framewaitforselectororfunctionortimeout-options).
@@ -678,6 +715,19 @@ Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options])](
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - `...args` <...[Object]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
+
+The `waitForFunction` could be used to observe viewport size change:
+```js
+const {Browser} = require('.');
+const browser = new Browser();
+
+browser.newPage().then(async page => {
+  const watchDog = page.waitForFunction('window.innerWidth < 100');
+  page.setViewport({width: 50, height: 50});
+  await watchDog;
+  browser.close();
+});
+```
 <!-- gen:stop -->
 Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args).
 
@@ -699,6 +749,24 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options, ...args])
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
+
+Wait for the `selector` to appear in page. If at the moment of calling
+the method the `selector` already exists, the method will return
+immediately. If the selector doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
+
+This method works across navigations:
+```js
+const {Browser} = new require('puppeteer');
+const browser = new Browser();
+
+browser.newPage().then(async page => {
+  let currentURL;
+  page.waitForSelector('img').then(() => console.log('First URL with image: ' + currentURL));
+  for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
+    await page.navigate(currentURL);
+  browser.close();
+});
+```
 <!-- gen:stop -->
 Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options).
 
@@ -854,11 +922,11 @@ browser.newPage().then(async page => {
 - `pageFunction` <[function]\([Element]\)> Function to be evaluated with first element matching `selector`
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value.
-<!-- gen:stop -->
 Example:
 ```js
 const outerhtml = await page.$('#box', e => e.outerHTML);
 ```
+<!-- gen:stop -->
 
 
 #### frame.$$(selector, pageFunction, ...args)
@@ -867,20 +935,21 @@ const outerhtml = await page.$('#box', e => e.outerHTML);
 - `pageFunction` <[function]\([Element]\)> Function to be evaluted for every element matching `selector`.
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Array]<[Object]>>> Promise which resolves to array of function return values.
-<!-- gen:stop -->
 Example:
 ```js
 const headings = await page.$$('h1,h2,h3,h4', el => el.textContent);
 for (const heading of headings) console.log(heading);
 ```
+<!-- gen:stop -->
 
 
 #### frame.addScriptTag(url)
 <!-- gen:copy('frame.addScriptTag') -->
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
-<!-- gen:stop -->
+
 Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScript could be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
+<!-- gen:stop -->
 
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
@@ -899,7 +968,7 @@ Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScri
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `...args` <...[string]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
-<!-- gen:stop -->
+
 If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
 
 ```js
@@ -919,6 +988,8 @@ A string can also be passed in instead of a function.
 ```js
 console.log(await page.evaluate('1 + 2')); // prints "3"
 ```
+<!-- gen:stop -->
+
 
 #### frame.focus(selector)
 <!-- gen:copy('frame.focus') -->
@@ -979,15 +1050,14 @@ Returns frame's url.
 - `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
 - returns: <[Promise]>
-<!-- gen:stop -->
-
-This is a shortcut method for [frame.waitForSelector](#framewaitforselectorselector-options) or [page.mainFrame().waitForFunction()](#framewaitforfunctionpagefunction-options-args).
 
 This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
 - if `selectorOrFunctionOrTimeout` is a `function`, than the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
 - if `selectorOrFunctionOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
+<!-- gen:stop -->
+
 
 #### frame.waitForFunction(pageFunction[, options, ...args])
 <!-- gen:copy('frame.waitForFunction') -->
@@ -999,7 +1069,6 @@ This method behaves differently with respect to the type of the first parameter:
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - `...args` <...[Object]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
-<!-- gen:stop -->
 
 The `waitForFunction` could be used to observe viewport size change:
 ```js
@@ -1013,6 +1082,7 @@ browser.newPage().then(async page => {
   browser.close();
 });
 ```
+<!-- gen:stop -->
 
 #### frame.waitForSelector(selector[, options])
 <!-- gen:copy('frame.waitForSelector') -->
@@ -1021,7 +1091,6 @@ browser.newPage().then(async page => {
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
-<!-- gen:stop -->
 
 Wait for the `selector` to appear in page. If at the moment of calling
 the method the `selector` already exists, the method will return
@@ -1040,6 +1109,7 @@ browser.newPage().then(async page => {
   browser.close();
 });
 ```
+<!-- gen:stop -->
 
 ### class: Request
 
