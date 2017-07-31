@@ -310,76 +310,60 @@ Emitted when a request is successfully finished.
 Emitted when a [response] is received.
 
 #### page.$(selector, pageFunction, ...args)
-
+<!-- gen:paste('frame.$') -->
+<!-- Text below is automatically copied from "gen:copy('frame.$')" -->
 - `selector` <[string]> A [selector] to be matched in the page
-- `pageFunction` <[function]\([Element]\)> Function to be evaluated in-page with first element matching `selector`
+- `pageFunction` <[function]\([Element]\)> Function to be evaluated with first element matching `selector`
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value.
-
-Example:
-```js
-const outerhtml = await page.$('#box', e => e.outerHTML);
-```
-
+<!-- gen:stop -->
 Shortcut for [page.mainFrame().$(selector, pageFunction, ...args)](#pageselector-fun-args).
 
 #### page.$$(selector, pageFunction, ...args)
-
+<!-- gen:paste('frame.$$') -->
+<!-- Text below is automatically copied from "gen:copy('frame.$$')" -->
 - `selector` <[string]> A [selector] to be matched in the page
-- `pageFunction` <[function]\([Element]\)> Function to be evaluated in-page for every matching element.
+- `pageFunction` <[function]\([Element]\)> Function to be evaluted for every element matching `selector`.
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Array]<[Object]>>> Promise which resolves to array of function return values.
-
-Example:
-```js
-const headings = await page.$$('h1,h2,h3,h4', el => el.textContent);
-for (const heading of headings) console.log(heading);
-```
+<!-- gen:stop -->
 
 Shortcut for [page.mainFrame().$$(selector, pageFunction, ...args)](#pageselector-fun-args).
 
 #### page.addScriptTag(url)
+<!-- gen:paste('frame.addScriptTag') -->
+<!-- Text below is automatically copied from "gen:copy('frame.addScriptTag')" -->
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
+<!-- gen:stop -->
 
-Adds a `<script>` tag to the page with the desired url. Alternatively, JavaScript could be injected to the page via [`page.injectFile`](#pageinjectfilefilepath) method.
+Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
+
 
 #### page.click(selector[, options])
+<!-- gen:paste('frame.click') -->
+<!-- Text below is automatically copied from "gen:copy('frame.click')" -->
 - `selector` <[string]> A query [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
   - `clickCount` <[number]> defaults to 1
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. Promise gets rejected if there's no element matching `selector`.
+<!-- gen:stop -->
+
+Shortcut for [page.mainFrame().click(selector[, options])](#frameclickselector-options).
 
 #### page.close()
 - returns: <[Promise]> Returns promise which resolves when page gets closed.
 
 #### page.evaluate(pageFunction, ...args)
+<!-- gen:paste('frame.evaluate') -->
+<!-- Text below is automatically copied from "gen:copy('frame.evaluate')" -->
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `...args` <...[string]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
+<!-- gen:stop -->
 
-If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
-
-```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
-browser.newPage().then(async page =>
-  const result = await page.evaluate(() => {
-    return Promise.resolve(8 * 7);
-  });
-  console.log(result); // prints "56"
-  browser.close();
-});
-```
-
-A string can also be passed in instead of a function.
-
-```js
-console.log(await page.evaluate('1 + 2')); // prints "3"
-```
-
-This is a shortcut for [page.mainFrame().evaluate()](#frameevaluatefun-args) method.
+Shortcut for [page.mainFrame().evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args) method.
 
 #### page.evaluateOnNewDocument(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
@@ -393,8 +377,13 @@ Adds a function which would be invoked in one of the following scenarios:
 The function is invoked after the document was created but before any of its scripts were run. This is useful to amend JavaScript environment, e.g. to seed [Math.random](https://github.com/GoogleChrome/puppeteer/blob/master/examples/unrandomize.js)
 
 #### page.focus(selector)
+<!-- gen:paste('frame.focus') -->
+<!-- Text below is automatically copied from "gen:copy('frame.focus')" -->
 - `selector` <[string]> A query [selector] of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. Promise gets rejected if there's no element matching `selector`.
+<!-- gen:stop -->
+
+Shortcut for [page.mainFrame().focus(selector)](#framefocusselector).
 
 #### page.frames()
 - returns: <[Array]<[Frame]>> An array of all frames attached to the page.
@@ -426,12 +415,22 @@ can not go back, resolves to null.
 Navigate to the next page in history.
 
 #### page.hover(selector)
+<!-- gen:paste('frame.hover') -->
+<!-- Text below is automatically copied from "gen:copy('frame.hover')" -->
 - `selector` <[string]> A query [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
+<!-- gen:stop -->
+
+Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
 
 #### page.injectFile(filePath)
-- `filePath` <[string]> Path to the JavaScript file to be injected into page. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-- returns: <[Promise]> Promise which resolves when file gets successfully evaluated in page.
+<!-- gen:paste('frame.injectFile') -->
+<!-- Text below is automatically copied from "gen:copy('frame.injectFile')" -->
+- `filePath` <[string]> Path to the JavaScript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+- returns: <[Promise]> Promise which resolves when file gets successfully evaluated in frame.
+<!-- gen:stop -->
+
+Shortcut for [page.mainFrame().injectFile(filePath)](#frameinjectfilefilepath).
 
 #### page.keyboard
 
@@ -622,7 +621,12 @@ screenshot (unless a `fullPage` option is given).
 In case of multiple pages in one browser, each page can have its own viewport size.
 
 #### page.title()
+<!-- gen:paste('frame.title') -->
+<!-- Text below is automatically copied from "gen:copy('frame.title')" -->
 - returns: <[Promise]<[string]>> Returns page's title.
+<!-- gen:stop -->
+
+Shortcut for [page.mainFrame().title()](#frametitle).
 
 #### page.type(text)
 - `text` <[string]> A text to type into a focused element.
@@ -633,12 +637,20 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 To press a special key, use [`page.press`](#pagepresskey-options).
 
 #### page.uploadFile(selector, ...filePaths)
+<!-- gen:paste('frame.uploadFile') -->
+<!-- Text below is automatically copied from "gen:copy('frame.uploadFile')" -->
 - `selector` <[string]> A query [selector] to a file input
 - `...filePaths` <[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]> Promise which resolves when the value is set.
+<!-- gen:stop -->
+
+Shortcut for [page.mainFrame().uploadFile(selector, ...filePaths)](#frameuploadfileselector-filepaths).
 
 #### page.url()
-- returns: <[string]> Current page url.
+<!-- gen:paste('frame.url') -->
+<!-- Text below is automatically copied from "gen:copy('frame.url')" -->
+- returns: <[string]>
+<!-- gen:stop -->
 
 This is a shortcut for [page.mainFrame().url()](#frameurl)
 
@@ -646,21 +658,18 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - returns: <[Object]>  An object with the save fields as described in [page.setViewport](#pagesetviewportviewport)
 
 #### page.waitFor(selectorOrFunctionOrTimeout[, options])
+<!-- gen:paste('frame.waitFor') -->
+<!-- Text below is automatically copied from "gen:copy('frame.waitFor')" -->
 - `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
 - returns: <[Promise]>
+<!-- gen:stop -->
 
-This is a shortcut method for [frame.waitForSelector](#framewaitforselectorselector-options) or [page.mainFrame().waitForFunction()](#framewaitforfunctionpagefunction-options-args).
-
-This method behaves differently with respect to the type of the first parameter:
-- if `selectorOrFunctionOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
-- if `selectorOrFunctionOrTimeout` is a `function`, than the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
-- if `selectorOrFunctionOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
-- otherwise, an exception is thrown
-
-The method is a shortcut for [page.mainFrame().waitFor()](#framewaitforselectorortimeout-options).
+Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options])](#framewaitforselectororfunctionortimeout-options).
 
 #### page.waitForFunction(pageFunction[, options, ...args])
+<!-- gen:paste('frame.waitForFunction') -->
+<!-- Text below is automatically copied from "gen:copy('frame.waitForFunction')" -->
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
   - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it could be one of the following values:
@@ -669,8 +678,8 @@ The method is a shortcut for [page.mainFrame().waitFor()](#framewaitforselectoro
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - `...args` <...[Object]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
-
-Shortcut for [page.mainFrame().waitForFunction()](#framewaitforfunctionpagefunction-options-args).
+<!-- gen:stop -->
+Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args).
 
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
@@ -683,13 +692,15 @@ Shortcut for [page.mainFrame().waitForFunction()](#framewaitforfunctionpagefunct
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.waitForSelector(selector[, options])
-- `selector` <[string]> A query [selector] to wait for on the page.
+<!-- gen:paste('frame.waitForSelector') -->
+<!-- Text below is automatically copied from "gen:copy('frame.waitForSelector')" -->
+- `selector` <[string]> CSS selector of awaited element,
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
-- returns: <[Promise]> Promise which resolves when the element matching `selector` appears in the page.
-
-Shortcut for [page.mainFrame().waitForSelector()](#framewaitforselectorselectoroptions).
+- returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
+<!-- gen:stop -->
+Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options).
 
 ### class: Keyboard
 
@@ -838,51 +849,94 @@ browser.newPage().then(async page => {
 ```
 
 #### frame.$(selector, pageFunction, ...args)
+<!-- gen:copy('frame.$') -->
 - `selector` <[string]> A [selector] to be matched in the page
 - `pageFunction` <[function]\([Element]\)> Function to be evaluated with first element matching `selector`
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value.
+<!-- gen:stop -->
+Example:
+```js
+const outerhtml = await page.$('#box', e => e.outerHTML);
+```
+
 
 #### frame.$$(selector, pageFunction, ...args)
+<!-- gen:copy('frame.$$') -->
 - `selector` <[string]> A [selector] to be matched in the page
 - `pageFunction` <[function]\([Element]\)> Function to be evaluted for every element matching `selector`.
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Array]<[Object]>>> Promise which resolves to array of function return values.
+<!-- gen:stop -->
+Example:
+```js
+const headings = await page.$$('h1,h2,h3,h4', el => el.textContent);
+for (const heading of headings) console.log(heading);
+```
+
 
 #### frame.addScriptTag(url)
+<!-- gen:copy('frame.addScriptTag') -->
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
-
+<!-- gen:stop -->
 Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScript could be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
 
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
 
 #### frame.click(selector[, options])
+<!-- gen:copy('frame.click') -->
 - `selector` <[string]> A query [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
   - `clickCount` <[number]> defaults to 1
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. Promise gets rejected if there's no element matching `selector`.
+<!-- gen:stop -->
 
 #### frame.evaluate(pageFunction, ...args)
+<!-- gen:copy('frame.evaluate') -->
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `...args` <...[string]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
+<!-- gen:stop -->
+If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
 
-If the function, passed to the `frame.evaluate`, returns a [Promise], then `frame.evaluate` would wait for the promise to resolve and return it's value.
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+browser.newPage().then(async page =>
+  const result = await page.evaluate(() => {
+    return Promise.resolve(8 * 7);
+  });
+  console.log(result); // prints "56"
+  browser.close();
+});
+```
+
+A string can also be passed in instead of a function.
+
+```js
+console.log(await page.evaluate('1 + 2')); // prints "3"
+```
 
 #### frame.focus(selector)
+<!-- gen:copy('frame.focus') -->
 - `selector` <[string]> A query [selector] of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. Promise gets rejected if there's no element matching `selector`.
+<!-- gen:stop -->
 
 #### frame.hover(selector)
+<!-- gen:copy('frame.hover') -->
 - `selector` <[string]> A query [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
+<!-- gen:stop -->
 
 #### frame.injectFile(filePath)
+<!-- gen:copy('frame.injectFile') -->
 - `filePath` <[string]> Path to the JavaScript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]> Promise which resolves when file gets successfully evaluated in frame.
+<!-- gen:stop -->
 
 #### frame.isDetached()
 - returns: <[boolean]>
@@ -902,22 +956,30 @@ Note: This value is calculated once when the frame is created, and will not upda
 - returns: <[Frame]> Returns parent frame, if any. Detached frames and main frames return `null`.
 
 #### frame.title()
+<!-- gen:copy('frame.title') -->
 - returns: <[Promise]<[string]>> Returns page's title.
+<!-- gen:stop -->
 
 #### frame.uploadFile(selector, ...filePaths)
+<!-- gen:copy('frame.uploadFile') -->
 - `selector` <[string]> A query [selector] to a file input
 - `...filePaths` <[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]> Promise which resolves when the value is set.
+<!-- gen:stop -->
 
 #### frame.url()
+<!-- gen:copy('frame.url') -->
 - returns: <[string]>
+<!-- gen:stop -->
 
 Returns frame's url.
 
 #### frame.waitFor(selectorOrFunctionOrTimeout[, options])
+<!-- gen:copy('frame.waitFor') -->
 - `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
 - returns: <[Promise]>
+<!-- gen:stop -->
 
 This is a shortcut method for [frame.waitForSelector](#framewaitforselectorselector-options) or [page.mainFrame().waitForFunction()](#framewaitforfunctionpagefunction-options-args).
 
@@ -928,6 +990,7 @@ This method behaves differently with respect to the type of the first parameter:
 - otherwise, an exception is thrown
 
 #### frame.waitForFunction(pageFunction[, options, ...args])
+<!-- gen:copy('frame.waitForFunction') -->
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
   - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it could be one of the following values:
@@ -936,6 +999,7 @@ This method behaves differently with respect to the type of the first parameter:
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - `...args` <...[Object]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
+<!-- gen:stop -->
 
 The `waitForFunction` could be used to observe viewport size change:
 ```js
@@ -951,11 +1015,13 @@ browser.newPage().then(async page => {
 ```
 
 #### frame.waitForSelector(selector[, options])
+<!-- gen:copy('frame.waitForSelector') -->
 - `selector` <[string]> CSS selector of awaited element,
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
+<!-- gen:stop -->
 
 Wait for the `selector` to appear in page. If at the moment of calling
 the method the `selector` already exists, the method will return
@@ -974,7 +1040,6 @@ browser.newPage().then(async page => {
   browser.close();
 });
 ```
-
 
 ### class: Request
 
