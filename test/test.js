@@ -1098,6 +1098,12 @@ describe('Puppeteer', function() {
           fail(modifiers[modifier] + ' should be false');
       }
     }));
+    it('should type with a delay', SX(async function(){
+      await page.navigate(PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      await page.type('Hello World!', {delay: 50});
+      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
+    }));
     function dimensions() {
       let rect = document.querySelector('textarea').getBoundingClientRect();
       return {

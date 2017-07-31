@@ -54,7 +54,7 @@
     + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
     + [page.setViewport(viewport)](#pagesetviewportviewport)
     + [page.title()](#pagetitle)
-    + [page.type(text)](#pagetypetext)
+    + [page.type(text, options)](#pagetypetext-options)
     + [page.uploadFile(selector, ...filePaths)](#pageuploadfileselector-filepaths)
     + [page.url()](#pageurl)
     + [page.viewport()](#pageviewport)
@@ -358,6 +358,7 @@ Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
   - `clickCount` <[number]> defaults to 1
+  - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. Promise gets rejected if there's no element matching `selector`.
 <!-- gen:stop -->
 
@@ -547,6 +548,7 @@ The `format` options are:
 - `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
 - `options` <[Object]>
   - `text` <[string]> If specified, generates an input event with this text.
+  - `delay` <[number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
 
 Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#keyboardupkey).
@@ -659,8 +661,10 @@ In case of multiple pages in one browser, each page can have its own viewport si
 
 Shortcut for [page.mainFrame().title()](#frametitle).
 
-#### page.type(text)
+#### page.type(text, options)
 - `text` <[string]> A text to type into a focused element.
+- `options` <[Object]>
+  - `delay` <[number]> Time to wait between key presses in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the text has been successfully typed.
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
@@ -826,6 +830,7 @@ Dispatches a `keyup` event.
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
   - `clickCount` <[number]> defaults to 1
+  - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
 
 Shortcut for [`mouse.move`](#mousemovexy), [`mouse.down`](#mousedownkey) and [`mouse.up`](#mouseupkey).
@@ -960,6 +965,7 @@ Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScri
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
   - `clickCount` <[number]> defaults to 1
+  - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. Promise gets rejected if there's no element matching `selector`.
 <!-- gen:stop -->
 
