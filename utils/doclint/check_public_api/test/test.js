@@ -17,9 +17,10 @@
 const fs = require('fs');
 const rm = require('rimraf').sync;
 const path = require('path');
-const Browser = require('../../../lib/Browser');
-const doclint = require('../lint');
-const GoldenUtils = require('../../../test/golden-utils');
+const Browser = require('../../../../lib/Browser');
+const checkPublicAPI = require('..');
+const SourceFactory = require('../../SourceFactory');
+const GoldenUtils = require('../../../../test/golden-utils');
 
 const OUTPUT_DIR = path.join(__dirname, 'output');
 const GOLDEN_DIR = path.join(__dirname, 'golden');
@@ -46,7 +47,7 @@ beforeEach(function() {
   GoldenUtils.addMatchers(jasmine, GOLDEN_DIR, OUTPUT_DIR);
 });
 
-describe('doclint', function() {
+describe('checkPublicAPI', function() {
   it('01-class-errors', SX(test));
   it('02-method-errors', SX(test));
   it('03-property-errors', SX(test));
@@ -58,8 +59,12 @@ describe('doclint', function() {
 });
 
 async function test() {
-  const filePath = path.join(__dirname, specName);
-  const errors = await doclint(page, filePath, filePath);
+  const dirPath = path.join(__dirname, specName);
+  const factory = new SourceFactory();
+  const mdSources = await factory.readdir(dirPath, '.md');
+  const jsSources = await factory.readdir(dirPath, '.js');
+  const messages = await checkPublicAPI(page, mdSources, jsSources);
+  const errors = messages.map(message => message.text);
   expect(errors.join('\n')).toBeGolden(specName + '.txt');
 }
 

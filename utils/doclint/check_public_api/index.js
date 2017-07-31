@@ -17,6 +17,7 @@
 const jsBuilder = require('./JSBuilder');
 const mdBuilder = require('./MDBuilder');
 const Documentation = require('./Documentation');
+const Message = require('../Message');
 
 const EXCLUDE_CLASSES = new Set([
   'Connection',
@@ -47,13 +48,13 @@ const EXCLUDE_METHODS = new Set([
 
 /**
  * @param {!Page} page
- * @param {string} docsFolderPath
- * @param {string} jsFolderPath
- * @return {!Promise<!Array<string>>}
+ * @param {!Array<!Source>} mdSources
+ * @param {!Array<!Source>} jsSources
+ * @return {!Promise<!Array<!Message>>}
  */
-module.exports = async function lint(page, docsFolderPath, jsFolderPath) {
-  let mdResult = await mdBuilder(page, docsFolderPath);
-  let jsResult = await jsBuilder(jsFolderPath);
+module.exports = async function lint(page, mdSources, jsSources) {
+  let mdResult = await mdBuilder(page, mdSources);
+  let jsResult = await jsBuilder(jsSources);
   let jsDocumentation = filterJSDocumentation(jsResult.documentation);
   let mdDocumentation = mdResult.documentation;
 
@@ -68,7 +69,7 @@ module.exports = async function lint(page, docsFolderPath, jsFolderPath) {
   // Push all errors with proper prefixes
   let errors = jsErrors.map(error => '[JavaScript] ' + error);
   errors.push(...mdErrors.map(error => '[MarkDown] ' + error));
-  return errors;
+  return errors.map(error => Message.error(error));
 };
 
 /**
