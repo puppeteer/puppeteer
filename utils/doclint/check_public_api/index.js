@@ -42,6 +42,7 @@ const EXCLUDE_METHODS = new Set([
   'Mouse.constructor',
   'Page.constructor',
   'Page.create',
+  'ProfilesManager.constructor',
   'Request.constructor',
   'Response.constructor',
 ]);
