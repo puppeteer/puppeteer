@@ -37,13 +37,17 @@ async function run() {
   // Documentation checks.
   {
     const mdSources = await sourceFactory.readdir(path.join(PROJECT_DIR, 'docs'), '.md');
-    const jsSources = await sourceFactory.readdir(path.join(PROJECT_DIR, 'lib'), '.js');
+
     const toc = require('./toc');
     messages.push(...await toc(mdSources));
+
+    const preprocessor = require('./preprocessor');
+    messages.push(...await preprocessor(mdSources));
 
     const browser = new Browser({args: ['--no-sandbox']});
     const page = await browser.newPage();
     const checkPublicAPI = require('./check_public_api');
+    const jsSources = await sourceFactory.readdir(path.join(PROJECT_DIR, 'lib'), '.js');
     messages.push(...await checkPublicAPI(page, mdSources, jsSources));
     await browser.close();
   }
@@ -67,9 +71,14 @@ async function run() {
       console.log(`  ${i + 1}) ${YELLOW_COLOR}${warning}${RESET_COLOR}`);
     }
   }
-  await sourceFactory.saveChangedSources();
+  let clearExit = messages.length === 0;
+  if (await sourceFactory.saveChangedSources()) {
+    if (clearExit)
+      console.log(`${YELLOW_COLOR}Some files were updated.${RESET_COLOR}`);
+    clearExit = false;
+  }
   console.log(`${errors.length} failures, ${warnings.length} warnings.`);
   const runningTime = Date.now() - startTime;
   console.log(`DocLint Finished in ${runningTime / 1000} seconds`);
-  process.exit(errors.length + warnings.length > 0 ? 1 : 0);
+  process.exit(clearExit ? 0 : 1);
 }

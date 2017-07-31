@@ -96,9 +96,15 @@ class SourceFactory {
     return Array.from(this._sources.values());
   }
 
+  /**
+   * @return {!Promise<boolean>}
+   */
   async saveChangedSources() {
     const changedSources = Array.from(this._sources.values()).filter(source => source.hasUpdatedText());
+    if (!changedSources.length)
+      return false;
     await Promise.all(changedSources.map(source => writeFileAsync(source.filePath(), source.text())));
+    return true;
   }
 
   /**
@@ -125,6 +131,15 @@ class SourceFactory {
     const fileNames = await readdirAsync(dirPath);
     const filePaths = fileNames.filter(fileName => fileName.endsWith(extension)).map(fileName => path.join(dirPath, fileName));
     return Promise.all(filePaths.map(filePath => this.readFile(filePath)));
+  }
+
+  /**
+   * @param {string} filePath
+   * @param {string} text
+   * @return {!Source}
+   */
+  createForTest(filePath, text) {
+    return new Source(filePath, text);
   }
 }
 

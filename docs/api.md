@@ -1,4 +1,4 @@
-# Puppeteer API
+# Puppeteer API v<!-- GEN:version -->0.1.0<!-- GEN:stop-->
 
 ##### Table of Contents
 
