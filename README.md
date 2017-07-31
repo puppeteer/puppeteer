@@ -11,6 +11,11 @@ Puppeteer is a node library which provides a high-level API to control [headless
 * Crawl your site to generate pre-rendered content for your SPA.
 * Scrape content from websites.
 
+###### Features
+* Full Page Screenshots
+* Low-Level Input Emulation
+* Build-In Device Emulation
+
 ## Installation
 
 To add Puppeteer to your project, run:
