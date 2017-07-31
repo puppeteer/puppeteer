@@ -1104,6 +1104,11 @@ describe('Puppeteer', function() {
       await page.type('Hello World!', {delay: 50});
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
     }));
+    it('should click with a delay', SX(async function(){
+      await page.navigate(PREFIX + '/input/button.html');
+      await page.click('button', {delay: 100});
+      expect(await page.evaluate(() => result)).toBe('Clicked');
+    }));
     function dimensions() {
       let rect = document.querySelector('textarea').getBoundingClientRect();
       return {
