@@ -52,26 +52,49 @@ else
   console.assert(revisionInfo, `Chromium r${chromiumRevision} is not downloaded. Run 'npm install' and try to re-run tests.`);
 }
 
-describe('Puppeteer', function() {
+let server;
+let httpsServer;
+beforeAll(SX(async function() {
+  const assetsPath = path.join(__dirname, 'assets');
+  server = await SimpleServer.create(assetsPath, PORT);
+  httpsServer = await SimpleServer.createHTTPS(assetsPath, HTTPS_PORT);
+  if (fs.existsSync(OUTPUT_DIR))
+    rm(OUTPUT_DIR);
+}));
+
+afterAll(SX(async function() {
+  await Promise.all([
+    server.stop(),
+    httpsServer.stop(),
+  ]);
+}));
+
+describe('Browser', function() {
+  it('Browser.Options.ignoreHTTPSErrors', SX(async function() {
+    let browser = new Browser({ignoreHTTPSErrors: true, headless, slowMo, args: ['--no-sandbox']});
+    let page = await browser.newPage();
+    let error = null;
+    let response = null;
+    try {
+      response = await page.navigate(HTTPS_PREFIX + '/empty.html');
+    } catch (e) {
+      error = e;
+    }
+    expect(error).toBe(null);
+    expect(response.ok).toBe(true);
+    browser.close();
+  }));
+});
+
+describe('Page', function() {
   let browser;
-  let server;
-  let httpsServer;
   let page;
 
   beforeAll(SX(async function() {
     browser = new Browser({headless, slowMo, args: ['--no-sandbox']});
-    const assetsPath = path.join(__dirname, 'assets');
-    server = await SimpleServer.create(assetsPath, PORT);
-    httpsServer = await SimpleServer.createHTTPS(assetsPath, HTTPS_PORT);
-    if (fs.existsSync(OUTPUT_DIR))
-      rm(OUTPUT_DIR);
   }));
 
   afterAll(SX(async function() {
-    await Promise.all([
-      server.stop(),
-      httpsServer.stop(),
-    ]);
     browser.close();
   }));
 
@@ -459,6 +482,8 @@ describe('Puppeteer', function() {
       expect(error.message).toContain('Cannot navigate to invalid URL');
     }));
     it('should fail when navigating to bad SSL', SX(async function() {
+      // Make sure that network events do not emit 'undefind'.
+      // @see https://github.com/GoogleChrome/puppeteer/issues/168
       page.on('request', request => expect(request).toBeTruthy());
       page.on('requestfinished', request => expect(request).toBeTruthy());
       page.on('requestfailed', request => expect(request).toBeTruthy());
