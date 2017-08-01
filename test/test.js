@@ -37,7 +37,9 @@ const iPhone = require('../DeviceDescriptors')['iPhone 6'];
 const iPhoneLandscape = require('../DeviceDescriptors')['iPhone 6 landscape'];
 
 const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
-if (process.env.DEBUG_TEST)
+const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
+
+if (process.env.DEBUG_TEST || slowMo)
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 1000 * 1000;
 else
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
@@ -57,7 +59,7 @@ describe('Puppeteer', function() {
   let page;
 
   beforeAll(SX(async function() {
-    browser = new Browser({headless, args: ['--no-sandbox']});
+    browser = new Browser({headless, slowMo, args: ['--no-sandbox']});
     const assetsPath = path.join(__dirname, 'assets');
     server = await SimpleServer.create(assetsPath, PORT);
     httpsServer = await SimpleServer.createHTTPS(assetsPath, HTTPS_PORT);

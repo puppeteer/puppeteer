@@ -103,6 +103,10 @@ npm run unit -- --filter=waitFor
 ```
 HEADLESS=false npm run unit
 ```
+- To run tests in slow-mode:
+```
+HEADLESS=false SLOW_MO=500 npm run unit
+```
 - To debug a test, "focus" a test first and then run:
 ```
 npm run debug-unit
