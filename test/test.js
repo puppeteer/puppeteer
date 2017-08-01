@@ -746,9 +746,10 @@ describe('Page', function() {
     }));
   });
 
-  describe('Page.setRequestInterceptor', function() {
+  describe('Page.setRequestInterceptionEnabled', function() {
     it('should intercept', SX(async function() {
-      await page.setRequestInterceptor(request => {
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
         expect(request.url).toContain('empty.html');
         expect(request.headers.has('User-Agent')).toBeTruthy();
         expect(request.method).toBe('GET');
@@ -762,7 +763,8 @@ describe('Page', function() {
       await page.setExtraHTTPHeaders(new Map(Object.entries({
         foo: 'bar'
       })));
-      await page.setRequestInterceptor(request => {
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
         expect(request.headers.get('foo')).toBe('bar');
         request.continue();
       });
@@ -770,7 +772,8 @@ describe('Page', function() {
       expect(response.ok).toBe(true);
     }));
     it('should be abortable', SX(async function() {
-      await page.setRequestInterceptor(request => {
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
         if (request.url.endsWith('.css'))
           request.abort();
         else
@@ -783,10 +786,11 @@ describe('Page', function() {
       expect(failedRequests).toBe(1);
     }));
     it('should amend HTTP headers', SX(async function() {
-      await page.setRequestInterceptor(request => {
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
         let headers = new Map(request.headers);
         headers.set('foo', 'bar');
-        request.continue({headers});
+        request.continue({ headers });
       });
       await page.goto(EMPTY_PAGE);
       const [request] = await Promise.all([
@@ -796,7 +800,8 @@ describe('Page', function() {
       expect(request.headers['foo']).toBe('bar');
     }));
     it('should fail navigation when aborting main resource', SX(async function() {
-      await page.setRequestInterceptor(request => request.abort());
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => request.abort());
       let error = null;
       try {
         await page.goto(EMPTY_PAGE);
@@ -807,10 +812,35 @@ describe('Page', function() {
       expect(error.message).toContain('Failed to navigate');
     }));
     it('should work with redirects', SX(async function() {
-      server.setRedirect('/non-existing-page.html', '/empty.html');
-      await page.setRequestInterceptor(request => request.continue());
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => request.continue());
+      server.setRedirect('/non-existing-page.html', '/non-existing-page-2.html');
+      server.setRedirect('/non-existing-page-2.html', '/non-existing-page-3.html');
+      server.setRedirect('/non-existing-page-3.html', '/non-existing-page-4.html');
+      server.setRedirect('/non-existing-page-4.html', '/empty.html');
       let response = await page.goto(PREFIX + '/non-existing-page.html');
       expect(response.status).toBe(200);
+      expect(response.url).toContain('empty.html');
+    }));
+    it('should be able to abort redirects', SX(async function() {
+      await page.setRequestInterceptionEnabled(true);
+      server.setRedirect('/non-existing.json', '/non-existing-2.json');
+      server.setRedirect('/non-existing-2.json', '/simple.html');
+      page.on('request', request => {
+        if (request.url.includes('non-existing-2'))
+          request.abort();
+        else
+          request.continue();
+      });
+      await page.goto(EMPTY_PAGE);
+      let result = await page.evaluate(async() => {
+        try {
+          await fetch('/non-existing.json');
+        } catch (e) {
+          return e.message;
+        }
+      });
+      expect(result).toContain('Failed to fetch');
     }));
   });
 
@@ -1328,7 +1358,8 @@ describe('Page', function() {
       expect(await responseText).toBe('hello world!');
     }));
     it('Page.Events.RequestFailed', SX(async function() {
-      page.setRequestInterceptor(request => {
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
         if (request.url.endsWith('css'))
           request.abort();
         else

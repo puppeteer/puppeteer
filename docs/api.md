@@ -49,7 +49,7 @@
     + [page.screenshot([options])](#pagescreenshotoptions)
     + [page.setContent(html)](#pagesetcontenthtml)
     + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
-    + [page.setRequestInterceptor(interceptor)](#pagesetrequestinterceptorinterceptor)
+    + [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
     + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
     + [page.setViewport(viewport)](#pagesetviewportviewport)
     + [page.title()](#pagetitle)
@@ -98,6 +98,8 @@
     + [frame.waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args)
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
   * [class: Request](#class-request)
+    + [request.abort()](#requestabort)
+    + [request.continue([overrides])](#requestcontinueoverrides)
     + [request.headers](#requestheaders)
     + [request.method](#requestmethod)
     + [request.postData](#requestpostdata)
@@ -110,16 +112,8 @@
     + [response.ok](#responseok)
     + [response.request()](#responserequest)
     + [response.status](#responsestatus)
-    + [response.statusText](#responsestatustext)
     + [response.text()](#responsetext)
     + [response.url](#responseurl)
-  * [class: InterceptedRequest](#class-interceptedrequest)
-    + [interceptedRequest.abort()](#interceptedrequestabort)
-    + [interceptedRequest.continue([overrides])](#interceptedrequestcontinueoverrides)
-    + [interceptedRequest.headers](#interceptedrequestheaders)
-    + [interceptedRequest.method](#interceptedrequestmethod)
-    + [interceptedRequest.postData](#interceptedrequestpostdata)
-    + [interceptedRequest.url](#interceptedrequesturl)
 
 <!-- tocstop -->
 
@@ -297,7 +291,8 @@ Emitted when an unhandled exception happens on the page. The only argument of th
 #### event: 'request'
 - <[Request]>
 
-Emitted when a page issues a request. The [request] object is a read-only object. In order to intercept and mutate requests, see [page.setRequestInterceptor](#pagesetrequestinterceptorinterceptor)
+Emitted when a page issues a request. The [request] object is a read-only object.
+In order to intercept and mutate requests, see `page.setRequestInterceptionEnabled`.
 
 #### event: 'requestfailed'
 - <[Request]>
@@ -618,19 +613,20 @@ The extra HTTP headers will be sent with every request the page initiates.
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
 
-#### page.setRequestInterceptor(interceptor)
-- `interceptor` <[function]> Callback function which accepts a single argument of type <[InterceptedRequest]>.
-- returns: <[Promise]> Promise which resolves when request interceptor is successfully installed on the page.
+#### page.setRequestInterceptionEnabled(value)
+- `value` <[boolean]> Whether to enable request interception.
+- returns: <[Promise]> Promise which resolves when request interception change is applied.
 
-After the request interceptor is installed on the page, every request will be reported to the interceptor. The [InterceptedRequest] could be modified and then either continued via the `continue()` method, or aborted via the `abort()` method.
+As the request interception is enabled, it is allowed to call `request.abort` and `request.continue` methods on [Request] class.
 
-En example of a naive request interceptor which aborts all image requests:
+En example of a naive request interception which aborts all image requests:
 ```js
 const {Browser} = require('puppeteer');
 const browser = new Browser();
 
 browser.newPage().then(async page =>
-  await page.setRequestInterceptor(interceptedRequest => {
+  await page.setRequestInterceptionEnabled(true);
+  page.on('request', request => {
     if (interceptedRequest.url.endsWith('.png') || interceptedRequest.url.endsWith('.jpg'))
       interceptedRequest.abort();
     else
@@ -1103,6 +1099,23 @@ If request gets a 'redirect' response, the request is successfully finished with
 
 [Request] class represents requests which are sent by page. [Request] implements [Body] mixin, which in case of HTTP POST requests allows clients to call `request.json()` or `request.text()` to get different representations of request's body.
 
+#### request.abort()
+
+Aborts request if the interception is enabled with `page.setRequestInterceptionEnabled`.
+Will throw if called with disabled request interception.
+
+#### request.continue([overrides])
+- `overrides` <[Object]> Optional request overwrites, which could be one of the following:
+  - `url` <[string]> If set, the request url will be changed
+  - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`)
+  - `postData` <[string]> If set changes the post data of request
+  - `headers` <[Map]> If set changes the request HTTP headers
+
+Continues request with optional request overrides if the interception is enabled with
+`page.setRequestInterceptionEnabled`.
+Will throw if called with disabled request interception.
+
+
 #### request.headers
 - <[Map]> A map of HTTP headers associated with the request.
 
@@ -1152,11 +1165,6 @@ Contains a boolean stating whether the response was successful (status in the ra
 
 Contains the status code of the response (e.g., 200 for a success).
 
-#### response.statusText
-- <[string]>
-
-Contains the status message corresponding to the status code (e.g., OK for 200).
-
 #### response.text()
 - returns: <Promise<[text]>> Promise which resolves to a text representation of response body.
 
@@ -1166,41 +1174,6 @@ Contains the status message corresponding to the status code (e.g., OK for 200).
 Contains the URL of the response.
 
 
-### class: InterceptedRequest
-
-[InterceptedRequest] represents an intercepted request, which can be either continued or aborted. [InterceptedRequest] which is not continued or aborted will be in a 'hanging' state.
-
-#### interceptedRequest.abort()
-
-Aborts request.
-
-#### interceptedRequest.continue([overrides])
-- `overrides` <[Object]> Optional request overwrites, which could be one of the following:
-  - `url` <[string]> If set, the request url will be changed
-  - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`)
-  - `postData` <[string]> If set changes the post data of request
-  - `headers` <[Map]> If set changes the request HTTP headers
-
-Continues request with optional request overrides.
-
-#### interceptedRequest.headers
-- <[Map]> A map of HTTP headers associated with the request.
-
-#### interceptedRequest.method
-- <[string]>
-
-Contains the request's method (GET, POST, etc.)
-
-
-#### interceptedRequest.postData
-- <[string]>
-
-Contains `POST` data for `POST` requests.
-
-#### interceptedRequest.url
-- <[string]>
-
-
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
 [Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer "Buffer"
@@ -1208,7 +1181,6 @@ Contains `POST` data for `POST` requests.
 [number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type "Number"
 [Object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object "Object"
 [Page]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-page "Page"
-[InterceptedRequest]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-interceptedrequest "Page"
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
 [stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable "stream.Readable"
