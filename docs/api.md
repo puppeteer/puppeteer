@@ -49,6 +49,7 @@
     + [page.screenshot([options])](#pagescreenshotoptions)
     + [page.setContent(html)](#pagesetcontenthtml)
     + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
+    + [page.setIgnoreHTTPSErrors(enabled)](#pagesetignorehttpserrorsenabled)
     + [page.setInPageCallback(name, callback)](#pagesetinpagecallbackname-callback)
     + [page.setRequestInterceptor(interceptor)](#pagesetrequestinterceptorinterceptor)
     + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
@@ -565,6 +566,13 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 The extra HTTP headers will be sent with every request the page initiates.
 
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
+
+#### page.setIgnoreHTTPSErrors(enabled)
+- `enabled` <[boolean]> Whether HTTPS errors should be ignored on navigation. Defaults to `false`.
+- returns: <[Promise]> Promise which resolves when ignoring HTTPS errors is applied.
+
+When set to `false`, navigating to pages with HTTPS errors fails and chromium shows interstitial page.
+When set to `true`, navigating to pages with HTTPS errors succeeds and interstitial is not shown.
 
 #### page.setInPageCallback(name, callback)
 - `name` <[string]> Name of the callback to be assigned on window object

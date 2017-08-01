@@ -444,6 +444,35 @@ describe('Puppeteer', function() {
     }));
   });
 
+  describe('Page.setIgnoreHTTPSErrors', function() {
+    it('should work', SX(async function() {
+      let error = null;
+      let response = null;
+      await page.setIgnoreHTTPSErrors(true);
+      try {
+        response = await page.navigate(HTTPS_PREFIX + '/empty.html');
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBe(null);
+      expect(response.ok).toBe(true);
+    }));
+    it('disabling after enabling should work', SX(async function() {
+      await page.setIgnoreHTTPSErrors(true);
+      await page.navigate(HTTPS_PREFIX + '/empty.html');
+      let error = null;
+      let response = null;
+      await page.setIgnoreHTTPSErrors(false);
+      try {
+        response = await page.navigate(HTTPS_PREFIX + '/empty.html');
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeTruthy();
+      expect(response).toBe(null);
+    }));
+  });
+
   describe('Page.navigate', function() {
     it('should navigate to about:blank', SX(async function() {
       let response = await page.navigate('about:blank');
@@ -459,6 +488,7 @@ describe('Puppeteer', function() {
       expect(error.message).toContain('Cannot navigate to invalid URL');
     }));
     it('should fail when navigating to bad SSL', SX(async function() {
+      // Make sure events always dispatch reasonable object.
       page.on('request', request => expect(request).toBeTruthy());
       page.on('requestfinished', request => expect(request).toBeTruthy());
       page.on('requestfailed', request => expect(request).toBeTruthy());
