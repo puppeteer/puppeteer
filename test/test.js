@@ -795,6 +795,40 @@ describe('Page', function() {
     }));
   });
 
+  describe('Profiler.start', () => {
+    it('should work', SX(async function() {
+      const profiler = page.profiler();
+      await profiler.startCpuProfile();
+      const profile = await profiler.stopCpuProfile();
+      expect(profile).toBeTruthy();
+      expect(profile.endTime).toBeGreaterThan(profile.startTime);
+    }));
+    it('should throw', SX(async function() {
+      const profiler = page.profiler();
+      await profiler.startCpuProfile();
+      let error;
+      try {
+        await profiler.startCpuProfile();
+      } catch (e) {
+        error = e;
+      }
+      await profiler.stopCpuProfile();
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('has already been started');
+    }));
+    it('should throw', SX(async function() {
+      const profiler = page.profiler();
+      let error;
+      try {
+        await profiler.stopCpuProfile();
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeTruthy();
+      expect(error.message).toContain(`hasn't been started`);
+    }));
+  });
+
   describe('Frame Management', function() {
     let FrameUtils = require('./frame-utils');
     it('should handle nested frames', SX(async function() {
