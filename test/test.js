@@ -69,8 +69,8 @@ afterAll(SX(async function() {
   ]);
 }));
 
-describe('Browser.Options.ignoreHTTPSErrors', function() {
-  it('should work', SX(async function() {
+describe('Browser', function() {
+  it('Browser.Options.ignoreHTTPSErrors', SX(async function() {
     let browser = new Browser({ignoreHTTPSErrors: true, headless, slowMo, args: ['--no-sandbox']});
     let page = await browser.newPage();
     let error = null;
@@ -86,7 +86,7 @@ describe('Browser.Options.ignoreHTTPSErrors', function() {
   }));
 });
 
-describe('Puppeteer', function() {
+describe('Page', function() {
   let browser;
   let page;
 
@@ -482,7 +482,8 @@ describe('Puppeteer', function() {
       expect(error.message).toContain('Cannot navigate to invalid URL');
     }));
     it('should fail when navigating to bad SSL', SX(async function() {
-      // Make sure events always dispatch reasonable object.
+      // Make sure that network events do not emit 'undefind'.
+      // @see https://github.com/GoogleChrome/puppeteer/issues/168
       page.on('request', request => expect(request).toBeTruthy());
       page.on('requestfinished', request => expect(request).toBeTruthy());
       page.on('requestfailed', request => expect(request).toBeTruthy());
