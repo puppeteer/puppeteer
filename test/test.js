@@ -1098,19 +1098,6 @@ describe('Puppeteer', function() {
           fail(modifiers[modifier] + ' should be false');
       }
     }));
-    it('should type with a delay', SX(async function(){
-      await page.navigate(PREFIX + '/input/textarea.html');
-      await page.focus('textarea');
-      // This doesn't actually test delay, it just makes sure that setting delay doesn't break type
-      await page.type('Hello World!', {delay: 1});
-      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
-    }));
-    it('should click with a delay', SX(async function(){
-      await page.navigate(PREFIX + '/input/button.html');
-      // This doesn't actually test delay, it just makes sure that setting delay doesn't break click
-      await page.click('button', {delay: 1});
-      expect(await page.evaluate(() => result)).toBe('Clicked');
-    }));
     function dimensions() {
       let rect = document.querySelector('textarea').getBoundingClientRect();
       return {

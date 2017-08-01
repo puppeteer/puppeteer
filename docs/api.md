@@ -671,6 +671,11 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 
 To press a special key, use [`page.press`](#pagepresskey-options).
 
+```js
+page.type('Hello'); // Types instantly
+page.type('World', {delay: 100}); // Types slower, like a user
+```
+
 #### page.uploadFile(selector, ...filePaths)
 <!-- gen:paste('frame.uploadFile') -->
 <!-- Text below is automatically copied from "gen:copy('frame.uploadFile')" -->
