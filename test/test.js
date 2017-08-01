@@ -703,9 +703,10 @@ describe('Page', function() {
     }));
   });
 
-  describe('Page.setRequestInterceptor', function() {
+  describe('Page.setRequestInterceptionEnabled', function() {
     it('should intercept', SX(async function() {
-      page.setRequestInterceptor(request => {
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
         expect(request.url).toContain('empty.html');
         expect(request.headers.has('User-Agent')).toBeTruthy();
         expect(request.method).toBe('GET');
@@ -719,7 +720,8 @@ describe('Page', function() {
       await page.setExtraHTTPHeaders(new Map(Object.entries({
         foo: 'bar'
       })));
-      page.setRequestInterceptor(request => {
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
         expect(request.headers.get('foo')).toBe('bar');
         request.continue();
       });
@@ -727,7 +729,8 @@ describe('Page', function() {
       expect(response.ok).toBe(true);
     }));
     it('should be abortable', SX(async function() {
-      page.setRequestInterceptor(request => {
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
         if (request.url.endsWith('.css'))
           request.abort();
         else
@@ -741,9 +744,11 @@ describe('Page', function() {
     }));
     it('should amend HTTP headers', SX(async function() {
       await page.navigate(EMPTY_PAGE);
-      page.setRequestInterceptor(request => {
-        request.headers.set('foo', 'bar');
-        request.continue();
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
+        let headers = new Map(request.headers);
+        headers.set('foo', 'bar');
+        request.continue({ headers });
       });
       let serverRequest = server.waitForRequest('/sleep.zzz');
       page.evaluate(() => {
@@ -1244,7 +1249,8 @@ describe('Page', function() {
       expect(await responseText).toBe('hello world!');
     }));
     it('Page.Events.RequestFailed', SX(async function() {
-      page.setRequestInterceptor(request => {
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
         if (request.url.endsWith('css'))
           request.abort();
         else
