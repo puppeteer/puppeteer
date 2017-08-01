@@ -19,16 +19,6 @@ const SourceFactory = require('../SourceFactory');
 const factory = new SourceFactory();
 const VERSION = require('../../../package.json').version;
 
-let COPY_INPUT = `
-<!-- gen:copy("test") -->Heyo!<!-- gen:stop -->
-<!-- gen:paste("test") --><!-- gen:stop -->
-`;
-let COPY_EXPECTED = `
-<!-- gen:copy("test") -->Heyo!<!-- gen:stop -->
-<!-- gen:paste("test") -->
-<!-- Text below is automatically copied from "gen:copy("test")" -->Heyo!<!-- gen:stop -->
-`;
-
 describe('preprocessor', function() {
   it('should throw for unknown command', function() {
     let source = factory.createForTest('doc.md', getCommand('unknownCommand()'));
@@ -60,58 +50,6 @@ describe('preprocessor', function() {
       expect(messages.length).toBe(1);
       expect(messages[0].type).toBe('error');
       expect(messages[0].text).toContain(`Failed to find 'gen:stop'`);
-    });
-  });
-  describe('gen:copy', function() {
-    it('should work', function() {
-      let source = factory.createForTest('doc.md', COPY_INPUT);
-      preprocessor([source]);
-      expect(source.hasUpdatedText()).toBe(true);
-      expect(source.text()).toBe(COPY_EXPECTED);
-    });
-    it('should throw if copy does not have argument', function() {
-      let source = factory.createForTest('doc.md', getCommand('copy()'));
-      let messages = preprocessor([source]);
-      expect(source.hasUpdatedText()).toBe(false);
-      expect(messages.length).toBe(1);
-      expect(messages[0].type).toBe('error');
-      expect(messages[0].text).toContain('should have argument');
-    });
-    it('should throw if copyId is not used', function() {
-      let source = factory.createForTest('doc.md', getCommand('copy(command-id)'));
-      let messages = preprocessor([source]);
-      expect(source.hasUpdatedText()).toBe(false);
-      expect(messages.length).toBe(1);
-      expect(messages[0].type).toBe('error');
-      expect(messages[0].text).toContain('unused copy id');
-    });
-    it('should throw if duplicate copy id', function() {
-      const copyCmd = getCommand('copy(foo)');
-      let source = factory.createForTest('doc.md', copyCmd + copyCmd);
-      let messages = preprocessor([source]);
-      messages.sort();
-      expect(source.hasUpdatedText()).toBe(false);
-      expect(messages.length).toBe(2);
-      expect(messages[0].type).toBe('error');
-      expect(messages[0].text).toContain('re-define copy id');
-    });
-  });
-  describe('gen:paste', function() {
-    it('should throw if paste does not have argument', function() {
-      let source = factory.createForTest('doc.md', getCommand('paste()'));
-      let messages = preprocessor([source]);
-      expect(source.hasUpdatedText()).toBe(false);
-      expect(messages.length).toBe(1);
-      expect(messages[0].type).toBe('error');
-      expect(messages[0].text).toContain('should have argument');
-    });
-    it('should throw if copyId is not defined', function() {
-      let source = factory.createForTest('doc.md', getCommand('paste(bar)'));
-      let messages = preprocessor([source]);
-      expect(source.hasUpdatedText()).toBe(false);
-      expect(messages.length).toBe(1);
-      expect(messages[0].type).toBe('error');
-      expect(messages[0].text).toContain('unknown copy id');
     });
   });
 });
