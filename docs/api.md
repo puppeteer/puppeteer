@@ -619,7 +619,7 @@ browser.newPage().then(async page =>
 	- `width` <[number]> Specify page's width in pixels.
 	- `height` <[number]> Specify page's height in pixels.
 	- `deviceScaleFactor` <[number]> Specify device scale factor (could be though of as dpr). Defaults to `1`.
-	- `isMobile` <[boolean]> Weather the `meta viewport` tag is taken into account. Defaults to `false`.
+	- `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
 	- `hasTouch`<[boolean]> Specify if viewport supports touch events. Defaults to `false`
 	- `isLandscape` <[boolean]> Specify if viewport is in the landscape mode. Defaults to `false`.
 - returns: <[Promise]> Promise which resolves when the dimensions are updated.
