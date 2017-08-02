@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-let loopWhile = require('deasync').loopWhile;
+const loopWhile = require('deasync').loopWhile;
 
 module.exports = {
   await: function(promise) {

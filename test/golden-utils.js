@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-let path = require('path');
-let fs = require('fs');
-let Diff = require('text-diff');
-let mime = require('mime');
-let PNG = require('pngjs').PNG;
-let pixelmatch = require('pixelmatch');
+const path = require('path');
+const fs = require('fs');
+const Diff = require('text-diff');
+const mime = require('mime');
+const PNG = require('pngjs').PNG;
+const pixelmatch = require('pixelmatch');
 
 module.exports = {
   addMatchers: function(jasmine, goldenPath, outputPath) {

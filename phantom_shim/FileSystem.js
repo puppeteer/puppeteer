@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-let path = require('path');
-let fs = require('fs');
-let deasync = require('deasync');
-let removeRecursive = require('rimraf').sync;
-let copyRecursive = deasync(require('ncp').ncp);
+const path = require('path');
+const fs = require('fs');
+const deasync = require('deasync');
+const removeRecursive = require('rimraf').sync;
+const copyRecursive = deasync(require('ncp').ncp);
 
 class FileSystem {
   constructor() {

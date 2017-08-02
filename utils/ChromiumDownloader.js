@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-let os = require('os');
-let https = require('https');
-let fs = require('fs');
-let path = require('path');
-let extract = require('extract-zip');
-let util = require('util');
-let URL = require('url');
-let removeRecursive = require('rimraf');
+const os = require('os');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+const extract = require('extract-zip');
+const util = require('util');
+const URL = require('url');
+const removeRecursive = require('rimraf');
 
-let DOWNLOADS_FOLDER = path.join(__dirname, '..', '.local-chromium');
+const DOWNLOADS_FOLDER = path.join(__dirname, '..', '.local-chromium');
 
-let downloadURLs = {
+const downloadURLs = {
   linux: 'https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/%d/chrome-linux.zip',
   mac: 'https://storage.googleapis.com/chromium-browser-snapshots/Mac/%d/chrome-mac.zip',
   win32: 'https://storage.googleapis.com/chromium-browser-snapshots/Win/%d/chrome-win32.zip',

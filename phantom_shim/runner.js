@@ -15,17 +15,17 @@
  * limitations under the License.
  */
 
-let vm = require('vm');
-let path = require('path');
-let fs = require('fs');
-let Phantom = require('./Phantom');
-let FileSystem = require('./FileSystem');
-let System = require('./System');
-let WebPage = require('./WebPage');
-let WebServer = require('./WebServer');
-let child_process = require('child_process');
-let Browser = require('..').Browser;
-let argv = require('minimist')(process.argv.slice(2), {
+const vm = require('vm');
+const path = require('path');
+const fs = require('fs');
+const Phantom = require('./Phantom');
+const FileSystem = require('./FileSystem');
+const System = require('./System');
+const WebPage = require('./WebPage');
+const WebServer = require('./WebServer');
+const child_process = require('child_process');
+const Browser = require('..').Browser;
+const argv = require('minimist')(process.argv.slice(2), {
   alias: { v: 'version' },
   boolean: ['headless'],
   default: {'headless': true },
