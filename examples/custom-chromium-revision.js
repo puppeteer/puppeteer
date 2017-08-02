@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-var Browser = require('../lib/Browser');
-var Downloader = require('../utils/ChromiumDownloader');
+let Browser = require('../lib/Browser');
+let Downloader = require('../utils/ChromiumDownloader');
 
-var revision = '483012';
+let revision = '483012';
 console.log('Downloading custom chromium revision - ' + revision);
-Downloader.downloadRevision(Downloader.currentPlatform(), revision).then(async () => {
-    console.log('Done.');
-    var executablePath = Downloader.revisionInfo(Downloader.currentPlatform(), revision).executablePath;
-    var browser1 = new Browser({ executablePath });
-    var browser2 = new Browser();
-    var [version1, version2] = await Promise.all([
-        browser1.version(),
-        browser2.version()
-    ]);
-    console.log('browser1: ' + version1);
-    console.log('browser2: ' + version2);
-    browser1.close();
-    browser2.close();
+Downloader.downloadRevision(Downloader.currentPlatform(), revision).then(async() => {
+  console.log('Done.');
+  let executablePath = Downloader.revisionInfo(Downloader.currentPlatform(), revision).executablePath;
+  let browser1 = new Browser({ executablePath });
+  let browser2 = new Browser();
+  let [version1, version2] = await Promise.all([
+    browser1.version(),
+    browser2.version()
+  ]);
+  console.log('browser1: ' + version1);
+  console.log('browser2: ' + version2);
+  browser1.close();
+  browser2.close();
 });
 
