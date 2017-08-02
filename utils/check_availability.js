@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-let Downloader = require('./ChromiumDownloader');
-let https = require('https');
-let OMAHA_PROXY = 'https://omahaproxy.appspot.com/all.json';
+const Downloader = require('./ChromiumDownloader');
+const https = require('https');
+const OMAHA_PROXY = 'https://omahaproxy.appspot.com/all.json';
 
-let colors = {
+const colors = {
   reset: '\x1b[0m',
   red: '\x1b[31m',
   green: '\x1b[32m',

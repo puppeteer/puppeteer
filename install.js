@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-let Downloader = require('./utils/ChromiumDownloader');
-let revision = require('./package').puppeteer.chromium_revision;
-let ProgressBar = require('progress');
+const Downloader = require('./utils/ChromiumDownloader');
+const revision = require('./package').puppeteer.chromium_revision;
+const ProgressBar = require('progress');
 
 // Do nothing if the revision is already downloaded.
 if (Downloader.revisionInfo(Downloader.currentPlatform(), revision))

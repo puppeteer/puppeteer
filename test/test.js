@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-let fs = require('fs');
-let rm = require('rimraf').sync;
-let path = require('path');
-let helper = require('../lib/helper');
+const fs = require('fs');
+const rm = require('rimraf').sync;
+const path = require('path');
+const helper = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
-let Browser = require('../lib/Browser');
-let SimpleServer = require('./server/SimpleServer');
-let GoldenUtils = require('./golden-utils');
+const Browser = require('../lib/Browser');
+const SimpleServer = require('./server/SimpleServer');
+const GoldenUtils = require('./golden-utils');
 
-let GOLDEN_DIR = path.join(__dirname, 'golden');
-let OUTPUT_DIR = path.join(__dirname, 'output');
+const GOLDEN_DIR = path.join(__dirname, 'golden');
+const OUTPUT_DIR = path.join(__dirname, 'output');
 
-let PORT = 8907;
-let PREFIX = 'http://localhost:' + PORT;
-let EMPTY_PAGE = PREFIX + '/empty.html';
-let HTTPS_PORT = 8908;
-let HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
+const PORT = 8907;
+const PREFIX = 'http://localhost:' + PORT;
+const EMPTY_PAGE = PREFIX + '/empty.html';
+const HTTPS_PORT = 8908;
+const HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
 
 const iPhone = require('../DeviceDescriptors')['iPhone 6'];
 const iPhoneLandscape = require('../DeviceDescriptors')['iPhone 6 landscape'];
