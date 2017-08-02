@@ -54,6 +54,7 @@
     + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
     + [page.setViewport(viewport)](#pagesetviewportviewport)
     + [page.title()](#pagetitle)
+    + [page.tracing](#pagetracing)
     + [page.type(text, options)](#pagetypetext-options)
     + [page.uploadFile(selector, ...filePaths)](#pageuploadfileselector-filepaths)
     + [page.url()](#pageurl)
@@ -71,6 +72,9 @@
     + [mouse.down([options])](#mousedownoptions)
     + [mouse.move(x, y)](#mousemovex-y)
     + [mouse.up([options])](#mouseupoptions)
+  * [class: Tracing](#class-tracing)
+    + [tracing.start([options])](#tracingstartoptions)
+    + [tracing.stop(path)](#tracingstoppath)
   * [class: Dialog](#class-dialog)
     + [dialog.accept([promptText])](#dialogacceptprompttext)
     + [dialog.dismiss()](#dialogdismiss)
@@ -638,6 +642,9 @@ In case of multiple pages in one browser, each page can have its own viewport si
 
 Shortcut for [page.mainFrame().title()](#frametitle).
 
+#### page.tracing
+- returns: <[Tracing]>
+
 #### page.type(text, options)
 - `text` <[string]> A text to type into a focused element.
 - `options` <[Object]>
@@ -826,6 +833,25 @@ Dispatches a `mousemove` event.
 - returns: <[Promise]>
 
 Dispatches a `mouseup` event.
+
+### class: Tracing
+
+You can use [`tracing.start`](#tracingstartoptions) and [`tracing.stop`](#tracingstoppath) to create a trace file which can be opened in Chrome DevTools or [timeline viewer](https://chromedevtools.github.io/timeline-viewer/).
+
+```js
+await page.tracing.start();
+await page.navigate('https://www.google.com');
+await page.tracing.stop('trace.json');
+```
+
+#### tracing.start([options])
+- `options` <[Object]>
+  - `screenshots` <[boolean]> captures screenshots in the trace.
+- returns: <[Promise]>
+
+#### tracing.stop(path)
+- `path` <[string]> A path to write the trace file to.
+- returns: <[Promise]>
 
 ### class: Dialog
 
@@ -1194,3 +1220,4 @@ If changed, the request url will be modified in a way that's not observable by p
 [Mouse]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-mouse "Mouse"
 [Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map "Map"
 [selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors "selector"
+[Tracing]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-tracing "Tracing"
