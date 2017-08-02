@@ -1320,13 +1320,13 @@ describe('Page', function() {
 
   describe('Page.viewport', function() {
     it('should get the proper viewport size', SX(async function() {
-      expect(page.viewport()).toEqual({width: 400, height: 300});
+      expect(page.viewport()).toEqual({width: 800, height: 600});
       await page.setViewport({width: 123, height: 456});
       expect(page.viewport()).toEqual({width: 123, height: 456});
     }));
     it('should support mobile emulation', SX(async function() {
       await page.navigate(PREFIX + '/mobile.html');
-      expect(await page.evaluate(() => window.innerWidth)).toBe(400);
+      expect(await page.evaluate(() => window.innerWidth)).toBe(800);
       await page.setViewport(iPhone.viewport);
       expect(await page.evaluate(() => window.innerWidth)).toBe(375);
       await page.setViewport({width: 400, height: 300});
