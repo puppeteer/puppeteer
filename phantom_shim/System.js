@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-let readline = require('readline');
-let await = require('./utilities').await;
-let os = require('os');
+const readline = require('readline');
+const await = require('./utilities').await;
+const os = require('os');
 
 class System {
   /**

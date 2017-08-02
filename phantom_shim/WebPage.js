@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-let await = require('./utilities').await;
-let EventEmitter = require('events');
-let fs = require('fs');
-let path = require('path');
-let PageEvents = require('../lib/Page').Events;
+const await = require('./utilities').await;
+const EventEmitter = require('events');
+const fs = require('fs');
+const path = require('path');
+const PageEvents = require('../lib/Page').Events;
 
-let noop = function() { };
+const noop = function() { };
 
 class WebPage {
   /**
