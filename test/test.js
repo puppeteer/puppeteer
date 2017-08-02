@@ -1352,7 +1352,7 @@ describe('Page', function() {
   });
 
   describe('Page.pdf', function() {
-    let outputFile = __dirname + '/assets/output.pdf';
+    const outputFile = __dirname + '/assets/output.pdf';
     afterEach(function() {
       fs.unlinkSync(outputFile);
     });
