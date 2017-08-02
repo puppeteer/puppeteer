@@ -1521,9 +1521,8 @@ if (process.env.COVERAGE) {
   describe('COVERAGE', function(){
     let coverage = helper.publicAPICoverage();
     let disabled = new Set();
-    if (!headless) {
+    if (!headless)
       disabled.add('page.pdf');
-    }
 
     for (let method of coverage.keys()) {
       (disabled.has(method) ? xit : it)(`public api '${method}' should be called`, SX(async function(){
