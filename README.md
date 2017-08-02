@@ -45,7 +45,7 @@ A few notes:
 
 1. By default, Puppeteer bundles chromium browser with which it works best. However, you can point Puppeteer to a different executable ([example](https://github.com/GoogleChrome/puppeteer/blob/master/examples/custom-chromium-revision.js))
 2. Puppeteer creates its own Chromium user profile which it cleans up on every run.
-3. Puppeteer sets an initial page size to 400px x 300px, which defines the screenshot size. The page size can be changed with `Page.setViewportSize()` method
+3. Puppeteer sets an initial page size to 800px x 600px, which defines the screenshot size. The page size can be changed with `Page.setViewportSize()` method
 4. By default, browser is launched in a headless mode. This could be changed via ['headless' browser option](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#new-browseroptions)
 
 ## API Documentation

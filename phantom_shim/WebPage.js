@@ -38,6 +38,8 @@ class WebPage {
       this.settings.userAgent = options.settings.userAgent;
     if (options.viewportSize)
       await(this._page.setViewport(options.viewportSize));
+    else
+      await(this._page.setViewport({width: 400, height: 300}));
 
     this.loading = false;
     this.loadingProgress = 0;
