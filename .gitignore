@@ -6,3 +6,4 @@
 *.swp
 *.pyc
 .vscode
+package-lock.json
