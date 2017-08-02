@@ -14,43 +14,43 @@
  * limitations under the License.
  */
 
-var path = require('path');
-var Browser = require('../lib/Browser');
-var browser = new Browser();
+let path = require('path');
+let Browser = require('../lib/Browser');
+let browser = new Browser();
 
 browser.newPage().then(async page => {
-    var modernizrPath = path.join(__dirname, '../third_party/phantomjs/examples/modernizr.js');
-    await page.injectFile(modernizrPath);
-    page.on('console', console.log);
-    await page.evaluate(detectFeatures);
-    browser.close();
+  let modernizrPath = path.join(__dirname, '../third_party/phantomjs/examples/modernizr.js');
+  await page.injectFile(modernizrPath);
+  page.on('console', console.log);
+  await page.evaluate(detectFeatures);
+  browser.close();
 });
 
 function detectFeatures() {
-    var supported = [], unsupported = [];
-    console.log('Detected features (using Modernizr ' + Modernizr._version + '):');
-    for (var feature in Modernizr) {
-        if (Modernizr.hasOwnProperty(feature)) {
-            if (feature[0] !== '_' && typeof Modernizr[feature] !== 'function' &&
+  let supported = [], unsupported = [];
+  console.log('Detected features (using Modernizr ' + Modernizr._version + '):');
+  for (let feature in Modernizr) {
+    if (Modernizr.hasOwnProperty(feature)) {
+      if (feature[0] !== '_' && typeof Modernizr[feature] !== 'function' &&
                 feature !== 'input' && feature !== 'inputtypes') {
-                if (Modernizr[feature]) {
-                    supported.push(feature);
-                } else {
-                    unsupported.push(feature);
-                }
-            }
-        }
+        if (Modernizr[feature])
+          supported.push(feature);
+        else
+          unsupported.push(feature);
+
+      }
     }
+  }
 
-    console.log('');
-    console.log('Supported:');
-    supported.forEach(function (e) {
-        console.log('  ' + e);
-    });
+  console.log('');
+  console.log('Supported:');
+  supported.forEach(function(e) {
+    console.log('  ' + e);
+  });
 
-    console.log('');
-    console.log('Not supported:');
-    unsupported.forEach(function (e) {
-        console.log('  ' + e);
-    });
+  console.log('');
+  console.log('Not supported:');
+  unsupported.forEach(function(e) {
+    console.log('  ' + e);
+  });
 }

@@ -14,31 +14,27 @@
  * limitations under the License.
  */
 
-var Browser = require('../lib/Browser');
-var browser = new Browser();
+let Browser = require('../lib/Browser');
+let browser = new Browser();
 
 browser.newPage().then(async page => {
-    page.on('console', console.log);
+  page.on('console', console.log);
 
 
-    await page.setInPageCallback('callPhantom', msg => {
-        console.log("Page is saying: '" + msg + "'");
-        return "Hello, page";
-    });
+  await page.setInPageCallback('callPhantom', msg => {
+    console.log("Page is saying: '" + msg + "'");
+    return 'Hello, page';
+  });
 
 
+  await page.evaluate(async function() {
 
 
-    await page.evaluate(async function() {
+    // Return-value of the "onCallback" handler arrive here
+    let callbackResponse = await window.callPhantom('Hello, driver');
+    console.log("Driver is saying: '" + callbackResponse + "'");
 
 
-
-        // Return-value of the "onCallback" handler arrive here
-        var callbackResponse = await window.callPhantom("Hello, driver");
-        console.log("Driver is saying: '" + callbackResponse + "'");
-
-
-
-    });
-    browser.close();
+  });
+  browser.close();
 });
