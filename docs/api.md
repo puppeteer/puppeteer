@@ -73,8 +73,8 @@
     + [mouse.move(x, y)](#mousemovex-y)
     + [mouse.up([options])](#mouseupoptions)
   * [class: Tracing](#class-tracing)
-    + [tracing.start([options])](#tracingstartoptions)
-    + [tracing.stop(path)](#tracingstoppath)
+    + [tracing.start(options)](#tracingstartoptions)
+    + [tracing.stop()](#tracingstop)
   * [class: Dialog](#class-dialog)
     + [dialog.accept([promptText])](#dialogacceptprompttext)
     + [dialog.dismiss()](#dialogdismiss)
@@ -839,18 +839,18 @@ Dispatches a `mouseup` event.
 You can use [`tracing.start`](#tracingstartoptions) and [`tracing.stop`](#tracingstoppath) to create a trace file which can be opened in Chrome DevTools or [timeline viewer](https://chromedevtools.github.io/timeline-viewer/).
 
 ```js
-await page.tracing.start();
+await page.tracing.start({path: 'trace.json'});
 await page.navigate('https://www.google.com');
-await page.tracing.stop('trace.json');
+await page.tracing.stop();
 ```
 
-#### tracing.start([options])
+#### tracing.start(options)
 - `options` <[Object]>
+  - `path` <[string]> A path to write the trace file to. **required**
   - `screenshots` <[boolean]> captures screenshots in the trace.
 - returns: <[Promise]>
 
-#### tracing.stop(path)
-- `path` <[string]> A path to write the trace file to.
+#### tracing.stop()
 - returns: <[Promise]>
 
 ### class: Dialog

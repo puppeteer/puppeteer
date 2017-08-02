@@ -1503,23 +1503,23 @@ describe('Page', function() {
       fs.unlinkSync(outputFile);
     });
     it('should output a trace', SX(async function() {
-      await page.tracing.start({screenshots: true});
+      await page.tracing.start({screenshots: true, path: outputFile});
       await page.navigate(PREFIX + '/grid.html');
-      await page.tracing.stop(outputFile);
+      await page.tracing.stop();
       expect(fs.existsSync(outputFile)).toBe(true);
     }));
     it('should throw if tracing on two pages', SX(async function() {
-      await page.tracing.start();
+      await page.tracing.start({path: outputFile});
       let newPage = await browser.newPage();
       let error = null;
       try {
-        await newPage.tracing.start();
+        await newPage.tracing.start({path: outputFile});
       } catch (e) {
         error = e;
       }
       await newPage.close();
       expect(error).toBeTruthy();
-      await page.tracing.stop(outputFile);
+      await page.tracing.stop();
     }));
   });
 });
