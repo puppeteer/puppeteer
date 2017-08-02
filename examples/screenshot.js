@@ -18,7 +18,7 @@ const Browser = require('../lib/Browser');
 const browser = new Browser();
 
 browser.newPage().then(async page => {
-    await page.navigate('http://example.com');
-    const screenshot = await page.screenshot({path: 'example.png'});
-    browser.close();
+  await page.navigate('http://example.com');
+  await page.screenshot({path: 'example.png'});
+  browser.close();
 });
