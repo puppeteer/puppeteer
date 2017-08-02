@@ -1502,6 +1502,7 @@ describe('Page', function() {
       } catch (e) {
         error = e;
       }
+      await newPage.close();
       expect(error).toBeTruthy();
       await page.tracing.stop(outputFile);
     }));
