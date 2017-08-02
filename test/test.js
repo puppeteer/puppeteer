@@ -755,14 +755,14 @@ describe('Page', function() {
   });
 
   describe('Page.Events.Dialog', function() {
-    it('should fire', function(done) {
+    it('should fire', SX(async function() {
       page.on('dialog', dialog => {
         expect(dialog.type).toBe('alert');
         expect(dialog.message()).toBe('yo');
-        done();
+        dialog.accept();
       });
-      page.evaluate(() => alert('yo'));
-    });
+      await page.evaluate(() => alert('yo'));
+    }));
     // TODO Enable this when crbug.com/718235 is fixed.
     (headless ? xit : it)('should allow accepting prompts', SX(async function(done) {
       page.on('dialog', dialog => {
