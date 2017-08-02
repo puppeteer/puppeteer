@@ -766,13 +766,12 @@ describe('Page', function() {
       page.on('dialog', dialog => {
         expect(dialog.type).toBe('alert');
         expect(dialog.message()).toBe('yo');
-        dialog.accept();
+        dialog.accept('continue');
       });
       await page.evaluate(() => alert('yo'));
     }));
-    // TODO Enable this when crbug.com/718235 is fixed.
-    (headless ? xit : it)('should allow accepting prompts', SX(async function(done) {
-      page.on('dialog', dialog => {
+    it('should allow accepting prompts', SX(async function() {
+      page.on('dialog', async dialog => {
         expect(dialog.type).toBe('prompt');
         expect(dialog.message()).toBe('question?');
         dialog.accept('answer!');
@@ -1522,12 +1521,8 @@ if (process.env.COVERAGE) {
   describe('COVERAGE', function(){
     let coverage = helper.publicAPICoverage();
     let disabled = new Set();
-    if (headless) {
-      disabled.add('dialog.accept');
-      disabled.add('dialog.dismiss');
-    } else {
+    if (!headless)
       disabled.add('page.pdf');
-    }
 
     for (let method of coverage.keys()) {
       (disabled.has(method) ? xit : it)(`public api '${method}' should be called`, SX(async function(){
