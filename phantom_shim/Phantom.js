@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-let fs = require('fs');
-let path = require('path');
-let vm = require('vm');
-let url = require('url');
+const fs = require('fs');
+const path = require('path');
+const vm = require('vm');
+const url = require('url');
 
 const VERSION = [0, 0, 1];
 
