@@ -770,7 +770,7 @@ describe('Page', function() {
       });
       await page.evaluate(() => alert('yo'));
     }));
-    it('should allow accepting prompts', SX(async function(done) {
+    it('should allow accepting prompts', SX(async function() {
       page.on('dialog', dialog => {
         expect(dialog.type).toBe('prompt');
         expect(dialog.message()).toBe('question?');
@@ -778,6 +778,13 @@ describe('Page', function() {
       });
       let result = await page.evaluate(() => prompt('question?'));
       expect(result).toBe('answer!');
+    }));
+    it('should dismiss the prompt', SX(async function() {
+      page.on('dialog', dialog => {
+        dialog.dismiss();
+      });
+      let result = await page.evaluate(() => prompt('question?'));
+      expect(result).toBe(null);
     }));
   });
 
