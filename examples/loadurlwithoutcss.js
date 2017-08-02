@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-let Browser = require('../lib/Browser');
+var Browser = require('../lib/Browser');
 
 if (process.argv.length < 3) {
-  console.log('Usage: loadurlwithoutcss.js URL');
-  return;
+    console.log('Usage: loadurlwithoutcss.js URL');
+    return;
 }
 
-let address = process.argv[2];
+var address = process.argv[2];
 
-let browser = new Browser({headless: false});
+var browser = new Browser({headless: false});
 browser.newPage().then(async page => {
-  page.setRequestInterceptor(request => {
-    if (request.url.endsWith('.css'))
-      request.abort();
-    else
-      request.continue();
-  });
-  let success = await page.navigate(address);
-  if (!success)
-    console.log('Unable to load the address!');
-  browser.close();
+    page.setRequestInterceptor(request => {
+        if (request.url.endsWith('.css'))
+            request.abort();
+        else
+            request.continue();
+    });
+    var success = await page.navigate(address);
+    if (!success)
+        console.log('Unable to load the address!');
+    browser.close();
 });
