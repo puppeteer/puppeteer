@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-var Browser = require('../lib/Browser');
-var browser = new Browser();
+const Browser = require('../lib/Browser');
+let browser = new Browser();
 
 browser.newPage().then(async page => {
-    await page.evaluateOnNewDocument(function() {
-        Math.random = () => 42 / 100;
-    });
-    var result = await page.navigate('http://ariya.github.com/js/random/');
-    if (result) {
-        console.log(await page.evaluate(function () {
-            return document.getElementById('numbers').textContent;
-        }));
-    } else {
-        console.log('Network error.');
-    }
-    browser.close();
+  await page.evaluateOnNewDocument(function() {
+    Math.random = () => 42 / 100;
+  });
+  let result = await page.navigate('http://ariya.github.com/js/random/');
+  if (result) {
+    console.log(await page.evaluate(function() {
+      return document.getElementById('numbers').textContent;
+    }));
+  } else {
+    console.log('Network error.');
+  }
+  browser.close();
 });
