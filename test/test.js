@@ -432,24 +432,28 @@ describe('Page', function() {
     it('should work', SX(async function() {
       let commandArgs = [];
       page.once('console', (...args) => commandArgs = args);
-      page.evaluate(() => console.log(5, 'hello', {foo: 'bar'}));
-      await waitForEvents(page, 'console');
+      await Promise.all([
+        page.evaluate(() => console.log(5, 'hello', {foo: 'bar'})),
+        waitForEvents(page, 'console')
+      ]);
       expect(commandArgs).toEqual([5, 'hello', {foo: 'bar'}]);
     }));
     it('should work for different console API calls', SX(async function() {
       let messages = [];
       page.on('console', msg => messages.push(msg));
-      page.evaluate(() => {
-        // A pair of time/timeEnd generates only one Console API call.
-        console.time('calling console.time');
-        console.timeEnd('calling console.time');
-        console.trace('calling console.trace');
-        console.dir('calling console.dir');
-        console.warn('calling console.warn');
-        console.error('calling console.error');
-      });
-      // Wait for 5 events to hit.
-      await waitForEvents(page, 'console', 5);
+      await Promise.all([
+        page.evaluate(() => {
+          // A pair of time/timeEnd generates only one Console API call.
+          console.time('calling console.time');
+          console.timeEnd('calling console.time');
+          console.trace('calling console.trace');
+          console.dir('calling console.dir');
+          console.warn('calling console.warn');
+          console.error('calling console.error');
+        }),
+        // Wait for 5 events to hit.
+        waitForEvents(page, 'console', 5)
+      ]);
       expect(messages[0]).toContain('calling console.time');
       expect(messages.slice(1)).toEqual([
         'calling console.trace',
@@ -461,8 +465,10 @@ describe('Page', function() {
     it('should not fail for window object', SX(async function() {
       let windowObj = null;
       page.once('console', arg => windowObj = arg);
-      page.evaluate(() => console.error(window));
-      await waitForEvents(page, 'console');
+      await Promise.all([
+        page.evaluate(() => console.error(window)),
+        waitForEvents(page, 'console')
+      ]);
       expect(windowObj).toBe('Window');
     }));
   });
@@ -644,8 +650,10 @@ describe('Page', function() {
   describe('Page.waitForNavigation', function() {
     it('should work', SX(async function() {
       await page.navigate(EMPTY_PAGE);
-      const result = page.waitForNavigation();
-      page.evaluate(url => window.location.href = url, PREFIX + '/grid.html');
+      const [result] = await Promise.all([
+        page.waitForNavigation(),
+        page.evaluate(url => window.location.href = url, PREFIX + '/grid.html')
+      ]);
       const response = await result;
       expect(response.ok).toBe(true);
       expect(response.url).toContain('grid.html');
@@ -745,24 +753,23 @@ describe('Page', function() {
         request.headers.set('foo', 'bar');
         request.continue();
       });
-      let serverRequest = server.waitForRequest('/sleep.zzz');
-      page.evaluate(() => {
-        fetch('/sleep.zzz');
-      });
-      let request = await serverRequest;
+      const [request] = await Promise.all([
+        server.waitForRequest('/sleep.zzz'),
+        page.evaluate(() => fetch('/sleep.zzz'))
+      ]);
       expect(request.headers['foo']).toBe('bar');
     }));
   });
 
   describe('Page.Events.Dialog', function() {
-    it('should fire', function(done) {
+    it('should fire', SX(async function() {
       page.on('dialog', dialog => {
         expect(dialog.type).toBe('alert');
         expect(dialog.message()).toBe('yo');
-        done();
+        dialog.accept();
       });
-      page.evaluate(() => alert('yo'));
-    });
+      await page.evaluate(() => alert('yo'));
+    }));
     // TODO Enable this when crbug.com/718235 is fixed.
     (headless ? xit : it)('should allow accepting prompts', SX(async function(done) {
       page.on('dialog', dialog => {
@@ -1228,8 +1235,10 @@ describe('Page', function() {
       page.on('response', r => pageResponse = r);
       page.on('requestfinished', () => requestFinished = true);
       // send request and wait for server response
-      page.evaluate(() => fetch('./get', { method: 'GET'}));
-      await waitForEvents(page, 'response');
+      await Promise.all([
+        page.evaluate(() => fetch('./get', { method: 'GET'})),
+        waitForEvents(page, 'response')
+      ]);
 
       expect(serverResponse).toBeTruthy();
       expect(pageResponse).toBeTruthy();
