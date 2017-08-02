@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-const fs = require('fs');
-const path = require('path');
 const esprima = require('esprima');
-const ESTreeWalker = require('../../third_party/chromium/ESTreeWalker');
+const ESTreeWalker = require('../../../third_party/chromium/ESTreeWalker');
 const Documentation = require('./Documentation');
 
 class JSOutline {
@@ -141,17 +139,14 @@ class JSOutline {
 }
 
 /**
- * @param {!Array<string>} dirPath
+ * @param {!Array<!Source>} sources
  * @return {!Promise<{documentation: !Documentation, errors: !Array<string>}>}
  */
-module.exports = async function(dirPath) {
-  let filePaths = fs.readdirSync(dirPath)
-      .filter(fileName => fileName.endsWith('.js'))
-      .map(fileName => path.join(dirPath, fileName));
+module.exports = async function(sources) {
   let classes = [];
   let errors = [];
-  for (let filePath of filePaths) {
-    let outline = new JSOutline(fs.readFileSync(filePath, 'utf8'));
+  for (let source of sources) {
+    let outline = new JSOutline(source.text());
     classes.push(...outline.classes);
     errors.push(...outline.errors);
   }

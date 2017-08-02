@@ -1,4 +1,4 @@
-# Puppeteer API
+# Puppeteer API v<!-- GEN:version -->0.1.0<!-- GEN:stop-->
 
 ##### Table of Contents
 
@@ -54,7 +54,8 @@
     + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
     + [page.setViewport(viewport)](#pagesetviewportviewport)
     + [page.title()](#pagetitle)
-    + [page.type(text)](#pagetypetext)
+    + [page.tracing](#pagetracing)
+    + [page.type(text, options)](#pagetypetext-options)
     + [page.uploadFile(selector, ...filePaths)](#pageuploadfileselector-filepaths)
     + [page.url()](#pageurl)
     + [page.viewport()](#pageviewport)
@@ -71,6 +72,9 @@
     + [mouse.down([options])](#mousedownoptions)
     + [mouse.move(x, y)](#mousemovex-y)
     + [mouse.up([options])](#mouseupoptions)
+  * [class: Tracing](#class-tracing)
+    + [tracing.start([options])](#tracingstartoptions)
+    + [tracing.stop(path)](#tracingstoppath)
   * [class: Dialog](#class-dialog)
     + [dialog.accept([promptText])](#dialogacceptprompttext)
     + [dialog.dismiss()](#dialogdismiss)
@@ -176,14 +180,17 @@ const browser = new Browser();
 browser.newPage().then(async page => {
   await page.navigate('https://example.com');
   browser.close();
-})
+});
 ```
 
 #### new Browser([options])
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
-	- `headless` <[boolean]> Wether to run chromium in headless mode. Defaults to `true`.
-	- `executablePath` <[string]> Path to a chromium executable to run instead of bundled chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-	- `args` <[Array]<[string]>> Additional arguments to pass to the chromium instance. List of chromium flags could be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
+  - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
+  - `headless` <[boolean]> Whether to run chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true`.
+  - `executablePath` <[string]> Path to a chromium executable to run instead of bundled chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful
+so that you can see what is going on.
+  - `args` <[Array]<[string]>> Additional arguments to pass to the chromium instance. List of chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
 
 
 #### browser.close()
@@ -263,7 +270,7 @@ page.evaluate(() => console.log(5, 'hello', {foo: 'bar'}));
 #### event: 'dialog'
 - <[Dialog]>
 
-Emitted when a javascript dialog, such as `alert`, `prompt`, `confirm` or `beforeunload`, gets opened on the page. Puppeteer can take action to the dialog via dialog's [accept](#dialogacceptprompttext) or [dismiss](#dialogdismiss) methods.
+Emitted when a JavaScript dialog, such as `alert`, `prompt`, `confirm` or `beforeunload`, gets opened on the page. Puppeteer can take action to the dialog via dialog's [accept](#dialogacceptprompttext) or [dismiss](#dialogdismiss) methods.
 
 #### event: 'frameattached'
 - <[Frame]>
@@ -310,46 +317,47 @@ Emitted when a request is successfully finished.
 Emitted when a [response] is received.
 
 #### page.$(selector, pageFunction, ...args)
-
 - `selector` <[string]> A [selector] to be matched in the page
-- `pageFunction` <[function]\([Element]\)> Function to be evaluated in-page with first element matching `selector`
+- `pageFunction` <[function]\([Element]\)> Function to be evaluated with first element matching `selector`
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value.
-
 Example:
 ```js
 const outerhtml = await page.$('#box', e => e.outerHTML);
 ```
-
-Shortcut for [page.mainFrame().$(selector, pageFunction, ...args)](#pageselector-fun-args).
+Shortcut for [page.mainFrame().$(selector, pageFunction, ...args)](#frameselector-pagefunction-args).
 
 #### page.$$(selector, pageFunction, ...args)
-
 - `selector` <[string]> A [selector] to be matched in the page
-- `pageFunction` <[function]\([Element]\)> Function to be evaluated in-page for every matching element.
+- `pageFunction` <[function]\([Element]\)> Function to be evaluted for every element matching `selector`.
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Array]<[Object]>>> Promise which resolves to array of function return values.
-
 Example:
 ```js
 const headings = await page.$$('h1,h2,h3,h4', el => el.textContent);
 for (const heading of headings) console.log(heading);
 ```
 
-Shortcut for [page.mainFrame().$$(selector, pageFunction, ...args)](#pageselector-fun-args).
+Shortcut for [page.mainFrame().$$(selector, pageFunction, ...args)](#frameselector-pagefunction-args-1).
 
 #### page.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
 
-Adds a `<script></script>` tag to the page with the desired url. Alternatively, javascript could be injected to the page via [`page.injectFile`](#pageinjectfilefilepath) method.
+Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScript could be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
+
+Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
+
 
 #### page.click(selector[, options])
 - `selector` <[string]> A query [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
   - `clickCount` <[number]> defaults to 1
+  - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. Promise gets rejected if there's no element matching `selector`.
+
+Shortcut for [page.mainFrame().click(selector[, options])](#frameclickselector-options).
 
 #### page.close()
 - returns: <[Promise]> Returns promise which resolves when page gets closed.
@@ -366,7 +374,7 @@ const {Browser} = require('puppeteer');
 const browser = new Browser();
 browser.newPage().then(async page =>
   const result = await page.evaluate(() => {
-    return Promise.resolve().then(() => 8 * 7);
+    return Promise.resolve(8 * 7);
   });
   console.log(result); // prints "56"
   browser.close();
@@ -379,7 +387,7 @@ A string can also be passed in instead of a function.
 console.log(await page.evaluate('1 + 2')); // prints "3"
 ```
 
-This is a shortcut for [page.mainFrame().evaluate()](#frameevaluatefun-args) method.
+Shortcut for [page.mainFrame().evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args).
 
 #### page.evaluateOnNewDocument(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
@@ -390,11 +398,13 @@ Adds a function which would be invoked in one of the following scenarios:
 - whenever the page gets navigated
 - whenever the child frame gets attached or navigated. In this case, the function gets invoked in the context of the newly attached frame
 
-The function is invoked after the document was created but before any of its scripts were run. This is useful to amend javascript environment, e.g. to seed [Math.random](https://github.com/GoogleChrome/puppeteer/blob/master/examples/unrandomize.js)
+The function is invoked after the document was created but before any of its scripts were run. This is useful to amend JavaScript environment, e.g. to seed [Math.random](https://github.com/GoogleChrome/puppeteer/blob/master/examples/unrandomize.js)
 
 #### page.focus(selector)
 - `selector` <[string]> A query [selector] of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. Promise gets rejected if there's no element matching `selector`.
+
+Shortcut for [page.mainFrame().focus(selector)](#framefocusselector).
 
 #### page.frames()
 - returns: <[Array]<[Frame]>> An array of all frames attached to the page.
@@ -429,9 +439,13 @@ Navigate to the next page in history.
 - `selector` <[string]> A query [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
 
+Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
+
 #### page.injectFile(filePath)
-- `filePath` <[string]> Path to the javascript file to be injected into page. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-- returns: <[Promise]> Promise which resolves when file gets successfully evaluated in page.
+- `filePath` <[string]> Path to the JavaScript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+- returns: <[Promise]> Promise which resolves when file gets successfully evaluated in frame.
+
+Shortcut for [page.mainFrame().injectFile(filePath)](#frameinjectfilefilepath).
 
 #### page.keyboard
 
@@ -517,6 +531,7 @@ The `format` options are:
 - `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
 - `options` <[Object]>
   - `text` <[string]> If specified, generates an input event with this text.
+  - `delay` <[number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
 
 Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#keyboardupkey).
@@ -555,6 +570,7 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 The extra HTTP headers will be sent with every request the page initiates.
 
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
+
 
 #### page.setInPageCallback(name, callback)
 - `name` <[string]> Name of the callback to be assigned on window object
@@ -609,7 +625,7 @@ browser.newPage().then(async page =>
 	- `width` <[number]> Specify page's width in pixels.
 	- `height` <[number]> Specify page's height in pixels.
 	- `deviceScaleFactor` <[number]> Specify device scale factor (could be though of as dpr). Defaults to `1`.
-	- `isMobile` <[boolean]> Weather the `meta viewport` tag is taken into account. Defaults to `false`.
+	- `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
 	- `hasTouch`<[boolean]> Specify if viewport supports touch events. Defaults to `false`
 	- `isLandscape` <[boolean]> Specify if viewport is in the landscape mode. Defaults to `false`.
 - returns: <[Promise]> Promise which resolves when the dimensions are updated.
@@ -624,21 +640,35 @@ In case of multiple pages in one browser, each page can have its own viewport si
 #### page.title()
 - returns: <[Promise]<[string]>> Returns page's title.
 
-#### page.type(text)
+Shortcut for [page.mainFrame().title()](#frametitle).
+
+#### page.tracing
+- returns: <[Tracing]>
+
+#### page.type(text, options)
 - `text` <[string]> A text to type into a focused element.
+- `options` <[Object]>
+  - `delay` <[number]> Time to wait between key presses in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the text has been successfully typed.
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
 
 To press a special key, use [`page.press`](#pagepresskey-options).
 
+```js
+page.type('Hello'); // Types instantly
+page.type('World', {delay: 100}); // Types slower, like a user
+```
+
 #### page.uploadFile(selector, ...filePaths)
 - `selector` <[string]> A query [selector] to a file input
 - `...filePaths` <[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]> Promise which resolves when the value is set.
 
+Shortcut for [page.mainFrame().uploadFile(selector, ...filePaths)](#frameuploadfileselector-filepaths).
+
 #### page.url()
-- returns: <[string]> Current page url.
+- returns: <[string]>
 
 This is a shortcut for [page.mainFrame().url()](#frameurl)
 
@@ -650,15 +680,13 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - `options` <[Object]> Optional waiting parameters
 - returns: <[Promise]>
 
-This is a shortcut method for [frame.waitForSelector](#framewaitforselectorselector-options) or [page.mainFrame().waitForFunction()](#framewaitforfunctionpagefunction-options-args).
-
 This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
 - if `selectorOrFunctionOrTimeout` is a `function`, than the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
 - if `selectorOrFunctionOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
-The method is a shortcut for [page.mainFrame().waitFor()](#framewaitforselectorortimeout-options).
+Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options])](#framewaitforselectororfunctionortimeout-options).
 
 #### page.waitForFunction(pageFunction[, options, ...args])
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
@@ -670,7 +698,19 @@ The method is a shortcut for [page.mainFrame().waitFor()](#framewaitforselectoro
 - `...args` <...[Object]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
 
-Shortcut for [page.mainFrame().waitForFunction()](#framewaitforfunctionpagefunction-options-args).
+The `waitForFunction` could be used to observe viewport size change:
+```js
+const {Browser} = require('.');
+const browser = new Browser();
+
+browser.newPage().then(async page => {
+  const watchDog = page.waitForFunction('window.innerWidth < 100');
+  page.setViewport({width: 50, height: 50});
+  await watchDog;
+  browser.close();
+});
+```
+Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args).
 
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
@@ -683,13 +723,30 @@ Shortcut for [page.mainFrame().waitForFunction()](#framewaitforfunctionpagefunct
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.waitForSelector(selector[, options])
-- `selector` <[string]> A query [selector] to wait for on the page.
+- `selector` <[string]> CSS selector of awaited element,
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
-- returns: <[Promise]> Promise which resolves when the element matching `selector` appears in the page.
+- returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
 
-Shortcut for [page.mainFrame().waitForSelector()](#framewaitforselectorselectoroptions).
+Wait for the `selector` to appear in page. If at the moment of calling
+the method the `selector` already exists, the method will return
+immediately. If the selector doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
+
+This method works across navigations:
+```js
+const {Browser} = new require('puppeteer');
+const browser = new Browser();
+
+browser.newPage().then(async page => {
+  let currentURL;
+  page.waitForSelector('img').then(() => console.log('First URL with image: ' + currentURL));
+  for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
+    await page.navigate(currentURL);
+  browser.close();
+});
+```
+Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options).
 
 ### class: Keyboard
 
@@ -723,6 +780,8 @@ This will not send input events unless `text` is specified.
 
 If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key presses will be sent with that modifier active. To release the modifier key, use [`keyboard.up`](#keyboardupkey).
 
+After the key is pressed once, subsequent calls to [`keyboard.down`](#keyboarddownkey-options) will have [repeat](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat) set to true. To release the key, use [`keyboard.up`](#keyboardupkey).
+
 #### keyboard.sendCharacter(char)
 - `char` <[string]> Character to send into the page.
 - returns: <[Promise]>
@@ -747,6 +806,7 @@ Dispatches a `keyup` event.
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
   - `clickCount` <[number]> defaults to 1
+  - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
 
 Shortcut for [`mouse.move`](#mousemovexy), [`mouse.down`](#mousedownkey) and [`mouse.up`](#mouseupkey).
@@ -774,6 +834,25 @@ Dispatches a `mousemove` event.
 
 Dispatches a `mouseup` event.
 
+### class: Tracing
+
+You can use [`tracing.start`](#tracingstartoptions) and [`tracing.stop`](#tracingstoppath) to create a trace file which can be opened in Chrome DevTools or [timeline viewer](https://chromedevtools.github.io/timeline-viewer/).
+
+```js
+await page.tracing.start();
+await page.navigate('https://www.google.com');
+await page.tracing.stop('trace.json');
+```
+
+#### tracing.start([options])
+- `options` <[Object]>
+  - `screenshots` <[boolean]> captures screenshots in the trace.
+- returns: <[Promise]>
+
+#### tracing.stop(path)
+- `path` <[string]> A path to write the trace file to.
+- returns: <[Promise]>
+
 ### class: Dialog
 
 [Dialog] objects are dispatched by page via the ['dialog'](#event-dialog) event.
@@ -792,7 +871,7 @@ browser.newPage().then(async page => {
 });
 ```
 
-> **NOTE** Chrome Headless currently has issues with managing javascript dialogs, see [issue 13](https://github.com/GoogleChrome/puppeteer/issues/13)
+> **NOTE** Chrome Headless currently has issues with managing JavaScript dialogs, see [issue 13](https://github.com/GoogleChrome/puppeteer/issues/13)
 
 #### dialog.accept([promptText])
 - `promptText` <[string]> A text to enter in prompt. Does not cause any effects if the dialog's `type` is not prompt.
@@ -842,18 +921,29 @@ browser.newPage().then(async page => {
 - `pageFunction` <[function]\([Element]\)> Function to be evaluated with first element matching `selector`
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value.
+Example:
+```js
+const outerhtml = await page.$('#box', e => e.outerHTML);
+```
+
 
 #### frame.$$(selector, pageFunction, ...args)
 - `selector` <[string]> A [selector] to be matched in the page
 - `pageFunction` <[function]\([Element]\)> Function to be evaluted for every element matching `selector`.
 - `...args` <...[string]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Array]<[Object]>>> Promise which resolves to array of function return values.
+Example:
+```js
+const headings = await page.$$('h1,h2,h3,h4', el => el.textContent);
+for (const heading of headings) console.log(heading);
+```
+
 
 #### frame.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
 
-Adds a `<script></script>` tag to the frame with the desired url. Alternatively, javascript could be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
+Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScript could be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
 
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
@@ -863,6 +953,7 @@ Adds a `<script></script>` tag to the frame with the desired url. Alternatively,
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
   - `clickCount` <[number]> defaults to 1
+  - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. Promise gets rejected if there's no element matching `selector`.
 
 #### frame.evaluate(pageFunction, ...args)
@@ -870,7 +961,26 @@ Adds a `<script></script>` tag to the frame with the desired url. Alternatively,
 - `...args` <...[string]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Object]>> Promise which resolves to function return value
 
-If the function, passed to the `frame.evaluate`, returns a [Promise], then `frame.evaluate` would wait for the promise to resolve and return it's value.
+If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
+
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+browser.newPage().then(async page =>
+  const result = await page.evaluate(() => {
+    return Promise.resolve(8 * 7);
+  });
+  console.log(result); // prints "56"
+  browser.close();
+});
+```
+
+A string can also be passed in instead of a function.
+
+```js
+console.log(await page.evaluate('1 + 2')); // prints "3"
+```
+
 
 #### frame.focus(selector)
 - `selector` <[string]> A query [selector] of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
@@ -879,9 +989,9 @@ If the function, passed to the `frame.evaluate`, returns a [Promise], then `fram
 #### frame.hover(selector)
 - `selector` <[string]> A query [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
- 
+
 #### frame.injectFile(filePath)
-- `filePath` <[string]> Path to the javascript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+- `filePath` <[string]> Path to the JavaScript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]> Promise which resolves when file gets successfully evaluated in frame.
 
 #### frame.isDetached()
@@ -919,13 +1029,12 @@ Returns frame's url.
 - `options` <[Object]> Optional waiting parameters
 - returns: <[Promise]>
 
-This is a shortcut method for [frame.waitForSelector](#framewaitforselectorselector-options) or [page.mainFrame().waitForFunction()](#framewaitforfunctionpagefunction-options-args).
-
 This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
 - if `selectorOrFunctionOrTimeout` is a `function`, than the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
 - if `selectorOrFunctionOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
+
 
 #### frame.waitForFunction(pageFunction[, options, ...args])
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
@@ -974,7 +1083,6 @@ browser.newPage().then(async page => {
   browser.close();
 });
 ```
-
 
 ### class: Request
 
@@ -1112,3 +1220,4 @@ If changed, the request url will be modified in a way that's not observable by p
 [Mouse]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-mouse "Mouse"
 [Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map "Map"
 [selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors "selector"
+[Tracing]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-tracing "Tracing"

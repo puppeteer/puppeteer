@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-const loopWhile = require('deasync').loopWhile;
+const markdownToc = require('markdown-toc');
+const Message = require('./Message');
 
-module.exports = {
-  await: function(promise) {
-    let error;
-    let result;
-    let done = false;
-    promise.then(r => result = r)
-        .catch(err => error = err)
-        .then(() => done = true);
-    loopWhile(() => !done);
-    if (error)
-      throw error;
-    return result;
+/**
+ * @param {!Array<!Source>} sources
+ * @return {!Array<!Message>}
+ */
+module.exports = function(sources) {
+  const warnings = [];
+  for (let source of sources) {
+    const newText = markdownToc.insert(source.text());
+    if (source.setText(newText))
+      warnings.push('Regenerated table-of-contexts: ' + source.projectPath());
   }
+  return warnings.map(warning => Message.warning(warning));
 };

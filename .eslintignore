@@ -1,3 +1,3 @@
 third_party/*
 examples/*
-utils/doclint/test/
+utils/doclint/check_public_api/test/

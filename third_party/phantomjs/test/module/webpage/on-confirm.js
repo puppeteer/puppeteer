@@ -30,7 +30,4 @@ test(function () {
     page.onConfirm = undefined;
     assert_equals(page.onConfirm, undefined);
 
-}, "page.onConfirm", {
-    /* @see crbug.com/718235 */
-    expected_fail: true
-});
+}, "page.onConfirm");

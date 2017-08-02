@@ -14,30 +14,32 @@
  * limitations under the License.
  */
 
-let fs = require('fs');
-let rm = require('rimraf').sync;
-let path = require('path');
-let helper = require('../lib/helper');
+const fs = require('fs');
+const rm = require('rimraf').sync;
+const path = require('path');
+const helper = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
-let Browser = require('../lib/Browser');
-let SimpleServer = require('./server/SimpleServer');
-let GoldenUtils = require('./golden-utils');
+const Browser = require('../lib/Browser');
+const SimpleServer = require('./server/SimpleServer');
+const GoldenUtils = require('./golden-utils');
 
-let GOLDEN_DIR = path.join(__dirname, 'golden');
-let OUTPUT_DIR = path.join(__dirname, 'output');
+const GOLDEN_DIR = path.join(__dirname, 'golden');
+const OUTPUT_DIR = path.join(__dirname, 'output');
 
-let PORT = 8907;
-let PREFIX = 'http://localhost:' + PORT;
-let EMPTY_PAGE = PREFIX + '/empty.html';
-let HTTPS_PORT = 8908;
-let HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
+const PORT = 8907;
+const PREFIX = 'http://localhost:' + PORT;
+const EMPTY_PAGE = PREFIX + '/empty.html';
+const HTTPS_PORT = 8908;
+const HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
 
 const iPhone = require('../DeviceDescriptors')['iPhone 6'];
 const iPhoneLandscape = require('../DeviceDescriptors')['iPhone 6 landscape'];
 
 const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
-if (process.env.DEBUG_TEST)
+const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
+
+if (process.env.DEBUG_TEST || slowMo)
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 1000 * 1000;
 else
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
@@ -50,26 +52,49 @@ else
   console.assert(revisionInfo, `Chromium r${chromiumRevision} is not downloaded. Run 'npm install' and try to re-run tests.`);
 }
 
-describe('Puppeteer', function() {
+let server;
+let httpsServer;
+beforeAll(SX(async function() {
+  const assetsPath = path.join(__dirname, 'assets');
+  server = await SimpleServer.create(assetsPath, PORT);
+  httpsServer = await SimpleServer.createHTTPS(assetsPath, HTTPS_PORT);
+  if (fs.existsSync(OUTPUT_DIR))
+    rm(OUTPUT_DIR);
+}));
+
+afterAll(SX(async function() {
+  await Promise.all([
+    server.stop(),
+    httpsServer.stop(),
+  ]);
+}));
+
+describe('Browser', function() {
+  it('Browser.Options.ignoreHTTPSErrors', SX(async function() {
+    let browser = new Browser({ignoreHTTPSErrors: true, headless, slowMo, args: ['--no-sandbox']});
+    let page = await browser.newPage();
+    let error = null;
+    let response = null;
+    try {
+      response = await page.navigate(HTTPS_PREFIX + '/empty.html');
+    } catch (e) {
+      error = e;
+    }
+    expect(error).toBe(null);
+    expect(response.ok).toBe(true);
+    browser.close();
+  }));
+});
+
+describe('Page', function() {
   let browser;
-  let server;
-  let httpsServer;
   let page;
 
   beforeAll(SX(async function() {
-    browser = new Browser({headless, args: ['--no-sandbox']});
-    const assetsPath = path.join(__dirname, 'assets');
-    server = await SimpleServer.create(assetsPath, PORT);
-    httpsServer = await SimpleServer.createHTTPS(assetsPath, HTTPS_PORT);
-    if (fs.existsSync(OUTPUT_DIR))
-      rm(OUTPUT_DIR);
+    browser = new Browser({headless, slowMo, args: ['--no-sandbox']});
   }));
 
   afterAll(SX(async function() {
-    await Promise.all([
-      server.stop(),
-      httpsServer.stop(),
-    ]);
     browser.close();
   }));
 
@@ -407,24 +432,28 @@ describe('Puppeteer', function() {
     it('should work', SX(async function() {
       let commandArgs = [];
       page.once('console', (...args) => commandArgs = args);
-      page.evaluate(() => console.log(5, 'hello', {foo: 'bar'}));
-      await waitForEvents(page, 'console');
+      await Promise.all([
+        page.evaluate(() => console.log(5, 'hello', {foo: 'bar'})),
+        waitForEvents(page, 'console')
+      ]);
       expect(commandArgs).toEqual([5, 'hello', {foo: 'bar'}]);
     }));
     it('should work for different console API calls', SX(async function() {
       let messages = [];
       page.on('console', msg => messages.push(msg));
-      page.evaluate(() => {
-        // A pair of time/timeEnd generates only one Console API call.
-        console.time('calling console.time');
-        console.timeEnd('calling console.time');
-        console.trace('calling console.trace');
-        console.dir('calling console.dir');
-        console.warn('calling console.warn');
-        console.error('calling console.error');
-      });
-      // Wait for 5 events to hit.
-      await waitForEvents(page, 'console', 5);
+      await Promise.all([
+        page.evaluate(() => {
+          // A pair of time/timeEnd generates only one Console API call.
+          console.time('calling console.time');
+          console.timeEnd('calling console.time');
+          console.trace('calling console.trace');
+          console.dir('calling console.dir');
+          console.warn('calling console.warn');
+          console.error('calling console.error');
+        }),
+        // Wait for 5 events to hit.
+        waitForEvents(page, 'console', 5)
+      ]);
       expect(messages[0]).toContain('calling console.time');
       expect(messages.slice(1)).toEqual([
         'calling console.trace',
@@ -436,8 +465,10 @@ describe('Puppeteer', function() {
     it('should not fail for window object', SX(async function() {
       let windowObj = null;
       page.once('console', arg => windowObj = arg);
-      page.evaluate(() => console.error(window));
-      await waitForEvents(page, 'console');
+      await Promise.all([
+        page.evaluate(() => console.error(window)),
+        waitForEvents(page, 'console')
+      ]);
       expect(windowObj).toBe('Window');
     }));
   });
@@ -457,6 +488,11 @@ describe('Puppeteer', function() {
       expect(error.message).toContain('Cannot navigate to invalid URL');
     }));
     it('should fail when navigating to bad SSL', SX(async function() {
+      // Make sure that network events do not emit 'undefind'.
+      // @see https://github.com/GoogleChrome/puppeteer/issues/168
+      page.on('request', request => expect(request).toBeTruthy());
+      page.on('requestfinished', request => expect(request).toBeTruthy());
+      page.on('requestfailed', request => expect(request).toBeTruthy());
       let error = null;
       try {
         await page.navigate(HTTPS_PREFIX + '/empty.html');
@@ -614,8 +650,10 @@ describe('Puppeteer', function() {
   describe('Page.waitForNavigation', function() {
     it('should work', SX(async function() {
       await page.navigate(EMPTY_PAGE);
-      const result = page.waitForNavigation();
-      page.evaluate(url => window.location.href = url, PREFIX + '/grid.html');
+      const [result] = await Promise.all([
+        page.waitForNavigation(),
+        page.evaluate(url => window.location.href = url, PREFIX + '/grid.html')
+      ]);
       const response = await result;
       expect(response.ok).toBe(true);
       expect(response.url).toContain('grid.html');
@@ -715,11 +753,10 @@ describe('Puppeteer', function() {
         request.headers.set('foo', 'bar');
         request.continue();
       });
-      let serverRequest = server.waitForRequest('/sleep.zzz');
-      page.evaluate(() => {
-        fetch('/sleep.zzz');
-      });
-      let request = await serverRequest;
+      const [request] = await Promise.all([
+        server.waitForRequest('/sleep.zzz'),
+        page.evaluate(() => fetch('/sleep.zzz'))
+      ]);
       expect(request.headers['foo']).toBe('bar');
     }));
   });
@@ -1094,6 +1131,15 @@ describe('Puppeteer', function() {
           fail(modifiers[modifier] + ' should be false');
       }
     }));
+    it('should specify repeat property', SX(async function(){
+      await page.navigate(PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      await page.$('textarea', textarea => textarea.addEventListener('keydown', e => window.lastEvent = e, true));
+      await page.keyboard.down('a', {text: 'a'});
+      expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(false);
+      await page.press('a');
+      expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(true);
+    }));
     function dimensions() {
       let rect = document.querySelector('textarea').getBoundingClientRect();
       return {
@@ -1173,6 +1219,37 @@ describe('Puppeteer', function() {
       expect(response).toBeTruthy();
       expect(await response.text()).toBe('{"foo": "bar"}\n');
       expect(await response.json()).toEqual({foo: 'bar'});
+    }));
+    it('Page.Events.Response should not report body unless request is finished', SX(async() => {
+      await page.navigate(EMPTY_PAGE);
+      // Setup server to trap request.
+      let serverResponse = null;
+      server.setRoute('/get', (req, res) => {
+        serverResponse = res;
+        res.write('hello ');
+      });
+      // Setup page to trap response.
+      let pageResponse = null;
+      let requestFinished = false;
+      page.on('response', r => pageResponse = r);
+      page.on('requestfinished', () => requestFinished = true);
+      // send request and wait for server response
+      await Promise.all([
+        page.evaluate(() => fetch('./get', { method: 'GET'})),
+        waitForEvents(page, 'response')
+      ]);
+
+      expect(serverResponse).toBeTruthy();
+      expect(pageResponse).toBeTruthy();
+      expect(pageResponse.status).toBe(200);
+      expect(requestFinished).toBe(false);
+
+      let responseText = pageResponse.text();
+      // Write part of the response and wait for it to be flushed.
+      await new Promise(x => serverResponse.write('wor', x));
+      // Finish response.
+      await new Promise(x => serverResponse.end('ld!', x));
+      expect(await responseText).toBe('hello world!');
     }));
     it('Page.Events.RequestFailed', SX(async function() {
       page.setRequestInterceptor(request => {
@@ -1410,6 +1487,32 @@ describe('Puppeteer', function() {
       for (let i = 0; i < N; ++i)
         expect(screenshots[i]).toBeGolden(`grid-cell-${i}.png`);
       await Promise.all(pages.map(page => page.close()));
+    }));
+  });
+
+  describe('Tracing', function() {
+    let outputFile = path.join(__dirname, 'assets', 'trace.json');
+    afterEach(function() {
+      fs.unlinkSync(outputFile);
+    });
+    it('should output a trace', SX(async function() {
+      await page.tracing.start({screenshots: true});
+      await page.navigate(PREFIX + '/grid.html');
+      await page.tracing.stop(outputFile);
+      expect(fs.existsSync(outputFile)).toBe(true);
+    }));
+    it('should throw if tracing on two pages', SX(async function() {
+      await page.tracing.start();
+      let newPage = await browser.newPage();
+      let error = null;
+      try {
+        await newPage.tracing.start();
+      } catch (e) {
+        error = e;
+      }
+      await newPage.close();
+      expect(error).toBeTruthy();
+      await page.tracing.stop(outputFile);
     }));
   });
 });

@@ -1,29 +1,29 @@
 # Puppeteer [![Build Status](https://travis-ci.com/GoogleChrome/puppeteer.svg?token=8jabovWqb8afz5RDcYqx&branch=master)](https://travis-ci.com/GoogleChrome/puppeteer) 
+
+<img src="https://user-images.githubusercontent.com/238208/28749789-e67693de-7487-11e7-85f9-2d9ad9025aae.png" height="150" align="right">
+
 ###### [API](docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md)
 
-Puppeteer is a node library which provides a high-level API to control Chromium over the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
+Puppeteer is a node library which provides a high-level API to control [headless](https://developers.google.com/web/updates/2017/04/headless-chrome) Chrome over the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/). It can also be configured to use full (non-headless) Chrome.
 
-
-## Use Cases
-* Up-to-date testing environment that supports the latest Javascript features.
+###### Use Cases
+* Up-to-date testing environment that supports the latest JavaScript features.
 * Crawl your site to generate pre-rendered content for your SPA.
 * Scrape content from websites.
 
+###### Features
+* Full Page Screenshots
+* Low-Level Input Emulation
+* Build-In Device Emulation
+
 ## Installation
 
-Get the source:
-
+To add Puppeteer to your project, run:
 ```
-git clone https://github.com/GoogleChrome/puppeteer
-cd puppeteer
+yarn add puppeteer
 ```
 
-Install the dependencies:
-
-```sh
-yarn # or 'npm install'
-```
-> **NOTE** Puppeteer bundles Chromium (~90Mb) which it is guaranteed to work with. However, you're free to point Puppeteer to any Chromium executable ([example](https://github.com/GoogleChrome/puppeteer/blob/master/examples/custom-chromium-revision.js))
+> **NOTE** Puppeteer bundles a version of Chromium (~90Mb) which it is guaranteed to work with. However, you're free to point Puppeteer to any Chromium executable ([example](https://github.com/GoogleChrome/puppeteer/blob/master/examples/custom-chromium-revision.js))
 
 
 ## Getting Started

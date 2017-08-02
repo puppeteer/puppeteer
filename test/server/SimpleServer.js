@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-let http = require('http');
-let https = require('https');
-let url = require('url');
-let fs = require('fs');
-let path = require('path');
-let mime = require('mime');
-let WebSocketServer = require('ws').Server;
+const http = require('http');
+const https = require('https');
+const url = require('url');
+const fs = require('fs');
+const path = require('path');
+const mime = require('mime');
+const WebSocketServer = require('ws').Server;
 
 const fulfillSymbol = Symbol('fullfill callback');
 const rejectSymbol = Symbol('reject callback');

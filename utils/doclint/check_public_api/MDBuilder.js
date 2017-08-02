@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-const fs = require('fs');
-const path = require('path');
 const Documentation = require('./Documentation');
 const commonmark = require('commonmark');
 
@@ -147,17 +145,14 @@ class MDOutline {
 
 /**
  * @param {!Page} page
- * @param {!Array<string>} dirPath
+ * @param {!Array<!Source>} sources
  * @return {!Promise<{documentation: !Documentation, errors: !Array<string>}>}
  */
-module.exports = async function(page, dirPath) {
-  let filePaths = fs.readdirSync(dirPath)
-      .filter(fileName => fileName.endsWith('.md'))
-      .map(fileName => path.join(dirPath, fileName));
+module.exports = async function(page, sources) {
   let classes = [];
   let errors = [];
-  for (let filePath of filePaths) {
-    let outline = await MDOutline.create(page, fs.readFileSync(filePath, 'utf8'));
+  for (let source of sources) {
+    let outline = await MDOutline.create(page, source.text());
     classes.push(...outline.classes);
     errors.push(...outline.errors);
   }

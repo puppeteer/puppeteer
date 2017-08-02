@@ -14,19 +14,31 @@
  * limitations under the License.
  */
 
-const loopWhile = require('deasync').loopWhile;
-
-module.exports = {
-  await: function(promise) {
-    let error;
-    let result;
-    let done = false;
-    promise.then(r => result = r)
-        .catch(err => error = err)
-        .then(() => done = true);
-    loopWhile(() => !done);
-    if (error)
-      throw error;
-    return result;
+class Message {
+  /**
+   * @param {string} type
+   * @param {string} text
+   */
+  constructor(type, text) {
+    this.type = type;
+    this.text = text;
   }
-};
+
+  /**
+   * @param {string} text
+   * @return {!Message}
+   */
+  static error(text) {
+    return new Message('error', text);
+  }
+
+  /**
+   * @param {string} text
+   * @return {!Message}
+   */
+  static warning(text) {
+    return new Message('warning', text);
+  }
+}
+
+module.exports = Message;

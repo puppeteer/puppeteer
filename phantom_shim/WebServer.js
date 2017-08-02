@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-let http = require('http');
-let await = require('./utilities').await;
+const http = require('http');
+const await = require('./utilities').await;
 
 class WebServer {
   constructor() {
