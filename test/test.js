@@ -1493,6 +1493,18 @@ describe('Page', function() {
       await page.tracing.stop(outputFile);
       expect(fs.existsSync(outputFile)).toBe(true);
     }));
+    it('should throw if tracing on two pages', SX(async function() {
+      await page.tracing.start();
+      let newPage = await browser.newPage();
+      let error = null;
+      try {
+        await newPage.tracing.start();
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeTruthy();
+      await page.tracing.stop(outputFile);
+    }));
   });
 });
 
