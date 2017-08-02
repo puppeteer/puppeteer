@@ -1481,6 +1481,19 @@ describe('Page', function() {
       await Promise.all(pages.map(page => page.close()));
     }));
   });
+
+  describe('Tracing', function() {
+    let outputFile = path.join(__dirname, 'assets', 'trace.json');
+    afterEach(function() {
+      fs.unlinkSync(outputFile);
+    });
+    it('should output a trace', SX(async function() {
+      await page.tracing.start({screenshots: true});
+      await page.navigate(PREFIX + '/grid.html');
+      await page.tracing.stop(outputFile);
+      expect(fs.existsSync(outputFile)).toBe(true);
+    }));
+  });
 });
 
 if (process.env.COVERAGE) {

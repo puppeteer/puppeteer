@@ -40,6 +40,7 @@ const EXCLUDE_METHODS = new Set([
   'InterceptedRequest.constructor',
   'Keyboard.constructor',
   'Mouse.constructor',
+  'Tracing.constructor',
   'Page.constructor',
   'Page.create',
   'Request.constructor',
