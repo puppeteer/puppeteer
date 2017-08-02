@@ -847,7 +847,6 @@ await page.tracing.stop('trace.json');
 #### tracing.start([options])
 - `options` <[Object]>
   - `screenshots` <[boolean]> captures screenshots in the trace.
-  - `clickCount` <[number]> defaults to 1
 - returns: <[Promise]>
 
 #### tracing.stop(path)
