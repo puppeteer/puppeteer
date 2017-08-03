@@ -311,13 +311,10 @@ describe('Page', function() {
 
     it('should work when node is added through innerHTML', SX(async function() {
       await page.navigate(EMPTY_PAGE);
-      let frame = page.mainFrame();
-      let added = false;
-      frame.waitForSelector('h3 div').then(() => added = true);
-      expect(added).toBe(false);
-      await frame.evaluate(addElement, 'span');
-      await page.$('span', span => span.innerHTML = '<h3><div></div></h3>');
-      expect(added).toBe(true);
+      let watchdog = page.waitForSelector('h3 div').then(() => added = true);
+      await page.evaluate(addElement, 'span');
+      await page.evaluate(() => document.querySelector('span').innerHTML = '<h3><div></div></h3>');
+      await watchdog;
     }));
 
     it('Page.waitForSelector is shortcut for main frame', SX(async function() {
@@ -956,21 +953,21 @@ describe('Page', function() {
       await page.navigate(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       await page.press('a', {text: 'f'});
-      expect(await page.$('textarea', t => t.value)).toBe('f');
+      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('f');
 
       await page.evaluate(() => window.addEventListener('keydown', e => e.preventDefault(), true));
 
       await page.press('a', {text: 'y'});
-      expect(await page.$('textarea', t => t.value)).toBe('f');
+      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('f');
     }));
     it('should send a character with sendCharacter', SX(async function() {
       await page.navigate(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       await page.keyboard.sendCharacter('嗨');
-      expect(await page.$('textarea', t => t.value)).toBe('嗨');
+      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('嗨');
       await page.evaluate(() => window.addEventListener('keydown', e => e.preventDefault(), true));
       await page.keyboard.sendCharacter('a');
-      expect(await page.$('textarea', t => t.value)).toBe('嗨a');
+      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('嗨a');
     }));
     it('should report shiftKey', SX(async function(){
       await page.navigate(PREFIX + '/input/keyboard.html');
@@ -1070,13 +1067,14 @@ describe('Page', function() {
     it('should scroll and click the button', SX(async function(){
       await page.navigate(PREFIX + '/input/scrollable.html');
       await page.click('#button-5');
-      expect(await page.$('#button-5', button => button.textContent)).toBe('clicked');
+      expect(await page.evaluate(() => document.querySelector('#button-5').textContent)).toBe('clicked');
       await page.click('#button-80');
-      expect(await page.$('#button-80', button => button.textContent)).toBe('clicked');
+      expect(await page.evaluate(() => document.querySelector('#button-80').textContent)).toBe('clicked');
     }));
     it('should click a partially obscured button', SX(async function() {
       await page.navigate(PREFIX + '/input/button.html');
-      await page.$('button', button => {
+      await page.evaluate(() => {
+        let button = document.querySelector('button');
         button.textContent = 'Some really long text that will go offscreen';
         button.style.position = 'absolute';
         button.style.left = '368px';
@@ -1089,7 +1087,7 @@ describe('Page', function() {
       await page.focus('textarea');
       let text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
       await page.type(text);
-      await page.$('textarea', textarea => textarea.scrollTop = 0);
+      await page.evaluate(() => document.querySelector('textarea').scrollTop = 0);
       let {x, y} = await page.evaluate(dimensions);
       await page.mouse.move(x + 2,y + 2);
       await page.mouse.down();
@@ -1110,20 +1108,20 @@ describe('Page', function() {
     it('should trigger hover state', SX(async function(){
       await page.navigate(PREFIX + '/input/scrollable.html');
       await page.hover('#button-6');
-      expect(await page.$('button:hover', button => button.id)).toBe('button-6');
+      expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-6');
       await page.hover('#button-2');
-      expect(await page.$('button:hover', button => button.id)).toBe('button-2');
+      expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-2');
       await page.hover('#button-91');
-      expect(await page.$('button:hover', button => button.id)).toBe('button-91');
+      expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-91');
     }));
     it('should fire contextmenu event on right click', SX(async function(){
       await page.navigate(PREFIX + '/input/scrollable.html');
       await page.click('#button-8', {button: 'right'});
-      expect(await page.$('#button-8', button => button.textContent)).toBe('context menu');
+      expect(await page.evaluate(() => document.querySelector('#button-8').textContent)).toBe('context menu');
     }));
     it('should set modifier keys on click', SX(async function(){
       await page.navigate(PREFIX + '/input/scrollable.html');
-      await page.$('#button-3', button => button.addEventListener('mousedown', e => window.lastEvent = e, true));
+      await page.evaluate(() => document.querySelector('#button-3').addEventListener('mousedown', e => window.lastEvent = e, true));
       let modifiers = {'Shift': 'shiftKey', 'Control': 'ctrlKey', 'Alt': 'altKey', 'Meta': 'metaKey'};
       for (let modifier in modifiers) {
         await page.keyboard.down(modifier);
@@ -1141,7 +1139,7 @@ describe('Page', function() {
     it('should specify repeat property', SX(async function(){
       await page.navigate(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
-      await page.$('textarea', textarea => textarea.addEventListener('keydown', e => window.lastEvent = e, true));
+      await page.evaluate(() => document.querySelector('textarea').addEventListener('keydown', e => window.lastEvent = e, true));
       await page.keyboard.down('a', {text: 'a'});
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(false);
       await page.press('a');
@@ -1391,34 +1389,6 @@ describe('Page', function() {
     it('should return the page title', SX(async function(){
       await page.navigate(PREFIX + '/input/button.html');
       expect(await page.title()).toBe('Button test');
-    }));
-  });
-
-  describe('Query selector', function() {
-    it('Page.$', SX(async function() {
-      await page.navigate(PREFIX + '/playground.html');
-      expect(await page.$('#first', element => element.textContent)).toBe('First div');
-      expect(await page.$('#second span', element => element.textContent)).toBe('Inner span');
-      expect(await page.$('#first', (element, arg1) => arg1, 'value1')).toBe('value1');
-      expect(await page.$('#first', (element, arg1, arg2) => arg2, 'value1', 'value2')).toBe('value2');
-      expect(await page.$('doesnot-exist', element => 5)).toBe(null);
-      expect(await page.$('button', function(element, arg1) {
-        element.textContent = arg1;
-        return true;
-      }, 'new button text')).toBe(true);
-      expect(await page.$('button', function(element) {
-        return element.textContent;
-      })).toBe('new button text');
-    }));
-
-    it('Page.$$', SX(async function() {
-      await page.navigate(PREFIX + '/playground.html');
-      expect((await page.$$('div', element => element.textContent)).length).toBe(2);
-      expect((await page.$$('div', (element, index) => index))[0]).toBe(0);
-      expect((await page.$$('div', (element, index) => index))[1]).toBe(1);
-      expect((await page.$$('doesnotexist', function(){})).length).toBe(0);
-      expect((await page.$$('div', element => element.textContent))[0]).toBe('First div');
-      expect((await page.$$('span', (element, index, arg1) => arg1, 'value1'))[0]).toBe('value1');
     }));
   });
 
