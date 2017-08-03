@@ -103,19 +103,6 @@ describe('Page', function() {
     server.reset();
     httpsServer.reset();
     GoldenUtils.addMatchers(jasmine, GOLDEN_DIR, OUTPUT_DIR);
-    jasmine.addMatchers({
-      toEPSEqual: function(util, customEqualityTesters) {
-        return {
-          compare: function(actual, expected, eps) {
-            const diff = Math.abs(actual - expected);
-            let result = {pass: diff < eps};
-            if (!result.pass)
-              result.message = `Expected |${actual} - ${expected}| < ${eps}, but difference is ${diff}`;
-            return result;
-          }
-        };
-      }
-    });
   }));
 
   afterEach(SX(async function() {
@@ -1390,16 +1377,16 @@ describe('Page', function() {
     it('should default to printing in Letter format', SX(async function() {
       let pages = await getPDFPages(await page.pdf());
       expect(pages.length).toBe(1);
-      expect(pages[0].width).toEPSEqual(8.5, 1e-2);
-      expect(pages[0].height).toEPSEqual(11, 1e-2);
+      expect(pages[0].width).toBeCloseTo(8.5, 1e-2);
+      expect(pages[0].height).toBeCloseTo(11, 1e-2);
     }));
     it('should support setting custom format', SX(async function() {
       let pages = await getPDFPages(await page.pdf({
         format: 'A4'
       }));
       expect(pages.length).toBe(1);
-      expect(pages[0].width).toEPSEqual(8.27, 1e-2);
-      expect(pages[0].height).toEPSEqual(11.7, 1e-2);
+      expect(pages[0].width).toBeCloseTo(8.27, 1e-2);
+      expect(pages[0].height).toBeCloseTo(11.7, 1e-2);
     }));
     it('should support setting paper width and height', SX(async function() {
       let pages = await getPDFPages(await page.pdf({
@@ -1407,8 +1394,8 @@ describe('Page', function() {
         height: '10in',
       }));
       expect(pages.length).toBe(1);
-      expect(pages[0].width).toEPSEqual(10, 1e-2);
-      expect(pages[0].height).toEPSEqual(10, 1e-2);
+      expect(pages[0].width).toBeCloseTo(10, 1e-2);
+      expect(pages[0].height).toBeCloseTo(10, 1e-2);
     }));
     it('should print multiple pages', SX(async function() {
       await page.navigate(PREFIX + '/grid.html');
@@ -1417,8 +1404,8 @@ describe('Page', function() {
       const height = 50 * 5 + 1;
       let pages = await getPDFPages(await page.pdf({width, height}));
       expect(pages.length).toBe(8);
-      expect(pages[0].width).toEPSEqual(cssPixelsToInches(width), 1e-2);
-      expect(pages[0].height).toEPSEqual(cssPixelsToInches(height), 1e-2);
+      expect(pages[0].width).toBeCloseTo(cssPixelsToInches(width), 1e-2);
+      expect(pages[0].height).toBeCloseTo(cssPixelsToInches(height), 1e-2);
     }));
     it('should support page ranges', SX(async function() {
       await page.navigate(PREFIX + '/grid.html');
