@@ -25,8 +25,6 @@
     + [event: 'requestfailed'](#event-requestfailed)
     + [event: 'requestfinished'](#event-requestfinished)
     + [event: 'response'](#event-response)
-    + [page.$(selector, pageFunction, ...args)](#pageselector-pagefunction-args)
-    + [page.$$(selector, pageFunction, ...args)](#pageselector-pagefunction-args)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
@@ -81,8 +79,6 @@
     + [dialog.message()](#dialogmessage)
     + [dialog.type](#dialogtype)
   * [class: Frame](#class-frame)
-    + [frame.$(selector, pageFunction, ...args)](#frameselector-pagefunction-args)
-    + [frame.$$(selector, pageFunction, ...args)](#frameselector-pagefunction-args)
     + [frame.addScriptTag(url)](#frameaddscripttagurl)
     + [frame.childFrames()](#framechildframes)
     + [frame.click(selector[, options])](#frameclickselector-options)
@@ -315,30 +311,6 @@ Emitted when a request is successfully finished.
 - <[Response]>
 
 Emitted when a [response] is received.
-
-#### page.$(selector, pageFunction, ...args)
-- `selector` <[string]> A [selector] to be matched in the page
-- `pageFunction` <[function]\([Element]\)> Function to be evaluated with first element matching `selector`
-- `...args` <...[string]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[Object]>> Promise which resolves to function return value.
-Example:
-```js
-const outerhtml = await page.$('#box', e => e.outerHTML);
-```
-Shortcut for [page.mainFrame().$(selector, pageFunction, ...args)](#frameselector-pagefunction-args).
-
-#### page.$$(selector, pageFunction, ...args)
-- `selector` <[string]> A [selector] to be matched in the page
-- `pageFunction` <[function]\([Element]\)> Function to be evaluted for every element matching `selector`.
-- `...args` <...[string]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[Array]<[Object]>>> Promise which resolves to array of function return values.
-Example:
-```js
-const headings = await page.$$('h1,h2,h3,h4', el => el.textContent);
-for (const heading of headings) console.log(heading);
-```
-
-Shortcut for [page.mainFrame().$$(selector, pageFunction, ...args)](#frameselector-pagefunction-args-1).
 
 #### page.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
@@ -914,28 +886,6 @@ browser.newPage().then(async page => {
       dumpFrameTree(child, indent + '  ');
   }
 });
-```
-
-#### frame.$(selector, pageFunction, ...args)
-- `selector` <[string]> A [selector] to be matched in the page
-- `pageFunction` <[function]\([Element]\)> Function to be evaluated with first element matching `selector`
-- `...args` <...[string]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[Object]>> Promise which resolves to function return value.
-Example:
-```js
-const outerhtml = await page.$('#box', e => e.outerHTML);
-```
-
-
-#### frame.$$(selector, pageFunction, ...args)
-- `selector` <[string]> A [selector] to be matched in the page
-- `pageFunction` <[function]\([Element]\)> Function to be evaluted for every element matching `selector`.
-- `...args` <...[string]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[Array]<[Object]>>> Promise which resolves to array of function return values.
-Example:
-```js
-const headings = await page.$$('h1,h2,h3,h4', el => el.textContent);
-for (const heading of headings) console.log(heading);
 ```
 
 
