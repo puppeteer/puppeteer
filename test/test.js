@@ -311,7 +311,7 @@ describe('Page', function() {
 
     it('should work when node is added through innerHTML', SX(async function() {
       await page.navigate(EMPTY_PAGE);
-      let watchdog = page.waitForSelector('h3 div').then(() => added = true);
+      let watchdog = page.waitForSelector('h3 div');
       await page.evaluate(addElement, 'span');
       await page.evaluate(() => document.querySelector('span').innerHTML = '<h3><div></div></h3>');
       await watchdog;
