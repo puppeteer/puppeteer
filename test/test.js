@@ -1364,17 +1364,79 @@ describe('Page', function() {
     }));
   });
 
-  describe('Page.pdf', function() {
-    const outputFile = __dirname + '/assets/output.pdf';
-    afterEach(function() {
-      fs.unlinkSync(outputFile);
-    });
-
-    // Printing to pdf is currently only supported in headless
-    (headless ? it : xit)('should print to pdf', SX(async function() {
-      await page.navigate(PREFIX + '/grid.html');
+  // Printing to pdf is currently only supported in headless
+  (headless ? describe : xdescribe)('Page.pdf', function() {
+    it('should be able to save file', SX(async function() {
+      const outputFile = __dirname + '/assets/output.pdf';
       await page.pdf({path: outputFile});
       expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
+      fs.unlinkSync(outputFile);
+    }));
+    it('should default to printing in Letter format', SX(async function() {
+      let pages = await getPDFPages(await page.pdf());
+      expect(pages.length).toBe(1);
+      expect(pages[0].width).toBeCloseTo(8.5, 2);
+      expect(pages[0].height).toBeCloseTo(11, 2);
+    }));
+    it('should support setting custom format', SX(async function() {
+      let pages = await getPDFPages(await page.pdf({
+        format: 'A4'
+      }));
+      expect(pages.length).toBe(1);
+      expect(pages[0].width).toBeCloseTo(8.27, 1);
+      expect(pages[0].height).toBeCloseTo(11.7, 1);
+    }));
+    it('should support setting paper width and height', SX(async function() {
+      let pages = await getPDFPages(await page.pdf({
+        width: '10in',
+        height: '10in',
+      }));
+      expect(pages.length).toBe(1);
+      expect(pages[0].width).toBeCloseTo(10, 2);
+      expect(pages[0].height).toBeCloseTo(10, 2);
+    }));
+    it('should print multiple pages', SX(async function() {
+      await page.navigate(PREFIX + '/grid.html');
+      // Define width and height in CSS pixels.
+      const width = 50 * 5 + 1;
+      const height = 50 * 5 + 1;
+      let pages = await getPDFPages(await page.pdf({width, height}));
+      expect(pages.length).toBe(8);
+      expect(pages[0].width).toBeCloseTo(cssPixelsToInches(width), 2);
+      expect(pages[0].height).toBeCloseTo(cssPixelsToInches(height), 2);
+    }));
+    it('should support page ranges', SX(async function() {
+      await page.navigate(PREFIX + '/grid.html');
+      // Define width and height in CSS pixels.
+      const width = 50 * 5 + 1;
+      const height = 50 * 5 + 1;
+      let pages = await getPDFPages(await page.pdf({width, height, pageRanges: '1,4-7'}));
+      expect(pages.length).toBe(5);
+    }));
+    it('should throw if format is unknown', SX(async function() {
+      let error = null;
+      try {
+        await getPDFPages(await page.pdf({
+          format: 'something'
+        }));
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('Unknown paper format');
+    }));
+    it('should throw if units are unknown', SX(async function() {
+      let error = null;
+      try {
+        await getPDFPages(await page.pdf({
+          width: '10em',
+          height: '10em',
+        }));
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('Failed to parse parameter value');
     }));
   });
 
@@ -1527,6 +1589,39 @@ function waitForEvents(emitter, eventName, eventCount = 1) {
     emitter.removeListener(eventName, onEvent);
     fulfill();
   }
+}
+
+/**
+ * @param {!Buffer} pdfBuffer
+ * @return {!Promise<!Array<!Object>>}
+ */
+async function getPDFPages(pdfBuffer) {
+  const PDFJS = require('pdfjs-dist');
+  PDFJS.disableWorker = true;
+  const data = new Uint8Array(pdfBuffer);
+  const doc = await PDFJS.getDocument(data);
+  let pages = [];
+  for (let i = 0; i < doc.numPages; ++i) {
+    let page = await doc.getPage(i + 1);
+    let viewport = page.getViewport(1);
+    // Viewport width and height is in PDF points, which is
+    // 1/72 of an inch.
+    pages.push({
+      width: viewport.width / 72,
+      height: viewport.height / 72,
+    });
+    page.cleanup();
+  }
+  doc.cleanup();
+  return pages;
+}
+
+/**
+ * @param {number} px
+ * @return {number}
+ */
+function cssPixelsToInches(px) {
+  return px / 96;
 }
 
 // Since Jasmine doesn't like async functions, they should be wrapped
