@@ -59,7 +59,6 @@
     + [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
     + [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [class: RemoteElement](#class-remoteelement)
-    + [remoteElement.center()](#remoteelementcenter)
     + [remoteElement.click([options])](#remoteelementclickoptions)
     + [remoteElement.eval(pageFunction, ...args)](#remoteelementevalpagefunction-args)
     + [remoteElement.focus()](#remoteelementfocus)
@@ -697,11 +696,6 @@ browser.newPage().then(async page => {
 Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options).
 
 ### class: RemoteElement
-
-#### remoteElement.center()
-- returns: <[Promise]<[Object]>>
-  - `x` <[number]>
-  - `y` <[number]>
 
 #### remoteElement.click([options])
 - `options` <[Object]>
