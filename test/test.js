@@ -1407,7 +1407,7 @@ describe('Page', function() {
     }));
     it('should support setting custom format', SX(async function() {
       let pages = await getPDFPages(await page.pdf({
-        format: 'A4'
+        format: 'a4'
       }));
       expect(pages.length).toBe(1);
       expect(pages[0].width).toBeCloseTo(8.27, 1);
