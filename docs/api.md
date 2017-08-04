@@ -822,7 +822,7 @@ await page.tracing.stop();
   - `screenshots` <[boolean]> captures screenshots in the trace.
 - returns: <[Promise]>
 
-Only one tracing could be started simultaneously per browser.
+Only one trace can be active at a time per browser.
 
 #### tracing.stop()
 - returns: <[Promise]>
