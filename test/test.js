@@ -501,7 +501,7 @@ describe('Page', function() {
     it('should fail when main resources failed to load', SX(async function() {
       let error = null;
       try {
-        await page.navigate('chrome-devtools://devtools/bundled/inspector.html');
+        await page.navigate('chrome-devtools://non-existing.html');
       } catch (e) {
         error = e;
       }
