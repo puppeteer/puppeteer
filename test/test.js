@@ -1159,6 +1159,11 @@ describe('Page', function() {
       await page.press('a');
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(true);
     }));
+    xit('should click links which cause navigation', SX(async function() {
+      await page.setContent(`<a href="${EMPTY_PAGE}">empty.html</a>`);
+      // This await should not hang.
+      await page.click('a');
+    }));
     function dimensions() {
       let rect = document.querySelector('textarea').getBoundingClientRect();
       return {
