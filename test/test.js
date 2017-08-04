@@ -24,6 +24,9 @@ const Browser = require('../lib/Browser');
 const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
 
+const YELLOW_COLOR = '\x1b[33m';
+const RESET_COLOR = '\x1b[0m';
+
 const GOLDEN_DIR = path.join(__dirname, 'golden');
 const OUTPUT_DIR = path.join(__dirname, 'output');
 
@@ -33,11 +36,18 @@ const EMPTY_PAGE = PREFIX + '/empty.html';
 const HTTPS_PORT = 8908;
 const HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
 
-const iPhone = require('../DeviceDescriptors')['iPhone 6'];
-const iPhoneLandscape = require('../DeviceDescriptors')['iPhone 6 landscape'];
-
 const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
 const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
+const executablePath = process.env.CHROME;
+if (executablePath)
+  console.warn(`${YELLOW_COLOR}WARN: running tests with ${executablePath}${RESET_COLOR}`);
+
+const defaultBrowserOptions = {
+  executablePath,
+  slowMo,
+  headless,
+  args: ['--no-sandbox']
+};
 
 if (process.env.DEBUG_TEST || slowMo)
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 1000 * 1000;
@@ -71,7 +81,8 @@ afterAll(SX(async function() {
 
 describe('Browser', function() {
   it('Browser.Options.ignoreHTTPSErrors', SX(async function() {
-    let browser = new Browser({ignoreHTTPSErrors: true, headless, slowMo, args: ['--no-sandbox']});
+    let options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
+    let browser = new Browser(options);
     let page = await browser.newPage();
     let error = null;
     let response = null;
@@ -87,11 +98,14 @@ describe('Browser', function() {
 });
 
 describe('Page', function() {
+  const iPhone = require('../DeviceDescriptors')['iPhone 6'];
+  const iPhoneLandscape = require('../DeviceDescriptors')['iPhone 6 landscape'];
+
   let browser;
   let page;
 
   beforeAll(SX(async function() {
-    browser = new Browser({headless, slowMo, args: ['--no-sandbox']});
+    browser = new Browser(defaultBrowserOptions);
   }));
 
   afterAll(SX(async function() {
