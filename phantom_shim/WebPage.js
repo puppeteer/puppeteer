@@ -396,9 +396,9 @@ class WebPage {
    */
   uploadFile(selector, files) {
     if (typeof files === 'string')
-      await(this._page.uploadFile(selector, files));
+      await(this._page.$(selector).uploadFile(files));
     else
-      await(this._page.uploadFile(selector, ...files));
+      await(this._page.$(selector).uploadFile(...files));
   }
 
   /**
