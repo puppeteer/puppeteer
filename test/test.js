@@ -24,6 +24,9 @@ const Browser = require('../lib/Browser');
 const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
 
+const YELLOW_COLOR = '\x1b[33m';
+const RESET_COLOR = '\x1b[0m';
+
 const GOLDEN_DIR = path.join(__dirname, 'golden');
 const OUTPUT_DIR = path.join(__dirname, 'output');
 
@@ -33,11 +36,18 @@ const EMPTY_PAGE = PREFIX + '/empty.html';
 const HTTPS_PORT = 8908;
 const HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
 
-const iPhone = require('../DeviceDescriptors')['iPhone 6'];
-const iPhoneLandscape = require('../DeviceDescriptors')['iPhone 6 landscape'];
-
 const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
 const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
+const executablePath = process.env.CHROME;
+if (executablePath)
+  console.warn(`${YELLOW_COLOR}WARN: running tests with ${executablePath}${RESET_COLOR}`);
+
+const defaultBrowserOptions = {
+  executablePath,
+  slowMo,
+  headless,
+  args: ['--no-sandbox']
+};
 
 if (process.env.DEBUG_TEST || slowMo)
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 1000 * 1000;
@@ -71,7 +81,8 @@ afterAll(SX(async function() {
 
 describe('Browser', function() {
   it('Browser.Options.ignoreHTTPSErrors', SX(async function() {
-    let browser = new Browser({ignoreHTTPSErrors: true, headless, slowMo, args: ['--no-sandbox']});
+    let options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
+    let browser = new Browser(options);
     let page = await browser.newPage();
     let error = null;
     let response = null;
@@ -87,11 +98,14 @@ describe('Browser', function() {
 });
 
 describe('Page', function() {
+  const iPhone = require('../DeviceDescriptors')['iPhone 6'];
+  const iPhoneLandscape = require('../DeviceDescriptors')['iPhone 6 landscape'];
+
   let browser;
   let page;
 
   beforeAll(SX(async function() {
-    browser = new Browser({headless, slowMo, args: ['--no-sandbox']});
+    browser = new Browser(defaultBrowserOptions);
   }));
 
   afterAll(SX(async function() {
@@ -501,7 +515,7 @@ describe('Page', function() {
     it('should fail when main resources failed to load', SX(async function() {
       let error = null;
       try {
-        await page.navigate('chrome-devtools://devtools/bundled/inspector.html');
+        await page.navigate('chrome-devtools://non-existing.html');
       } catch (e) {
         error = e;
       }
@@ -895,6 +909,13 @@ describe('Page', function() {
       await page.$('button').click();
       expect(await page.evaluate(() => result)).toBe('Clicked');
     }));
+    // @see https://github.com/GoogleChrome/puppeteer/issues/161
+    xit('should not hang with touch-enabled viewports', SX(async function() {
+      await page.setViewport(iPhone.viewport);
+      await page.mouse.down();
+      await page.mouse.move(100, 10);
+      await page.mouse.up();
+    }));
     it('should type into the textarea', SX(async function() {
       await page.navigate(PREFIX + '/input/textarea.html');
       await page.$('textarea').focus();
@@ -1133,6 +1154,12 @@ describe('Page', function() {
       await page.press('a');
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(true);
     }));
+    // @see https://github.com/GoogleChrome/puppeteer/issues/206
+    xit('should click links which cause navigation', SX(async function() {
+      await page.setContent(`<a href="${EMPTY_PAGE}">empty.html</a>`);
+      // This await should not hang.
+      await page.click('a');
+    }));
     function dimensions() {
       let rect = document.querySelector('textarea').getBoundingClientRect();
       return {
@@ -1368,7 +1395,7 @@ describe('Page', function() {
     }));
     it('should support setting custom format', SX(async function() {
       let pages = await getPDFPages(await page.pdf({
-        format: 'A4'
+        format: 'a4'
       }));
       expect(pages.length).toBe(1);
       expect(pages[0].width).toBeCloseTo(8.27, 1);

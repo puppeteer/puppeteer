@@ -103,6 +103,10 @@ npm run unit -- --filter=waitFor
 ```
 HEADLESS=false npm run unit
 ```
+- To run tests with custom chromium executable:
+```
+CHROME=<path-to-executable> npm run unit
+```
 - To run tests in slow-mode:
 ```
 HEADLESS=false SLOW_MO=500 npm run unit
