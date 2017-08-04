@@ -822,6 +822,8 @@ await page.tracing.stop();
   - `screenshots` <[boolean]> captures screenshots in the trace.
 - returns: <[Promise]>
 
+Only one tracing could be started simultaneously per browser.
+
 #### tracing.stop()
 - returns: <[Promise]>
 
@@ -842,8 +844,6 @@ browser.newPage().then(async page => {
   page.evaluate(() => alert('1'));
 });
 ```
-
-> **NOTE** Chrome Headless currently has issues with managing JavaScript dialogs, see [issue 13](https://github.com/GoogleChrome/puppeteer/issues/13)
 
 #### dialog.accept([promptText])
 - `promptText` <[string]> A text to enter in prompt. Does not cause any effects if the dialog's `type` is not prompt.
