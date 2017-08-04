@@ -45,6 +45,7 @@ const EXCLUDE_METHODS = new Set([
   'Page.create',
   'Request.constructor',
   'Response.constructor',
+  'RemoteElement.constructor',
 ]);
 
 /**
