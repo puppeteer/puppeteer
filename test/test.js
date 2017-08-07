@@ -770,6 +770,17 @@ describe('Page', function() {
       ]);
       expect(request.headers['foo']).toBe('bar');
     }));
+    it('should fail navigation when aborting main resource', SX(async function() {
+      page.setRequestInterceptor(request => request.abort());
+      let error = null;
+      try {
+        await page.navigate(EMPTY_PAGE);
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('Failed to navigate');
+    }));
   });
 
   describe('Page.Events.Dialog', function() {
