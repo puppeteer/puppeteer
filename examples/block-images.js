@@ -14,27 +14,21 @@
  * limitations under the License.
  */
 
-const Browser = require('../lib/Browser');
-let browser = new Browser();
+(async() => {
 
-browser.newPage().then(async page => {
-  page.on('console', console.log);
+const {Browser} = require('puppeteer');
+const browser = new Browser();
 
-
-  await page.setInPageCallback('callPhantom', msg => {
-    console.log("Page is saying: '" + msg + "'");
-    return 'Hello, page';
-  });
-
-
-  await page.evaluate(async function() {
-
-
-    // Return-value of the "onCallback" handler arrive here
-    let callbackResponse = await window.callPhantom('Hello, driver');
-    console.log("Driver is saying: '" + callbackResponse + "'");
-
-
-  });
-  browser.close();
+const page = await browser.newPage();
+await page.setRequestInterceptor(request => {
+  if (/\.(png|jpg|jpeg$)/.test(request.url))
+    request.abort();
+  else
+    request.continue();
 });
+await page.navigate('https://bbc.com');
+await page.screenshot({path: 'news.png', fullPage: true});
+browser.close();
+
+})();
+

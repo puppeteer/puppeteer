@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const Browser = require('../lib/Browser');
+const {Browser} = require('puppeteer');
 const browser = new Browser();
 
 browser.newPage().then(async page => {
