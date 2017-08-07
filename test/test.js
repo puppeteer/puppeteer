@@ -779,6 +779,7 @@ describe('Page', function() {
         error = e;
       }
       expect(error).toBeTruthy();
+      expect(error.message).toContain('Failed to navigate');
     }));
   });
 
