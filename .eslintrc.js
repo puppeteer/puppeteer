@@ -100,7 +100,7 @@ module.exports = {
         "no-mixed-spaces-and-tabs": 2,
         "no-trailing-spaces": 2,
         "linebreak-style": [ 2, "unix" ],
-        "indent": [2, 2, { "SwitchCase": 1, "CallExpression": {"arguments": 2}, "MemberExpression": 2 }],
+        "indent": [2, 2, { "SwitchCase": 1, "CallExpression": {"arguments": 2}, "MemberExpression": 2, "outerIIFEBody": 0 }],
 
         /**
          * Disabled, aspirational rules

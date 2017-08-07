@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-(async () => {
+(async() => {
 
 const {Browser} = require('puppeteer');
 const browser = new Browser();
