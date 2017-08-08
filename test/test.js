@@ -508,7 +508,7 @@ describe('Page', function() {
     }));
   });
 
-  describe('Page.navigate', function() {
+  describe('Page.goto', function() {
     it('should navigate to about:blank', SX(async function() {
       let response = await page.goto('about:blank');
       expect(response).toBe(null);
@@ -993,6 +993,78 @@ describe('Page', function() {
       expect(page.frames()[0].parentFrame()).toBe(null);
       expect(page.frames()[1].parentFrame()).toBe(page.mainFrame());
       expect(page.frames()[2].parentFrame()).toBe(page.mainFrame());
+    }));
+  });
+
+  describe('Page.$', function() {
+    it('should query existing element', SX(async function() {
+      await page.setContent('<section>test</section>');
+      let element = await page.$('section');
+      expect(element).toBeTruthy();
+    }));
+    it('should return null for non-existing element', SX(async function() {
+      let element = await page.$('non-existing-element');
+      expect(element).toBe(null);
+    }));
+  });
+
+  describe('ElementHandle.evaluate', function() {
+    it('should work', SX(async function() {
+      await page.setContent('<section>42</section>');
+      let element = await page.$('section');
+      let text = await element.evaluate(e => e.textContent);
+      expect(text).toBe('42');
+    }));
+    it('should await promise if any', SX(async function() {
+      await page.setContent('<section>39</section>');
+      let element = await page.$('section');
+      let text = await element.evaluate(e => Promise.resolve(e.textContent));
+      expect(text).toBe('39');
+    }));
+    it('should throw if underlying page got closed', SX(async function() {
+      let otherPage = await browser.newPage();
+      await otherPage.setContent('<section>88</section>');
+      let element = await otherPage.$('section');
+      expect(element).toBeTruthy();
+      await otherPage.close();
+      let error = null;
+      try {
+        await element.evaluate(e => e.textContent);
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toContain('Session closed');
+    }));
+    it('should throw if underlying element was released', SX(async function() {
+      await page.setContent('<section>39</section>');
+      let element = await page.$('section');
+      expect(element).toBeTruthy();
+      await element.release();
+      let error = null;
+      try {
+        await element.evaluate(e => e.textContent);
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toContain('ElementHandle is released');
+    }));
+  });
+
+  describe('ElementHandle.click', function() {
+    it('should work', SX(async function() {
+      await page.goto(PREFIX + '/input/button.html');
+      let button = await page.$('button');
+      await button.click('button');
+      expect(await page.evaluate(() => result)).toBe('Clicked');
+    }));
+  });
+
+  describe('ElementHandle.hover', function() {
+    it('should work', SX(async function() {
+      await page.goto(PREFIX + '/input/scrollable.html');
+      let button = await page.$('#button-6');
+      await button.hover();
+      expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-6');
     }));
   });
 

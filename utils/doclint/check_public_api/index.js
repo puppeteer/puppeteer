@@ -38,6 +38,7 @@ const EXCLUDE_METHODS = new Set([
   'Body.constructor',
   'Browser.constructor',
   'Dialog.constructor',
+  'ElementHandle.constructor',
   'Frame.constructor',
   'Headers.constructor',
   'Headers.fromPayload',
