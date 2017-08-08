@@ -106,7 +106,7 @@ module.exports = {
   },
 
   /**
-   * @return {!Array<!{platform:string, revision: string}>}
+   * @return {!Array<{platform:string, revision: string}>}
    */
   downloadedRevisions: function() {
     if (!fs.existsSync(DOWNLOADS_FOLDER))
@@ -144,7 +144,7 @@ module.exports = {
     else if (platform === 'win32' || platform === 'win64')
       executablePath = path.join(folderPath, 'chrome-win32', 'chrome.exe');
     else
-      throw 'Unsupported platfrom: ' + platfrom;
+      throw 'Unsupported platfrom: ' + platform;
     return {
       executablePath: executablePath
     };
@@ -196,7 +196,7 @@ function downloadFile(url, destinationPath, progressCallback) {
     file.on('finish', () => fulfill());
     file.on('error', error => reject(error));
     response.pipe(file);
-    let totalBytes = parseInt(response.headers['content-length'], 10);
+    let totalBytes = parseInt(/** @type {string} */(response.headers['content-length']), 10);
     if (progressCallback)
       response.on('data', onData.bind(null, totalBytes));
   });
@@ -211,7 +211,7 @@ function downloadFile(url, destinationPath, progressCallback) {
 /**
  * @param {string} zipPath
  * @param {string} folderPath
- * @return {!Promise<?Error>}
+ * @return {!Promise<Error|null>}
  */
 function extractZip(zipPath, folderPath) {
   return new Promise(fulfill => extract(zipPath, {dir: folderPath}, fulfill));

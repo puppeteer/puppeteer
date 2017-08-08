@@ -81,12 +81,16 @@ class JSOutline {
     }
     const args = [];
     for (let param of node.value.params) {
-      if (param.type === 'AssignmentPattern')
+      if (param.type === 'AssignmentPattern' && param.left.type === 'Identifier')
         args.push(new Documentation.Argument(param.left.name));
       else if (param.type === 'RestElement')
         args.push(new Documentation.Argument('...' + param.argument.name));
       else if (param.type === 'Identifier')
         args.push(new Documentation.Argument(param.name));
+      else if (param.type === 'ObjectPattern')
+        args.push(new Documentation.Argument('options'));
+      else if (param.type === 'AssignmentPattern' && param.left.type === 'ObjectPattern')
+        args.push(new Documentation.Argument('options'));
       else
         this.errors.push(`JS Parsing issue: unsupported syntax to define parameter in ${this._currentClassName}.${methodName}(): ${this._extractText(param)}`);
     }
