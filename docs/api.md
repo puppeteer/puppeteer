@@ -113,7 +113,7 @@
     + [response.url](#responseurl)
   * [class: InterceptedRequest](#class-interceptedrequest)
     + [interceptedRequest.abort()](#interceptedrequestabort)
-    + [interceptedRequest.continue()](#interceptedrequestcontinue)
+    + [interceptedRequest.continue([overrides])](#interceptedrequestcontinueoverrides)
     + [interceptedRequest.headers](#interceptedrequestheaders)
     + [interceptedRequest.method](#interceptedrequestmethod)
     + [interceptedRequest.postData](#interceptedrequestpostdata)
@@ -1112,39 +1112,37 @@ Contains the URL of the response.
 
 ### class: InterceptedRequest
 
-[InterceptedRequest] represents an intercepted request, which can be mutated and either continued or aborted. [InterceptedRequest] which is not continued or aborted will be in a 'hanging' state.
+[InterceptedRequest] represents an intercepted request, which can be either continued or aborted. [InterceptedRequest] which is not continued or aborted will be in a 'hanging' state.
 
 #### interceptedRequest.abort()
 
 Aborts request.
 
-#### interceptedRequest.continue()
+#### interceptedRequest.continue([overrides])
+- `overrides` <[Object]> Optional request overwrites, which could be one of the following:
+  - `url` <[string]> If set, the request url will be changed
+  - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`)
+  - `postData` <[string]> If set changes the post data of request
+  - `headers` <[Map]> If set changes the request HTTP headers
 
-Continues request.
+Continues request with optional request overrides.
 
 #### interceptedRequest.headers
 - <[Map]> A map of HTTP headers associated with the request.
-
-Headers could be mutated. Must not be changed in response to an authChallenge.
 
 #### interceptedRequest.method
 - <[string]>
 
 Contains the request's method (GET, POST, etc.)
 
-If set this allows the request method to be overridden. Must not be changed in response to an authChallenge.
 
 #### interceptedRequest.postData
 - <[string]>
 
 Contains `POST` data for `POST` requests.
 
-`request.postData` is mutable and could be written to. Must not be changed in response to an authChallenge.
-
 #### interceptedRequest.url
 - <[string]>
-
-If changed, the request url will be modified in a way that's not observable by page. Must not be changed in response to an authChallenge.
 
 
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"

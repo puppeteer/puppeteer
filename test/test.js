@@ -724,7 +724,7 @@ describe('Page', function() {
 
   describe('Page.setRequestInterceptor', function() {
     it('should intercept', SX(async function() {
-      page.setRequestInterceptor(request => {
+      await page.setRequestInterceptor(request => {
         expect(request.url).toContain('empty.html');
         expect(request.headers.has('User-Agent')).toBeTruthy();
         expect(request.method).toBe('GET');
@@ -738,7 +738,7 @@ describe('Page', function() {
       await page.setExtraHTTPHeaders(new Map(Object.entries({
         foo: 'bar'
       })));
-      page.setRequestInterceptor(request => {
+      await page.setRequestInterceptor(request => {
         expect(request.headers.get('foo')).toBe('bar');
         request.continue();
       });
@@ -746,7 +746,7 @@ describe('Page', function() {
       expect(response.ok).toBe(true);
     }));
     it('should be abortable', SX(async function() {
-      page.setRequestInterceptor(request => {
+      await page.setRequestInterceptor(request => {
         if (request.url.endsWith('.css'))
           request.abort();
         else
@@ -759,11 +759,12 @@ describe('Page', function() {
       expect(failedRequests).toBe(1);
     }));
     it('should amend HTTP headers', SX(async function() {
-      await page.navigate(EMPTY_PAGE);
-      page.setRequestInterceptor(request => {
-        request.headers.set('foo', 'bar');
-        request.continue();
+      await page.setRequestInterceptor(request => {
+        let headers = new Map(request.headers);
+        headers.set('foo', 'bar');
+        request.continue({headers});
       });
+      await page.navigate(EMPTY_PAGE);
       const [request] = await Promise.all([
         server.waitForRequest('/sleep.zzz'),
         page.evaluate(() => fetch('/sleep.zzz'))
@@ -771,7 +772,7 @@ describe('Page', function() {
       expect(request.headers['foo']).toBe('bar');
     }));
     it('should fail navigation when aborting main resource', SX(async function() {
-      page.setRequestInterceptor(request => request.abort());
+      await page.setRequestInterceptor(request => request.abort());
       let error = null;
       try {
         await page.navigate(EMPTY_PAGE);
@@ -780,6 +781,12 @@ describe('Page', function() {
       }
       expect(error).toBeTruthy();
       expect(error.message).toContain('Failed to navigate');
+    }));
+    it('should work with redirects', SX(async function() {
+      server.setRedirect('/non-existing-page.html', '/empty.html');
+      await page.setRequestInterceptor(request => request.continue());
+      let response = await page.navigate(PREFIX + '/non-existing-page.html');
+      expect(response.status).toBe(200);
     }));
   });
 
