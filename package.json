@@ -12,11 +12,12 @@
     "debug-unit": "DEBUG_TEST=true node --inspect-brk ./node_modules/.bin/jasmine test/test.js",
     "test-phantom": "python third_party/phantomjs/test/run-tests.py",
     "test-doclint": "jasmine utils/doclint/check_public_api/test/test.js && jasmine utils/doclint/preprocessor/test.js",
-    "test": "npm run lint --silent && npm run coverage && npm run test-phantom && npm run test-doclint",
+    "test": "npm run lint --silent && npm run type && npm run coverage && npm run test-phantom && npm run test-doclint",
     "install": "node install.js",
     "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .) && npm run doc",
     "doc": "node utils/doclint/cli.js",
-    "coverage": "COVERAGE=true npm run unit"
+    "coverage": "COVERAGE=true npm run unit",
+    "type": "tsc -p ."
   },
   "author": "The Chromium Authors",
   "license": "SEE LICENSE IN LICENSE",
@@ -32,6 +33,12 @@
     "chromium_revision": "491334"
   },
   "devDependencies": {
+    "@types/debug": "0.0.30",
+    "@types/extract-zip": "^1.6.2",
+    "@types/mime": "^1.3.1",
+    "@types/node": "^8.0.19",
+    "@types/rimraf": "0.0.28",
+    "@types/ws": "^3.0.2",
     "commonmark": "^0.27.0",
     "deasync": "^0.1.9",
     "eslint": "^4.0.0",
@@ -43,6 +50,7 @@
     "pdfjs-dist": "^1.8.595",
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.2.0",
-    "text-diff": "^1.0.1"
+    "text-diff": "^1.0.1",
+    "typescript": "^2.5.0-dev.20170807"
   }
 }
