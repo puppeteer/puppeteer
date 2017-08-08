@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const Browser = require('../lib/Browser');
+const {Browser} = require('../lib/Browser');
 
 if (process.argv.length < 5) {
   console.log('Usage: openurlwithproxy.js <proxyHost> <proxyPort> <URL>');

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const Browser = require('../lib/Browser');
+const {Browser} = require('../lib/Browser');
 let browser = new Browser();
 
 browser.newPage().then(async page => {

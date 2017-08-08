@@ -20,7 +20,7 @@ const path = require('path');
 const helper = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
-const Browser = require('../lib/Browser');
+const {Browser} = require('../lib/Browser');
 const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
 

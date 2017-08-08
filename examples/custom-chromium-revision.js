@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const Browser = require('../lib/Browser');
+const {Browser} = require('../lib/Browser');
 const Downloader = require('../utils/ChromiumDownloader');
 
 let revision = '483012';

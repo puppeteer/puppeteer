@@ -15,7 +15,7 @@
  */
 
 const path = require('path');
-const Browser = require('../lib/Browser');
+const {Browser} = require('../lib/Browser');
 let browser = new Browser();
 
 browser.newPage().then(async page => {

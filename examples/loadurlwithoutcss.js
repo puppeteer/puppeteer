@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const Browser = require('../lib/Browser');
+const {Browser} = require('../lib/Browser');
 
 if (process.argv.length < 3) {
   console.log('Usage: loadurlwithoutcss.js URL');

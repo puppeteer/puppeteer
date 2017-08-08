@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-const Browser = require('../../lib/Browser');
+const {Browser} = require('../../lib/Browser');
 const path = require('path');
 const SourceFactory = require('./SourceFactory');
 

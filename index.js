@@ -15,5 +15,5 @@
  */
 
 module.exports = {
-  Browser: require('./lib/Browser')
+  Browser: require('./lib/Browser').Browser
 };
