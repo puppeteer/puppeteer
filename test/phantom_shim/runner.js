@@ -24,7 +24,7 @@ const System = require('./System');
 const WebPage = require('./WebPage');
 const WebServer = require('./WebServer');
 const child_process = require('child_process');
-const Browser = require('..').Browser;
+const Browser = require('../..').Browser;
 const argv = require('minimist')(process.argv.slice(2), {
   alias: { v: 'version' },
   boolean: ['headless'],
