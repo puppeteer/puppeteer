@@ -1120,7 +1120,7 @@ Aborts request.
 
 #### interceptedRequest.continue([overrides])
 - `overrides` <[Object]> Optional request overwrites, which could be one of the following:
-  - `url` <[string]> If set, the request url will be modified in a way that's not observable by page
+  - `url` <[string]> If set, the request url will be changed
   - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`)
   - `postData` <[string]> If set changes the post data of request
   - `headers` <[Map]> If set changes the request HTTP headers
