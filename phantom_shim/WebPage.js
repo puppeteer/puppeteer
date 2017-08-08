@@ -236,12 +236,16 @@ class WebPage {
        */
     function resourceInterceptor(request) {
       let requestData = new RequestData(request);
-      let phantomRequest = new PhantomRequest(request);
+      let phantomRequest = new PhantomRequest();
       callback(requestData, phantomRequest);
-      if (phantomRequest._aborted)
+      if (phantomRequest._aborted) {
         request.abort();
-      else
-        request.continue();
+      } else {
+        request.continue({
+          url: phantomRequest._url,
+          headers: phantomRequest._headers,
+        });
+      }
     }
   }
 
@@ -608,11 +612,9 @@ class WebPageSettings {
 }
 
 class PhantomRequest {
-  /**
-   * @param {!InterceptedRequest} request
-   */
-  constructor(request) {
-    this._request = request;
+  constructor() {
+    this._url = undefined;
+    this._headers = undefined;
   }
 
   /**
@@ -620,7 +622,9 @@ class PhantomRequest {
    * @param {string} value
    */
   setHeader(key, value) {
-    this._request.headers.set(key, value);
+    if (!this._headers)
+      this._headers = new Map();
+    this._headers.set(key, value);
   }
 
   abort() {
@@ -631,7 +635,7 @@ class PhantomRequest {
    * @param {string} url
    */
   changeUrl(newUrl) {
-    this._request.url = newUrl;
+    this._url = newUrl;
   }
 }
 
