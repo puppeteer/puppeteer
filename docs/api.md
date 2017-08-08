@@ -25,16 +25,14 @@
     + [event: 'requestfailed'](#event-requestfailed)
     + [event: 'requestfinished'](#event-requestfinished)
     + [event: 'response'](#event-response)
+    + [page.$(selector)](#pageselector)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
-    + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
     + [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
     + [page.evaluateOnNewDocument(pageFunction, ...args)](#pageevaluateonnewdocumentpagefunction-args)
-    + [page.focus(selector)](#pagefocusselector)
     + [page.frames()](#pageframes)
     + [page.goBack(options)](#pagegobackoptions)
     + [page.goForward(options)](#pagegoforwardoptions)
-    + [page.hover(selector)](#pagehoverselector)
     + [page.injectFile(filePath)](#pageinjectfilefilepath)
     + [page.keyboard](#pagekeyboard)
     + [page.mainFrame()](#pagemainframe)
@@ -54,13 +52,19 @@
     + [page.title()](#pagetitle)
     + [page.tracing](#pagetracing)
     + [page.type(text, options)](#pagetypetext-options)
-    + [page.uploadFile(selector, ...filePaths)](#pageuploadfileselector-filepaths)
     + [page.url()](#pageurl)
     + [page.viewport()](#pageviewport)
     + [page.waitFor(selectorOrFunctionOrTimeout[, options])](#pagewaitforselectororfunctionortimeout-options)
     + [page.waitForFunction(pageFunction[, options, ...args])](#pagewaitforfunctionpagefunction-options-args)
     + [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
     + [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
+  * [class: RemoteElement](#class-remoteelement)
+    + [remoteElement.click([options])](#remoteelementclickoptions)
+    + [remoteElement.eval(pageFunction, ...args)](#remoteelementevalpagefunction-args)
+    + [remoteElement.focus()](#remoteelementfocus)
+    + [remoteElement.hover()](#remoteelementhover)
+    + [remoteElement.release()](#remoteelementrelease)
+    + [remoteElement.uploadFile(...filePaths)](#remoteelementuploadfilefilepaths)
   * [class: Keyboard](#class-keyboard)
     + [keyboard.down(key[, options])](#keyboarddownkey-options)
     + [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
@@ -79,18 +83,15 @@
     + [dialog.message()](#dialogmessage)
     + [dialog.type](#dialogtype)
   * [class: Frame](#class-frame)
+    + [frame.$(selector)](#frameselector)
     + [frame.addScriptTag(url)](#frameaddscripttagurl)
     + [frame.childFrames()](#framechildframes)
-    + [frame.click(selector[, options])](#frameclickselector-options)
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
-    + [frame.focus(selector)](#framefocusselector)
-    + [frame.hover(selector)](#framehoverselector)
     + [frame.injectFile(filePath)](#frameinjectfilefilepath)
     + [frame.isDetached()](#frameisdetached)
     + [frame.name()](#framename)
     + [frame.parentFrame()](#frameparentframe)
     + [frame.title()](#frametitle)
-    + [frame.uploadFile(selector, ...filePaths)](#frameuploadfileselector-filepaths)
     + [frame.url()](#frameurl)
     + [frame.waitFor(selectorOrFunctionOrTimeout[, options])](#framewaitforselectororfunctionortimeout-options)
     + [frame.waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args)
@@ -312,6 +313,10 @@ Emitted when a request is successfully finished.
 
 Emitted when a [response] is received.
 
+#### page.$(selector)
+- `selector` <[string]> A selector to be evaluated on the page
+- returns: <[RemoteElement]>
+
 #### page.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
@@ -319,17 +324,6 @@ Emitted when a [response] is received.
 Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScript could be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
 
 Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
-
-
-#### page.click(selector[, options])
-- `selector` <[string]> A query [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
-- `options` <[Object]>
-  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
-  - `clickCount` <[number]> defaults to 1
-  - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
-- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. Promise gets rejected if there's no element matching `selector`.
-
-Shortcut for [page.mainFrame().click(selector[, options])](#frameclickselector-options).
 
 #### page.close()
 - returns: <[Promise]> Returns promise which resolves when page gets closed.
@@ -372,12 +366,6 @@ Adds a function which would be invoked in one of the following scenarios:
 
 The function is invoked after the document was created but before any of its scripts were run. This is useful to amend JavaScript environment, e.g. to seed [Math.random](https://github.com/GoogleChrome/puppeteer/blob/master/examples/unrandomize.js)
 
-#### page.focus(selector)
-- `selector` <[string]> A query [selector] of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
-- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. Promise gets rejected if there's no element matching `selector`.
-
-Shortcut for [page.mainFrame().focus(selector)](#framefocusselector).
-
 #### page.frames()
 - returns: <[Array]<[Frame]>> An array of all frames attached to the page.
 
@@ -406,12 +394,6 @@ Navigate to the previous page in history.
 can not go back, resolves to null.
 
 Navigate to the next page in history.
-
-#### page.hover(selector)
-- `selector` <[string]> A query [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
-- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
-
-Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
 
 #### page.injectFile(filePath)
 - `filePath` <[string]> Path to the JavaScript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
@@ -632,13 +614,6 @@ page.type('Hello'); // Types instantly
 page.type('World', {delay: 100}); // Types slower, like a user
 ```
 
-#### page.uploadFile(selector, ...filePaths)
-- `selector` <[string]> A query [selector] to a file input
-- `...filePaths` <[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-- returns: <[Promise]> Promise which resolves when the value is set.
-
-Shortcut for [page.mainFrame().uploadFile(selector, ...filePaths)](#frameuploadfileselector-filepaths).
-
 #### page.url()
 - returns: <[string]>
 
@@ -719,6 +694,35 @@ browser.newPage().then(async page => {
 });
 ```
 Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options).
+
+### class: RemoteElement
+
+#### remoteElement.click([options])
+- `options` <[Object]>
+  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
+  - `clickCount` <[number]> defaults to 1
+  - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
+- returns: <[Promise]>
+
+#### remoteElement.eval(pageFunction, ...args)
+- `pageFunction` <[function]\([Element])> Function to be evaluated in browser context
+- `...args` <...[string]> Extra arguments to pass to  `pageFunction`
+- returns: <[Promise]<[Object]>> Promise which resolves to function return value
+
+If the function, passed to the `remoteElement.eval` returns a [Promise], then `remoteElement.eval` will wait for the promise to resolve and return it's value.
+
+#### remoteElement.focus()
+- returns: <[Promise]>
+
+#### remoteElement.hover()
+- returns: <[Promise]>
+
+#### remoteElement.release()
+- returns: <[Promise]>
+
+#### remoteElement.uploadFile(...filePaths)
+- `...filePaths` <[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+- returns: <[Promise]>
 
 ### class: Keyboard
 
@@ -888,6 +892,9 @@ browser.newPage().then(async page => {
 });
 ```
 
+#### frame.$(selector)
+- `selector` <[string]> A selector to be evaluated on the page
+- returns: <[RemoteElement]>
 
 #### frame.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
@@ -897,14 +904,6 @@ Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScri
 
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
-
-#### frame.click(selector[, options])
-- `selector` <[string]> A query [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
-- `options` <[Object]>
-  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
-  - `clickCount` <[number]> defaults to 1
-  - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
-- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. Promise gets rejected if there's no element matching `selector`.
 
 #### frame.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
@@ -931,15 +930,6 @@ A string can also be passed in instead of a function.
 console.log(await page.evaluate('1 + 2')); // prints "3"
 ```
 
-
-#### frame.focus(selector)
-- `selector` <[string]> A query [selector] of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
-- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. Promise gets rejected if there's no element matching `selector`.
-
-#### frame.hover(selector)
-- `selector` <[string]> A query [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
-- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
-
 #### frame.injectFile(filePath)
 - `filePath` <[string]> Path to the JavaScript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]> Promise which resolves when file gets successfully evaluated in frame.
@@ -963,11 +953,6 @@ Note: This value is calculated once when the frame is created, and will not upda
 
 #### frame.title()
 - returns: <[Promise]<[string]>> Returns page's title.
-
-#### frame.uploadFile(selector, ...filePaths)
-- `selector` <[string]> A query [selector] to a file input
-- `...filePaths` <[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-- returns: <[Promise]> Promise which resolves when the value is set.
 
 #### frame.url()
 - returns: <[string]>
@@ -1169,3 +1154,4 @@ Contains `POST` data for `POST` requests.
 [Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map "Map"
 [selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors "selector"
 [Tracing]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-tracing "Tracing"
+[RemoteElement]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-remoteelement "RemoteElement"
