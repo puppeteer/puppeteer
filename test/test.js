@@ -783,9 +783,9 @@ describe('Page', function() {
       expect(error.message).toContain('Failed to navigate');
     }));
     it('should work with redirects', SX(async function() {
-      server.setRedirect('/foo.html', '/empty.html');
+      server.setRedirect('/non-existing-page.html', '/empty.html');
       await page.setRequestInterceptor(request => request.continue());
-      let response = await page.navigate(PREFIX + '/foo.html');
+      let response = await page.navigate(PREFIX + '/non-existing-page.html');
       expect(response.status).toBe(200);
     }));
   });
