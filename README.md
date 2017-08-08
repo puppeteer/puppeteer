@@ -23,7 +23,7 @@ To add Puppeteer to your project, run:
 yarn add puppeteer
 ```
 
-> **NOTE** Puppeteer bundles a version of Chromium (~90Mb) which it is guaranteed to work with. However, you're free to point Puppeteer to any Chromium executable ([example](https://github.com/GoogleChrome/puppeteer/blob/master/examples/custom-chromium-revision.js))
+> **NOTE** Puppeteer bundles a version of Chromium (~90Mb) which it is guaranteed to work with. However, you're free to point Puppeteer to any Chromium executable ([documentation](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#new-browseroptions))
 
 
 ## Getting Started
