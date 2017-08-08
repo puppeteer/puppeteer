@@ -18,7 +18,7 @@ const await = require('./utilities').await;
 const EventEmitter = require('events');
 const fs = require('fs');
 const path = require('path');
-const PageEvents = require('../lib/Page').Events;
+const PageEvents = require('../../lib/Page').Events;
 
 const noop = function() { };
 

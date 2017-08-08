@@ -1,4 +1,4 @@
-# Puppeteer [![Build Status](https://travis-ci.com/GoogleChrome/puppeteer.svg?token=8jabovWqb8afz5RDcYqx&branch=master)](https://travis-ci.com/GoogleChrome/puppeteer) 
+# Puppeteer [![Build Status](https://travis-ci.com/GoogleChrome/puppeteer.svg?token=8jabovWqb8afz5RDcYqx&branch=master)](https://travis-ci.com/GoogleChrome/puppeteer)
 
 <img src="https://user-images.githubusercontent.com/238208/28749789-e67693de-7487-11e7-85f9-2d9ad9025aae.png" height="150" align="right">
 
@@ -54,7 +54,7 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
 
 ## Contributing to Puppeteer
 
-Check out [contributing guide](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md) to get an overview of puppeteer development. 
+Check out [contributing guide](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md) to get an overview of puppeteer development.
 
 # FAQ
 
@@ -90,7 +90,7 @@ browser.newPage().then(async page => {
 
 #### Q: What is the "Phantom Shim"?
 
-To make sure Puppeteer's API is comprehensive, we built [PhantomShim](https://github.com/GoogleChrome/puppeteer/tree/master/phantom_shim) - a lightweight phantomJS script runner built atop of Puppeteer API. We run phantomJS tests against PhantomShim with an ultimate goal to pass them all.
+To make sure Puppeteer's API is comprehensive, we built [PhantomShim](https://github.com/GoogleChrome/puppeteer/tree/master/test/phantom_shim) - a lightweight phantomJS script runner built atop of Puppeteer API. We run phantomJS tests against PhantomShim with an ultimate goal to pass them all.
 
 To emulate PhantomJS which runs automation scripts in-process to the automated page, PhantomShim spawns [nested event loops](https://github.com/abbr/deasync). On practice, this might result in unpredictable side-effects and makes the shim unreliable, but this works pretty good for testing goals.
 
