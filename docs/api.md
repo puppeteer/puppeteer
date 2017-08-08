@@ -1125,7 +1125,7 @@ Aborts request.
   - `postData` <[string]> If set changes the post data of request
   - `headers` <[Map]> If set changes the request HTTP headers
 
-Continues request with optional request overwrites.
+Continues request with optional request overrides.
 
 #### interceptedRequest.headers
 - <[Map]> A map of HTTP headers associated with the request.
