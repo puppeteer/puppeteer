@@ -95,6 +95,15 @@ describe('Browser', function() {
     expect(response.ok).toBe(true);
     browser.close();
   }));
+  it('should reject all promises when browser is closed', SX(async function() {
+    let browser = new Browser(defaultBrowserOptions);
+    let page = await browser.newPage();
+    let error = null;
+    let neverResolves = page.evaluate(() => new Promise(r => {})).catch(e => error = e);
+    browser.close();
+    await neverResolves;
+    expect(error.message).toContain('Protocol error');
+  }));
 });
 
 describe('Page', function() {
@@ -128,6 +137,21 @@ describe('Page', function() {
       let version = await browser.version();
       expect(version.length).toBeGreaterThan(0);
       expect(version.startsWith('Headless')).toBe(headless);
+    }));
+  });
+
+  describe('Page.close', function() {
+    it('should reject all promises when page is closed', SX(async function() {
+      let newPage = await browser.newPage();
+      let neverResolves = newPage.evaluate(() => new Promise(r => {}));
+      newPage.close();
+      let error = null;
+      try {
+        await neverResolves;
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toContain('Protocol error');
     }));
   });
 

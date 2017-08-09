@@ -27,6 +27,7 @@ const EXCLUDE_CLASSES = new Set([
   'NavigatorWatcher',
   'NetworkManager',
   'ProxyStream',
+  'Session',
   'TaskQueue',
   'WaitTask',
 ]);
