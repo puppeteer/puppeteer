@@ -1421,6 +1421,11 @@ describe('Page', function() {
       await page.setViewport({width: 100, height: 100});
       expect(await page.evaluate(() => screen.orientation.type)).toBe('portrait-primary');
     }));
+    it('should support emulate shorthand', SX(async function() {
+      await page.emulate({viewport:{width: 123, height: 456}, userAgent:'UA'});
+      expect(page.viewport()).toEqual({width: 123, height: 456});
+      expect(await page.evaluate(() => navigator.userAgent)).toContain('UA');
+    }));
   });
 
   describe('Page.evaluateOnNewDocument', function() {

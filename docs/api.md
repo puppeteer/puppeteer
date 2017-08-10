@@ -28,6 +28,7 @@
     + [page.addScriptTag(url)](#pageaddscripttagurl)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
+    + [page.emulate(options)](#pageemulateoptions)
     + [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
     + [page.evaluateOnNewDocument(pageFunction, ...args)](#pageevaluateonnewdocumentpagefunction-args)
     + [page.focus(selector)](#pagefocusselector)
@@ -333,6 +334,14 @@ Shortcut for [page.mainFrame().click(selector[, options])](#frameclickselector-o
 
 #### page.close()
 - returns: <[Promise]> Returns promise which resolves when page gets closed.
+
+#### page.emulate(options)
+- `options` <[Object]>
+  - `viewport` <[Object]> viewport as described in [`page.setViewport`](#pagesetviewportpath) method.
+  - `userAgent` <[string]> user agent string
+- returns: <[Promise]> Promise which resolves when emulation is performed.
+
+Emulates given device metrics and user agent.
 
 #### page.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context

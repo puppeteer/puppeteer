@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-(async() => {
-
 const {Browser} = require('puppeteer');
+const devices = require('puppeteer/DeviceDescriptors');
 const browser = new Browser();
 
-const page = await browser.newPage();
-await page.navigate('https://news.ycombinator.com', {waitUntil: 'networkidle'});
-// page.pdf() is currently supported only in headless mode.
-// @see https://bugs.chromium.org/p/chromium/issues/detail?id=753118
-await page.pdf({
-  path: 'hn.pdf',
-  format: 'letter'
+browser.newPage().then(async page => {
+  await page.emulate(devices['iPhone 6']);
+  await page.navigate('https://www.nytimes.com/');
+  await page.screenshot({path: 'fp_page.png', fullPage: true});
+  browser.close();
 });
-
-browser.close();
-
-})();
