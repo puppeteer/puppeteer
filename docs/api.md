@@ -25,6 +25,7 @@
     + [event: 'requestfailed'](#event-requestfailed)
     + [event: 'requestfinished'](#event-requestfinished)
     + [event: 'response'](#event-response)
+    + [page.addBinding(name, puppeteerFunction)](#pageaddbindingname-puppeteerfunction)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
@@ -48,7 +49,6 @@
     + [page.screenshot([options])](#pagescreenshotoptions)
     + [page.setContent(html)](#pagesetcontenthtml)
     + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
-    + [page.setInPageCallback(name, callback)](#pagesetinpagecallbackname-callback)
     + [page.setRequestInterceptor(interceptor)](#pagesetrequestinterceptorinterceptor)
     + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
     + [page.setViewport(viewport)](#pagesetviewportviewport)
@@ -313,6 +313,69 @@ Emitted when a request is successfully finished.
 
 Emitted when a [response] is received.
 
+
+#### page.addBinding(name, puppeteerFunction)
+- `name` <[string]> Name of the binding on window object
+- `puppeteerFunction` <[function]> Callback function which will be called in puppeteer's context.
+- returns: <[Promise]> Promise which resolves with the result of `puppeteerFunction`.
+
+The method adds a function called `name` on `window` object.
+When called, the function executes `puppeteerFunction` function in puppeteer context and returns
+a promise that resolves with the puppeteer's result.
+
+If the `puppeteerFunction` returns a promise, it would be awaited.
+
+> **NOTE** All the bindings installed via the `page.addBinding` survive navigations.
+
+An example of adding `window.md5` binding to the page:
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+const crypto = require('crypto');
+
+browser.newPage().then(async page => {
+  page.on('console', console.log);
+  await page.setInPageCallback('md5', text => crypto.createHash('md5').update(text).digest('hex'));
+  await page.evaluate(async () => {
+    // use window.md5 to compute hashes
+    let myString = 'PUPPETEER';
+    let myHash = await window.md5(myString);
+    console.log(`md5 of ${myString} is ${myHash}`);
+  });
+  browser.close();
+});
+```
+
+An example of adding `window.readfile` binding to the page:
+
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+const fs = require('fs');
+
+browser.newPage().then(async page => {
+  page.on('console', console.log);
+  await page.setInPageCallback('readfile', async filePath => {
+    return new Promise((resolve, reject) => {
+      fs.readFile(filePath, 'utf8', (err, text) => {
+        if (err)
+          reject(err);
+        else
+          resolve(text);
+      });
+    });
+  });
+  await page.evaluate(async () => {
+    // use window.readfile to read contents of a file
+    let content = await window.readfile('/etc/hosts');
+    console.log(content);
+  });
+  browser.close();
+});
+
+```
+
+
 #### page.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
@@ -553,27 +616,6 @@ The extra HTTP headers will be sent with every request the page initiates.
 
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
-
-#### page.setInPageCallback(name, callback)
-- `name` <[string]> Name of the callback to be assigned on window object
-- `callback` <[function]> Callback function which will be called in puppeteer's context.
-- returns: <[Promise]> Promise which resolves when callback is successfully initialized
-
-The in-page callback allows page to asynchronously reach back to the Puppeteer.
-An example of a page showing amount of CPU's:
-```js
-const os = require('os');
-const {Browser} = require('puppeteer');
-const browser = new Browser();
-
-browser.newPage().then(async page =>
-  await page.setInPageCallback('getCPUCount', () => os.cpus().length);
-  await page.evaluate(async () => {
-    alert(await window.getCPUCount());
-  });
-  browser.close();
-});
-```
 
 #### page.setRequestInterceptor(interceptor)
 - `interceptor` <[function]> Callback function which accepts a single argument of type <[InterceptedRequest]>.
@@ -966,7 +1008,7 @@ Returns frame's name attribute as specified in the tag.
 
 If the name is empty, returns the id attribute instead.
 
-Note: This value is calculated once when the frame is created, and will not update if the attribute is changed later.
+> **NOTE** This value is calculated once when the frame is created, and will not update if the attribute is changed later.
 
 #### frame.parentFrame()
 - returns: <[Frame]> Returns parent frame, if any. Detached frames and main frames return `null`.
