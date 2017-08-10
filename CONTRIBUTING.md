@@ -136,8 +136,13 @@ Puppeteer uses [DEBUG](https://github.com/visionmedia/debug) module to expose so
 const {Browser} = require('puppeteer');
 const browser = new Browser();
 
-browser.newPage().then(() => page.goto('https://example.com'));
+(async() => {
+
+const page = await browser.newPage();
+await page.goto('https://example.com');
 browser.close();
+
+})();
 ```
 
 Tips-n-tricks:
