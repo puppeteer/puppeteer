@@ -527,7 +527,7 @@ class WebPage {
         callback.call(null, status);
       this.loadingProgress = 0;
     };
-    this._page.navigate(url).then(response => handleNavigation(null, response))
+    this._page.goto(url).then(response => handleNavigation(null, response))
         .catch(e => handleNavigation(e, null));
   }
 

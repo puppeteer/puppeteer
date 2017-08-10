@@ -35,7 +35,7 @@ const {Browser} = require('puppeteer');
 const browser = new Browser();
 
 browser.newPage().then(async page => {
-  await page.navigate('https://example.com');
+  await page.goto('https://example.com');
   await page.screenshot({path: 'example.png'});
   browser.close();
 });
