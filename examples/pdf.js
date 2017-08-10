@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-(async() => {
-
 const {Browser} = require('puppeteer');
 const browser = new Browser();
+
+(async() => {
 
 const page = await browser.newPage();
 await page.goto('https://news.ycombinator.com', {waitUntil: 'networkidle'});

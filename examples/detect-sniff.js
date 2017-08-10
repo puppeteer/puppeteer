@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-(async() => {
-
 const {Browser} = require('puppeteer');
 const browser = new Browser();
-
-const page = await browser.newPage();
-await page.evaluateOnNewDocument(sniffDetector);
-await page.goto('https://www.google.com', {waitUntil: 'networkidle'});
-console.log('Sniffed: ' + (await page.evaluate(() => !!navigator.sniffed)));
-browser.close();
-
-})();
 
 function sniffDetector() {
   let userAgent = window.navigator.userAgent;
@@ -41,3 +31,14 @@ function sniffDetector() {
     return platform;
   });
 }
+
+(async() => {
+
+const page = await browser.newPage();
+await page.evaluateOnNewDocument(sniffDetector);
+await page.goto('https://www.google.com', {waitUntil: 'networkidle'});
+console.log('Sniffed: ' + (await page.evaluate(() => !!navigator.sniffed)));
+
+browser.close();
+
+})();

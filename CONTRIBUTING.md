@@ -15,9 +15,9 @@ You generally only need to submit a CLA once, so if you've already submitted one
 (even if it was for a different project), you probably don't need to do it
 again.
 
-## Getting the Code
+## Getting setup
 
-1. Clone repository
+1. Clone this repository
 ```bash
 git clone https://github.com/GoogleChrome/puppeteer
 cd puppeteer
@@ -123,22 +123,21 @@ are used to test `phantom_shim`.
 
 Every public API method or event should be called at least once in tests. To ensure this, there's a coverage command which tracks calls to public API and reports back if some methods/events were not called.
 
-- To run coverage:
+Run coverage:
+
 ```
 npm run coverage
 ```
 
 ## Debugging Puppeteer
-Puppeteer uses [DEBUG](https://github.com/visionmedia/debug) module to expose some of it's inner guts under the `puppeteer` namespace.
-Try putting the following script in the `script.js` and running it via `DEBUG=* node script.js`:
+Puppeteer uses [DEBUG](https://github.com/visionmedia/debug) module to expose some of it's inner guts under the `puppeteer` namespace. Try putting the following in a file called `script.js` and running it via `DEBUG=* node script.js`:
 
 ```js
 const {Browser} = require('puppeteer');
 const browser = new Browser();
-browser.newPage().then(async page => {
-  await page.goto('https://example.com');
-  browser.close();
-});
+
+browser.newPage().then(() => page.goto('https://example.com'));
+browser.close();
 ```
 
 Tips-n-tricks:

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-(async() => {
-
 const {Browser} = require('puppeteer');
 const browser = new Browser();
+
+(async() => {
 
 const page = await browser.newPage();
 await page.setRequestInterceptor(request => {
@@ -28,6 +28,7 @@ await page.setRequestInterceptor(request => {
 });
 await page.goto('https://bbc.com');
 await page.screenshot({path: 'news.png', fullPage: true});
+
 browser.close();
 
 })();
