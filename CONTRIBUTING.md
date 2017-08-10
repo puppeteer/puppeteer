@@ -86,7 +86,7 @@ npm run unit -- --filter=waitFor
   ...
   // Using "fit" to run specific test
   fit('should work', SX(async function() {
-    await response = page.navigate(EMPTY_PAGE);
+    await response = page.goto(EMPTY_PAGE);
     expect(response.ok).toBe(true);
   }))
 ```
@@ -95,7 +95,7 @@ npm run unit -- --filter=waitFor
   ...
   // Using "xit" to skip specific test
   xit('should work', SX(async function() {
-    await response = page.navigate(EMPTY_PAGE);
+    await response = page.goto(EMPTY_PAGE);
     expect(response.ok).toBe(true);
   }))
 ```
@@ -136,7 +136,7 @@ Try putting the following script in the `script.js` and running it via `DEBUG=* 
 const {Browser} = require('puppeteer');
 const browser = new Browser();
 browser.newPage().then(async page => {
-  await page.navigate('https://example.com');
+  await page.goto('https://example.com');
   browser.close();
 });
 ```

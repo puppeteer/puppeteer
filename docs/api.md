@@ -34,12 +34,12 @@
     + [page.frames()](#pageframes)
     + [page.goBack(options)](#pagegobackoptions)
     + [page.goForward(options)](#pagegoforwardoptions)
+    + [page.goto(url, options)](#pagegotourl-options)
     + [page.hover(selector)](#pagehoverselector)
     + [page.injectFile(filePath)](#pageinjectfilefilepath)
     + [page.keyboard](#pagekeyboard)
     + [page.mainFrame()](#pagemainframe)
     + [page.mouse](#pagemouse)
-    + [page.navigate(url, options)](#pagenavigateurl-options)
     + [page.pdf(options)](#pagepdfoptions)
     + [page.plainText()](#pageplaintext)
     + [page.press(key[, options])](#pagepresskey-options)
@@ -131,7 +131,7 @@ The following is a typical example of using a Browser class to drive automation:
 const {Browser} = require('puppeteer');
 const browser = new Browser();
 browser.newPage().then(async page => {
-  await page.navigate('https://google.com');
+  await page.goto('https://google.com');
   // other actions...
   browser.close();
 });
@@ -155,7 +155,7 @@ browser.newPage().then(async page => {
     page.setUserAgent(iPhone.userAgent),
     page.setViewport(iPhone.viewport)
   ]);
-  await page.navigate('https://google.com');
+  await page.goto('https://google.com');
   // other actions...
   browser.close();
 });
@@ -174,7 +174,7 @@ A typical scenario of using [Browser] is opening a new page and navigating it to
 const {Browser} = require('puppeteer');
 const browser = new Browser();
 browser.newPage().then(async page => {
-  await page.navigate('https://example.com');
+  await page.goto('https://example.com');
   browser.close();
 });
 ```
@@ -241,7 +241,7 @@ An example of creating a page, navigating it to a URL and saving screenshot as `
 const {Browser} = require('puppeteer');
 const browser = new Browser();
 browser.newPage().then(async page =>
-  await page.navigate('https://example.com');
+  await page.goto('https://example.com');
   await page.screenshot({path: 'screenshot.png'});
   browser.close();
 });
@@ -407,6 +407,26 @@ can not go back, resolves to null.
 
 Navigate to the next page in history.
 
+#### page.goto(url, options)
+- `url` <[string]> URL to navigate page to
+- `options` <[Object]> Navigation parameters which might have the following properties:
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
+  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
+    - `load` - consider navigation to be finished when the `load` event is fired.
+    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout`ms.
+  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
+  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
+- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
+
+The `page.goto` will throw an error if:
+- there's an SSL error (e.g. in case of self-signed certificates).
+- target URL is invalid.
+- the `timeout` is exceeded during navigation.
+- the main resource failed to load.
+
+> **NOTE** `page.goto` either throw or return a main resource response. The only exception is navigation to `about:blank`, which would succeed and return `null`.
+
+
 #### page.hover(selector)
 - `selector` <[string]> A query [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
@@ -431,25 +451,6 @@ Page is guaranteed to have a main frame which persists during navigations.
 #### page.mouse
 
 - returns: <[Mouse]>
-
-#### page.navigate(url, options)
-- `url` <[string]> URL to navigate page to
-- `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
-    - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout`ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
-  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
-- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
-
-The `page.navigate` will throw an error if:
-- there's an SSL error (e.g. in case of self-signed certificates).
-- target URL is invalid.
-- the `timeout` is exceeded during navigation.
-- the main resource failed to load.
-
-> **NOTE** `page.navigate` either throw or return a main resource response. The only exception is navigation to `about:blank`, which would succeed and return `null`.
 
 #### page.pdf(options)
 - `options` <[Object]> Options object which might have the following properties:
@@ -583,7 +584,7 @@ browser.newPage().then(async page =>
     else
       interceptedRequest.continue();
   });
-  await page.navigate('https://example.com');
+  await page.goto('https://example.com');
   browser.close();
 });
 ```
@@ -714,7 +715,7 @@ browser.newPage().then(async page => {
   let currentURL;
   page.waitForSelector('img').then(() => console.log('First URL with image: ' + currentURL));
   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
-    await page.navigate(currentURL);
+    await page.goto(currentURL);
   browser.close();
 });
 ```
@@ -812,7 +813,7 @@ You can use [`tracing.start`](#tracingstartoptions) and [`tracing.stop`](#tracin
 
 ```js
 await page.tracing.start({path: 'trace.json'});
-await page.navigate('https://www.google.com');
+await page.goto('https://www.google.com');
 await page.tracing.stop();
 ```
 
@@ -876,7 +877,7 @@ const {Browser} = new require('.');
 const browser = new Browser({headless: true});
 
 browser.newPage().then(async page => {
-  await page.navigate('https://www.google.com/chrome/browser/canary.html');
+  await page.goto('https://www.google.com/chrome/browser/canary.html');
   dumpFrameTree(page.mainFrame(), '');
   browser.close();
 
@@ -1029,7 +1030,7 @@ browser.newPage().then(async page => {
   let currentURL;
   page.waitForSelector('img').then(() => console.log('First URL with image: ' + currentURL));
   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
-    await page.navigate(currentURL);
+    await page.goto(currentURL);
   browser.close();
 });
 ```

@@ -21,7 +21,7 @@ const browser = new Browser();
 
 const page = await browser.newPage();
 await page.evaluateOnNewDocument(sniffDetector);
-await page.navigate('https://www.google.com', {waitUntil: 'networkidle'});
+await page.goto('https://www.google.com', {waitUntil: 'networkidle'});
 console.log('Sniffed: ' + (await page.evaluate(() => !!navigator.sniffed)));
 browser.close();
 

@@ -26,7 +26,7 @@ await page.setRequestInterceptor(request => {
   else
     request.continue();
 });
-await page.navigate('https://bbc.com');
+await page.goto('https://bbc.com');
 await page.screenshot({path: 'news.png', fullPage: true});
 browser.close();
 
