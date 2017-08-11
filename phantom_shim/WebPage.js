@@ -395,7 +395,7 @@ class WebPage {
       let result = this._onConfirmCallback.call(null, dialog.message());
       await(result ? dialog.accept() : dialog.dismiss());
     } else if (dialog.type === 'prompt' && this._onPromptCallback) {
-      let result = this._onPromptCallback.call(null, dialog.message(), dialog.defaultPrompt());
+      let result = this._onPromptCallback.call(null, dialog.message(), dialog.defaultValue());
       await(result ? dialog.accept(result) : dialog.dismiss());
     }
   }

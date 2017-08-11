@@ -818,7 +818,7 @@ describe('Page', function() {
     it('should fire', SX(async function() {
       page.on('dialog', dialog => {
         expect(dialog.type).toBe('alert');
-        expect(dialog.defaultPrompt()).toBe('');
+        expect(dialog.defaultValue()).toBe('');
         expect(dialog.message()).toBe('yo');
         dialog.accept();
       });
@@ -827,7 +827,7 @@ describe('Page', function() {
     it('should allow accepting prompts', SX(async function() {
       page.on('dialog', dialog => {
         expect(dialog.type).toBe('prompt');
-        expect(dialog.defaultPrompt()).toBe('yes.');
+        expect(dialog.defaultValue()).toBe('yes.');
         expect(dialog.message()).toBe('question?');
         dialog.accept('answer!');
       });
