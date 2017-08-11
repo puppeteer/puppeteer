@@ -76,6 +76,7 @@
     + [tracing.stop()](#tracingstop)
   * [class: Dialog](#class-dialog)
     + [dialog.accept([promptText])](#dialogacceptprompttext)
+    + [dialog.defaultPrompt()](#dialogdefaultprompt)
     + [dialog.dismiss()](#dialogdismiss)
     + [dialog.message()](#dialogmessage)
     + [dialog.type](#dialogtype)
@@ -900,6 +901,9 @@ browser.newPage().then(async page => {
 #### dialog.accept([promptText])
 - `promptText` <[string]> A text to enter in prompt. Does not cause any effects if the dialog's `type` is not prompt.
 - returns: <[Promise]> Promise which resolves when the dialog has being accepted.
+
+#### dialog.defaultPrompt()
+- returns: <[string]> If dialog is prompt, returns default prompt value. Otherwise, returns empty string.
 
 #### dialog.dismiss()
 - returns: <[Promise]> Promise which resolves when the dialog has being dismissed.

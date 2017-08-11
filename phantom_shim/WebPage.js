@@ -58,6 +58,7 @@ class WebPage {
 
     this._onResourceRequestedCallback = undefined;
     this._onConfirmCallback = undefined;
+    this._onPromptCallback = undefined;
     this._onAlertCallback = undefined;
     this._onError = noop;
 
@@ -354,6 +355,22 @@ class WebPage {
   /**
    * @return {(function()|undefined)}
    */
+  get onPrompt() {
+    return this._onPromptCallback;
+  }
+
+  /**
+   * @param {function()} handler
+   */
+  set onPrompt(handler) {
+    if (typeof handler !== 'function')
+      handler = undefined;
+    this._onPromptCallback = handler;
+  }
+
+  /**
+   * @return {(function()|undefined)}
+   */
   get onAlert() {
     return this._onAlertCallback;
   }
@@ -377,6 +394,9 @@ class WebPage {
     } else if (dialog.type === 'confirm' && this._onConfirmCallback) {
       let result = this._onConfirmCallback.call(null, dialog.message());
       await(result ? dialog.accept() : dialog.dismiss());
+    } else if (dialog.type === 'prompt' && this._onPromptCallback) {
+      let result = this._onPromptCallback.call(null, dialog.message(), dialog.defaultPrompt());
+      await(result ? dialog.accept(result) : dialog.dismiss());
     }
   }
 
