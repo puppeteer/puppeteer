@@ -16,7 +16,7 @@
 
 (async() => {
 
-const {Browser} = require('..');
+const {Browser} = require('puppeteer');
 const browser = new Browser();
 
 const page = await browser.newPage();
