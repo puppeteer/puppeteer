@@ -18,9 +18,12 @@ const {Browser} = require('puppeteer');
 const devices = require('puppeteer/DeviceDescriptors');
 const browser = new Browser();
 
-browser.newPage().then(async page => {
-  await page.emulate(devices['iPhone 6']);
-  await page.navigate('https://www.nytimes.com/');
-  await page.screenshot({path: 'fp_page.png', fullPage: true});
-  browser.close();
-});
+(async () => {
+
+let page = await browser.newPage();
+await page.emulate(devices['iPhone 6']);
+await page.goto('https://www.nytimes.com/');
+await page.screenshot({path: 'full.png', fullPage: true});
+browser.close();
+
+})();
