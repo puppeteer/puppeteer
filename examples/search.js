@@ -20,10 +20,11 @@ const {Browser} = require('..');
 const browser = new Browser();
 
 const page = await browser.newPage();
-await page.navigate('https://google.com', {waitUntil: 'networkidle'});
+await page.goto('https://google.com', {waitUntil: 'networkidle'});
 // Type our query into the search bar
 await page.type('puppeteer');
-await page.press('Enter');
+
+await page.click('input[type="submit"]');
 
 // Wait for the results to show up
 await page.waitForSelector('h3 a');
