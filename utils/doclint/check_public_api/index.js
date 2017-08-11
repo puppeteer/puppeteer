@@ -24,6 +24,7 @@ const EXCLUDE_CLASSES = new Set([
   'EmulationManager',
   'FrameManager',
   'Helper',
+  'Multimap',
   'NavigatorWatcher',
   'NetworkManager',
   'ProxyStream',

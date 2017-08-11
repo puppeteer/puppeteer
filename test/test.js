@@ -842,6 +842,25 @@ describe('Page', function() {
       });
       expect(result).toContain('Failed to fetch');
     }));
+    it('should work with equal requests', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      let responseCount = 1;
+      server.setRoute('/zzz', (req, res) => res.end((responseCount++) * 11 + ''));
+      await page.setRequestInterceptionEnabled(true);
+
+      let spinner = false;
+      // Cancel 2nd request.
+      page.on('request', request => {
+        spinner ? request.abort() : request.continue();
+        spinner = !spinner;
+      });
+      let results = await page.evaluate(() => Promise.all([
+        fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
+        fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
+        fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
+      ]));
+      expect(results).toEqual(['11', 'FAILED', '22']);
+    }));
   });
 
   describe('Page.Events.Dialog', function() {
