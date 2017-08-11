@@ -1429,6 +1429,13 @@ describe('Page', function() {
         return promise;
       }
     }));
+    fit('should be detectable by Modernizr', SX(async function(){
+      await page.goto(PREFIX + '/detect-touch.html');
+      expect(await page.evaluate(() => document.body.textContent.trim())).toBe('NO');
+      await page.setViewport(iPhone.viewport);
+      await page.goto(PREFIX + '/detect-touch.html');
+      expect(await page.evaluate(() => document.body.textContent.trim())).toBe('YES');
+    }));
     it('should support landscape emulation', SX(async function() {
       await page.goto(PREFIX + '/mobile.html');
       expect(await page.evaluate(() => screen.orientation.type)).toBe('portrait-primary');
