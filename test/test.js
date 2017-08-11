@@ -1429,7 +1429,7 @@ describe('Page', function() {
         return promise;
       }
     }));
-    fit('should be detectable by Modernizr', SX(async function(){
+    it('should be detectable by Modernizr', SX(async function(){
       await page.goto(PREFIX + '/detect-touch.html');
       expect(await page.evaluate(() => document.body.textContent.trim())).toBe('NO');
       await page.setViewport(iPhone.viewport);
