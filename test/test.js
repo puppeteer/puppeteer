@@ -961,7 +961,7 @@ describe('Page', function() {
       }
     }));
     // @see https://github.com/GoogleChrome/puppeteer/issues/161
-    xit('should not hang with touch-enabled viewports', SX(async function() {
+    it('should not hang with touch-enabled viewports', SX(async function() {
       await page.setViewport(iPhone.viewport);
       await page.mouse.down();
       await page.mouse.move(100, 10);
@@ -1209,7 +1209,7 @@ describe('Page', function() {
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(true);
     }));
     // @see https://github.com/GoogleChrome/puppeteer/issues/206
-    xit('should click links which cause navigation', SX(async function() {
+    it('should click links which cause navigation', SX(async function() {
       await page.setContent(`<a href="${EMPTY_PAGE}">empty.html</a>`);
       // This await should not hang.
       await page.click('a');
