@@ -1435,6 +1435,12 @@ describe('Page', function() {
       await page.setViewport({width: 100, height: 100});
       expect(await page.evaluate(() => screen.orientation.type)).toBe('portrait-primary');
     }));
+    it('should support emulate shorthand', SX(async function() {
+      await page.goto(PREFIX + '/mobile.html');
+      await page.emulate(iPhone);
+      expect(await page.evaluate(() => window.innerWidth)).toBe(375);
+      expect(await page.evaluate(() => navigator.userAgent)).toContain('Safari');
+    }));
   });
 
   describe('Page.evaluateOnNewDocument', function() {
