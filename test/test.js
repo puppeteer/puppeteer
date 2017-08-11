@@ -166,7 +166,7 @@ describe('Page', function() {
     }));
     it('should work from-inside inPageCallback', SX(async function() {
       // Setup inpage callback, which calls Page.evaluate
-      await page.setInPageCallback('callController', async function(a, b) {
+      await page.addBinding('callController', async function(a, b) {
         return await page.evaluate((a, b) => a * b, a, b);
       });
       let result = await page.evaluate(async function() {
@@ -713,34 +713,34 @@ describe('Page', function() {
     }));
   });
 
-  describe('Page.setInPageCallback', function() {
+  describe('Page.addBinding', function() {
     it('should work', SX(async function() {
-      await page.setInPageCallback('callController', function(a, b) {
+      await page.addBinding('compute', function(a, b) {
         return a * b;
       });
       let result = await page.evaluate(async function() {
-        return await callController(9, 4);
+        return await compute(9, 4);
       });
       expect(result).toBe(36);
     }));
     it('should survive navigation', SX(async function() {
-      await page.setInPageCallback('callController', function(a, b) {
+      await page.addBinding('compute', function(a, b) {
         return a * b;
       });
 
       await page.goto(EMPTY_PAGE);
       let result = await page.evaluate(async function() {
-        return await callController(9, 4);
+        return await compute(9, 4);
       });
       expect(result).toBe(36);
     }));
     it('should await returned promise', SX(async function() {
-      await page.setInPageCallback('callController', function(a, b) {
+      await page.addBinding('compute', function(a, b) {
         return Promise.resolve(a * b);
       });
 
       let result = await page.evaluate(async function() {
-        return await callController(3, 5);
+        return await compute(3, 5);
       });
       expect(result).toBe(15);
     }));
