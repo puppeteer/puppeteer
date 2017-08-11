@@ -617,9 +617,9 @@ The extra HTTP headers will be sent with every request the page initiates.
 - `value` <[boolean]> Whether to enable request interception.
 - returns: <[Promise]> Promise which resolves when request interception change is applied.
 
-As the request interception is enabled, it is allowed to call `request.abort` and `request.continue` methods on [Request] class.
+Activating request interception enables  `request.abort` and `request.continue`.
 
-En example of a naive request interception which aborts all image requests:
+An example of a naïve request interceptor which aborts all image requests:
 ```js
 const {Browser} = require('puppeteer');
 const browser = new Browser();
@@ -1101,8 +1101,8 @@ If request gets a 'redirect' response, the request is successfully finished with
 
 #### request.abort()
 
-Aborts request if the interception is enabled with `page.setRequestInterceptionEnabled`.
-Will throw if called with disabled request interception.
+Aborts request. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
+Exception is immediately thrown if the request interception is not enabled.
 
 #### request.continue([overrides])
 - `overrides` <[Object]> Optional request overwrites, which could be one of the following:
@@ -1111,10 +1111,8 @@ Will throw if called with disabled request interception.
   - `postData` <[string]> If set changes the post data of request
   - `headers` <[Map]> If set changes the request HTTP headers
 
-Continues request with optional request overrides if the interception is enabled with
-`page.setRequestInterceptionEnabled`.
-Will throw if called with disabled request interception.
-
+Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
+Exception is immediately thrown if the request interception is not enabled.
 
 #### request.headers
 - <[Map]> A map of HTTP headers associated with the request.
