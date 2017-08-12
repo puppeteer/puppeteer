@@ -38,12 +38,10 @@ const HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
 
 const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
 const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
-const executablePath = process.env.CHROME;
-if (executablePath)
-  console.warn(`${YELLOW_COLOR}WARN: running tests with ${executablePath}${RESET_COLOR}`);
+if (process.env.CHROME_PATH)
+  console.warn(`${YELLOW_COLOR}WARN: running tests with ${process.env.CHROME_PATH}${RESET_COLOR}`);
 
 const defaultBrowserOptions = {
-  executablePath,
   slowMo,
   headless,
   args: ['--no-sandbox']

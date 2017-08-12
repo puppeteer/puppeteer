@@ -179,9 +179,8 @@ browser.newPage().then(async page => {
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
   - `headless` <[boolean]> Whether to run chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true`.
-  - `executablePath` <[string]> Path to a chromium executable to run instead of bundled chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-  - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful
-so that you can see what is going on.
+  - `chromePath` <[string]> Path to a chromium executable to run instead of bundled chromium. If `chromePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If `CHROME_PATH` env variable is set, it would be used. If both `CHROME_PATH` env variable and `chromePath` options are specified, `chromePath` option will be used.
+  - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
   - `args` <[Array]<[string]>> Additional arguments to pass to the chromium instance. List of chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
 
 
