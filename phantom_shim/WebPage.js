@@ -63,6 +63,7 @@ class WebPage {
     this._onError = noop;
 
     this._pageEvents = new AsyncEmitter(this._page);
+    this._pageEvents.on(PageEvents.Request, request => this._onRequest(request));
     this._pageEvents.on(PageEvents.Response, response => this._onResponseReceived(response));
     this._pageEvents.on(PageEvents.RequestFinished, request => this._onRequestFinished(request));
     this._pageEvents.on(PageEvents.RequestFailed, event => (this.onResourceError || noop).call(null, event));
@@ -229,24 +230,23 @@ class WebPage {
    * @return {?function(!Object, !Request)} callback
    */
   set onResourceRequested(callback) {
+    await(this._page.setRequestInterceptionEnabled(!!callback));
     this._onResourceRequestedCallback = callback;
-    this._page.setRequestInterceptor(callback ? resourceInterceptor : null);
+  }
 
-    /**
-       * @param {!InterceptedRequest} request
-       */
-    function resourceInterceptor(request) {
-      let requestData = new RequestData(request);
-      let phantomRequest = new PhantomRequest();
-      callback(requestData, phantomRequest);
-      if (phantomRequest._aborted) {
-        request.abort();
-      } else {
-        request.continue({
-          url: phantomRequest._url,
-          headers: phantomRequest._headers,
-        });
-      }
+  _onRequest(request) {
+    if (!this._onResourceRequestedCallback)
+      return;
+    let requestData = new RequestData(request);
+    let phantomRequest = new PhantomRequest();
+    this._onResourceRequestedCallback.call(null, requestData, phantomRequest);
+    if (phantomRequest._aborted) {
+      request.abort();
+    } else {
+      request.continue({
+        url: phantomRequest._url,
+        headers: phantomRequest._headers,
+      });
     }
   }
 
