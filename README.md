@@ -131,14 +131,6 @@ Yes. Puppeteer runs Chromium in [headless mode](https://developers.google.com/we
 
 Since Puppeteer's code is run by Node, it exists out-of-process to the controlled Chromium instance. This requires most of the API calls to be asynchronous to allow the necessary roundtrips to the browser.
 
-#### Q: What is the "Phantom Shim"?
-
-To make sure Puppeteer's API is comprehensive, we built [PhantomShim](https://github.com/GoogleChrome/puppeteer/tree/master/phantom_shim) - a lightweight phantomJS script runner built atop of Puppeteer API. We run phantomJS tests against PhantomShim with an ultimate goal to pass them all.
-
-To emulate PhantomJS which runs automation scripts in-process to the automated page, PhantomShim spawns [nested event loops](https://github.com/abbr/deasync). On practice, this might result in unpredictable side-effects and makes the shim unreliable, but this works pretty good for testing goals.
-
-> **NOTE** It is strictly **not recommended** to use PhantomShim out in the wild.
-
 #### Q: What is the difference between Puppeteer and Selenium / WebDriver?
 
 Selenium / WebDriver is a well-established cross-browser API that is useful for testing cross-browser support.
