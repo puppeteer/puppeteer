@@ -5,7 +5,6 @@
 <!-- toc -->
 
 - [Puppeteer](#puppeteer)
-  * [Emulation](#emulation)
   * [class: Browser](#class-browser)
     + [new Browser([options])](#new-browseroptions)
     + [browser.close()](#browserclose)
@@ -132,32 +131,6 @@ browser.newPage().then(async page => {
   browser.close();
 });
 ```
-
-### Emulation
-
-Puppeteer supports device emulation with two primitives:
-- [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
-- [page.setViewport(viewport)](#pagesetviewportviewport)
-
-To aid emulation, puppeteer provides a list of device descriptors which could be obtained via the `require('puppeteer/DeviceDescriptors')` command.
-Below is an example of emulating iPhone 6 in puppeteer:
-```js
-const {Browser} = require('puppeteer');
-const devices = require('puppeteer/DeviceDescriptors');
-const iPhone = devices['iPhone 6'];
-const browser = new Browser();
-browser.newPage().then(async page => {
-  await Promise.all([
-    page.setUserAgent(iPhone.userAgent),
-    page.setViewport(iPhone.viewport)
-  ]);
-  await page.goto('https://google.com');
-  // other actions...
-  browser.close();
-});
-```
-
-List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js).
 
 ### class: Browser
 
@@ -400,7 +373,26 @@ Shortcut for [page.mainFrame().click(selector[, options])](#frameclickselector-o
   - `userAgent` <[string]> user agent string
 - returns: <[Promise]> Promise which resolves when emulation is performed.
 
-Emulates given device metrics and user agent.
+Emulates given device metrics and user agent. This method is a shortcut for calling two methods:
+- [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
+- [page.setViewport(viewport)](#pagesetviewportviewport)
+
+To aid emulation, puppeteer provides a list of device descriptors which could be obtained via the `require('puppeteer/DeviceDescriptors')` command.
+Below is an example of emulating iPhone 6 in puppeteer:
+```js
+const {Browser} = require('puppeteer');
+const devices = require('puppeteer/DeviceDescriptors');
+const iPhone = devices['iPhone 6'];
+const browser = new Browser();
+browser.newPage().then(async page => {
+  await page.emulate(iPhone);
+  await page.goto('https://google.com');
+  // other actions...
+  browser.close();
+});
+```
+
+List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js).
 
 #### page.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
