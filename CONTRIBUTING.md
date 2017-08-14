@@ -105,7 +105,7 @@ HEADLESS=false npm run unit
 ```
 - To run tests with custom chromium executable:
 ```
-CHROME=<path-to-executable> npm run unit
+CHROM_PATH=<path-to-executable> npm run unit
 ```
 - To run tests in slow-mode:
 ```
