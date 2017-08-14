@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+const puppeteer = require('puppeteer');
+
 (async() => {
 
-const {Browser} = require('puppeteer');
-const browser = new Browser();
-
+const browser = await puppeteer.launch();
 const page = await browser.newPage();
 await page.goto('https://google.com', {waitUntil: 'networkidle'});
 // Type our query into the search bar

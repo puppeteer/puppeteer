@@ -20,7 +20,7 @@ const path = require('path');
 const helper = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
-const Browser = require('../lib/Browser');
+const puppeteer = require('..');
 const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
 
@@ -82,7 +82,7 @@ afterAll(SX(async function() {
 describe('Browser', function() {
   it('Browser.Options.ignoreHTTPSErrors', SX(async function() {
     let options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
-    let browser = new Browser(options);
+    let browser = await puppeteer.launch(options);
     let page = await browser.newPage();
     let error = null;
     let response = null;
@@ -96,7 +96,7 @@ describe('Browser', function() {
     browser.close();
   }));
   it('should reject all promises when browser is closed', SX(async function() {
-    let browser = new Browser(defaultBrowserOptions);
+    let browser = await puppeteer.launch(defaultBrowserOptions);
     let page = await browser.newPage();
     let error = null;
     let neverResolves = page.evaluate(() => new Promise(r => {})).catch(e => error = e);
@@ -114,7 +114,7 @@ describe('Page', function() {
   let page;
 
   beforeAll(SX(async function() {
-    browser = new Browser(defaultBrowserOptions);
+    browser = await puppeteer.launch(defaultBrowserOptions);
   }));
 
   afterAll(SX(async function() {

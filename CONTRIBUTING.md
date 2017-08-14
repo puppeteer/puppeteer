@@ -133,11 +133,11 @@ npm run coverage
 Puppeteer uses [DEBUG](https://github.com/visionmedia/debug) module to expose some of it's inner guts under the `puppeteer` namespace. Try putting the following in a file called `script.js` and running it via `DEBUG=* node script.js`:
 
 ```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
+const puppeteer = require('puppeteer');
 
 (async() => {
 
+const browser = await puppeteer.launch();
 const page = await browser.newPage();
 await page.goto('https://example.com');
 browser.close();

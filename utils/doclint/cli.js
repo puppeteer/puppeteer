@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-const Browser = require('../../lib/Browser');
+const puppeteer = require('../..');
 const path = require('path');
 const SourceFactory = require('./SourceFactory');
 
@@ -44,7 +44,7 @@ async function run() {
     const preprocessor = require('./preprocessor');
     messages.push(...await preprocessor(mdSources));
 
-    const browser = new Browser({args: ['--no-sandbox']});
+    const browser = await puppeteer.launch({args: ['--no-sandbox']});
     const page = await browser.newPage();
     const checkPublicAPI = require('./check_public_api');
     const jsSources = await sourceFactory.readdir(path.join(PROJECT_DIR, 'lib'), '.js');

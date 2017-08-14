@@ -24,6 +24,7 @@ const EXCLUDE_CLASSES = new Set([
   'EmulationManager',
   'FrameManager',
   'Helper',
+  'Launcher',
   'Multimap',
   'NavigatorWatcher',
   'NetworkManager',
@@ -35,6 +36,7 @@ const EXCLUDE_CLASSES = new Set([
 
 const EXCLUDE_METHODS = new Set([
   'Body.constructor',
+  'Browser.constructor',
   'Dialog.constructor',
   'Frame.constructor',
   'Headers.constructor',

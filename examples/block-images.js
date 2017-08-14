@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-const {Browser} = require('puppeteer');
-const browser = new Browser();
+const puppeteer = require('puppeteer');
 
 (async() => {
 
+const browser = puppeteer.launch();
 const page = await browser.newPage();
 await page.setRequestInterceptor(request => {
   if (/\.(png|jpg|jpeg$)/.test(request.url))

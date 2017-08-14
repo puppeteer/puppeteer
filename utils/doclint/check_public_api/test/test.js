@@ -17,7 +17,7 @@
 const fs = require('fs');
 const rm = require('rimraf').sync;
 const path = require('path');
-const Browser = require('../../../../lib/Browser');
+const puppeteer = require('../../../..');
 const checkPublicAPI = require('..');
 const SourceFactory = require('../../SourceFactory');
 const GoldenUtils = require('../../../../test/golden-utils');
@@ -25,7 +25,7 @@ const GoldenUtils = require('../../../../test/golden-utils');
 const OUTPUT_DIR = path.join(__dirname, 'output');
 const GOLDEN_DIR = path.join(__dirname, 'golden');
 
-const browser = new Browser({args: ['--no-sandbox']});
+let browser;
 let page;
 let specName;
 
@@ -34,6 +34,7 @@ jasmine.getEnv().addReporter({
 });
 
 beforeAll(SX(async function() {
+  browser = await puppeteer.launch({args: ['--no-sandbox']});
   page = await browser.newPage();
   if (fs.existsSync(OUTPUT_DIR))
     rm(OUTPUT_DIR);
