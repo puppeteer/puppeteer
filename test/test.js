@@ -104,6 +104,13 @@ describe('Browser', function() {
     await neverResolves;
     expect(error.message).toContain('Protocol error');
   }));
+  it('Puppeteer.connect', SX(async function() {
+    let originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+    let browser = await puppeteer.connect(originalBrowser.remoteDebuggingURL());
+    let page = await browser.newPage();
+    expect(await page.evaluate(() => 7 * 8)).toBe(56);
+    originalBrowser.close();
+  }));
 });
 
 describe('Page', function() {
