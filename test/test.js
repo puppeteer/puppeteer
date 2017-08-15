@@ -508,7 +508,7 @@ describe('Page', function() {
     }));
   });
 
-  describe('Page.navigate', function() {
+  describe('Page.goto', function() {
     it('should navigate to about:blank', SX(async function() {
       let response = await page.goto('about:blank');
       expect(response).toBe(null);
@@ -679,6 +679,24 @@ describe('Page', function() {
         await page.goto(EMPTY_PAGE);
       process.removeListener('warning', warningHandler);
       expect(warning).toBe(null);
+    }));
+    it('should navigate to dataURL and fire dataURL requests', SX(async function() {
+      let requests = [];
+      page.on('request', request => requests.push(request));
+      let dataURL = 'data:text/html,<div>yo</div>';
+      let response = await page.goto(dataURL);
+      expect(response.status).toBe(200);
+      expect(requests.length).toBe(1);
+      expect(requests[0].url).toBe(dataURL);
+    }));
+    it('should navigate to URL with hash and fire requests without hash', SX(async function() {
+      let requests = [];
+      page.on('request', request => requests.push(request));
+      let response = await page.goto(EMPTY_PAGE + '#hash');
+      expect(response.status).toBe(200);
+      expect(response.url).toBe(EMPTY_PAGE);
+      expect(requests.length).toBe(1);
+      expect(requests[0].url).toBe(EMPTY_PAGE);
     }));
   });
 
@@ -860,6 +878,32 @@ describe('Page', function() {
         fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
       ]));
       expect(results).toEqual(['11', 'FAILED', '22']);
+    }));
+    it('should navigate to dataURL and fire dataURL requests', SX(async function() {
+      await page.setRequestInterceptionEnabled(true);
+      let requests = [];
+      page.on('request', request => {
+        requests.push(request);
+        request.continue();
+      });
+      let dataURL = 'data:text/html,<div>yo</div>';
+      let response = await page.goto(dataURL);
+      expect(response.status).toBe(200);
+      expect(requests.length).toBe(1);
+      expect(requests[0].url).toBe(dataURL);
+    }));
+    it('should navigate to URL with hash and and fire requests without hash', SX(async function() {
+      await page.setRequestInterceptionEnabled(true);
+      let requests = [];
+      page.on('request', request => {
+        requests.push(request);
+        request.continue();
+      });
+      let response = await page.goto(EMPTY_PAGE + '#hash');
+      expect(response.status).toBe(200);
+      expect(response.url).toBe(EMPTY_PAGE);
+      expect(requests.length).toBe(1);
+      expect(requests[0].url).toBe(EMPTY_PAGE);
     }));
   });
 
