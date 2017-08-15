@@ -18,9 +18,10 @@ const puppeteer = require('puppeteer');
 
 (async() => {
 
-const browser = puppeteer.launch();
+const browser = await puppeteer.launch();
 const page = await browser.newPage();
-await page.setRequestInterceptor(request => {
+await page.setRequestInterceptionEnabled(true);
+page.on('request', request => {
   if (/\.(png|jpg|jpeg$)/.test(request.url))
     request.abort();
   else

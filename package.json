@@ -2,7 +2,7 @@
   "name": "puppeteer",
   "version": "0.1.0",
   "description": "",
-  "main": "lib/Puppeteer.js",
+  "main": "index.js",
   "repository": "github:GoogleChrome/puppeteer",
   "engines": {
     "node": ">=7.10.0"
