@@ -1,7 +1,5 @@
 # Puppeteer [![Build Status](https://travis-ci.com/GoogleChrome/puppeteer.svg?token=8jabovWqb8afz5RDcYqx&branch=master)](https://travis-ci.com/GoogleChrome/puppeteer)
 
-<img src="https://user-images.githubusercontent.com/238208/28749789-e67693de-7487-11e7-85f9-2d9ad9025aae.png" height="150" align="right">
-
 ###### [API](docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md)
 
 Puppeteer is a Node library which provides a high-level API to control [headless](https://developers.google.com/web/updates/2017/04/headless-chrome) Chrome over the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/). It can also be configured to use full (non-headless) Chrome.
@@ -172,7 +170,7 @@ See [Contributing](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIB
 
 The goals are the project are simple:
 
-- Provide a slim (1.7 Mb), canonical library that highlights the capabilities of the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
+- Provide a slim, canonical library that highlights the capabilities of the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
 - Provide a reference implementation for similar testing libraries. Eventually, these
 other frameworks could adopt Puppeteer as their foundational layer.
 - Grow the adoption of headless/automated browser testing.
