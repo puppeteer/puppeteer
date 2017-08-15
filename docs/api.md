@@ -11,7 +11,7 @@
   * [class: Browser](#class-browser)
     + [browser.close()](#browserclose)
     + [browser.newPage()](#browsernewpage)
-    + [browser.remoteDebuggingURL()](#browserremotedebuggingurl)
+    + [browser.protocolWSEndpoint()](#browserprotocolwsendpoint)
     + [browser.version()](#browserversion)
   * [class: Page](#class-page)
     + [event: 'console'](#event-console)
