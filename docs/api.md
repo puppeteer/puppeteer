@@ -26,6 +26,7 @@
     + [event: 'requestfailed'](#event-requestfailed)
     + [event: 'requestfinished'](#event-requestfinished)
     + [event: 'response'](#event-response)
+    + [page.$(selector)](#pageselector)
     + [page.addBinding(name, puppeteerFunction)](#pageaddbindingname-puppeteerfunction)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
     + [page.click(selector[, options])](#pageclickselector-options)
@@ -82,12 +83,10 @@
     + [dialog.message()](#dialogmessage)
     + [dialog.type](#dialogtype)
   * [class: Frame](#class-frame)
+    + [frame.$(selector)](#frameselector)
     + [frame.addScriptTag(url)](#frameaddscripttagurl)
     + [frame.childFrames()](#framechildframes)
-    + [frame.click(selector[, options])](#frameclickselector-options)
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
-    + [frame.focus(selector)](#framefocusselector)
-    + [frame.hover(selector)](#framehoverselector)
     + [frame.injectFile(filePath)](#frameinjectfilefilepath)
     + [frame.isDetached()](#frameisdetached)
     + [frame.name()](#framename)
@@ -98,6 +97,11 @@
     + [frame.waitFor(selectorOrFunctionOrTimeout[, options])](#framewaitforselectororfunctionortimeout-options)
     + [frame.waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args)
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
+  * [class: ElementHandle](#class-elementhandle)
+    + [elementHandle.click([options])](#elementhandleclickoptions)
+    + [elementHandle.evaluate(pageFunction, ...args)](#elementhandleevaluatepagefunction-args)
+    + [elementHandle.hover()](#elementhandlehover)
+    + [elementHandle.release()](#elementhandlerelease)
   * [class: Request](#class-request)
     + [request.abort()](#requestabort)
     + [request.continue([overrides])](#requestcontinueoverrides)
@@ -283,6 +287,13 @@ Emitted when a request is successfully finished.
 
 Emitted when a [response] is received.
 
+#### page.$(selector)
+- `selector` <[string]> Selector to query page for
+- returns: <[Promise]<[ElementHandle]>> Promise which resolves to ElementHandle pointing to the page element.
+
+The method queries page for the selector. If there's no such element on the page, the method will resolve to `null`.
+
+Shortcut for [page.mainFrame().$(selector)](#frameselector).
 
 #### page.addBinding(name, puppeteerFunction)
 - `name` <[string]> Name of the binding on window object
@@ -344,7 +355,6 @@ puppeteer.launch().then(async browser => {
 });
 
 ```
-
 
 #### page.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
@@ -932,6 +942,12 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
+#### frame.$(selector)
+- `selector` <[string]> Selector to query page for
+- returns: <[Promise]<[ElementHandle]>> Promise which resolves to ElementHandle pointing to the page element.
+
+The method queries page for the selector. If there's no such element on the page, the method will resolve to `null`.
+
 
 #### frame.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
@@ -941,14 +957,6 @@ Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScri
 
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
-
-#### frame.click(selector[, options])
-- `selector` <[string]> A query [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
-- `options` <[Object]>
-  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
-  - `clickCount` <[number]> defaults to 1
-  - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
-- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. Promise gets rejected if there's no element matching `selector`.
 
 #### frame.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
@@ -975,15 +983,6 @@ A string can also be passed in instead of a function.
 ```js
 console.log(await page.evaluate('1 + 2')); // prints "3"
 ```
-
-
-#### frame.focus(selector)
-- `selector` <[string]> A query [selector] of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
-- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. Promise gets rejected if there's no element matching `selector`.
-
-#### frame.hover(selector)
-- `selector` <[string]> A query [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
-- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
 
 #### frame.injectFile(filePath)
 - `filePath` <[string]> Path to the JavaScript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
@@ -1078,6 +1077,66 @@ puppeteer.launch().then(async browser => {
   browser.close();
 });
 ```
+
+### class: ElementHandle
+
+ElementHandle represents an in-page DOM element. ElementHandles could be created with the [page.$](#pageselector) method.
+
+```js
+const puppeteer = require('puppeteer');
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
+  await page.goto('https://google.com');
+  let inputElement = await page.$('input[type=submit]');
+  await inputElement.click();
+  ...
+});
+```
+
+ElementHandle prevents DOM element from garbage collection unless the handle is [released](#elementhandlerelease). ElementHandles are auto-released when their origin frame gets navigated.
+
+#### elementHandle.click([options])
+- `options` <[Object]>
+  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
+  - `clickCount` <[number]> defaults to 1
+  - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
+- returns: <[Promise]> Promise which resolves when the element is successfully clicked. Promise gets rejected if the element is detached from DOM.
+
+This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
+If the element is detached from DOM, the method throws an error.
+
+#### elementHandle.evaluate(pageFunction, ...args)
+- `pageFunction` <[function]> Function to be evaluated in browser context
+- `...args` <...[string]> Arguments to pass to  `pageFunction`
+- returns: <[Promise]<[Object]>> Promise which resolves to function return value
+
+If the function, passed to the `elementHandle.evaluate`, returns a [Promise], then `elementHandle.evaluate` would wait for the promise to resolve and return it's value.
+The function will be passed in the element ifself as a first argument.
+
+#### elementHandle.hover()
+- returns: <[Promise]> Promise which resolves when the element is successfully hovered.
+
+This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
+If the element is detached from DOM, the method throws an error.
+
+
+#### elementHandle.release()
+- returns: <[Promise]> Promise which resolves when the element handle is successfully released.
+
+The `elementHandle.release` method stops referencing the element handle.
+
+```js
+const {Browser} = require('puppeteer');
+const browser = new Browser();
+browser.newPage().then(async page =>
+  await page.setContent('<div>hello</div>');
+  let element = await page.$('div');
+  let text = element.evaluate((e, suffix) => e.textContent + ' ' + suffix, 'world!');
+  console.log(text); // "hello world!"
+  browser.close();
+});
+```
+
 
 ### class: Request
 
@@ -1189,3 +1248,4 @@ Contains the URL of the response.
 [Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map "Map"
 [selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors "selector"
 [Tracing]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-tracing "Tracing"
+[ElementHandle]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-element "ElementHandle"
