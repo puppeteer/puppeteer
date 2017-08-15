@@ -1,6 +1,6 @@
 # Puppeteer [![Build Status](https://travis-ci.com/GoogleChrome/puppeteer.svg?token=8jabovWqb8afz5RDcYqx&branch=master)](https://travis-ci.com/GoogleChrome/puppeteer)
 
-<img src="https://user-images.githubusercontent.com/238208/29325131-7c9cce30-819b-11e7-8686-5765f43621df.png" height="200" align="right">
+<img src="https://user-images.githubusercontent.com/39191/29328670-348d1a0c-81a8-11e7-9f27-2d33b505ec61.png" height="200" align="right">
 
 ###### [API](docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md)
 
