@@ -146,6 +146,8 @@ puppeteer.launch().then(async browser => {
 
 The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process gets closed.
 
+> **Note** Puppeteer works best with bundled version of chromium, and there's no guarantee it would work properly with any other version. Use `executablePath` option with extreme caution.
+
 ### class: Browser
 
 Browser manages a browser instance, creating it with a predefined
