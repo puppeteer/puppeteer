@@ -14,6 +14,7 @@
   * [class: Page](#class-page)
     + [event: 'console'](#event-console)
     + [event: 'dialog'](#event-dialog)
+    + [event: 'error'](#event-error)
     + [event: 'frameattached'](#event-frameattached)
     + [event: 'framedetached'](#event-framedetached)
     + [event: 'framenavigated'](#event-framenavigated)
@@ -215,6 +216,13 @@ page.evaluate(() => console.log(5, 'hello', {foo: 'bar'}));
 - <[Dialog]>
 
 Emitted when a JavaScript dialog, such as `alert`, `prompt`, `confirm` or `beforeunload`, gets opened on the page. Puppeteer can take action to the dialog via dialog's [accept](#dialogacceptprompttext) or [dismiss](#dialogdismiss) methods.
+
+#### event: 'error'
+- <[Error]>
+
+Emitted when the page crashes.
+
+> **Note** `error` event has a special meaning in Node, see [error events](https://nodejs.org/api/events.html#events_error_events) for details.
 
 #### event: 'frameattached'
 - <[Frame]>
@@ -1153,6 +1161,7 @@ Contains the URL of the response.
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
 [stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable "stream.Readable"
+[Error]: https://nodejs.org/api/errors.html#errors_class_error "Error"
 [Frame]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-frame "Frame"
 [iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols "Iterator"
 [Response]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-response  "Response"

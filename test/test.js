@@ -155,6 +155,16 @@ describe('Page', function() {
     }));
   });
 
+  describe('Page.Events.error', function() {
+    it('should throw when page crashes', SX(async function() {
+      let error = null;
+      page.on('error', err => error = err);
+      page.goto('chrome://crash').catch(e => {});
+      await waitForEvents(page, 'error');
+      expect(error.message).toBe('Page crashed!');
+    }));
+  });
+
   describe('Page.evaluate', function() {
     it('should work', SX(async function() {
       let result = await page.evaluate(() => 7 * 3);
