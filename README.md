@@ -153,10 +153,10 @@ versions of Chromium, which use the Blink rendering engine.
 [Chromeless](https://github.com/graphcool/chromeless) and Puppeteer are similar projects.
 Both are Node libraries that provide a high-level JS APIs to control headless Chrome.
 
-Chromeless (31 Mb) is intended to work well with AWS Lambda to deploy parallel testing in a serverless setup.
+Chromeless is intended to work well with AWS Lambda to deploy parallel testing in a serverless setup.
 Under the hood, it uses [chrome-remote-interface](https://www.npmjs.com/package/chrome-remote-interface) to interface with the DevTools Protocol. In the future, it could use Puppeteer's API.
 
-Puppeteer is smaller in size (1.77 Mb, ignoring the bundled version of Chrome) and does not use
+Puppeteer is smaller in size (ignoring the bundled version of Chrome) and does not use
 dependencies to interface with Chrome. It's API is inspired by other popular automated testing
 libraries like PhantomJS and [NightmareJS](http://www.nightmarejs.org/).
 
@@ -173,5 +173,5 @@ The goals are the project are simple:
 - Provide a reference implementation for similar testing libraries. Eventually, these
 other frameworks could adopt Puppeteer as their foundational layer.
 - Grow the adoption of headless/automated browser testing.
-- Help dogfood new DevTools features...and catch bugs!
+- Help dogfood new DevTools Protocol features...and catch bugs!
 - Learn more about the pain points of automated browser testing and help fill those gaps.
