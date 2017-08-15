@@ -265,7 +265,7 @@ Emitted when a [response] is received.
 
 #### page.$(selector)
 - `selector` <[string]> Selector to query page for
-- returns: <[Promise]<[Element]>> Promise which resolves to Element pointing to the page element.
+- returns: <[Promise]<[ElementHandle]>> Promise which resolves to ElementHandle pointing to the page element.
 
 The method queries page for the selector. If there's no such element on the page, the method will resolve to `null`.
 
@@ -920,7 +920,7 @@ puppeteer.launch().then(async browser => {
 
 #### frame.$(selector)
 - `selector` <[string]> Selector to query page for
-- returns: <[Promise]<[Element]>> Promise which resolves to Element pointing to the page element.
+- returns: <[Promise]<[ElementHandle]>> Promise which resolves to ElementHandle pointing to the page element.
 
 The method queries page for the selector. If there's no such element on the page, the method will resolve to `null`.
 
@@ -1056,11 +1056,20 @@ puppeteer.launch().then(async browser => {
 
 ### class: ElementHandle
 
-ElementHandle holds a reference to the in-page element. Element handles could be thought about as
-a javascript reference. Element handles could be created with the [page.$](#pageselector) function.
+ElementHandle represents an in-page DOM element. ElementHandles could be created with the [page.$](#pageselector) method.
 
-Element handles keep underlying elements from garbage collection unless they are [released](#elementhandlerelease).
-Element handles also get auto-released when their origin frame gets navigated.
+```js
+const puppeteer = require('puppeteer');
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
+  await page.goto('https://google.com');
+  let inputElement = await page.$('input[type=submit]');
+  await inputElement.click();
+  ...
+});
+```
+
+ElementHandle prevents DOM element from garbage collection unless the handle is [released](#elementhandlerelease). ElementHandles are auto-released when their origin frame gets navigated.
 
 #### elementHandle.click([options])
 - `options` <[Object]>
@@ -1214,4 +1223,4 @@ Contains the URL of the response.
 [Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map "Map"
 [selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors "selector"
 [Tracing]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-tracing "Tracing"
-[Element]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-element "Element"
+[ElementHandle]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-element "ElementHandle"
