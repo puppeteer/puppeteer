@@ -105,7 +105,7 @@ is guaranteed to work out of the box. To use Puppeteer with a different version 
 pass in the executable's path when creating a `Browser` instance:
 
 ```js
-const browser = new Browser({executablePath: '/path/to/Chrome'});
+const browser = await puppeteer.launch({executablePath: '/path/to/Chrome'});
 ```
 
 See [`Browser`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#new-browseroptions) for more information.
