@@ -136,9 +136,10 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
-#### puppeteer.connect(remoteDebuggingURL[, ignoreHTTPSErrors])
-- `remoteDebuggingURL` <[string]> a remote debugging URL to connect to
-- `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
+#### puppeteer.connect(options)
+- `options` <[Object]>  Set of options to connect to the browser. Can have the following fields:
+  - `remoteDebuggingURL` <[string]> a remote debugging URL to connect to.
+  - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
 
 This method could be used to connect to already running browser instance.

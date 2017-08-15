@@ -106,7 +106,9 @@ describe('Browser', function() {
   }));
   it('Puppeteer.connect', SX(async function() {
     let originalBrowser = await puppeteer.launch(defaultBrowserOptions);
-    let browser = await puppeteer.connect(originalBrowser.remoteDebuggingURL());
+    let browser = await puppeteer.connect({
+      remoteDebuggingURL: originalBrowser.remoteDebuggingURL()
+    });
     let page = await browser.newPage();
     expect(await page.evaluate(() => 7 * 8)).toBe(56);
     originalBrowser.close();
