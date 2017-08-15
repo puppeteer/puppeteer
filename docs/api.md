@@ -122,7 +122,7 @@ Puppeteer is a Node library which provides a high-level API to control Chromium 
 
 ### class: Puppeteer
 
-Puppeteer module provides a method to launch a chromium instance.
+Puppeteer module provides a method to launch a Chromium instance.
 The following is a typical example of using a Puppeteer to drive automation:
 ```js
 const puppeteer = require('puppeteer');
@@ -137,16 +137,16 @@ puppeteer.launch().then(async browser => {
 #### puppeteer.launch([options])
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
-  - `headless` <[boolean]> Whether to run chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true`.
-  - `executablePath` <[string]> Path to a chromium executable to run instead of bundled chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `headless` <[boolean]> Whether to run Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true`.
+  - `executablePath` <[string]> Path to a Chromium executable to run instead of bundled Chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
-  - `args` <[Array]<[string]>> Additional arguments to pass to the chromium instance. List of chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
+  - `args` <[Array]<[string]>> Additional arguments to pass to the Chromium instance. List of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
   - `dumpio` <[boolean]> Whether to pipe browser process stdout and stderr into `process.stdout` and `process.stderr`. Defaults to `false`.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
 
 The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process gets closed.
 
-> **Note** Puppeteer works best with bundled version of chromium, and there's no guarantee it would work properly with any other version. Use `executablePath` option with extreme caution.
+> **Note** Puppeteer works best with bundled version of Chromium, and there's no guarantee it would work properly with any other version. Use `executablePath` option with extreme caution.
 
 ### class: Browser
 
@@ -175,7 +175,7 @@ Closes browser with all the pages (if any were opened). The browser object itsel
 
 
 #### browser.version()
-- returns: <[Promise]<[string]>> String describing browser version. For headless chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is `Chrome/61.0.3153.0`.
+- returns: <[Promise]<[string]>> String describing browser version. For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is `Chrome/61.0.3153.0`.
 
 > **NOTE** the format of browser.version() is not fixed and might change with future releases of the library.
 
@@ -264,7 +264,7 @@ Emitted when a [response] is received.
 
 #### page.addBinding(name, puppeteerFunction)
 - `name` <[string]> Name of the binding on window object
-- `puppeteerFunction` <[function]> Callback function which will be called in puppeteer's context.
+- `puppeteerFunction` <[function]> Callback function which will be called in Puppeteer's context.
 - returns: <[Promise]> Promise which resolves with the result of `puppeteerFunction`.
 
 The method adds a function called `name` on `window` object.
