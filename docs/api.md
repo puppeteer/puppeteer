@@ -6,7 +6,7 @@
 
 - [Puppeteer](#puppeteer)
   * [class: Puppeteer](#class-puppeteer)
-    + [puppeteer.connect(remoteDebuggingURL[, ignoreHTTPSErrors])](#puppeteerconnectremotedebuggingurl-ignorehttpserrors)
+    + [puppeteer.connect(options)](#puppeteerconnectoptions)
     + [puppeteer.launch([options])](#puppeteerlaunchoptions)
   * [class: Browser](#class-browser)
     + [browser.close()](#browserclose)
