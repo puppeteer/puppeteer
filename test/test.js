@@ -1756,6 +1756,65 @@ describe('Page', function() {
       await page.tracing.stop();
     }));
   });
+
+  describe('Chaining', function() {
+    class X {
+      constructor() {
+        this.a = 1;
+        this.b = 2;
+      }
+      static create() {
+        let instancePromise = Promise.resolve(new X());
+        return helper.Chain(instancePromise, instancePromise, 'X');
+      }
+      test() {
+        return {abc: 123};
+      }
+      increment() {
+        this.a++;
+        return this.a;
+      }
+      async slowIncrement() {
+        await new Promise(x => setTimeout(x, 100));
+        this.a += 5;
+      }
+
+      nested() {
+        return X.create();
+      }
+    }
+    it('should chain a basic class', SX(async function() {
+      let x = X.create();
+      expect(await x.test()).toEqual({abc: 123});
+      expect(await x.increment()).toBe(2);
+      expect(await x.increment()).toBe(3);
+      expect(await x.a).toBe(3);
+      expect(await x.increment().increment()).toBe(5);
+      expect(await x.increment().increment().test()).toEqual({abc: 123});
+      expect(await x.increment().increment().a).toBe(9);
+      expect(await x.slowIncrement().increment().a).toBe(15);
+      expect(await x.test().abc).toBe(undefined);
+      expect((await x.test()).abc).toBe(123);
+      expect((await x).test()).toEqual({abc: 123});
+    }));
+
+    it('should throw errors', SX(async function(){
+      let x = X.create();
+      expect(await getError(() => x.test().doesntExist())).toEqual('ChainError: X.test().doesntExist is not a function');
+      expect(await getError(() => x.doesntExist())).toEqual('ChainError: X.doesntExist is not a function');
+    }));
+
+    it('should have nested chains', SX(async function() {
+      expect(await X.create().increment().increment().nested().a).toBe(1);
+    }));
+
+    it('should work with Browser and Page', SX(async function(){
+      let browserChain = puppeteer.launch(defaultBrowserOptions);
+      let pageChain = browserChain.newPage();
+      expect(await pageChain.goto(PREFIX + '/grid.html').evaluate(() => document.location.href)).toContain('grid.html');
+      await browserChain.close();
+    }));
+  });
 });
 
 if (process.env.COVERAGE) {
@@ -1824,6 +1883,21 @@ async function getPDFPages(pdfBuffer) {
  */
 function cssPixelsToInches(px) {
   return px / 96;
+}
+
+/**
+ *
+ * @param {function()} fn
+ * @return {?Error}
+ */
+async function getError(fn) {
+  try {
+    await fn();
+  }
+  catch (e) {
+    return e.message;
+  }
+  return null;
 }
 
 // Since Jasmine doesn't like async functions, they should be wrapped
