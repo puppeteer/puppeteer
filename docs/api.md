@@ -6,10 +6,12 @@
 
 - [Puppeteer](#puppeteer)
   * [class: Puppeteer](#class-puppeteer)
+    + [puppeteer.connect(options)](#puppeteerconnectoptions)
     + [puppeteer.launch([options])](#puppeteerlaunchoptions)
   * [class: Browser](#class-browser)
     + [browser.close()](#browserclose)
     + [browser.newPage()](#browsernewpage)
+    + [browser.remoteDebuggingURL()](#browserremotedebuggingurl)
     + [browser.version()](#browserversion)
   * [class: Page](#class-page)
     + [event: 'console'](#event-console)
@@ -135,6 +137,14 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
+#### puppeteer.connect(options)
+- `options` <[Object]>  Set of options to connect to the browser. Can have the following fields:
+  - `remoteDebuggingURL` <[string]> a remote debugging URL to connect to.
+  - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
+- returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
+
+This method could be used to connect to already running browser instance.
+
 #### puppeteer.launch([options])
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
@@ -174,6 +184,10 @@ Closes browser with all the pages (if any were opened). The browser object itsel
 #### browser.newPage()
 - returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.
 
+#### browser.remoteDebuggingURL()
+- returns: <[string]> A URL that could be used to start debugging this browser instance.
+
+Remote debugging url could be used as an argument to the [puppeteer.connect](#puppeteerconnect).
 
 #### browser.version()
 - returns: <[Promise]<[string]>> String describing browser version. For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is `Chrome/61.0.3153.0`.

@@ -87,6 +87,8 @@ class JSOutline {
         args.push(new Documentation.Argument('...' + param.argument.name));
       else if (param.type === 'Identifier')
         args.push(new Documentation.Argument(param.name));
+      else if (param.type === 'ObjectPattern')
+        args.push(new Documentation.Argument('options'));
       else
         this.errors.push(`JS Parsing issue: unsupported syntax to define parameter in ${this._currentClassName}.${methodName}(): ${this._extractText(param)}`);
     }
