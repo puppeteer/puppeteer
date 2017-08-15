@@ -120,7 +120,7 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
 
 ## Contributing to Puppeteer
 
-Check out [contributing guide](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md) to get an overview of puppeteer development.
+Check out [contributing guide](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md) to get an overview of Puppeteer development.
 
 # FAQ
 
