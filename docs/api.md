@@ -5,12 +5,11 @@
 <!-- toc -->
 
 - [Puppeteer](#puppeteer)
+  * [class: Puppeteer](#class-puppeteer)
+    + [puppeteer.launch([options])](#puppeteerlaunchoptions)
   * [class: Browser](#class-browser)
-    + [new Browser([options])](#new-browseroptions)
     + [browser.close()](#browserclose)
     + [browser.newPage()](#browsernewpage)
-    + [browser.stderr](#browserstderr)
-    + [browser.stdout](#browserstdout)
     + [browser.version()](#browserversion)
   * [class: Page](#class-page)
     + [event: 'console'](#event-console)
@@ -120,17 +119,32 @@
 
 Puppeteer is a Node library which provides a high-level API to control Chromium over the DevTools Protocol.
 
-Puppeteer provides a top-level require which has a [Browser](#class-browser) class.
-The following is a typical example of using a Browser class to drive automation:
+
+### class: Puppeteer
+
+Puppeteer module provides a method to launch a chromium instance.
+The following is a typical example of using a Puppeteer to drive automation:
 ```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
-browser.newPage().then(async page => {
+const puppeteer = require('puppeteer');
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
   await page.goto('https://google.com');
   // other actions...
   browser.close();
 });
 ```
+
+#### puppeteer.launch([options])
+- `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
+  - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
+  - `headless` <[boolean]> Whether to run chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true`.
+  - `executablePath` <[string]> Path to a chromium executable to run instead of bundled chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
+  - `args` <[Array]<[string]>> Additional arguments to pass to the chromium instance. List of chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
+  - `dumpio` <[boolean]> Whether to pipe browser process stdout and stderr into `process.stdout` and `process.stderr`. Defaults to `false`.
+- returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
+
+The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process gets closed.
 
 ### class: Browser
 
@@ -140,22 +154,14 @@ not necessarily result in launching browser; the instance will be launched when 
 
 A typical scenario of using [Browser] is opening a new page and navigating it to a desired URL:
 ```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
-browser.newPage().then(async page => {
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
   await page.goto('https://example.com');
   browser.close();
 });
 ```
-
-#### new Browser([options])
-- `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
-  - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
-  - `headless` <[boolean]> Whether to run chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true`.
-  - `executablePath` <[string]> Path to a chromium executable to run instead of bundled chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-  - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful
-so that you can see what is going on.
-  - `args` <[Array]<[string]>> Additional arguments to pass to the chromium instance. List of chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
 
 
 #### browser.close()
@@ -165,36 +171,6 @@ Closes browser with all the pages (if any were opened). The browser object itsel
 #### browser.newPage()
 - returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.
 
-
-#### browser.stderr
-- <[stream.Readable]>
-
-A Readable Stream that represents the browser process's stderr.
-For example, `stderr` could be piped into `process.stderr`:
-```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
-browser.stderr.pipe(process.stderr);
-browser.version().then(version => {
-  console.log(version);
-  browser.close();
-});
-```
-
-#### browser.stdout
-- <[stream.Readable]>
-
-A Readable Stream that represents the browser process's stdout.
-For example, `stdout` could be piped into `process.stdout`:
-```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
-browser.stdout.pipe(process.stdout);
-browser.version().then(version => {
-  console.log(version);
-  browser.close();
-});
-```
 
 #### browser.version()
 - returns: <[Promise]<[string]>> String describing browser version. For headless chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is `Chrome/61.0.3153.0`.
@@ -207,9 +183,10 @@ Page provides methods to interact with browser page. Page could be thought about
 
 An example of creating a page, navigating it to a URL and saving screenshot as `screenshot.png`:
 ```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
-browser.newPage().then(async page =>
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
   await page.goto('https://example.com');
   await page.screenshot({path: 'screenshot.png'});
   browser.close();
@@ -298,11 +275,11 @@ If the `puppeteerFunction` returns a promise, it would be awaited.
 
 An example of adding `window.md5` binding to the page:
 ```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
+const puppeteer = require('puppeteer');
 const crypto = require('crypto');
 
-browser.newPage().then(async page => {
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
   page.on('console', console.log);
   await page.setInPageCallback('md5', text => crypto.createHash('md5').update(text).digest('hex'));
   await page.evaluate(async () => {
@@ -318,11 +295,11 @@ browser.newPage().then(async page => {
 An example of adding `window.readfile` binding to the page:
 
 ```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
+const puppeteer = require('puppeteer');
 const fs = require('fs');
 
-browser.newPage().then(async page => {
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
   page.on('console', console.log);
   await page.setInPageCallback('readfile', async filePath => {
     return new Promise((resolve, reject) => {
@@ -380,11 +357,12 @@ Emulates given device metrics and user agent. This method is a shortcut for call
 To aid emulation, puppeteer provides a list of device descriptors which could be obtained via the `require('puppeteer/DeviceDescriptors')` command.
 Below is an example of emulating iPhone 6 in puppeteer:
 ```js
-const {Browser} = require('puppeteer');
+const puppeteer = require('puppeteer');
 const devices = require('puppeteer/DeviceDescriptors');
 const iPhone = devices['iPhone 6'];
-const browser = new Browser();
-browser.newPage().then(async page => {
+
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
   await page.emulate(iPhone);
   await page.goto('https://google.com');
   // other actions...
@@ -402,9 +380,9 @@ List of all available devices is available in the source code: [DeviceDescriptor
 If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
 
 ```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
-browser.newPage().then(async page =>
+const puppeteer = require('puppeteer');
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
   const result = await page.evaluate(() => {
     return Promise.resolve(8 * 7);
   });
@@ -613,10 +591,9 @@ Activating request interception enables  `request.abort` and `request.continue`.
 
 An example of a naïve request interceptor which aborts all image requests:
 ```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
-
-browser.newPage().then(async page =>
+const puppeteer = require('puppeteer');
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
   await page.setRequestInterceptionEnabled(true);
   page.on('request', request => {
     if (interceptedRequest.url.endsWith('.png') || interceptedRequest.url.endsWith('.jpg'))
@@ -713,10 +690,9 @@ Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options])](
 
 The `waitForFunction` could be used to observe viewport size change:
 ```js
-const {Browser} = require('.');
-const browser = new Browser();
-
-browser.newPage().then(async page => {
+const puppeteer = require('puppeteer');
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
   const watchDog = page.waitForFunction('window.innerWidth < 100');
   page.setViewport({width: 50, height: 50});
   await watchDog;
@@ -748,10 +724,9 @@ immediately. If the selector doesn't appear after the `timeout` milliseconds of 
 
 This method works across navigations:
 ```js
-const {Browser} = new require('puppeteer');
-const browser = new Browser();
-
-browser.newPage().then(async page => {
+const puppeteer = require('puppeteer');
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
   let currentURL;
   page.waitForSelector('img').then(() => console.log('First URL with image: ' + currentURL));
   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
@@ -874,9 +849,10 @@ Only one trace can be active at a time per browser.
 
 An example of using `Dialog` class:
 ```js
-const {Browser} = require('puppeteer');
-const browser = new Browser({headless: false});
-browser.newPage().then(async page => {
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
   page.on('dialog', dialog => {
     console.log(dialog.message());
     dialog.dismiss();
@@ -916,10 +892,10 @@ At every point of time, page exposes its current frame tree via the [page.mainFr
 An example of dumping frame tree:
 
 ```js
-const {Browser} = new require('.');
-const browser = new Browser({headless: true});
+const puppeteer = require('puppeteer');
 
-browser.newPage().then(async page => {
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
   await page.goto('https://www.google.com/chrome/browser/canary.html');
   dumpFrameTree(page.mainFrame(), '');
   browser.close();
@@ -958,9 +934,10 @@ Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScri
 If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
 
 ```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
-browser.newPage().then(async page =>
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
   const result = await page.evaluate(() => {
     return Promise.resolve(8 * 7);
   });
@@ -1042,10 +1019,10 @@ This method behaves differently with respect to the type of the first parameter:
 
 The `waitForFunction` could be used to observe viewport size change:
 ```js
-const {Browser} = require('.');
-const browser = new Browser();
+const puppeteer = require('puppeteer');
 
-browser.newPage().then(async page => {
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
   const watchDog = page.waitForFunction('window.innerWidth < 100');
   page.setViewport({width: 50, height: 50});
   await watchDog;
@@ -1066,10 +1043,10 @@ immediately. If the selector doesn't appear after the `timeout` milliseconds of 
 
 This method works across navigations:
 ```js
-const {Browser} = new require('puppeteer');
-const browser = new Browser();
+const puppeteer = require('puppeteer');
 
-browser.newPage().then(async page => {
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
   let currentURL;
   page.waitForSelector('img').then(() => console.log('First URL with image: ' + currentURL));
   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])

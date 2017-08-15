@@ -39,10 +39,11 @@ of `Browser`, open pages, and then manipulate them with [Puppeteer's API](https:
 **Example** - navigating to https://example.com and saving a screenshot as *example.png*:
 
 ```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
+const puppeteer = require('puppeteer');
 
 (async() => {
+
+const browser = await puppeteer.launch();
 const page = await browser.newPage();
 await page.goto('https://example.com');
 await page.screenshot({path: 'example.png'});
@@ -54,16 +55,17 @@ browser.close();
 or, without `async`/`await`:
 
 ```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
+const puppeteer = require('puppeteer');
 
-browser.newPage().then(page => {
-  page.goto('https://example.com').then(response => {
-     page.screenshot({path: 'example.png'}).then(buffer => {
-       browser.close();
-     });
+puppeteer.launch()
+  .then(browser => browser.newPage())
+  .then(page => {
+    page.goto('https://example.com').then(response => {
+       page.screenshot({path: 'example.png'}).then(buffer => {
+         browser.close();
+       });
+    });
   });
-});
 ```
 
 Puppeteer sets an initial page size to 800px x 600px, which defines the screenshot size. The page size can be customized  with [`Page.setViewport()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pagesetviewportviewport).
@@ -71,10 +73,11 @@ Puppeteer sets an initial page size to 800px x 600px, which defines the screensh
 **Example** - create a PDF.
 
 ```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
+const puppeteer = require('puppeteer');
 
 (async() => {
+
+const browser = await puppeteer.launch();
 const page = await browser.newPage();
 await page.goto('https://news.ycombinator.com', {waitUntil: 'networkidle'});
 await page.pdf({path: 'hn.pdf', format: 'A4'});
@@ -92,7 +95,7 @@ See [`Page.pdf()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/ap
 Puppeteer launches Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). To launch a full version of Chromium, set the ['headless' option](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#new-browseroptions) when creating a browser:
 
 ```js
-const browser = new Browser({headless: false});
+const browser = await puppeteer.launch({headless: false});
 ```
 
 **2. Runs a bundled version of Chromium**

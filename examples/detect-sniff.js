@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-const {Browser} = require('puppeteer');
-const browser = new Browser();
+const puppeteer = require('puppeteer');
 
 function sniffDetector() {
   let userAgent = window.navigator.userAgent;
@@ -34,6 +33,7 @@ function sniffDetector() {
 
 (async() => {
 
+const browser = await puppeteer.launch();
 const page = await browser.newPage();
 await page.evaluateOnNewDocument(sniffDetector);
 await page.goto('https://www.google.com', {waitUntil: 'networkidle'});

@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+const await = require('./utilities').await;
 const vm = require('vm');
 const path = require('path');
 const fs = require('fs');
@@ -24,7 +25,7 @@ const System = require('./System');
 const WebPage = require('./WebPage');
 const WebServer = require('./WebServer');
 const child_process = require('child_process');
-const Browser = require('..').Browser;
+const puppeteer = require('..');
 const argv = require('minimist')(process.argv.slice(2), {
   alias: { v: 'version' },
   boolean: ['headless'],
@@ -55,23 +56,19 @@ if (!fs.existsSync(scriptPath)) {
   return;
 }
 
-let browser = new Browser({
-  headless: argv.headless,
-  args: ['--no-sandbox']
-});
-
-let context = createPhantomContext(browser, scriptPath, argv);
+let context = createPhantomContext(argv.headless, scriptPath, argv);
 let scriptContent = fs.readFileSync(scriptPath, 'utf8');
 vm.runInContext(scriptContent, context);
 
 /**
- * @param {!Browser} browser
+ * @param {boolean} headless
  * @param {string} scriptPath
  * @param {!Array<string>} argv
  * @return {!Object}
  */
-function createPhantomContext(browser, scriptPath, argv) {
+function createPhantomContext(headless, scriptPath, argv) {
   let context = {};
+  let browser = null;
   context.setInterval = setInterval;
   context.setTimeout = setTimeout;
   context.clearInterval = clearInterval;
@@ -80,7 +77,7 @@ function createPhantomContext(browser, scriptPath, argv) {
   context.phantom = Phantom.create(context, scriptPath);
   context.console = console;
   context.window = context;
-  context.WebPage = options => new WebPage(browser, scriptPath, options);
+  context.WebPage = options => new WebPage(ensureBrowser(), scriptPath, options);
 
   vm.createContext(context);
 
@@ -104,5 +101,15 @@ function createPhantomContext(browser, scriptPath, argv) {
     filename: 'bootstrap.js'
   })(nativeExports);
   return context;
+
+  function ensureBrowser() {
+    if (!browser) {
+      browser = await(puppeteer.launch({
+        headless: argv.headless,
+        args: ['--no-sandbox']
+      }));
+    }
+    return browser;
+  }
 }
 

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-const {Browser} = require('puppeteer');
-const browser = new Browser();
+const puppeteer = require('puppeteer');
 
 (async() => {
 
+const browser = await puppeteer.launch();
 const page = await browser.newPage();
 await page.goto('https://news.ycombinator.com', {waitUntil: 'networkidle'});
 // page.pdf() is currently supported only in headless mode.

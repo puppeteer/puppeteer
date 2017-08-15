@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-module.exports = {
-  Browser: require('./lib/Browser')
-};
+module.exports = require('./lib/Puppeteer');
