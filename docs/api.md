@@ -1,4 +1,4 @@
-# Puppeteer API v<!-- GEN:version -->0.1.0<!-- GEN:stop-->
+# Puppeteer API v<!-- GEN:version -->0.9.0<!-- GEN:stop-->
 
 ##### Table of Contents
 
@@ -316,7 +316,7 @@ const crypto = require('crypto');
 puppeteer.launch().then(async browser => {
   let page = await browser.newPage();
   page.on('console', console.log);
-  await page.setInPageCallback('md5', text => crypto.createHash('md5').update(text).digest('hex'));
+  await page.addBinding('md5', text => crypto.createHash('md5').update(text).digest('hex'));
   await page.evaluate(async () => {
     // use window.md5 to compute hashes
     let myString = 'PUPPETEER';
@@ -336,7 +336,7 @@ const fs = require('fs');
 puppeteer.launch().then(async browser => {
   let page = await browser.newPage();
   page.on('console', console.log);
-  await page.setInPageCallback('readfile', async filePath => {
+  await page.addBinding('readfile', async filePath => {
     return new Promise((resolve, reject) => {
       fs.readFile(filePath, 'utf8', (err, text) => {
         if (err)
