@@ -139,3 +139,9 @@ other frameworks could adopt Puppeteer as their foundational layer.
 - Grow the adoption of headless/automated browser testing.
 - Help dogfood new DevTools Protocol features...and catch bugs!
 - Learn more about the pain points of automated browser testing and help fill those gaps.
+
+#### Q: How does Puppeteer compare with other headless Chrome projects?
+ 
+The past few months have brought [several new libraries for automating headless Chrome](https://medium.com/@kensoh/chromeless-chrominator-chromy-navalia-lambdium-ghostjs-autogcd-ef34bcd26907). As the team authoring the underlying DevTools Protocol, we're excited to witness and support this flourishing ecosystem.
+
+We've reached out to a number of these projects to see if there are opportunities for collaboration, and we're happy to do what we can to help.
