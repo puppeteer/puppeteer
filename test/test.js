@@ -183,9 +183,9 @@ describe('Page', function() {
       let result = await page.evaluate(() => Promise.resolve(8 * 7));
       expect(result).toBe(56);
     }));
-    it('should work from-inside inPageCallback', SX(async function() {
+    it('should work from-inside an exposed function', SX(async function() {
       // Setup inpage callback, which calls Page.evaluate
-      await page.addBinding('callController', async function(a, b) {
+      await page.exposeFunction('callController', async function(a, b) {
         return await page.evaluate((a, b) => a * b, a, b);
       });
       let result = await page.evaluate(async function() {
@@ -752,9 +752,9 @@ describe('Page', function() {
     }));
   });
 
-  describe('Page.addBinding', function() {
+  describe('Page.exposeFunction', function() {
     it('should work', SX(async function() {
-      await page.addBinding('compute', function(a, b) {
+      await page.exposeFunction('compute', function(a, b) {
         return a * b;
       });
       let result = await page.evaluate(async function() {
@@ -763,7 +763,7 @@ describe('Page', function() {
       expect(result).toBe(36);
     }));
     it('should survive navigation', SX(async function() {
-      await page.addBinding('compute', function(a, b) {
+      await page.exposeFunction('compute', function(a, b) {
         return a * b;
       });
 
@@ -774,7 +774,7 @@ describe('Page', function() {
       expect(result).toBe(36);
     }));
     it('should await returned promise', SX(async function() {
-      await page.addBinding('compute', function(a, b) {
+      await page.exposeFunction('compute', function(a, b) {
         return Promise.resolve(a * b);
       });
 

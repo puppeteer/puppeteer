@@ -27,13 +27,13 @@
     + [event: 'requestfinished'](#event-requestfinished)
     + [event: 'response'](#event-response)
     + [page.$(selector)](#pageselector)
-    + [page.addBinding(name, puppeteerFunction)](#pageaddbindingname-puppeteerfunction)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
     + [page.emulate(options)](#pageemulateoptions)
     + [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
     + [page.evaluateOnNewDocument(pageFunction, ...args)](#pageevaluateonnewdocumentpagefunction-args)
+    + [page.exposeFunction(name, puppeteerFunction)](#pageexposefunctionname-puppeteerfunction)
     + [page.focus(selector)](#pagefocusselector)
     + [page.frames()](#pageframes)
     + [page.goBack(options)](#pagegobackoptions)
@@ -135,19 +135,19 @@ The following is a typical example of using a Puppeteer to drive automation:
 const puppeteer = require('puppeteer');
 puppeteer.launch().then(async browser => {
   let page = await browser.newPage();
-  await page.goto('https://google.com');
+  await page.goto('https://www.google.com');
   // other actions...
   browser.close();
 });
 ```
 
 #### puppeteer.connect(options)
-- `options` <[Object]>  Set of options to connect to the browser. Can have the following fields:
-  - `remoteDebuggingURL` <[string]> a remote debugging URL to connect to.
+- `options` <[Object]>
+  - `remoteDebuggingURL` <[string]> a [remote debugging URL](#browserremotedebuggingurl) to connect to.
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
-- returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
+- returns: <[Promise]<[Browser]>>
 
-This method could be used to connect to already running browser instance.
+This methods attaches Puppeteer to an existing Chromium instance.
 
 #### puppeteer.launch([options])
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
@@ -159,17 +159,15 @@ This method could be used to connect to already running browser instance.
   - `dumpio` <[boolean]> Whether to pipe browser process stdout and stderr into `process.stdout` and `process.stderr`. Defaults to `false`.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
 
-The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process gets closed.
+The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process is closed.
 
-> **Note** Puppeteer works best with bundled version of Chromium, and there's no guarantee it would work properly with any other version. Use `executablePath` option with extreme caution.
+> **Note** Puppeteer works best with the version of Chromium it is bundled with. There is no guarantee it will work with any other version. Use `executablePath` option with extreme caution.
 
 ### class: Browser
 
-Browser manages a browser instance, creating it with a predefined
-settings, opening and closing pages. Instantiating Browser class does
-not necessarily result in launching browser; the instance will be launched when the need will arise.
+A Browser is created when Puppeteer connects to a Chromium instance, either through [`puppeteer.launch`](#puppeteerlaunchoptions) or [`puppeteer.connect`](#puppeteerconnectoptions).
 
-A typical scenario of using [Browser] is opening a new page and navigating it to a desired URL:
+An example of using a [Browser] to create a [Page]:
 ```js
 const puppeteer = require('puppeteer');
 
@@ -180,7 +178,6 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
-
 #### browser.close()
 
 Closes browser with all the pages (if any were opened). The browser object itself is considered to be disposed and could not be used anymore.
@@ -189,20 +186,20 @@ Closes browser with all the pages (if any were opened). The browser object itsel
 - returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.
 
 #### browser.remoteDebuggingURL()
-- returns: <[string]> A URL that could be used to start debugging this browser instance.
+- returns: <[string]> A URL for debugging this browser instance.
 
-Remote debugging url could be used as an argument to the [puppeteer.connect](#puppeteerconnect).
+Remote debugging url is as an argument to the [puppeteer.connect](#puppeteerconnect).
 
 #### browser.version()
-- returns: <[Promise]<[string]>> String describing browser version. For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is `Chrome/61.0.3153.0`.
+- returns: <[Promise]<[string]>> For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is similar to `Chrome/61.0.3153.0`.
 
-> **NOTE** the format of browser.version() is not fixed and might change with future releases of the library.
+> **NOTE** the format of browser.version() might change with future releases of Chromium.
 
 ### class: Page
 
-Page provides methods to interact with browser page. Page could be thought about as a browser tab, so one [Browser] instance might have multiple [Page] instances.
+Page provides methods to interact with a single tab in Chromium. One [Browser] instance might have multiple [Page] instances.
 
-An example of creating a page, navigating it to a URL and saving screenshot as `screenshot.png`:
+This example creates a page, navigates it to a URL, and then saves a screenshot:
 ```js
 const puppeteer = require('puppeteer');
 
@@ -217,9 +214,9 @@ puppeteer.launch().then(async browser => {
 #### event: 'console'
 - <[string]>
 
-Emitted when a page calls one of console API methods, e.g. `console.log` or `console.dir`.
+Emitted when JavaScript on the page calls one of console API methods, e.g. `console.log` or `console.dir`. Also emitted if the page throws an error or a warning.
 
-If multiple arguments are passed over to the console API call, these arguments are dispatched in an event.
+The arguments passed into `console.log` appear as arguments on the event handler.
 
 An example of handling `console` event:
 ```js
@@ -233,7 +230,7 @@ page.evaluate(() => console.log(5, 'hello', {foo: 'bar'}));
 #### event: 'dialog'
 - <[Dialog]>
 
-Emitted when a JavaScript dialog, such as `alert`, `prompt`, `confirm` or `beforeunload`, gets opened on the page. Puppeteer can take action to the dialog via dialog's [accept](#dialogacceptprompttext) or [dismiss](#dialogdismiss) methods.
+Emitted when a JavaScript dialog appears, such as `alert`, `prompt`, `confirm` or `beforeunload`. Puppeteer can respond to the dialog via [Dialog]'s [accept](#dialogacceptprompttext) or [dismiss](#dialogdismiss) methods.
 
 #### event: 'error'
 - <[Error]>
@@ -245,42 +242,42 @@ Emitted when the page crashes.
 #### event: 'frameattached'
 - <[Frame]>
 
-Emitted when a frame gets attached.
+Emitted when a frame is attached.
 
 #### event: 'framedetached'
 - <[Frame]>
 
-Emitted when a frame gets detached.
+Emitted when a frame is detached.
 
 #### event: 'framenavigated'
 - <[Frame]>
 
-Emitted when a frame committed navigation.
+Emitted when a frame is navigated to a new url.
 
 #### event: 'load'
 
-Emitted when a page's `load` event was dispatched.
+Emitted when the JavaScriot [`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load) event is dispatched.
 
 #### event: 'pageerror'
-- <[string]>
+- <[string]> The exception message
 
-Emitted when an unhandled exception happens on the page. The only argument of the event holds the exception message.
+Emitted when an unhandled exception happens on the page.
 
 #### event: 'request'
 - <[Request]>
 
-Emitted when a page issues a request. The [request] object is a read-only object.
+Emitted when a page issues a request. The [request] object is read-only.
 In order to intercept and mutate requests, see `page.setRequestInterceptionEnabled`.
 
 #### event: 'requestfailed'
 - <[Request]>
 
-Emitted when a request is failed.
+Emitted when a request fails, for example by timing out.
 
 #### event: 'requestfinished'
 - <[Request]>
 
-Emitted when a request is successfully finished.
+Emitted when a request finishes successfully.
 
 #### event: 'response'
 - <[Response]>
@@ -289,78 +286,17 @@ Emitted when a [response] is received.
 
 #### page.$(selector)
 - `selector` <[string]> Selector to query page for
-- returns: <[Promise]<[ElementHandle]>> Promise which resolves to ElementHandle pointing to the page element.
+- returns: <[Promise]<[ElementHandle]>>
 
-The method queries page for the selector. If there's no such element on the page, the method will resolve to `null`.
+The method runs `document.querySelector` on the page. If no element matches the selector, the return value resolve to `null`.
 
 Shortcut for [page.mainFrame().$(selector)](#frameselector).
 
-#### page.addBinding(name, puppeteerFunction)
-- `name` <[string]> Name of the binding on window object
-- `puppeteerFunction` <[function]> Callback function which will be called in Puppeteer's context.
-- returns: <[Promise]> Promise which resolves with the result of `puppeteerFunction`.
-
-The method adds a function called `name` on `window` object.
-When called, the function executes `puppeteerFunction` function in puppeteer context and returns
-a promise that resolves with the puppeteer's result.
-
-If the `puppeteerFunction` returns a promise, it would be awaited.
-
-> **NOTE** All the bindings installed via the `page.addBinding` survive navigations.
-
-An example of adding `window.md5` binding to the page:
-```js
-const puppeteer = require('puppeteer');
-const crypto = require('crypto');
-
-puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
-  page.on('console', console.log);
-  await page.addBinding('md5', text => crypto.createHash('md5').update(text).digest('hex'));
-  await page.evaluate(async () => {
-    // use window.md5 to compute hashes
-    let myString = 'PUPPETEER';
-    let myHash = await window.md5(myString);
-    console.log(`md5 of ${myString} is ${myHash}`);
-  });
-  browser.close();
-});
-```
-
-An example of adding `window.readfile` binding to the page:
-
-```js
-const puppeteer = require('puppeteer');
-const fs = require('fs');
-
-puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
-  page.on('console', console.log);
-  await page.addBinding('readfile', async filePath => {
-    return new Promise((resolve, reject) => {
-      fs.readFile(filePath, 'utf8', (err, text) => {
-        if (err)
-          reject(err);
-        else
-          resolve(text);
-      });
-    });
-  });
-  await page.evaluate(async () => {
-    // use window.readfile to read contents of a file
-    let content = await window.readfile('/etc/hosts');
-    console.log(content);
-  });
-  browser.close();
-});
-
-```
-
 #### page.addScriptTag(url)
-- `url` <[string]> Url of a script to be added
+- `url` <[string]> Sets the url of the `<script>` tag
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
 
-Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScript could be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
+Adds a `<script>` tag into the page with the desired url. Alternatively, JavaScript could be injected to the page via [`page.injectFile`](#pageinjectfilefilepath) method.
 
 Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
 
@@ -371,25 +307,31 @@ Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
   - `clickCount` <[number]> defaults to 1
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
-- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. Promise gets rejected if there's no element matching `selector`.
+- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. The Promise will be rejected if there is no element matching `selector`.
 
 Shortcut for [page.mainFrame().click(selector[, options])](#frameclickselector-options).
 
 #### page.close()
-- returns: <[Promise]> Returns promise which resolves when page gets closed.
+- returns: <[Promise]>
 
 #### page.emulate(options)
 - `options` <[Object]>
-  - `viewport` <[Object]> viewport as described in [`page.setViewport`](#pagesetviewportpath) method.
-  - `userAgent` <[string]> user agent string
-- returns: <[Promise]> Promise which resolves when emulation is performed.
+  - `viewport` <[Object]>
+    - `width` <[number]> Specifies the page width in pixels.
+    - `height` <[number]> Specifies the page height in pixels.
+    - `deviceScaleFactor` <[number]> Specify device scale factor (could be though of as dpr). Defaults to `1`.
+    - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
+    - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
+    - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
+  - `userAgent` <[string]>
+- returns: <[Promise]>
 
 Emulates given device metrics and user agent. This method is a shortcut for calling two methods:
 - [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
 - [page.setViewport(viewport)](#pagesetviewportviewport)
 
 To aid emulation, puppeteer provides a list of device descriptors which could be obtained via the `require('puppeteer/DeviceDescriptors')` command.
-Below is an example of emulating iPhone 6 in puppeteer:
+Below is an example of emulating an iPhone 6 in puppeteer:
 ```js
 const puppeteer = require('puppeteer');
 const devices = require('puppeteer/DeviceDescriptors');
@@ -398,7 +340,7 @@ const iPhone = devices['iPhone 6'];
 puppeteer.launch().then(async browser => {
   let page = await browser.newPage();
   await page.emulate(iPhone);
-  await page.goto('https://google.com');
+  await page.goto('https://www.google.com');
   // other actions...
   browser.close();
 });
@@ -407,9 +349,9 @@ puppeteer.launch().then(async browser => {
 List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js).
 
 #### page.evaluate(pageFunction, ...args)
-- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
-- `...args` <...[string]> Arguments to pass to  `pageFunction`
-- returns: <[Promise]<[Object]>> Promise which resolves to function return value
+- `pageFunction` <[function]|[string]> Function to be evaluated in the page context
+- `...args` Arguments to pass to `pageFunction`
+- returns: <[Promise]> Resolves to the return value of `pageFunction`
 
 If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
 
@@ -435,18 +377,78 @@ Shortcut for [page.mainFrame().evaluate(pageFunction, ...args)](#frameevaluatepa
 
 #### page.evaluateOnNewDocument(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
-- `...args` <...[string]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[Object]>> Promise which resolves to function
+- `...args` Arguments to pass to `pageFunction`
+- returns: <[Promise]>
 
 Adds a function which would be invoked in one of the following scenarios:
-- whenever the page gets navigated
-- whenever the child frame gets attached or navigated. In this case, the function gets invoked in the context of the newly attached frame
+- whenever the page is navigated
+- whenever the child frame is attached or navigated. In this case, the function is invoked in the context of the newly attached frame
 
 The function is invoked after the document was created but before any of its scripts were run. This is useful to amend JavaScript environment, e.g. to seed [Math.random](https://github.com/GoogleChrome/puppeteer/blob/master/examples/unrandomize.js)
 
+#### page.exposeFunction(name, puppeteerFunction)
+- `name` <[string]> Name of the function on the window object
+- `puppeteerFunction` <[function]> Callback function which will be called in Puppeteer's context.
+- returns: <[Promise]> Promise which resolves with the result of `puppeteerFunction`.
+
+The method adds a function called `name` on the `window` object.
+When called, the function executes `puppeteerFunction` in node.js and returns a [Promise] which resolves to the return value of `puppeteerFunction`.
+
+If the `puppeteerFunction` returns a [Promise], it will be awaited.
+
+> **NOTE** Functions installed via `page.exposeFunction` survive navigations.
+
+An example of adding an `md5` function into the page:
+```js
+const puppeteer = require('puppeteer');
+const crypto = require('crypto');
+
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
+  page.on('console', console.log);
+  await page.exposeFunction('md5', text => crypto.createHash('md5').update(text).digest('hex'));
+  await page.evaluate(async () => {
+    // use window.md5 to compute hashes
+    let myString = 'PUPPETEER';
+    let myHash = await window.md5(myString);
+    console.log(`md5 of ${myString} is ${myHash}`);
+  });
+  browser.close();
+});
+```
+
+An example of adding a `window.readfile` function into the page:
+
+```js
+const puppeteer = require('puppeteer');
+const fs = require('fs');
+
+puppeteer.launch().then(async browser => {
+  let page = await browser.newPage();
+  page.on('console', console.log);
+  await page.exposeFunction('readfile', async filePath => {
+    return new Promise((resolve, reject) => {
+      fs.readFile(filePath, 'utf8', (err, text) => {
+        if (err)
+          reject(err);
+        else
+          resolve(text);
+      });
+    });
+  });
+  await page.evaluate(async () => {
+    // use window.readfile to read contents of a file
+    let content = await window.readfile('/etc/hosts');
+    console.log(content);
+  });
+  browser.close();
+});
+
+```
+
 #### page.focus(selector)
-- `selector` <[string]> A query [selector] of element to focus. If there are multiple elements satisfying the selector, the first will be focused.
-- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. Promise gets rejected if there's no element matching `selector`.
+- `selector` <[string]> A query [selector] of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
+- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. The promise will be rejected if there is no element matching `selector`.
 
 Shortcut for [page.mainFrame().focus(selector)](#framefocusselector).
 
@@ -456,7 +458,7 @@ Shortcut for [page.mainFrame().focus(selector)](#framefocusselector).
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
+  - `waitUntil` <[string]> When to consider a navigation finished, defaults to `load`. Could be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout`ms.
   - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
@@ -586,7 +588,7 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout`ms.
+    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
   - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
   - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
@@ -606,11 +608,11 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 
 #### page.setContent(html)
 - `html` <[string]> HTML markup to assign to the page.
-- returns: <[Promise]> Promise which resolves when the content is successfully assigned.
+- returns: <[Promise]>
 
 #### page.setExtraHTTPHeaders(headers)
 - `headers` <[Map]> A map of additional http headers to be sent with every request.
-- returns: <[Promise]> Promise which resolves when additional headers are installed
+- returns: <[Promise]>
 
 The extra HTTP headers will be sent with every request the page initiates.
 
@@ -619,9 +621,9 @@ The extra HTTP headers will be sent with every request the page initiates.
 
 #### page.setRequestInterceptionEnabled(value)
 - `value` <[boolean]> Whether to enable request interception.
-- returns: <[Promise]> Promise which resolves when request interception change is applied.
+- returns: <[Promise]>
 
-Activating request interception enables  `request.abort` and `request.continue`.
+Activating request interception enables `request.abort` and `request.continue`.
 
 An example of a naïve request interceptor which aborts all image requests:
 ```js
@@ -645,21 +647,18 @@ puppeteer.launch().then(async browser => {
 - returns: <[Promise]> Promise which resolves when the user agent is set.
 
 #### page.setViewport(viewport)
-- `viewport` <[Object]>  An object with two fields:
-	- `width` <[number]> Specify page's width in pixels.
-	- `height` <[number]> Specify page's height in pixels.
-	- `deviceScaleFactor` <[number]> Specify device scale factor (could be though of as dpr). Defaults to `1`.
-	- `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
-	- `hasTouch`<[boolean]> Specify if viewport supports touch events. Defaults to `false`
-	- `isLandscape` <[boolean]> Specify if viewport is in the landscape mode. Defaults to `false`.
-- returns: <[Promise]> Promise which resolves when the dimensions are updated.
+- `viewport` <[Object]>
+  - `width` <[number]> Specifies the page width in pixels.
+  - `height` <[number]> Specifies the page height in pixels.
+  - `deviceScaleFactor` <[number]> Specify device scale factor (could be though of as dpr). Defaults to `1`.
+  - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
+  - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
+  - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
+- returns: <[Promise]>
 
-> **NOTE** in certain cases, setting viewport will reload the page so that the `isMobile` or `hasTouch` options will be able to interfere in project loading.
+> **NOTE** in certain cases, setting viewport will reload the page in order to set the `isMobile` or `hasTouch` properties.
 
-The page's viewport size defines page's dimensions, observable from page via `window.innerWidth / window.innerHeight`. The viewport size defines a size of page
-screenshot (unless a `fullPage` option is given).
-
-In case of multiple pages in one browser, each page can have its own viewport size.
+In the case of multiple pages in a single browser, each page can have its own viewport size.
 
 #### page.title()
 - returns: <[Promise]<[string]>> Returns page's title.
@@ -673,7 +672,7 @@ Shortcut for [page.mainFrame().title()](#frametitle).
 - `text` <[string]> A text to type into a focused element.
 - `options` <[Object]>
   - `delay` <[number]> Time to wait between key presses in milliseconds. Defaults to 0.
-- returns: <[Promise]> Promise which resolves when the text has been successfully typed.
+- returns: <[Promise]>
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
 
@@ -697,7 +696,13 @@ Shortcut for [page.mainFrame().uploadFile(selector, ...filePaths)](#frameuploadf
 This is a shortcut for [page.mainFrame().url()](#frameurl)
 
 #### page.viewport()
-- returns: <[Object]>  An object with the save fields as described in [page.setViewport](#pagesetviewportviewport)
+- returns: <[Object]>
+  - `width` <[number]> Specifies the page width in pixels.
+  - `height` <[number]> Specifies the page height in pixels.
+  - `deviceScaleFactor` <[number]> Specify device scale factor (could be though of as dpr). Defaults to `1`.
+  - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
+  - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
+  - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
 
 #### page.waitFor(selectorOrFunctionOrTimeout[, options])
 - `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
@@ -740,13 +745,13 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options, ...args])
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout`ms.
+    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
   - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
   - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.waitForSelector(selector[, options])
-- `selector` <[string]> CSS selector of awaited element,
+- `selector` <[string]> A query [selector] of an element to wait for,
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
@@ -1054,7 +1059,7 @@ puppeteer.launch().then(async browser => {
 ```
 
 #### frame.waitForSelector(selector[, options])
-- `selector` <[string]> CSS selector of awaited element,
+- `selector` <[string]> A query [selector] of an element to wait for,
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
@@ -1230,22 +1235,22 @@ Contains the URL of the response.
 [function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function "Function"
 [number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type "Number"
 [Object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object "Object"
-[Page]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-page "Page"
+[Page]: #class-page "Page"
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
 [stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable "stream.Readable"
 [Error]: https://nodejs.org/api/errors.html#errors_class_error "Error"
-[Frame]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-frame "Frame"
+[Frame]: #class-frame "Frame"
 [iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols "Iterator"
-[Response]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-response  "Response"
-[Request]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-request  "Request"
-[Browser]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-browser  "Browser"
-[Body]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-body  "Body"
+[Response]: #class-response  "Response"
+[Request]: #class-request  "Request"
+[Browser]: #class-browser  "Browser"
+[Body]: #class-body  "Body"
 [Element]: https://developer.mozilla.org/en-US/docs/Web/API/element "Element"
-[Keyboard]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-keyboard "Keyboard"
-[Dialog]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-dialog  "Dialog"
-[Mouse]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-mouse "Mouse"
+[Keyboard]: #class-keyboard "Keyboard"
+[Dialog]: #class-dialog  "Dialog"
+[Mouse]: #class-mouse "Mouse"
 [Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map "Map"
 [selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors "selector"
-[Tracing]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-tracing "Tracing"
-[ElementHandle]: https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-element "ElementHandle"
+[Tracing]: #class-tracing "Tracing"
+[ElementHandle]: #class-element "ElementHandle"
