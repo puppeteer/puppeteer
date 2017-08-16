@@ -1,0 +1,16 @@
+# exclude phantomjs tests
+third_party/phantomjs/
+# exclude phantom_shim project
+phantom_shim
+# exclude all tests
+test
+
+# repeats from .gitignore
+node_modules
+.local-chromium
+.dev_profile*
+.DS_Store
+*.swp
+*.pyc
+.vscode
+package-lock.json
