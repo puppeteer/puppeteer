@@ -26,7 +26,7 @@ Most things that you can do manually in the browser can be done using Puppeteer!
 To use Puppeteer in your project, run:
 ```
 yarn add puppeteer
-# or "npm i puppeteer"
+# or "npm i --save-dev puppeteer"
 ```
 
 > **Note**: When you install Puppeteer, it downloads a recent version of Chromium (~71Mb Mac, ~90Mb Linux, ~110Mb Win) that is guaranteed to work with the API. 
