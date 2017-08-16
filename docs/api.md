@@ -632,7 +632,7 @@ const puppeteer = require('puppeteer');
 puppeteer.launch().then(async browser => {
   let page = await browser.newPage();
   await page.setRequestInterceptionEnabled(true);
-  page.on('request', request => {
+  page.on('request', interceptedRequest => {
     if (interceptedRequest.url.endsWith('.png') || interceptedRequest.url.endsWith('.jpg'))
       interceptedRequest.abort();
     else
