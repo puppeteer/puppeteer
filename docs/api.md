@@ -214,7 +214,7 @@ puppeteer.launch().then(async browser => {
 #### event: 'console'
 - <[string]>
 
-Emitted when JavaScript on the page calls one of console API methods, e.g. `console.log` or `console.dir`. Also emitted if the page throws an error or a warning.
+Emitted when JavaScript within the page calls one of console API methods, e.g. `console.log` or `console.dir`. Also emitted if the page throws an error or a warning.
 
 The arguments passed into `console.log` appear as arguments on the event handler.
 
@@ -261,7 +261,7 @@ Emitted when the JavaScriot [`load`](https://developer.mozilla.org/en-US/docs/We
 #### event: 'pageerror'
 - <[string]> The exception message
 
-Emitted when an unhandled exception happens on the page.
+Emitted when an uncaught exception happens within the page.
 
 #### event: 'request'
 - <[Request]>
@@ -288,24 +288,24 @@ Emitted when a [response] is received.
 - `selector` <[string]> Selector to query page for
 - returns: <[Promise]<[ElementHandle]>>
 
-The method runs `document.querySelector` on the page. If no element matches the selector, the return value resolve to `null`.
+The method runs `document.querySelector` within the page. If no element matches the selector, the return value resolve to `null`.
 
 Shortcut for [page.mainFrame().$(selector)](#frameselector).
 
 #### page.addScriptTag(url)
-- `url` <[string]> Sets the url of the `<script>` tag
-- returns: <[Promise]> Promise which resolves as the script gets added and loads.
+- `url` <[string]> Url of the `<script>` tag
+- returns: <[Promise]> which resolves when the script's onload fires.
 
-Adds a `<script>` tag into the page with the desired url. Alternatively, JavaScript could be injected to the page via [`page.injectFile`](#pageinjectfilefilepath) method.
+Adds a `<script>` tag into the page with the desired url. Alternatively, a local JavaScript file could be injected via [`page.injectFile`](#pageinjectfilefilepath) method.
 
 Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
 
 
 #### page.click(selector[, options])
-- `selector` <[string]> A query [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
+- `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
-  - `clickCount` <[number]> defaults to 1
+  - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. The Promise will be rejected if there is no element matching `selector`.
 
@@ -317,8 +317,8 @@ Shortcut for [page.mainFrame().click(selector[, options])](#frameclickselector-o
 #### page.emulate(options)
 - `options` <[Object]>
   - `viewport` <[Object]>
-    - `width` <[number]> Specifies the page width in pixels.
-    - `height` <[number]> Specifies the page height in pixels.
+    - `width` <[number]> page width in pixels.
+    - `height` <[number]> page height in pixels.
     - `deviceScaleFactor` <[number]> Specify device scale factor (could be though of as dpr). Defaults to `1`.
     - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
     - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
@@ -391,7 +391,7 @@ The function is invoked after the document was created but before any of its scr
 - `puppeteerFunction` <[function]> Callback function which will be called in Puppeteer's context.
 - returns: <[Promise]> Promise which resolves with the result of `puppeteerFunction`.
 
-The method adds a function called `name` on the `window` object.
+The method adds a function called `name` on the page's `window` object.
 When called, the function executes `puppeteerFunction` in node.js and returns a [Promise] which resolves to the return value of `puppeteerFunction`.
 
 If the `puppeteerFunction` returns a [Promise], it will be awaited.
@@ -447,7 +447,7 @@ puppeteer.launch().then(async browser => {
 ```
 
 #### page.focus(selector)
-- `selector` <[string]> A query [selector] of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
+- `selector` <[string]> A [selector] of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. The promise will be rejected if there is no element matching `selector`.
 
 Shortcut for [page.mainFrame().focus(selector)](#framefocusselector).
@@ -460,7 +460,7 @@ Shortcut for [page.mainFrame().focus(selector)](#framefocusselector).
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
   - `waitUntil` <[string]> When to consider a navigation finished, defaults to `load`. Could be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout`ms.
+    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
   - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
   - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
@@ -473,7 +473,7 @@ Navigate to the previous page in history.
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout`ms.
+    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
   - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
   - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
@@ -502,7 +502,7 @@ The `page.goto` will throw an error if:
 
 
 #### page.hover(selector)
-- `selector` <[string]> A query [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
+- `selector` <[string]> A [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
 
 Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
@@ -648,8 +648,8 @@ puppeteer.launch().then(async browser => {
 
 #### page.setViewport(viewport)
 - `viewport` <[Object]>
-  - `width` <[number]> Specifies the page width in pixels.
-  - `height` <[number]> Specifies the page height in pixels.
+  - `width` <[number]> page width in pixels.
+  - `height` <[number]> page height in pixels.
   - `deviceScaleFactor` <[number]> Specify device scale factor (could be though of as dpr). Defaults to `1`.
   - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
   - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
@@ -684,7 +684,7 @@ page.type('World', {delay: 100}); // Types slower, like a user
 ```
 
 #### page.uploadFile(selector, ...filePaths)
-- `selector` <[string]> A query [selector] to a file input
+- `selector` <[string]> A [selector] to a file input
 - `...filePaths` <[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]> Promise which resolves when the value is set.
 
@@ -697,8 +697,8 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 
 #### page.viewport()
 - returns: <[Object]>
-  - `width` <[number]> Specifies the page width in pixels.
-  - `height` <[number]> Specifies the page height in pixels.
+  - `width` <[number]> page width in pixels.
+  - `height` <[number]> page height in pixels.
   - `deviceScaleFactor` <[number]> Specify device scale factor (could be though of as dpr). Defaults to `1`.
   - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
   - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
@@ -751,7 +751,7 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options, ...args])
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.waitForSelector(selector[, options])
-- `selector` <[string]> A query [selector] of an element to wait for,
+- `selector` <[string]> A [selector] of an element to wait for,
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
@@ -832,7 +832,7 @@ Dispatches a `keyup` event.
 - `y` <[number]>
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
-  - `clickCount` <[number]> defaults to 1
+  - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
 
@@ -841,7 +841,7 @@ Shortcut for [`mouse.move`](#mousemovexy), [`mouse.down`](#mousedownkey) and [`m
 #### mouse.down([options])
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
-  - `clickCount` <[number]> defaults to 1
+  - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
 - returns: <[Promise]>
 
 Dispatches a `mousedown` event.
@@ -856,7 +856,7 @@ Dispatches a `mousemove` event.
 #### mouse.up([options])
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
-  - `clickCount` <[number]> defaults to 1
+  - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
 - returns: <[Promise]>
 
 Dispatches a `mouseup` event.
@@ -951,7 +951,7 @@ puppeteer.launch().then(async browser => {
 - `selector` <[string]> Selector to query page for
 - returns: <[Promise]<[ElementHandle]>> Promise which resolves to ElementHandle pointing to the page element.
 
-The method queries page for the selector. If there's no such element on the page, the method will resolve to `null`.
+The method queries page for the selector. If there's no such element within the page, the method will resolve to `null`.
 
 
 #### frame.addScriptTag(url)
@@ -1014,7 +1014,7 @@ If the name is empty, returns the id attribute instead.
 - returns: <[Promise]<[string]>> Returns page's title.
 
 #### frame.uploadFile(selector, ...filePaths)
-- `selector` <[string]> A query [selector] to a file input
+- `selector` <[string]> A [selector] to a file input
 - `...filePaths` <[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]> Promise which resolves when the value is set.
 
@@ -1059,7 +1059,7 @@ puppeteer.launch().then(async browser => {
 ```
 
 #### frame.waitForSelector(selector[, options])
-- `selector` <[string]> A query [selector] of an element to wait for,
+- `selector` <[string]> A [selector] of an element to wait for,
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
@@ -1103,7 +1103,7 @@ ElementHandle prevents DOM element from garbage collection unless the handle is 
 #### elementHandle.click([options])
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
-  - `clickCount` <[number]> defaults to 1
+  - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the element is successfully clicked. Promise gets rejected if the element is detached from DOM.
 
@@ -1254,3 +1254,4 @@ Contains the URL of the response.
 [selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors "selector"
 [Tracing]: #class-tracing "Tracing"
 [ElementHandle]: #class-element "ElementHandle"
+[UIEvent.detail]: https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail "UIEvent.detail"
