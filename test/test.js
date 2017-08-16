@@ -504,6 +504,7 @@ describe('Page', function() {
           console.dir('calling console.dir');
           console.warn('calling console.warn');
           console.error('calling console.error');
+          console.log(Promise.resolve('should not wait until resolved!'));
         }),
         // Wait for 5 events to hit.
         waitForEvents(page, 'console', 5)
@@ -514,6 +515,7 @@ describe('Page', function() {
         'calling console.dir',
         'calling console.warn',
         'calling console.error',
+        'Promise',
       ]);
     }));
     it('should not fail for window object', SX(async function() {
