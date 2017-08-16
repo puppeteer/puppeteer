@@ -29,7 +29,7 @@ yarn add puppeteer
 # or "npm i puppeteer"
 ```
 
-> **Note**: When you install Puppeteer, it downloads a recent version of Chromium (~71Mb Mac, ~90Mb Linux, ~110Mb Win) that is guaranteed to work with the API. 
+> **Note**: When you install Puppeteer, it downloads a recent version of Chromium (~71Mb Mac, ~90Mb Linux, ~110Mb Win) that is guaranteed to work with the API.
 
 ### Usage
 
@@ -141,7 +141,73 @@ other frameworks could adopt Puppeteer as their foundational layer.
 - Learn more about the pain points of automated browser testing and help fill those gaps.
 
 #### Q: How does Puppeteer compare with other headless Chrome projects?
- 
+
 The past few months have brought [several new libraries for automating headless Chrome](https://medium.com/@kensoh/chromeless-chrominator-chromy-navalia-lambdium-ghostjs-autogcd-ef34bcd26907). As the team authoring the underlying DevTools Protocol, we're excited to witness and support this flourishing ecosystem.
 
 We've reached out to a number of these projects to see if there are opportunities for collaboration, and we're happy to do what we can to help.
+
+#### Q: Chromium won't run on my remote server. How do I make it work?
+
+##### Dependencies
+
+Servers still need to have the proper dependencies for running a normal Chrome instance.
+
+<details>
+<summary>Debian Dependencies</summary>
+
+```shell
+sudo apt install gconf-service \
+libasound2 \
+libatk1.0-0 \
+libc6 \
+libcairo2 \
+libcups2 \
+libdbus-1-3 \
+libexpat1 \
+libfontconfig1 \
+libgcc1 \
+libgconf-2-4 \
+libgdk-pixbuf2.0-0 \
+libglib2.0-0 \
+libgtk-3-0 \
+libnspr4 \
+libpango-1.0-0 \
+libpangocairo-1.0-0 \
+libstdc++6 \
+libx11-6 \
+libx11-xcb1 \
+libxcb1 \
+libxcomposite1 \
+libxcursor1 \
+libxdamage1 \
+libxext6 \
+libxfixes3 \
+libxi6 \
+libxrandr2 \
+libxrender1 \
+libxss1 \
+libxtst6 \
+ca-certificates \
+fonts-liberation \
+libappindicator1 \
+libnss3 \
+lsb-release \
+xdg-utils \
+wget
+```
+
+</details>
+
+##### Sandbox
+
+If running as a root user, you need to launch Chromium with the `--no-sandbox` argument.
+
+```javascript
+let browser = puppeteer.launch({
+  args: [
+    '--no-sandbox',
+  ]
+});
+```
+
+This is only required when running as root (such as in a docker container.) It extremely decreases the security of the chromium instance for regular users.
