@@ -11,8 +11,8 @@
   * [class: Browser](#class-browser)
     + [browser.close()](#browserclose)
     + [browser.newPage()](#browsernewpage)
-    + [browser.protocolWSEndpoint()](#browserprotocolwsendpoint)
     + [browser.version()](#browserversion)
+    + [browser.wsEndpoint()](#browserwsendpoint)
   * [class: Page](#class-page)
     + [event: 'console'](#event-console)
     + [event: 'dialog'](#event-dialog)
@@ -143,7 +143,7 @@ puppeteer.launch().then(async browser => {
 
 #### puppeteer.connect(options)
 - `options` <[Object]>
-  - `remoteDebuggingURL` <[string]> a [remote debugging URL](#browserremotedebuggingurl) to connect to.
+  - `browserWSEndpoint` <[string]> a [browser websocket endpoint](#browserwsendpoint) to connect to.
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
 - returns: <[Promise]<[Browser]>>
 
@@ -185,15 +185,16 @@ Closes browser with all the pages (if any were opened). The browser object itsel
 #### browser.newPage()
 - returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.
 
-#### browser.remoteDebuggingURL()
-- returns: <[string]> A URL for debugging this browser instance.
-
-Remote debugging url is as an argument to the [puppeteer.connect](#puppeteerconnect).
-
 #### browser.version()
 - returns: <[Promise]<[string]>> For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is similar to `Chrome/61.0.3153.0`.
 
 > **NOTE** the format of browser.version() might change with future releases of Chromium.
+
+#### browser.wsEndpoint()
+- returns: <[string]> Browser websocket url.
+
+Browser websocket endpoint which could be used as an argument to
+[puppeteer.connect](#puppeteerconnect).
 
 ### class: Page
 
