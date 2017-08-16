@@ -21,14 +21,18 @@ const puppeteer = require('puppeteer');
 const browser = await puppeteer.launch();
 const page = await browser.newPage();
 await page.setRequestInterceptionEnabled(true);
-page.on('request', request => {
+
+function imageInterceptor(request) {
   if (/\.(png|jpg|jpeg$)/.test(request.url))
     request.abort();
   else
     request.continue();
-});
+}
+
+page.on('request', imageInterceptor);
 await page.goto('https://bbc.com');
 await page.screenshot({path: 'news.png', fullPage: true});
+page.removeListener('request', imageInterceptor);
 
 browser.close();
 
