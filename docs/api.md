@@ -99,9 +99,9 @@
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
   * [class: ElementHandle](#class-elementhandle)
     + [elementHandle.click([options])](#elementhandleclickoptions)
+    + [elementHandle.dispose()](#elementhandledispose)
     + [elementHandle.evaluate(pageFunction, ...args)](#elementhandleevaluatepagefunction-args)
     + [elementHandle.hover()](#elementhandlehover)
-    + [elementHandle.release()](#elementhandlerelease)
   * [class: Request](#class-request)
     + [request.abort()](#requestabort)
     + [request.continue([overrides])](#requestcontinueoverrides)
@@ -1098,7 +1098,7 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
-ElementHandle prevents DOM element from garbage collection unless the handle is [released](#elementhandlerelease). ElementHandles are auto-released when their origin frame gets navigated.
+ElementHandle prevents DOM element from garbage collection unless the handle is [disposed](#elementhandledispose). ElementHandles are auto-disposed when their origin frame gets navigated.
 
 #### elementHandle.click([options])
 - `options` <[Object]>
@@ -1109,6 +1109,11 @@ ElementHandle prevents DOM element from garbage collection unless the handle is 
 
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
 If the element is detached from DOM, the method throws an error.
+
+#### elementHandle.dispose()
+- returns: <[Promise]> Promise which resolves when the element handle is successfully disposed.
+
+The `elementHandle.dispose` method stops referencing the element handle.
 
 #### elementHandle.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]> Function to be evaluated in browser context
@@ -1123,25 +1128,6 @@ The function will be passed in the element ifself as a first argument.
 
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
 If the element is detached from DOM, the method throws an error.
-
-
-#### elementHandle.release()
-- returns: <[Promise]> Promise which resolves when the element handle is successfully released.
-
-The `elementHandle.release` method stops referencing the element handle.
-
-```js
-const {Browser} = require('puppeteer');
-const browser = new Browser();
-browser.newPage().then(async page =>
-  await page.setContent('<div>hello</div>');
-  let element = await page.$('div');
-  let text = element.evaluate((e, suffix) => e.textContent + ' ' + suffix, 'world!');
-  console.log(text); // "hello world!"
-  browser.close();
-});
-```
-
 
 ### class: Request
 
