@@ -1920,6 +1920,102 @@ describe('Page', function() {
       await page.tracing.stop();
     }));
   });
+
+  describe('Cookies', function() {
+    afterEach(SX(async function(){
+      let cookies = await page.cookies();
+      for (let cookie of cookies)
+        await page.deleteCookie(cookie);
+    }));
+    it('should set and get cookies', SX(async function(){
+      await page.goto(PREFIX + '/grid.html');
+      expect(await page.cookies()).toEqual([]);
+      await page.evaluate(() => {
+        document.cookie = 'username=John Doe';
+      });
+      expect(await page.cookies()).toEqual([{
+        name: 'username',
+        value: 'John Doe',
+        domain: 'localhost',
+        path: '/',
+        expires: 0,
+        size: 16,
+        httpOnly: false,
+        secure: false,
+        session: true }
+      ]);
+      await page.setCookie({
+        name: 'password',
+        value: '123456'
+      });
+      expect(await page.evaluate('document.cookie')).toBe('username=John Doe; password=123456');
+      expect(await page.cookies()).toEqual([{
+        name: 'password',
+        value: '123456',
+        domain: 'localhost',
+        path: '/',
+        expires: 0,
+        size: 14,
+        httpOnly: false,
+        secure: false,
+        session: true
+      }, {
+        name: 'username',
+        value: 'John Doe',
+        domain: 'localhost',
+        path: '/',
+        expires: 0,
+        size: 16,
+        httpOnly: false,
+        secure: false,
+        session: true
+      }]);
+    }));
+
+    it('should set a cookie with a path', SX(async function(){
+      await page.goto(PREFIX + '/grid.html');
+      await page.setCookie({
+        name: 'gridcookie',
+        value: 'GRID',
+        path: '/grid.html'
+      });
+      expect(await page.cookies()).toEqual([{
+        name: 'gridcookie',
+        value: 'GRID',
+        domain: 'localhost',
+        path: '/grid.html',
+        expires: 0,
+        size: 14,
+        httpOnly: false,
+        secure: false,
+        session: true
+      }]);
+      expect(await page.evaluate('document.cookie')).toBe('gridcookie=GRID');
+      await page.goto(PREFIX + '/empty.html');
+      expect(await page.cookies()).toEqual([]);
+      expect(await page.evaluate('document.cookie')).toBe('');
+      await page.goto(PREFIX + '/grid.html');
+      expect(await page.evaluate('document.cookie')).toBe('gridcookie=GRID');
+    }));
+
+
+    it('should delete a cookie', SX(async function(){
+      await page.goto(PREFIX + '/grid.html');
+      await page.setCookie({
+        name: 'cookie1',
+        value: '1'
+      }, {
+        name: 'cookie2',
+        value: '2'
+      }, {
+        name: 'cookie3',
+        value: '3'
+      });
+      expect(await page.evaluate('document.cookie')).toBe('cookie1=1; cookie2=2; cookie3=3');
+      page.deleteCookie({name: 'cookie2'});
+      expect(await page.evaluate('document.cookie')).toBe('cookie1=1; cookie3=3');
+    }));
+  });
 });
 
 if (process.env.COVERAGE) {
