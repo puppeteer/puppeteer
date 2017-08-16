@@ -1100,18 +1100,18 @@ describe('Page', function() {
       }
       expect(error.message).toContain('Session closed');
     }));
-    it('should throw if underlying element was released', SX(async function() {
+    it('should throw if underlying element was disposed', SX(async function() {
       await page.setContent('<section>39</section>');
       let element = await page.$('section');
       expect(element).toBeTruthy();
-      await element.release();
+      await element.dispose();
       let error = null;
       try {
         await element.evaluate(e => e.textContent);
       } catch (e) {
         error = e;
       }
-      expect(error.message).toContain('ElementHandle is released');
+      expect(error.message).toContain('ElementHandle is disposed');
     }));
   });
 
