@@ -161,7 +161,7 @@ This methods attaches Puppeteer to an existing Chromium instance.
 
 The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process is closed.
 
-> **Note** Puppeteer works best with the version of Chromium it is bundled with. There is no guarantee it will work with any other version. Use `executablePath` option with extreme caution.
+> **Note** Puppeteer works best with the version of Chromium it is bundled with. There is no guarantee it will work with any other version. Use `executablePath` option with extreme caution.  If Google Chrome (rather than Chromium) is preferred, a [Chrome Canary](https://www.google.com/chrome/browser/canary.html) or [Dev Channel](https://www.chromium.org/getting-involved/dev-channel) build is suggested.
 
 ### class: Browser
 
