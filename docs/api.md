@@ -1119,8 +1119,8 @@ This method scrolls element into view if needed, and then uses [page.mouse](#pag
 If the element is detached from DOM, the method throws an error.
 
 #### elementHandle.uploadFile(...filePaths)
-- `...filePaths` <[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-- returns: <[Promise]> Promise which resolves when the value is set.
+- `...filePaths` <...[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+- returns: <[Promise]>
 
 This method expects `elementHandle` to point to an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
 
