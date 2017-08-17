@@ -1637,6 +1637,12 @@ describe('Page', function() {
       expect(await page.evaluate(() => window.innerWidth)).toBe(375);
       expect(await page.evaluate(() => navigator.userAgent)).toContain('Safari');
     }));
+    it('should emulate background color', SX(async function() {
+      await page.setViewport({ width: 500, height: 500, defaultBackgroundColor: { r: 255, g: 128, b: 64, a: 0.25 } });
+      await page.goto(EMPTY_PAGE);
+      let screenshot = await page.screenshot();
+      expect(screenshot).toBeGolden('emulate-background.png');
+    }));
   });
 
   describe('Page.evaluateOnNewDocument', function() {

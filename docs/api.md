@@ -318,12 +318,17 @@ Shortcut for [page.mainFrame().click(selector[, options])](#frameclickselector-o
 #### page.emulate(options)
 - `options` <[Object]>
   - `viewport` <[Object]>
-    - `width` <[number]> page width in pixels.
-    - `height` <[number]> page height in pixels.
+    - `width` <[number]> page width in pixels. **required**
+    - `height` <[number]> page height in pixels. **required**
     - `deviceScaleFactor` <[number]> Specify device scale factor (could be thought of as dpr). Defaults to `1`.
     - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
     - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
     - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
+    - `defaultBackgroundColor` <[Object]>
+      - `r` <[number]> The red component, in the [0-255] range.
+      - `g` <[number]> The green component, in the [0-255] range.
+      - `b` <[number]> The blue component, in the [0-255] range.
+      - `a` <[number]> The alpha component, in the [0-1] range. Defaults to `1`
   - `userAgent` <[string]>
 - returns: <[Promise]>
 
@@ -649,12 +654,17 @@ puppeteer.launch().then(async browser => {
 
 #### page.setViewport(viewport)
 - `viewport` <[Object]>
-  - `width` <[number]> page width in pixels.
-  - `height` <[number]> page height in pixels.
+  - `width` <[number]> page width in pixels. **required**
+  - `height` <[number]> page height in pixels. **required**
   - `deviceScaleFactor` <[number]> Specify device scale factor (could be thought of as dpr). Defaults to `1`.
   - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
   - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
   - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
+  - `defaultBackgroundColor` <[Object]>
+    - `r` <[number]> The red component, in the [0-255] range.
+    - `g` <[number]> The green component, in the [0-255] range.
+    - `b` <[number]> The blue component, in the [0-255] range.
+    - `a` <[number]> The alpha component, in the [0-1] range. Defaults to `1`
 - returns: <[Promise]>
 
 > **NOTE** in certain cases, setting viewport will reload the page in order to set the `isMobile` or `hasTouch` properties.
@@ -700,10 +710,15 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - returns: <[Object]>
   - `width` <[number]> page width in pixels.
   - `height` <[number]> page height in pixels.
-  - `deviceScaleFactor` <[number]> Specify device scale factor (could be though of as dpr). Defaults to `1`.
+  - `deviceScaleFactor` <[number]> Specify device scale factor (could be thought of as dpr). Defaults to `1`.
   - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
   - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
   - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
+  - `defaultBackgroundColor` <[Object]>
+    - `r` <[number]> The red component, in the [0-255] range.
+    - `g` <[number]> The green component, in the [0-255] range.
+    - `b` <[number]> The blue component, in the [0-255] range.
+    - `a` <[number]> The alpha component, in the [0-1] range. Defaults to `1`
 
 #### page.waitFor(selectorOrFunctionOrTimeout[, options])
 - `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
