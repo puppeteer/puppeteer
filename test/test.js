@@ -332,6 +332,12 @@ describe('Page', function() {
       expect(error).toBeTruthy();
       expect(error.message).toContain('Cannot poll with non-positive interval');
     }));
+    it('should return the success value', SX(async function() {
+      const watchdog = page.waitForFunction(() => window.__FOO);
+      let success = await page.evaluate(() => window.__FOO = 'hit');
+      await watchdog;
+      expect(success).toBe('hit');
+    }));
   });
 
   describe('Frame.waitForSelector', function() {
