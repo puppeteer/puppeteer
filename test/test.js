@@ -2016,7 +2016,7 @@ describe('Page', function() {
       expect(await page.evaluate('document.cookie')).toBe('cookie1=1; cookie3=3');
     }));
 
-    fit('should set a cookie on a different domain', SX(async function() {
+    it('should set a cookie on a different domain', SX(async function() {
       await page.goto(PREFIX + '/grid.html');
       await page.setCookie({name:'example-cookie', value:'best',  url:'https://www.example.com'});
       expect(await page.evaluate('document.cookie')).toBe('');
