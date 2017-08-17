@@ -605,6 +605,7 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
         - `y` <[number]> y-coordinate of top-left corner of clip area
         - `width` <[number]> width of clipping area
         - `height` <[number]> height of clipping area
+    - `noBackground` <[boolean]> When true, hides default white background and allows capturing screenshots with transparency.
 - returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot
 
 #### page.setContent(html)
