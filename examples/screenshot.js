@@ -23,9 +23,6 @@ const page = await browser.newPage();
 await page.goto('http://example.com');
 await page.screenshot({path: 'example.png'});
 
-await page.setContent('TRANSPARENT BACKGROUND');
-await page.screenshot({path: 'transparent.png', noBackground: true});
-
 browser.close();
 
 })();
