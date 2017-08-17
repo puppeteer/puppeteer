@@ -257,7 +257,7 @@ Emitted when a frame is navigated to a new url.
 
 #### event: 'load'
 
-Emitted when the JavaScriot [`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load) event is dispatched.
+Emitted when the JavaScript [`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load) event is dispatched.
 
 #### event: 'pageerror'
 - <[string]> The exception message
