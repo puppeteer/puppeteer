@@ -1113,6 +1113,13 @@ describe('Page', function() {
       }
       expect(error.message).toContain('ElementHandle is disposed');
     }));
+    it('should return ElementHandles', SX(async function(){
+      await page.setContent('<section><div></div></section>');
+      let section = await page.evaluate(() => document.querySelector('section'));
+      let div = await section.evaluate(e => e.children[0]);
+      expect(await section.evaluate(e => e.tagName)).toBe('SECTION');
+      expect(await div.evaluate(e => e.tagName)).toBe('DIV');
+    }));
   });
 
   describe('ElementHandle.click', function() {
