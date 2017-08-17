@@ -33,3 +33,4 @@ await page.screenshot({path: 'news.png', fullPage: true});
 browser.close();
 
 })();
+
