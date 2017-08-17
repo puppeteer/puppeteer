@@ -351,8 +351,8 @@ List of all available devices is available in the source code: [DeviceDescriptor
 
 #### page.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context
-- `...args` Arguments to pass to `pageFunction`
-- returns: <[Promise]> Resolves to the return value of `pageFunction`
+- `...args` <...[Serializable]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Serializable]>> Resolves to the return value of `pageFunction`
 
 If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
 
@@ -378,7 +378,7 @@ Shortcut for [page.mainFrame().evaluate(pageFunction, ...args)](#frameevaluatepa
 
 #### page.evaluateOnNewDocument(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
-- `...args` Arguments to pass to `pageFunction`
+- `...args` <...[Serializable]> Arguments to pass to `pageFunction`
 - returns: <[Promise]>
 
 Adds a function which would be invoked in one of the following scenarios:
@@ -390,7 +390,7 @@ The function is invoked after the document was created but before any of its scr
 #### page.exposeFunction(name, puppeteerFunction)
 - `name` <[string]> Name of the function on the window object
 - `puppeteerFunction` <[function]> Callback function which will be called in Puppeteer's context.
-- returns: <[Promise]> Promise which resolves with the result of `puppeteerFunction`.
+- returns: <[Promise]>
 
 The method adds a function called `name` on the page's `window` object.
 When called, the function executes `puppeteerFunction` in node.js and returns a [Promise] which resolves to the return value of `puppeteerFunction`.
@@ -686,7 +686,7 @@ page.type('World', {delay: 100}); // Types slower, like a user
 
 #### page.uploadFile(selector, ...filePaths)
 - `selector` <[string]> A [selector] to a file input
-- `...filePaths` <[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+- `...filePaths` <...[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]> Promise which resolves when the value is set.
 
 Shortcut for [page.mainFrame().uploadFile(selector, ...filePaths)](#frameuploadfileselector-filepaths).
@@ -725,7 +725,7 @@ Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options])](
     - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
     - `mutation` - to execute `pageFunction` on every DOM mutation.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
-- `...args` <...[Object]> Arguments to pass to  `pageFunction`
+- `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
 
 The `waitForFunction` could be used to observe viewport size change:
@@ -966,8 +966,8 @@ Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScri
 
 #### frame.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
-- `...args` <...[string]> Arguments to pass to  `pageFunction`
-- returns: <[Promise]<[Object]>> Promise which resolves to function return value
+- `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
 
 If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
 
@@ -1016,7 +1016,7 @@ If the name is empty, returns the id attribute instead.
 
 #### frame.uploadFile(selector, ...filePaths)
 - `selector` <[string]> A [selector] to a file input
-- `...filePaths` <[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+- `...filePaths` <...[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]> Promise which resolves when the value is set.
 
 #### frame.url()
@@ -1043,7 +1043,7 @@ This method behaves differently with respect to the type of the first parameter:
     - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
     - `mutation` - to execute `pageFunction` on every DOM mutation.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
-- `...args` <...[Object]> Arguments to pass to  `pageFunction`
+- `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
 
 The `waitForFunction` could be used to observe viewport size change:
@@ -1118,8 +1118,8 @@ The `elementHandle.dispose` method stops referencing the element handle.
 
 #### elementHandle.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]> Function to be evaluated in browser context
-- `...args` <...[string]> Arguments to pass to  `pageFunction`
-- returns: <[Promise]<[Object]>> Promise which resolves to function return value
+- `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
 
 If the function, passed to the `elementHandle.evaluate`, returns a [Promise], then `elementHandle.evaluate` would wait for the promise to resolve and return it's value.
 The function will be passed in the element ifself as a first argument.
@@ -1215,7 +1215,6 @@ Contains the status code of the response (e.g., 200 for a success).
 
 Contains the URL of the response.
 
-
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
 [Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer "Buffer"
@@ -1242,3 +1241,4 @@ Contains the URL of the response.
 [Tracing]: #class-tracing "Tracing"
 [ElementHandle]: #class-element "ElementHandle"
 [UIEvent.detail]: https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail "UIEvent.detail"
+[Serializable]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify "Serializable"
