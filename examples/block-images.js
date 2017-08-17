@@ -22,7 +22,7 @@ const browser = await puppeteer.launch();
 const page = await browser.newPage();
 await page.setRequestInterceptionEnabled(true);
 page.on('request', request => {
-  if (/\.(png|jpg|jpeg$)/.test(request.url))
+  if (/\.(png|jpg|jpeg|gif|webp)$/.test(request.url))
     request.abort();
   else
     request.continue();
@@ -33,4 +33,3 @@ await page.screenshot({path: 'news.png', fullPage: true});
 browser.close();
 
 })();
-
