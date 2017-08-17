@@ -342,7 +342,7 @@ If there's no element matching `selector`, the method throws an error.
 Gets the full HTML contents of the page, including the doctype.
 
 #### page.cookies(...urls)
-- `...urls` <[string]>
+- `...urls` <...[string]>
 - returns: <[Promise]<[Array]<[Object]>>>
   - `name` <[string]>
   - `value` <[string]>
@@ -357,7 +357,7 @@ If no URLs are specified, this method returns cookies related to the current pag
 If URLs are specified, only cookies for those URLs are returned.
 
 #### page.deleteCookie(...cookies)
-- `...cookies` <[Object]>
+- `...cookies` <...[Object]>
   - `name` <[string]> **required**
   - `url` <[string]>
   - `domain` <[string]>
@@ -680,7 +680,7 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 - returns: <[Promise]>
 
 #### page.setCookie(...cookies)
-- `...cookies` <[Object]>
+- `...cookies` <...[Object]>
   - `name` <[string]> **required**
   - `value` <[string]> **required**
   - `url` <[string]>
