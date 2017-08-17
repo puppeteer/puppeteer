@@ -15,7 +15,7 @@
  */
 
 const os = require('os');
-const https = require('https');
+const request = require('request');
 const fs = require('fs');
 const path = require('path');
 const extract = require('extract-zip');
@@ -62,21 +62,16 @@ module.exports = {
   canDownloadRevision: function(platform, revision) {
     console.assert(downloadURLs[platform], 'Unknown platform: ' + platform);
     let url = URL.parse(util.format(downloadURLs[platform], revision));
-    let options = {
-      method: 'HEAD',
-      host: url.host,
-      path: url.pathname,
-    };
     let resolve;
     let promise = new Promise(x => resolve = x);
-    let request = https.request(options, response => {
+    let req = request.head(url, response => {
       resolve(response.statusCode === 200);
     });
-    request.on('error', error => {
+    req.on('error', error => {
       console.error(error);
       resolve(false);
     });
-    request.end();
+    req.end();
     return promise;
   },
 
@@ -184,7 +179,8 @@ function parseFolderPath(folderPath) {
 function downloadFile(url, destinationPath, progressCallback) {
   let fulfill, reject;
   let promise = new Promise((x, y) => { fulfill = x; reject = y; });
-  let request = https.get(url, response => {
+  let req = request.get(url)
+  .on("response", response => {
     if (response.statusCode !== 200) {
       let error = new Error(`Download failed: server returned code ${response.statusCode}. URL: ${url}`);
       // consume response data to free up memory
@@ -195,12 +191,12 @@ function downloadFile(url, destinationPath, progressCallback) {
     let file = fs.createWriteStream(destinationPath);
     file.on('finish', () => fulfill());
     file.on('error', error => reject(error));
-    response.pipe(file);
+    req.pipe(file);
     let totalBytes = parseInt(response.headers['content-length'], 10);
     if (progressCallback)
-      response.on('data', onData.bind(null, totalBytes));
+      req.on('data', onData.bind(null, totalBytes));
   });
-  request.on('error', error => reject(error));
+  req.on('error', error => reject(error));
   return promise;
 
   function onData(totalBytes, chunk) {
