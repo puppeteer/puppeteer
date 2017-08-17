@@ -1813,10 +1813,10 @@ describe('Page', function() {
       await Promise.all(pages.map(page => page.close()));
     }));
     it('should allow transparency', SX(async function() {
-       await page.setViewport({ width: 100, height: 100 });
-       await page.goto(EMPTY_PAGE);
-       let screenshot = await page.screenshot({noBackground:true});
-       expect(screenshot).toBeGolden('transparent.png');
+      await page.setViewport({ width: 100, height: 100 });
+      await page.goto(EMPTY_PAGE);
+      let screenshot = await page.screenshot({noBackground:true});
+      expect(screenshot).toBeGolden('transparent.png');
     }));
   });
 
