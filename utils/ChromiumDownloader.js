@@ -18,10 +18,10 @@ const os = require('os');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
-const extract = require('extract-zip');
 const util = require('util');
 const URL = require('url');
 const removeRecursive = require('rimraf');
+const download = require('download');
 
 const DOWNLOADS_FOLDER = path.join(__dirname, '..', '.local-chromium');
 
@@ -90,19 +90,10 @@ module.exports = {
     let url = downloadURLs[platform];
     console.assert(url, `Unsupported platform: ${platform}`);
     url = util.format(url, revision);
-    let zipPath = path.join(DOWNLOADS_FOLDER, `download-${platform}-${revision}.zip`);
     let folderPath = getFolderPath(platform, revision);
     if (fs.existsSync(folderPath))
       return;
-    try {
-      if (!fs.existsSync(DOWNLOADS_FOLDER))
-        fs.mkdirSync(DOWNLOADS_FOLDER);
-      await downloadFile(url, zipPath, progressCallback);
-      await extractZip(zipPath, folderPath);
-    } finally {
-      if (fs.existsSync(zipPath))
-        fs.unlinkSync(zipPath);
-    }
+    await downloadFile(url, folderPath, progressCallback);
   },
 
   /**
@@ -182,37 +173,22 @@ function parseFolderPath(folderPath) {
  * @return {!Promise}
  */
 function downloadFile(url, destinationPath, progressCallback) {
-  let fulfill, reject;
-  let promise = new Promise((x, y) => { fulfill = x; reject = y; });
-  let request = https.get(url, response => {
-    if (response.statusCode !== 200) {
+  let request = download(url, destinationPath, {extract: true});
+  request.on('response', res => {
+    if (res.statusCode !== 200) {
       let error = new Error(`Download failed: server returned code ${response.statusCode}. URL: ${url}`);
-      // consume response data to free up memory
-      response.resume();
-      reject(error);
-      return;
+      res.resume();
+      throw error;
     }
-    let file = fs.createWriteStream(destinationPath);
-    file.on('finish', () => fulfill());
-    file.on('error', error => reject(error));
-    response.pipe(file);
-    let totalBytes = parseInt(response.headers['content-length'], 10);
-    if (progressCallback)
-      response.on('data', onData.bind(null, totalBytes));
+
+    if (progressCallback) {
+      let totalBytes = parseInt(res.headers['content-length'], 10);
+      res.on('data', onData.bind(null, totalBytes));
+    }
   });
-  request.on('error', error => reject(error));
-  return promise;
+  return request;
 
   function onData(totalBytes, chunk) {
     progressCallback(totalBytes, chunk.length);
   }
-}
-
-/**
- * @param {string} zipPath
- * @param {string} folderPath
- * @return {!Promise<?Error>}
- */
-function extractZip(zipPath, folderPath) {
-  return new Promise(fulfill => extract(zipPath, {dir: folderPath}, fulfill));
 }
