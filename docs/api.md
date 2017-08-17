@@ -57,7 +57,6 @@
     + [page.title()](#pagetitle)
     + [page.tracing](#pagetracing)
     + [page.type(text, options)](#pagetypetext-options)
-    + [page.uploadFile(selector, ...filePaths)](#pageuploadfileselector-filepaths)
     + [page.url()](#pageurl)
     + [page.viewport()](#pageviewport)
     + [page.waitFor(selectorOrFunctionOrTimeout[, options])](#pagewaitforselectororfunctionortimeout-options)
@@ -92,7 +91,6 @@
     + [frame.name()](#framename)
     + [frame.parentFrame()](#frameparentframe)
     + [frame.title()](#frametitle)
-    + [frame.uploadFile(selector, ...filePaths)](#frameuploadfileselector-filepaths)
     + [frame.url()](#frameurl)
     + [frame.waitFor(selectorOrFunctionOrTimeout[, options])](#framewaitforselectororfunctionortimeout-options)
     + [frame.waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args)
@@ -102,6 +100,7 @@
     + [elementHandle.dispose()](#elementhandledispose)
     + [elementHandle.evaluate(pageFunction, ...args)](#elementhandleevaluatepagefunction-args)
     + [elementHandle.hover()](#elementhandlehover)
+    + [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
   * [class: Request](#class-request)
     + [request.abort()](#requestabort)
     + [request.continue([overrides])](#requestcontinueoverrides)
@@ -684,13 +683,6 @@ page.type('Hello'); // Types instantly
 page.type('World', {delay: 100}); // Types slower, like a user
 ```
 
-#### page.uploadFile(selector, ...filePaths)
-- `selector` <[string]> A [selector] to a file input
-- `...filePaths` <[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-- returns: <[Promise]> Promise which resolves when the value is set.
-
-Shortcut for [page.mainFrame().uploadFile(selector, ...filePaths)](#frameuploadfileselector-filepaths).
-
 #### page.url()
 - returns: <[string]>
 
@@ -1014,11 +1006,6 @@ If the name is empty, returns the id attribute instead.
 #### frame.title()
 - returns: <[Promise]<[string]>> Returns page's title.
 
-#### frame.uploadFile(selector, ...filePaths)
-- `selector` <[string]> A [selector] to a file input
-- `...filePaths` <[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-- returns: <[Promise]> Promise which resolves when the value is set.
-
 #### frame.url()
 - returns: <[string]>
 
@@ -1129,6 +1116,12 @@ The function will be passed in the element ifself as a first argument.
 
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
 If the element is detached from DOM, the method throws an error.
+
+#### elementHandle.uploadFile(...filePaths)
+- `...filePaths` <...[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+- returns: <[Promise]>
+
+This method expects `elementHandle` to point to an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
 
 ### class: Request
 
