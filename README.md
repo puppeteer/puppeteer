@@ -43,12 +43,12 @@ const puppeteer = require('puppeteer');
 
 (async() => {
 
-const browser = await puppeteer.launch();
-const page = await browser.newPage();
-await page.goto('https://example.com');
-await page.screenshot({path: 'example.png'});
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto('https://example.com');
+  await page.screenshot({path: 'example.png'});
 
-browser.close();
+  browser.close();
 })();
 ```
 
@@ -61,12 +61,12 @@ const puppeteer = require('puppeteer');
 
 (async() => {
 
-const browser = await puppeteer.launch();
-const page = await browser.newPage();
-await page.goto('https://news.ycombinator.com', {waitUntil: 'networkidle'});
-await page.pdf({path: 'hn.pdf', format: 'A4'});
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto('https://news.ycombinator.com', {waitUntil: 'networkidle'});
+  await page.pdf({path: 'hn.pdf', format: 'A4'});
 
-browser.close();
+  browser.close();
 })();
 ```
 
