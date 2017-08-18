@@ -535,6 +535,14 @@ describe('Page', function() {
       let response = await page.goto('about:blank');
       expect(response).toBe(null);
     }));
+    it('should navigate to anchor URL', SX(async function() {
+      let sectionName = '';
+      page.on('console', arg => sectionName = arg);
+      await page.goto(PREFIX + '/anchor-routing.html');
+      let response = await page.goto(page.url() + '#section3');
+      expect(response).toBe(null);
+      expect(sectionName).toBe('#section3');
+    }));
     it('should fail when navigating to bad url', SX(async function() {
       let error = null;
       try {
@@ -725,13 +733,23 @@ describe('Page', function() {
   describe('Page.waitForNavigation', function() {
     it('should work', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      const [result] = await Promise.all([
+      const [response] = await Promise.all([
         page.waitForNavigation(),
         page.evaluate(url => window.location.href = url, PREFIX + '/grid.html')
       ]);
-      const response = await result;
       expect(response.ok).toBe(true);
       expect(response.url).toContain('grid.html');
+    }));
+    it('should work with anchor navigation', SX(async function() {
+      let sectionName = '';
+      page.on('console', arg => sectionName = arg);
+      await page.goto(PREFIX + '/anchor-routing.html');
+      const [response] = await Promise.all([
+        page.waitForNavigation(),
+        page.evaluate(() => window.location.hash = 'section2')
+      ]);
+      expect(response).toBe(null);
+      expect(sectionName).toBe('#section2');
     }));
   });
 
@@ -750,6 +768,21 @@ describe('Page', function() {
 
       response = await page.goForward();
       expect(response).toBe(null);
+    }));
+    it('should navigate between anchor urls', SX(async function() {
+      await page.goto(PREFIX + '/anchor-routing.html');
+      await page.goto(PREFIX + '/anchor-routing.html#section2');
+      await page.goto(PREFIX + '/anchor-routing.html#section4');
+
+      let sectionName = '';
+      page.on('console', arg => sectionName = arg);
+      let response = await page.goBack();
+      expect(response).toBe(null);
+      expect(sectionName).toBe('#section2');
+
+      response = await page.goForward();
+      expect(response).toBe(null);
+      expect(sectionName).toBe('#section4');
     }));
   });
 
