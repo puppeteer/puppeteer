@@ -355,7 +355,7 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       let frame = page.mainFrame();
       let added = false;
-      frame.waitForSelector('div').then(() => added = true);
+      let watchdog = frame.waitForSelector('div').then(() => added = true);
       // run nop function..
       await frame.evaluate(() => 42);
       // .. to be sure that waitForSelector promise is not resolved yet.
@@ -363,6 +363,7 @@ describe('Page', function() {
       await frame.evaluate(addElement, 'br');
       expect(added).toBe(false);
       await frame.evaluate(addElement, 'div');
+      await watchdog;
       expect(added).toBe(true);
     }));
 
@@ -1171,16 +1172,13 @@ describe('Page', function() {
     it('should upload the file', SX(async function(){
       await page.goto(PREFIX + '/input/fileupload.html');
       const filePath = path.relative(process.cwd(), __dirname + '/assets/file-to-upload.txt');
-      await page.uploadFile('input', filePath);
-      expect(await page.evaluate(() => {
-        let input = document.querySelector('input');
-        return input.files[0].name;
-      })).toBe('file-to-upload.txt');
-      expect(await page.evaluate(() => {
-        let input = document.querySelector('input');
+      let input = await page.$('input');
+      await input.uploadFile(filePath);
+      expect(await input.evaluate(e => e.files[0].name)).toBe('file-to-upload.txt');
+      expect(await input.evaluate(e => {
         let reader = new FileReader();
         let promise = new Promise(fulfill => reader.onload = fulfill);
-        reader.readAsText(input.files[0]);
+        reader.readAsText(e.files[0]);
         return promise.then(() => reader.result);
       })).toBe('contents of the file');
     }));

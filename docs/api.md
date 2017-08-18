@@ -57,7 +57,6 @@
     + [page.title()](#pagetitle)
     + [page.tracing](#pagetracing)
     + [page.type(text, options)](#pagetypetext-options)
-    + [page.uploadFile(selector, ...filePaths)](#pageuploadfileselector-filepaths)
     + [page.url()](#pageurl)
     + [page.viewport()](#pageviewport)
     + [page.waitFor(selectorOrFunctionOrTimeout[, options])](#pagewaitforselectororfunctionortimeout-options)
@@ -92,7 +91,6 @@
     + [frame.name()](#framename)
     + [frame.parentFrame()](#frameparentframe)
     + [frame.title()](#frametitle)
-    + [frame.uploadFile(selector, ...filePaths)](#frameuploadfileselector-filepaths)
     + [frame.url()](#frameurl)
     + [frame.waitFor(selectorOrFunctionOrTimeout[, options])](#framewaitforselectororfunctionortimeout-options)
     + [frame.waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args)
@@ -102,6 +100,7 @@
     + [elementHandle.dispose()](#elementhandledispose)
     + [elementHandle.evaluate(pageFunction, ...args)](#elementhandleevaluatepagefunction-args)
     + [elementHandle.hover()](#elementhandlehover)
+    + [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
   * [class: Request](#class-request)
     + [request.abort()](#requestabort)
     + [request.continue([overrides])](#requestcontinueoverrides)
@@ -257,7 +256,7 @@ Emitted when a frame is navigated to a new url.
 
 #### event: 'load'
 
-Emitted when the JavaScriot [`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load) event is dispatched.
+Emitted when the JavaScript [`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load) event is dispatched.
 
 #### event: 'pageerror'
 - <[string]> The exception message
@@ -320,7 +319,7 @@ Shortcut for [page.mainFrame().click(selector[, options])](#frameclickselector-o
   - `viewport` <[Object]>
     - `width` <[number]> page width in pixels.
     - `height` <[number]> page height in pixels.
-    - `deviceScaleFactor` <[number]> Specify device scale factor (could be though of as dpr). Defaults to `1`.
+    - `deviceScaleFactor` <[number]> Specify device scale factor (could be thought of as dpr). Defaults to `1`.
     - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
     - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
     - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
@@ -651,7 +650,7 @@ puppeteer.launch().then(async browser => {
 - `viewport` <[Object]>
   - `width` <[number]> page width in pixels.
   - `height` <[number]> page height in pixels.
-  - `deviceScaleFactor` <[number]> Specify device scale factor (could be though of as dpr). Defaults to `1`.
+  - `deviceScaleFactor` <[number]> Specify device scale factor (could be thought of as dpr). Defaults to `1`.
   - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
   - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
   - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
@@ -683,13 +682,6 @@ To press a special key, use [`page.press`](#pagepresskey-options).
 page.type('Hello'); // Types instantly
 page.type('World', {delay: 100}); // Types slower, like a user
 ```
-
-#### page.uploadFile(selector, ...filePaths)
-- `selector` <[string]> A [selector] to a file input
-- `...filePaths` <...[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-- returns: <[Promise]> Promise which resolves when the value is set.
-
-Shortcut for [page.mainFrame().uploadFile(selector, ...filePaths)](#frameuploadfileselector-filepaths).
 
 #### page.url()
 - returns: <[string]>
@@ -1014,11 +1006,6 @@ If the name is empty, returns the id attribute instead.
 #### frame.title()
 - returns: <[Promise]<[string]>> Returns page's title.
 
-#### frame.uploadFile(selector, ...filePaths)
-- `selector` <[string]> A [selector] to a file input
-- `...filePaths` <...[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-- returns: <[Promise]> Promise which resolves when the value is set.
-
 #### frame.url()
 - returns: <[string]>
 
@@ -1130,6 +1117,12 @@ The function will be passed in the element ifself as a first argument.
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
 If the element is detached from DOM, the method throws an error.
 
+#### elementHandle.uploadFile(...filePaths)
+- `...filePaths` <...[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+- returns: <[Promise]>
+
+This method expects `elementHandle` to point to an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
+
 ### class: Request
 
 Whenever the page sends a request, the following events are emitted by puppeteer's page:
@@ -1239,6 +1232,6 @@ Contains the URL of the response.
 [Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map "Map"
 [selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors "selector"
 [Tracing]: #class-tracing "Tracing"
-[ElementHandle]: #class-element "ElementHandle"
+[ElementHandle]: #class-elementhandle "ElementHandle"
 [UIEvent.detail]: https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail "UIEvent.detail"
 [Serializable]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Description "Serializable"
