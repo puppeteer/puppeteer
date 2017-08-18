@@ -31,6 +31,7 @@
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
     + [page.emulate(options)](#pageemulateoptions)
+    + [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
     + [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
     + [page.evaluateOnNewDocument(pageFunction, ...args)](#pageevaluateonnewdocumentpagefunction-args)
     + [page.exposeFunction(name, puppeteerFunction)](#pageexposefunctionname-puppeteerfunction)
@@ -160,7 +161,7 @@ This methods attaches Puppeteer to an existing Chromium instance.
 
 The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process is closed.
 
-> **Note** Puppeteer works best with the version of Chromium it is bundled with. There is no guarantee it will work with any other version. Use `executablePath` option with extreme caution.  If Google Chrome (rather than Chromium) is preferred, a [Chrome Canary](https://www.google.com/chrome/browser/canary.html) or [Dev Channel](https://www.chromium.org/getting-involved/dev-channel) build is suggested.
+> **NOTE** Puppeteer works best with the version of Chromium it is bundled with. There is no guarantee it will work with any other version. Use `executablePath` option with extreme caution.  If Google Chrome (rather than Chromium) is preferred, a [Chrome Canary](https://www.google.com/chrome/browser/canary.html) or [Dev Channel](https://www.chromium.org/getting-involved/dev-channel) build is suggested.
 
 ### class: Browser
 
@@ -237,7 +238,7 @@ Emitted when a JavaScript dialog appears, such as `alert`, `prompt`, `confirm` o
 
 Emitted when the page crashes.
 
-> **Note** `error` event has a special meaning in Node, see [error events](https://nodejs.org/api/events.html#events_error_events) for details.
+> **NOTE** `error` event has a special meaning in Node, see [error events](https://nodejs.org/api/events.html#events_error_events) for details.
 
 #### event: 'frameattached'
 - <[Frame]>
@@ -347,6 +348,10 @@ puppeteer.launch().then(async browser => {
 ```
 
 List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js).
+
+#### page.emulateMedia(mediaType)
+  - `mediaType` <[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'media'` and `null`. Passing `null` disables media emulation.
+  - returns: <[Promise]>
 
 #### page.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context
@@ -545,6 +550,14 @@ Page is guaranteed to have a main frame which persists during navigations.
     - `bottom` <[string]> Bottom margin, accepts values labeled with units.
     - `left` <[string]> Left margin, accepts values labeled with units.
 - returns: <[Promise]<[Buffer]>> Promise which resolves with PDF buffer.
+
+`page.pdf()` generates a pdf of the page with `print` css media. To generate a pdf with `screen` media, call [page.emulateMedia('screen')](#pageemulatemediamediatype) before calling `page.pdf()`:
+
+```js
+// Generates a PDF with 'screen' media type.
+await page.emulateMedia('screen');
+await page.pdf({path: 'page.pdf'});
+```
 
 The `width`, `height`, and `margin` options accept values labeled with units. Unlabeled values are treated as pixels.
 
