@@ -29,7 +29,7 @@ yarn add puppeteer
 # or "npm i puppeteer"
 ```
 
-> **Note**: When you install Puppeteer, it downloads a recent version of Chromium (~71Mb Mac, ~90Mb Linux, ~110Mb Win) that is guaranteed to work with the API. 
+> **Note**: When you install Puppeteer, it downloads a recent version of Chromium (~71Mb Mac, ~90Mb Linux, ~110Mb Win) that is guaranteed to work with the API.
 
 ### Usage
 
@@ -102,6 +102,26 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
 
 Explore the [API documentation](docs/api.md) and [examples](https://github.com/GoogleChrome/puppeteer/tree/master/examples/) to learn more.
 
+## Debugging tips
+
+1. Turn off headless mode - sometimes it's useful to turn see what the browser is
+   displaying. Instead of launching in headless mode, launch a full version of
+   Chrome using  `headless: false`:
+
+    ```js
+    const browser = await puppeteer.launch({headless: false});
+    ```
+
+1. Slow it down - the `slowMo` option slows down Puppeteer operations by the
+   specified amount of milliseconds. It's another way to help see what's going on.
+
+    ```js
+    const browser = await puppeteer.launch({
+      headless: false,
+      slowMo: 250 // slow down by 250ms
+    });
+    ```
+
 ## Contributing to Puppeteer
 
 Check out [contributing guide](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md) to get an overview of Puppeteer development.
@@ -114,7 +134,6 @@ Look for `chromium_revision` in [package.json](https://github.com/GoogleChrome/p
 
 Puppeteer bundles Chromium to ensure that the latest features it uses are guaranteed to be available. As the DevTools protocol and browser improve over time, Puppeteer will be updated to depend on newer versions of Chromium.
 
-
 #### Q: What is the difference between Puppeteer, Selenium / WebDriver, and PhantomJS?
 
 Selenium / WebDriver is a well-established cross-browser API that is useful for testing cross-browser support.
@@ -122,7 +141,6 @@ Selenium / WebDriver is a well-established cross-browser API that is useful for 
 Puppeteer works only with Chrome. However, many teams only run unit tests with a single browser (e.g. PhantomJS). In non-testing use cases, Puppeteer provides a powerful but simple API because it's only targeting one browser that enables you to rapidly develop automation scripts.
 
 Puppeteer uses the latest versions of Chromium.
-
 
 #### Q: Who maintains Puppeteer?
 
@@ -141,7 +159,7 @@ other frameworks could adopt Puppeteer as their foundational layer.
 - Learn more about the pain points of automated browser testing and help fill those gaps.
 
 #### Q: How does Puppeteer compare with other headless Chrome projects?
- 
+
 The past few months have brought [several new libraries for automating headless Chrome](https://medium.com/@kensoh/chromeless-chrominator-chromy-navalia-lambdium-ghostjs-autogcd-ef34bcd26907). As the team authoring the underlying DevTools Protocol, we're excited to witness and support this flourishing ecosystem.
 
 We've reached out to a number of these projects to see if there are opportunities for collaboration, and we're happy to do what we can to help.
