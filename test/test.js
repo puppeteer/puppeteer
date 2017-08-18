@@ -1815,7 +1815,7 @@ describe('Page', function() {
     it('should allow transparency', SX(async function() {
       await page.setViewport({ width: 100, height: 100 });
       await page.goto(EMPTY_PAGE);
-      let screenshot = await page.screenshot({noBackground:true});
+      let screenshot = await page.screenshot({omitBackground:true});
       expect(screenshot).toBeGolden('transparent.png');
     }));
   });
