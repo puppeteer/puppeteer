@@ -549,7 +549,7 @@ Page is guaranteed to have a main frame which persists during navigations.
     - `left` <[string]> Left margin, accepts values labeled with units.
 - returns: <[Promise]<[Buffer]>> Promise which resolves with PDF buffer.
 
-`page.pdf()` generates a pdf of the page with `print` css media. To get a pdf with `screen` media, use [page.emulateMedia(mediaType)](#pageemulatemediamediatype).
+`page.pdf()` generates a pdf of the page with `print` css media. To generate a pdf with `screen` media, call [page.emulateMedia('screen')](#pageemulatemediamediatype) before calling `page.pdf()`.
 
 The `width`, `height`, and `margin` options accept values labeled with units. Unlabeled values are treated as pixels.
 
