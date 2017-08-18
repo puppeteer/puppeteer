@@ -355,7 +355,7 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       let frame = page.mainFrame();
       let added = false;
-      frame.waitForSelector('div').then(() => added = true);
+      let watchdog = frame.waitForSelector('div').then(() => added = true);
       // run nop function..
       await frame.evaluate(() => 42);
       // .. to be sure that waitForSelector promise is not resolved yet.
@@ -363,6 +363,7 @@ describe('Page', function() {
       await frame.evaluate(addElement, 'br');
       expect(added).toBe(false);
       await frame.evaluate(addElement, 'div');
+      await watchdog;
       expect(added).toBe(true);
     }));
 
