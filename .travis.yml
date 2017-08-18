@@ -19,3 +19,4 @@ script:
   - yarn run lint
   - yarn run coverage
   - yarn run test-phantom
+  - yarn run test-type

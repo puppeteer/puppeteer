@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES5",
+    "strict": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "typeRoots": [
+      "../../node_modules/@types"
+    ],
+    "baseUrl": "../../",
+    "lib": [
+      "es2015"
+    ]
+  },
+  "include": [
+    "spec.ts"
+  ]
+}
