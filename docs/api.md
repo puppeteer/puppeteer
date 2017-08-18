@@ -221,8 +221,9 @@ The arguments passed into `console.log` appear as arguments on the event handler
 An example of handling `console` event:
 ```js
 page.on('console', (...args) => {
-  for (let i =0; i < args.length; ++i)
+  for (let i = 0; i < args.length; ++i) {
     console.log(`${i}: ${args[i]}`);
+  }
 });
 page.evaluate(() => console.log(5, 'hello', {foo: 'bar'}));
 ```
@@ -406,7 +407,9 @@ const crypto = require('crypto');
 puppeteer.launch().then(async browser => {
   let page = await browser.newPage();
   page.on('console', console.log);
-  await page.exposeFunction('md5', text => crypto.createHash('md5').update(text).digest('hex'));
+  await page.exposeFunction('md5', text =>
+    crypto.createHash('md5').update(text).digest('hex')
+  );
   await page.evaluate(async () => {
     // use window.md5 to compute hashes
     let myString = 'PUPPETEER';
@@ -429,10 +432,11 @@ puppeteer.launch().then(async browser => {
   await page.exposeFunction('readfile', async filePath => {
     return new Promise((resolve, reject) => {
       fs.readFile(filePath, 'utf8', (err, text) => {
-        if (err)
+        if (err) {
           reject(err);
-        else
+        } else {
           resolve(text);
+        }
       });
     });
   });
@@ -633,10 +637,14 @@ puppeteer.launch().then(async browser => {
   let page = await browser.newPage();
   await page.setRequestInterceptionEnabled(true);
   page.on('request', interceptedRequest => {
-    if (interceptedRequest.url.endsWith('.png') || interceptedRequest.url.endsWith('.jpg'))
+    if (
+      interceptedRequest.url.endsWith('.png') ||
+      interceptedRequest.url.endsWith('.jpg')
+    ) {
       interceptedRequest.abort();
-    else
+    } else {
       interceptedRequest.continue();
+    }
   });
   await page.goto('https://example.com');
   browser.close();
@@ -761,9 +769,16 @@ const puppeteer = require('puppeteer');
 puppeteer.launch().then(async browser => {
   let page = await browser.newPage();
   let currentURL;
-  page.waitForSelector('img').then(() => console.log('First URL with image: ' + currentURL));
-  for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
+  page
+    .waitForSelector('img')
+    .then(() => console.log('First URL with image: ' + currentURL));
+  for (currentURL of [
+    'https://example.com',
+    'https://google.com',
+    'https://bbc.com'
+  ]) {
     await page.goto(currentURL);
+  }
   browser.close();
 });
 ```
@@ -781,8 +796,9 @@ page.type('Hello World!');
 page.press('ArrowLeft');
 
 page.keyboard.down('Shift');
-for (let i = 0; i < ' World'.length; i++)
+for (let i = 0; i < ' World'.length; i++) {
   page.press('ArrowLeft');
+}
 page.keyboard.up('Shift');
 
 page.press('Backspace');
@@ -935,8 +951,9 @@ puppeteer.launch().then(async browser => {
 
   function dumpFrameTree(frame, indent) {
     console.log(indent + frame.url());
-    for (let child of frame.childFrames())
+    for (let child of frame.childFrames()) {
       dumpFrameTree(child, indent + '  ');
+    }
   }
 });
 ```
@@ -1065,9 +1082,16 @@ const puppeteer = require('puppeteer');
 puppeteer.launch().then(async browser => {
   let page = await browser.newPage();
   let currentURL;
-  page.waitForSelector('img').then(() => console.log('First URL with image: ' + currentURL));
-  for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
+  page
+    .waitForSelector('img')
+    .then(() => console.log('First URL with image: ' + currentURL));
+  for (currentURL of [
+    'https://example.com',
+    'https://google.com',
+    'https://bbc.com'
+  ]) {
     await page.goto(currentURL);
+  }
   browser.close();
 });
 ```
@@ -1083,7 +1107,7 @@ puppeteer.launch().then(async browser => {
   await page.goto('https://google.com');
   let inputElement = await page.$('input[type=submit]');
   await inputElement.click();
-  ...
+  // ...
 });
 ```
 
