@@ -104,7 +104,7 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
 
 ## Debugging tips
 
-1. Turn off headless mode - sometimes it's useful to turn see what the browser is
+1. Turn off headless mode - sometimes it's useful to see what the browser is
    displaying. Instead of launching in headless mode, launch a full version of
    Chrome using  `headless: false`:
 
