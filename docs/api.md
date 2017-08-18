@@ -358,7 +358,7 @@ List of all available devices is available in the source code: [DeviceDescriptor
 - `...args` <...[Serializable]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Resolves to the return value of `pageFunction`
 
-If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
+If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return its value. If the function returns an [Element], then `page.evaluate` will return an [ElementHandle].
 
 ```js
 const puppeteer = require('puppeteer');
@@ -979,7 +979,7 @@ Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScri
 - `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
 
-If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
+If the function, passed to the `page.evaluate`, returns a [Promise], then `frame.evaluate` would wait for the promise to resolve and return its value. If the function returns an [Element], then `frame.evaluate` will return an [ElementHandle].
 
 ```js
 const puppeteer = require('puppeteer');
@@ -1128,7 +1128,8 @@ The `elementHandle.dispose` method stops referencing the element handle.
 - `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
 
-If the function, passed to the `elementHandle.evaluate`, returns a [Promise], then `elementHandle.evaluate` would wait for the promise to resolve and return it's value.
+If the function, passed to the `elementHandle.evaluate`, returns a [Promise], then `elementHandle.evaluate` would wait for the promise to resolve and return its value. If the function returns an [Element], then `elementHandle.evaluate` will return an [ElementHandle].
+
 The function will be passed in the element ifself as a first argument.
 
 #### elementHandle.hover()
