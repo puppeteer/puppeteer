@@ -221,7 +221,7 @@ The arguments passed into `console.log` appear as arguments on the event handler
 An example of handling `console` event:
 ```js
 page.on('console', (...args) => {
-  for (let i =0; i < args.length; ++i)
+  for (let i = 0; i < args.length; ++i)
     console.log(`${i}: ${args[i]}`);
 });
 page.evaluate(() => console.log(5, 'hello', {foo: 'bar'}));
@@ -406,7 +406,9 @@ const crypto = require('crypto');
 puppeteer.launch().then(async browser => {
   let page = await browser.newPage();
   page.on('console', console.log);
-  await page.exposeFunction('md5', text => crypto.createHash('md5').update(text).digest('hex'));
+  await page.exposeFunction('md5', text =>
+    crypto.createHash('md5').update(text).digest('hex')
+  );
   await page.evaluate(async () => {
     // use window.md5 to compute hashes
     let myString = 'PUPPETEER';
@@ -761,7 +763,9 @@ const puppeteer = require('puppeteer');
 puppeteer.launch().then(async browser => {
   let page = await browser.newPage();
   let currentURL;
-  page.waitForSelector('img').then(() => console.log('First URL with image: ' + currentURL));
+  page
+    .waitForSelector('img')
+    .then(() => console.log('First URL with image: ' + currentURL));
   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
     await page.goto(currentURL);
   browser.close();
@@ -1065,7 +1069,9 @@ const puppeteer = require('puppeteer');
 puppeteer.launch().then(async browser => {
   let page = await browser.newPage();
   let currentURL;
-  page.waitForSelector('img').then(() => console.log('First URL with image: ' + currentURL));
+  page
+    .waitForSelector('img')
+    .then(() => console.log('First URL with image: ' + currentURL));
   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
     await page.goto(currentURL);
   browser.close();
@@ -1083,7 +1089,7 @@ puppeteer.launch().then(async browser => {
   await page.goto('https://google.com');
   let inputElement = await page.$('input[type=submit]');
   await inputElement.click();
-  ...
+  // ...
 });
 ```
 

@@ -42,7 +42,6 @@ of `Browser`, open pages, and then manipulate them with [Puppeteer's API](https:
 const puppeteer = require('puppeteer');
 
 (async () => {
-
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto('https://example.com');
@@ -60,7 +59,6 @@ Puppeteer sets an initial page size to 800px x 600px, which defines the screensh
 const puppeteer = require('puppeteer');
 
 (async () => {
-
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto('https://news.ycombinator.com', {waitUntil: 'networkidle'});
