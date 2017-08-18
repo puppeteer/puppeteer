@@ -635,10 +635,7 @@ puppeteer.launch().then(async browser => {
   let page = await browser.newPage();
   await page.setRequestInterceptionEnabled(true);
   page.on('request', interceptedRequest => {
-    if (
-      interceptedRequest.url.endsWith('.png') ||
-      interceptedRequest.url.endsWith('.jpg')
-    )
+    if (interceptedRequest.url.endsWith('.png') || interceptedRequest.url.endsWith('.jpg'))
       interceptedRequest.abort();
     else
       interceptedRequest.continue();
@@ -769,11 +766,7 @@ puppeteer.launch().then(async browser => {
   page
     .waitForSelector('img')
     .then(() => console.log('First URL with image: ' + currentURL));
-  for (currentURL of [
-    'https://example.com',
-    'https://google.com',
-    'https://bbc.com'
-  ])
+  for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
     await page.goto(currentURL);
   browser.close();
 });
@@ -1079,11 +1072,7 @@ puppeteer.launch().then(async browser => {
   page
     .waitForSelector('img')
     .then(() => console.log('First URL with image: ' + currentURL));
-  for (currentURL of [
-    'https://example.com',
-    'https://google.com',
-    'https://bbc.com'
-  ])
+  for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
     await page.goto(currentURL);
   browser.close();
 });
