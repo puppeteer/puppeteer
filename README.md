@@ -113,10 +113,11 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
     ```
 
 1. Slow it down - the `slowMo` option slows down Puppeteer operations by the
-   specified amount of milliseconds. Another way to help see what's going on:
+   specified amount of milliseconds. It's another way to help see what's going on.
 
     ```js
     const browser = await puppeteer.launch({
+      headless: false,
       slowMo: 250 // slow down by 250ms
     });
     ```
