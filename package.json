@@ -3,6 +3,7 @@
   "version": "0.9.0",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "main": "index.js",
+  "typings": "./index.d.ts",
   "repository": "github:GoogleChrome/puppeteer",
   "engines": {
     "node": ">=7.10.0"
@@ -12,7 +13,8 @@
     "debug-unit": "DEBUG_TEST=true node --inspect-brk ./node_modules/.bin/jasmine test/test.js",
     "test-phantom": "python third_party/phantomjs/test/run-tests.py",
     "test-doclint": "jasmine utils/doclint/check_public_api/test/test.js && jasmine utils/doclint/preprocessor/test.js",
-    "test": "npm run lint --silent && npm run coverage && npm run test-phantom && npm run test-doclint",
+    "test-type": "tsc -p test/type/tsconfig.json && rm test/type/spec.js",
+    "test": "npm run lint --silent && npm run coverage && npm run test-phantom && npm run test-type && npm run test-doclint",
     "install": "node install.js",
     "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .) && npm run doc",
     "doc": "node utils/doclint/cli.js",
@@ -32,6 +34,7 @@
     "chromium_revision": "494755"
   },
   "devDependencies": {
+    "@types/node": "^8.0.24",
     "commonmark": "^0.27.0",
     "deasync": "^0.1.9",
     "eslint": "^4.0.0",
@@ -43,6 +46,7 @@
     "pdfjs-dist": "^1.8.595",
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.2.0",
-    "text-diff": "^1.0.1"
+    "text-diff": "^1.0.1",
+    "typescript": "^2.4.2"
   }
 }
