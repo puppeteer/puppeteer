@@ -1647,7 +1647,7 @@ describe('Page', function() {
       await page.emulateMedia('print');
       expect(await page.evaluate(() => window.matchMedia('screen').matches)).toBe(false);
       expect(await page.evaluate(() => window.matchMedia('print').matches)).toBe(true);
-      await page.emulateMedia('');
+      await page.emulateMedia(null);
       expect(await page.evaluate(() => window.matchMedia('screen').matches)).toBe(true);
       expect(await page.evaluate(() => window.matchMedia('print').matches)).toBe(false);
     }));
