@@ -1629,11 +1629,32 @@ describe('Page', function() {
       await page.setViewport({width: 100, height: 100});
       expect(await page.evaluate(() => screen.orientation.type)).toBe('portrait-primary');
     }));
-    it('should support emulate shorthand', SX(async function() {
+  });
+
+  describe('Page.emulate', function() {
+    it('should work', SX(async function() {
       await page.goto(PREFIX + '/mobile.html');
       await page.emulate(iPhone);
       expect(await page.evaluate(() => window.innerWidth)).toBe(375);
       expect(await page.evaluate(() => navigator.userAgent)).toContain('Safari');
+    }));
+  });
+
+  describe('Page.emulateMedia', function() {
+    it('should work', SX(async function() {
+      expect(await page.evaluate(() => window.matchMedia('screen').matches)).toBe(true);
+      expect(await page.evaluate(() => window.matchMedia('print').matches)).toBe(false);
+      await page.emulateMedia('print');
+      expect(await page.evaluate(() => window.matchMedia('screen').matches)).toBe(false);
+      expect(await page.evaluate(() => window.matchMedia('print').matches)).toBe(true);
+      await page.emulateMedia('');
+      expect(await page.evaluate(() => window.matchMedia('screen').matches)).toBe(true);
+      expect(await page.evaluate(() => window.matchMedia('print').matches)).toBe(false);
+    }));
+    it('should throw in case of bad argument', SX(async function() {
+      let error = null;
+      await page.emulateMedia('bad').catch(e => error = e);
+      expect(error.message).toBe('Unsupported media type: bad');
     }));
   });
 
