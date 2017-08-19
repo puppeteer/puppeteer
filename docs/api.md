@@ -194,7 +194,7 @@ Closes browser with all the pages (if any were opened). The browser object itsel
 - returns: <[string]> Browser websocket url.
 
 Browser websocket endpoint which could be used as an argument to
-[puppeteer.connect](#puppeteerconnect).
+[puppeteer.connect](#puppeteerconnectoptions).
 
 ### class: Page
 
@@ -719,8 +719,8 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - returns: <[Promise]>
 
 This method behaves differently with respect to the type of the first parameter:
-- if `selectorOrFunctionOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
-- if `selectorOrFunctionOrTimeout` is a `function`, than the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
+- if `selectorOrFunctionOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [page.waitForSelector](#pagewaitforselectorselector-options)
+- if `selectorOrFunctionOrTimeout` is a `function`, than the first argument is treated as a predicate to wait for and the method is a shortcut for [page.waitForFunction()](#pagewaitforfunctionpagefunction-options-args).
 - if `selectorOrFunctionOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
@@ -788,7 +788,7 @@ Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitf
 
 ### class: Keyboard
 
-Keyboard provides an api for managing a virtual keyboard. The high level api is [`page.type`](#pageypetext), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
+Keyboard provides an api for managing a virtual keyboard. The high level api is [`page.type`](#pagetypetext-options), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
 
 For finer control, you can use [`keyboard.down`](#keyboarddownkey-options), [`keyboard.up`](#keyboardupkey), and [`keyboard.sendCharacter`](#keyboardsendcharacterchar) to manually fire events as if they were generated from a real keyboard.
 
@@ -847,7 +847,7 @@ Dispatches a `keyup` event.
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
 
-Shortcut for [`mouse.move`](#mousemovexy), [`mouse.down`](#mousedownkey) and [`mouse.up`](#mouseupkey).
+Shortcut for [`mouse.move`](#mousemovex-y), [`mouse.down`](#mousedownoptions) and [`mouse.up`](#mouseupoptions).
 
 #### mouse.down([options])
 - `options` <[Object]>
@@ -874,7 +874,7 @@ Dispatches a `mouseup` event.
 
 ### class: Tracing
 
-You can use [`tracing.start`](#tracingstartoptions) and [`tracing.stop`](#tracingstoppath) to create a trace file which can be opened in Chrome DevTools or [timeline viewer](https://chromedevtools.github.io/timeline-viewer/).
+You can use [`tracing.start`](#tracingstartoptions) and [`tracing.stop`](#tracingstop) to create a trace file which can be opened in Chrome DevTools or [timeline viewer](https://chromedevtools.github.io/timeline-viewer/).
 
 ```js
 await page.tracing.start({path: 'trace.json'});
