@@ -734,7 +734,7 @@ Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options])](
     - `mutation` - to execute `pageFunction` on every DOM mutation.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
-- returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
+- returns: <[Promise]> Promise which resolves when the `pageFunction` returns a truthy value.
 
 The `waitForFunction` could be used to observe viewport size change:
 ```js
@@ -1049,7 +1049,7 @@ This method behaves differently with respect to the type of the first parameter:
     - `mutation` - to execute `pageFunction` on every DOM mutation.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
-- returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
+- returns: <[Promise]> Promise which resolves when the `pageFunction` returns a truthy value.
 
 The `waitForFunction` could be used to observe viewport size change:
 ```js
