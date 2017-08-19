@@ -86,7 +86,7 @@ npm run unit -- --filter=waitFor
   ...
   // Using "fit" to run specific test
   fit('should work', SX(async function() {
-    await response = page.goto(EMPTY_PAGE);
+    const response = await page.goto(EMPTY_PAGE);
     expect(response.ok).toBe(true);
   }))
 ```
@@ -95,7 +95,7 @@ npm run unit -- --filter=waitFor
   ...
   // Using "xit" to skip specific test
   xit('should work', SX(async function() {
-    await response = page.goto(EMPTY_PAGE);
+    const response = await page.goto(EMPTY_PAGE);
     expect(response.ok).toBe(true);
   }))
 ```
@@ -135,13 +135,11 @@ Puppeteer uses [DEBUG](https://github.com/visionmedia/debug) module to expose so
 ```js
 const puppeteer = require('puppeteer');
 
-(async() => {
-
-const browser = await puppeteer.launch();
-const page = await browser.newPage();
-await page.goto('https://example.com');
-browser.close();
-
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto('https://example.com');
+  browser.close();
 })();
 ```
 
