@@ -1,5 +1,6 @@
 language: node_js
 node_js:
+  - "6"
   - "7"
 dist: trusty
 addons:
@@ -13,7 +14,7 @@ cache:
   directories:
     - node_modules
 install:
-  - yarn install
+  - yarn
   # puppeteer's install script downloads Chrome
 script:
   - yarn run lint

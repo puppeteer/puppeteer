@@ -16,7 +16,7 @@
 
 const Message = require('../Message');
 
-const PUPPETEER_VERSION = require('../../../package.json').version;
+const PUPPETEER_VERSION = require('../../../../package.json').version;
 
 module.exports = function(sources) {
   let messages = [];
