@@ -4,14 +4,12 @@ class Foo {
   }
 
   returnNothing() {
-    let e = () => {
-      return 10;
-    }
+    let e = () => 10;
     e();
   }
 
   www() {
-    if (1 === 1)
+    if (1 === 1) // eslint-disable-line no-self-compare
       return 'df';
   }
 

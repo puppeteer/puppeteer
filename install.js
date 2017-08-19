@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const Downloader = require('./utils/ChromiumDownloader');
+const Downloader = require('./lib/utils/ChromiumDownloader');
 const revision = require('./package').puppeteer.chromium_revision;
 const ProgressBar = require('progress');
 

@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-const puppeteer = require('../..');
+const puppeteer = require('../../..');
 const path = require('path');
 const SourceFactory = require('./SourceFactory');
 
-const PROJECT_DIR = path.join(__dirname, '..', '..');
+const PROJECT_DIR = path.join(__dirname, '..', '..', '..');
 
 const RED_COLOR = '\x1b[31m';
 const YELLOW_COLOR = '\x1b[33m';
