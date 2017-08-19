@@ -16,7 +16,8 @@
     "install": "node install.js",
     "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .) && npm run doc",
     "doc": "node utils/doclint/cli.js",
-    "coverage": "COVERAGE=true npm run unit"
+    "coverage": "COVERAGE=true npm run unit",
+    "build": "rimraf lib/*; NODE_ENV=production babel src/ -d lib/ -s"
   },
   "author": "The Chromium Authors",
   "license": "SEE LICENSE IN LICENSE",
@@ -32,6 +33,11 @@
     "chromium_revision": "494755"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-parser-opts": "^1.0.1",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "babel-plugin-transform-object-entries": "^1.0.0",
     "commonmark": "^0.27.0",
     "deasync": "^0.1.9",
     "eslint": "^4.0.0",
@@ -43,6 +49,7 @@
     "pdfjs-dist": "^1.8.595",
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.2.0",
+    "rimraf": "^2.6.1",
     "text-diff": "^1.0.1"
   }
 }

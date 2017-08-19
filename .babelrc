@@ -1,0 +1,3 @@
+{
+  "plugins": ["transform-async-to-generator", "transform-object-entries", "transform-es2015-modules-commonjs", ["parser-opts", {"allowReturnOutsideFunction": true}]]
+}
