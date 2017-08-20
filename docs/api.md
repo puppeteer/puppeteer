@@ -1221,7 +1221,7 @@ Contains a boolean stating whether the response was successful (status in the ra
 Contains the status code of the response (e.g., 200 for a success).
 
 #### response.text()
-- returns: <Promise<[text]>> Promise which resolves to a text representation of response body.
+- returns: <[Promise]<[string]>> Promise which resolves to a text representation of response body.
 
 #### response.url
 - <[string]>
