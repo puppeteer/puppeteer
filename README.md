@@ -76,10 +76,10 @@ See [`Page.pdf()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/ap
 
 **1. Uses Headless mode**
 
-Puppeteer launches Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). To launch a full version of Chromium, set the ['headless' option](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions) when creating a browser:
+Puppeteer launches Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). To launch a full version of Chromium, set the ['headless' option](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions) when launching a browser:
 
 ```js
-const browser = await puppeteer.launch({headless: true});
+const browser = await puppeteer.launch({headless: false}); // default is true
 ```
 
 **2. Runs a bundled version of Chromium**
