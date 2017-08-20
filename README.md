@@ -33,7 +33,7 @@ yarn add puppeteer
 
 ### Usage
 
-Puppeteer will be familiar to using other browser testing frameworks. You create an instance
+Puppeteer will be familiar to people using other browser testing frameworks. You create an instance
 of `Browser`, open pages, and then manipulate them with [Puppeteer's API](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#).
 
 **Example** - navigating to https://example.com and saving a screenshot as *example.png*:
