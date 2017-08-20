@@ -1129,7 +1129,7 @@ The `elementHandle.dispose` method stops referencing the element handle.
 - returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
 
 If the function, passed to the `elementHandle.evaluate`, returns a [Promise], then `elementHandle.evaluate` would wait for the promise to resolve and return it's value.
-The function will be passed in the element ifself as a first argument.
+The element will be passed as the first argument to `pageFunction`, followed by any `args`.
 
 #### elementHandle.hover()
 - returns: <[Promise]> Promise which resolves when the element is successfully hovered.
