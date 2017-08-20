@@ -133,8 +133,9 @@ Puppeteer module provides a method to launch a Chromium instance.
 The following is a typical example of using a Puppeteer to drive automation:
 ```js
 const puppeteer = require('puppeteer');
+
 puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
+  const page = await browser.newPage();
   await page.goto('https://www.google.com');
   // other actions...
   browser.close();
@@ -172,7 +173,7 @@ An example of using a [Browser] to create a [Page]:
 const puppeteer = require('puppeteer');
 
 puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
+  const page = await browser.newPage();
   await page.goto('https://example.com');
   browser.close();
 });
@@ -205,7 +206,7 @@ This example creates a page, navigates it to a URL, and then saves a screenshot:
 const puppeteer = require('puppeteer');
 
 puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
+  const page = await browser.newPage();
   await page.goto('https://example.com');
   await page.screenshot({path: 'screenshot.png'});
   browser.close();
@@ -339,7 +340,7 @@ const devices = require('puppeteer/DeviceDescriptors');
 const iPhone = devices['iPhone 6'];
 
 puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
+  const page = await browser.newPage();
   await page.emulate(iPhone);
   await page.goto('https://www.google.com');
   // other actions...
@@ -362,8 +363,9 @@ If the function, passed to the `page.evaluate`, returns a [Promise], then `page.
 
 ```js
 const puppeteer = require('puppeteer');
+
 puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
+  const page = await browser.newPage();
   const result = await page.evaluate(() => {
     return Promise.resolve(8 * 7);
   });
@@ -409,15 +411,15 @@ const puppeteer = require('puppeteer');
 const crypto = require('crypto');
 
 puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
+  const page = await browser.newPage();
   page.on('console', console.log);
   await page.exposeFunction('md5', text =>
     crypto.createHash('md5').update(text).digest('hex')
   );
   await page.evaluate(async () => {
     // use window.md5 to compute hashes
-    let myString = 'PUPPETEER';
-    let myHash = await window.md5(myString);
+    const myString = 'PUPPETEER';
+    const myHash = await window.md5(myString);
     console.log(`md5 of ${myString} is ${myHash}`);
   });
   browser.close();
@@ -431,7 +433,7 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 
 puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
+  const page = await browser.newPage();
   page.on('console', console.log);
   await page.exposeFunction('readfile', async filePath => {
     return new Promise((resolve, reject) => {
@@ -445,7 +447,7 @@ puppeteer.launch().then(async browser => {
   });
   await page.evaluate(async () => {
     // use window.readfile to read contents of a file
-    let content = await window.readfile('/etc/hosts');
+    const content = await window.readfile('/etc/hosts');
     console.log(content);
   });
   browser.close();
@@ -644,8 +646,9 @@ Activating request interception enables `request.abort` and `request.continue`.
 An example of a naïve request interceptor which aborts all image requests:
 ```js
 const puppeteer = require('puppeteer');
+
 puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
+  const page = await browser.newPage();
   await page.setRequestInterceptionEnabled(true);
   page.on('request', interceptedRequest => {
     if (interceptedRequest.url.endsWith('.png') || interceptedRequest.url.endsWith('.jpg'))
@@ -739,8 +742,9 @@ Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options])](
 The `waitForFunction` could be used to observe viewport size change:
 ```js
 const puppeteer = require('puppeteer');
+
 puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
+  const page = await browser.newPage();
   const watchDog = page.waitForFunction('window.innerWidth < 100');
   page.setViewport({width: 50, height: 50});
   await watchDog;
@@ -773,8 +777,9 @@ immediately. If the selector doesn't appear after the `timeout` milliseconds of 
 This method works across navigations:
 ```js
 const puppeteer = require('puppeteer');
+
 puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
+  const page = await browser.newPage();
   let currentURL;
   page
     .waitForSelector('img')
@@ -902,10 +907,10 @@ An example of using `Dialog` class:
 const puppeteer = require('puppeteer');
 
 puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
-  page.on('dialog', dialog => {
+  const page = await browser.newPage();
+  page.on('dialog', async dialog => {
     console.log(dialog.message());
-    dialog.dismiss();
+    await dialog.dismiss();
     browser.close();
   });
   page.evaluate(() => alert('1'));
@@ -945,7 +950,7 @@ An example of dumping frame tree:
 const puppeteer = require('puppeteer');
 
 puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
+  const page = await browser.newPage();
   await page.goto('https://www.google.com/chrome/browser/canary.html');
   dumpFrameTree(page.mainFrame(), '');
   browser.close();
@@ -985,8 +990,8 @@ If the function, passed to the `page.evaluate`, returns a [Promise], then `page.
 const puppeteer = require('puppeteer');
 
 puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
-  const result = await page.evaluate(() => {
+  const page = await browser.newPage();
+  const result = await page.mainFrame().evaluate(() => {
     return Promise.resolve(8 * 7);
   });
   console.log(result); // prints "56"
@@ -997,7 +1002,7 @@ puppeteer.launch().then(async browser => {
 A string can also be passed in instead of a function.
 
 ```js
-console.log(await page.evaluate('1 + 2')); // prints "3"
+console.log(await page.mainFrame().evaluate('1 + 2')); // prints "3"
 ```
 
 #### frame.injectFile(filePath)
@@ -1056,8 +1061,8 @@ The `waitForFunction` could be used to observe viewport size change:
 const puppeteer = require('puppeteer');
 
 puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
-  const watchDog = page.waitForFunction('window.innerWidth < 100');
+  const page = await browser.newPage();
+  const watchDog = page.mainFrame().waitForFunction('window.innerWidth < 100');
   page.setViewport({width: 50, height: 50});
   await watchDog;
   browser.close();
@@ -1080,9 +1085,9 @@ This method works across navigations:
 const puppeteer = require('puppeteer');
 
 puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
+  const page = await browser.newPage();
   let currentURL;
-  page
+  page.mainFrame()
     .waitForSelector('img')
     .then(() => console.log('First URL with image: ' + currentURL));
   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
@@ -1097,10 +1102,11 @@ ElementHandle represents an in-page DOM element. ElementHandles could be created
 
 ```js
 const puppeteer = require('puppeteer');
+
 puppeteer.launch().then(async browser => {
-  let page = await browser.newPage();
+  const page = await browser.newPage();
   await page.goto('https://google.com');
-  let inputElement = await page.$('input[type=submit]');
+  const inputElement = await page.$('input[type=submit]');
   await inputElement.click();
   // ...
 });
