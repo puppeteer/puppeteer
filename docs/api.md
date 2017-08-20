@@ -26,7 +26,7 @@
     + [event: 'requestfailed'](#event-requestfailed)
     + [event: 'requestfinished'](#event-requestfinished)
     + [event: 'response'](#event-response)
-    + [page.$(selector)](#pageselector)
+    + [page.$(selector, ...args)](#pageselector-args)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
@@ -83,7 +83,7 @@
     + [dialog.message()](#dialogmessage)
     + [dialog.type](#dialogtype)
   * [class: Frame](#class-frame)
-    + [frame.$(selector)](#frameselector)
+    + [frame.$(selector, ...args)](#frameselector-args)
     + [frame.addScriptTag(url)](#frameaddscripttagurl)
     + [frame.childFrames()](#framechildframes)
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
@@ -285,11 +285,12 @@ Emitted when a request finishes successfully.
 
 Emitted when a [response] is received.
 
-#### page.$(selector)
-- `selector` <[string]> Selector to query page for
+#### page.$(selector, ...args)
+- `selector` <[string]|[function]> Selector to query page for, or a function to be evaluated in the page context
+- `...args` <...[Serializable]> Arguments to pass to `selector` function
 - returns: <[Promise]<[ElementHandle]>>
 
-The method runs `document.querySelector` within the page. If no element matches the selector, the return value resolve to `null`.
+The method runs `document.querySelector` by default within the page. You can pass in custom function to perform more complex selecting. If no element matches the selector, the return value resolve to `null`.
 
 Shortcut for [page.mainFrame().$(selector)](#frameselector).
 
@@ -958,8 +959,9 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
-#### frame.$(selector)
-- `selector` <[string]> Selector to query page for
+#### frame.$(selector, ...args)
+- `selector` <[string]|[function]> Selector to query page for, or a function to be evaluated in the page context
+- `...args` <...[Serializable]> Arguments to pass to `selector` function
 - returns: <[Promise]<[ElementHandle]>> Promise which resolves to ElementHandle pointing to the page element.
 
 The method queries page for the selector. If there's no such element within the page, the method will resolve to `null`.
