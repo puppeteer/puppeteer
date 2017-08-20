@@ -1072,6 +1072,19 @@ describe('Page', function() {
       let element = await page.$('non-existing-element');
       expect(element).toBe(null);
     }));
+    it('should query by custom function', SX(async function() {
+      await page.setContent('<section><span>1</span><div>2</div></section>');
+      const selectSecondItem = selector => document.querySelectorAll(selector)[1];
+      let element = await page.$(selectSecondItem, 'section > *');
+      expect(element).toBeTruthy();
+      expect(element._remoteObject.description).toBe('div');
+    }));
+    it('should return null for non-existing query by custom function', SX(async function() {
+      await page.setContent('<section><span>1</span><span>2</span></section>');
+      const selectSecondItem = selector => document.querySelectorAll(selector)[1];
+      let element = await page.$(selectSecondItem, 'section > div');
+      expect(element).toBe(null);
+    }));
   });
 
   describe('ElementHandle.evaluate', function() {
