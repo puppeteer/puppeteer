@@ -1437,10 +1437,24 @@ describe('Page', function() {
     }));
   });
   describe('Page.setContent', function() {
+    const expectedOutput = '<html><head></head><body><div>hello</div></body></html>';
     it('should work', SX(async function() {
       await page.setContent('<div>hello</div>');
-      let result = await page.evaluate(() => document.body.innerHTML);
-      expect(result).toBe('<div>hello</div>');
+      let result = await page.content();
+      expect(result).toBe(expectedOutput);
+    }));
+    it('should work with doctype', SX(async function() {
+      const doctype = '<!DOCTYPE html>';
+      await page.setContent(`${doctype}<div>hello</div>`);
+      let result = await page.content();
+      expect(result).toBe(`${doctype}${expectedOutput}`);
+    }));
+    it('should work with HTML 4 doctype', SX(async function() {
+      const doctype = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" ' +
+        '"http://www.w3.org/TR/html4/strict.dtd">';
+      await page.setContent(`${doctype}<div>hello</div>`);
+      let result = await page.content();
+      expect(result).toBe(`${doctype}${expectedOutput}`);
     }));
   });
   describe('Network Events', function() {
