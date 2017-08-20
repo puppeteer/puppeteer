@@ -311,7 +311,8 @@ Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. The Promise will be rejected if there is no element matching `selector`.
 
-Shortcut for [page.mainFrame().click(selector[, options])](#frameclickselector-options).
+This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
+If there's no element matching `selector`, the method throws an error.
 
 #### page.close()
 - returns: <[Promise]>
@@ -459,7 +460,8 @@ puppeteer.launch().then(async browser => {
 - `selector` <[string]> A [selector] of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. The promise will be rejected if there is no element matching `selector`.
 
-Shortcut for [page.mainFrame().focus(selector)](#framefocusselector).
+This method fetches an element with `selector` and focuses it.
+If there's no element matching `selector`, the method throws an error.
 
 #### page.frames()
 - returns: <[Array]<[Frame]>> An array of all frames attached to the page.
@@ -514,7 +516,8 @@ The `page.goto` will throw an error if:
 - `selector` <[string]> A [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
 
-Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
+This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
+If there's no element matching `selector`, the method throws an error.
 
 #### page.injectFile(filePath)
 - `filePath` <[string]> Path to the JavaScript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
