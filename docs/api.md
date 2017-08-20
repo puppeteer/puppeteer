@@ -1163,8 +1163,6 @@ If request fails at some point, then instead of 'requestfinished' event (and pos
 
 If request gets a 'redirect' response, the request is successfully finished with the 'requestfinished' event, and a new request is  issued to a redirected url.
 
-[Request] class represents requests which are sent by page. [Request] implements [Body] mixin, which in case of HTTP POST requests allows clients to call `request.json()` or `request.text()` to get different representations of request's body.
-
 #### request.abort()
 
 Aborts request. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
@@ -1203,7 +1201,7 @@ Contains the URL of the request.
 
 ### class: Response
 
-[Response] class represents responses which are received by page. [Response] implements [Body] mixin, which allows clients to call `response.json()` or `response.text()` to get different representations of response body.
+[Response] class represents responses which are received by page.
 
 #### response.buffer()
 - returns: <Promise<[Buffer]>> Promise which resolves to a buffer with response body.
