@@ -3,7 +3,7 @@
 ## Chrome headless doesn't start on Debian (e.g. Ubuntu)
 
 - Make sure all the necessary dependencies are installed
-- The broad discussion on the topic could be found in [#290](https://github.com/GoogleChrome/puppeteer/issues/290)
+- The broad discussion on the topic can be found in [#290](https://github.com/GoogleChrome/puppeteer/issues/290)
 
 <details>
 <summary>Debian Dependencies</summary>
