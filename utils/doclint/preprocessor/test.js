@@ -21,8 +21,8 @@ const VERSION = require('../../../package.json').version;
 
 describe('preprocessor', function() {
   it('should throw for unknown command', function() {
-    let source = factory.createForTest('doc.md', getCommand('unknownCommand()'));
-    let messages = preprocessor([source]);
+    const source = factory.createForTest('doc.md', getCommand('unknownCommand()'));
+    const messages = preprocessor([source]);
     expect(source.hasUpdatedText()).toBe(false);
     expect(messages.length).toBe(1);
     expect(messages[0].type).toBe('error');
@@ -30,22 +30,22 @@ describe('preprocessor', function() {
   });
   describe('gen:version', function() {
     it('should work', function() {
-      let source = factory.createForTest('doc.md', `Puppeteer v${getCommand('version')}`);
-      let messages = preprocessor([source]);
+      const source = factory.createForTest('doc.md', `Puppeteer v${getCommand('version')}`);
+      const messages = preprocessor([source]);
       expect(messages.length).toBe(1);
       expect(messages[0].type).toBe('warning');
       expect(messages[0].text).toContain('doc.md');
       expect(source.text()).toBe(`Puppeteer v${getCommand('version', VERSION)}`);
     });
     it('should tolerate different writing', function() {
-      let source = factory.createForTest('doc.md', `Puppeteer v<!--   gEn:version (  ) -->WHAT
+      const source = factory.createForTest('doc.md', `Puppeteer v<!--   gEn:version (  ) -->WHAT
 <!--     GEN:stop   -->`);
       preprocessor([source]);
       expect(source.text()).toBe(`Puppeteer v<!--   gEn:version (  ) -->${VERSION}<!--     GEN:stop   -->`);
     });
     it('should not tolerate missing gen:stop', function() {
-      let source = factory.createForTest('doc.md', `<!--GEN:version-->`);
-      let messages = preprocessor([source]);
+      const source = factory.createForTest('doc.md', `<!--GEN:version-->`);
+      const messages = preprocessor([source]);
       expect(source.hasUpdatedText()).toBe(false);
       expect(messages.length).toBe(1);
       expect(messages[0].type).toBe('error');

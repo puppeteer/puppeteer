@@ -23,7 +23,7 @@ const Message = require('./Message');
  */
 module.exports = function(sources) {
   const warnings = [];
-  for (let source of sources) {
+  for (const source of sources) {
     const newText = markdownToc.insert(source.text());
     if (source.setText(newText))
       warnings.push('Regenerated table-of-contexts: ' + source.projectPath());

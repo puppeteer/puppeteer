@@ -61,7 +61,7 @@ class StandardInput {
     if (this._closed && !this._lines.length)
       return '';
     if (!this._lines.length) {
-      let linePromise = new Promise(fulfill => this._readline.once('line', fulfill));
+      const linePromise = new Promise(fulfill => this._readline.once('line', fulfill));
       await(linePromise);
     }
     return this._lines.shift();
@@ -72,10 +72,10 @@ class StandardInput {
      */
   read() {
     if (!this._closed) {
-      let closePromise = new Promise(fulfill => this._readline.once('close', fulfill));
+      const closePromise = new Promise(fulfill => this._readline.once('close', fulfill));
       await(closePromise);
     }
-    let text = this._lines.join('\n');
+    const text = this._lines.join('\n');
     this._lines = [];
     return text;
   }

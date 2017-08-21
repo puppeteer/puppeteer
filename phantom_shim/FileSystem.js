@@ -68,7 +68,7 @@ class FileSystem {
      * @param {string} toPath
      */
   copy(fromPath, toPath) {
-    let content = fs.readFileSync(fromPath);
+    const content = fs.readFileSync(fromPath);
     fs.writeFileSync(toPath, content);
   }
 
@@ -77,7 +77,7 @@ class FileSystem {
      * @param {string} toPath
      */
   move(fromPath, toPath) {
-    let content = fs.readFileSync(fromPath);
+    const content = fs.readFileSync(fromPath);
     fs.writeFileSync(toPath, content);
     fs.unlinkSync(fromPath);
   }
@@ -170,7 +170,7 @@ class FileSystem {
      * @param {string} mode
      */
   write(filePath, data, mode) {
-    let fd = new FileDescriptor(filePath, mode, 'utf8');
+    const fd = new FileDescriptor(filePath, mode, 'utf8');
     fd.write(data);
     fd.close();
   }
@@ -288,8 +288,8 @@ class FileSystem {
   }
 }
 
-let fdwrite = deasync(fs.write);
-let fdread = deasync(fs.read);
+const fdwrite = deasync(fs.write);
+const fdread = deasync(fs.read);
 
 class FileDescriptor {
   /**
@@ -318,8 +318,8 @@ class FileDescriptor {
      * @param {string} data
      */
   write(data) {
-    let buffer = Buffer.from(data, this._encoding);
-    let written = fdwrite(this._fd, buffer, 0, buffer.length, this._position);
+    const buffer = Buffer.from(data, this._encoding);
+    const written = fdwrite(this._fd, buffer, 0, buffer.length, this._position);
     this._position += written;
   }
 
@@ -344,8 +344,8 @@ class FileDescriptor {
       size = fs.fstatSync(this._fd).size;
       position = 0;
     }
-    let buffer = new Buffer(size);
-    let bytesRead = fdread(this._fd, buffer, 0, size, position);
+    const buffer = new Buffer(size);
+    const bytesRead = fdread(this._fd, buffer, 0, size, position);
     this._position += bytesRead;
     return buffer.toString(this._encoding);
   }
