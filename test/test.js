@@ -1778,6 +1778,14 @@ describe('Page', function() {
       });
       expect(screenshot).toBeGolden('screenshot-clip-rect.png');
     }));
+    it('should clip selector', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(PREFIX + '/grid.html');
+      let screenshot = await page.screenshot({
+        clip: '.box:nth-of-type(43)'
+      });
+      expect(screenshot).toBeGolden('screenshot-clip-selector.png');
+    }));
     it('should work for offscreen clip', SX(async function() {
       await page.setViewport({width: 500, height: 500});
       await page.goto(PREFIX + '/grid.html');

@@ -619,11 +619,13 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
     - `type` <[string]> Specify screenshot type, could be either `jpeg` or `png`. Defaults to 'png'.
     - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
     - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
-    - `clip` <[Object]> An object which specifies clipping region of the page. Should have the following fields:
-        - `x` <[number]> x-coordinate of top-left corner of clip area
-        - `y` <[number]> y-coordinate of top-left corner of clip area
-        - `width` <[number]> width of clipping area
-        - `height` <[number]> height of clipping area
+    - `clip` <[string]|[Object]>
+        - if `clip` is a `string` - A [selector] to search for element to capture
+        - otherwise, an `Object` which specifies clipping region of the page. Should have the following fields:
+            - `x` <[number]> x-coordinate of top-left corner of clip area
+            - `y` <[number]> y-coordinate of top-left corner of clip area
+            - `width` <[number]> width of clipping area
+            - `height` <[number]> height of clipping area
     - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
 - returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot
 
