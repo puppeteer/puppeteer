@@ -228,7 +228,7 @@ function applyAgent(opt)
   {
     let parsedProxy = process.env.http_proxy ? URL.parse(process.env.http_proxy) : URL.parse(process.env.https_proxy);
 
-    if (parsedProxy.protocol === "http:")
+    if (parsedProxy.protocol === 'http:')
       parsedProxy.secureProxy = false;
 
     opt.agent = new ProxyAgent(parsedProxy);
