@@ -15,18 +15,30 @@
  */
 
 const Downloader = require('./utils/ChromiumDownloader');
+const platform = Downloader.currentPlatform();
 const revision = require('./package').puppeteer.chromium_revision;
 const ProgressBar = require('progress');
 
+const revisionInfo = Downloader.revisionInfo(platform, revision);
 // Do nothing if the revision is already downloaded.
-if (Downloader.revisionInfo(Downloader.currentPlatform(), revision))
+if (revisionInfo.downloaded)
   return;
 
 let allRevisions = Downloader.downloadedRevisions();
-Downloader.downloadRevision(Downloader.currentPlatform(), revision, onProgress)
+Downloader.downloadRevision(platform, revision, onProgress)
     // Remove previous chromium revisions.
     .then(() => Promise.all(allRevisions.map(({platform, revision}) => Downloader.removeRevision(platform, revision))))
-    .catch(error => console.error('Download failed: ' + error.message));
+    .catch(onError);
+
+function onError(error) {
+  console.error(`ERROR: Failed to download chromium r${revision}!
+- Download chromium manually:
+    ${revisionInfo.url}
+- Extract chromium into ${revisionInfo.folderPath}
+  * Chromium executable should be at ${revisionInfo.executablePath}
+- Alternatively, point puppeteer to the downloaded chromium with the 'executablePath' option:
+    https://goo.gl/E8yQua`);
+}
 
 let progressBar = null;
 function onProgress(bytesTotal, delta) {
