@@ -17,6 +17,15 @@
 const Downloader = require('./utils/ChromiumDownloader');
 const revision = require('./package').puppeteer.chromium_revision;
 const ProgressBar = require('progress');
+const os = require('os');
+const { execSync } = require('child_process');
+const path = require('path');
+const fs = require('fs');
+
+if (os.platform() === 'linux') {
+  let scriptPath = path.join(path.dirname(fs.realpathSync(__filename)), 'utils', 'linux', 'postinstall.sh');
+  process.stdout.write(execSync(scriptPath));
+}
 
 // Do nothing if the revision is already downloaded.
 if (Downloader.revisionInfo(Downloader.currentPlatform(), revision))
