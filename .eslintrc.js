@@ -47,6 +47,7 @@ module.exports = {
         "new-parens": 2,
         "func-call-spacing": 2,
         "arrow-parens": [2, "as-needed"],
+        "prefer-const": 2,
 
         // anti-patterns
         "no-var": 2,

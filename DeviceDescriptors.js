@@ -628,5 +628,5 @@ module.exports = [
     }
   }
 ];
-for (let device of module.exports)
+for (const device of module.exports)
   module.exports[device.name] = device;

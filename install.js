@@ -22,7 +22,7 @@ const ProgressBar = require('progress');
 if (Downloader.revisionInfo(Downloader.currentPlatform(), revision))
   return;
 
-let allRevisions = Downloader.downloadedRevisions();
+const allRevisions = Downloader.downloadedRevisions();
 Downloader.downloadRevision(Downloader.currentPlatform(), revision, onProgress)
     // Remove previous chromium revisions.
     .then(() => Promise.all(allRevisions.map(({platform, revision}) => Downloader.removeRevision(platform, revision))))
@@ -42,7 +42,7 @@ function onProgress(bytesTotal, delta) {
 }
 
 function toMegabytes(bytes) {
-  let mb = bytes / 1024 / 1024;
+  const mb = bytes / 1024 / 1024;
   return `${Math.round(mb * 10) / 10} Mb`;
 }
 

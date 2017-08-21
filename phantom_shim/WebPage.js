@@ -153,7 +153,7 @@ class WebPage {
    * @return {string}
    */
   get focusedFrameName() {
-    let focusedFrame = this._focusedFrame();
+    const focusedFrame = this._focusedFrame();
     return focusedFrame ? focusedFrame.name() : '';
   }
 
@@ -161,10 +161,10 @@ class WebPage {
    * @return {?Frame}
    */
   _focusedFrame() {
-    let frames = this._currentFrame.childFrames().slice();
+    const frames = this._currentFrame.childFrames().slice();
     frames.push(this._currentFrame);
-    let promises = frames.map(frame => frame.evaluate(() => document.hasFocus()));
-    let result = await(Promise.all(promises));
+    const promises = frames.map(frame => frame.evaluate(() => document.hasFocus()));
+    const result = await(Promise.all(promises));
     for (let i = 0; i < result.length; ++i) {
       if (result[i])
         return frames[i];
@@ -173,7 +173,7 @@ class WebPage {
   }
 
   switchToFocusedFrame() {
-    let frame = this._focusedFrame();
+    const frame = this._focusedFrame();
     this._currentFrame = frame;
   }
 
@@ -197,7 +197,7 @@ class WebPage {
    * @return {boolean}
    */
   switchToParentFrame() {
-    let frame = this._currentFrame.parentFrame();
+    const frame = this._currentFrame.parentFrame();
     if (!frame)
       return false;
     this._currentFrame = frame;
@@ -237,8 +237,8 @@ class WebPage {
   _onRequest(request) {
     if (!this._onResourceRequestedCallback)
       return;
-    let requestData = new RequestData(request);
-    let phantomRequest = new PhantomRequest();
+    const requestData = new RequestData(request);
+    const phantomRequest = new PhantomRequest();
     this._onResourceRequestedCallback.call(null, requestData, phantomRequest);
     if (phantomRequest._aborted) {
       request.abort();
@@ -253,14 +253,14 @@ class WebPage {
   _onResponseReceived(response) {
     if (!this.onResourceReceived)
       return;
-    let phantomResponse = new PhantomResponse(response, false /* isResponseFinished */);
+    const phantomResponse = new PhantomResponse(response, false /* isResponseFinished */);
     this.onResourceReceived.call(null, phantomResponse);
   }
 
   _onRequestFinished(request) {
     if (!this.onResourceReceived)
       return;
-    let phantomResponse = new PhantomResponse(request.response(), true /* isResponseFinished */);
+    const phantomResponse = new PhantomResponse(request.response(), true /* isResponseFinished */);
     this.onResourceReceived.call(null, phantomResponse);
   }
 
@@ -392,10 +392,10 @@ class WebPage {
       this._onAlertCallback.call(null, dialog.message());
       await(dialog.accept());
     } else if (dialog.type === 'confirm' && this._onConfirmCallback) {
-      let result = this._onConfirmCallback.call(null, dialog.message());
+      const result = this._onConfirmCallback.call(null, dialog.message());
       await(result ? dialog.accept() : dialog.dismiss());
     } else if (dialog.type === 'prompt' && this._onPromptCallback) {
-      let result = this._onPromptCallback.call(null, dialog.message(), dialog.defaultValue());
+      const result = this._onPromptCallback.call(null, dialog.message(), dialog.defaultValue());
       await(result ? dialog.accept(result) : dialog.dismiss());
     }
   }
@@ -450,7 +450,7 @@ class WebPage {
           await(this._page.keyboard.up(String.fromCharCode(keyOrKeys)));
           break;
         }
-        for (let key of keyOrKeys)
+        for (const key of keyOrKeys)
           await(this._page.keyboard.up(key));
         break;
       case 'keypress':
@@ -476,7 +476,7 @@ class WebPage {
           await(this._page.keyboard.down(String.fromCharCode(keyOrKeys)));
           break;
         }
-        for (let key of keyOrKeys)
+        for (const key of keyOrKeys)
           await(this._page.keyboard.down(key));
         break;
     }
@@ -540,7 +540,7 @@ class WebPage {
           errorString: 'SSL handshake failed'
         });
       }
-      let status = error ? 'fail' : 'success';
+      const status = error ? 'fail' : 'success';
       if (this.onLoadFinished)
         this.onLoadFinished.call(null, status);
       if (callback)
@@ -575,8 +575,8 @@ class WebPage {
    */
   render(fileName) {
     if (fileName.endsWith('pdf')) {
-      let options = {};
-      let paperSize = this.paperSize || {};
+      const options = {};
+      const paperSize = this.paperSize || {};
       options.margin = paperSize.margin;
       options.format = paperSize.format;
       options.landscape = paperSize.orientation === 'landscape';
@@ -585,7 +585,7 @@ class WebPage {
       options.path = fileName;
       await(this._page.pdf(options));
     } else {
-      let options = {};
+      const options = {};
       if (this.clipRect && (this.clipRect.left || this.clipRect.top || this.clipRect.width || this.clipRect.height)) {
         options.clip = {
           x: this.clipRect.left,
@@ -670,7 +670,7 @@ class PhantomResponse {
     this.statusText = response.statusText;
     this.stage = isResponseFinished ? 'end' : 'start';
     this.headers = [];
-    for (let entry of response.headers.entries()) {
+    for (const entry of response.headers.entries()) {
       this.headers.push({
         name: entry[0],
         value: entry[1]
@@ -686,7 +686,7 @@ class RequestData {
   constructor(request) {
     this.url = request.url,
     this.headers = {};
-    for (let entry of request.headers.entries())
+    for (const entry of request.headers.entries())
       this.headers[entry[0]] = entry[1];
   }
 }
@@ -715,7 +715,7 @@ class AsyncEmitter extends EventEmitter {
 
   _onListenerAdded(event, listener) {
     // Async listener calls original listener on next tick.
-    let asyncListener = (...args) => {
+    const asyncListener = (...args) => {
       process.nextTick(() => listener.apply(null, args));
     };
     listener[this._symbol] = asyncListener;

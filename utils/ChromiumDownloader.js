@@ -44,7 +44,7 @@ module.exports = {
    * @return {string}
    */
   currentPlatform: function() {
-    let platform = os.platform();
+    const platform = os.platform();
     if (platform === 'darwin')
       return 'mac';
     if (platform === 'linux')
@@ -61,15 +61,15 @@ module.exports = {
    */
   canDownloadRevision: function(platform, revision) {
     console.assert(downloadURLs[platform], 'Unknown platform: ' + platform);
-    let url = URL.parse(util.format(downloadURLs[platform], revision));
-    let options = {
+    const url = URL.parse(util.format(downloadURLs[platform], revision));
+    const options = {
       method: 'HEAD',
       host: url.host,
       path: url.pathname,
     };
     let resolve;
-    let promise = new Promise(x => resolve = x);
-    let request = https.request(options, response => {
+    const promise = new Promise(x => resolve = x);
+    const request = https.request(options, response => {
       resolve(response.statusCode === 200);
     });
     request.on('error', error => {
@@ -90,8 +90,8 @@ module.exports = {
     let url = downloadURLs[platform];
     console.assert(url, `Unsupported platform: ${platform}`);
     url = util.format(url, revision);
-    let zipPath = path.join(DOWNLOADS_FOLDER, `download-${platform}-${revision}.zip`);
-    let folderPath = getFolderPath(platform, revision);
+    const zipPath = path.join(DOWNLOADS_FOLDER, `download-${platform}-${revision}.zip`);
+    const folderPath = getFolderPath(platform, revision);
     if (fs.existsSync(folderPath))
       return;
     try {
@@ -111,7 +111,7 @@ module.exports = {
   downloadedRevisions: function() {
     if (!fs.existsSync(DOWNLOADS_FOLDER))
       return [];
-    let fileNames = fs.readdirSync(DOWNLOADS_FOLDER);
+    const fileNames = fs.readdirSync(DOWNLOADS_FOLDER);
     return fileNames.map(fileName => parseFolderPath(fileName)).filter(revision => !!revision);
   },
 
@@ -133,7 +133,7 @@ module.exports = {
    */
   revisionInfo: function(platform, revision) {
     console.assert(downloadURLs[platform], `Unsupported platform: ${platform}`);
-    let folderPath = getFolderPath(platform, revision);
+    const folderPath = getFolderPath(platform, revision);
     if (!fs.existsSync(folderPath))
       return null;
     let executablePath = '';
@@ -165,11 +165,11 @@ function getFolderPath(platform, revision) {
  * @return {?{platform: string, revision: string}}
  */
 function parseFolderPath(folderPath) {
-  let name = path.basename(folderPath);
-  let splits = name.split('-');
+  const name = path.basename(folderPath);
+  const splits = name.split('-');
   if (splits.length !== 2)
     return null;
-  let [platform, revision] = splits;
+  const [platform, revision] = splits;
   if (!downloadURLs[platform])
     return null;
   return {platform, revision};
@@ -183,20 +183,20 @@ function parseFolderPath(folderPath) {
  */
 function downloadFile(url, destinationPath, progressCallback) {
   let fulfill, reject;
-  let promise = new Promise((x, y) => { fulfill = x; reject = y; });
-  let request = https.get(url, response => {
+  const promise = new Promise((x, y) => { fulfill = x; reject = y; });
+  const request = https.get(url, response => {
     if (response.statusCode !== 200) {
-      let error = new Error(`Download failed: server returned code ${response.statusCode}. URL: ${url}`);
+      const error = new Error(`Download failed: server returned code ${response.statusCode}. URL: ${url}`);
       // consume response data to free up memory
       response.resume();
       reject(error);
       return;
     }
-    let file = fs.createWriteStream(destinationPath);
+    const file = fs.createWriteStream(destinationPath);
     file.on('finish', () => fulfill());
     file.on('error', error => reject(error));
     response.pipe(file);
-    let totalBytes = parseInt(response.headers['content-length'], 10);
+    const totalBytes = parseInt(response.headers['content-length'], 10);
     if (progressCallback)
       response.on('data', onData.bind(null, totalBytes));
   });
