@@ -1,12 +1,12 @@
 # Troubleshooting
 
-## Chrome headless doesn't start
+## Chrome headless doesn't start on Debian (e.g. Ubuntu)
 
 - Make sure all the necessary dependencies are installed
 - The broad discussion on the topic could be found in [#290](https://github.com/GoogleChrome/puppeteer/issues/290)
 
 <details>
-<summary>Debian Dependencies (e.g. Ubuntu)</summary>
+<summary>Debian Dependencies</summary>
 
 ```
 gconf-service
@@ -54,15 +54,8 @@ wget
 
 - make sure kernel version is up-to-date
 - read about linux sandbox here: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_suid_sandbox_development.md
-- try running without sandbox (**Note: running without sandbox is not recommended due to security reasons!**)
+- try running without the sandbox (**Note: running without the sandbox is not recommended due to security reasons!**)
 ```js
-const puppeteer = require('puppeteer');
-(async() => {
-  const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
-  const page = await browser.newPage();
-  await page.goto('https://example.com');
-  await page.screenshot({path: 'example.png'});
-  browser.close();
-})();
+const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
 ```
 
