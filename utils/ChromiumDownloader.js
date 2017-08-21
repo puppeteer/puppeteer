@@ -22,6 +22,7 @@ const extract = require('extract-zip');
 const util = require('util');
 const URL = require('url');
 const removeRecursive = require('rimraf');
+const ProxyAgent = require('https-proxy-agent');
 
 const DOWNLOADS_FOLDER = path.join(__dirname, '..', '.local-chromium');
 
@@ -61,12 +62,11 @@ module.exports = {
    */
   canDownloadRevision: function(platform, revision) {
     console.assert(downloadURLs[platform], 'Unknown platform: ' + platform);
-    let url = URL.parse(util.format(downloadURLs[platform], revision));
-    let options = {
-      method: 'HEAD',
-      host: url.host,
-      path: url.pathname,
-    };
+    let options = URL.parse(util.format(downloadURLs[platform], revision));
+    options.method = 'HEAD';
+
+    applyAgent(options);
+
     let resolve;
     let promise = new Promise(x => resolve = x);
     let request = https.request(options, response => {
@@ -184,7 +184,12 @@ function parseFolderPath(folderPath) {
 function downloadFile(url, destinationPath, progressCallback) {
   let fulfill, reject;
   let promise = new Promise((x, y) => { fulfill = x; reject = y; });
-  let request = https.get(url, response => {
+
+  let options = URL.parse(url);
+
+  applyAgent(options);
+
+  let request = https.get(options, response => {
     if (response.statusCode !== 200) {
       let error = new Error(`Download failed: server returned code ${response.statusCode}. URL: ${url}`);
       // consume response data to free up memory
@@ -215,4 +220,18 @@ function downloadFile(url, destinationPath, progressCallback) {
  */
 function extractZip(zipPath, folderPath) {
   return new Promise(fulfill => extract(zipPath, {dir: folderPath}, fulfill));
+}
+
+function applyAgent(opt)
+{
+  if (process.env.http_proxy || process.env.https_proxy)
+  {
+    let parsedProxy = process.env.http_proxy ? URL.parse(process.env.http_proxy) : URL.parse(process.env.https_proxy);
+
+    if (parsedProxy.protocol === "http:") {
+      parsedProxy.secureProxy = false;
+    }
+
+    opt.agent = new ProxyAgent(parsedProxy);
+  }
 }
