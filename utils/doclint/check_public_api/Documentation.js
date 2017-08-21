@@ -21,7 +21,7 @@ class Documentation {
   constructor(classesArray) {
     this.classesArray = classesArray;
     this.classes = new Map();
-    for (let cls of classesArray)
+    for (const cls of classesArray)
       this.classes.set(cls.name, cls);
   }
 }
@@ -38,7 +38,7 @@ Documentation.Class = class {
     this.properties = new Map();
     this.methods = new Map();
     this.events = new Map();
-    for (let member of membersArray) {
+    for (const member of membersArray) {
       this.members.set(member.name, member);
       if (member.type === 'method')
         this.methods.set(member.name, member);
@@ -65,7 +65,7 @@ Documentation.Member = class {
     this.args = new Map();
     this.hasReturn = hasReturn;
     this.async = async;
-    for (let arg of argsArray)
+    for (const arg of argsArray)
       this.args.set(arg.name, arg);
   }
 

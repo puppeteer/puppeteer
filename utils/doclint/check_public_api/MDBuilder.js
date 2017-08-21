@@ -33,11 +33,11 @@ class MDOutline {
     // Extract headings.
     await page.setContent(html);
     const {classes, errors} = await page.evaluate(() => {
-      let classes = [];
+      const classes = [];
       let currentClass = {};
       let member = {};
-      let errors = [];
-      for (let element of document.body.querySelectorAll('h3, h4, h4 + ul > li')) {
+      const errors = [];
+      for (const element of document.body.querySelectorAll('h3, h4, h4 + ul > li')) {
         if (element.matches('h3')) {
           currentClass = {
             name: element.textContent,
@@ -82,22 +82,22 @@ class MDOutline {
     let currentClassName = null;
     let currentClassMembers = [];
     for (const cls of classes) {
-      let match = cls.name.match(classHeading);
+      const match = cls.name.match(classHeading);
       if (!match)
         continue;
       currentClassName = match[1];
-      for (let member of cls.members) {
+      for (const member of cls.members) {
         if (constructorRegex.test(member.name)) {
-          let match = member.name.match(constructorRegex);
+          const match = member.name.match(constructorRegex);
           handleMethod.call(this, member, match[1], 'constructor', match[2]);
         } else if (methodRegex.test(member.name)) {
-          let match = member.name.match(methodRegex);
+          const match = member.name.match(methodRegex);
           handleMethod.call(this, member, match[1], match[2], match[3]);
         } else if (propertyRegex.test(member.name)) {
-          let match = member.name.match(propertyRegex);
+          const match = member.name.match(propertyRegex);
           handleProperty.call(this, member, match[1], match[2]);
         } else if (eventRegex.test(member.name)) {
-          let match = member.name.match(eventRegex);
+          const match = member.name.match(eventRegex);
           handleEvent.call(this, member, match[1]);
         }
       }
@@ -112,8 +112,8 @@ class MDOutline {
       parameters = parameters.trim().replace(/[\[\]]/g, '');
       if (parameters !== member.args.join(', '))
         this.errors.push(`Heading arguments for "${member.name}" do not match described ones, i.e. "${parameters}" != "${member.args.join(', ')}"`);
-      let args = member.args.map(arg => new Documentation.Argument(arg));
-      let method = Documentation.Member.createMethod(methodName, args, member.hasReturn, false);
+      const args = member.args.map(arg => new Documentation.Argument(arg));
+      const method = Documentation.Member.createMethod(methodName, args, member.hasReturn, false);
       currentClassMembers.push(method);
     }
 
@@ -149,10 +149,10 @@ class MDOutline {
  * @return {!Promise<{documentation: !Documentation, errors: !Array<string>}>}
  */
 module.exports = async function(page, sources) {
-  let classes = [];
-  let errors = [];
-  for (let source of sources) {
-    let outline = await MDOutline.create(page, source.text());
+  const classes = [];
+  const errors = [];
+  for (const source of sources) {
+    const outline = await MDOutline.create(page, source.text());
     classes.push(...outline.classes);
     errors.push(...outline.errors);
   }
