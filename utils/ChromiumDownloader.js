@@ -129,13 +129,11 @@ module.exports = {
   /**
    * @param {string} platform
    * @param {string} revision
-   * @return {?{executablePath: string}}
+   * @return {!{folderPath: string, executablePath: string, downloaded: boolean, url: string}}
    */
   revisionInfo: function(platform, revision) {
     console.assert(downloadURLs[platform], `Unsupported platform: ${platform}`);
     let folderPath = getFolderPath(platform, revision);
-    if (!fs.existsSync(folderPath))
-      return null;
     let executablePath = '';
     if (platform === 'mac')
       executablePath = path.join(folderPath, 'chrome-mac', 'Chromium.app', 'Contents', 'MacOS', 'Chromium');
@@ -146,7 +144,10 @@ module.exports = {
     else
       throw 'Unsupported platfrom: ' + platfrom;
     return {
-      executablePath: executablePath
+      executablePath,
+      folderPath,
+      downloaded: fs.existsSync(folderPath),
+      url: util.format(downloadURLs[platform], revision)
     };
   },
 };
