@@ -28,11 +28,10 @@ class WebPage {
    * @param {string} scriptPath
    * @param {!Object=} options
    */
-  constructor(browser, scriptPath, options) {
+  constructor(browser, scriptPath, options = {}) {
     this._page = await(browser.newPage());
     this.settings = new WebPageSettings(this._page);
 
-    options = options || {};
     options.settings = options.settings || {};
     if (options.settings.userAgent)
       this.settings.userAgent = options.settings.userAgent;
