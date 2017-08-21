@@ -35,9 +35,7 @@ function onError(error) {
 - Download chromium manually:
     ${revisionInfo.url}
 - Extract chromium into ${revisionInfo.folderPath}
-  * Chromium executable should be at ${revisionInfo.executablePath}
-- Alternatively, point puppeteer to the downloaded chromium with the 'executablePath' option:
-    https://goo.gl/E8yQua`);
+  * Chromium executable should be at ${revisionInfo.executablePath}`);
 }
 
 let progressBar = null;
