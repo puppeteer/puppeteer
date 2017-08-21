@@ -16,7 +16,7 @@
  */
 
 const Downloader = require('./ChromiumDownloader');
-const https = require('https');
+const request = require('request');
 const OMAHA_PROXY = 'https://omahaproxy.appspot.com/all.json';
 
 const colors = {
@@ -131,7 +131,8 @@ async function checkAndDrawRevisionAvailability(table, name, revision) {
 function loadJSON(url) {
   let resolve;
   let promise = new Promise(x => resolve = x);
-  https.get(url, response => {
+  request.get(url)
+  .on('response', response => {
     if (response.statusCode !== 200) {
       resolve(null);
       return;
