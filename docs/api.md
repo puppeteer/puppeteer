@@ -922,13 +922,13 @@ puppeteer.launch().then(async browser => {
 
 #### dialog.accept([promptText])
 - `promptText` <[string]> A text to enter in prompt. Does not cause any effects if the dialog's `type` is not prompt.
-- returns: <[Promise]> Promise which resolves when the dialog has being accepted.
+- returns: <[Promise]> Promise which resolves when the dialog has been accepted.
 
 #### dialog.defaultValue()
 - returns: <[string]> If dialog is prompt, returns default prompt value. Otherwise, returns empty string.
 
 #### dialog.dismiss()
-- returns: <[Promise]> Promise which resolves when the dialog has being dismissed.
+- returns: <[Promise]> Promise which resolves when the dialog has been dismissed.
 
 #### dialog.message()
 - returns: <[string]> A message displayed in the dialog.
@@ -1015,7 +1015,7 @@ console.log(await page.mainFrame().evaluate('1 + 2')); // prints "3"
 #### frame.isDetached()
 - returns: <[boolean]>
 
-Returns `true` if the frame has being detached, or `false` otherwise.
+Returns `true` if the frame has been detached, or `false` otherwise.
 
 #### frame.name()
 - returns: <[string]>
