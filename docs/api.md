@@ -51,6 +51,7 @@
     + [page.reload(options)](#pagereloadoptions)
     + [page.screenshot([options])](#pagescreenshotoptions)
     + [page.setContent(html)](#pagesetcontenthtml)
+    + [page.setElementContent(selector, text)](#pagesetelementcontentselector-text)
     + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
     + [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
     + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
@@ -630,6 +631,15 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 #### page.setContent(html)
 - `html` <[string]> HTML markup to assign to the page.
 - returns: <[Promise]>
+
+#### page.setElementContent(selector, text)
+- `selector` <[string]> a string containing a CSS selector.
+- `text` <[string]> the text to append in the found node.
+- returns: <[Promise]>
+
+Runs a `document.querySelector` and applies text according to the following rules:
+- If the node is `<input>` or `<button>`: `.value` is used.
+- Otherwise falls back to using `.innerHTML`
 
 #### page.setExtraHTTPHeaders(headers)
 - `headers` <[Map]> A map of additional http headers to be sent with every request.
