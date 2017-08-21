@@ -24,7 +24,7 @@ const revisionInfo = Downloader.revisionInfo(platform, revision);
 if (revisionInfo.downloaded)
   return;
 
-let allRevisions = Downloader.downloadedRevisions();
+const allRevisions = Downloader.downloadedRevisions();
 Downloader.downloadRevision(platform, revision, onProgress)
     // Remove previous chromium revisions.
     .then(() => Promise.all(allRevisions.map(({platform, revision}) => Downloader.removeRevision(platform, revision))))
@@ -52,7 +52,7 @@ function onProgress(bytesTotal, delta) {
 }
 
 function toMegabytes(bytes) {
-  let mb = bytes / 1024 / 1024;
+  const mb = bytes / 1024 / 1024;
   return `${Math.round(mb * 10) / 10} Mb`;
 }
 

@@ -59,8 +59,8 @@ Running command without arguments will check against omahaproxy revisions.`);
   return;
 }
 
-let fromRevision = parseInt(process.argv[2], 10);
-let toRevision = parseInt(process.argv[3], 10);
+const fromRevision = parseInt(process.argv[2], 10);
+const toRevision = parseInt(process.argv[3], 10);
 checkRangeAvailability(fromRevision, toRevision);
 
 /**
@@ -68,23 +68,23 @@ checkRangeAvailability(fromRevision, toRevision);
  */
 async function checkOmahaProxyAvailability() {
   console.log('Fetching revisions from ' + OMAHA_PROXY);
-  let platforms = await loadJSON(OMAHA_PROXY);
+  const platforms = await loadJSON(OMAHA_PROXY);
   if (!platforms) {
     console.error('ERROR: failed to fetch chromium revisions from omahaproxy.');
     return;
   }
-  let table = new Table([27, 7, 7, 7, 7]);
+  const table = new Table([27, 7, 7, 7, 7]);
   table.drawRow([''].concat(Downloader.supportedPlatforms()));
-  for (let platform of platforms) {
+  for (const platform of platforms) {
     // Trust only to the main platforms.
     if (platform.os !== 'mac' && platform.os !== 'win' && platform.os !== 'win64' && platform.os !== 'linux')
       continue;
-    let osName = platform.os === 'win' ? 'win32' : platform.os;
-    for (let version of platform.versions) {
+    const osName = platform.os === 'win' ? 'win32' : platform.os;
+    for (const version of platform.versions) {
       if (version.channel !== 'dev' && version.channel !== 'beta' && version.channel !== 'canary' && version.channel !== 'stable')
         continue;
-      let revisionName = padLeft('[' + osName + ' ' + version.channel + ']', 15);
-      let revision = parseInt(version.branch_base_position, 10);
+      const revisionName = padLeft('[' + osName + ' ' + version.channel + ']', 15);
+      const revision = parseInt(version.branch_base_position, 10);
       await checkAndDrawRevisionAvailability(table, revisionName, revision);
     }
   }
@@ -96,9 +96,9 @@ async function checkOmahaProxyAvailability() {
  * @return {!Promise}
  */
 async function checkRangeAvailability(fromRevision, toRevision) {
-  let table = new Table([10, 7, 7, 7, 7]);
+  const table = new Table([10, 7, 7, 7, 7]);
   table.drawRow([''].concat(Downloader.supportedPlatforms()));
-  let inc = fromRevision < toRevision ? 1 : -1;
+  const inc = fromRevision < toRevision ? 1 : -1;
   for (let revision = fromRevision; revision !== toRevision; revision += inc)
     await checkAndDrawRevisionAvailability(table, '', revision);
 }
@@ -110,15 +110,15 @@ async function checkRangeAvailability(fromRevision, toRevision) {
  * @return {!Promise}
  */
 async function checkAndDrawRevisionAvailability(table, name, revision) {
-  let promises = [];
-  for (let platform of Downloader.supportedPlatforms())
+  const promises = [];
+  for (const platform of Downloader.supportedPlatforms())
     promises.push(Downloader.canDownloadRevision(platform, revision));
-  let availability = await Promise.all(promises);
-  let allAvailable = availability.every(e => !!e);
-  let values = [name + ' ' + (allAvailable ? colors.green + revision + colors.reset : revision)];
+  const availability = await Promise.all(promises);
+  const allAvailable = availability.every(e => !!e);
+  const values = [name + ' ' + (allAvailable ? colors.green + revision + colors.reset : revision)];
   for (let i = 0; i < availability.length; ++i) {
-    let decoration = availability[i] ? '+' : '-';
-    let color = availability[i] ? colors.green : colors.red;
+    const decoration = availability[i] ? '+' : '-';
+    const color = availability[i] ? colors.green : colors.red;
     values.push(color + decoration + colors.reset);
   }
   table.drawRow(values);
@@ -130,7 +130,7 @@ async function checkAndDrawRevisionAvailability(table, name, revision) {
  */
 function loadJSON(url) {
   let resolve;
-  let promise = new Promise(x => resolve = x);
+  const promise = new Promise(x => resolve = x);
   https.get(url, response => {
     if (response.statusCode !== 200) {
       resolve(null);
@@ -141,7 +141,7 @@ function loadJSON(url) {
       body += chunk;
     });
     response.on('end', function(){
-      let json = JSON.parse(body);
+      const json = JSON.parse(body);
       resolve(json);
     });
   }).on('error', function(e){
@@ -164,8 +164,8 @@ function spaceString(size) {
  * @return {string}
  */
 function filterOutColors(text) {
-  for (let colorName in colors) {
-    let color = colors[colorName];
+  for (const colorName in colors) {
+    const color = colors[colorName];
     text = text.replace(color, '');
   }
   return text;
@@ -177,7 +177,7 @@ function filterOutColors(text) {
  * @return {string}
  */
 function padLeft(text, length) {
-  let printableCharacters = filterOutColors(text);
+  const printableCharacters = filterOutColors(text);
   return printableCharacters.length >= length ? text : spaceString(length - text.length) + text;
 }
 
@@ -187,10 +187,10 @@ function padLeft(text, length) {
  * @return {string}
  */
 function padCenter(text, length) {
-  let printableCharacters = filterOutColors(text);
+  const printableCharacters = filterOutColors(text);
   if (printableCharacters.length >= length)
     return text;
-  let left = Math.floor((length - printableCharacters.length) / 2);
-  let right = Math.ceil((length - printableCharacters.length) / 2);
+  const left = Math.floor((length - printableCharacters.length) / 2);
+  const right = Math.ceil((length - printableCharacters.length) / 2);
   return spaceString(left) + text + spaceString(right);
 }

@@ -82,9 +82,9 @@ afterAll(SX(async function() {
 
 describe('Browser', function() {
   it('Browser.Options.ignoreHTTPSErrors', SX(async function() {
-    let options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
-    let browser = await puppeteer.launch(options);
-    let page = await browser.newPage();
+    const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
+    const browser = await puppeteer.launch(options);
+    const page = await browser.newPage();
     let error = null;
     let response = null;
     try {
@@ -97,20 +97,20 @@ describe('Browser', function() {
     browser.close();
   }));
   it('should reject all promises when browser is closed', SX(async function() {
-    let browser = await puppeteer.launch(defaultBrowserOptions);
-    let page = await browser.newPage();
+    const browser = await puppeteer.launch(defaultBrowserOptions);
+    const page = await browser.newPage();
     let error = null;
-    let neverResolves = page.evaluate(() => new Promise(r => {})).catch(e => error = e);
+    const neverResolves = page.evaluate(() => new Promise(r => {})).catch(e => error = e);
     browser.close();
     await neverResolves;
     expect(error.message).toContain('Protocol error');
   }));
   it('Puppeteer.connect', SX(async function() {
-    let originalBrowser = await puppeteer.launch(defaultBrowserOptions);
-    let browser = await puppeteer.connect({
+    const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+    const browser = await puppeteer.connect({
       browserWSEndpoint: originalBrowser.wsEndpoint()
     });
-    let page = await browser.newPage();
+    const page = await browser.newPage();
     expect(await page.evaluate(() => 7 * 8)).toBe(56);
     originalBrowser.close();
   }));
@@ -144,7 +144,7 @@ describe('Page', function() {
 
   describe('Browser.version', function() {
     it('should return whether we are in headless', SX(async function() {
-      let version = await browser.version();
+      const version = await browser.version();
       expect(version.length).toBeGreaterThan(0);
       expect(version.startsWith('Headless')).toBe(headless);
     }));
@@ -152,8 +152,8 @@ describe('Page', function() {
 
   describe('Page.close', function() {
     it('should reject all promises when page is closed', SX(async function() {
-      let newPage = await browser.newPage();
-      let neverResolves = newPage.evaluate(() => new Promise(r => {}));
+      const newPage = await browser.newPage();
+      const neverResolves = newPage.evaluate(() => new Promise(r => {}));
       newPage.close();
       let error = null;
       try {
@@ -177,11 +177,11 @@ describe('Page', function() {
 
   describe('Page.evaluate', function() {
     it('should work', SX(async function() {
-      let result = await page.evaluate(() => 7 * 3);
+      const result = await page.evaluate(() => 7 * 3);
       expect(result).toBe(21);
     }));
     it('should await promise', SX(async function() {
-      let result = await page.evaluate(() => Promise.resolve(8 * 7));
+      const result = await page.evaluate(() => Promise.resolve(8 * 7));
       expect(result).toBe(56);
     }));
     it('should work from-inside an exposed function', SX(async function() {
@@ -189,7 +189,7 @@ describe('Page', function() {
       await page.exposeFunction('callController', async function(a, b) {
         return await page.evaluate((a, b) => a * b, a, b);
       });
-      let result = await page.evaluate(async function() {
+      const result = await page.evaluate(async function() {
         return await callController(9, 3);
       });
       expect(result).toBe(27);
@@ -206,40 +206,40 @@ describe('Page', function() {
     }));
     it('should return complex objects', SX(async function() {
       const object = {foo: 'bar!'};
-      let result = await page.evaluate(a => a, object);
+      const result = await page.evaluate(a => a, object);
       expect(result).not.toBe(object);
       expect(result).toEqual(object);
     }));
     it('should return NaN', SX(async function() {
-      let result = await page.evaluate(() => NaN);
+      const result = await page.evaluate(() => NaN);
       expect(Object.is(result, NaN)).toBe(true);
     }));
     it('should return -0', SX(async function() {
-      let result = await page.evaluate(() => -0);
+      const result = await page.evaluate(() => -0);
       expect(Object.is(result, -0)).toBe(true);
     }));
     it('should return Infinity', SX(async function() {
-      let result = await page.evaluate(() => Infinity);
+      const result = await page.evaluate(() => Infinity);
       expect(Object.is(result, Infinity)).toBe(true);
     }));
     it('should return -Infinity', SX(async function() {
-      let result = await page.evaluate(() => -Infinity);
+      const result = await page.evaluate(() => -Infinity);
       expect(Object.is(result, -Infinity)).toBe(true);
     }));
     it('should not fail for window object', SX(async function() {
-      let result = await page.evaluate(() => window);
+      const result = await page.evaluate(() => window);
       expect(result).toBe('Window');
     }));
     it('should accept a string', SX(async function() {
-      let result = await page.evaluate('1 + 2');
+      const result = await page.evaluate('1 + 2');
       expect(result).toBe(3);
     }));
     it('should accept a string with semi colons', SX(async function() {
-      let result = await page.evaluate('1 + 5;');
+      const result = await page.evaluate('1 + 5;');
       expect(result).toBe(6);
     }));
     it('should accept a string with comments', SX(async function() {
-      let result = await page.evaluate('2 + 5;\n// do some math!');
+      const result = await page.evaluate('2 + 5;\n// do some math!');
       expect(result).toBe(7);
     }));
   });
@@ -260,13 +260,13 @@ describe('Page', function() {
   });
 
   describe('Frame.evaluate', function() {
-    let FrameUtils = require('./frame-utils');
+    const FrameUtils = require('./frame-utils');
     it('should have different execution contexts', SX(async function() {
       await page.goto(EMPTY_PAGE);
       await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
       expect(page.frames().length).toBe(2);
-      let frame1 = page.frames()[0];
-      let frame2 = page.frames()[1];
+      const frame1 = page.frames()[0];
+      const frame2 = page.frames()[1];
       await frame1.evaluate(() => window.FOO = 'foo');
       await frame2.evaluate(() => window.FOO = 'bar');
       expect(await frame1.evaluate(() => window.FOO)).toBe('foo');
@@ -274,7 +274,7 @@ describe('Page', function() {
     }));
     it('should execute after cross-site navigation', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      let mainFrame = page.mainFrame();
+      const mainFrame = page.mainFrame();
       expect(await mainFrame.evaluate(() => window.location.href)).toContain('localhost');
       await page.goto(CROSS_PROCESS_PREFIX + '/empty.html');
       expect(await mainFrame.evaluate(() => window.location.href)).toContain('127');
@@ -336,12 +336,12 @@ describe('Page', function() {
   });
 
   describe('Frame.waitForSelector', function() {
-    let FrameUtils = require('./frame-utils');
-    let addElement = tag => document.body.appendChild(document.createElement(tag));
+    const FrameUtils = require('./frame-utils');
+    const addElement = tag => document.body.appendChild(document.createElement(tag));
 
     it('should immediately resolve promise if node exists', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      let frame = page.mainFrame();
+      const frame = page.mainFrame();
       let added = false;
       await frame.waitForSelector('*').then(() => added = true);
       expect(added).toBe(true);
@@ -354,9 +354,9 @@ describe('Page', function() {
 
     it('should resolve promise when node is added', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      let frame = page.mainFrame();
+      const frame = page.mainFrame();
       let added = false;
-      let watchdog = frame.waitForSelector('div').then(() => added = true);
+      const watchdog = frame.waitForSelector('div').then(() => added = true);
       // run nop function..
       await frame.evaluate(() => 42);
       // .. to be sure that waitForSelector promise is not resolved yet.
@@ -370,7 +370,7 @@ describe('Page', function() {
 
     it('should work when node is added through innerHTML', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      let watchdog = page.waitForSelector('h3 div');
+      const watchdog = page.waitForSelector('h3 div');
       await page.evaluate(addElement, 'span');
       await page.evaluate(() => document.querySelector('span').innerHTML = '<h3><div></div></h3>');
       await watchdog;
@@ -379,7 +379,7 @@ describe('Page', function() {
     it('Page.waitForSelector is shortcut for main frame', SX(async function() {
       await page.goto(EMPTY_PAGE);
       await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
-      let otherFrame = page.frames()[1];
+      const otherFrame = page.frames()[1];
       let added = false;
       page.waitForSelector('div').then(() => added = true);
       await otherFrame.evaluate(addElement, 'div');
@@ -391,8 +391,8 @@ describe('Page', function() {
     it('should run in specified frame', SX(async function() {
       await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
       await FrameUtils.attachFrame(page, 'frame2', EMPTY_PAGE);
-      let frame1 = page.frames()[1];
-      let frame2 = page.frames()[2];
+      const frame1 = page.frames()[1];
+      const frame2 = page.frames()[2];
       let added = false;
       frame2.waitForSelector('div').then(() => added = true);
       expect(added).toBe(false);
@@ -416,9 +416,9 @@ describe('Page', function() {
     }));
     it('should throw when frame is detached', SX(async function() {
       await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
-      let frame = page.frames()[1];
+      const frame = page.frames()[1];
       let waitError = null;
-      let waitPromise = frame.waitForSelector('.box').catch(e => waitError = e);
+      const waitPromise = frame.waitForSelector('.box').catch(e => waitError = e);
       await FrameUtils.detachFrame(page, 'frame1');
       await waitPromise;
       expect(waitError).toBeTruthy();
@@ -426,7 +426,7 @@ describe('Page', function() {
     }));
     it('should survive cross-process navigation', SX(async function() {
       let boxFound = false;
-      let waitForSelector = page.waitForSelector('.box').then(() => boxFound = true);
+      const waitForSelector = page.waitForSelector('.box').then(() => boxFound = true);
       await page.goto(EMPTY_PAGE);
       expect(boxFound).toBe(false);
       await page.reload();
@@ -437,7 +437,7 @@ describe('Page', function() {
     }));
     it('should wait for visible', SX(async function() {
       let divFound = false;
-      let waitForSelector = page.waitForSelector('div', {visible: true}).then(() => divFound = true);
+      const waitForSelector = page.waitForSelector('div', {visible: true}).then(() => divFound = true);
       await page.setContent(`<div style='display: none;visibility: hidden'></div>`);
       expect(divFound).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.removeProperty('display'));
@@ -456,7 +456,7 @@ describe('Page', function() {
   describe('Page.waitFor', function() {
     it('should wait for selector', SX(async function() {
       let found = false;
-      let waitFor = page.waitFor('div').then(() => found = true);
+      const waitFor = page.waitFor('div').then(() => found = true);
       await page.goto(EMPTY_PAGE);
       expect(found).toBe(false);
       await page.goto(PREFIX + '/grid.html');
@@ -464,7 +464,7 @@ describe('Page', function() {
       expect(found).toBe(true);
     }));
     it('should timeout', SX(async function() {
-      let startTime = Date.now();
+      const startTime = Date.now();
       const timeout = 42;
       await page.waitFor(timeout);
       expect(Date.now() - startTime).not.toBeLessThan(timeout / 2);
@@ -495,7 +495,7 @@ describe('Page', function() {
       expect(commandArgs).toEqual([5, 'hello', {foo: 'bar'}]);
     }));
     it('should work for different console API calls', SX(async function() {
-      let messages = [];
+      const messages = [];
       page.on('console', msg => messages.push(msg));
       await Promise.all([
         page.evaluate(() => {
@@ -533,7 +533,7 @@ describe('Page', function() {
 
   describe('Page.goto', function() {
     it('should navigate to about:blank', SX(async function() {
-      let response = await page.goto('about:blank');
+      const response = await page.goto('about:blank');
       expect(response).toBe(null);
     }));
     it('should fail when navigating to bad url', SX(async function() {
@@ -607,16 +607,16 @@ describe('Page', function() {
       server.setRoute('/fetch-request-b.js', (req, res) => responses.push(res));
       server.setRoute('/fetch-request-c.js', (req, res) => responses.push(res));
       server.setRoute('/fetch-request-d.js', (req, res) => responses.push(res));
-      let initialFetchResourcesRequested = Promise.all([
+      const initialFetchResourcesRequested = Promise.all([
         server.waitForRequest('/fetch-request-a.js'),
         server.waitForRequest('/fetch-request-b.js'),
         server.waitForRequest('/fetch-request-c.js'),
       ]);
-      let secondFetchResourceRequested = server.waitForRequest('/fetch-request-d.js');
+      const secondFetchResourceRequested = server.waitForRequest('/fetch-request-d.js');
 
       // Navigate to a page which loads immediately and then does a bunch of
       // requests via javascript's fetch method.
-      let navigationPromise = page.goto(PREFIX + '/networkidle.html', {
+      const navigationPromise = page.goto(PREFIX + '/networkidle.html', {
         waitUntil: 'networkidle',
         networkIdleTimeout: 100,
         networkIdleInflight: 0, // Only be idle when there are 0 inflight requests
@@ -636,7 +636,7 @@ describe('Page', function() {
       expect(navigationFinished).toBe(false);
 
       // Respond to initial requests.
-      for (let response of responses) {
+      for (const response of responses) {
         response.statusCode = 404;
         response.end(`File not found`);
       }
@@ -650,7 +650,7 @@ describe('Page', function() {
       expect(navigationFinished).toBe(false);
 
       // Respond to requests.
-      for (let response of responses) {
+      for (const response of responses) {
         response.statusCode = 404;
         response.end(`File not found`);
       }
@@ -660,13 +660,13 @@ describe('Page', function() {
       expect(response.ok).toBe(true);
     }));
     it('should wait for websockets to succeed navigation', SX(async function() {
-      let responses = [];
+      const responses = [];
       // Hold on to the fetch request without answering.
       server.setRoute('/fetch-request.js', (req, res) => responses.push(res));
-      let fetchResourceRequested = server.waitForRequest('/fetch-request.js');
+      const fetchResourceRequested = server.waitForRequest('/fetch-request.js');
       // Navigate to a page which loads immediately and then opens a bunch of
       // websocket connections and then a fetch request.
-      let navigationPromise = page.goto(PREFIX + '/websocket.html', {
+      const navigationPromise = page.goto(PREFIX + '/websocket.html', {
         waitUntil: 'networkidle',
         networkIdleTimeout: 100,
         networkIdleInflight: 0, // Only be idle when there are 0 inflight requests/connections
@@ -686,7 +686,7 @@ describe('Page', function() {
       expect(navigationFinished).toBe(false);
 
       // Respond to the request.
-      for (let response of responses) {
+      for (const response of responses) {
         response.statusCode = 404;
         response.end(`File not found`);
       }
@@ -704,18 +704,18 @@ describe('Page', function() {
       expect(warning).toBe(null);
     }));
     it('should navigate to dataURL and fire dataURL requests', SX(async function() {
-      let requests = [];
+      const requests = [];
       page.on('request', request => requests.push(request));
-      let dataURL = 'data:text/html,<div>yo</div>';
-      let response = await page.goto(dataURL);
+      const dataURL = 'data:text/html,<div>yo</div>';
+      const response = await page.goto(dataURL);
       expect(response.status).toBe(200);
       expect(requests.length).toBe(1);
       expect(requests[0].url).toBe(dataURL);
     }));
     it('should navigate to URL with hash and fire requests without hash', SX(async function() {
-      let requests = [];
+      const requests = [];
       page.on('request', request => requests.push(request));
-      let response = await page.goto(EMPTY_PAGE + '#hash');
+      const response = await page.goto(EMPTY_PAGE + '#hash');
       expect(response.status).toBe(200);
       expect(response.url).toBe(EMPTY_PAGE);
       expect(requests.length).toBe(1);
@@ -759,7 +759,7 @@ describe('Page', function() {
       await page.exposeFunction('compute', function(a, b) {
         return a * b;
       });
-      let result = await page.evaluate(async function() {
+      const result = await page.evaluate(async function() {
         return await compute(9, 4);
       });
       expect(result).toBe(36);
@@ -770,7 +770,7 @@ describe('Page', function() {
       });
 
       await page.goto(EMPTY_PAGE);
-      let result = await page.evaluate(async function() {
+      const result = await page.evaluate(async function() {
         return await compute(9, 4);
       });
       expect(result).toBe(36);
@@ -780,7 +780,7 @@ describe('Page', function() {
         return Promise.resolve(a * b);
       });
 
-      let result = await page.evaluate(async function() {
+      const result = await page.evaluate(async function() {
         return await compute(3, 5);
       });
       expect(result).toBe(15);
@@ -829,7 +829,7 @@ describe('Page', function() {
     it('should amend HTTP headers', SX(async function() {
       await page.setRequestInterceptionEnabled(true);
       page.on('request', request => {
-        let headers = new Map(request.headers);
+        const headers = new Map(request.headers);
         headers.set('foo', 'bar');
         request.continue({ headers });
       });
@@ -859,7 +859,7 @@ describe('Page', function() {
       server.setRedirect('/non-existing-page-2.html', '/non-existing-page-3.html');
       server.setRedirect('/non-existing-page-3.html', '/non-existing-page-4.html');
       server.setRedirect('/non-existing-page-4.html', '/empty.html');
-      let response = await page.goto(PREFIX + '/non-existing-page.html');
+      const response = await page.goto(PREFIX + '/non-existing-page.html');
       expect(response.status).toBe(200);
       expect(response.url).toContain('empty.html');
     }));
@@ -874,7 +874,7 @@ describe('Page', function() {
           request.continue();
       });
       await page.goto(EMPTY_PAGE);
-      let result = await page.evaluate(async() => {
+      const result = await page.evaluate(async() => {
         try {
           await fetch('/non-existing.json');
         } catch (e) {
@@ -895,7 +895,7 @@ describe('Page', function() {
         spinner ? request.abort() : request.continue();
         spinner = !spinner;
       });
-      let results = await page.evaluate(() => Promise.all([
+      const results = await page.evaluate(() => Promise.all([
         fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
         fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
         fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
@@ -904,25 +904,25 @@ describe('Page', function() {
     }));
     it('should navigate to dataURL and fire dataURL requests', SX(async function() {
       await page.setRequestInterceptionEnabled(true);
-      let requests = [];
+      const requests = [];
       page.on('request', request => {
         requests.push(request);
         request.continue();
       });
-      let dataURL = 'data:text/html,<div>yo</div>';
-      let response = await page.goto(dataURL);
+      const dataURL = 'data:text/html,<div>yo</div>';
+      const response = await page.goto(dataURL);
       expect(response.status).toBe(200);
       expect(requests.length).toBe(1);
       expect(requests[0].url).toBe(dataURL);
     }));
     it('should navigate to URL with hash and and fire requests without hash', SX(async function() {
       await page.setRequestInterceptionEnabled(true);
-      let requests = [];
+      const requests = [];
       page.on('request', request => {
         requests.push(request);
         request.continue();
       });
-      let response = await page.goto(EMPTY_PAGE + '#hash');
+      const response = await page.goto(EMPTY_PAGE + '#hash');
       expect(response.status).toBe(200);
       expect(response.url).toBe(EMPTY_PAGE);
       expect(requests.length).toBe(1);
@@ -947,14 +947,14 @@ describe('Page', function() {
         expect(dialog.message()).toBe('question?');
         dialog.accept('answer!');
       });
-      let result = await page.evaluate(() => prompt('question?', 'yes.'));
+      const result = await page.evaluate(() => prompt('question?', 'yes.'));
       expect(result).toBe('answer!');
     }));
     it('should dismiss the prompt', SX(async function() {
       page.on('dialog', dialog => {
         dialog.dismiss();
       });
-      let result = await page.evaluate(() => prompt('question?'));
+      const result = await page.evaluate(() => prompt('question?'));
       expect(result).toBe(null);
     }));
   });
@@ -971,7 +971,7 @@ describe('Page', function() {
 
   describe('Page.Events.Request', function() {
     it('should fire', SX(async function() {
-      let requests = [];
+      const requests = [];
       page.on('request', request => requests.push(request));
       await page.goto(EMPTY_PAGE);
       expect(requests.length).toBe(1);
@@ -980,7 +980,7 @@ describe('Page', function() {
   });
 
   describe('Frame Management', function() {
-    let FrameUtils = require('./frame-utils');
+    const FrameUtils = require('./frame-utils');
     it('should handle nested frames', SX(async function() {
       await page.goto(PREFIX + '/frames/nested-frames.html');
       expect(FrameUtils.dumpFrames(page.mainFrame())).toBeGolden('nested-frames.txt');
@@ -988,21 +988,21 @@ describe('Page', function() {
     it('should send events when frames are manipulated dynamically', SX(async function() {
       await page.goto(EMPTY_PAGE);
       // validate frameattached events
-      let attachedFrames = [];
+      const attachedFrames = [];
       page.on('frameattached', frame => attachedFrames.push(frame));
       await FrameUtils.attachFrame(page, 'frame1', './assets/frame.html');
       expect(attachedFrames.length).toBe(1);
       expect(attachedFrames[0].url()).toContain('/assets/frame.html');
 
       // validate framenavigated events
-      let navigatedFrames = [];
+      const navigatedFrames = [];
       page.on('framenavigated', frame => navigatedFrames.push(frame));
       await FrameUtils.navigateFrame(page, 'frame1', './empty.html');
       expect(navigatedFrames.length).toBe(1);
       expect(navigatedFrames[0].url()).toContain('/empty.html');
 
       // validate framedetached events
-      let detachedFrames = [];
+      const detachedFrames = [];
       page.on('framedetached', frame => detachedFrames.push(frame));
       await FrameUtils.detachFrame(page, 'frame1');
       expect(detachedFrames.length).toBe(1);
@@ -1010,7 +1010,7 @@ describe('Page', function() {
     }));
     it('should persist mainFrame on cross-process navigation', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      let mainFrame = page.mainFrame();
+      const mainFrame = page.mainFrame();
       await page.goto('http://127.0.0.1:' + PORT + '/empty.html');
       expect(page.mainFrame() === mainFrame).toBeTruthy();
     }));
@@ -1044,7 +1044,7 @@ describe('Page', function() {
     it('should report frame.name()', SX(async function() {
       await FrameUtils.attachFrame(page, 'theFrameId', EMPTY_PAGE);
       await page.evaluate(url => {
-        let frame = document.createElement('iframe');
+        const frame = document.createElement('iframe');
         frame.name = 'theFrameName';
         frame.src = url;
         document.body.appendChild(frame);
@@ -1066,11 +1066,11 @@ describe('Page', function() {
   describe('Page.$', function() {
     it('should query existing element', SX(async function() {
       await page.setContent('<section>test</section>');
-      let element = await page.$('section');
+      const element = await page.$('section');
       expect(element).toBeTruthy();
     }));
     it('should return null for non-existing element', SX(async function() {
-      let element = await page.$('non-existing-element');
+      const element = await page.$('non-existing-element');
       expect(element).toBe(null);
     }));
   });
@@ -1078,20 +1078,20 @@ describe('Page', function() {
   describe('ElementHandle.evaluate', function() {
     it('should work', SX(async function() {
       await page.setContent('<section>42</section>');
-      let element = await page.$('section');
-      let text = await element.evaluate(e => e.textContent);
+      const element = await page.$('section');
+      const text = await element.evaluate(e => e.textContent);
       expect(text).toBe('42');
     }));
     it('should await promise if any', SX(async function() {
       await page.setContent('<section>39</section>');
-      let element = await page.$('section');
-      let text = await element.evaluate(e => Promise.resolve(e.textContent));
+      const element = await page.$('section');
+      const text = await element.evaluate(e => Promise.resolve(e.textContent));
       expect(text).toBe('39');
     }));
     it('should throw if underlying page got closed', SX(async function() {
-      let otherPage = await browser.newPage();
+      const otherPage = await browser.newPage();
       await otherPage.setContent('<section>88</section>');
-      let element = await otherPage.$('section');
+      const element = await otherPage.$('section');
       expect(element).toBeTruthy();
       await otherPage.close();
       let error = null;
@@ -1104,7 +1104,7 @@ describe('Page', function() {
     }));
     it('should throw if underlying element was disposed', SX(async function() {
       await page.setContent('<section>39</section>');
-      let element = await page.$('section');
+      const element = await page.$('section');
       expect(element).toBeTruthy();
       await element.dispose();
       let error = null;
@@ -1120,7 +1120,7 @@ describe('Page', function() {
   describe('ElementHandle.click', function() {
     it('should work', SX(async function() {
       await page.goto(PREFIX + '/input/button.html');
-      let button = await page.$('button');
+      const button = await page.$('button');
       await button.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     }));
@@ -1129,7 +1129,7 @@ describe('Page', function() {
   describe('ElementHandle.hover', function() {
     it('should work', SX(async function() {
       await page.goto(PREFIX + '/input/scrollable.html');
-      let button = await page.$('#button-6');
+      const button = await page.$('#button-6');
       await button.hover();
       expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-6');
     }));
@@ -1173,12 +1173,12 @@ describe('Page', function() {
     it('should upload the file', SX(async function(){
       await page.goto(PREFIX + '/input/fileupload.html');
       const filePath = path.relative(process.cwd(), __dirname + '/assets/file-to-upload.txt');
-      let input = await page.$('input');
+      const input = await page.$('input');
       await input.uploadFile(filePath);
       expect(await input.evaluate(e => e.files[0].name)).toBe('file-to-upload.txt');
       expect(await input.evaluate(e => {
-        let reader = new FileReader();
-        let promise = new Promise(fulfill => reader.onload = fulfill);
+        const reader = new FileReader();
+        const promise = new Promise(fulfill => reader.onload = fulfill);
         reader.readAsText(e.files[0]);
         return promise.then(() => reader.result);
       })).toBe('contents of the file');
@@ -1221,9 +1221,9 @@ describe('Page', function() {
     }));
     it('should report shiftKey', SX(async function(){
       await page.goto(PREFIX + '/input/keyboard.html');
-      let keyboard = page.keyboard;
-      let codeForKey = {'Shift': 16, 'Alt': 18, 'Meta': 91, 'Control': 17};
-      for (let modifierKey in codeForKey) {
+      const keyboard = page.keyboard;
+      const codeForKey = {'Shift': 16, 'Alt': 18, 'Meta': 91, 'Control': 17};
+      for (const modifierKey in codeForKey) {
         await keyboard.down(modifierKey);
         expect(await page.evaluate(() => getResult())).toBe('Keydown: ' + modifierKey + ' ' + codeForKey[modifierKey] + ' [' + modifierKey + ']');
         await keyboard.down('!');
@@ -1236,7 +1236,7 @@ describe('Page', function() {
     }));
     it('should report multiple modifiers', SX(async function(){
       await page.goto(PREFIX + '/input/keyboard.html');
-      let keyboard = page.keyboard;
+      const keyboard = page.keyboard;
       await keyboard.down('Control');
       expect(await page.evaluate(() => getResult())).toBe('Keydown: Control 17 [Control]');
       await keyboard.down('Meta');
@@ -1265,7 +1265,7 @@ describe('Page', function() {
     }));
     it('should send propery codes while typing with shift', SX(async function(){
       await page.goto(PREFIX + '/input/keyboard.html');
-      let keyboard = page.keyboard;
+      const keyboard = page.keyboard;
       await keyboard.down('Shift');
       await page.type('~');
       expect(await page.evaluate(() => getResult())).toBe(
@@ -1292,7 +1292,7 @@ describe('Page', function() {
       expect(await page.evaluate(() => textarea.value)).toBe('He Wrd!');
     }));
     it('keyboard.modifiers()', SX(async function(){
-      let keyboard = page.keyboard;
+      const keyboard = page.keyboard;
       expect(keyboard._modifiers).toBe(0);
       await keyboard.down('Shift');
       expect(keyboard._modifiers).toBe(8);
@@ -1304,13 +1304,13 @@ describe('Page', function() {
     }));
     it('should resize the textarea', SX(async function(){
       await page.goto(PREFIX + '/input/textarea.html');
-      let {x, y, width, height} = await page.evaluate(dimensions);
-      let mouse = page.mouse;
+      const {x, y, width, height} = await page.evaluate(dimensions);
+      const mouse = page.mouse;
       await mouse.move(x + width - 4, y + height - 4);
       await mouse.down();
       await mouse.move(x + width + 100, y + height + 100);
       await mouse.up();
-      let newDimensions = await page.evaluate(dimensions);
+      const newDimensions = await page.evaluate(dimensions);
       expect(newDimensions.width).toBe(width + 104);
       expect(newDimensions.height).toBe(height + 104);
     }));
@@ -1324,7 +1324,7 @@ describe('Page', function() {
     it('should click a partially obscured button', SX(async function() {
       await page.goto(PREFIX + '/input/button.html');
       await page.evaluate(() => {
-        let button = document.querySelector('button');
+        const button = document.querySelector('button');
         button.textContent = 'Some really long text that will go offscreen';
         button.style.position = 'absolute';
         button.style.left = '368px';
@@ -1335,10 +1335,10 @@ describe('Page', function() {
     it('should select the text with mouse', SX(async function(){
       await page.goto(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
-      let text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
+      const text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
       await page.type(text);
       await page.evaluate(() => document.querySelector('textarea').scrollTop = 0);
-      let {x, y} = await page.evaluate(dimensions);
+      const {x, y} = await page.evaluate(dimensions);
       await page.mouse.move(x + 2,y + 2);
       await page.mouse.down();
       await page.mouse.move(100,100);
@@ -1348,7 +1348,7 @@ describe('Page', function() {
     it('should select the text by triple clicking', SX(async function(){
       await page.goto(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
-      let text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
+      const text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
       await page.type(text);
       await page.click('textarea');
       await page.click('textarea', {clickCount: 2});
@@ -1372,8 +1372,8 @@ describe('Page', function() {
     it('should set modifier keys on click', SX(async function(){
       await page.goto(PREFIX + '/input/scrollable.html');
       await page.evaluate(() => document.querySelector('#button-3').addEventListener('mousedown', e => window.lastEvent = e, true));
-      let modifiers = {'Shift': 'shiftKey', 'Control': 'ctrlKey', 'Alt': 'altKey', 'Meta': 'metaKey'};
-      for (let modifier in modifiers) {
+      const modifiers = {'Shift': 'shiftKey', 'Control': 'ctrlKey', 'Alt': 'altKey', 'Meta': 'metaKey'};
+      for (const modifier in modifiers) {
         await page.keyboard.down(modifier);
         await page.click('#button-3');
         if (!(await page.evaluate(mod => window.lastEvent[mod], modifiers[modifier])))
@@ -1381,7 +1381,7 @@ describe('Page', function() {
         await page.keyboard.up(modifier);
       }
       await page.click('#button-3');
-      for (let modifier in modifiers) {
+      for (const modifier in modifiers) {
         if ((await page.evaluate(mod => window.lastEvent[mod], modifiers[modifier])))
           fail(modifiers[modifier] + ' should be false');
       }
@@ -1402,7 +1402,7 @@ describe('Page', function() {
       await page.click('a');
     }));
     function dimensions() {
-      let rect = document.querySelector('textarea').getBoundingClientRect();
+      const rect = document.querySelector('textarea').getBoundingClientRect();
       return {
         x: rect.left,
         y: rect.top,
@@ -1417,7 +1417,7 @@ describe('Page', function() {
       expect(await page.evaluate(() => navigator.userAgent)).toContain('Mozilla');
       page.setUserAgent('foobar');
       page.goto(EMPTY_PAGE);
-      let request = await server.waitForRequest('/empty.html');
+      const request = await server.waitForRequest('/empty.html');
       expect(request.headers['user-agent']).toBe('foobar');
     }));
     it('should emulate device user-agent', SX(async function() {
@@ -1433,7 +1433,7 @@ describe('Page', function() {
         foo: 'bar'
       })));
       page.goto(EMPTY_PAGE);
-      let request = await server.waitForRequest('/empty.html');
+      const request = await server.waitForRequest('/empty.html');
       expect(request.headers['foo']).toBe('bar');
     }));
   });
@@ -1441,26 +1441,26 @@ describe('Page', function() {
     const expectedOutput = '<html><head></head><body><div>hello</div></body></html>';
     it('should work', SX(async function() {
       await page.setContent('<div>hello</div>');
-      let result = await page.content();
+      const result = await page.content();
       expect(result).toBe(expectedOutput);
     }));
     it('should work with doctype', SX(async function() {
       const doctype = '<!DOCTYPE html>';
       await page.setContent(`${doctype}<div>hello</div>`);
-      let result = await page.content();
+      const result = await page.content();
       expect(result).toBe(`${doctype}${expectedOutput}`);
     }));
     it('should work with HTML 4 doctype', SX(async function() {
       const doctype = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" ' +
         '"http://www.w3.org/TR/html4/strict.dtd">';
       await page.setContent(`${doctype}<div>hello</div>`);
-      let result = await page.content();
+      const result = await page.content();
       expect(result).toBe(`${doctype}${expectedOutput}`);
     }));
   });
   describe('Network Events', function() {
     it('Page.Events.Request', SX(async function() {
-      let requests = [];
+      const requests = [];
       page.on('request', request => requests.push(request));
       await page.goto(EMPTY_PAGE);
       expect(requests.length).toBe(1);
@@ -1478,7 +1478,7 @@ describe('Page', function() {
       expect(request.postData).toBe('{"foo":"bar"}');
     }));
     it('Page.Events.Response', SX(async function() {
-      let responses = [];
+      const responses = [];
       page.on('response', response => responses.push(response));
       await page.goto(EMPTY_PAGE);
       expect(responses.length).toBe(1);
@@ -1519,7 +1519,7 @@ describe('Page', function() {
       expect(pageResponse.status).toBe(200);
       expect(requestFinished).toBe(false);
 
-      let responseText = pageResponse.text();
+      const responseText = pageResponse.text();
       // Write part of the response and wait for it to be flushed.
       await new Promise(x => serverResponse.write('wor', x));
       // Finish response.
@@ -1534,7 +1534,7 @@ describe('Page', function() {
         else
           request.continue();
       });
-      let failedRequests = [];
+      const failedRequests = [];
       page.on('requestfailed', request => failedRequests.push(request));
       await page.goto(PREFIX + '/one-style.html');
       expect(failedRequests.length).toBe(1);
@@ -1542,7 +1542,7 @@ describe('Page', function() {
       expect(failedRequests[0].response()).toBe(null);
     }));
     it('Page.Events.RequestFinished', SX(async function() {
-      let requests = [];
+      const requests = [];
       page.on('requestfinished', request => requests.push(request));
       await page.goto(EMPTY_PAGE);
       expect(requests.length).toBe(1);
@@ -1550,7 +1550,7 @@ describe('Page', function() {
       expect(requests[0].response()).toBeTruthy();
     }));
     it('should fire events in proper order', SX(async function() {
-      let events = [];
+      const events = [];
       page.on('request', request => events.push('request'));
       page.on('response', response => events.push('response'));
       page.on('requestfinished', request => events.push('requestfinished'));
@@ -1558,7 +1558,7 @@ describe('Page', function() {
       expect(events).toEqual(['request', 'response', 'requestfinished']);
     }));
     it('should support redirects', SX(async function() {
-      let events = [];
+      const events = [];
       page.on('request', request => events.push(`${request.method} ${request.url}`));
       page.on('response', response => events.push(`${response.status} ${response.url}`));
       page.on('requestfinished', request => events.push(`DONE ${request.url}`));
@@ -1618,7 +1618,7 @@ describe('Page', function() {
 
       function dispatchTouch() {
         let fulfill;
-        let promise = new Promise(x => fulfill = x);
+        const promise = new Promise(x => fulfill = x);
         window.ontouchstart = function(e) {
           fulfill('Recieved touch');
         };
@@ -1692,13 +1692,13 @@ describe('Page', function() {
       fs.unlinkSync(outputFile);
     }));
     it('should default to printing in Letter format', SX(async function() {
-      let pages = await getPDFPages(await page.pdf());
+      const pages = await getPDFPages(await page.pdf());
       expect(pages.length).toBe(1);
       expect(pages[0].width).toBeCloseTo(8.5, 2);
       expect(pages[0].height).toBeCloseTo(11, 2);
     }));
     it('should support setting custom format', SX(async function() {
-      let pages = await getPDFPages(await page.pdf({
+      const pages = await getPDFPages(await page.pdf({
         format: 'a4'
       }));
       expect(pages.length).toBe(1);
@@ -1706,7 +1706,7 @@ describe('Page', function() {
       expect(pages[0].height).toBeCloseTo(11.7, 1);
     }));
     it('should support setting paper width and height', SX(async function() {
-      let pages = await getPDFPages(await page.pdf({
+      const pages = await getPDFPages(await page.pdf({
         width: '10in',
         height: '10in',
       }));
@@ -1719,7 +1719,7 @@ describe('Page', function() {
       // Define width and height in CSS pixels.
       const width = 50 * 5 + 1;
       const height = 50 * 5 + 1;
-      let pages = await getPDFPages(await page.pdf({width, height}));
+      const pages = await getPDFPages(await page.pdf({width, height}));
       expect(pages.length).toBe(8);
       expect(pages[0].width).toBeCloseTo(cssPixelsToInches(width), 2);
       expect(pages[0].height).toBeCloseTo(cssPixelsToInches(height), 2);
@@ -1729,7 +1729,7 @@ describe('Page', function() {
       // Define width and height in CSS pixels.
       const width = 50 * 5 + 1;
       const height = 50 * 5 + 1;
-      let pages = await getPDFPages(await page.pdf({width, height, pageRanges: '1,4-7'}));
+      const pages = await getPDFPages(await page.pdf({width, height, pageRanges: '1,4-7'}));
       expect(pages.length).toBe(5);
     }));
     it('should throw if format is unknown', SX(async function() {
@@ -1777,13 +1777,13 @@ describe('Page', function() {
     it('should work', SX(async function() {
       await page.setViewport({width: 500, height: 500});
       await page.goto(PREFIX + '/grid.html');
-      let screenshot = await page.screenshot();
+      const screenshot = await page.screenshot();
       expect(screenshot).toBeGolden('screenshot-sanity.png');
     }));
     it('should clip rect', SX(async function() {
       await page.setViewport({width: 500, height: 500});
       await page.goto(PREFIX + '/grid.html');
-      let screenshot = await page.screenshot({
+      const screenshot = await page.screenshot({
         clip: {
           x: 50,
           y: 100,
@@ -1796,7 +1796,7 @@ describe('Page', function() {
     it('should work for offscreen clip', SX(async function() {
       await page.setViewport({width: 500, height: 500});
       await page.goto(PREFIX + '/grid.html');
-      let screenshot = await page.screenshot({
+      const screenshot = await page.screenshot({
         clip: {
           x: 50,
           y: 600,
@@ -1809,7 +1809,7 @@ describe('Page', function() {
     it('should run in parallel', SX(async function() {
       await page.setViewport({width: 500, height: 500});
       await page.goto(PREFIX + '/grid.html');
-      let promises = [];
+      const promises = [];
       for (let i = 0; i < 3; ++i) {
         promises.push(page.screenshot({
           clip: {
@@ -1820,28 +1820,28 @@ describe('Page', function() {
           }
         }));
       }
-      let screenshots = await Promise.all(promises);
+      const screenshots = await Promise.all(promises);
       expect(screenshots[1]).toBeGolden('grid-cell-1.png');
     }));
     it('should take fullPage screenshots', SX(async function() {
       await page.setViewport({width: 500, height: 500});
       await page.goto(PREFIX + '/grid.html');
-      let screenshot = await page.screenshot({
+      const screenshot = await page.screenshot({
         fullPage: true
       });
       expect(screenshot).toBeGolden('screenshot-grid-fullpage.png');
     }));
     it('should run in parallel in multiple pages', SX(async function() {
       const N = 2;
-      let pages = await Promise.all(Array(N).fill(0).map(async() => {
-        let page = await browser.newPage();
+      const pages = await Promise.all(Array(N).fill(0).map(async() => {
+        const page = await browser.newPage();
         await page.goto(PREFIX + '/grid.html');
         return page;
       }));
-      let promises = [];
+      const promises = [];
       for (let i = 0; i < N; ++i)
         promises.push(pages[i].screenshot({ clip: { x: 50 * i, y: 0, width: 50, height: 50 } }));
-      let screenshots = await Promise.all(promises);
+      const screenshots = await Promise.all(promises);
       for (let i = 0; i < N; ++i)
         expect(screenshots[i]).toBeGolden(`grid-cell-${i}.png`);
       await Promise.all(pages.map(page => page.close()));
@@ -1849,13 +1849,13 @@ describe('Page', function() {
     it('should allow transparency', SX(async function() {
       await page.setViewport({ width: 100, height: 100 });
       await page.goto(EMPTY_PAGE);
-      let screenshot = await page.screenshot({omitBackground:true});
+      const screenshot = await page.screenshot({omitBackground:true});
       expect(screenshot).toBeGolden('transparent.png');
     }));
   });
 
   describe('Tracing', function() {
-    let outputFile = path.join(__dirname, 'assets', 'trace.json');
+    const outputFile = path.join(__dirname, 'assets', 'trace.json');
     afterEach(function() {
       fs.unlinkSync(outputFile);
     });
@@ -1867,7 +1867,7 @@ describe('Page', function() {
     }));
     it('should throw if tracing on two pages', SX(async function() {
       await page.tracing.start({path: outputFile});
-      let newPage = await browser.newPage();
+      const newPage = await browser.newPage();
       let error = null;
       try {
         await newPage.tracing.start({path: outputFile});
@@ -1883,12 +1883,12 @@ describe('Page', function() {
 
 if (process.env.COVERAGE) {
   describe('COVERAGE', function(){
-    let coverage = helper.publicAPICoverage();
-    let disabled = new Set();
+    const coverage = helper.publicAPICoverage();
+    const disabled = new Set();
     if (!headless)
       disabled.add('page.pdf');
 
-    for (let method of coverage.keys()) {
+    for (const method of coverage.keys()) {
       (disabled.has(method) ? xit : it)(`public api '${method}' should be called`, SX(async function(){
         expect(coverage.get(method)).toBe(true);
       }));
@@ -1903,7 +1903,7 @@ if (process.env.COVERAGE) {
  */
 function waitForEvents(emitter, eventName, eventCount = 1) {
   let fulfill;
-  let promise = new Promise(x => fulfill = x);
+  const promise = new Promise(x => fulfill = x);
   emitter.on(eventName, onEvent);
   return promise;
 
@@ -1925,10 +1925,10 @@ async function getPDFPages(pdfBuffer) {
   PDFJS.disableWorker = true;
   const data = new Uint8Array(pdfBuffer);
   const doc = await PDFJS.getDocument(data);
-  let pages = [];
+  const pages = [];
   for (let i = 0; i < doc.numPages; ++i) {
-    let page = await doc.getPage(i + 1);
-    let viewport = page.getViewport(1);
+    const page = await doc.getPage(i + 1);
+    const viewport = page.getViewport(1);
     // Viewport width and height is in PDF points, which is
     // 1/72 of an inch.
     pages.push({
