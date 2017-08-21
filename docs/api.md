@@ -30,6 +30,7 @@
     + [page.addScriptTag(url)](#pageaddscripttagurl)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
+    + [page.content()](#pagecontent)
     + [page.emulate(options)](#pageemulateoptions)
     + [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
     + [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
@@ -316,6 +317,11 @@ If there's no element matching `selector`, the method throws an error.
 
 #### page.close()
 - returns: <[Promise]>
+
+#### page.content()
+- returns: <[Promise]<[String]>>
+
+Gets the full HTML contents of the page, including the doctype.
 
 #### page.emulate(options)
 - `options` <[Object]>

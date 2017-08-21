@@ -32,6 +32,7 @@ const OUTPUT_DIR = path.join(__dirname, 'output');
 
 const PORT = 8907;
 const PREFIX = 'http://localhost:' + PORT;
+const CROSS_PROCESS_PREFIX = 'http://127.0.0.1:' + PORT;
 const EMPTY_PAGE = PREFIX + '/empty.html';
 const HTTPS_PORT = 8908;
 const HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
@@ -59,7 +60,7 @@ else
   const Downloader = require('../utils/ChromiumDownloader');
   const chromiumRevision = require('../package.json').puppeteer.chromium_revision;
   const revisionInfo = Downloader.revisionInfo(Downloader.currentPlatform(), chromiumRevision);
-  console.assert(revisionInfo, `Chromium r${chromiumRevision} is not downloaded. Run 'npm install' and try to re-run tests.`);
+  console.assert(revisionInfo.downloaded, `Chromium r${chromiumRevision} is not downloaded. Run 'npm install' and try to re-run tests.`);
 }
 
 let server;
@@ -275,7 +276,7 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       let mainFrame = page.mainFrame();
       expect(await mainFrame.evaluate(() => window.location.href)).toContain('localhost');
-      await page.goto('http://127.0.0.1:' + PORT + '/empty.html');
+      await page.goto(CROSS_PROCESS_PREFIX + '/empty.html');
       expect(await mainFrame.evaluate(() => window.location.href)).toContain('127');
     }));
   });
@@ -423,14 +424,14 @@ describe('Page', function() {
       expect(waitError).toBeTruthy();
       expect(waitError.message).toContain('waitForSelector failed: frame got detached.');
     }));
-    it('should survive navigation', SX(async function() {
+    it('should survive cross-process navigation', SX(async function() {
       let boxFound = false;
       let waitForSelector = page.waitForSelector('.box').then(() => boxFound = true);
       await page.goto(EMPTY_PAGE);
       expect(boxFound).toBe(false);
       await page.reload();
       expect(boxFound).toBe(false);
-      await page.goto(PREFIX + '/grid.html');
+      await page.goto(CROSS_PROCESS_PREFIX + '/grid.html');
       await waitForSelector;
       expect(boxFound).toBe(true);
     }));
@@ -1437,10 +1438,24 @@ describe('Page', function() {
     }));
   });
   describe('Page.setContent', function() {
+    const expectedOutput = '<html><head></head><body><div>hello</div></body></html>';
     it('should work', SX(async function() {
       await page.setContent('<div>hello</div>');
-      let result = await page.evaluate(() => document.body.innerHTML);
-      expect(result).toBe('<div>hello</div>');
+      let result = await page.content();
+      expect(result).toBe(expectedOutput);
+    }));
+    it('should work with doctype', SX(async function() {
+      const doctype = '<!DOCTYPE html>';
+      await page.setContent(`${doctype}<div>hello</div>`);
+      let result = await page.content();
+      expect(result).toBe(`${doctype}${expectedOutput}`);
+    }));
+    it('should work with HTML 4 doctype', SX(async function() {
+      const doctype = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" ' +
+        '"http://www.w3.org/TR/html4/strict.dtd">';
+      await page.setContent(`${doctype}<div>hello</div>`);
+      let result = await page.content();
+      expect(result).toBe(`${doctype}${expectedOutput}`);
     }));
   });
   describe('Network Events', function() {
