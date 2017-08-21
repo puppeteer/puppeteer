@@ -32,6 +32,7 @@ const OUTPUT_DIR = path.join(__dirname, 'output');
 
 const PORT = 8907;
 const PREFIX = 'http://localhost:' + PORT;
+const CROSS_PROCESS_PREFIX = 'http://127.0.0.1:' + PORT;
 const EMPTY_PAGE = PREFIX + '/empty.html';
 const HTTPS_PORT = 8908;
 const HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
@@ -275,7 +276,7 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       let mainFrame = page.mainFrame();
       expect(await mainFrame.evaluate(() => window.location.href)).toContain('localhost');
-      await page.goto('http://127.0.0.1:' + PORT + '/empty.html');
+      await page.goto(CROSS_PROCESS_PREFIX + '/empty.html');
       expect(await mainFrame.evaluate(() => window.location.href)).toContain('127');
     }));
   });
@@ -423,14 +424,14 @@ describe('Page', function() {
       expect(waitError).toBeTruthy();
       expect(waitError.message).toContain('waitForSelector failed: frame got detached.');
     }));
-    it('should survive navigation', SX(async function() {
+    it('should survive cross-process navigation', SX(async function() {
       let boxFound = false;
       let waitForSelector = page.waitForSelector('.box').then(() => boxFound = true);
       await page.goto(EMPTY_PAGE);
       expect(boxFound).toBe(false);
       await page.reload();
       expect(boxFound).toBe(false);
-      await page.goto(PREFIX + '/grid.html');
+      await page.goto(CROSS_PROCESS_PREFIX + '/grid.html');
       await waitForSelector;
       expect(boxFound).toBe(true);
     }));
