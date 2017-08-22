@@ -1117,12 +1117,12 @@ describe('Page', function() {
   });
 
   describe('ElementHandle.boundingBox', function() {
-    it('should work', SX(async function() {
+    fit('should work', SX(async function() {
       await page.setViewport({width: 500, height: 500});
       await page.goto(PREFIX + '/grid.html');
-      const fourtySecondBoxElement = await page.$('.box:nth-of-type(42)');
-      const box = await fourtySecondBoxElement.boundingBox();
-      expect(box).toEqual({ x: 51, y: 201, width: 50, height: 50 });
+      const elementHandle = await page.$('.box:nth-of-type(42)');
+      const box = await elementHandle.boundingBox();
+      expect(box).toEqual({ x: 50, y: 200, width: 50, height: 50 });
     }));
   });
 
