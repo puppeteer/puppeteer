@@ -120,6 +120,19 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
     });
     ```
 
+2. Capture console output from the page by listening for the `console` event.
+   This is also handy when debugging code in `page.evaluate()`:
+
+    ```js
+    page.on('console', (...args) => {
+      console.log('PAGE LOG:', ...args);
+    });
+
+    await page.evaluate(() => {
+      console.log(`url is ${location.href}`);
+    });
+    ```
+
 ## Contributing to Puppeteer
 
 Check out [contributing guide](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md) to get an overview of Puppeteer development.
