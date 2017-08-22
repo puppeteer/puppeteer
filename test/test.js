@@ -1673,6 +1673,25 @@ describe('Page', function() {
     }));
   });
 
+  describe('Page.setScriptExecutionDisabled', function() {
+    it('should work', SX(async function() {
+      await page.setScriptExecutionDisabled(true);
+      await page.goto('data:text/html, <script>var something = "forbidden"</script>');
+      let error = null;
+      try {
+        await page.evaluate('something');
+      }
+      catch (e) {
+        error = e;
+      }
+      expect(error.message).toContain('something is not defined');
+
+      await page.setScriptExecutionDisabled(false);
+      await page.goto('data:text/html, <script>var something = "forbidden"</script>');
+      expect(await page.evaluate('something')).toBe('forbidden');
+    }));
+  });
+
   describe('Page.evaluateOnNewDocument', function() {
     it('should evaluate before anything else on the page', SX(async function() {
       await page.evaluateOnNewDocument(function(){

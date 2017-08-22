@@ -54,6 +54,7 @@
     + [page.setContent(html)](#pagesetcontenthtml)
     + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
     + [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
+    + [page.setScriptExecutionDisabled(value)](#pagesetscriptexecutiondisabledvalue)
     + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
     + [page.setViewport(viewport)](#pagesetviewportviewport)
     + [page.title()](#pagetitle)
@@ -671,6 +672,10 @@ puppeteer.launch().then(async browser => {
   browser.close();
 });
 ```
+
+#### page.setScriptExecutionDisabled(value)
+- `value` <[boolean]> Whether or not to disable JavaScript on the page.
+- returns: <[Promise]>
 
 #### page.setUserAgent(userAgent)
 - `userAgent` <[string]> Specific user agent to use in this page
