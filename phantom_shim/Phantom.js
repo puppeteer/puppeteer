@@ -123,7 +123,7 @@ module.exports.create = function(context, scriptPath) {
      * @param {string} filename
      */
     loadModule: function(moduleSource, filename) {
-      let code = [
+      const code = [
         '(function(require, exports, module) {\n',
         moduleSource,
         '\n}.call({},',

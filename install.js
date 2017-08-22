@@ -15,18 +15,28 @@
  */
 
 const Downloader = require('./utils/ChromiumDownloader');
+const platform = Downloader.currentPlatform();
 const revision = require('./package').puppeteer.chromium_revision;
 const ProgressBar = require('progress');
 
+const revisionInfo = Downloader.revisionInfo(platform, revision);
 // Do nothing if the revision is already downloaded.
-if (Downloader.revisionInfo(Downloader.currentPlatform(), revision))
+if (revisionInfo.downloaded)
   return;
 
-let allRevisions = Downloader.downloadedRevisions();
-Downloader.downloadRevision(Downloader.currentPlatform(), revision, onProgress)
+const allRevisions = Downloader.downloadedRevisions();
+Downloader.downloadRevision(platform, revision, onProgress)
     // Remove previous chromium revisions.
     .then(() => Promise.all(allRevisions.map(({platform, revision}) => Downloader.removeRevision(platform, revision))))
-    .catch(error => console.error('Download failed: ' + error.message));
+    .catch(onError);
+
+function onError(error) {
+  console.error(`ERROR: Failed to download chromium r${revision}!
+- Download chromium manually:
+    ${revisionInfo.url}
+- Extract chromium into ${revisionInfo.folderPath}
+  * Chromium executable should be at ${revisionInfo.executablePath}`);
+}
 
 let progressBar = null;
 function onProgress(bytesTotal, delta) {
@@ -42,7 +52,7 @@ function onProgress(bytesTotal, delta) {
 }
 
 function toMegabytes(bytes) {
-  let mb = bytes / 1024 / 1024;
+  const mb = bytes / 1024 / 1024;
   return `${Math.round(mb * 10) / 10} Mb`;
 }
 

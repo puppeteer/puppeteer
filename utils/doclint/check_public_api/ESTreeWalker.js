@@ -36,13 +36,13 @@ class ESTreeWalker {
       return;
     }
 
-    let walkOrder = ESTreeWalker._walkOrder[node.type];
+    const walkOrder = ESTreeWalker._walkOrder[node.type];
     if (!walkOrder)
       return;
 
     if (node.type === 'TemplateLiteral') {
-      let templateLiteral = /** @type {!ESTree.TemplateLiteralNode} */ (node);
-      let expressionsLength = templateLiteral.expressions.length;
+      const templateLiteral = /** @type {!ESTree.TemplateLiteralNode} */ (node);
+      const expressionsLength = templateLiteral.expressions.length;
       for (let i = 0; i < expressionsLength; ++i) {
         this._innerWalk(templateLiteral.quasis[i], templateLiteral);
         this._innerWalk(templateLiteral.expressions[i], templateLiteral);
@@ -50,7 +50,7 @@ class ESTreeWalker {
       this._innerWalk(templateLiteral.quasis[expressionsLength], templateLiteral);
     } else {
       for (let i = 0; i < walkOrder.length; ++i) {
-        let entity = node[walkOrder[i]];
+        const entity = node[walkOrder[i]];
         if (Array.isArray(entity))
           this._walkArray(entity, node);
         else

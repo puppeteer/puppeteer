@@ -43,21 +43,21 @@ if (argv['ssl-certificates-path']) {
   return;
 }
 
-let scriptArguments = argv._;
+const scriptArguments = argv._;
 if (!scriptArguments.length) {
   console.log(__filename.split('/').pop() + ' [scriptfile]');
   return;
 }
 
-let scriptPath = path.resolve(process.cwd(), scriptArguments[0]);
+const scriptPath = path.resolve(process.cwd(), scriptArguments[0]);
 if (!fs.existsSync(scriptPath)) {
   console.error(`script not found: ${scriptPath}`);
   process.exit(1);
   return;
 }
 
-let context = createPhantomContext(argv.headless, scriptPath, argv);
-let scriptContent = fs.readFileSync(scriptPath, 'utf8');
+const context = createPhantomContext(argv.headless, scriptPath, argv);
+const scriptContent = fs.readFileSync(scriptPath, 'utf8');
 vm.runInContext(scriptContent, context);
 
 /**
@@ -67,7 +67,7 @@ vm.runInContext(scriptContent, context);
  * @return {!Object}
  */
 function createPhantomContext(headless, scriptPath, argv) {
-  let context = {};
+  const context = {};
   let browser = null;
   context.setInterval = setInterval;
   context.setTimeout = setTimeout;
@@ -81,7 +81,7 @@ function createPhantomContext(headless, scriptPath, argv) {
 
   vm.createContext(context);
 
-  let nativeExports = {
+  const nativeExports = {
     fs: new FileSystem(),
     system: new System(argv._),
     webpage: {
@@ -95,8 +95,8 @@ function createPhantomContext(headless, scriptPath, argv) {
     },
     child_process: child_process
   };
-  let bootstrapPath = path.join(__dirname, '..', 'third_party', 'phantomjs', 'bootstrap.js');
-  let bootstrapCode = fs.readFileSync(bootstrapPath, 'utf8');
+  const bootstrapPath = path.join(__dirname, '..', 'third_party', 'phantomjs', 'bootstrap.js');
+  const bootstrapCode = fs.readFileSync(bootstrapPath, 'utf8');
   vm.runInContext(bootstrapCode, context, {
     filename: 'bootstrap.js'
   })(nativeExports);
