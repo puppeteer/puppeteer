@@ -1126,7 +1126,7 @@ ElementHandle prevents DOM element from garbage collection unless the handle is 
     - width <[number]> the width of the element in pixels.
     - height <[number]> the height of the element in pixels.
 
-This method returns the bounding box of the element (relative to the main frame).
+This method returns the bounding box of the element (relative to the main frame), or `null` if element is detached from dom.
 Can be used in conjunction with [Page.screenshot](#pagescreenshotoptions)
 ```js
 const puppeteer = require('puppeteer');

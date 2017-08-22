@@ -1117,7 +1117,7 @@ describe('Page', function() {
   });
 
   describe('ElementHandle.boundingBox', function() {
-    fit('should work', SX(async function() {
+    it('should work', SX(async function() {
       await page.setViewport({width: 500, height: 500});
       await page.goto(PREFIX + '/grid.html');
       const elementHandle = await page.$('.box:nth-of-type(42)');
@@ -1846,6 +1846,15 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       let screenshot = await page.screenshot({omitBackground:true});
       expect(screenshot).toBeGolden('transparent.png');
+    }));
+    it('should work with elementHandle.boundingBox', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(PREFIX + '/grid.html');
+      await page.evaluate(() => window.scrollBy(50, 100));
+      const box = await page.$('.box:nth-of-type(3)');
+      const clip = await box.boundingBox();
+      const screenshot = await page.screenshot({ clip });
+      expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
     }));
   });
 
