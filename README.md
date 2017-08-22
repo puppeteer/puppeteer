@@ -36,6 +36,11 @@ yarn add puppeteer
 Puppeteer will be familiar to people using other browser testing frameworks. You create an instance
 of `Browser`, open pages, and then manipulate them with [Puppeteer's API](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#).
 
+Save the code to a file and run it like:
+```shell
+node example.js
+```
+
 **Example** - navigating to https://example.com and saving a screenshot as *example.png*:
 
 ```js
