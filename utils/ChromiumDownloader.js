@@ -64,7 +64,7 @@ module.exports = {
   canDownloadRevision: function(platform, revision) {
     console.assert(downloadURLs[platform], 'Unknown platform: ' + platform);
 
-    let options = URL.parse(util.format(downloadURLs[platform], revision));
+    const options = URL.parse(util.format(downloadURLs[platform], revision));
     options.method = 'HEAD';
 
     applyAgent(options);
@@ -187,12 +187,12 @@ function parseFolderPath(folderPath) {
 function downloadFile(url, destinationPath, progressCallback) {
   let fulfill, reject;
 
-  let promise = new Promise((x, y) => { fulfill = x; reject = y; });
+  const promise = new Promise((x, y) => { fulfill = x; reject = y; });
 
-  let options = URL.parse(url);
+  const options = URL.parse(url);
   applyAgent(options);
 
-  let request = https.get(options, response => {
+  const request = https.get(options, response => {
     if (response.statusCode !== 200) {
       const error = new Error(`Download failed: server returned code ${response.statusCode}. URL: ${url}`);
       // consume response data to free up memory
@@ -226,11 +226,11 @@ function extractZip(zipPath, folderPath) {
 }
 
 function applyAgent(opt) {
-  let proxy_url = getProxyForUrl(opt.href); 
+  const proxy_url = getProxyForUrl(opt.href);
 
   if (proxy_url)
   {
-    let parsedProxy = URL.parse(proxy_url);
+    const parsedProxy = URL.parse(proxy_url);
 
     if (parsedProxy.protocol === 'http:')
       parsedProxy.secureProxy = false;
