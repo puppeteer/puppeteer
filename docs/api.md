@@ -1135,7 +1135,7 @@ puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
   await page.goto('https://google.com');
   const imgElement = await page.$('img');
-  const imgBox = imgElement.boundingBox();
+  const imgBox = await imgElement.boundingBox();
   await page.screenshot({ path: 'logo.png', clip: imgBox });
   // ...
 });
