@@ -1116,6 +1116,16 @@ describe('Page', function() {
     }));
   });
 
+  describe('ElementHandle.boundingBox', function() {
+    it('should work', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(PREFIX + '/grid.html');
+      const fourtySecondBoxElement = await page.$('.box:nth-of-type(42)');
+      const box = await fourtySecondBoxElement.boundingBox();
+      expect(box).toEqual({ x: 51, y: 201, width: 50, height: 50 });
+    }));
+  });
+
   describe('ElementHandle.click', function() {
     it('should work', SX(async function() {
       await page.goto(PREFIX + '/input/button.html');
@@ -1777,14 +1787,6 @@ describe('Page', function() {
         }
       });
       expect(screenshot).toBeGolden('screenshot-clip-rect.png');
-    }));
-    it('should clip selector', SX(async function() {
-      await page.setViewport({width: 500, height: 500});
-      await page.goto(PREFIX + '/grid.html');
-      let screenshot = await page.screenshot({
-        clip: '.box:nth-of-type(43)'
-      });
-      expect(screenshot).toBeGolden('screenshot-clip-selector.png');
     }));
     it('should work for offscreen clip', SX(async function() {
       await page.setViewport({width: 500, height: 500});

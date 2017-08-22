@@ -97,6 +97,7 @@
     + [frame.waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args)
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
   * [class: ElementHandle](#class-elementhandle)
+    + [elementHandle.boundingBox()](#elementhandleboundingbox)
     + [elementHandle.click([options])](#elementhandleclickoptions)
     + [elementHandle.dispose()](#elementhandledispose)
     + [elementHandle.evaluate(pageFunction, ...args)](#elementhandleevaluatepagefunction-args)
@@ -619,13 +620,11 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
     - `type` <[string]> Specify screenshot type, could be either `jpeg` or `png`. Defaults to 'png'.
     - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
     - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
-    - `clip` <[string]|[Object]>
-        - if `clip` is a `string` - A [selector] to search for element to capture
-        - otherwise, an `Object` which specifies clipping region of the page. Should have the following fields:
-            - `x` <[number]> x-coordinate of top-left corner of clip area
-            - `y` <[number]> y-coordinate of top-left corner of clip area
-            - `width` <[number]> width of clipping area
-            - `height` <[number]> height of clipping area
+    - `clip` <[Object]> An object which specifies clipping region of the page. Should have the following fields:
+        - `x` <[number]> x-coordinate of top-left corner of clip area
+        - `y` <[number]> y-coordinate of top-left corner of clip area
+        - `width` <[number]> width of clipping area
+        - `height` <[number]> height of clipping area
     - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
 - returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot
 
@@ -1118,6 +1117,29 @@ puppeteer.launch().then(async browser => {
 ```
 
 ElementHandle prevents DOM element from garbage collection unless the handle is [disposed](#elementhandledispose). ElementHandles are auto-disposed when their origin frame gets navigated.
+
+
+#### elementHandle.boundingBox()
+- returns: <[Object]>
+    - x <[number]> the x coordinate of the element in pixels.
+    - y <[number]> the y coordinate of the element in pixels.
+    - width <[number]> the width of the element in pixels.
+    - height <[number]> the height of the element in pixels.
+
+This method returns the bounding box of the element (relative to the main frame).
+Can be used in conjunction with [Page.screenshot](#pagescreenshotoptions)
+```js
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
+  const page = await browser.newPage();
+  await page.goto('https://google.com');
+  const imgElement = await page.$('img');
+  const imgBox = imgElement.boundingBox();
+  await page.screenshot({ path: 'logo.png', clip: imgBox });
+  // ...
+});
+```
 
 #### elementHandle.click([options])
 - `options` <[Object]>
