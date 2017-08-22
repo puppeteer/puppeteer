@@ -27,6 +27,7 @@
     + [event: 'requestfinished'](#event-requestfinished)
     + [event: 'response'](#event-response)
     + [page.$(selector)](#pageselector)
+    + [page.$$(selector)](#pageselector)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
@@ -85,6 +86,7 @@
     + [dialog.type](#dialogtype)
   * [class: Frame](#class-frame)
     + [frame.$(selector)](#frameselector)
+    + [frame.$$(selector)](#frameselector)
     + [frame.addScriptTag(url)](#frameaddscripttagurl)
     + [frame.childFrames()](#framechildframes)
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
@@ -296,6 +298,14 @@ Emitted when a [response] is received.
 The method runs `document.querySelector` within the page. If no element matches the selector, the return value resolve to `null`.
 
 Shortcut for [page.mainFrame().$(selector)](#frameselector).
+
+#### page.$$(selector)
+- `selector` <[string]> Selector to query page for
+- returns: <[Promise]<[Array]<[ElementHandle]>>>
+
+The method runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `[]`.
+
+Shortcut for [page.mainFrame().$$(selector)](#frameselector).
 
 #### page.addScriptTag(url)
 - `url` <[string]> Url of the `<script>` tag
@@ -980,6 +990,11 @@ puppeteer.launch().then(async browser => {
 
 The method queries page for the selector. If there's no such element within the page, the method will resolve to `null`.
 
+#### frame.$$(selector)
+- `selector` <[string]> Selector to query page for
+- returns: <[Promise]<[Array]<[ElementHandle]>>> Promise which resolves to ElementHandles pointing to the page elements.
+
+The method queries page for all elements matching selector. If there are no such elements within the page, the method will resolve to `[]`.
 
 #### frame.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
