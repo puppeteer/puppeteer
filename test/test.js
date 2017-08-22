@@ -562,7 +562,7 @@ describe('Page', function() {
     it('should fail when main resources failed to load', SX(async function() {
       let error = null;
       try {
-        await page.goto('chrome-devtools://non-existing.html');
+        await page.goto('http://localhost:44123/non-existing-url');
       } catch (e) {
         error = e;
       }
