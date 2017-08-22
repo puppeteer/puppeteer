@@ -1,2 +1,2 @@
-__injected = 42;
-__injectedError = new Error('hi');
+window.__injected = 42;
+window.__injectedError = new Error('hi');

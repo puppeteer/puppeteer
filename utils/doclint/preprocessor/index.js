@@ -55,7 +55,7 @@ module.exports = function(sources) {
     if (command.source.setText(newText))
       changedSources.add(command.source);
   }
-  for (source of changedSources)
+  for (const source of changedSources)
     messages.push(Message.warning(`GEN: updated ${source.projectPath()}`));
   return messages;
 };
