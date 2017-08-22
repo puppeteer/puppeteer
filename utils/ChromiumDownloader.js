@@ -23,6 +23,7 @@ const util = require('util');
 const URL = require('url');
 const removeRecursive = require('rimraf');
 const ProxyAgent = require('https-proxy-agent');
+const getProxyForUrl = require('proxy-from-env').getProxyForUrl;
 
 const DOWNLOADS_FOLDER = path.join(__dirname, '..', '.local-chromium');
 
@@ -222,11 +223,12 @@ function extractZip(zipPath, folderPath) {
   return new Promise(fulfill => extract(zipPath, {dir: folderPath}, fulfill));
 }
 
-function applyAgent(opt)
-{
-  if (process.env.http_proxy || process.env.https_proxy)
+function applyAgent(opt) {
+  let proxy_url = getProxyForUrl(opt.href); 
+
+  if (proxy_url)
   {
-    let parsedProxy = process.env.http_proxy ? URL.parse(process.env.http_proxy) : URL.parse(process.env.https_proxy);
+    let parsedProxy = URL.parse(proxy_url);
 
     if (parsedProxy.protocol === 'http:')
       parsedProxy.secureProxy = false;
