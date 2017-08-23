@@ -15,7 +15,7 @@
  */
 
 const esprima = require('esprima');
-const ESTreeWalker = require('./ESTreeWalker');
+const ESTreeWalker = require('../../ESTreeWalker');
 const Documentation = require('./Documentation');
 
 class JSOutline {

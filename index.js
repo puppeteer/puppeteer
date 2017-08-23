@@ -14,4 +14,13 @@
  * limitations under the License.
  */
 
-module.exports = require('./lib/Puppeteer');
+// If node does not support async await, use the compiled version.
+let folder = 'lib';
+try {
+  new Function('async function test(){await 1}');
+}
+catch (error) {
+  folder = 'node6';
+}
+
+module.exports = require(`./${folder}/Puppeteer`);

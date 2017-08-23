@@ -19,3 +19,6 @@ script:
   - yarn run lint
   - yarn run coverage
   - yarn run test-phantom
+  - yarn run node6
+  - yarn run test-node6
+  - yarn run node6-unit

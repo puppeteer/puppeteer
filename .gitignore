@@ -7,3 +7,4 @@
 *.pyc
 .vscode
 package-lock.json
+node6
