@@ -513,7 +513,7 @@ can not go back, resolves to null.
 Navigate to the next page in history.
 
 #### page.goto(url, options)
-- `url` <[string]> URL to navigate page to
+- `url` <[string]> URL to navigate page to. The url should include scheme, e.g. `https://`.
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
