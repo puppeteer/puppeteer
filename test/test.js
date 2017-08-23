@@ -1074,6 +1074,20 @@ describe('Page', function() {
       expect(element).toBe(null);
     }));
   });
+  describe('Page.$$', function() {
+    it('should query existing elements', SX(async function() {
+      await page.setContent('<div>A</div><br/><div>B</div>');
+      const elements = await page.$$('div');
+      expect(elements.length).toBe(2);
+      const promises = elements.map(element => element.evaluate(e => e.textContent));
+      expect(await Promise.all(promises)).toEqual(['A', 'B']);
+    }));
+    it('should return ampty array if nothing is found', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      const elements = await page.$$('div');
+      expect(elements.length).toBe(0);
+    }));
+  });
 
   describe('ElementHandle.evaluate', function() {
     it('should work', SX(async function() {
