@@ -1923,8 +1923,8 @@ describe('Page', function() {
 
   describe('Cookies', function() {
     afterEach(SX(async function(){
-      let cookies = await page.cookies();
-      for (let cookie of cookies)
+      const cookies = await page.cookies();
+      for (const cookie of cookies)
         await page.deleteCookie(cookie);
     }));
     it('should set and get cookies', SX(async function(){
@@ -2018,7 +2018,7 @@ describe('Page', function() {
 
     it('should set a cookie on a different domain', SX(async function() {
       await page.goto(PREFIX + '/grid.html');
-      await page.setCookie({name:'example-cookie', value:'best',  url:'https://www.example.com'});
+      await page.setCookie({name: 'example-cookie', value: 'best',  url: 'https://www.example.com'});
       expect(await page.evaluate('document.cookie')).toBe('');
       expect(await page.cookies()).toEqual([]);
       expect(await page.cookies('https://www.example.com')).toEqual([{

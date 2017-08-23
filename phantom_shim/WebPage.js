@@ -212,7 +212,7 @@ class WebPage {
   }
 
   set cookies(cookies) {
-    let cookies2 = await(this._page.cookies());
+    const cookies2 = await(this._page.cookies());
     await(this._page.deleteCookie(...cookies2));
     await(this._page.setCookie(...cookies));
 
@@ -223,7 +223,7 @@ class WebPage {
   }
 
   deleteCookie(cookieName) {
-    await(this._page.deleteCookie({name:cookieName}));
+    await(this._page.deleteCookie({name: cookieName}));
   }
 
   get onInitialized() {
