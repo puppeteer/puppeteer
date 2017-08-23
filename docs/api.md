@@ -653,7 +653,7 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 - returns: <[Promise]>
 
 #### page.setExtraHTTPHeaders(headers)
-- `headers` <[Map]> A map of additional http headers to be sent with every request.
+- `headers` <[Map|Object]> A map of additional http headers to be sent with every request.
 - returns: <[Promise]>
 
 The extra HTTP headers will be sent with every request the page initiates.
