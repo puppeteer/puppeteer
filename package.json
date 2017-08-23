@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": "github:GoogleChrome/puppeteer",
   "engines": {
-    "node": ">=7.10.0"
+    "node": ">=6.4.0"
   },
   "scripts": {
     "unit": "jasmine test/test.js",
