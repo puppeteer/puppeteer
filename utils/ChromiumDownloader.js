@@ -64,10 +64,7 @@ module.exports = {
   canDownloadRevision: function(platform, revision) {
     console.assert(downloadURLs[platform], 'Unknown platform: ' + platform);
 
-    const options = URL.parse(util.format(downloadURLs[platform], revision));
-    options.method = 'HEAD';
-
-    applyAgent(options);
+    const options = requestOptions(util.format(downloadURLs[platform], revision), 'HEAD');
 
     let resolve;
     const promise = new Promise(x => resolve = x);
@@ -189,9 +186,7 @@ function downloadFile(url, destinationPath, progressCallback) {
 
   const promise = new Promise((x, y) => { fulfill = x; reject = y; });
 
-  const options = URL.parse(url);
-  applyAgent(options);
-
+  const options = requestOptions(url);
   const request = https.get(options, response => {
     if (response.statusCode !== 200) {
       const error = new Error(`Download failed: server returned code ${response.statusCode}. URL: ${url}`);
@@ -225,16 +220,17 @@ function extractZip(zipPath, folderPath) {
   return new Promise(fulfill => extract(zipPath, {dir: folderPath}, fulfill));
 }
 
-function applyAgent(opt) {
-  const proxy_url = getProxyForUrl(opt.href);
+function requestOptions(url, method = 'GET') {
+  const result = URL.parse(url);
+  result.method = method;
 
-  if (proxy_url)
-  {
-    const parsedProxy = URL.parse(proxy_url);
+  const proxyURL = getProxyForUrl(url);
+  if (proxyURL) {
+    const parsedProxyURL = URL.parse(proxyURL);
+    parsedProxyURL.secureProxy = parsedProxyURL.protocol === 'https:'
 
-    if (parsedProxy.protocol === 'http:')
-      parsedProxy.secureProxy = false;
-
-    opt.agent = new ProxyAgent(parsedProxy);
+    result.agent = new ProxyAgent(parsedProxyURL);
   }
+
+  return result; 
 }
