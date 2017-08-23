@@ -1120,9 +1120,17 @@ describe('Page', function() {
     it('should work', SX(async function() {
       await page.setViewport({width: 500, height: 500});
       await page.goto(PREFIX + '/grid.html');
-      const elementHandle = await page.$('.box:nth-of-type(42)');
+      const elementHandle = await page.$('.box:nth-of-type(13)');
       const box = await elementHandle.boundingBox();
-      expect(box).toEqual({ x: 50, y: 200, width: 50, height: 50 });
+      expect(box).toEqual({ x: 100, y: 50, width: 50, height: 50 });
+    }));
+    it('should handle nested frames', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(PREFIX + '/frames/nested-frames.html');
+      const nestedFrame = page.frames()[1].childFrames()[1];
+      const elementHandle = await nestedFrame.$('div');
+      const box = await elementHandle.boundingBox();
+      expect(box).toEqual({ x: 28, y: 260, width: 264, height: 18 });
     }));
   });
 
