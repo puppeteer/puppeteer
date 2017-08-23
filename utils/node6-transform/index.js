@@ -29,8 +29,8 @@ if (fs.existsSync(outPath))
 fs.mkdirSync(outPath);
 
 filePaths.forEach(filePath => {
-  const content = fs.readFileSync(path.join(dirPath, filePath)).toString();
+  const content = fs.readFileSync(path.join(dirPath, filePath), 'utf8');
   const output = transformAsyncFunctions(content);
-  fs.writeFile(path.resolve(outPath, filePath), output, function() {});
+  fs.writeFileSync(path.resolve(outPath, filePath), output);
 });
 

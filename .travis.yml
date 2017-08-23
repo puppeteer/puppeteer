@@ -1,6 +1,4 @@
 language: node_js
-node_js:
-  - "7"
 dist: trusty
 addons:
   apt:
@@ -16,9 +14,14 @@ install:
   - yarn install
   # puppeteer's install script downloads Chrome
 script:
-  - yarn run lint
-  - yarn run coverage
-  - yarn run test-phantom
+  - 'if [ ${NODE6} != "true"]; then yarn run lint; fi'
+  - 'if [ ${NODE6} != "true"]; then yarn run coverage; fi'
+  - 'if [ ${NODE6} != "true"]; then yarn run test-phantom; fi'
   - yarn run node6
   - yarn run test-node6
-  - yarn run node6-unit
+  - yarn run sanity
+jobs:
+  include:
+    - node_js: "7"
+    - node_js: "6.4.0"
+      env: NODE6=true

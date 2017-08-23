@@ -53,11 +53,11 @@ const asyncToGenerator = fn => {
 function transformAsyncFunctions(text) {
   const edits = [];
 
-  const ast = esprima.parseScript(text, {loc: true, range: true});
+  const ast = esprima.parseScript(text, {range: true});
   const walker = new ESTreeWalker(node => {
     if (node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration' || node.type === 'ArrowFunctionExpression')
       onFunction(node);
-    if (node.type === 'AwaitExpression')
+    else if (node.type === 'AwaitExpression')
       onAwait(node);
   });
   walker.walk(ast);
@@ -79,7 +79,7 @@ function transformAsyncFunctions(text) {
       range = node.parent.range;
     else
       range = node.range;
-    const index = textInRange(range[0], range[1]).indexOf('async') + range[0];
+    const index = text.substring(range[0], range[1]).indexOf('async') + range[0];
     insertText(index, index + 'async'.length, '/* async */');
 
     let before = `{return (${asyncToGenerator.toString()})(function*()`;
@@ -96,8 +96,7 @@ function transformAsyncFunctions(text) {
    * @param {ESTree.Node} node
    */
   function onAwait(node) {
-    const text = textInRange(node.range[0], node.range[1]);
-    const index = text.indexOf('await') + node.range[0];
+    const index = text.substring(node.range[0], node.range[1]).indexOf('await') + node.range[0];
     insertText(index, index + 'await'.length, '(yield');
     insertText(node.range[1], node.range[1], ')');
   }
@@ -109,15 +108,6 @@ function transformAsyncFunctions(text) {
    */
   function insertText(from, to, replacement) {
     edits.push({from, to, replacement});
-  }
-
-  /**
-   * @param {number} from
-   * @param {number} to
-   * @return {string}
-   */
-  function textInRange(from, to) {
-    return text.substring(from, to);
   }
 }
 
