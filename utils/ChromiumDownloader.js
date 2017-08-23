@@ -227,10 +227,10 @@ function requestOptions(url, method = 'GET') {
   const proxyURL = getProxyForUrl(url);
   if (proxyURL) {
     const parsedProxyURL = URL.parse(proxyURL);
-    parsedProxyURL.secureProxy = parsedProxyURL.protocol === 'https:'
+    parsedProxyURL.secureProxy = parsedProxyURL.protocol === 'https:';
 
     result.agent = new ProxyAgent(parsedProxyURL);
   }
 
-  return result; 
+  return result;
 }
