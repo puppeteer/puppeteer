@@ -1673,9 +1673,9 @@ describe('Page', function() {
     }));
   });
 
-  describe('Page.setScriptExecutionDisabled', function() {
+  describe('Page.setJavaScriptEnabled', function() {
     it('should work', SX(async function() {
-      await page.setScriptExecutionDisabled(true);
+      await page.setJavaScriptEnabled(false);
       await page.goto('data:text/html, <script>var something = "forbidden"</script>');
       let error = null;
       try {
@@ -1686,7 +1686,7 @@ describe('Page', function() {
       }
       expect(error.message).toContain('something is not defined');
 
-      await page.setScriptExecutionDisabled(false);
+      await page.setJavaScriptEnabled(true);
       await page.goto('data:text/html, <script>var something = "forbidden"</script>');
       expect(await page.evaluate('something')).toBe('forbidden');
     }));
