@@ -17,7 +17,6 @@
     "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .) && npm run doc",
     "doc": "node utils/doclint/cli.js",
     "coverage": "COVERAGE=true npm run unit",
-    "node6-unit": "TRANSPILED=true npm run unit",
     "node6": "node utils/node6-transform/index.js",
     "test-node6": "jasmine utils/node6-transform/test/test.js",
     "build": "npm run node6",

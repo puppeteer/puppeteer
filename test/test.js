@@ -17,11 +17,10 @@
 const fs = require('fs');
 const rm = require('rimraf').sync;
 const path = require('path');
-const srcDir = process.env.TRANSPILED ? 'node6' : 'lib';
-const helper = require(`../${srcDir}/helper`);
+const helper = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
-const puppeteer = require(`../${srcDir}/Puppeteer`);
+const puppeteer = require('..');
 const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
 
