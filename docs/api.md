@@ -661,7 +661,7 @@ The extra HTTP headers will be sent with every request the page initiates.
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
 #### page.setJavaScriptEnabled(enabled)
-- `enabled` <[boolean]> Whether or not to enabled JavaScript on the page.
+- `enabled` <[boolean]> Whether or not to enable JavaScript on the page.
 - returns: <[Promise]>
 
 > **NOTE** changing this value won't affect scripts that have already been run. It will take full effect on the next [navigation](#pagegotourl-options).
