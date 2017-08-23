@@ -1077,12 +1077,12 @@ describe('Page', function() {
   describe('Page.$$', function() {
     it('should query existing elements', SX(async function() {
       await page.setContent('<div>A</div><br/><div>B</div>');
-      let elements = await page.$$('div');
+      const elements = await page.$$('div');
       expect(elements.length).toBe(2);
     }));
     it('should return ampty array if nothing is found', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      let elements = await page.$$('div');
+      const elements = await page.$$('div');
       expect(elements.length).toBe(0);
     }));
   });
