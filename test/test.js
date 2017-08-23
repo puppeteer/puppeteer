@@ -1680,8 +1680,7 @@ describe('Page', function() {
       let error = null;
       try {
         await page.evaluate('something');
-      }
-      catch (e) {
+      } catch (e) {
         error = e;
       }
       expect(error.message).toContain('something is not defined');

@@ -53,8 +53,8 @@
     + [page.screenshot([options])](#pagescreenshotoptions)
     + [page.setContent(html)](#pagesetcontenthtml)
     + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
+    + [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
     + [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
-    + [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptEnabledenabled)
     + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
     + [page.setViewport(viewport)](#pagesetviewportviewport)
     + [page.title()](#pagetitle)
@@ -648,6 +648,11 @@ The extra HTTP headers will be sent with every request the page initiates.
 
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
+#### page.setJavaScriptEnabled(enabled)
+- `enabled` <[boolean]> Whether or not to enabled JavaScript on the page.
+- returns: <[Promise]>
+
+> **NOTE** changing this value won't affect scripts that have already been run. It will take full effect on the next [navigation](#pagegotourl-options).
 
 #### page.setRequestInterceptionEnabled(value)
 - `value` <[boolean]> Whether to enable request interception.
@@ -672,12 +677,6 @@ puppeteer.launch().then(async browser => {
   browser.close();
 });
 ```
-
-#### page.setJavaScriptEnabled(enabled)
-- `enabled` <[boolean]> Whether or not to enabled JavaScript on the page.
-- returns: <[Promise]>
-
-> **NOTE** changing this value won't affect scripts that have already been run. It will take full effect on the next [navigation](#pagegotourl-options).
 
 #### page.setUserAgent(userAgent)
 - `userAgent` <[string]> Specific user agent to use in this page
