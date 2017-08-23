@@ -22,6 +22,8 @@ const extract = require('extract-zip');
 const util = require('util');
 const URL = require('url');
 const removeRecursive = require('rimraf');
+const ProxyAgent = require('https-proxy-agent');
+const getProxyForUrl = require('proxy-from-env').getProxyForUrl;
 
 const DOWNLOADS_FOLDER = path.join(__dirname, '..', '.local-chromium');
 
@@ -61,12 +63,9 @@ module.exports = {
    */
   canDownloadRevision: function(platform, revision) {
     console.assert(downloadURLs[platform], 'Unknown platform: ' + platform);
-    const url = URL.parse(util.format(downloadURLs[platform], revision));
-    const options = {
-      method: 'HEAD',
-      host: url.host,
-      path: url.pathname,
-    };
+
+    const options = requestOptions(util.format(downloadURLs[platform], revision), 'HEAD');
+
     let resolve;
     const promise = new Promise(x => resolve = x);
     const request = https.request(options, response => {
@@ -184,8 +183,11 @@ function parseFolderPath(folderPath) {
  */
 function downloadFile(url, destinationPath, progressCallback) {
   let fulfill, reject;
+
   const promise = new Promise((x, y) => { fulfill = x; reject = y; });
-  const request = https.get(url, response => {
+
+  const options = requestOptions(url);
+  const request = https.get(options, response => {
     if (response.statusCode !== 200) {
       const error = new Error(`Download failed: server returned code ${response.statusCode}. URL: ${url}`);
       // consume response data to free up memory
@@ -216,4 +218,19 @@ function downloadFile(url, destinationPath, progressCallback) {
  */
 function extractZip(zipPath, folderPath) {
   return new Promise(fulfill => extract(zipPath, {dir: folderPath}, fulfill));
+}
+
+function requestOptions(url, method = 'GET') {
+  const result = URL.parse(url);
+  result.method = method;
+
+  const proxyURL = getProxyForUrl(url);
+  if (proxyURL) {
+    const parsedProxyURL = URL.parse(proxyURL);
+    parsedProxyURL.secureProxy = parsedProxyURL.protocol === 'https:';
+
+    result.agent = new ProxyAgent(parsedProxyURL);
+  }
+
+  return result;
 }
