@@ -1082,7 +1082,7 @@ describe('Page', function() {
       const promises = elements.map(element => element.evaluate(e => e.textContent));
       expect(await Promise.all(promises)).toEqual(['A', 'B']);
     }));
-    it('should return ampty array if nothing is found', SX(async function() {
+    it('should return empty array if nothing is found', SX(async function() {
       await page.goto(EMPTY_PAGE);
       const elements = await page.$$('div');
       expect(elements.length).toBe(0);
