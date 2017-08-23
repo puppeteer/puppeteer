@@ -95,7 +95,7 @@ module.exports = {
       return;
     if (!fs.existsSync(DOWNLOADS_FOLDER))
       fs.mkdirSync(DOWNLOADS_FOLDER);
-    downloadFile(url, zipPath, progressCallback)
+    return downloadFile(url, zipPath, progressCallback)
         .then(() => extractZip(zipPath, folderPath))
         .catch(err => err)
         .then(() => {
@@ -117,6 +117,7 @@ module.exports = {
   /**
    * @param {string} platform
    * @param {string} revision
+   * @return {!Promise}
    */
   removeRevision: function(platform, revision) {
     console.assert(downloadURLs[platform], `Unsupported platform: ${platform}`);

@@ -19,9 +19,9 @@ const path = require('path');
 const removeRecursive = require('rimraf').sync;
 const transformAsyncFunctions = require('./TransformAsyncFunctions');
 
-const dirPath = 'lib';
-const outPath = path.resolve('node6');
-const fileNames = fs.readdirSync(path.resolve(dirPath));
+const dirPath = path.join(__dirname, '..', '..', 'lib');
+const outPath = path.join(__dirname, '..', '..', 'node6');
+const fileNames = fs.readdirSync(dirPath);
 const filePaths = fileNames.filter(fileName => fileName.endsWith('.js'));
 
 if (fs.existsSync(outPath))
@@ -29,8 +29,8 @@ if (fs.existsSync(outPath))
 fs.mkdirSync(outPath);
 
 filePaths.forEach(filePath => {
-  let content = fs.readFileSync(path.resolve(dirPath, filePath)).toString();
-  let output = transformAsyncFunctions(content);
+  const content = fs.readFileSync(path.join(dirPath, filePath)).toString();
+  const output = transformAsyncFunctions(content);
   fs.writeFile(path.resolve(outPath, filePath), output, function() {});
 });
 

@@ -17,44 +17,50 @@ const transformAsyncFunctions = require('../TransformAsyncFunctions');
 
 describe('TransformAsyncFunctions', function() {
   it('should convert a function expression', function(done) {
-    let input = `(async function(){ return 123 })()`;
-    let output = eval(transformAsyncFunctions(input));
+    const input = `(async function(){ return 123 })()`;
+    const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
   it('should convert an arrow function', function(done) {
-    let input = `(async () => 123)()`;
-    let output = eval(transformAsyncFunctions(input));
+    const input = `(async () => 123)()`;
+    const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
   it('should convert an arrow function with curly braces', function(done) {
-    let input = `(async () => { return 123 })()`;
-    let output = eval(transformAsyncFunctions(input));
+    const input = `(async () => { return 123 })()`;
+    const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
   it('should convert a function declaration', function(done) {
-    let input = `async function f(){ return 123; } f();`;
-    let output = eval(transformAsyncFunctions(input));
+    const input = `async function f(){ return 123; } f();`;
+    const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
   it('should convert await', function(done) {
-    let input = `async function f(){ return 23 + await Promise.resolve(100); } f();`;
-    let output = eval(transformAsyncFunctions(input));
+    const input = `async function f(){ return 23 + await Promise.resolve(100); } f();`;
+    const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
   it('should convert method', function(done) {
-    let input = `class X{async f() { return 123 }} (new X()).f();`;
-    let output = eval(transformAsyncFunctions(input));
+    const input = `class X{async f() { return 123 }} (new X()).f();`;
+    const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
   it('should pass arguments', function(done) {
-    let input = `(async function(a, b){ return await a + await b })(Promise.resolve(100), 23)`;
-    let output = eval(transformAsyncFunctions(input));
+    const input = `(async function(a, b){ return await a + await b })(Promise.resolve(100), 23)`;
+    const output = eval(transformAsyncFunctions(input));
+    expect(output instanceof Promise).toBe(true);
+    output.then(result => expect(result).toBe(123)).then(done);
+  });
+  it('should still work across eval', function(done) {
+    const input = `var str = (async function(){ return 123; }).toString(); eval('(' + str + ')')();`;
+    const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
