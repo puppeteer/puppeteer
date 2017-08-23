@@ -18,8 +18,7 @@
 let folder = 'lib';
 try {
   new Function('async function test(){await 1}');
-}
-catch (error) {
+} catch (error) {
   folder = 'node6';
 }
 

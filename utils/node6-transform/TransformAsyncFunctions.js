@@ -54,7 +54,7 @@ function transformAsyncFunctions(text) {
   const edits = [];
 
   const ast = esprima.parseScript(text, {loc: true, range: true});
-  let walker = new ESTreeWalker(node => {
+  const walker = new ESTreeWalker(node => {
     if (node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration' || node.type === 'ArrowFunctionExpression')
       onFunction(node);
     if (node.type === 'AwaitExpression')
@@ -63,7 +63,7 @@ function transformAsyncFunctions(text) {
   walker.walk(ast);
 
   edits.sort((a, b) => b.from - a.from);
-  for (let {replacement, from, to} of edits)
+  for (const {replacement, from, to} of edits)
     text = text.substring(0, from) + replacement + text.substring(to);
 
   return text;
@@ -96,8 +96,8 @@ function transformAsyncFunctions(text) {
    * @param {ESTree.Node} node
    */
   function onAwait(node) {
-    let text = textInRange(node.range[0], node.range[1]);
-    let index = text.indexOf('await') + node.range[0];
+    const text = textInRange(node.range[0], node.range[1]);
+    const index = text.indexOf('await') + node.range[0];
     insertText(index, index + 'await'.length, '(yield');
     insertText(node.range[1], node.range[1], ')');
   }
