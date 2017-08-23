@@ -1923,7 +1923,7 @@ describe('Page', function() {
 
   describe('Cookies', function() {
     afterEach(SX(async function(){
-      const cookies = await page.cookies();
+      const cookies = await page.cookies(PREFIX + '/grid.html', CROSS_PROCESS_PREFIX);
       for (const cookie of cookies)
         await page.deleteCookie(cookie);
     }));
@@ -2032,6 +2032,48 @@ describe('Page', function() {
         secure: true,
         session: true
       }]);
+    }));
+
+    it('should set cookies from a frame', SX(async function() {
+      await page.goto(PREFIX + '/grid.html');
+      await page.setCookie({name: 'localhost-cookie', value: 'best'});
+      await page.evaluate(src => {
+        let fulfill;
+        const promise = new Promise(x => fulfill = x);
+        const iframe = document.createElement('iframe');
+        document.body.appendChild(iframe);
+        iframe.onload = fulfill;
+        iframe.src = src;
+        return promise;
+      }, CROSS_PROCESS_PREFIX);
+      await page.setCookie({name: '127-cookie', value: 'worst', url: CROSS_PROCESS_PREFIX});
+      expect(await page.evaluate('document.cookie')).toBe('localhost-cookie=best');
+      expect(await page.frames()[1].evaluate('document.cookie')).toBe('127-cookie=worst');
+
+      expect(await page.cookies()).toEqual([{
+        name: 'localhost-cookie',
+        value: 'best',
+        domain: 'localhost',
+        path: '/',
+        expires: 0,
+        size: 20,
+        httpOnly: false,
+        secure: false,
+        session: true
+      }]);
+
+      expect(await page.cookies(CROSS_PROCESS_PREFIX)).toEqual([{
+        name: '127-cookie',
+        value: 'worst',
+        domain: '127.0.0.1',
+        path: '/',
+        expires: 0,
+        size: 15,
+        httpOnly: false,
+        secure: false,
+        session: true
+      }]);
+
     }));
   });
 });

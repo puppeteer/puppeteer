@@ -353,7 +353,7 @@ Gets the full HTML contents of the page, including the doctype.
   - `secure` <[boolean]>
   - `sameSite` <[string]> `"Strict"` or `"Lax"`.
 
-If no URLs are specified, this method returns cookies related to the current page.
+If no URLs are specified, this method returns cookies for the current page URL.
 If URLs are specified, only cookies for those URLs are returned.
 
 #### page.deleteCookie(...cookies)
