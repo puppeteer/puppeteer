@@ -85,7 +85,7 @@ module.exports = {
    * @param {?function(number, number)} progressCallback
    * @return {!Promise}
    */
-  downloadRevision: async function(platform, revision, progressCallback) {
+  downloadRevision: function(platform, revision, progressCallback) {
     let url = downloadURLs[platform];
     console.assert(url, `Unsupported platform: ${platform}`);
     url = util.format(url, revision);
@@ -93,15 +93,15 @@ module.exports = {
     const folderPath = getFolderPath(platform, revision);
     if (fs.existsSync(folderPath))
       return;
-    try {
-      if (!fs.existsSync(DOWNLOADS_FOLDER))
-        fs.mkdirSync(DOWNLOADS_FOLDER);
-      await downloadFile(url, zipPath, progressCallback);
-      await extractZip(zipPath, folderPath);
-    } finally {
-      if (fs.existsSync(zipPath))
-        fs.unlinkSync(zipPath);
-    }
+    if (!fs.existsSync(DOWNLOADS_FOLDER))
+      fs.mkdirSync(DOWNLOADS_FOLDER);
+    downloadFile(url, zipPath, progressCallback)
+        .then(() => extractZip(zipPath, folderPath))
+        .catch(err => err)
+        .then(() => {
+          if (fs.existsSync(zipPath))
+            fs.unlinkSync(zipPath);
+        });
   },
 
   /**
@@ -118,11 +118,11 @@ module.exports = {
    * @param {string} platform
    * @param {string} revision
    */
-  removeRevision: async function(platform, revision) {
+  removeRevision: function(platform, revision) {
     console.assert(downloadURLs[platform], `Unsupported platform: ${platform}`);
     const folderPath = getFolderPath(platform, revision);
     console.assert(fs.existsSync(folderPath));
-    await new Promise(fulfill => removeRecursive(folderPath, fulfill));
+    return new Promise(fulfill => removeRecursive(folderPath, fulfill));
   },
 
   /**
