@@ -305,7 +305,7 @@ Shortcut for [page.mainFrame().$(selector)](#frameselector).
 
 The method runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `[]`.
 
-Shortcut for [page.mainFrame().$$(selector)](#frameselector).
+Shortcut for [page.mainFrame().$$(selector)](#frameselector-1).
 
 #### page.addScriptTag(url)
 - `url` <[string]> Url of the `<script>` tag
@@ -986,15 +986,15 @@ puppeteer.launch().then(async browser => {
 
 #### frame.$(selector)
 - `selector` <[string]> Selector to query page for
-- returns: <[Promise]<[ElementHandle]>> Promise which resolves to ElementHandle pointing to the page element.
+- returns: <[Promise]<[ElementHandle]>> Promise which resolves to ElementHandle pointing to the frame element.
 
-The method queries page for the selector. If there's no such element within the page, the method will resolve to `null`.
+The method queries frame for the selector. If there's no such element within the frame, the method will resolve to `null`.
 
 #### frame.$$(selector)
 - `selector` <[string]> Selector to query page for
-- returns: <[Promise]<[Array]<[ElementHandle]>>> Promise which resolves to ElementHandles pointing to the page elements.
+- returns: <[Promise]<[Array]<[ElementHandle]>>> Promise which resolves to ElementHandles pointing to the frame elements.
 
-The method queries page for all elements matching selector. If there are no such elements within the page, the method will resolve to `[]`.
+The method runs `document.querySelectorAll` within the frame. If no elements match the selector, the return value resolve to `[]`.
 
 #### frame.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
