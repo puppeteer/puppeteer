@@ -451,6 +451,15 @@ describe('Page', function() {
       expect(error).toBeTruthy();
       expect(error.message).toContain('waiting failed: timeout');
     }));
+
+    it('should respond to node attribute mutation', SX(async function() {
+      let divFound = false;
+      const waitForSelector = page.waitForSelector('.zombo').then(() => divFound = true);
+      await page.setContent(`<div class='notZombo'></div>`);
+      expect(divFound).toBe(false);
+      await page.evaluate(() => document.querySelector('div').className = 'zombo');
+      expect(await waitForSelector).toBe(true);
+    }));
   });
 
   describe('Page.waitFor', function() {
