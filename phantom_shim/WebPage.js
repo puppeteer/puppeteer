@@ -207,6 +207,25 @@ class WebPage {
     this._currentFrame = this._page.mainFrame();
   }
 
+  get cookies() {
+    return await(this._page.cookies());
+  }
+
+  set cookies(cookies) {
+    const cookies2 = await(this._page.cookies());
+    await(this._page.deleteCookie(...cookies2));
+    await(this._page.setCookie(...cookies));
+
+  }
+
+  addCookie(cookie) {
+    await(this._page.setCookie(cookie));
+  }
+
+  deleteCookie(cookieName) {
+    await(this._page.deleteCookie({name: cookieName}));
+  }
+
   get onInitialized() {
     return this._onInitialized;
   }

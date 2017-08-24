@@ -1,23 +1,24 @@
-//! unsupported
 async_test(function () {
     var url = TEST_HTTP_BASE + "echo";
-    var page = new WebPage();
+    var webpage = require('webpage');
+
+    var page = webpage.create();
 
     page.cookies = [{
         'name' : 'Valid-Cookie-Name',
         'value' : 'Valid-Cookie-Value',
         'domain' : 'localhost',
         'path' : '/',
-        'httponly' : true,
+        'httpOnly' : true,
         'secure' : false
     },{
         'name' : 'Valid-Cookie-Name-Sec',
         'value' : 'Valid-Cookie-Value-Sec',
         'domain' : 'localhost',
         'path' : '/',
-        'httponly' : true,
+        'httpOnly' : true,
         'secure' : false,
-        'expires' : Date.now() + 3600 //< expires in 1h
+        'expires': (Date.now()/1000) + 3600
     }];
 
     page.open(url, this.step_func(function (status) {
@@ -41,7 +42,9 @@ async_test(function () {
 
 async_test(function () {
     var url = TEST_HTTP_BASE + "echo";
-    var page = new WebPage();
+    var webpage = require('webpage');
+
+    var page = webpage.create();
 
     page.addCookie({
         'name' : 'Added-Cookie-Name',
@@ -68,7 +71,9 @@ async_test(function () {
 
 async_test(function () {
     var url = TEST_HTTP_BASE + "echo";
-    var page = new WebPage();
+    var webpage = require('webpage');
+
+    var page = webpage.create();
 
     page.cookies = [
         { // domain mismatch.
@@ -85,7 +90,7 @@ async_test(function () {
             'name' : 'Invalid-Cookie-Name-3',
             'value' : 'Invalid-Cookie-Value-3',
             'domain' : 'localhost',
-            'expires' : 'Sat, 01 Jan 2000 00:00:00 GMT'
+            'expires' : 5
         },{ // https only: the cookie will be set,
             // but won't be visible from the given URL (not https).
             'name' : 'Invalid-Cookie-Name-4',
@@ -96,12 +101,7 @@ async_test(function () {
             'name' : 'Invalid-Cookie-Name-5',
             'value' : 'Invalid-Cookie-Value-5',
             'domain' : 'localhost',
-            'expires' : new Date().getTime() - 1 //< date in the past
-        },{ // cookie expired (date in "sec since epoch" - using "expiry").
-            'name' : 'Invalid-Cookie-Name-6',
-            'value' : 'Invalid-Cookie-Value-6',
-            'domain' : 'localhost',
-            'expiry' : new Date().getTime() - 1 //< date in the past
+            'expires' : (Date.now()/1000) - 10 //< date in the past
         }];
 
     page.open(url, this.step_func_done(function (status) {

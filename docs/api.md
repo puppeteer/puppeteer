@@ -34,6 +34,8 @@
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
     + [page.content()](#pagecontent)
+    + [page.cookies(...urls)](#pagecookiesurls)
+    + [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
     + [page.emulate(options)](#pageemulateoptions)
     + [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
     + [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
@@ -55,6 +57,7 @@
     + [page.reload(options)](#pagereloadoptions)
     + [page.screenshot([options])](#pagescreenshotoptions)
     + [page.setContent(html)](#pagesetcontenthtml)
+    + [page.setCookie(...cookies)](#pagesetcookiecookies)
     + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
     + [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
     + [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
@@ -337,6 +340,30 @@ If there's no element matching `selector`, the method throws an error.
 - returns: <[Promise]<[String]>>
 
 Gets the full HTML contents of the page, including the doctype.
+
+#### page.cookies(...urls)
+- `...urls` <...[string]>
+- returns: <[Promise]<[Array]<[Object]>>>
+  - `name` <[string]>
+  - `value` <[string]>
+  - `domain` <[string]>
+  - `path` <[string]>
+  - `expires` <[number]> Unix time in seconds.
+  - `httpOnly` <[boolean]>
+  - `secure` <[boolean]>
+  - `sameSite` <[string]> `"Strict"` or `"Lax"`.
+
+If no URLs are specified, this method returns cookies for the current page URL.
+If URLs are specified, only cookies for those URLs are returned.
+
+#### page.deleteCookie(...cookies)
+- `...cookies` <...[Object]>
+  - `name` <[string]> **required**
+  - `url` <[string]>
+  - `domain` <[string]>
+  - `path` <[string]>
+  - `secure` <[boolean]>
+- returns: <[Promise]>
 
 #### page.emulate(options)
 - `options` <[Object]>
@@ -650,6 +677,19 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 
 #### page.setContent(html)
 - `html` <[string]> HTML markup to assign to the page.
+- returns: <[Promise]>
+
+#### page.setCookie(...cookies)
+- `...cookies` <...[Object]>
+  - `name` <[string]> **required**
+  - `value` <[string]> **required**
+  - `url` <[string]>
+  - `domain` <[string]>
+  - `path` <[string]>
+  - `expires` <[number]> Unix time in seconds.
+  - `httpOnly` <[boolean]>
+  - `secure` <[boolean]>
+  - `sameSite` <[string]> `"Strict"` or `"Lax"`.
 - returns: <[Promise]>
 
 #### page.setExtraHTTPHeaders(headers)
