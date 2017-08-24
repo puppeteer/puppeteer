@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-const puppeteer = require('../index.js');
+'use strict';
+
+const puppeteer = require('puppeteer');
 
 (async() => {
 
