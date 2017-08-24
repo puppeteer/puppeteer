@@ -1481,6 +1481,16 @@ describe('Page', function() {
       expect(result).toBe(`${doctype}${expectedOutput}`);
     }));
   });
+
+  describe('Page.setElementContent', function() {
+    it('should work', SX(async function() {
+      await page.setContent('<div id="testdiv"></div>');
+      await page.setElementContent('#testdiv', 'hello');
+      let result = await page.evaluate(() => document.body.innerHTML);
+      expect(result).toBe('<div id="testdiv">hello</div>');
+    }));
+  });
+
   describe('Network Events', function() {
     it('Page.Events.Request', SX(async function() {
       const requests = [];
