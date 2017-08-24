@@ -85,11 +85,11 @@ const puppeteer = require('puppeteer');
     return {
       width: document.documentElement.clientWidth,
       height: document.documentElement.clientHeight,
-      devicePixelRatio: window.devicePixelRatio
+      deviceScaleFactor: window.devicePixelRatio
     };
   });
   
-  console.log('Viewport is:', dimensions);
+  console.log('Dimensions:', dimensions);
 
   browser.close();
 })();
