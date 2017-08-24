@@ -93,6 +93,7 @@ const puppeteer = require('puppeteer');
 
   browser.close();
 })();
+```
 
 See [`Page.evaluate()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pageevaluatepagefunction-args) for more information on `evaluate` and related methods like `evaluateOnNewDocument` and `exposeFunction`.
 
