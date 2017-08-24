@@ -5,18 +5,22 @@
   "main": "index.js",
   "repository": "github:GoogleChrome/puppeteer",
   "engines": {
-    "node": ">=7.10.0"
+    "node": ">=6.4.0"
   },
   "scripts": {
     "unit": "jasmine test/test.js",
     "debug-unit": "DEBUG_TEST=true node --inspect-brk ./node_modules/.bin/jasmine test/test.js",
     "test-phantom": "python third_party/phantomjs/test/run-tests.py",
     "test-doclint": "jasmine utils/doclint/check_public_api/test/test.js && jasmine utils/doclint/preprocessor/test.js",
-    "test": "npm run lint --silent && npm run coverage && npm run test-phantom && npm run test-doclint",
+    "test": "npm run lint --silent && npm run coverage && npm run test-phantom && npm run test-doclint && npm run test-node6",
     "install": "node install.js",
     "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .) && npm run doc",
     "doc": "node utils/doclint/cli.js",
-    "coverage": "COVERAGE=true npm run unit"
+    "coverage": "COVERAGE=true npm run unit",
+    "node6": "node utils/node6-transform/index.js",
+    "test-node6": "jasmine utils/node6-transform/test/test.js",
+    "build": "npm run node6",
+    "node6-sanity": "jasmine test/sanity.js"
   },
   "author": "The Chromium Authors",
   "license": "SEE LICENSE IN LICENSE",

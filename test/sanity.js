@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-// If node does not support async await, use the compiled version.
-let folder = 'lib';
-try {
-  new Function('async function test(){await 1}');
-} catch (error) {
-  folder = 'node6';
-}
-
-module.exports = require(`./${folder}/Puppeteer`);
+describe('Puppeteer Sanity', function() {
+  it('should not be insane', function(done) {
+    const puppeteer = require('..');
+    puppeteer.launch().then(browser => {
+      browser.newPage().then(page => {
+        page.goto('data:text/html,hello').then(() => {
+          page.evaluate(() => document.body.textContent).then(content => {
+            expect(content).toBe('hello');
+            done();
+          });
+        });
+      });
+    });
+  });
+});
