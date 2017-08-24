@@ -2012,7 +2012,7 @@ describe('Page', function() {
         value: '3'
       });
       expect(await page.evaluate('document.cookie')).toBe('cookie1=1; cookie2=2; cookie3=3');
-      page.deleteCookie({name: 'cookie2'});
+      await page.deleteCookie({name: 'cookie2'});
       expect(await page.evaluate('document.cookie')).toBe('cookie1=1; cookie3=3');
     }));
 
