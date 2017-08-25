@@ -21,7 +21,7 @@ Most things that you can do manually in the browser can be done using Puppeteer!
 
 ### Installation
 
-*Puppeteer requires Node version 7.10 or greater*
+*Puppeteer requires Node version 6.4.0 or greater*
 
 To use Puppeteer in your project, run:
 ```
