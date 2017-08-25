@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+const fs = require('fs');
+const path = require('path');
+if (fs.existsSync(path.join(__dirname, 'utils', 'node6-transform')))
+  require('./utils/node6-transform/');
+
 const Downloader = require('./utils/ChromiumDownloader');
 const platform = Downloader.currentPlatform();
 const revision = require('./package').puppeteer.chromium_revision;
