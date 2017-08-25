@@ -1,1 +1,0 @@
-module.exports = 'dir/dummy';

@@ -15,7 +15,6 @@ install:
 script:
   - 'if [ "$NODE7" = "true" ]; then yarn run lint; fi'
   - 'if [ "$NODE7" = "true" ]; then yarn run coverage; fi'
-  - 'if [ "$NODE7" = "true" ]; then yarn run test-phantom; fi'
   - 'if [ "$NODE6" = "true" ]; then yarn run node6; fi'
   - 'if [ "$NODE6" = "true" ]; then yarn run test-node6; fi'
   - 'if [ "$NODE6" = "true" ]; then yarn run node6-sanity; fi'
