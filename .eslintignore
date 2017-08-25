@@ -1,3 +1,4 @@
 third_party/*
 utils/doclint/check_public_api/test/
 node6/*
+node6-test/*
