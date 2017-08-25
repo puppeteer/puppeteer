@@ -1,7 +1,3 @@
-# exclude phantomjs tests
-third_party/phantomjs/
-# exclude phantom_shim project
-phantom_shim
 # exclude all tests
 test
 utils/node6-transform
