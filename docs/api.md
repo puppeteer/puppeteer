@@ -1191,7 +1191,7 @@ puppeteer.launch().then(async browser => {
 ElementHandle prevents DOM element from garbage collection unless the handle is [disposed](#elementhandledispose). ElementHandles are auto-disposed when their origin frame gets navigated.
 
 #### elementHandle.attribute(key)
-- `key` <string> Get the attribute of this Element
+- `key` <string> the name the attribute of this Element.
 - returns: <[Promise]>
 
 #### elementHandle.click([options])
@@ -1224,7 +1224,7 @@ This method scrolls element into view if needed, and then uses [page.mouse](#pag
 If the element is detached from DOM, the method throws an error.
 
 #### elementHandle.property(key)
-- `key` <string> Get the property of this Element
+- `key` <string> the name of property of this Element.
 - returns: <[Promise]>
 
 #### elementHandle.uploadFile(...filePaths)
