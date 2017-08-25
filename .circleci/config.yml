@@ -1,0 +1,63 @@
+version: 2
+jobs:
+  test_node_7:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/node:7-browsers
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - node-cache-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install node dependencies
+          command: |
+            yarn install
+      - save_cache:
+          key: node-cache-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.yarn-cache
+            - ./node_modules
+
+      - deploy:
+          name: Test
+          command: |
+            yarn run lint
+            yarn run coverage
+            yarn run test-phantom
+
+  test_node_8:
+    working_directory: ~/repo
+    docker:
+      - image: circleci/node:8-browsers
+
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - node-cache-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install node dependencies
+          command: |
+            yarn install
+      - save_cache:
+          key: node-cache-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.yarn-cache
+            - ./node_modules
+
+      - deploy:
+          name: Test
+          command: |
+            yarn run lint
+            yarn run coverage
+            yarn run test-phantom
+
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test_node_7
+      - test_node_8
