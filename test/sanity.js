@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+console.log(process.version);
+
 describe('Puppeteer Sanity', function() {
   it('should not be insane', function(done) {
     const puppeteer = require('..');

@@ -4,6 +4,7 @@ third_party/phantomjs/
 phantom_shim
 # exclude all tests
 test
+utils/node6-transform
 
 # repeats from .gitignore
 node_modules
