@@ -116,9 +116,6 @@ HEADLESS=false SLOW_MO=500 npm run unit
 npm run debug-unit
 ```
 
-There are also phantomjs tests located under [third_party/phantomjs/test](https://github.com/GoogleChrome/puppeteer/tree/master/third_party/phantomjs). These
-are used to test `phantom_shim`.
-
 ## Public API Coverage
 
 Every public API method or event should be called at least once in tests. To ensure this, there's a coverage command which tracks calls to public API and reports back if some methods/events were not called.
