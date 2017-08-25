@@ -1194,6 +1194,13 @@ ElementHandle prevents DOM element from garbage collection unless the handle is 
 - `key` <string> the name the attribute of this Element.
 - returns: <[Promise]>
 
+```js
+  const page = await browser.newPage();
+  await page.goto('https://google.com');
+  const inputElement = await page.$('input');
+  const inputType = await inputElement.attribute('type')
+```
+
 #### elementHandle.click([options])
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
@@ -1226,6 +1233,13 @@ If the element is detached from DOM, the method throws an error.
 #### elementHandle.property(key)
 - `key` <string> the name of property of this Element.
 - returns: <[Promise]>
+
+```js
+  const page = await browser.newPage();
+  await page.goto('https://google.com');
+  const inputElement = await page.$('input');
+  const inputType = await inputElement.property('value')
+```
 
 #### elementHandle.uploadFile(...filePaths)
 - `...filePaths` <...[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
