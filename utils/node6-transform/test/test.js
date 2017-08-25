@@ -64,7 +64,7 @@ describe('TransformAsyncFunctions', function() {
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
-  fit('should work with double await', function(done) {
+  it('should work with double await', function(done) {
     const input = `async function f(){ return 23 + await Promise.resolve(50 + await Promise.resolve(50)); } f();`;
     const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
