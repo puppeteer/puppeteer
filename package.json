@@ -18,7 +18,8 @@
     "coverage": "COVERAGE=true npm run unit",
     "node6": "node utils/node6-transform/index.js",
     "test-node6": "jasmine utils/node6-transform/test/test.js",
-    "node6-sanity": "jasmine test/sanity.js"
+    "node6-sanity": "jasmine test/sanity.js",
+    "build": "npm run node6",
   },
   "author": "The Chromium Authors",
   "license": "SEE LICENSE IN LICENSE",
