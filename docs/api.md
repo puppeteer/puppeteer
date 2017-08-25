@@ -1,4 +1,4 @@
-##### Released API: [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md) [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md)
+##### Released API: [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md) 
 
 # Puppeteer API v<!-- GEN:version -->0.10.1-alpha<!-- GEN:stop-->
 
