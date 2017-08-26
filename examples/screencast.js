@@ -16,7 +16,7 @@
 
 'use strict';
 
-const puppeteer = require('../index.js');
+const puppeteer = require('puppeteer');
 const fs = require('fs');
 
 (async() => {
@@ -28,9 +28,6 @@ await page.goto('https://www.youtube.com/watch?v=dQw4w9WgXcQ');
 let frameCount = 0;
 page.on('screencastframe', async frame => {
   await page.screencastFrameAck(frame.sessionId);
-
-  console.log(Object.keys(frame.metadata));
-  console.log(frame.metadata);
 
   fs.writeFileSync('frame' + frameCount + '.jpg', frame.data, 'base64');
   frameCount++;
