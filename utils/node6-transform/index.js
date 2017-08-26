@@ -30,7 +30,7 @@ function copyFolder(source, target) {
 
   fs.readdirSync(source).forEach(file => {
     const from = path.join(source, file);
-    const to = path.join(source, file);
+    const to = path.join(target, file);
     if (fs.lstatSync(from).isDirectory()) {
       copyFolder(from, to);
     } else {
