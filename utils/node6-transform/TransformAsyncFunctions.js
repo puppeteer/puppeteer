@@ -49,6 +49,7 @@ const asyncToGenerator = fn => {
 
 /**
  * @param {string} text
+ * @return {string}
  */
 function transformAsyncFunctions(text) {
   const edits = [];
