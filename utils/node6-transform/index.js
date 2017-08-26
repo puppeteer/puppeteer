@@ -23,20 +23,21 @@ copyFolder(path.join(__dirname, '..', '..', 'lib'), path.join(__dirname, '..', '
 copyFolder(path.join(__dirname, '..', '..', 'test'), path.join(__dirname, '..', '..', 'node6-test'));
 
 
-function copyFolder(source, target, root) {
+function copyFolder(source, target) {
   if (fs.existsSync(target))
     removeRecursive(target);
   fs.mkdirSync(target);
 
   fs.readdirSync(source).forEach(file => {
-    const curSource = path.join(source, file);
-    if (fs.lstatSync(curSource).isDirectory()) {
-      copyFolder(curSource, path.join(target, path.basename(curSource)));
+    const from = path.join(source, file);
+    const to = path.join(source, file);
+    if (fs.lstatSync(from).isDirectory()) {
+      copyFolder(from, to);
     } else {
-      let text = fs.readFileSync(curSource);
-      if (curSource.endsWith('.js'))
+      let text = fs.readFileSync(from);
+      if (file.endsWith('.js'))
         text = transformAsyncFunctions(text.toString()).replace(/require\('\.\.\/lib\//g, `require('../node6/`);
-      fs.writeFileSync(path.join(target, path.basename(curSource)), text);
+      fs.writeFileSync(to, text);
     }
   });
 }
