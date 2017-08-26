@@ -29,6 +29,9 @@ let frameCount = 0;
 page.on('screencastframe', async frame => {
   await page.screencastFrameAck(frame.sessionId);
 
+  console.log(Object.keys(frame.metadata));
+  console.log(frame.metadata);
+
   fs.writeFileSync('frame' + frameCount + '.jpg', frame.data, 'base64');
   frameCount++;
 

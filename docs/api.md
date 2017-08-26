@@ -28,6 +28,7 @@
     + [event: 'requestfailed'](#event-requestfailed)
     + [event: 'requestfinished'](#event-requestfinished)
     + [event: 'response'](#event-response)
+    + [event: 'screencastframe'](#event-screencastframe)
     + [page.$(selector)](#pageselector)
     + [page.$$(selector)](#pageselector)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
@@ -55,6 +56,7 @@
     + [page.plainText()](#pageplaintext)
     + [page.press(key[, options])](#pagepresskey-options)
     + [page.reload(options)](#pagereloadoptions)
+    + [page.screencastFrameAck(sessionId)](#pagescreencastframeacksessionid)
     + [page.screenshot([options])](#pagescreenshotoptions)
     + [page.setContent(html)](#pagesetcontenthtml)
     + [page.setCookie(...cookies)](#pagesetcookiecookies)
@@ -63,6 +65,8 @@
     + [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
     + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
     + [page.setViewport(viewport)](#pagesetviewportviewport)
+    + [page.startScreencast([options])](#pagestartscreencastoptions)
+    + [page.stopScreencast()](#pagestopscreencast)
     + [page.title()](#pagetitle)
     + [page.tracing](#pagetracing)
     + [page.type(text, options)](#pagetypetext-options)
@@ -294,6 +298,21 @@ Emitted when a request finishes successfully.
 
 #### event: 'response'
 - <[Response]>
+
+Emitted when a [response] is received.
+
+#### event: 'screencastframe'
+- <[object]>
+    - `data` <[string]> Base64 encoded frame data.
+    - `metadata` <[object]>
+        - `offsetTop` <[number]>
+        - `pageScaleFactor` <[number]>
+        - `deviceWidth` <[number]>
+        - `deviceHeight` <[number]>
+        - `scrollOffsetX` <[number]>
+        - `scrollOffsetY` <[number]>
+        - `timestamp` <[number]>
+    - `sessionId` <[number]> The ID of the session this frame is from.
 
 Emitted when a [response] is received.
 
@@ -661,6 +680,10 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
   - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
+#### page.screencastFrameAck(sessionId)
+- `sessionId` <[number]> The sessionId of the frame that is being acknowledge. Provided in the `screencastframe` event.
+- returns: <[Promise]>
+
 #### page.screenshot([options])
 - `options` <[Object]> Options object which might have the following properties:
     - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the image won't be saved to the disk.
@@ -747,6 +770,18 @@ puppeteer.launch().then(async browser => {
 > **NOTE** in certain cases, setting viewport will reload the page in order to set the `isMobile` or `hasTouch` properties.
 
 In the case of multiple pages in a single browser, each page can have its own viewport size.
+
+#### page.startScreencast([options])
+- `options` <[Object]> Options object which might have the following properties:
+    - `format` <[string]> Specify screencast frame format, could be either `jpeg` or `png`. Defaults to 'png'.
+    - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
+    - `maxWidth` <[number]> The maximum width of the screencast frame.
+    - `maxHeight` <[number]> The maximum height of the screencast frame.
+    - `everyNthFrame` <[number]> Defines which frames to send.
+- returns: <[Promise]>
+
+#### page.stopScreencast()
+- returns: <[Promise]>
 
 #### page.title()
 - returns: <[Promise]<[string]>> Returns page's title.
