@@ -115,6 +115,25 @@ describe('Browser', function() {
     expect(await page.evaluate(() => 7 * 8)).toBe(56);
     originalBrowser.close();
   }));
+  it('userDataDir option', SX(async function() {
+    const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+    const options = Object.assign({userDataDir}, defaultBrowserOptions);
+    const browser = await puppeteer.launch(options);
+    expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+    browser.close();
+    expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+    rm(userDataDir);
+  }));
+  it('userDataDir argument', SX(async function() {
+    const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+    const options = Object.assign({}, defaultBrowserOptions);
+    options.args = [`--user-data-dir=${userDataDir}`].concat(options.args);
+    const browser = await puppeteer.launch(options);
+    expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+    browser.close();
+    expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+    rm(userDataDir);
+  }));
 });
 
 describe('Page', function() {
