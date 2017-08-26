@@ -1195,10 +1195,14 @@ ElementHandle prevents DOM element from garbage collection unless the handle is 
 - returns: <[Promise]>
 
 ```js
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
   await page.goto('https://google.com');
   const inputElement = await page.$('input');
-  const inputType = await inputElement.attribute('type')
+  const inputType = await inputElement.attribute('type');
+});
 ```
 
 #### elementHandle.click([options])
@@ -1235,10 +1239,14 @@ If the element is detached from DOM, the method throws an error.
 - returns: <[Promise]>
 
 ```js
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
   await page.goto('https://google.com');
   const inputElement = await page.$('input');
-  const inputType = await inputElement.property('value')
+  const inputType = await inputElement.property('value');
+})
 ```
 
 #### elementHandle.uploadFile(...filePaths)
