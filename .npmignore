@@ -1,9 +1,6 @@
-# exclude phantomjs tests
-third_party/phantomjs/
-# exclude phantom_shim project
-phantom_shim
 # exclude all tests
 test
+utils/node6-transform
 
 # repeats from .gitignore
 node_modules
@@ -14,3 +11,4 @@ node_modules
 *.pyc
 .vscode
 package-lock.json
+/node6-test

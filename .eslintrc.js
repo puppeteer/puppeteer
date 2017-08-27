@@ -43,10 +43,13 @@ module.exports = {
             "getWithoutSet": false,
             "setWithoutGet": false
         }],
+        "brace-style": [2, "1tbs", {"allowSingleLine": true}],
         "curly": [2, "multi-or-nest", "consistent"],
         "new-parens": 2,
         "func-call-spacing": 2,
         "arrow-parens": [2, "as-needed"],
+        "prefer-const": 2,
+        "quote-props": [2, "consistent"],
 
         // anti-patterns
         "no-var": 2,
@@ -69,6 +72,7 @@ module.exports = {
         "radix": 2,
         "valid-typeof": 2,
         "no-unused-vars": [2, { "args": "none", "vars": "local" }],
+        "no-implicit-globals": [2],
 
         // es2015 features
         "require-yield": 2,
@@ -99,25 +103,10 @@ module.exports = {
         "no-multiple-empty-lines": [2, {"max": 2}],
         "no-mixed-spaces-and-tabs": 2,
         "no-trailing-spaces": 2,
-        "linebreak-style": [ 2, "unix" ],
+        "linebreak-style": [ process.platform === "win32" ? 0 : 2, "unix" ],
         "indent": [2, 2, { "SwitchCase": 1, "CallExpression": {"arguments": 2}, "MemberExpression": 2 }],
-
-        /**
-         * Disabled, aspirational rules
-         */
-        // brace-style is disabled, as eslint cannot enforce 1tbs as default, but allman for functions
-        "brace-style": [0, "allman", { "allowSingleLine": true }],
-
-        // key-spacing is disabled, as some objects use value-aligned spacing, some not.
-        "key-spacing": [0, {
-            "beforeColon": false,
-            "afterColon": true,
-            "align": "value"
-        }],
-        // quote-props is diabled, as property quoting styles are too varied to enforce.
-        "quote-props": [0, "as-needed"],
-
-        // no-implicit-globals will prevent accidental globals
-        "no-implicit-globals": [0]
+        "key-spacing": [2, {
+            "beforeColon": false
+        }]
     }
 };

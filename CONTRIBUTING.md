@@ -86,7 +86,7 @@ npm run unit -- --filter=waitFor
   ...
   // Using "fit" to run specific test
   fit('should work', SX(async function() {
-    await response = page.goto(EMPTY_PAGE);
+    const response = await page.goto(EMPTY_PAGE);
     expect(response.ok).toBe(true);
   }))
 ```
@@ -95,7 +95,7 @@ npm run unit -- --filter=waitFor
   ...
   // Using "xit" to skip specific test
   xit('should work', SX(async function() {
-    await response = page.goto(EMPTY_PAGE);
+    const response = await page.goto(EMPTY_PAGE);
     expect(response.ok).toBe(true);
   }))
 ```
@@ -116,9 +116,6 @@ HEADLESS=false SLOW_MO=500 npm run unit
 npm run debug-unit
 ```
 
-There are also phantomjs tests located under [third_party/phantomjs/test](https://github.com/GoogleChrome/puppeteer/tree/master/third_party/phantomjs). These
-are used to test `phantom_shim`.
-
 ## Public API Coverage
 
 Every public API method or event should be called at least once in tests. To ensure this, there's a coverage command which tracks calls to public API and reports back if some methods/events were not called.
@@ -135,13 +132,11 @@ Puppeteer uses [DEBUG](https://github.com/visionmedia/debug) module to expose so
 ```js
 const puppeteer = require('puppeteer');
 
-(async() => {
-
-const browser = await puppeteer.launch();
-const page = await browser.newPage();
-await page.goto('https://example.com');
-browser.close();
-
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto('https://example.com');
+  browser.close();
 })();
 ```
 

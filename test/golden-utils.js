@@ -30,7 +30,7 @@ module.exports = {
   },
 };
 
-let GoldenComparators = {
+const GoldenComparators = {
   'image/png': compareImages,
   'text/plain': compareText
 };
@@ -44,15 +44,15 @@ function compareImages(actualBuffer, expectedBuffer) {
   if (!actualBuffer || !(actualBuffer instanceof Buffer))
     return { errorMessage: 'Actual result should be Buffer.' };
 
-  let actual = PNG.sync.read(actualBuffer);
-  let expected = PNG.sync.read(expectedBuffer);
+  const actual = PNG.sync.read(actualBuffer);
+  const expected = PNG.sync.read(expectedBuffer);
   if (expected.width !== actual.width || expected.height !== actual.height) {
     return {
       errorMessage: `Sizes differ: expected image ${expected.width}px X ${expected.height}px, but got ${actual.width}px X ${actual.height}px. `
     };
   }
-  let diff = new PNG({width: expected.width, height: expected.height});
-  let count = pixelmatch(expected.data, actual.data, diff.data, expected.width, expected.height, {threshold: 0.1});
+  const diff = new PNG({width: expected.width, height: expected.height});
+  const count = pixelmatch(expected.data, actual.data, diff.data, expected.width, expected.height, {threshold: 0.1});
   return count > 0 ? { diff: PNG.sync.write(diff) } : null;
 }
 
@@ -64,14 +64,14 @@ function compareImages(actualBuffer, expectedBuffer) {
 function compareText(actual, expectedBuffer) {
   if (typeof actual !== 'string')
     return { errorMessage: 'Actual result should be string' };
-  let expected = expectedBuffer.toString('utf-8');
+  const expected = expectedBuffer.toString('utf-8');
   if (expected === actual)
     return null;
-  let diff = new Diff();
-  let result = diff.main(expected, actual);
+  const diff = new Diff();
+  const result = diff.main(expected, actual);
   diff.cleanupSemantic(result);
   let html = diff.prettyHtml(result);
-  let diffStylePath = path.join(__dirname, 'diffstyle.css');
+  const diffStylePath = path.join(__dirname, 'diffstyle.css');
   html = `<link rel="stylesheet" href="file://${diffStylePath}">` + html;
   return {
     diff: html,
@@ -85,10 +85,10 @@ function compareText(actual, expectedBuffer) {
  * @return {!{pass: boolean, message: (undefined|string)}}
  */
 function compare(goldenPath, outputPath, actual, goldenName) {
-  let expectedPath = path.join(goldenPath, goldenName);
-  let actualPath = path.join(outputPath, goldenName);
+  const expectedPath = path.join(goldenPath, goldenName);
+  const actualPath = path.join(outputPath, goldenName);
 
-  let messageSuffix = 'Output is saved in "' + path.basename(outputPath + '" directory');
+  const messageSuffix = 'Output is saved in "' + path.basename(outputPath + '" directory');
 
   if (!fs.existsSync(expectedPath)) {
     ensureOutputDir();
@@ -98,15 +98,15 @@ function compare(goldenPath, outputPath, actual, goldenName) {
       message: goldenName + ' is missing in golden results. ' + messageSuffix
     };
   }
-  let expected = fs.readFileSync(expectedPath);
-  let comparator = GoldenComparators[mime.lookup(goldenName)];
+  const expected = fs.readFileSync(expectedPath);
+  const comparator = GoldenComparators[mime.lookup(goldenName)];
   if (!comparator) {
     return {
       pass: false,
       message: 'Failed to find comparator with type ' + mime.lookup(goldenName) + ': '  + goldenName
     };
   }
-  let result = comparator(actual, expected);
+  const result = comparator(actual, expected);
   if (!result)
     return { pass: true };
   ensureOutputDir();
@@ -114,7 +114,7 @@ function compare(goldenPath, outputPath, actual, goldenName) {
   // Copy expected to the output/ folder for convenience.
   fs.writeFileSync(addSuffix(actualPath, '-expected'), expected);
   if (result.diff) {
-    let diffPath = addSuffix(actualPath, '-diff', result.diffExtension);
+    const diffPath = addSuffix(actualPath, '-diff', result.diffExtension);
     fs.writeFileSync(diffPath, result.diff);
   }
 
@@ -139,8 +139,8 @@ function compare(goldenPath, outputPath, actual, goldenName) {
  * @return {string}
  */
 function addSuffix(filePath, suffix, customExtension) {
-  let dirname = path.dirname(filePath);
-  let ext = path.extname(filePath);
-  let name = path.basename(filePath, ext);
+  const dirname = path.dirname(filePath);
+  const ext = path.extname(filePath);
+  const name = path.basename(filePath, ext);
   return path.join(dirname, name + suffix + (customExtension || ext));
 }

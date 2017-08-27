@@ -11,5 +11,6 @@ module.exports = {
      */
     "rules": {
         "indent": [2, 2, { "SwitchCase": 1, "CallExpression": {"arguments": 2}, "MemberExpression": 2, "outerIIFEBody": 0 }],
+        "strict": [2, "global"],
     }
 };

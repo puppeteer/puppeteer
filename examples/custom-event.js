@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Google Inc., PhantomJS Authors All rights reserved.
+ * Copyright 2017 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,17 +22,29 @@ const puppeteer = require('puppeteer');
 
 const browser = await puppeteer.launch();
 const page = await browser.newPage();
-await page.setRequestInterceptionEnabled(true);
-page.on('request', request => {
-  if (/\.(png|jpg|jpeg|gif|webp)$/i.test(request.url))
-    request.abort();
-  else
-    request.continue();
+
+// Define a window.onCustomEvent function on the page.
+await page.exposeFunction('onCustomEvent', e => {
+  console.log(`${e.type} fired`, e.detail || '');
 });
-await page.goto('https://bbc.com');
-await page.screenshot({path: 'news.png', fullPage: true});
+
+/**
+ * Attach an event listener to page to capture a custom event on page load/navigation.
+ * @param {string} type Event name.
+ * @return {!Promise}
+ */
+function listenFor(type) {
+  return page.evaluateOnNewDocument(type => {
+    document.addEventListener(type, e => {
+      window.onCustomEvent({type, detail: e.detail});
+    });
+  }, type);
+}
+
+await listenFor('app-ready'); // Listen for "app-ready" custom event on page load.
+
+await page.goto('https://www.chromestatus.com/features', {waitUntil: 'networkidle'});
 
 browser.close();
 
 })();
-

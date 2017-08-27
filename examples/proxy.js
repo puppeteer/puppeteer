@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Google Inc., PhantomJS Authors All rights reserved.
+ * Copyright 2017 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,19 +20,14 @@ const puppeteer = require('puppeteer');
 
 (async() => {
 
-const browser = await puppeteer.launch();
-const page = await browser.newPage();
-await page.setRequestInterceptionEnabled(true);
-page.on('request', request => {
-  if (/\.(png|jpg|jpeg|gif|webp)$/i.test(request.url))
-    request.abort();
-  else
-    request.continue();
+const browser = await puppeteer.launch({
+  // Launch chromium using a proxy server on port 9876.
+  // More on proxing:
+  //    https://www.chromium.org/developers/design-documents/network-settings
+  args: [ '--proxy-server=127.0.0.1:9876' ]
 });
-await page.goto('https://bbc.com');
-await page.screenshot({path: 'news.png', fullPage: true});
-
+const page = await browser.newPage();
+await page.goto('https://google.com');
 browser.close();
 
 })();
-

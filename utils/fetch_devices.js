@@ -52,7 +52,7 @@ Fetch Chrome DevTools front-end emulation devices from given URL, convert them t
 devices and save to the <outputPath>.
 `;
 
-let argv = require('minimist')(process.argv.slice(2), {
+const argv = require('minimist')(process.argv.slice(2), {
   alias: { u: 'url', h: 'help' },
 });
 
@@ -61,8 +61,8 @@ if (argv.help) {
   return;
 }
 
-let url = argv.url || DEVICES_URL;
-let outputPath = argv._[0];
+const url = argv.url || DEVICES_URL;
+const outputPath = argv._[0];
 if (!outputPath) {
   console.log('ERROR: output file name is missing. Use --help for help.');
   return;
@@ -72,7 +72,7 @@ main(url);
 
 async function main(url) {
   console.log('GET ' + url);
-  let text = await httpGET(url);
+  const text = await httpGET(url);
   let json = null;
   try {
     json = JSON.parse(text);
@@ -80,11 +80,11 @@ async function main(url) {
     console.error(`FAILED: error parsing response - ${e.message}`);
     return;
   }
-  let devicePayloads = json.extensions.filter(extension => extension.type === 'emulated-device').map(extension => extension.device);
+  const devicePayloads = json.extensions.filter(extension => extension.type === 'emulated-device').map(extension => extension.device);
   let devices = [];
-  for (let payload of devicePayloads) {
-    let device = createDevice(payload, false);
-    let landscape = createDevice(payload, true);
+  for (const payload of devicePayloads) {
+    const device = createDevice(payload, false);
+    const landscape = createDevice(payload, true);
     devices.push(device);
     if (landscape.viewport.width !== device.viewport.width || landscape.viewport.height !== device.viewport.height)
       devices.push(landscape);
@@ -92,10 +92,10 @@ async function main(url) {
   devices = devices.filter(device => device.viewport.isMobile);
   devices.sort((a, b) => a.name.localeCompare(b.name));
   // Use single-quotes instead of double-quotes to conform with codestyle.
-  let serialized = JSON.stringify(devices, null, 2)
+  const serialized = JSON.stringify(devices, null, 2)
       .replace(/'/g, `\\'`)
       .replace(/"/g, `'`);
-  let result = util.format(template, serialized);
+  const result = util.format(template, serialized);
   fs.writeFileSync(outputPath, result, 'utf8');
 }
 

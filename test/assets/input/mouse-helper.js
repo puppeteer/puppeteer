@@ -1,9 +1,9 @@
 // This injects a box into the page that moves with the mouse;
 // Useful for debugging
 (function(){
-  let box = document.createElement('div');
+  const box = document.createElement('div');
   box.classList.add('mouse-helper');
-  let styleElement = document.createElement('style');
+  const styleElement = document.createElement('style');
   styleElement.innerHTML = `
   .mouse-helper {
     pointer-events: none;

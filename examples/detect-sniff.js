@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
+'use strict';
+
 const puppeteer = require('puppeteer');
 
 function sniffDetector() {
-  let userAgent = window.navigator.userAgent;
-  let platform = window.navigator.platform;
+  const userAgent = window.navigator.userAgent;
+  const platform = window.navigator.platform;
 
   window.navigator.__defineGetter__('userAgent', function() {
     window.navigator.sniffed = true;

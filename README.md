@@ -1,6 +1,6 @@
 # Puppeteer [![Build Status](https://travis-ci.org/GoogleChrome/puppeteer.svg?branch=master)](https://travis-ci.org/GoogleChrome/puppeteer) [![NPM puppeteer package](https://img.shields.io/npm/v/puppeteer.svg)](https://npmjs.org/package/puppeteer)
 
-<img src="https://user-images.githubusercontent.com/39191/29330067-dfc2be5a-81ac-11e7-9cc2-c569dd5f078c.png" height="200" align="right">
+<img src="https://user-images.githubusercontent.com/10379601/29446482-04f7036a-841f-11e7-9872-91d1fc2ea683.png" height="200" align="right">
 
 ###### [API](docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md)
 
@@ -21,7 +21,7 @@ Most things that you can do manually in the browser can be done using Puppeteer!
 
 ### Installation
 
-*Puppeteer requires Node version 7.10 or greater*
+*Puppeteer requires Node version 6.4.0 or greater*
 
 To use Puppeteer in your project, run:
 ```
@@ -29,11 +29,11 @@ yarn add puppeteer
 # or "npm i puppeteer"
 ```
 
-> **Note**: When you install Puppeteer, it downloads a recent version of Chromium (~71Mb Mac, ~90Mb Linux, ~110Mb Win) that is guaranteed to work with the API. 
+> **Note**: When you install Puppeteer, it downloads a recent version of Chromium (~71Mb Mac, ~90Mb Linux, ~110Mb Win) that is guaranteed to work with the API.
 
 ### Usage
 
-Puppeteer will be familiar to using other browser testing frameworks. You create an instance
+Puppeteer will be familiar to people using other browser testing frameworks. You create an instance
 of `Browser`, open pages, and then manipulate them with [Puppeteer's API](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#).
 
 **Example** - navigating to https://example.com and saving a screenshot as *example.png*:
@@ -41,14 +41,13 @@ of `Browser`, open pages, and then manipulate them with [Puppeteer's API](https:
 ```js
 const puppeteer = require('puppeteer');
 
-(async() => {
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto('https://example.com');
+  await page.screenshot({path: 'example.png'});
 
-const browser = await puppeteer.launch();
-const page = await browser.newPage();
-await page.goto('https://example.com');
-await page.screenshot({path: 'example.png'});
-
-browser.close();
+  browser.close();
 })();
 ```
 
@@ -59,27 +58,53 @@ Puppeteer sets an initial page size to 800px x 600px, which defines the screensh
 ```js
 const puppeteer = require('puppeteer');
 
-(async() => {
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto('https://news.ycombinator.com', {waitUntil: 'networkidle'});
+  await page.pdf({path: 'hn.pdf', format: 'A4'});
 
-const browser = await puppeteer.launch();
-const page = await browser.newPage();
-await page.goto('https://news.ycombinator.com', {waitUntil: 'networkidle'});
-await page.pdf({path: 'hn.pdf', format: 'A4'});
-
-browser.close();
+  browser.close();
 })();
 ```
 
 See [`Page.pdf()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pagepdfoptions) for more information about creating pdfs.
 
+**Example** - evaluate script in the context of the page
+
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto('https://example.com');
+  
+  // Get the "viewport" of the page, as reported by the page.
+  const dimensions = await page.evaluate(() => {
+    return {
+      width: document.documentElement.clientWidth,
+      height: document.documentElement.clientHeight,
+      deviceScaleFactor: window.devicePixelRatio
+    };
+  });
+  
+  console.log('Dimensions:', dimensions);
+
+  browser.close();
+})();
+```
+
+See [`Page.evaluate()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pageevaluatepagefunction-args) for more information on `evaluate` and related methods like `evaluateOnNewDocument` and `exposeFunction`.
+
 ## Default runtime settings
 
 **1. Uses Headless mode**
 
-Puppeteer launches Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). To launch a full version of Chromium, set the ['headless' option](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions) when creating a browser:
+Puppeteer launches Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). To launch a full version of Chromium, set the ['headless' option](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions) when launching a browser:
 
 ```js
-const browser = await puppeteer.launch({headless: false});
+const browser = await puppeteer.launch({headless: false}); // default is true
 ```
 
 **2. Runs a bundled version of Chromium**
@@ -102,6 +127,39 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
 
 Explore the [API documentation](docs/api.md) and [examples](https://github.com/GoogleChrome/puppeteer/tree/master/examples/) to learn more.
 
+## Debugging tips
+
+1. Turn off headless mode - sometimes it's useful to see what the browser is
+   displaying. Instead of launching in headless mode, launch a full version of
+   Chrome using  `headless: false`:
+
+    ```js
+    const browser = await puppeteer.launch({headless: false});
+    ```
+
+1. Slow it down - the `slowMo` option slows down Puppeteer operations by the
+   specified amount of milliseconds. It's another way to help see what's going on.
+
+    ```js
+    const browser = await puppeteer.launch({
+      headless: false,
+      slowMo: 250 // slow down by 250ms
+    });
+    ```
+
+2. Capture console output from the page by listening for the `console` event.
+   This is also handy when debugging code in `page.evaluate()`:
+
+    ```js
+    page.on('console', (...args) => {
+      console.log('PAGE LOG:', ...args);
+    });
+
+    await page.evaluate(() => {
+      console.log(`url is ${location.href}`);
+    });
+    ```
+
 ## Contributing to Puppeteer
 
 Check out [contributing guide](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md) to get an overview of Puppeteer development.
@@ -114,7 +172,6 @@ Look for `chromium_revision` in [package.json](https://github.com/GoogleChrome/p
 
 Puppeteer bundles Chromium to ensure that the latest features it uses are guaranteed to be available. As the DevTools protocol and browser improve over time, Puppeteer will be updated to depend on newer versions of Chromium.
 
-
 #### Q: What is the difference between Puppeteer, Selenium / WebDriver, and PhantomJS?
 
 Selenium / WebDriver is a well-established cross-browser API that is useful for testing cross-browser support.
@@ -122,7 +179,6 @@ Selenium / WebDriver is a well-established cross-browser API that is useful for 
 Puppeteer works only with Chrome. However, many teams only run unit tests with a single browser (e.g. PhantomJS). In non-testing use cases, Puppeteer provides a powerful but simple API because it's only targeting one browser that enables you to rapidly develop automation scripts.
 
 Puppeteer uses the latest versions of Chromium.
-
 
 #### Q: Who maintains Puppeteer?
 
@@ -141,7 +197,7 @@ other frameworks could adopt Puppeteer as their foundational layer.
 - Learn more about the pain points of automated browser testing and help fill those gaps.
 
 #### Q: How does Puppeteer compare with other headless Chrome projects?
- 
+
 The past few months have brought [several new libraries for automating headless Chrome](https://medium.com/@kensoh/chromeless-chrominator-chromy-navalia-lambdium-ghostjs-autogcd-ef34bcd26907). As the team authoring the underlying DevTools Protocol, we're excited to witness and support this flourishing ecosystem.
 
 We've reached out to a number of these projects to see if there are opportunities for collaboration, and we're happy to do what we can to help.
