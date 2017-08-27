@@ -1474,13 +1474,20 @@ describe('Page', function() {
     }));
   });
   describe('Page.setExtraHTTPHeaders', function() {
+    async function assertHeaderValueSet(key, val) {
+      page.goto(EMPTY_PAGE);
+      const request = await server.waitForRequest('/empty.html');
+      expect(request.headers[key]).toBe(val);
+    }
     it('should work', SX(async function() {
       await page.setExtraHTTPHeaders(new Map(Object.entries({
         foo: 'bar'
       })));
-      page.goto(EMPTY_PAGE);
-      const request = await server.waitForRequest('/empty.html');
-      expect(request.headers['foo']).toBe('bar');
+      await assertHeaderValueSet('foo', 'bar');
+    }));
+    it('should accept an object arg', SX(async function() {
+      await page.setExtraHTTPHeaders({foo: 'bar'});
+      await assertHeaderValueSet('foo', 'bar');
     }));
   });
   describe('Page.setContent', function() {
