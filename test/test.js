@@ -949,6 +949,28 @@ describe('Page', function() {
       expect(requests.length).toBe(1);
       expect(requests[0].url).toBe(EMPTY_PAGE);
     }));
+    it('should work with encoded URLs', SX(async function() {
+      // The requestWillBeSent will report encoded URL, whereas interception will
+      // report URL as-is. @see crbug.com/759388
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => request.continue());
+      const response = await page.goto(PREFIX + '/some nonexisting page');
+      expect(response.status).toBe(404);
+    }));
+    it('should work with encoded URLs - 2', SX(async function() {
+      // The requestWillBeSent will report URL as-is, whereas interception will
+      // report encoded URL for stylesheet. @see crbug.com/759388
+      await page.setRequestInterceptionEnabled(true);
+      const requests = [];
+      page.on('request', request => {
+        request.continue();
+        requests.push(request);
+      });
+      const response = await page.goto(`data:text/html,<link rel="stylesheet" href="${PREFIX}/fonts?helvetica|arial"/>`);
+      expect(response.status).toBe(200);
+      expect(requests.length).toBe(2);
+      expect(requests[1].response().status).toBe(404);
+    }));
   });
 
   describe('Page.Events.Dialog', function() {
