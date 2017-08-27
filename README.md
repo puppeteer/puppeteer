@@ -21,7 +21,7 @@ Most things that you can do manually in the browser can be done using Puppeteer!
 
 ### Installation
 
-*Puppeteer requires Node version 6.4.0 or greater*
+> *Note: Puppeteer requires at least Node v6.4.0, but the examples below use async/await which is only supported in Node v8+*
 
 To use Puppeteer in your project, run:
 ```
