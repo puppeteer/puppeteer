@@ -802,7 +802,7 @@ describe('Page', function() {
       await page.setRequestInterceptionEnabled(true);
       page.on('request', request => {
         expect(request.url).toContain('empty.html');
-        expect(request.headers.has('User-Agent')).toBeTruthy();
+        expect(request.headers['user-agent']).toBeTruthy();
         expect(request.method).toBe('GET');
         expect(request.postData).toBe(undefined);
         request.continue();
@@ -811,12 +811,12 @@ describe('Page', function() {
       expect(response.ok).toBe(true);
     }));
     it('should show custom HTTP headers', SX(async function() {
-      await page.setExtraHTTPHeaders(new Map(Object.entries({
+      await page.setExtraHTTPHeaders({
         foo: 'bar'
-      })));
+      });
       await page.setRequestInterceptionEnabled(true);
       page.on('request', request => {
-        expect(request.headers.get('foo')).toBe('bar');
+        expect(request.headers['foo']).toBe('bar');
         request.continue();
       });
       const response = await page.goto(EMPTY_PAGE);
@@ -839,8 +839,8 @@ describe('Page', function() {
     it('should amend HTTP headers', SX(async function() {
       await page.setRequestInterceptionEnabled(true);
       page.on('request', request => {
-        const headers = new Map(request.headers);
-        headers.set('foo', 'bar');
+        const headers = Object.assign({}, request.headers);
+        headers['FOO'] = 'bar';
         request.continue({ headers });
       });
       await page.goto(EMPTY_PAGE);
@@ -1475,9 +1475,9 @@ describe('Page', function() {
   });
   describe('Page.setExtraHTTPHeaders', function() {
     it('should work', SX(async function() {
-      await page.setExtraHTTPHeaders(new Map(Object.entries({
+      await page.setExtraHTTPHeaders({
         foo: 'bar'
-      })));
+      });
       page.goto(EMPTY_PAGE);
       const request = await server.waitForRequest('/empty.html');
       expect(request.headers['foo']).toBe('bar');
