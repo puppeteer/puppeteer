@@ -604,6 +604,8 @@ Page is guaranteed to have a main frame which persists during navigations.
     - `left` <[string]> Left margin, accepts values labeled with units.
 - returns: <[Promise]<[Buffer]>> Promise which resolves with PDF buffer.
 
+> **NOTE** Generating a pdf is currently only supported in Chrome headless.
+
 `page.pdf()` generates a pdf of the page with `print` css media. To generate a pdf with `screen` media, call [page.emulateMedia('screen')](#pageemulatemediamediatype) before calling `page.pdf()`:
 
 ```js
@@ -636,8 +638,6 @@ The `format` options are:
 - `A3`: 11.7in x 16.5in
 - `A4`: 8.27in x 11.7in
 - `A5`: 5.83in x 8.27in
-
-> **NOTE** Generating a pdf is currently only supported in Chrome headless.
 
 #### page.plainText()
 - returns:  <[Promise]<[string]>> Returns page's inner text.
