@@ -1,6 +1,6 @@
-##### Released API: [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
+##### Released API: [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
 
-# Puppeteer API v<!-- GEN:version -->0.10.1<!-- GEN:stop-->
+# Puppeteer API v<!-- GEN:version -->0.10.2-alpha<!-- GEN:stop-->
 
 ##### Table of Contents
 
@@ -401,7 +401,7 @@ puppeteer.launch().then(async browser => {
 List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js).
 
 #### page.emulateMedia(mediaType)
-  - `mediaType` <[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'media'` and `null`. Passing `null` disables media emulation.
+  - `mediaType` <[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation.
   - returns: <[Promise]>
 
 #### page.evaluate(pageFunction, ...args)
@@ -605,6 +605,8 @@ Page is guaranteed to have a main frame which persists during navigations.
     - `left` <[string]> Left margin, accepts values labeled with units.
 - returns: <[Promise]<[Buffer]>> Promise which resolves with PDF buffer.
 
+> **NOTE** Generating a pdf is currently only supported in Chrome headless.
+
 `page.pdf()` generates a pdf of the page with `print` css media. To generate a pdf with `screen` media, call [page.emulateMedia('screen')](#pageemulatemediamediatype) before calling `page.pdf()`:
 
 ```js
@@ -637,8 +639,6 @@ The `format` options are:
 - `A3`: 11.7in x 16.5in
 - `A4`: 8.27in x 11.7in
 - `A5`: 5.83in x 8.27in
-
-> **NOTE** Generating a pdf is currently only supported in Chrome headless.
 
 #### page.plainText()
 - returns:  <[Promise]<[string]>> Returns page's inner text.
