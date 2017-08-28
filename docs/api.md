@@ -693,7 +693,7 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 - returns: <[Promise]>
 
 #### page.setExtraHTTPHeaders(headers)
-- `headers` <[Map]> A map of additional http headers to be sent with every request.
+- `headers` <[Object]> An object containing additional http headers to be sent with every request.
 - returns: <[Promise]>
 
 The extra HTTP headers will be sent with every request the page initiates.
@@ -1244,13 +1244,13 @@ Exception is immediately thrown if the request interception is not enabled.
   - `url` <[string]> If set, the request url will be changed
   - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`)
   - `postData` <[string]> If set changes the post data of request
-  - `headers` <[Map]> If set changes the request HTTP headers
+  - `headers` <[Object]> If set changes the request HTTP headers
 
 Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
 Exception is immediately thrown if the request interception is not enabled.
 
 #### request.headers
-- <[Map]> A map of HTTP headers associated with the request.
+- <[Object]> An object with HTTP headers associated with the request. All header names are lower-case.
 
 #### request.method
 - <[string]>
@@ -1278,7 +1278,7 @@ Contains the URL of the request.
 - returns: <Promise<[Buffer]>> Promise which resolves to a buffer with response body.
 
 #### response.headers
-- <[Map]> A map of HTTP headers associated with the response.
+- <[Object]> An object with HTTP headers associated with the response. All header names are lower-case.
 
 #### response.json()
 - returns: <Promise<[Object]>> Promise which resolves to a JSON representation of response body.
