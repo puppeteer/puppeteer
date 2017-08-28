@@ -1234,21 +1234,6 @@ The element will be passed as the first argument to `pageFunction`, followed by 
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
 If the element is detached from DOM, the method throws an error.
 
-#### elementHandle.property(key)
-- `key` <string> the name of property of this Element.
-- returns: <[Promise]>
-
-```js
-const puppeteer = require('puppeteer');
-
-puppeteer.launch().then(async browser => {
-  const page = await browser.newPage();
-  await page.goto('https://google.com');
-  const inputElement = await page.$('input');
-  const inputType = await inputElement.property('value');
-})
-```
-
 #### elementHandle.uploadFile(...filePaths)
 - `...filePaths` <...[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]>

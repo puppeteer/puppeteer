@@ -1144,12 +1144,6 @@ describe('Page', function() {
       expect(element).toBeTruthy();
       expect(await element.attribute('id')).toBe('testAttribute');
     }));
-    it('should return property', SX(async function() {
-      await page.setContent('<input value="123">');
-      const element = await page.$('input');
-      expect(element).toBeTruthy();
-      expect(await element.property('value')).toBe('123');
-    }));
   });
 
   describe('ElementHandle.click', function() {
