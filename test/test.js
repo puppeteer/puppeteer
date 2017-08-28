@@ -813,7 +813,7 @@ describe('Page', function() {
     it('should block patterns', SX(async function() {
       await page.setRequestInterceptionEnabled(true, ['*.css']);
       page.on('request', request => {
-        request.continue();
+        request.abort();
       });
       let failedRequests = 0;
       page.on('requestfailed', event => ++failedRequests);
