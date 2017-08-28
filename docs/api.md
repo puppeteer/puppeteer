@@ -400,7 +400,7 @@ puppeteer.launch().then(async browser => {
 List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js).
 
 #### page.emulateMedia(mediaType)
-  - `mediaType` <[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'media'` and `null`. Passing `null` disables media emulation.
+  - `mediaType` <[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation.
   - returns: <[Promise]>
 
 #### page.evaluate(pageFunction, ...args)
