@@ -111,7 +111,6 @@
     + [elementHandle.dispose()](#elementhandledispose)
     + [elementHandle.evaluate(pageFunction, ...args)](#elementhandleevaluatepagefunction-args)
     + [elementHandle.hover()](#elementhandlehover)
-    + [elementHandle.property(key)](#elementhandlepropertykey)
     + [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
   * [class: Request](#class-request)
     + [request.abort()](#requestabort)
