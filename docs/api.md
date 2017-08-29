@@ -79,7 +79,7 @@
   * [class: Mouse](#class-mouse)
     + [mouse.click(x, y, [options])](#mouseclickx-y-options)
     + [mouse.down([options])](#mousedownoptions)
-    + [mouse.move(x, y)](#mousemovex-y)
+    + [mouse.move(x, y, [options])](#mousemovex-y-options)
     + [mouse.up([options])](#mouseupoptions)
   * [class: Tracing](#class-tracing)
     + [tracing.start(options)](#tracingstartoptions)
@@ -933,9 +933,11 @@ Shortcut for [`mouse.move`](#mousemovex-y), [`mouse.down`](#mousedownoptions) an
 
 Dispatches a `mousedown` event.
 
-#### mouse.move(x, y)
+#### mouse.move(x, y, [options])
 - `x` <[number]>
 - `y` <[number]>
+- `options` <[Object]>
+  - `steps` <[number]> defaults to 1. Sends intermediate `mousemove` events.
 - returns: <[Promise]>
 
 Dispatches a `mousemove` event.

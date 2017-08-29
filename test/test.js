@@ -1472,6 +1472,24 @@ describe('Page', function() {
       // This await should not hang.
       await page.click('a');
     }));
+    it('should tween mouse movement', SX(async function() {
+      await page.evaluate(() => {
+        window.result = [];
+        document.addEventListener('mousemove', event => {
+          window.result.push([event.clientX, event.clientY]);
+        });
+      });
+      await page.mouse.move(100, 100);
+      await page.mouse.move(200, 300, {steps: 5});
+      expect(await page.evaluate('result')).toEqual([
+        [100, 100],
+        [120, 140],
+        [140, 180],
+        [160, 220],
+        [180, 260],
+        [200, 300]
+      ]);
+    }));
     function dimensions() {
       const rect = document.querySelector('textarea').getBoundingClientRect();
       return {
