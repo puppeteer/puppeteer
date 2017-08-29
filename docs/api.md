@@ -106,6 +106,7 @@
     + [frame.waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args)
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
   * [class: ElementHandle](#class-elementhandle)
+    + [elementHandle.attribute(key)](#elementhandleattributekey)
     + [elementHandle.click([options])](#elementhandleclickoptions)
     + [elementHandle.dispose()](#elementhandledispose)
     + [elementHandle.evaluate(pageFunction, ...args)](#elementhandleevaluatepagefunction-args)
@@ -1188,6 +1189,21 @@ puppeteer.launch().then(async browser => {
 ```
 
 ElementHandle prevents DOM element from garbage collection unless the handle is [disposed](#elementhandledispose). ElementHandles are auto-disposed when their origin frame gets navigated.
+
+#### elementHandle.attribute(key)
+- `key` <string> the name the attribute of this Element.
+- returns: <[Promise]>
+
+```js
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
+  const page = await browser.newPage();
+  await page.goto('https://google.com');
+  const inputElement = await page.$('input');
+  const inputType = await inputElement.attribute('type');
+});
+```
 
 #### elementHandle.click([options])
 - `options` <[Object]>

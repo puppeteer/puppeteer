@@ -1180,6 +1180,12 @@ describe('Page', function() {
       }
       expect(error.message).toContain('ElementHandle is disposed');
     }));
+    it('should return attribute', SX(async function() {
+      await page.setContent('<section id="testAttribute">43543</section>');
+      const element = await page.$('section');
+      expect(element).toBeTruthy();
+      expect(await element.attribute('id')).toBe('testAttribute');
+    }));
   });
 
   describe('ElementHandle.click', function() {
