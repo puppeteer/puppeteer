@@ -20,6 +20,7 @@ const path = require('path');
 const helper = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
+console.log('Testing on Node', process.version);
 const puppeteer = require('..');
 const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
@@ -113,6 +114,25 @@ describe('Browser', function() {
     const page = await browser.newPage();
     expect(await page.evaluate(() => 7 * 8)).toBe(56);
     originalBrowser.close();
+  }));
+  it('userDataDir option', SX(async function() {
+    const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+    const options = Object.assign({userDataDir}, defaultBrowserOptions);
+    const browser = await puppeteer.launch(options);
+    expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+    browser.close();
+    expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+    rm(userDataDir);
+  }));
+  it('userDataDir argument', SX(async function() {
+    const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+    const options = Object.assign({}, defaultBrowserOptions);
+    options.args = [`--user-data-dir=${userDataDir}`].concat(options.args);
+    const browser = await puppeteer.launch(options);
+    expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+    browser.close();
+    expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+    rm(userDataDir);
   }));
 });
 
@@ -801,7 +821,7 @@ describe('Page', function() {
       await page.setRequestInterceptionEnabled(true);
       page.on('request', request => {
         expect(request.url).toContain('empty.html');
-        expect(request.headers.has('User-Agent')).toBeTruthy();
+        expect(request.headers['user-agent']).toBeTruthy();
         expect(request.method).toBe('GET');
         expect(request.postData).toBe(undefined);
         request.continue();
@@ -810,12 +830,12 @@ describe('Page', function() {
       expect(response.ok).toBe(true);
     }));
     it('should show custom HTTP headers', SX(async function() {
-      await page.setExtraHTTPHeaders(new Map(Object.entries({
+      await page.setExtraHTTPHeaders({
         foo: 'bar'
-      })));
+      });
       await page.setRequestInterceptionEnabled(true);
       page.on('request', request => {
-        expect(request.headers.get('foo')).toBe('bar');
+        expect(request.headers['foo']).toBe('bar');
         request.continue();
       });
       const response = await page.goto(EMPTY_PAGE);
@@ -838,8 +858,8 @@ describe('Page', function() {
     it('should amend HTTP headers', SX(async function() {
       await page.setRequestInterceptionEnabled(true);
       page.on('request', request => {
-        const headers = new Map(request.headers);
-        headers.set('foo', 'bar');
+        const headers = Object.assign({}, request.headers);
+        headers['FOO'] = 'bar';
         request.continue({ headers });
       });
       await page.goto(EMPTY_PAGE);
@@ -936,6 +956,28 @@ describe('Page', function() {
       expect(response.url).toBe(EMPTY_PAGE);
       expect(requests.length).toBe(1);
       expect(requests[0].url).toBe(EMPTY_PAGE);
+    }));
+    it('should work with encoded URLs', SX(async function() {
+      // The requestWillBeSent will report encoded URL, whereas interception will
+      // report URL as-is. @see crbug.com/759388
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => request.continue());
+      const response = await page.goto(PREFIX + '/some nonexisting page');
+      expect(response.status).toBe(404);
+    }));
+    it('should work with encoded URLs - 2', SX(async function() {
+      // The requestWillBeSent will report URL as-is, whereas interception will
+      // report encoded URL for stylesheet. @see crbug.com/759388
+      await page.setRequestInterceptionEnabled(true);
+      const requests = [];
+      page.on('request', request => {
+        request.continue();
+        requests.push(request);
+      });
+      const response = await page.goto(`data:text/html,<link rel="stylesheet" href="${PREFIX}/fonts?helvetica|arial"/>`);
+      expect(response.status).toBe(200);
+      expect(requests.length).toBe(2);
+      expect(requests[1].response().status).toBe(404);
     }));
   });
 
@@ -1458,9 +1500,9 @@ describe('Page', function() {
   });
   describe('Page.setExtraHTTPHeaders', function() {
     it('should work', SX(async function() {
-      await page.setExtraHTTPHeaders(new Map(Object.entries({
+      await page.setExtraHTTPHeaders({
         foo: 'bar'
-      })));
+      });
       page.goto(EMPTY_PAGE);
       const request = await server.waitForRequest('/empty.html');
       expect(request.headers['foo']).toBe('bar');

@@ -49,11 +49,12 @@ const asyncToGenerator = fn => {
 
 /**
  * @param {string} text
+ * @return {string}
  */
 function transformAsyncFunctions(text) {
   const edits = [];
 
-  const ast = esprima.parseScript(text, {range: true});
+  const ast = esprima.parseScript(text, {range: true, tolerant: true});
   const walker = new ESTreeWalker(node => {
     if (node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration' || node.type === 'ArrowFunctionExpression')
       onFunction(node);

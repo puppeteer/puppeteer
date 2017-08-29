@@ -76,7 +76,7 @@ ESTreeWalker.SkipSubtree = {};
 
 /** @enum {!Array.<string>} */
 ESTreeWalker._walkOrder = {
-  'AwaitExpression': ['arguments'],
+  'AwaitExpression': ['argument'],
   'ArrayExpression': ['elements'],
   'ArrowFunctionExpression': ['params', 'body'],
   'AssignmentExpression': ['left', 'right'],

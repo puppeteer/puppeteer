@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "0.10.1-alpha",
+  "version": "0.10.2-alpha",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "main": "index.js",
   "repository": "github:GoogleChrome/puppeteer",
@@ -10,17 +10,15 @@
   "scripts": {
     "unit": "jasmine test/test.js",
     "debug-unit": "DEBUG_TEST=true node --inspect-brk ./node_modules/.bin/jasmine test/test.js",
-    "test-phantom": "python third_party/phantomjs/test/run-tests.py",
     "test-doclint": "jasmine utils/doclint/check_public_api/test/test.js && jasmine utils/doclint/preprocessor/test.js",
-    "test": "npm run lint --silent && npm run coverage && npm run test-phantom && npm run test-doclint && npm run test-node6",
+    "test": "npm run lint --silent && npm run coverage && npm run test-doclint && npm run test-node6-transformer",
     "install": "node install.js",
     "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .) && npm run doc",
     "doc": "node utils/doclint/cli.js",
     "coverage": "COVERAGE=true npm run unit",
-    "node6": "node utils/node6-transform/index.js",
-    "test-node6": "jasmine utils/node6-transform/test/test.js",
-    "build": "npm run node6",
-    "node6-sanity": "jasmine test/sanity.js"
+    "test-node6-transformer": "jasmine utils/node6-transform/test/test.js",
+    "build": "node utils/node6-transform/index.js",
+    "unit-node6": "jasmine node6-test/test.js"
   },
   "author": "The Chromium Authors",
   "license": "SEE LICENSE IN LICENSE",
@@ -35,7 +33,7 @@
     "ws": "^3.0.0"
   },
   "puppeteer": {
-    "chromium_revision": "496140"
+    "chromium_revision": "497674"
   },
   "devDependencies": {
     "commonmark": "^0.27.0",
