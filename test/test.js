@@ -1613,6 +1613,7 @@ describe('Page', function() {
       expect(failedRequests.length).toBe(1);
       expect(failedRequests[0].url).toContain('one-style.css');
       expect(failedRequests[0].response()).toBe(null);
+      expect(failedRequests[0].resourceType).toBe('Stylesheet');
     }));
     it('Page.Events.RequestFinished', SX(async function() {
       const requests = [];
