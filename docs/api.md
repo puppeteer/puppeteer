@@ -118,6 +118,7 @@
     + [request.headers](#requestheaders)
     + [request.method](#requestmethod)
     + [request.postData](#requestpostdata)
+    + [request.resourceType](#requestresourcetype)
     + [request.response()](#requestresponse)
     + [request.url](#requesturl)
   * [class: Response](#class-response)
@@ -1280,6 +1281,12 @@ Contains the request's method (GET, POST, etc.)
 - <[string]>
 
 Contains the request's post body, if any.
+
+#### request.resourceType
+- <[string]>
+
+Contains the request's resource type as it was perceived by the rendering engine.
+ResourceType will be one of the following: `Document`, `Stylesheet`, `Image`, `Media`, `Font`, `Script`, `TextTrack`, `XHR`, `Fetch`, `EventSource`, `WebSocket`, `Manifest`, `Other`.
 
 #### request.response()
 - returns: <[Response]> A matching [Response] object, or `null` if the response has not been received yet.
