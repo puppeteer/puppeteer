@@ -60,7 +60,7 @@
     + [page.setCookie(...cookies)](#pagesetcookiecookies)
     + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
     + [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
-    + [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
+    + [page.setRequestInterceptionEnabled(value[, patterns])](#pagesetrequestinterceptionenabledvalue-patterns)
     + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
     + [page.setViewport(viewport)](#pagesetviewportviewport)
     + [page.title()](#pagetitle)
@@ -707,8 +707,9 @@ The extra HTTP headers will be sent with every request the page initiates.
 
 > **NOTE** changing this value won't affect scripts that have already been run. It will take full effect on the next [navigation](#pagegotourl-options).
 
-#### page.setRequestInterceptionEnabled(value)
+#### page.setRequestInterceptionEnabled(value[, patterns])
 - `value` <[boolean]> Whether to enable request interception.
+- `patterns` <[Array]> Array of string patterns. Only requests matching any one of these URL patterns are intercepted. Wildcards ('\*' -> zero or more, '?' -> exactly one) are allowed. Escape character is backslash. Defaults to ['*'] (intercept all).
 - returns: <[Promise]>
 
 Activating request interception enables `request.abort` and `request.continue`.

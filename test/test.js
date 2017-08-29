@@ -829,6 +829,17 @@ describe('Page', function() {
       const response = await page.goto(EMPTY_PAGE);
       expect(response.ok).toBe(true);
     }));
+    it('should block patterns', SX(async function() {
+      await page.setRequestInterceptionEnabled(true, ['*.css']);
+      page.on('request', request => {
+        request.abort();
+      });
+      let failedRequests = 0;
+      page.on('requestfailed', event => ++failedRequests);
+      const response = await page.goto(PREFIX + '/one-style.html');
+      expect(response.ok).toBe(true);
+      expect(failedRequests).toBe(1);
+    }));
     it('should show custom HTTP headers', SX(async function() {
       await page.setExtraHTTPHeaders({
         foo: 'bar'
