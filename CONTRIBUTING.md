@@ -127,5 +127,5 @@ npm run coverage
 ```
 
 ## Debugging Puppeteer
-See [Debugging Tips](../README.md#debugging-tips) on the readme
+See [Debugging Tips](README.md#debugging-tips) in the readme
 
