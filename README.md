@@ -79,7 +79,7 @@ const puppeteer = require('puppeteer');
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto('https://example.com');
-  
+
   // Get the "viewport" of the page, as reported by the page.
   const dimensions = await page.evaluate(() => {
     return {
@@ -88,7 +88,7 @@ const puppeteer = require('puppeteer');
       deviceScaleFactor: window.devicePixelRatio
     };
   });
-  
+
   console.log('Dimensions:', dimensions);
 
   browser.close();
@@ -147,18 +147,34 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
     });
     ```
 
-2. Capture console output from the page by listening for the `console` event.
+1. Capture console output - You can listen for the `console` event.
    This is also handy when debugging code in `page.evaluate()`:
 
     ```js
-    page.on('console', (...args) => {
-      console.log('PAGE LOG:', ...args);
-    });
+    page.on('console', (...args) => console.log('PAGE LOG:', ...args));
 
-    await page.evaluate(() => {
-      console.log(`url is ${location.href}`);
-    });
+    await page.evaluate(() => console.log(`url is ${location.href}`));
     ```
+
+
+1. Enable verbose logging - All public API calls and internal protocol traffic
+   will be logged via the [`debug`](https://github.com/visionmedia/debug) module.
+
+   ```sh
+   # Basic verbose logging
+   env DEBUG="*" node script.js
+
+   # Debug output can be enabled/disabled by namespace
+   env DEBUG="*,-*:protocol" node script.js # everything BUT protocol messages
+   env DEBUG="*:session" node script.js # protocol session messages (protocol messages to targets)
+   env DEBUG="*:mouse,*:keyboard" node script.js # only Mouse and Keyboard API calls
+
+   # Protocol traffic can be rather noisy. This example filters out all Network domain messages
+   env DEBUG="*" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
+   ```
+
+
+
 
 ## Contributing to Puppeteer
 
