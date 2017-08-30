@@ -37,7 +37,6 @@
   },
   "devDependencies": {
     "commonmark": "^0.27.0",
-    "deasync": "^0.1.9",
     "eslint": "^4.0.0",
     "esprima": "^4.0.0",
     "jasmine": "^2.6.0",
