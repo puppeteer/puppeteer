@@ -147,18 +147,29 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
     });
     ```
 
-2. Capture console output from the page by listening for the `console` event.
+1. Capture console output - You can listen for the `console` event.
    This is also handy when debugging code in `page.evaluate()`:
 
     ```js
-    page.on('console', (...args) => {
-      console.log('PAGE LOG:', ...args);
-    });
+    page.on('console', (...args) => console.log('PAGE LOG:', ...args));
 
-    await page.evaluate(() => {
-      console.log(`url is ${location.href}`);
-    });
+    await page.evaluate(() => console.log(`url is ${location.href}`));
     ```
+    
+ 
+1. Enable verbose logging - All public API calls and internal protocol traffic
+   will be logged via the [`debug`](https://github.com/visionmedia/debug) module.
+   
+   ```sh
+   # Basic verbose logging
+   env DEBUG="*" node my-pptr-script.js
+   
+   # Debug output can be enabled/disabled by namespace
+   env DEBUG="*,-puppeteer:session" node my-pptr-script.js
+  
+   # Protocol traffic can be rather noisy. This example filters out all Network domain messages
+   env DEBUG="*" env DEBUG_COLORS=true node my-pptr-script.js 2>&1 | grep -v '"Network'
+   ```
 
 ## Contributing to Puppeteer
 
