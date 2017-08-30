@@ -31,6 +31,7 @@
     + [page.$(selector)](#pageselector)
     + [page.$$(selector)](#pageselector)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
+    + [page.authenticate(username, password)](#pageauthenticateusername-password)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
     + [page.content()](#pagecontent)
@@ -322,6 +323,12 @@ Adds a `<script>` tag into the page with the desired url. Alternatively, a local
 
 Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
 
+#### page.authenticate(username, password)
+- `username` <[string]> page or proxy username
+- `password` <[string]> page or proxy password
+- returns: <[Promise]>
+
+Define a username and password that will be used when a page or a proxy requires authentication.
 
 #### page.click(selector[, options])
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
