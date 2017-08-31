@@ -1509,6 +1509,24 @@ describe('Page', function() {
         [200, 300]
       ]);
     }));
+    it('should tap the button', SX(async function() {
+      await page.goto(PREFIX + '/input/button.html');
+      const button = await page.$('button');
+      await button.tap();
+      expect(await page.evaluate(() => result)).toBe('Clicked');
+    }));
+    it('should report touches', SX(async function() {
+      await page.goto(PREFIX + '/input/touches.html');
+      const button = await page.$('button');
+      await button.tap();
+      expect(await page.evaluate(() => getResult())).toEqual(['Touchstart: 0', 'Touchend: 0']);
+    }));
+    it('should scroll with touch', SX(async function() {
+      await page.goto(PREFIX + '/input/scrollable.html');
+      expect(await page.evaluate('window.scrollY')).toBe(0);
+      await page.touchScreen.swipe(50, 200, 50, 50);
+      expect(await page.evaluate('window.scrollY')).toBe(135);
+    }));
     function dimensions() {
       const rect = document.querySelector('textarea').getBoundingClientRect();
       return {
