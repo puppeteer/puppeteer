@@ -31,6 +31,7 @@
     + [event: 'response'](#event-response)
     + [page.$(selector)](#pageselector)
     + [page.$$(selector)](#pageselector)
+    + [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
@@ -94,6 +95,7 @@
   * [class: Frame](#class-frame)
     + [frame.$(selector)](#frameselector)
     + [frame.$$(selector)](#frameselector)
+    + [frame.$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
     + [frame.addScriptTag(url)](#frameaddscripttagurl)
     + [frame.childFrames()](#framechildframes)
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
@@ -107,7 +109,6 @@
     + [frame.waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args)
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
   * [class: ElementHandle](#class-elementhandle)
-    + [elementHandle.attribute(key)](#elementhandleattributekey)
     + [elementHandle.click([options])](#elementhandleclickoptions)
     + [elementHandle.dispose()](#elementhandledispose)
     + [elementHandle.evaluate(pageFunction, ...args)](#elementhandleevaluatepagefunction-args)
@@ -308,7 +309,7 @@ Emitted when a request finishes successfully.
 Emitted when a [response] is received.
 
 #### page.$(selector)
-- `selector` <[string]> Selector to query page for
+- `selector` <[string]> A [selector] to query page for
 - returns: <[Promise]<[ElementHandle]>>
 
 The method runs `document.querySelector` within the page. If no element matches the selector, the return value resolve to `null`.
@@ -316,12 +317,31 @@ The method runs `document.querySelector` within the page. If no element matches 
 Shortcut for [page.mainFrame().$(selector)](#frameselector).
 
 #### page.$$(selector)
-- `selector` <[string]> Selector to query page for
+- `selector` <[string]> A [selector] to query page for
 - returns: <[Promise]<[Array]<[ElementHandle]>>>
 
 The method runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `[]`.
 
 Shortcut for [page.mainFrame().$$(selector)](#frameselector-1).
+
+#### page.$eval(selector, pageFunction[, ...args])
+- `selector` <[string]> A [selector] to query page for
+- `pageFunction` <[function]> Function to be evaluated in browser context
+- `...args` <...[Serializable]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
+
+This method runs `document.querySelector` within the page and passes it as the first argument to `pageFunction`. If there's no element matching `selector`, the method throws an error.
+
+If `pageFunction` returns a [Promise], then `page.$eval` would wait for the promise to resolve and return it's value.
+
+Examples:
+```js
+const searchValue = await page.$eval('#search', el => el.value);
+const preloadHref = await page.$eval('link[rel=preload]', el => el.href);
+const html = await page.$eval('.main-container', e => e.outerHTML);
+```
+
+Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector-pagefunction-args).
 
 #### page.addScriptTag(url)
 - `url` <[string]> Url of the `<script>` tag
@@ -1056,6 +1076,23 @@ The method queries frame for the selector. If there's no such element within the
 
 The method runs `document.querySelectorAll` within the frame. If no elements match the selector, the return value resolve to `[]`.
 
+#### frame.$eval(selector, pageFunction[, ...args])
+- `selector` <[string]> A [selector] to query frame for
+- `pageFunction` <[function]> Function to be evaluated in browser context
+- `...args` <...[Serializable]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
+
+This method runs `document.querySelector` within the frame and passes it as the first argument to `pageFunction`. If there's no element matching `selector`, the method throws an error.
+
+If `pageFunction` returns a [Promise], then `frame.$eval` would wait for the promise to resolve and return it's value.
+
+Examples:
+```js
+const searchValue = await frame.$eval('#search', el => el.value);
+const preloadHref = await frame.$eval('link[rel=preload]', el => el.href);
+const html = await frame.$eval('.main-container', e => e.outerHTML);
+```
+
 #### frame.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
@@ -1199,21 +1236,6 @@ puppeteer.launch().then(async browser => {
 ```
 
 ElementHandle prevents DOM element from garbage collection unless the handle is [disposed](#elementhandledispose). ElementHandles are auto-disposed when their origin frame gets navigated.
-
-#### elementHandle.attribute(key)
-- `key` <string> the name the attribute of this Element.
-- returns: <[Promise]>
-
-```js
-const puppeteer = require('puppeteer');
-
-puppeteer.launch().then(async browser => {
-  const page = await browser.newPage();
-  await page.goto('https://google.com');
-  const inputElement = await page.$('input');
-  const inputType = await inputElement.attribute('type');
-});
-```
 
 #### elementHandle.click([options])
 - `options` <[Object]>
