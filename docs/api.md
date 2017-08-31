@@ -32,11 +32,11 @@
     + [page.$(selector)](#pageselector)
     + [page.$$(selector)](#pageselector)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
+    + [page.allCookies()](#pageallcookies)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
     + [page.content()](#pagecontent)
     + [page.cookies(...urls)](#pagecookiesurls)
-    + [page.allCookies()](#pageallcookies)
     + [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
     + [page.emulate(options)](#pageemulateoptions)
     + [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
@@ -332,6 +332,19 @@ Adds a `<script>` tag into the page with the desired url. Alternatively, a local
 
 Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
 
+#### page.allCookies()
+- returns: <[Promise]<[Array]<[Object]>>>
+  - `name` <[string]>
+  - `value` <[string]>
+  - `domain` <[string]>
+  - `path` <[string]>
+  - `expires` <[number]> Unix time in seconds.
+  - `size` <[number]> cookie size in byte.
+  - `httpOnly` <[boolean]>
+  - `secure` <[boolean]>
+  - `session` <[boolean]>
+
+This method returns all the cookies for the current page URL, even third party ones.
 
 #### page.click(selector[, options])
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
@@ -352,6 +365,7 @@ If there's no element matching `selector`, the method throws an error.
 
 Gets the full HTML contents of the page, including the doctype.
 
+
 #### page.cookies(...urls)
 - `...urls` <...[string]>
 - returns: <[Promise]<[Array]<[Object]>>>
@@ -366,20 +380,6 @@ Gets the full HTML contents of the page, including the doctype.
 
 If no URLs are specified, this method returns cookies for the current page URL.
 If URLs are specified, only cookies for those URLs are returned.
-
-#### page.allCookies()
-- returns: <[Promise]<[Array]<[Object]>>>
-  - `name` <[string]>
-  - `value` <[string]>
-  - `domain` <[string]>
-  - `path` <[string]>
-  - `expires` <[number]> Unix time in seconds.
-  - `size` <[number]> cookie size in byte.
-  - `httpOnly` <[boolean]>
-  - `secure` <[boolean]>
-  - `session` <[boolean]>
-
-This method returns all the cookies for the current page URL, even third party ones.
 
 #### page.deleteCookie(...cookies)
 - `...cookies` <...[Object]>
