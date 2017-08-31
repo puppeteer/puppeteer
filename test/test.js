@@ -262,6 +262,21 @@ describe('Page', function() {
       const result = await page.evaluate('2 + 5;\n// do some math!');
       expect(result).toBe(7);
     }));
+    it('should accept element handle as an argument', SX(async function() {
+      await page.setContent('<section>42</section>');
+      const element = await page.$('section');
+      const text = await page.evaluate(e => e.textContent, element);
+      expect(text).toBe('42');
+    }));
+    it('should throw if underlying element was disposed', SX(async function() {
+      await page.setContent('<section>39</section>');
+      const element = await page.$('section');
+      expect(element).toBeTruthy();
+      await element.dispose();
+      let error = null;
+      await page.evaluate(e => e.textContent, element).catch(e => error = e);
+      expect(error.message).toContain('ElementHandle is disposed');
+    }));
   });
 
   describe('Page.injectFile', function() {
@@ -1132,6 +1147,12 @@ describe('Page', function() {
       const text = await page.$eval('section', (e, suffix) => e.textContent + suffix, ' world!');
       expect(text).toBe('hello world!');
     }));
+    it('should accept ElementHandles as arguments', SX(async function() {
+      await page.setContent('<section>hello</section><div> world</div>');
+      const divHandle = await page.$('div');
+      const text = await page.$eval('section', (e, div) => e.textContent + div.textContent, divHandle);
+      expect(text).toBe('hello world');
+    }));
     it('should throw error if no element is found', SX(async function() {
       let error = null;
       await page.$eval('section', e => e.id).catch(e => error = e);
@@ -1155,55 +1176,13 @@ describe('Page', function() {
       await page.setContent('<div>A</div><br/><div>B</div>');
       const elements = await page.$$('div');
       expect(elements.length).toBe(2);
-      const promises = elements.map(element => element.evaluate(e => e.textContent));
+      const promises = elements.map(element => page.evaluate(e => e.textContent, element));
       expect(await Promise.all(promises)).toEqual(['A', 'B']);
     }));
     it('should return empty array if nothing is found', SX(async function() {
       await page.goto(EMPTY_PAGE);
       const elements = await page.$$('div');
       expect(elements.length).toBe(0);
-    }));
-  });
-
-  describe('ElementHandle.evaluate', function() {
-    it('should work', SX(async function() {
-      await page.setContent('<section>42</section>');
-      const element = await page.$('section');
-      const text = await element.evaluate(e => e.textContent);
-      expect(text).toBe('42');
-    }));
-    it('should await promise if any', SX(async function() {
-      await page.setContent('<section>39</section>');
-      const element = await page.$('section');
-      const text = await element.evaluate(e => Promise.resolve(e.textContent));
-      expect(text).toBe('39');
-    }));
-    it('should throw if underlying page got closed', SX(async function() {
-      const otherPage = await browser.newPage();
-      await otherPage.setContent('<section>88</section>');
-      const element = await otherPage.$('section');
-      expect(element).toBeTruthy();
-      await otherPage.close();
-      let error = null;
-      try {
-        await element.evaluate(e => e.textContent);
-      } catch (e) {
-        error = e;
-      }
-      expect(error.message).toContain('Session closed');
-    }));
-    it('should throw if underlying element was disposed', SX(async function() {
-      await page.setContent('<section>39</section>');
-      const element = await page.$('section');
-      expect(element).toBeTruthy();
-      await element.dispose();
-      let error = null;
-      try {
-        await element.evaluate(e => e.textContent);
-      } catch (e) {
-        error = e;
-      }
-      expect(error.message).toContain('ElementHandle is disposed');
     }));
   });
 
@@ -1265,13 +1244,13 @@ describe('Page', function() {
       const filePath = path.relative(process.cwd(), __dirname + '/assets/file-to-upload.txt');
       const input = await page.$('input');
       await input.uploadFile(filePath);
-      expect(await input.evaluate(e => e.files[0].name)).toBe('file-to-upload.txt');
-      expect(await input.evaluate(e => {
+      expect(await page.evaluate(e => e.files[0].name, input)).toBe('file-to-upload.txt');
+      expect(await page.evaluate(e => {
         const reader = new FileReader();
         const promise = new Promise(fulfill => reader.onload = fulfill);
         reader.readAsText(e.files[0]);
         return promise.then(() => reader.result);
-      })).toBe('contents of the file');
+      }, input)).toBe('contents of the file');
     }));
     it('should move with the arrow keys', SX(async function(){
       await page.goto(PREFIX + '/input/textarea.html');
