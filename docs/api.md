@@ -85,7 +85,6 @@
     + [mouse.move(x, y, [options])](#mousemovex-y-options)
     + [mouse.up([options])](#mouseupoptions)
   * [class: TouchScreen](#class-touchscreen)
-    + [touchScreen.swipe(x, y, toX, toY)](#touchscreenswipex-y-tox-toy)
     + [touchScreen.tap(x, y)](#touchscreentapx-y)
   * [class: Tracing](#class-tracing)
     + [tracing.start(options)](#tracingstartoptions)
@@ -987,13 +986,6 @@ Dispatches a `mousemove` event.
 Dispatches a `mouseup` event.
 
 ### class: TouchScreen
-
-#### touchScreen.swipe(x, y, toX, toY)
-- `x` <[number]>
-- `y` <[number]>
-- `toX` <[number]>
-- `toY` <[number]>
-- returns: <[Promise]>
 
 #### touchScreen.tap(x, y)
 - `x` <[number]>
