@@ -374,7 +374,7 @@ If URLs are specified, only cookies for those URLs are returned.
   - `domain` <[string]>
   - `path` <[string]>
   - `expires` <[number]> Unix time in seconds.
-  - 'size' <[number]> cookie size in byte.
+  - `size` <[number]> cookie size in byte.
   - `httpOnly` <[boolean]>
   - `secure` <[boolean]>
   - `session` <[boolean]>
