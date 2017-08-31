@@ -21,7 +21,7 @@
     "unit-node6": "jasmine node6-test/test.js"
   },
   "author": "The Chromium Authors",
-  "license": "Apache License 2.0",
+  "license": "Apache-2.0",
   "dependencies": {
     "debug": "^2.6.8",
     "extract-zip": "^1.6.5",
