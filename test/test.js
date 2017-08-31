@@ -1127,6 +1127,11 @@ describe('Page', function() {
       const idAttribute = await page.$eval('section', e => e.id);
       expect(idAttribute).toBe('testAttribute');
     }));
+    it('should accept arguments', SX(async function() {
+      await page.setContent('<section>hello</section>');
+      const text = await page.$eval('section', (e, suffix) => e.textContent + suffix, ' world!');
+      expect(text).toBe('hello world!');
+    }));
     it('should throw error if no element is found', SX(async function() {
       let error = null;
       await page.$eval('section', e => e.id).catch(e => error = e);
