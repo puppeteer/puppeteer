@@ -31,6 +31,7 @@
     + [event: 'response'](#event-response)
     + [page.$(selector)](#pageselector)
     + [page.$$(selector)](#pageselector)
+    + [page.$eval(selector, pageFunction)](#pageevalselector-pagefunction)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
@@ -94,6 +95,7 @@
   * [class: Frame](#class-frame)
     + [frame.$(selector)](#frameselector)
     + [frame.$$(selector)](#frameselector)
+    + [frame.$eval(selector, pageFunction)](#frameevalselector-pagefunction)
     + [frame.addScriptTag(url)](#frameaddscripttagurl)
     + [frame.childFrames()](#framechildframes)
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
@@ -107,7 +109,6 @@
     + [frame.waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args)
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
   * [class: ElementHandle](#class-elementhandle)
-    + [elementHandle.attribute(key)](#elementhandleattributekey)
     + [elementHandle.click([options])](#elementhandleclickoptions)
     + [elementHandle.dispose()](#elementhandledispose)
     + [elementHandle.evaluate(pageFunction, ...args)](#elementhandleevaluatepagefunction-args)
@@ -322,6 +323,17 @@ Shortcut for [page.mainFrame().$(selector)](#frameselector).
 The method runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `[]`.
 
 Shortcut for [page.mainFrame().$$(selector)](#frameselector-1).
+
+#### page.$eval(selector, pageFunction)
+- `selector` <[string]> Selector to query page for
+- `pageFunction` <[function]> Function to be evaluated in browser context
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
+
+This method runs `document.querySelector` within the page and passes it as the first argument to `pageFunction`. If there's no element matching `selector`, the method throws an error.
+
+If `pageFunction` returns a [Promise], then `page.$eval` would wait for the promise to resolve and return it's value.
+
+Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector-pageFunction).
 
 #### page.addScriptTag(url)
 - `url` <[string]> Url of the `<script>` tag
@@ -1056,6 +1068,15 @@ The method queries frame for the selector. If there's no such element within the
 
 The method runs `document.querySelectorAll` within the frame. If no elements match the selector, the return value resolve to `[]`.
 
+#### frame.$eval(selector, pageFunction)
+- `selector` <[string]> Selector to query frame for
+- `pageFunction` <[function]> Function to be evaluated in browser context
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
+
+This method runs `document.querySelector` within the frame and passes it as the first argument to `pageFunction`. If there's no element matching `selector`, the method throws an error.
+
+If `pageFunction` returns a [Promise], then `frame.$eval` would wait for the promise to resolve and return it's value.
+
 #### frame.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
@@ -1199,21 +1220,6 @@ puppeteer.launch().then(async browser => {
 ```
 
 ElementHandle prevents DOM element from garbage collection unless the handle is [disposed](#elementhandledispose). ElementHandles are auto-disposed when their origin frame gets navigated.
-
-#### elementHandle.attribute(key)
-- `key` <string> the name the attribute of this Element.
-- returns: <[Promise]>
-
-```js
-const puppeteer = require('puppeteer');
-
-puppeteer.launch().then(async browser => {
-  const page = await browser.newPage();
-  await page.goto('https://google.com');
-  const inputElement = await page.$('input');
-  const inputType = await inputElement.attribute('type');
-});
-```
 
 #### elementHandle.click([options])
 - `options` <[Object]>

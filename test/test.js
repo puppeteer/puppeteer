@@ -1121,6 +1121,19 @@ describe('Page', function() {
     }));
   });
 
+  describe('Page.$eval', function() {
+    it('should work', SX(async function() {
+      await page.setContent('<section id="testAttribute">43543</section>');
+      const idAttribute = await page.$eval('section', e => e.id);
+      expect(idAttribute).toBe('testAttribute');
+    }));
+    it('should throw error if no element is found', SX(async function() {
+      let error = null;
+      await page.$eval('section', e => e.id).catch(e => error = e);
+      expect(error.message).toContain('failed to find element matching selector "section"');
+    }));
+  });
+
   describe('Page.$', function() {
     it('should query existing element', SX(async function() {
       await page.setContent('<section>test</section>');
@@ -1186,12 +1199,6 @@ describe('Page', function() {
         error = e;
       }
       expect(error.message).toContain('ElementHandle is disposed');
-    }));
-    it('should return attribute', SX(async function() {
-      await page.setContent('<section id="testAttribute">43543</section>');
-      const element = await page.$('section');
-      expect(element).toBeTruthy();
-      expect(await element.attribute('id')).toBe('testAttribute');
     }));
   });
 
