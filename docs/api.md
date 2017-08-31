@@ -7,6 +7,7 @@
 <!-- toc -->
 
 - [Puppeteer](#puppeteer)
+  * [Environment Variables](#environment-variables)
   * [class: Puppeteer](#class-puppeteer)
     + [puppeteer.connect(options)](#puppeteerconnectoptions)
     + [puppeteer.launch([options])](#puppeteerlaunchoptions)
@@ -137,6 +138,12 @@
 
 Puppeteer is a Node library which provides a high-level API to control Chromium over the DevTools Protocol.
 
+### Environment Variables
+
+Puppeteer looks for certain environment variables to aid its operations:
+
+- `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
+- `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
 
 ### class: Puppeteer
 
