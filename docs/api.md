@@ -31,7 +31,7 @@
     + [event: 'response'](#event-response)
     + [page.$(selector)](#pageselector)
     + [page.$$(selector)](#pageselector)
-    + [page.$eval(selector, pageFunction)](#pageevalselector-pagefunction)
+    + [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
@@ -95,7 +95,7 @@
   * [class: Frame](#class-frame)
     + [frame.$(selector)](#frameselector)
     + [frame.$$(selector)](#frameselector)
-    + [frame.$eval(selector, pageFunction)](#frameevalselector-pagefunction)
+    + [frame.$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
     + [frame.addScriptTag(url)](#frameaddscripttagurl)
     + [frame.childFrames()](#framechildframes)
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
@@ -324,7 +324,7 @@ The method runs `document.querySelectorAll` within the page. If no elements matc
 
 Shortcut for [page.mainFrame().$$(selector)](#frameselector-1).
 
-#### page.$eval(selector, pageFunction, ...args)
+#### page.$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> Selector to query page for
 - `pageFunction` <[function]> Function to be evaluated in browser context
 - `...args` <...[Serializable]> Arguments to pass to `pageFunction`
@@ -341,7 +341,7 @@ const preloadHref = await page.$eval('link[rel=preload]', el => el.href);
 const html = await page.$eval('.main-container', e => e.outerHTML);
 ```
 
-Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector-pagefunction).
+Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector-pagefunction-args).
 
 #### page.addScriptTag(url)
 - `url` <[string]> Url of the `<script>` tag
@@ -1076,7 +1076,7 @@ The method queries frame for the selector. If there's no such element within the
 
 The method runs `document.querySelectorAll` within the frame. If no elements match the selector, the return value resolve to `[]`.
 
-#### frame.$eval(selector, pageFunction)
+#### frame.$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> Selector to query frame for
 - `pageFunction` <[function]> Function to be evaluated in browser context
 - `...args` <...[Serializable]> Arguments to pass to `pageFunction`
