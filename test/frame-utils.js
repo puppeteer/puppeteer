@@ -19,7 +19,6 @@ const utils = module.exports = {
    * @param {!Page} page
    * @param {string} frameId
    * @param {string} url
-   * @return {!Promise}
    */
   attachFrame: async function(page, frameId, url) {
     await page.evaluate(attachFrame, frameId, url);
@@ -36,7 +35,6 @@ const utils = module.exports = {
   /**
    * @param {!Page} page
    * @param {string} frameId
-   * @return {!Promise}
    */
   detachFrame: async function(page, frameId) {
     await page.evaluate(detachFrame, frameId);
@@ -51,7 +49,6 @@ const utils = module.exports = {
    * @param {!Page} page
    * @param {string} frameId
    * @param {string} url
-   * @return {!Promise}
    */
   navigateFrame: async function(page, frameId, url) {
     await page.evaluate(navigateFrame, frameId, url);
