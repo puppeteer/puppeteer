@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-if (process.env['PUPPETEER_SKIP_CHROMIUM_DOWNLOAD']) {
-  console.log('**WARNING** Puppeteer is skipping chromium download because environment contains "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" variable.');
+if (process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD) {
+  console.log('**INFO** Skipping Chromium download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" environment variable was found.');
   return;
 }
 
