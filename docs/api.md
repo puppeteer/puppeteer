@@ -58,7 +58,7 @@
     + [page.press(key[, options])](#pagepresskey-options)
     + [page.reload(options)](#pagereloadoptions)
     + [page.screenshot([options])](#pagescreenshotoptions)
-    + [page.setBlockedURLs(urls)](#pagesetblockedURLs)
+    + [page.setBlockedURLs(urls)](#pagesetblockedurlsurls)
     + [page.setContent(html)](#pagesetcontenthtml)
     + [page.setCookie(...cookies)](#pagesetcookiecookies)
     + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
@@ -707,7 +707,7 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 - returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot
 
 #### page.setBlockedURLs(urls)
-- `urls` <[Array]<[url]>> URL patterns to block. Wildcards ('*') are allowed.
+- `urls` <[Array]<[string]>> URL patterns to block. Wildcards ('*') are allowed.
 - returns: <[Promise]>
 
 #### page.setContent(html)
