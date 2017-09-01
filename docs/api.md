@@ -33,6 +33,7 @@
     + [page.$$(selector)](#pageselector)
     + [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
+    + [page.allCookies()](#pageallcookies)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
     + [page.content()](#pagecontent)
@@ -351,6 +352,19 @@ Adds a `<script>` tag into the page with the desired url. Alternatively, a local
 
 Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
 
+#### page.allCookies()
+- returns: <[Promise]<[Array]<[Object]>>>
+  - `name` <[string]>
+  - `value` <[string]>
+  - `domain` <[string]>
+  - `path` <[string]>
+  - `expires` <[number]> Unix time in seconds.
+  - `size` <[number]> cookie size in byte.
+  - `httpOnly` <[boolean]>
+  - `secure` <[boolean]>
+  - `session` <[boolean]>
+
+This method returns all the cookies for the current page URL, even third party ones.
 
 #### page.click(selector[, options])
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
@@ -370,6 +384,7 @@ If there's no element matching `selector`, the method throws an error.
 - returns: <[Promise]<[String]>>
 
 Gets the full HTML contents of the page, including the doctype.
+
 
 #### page.cookies(...urls)
 - `...urls` <...[string]>

@@ -2031,6 +2031,17 @@ describe('Page', function() {
         secure: false,
         session: true }
       ]);
+      expect(await page.allCookies()).toEqual([{
+        name: 'username',
+        value: 'John Doe',
+        domain: 'localhost',
+        path: '/',
+        expires: 0,
+        size: 16,
+        httpOnly: false,
+        secure: false,
+        session: true }
+      ]);
       await page.setCookie({
         name: 'password',
         value: '123456'
