@@ -63,9 +63,6 @@ const fromRevision = parseInt(process.argv[2], 10);
 const toRevision = parseInt(process.argv[3], 10);
 checkRangeAvailability(fromRevision, toRevision);
 
-/**
- * @return {!Promise}
- */
 async function checkOmahaProxyAvailability() {
   console.log('Fetching revisions from ' + OMAHA_PROXY);
   const platforms = await loadJSON(OMAHA_PROXY);
@@ -93,7 +90,6 @@ async function checkOmahaProxyAvailability() {
 /**
  * @param {number} fromRevision
  * @param {number} toRevision
- * @return {!Promise}
  */
 async function checkRangeAvailability(fromRevision, toRevision) {
   const table = new Table([10, 7, 7, 7, 7]);
@@ -107,7 +103,6 @@ async function checkRangeAvailability(fromRevision, toRevision) {
  * @param {!Table} table
  * @param {string} name
  * @param {number} revision
- * @return {!Promise}
  */
 async function checkAndDrawRevisionAvailability(table, name, revision) {
   const promises = [];

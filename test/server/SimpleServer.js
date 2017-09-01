@@ -88,9 +88,6 @@ class SimpleServer {
     socket.once('close', () => this._sockets.delete(socket));
   }
 
-  /**
-   * @return {!Promise}
-   */
   async stop() {
     this.reset();
     for (const socket of this._sockets)
