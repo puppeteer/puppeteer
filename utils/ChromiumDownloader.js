@@ -97,10 +97,12 @@ module.exports = {
       fs.mkdirSync(DOWNLOADS_FOLDER);
     return downloadFile(url, zipPath, progressCallback)
         .then(() => extractZip(zipPath, folderPath))
-        .catch(err => { throw err; })
-        .then(() => {
+        .catch(err => err)
+        .then(err => {
           if (fs.existsSync(zipPath))
             fs.unlinkSync(zipPath);
+          if (err)
+            throw err;
         });
   },
 
