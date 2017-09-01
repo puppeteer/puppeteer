@@ -65,8 +65,9 @@
     + [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
     + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
     + [page.setViewport(viewport)](#pagesetviewportviewport)
+    + [page.tap(selector)](#pagetapselector)
     + [page.title()](#pagetitle)
-    + [page.touchScreen](#pagetouchscreen)
+    + [page.touchscreen](#pagetouchscreen)
     + [page.tracing](#pagetracing)
     + [page.type(text, options)](#pagetypetext-options)
     + [page.url()](#pageurl)
@@ -84,8 +85,8 @@
     + [mouse.down([options])](#mousedownoptions)
     + [mouse.move(x, y, [options])](#mousemovex-y-options)
     + [mouse.up([options])](#mouseupoptions)
-  * [class: TouchScreen](#class-touchscreen)
-    + [touchScreen.tap(x, y)](#touchscreentapx-y)
+  * [class: Touchscreen](#class-touchscreen)
+    + [touchscreen.tap(x, y)](#touchscreentapx-y)
   * [class: Tracing](#class-tracing)
     + [tracing.start(options)](#tracingstartoptions)
     + [tracing.stop()](#tracingstop)
@@ -782,13 +783,20 @@ puppeteer.launch().then(async browser => {
 
 In the case of multiple pages in a single browser, each page can have its own viewport size.
 
+#### page.tap(selector)
+- `selector` <[string]> A [selector] to search for element to tap. If there are multiple elements satisfying the selector, the first will be tapped.
+- returns: <[Promise]>
+
+This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.touchscreen](#pagetouchscreen) to tap in the center of the element.
+If there's no element matching `selector`, the method throws an error.
+
 #### page.title()
 - returns: <[Promise]<[string]>> Returns page's title.
 
 Shortcut for [page.mainFrame().title()](#frametitle).
 
-#### page.touchScreen
-- returns: <[TouchScreen]>
+#### page.touchscreen
+- returns: <[Touchscreen]>
 
 #### page.tracing
 - returns: <[Tracing]>
@@ -985,12 +993,14 @@ Dispatches a `mousemove` event.
 
 Dispatches a `mouseup` event.
 
-### class: TouchScreen
+### class: Touchscreen
 
-#### touchScreen.tap(x, y)
+#### touchscreen.tap(x, y)
 - `x` <[number]>
 - `y` <[number]>
 - returns: <[Promise]>
+
+Dispatches a `touchstart` and `touchend` event.
 
 ### class: Tracing
 
@@ -1283,7 +1293,7 @@ If the element is detached from DOM, the method throws an error.
 #### elementHandle.tap()
 - returns: <[Promise]> Promise which resolves when the element is successfully tapped. Promise gets rejected if the element is detached from DOM.
 
-This method scrolls element into view if needed, and then uses [touchScreen.tap](#touchscreentapx-y) to tap in the center of the element.
+This method scrolls element into view if needed, and then uses [touchscreen.tap](#touchscreentapx-y) to tap in the center of the element.
 If the element is detached from DOM, the method throws an error.
 
 #### elementHandle.uploadFile(...filePaths)
@@ -1408,4 +1418,4 @@ Contains the URL of the response.
 [ElementHandle]: #class-elementhandle "ElementHandle"
 [UIEvent.detail]: https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail "UIEvent.detail"
 [Serializable]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Description "Serializable"
-[TouchScreen]: #class-touchscreen "TouchScreen"
+[Touchscreen]: #class-touchscreen "Touchscreen"
