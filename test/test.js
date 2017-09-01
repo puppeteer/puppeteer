@@ -1537,7 +1537,7 @@ describe('Page', function() {
   });
 
   describe('Page.setBlockedURLs', function() {
-    fit('should block image requests', SX(async function() {
+    it('should block image requests', SX(async function() {
       await page.setBlockedURLs(['.png']);
       const failedRequests = [];
       page.on('requestfailed', request => failedRequests.push(request));
