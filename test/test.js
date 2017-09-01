@@ -1535,6 +1535,17 @@ describe('Page', function() {
       expect(await page.evaluate(() => navigator.userAgent)).toContain('Safari');
     }));
   });
+
+  describe('Page.setBlockedURLs', function() {
+    fit('should block image requests', SX(async function() {
+      await page.setBlockedURLs(['.png']);
+      const failedRequests = [];
+      page.on('requestfailed', request => failedRequests.push(request));
+      await page.goto(PREFIX + '/grid.html');
+      expect(failedRequests.length).toBe(490);
+    }));
+  });
+
   describe('Page.setExtraHTTPHeaders', function() {
     it('should work', SX(async function() {
       await page.setExtraHTTPHeaders({
