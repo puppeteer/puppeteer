@@ -98,9 +98,11 @@ module.exports = {
     return downloadFile(url, zipPath, progressCallback)
         .then(() => extractZip(zipPath, folderPath))
         .catch(err => err)
-        .then(() => {
+        .then(err => {
           if (fs.existsSync(zipPath))
             fs.unlinkSync(zipPath);
+          if (err)
+            throw err;
         });
   },
 
