@@ -36,11 +36,11 @@ Downloader.downloadRevision(platform, revision, onProgress)
     .catch(onError);
 
 function onError(error) {
-  console.error(`ERROR: Failed to download chromium r${revision}!
-- Download chromium manually:
+  console.error(`ERROR: Failed to download Chromium r${revision}! Set "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" env variable to skip download or download Chromium manually:
     ${revisionInfo.url}
-- Extract chromium into ${revisionInfo.folderPath}
+- Extract Chromium into ${revisionInfo.folderPath}
   * Chromium executable should be at ${revisionInfo.executablePath}`);
+  process.exit(1);
 }
 
 let progressBar = null;
