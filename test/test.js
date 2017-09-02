@@ -1509,6 +1509,17 @@ describe('Page', function() {
         [200, 300]
       ]);
     }));
+    it('should tap the button', SX(async function() {
+      await page.goto(PREFIX + '/input/button.html');
+      await page.tap('button');
+      expect(await page.evaluate(() => result)).toBe('Clicked');
+    }));
+    it('should report touches', SX(async function() {
+      await page.goto(PREFIX + '/input/touches.html');
+      const button = await page.$('button');
+      await button.tap();
+      expect(await page.evaluate(() => getResult())).toEqual(['Touchstart: 0', 'Touchend: 0']);
+    }));
     function dimensions() {
       const rect = document.querySelector('textarea').getBoundingClientRect();
       return {

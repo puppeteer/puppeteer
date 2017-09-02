@@ -65,7 +65,9 @@
     + [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
     + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
     + [page.setViewport(viewport)](#pagesetviewportviewport)
+    + [page.tap(selector)](#pagetapselector)
     + [page.title()](#pagetitle)
+    + [page.touchscreen](#pagetouchscreen)
     + [page.tracing](#pagetracing)
     + [page.type(text, options)](#pagetypetext-options)
     + [page.url()](#pageurl)
@@ -83,6 +85,8 @@
     + [mouse.down([options])](#mousedownoptions)
     + [mouse.move(x, y, [options])](#mousemovex-y-options)
     + [mouse.up([options])](#mouseupoptions)
+  * [class: Touchscreen](#class-touchscreen)
+    + [touchscreen.tap(x, y)](#touchscreentapx-y)
   * [class: Tracing](#class-tracing)
     + [tracing.start(options)](#tracingstartoptions)
     + [tracing.stop()](#tracingstop)
@@ -113,6 +117,7 @@
     + [elementHandle.dispose()](#elementhandledispose)
     + [elementHandle.evaluate(pageFunction, ...args)](#elementhandleevaluatepagefunction-args)
     + [elementHandle.hover()](#elementhandlehover)
+    + [elementHandle.tap()](#elementhandletap)
     + [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
   * [class: Request](#class-request)
     + [request.abort()](#requestabort)
@@ -778,10 +783,20 @@ puppeteer.launch().then(async browser => {
 
 In the case of multiple pages in a single browser, each page can have its own viewport size.
 
+#### page.tap(selector)
+- `selector` <[string]> A [selector] to search for element to tap. If there are multiple elements satisfying the selector, the first will be tapped.
+- returns: <[Promise]>
+
+This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.touchscreen](#pagetouchscreen) to tap in the center of the element.
+If there's no element matching `selector`, the method throws an error.
+
 #### page.title()
 - returns: <[Promise]<[string]>> Returns page's title.
 
 Shortcut for [page.mainFrame().title()](#frametitle).
+
+#### page.touchscreen
+- returns: <[Touchscreen]>
 
 #### page.tracing
 - returns: <[Tracing]>
@@ -977,6 +992,15 @@ Dispatches a `mousemove` event.
 - returns: <[Promise]>
 
 Dispatches a `mouseup` event.
+
+### class: Touchscreen
+
+#### touchscreen.tap(x, y)
+- `x` <[number]>
+- `y` <[number]>
+- returns: <[Promise]>
+
+Dispatches a `touchstart` and `touchend` event.
 
 ### class: Tracing
 
@@ -1266,6 +1290,12 @@ The element will be passed as the first argument to `pageFunction`, followed by 
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
 If the element is detached from DOM, the method throws an error.
 
+#### elementHandle.tap()
+- returns: <[Promise]> Promise which resolves when the element is successfully tapped. Promise gets rejected if the element is detached from DOM.
+
+This method scrolls element into view if needed, and then uses [touchscreen.tap](#touchscreentapx-y) to tap in the center of the element.
+If the element is detached from DOM, the method throws an error.
+
 #### elementHandle.uploadFile(...filePaths)
 - `...filePaths` <...[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]>
@@ -1388,3 +1418,4 @@ Contains the URL of the response.
 [ElementHandle]: #class-elementhandle "ElementHandle"
 [UIEvent.detail]: https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail "UIEvent.detail"
 [Serializable]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Description "Serializable"
+[Touchscreen]: #class-touchscreen "Touchscreen"

@@ -44,6 +44,7 @@ const EXCLUDE_METHODS = new Set([
   'Headers.fromPayload',
   'Keyboard.constructor',
   'Mouse.constructor',
+  'Touchscreen.constructor',
   'Tracing.constructor',
   'Page.constructor',
   'Page.create',
