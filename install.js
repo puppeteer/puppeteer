@@ -31,8 +31,6 @@ if (revisionInfo.downloaded)
 
 const allRevisions = Downloader.downloadedRevisions();
 Downloader.downloadRevision(platform, revision, onProgress)
-    // Remove previous chromium revisions.
-    .then()
     .then(onSuccess)
     .catch(onError);
 
@@ -41,6 +39,7 @@ Downloader.downloadRevision(platform, revision, onProgress)
  */
 function onSuccess() {
   console.log('Chromium downloaded to ' + revisionInfo.folderPath);
+  // Remove previous chromium revisions.
   const cleanupOldVersions = allRevisions.map(({platform, revision}) => Downloader.removeRevision(platform, revision));
   return Promise.all(cleanupOldVersions);
 }
