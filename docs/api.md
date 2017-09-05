@@ -10,7 +10,7 @@
   * [Environment Variables](#environment-variables)
   * [class: Puppeteer](#class-puppeteer)
     + [puppeteer.connect(options)](#puppeteerconnectoptions)
-    + [puppeteer.launch([options])](#puppeteerlaunchoptions)
+    + [puppeteer.launch(options)](#puppeteerlaunchoptions)
   * [class: Browser](#class-browser)
     + [browser.close()](#browserclose)
     + [browser.newPage()](#browsernewpage)
@@ -174,7 +174,7 @@ puppeteer.launch().then(async browser => {
 
 This methods attaches Puppeteer to an existing Chromium instance.
 
-#### puppeteer.launch([options])
+#### puppeteer.launch(options)
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
   - `headless` <[boolean]> Whether to run Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true`.
