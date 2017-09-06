@@ -165,9 +165,9 @@ function checkDuplicates(doc) {
     classes.add(cls.name);
     const members = new Set();
     for (const member of cls.membersArray) {
-      if (members.has(member.name))
-        errors.push(`Duplicate declaration of method ${cls.name}.${member.name}()`);
-      members.add(member.name);
+      if (members.has(member.type + ' ' + member.name))
+        errors.push(`Duplicate declaration of ${member.type} ${cls.name}.${member.name}()`);
+      members.add(member.type + ' ' + member.name);
       const args = new Set();
       for (const arg of member.argsArray) {
         if (args.has(arg.name))

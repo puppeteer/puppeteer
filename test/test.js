@@ -107,7 +107,7 @@ describe('Puppeteer', function() {
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
-      browser.close();
+      await browser.close();
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
       rm(userDataDir);
     }));
@@ -117,7 +117,7 @@ describe('Puppeteer', function() {
       options.args = [`--user-data-dir=${userDataDir}`].concat(options.args);
       const browser = await puppeteer.launch(options);
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
-      browser.close();
+      await browser.close();
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
       rm(userDataDir);
     }));

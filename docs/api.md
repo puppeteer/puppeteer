@@ -13,6 +13,7 @@
     + [puppeteer.executablePath()](#puppeteerexecutablepath)
     + [puppeteer.launch([options])](#puppeteerlaunchoptions)
   * [class: Browser](#class-browser)
+    + [event: 'close'](#event-close)
     + [browser.close()](#browserclose)
     + [browser.newPage()](#browsernewpage)
     + [browser.version()](#browserversion)
@@ -209,6 +210,10 @@ puppeteer.launch().then(async browser => {
   browser.close();
 });
 ```
+
+#### event: 'close'
+
+Emitted when the Chromium process [`close`](https://nodejs.org/api/child_process.html#child_process_event_close) event is dispatched.
 
 #### browser.close()
 
