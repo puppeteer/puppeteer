@@ -58,6 +58,7 @@
     + [page.press(key[, options])](#pagepresskey-options)
     + [page.reload(options)](#pagereloadoptions)
     + [page.screenshot([options])](#pagescreenshotoptions)
+    + [page.setBlockedURLs(urls)](#pagesetblockedurlsurls)
     + [page.setContent(html)](#pagesetcontenthtml)
     + [page.setCookie(...cookies)](#pagesetcookiecookies)
     + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
@@ -709,6 +710,10 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
         - `height` <[number]> height of clipping area
     - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
 - returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot
+
+#### page.setBlockedURLs(urls)
+- `urls` <[Array]<[string]>> URL patterns to block. Wildcards ('*') are allowed.
+- returns: <[Promise]>
 
 #### page.setContent(html)
 - `html` <[string]> HTML markup to assign to the page.

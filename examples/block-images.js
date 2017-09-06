@@ -22,13 +22,7 @@ const puppeteer = require('puppeteer');
 
 const browser = await puppeteer.launch();
 const page = await browser.newPage();
-await page.setRequestInterceptionEnabled(true);
-page.on('request', request => {
-  if (request.resourceType === 'Image')
-    request.abort();
-  else
-    request.continue();
-});
+await page.setBlockedURLs(['.png', '.svg', '.jpg']);
 await page.goto('https://bbc.com');
 await page.screenshot({path: 'news.png', fullPage: true});
 
