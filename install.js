@@ -31,12 +31,25 @@ if (revisionInfo.downloaded)
 
 const allRevisions = Downloader.downloadedRevisions();
 Downloader.downloadRevision(platform, revision, onProgress)
-    // Remove previous chromium revisions.
-    .then(() => Promise.all(allRevisions.map(({platform, revision}) => Downloader.removeRevision(platform, revision))))
+    .then(onSuccess)
     .catch(onError);
 
+/**
+ * @return {!Promise}
+ */
+function onSuccess() {
+  console.log('Chromium downloaded to ' + revisionInfo.folderPath);
+  // Remove previous chromium revisions.
+  const cleanupOldVersions = allRevisions.map(({platform, revision}) => Downloader.removeRevision(platform, revision));
+  return Promise.all(cleanupOldVersions);
+}
+
+/**
+ * @param {!Error} error
+ */
 function onError(error) {
   console.error(`ERROR: Failed to download Chromium r${revision}! Set "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" env variable to skip download.`);
+  console.error(error);
   process.exit(1);
 }
 
