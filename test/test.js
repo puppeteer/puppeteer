@@ -750,6 +750,11 @@ describe('Page', function() {
       expect(requests.length).toBe(1);
       expect(requests[0].url).toBe(EMPTY_PAGE);
     }));
+    it('should navigate to URL with authentication set but no challenge', SX(async function() {
+      await page.authenticate('anyuser', 'anypassword');
+      const response = await page.goto(EMPTY_PAGE);
+      expect(response.ok).toBe(true);
+    }));
   });
 
   describe('Page.waitForNavigation', function() {
