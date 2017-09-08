@@ -30,7 +30,7 @@
     + [event: 'requestfinished'](#event-requestfinished)
     + [event: 'response'](#event-response)
     + [page.$(selector)](#pageselector)
-    + [page.$$(selector)](#pageselector)
+    + [page.$$(selector)](#pageselector-1)
     + [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
     + [page.click(selector[, options])](#pageclickselector-options)
