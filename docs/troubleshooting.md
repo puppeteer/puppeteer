@@ -91,3 +91,47 @@ xorg-x11-fonts-misc
 const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
 ```
 
+## Running Puppeteer in Docker
+
+Using headless Chrome Linux to run Puppeteer in Docker container can be tricky.
+The bundled version Chromium that Puppeteer installs is missing the necessary
+shared library dependencies.
+
+To fix this, you'll need to install the latest version of Chrome dev in your
+Dockerfile:
+
+```
+FROM node:8-slim
+
+# Install latest chrome (dev) package.
+# Note: this also installs the necessary libs so we don't need the previous RUN command.
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - &&\
+sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list' &&\
+apt-get update &&\
+apt-get install -y google-chrome-unstable
+
+# Uncomment to skip the chromium download when installing puppeteer. If you do,
+# you'll need to launch puppeteer with:
+#     browser.launch({executablePath: 'google-chrome-unstable'})
+# ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+
+# Install puppeteer so it can be required by user code that gets ran in server.js.
+RUN yarn add puppeteer
+
+CMD ["google-chrome-unstable", "--no-sandbox"]
+```
+
+Build the container:
+
+```bash
+docker build -t puppeteer-chrome-linux .
+```
+
+Run the container by passing `node -e "<yourscript.js content as a string>` as the command:
+
+```bash
+ docker run -i --rm --name puppeteer-chrome puppeteer-chrome-linux node -e "`cat yourscript.js`"
+```
+
+There's a full example at https://github.com/ebidel/try-puppeteer that shows
+how to run this setup from a webserver running on App Engine Flex (Node).
