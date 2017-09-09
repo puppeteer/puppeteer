@@ -1514,7 +1514,7 @@ describe('Page', function() {
       await page.tap('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     }));
-    it('should report touches', SX(async function() {
+    xit('should report touches', SX(async function() {
       await page.goto(PREFIX + '/input/touches.html');
       const button = await page.$('button');
       await button.tap();
