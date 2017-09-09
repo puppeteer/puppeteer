@@ -1570,6 +1570,43 @@ describe('Page', function() {
       expect(request.headers['foo']).toBe('bar');
     }));
   });
+  describe('Page.authenticate', function() {
+    it('should work', SX(async function() {
+      server.setAuth('/empty.html', 'user', 'pass');
+      let response = await page.goto(EMPTY_PAGE);
+      expect(response.status).toBe(401);
+      await page.authenticate({
+        username: 'user',
+        password: 'pass'
+      });
+      response = await page.reload();
+      expect(response.status).toBe(200);
+    }));
+    it('should fail if wrong credentials', SX(async function() {
+      // Use unique user/password since Chrome caches credentials per origin.
+      server.setAuth('/empty.html', 'user2', 'pass2');
+      await page.authenticate({
+        username: 'foo',
+        password: 'bar'
+      });
+      const response = await page.goto(EMPTY_PAGE);
+      expect(response.status).toBe(401);
+    }));
+    it('should allow disable authentication', SX(async function() {
+      // Use unique user/password since Chrome caches credentials per origin.
+      server.setAuth('/empty.html', 'user3', 'pass3');
+      await page.authenticate({
+        username: 'user3',
+        password: 'pass3'
+      });
+      let response = await page.goto(EMPTY_PAGE);
+      expect(response.status).toBe(200);
+      await page.authenticate(null);
+      // Navigate to a different origin to bust Chrome's credential caching.
+      response = await page.goto(CROSS_PROCESS_PREFIX + '/empty.html');
+      expect(response.status).toBe(401);
+    }));
+  });
   describe('Page.setContent', function() {
     const expectedOutput = '<html><head></head><body><div>hello</div></body></html>';
     it('should work', SX(async function() {
