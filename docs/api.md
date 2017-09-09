@@ -442,13 +442,6 @@ List of all available devices is available in the source code: [DeviceDescriptor
 - `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Resolves to the return value of `pageFunction`
 
-[ElementHandle] instances could be passed as arguments to the `page.evaluate`:
-```js
-const bodyHandle = await page.$('body');
-const html = await page.evaluate(body => body.innerHTML, bodyHandle);
-await bodyHandle.dispose();
-```
-
 If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
 
 ```js
@@ -462,6 +455,13 @@ A string can also be passed in instead of a function.
 
 ```js
 console.log(await page.evaluate('1 + 2')); // prints "3"
+```
+
+[ElementHandle] instances could be passed as arguments to the `page.evaluate`:
+```js
+const bodyHandle = await page.$('body');
+const html = await page.evaluate(body => body.innerHTML, bodyHandle);
+await bodyHandle.dispose();
 ```
 
 Shortcut for [page.mainFrame().evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args).
@@ -1131,13 +1131,6 @@ Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScri
 - `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
 
-[ElementHandle] instances could be passed as arguments to the `frame.evaluate`:
-```js
-const bodyHandle = await frame.$('body');
-const html = await frame.evaluate(body => body.innerHTML, bodyHandle);
-await bodyHandle.dispose();
-```
-
 If the function, passed to the `frame.evaluate`, returns a [Promise], then `frame.evaluate` would wait for the promise to resolve and return it's value.
 
 ```js
@@ -1151,6 +1144,13 @@ A string can also be passed in instead of a function.
 
 ```js
 console.log(await frame.evaluate('1 + 2')); // prints "3"
+```
+
+[ElementHandle] instances could be passed as arguments to the `frame.evaluate`:
+```js
+const bodyHandle = await frame.$('body');
+const html = await frame.evaluate(body => body.innerHTML, bodyHandle);
+await bodyHandle.dispose();
 ```
 
 #### frame.injectFile(filePath)
