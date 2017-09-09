@@ -30,8 +30,12 @@ if (revisionInfo.downloaded)
   return;
 
 // Override current environment proxy settings with npm configuration, if any.
-process.env.HTTPS_PROXY = process.env.npm_config_https_proxy || process.env.npm_config_proxy || process.env.HTTPS_PROXY;
-process.env.HTTP_PROXY = process.env.npm_config_http_proxy || process.env.npm_config_proxy || process.env.HTTP_PROXY;
+const NPM_HTTPS_PROXY = process.env.npm_config_https_proxy || process.env.npm_config_proxy;
+const NPM_HTTP_PROXY = process.env.npm_config_http_proxy || process.env.npm_config_proxy;
+if (NPM_HTTPS_PROXY)
+  process.env.HTTPS_PROXY = NPM_HTTPS_PROXY;
+if (NPM_HTTP_PROXY)
+  process.env.HTTP_PROXY = NPM_HTTP_PROXY;
 
 const allRevisions = Downloader.downloadedRevisions();
 Downloader.downloadRevision(platform, revision, onProgress)
