@@ -246,6 +246,10 @@ describe('Page', function() {
       const result = await page.evaluate(() => -Infinity);
       expect(Object.is(result, -Infinity)).toBe(true);
     }));
+    it('should accept undefined as one of multiple parameters', SX(async function() {
+      const result = await page.evaluate((a, b) => a + b, undefined, '!');
+      expect(result).toBe('undefined!');
+    }));
     it('should not fail for window object', SX(async function() {
       const result = await page.evaluate(() => window);
       expect(result).toBe('Window');
