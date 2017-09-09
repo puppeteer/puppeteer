@@ -277,6 +277,15 @@ describe('Page', function() {
       await page.evaluate(e => e.textContent, element).catch(e => error = e);
       expect(error.message).toContain('ElementHandle is disposed');
     }));
+    it('should throw if elementHandles are from other frames', SX(async function() {
+      const FrameUtils = require('./frame-utils');
+      await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
+      const bodyHandle = await page.frames()[1].$('body');
+      let error = null;
+      await page.evaluate(body => body.innerHTML, bodyHandle).catch(e => error = e);
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('ElementHandles passed as arguments should belong');
+    }));
   });
 
   describe('Page.injectFile', function() {
