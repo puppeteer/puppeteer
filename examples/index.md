@@ -1,6 +1,6 @@
-# Resources and examples
+# Other resources
 
-> Other useful tools and projects that use Puppeteer.
+> Other useful tools, articles, and projects that use Puppeteer.
 
 ## Web scraping
 - [Puppetron](https://github.com/cheeaun/puppetron) - Demo site that shows how to use Puppeteer and Headless Chrome to render pages. Inspired by [GoogleChrome/rendertron](https://github.com/GoogleChrome/rendertron).
