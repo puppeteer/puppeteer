@@ -1314,6 +1314,7 @@ If request fails at some point, then instead of 'requestfinished' event (and pos
 If request gets a 'redirect' response, the request is successfully finished with the 'requestfinished' event, and a new request is  issued to a redirected url.
 
 #### request.abort()
+- returns: <[Promise]>
 
 Aborts request. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
 Exception is immediately thrown if the request interception is not enabled.
@@ -1324,6 +1325,7 @@ Exception is immediately thrown if the request interception is not enabled.
   - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`)
   - `postData` <[string]> If set changes the post data of request
   - `headers` <[Object]> If set changes the request HTTP headers
+- returns: <[Promise]>
 
 Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
 Exception is immediately thrown if the request interception is not enabled.

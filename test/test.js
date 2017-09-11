@@ -17,7 +17,7 @@
 const fs = require('fs');
 const rm = require('rimraf').sync;
 const path = require('path');
-const helper = require('../lib/helper');
+const {helper} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
 console.log('Testing on Node', process.version);
@@ -985,6 +985,20 @@ describe('Page', function() {
       expect(response.status).toBe(200);
       expect(requests.length).toBe(2);
       expect(requests[1].response().status).toBe(404);
+    }));
+    it('should not throw "Invalid Interception Id" if the request was cancelled', SX(async function() {
+      await page.setContent('<iframe></iframe>');
+      await page.setRequestInterceptionEnabled(true);
+      let request = null;
+      page.on('request', async r => request = r);
+      page.$eval('iframe', (frame, url) => frame.src = url, EMPTY_PAGE),
+      // Wait for request interception.
+      await waitForEvents(page, 'request');
+      // Delete frame to cause request to be canceled.
+      await page.$eval('iframe', frame => frame.remove());
+      let error = null;
+      await request.continue().catch(e => error = e);
+      expect(error).toBe(null);
     }));
   });
 
