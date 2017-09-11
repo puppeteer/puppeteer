@@ -6,6 +6,7 @@
 *.swp
 *.pyc
 .vscode
+.alm
 package-lock.json
 /node6
 /node6-test
