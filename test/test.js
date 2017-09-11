@@ -598,15 +598,16 @@ describe('Page', function() {
       expect(error.message).toContain('Failed to navigate');
     }));
     it('should fail when exceeding maximum navigation timeout', SX(async function() {
-      let error = null;
+      let hasUnhandledRejection = false;
+      const unhandledRejectionHandler = () => hasUnhandledRejection = true;
+      process.on('unhandledRejection', unhandledRejectionHandler);
       // Hang for request to the empty.html
       server.setRoute('/empty.html', (req, res) => { });
-      try {
-        await page.goto(PREFIX + '/empty.html', {timeout: 59});
-      } catch (e) {
-        error = e;
-      }
-      expect(error.message).toContain('Navigation Timeout Exceeded: 59ms');
+      let error = null;
+      await page.goto(PREFIX + '/empty.html', {timeout: 1}).catch(e => error = e);
+      expect(hasUnhandledRejection).toBe(false);
+      expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
+      process.removeListener('unhandledRejection', unhandledRejectionHandler);
     }));
     it('should work when navigating to valid url', SX(async function() {
       const response = await page.goto(EMPTY_PAGE);
