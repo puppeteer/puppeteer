@@ -102,6 +102,12 @@ describe('Puppeteer', function() {
       await neverResolves;
       expect(error.message).toContain('Protocol error');
     }));
+    it('should reject if executable path is invalid', SX(async function() {
+      let waitError = null;
+      const options = Object.assign({}, defaultBrowserOptions, {executablePath: 'random-invalid-path'});
+      await puppeteer.launch(options).catch(e => waitError = e);
+      expect(waitError.message).toBe('Error launching Chromium process with executable path "random-invalid-path"');
+    }));
     it('userDataDir option', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
