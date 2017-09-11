@@ -150,6 +150,7 @@ Puppeteer looks for certain environment variables to aid its operations:
 
 - `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
+- `PUPPETEER_DOWNLOAD_CHROMIUM_URL` - download bundled Chromium from specified URL.
 
 ### class: Puppeteer
 
