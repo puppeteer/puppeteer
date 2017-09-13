@@ -2091,7 +2091,8 @@ describe('Page', function() {
         value: '123456'
       });
       expect(await page.evaluate('document.cookie')).toBe('username=John Doe; password=123456');
-      expect(await page.cookies()).toEqual([{
+      const cookies = await page.cookies();
+      expect(cookies.sort((a, b) => a.name.localeCompare(b.name))).toEqual([{
         name: 'password',
         value: '123456',
         domain: 'localhost',
