@@ -354,13 +354,21 @@ describe('Page', function() {
     }));
     it('should throw on bad polling value', SX(async function() {
       let error = null;
-      await page.waitForFunction(() => !!document.body, {polling: 'unknown'}).catch(e => error = e);
+      try {
+        await page.waitForFunction(() => !!document.body, {polling: 'unknown'});
+      } catch (e) {
+        error = e;
+      }
       expect(error).toBeTruthy();
       expect(error.message).toContain('polling');
     }));
     it('should throw negative polling interval', SX(async function() {
       let error = null;
-      await page.waitForFunction(() => !!document.body, {polling: -10}).catch(e => error = e);
+      try {
+        await page.waitForFunction(() => !!document.body, {polling: -10});
+      } catch (e) {
+        error = e;
+      }
       expect(error).toBeTruthy();
       expect(error.message).toContain('Cannot poll with non-positive interval');
     }));
@@ -1871,18 +1879,26 @@ describe('Page', function() {
     }));
     it('should throw if format is unknown', SX(async function() {
       let error = null;
-      await getPDFPages(await page.pdf({
-        format: 'something'
-      })).catch(e => error = e);
+      try {
+        await getPDFPages(await page.pdf({
+          format: 'something'
+        }));
+      } catch (e) {
+        error = e;
+      }
       expect(error).toBeTruthy();
       expect(error.message).toContain('Unknown paper format');
     }));
     it('should throw if units are unknown', SX(async function() {
       let error = null;
-      await getPDFPages(await page.pdf({
-        width: '10em',
-        height: '10em',
-      })).catch(e => error = e);
+      try {
+        await getPDFPages(await page.pdf({
+          width: '10em',
+          height: '10em',
+        }));
+      } catch (e) {
+        error = e;
+      }
       expect(error).toBeTruthy();
       expect(error.message).toContain('Failed to parse parameter value');
     }));
