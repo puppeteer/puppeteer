@@ -1,10 +1,13 @@
-# Puppeteer API v<!-- GEN:version -->0.9.0<!-- GEN:stop-->
+##### Released API: [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
+
+# Puppeteer API v<!-- GEN:version -->0.11.0-alpha<!-- GEN:stop-->
 
 ##### Table of Contents
 
 <!-- toc -->
 
 - [Puppeteer](#puppeteer)
+  * [Environment Variables](#environment-variables)
   * [class: Puppeteer](#class-puppeteer)
     + [puppeteer.connect(options)](#puppeteerconnectoptions)
     + [puppeteer.launch([options])](#puppeteerlaunchoptions)
@@ -27,9 +30,15 @@
     + [event: 'requestfinished'](#event-requestfinished)
     + [event: 'response'](#event-response)
     + [page.$(selector)](#pageselector)
+    + [page.$$(selector)](#pageselector)
+    + [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
+    + [page.authenticate(credentials)](#pageauthenticatecredentials)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
+    + [page.content()](#pagecontent)
+    + [page.cookies(...urls)](#pagecookiesurls)
+    + [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
     + [page.emulate(options)](#pageemulateoptions)
     + [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
     + [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
@@ -51,11 +60,15 @@
     + [page.reload(options)](#pagereloadoptions)
     + [page.screenshot([options])](#pagescreenshotoptions)
     + [page.setContent(html)](#pagesetcontenthtml)
+    + [page.setCookie(...cookies)](#pagesetcookiecookies)
     + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
+    + [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
     + [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
     + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
     + [page.setViewport(viewport)](#pagesetviewportviewport)
+    + [page.tap(selector)](#pagetapselector)
     + [page.title()](#pagetitle)
+    + [page.touchscreen](#pagetouchscreen)
     + [page.tracing](#pagetracing)
     + [page.type(text, options)](#pagetypetext-options)
     + [page.url()](#pageurl)
@@ -71,8 +84,10 @@
   * [class: Mouse](#class-mouse)
     + [mouse.click(x, y, [options])](#mouseclickx-y-options)
     + [mouse.down([options])](#mousedownoptions)
-    + [mouse.move(x, y)](#mousemovex-y)
+    + [mouse.move(x, y, [options])](#mousemovex-y-options)
     + [mouse.up([options])](#mouseupoptions)
+  * [class: Touchscreen](#class-touchscreen)
+    + [touchscreen.tap(x, y)](#touchscreentapx-y)
   * [class: Tracing](#class-tracing)
     + [tracing.start(options)](#tracingstartoptions)
     + [tracing.stop()](#tracingstop)
@@ -84,6 +99,8 @@
     + [dialog.type](#dialogtype)
   * [class: Frame](#class-frame)
     + [frame.$(selector)](#frameselector)
+    + [frame.$$(selector)](#frameselector)
+    + [frame.$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
     + [frame.addScriptTag(url)](#frameaddscripttagurl)
     + [frame.childFrames()](#framechildframes)
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
@@ -100,8 +117,8 @@
     + [elementHandle.boundingBox()](#elementhandleboundingbox)
     + [elementHandle.click([options])](#elementhandleclickoptions)
     + [elementHandle.dispose()](#elementhandledispose)
-    + [elementHandle.evaluate(pageFunction, ...args)](#elementhandleevaluatepagefunction-args)
     + [elementHandle.hover()](#elementhandlehover)
+    + [elementHandle.tap()](#elementhandletap)
     + [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
   * [class: Request](#class-request)
     + [request.abort()](#requestabort)
@@ -109,6 +126,7 @@
     + [request.headers](#requestheaders)
     + [request.method](#requestmethod)
     + [request.postData](#requestpostdata)
+    + [request.resourceType](#requestresourcetype)
     + [request.response()](#requestresponse)
     + [request.url](#requesturl)
   * [class: Response](#class-response)
@@ -127,6 +145,12 @@
 
 Puppeteer is a Node library which provides a high-level API to control Chromium over the DevTools Protocol.
 
+### Environment Variables
+
+Puppeteer looks for certain environment variables to aid its operations:
+
+- `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
+- `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
 
 ### class: Puppeteer
 
@@ -158,7 +182,10 @@ This methods attaches Puppeteer to an existing Chromium instance.
   - `executablePath` <[string]> Path to a Chromium executable to run instead of bundled Chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
   - `args` <[Array]<[string]>> Additional arguments to pass to the Chromium instance. List of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
+  - `handleSIGINT` <[boolean]> Close chrome process on Ctrl-C. Defaults to `true`.
+  - `timeout` <[number]> Maximum time in milliseconds to wait for the Chrome instance to start. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
   - `dumpio` <[boolean]> Whether to pipe browser process stdout and stderr into `process.stdout` and `process.stderr`. Defaults to `false`.
+  - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
 
 The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process is closed.
@@ -288,12 +315,39 @@ Emitted when a request finishes successfully.
 Emitted when a [response] is received.
 
 #### page.$(selector)
-- `selector` <[string]> Selector to query page for
+- `selector` <[string]> A [selector] to query page for
 - returns: <[Promise]<[ElementHandle]>>
 
 The method runs `document.querySelector` within the page. If no element matches the selector, the return value resolve to `null`.
 
 Shortcut for [page.mainFrame().$(selector)](#frameselector).
+
+#### page.$$(selector)
+- `selector` <[string]> A [selector] to query page for
+- returns: <[Promise]<[Array]<[ElementHandle]>>>
+
+The method runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `[]`.
+
+Shortcut for [page.mainFrame().$$(selector)](#frameselector-1).
+
+#### page.$eval(selector, pageFunction[, ...args])
+- `selector` <[string]> A [selector] to query page for
+- `pageFunction` <[function]> Function to be evaluated in browser context
+- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
+
+This method runs `document.querySelector` within the page and passes it as the first argument to `pageFunction`. If there's no element matching `selector`, the method throws an error.
+
+If `pageFunction` returns a [Promise], then `page.$eval` would wait for the promise to resolve and return it's value.
+
+Examples:
+```js
+const searchValue = await page.$eval('#search', el => el.value);
+const preloadHref = await page.$eval('link[rel=preload]', el => el.href);
+const html = await page.$eval('.main-container', e => e.outerHTML);
+```
+
+Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector-pagefunction-args).
 
 #### page.addScriptTag(url)
 - `url` <[string]> Url of the `<script>` tag
@@ -303,6 +357,15 @@ Adds a `<script>` tag into the page with the desired url. Alternatively, a local
 
 Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
 
+#### page.authenticate(credentials)
+- `credentials` <[Object]>
+  - `username` <[string]>
+  - `password` <[string]>
+- returns: <[Promise]>
+
+Provide credentials for [http authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication).
+
+To disable authentication, pass `null`.
 
 #### page.click(selector[, options])
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
@@ -316,6 +379,35 @@ This method fetches an element with `selector`, scrolls it into view if needed, 
 If there's no element matching `selector`, the method throws an error.
 
 #### page.close()
+- returns: <[Promise]>
+
+#### page.content()
+- returns: <[Promise]<[String]>>
+
+Gets the full HTML contents of the page, including the doctype.
+
+#### page.cookies(...urls)
+- `...urls` <...[string]>
+- returns: <[Promise]<[Array]<[Object]>>>
+  - `name` <[string]>
+  - `value` <[string]>
+  - `domain` <[string]>
+  - `path` <[string]>
+  - `expires` <[number]> Unix time in seconds.
+  - `httpOnly` <[boolean]>
+  - `secure` <[boolean]>
+  - `sameSite` <[string]> `"Strict"` or `"Lax"`.
+
+If no URLs are specified, this method returns cookies for the current page URL.
+If URLs are specified, only cookies for those URLs are returned.
+
+#### page.deleteCookie(...cookies)
+- `...cookies` <...[Object]>
+  - `name` <[string]> **required**
+  - `url` <[string]>
+  - `domain` <[string]>
+  - `path` <[string]>
+  - `secure` <[boolean]>
 - returns: <[Promise]>
 
 #### page.emulate(options)
@@ -353,33 +445,34 @@ puppeteer.launch().then(async browser => {
 List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js).
 
 #### page.emulateMedia(mediaType)
-  - `mediaType` <[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'media'` and `null`. Passing `null` disables media emulation.
+  - `mediaType` <[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation.
   - returns: <[Promise]>
 
 #### page.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context
-- `...args` <...[Serializable]> Arguments to pass to `pageFunction`
+- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Resolves to the return value of `pageFunction`
 
 If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
 
 ```js
-const puppeteer = require('puppeteer');
-
-puppeteer.launch().then(async browser => {
-  const page = await browser.newPage();
-  const result = await page.evaluate(() => {
-    return Promise.resolve(8 * 7);
-  });
-  console.log(result); // prints "56"
-  browser.close();
+const result = await page.evaluate(() => {
+  return Promise.resolve(8 * 7);
 });
+console.log(result); // prints "56"
 ```
 
 A string can also be passed in instead of a function.
 
 ```js
 console.log(await page.evaluate('1 + 2')); // prints "3"
+```
+
+[ElementHandle] instances could be passed as arguments to the `page.evaluate`:
+```js
+const bodyHandle = await page.$('body');
+const html = await page.evaluate(body => body.innerHTML, bodyHandle);
+await bodyHandle.dispose();
 ```
 
 Shortcut for [page.mainFrame().evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args).
@@ -494,13 +587,13 @@ can not go back, resolves to null.
 Navigate to the next page in history.
 
 #### page.goto(url, options)
-- `url` <[string]> URL to navigate page to
+- `url` <[string]> URL to navigate page to. The url should include scheme, e.g. `https://`.
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
+  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter. Defaults to 2.
   - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter. Defaults to 1000 ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
@@ -557,6 +650,8 @@ Page is guaranteed to have a main frame which persists during navigations.
     - `left` <[string]> Left margin, accepts values labeled with units.
 - returns: <[Promise]<[Buffer]>> Promise which resolves with PDF buffer.
 
+> **NOTE** Generating a pdf is currently only supported in Chrome headless.
+
 `page.pdf()` generates a pdf of the page with `print` css media. To generate a pdf with `screen` media, call [page.emulateMedia('screen')](#pageemulatemediamediatype) before calling `page.pdf()`:
 
 ```js
@@ -589,8 +684,6 @@ The `format` options are:
 - `A3`: 11.7in x 16.5in
 - `A4`: 8.27in x 11.7in
 - `A5`: 5.83in x 8.27in
-
-> **NOTE** Generating a pdf is currently only supported in Chrome headless.
 
 #### page.plainText()
 - returns:  <[Promise]<[string]>> Returns page's inner text.
@@ -632,14 +725,32 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 - `html` <[string]> HTML markup to assign to the page.
 - returns: <[Promise]>
 
+#### page.setCookie(...cookies)
+- `...cookies` <...[Object]>
+  - `name` <[string]> **required**
+  - `value` <[string]> **required**
+  - `url` <[string]>
+  - `domain` <[string]>
+  - `path` <[string]>
+  - `expires` <[number]> Unix time in seconds.
+  - `httpOnly` <[boolean]>
+  - `secure` <[boolean]>
+  - `sameSite` <[string]> `"Strict"` or `"Lax"`.
+- returns: <[Promise]>
+
 #### page.setExtraHTTPHeaders(headers)
-- `headers` <[Map]> A map of additional http headers to be sent with every request.
+- `headers` <[Object]> An object containing additional http headers to be sent with every request.
 - returns: <[Promise]>
 
 The extra HTTP headers will be sent with every request the page initiates.
 
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
+#### page.setJavaScriptEnabled(enabled)
+- `enabled` <[boolean]> Whether or not to enable JavaScript on the page.
+- returns: <[Promise]>
+
+> **NOTE** changing this value won't affect scripts that have already been run. It will take full effect on the next [navigation](#pagegotourl-options).
 
 #### page.setRequestInterceptionEnabled(value)
 - `value` <[boolean]> Whether to enable request interception.
@@ -683,10 +794,20 @@ puppeteer.launch().then(async browser => {
 
 In the case of multiple pages in a single browser, each page can have its own viewport size.
 
+#### page.tap(selector)
+- `selector` <[string]> A [selector] to search for element to tap. If there are multiple elements satisfying the selector, the first will be tapped.
+- returns: <[Promise]>
+
+This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.touchscreen](#pagetouchscreen) to tap in the center of the element.
+If there's no element matching `selector`, the method throws an error.
+
 #### page.title()
 - returns: <[Promise]<[string]>> Returns page's title.
 
 Shortcut for [page.mainFrame().title()](#frametitle).
+
+#### page.touchscreen
+- returns: <[Touchscreen]>
 
 #### page.tracing
 - returns: <[Tracing]>
@@ -866,9 +987,11 @@ Shortcut for [`mouse.move`](#mousemovex-y), [`mouse.down`](#mousedownoptions) an
 
 Dispatches a `mousedown` event.
 
-#### mouse.move(x, y)
+#### mouse.move(x, y, [options])
 - `x` <[number]>
 - `y` <[number]>
+- `options` <[Object]>
+  - `steps` <[number]> defaults to 1. Sends intermediate `mousemove` events.
 - returns: <[Promise]>
 
 Dispatches a `mousemove` event.
@@ -880,6 +1003,15 @@ Dispatches a `mousemove` event.
 - returns: <[Promise]>
 
 Dispatches a `mouseup` event.
+
+### class: Touchscreen
+
+#### touchscreen.tap(x, y)
+- `x` <[number]>
+- `y` <[number]>
+- returns: <[Promise]>
+
+Dispatches a `touchstart` and `touchend` event.
 
 ### class: Tracing
 
@@ -969,10 +1101,32 @@ puppeteer.launch().then(async browser => {
 
 #### frame.$(selector)
 - `selector` <[string]> Selector to query page for
-- returns: <[Promise]<[ElementHandle]>> Promise which resolves to ElementHandle pointing to the page element.
+- returns: <[Promise]<[ElementHandle]>> Promise which resolves to ElementHandle pointing to the frame element.
 
-The method queries page for the selector. If there's no such element within the page, the method will resolve to `null`.
+The method queries frame for the selector. If there's no such element within the frame, the method will resolve to `null`.
 
+#### frame.$$(selector)
+- `selector` <[string]> Selector to query page for
+- returns: <[Promise]<[Array]<[ElementHandle]>>> Promise which resolves to ElementHandles pointing to the frame elements.
+
+The method runs `document.querySelectorAll` within the frame. If no elements match the selector, the return value resolve to `[]`.
+
+#### frame.$eval(selector, pageFunction[, ...args])
+- `selector` <[string]> A [selector] to query frame for
+- `pageFunction` <[function]> Function to be evaluated in browser context
+- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
+
+This method runs `document.querySelector` within the frame and passes it as the first argument to `pageFunction`. If there's no element matching `selector`, the method throws an error.
+
+If `pageFunction` returns a [Promise], then `frame.$eval` would wait for the promise to resolve and return it's value.
+
+Examples:
+```js
+const searchValue = await frame.$eval('#search', el => el.value);
+const preloadHref = await frame.$eval('link[rel=preload]', el => el.href);
+const html = await frame.$eval('.main-container', e => e.outerHTML);
+```
 
 #### frame.addScriptTag(url)
 - `url` <[string]> Url of a script to be added
@@ -985,28 +1139,29 @@ Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScri
 
 #### frame.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
-- `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
+- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
 
-If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
+If the function, passed to the `frame.evaluate`, returns a [Promise], then `frame.evaluate` would wait for the promise to resolve and return it's value.
 
 ```js
-const puppeteer = require('puppeteer');
-
-puppeteer.launch().then(async browser => {
-  const page = await browser.newPage();
-  const result = await page.mainFrame().evaluate(() => {
-    return Promise.resolve(8 * 7);
-  });
-  console.log(result); // prints "56"
-  browser.close();
+const result = await frame.evaluate(() => {
+  return Promise.resolve(8 * 7);
 });
+console.log(result); // prints "56"
 ```
 
 A string can also be passed in instead of a function.
 
 ```js
-console.log(await page.mainFrame().evaluate('1 + 2')); // prints "3"
+console.log(await frame.evaluate('1 + 2')); // prints "3"
+```
+
+[ElementHandle] instances could be passed as arguments to the `frame.evaluate`:
+```js
+const bodyHandle = await frame.$('body');
+const html = await frame.evaluate(body => body.innerHTML, bodyHandle);
+await bodyHandle.dispose();
 ```
 
 #### frame.injectFile(filePath)
@@ -1156,18 +1311,16 @@ If the element is detached from DOM, the method throws an error.
 
 The `elementHandle.dispose` method stops referencing the element handle.
 
-#### elementHandle.evaluate(pageFunction, ...args)
-- `pageFunction` <[function]> Function to be evaluated in browser context
-- `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
-- returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
-
-If the function, passed to the `elementHandle.evaluate`, returns a [Promise], then `elementHandle.evaluate` would wait for the promise to resolve and return it's value.
-The element will be passed as the first argument to `pageFunction`, followed by any `args`.
-
 #### elementHandle.hover()
 - returns: <[Promise]> Promise which resolves when the element is successfully hovered.
 
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
+If the element is detached from DOM, the method throws an error.
+
+#### elementHandle.tap()
+- returns: <[Promise]> Promise which resolves when the element is successfully tapped. Promise gets rejected if the element is detached from DOM.
+
+This method scrolls element into view if needed, and then uses [touchscreen.tap](#touchscreentapx-y) to tap in the center of the element.
 If the element is detached from DOM, the method throws an error.
 
 #### elementHandle.uploadFile(...filePaths)
@@ -1188,6 +1341,7 @@ If request fails at some point, then instead of 'requestfinished' event (and pos
 If request gets a 'redirect' response, the request is successfully finished with the 'requestfinished' event, and a new request is  issued to a redirected url.
 
 #### request.abort()
+- returns: <[Promise]>
 
 Aborts request. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
 Exception is immediately thrown if the request interception is not enabled.
@@ -1197,13 +1351,14 @@ Exception is immediately thrown if the request interception is not enabled.
   - `url` <[string]> If set, the request url will be changed
   - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`)
   - `postData` <[string]> If set changes the post data of request
-  - `headers` <[Map]> If set changes the request HTTP headers
+  - `headers` <[Object]> If set changes the request HTTP headers
+- returns: <[Promise]>
 
 Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
 Exception is immediately thrown if the request interception is not enabled.
 
 #### request.headers
-- <[Map]> A map of HTTP headers associated with the request.
+- <[Object]> An object with HTTP headers associated with the request. All header names are lower-case.
 
 #### request.method
 - <[string]>
@@ -1214,6 +1369,12 @@ Contains the request's method (GET, POST, etc.)
 - <[string]>
 
 Contains the request's post body, if any.
+
+#### request.resourceType
+- <[string]>
+
+Contains the request's resource type as it was perceived by the rendering engine.
+ResourceType will be one of the following: `Document`, `Stylesheet`, `Image`, `Media`, `Font`, `Script`, `TextTrack`, `XHR`, `Fetch`, `EventSource`, `WebSocket`, `Manifest`, `Other`.
 
 #### request.response()
 - returns: <[Response]> A matching [Response] object, or `null` if the response has not been received yet.
@@ -1231,7 +1392,7 @@ Contains the URL of the request.
 - returns: <Promise<[Buffer]>> Promise which resolves to a buffer with response body.
 
 #### response.headers
-- <[Map]> A map of HTTP headers associated with the response.
+- <[Object]> An object with HTTP headers associated with the response. All header names are lower-case.
 
 #### response.json()
 - returns: <Promise<[Object]>> Promise which resolves to a JSON representation of response body.
@@ -1286,3 +1447,4 @@ Contains the URL of the response.
 [ElementHandle]: #class-elementhandle "ElementHandle"
 [UIEvent.detail]: https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail "UIEvent.detail"
 [Serializable]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Description "Serializable"
+[Touchscreen]: #class-touchscreen "Touchscreen"

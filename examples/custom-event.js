@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Google Inc., PhantomJS Authors All rights reserved.
+ * Copyright 2017 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,28 +18,32 @@
 
 const puppeteer = require('puppeteer');
 
-function sniffDetector() {
-  const userAgent = window.navigator.userAgent;
-  const platform = window.navigator.platform;
-
-  window.navigator.__defineGetter__('userAgent', function() {
-    window.navigator.sniffed = true;
-    return userAgent;
-  });
-
-  window.navigator.__defineGetter__('platform', function() {
-    window.navigator.sniffed = true;
-    return platform;
-  });
-}
-
 (async() => {
 
 const browser = await puppeteer.launch();
 const page = await browser.newPage();
-await page.evaluateOnNewDocument(sniffDetector);
-await page.goto('https://www.google.com', {waitUntil: 'networkidle'});
-console.log('Sniffed: ' + (await page.evaluate(() => !!navigator.sniffed)));
+
+// Define a window.onCustomEvent function on the page.
+await page.exposeFunction('onCustomEvent', e => {
+  console.log(`${e.type} fired`, e.detail || '');
+});
+
+/**
+ * Attach an event listener to page to capture a custom event on page load/navigation.
+ * @param {string} type Event name.
+ * @return {!Promise}
+ */
+function listenFor(type) {
+  return page.evaluateOnNewDocument(type => {
+    document.addEventListener(type, e => {
+      window.onCustomEvent({type, detail: e.detail});
+    });
+  }, type);
+}
+
+await listenFor('app-ready'); // Listen for "app-ready" custom event on page load.
+
+await page.goto('https://www.chromestatus.com/features', {waitUntil: 'networkidle'});
 
 browser.close();
 

@@ -116,9 +116,6 @@ HEADLESS=false SLOW_MO=500 npm run unit
 npm run debug-unit
 ```
 
-There are also phantomjs tests located under [third_party/phantomjs/test](https://github.com/GoogleChrome/puppeteer/tree/master/third_party/phantomjs). These
-are used to test `phantom_shim`.
-
 ## Public API Coverage
 
 Every public API method or event should be called at least once in tests. To ensure this, there's a coverage command which tracks calls to public API and reports back if some methods/events were not called.
@@ -130,21 +127,5 @@ npm run coverage
 ```
 
 ## Debugging Puppeteer
-Puppeteer uses [DEBUG](https://github.com/visionmedia/debug) module to expose some of it's inner guts under the `puppeteer` namespace. Try putting the following in a file called `script.js` and running it via `DEBUG=* node script.js`:
+See [Debugging Tips](README.md#debugging-tips) in the readme
 
-```js
-const puppeteer = require('puppeteer');
-
-(async () => {
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.goto('https://example.com');
-  browser.close();
-})();
-```
-
-Tips-n-tricks:
-- `DEBUG=*:session node script.js` - dump protocol session messages (protocol messages to targets)
-- `DEBUG=*,-*:protocol node script.js` - dump everything BUT protocol messages
-- `DEBUG=*:page node script.js` - dump only Page's API calls
-- `DEBUG=*:mouse,*:keyboard node script.js` - dump only Mouse and Keyboard API calls

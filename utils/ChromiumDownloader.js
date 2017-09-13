@@ -22,6 +22,8 @@ const extract = require('extract-zip');
 const util = require('util');
 const URL = require('url');
 const removeRecursive = require('rimraf');
+const ProxyAgent = require('https-proxy-agent');
+const getProxyForUrl = require('proxy-from-env').getProxyForUrl;
 
 const DOWNLOADS_FOLDER = path.join(__dirname, '..', '.local-chromium');
 
@@ -44,7 +46,7 @@ module.exports = {
    * @return {string}
    */
   currentPlatform: function() {
-    let platform = os.platform();
+    const platform = os.platform();
     if (platform === 'darwin')
       return 'mac';
     if (platform === 'linux')
@@ -61,15 +63,12 @@ module.exports = {
    */
   canDownloadRevision: function(platform, revision) {
     console.assert(downloadURLs[platform], 'Unknown platform: ' + platform);
-    let url = URL.parse(util.format(downloadURLs[platform], revision));
-    let options = {
-      method: 'HEAD',
-      host: url.host,
-      path: url.pathname,
-    };
+
+    const options = requestOptions(util.format(downloadURLs[platform], revision), 'HEAD');
+
     let resolve;
-    let promise = new Promise(x => resolve = x);
-    let request = https.request(options, response => {
+    const promise = new Promise(x => resolve = x);
+    const request = https.request(options, response => {
       resolve(response.statusCode === 200);
     });
     request.on('error', error => {
@@ -86,23 +85,25 @@ module.exports = {
    * @param {?function(number, number)} progressCallback
    * @return {!Promise}
    */
-  downloadRevision: async function(platform, revision, progressCallback) {
+  downloadRevision: function(platform, revision, progressCallback) {
     let url = downloadURLs[platform];
     console.assert(url, `Unsupported platform: ${platform}`);
     url = util.format(url, revision);
-    let zipPath = path.join(DOWNLOADS_FOLDER, `download-${platform}-${revision}.zip`);
-    let folderPath = getFolderPath(platform, revision);
+    const zipPath = path.join(DOWNLOADS_FOLDER, `download-${platform}-${revision}.zip`);
+    const folderPath = getFolderPath(platform, revision);
     if (fs.existsSync(folderPath))
       return;
-    try {
-      if (!fs.existsSync(DOWNLOADS_FOLDER))
-        fs.mkdirSync(DOWNLOADS_FOLDER);
-      await downloadFile(url, zipPath, progressCallback);
-      await extractZip(zipPath, folderPath);
-    } finally {
-      if (fs.existsSync(zipPath))
-        fs.unlinkSync(zipPath);
-    }
+    if (!fs.existsSync(DOWNLOADS_FOLDER))
+      fs.mkdirSync(DOWNLOADS_FOLDER);
+    return downloadFile(url, zipPath, progressCallback)
+        .then(() => extractZip(zipPath, folderPath))
+        .catch(err => err)
+        .then(err => {
+          if (fs.existsSync(zipPath))
+            fs.unlinkSync(zipPath);
+          if (err)
+            throw err;
+        });
   },
 
   /**
@@ -111,31 +112,30 @@ module.exports = {
   downloadedRevisions: function() {
     if (!fs.existsSync(DOWNLOADS_FOLDER))
       return [];
-    let fileNames = fs.readdirSync(DOWNLOADS_FOLDER);
+    const fileNames = fs.readdirSync(DOWNLOADS_FOLDER);
     return fileNames.map(fileName => parseFolderPath(fileName)).filter(revision => !!revision);
   },
 
   /**
    * @param {string} platform
    * @param {string} revision
+   * @return {!Promise}
    */
-  removeRevision: async function(platform, revision) {
+  removeRevision: function(platform, revision) {
     console.assert(downloadURLs[platform], `Unsupported platform: ${platform}`);
     const folderPath = getFolderPath(platform, revision);
     console.assert(fs.existsSync(folderPath));
-    await new Promise(fulfill => removeRecursive(folderPath, fulfill));
+    return new Promise(fulfill => removeRecursive(folderPath, fulfill));
   },
 
   /**
    * @param {string} platform
    * @param {string} revision
-   * @return {?{executablePath: string}}
+   * @return {!{folderPath: string, executablePath: string, downloaded: boolean, url: string}}
    */
   revisionInfo: function(platform, revision) {
     console.assert(downloadURLs[platform], `Unsupported platform: ${platform}`);
-    let folderPath = getFolderPath(platform, revision);
-    if (!fs.existsSync(folderPath))
-      return null;
+    const folderPath = getFolderPath(platform, revision);
     let executablePath = '';
     if (platform === 'mac')
       executablePath = path.join(folderPath, 'chrome-mac', 'Chromium.app', 'Contents', 'MacOS', 'Chromium');
@@ -146,7 +146,10 @@ module.exports = {
     else
       throw 'Unsupported platfrom: ' + platfrom;
     return {
-      executablePath: executablePath
+      executablePath,
+      folderPath,
+      downloaded: fs.existsSync(folderPath),
+      url: util.format(downloadURLs[platform], revision)
     };
   },
 };
@@ -165,11 +168,11 @@ function getFolderPath(platform, revision) {
  * @return {?{platform: string, revision: string}}
  */
 function parseFolderPath(folderPath) {
-  let name = path.basename(folderPath);
-  let splits = name.split('-');
+  const name = path.basename(folderPath);
+  const splits = name.split('-');
   if (splits.length !== 2)
     return null;
-  let [platform, revision] = splits;
+  const [platform, revision] = splits;
   if (!downloadURLs[platform])
     return null;
   return {platform, revision};
@@ -183,20 +186,23 @@ function parseFolderPath(folderPath) {
  */
 function downloadFile(url, destinationPath, progressCallback) {
   let fulfill, reject;
-  let promise = new Promise((x, y) => { fulfill = x; reject = y; });
-  let request = https.get(url, response => {
+
+  const promise = new Promise((x, y) => { fulfill = x; reject = y; });
+
+  const options = requestOptions(url);
+  const request = https.get(options, response => {
     if (response.statusCode !== 200) {
-      let error = new Error(`Download failed: server returned code ${response.statusCode}. URL: ${url}`);
+      const error = new Error(`Download failed: server returned code ${response.statusCode}. URL: ${url}`);
       // consume response data to free up memory
       response.resume();
       reject(error);
       return;
     }
-    let file = fs.createWriteStream(destinationPath);
+    const file = fs.createWriteStream(destinationPath);
     file.on('finish', () => fulfill());
     file.on('error', error => reject(error));
     response.pipe(file);
-    let totalBytes = parseInt(response.headers['content-length'], 10);
+    const totalBytes = parseInt(response.headers['content-length'], 10);
     if (progressCallback)
       response.on('data', onData.bind(null, totalBytes));
   });
@@ -215,4 +221,19 @@ function downloadFile(url, destinationPath, progressCallback) {
  */
 function extractZip(zipPath, folderPath) {
   return new Promise(fulfill => extract(zipPath, {dir: folderPath}, fulfill));
+}
+
+function requestOptions(url, method = 'GET') {
+  const result = URL.parse(url);
+  result.method = method;
+
+  const proxyURL = getProxyForUrl(url);
+  if (proxyURL) {
+    const parsedProxyURL = URL.parse(proxyURL);
+    parsedProxyURL.secureProxy = parsedProxyURL.protocol === 'https:';
+
+    result.agent = new ProxyAgent(parsedProxyURL);
+  }
+
+  return result;
 }

@@ -32,7 +32,7 @@ class SimpleServer {
    * @return {!SimpleServer}
    */
   static async create(dirPath, port) {
-    let server = new SimpleServer(dirPath, port);
+    const server = new SimpleServer(dirPath, port);
     await new Promise(x => server._server.once('listening', x));
     return server;
   }
@@ -43,7 +43,7 @@ class SimpleServer {
    * @return {!SimpleServer}
    */
   static async createHTTPS(dirPath, port) {
-    let server = new SimpleServer(dirPath, port, {
+    const server = new SimpleServer(dirPath, port, {
       key: fs.readFileSync(path.join(__dirname, 'key.pem')),
       cert: fs.readFileSync(path.join(__dirname, 'cert.pem')),
       passphrase: 'aaaa',
@@ -73,6 +73,8 @@ class SimpleServer {
 
     /** @type {!Map<string, function(!IncomingMessage, !ServerResponse)>} */
     this._routes = new Map();
+    /** @type {!Map<string, !{username:string, password:string}>} */
+    this._auths = new Map();
     /** @type {!Map<string, !Promise>} */
     this._requestSubscribers = new Map();
   }
@@ -89,11 +91,17 @@ class SimpleServer {
   }
 
   /**
-   * @return {!Promise}
+   * @param {string} path
+   * @param {string} username
+   * @param {string} password
    */
+  setAuth(path, username, password) {
+    this._auths.set(path, {username, password});
+  }
+
   async stop() {
     this.reset();
-    for (let socket of this._sockets)
+    for (const socket of this._sockets)
       socket.destroy();
     this._sockets.clear();
     await new Promise(x => this._server.close(x));
@@ -139,8 +147,9 @@ class SimpleServer {
 
   reset() {
     this._routes.clear();
-    let error = new Error('Static Server has been reset');
-    for (let subscriber of this._requestSubscribers.values())
+    this._auths.clear();
+    const error = new Error('Static Server has been reset');
+    for (const subscriber of this._requestSubscribers.values())
       subscriber[rejectSymbol].call(null, error);
     this._requestSubscribers.clear();
   }
@@ -152,11 +161,20 @@ class SimpleServer {
       else
         throw error;
     });
-    let pathName = url.parse(request.url).path;
+    const pathName = url.parse(request.url).path;
+    if (this._auths.has(pathName)) {
+      const auth = this._auths.get(pathName);
+      const credentials = new Buffer((request.headers.authorization || '').split(' ')[1] || '', 'base64').toString();
+      if (credentials !== `${auth.username}:${auth.password}`) {
+        response.writeHead(401, { 'WWW-Authenticate': 'Basic realm="Secure Area"' });
+        response.end('HTTP Error 401 Unauthorized: Access is denied');
+        return;
+      }
+    }
     // Notify request subscriber.
     if (this._requestSubscribers.has(pathName))
       this._requestSubscribers.get(pathName)[fulfillSymbol].call(null, request);
-    let handler = this._routes.get(pathName);
+    const handler = this._routes.get(pathName);
     if (handler)
       handler.call(null, request, response);
     else
