@@ -133,6 +133,12 @@ describe('Puppeteer', function() {
       originalBrowser.close();
     }));
   });
+  describe('Puppeteer.executablePath', function() {
+    it('should work', SX(async function() {
+      const executablePath = puppeteer.executablePath();
+      expect(fs.existsSync(executablePath)).toBe(true);
+    }));
+  });
 });
 
 describe('Page', function() {

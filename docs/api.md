@@ -174,6 +174,9 @@ puppeteer.launch().then(async browser => {
 
 This methods attaches Puppeteer to an existing Chromium instance.
 
+#### puppeteer.executablePath()
+- returns: <[string]> A path where Puppeteer expects to find bundled chromium. Chromium might not exist there if the download was skipped with `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD`.
+
 #### puppeteer.launch([options])
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
