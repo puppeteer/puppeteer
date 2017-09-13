@@ -74,8 +74,8 @@
     + [page.type(text, options)](#pagetypetext-options)
     + [page.url()](#pageurl)
     + [page.viewport()](#pageviewport)
-    + [page.waitFor(selectorOrFunctionOrTimeout[, options])](#pagewaitforselectororfunctionortimeout-options)
-    + [page.waitForFunction(pageFunction[, options, ...args])](#pagewaitforfunctionpagefunction-options-args)
+    + [page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#pagewaitforselectororfunctionortimeout-options-args)
+    + [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
     + [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
     + [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [class: Keyboard](#class-keyboard)
@@ -111,8 +111,8 @@
     + [frame.parentFrame()](#frameparentframe)
     + [frame.title()](#frametitle)
     + [frame.url()](#frameurl)
-    + [frame.waitFor(selectorOrFunctionOrTimeout[, options])](#framewaitforselectororfunctionortimeout-options)
-    + [frame.waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args)
+    + [frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args)
+    + [frame.waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args)
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
   * [class: ElementHandle](#class-elementhandle)
     + [elementHandle.click([options])](#elementhandleclickoptions)
@@ -844,9 +844,10 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
   - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
   - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
 
-#### page.waitFor(selectorOrFunctionOrTimeout[, options])
+#### page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])
 - `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
+- `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]>
 
 This method behaves differently with respect to the type of the first parameter:
@@ -855,9 +856,9 @@ This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
-Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options])](#framewaitforselectororfunctionortimeout-options).
+Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options).
 
-#### page.waitForFunction(pageFunction[, options, ...args])
+#### page.waitForFunction(pageFunction[, options[, ...args]])
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
   - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it could be one of the following values:
@@ -879,7 +880,7 @@ puppeteer.launch().then(async browser => {
   browser.close();
 });
 ```
-Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args).
+Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args).
 
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
@@ -1196,9 +1197,10 @@ If the name is empty, returns the id attribute instead.
 
 Returns frame's url.
 
-#### frame.waitFor(selectorOrFunctionOrTimeout[, options])
+#### frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])
 - `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
+- `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]>
 
 This method behaves differently with respect to the type of the first parameter:
@@ -1208,7 +1210,7 @@ This method behaves differently with respect to the type of the first parameter:
 - otherwise, an exception is thrown
 
 
-#### frame.waitForFunction(pageFunction[, options, ...args])
+#### frame.waitForFunction(pageFunction[, options[, ...args]])
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
   - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it could be one of the following values:
