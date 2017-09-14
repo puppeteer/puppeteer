@@ -1538,6 +1538,15 @@ describe('Page', function() {
       ]);
       expect(request.headers['foo']).toBe('bar');
     }));
+    it('should throw for non-string header values', SX(async function() {
+      let error = null;
+      try {
+        await page.setExtraHTTPHeaders({ 'foo': 1 });
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toBe('Expected value of header "foo" to be String, but "number" is found.');
+    }));
   });
   describe('Page.authenticate', function() {
     it('should work', SX(async function() {
