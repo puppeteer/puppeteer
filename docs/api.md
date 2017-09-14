@@ -59,7 +59,7 @@
     + [page.press(key[, options])](#pagepresskey-options)
     + [page.reload(options)](#pagereloadoptions)
     + [page.screenshot([options])](#pagescreenshotoptions)
-    + [page.select(selector, value)](#pageselectselector-value)
+    + [page.select(selector, ...values)](#pageselectselector-values)
     + [page.setContent(html)](#pagesetcontenthtml)
     + [page.setCookie(...cookies)](#pagesetcookiecookies)
     + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
@@ -721,12 +721,13 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
     - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
 - returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot
 
-#### page.select(selector, value)
+#### page.select(selector, ...values)
 - `selector` <[string]> A [selector] to query page for
-- `value` <[string]|[Array]<[string]>> A string, or array strings in case of `multiple`, of options to select. If the provided value cannot be matched to the `option` value, it tries to match against the `option` label instead.
+- `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account. If the provided values(s) cannot be matched to any `option` value, they are matched against the `option` label as a fallback.
 - returns: <[Promise]>
 
 Sends a `change` and `input` event once all the provided options have been selected.
+If there's no `<select>` element matching `selector`, the method throws an error.
 
 ```js
 page.select('select#colors', 'blue'); // single selection

@@ -2005,12 +2005,6 @@ describe('Page', function() {
   });
 
   describe('Page.select', function() {
-    it('should select single option', SX(async function() {
-      await page.goto(PREFIX + '/input/select.html');
-      await page.select('select', '');
-      expect(await page.evaluate(() => result)).toBe('');
-    }));
-
     it('should select single option by value', SX(async function() {
       await page.goto(PREFIX + '/input/select.html');
       await page.select('select', 'blue');
@@ -2023,28 +2017,35 @@ describe('Page', function() {
       expect(await page.evaluate(() => result)).toBe('brown');
     }));
 
-    it('should select multiple options', SX(async function() {
-      await page.goto(PREFIX + '/input/select-multiple.html');
-      await page.select('select', []);
-      expect(await page.evaluate(() => result)).toEqual([]);
-    }));
-
     it('should select multiple options by value', SX(async function() {
       await page.goto(PREFIX + '/input/select-multiple.html');
-      await page.select('select', ['blue', 'green', 'red']);
+      await page.select('select', 'blue', 'green', 'red');
       expect(await page.evaluate(() => result)).toEqual(['blue', 'green', 'red']);
     }));
 
     it('should select multiple options by label', SX(async function() {
       await page.goto(PREFIX + '/input/select-multiple.html');
-      await page.select('select', ['Blue', 'Green', 'Red']);
+      await page.select('select', 'Blue', 'Green', 'Red');
       expect(await page.evaluate(() => result)).toEqual(['blue', 'green', 'red']);
     }));
 
     it('should work with no options', SX(async function() {
       await page.goto(PREFIX + '/input/select-none.html');
-      await page.select('select', '');
+      await page.select('select', '42');
       expect(await page.evaluate(() => result)).toBe('');
+    }));
+
+    it('should not select a non-existent option', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      await page.select('select', '42');
+      expect(await page.evaluate(() => result)).toBe('');
+    }));
+
+    it('should throw', SX(async function() {
+      let error = null;
+      await page.goto(PREFIX + '/input/select-none.html');
+      await page.select('mark', '').catch(e => error = e);
+      expect(error.message).toContain('Element is not a <select> element.');
     }));
   });
 
