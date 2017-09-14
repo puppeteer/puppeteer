@@ -726,6 +726,13 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 - `value` <[string|string[]]> A string, or array strings in case of `multiple`, of options to select. If the provided value cannot be matched to the `option` value, it tries to match against the `option` label instead.
 - returns: <[Promise]>
 
+Sends a `change` and `input` event once all the provided options have been selected.
+
+```js
+page.select('select#colors', 'blue'); // single selection
+page.select('select#colors', ['red', 'green', 'blue']); // multiple selections
+```
+
 #### page.setContent(html)
 - `html` <[string]> HTML markup to assign to the page.
 - returns: <[Promise]>
