@@ -226,7 +226,9 @@ Closes browser with all the pages (if any were opened). The browser object itsel
 - returns: <[string]> Browser websocket url.
 
 Browser websocket endpoint which could be used as an argument to
-[puppeteer.connect](#puppeteerconnectoptions).
+[puppeteer.connect](#puppeteerconnectoptions). The format is `ws://${host}:${port}/page/<id>`
+
+You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json`.
 
 ### class: Page
 
