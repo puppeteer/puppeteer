@@ -10,6 +10,7 @@
   * [Environment Variables](#environment-variables)
   * [class: Puppeteer](#class-puppeteer)
     + [puppeteer.connect(options)](#puppeteerconnectoptions)
+    + [puppeteer.executablePath()](#puppeteerexecutablepath)
     + [puppeteer.launch([options])](#puppeteerlaunchoptions)
   * [class: Browser](#class-browser)
     + [browser.close()](#browserclose)
@@ -173,6 +174,9 @@ puppeteer.launch().then(async browser => {
 - returns: <[Promise]<[Browser]>>
 
 This methods attaches Puppeteer to an existing Chromium instance.
+
+#### puppeteer.executablePath()
+- returns: <[string]> A path where Puppeteer expects to find bundled Chromium. Chromium might not exist there if the download was skipped with [`PUPPETEER_SKIP_CHROMIUM_DOWNLOAD`](#environment-variables).
 
 #### puppeteer.launch([options])
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
