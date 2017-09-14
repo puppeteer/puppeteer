@@ -211,6 +211,7 @@ puppeteer.launch().then(async browser => {
 ```
 
 #### browser.close()
+- returns: <[Promise]>
 
 Closes browser with all the pages (if any were opened). The browser object itself is considered to be disposed and could not be used anymore.
 
