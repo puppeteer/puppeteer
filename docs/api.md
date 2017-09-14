@@ -59,6 +59,7 @@
     + [page.press(key[, options])](#pagepresskey-options)
     + [page.reload(options)](#pagereloadoptions)
     + [page.screenshot([options])](#pagescreenshotoptions)
+    + [page.select(selector, value)](#pageselectselector-value)
     + [page.setContent(html)](#pagesetcontenthtml)
     + [page.setCookie(...cookies)](#pagesetcookiecookies)
     + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
@@ -719,6 +720,11 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
         - `height` <[number]> height of clipping area
     - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
 - returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot
+
+#### page.select(selector, value)
+- `selector` <[string]> A [selector] to query page for
+- `value` <[string|string[]]> A string, or array strings in case of `multiple`, of options to select. If the provided value cannot be matched to the `option` value, it tries to match against the `option` label instead.
+- returns: <[Promise]>
 
 #### page.setContent(html)
 - `html` <[string]> HTML markup to assign to the page.

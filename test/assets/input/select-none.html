@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Selection Test</title>
+  </head>
+  <body>
+    <select>
+    </select>
+    <script>
+      window.result = null;
+
+      let select = document.querySelector('select');
+
+      select.addEventListener('input', () => {
+        result = select.value;
+      }, false);
+    </script>
+  </body>
+</html>

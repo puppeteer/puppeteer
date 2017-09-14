@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Multiple Selection Test</title>
+  </head>
+  <body>
+    <select multiple="true">
+      <option value="black">Black</option>
+      <option value="blue">Blue</option>
+      <option value="brown">Brown</option>
+      <option value="cyan">Cyan</option>
+      <option value="gray">Gray</option>
+      <option value="green">Green</option>
+      <option value="indigo">Indigo</option>
+      <option value="magenta">Magenta</option>
+      <option value="orange">Orange</option>
+      <option value="pink">Pink</option>
+      <option value="purple">Purple</option>
+      <option value="red">Red</option>
+      <option value="violet">Violet</option>
+      <option value="white">White</option>
+      <option value="yellow">Yellow</option>
+    </select>
+    <script>
+      window.result = null;
+
+      let select = document.querySelector('select');
+
+      select.addEventListener('input', () => {
+        result = Array.from(select.querySelectorAll('option:checked')).map((option) => {
+          return option.value;
+        });
+      }, false);
+    </script>
+  </body>
+</html>
