@@ -27,12 +27,17 @@ const getProxyForUrl = require('proxy-from-env').getProxyForUrl;
 
 const DOWNLOADS_FOLDER = path.join(__dirname, '..', '.local-chromium');
 
+const downloadURLPrefix = process.env.PUPPETEER_DOWNLOAD_CHROMIUM_URL || 'https://storage.googleapis.com/chromium-browser-snapshots';
 const downloadURLs = {
-  linux: 'https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/%d/chrome-linux.zip',
-  mac: 'https://storage.googleapis.com/chromium-browser-snapshots/Mac/%d/chrome-mac.zip',
-  win32: 'https://storage.googleapis.com/chromium-browser-snapshots/Win/%d/chrome-win32.zip',
-  win64: 'https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/%d/chrome-win32.zip',
+  linux: `${downloadURLPrefix}/Linux_x64/%d/chrome-linux.zip`,
+  mac: `${downloadURLPrefix}/Mac/%d/chrome-mac.zip`,
+  win32: `${downloadURLPrefix}/Win/%d/chrome-win32.zip`,
+  win64: `${downloadURLPrefix}/Win_x64/%d/chrome-win32.zip`,
 };
+
+if (process.env.PUPPETEER_DOWNLOAD_CHROMIUM_URL)
+  console.log(`**INFO** Using custom chromium download url: ${downloadURLPrefix}`);
+
 
 module.exports = {
   /**
