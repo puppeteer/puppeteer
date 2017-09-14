@@ -723,7 +723,7 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 
 #### page.select(selector, value)
 - `selector` <[string]> A [selector] to query page for
-- `value` <[string|string[]]> A string, or array strings in case of `multiple`, of options to select. If the provided value cannot be matched to the `option` value, it tries to match against the `option` label instead.
+- `value` <[string]|[Array]<[string]>> A string, or array strings in case of `multiple`, of options to select. If the provided value cannot be matched to the `option` value, it tries to match against the `option` label instead.
 - returns: <[Promise]>
 
 Sends a `change` and `input` event once all the provided options have been selected.
