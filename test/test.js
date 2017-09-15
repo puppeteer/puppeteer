@@ -530,6 +530,9 @@ describe('Page', function() {
       await page.waitFor({foo: 'bar'}).catch(e => error = e);
       expect(error.message).toContain('Unsupported target type');
     }));
+    it('should wait for predicate with arguments', SX(async function() {
+      await page.waitFor((arg1, arg2) => arg1 !== arg2, {}, 1, 2);
+    }));
   });
 
   describe('Page.Events.Console', function() {
