@@ -531,9 +531,7 @@ describe('Page', function() {
       expect(error.message).toContain('Unsupported target type');
     }));
     it('should wait for predicate with arguments', SX(async function() {
-      const watchdog = page.waitFor((arg1, arg2) => window[arg1] < arg2, {}, 'innerWidth', 100);
-      page.setViewport({width: 10, height: 10});
-      await watchdog;
+      await page.waitFor((arg1, arg2) => arg1 !== arg2, {}, 1, 2);
     }));
   });
 
