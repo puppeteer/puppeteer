@@ -1426,7 +1426,9 @@ describe('Page', function() {
     }));
     it('should type into the textarea', SX(async function() {
       await page.goto(PREFIX + '/input/textarea.html');
-      await page.type('textarea', 'Type in this text!');
+
+      const textarea = await page.$('textarea');
+      await textarea.type('Type in this text!');
       expect(await page.evaluate(() => result)).toBe('Type in this text!');
     }));
     it('should click the button after navigation ', SX(async function() {
