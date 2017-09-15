@@ -1944,6 +1944,15 @@ describe('Page', function() {
       const screenshot = await page.screenshot();
       expect(screenshot).toBeGolden('screenshot-sanity.png');
     }));
+    it('should mkdir, if no directory exits', SX(async function() {
+      const dir = 'test/.temp/';
+      await page.goto(PREFIX + '/grid.html');
+      await page.screenshot({
+        path: dir + 'screenshot-sanity.png'
+      });
+      expect(fs.existsSync(dir)).toBeTruthy();
+      rm(__dirname + '/.temp');
+    }));
     it('should clip rect', SX(async function() {
       await page.setViewport({width: 500, height: 500});
       await page.goto(PREFIX + '/grid.html');
