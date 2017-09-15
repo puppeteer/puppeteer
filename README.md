@@ -47,7 +47,7 @@ const puppeteer = require('puppeteer');
   await page.goto('https://example.com');
   await page.screenshot({path: 'example.png'});
 
-  browser.close();
+  await browser.close();
 })();
 ```
 
@@ -64,7 +64,7 @@ const puppeteer = require('puppeteer');
   await page.goto('https://news.ycombinator.com', {waitUntil: 'networkidle'});
   await page.pdf({path: 'hn.pdf', format: 'A4'});
 
-  browser.close();
+  await browser.close();
 })();
 ```
 
@@ -91,7 +91,7 @@ const puppeteer = require('puppeteer');
 
   console.log('Dimensions:', dimensions);
 
-  browser.close();
+  await browser.close();
 })();
 ```
 

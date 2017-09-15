@@ -45,6 +45,6 @@ await listenFor('app-ready'); // Listen for "app-ready" custom event on page loa
 
 await page.goto('https://www.chromestatus.com/features', {waitUntil: 'networkidle'});
 
-browser.close();
+await browser.close();
 
 })();
