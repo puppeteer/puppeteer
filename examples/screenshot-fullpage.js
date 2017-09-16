@@ -26,6 +26,6 @@ const page = await browser.newPage();
 await page.emulate(devices['iPhone 6']);
 await page.goto('https://www.nytimes.com/');
 await page.screenshot({path: 'full.png', fullPage: true});
-browser.close();
+await browser.close();
 
 })();

@@ -30,6 +30,6 @@ await page.pdf({
   format: 'letter'
 });
 
-browser.close();
+await browser.close();
 
 })();

@@ -32,7 +32,7 @@ page.on('request', request => {
 await page.goto('https://www.reuters.com/');
 await page.screenshot({path: 'news.png', fullPage: true});
 
-browser.close();
+await browser.close();
 
 })();
 

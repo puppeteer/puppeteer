@@ -162,7 +162,7 @@ puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
   await page.goto('https://www.google.com');
   // other actions...
-  browser.close();
+  await browser.close();
 });
 ```
 
@@ -205,7 +205,7 @@ const puppeteer = require('puppeteer');
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
   await page.goto('https://example.com');
-  browser.close();
+  await browser.close();
 });
 ```
 
@@ -240,7 +240,7 @@ puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
   await page.goto('https://example.com');
   await page.screenshot({path: 'screenshot.png'});
-  browser.close();
+  await browser.close();
 });
 ```
 
@@ -441,7 +441,7 @@ puppeteer.launch().then(async browser => {
   await page.emulate(iPhone);
   await page.goto('https://www.google.com');
   // other actions...
-  browser.close();
+  await browser.close();
 });
 ```
 
@@ -520,7 +520,7 @@ puppeteer.launch().then(async browser => {
     const myHash = await window.md5(myString);
     console.log(`md5 of ${myString} is ${myHash}`);
   });
-  browser.close();
+  await browser.close();
 });
 ```
 
@@ -548,7 +548,7 @@ puppeteer.launch().then(async browser => {
     const content = await window.readfile('/etc/hosts');
     console.log(content);
   });
-  browser.close();
+  await browser.close();
 });
 
 ```
@@ -775,7 +775,7 @@ puppeteer.launch().then(async browser => {
       interceptedRequest.continue();
   });
   await page.goto('https://example.com');
-  browser.close();
+  await browser.close();
 });
 ```
 
@@ -877,7 +877,7 @@ puppeteer.launch().then(async browser => {
   const watchDog = page.waitForFunction('window.innerWidth < 100');
   page.setViewport({width: 50, height: 50});
   await watchDog;
-  browser.close();
+  await browser.close();
 });
 ```
 Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args).
@@ -915,7 +915,7 @@ puppeteer.launch().then(async browser => {
     .then(() => console.log('First URL with image: ' + currentURL));
   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
     await page.goto(currentURL);
-  browser.close();
+  await browser.close();
 });
 ```
 Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options).
@@ -1051,7 +1051,7 @@ puppeteer.launch().then(async browser => {
   page.on('dialog', async dialog => {
     console.log(dialog.message());
     await dialog.dismiss();
-    browser.close();
+    await browser.close();
   });
   page.evaluate(() => alert('1'));
 });
@@ -1093,7 +1093,7 @@ puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
   await page.goto('https://www.google.com/chrome/browser/canary.html');
   dumpFrameTree(page.mainFrame(), '');
-  browser.close();
+  await browser.close();
 
   function dumpFrameTree(frame, indent) {
     console.log(indent + frame.url());
@@ -1229,7 +1229,7 @@ puppeteer.launch().then(async browser => {
   const watchDog = page.mainFrame().waitForFunction('window.innerWidth < 100');
   page.setViewport({width: 50, height: 50});
   await watchDog;
-  browser.close();
+  await browser.close();
 });
 ```
 
@@ -1256,7 +1256,7 @@ puppeteer.launch().then(async browser => {
     .then(() => console.log('First URL with image: ' + currentURL));
   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
     await page.goto(currentURL);
-  browser.close();
+  await browser.close();
 });
 ```
 

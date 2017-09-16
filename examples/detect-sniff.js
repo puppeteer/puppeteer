@@ -41,6 +41,6 @@ await page.evaluateOnNewDocument(sniffDetector);
 await page.goto('https://www.google.com', {waitUntil: 'networkidle'});
 console.log('Sniffed: ' + (await page.evaluate(() => !!navigator.sniffed)));
 
-browser.close();
+await browser.close();
 
 })();
