@@ -637,7 +637,7 @@ Page is guaranteed to have a main frame which persists during navigations.
 
 #### page.pdf(options)
 - `options` <[Object]> Options object which might have the following properties:
-  - `path` <[string]> The file path to save the PDF to. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the PDF won't be saved to the disk.
+  - `path` <[string]> The file path to save the PDF to. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided or it doesn't exist, the PDF won't be saved to the disk.
   - `scale` <[number]> Scale of the webpage rendering. Defaults to `1`.
   - `displayHeaderFooter` <[boolean]> Display header and footer. Defaults to `false`.
   - `printBackground` <[boolean]> Print background graphics. Defaults to `false`.
@@ -712,7 +712,7 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 
 #### page.screenshot([options])
 - `options` <[Object]> Options object which might have the following properties:
-    - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the image won't be saved to the disk.
+    - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided or it doesn't exist, the image won't be saved to the disk.
     - `type` <[string]> Specify screenshot type, could be either `jpeg` or `png`. Defaults to 'png'.
     - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
     - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
