@@ -1006,9 +1006,6 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
-> **NOTE** Request interception doesn't work with data URLs. Calling `abort`,
-> `continue` or `respond` on requests for data URLs is a noop.
-
 > **NOTE** Enabling request interception disables page caching.
 
 #### page.setUserAgent(userAgent)
@@ -1981,6 +1978,8 @@ page.on('request', request => {
 });
 ```
 
+> **NOTE** Mocking responses for dataURL requests is not supported.
+> Calling `request.respond` for a dataURL request is a noop.
 
 #### request.response()
 - returns: <[Response]> A matching [Response] object, or `null` if the response has not been received yet.

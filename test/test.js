@@ -1294,6 +1294,15 @@ describe('Page', function() {
       expect(requests.length).toBe(1);
       expect(requests[0].url).toBe(dataURL);
     }));
+    it('should abort data URLs', SX(async function() {
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        request.abort();
+      });
+      let error = null;
+      await page.goto('data:text/html,No way!').catch(err => error = err);
+      expect(error.message).toContain('Failed to navigate');
+    }));
     it('should navigate to URL with hash and and fire requests without hash', SX(async function() {
       await page.setRequestInterception(true);
       const requests = [];
