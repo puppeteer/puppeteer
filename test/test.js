@@ -2043,6 +2043,22 @@ describe('Page', function() {
     }));
   });
 
+  describe('Storage', function() {
+    beforeEach(SX(async function() {
+      await page.goto(PREFIX + '/grid.html');
+    }));
+    describe('clearDataForOrigin', function() {
+      it('should work on local_storge', SX(async function(){
+        await page.evaluate(() => localStorage.setItem('foo', 'bar'));
+        let item = await page.evaluate(() => localStorage.getItem('foo'));
+        expect(item).toBe('bar');
+        await page.clearDataForOrigin(PREFIX, 'local_storage');
+        item = await page.evaluate(() => localStorage.getItem('foo'));
+        expect(item).toBeNull();
+      }));
+    });
+  });
+
   describe('Cookies', function() {
     afterEach(SX(async function(){
       const cookies = await page.cookies(PREFIX + '/grid.html', CROSS_PROCESS_PREFIX);
