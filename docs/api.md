@@ -795,6 +795,8 @@ puppeteer.launch().then(async browser => {
 
 > **NOTE** in certain cases, setting viewport will reload the page in order to set the `isMobile` or `hasTouch` properties.
 
+> **NOTE** Puppeteer defaults viewport to `800 x 600`. Some pages do not render parts of their layout with such viewport which may cause some unexpected results ([for example](https://github.com/GoogleChrome/puppeteer/issues/825), `element.innerText()` may fall back on `element.textContent()` value). If this concerns your tests, try to increase viewport with this function before `page.goto()` call.
+
 In the case of multiple pages in a single browser, each page can have its own viewport size.
 
 #### page.tap(selector)
