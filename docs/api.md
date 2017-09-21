@@ -35,6 +35,7 @@
     + [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
     + [page.authenticate(credentials)](#pageauthenticatecredentials)
+    + [page.clearDataForOrigin(origin, storageTypes)](#pagecleardatafororiginorigin-storagetypes)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
     + [page.content()](#pagecontent)
@@ -369,6 +370,11 @@ Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
 Provide credentials for [http authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication).
 
 To disable authentication, pass `null`.
+
+#### page.clearDataForOrigin(origin, storageTypes)
+- `origin` <[string]>
+- `storageTypes` <[string]>
+- returns: <[Promise]>
 
 #### page.click(selector[, options])
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
