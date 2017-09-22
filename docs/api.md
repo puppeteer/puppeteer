@@ -982,7 +982,7 @@ Dispatches a `keyup` event.
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
 
-Shortcut for [`mouse.move`](#mousemovex-y), [`mouse.down`](#mousedownoptions) and [`mouse.up`](#mouseupoptions).
+Shortcut for [`mouse.move`](#mousemovex-y-options), [`mouse.down`](#mousedownoptions) and [`mouse.up`](#mouseupoptions).
 
 #### mouse.down([options])
 - `options` <[Object]>
