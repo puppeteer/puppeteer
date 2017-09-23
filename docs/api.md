@@ -723,10 +723,10 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 
 #### page.select(selector, ...values)
 - `selector` <[string]> A [selector] to query page for
-- `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account. If the provided values(s) cannot be matched to any `option` value, they are matched against the `option` label as a fallback.
+- `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
 - returns: <[Promise]>
 
-Sends a `change` and `input` event once all the provided options have been selected.
+Triggers a `change` and `input` event once all the provided options have been selected.
 If there's no `<select>` element matching `selector`, the method throws an error.
 
 ```js
