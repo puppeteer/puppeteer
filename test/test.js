@@ -1177,6 +1177,7 @@ describe('Page', function() {
       expect(element).toBe(null);
     }));
   });
+
   describe('Page.$$', function() {
     it('should query existing elements', SX(async function() {
       await page.setContent('<div>A</div><br/><div>B</div>');
@@ -1530,6 +1531,7 @@ describe('Page', function() {
       expect(await page.evaluate(() => navigator.userAgent)).toContain('Safari');
     }));
   });
+
   describe('Page.setExtraHTTPHeaders', function() {
     it('should work', SX(async function() {
       await page.setExtraHTTPHeaders({
@@ -1551,6 +1553,7 @@ describe('Page', function() {
       expect(error.message).toBe('Expected value of header "foo" to be String, but "number" is found.');
     }));
   });
+
   describe('Page.authenticate', function() {
     it('should work', SX(async function() {
       server.setAuth('/empty.html', 'user', 'pass');
@@ -1588,6 +1591,7 @@ describe('Page', function() {
       expect(response.status).toBe(401);
     }));
   });
+
   describe('Page.setContent', function() {
     const expectedOutput = '<html><head></head><body><div>hello</div></body></html>';
     it('should work', SX(async function() {
@@ -1609,6 +1613,7 @@ describe('Page', function() {
       expect(result).toBe(`${doctype}${expectedOutput}`);
     }));
   });
+
   describe('Network Events', function() {
     it('Page.Events.Request', SX(async function() {
       const requests = [];
@@ -2018,6 +2023,45 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       const screenshot = await page.screenshot({omitBackground: true});
       expect(screenshot).toBeGolden('transparent.png');
+    }));
+  });
+
+  describe('Page.select', function() {
+    it('should select single option', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      await page.select('select', 'blue');
+      expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
+      expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
+    }));
+
+    it('should select multiple options', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      await page.evaluate(() => makeMultiple());
+      await page.select('select', 'blue', 'green', 'red');
+      expect(await page.evaluate(() => result.onInput)).toEqual(['blue', 'green', 'red']);
+      expect(await page.evaluate(() => result.onChange)).toEqual(['blue', 'green', 'red']);
+    }));
+
+    it('should work with no options', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      await page.evaluate(() => makeEmpty());
+      await page.select('select', '42');
+      expect(await page.evaluate(() => result.onInput)).toEqual([]);
+      expect(await page.evaluate(() => result.onChange)).toEqual([]);
+    }));
+
+    it('should not select a non-existent option', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      await page.select('select', '42');
+      expect(await page.evaluate(() => result.onInput)).toEqual([]);
+      expect(await page.evaluate(() => result.onChange)).toEqual([]);
+    }));
+
+    it('should throw', SX(async function() {
+      let error = null;
+      await page.goto(PREFIX + '/input/select.html');
+      await page.select('body', '').catch(e => error = e);
+      expect(error.message).toContain('Element is not a <select> element.');
     }));
   });
 
