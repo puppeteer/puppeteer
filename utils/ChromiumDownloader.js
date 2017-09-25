@@ -25,10 +25,7 @@ const removeRecursive = require('rimraf');
 const ProxyAgent = require('https-proxy-agent');
 const getProxyForUrl = require('proxy-from-env').getProxyForUrl;
 
-const DOWNLOADS_FOLDER = process.env.npm_config_puppeteer_downloads_folder ||
-                          process.env.PUPPETEER_DOWNLOADS_FOLDER ||
-                          path.join(__dirname, '..', '.local-chromium');
-if (!DOWNLOADS_FOLDER.startsWith('/')) throw new Error('Puppeteer downloads folder must be an absolute path.');
+const DOWNLOADS_FOLDER = path.join(__dirname, '..', '.local-chromium');
 
 const downloadURLs = {
   linux: 'https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/%d/chrome-linux.zip',
