@@ -731,7 +731,7 @@ If there's no `<select>` element matching `selector`, the method throws an error
 
 ```js
 page.select('select#colors', 'blue'); // single selection
-page.select('select#colors', ['red', 'green', 'blue']); // multiple selections
+page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 ```
 
 #### page.setContent(html)
