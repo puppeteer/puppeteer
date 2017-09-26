@@ -63,6 +63,7 @@
     + [page.select(selector, ...values)](#pageselectselector-values)
     + [page.setContent(html)](#pagesetcontenthtml)
     + [page.setCookie(...cookies)](#pagesetcookiecookies)
+    + [page.setDownloadBehavior(behavior, downloadPath)](#pagesetdownloadbehaviorbehavior-downloadpath)
     + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
     + [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
     + [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
@@ -757,6 +758,11 @@ page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
   - `httpOnly` <[boolean]>
   - `secure` <[boolean]>
   - `sameSite` <[string]> `"Strict"` or `"Lax"`.
+- returns: <[Promise]>
+
+#### page.setDownloadBehavior(behavior, downloadPath)
+- `behavior` <[string]> A string Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny). Allowed values: deny, allow, default..
+- `downloadPath` <[string]> The default path to save downloaded files to. This is required if behavior is set to 'allow'.
 - returns: <[Promise]>
 
 #### page.setExtraHTTPHeaders(headers)
