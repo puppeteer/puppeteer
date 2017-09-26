@@ -979,6 +979,13 @@ describe('Page', function() {
       const response = await page.goto(PREFIX + '/some nonexisting page');
       expect(response.status).toBe(404);
     }));
+    it('should work with badly encoded URLs', SX(async function() {
+      await page.setRequestInterceptionEnabled(true);
+      server.setRoute('/malformed?rnd=%911', (req, res) => res.end());
+      page.on('request', request => request.continue());
+      const response = await page.goto(PREFIX + '/malformed?rnd=%911');
+      expect(response.status).toBe(200);
+    }));
     it('should work with encoded URLs - 2', SX(async function() {
       // The requestWillBeSent will report URL as-is, whereas interception will
       // report encoded URL for stylesheet. @see crbug.com/759388
