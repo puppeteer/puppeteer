@@ -148,10 +148,11 @@ Puppeteer is a Node library which provides a high-level API to control Chromium 
 
 ### Environment Variables
 
-Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) to aid its operations:
+Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) to aid its operations. These variables could be either set in the environment or in the [npm config](https://docs.npmjs.com/cli/config).
 
 - `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
-- `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step. (`puppeteer_skip_chromium_download` in `.npmrc` as same)
+- `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
+
 ### class: Puppeteer
 
 Puppeteer module provides a method to launch a Chromium instance.
