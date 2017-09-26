@@ -228,7 +228,7 @@ Closes browser with all the pages (if any were opened). The browser object itsel
 Browser websocket endpoint which could be used as an argument to
 [puppeteer.connect](#puppeteerconnectoptions). The format is `ws://${host}:${port}/browser/<id>`
 
-You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/version`. More about the chrome devtools protocol is available at [https://chromedevtools.github.io/devtools-protocol](https://chromedevtools.github.io/devtools-protocol), with the latest information about the browser debugger endpoint available in the [FAQ](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target)
+You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/version`. Learn more about the [devtools protocol](https://chromedevtools.github.io/devtools-protocol) and the [browser endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
 
 ### class: Page
 
