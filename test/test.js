@@ -265,9 +265,10 @@ describe('Page', function() {
       const result = await page.evaluate((a, b) => Object.is(a, undefined) && Object.is(b, 'foo'), undefined, 'foo');
       expect(result).toBe(true);
     }));
-    it('should not fail for window object', SX(async function() {
-      const result = await page.evaluate(() => window);
-      expect(result).toBe('Window');
+    it('should fail for window object', SX(async function() {
+      let error = null;
+      await page.evaluate(() => window).catch(e => error = e);
+      expect(error.message).toContain('Converting circular structure to JSON');
     }));
     it('should accept a string', SX(async function() {
       const result = await page.evaluate('1 + 2');
@@ -294,7 +295,7 @@ describe('Page', function() {
       await element.dispose();
       let error = null;
       await page.evaluate(e => e.textContent, element).catch(e => error = e);
-      expect(error.message).toContain('ElementHandle is disposed');
+      expect(error.message).toContain('ObjectHandle is disposed');
     }));
     it('should throw if elementHandles are from other frames', SX(async function() {
       const FrameUtils = require('./frame-utils');
@@ -303,7 +304,96 @@ describe('Page', function() {
       let error = null;
       await page.evaluate(body => body.innerHTML, bodyHandle).catch(e => error = e);
       expect(error).toBeTruthy();
-      expect(error.message).toContain('ElementHandles passed as arguments should belong');
+      expect(error.message).toContain('ObjectHandles can be evaluated only in the context they were created');
+    }));
+    it('should accept object handle as an argument', SX(async function() {
+      const navigatorHandle = await page.object(() => navigator);
+      const text = await page.evaluate(e => e.userAgent, navigatorHandle);
+      expect(text).toContain('Mozilla');
+    }));
+    it('should accept object handle to primitive types', SX(async function() {
+      const aHandle = await page.object(() => 5);
+      const isFive = await page.evaluate(e => Object.is(e, 5), aHandle);
+      expect(isFive).toBeTruthy();
+    }));
+  });
+
+  describe('Page.object', function() {
+    it('should work', SX(async function() {
+      const windowHandle = await page.object(() => window);
+      expect(windowHandle).toBeTruthy();
+    }));
+  });
+
+  describe('ObjectHandle.get', function() {
+    it('should work', SX(async function() {
+      const aHandle = await page.object(() => ({
+        one: 1,
+        two: 2,
+        three: 3
+      }));
+      const twoHandle = await aHandle.get('two');
+      expect(await twoHandle.asJSON()).toEqual(2);
+    }));
+  });
+
+  describe('ObjectHandle.asJSON', function() {
+    it('should work', SX(async function() {
+      const aHandle = await page.object(() => ({foo: 'bar'}));
+      const json = await aHandle.asJSON();
+      expect(json).toEqual({foo: 'bar'});
+    }));
+    it('should work with dates', SX(async function() {
+      const dateHandle = await page.object(() => new Date('2017-09-26T00:00:00.000Z'));
+      const json = await dateHandle.asJSON();
+      expect(json).toBe('2017-09-26T00:00:00.000Z');
+    }));
+    it('should throw for circular objects', SX(async function() {
+      const windowHandle = await page.object('window');
+      let error = null;
+      await windowHandle.asJSON().catch(e => error = e);
+      expect(error.message).toContain('Converting circular structure to JSON');
+    }));
+  });
+
+  describe('ObjectHandle.asArray', function() {
+    it('should work', SX(async function() {
+      const aHandle = await page.object(() => ([3,2]));
+      const array = await aHandle.asArray();
+      expect(array.length).toBe(2);
+      expect(await array[0].asJSON()).toBe(3);
+      expect(await array[1].asJSON()).toBe(2);
+    }));
+  });
+
+  describe('ObjectHandle.asObject', function() {
+    it('should work', SX(async function() {
+      const aHandle = await page.object(() => ({
+        foo: 'bar'
+      }));
+      const object = await aHandle.asObject();
+      expect(object.foo).toBeTruthy();
+      expect(await object.foo.asJSON()).toBe('bar');
+    }));
+  });
+
+  describe('ObjectHandle.asElement', function() {
+    it('should work', SX(async function() {
+      const aHandle = await page.object(() => document.body);
+      const element = aHandle.asElement();
+      expect(element).toBeTruthy();
+    }));
+    it('should return null for non-elements', SX(async function() {
+      const aHandle = await page.object(() => 2);
+      const element = aHandle.asElement();
+      expect(element).toBeFalsy();
+    }));
+    it('should return ElementHandle for TextNodes', SX(async function() {
+      await page.setContent('<div>ee!</div>');
+      const aHandle = await page.object(() => document.querySelector('div').firstChild);
+      const element = aHandle.asElement();
+      expect(element).toBeTruthy();
+      expect(await page.evaluate(e => e.nodeType === HTMLElement.TEXT_NODE, element));
     }));
   });
 
@@ -319,6 +409,19 @@ describe('Page', function() {
       await page.injectFile(helloPath);
       const result = await page.evaluate(() => __injectedError.stack);
       expect(result).toContain(path.join('assets', 'injectedfile.js'));
+    }));
+  });
+
+  describe('Frame.context', function() {
+    const FrameUtils = require('./frame-utils');
+    it('should work', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
+      expect(page.frames().length).toBe(2);
+      const [frame1, frame2] = page.frames();
+      expect(frame1.context()).toBeTruthy();
+      expect(frame2.context()).toBeTruthy();
+      expect(frame1.context() !== frame2.context()).toBeTruthy();
     }));
   });
 
@@ -561,9 +664,11 @@ describe('Page', function() {
         page.evaluate(() => console.log('hello', 5, {foo: 'bar'})),
         waitForEvents(page, 'console')
       ]);
-      expect(message.text).toEqual('hello 5 [object Object]');
+      expect(message.text).toEqual('hello 5 ObjectHandle@object');
       expect(message.type).toEqual('log');
-      expect(message.args).toEqual(['hello', 5, {foo: 'bar'}]);
+      expect(await message.args[0].asJSON()).toEqual('hello');
+      expect(await message.args[1].asJSON()).toEqual(5);
+      expect(await message.args[2].asJSON()).toEqual({foo: 'bar'});
     }));
     it('should work for different console API calls', SX(async function() {
       const messages = [];
@@ -591,7 +696,7 @@ describe('Page', function() {
         'calling console.dir',
         'calling console.warn',
         'calling console.error',
-        'Promise',
+        'ObjectHandle@promise',
       ]);
     }));
     it('should not fail for window object', SX(async function() {
@@ -601,7 +706,7 @@ describe('Page', function() {
         page.evaluate(() => console.error(window)),
         waitForEvents(page, 'console')
       ]);
-      expect(message.text).toBe('Window');
+      expect(message.text).toBe('ObjectHandle@object');
     }));
   });
 
@@ -1242,6 +1347,12 @@ describe('Page', function() {
       await page.goto(PREFIX + '/input/button.html');
       const button = await page.$('button');
       await button.click('button');
+      expect(await page.evaluate(() => result)).toBe('Clicked');
+    }));
+    it('should work for TextNodes', SX(async function() {
+      await page.goto(PREFIX + '/input/button.html');
+      const buttonTextNode = await page.object(() => document.querySelector('button').firstChild);
+      await buttonTextNode.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     }));
   });

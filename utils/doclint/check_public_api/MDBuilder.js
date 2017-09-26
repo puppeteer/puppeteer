@@ -59,7 +59,7 @@ class MDOutline {
           let actualText = element.firstChild.textContent;
           let angleIndex = actualText.indexOf('<');
           let spaceIndex = actualText.indexOf(' ');
-          angleIndex = angleIndex === -1 ? angleText.length : angleIndex;
+          angleIndex = angleIndex === -1 ? actualText.length : angleIndex;
           spaceIndex = spaceIndex === -1 ? spaceIndex.length : spaceIndex + 1;
           actualText = actualText.substring(0, Math.min(angleIndex, spaceIndex));
           if (actualText !== expectedText)

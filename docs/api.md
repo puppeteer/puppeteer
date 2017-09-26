@@ -56,6 +56,7 @@
     + [page.keyboard](#pagekeyboard)
     + [page.mainFrame()](#pagemainframe)
     + [page.mouse](#pagemouse)
+    + [page.object(pageFunction, ...args)](#pageobjectpagefunction-args)
     + [page.pdf(options)](#pagepdfoptions)
     + [page.plainText()](#pageplaintext)
     + [page.press(key[, options])](#pagepresskey-options)
@@ -111,21 +112,44 @@
     + [frame.addScriptTag(url)](#frameaddscripttagurl)
     + [frame.addStyleTag(url)](#frameaddstyletagurl)
     + [frame.childFrames()](#framechildframes)
+    + [frame.context()](#framecontext)
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
     + [frame.injectFile(filePath)](#frameinjectfilefilepath)
     + [frame.isDetached()](#frameisdetached)
     + [frame.name()](#framename)
+    + [frame.object(pageFunction, ...args)](#frameobjectpagefunction-args)
     + [frame.parentFrame()](#frameparentframe)
     + [frame.title()](#frametitle)
     + [frame.url()](#frameurl)
     + [frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args)
     + [frame.waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args)
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
+  * [class: ExecutionContext](#class-executioncontext)
+    + [executionContext.evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args)
+    + [executionContext.object(pageFunction, ...args)](#executioncontextobjectpagefunction-args)
+  * [class: ObjectHandle](#class-objecthandle)
+    + [objectHandle.asArray()](#objecthandleasarray)
+    + [objectHandle.asElement()](#objecthandleaselement)
+    + [objectHandle.asJSON()](#objecthandleasjson)
+    + [objectHandle.asObject()](#objecthandleasobject)
+    + [objectHandle.context()](#objecthandlecontext)
+    + [objectHandle.dispose()](#objecthandledispose)
+    + [objectHandle.get(propertyName)](#objecthandlegetpropertyname)
+    + [objectHandle.toString()](#objecthandletostring)
+    + [objectHandle.type()](#objecthandletype)
   * [class: ElementHandle](#class-elementhandle)
+    + [elementHandle.asArray()](#elementhandleasarray)
+    + [elementHandle.asElement()](#elementhandleaselement)
+    + [elementHandle.asJSON()](#elementhandleasjson)
+    + [elementHandle.asObject()](#elementhandleasobject)
     + [elementHandle.click([options])](#elementhandleclickoptions)
+    + [elementHandle.context()](#elementhandlecontext)
     + [elementHandle.dispose()](#elementhandledispose)
+    + [elementHandle.get(propertyName)](#elementhandlegetpropertyname)
     + [elementHandle.hover()](#elementhandlehover)
     + [elementHandle.tap()](#elementhandletap)
+    + [elementHandle.toString()](#elementhandletostring)
+    + [elementHandle.type()](#elementhandletype)
     + [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
   * [class: Request](#class-request)
     + [request.abort()](#requestabort)
@@ -654,6 +678,36 @@ Page is guaranteed to have a main frame which persists during navigations.
 #### page.mouse
 
 - returns: <[Mouse]>
+
+#### page.object(pageFunction, ...args)
+- `pageFunction` <[function]|[string]> Function to be evaluated in the page context
+- `...args` <...[Serializable]|[ObjectHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[ObjectHandle]>> Resolves to the return value of `pageFunction`
+
+If the function, passed to the `page.object`, returns a [Promise], then `page.object` would wait for the promise to resolve and return it's value.
+
+```js
+const aHandle = await page.object(() => {
+  return Promise.resolve(window);
+});
+aHandle; // Handle on the window object.
+```
+
+A string can also be passed in instead of a function.
+
+```js
+const aHandle = await page.object('1 + 2'); // Handle on the '3' object.
+```
+
+[ObjectHandle] instances could be passed as arguments to the `page.object`:
+```js
+const aHandle = await page.object(() => document.body);
+const resultHandle = await page.object(body => body.innerHTML, aHandle);
+console.log(await resultHandle.asJSON());
+await resultHandle.dispose();
+```
+
+Shortcut for [page.mainFrame().object(pageFunction, ...args)](#frameobjectpagefunction-args).
 
 #### page.pdf(options)
 - `options` <[Object]> Options object which might have the following properties:
@@ -1195,6 +1249,9 @@ Adds a `<link rel="stylesheet">` tag to the frame with the desired url.
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
 
+#### frame.context()
+- returns: <[ExecutionContext]> Execution context associated with this frame.
+
 #### frame.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to  `pageFunction`
@@ -1239,6 +1296,34 @@ Returns frame's name attribute as specified in the tag.
 If the name is empty, returns the id attribute instead.
 
 > **NOTE** This value is calculated once when the frame is created, and will not update if the attribute is changed later.
+
+#### frame.object(pageFunction, ...args)
+- `pageFunction` <[function]|[string]> Function to be evaluated in the page context
+- `...args` <...[Serializable]|[ObjectHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[ObjectHandle]>> Resolves to the return value of `pageFunction`
+
+If the function, passed to the `page.object`, returns a [Promise], then `page.object` would wait for the promise to resolve and return it's value.
+
+```js
+const aHandle = await page.object(() => {
+  return Promise.resolve(window);
+});
+aHandle; // Handle on the window object.
+```
+
+A string can also be passed in instead of a function.
+
+```js
+const aHandle = await page.object('1 + 2'); // Handle on the '3' object.
+```
+
+[ObjectHandle] instances could be passed as arguments to the `page.object`:
+```js
+const aHandle = await page.object(() => document.body);
+const resultHandle = await page.object(body => body.innerHTML, aHandle);
+console.log(await resultHandle.asJSON());
+await resultHandle.dispose();
+```
 
 #### frame.parentFrame()
 - returns: <[Frame]> Returns parent frame, if any. Detached frames and main frames return `null`.
@@ -1314,7 +1399,139 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
+### class: ExecutionContext
+
+The class represents a context for javascript execution. Examples of javascript contexts are:
+- each frame has a separate execution context
+- all kind of workers have their own contexts
+
+#### executionContext.evaluate(pageFunction, ...args)
+- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
+- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to  `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
+
+If the function, passed to the `frame.evaluate`, returns a [Promise], then `frame.evaluate` would wait for the promise to resolve and return it's value.
+
+```js
+const result = await frame.evaluate(() => {
+  return Promise.resolve(8 * 7);
+});
+console.log(result); // prints "56"
+```
+
+A string can also be passed in instead of a function.
+
+```js
+console.log(await frame.evaluate('1 + 2')); // prints "3"
+```
+
+[ElementHandle] instances could be passed as arguments to the `frame.evaluate`:
+```js
+const bodyHandle = await frame.$('body');
+const html = await frame.evaluate(body => body.innerHTML, bodyHandle);
+await bodyHandle.dispose();
+```
+
+#### executionContext.object(pageFunction, ...args)
+- `pageFunction` <[function]|[string]> Function to be evaluated in the page context
+- `...args` <...[Serializable]|[ObjectHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[ObjectHandle]>> Resolves to the return value of `pageFunction`
+
+If the function, passed to the `page.object`, returns a [Promise], then `page.object` would wait for the promise to resolve and return it's value.
+
+```js
+const aHandle = await page.object(() => {
+  return Promise.resolve(window);
+});
+aHandle; // Handle on the window object.
+```
+
+A string can also be passed in instead of a function.
+
+```js
+const aHandle = await page.object('1 + 2'); // Handle on the '3' object.
+```
+
+[ObjectHandle] instances could be passed as arguments to the `page.object`:
+```js
+const aHandle = await page.object(() => document.body);
+const resultHandle = await page.object(body => body.innerHTML, aHandle);
+console.log(await resultHandle.asJSON());
+await resultHandle.dispose();
+```
+
+### class: ObjectHandle
+
+ObjectHandle represents an in-page javascript object. ObjectHandles could be created with the [page.object](#pageobjectpagefunction-args) method.
+
+```js
+await windowHandle = await page.object(() => window);
+// ...
+```
+
+ObjectHandle prevents references javascript objects from garbage collection unless the handle is [disposed](#objecthandledispose). ObjectHandles are auto-disposed when their origin frame gets navigated.
+
+ObjectHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args), [`page.evaluate()`](#pageevaluatepagefunction-args) and [`page.object`](#pageobjectpagefunction-args) methods.
+
+#### objectHandle.asArray()
+- returns: <[Promise]<[Array]<[ObjectHandle]>>>
+
+The method returns an array which properties are ObjectHandle instances to the property values.
+
+```js
+const arrayHandle = await page.object(() => [window, document]);
+const [windowHandle, documentHandle] = await arrayHandle.asArray();
+await arrayHandle.dispose();
+```
+
+#### objectHandle.asElement()
+- returns: <[ElementHandle]>
+
+Returns either `null` or the object handle itself, if the object handle is an instance of [ElementHandle].
+
+#### objectHandle.asJSON()
+- returns: <[Promise]<[Object]>>
+
+Returns a JSON representation of the object. The JSON is generated by running [`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) on the object in page and consequent [`JSON.parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) in puppeteer.
+
+> **NOTE** The method will throw if the references object is not stringifiable.
+
+#### objectHandle.asObject()
+- returns: <[Object]<[string], [ObjectHandle]>>
+
+The method returns an object which properties are ObjectHandle instances to the property values.
+
+```js
+const objectHandle = await page.object(() => {window, document});
+const {window, document} = await objectHandle.asObject();
+await arrayHandle.dispose();
+```
+
+#### objectHandle.context()
+- returns: [ExecutionContext]
+
+Returns execution context the handle belongs to.
+
+#### objectHandle.dispose()
+- returns: <[Promise]> Promise which resolves when the object handle is successfully disposed.
+
+The `objectHandle.dispose` method stops referencing the element handle.
+
+#### objectHandle.get(propertyName)
+- `propertyName` <[string]> property to get
+- returns: <[Promise]<[ObjectHandle]>>
+
+#### objectHandle.toString()
+- returns: <[string]>
+
+#### objectHandle.type()
+- returns: <[string]>
+
+Returns one of the following: `'object'`, `'function'`, `'undefined'`, `'string'`, `'number'`, `'boolean'`, `'symbol'`, `'array'`, `'null'`, `'node'`, `'regexp'`, `'date'`, `'map'`, `'set'`, `'weakmap'`, `'weakset'`, `'iterator'`, `'generator'`, `'error'`, `'proxy'`, `'typedarray'`.
+
 ### class: ElementHandle
+
+> **NOTE** Class [ElementHandle] extends [ObjectHandle].
 
 ElementHandle represents an in-page DOM element. ElementHandles could be created with the [page.$](#pageselector) method.
 
@@ -1334,6 +1551,18 @@ ElementHandle prevents DOM element from garbage collection unless the handle is 
 
 ElementHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args) and [`page.evaluate()`](#pageevaluatepagefunction-args) methods.
 
+#### elementHandle.asArray()
+- returns: <[Promise]<[Array]<[ObjectHandle]>>>
+
+#### elementHandle.asElement()
+- returns: <[ElementHandle]>
+
+#### elementHandle.asJSON()
+- returns: <[Promise]<[Object]>>
+
+#### elementHandle.asObject()
+- returns: <[Object]<[string], [ObjectHandle]>>
+
 #### elementHandle.click([options])
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
@@ -1344,10 +1573,17 @@ ElementHandle instances can be used as arguments in [`page.$eval()`](#pageevalse
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
 If the element is detached from DOM, the method throws an error.
 
+#### elementHandle.context()
+- returns: [ExecutionContext]
+
 #### elementHandle.dispose()
 - returns: <[Promise]> Promise which resolves when the element handle is successfully disposed.
 
 The `elementHandle.dispose` method stops referencing the element handle.
+
+#### elementHandle.get(propertyName)
+- `propertyName` <[string]>
+- returns: <[Promise]<[ObjectHandle]>>
 
 #### elementHandle.hover()
 - returns: <[Promise]> Promise which resolves when the element is successfully hovered.
@@ -1360,6 +1596,12 @@ If the element is detached from DOM, the method throws an error.
 
 This method scrolls element into view if needed, and then uses [touchscreen.tap](#touchscreentapx-y) to tap in the center of the element.
 If the element is detached from DOM, the method throws an error.
+
+#### elementHandle.toString()
+- returns: <[string]>
+
+#### elementHandle.type()
+- returns: <[string]>
 
 #### elementHandle.uploadFile(...filePaths)
 - `...filePaths` <...[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
@@ -1479,6 +1721,8 @@ Contains the URL of the response.
 [Element]: https://developer.mozilla.org/en-US/docs/Web/API/element "Element"
 [Keyboard]: #class-keyboard "Keyboard"
 [Dialog]: #class-dialog  "Dialog"
+[ObjectHandle]: #class-objecthandle "ObjectHandle"
+[ExecutionContext]: #class-executioncontext "ExecutionContext"
 [Mouse]: #class-mouse "Mouse"
 [Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map "Map"
 [selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors "selector"
