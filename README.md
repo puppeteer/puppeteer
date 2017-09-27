@@ -17,6 +17,8 @@ Most things that you can do manually in the browser can be done using Puppeteer!
 * Create an up-to-date, automated testing environment. Run your tests directly in the latest version of Chrome using the latest JavaScript and browser features.
 * Capture a [timeline trace](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/reference) of your site to help diagnose performance issues.
 
+Give it a spin: https://try-puppeteer.appspot.com/
+
 ## Getting Started
 
 ### Installation
