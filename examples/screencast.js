@@ -30,11 +30,12 @@ page.screencast.on('frame', frame => {
   console.log('Frame captured @', frame.metadata.timestamp);
 });
 
-await page.screencast.start({path: 'video.webm'});
-
 console.log('Capturing screencast for actions...');
 
 const tic = Date.now();
+
+await page.screencast.start({path: 'video.webm'});
+
 await page.goto('https://www.chromestatus.com/', {waitUntil: 'networkidle'});
 
 // Wait for features list to show up.
@@ -57,12 +58,14 @@ await page.waitFor(2000); // pause
 await page.goto(nextURL);
 
 const seconds = (Date.now() - tic) / 1000;
+console.log(`Duration: ${seconds}s`);
+
+console.log('Creating video...');
 const frames = await page.screencast.stop();
 const fps = frames.length / seconds;
 
 console.log(`Captured ${frames.length} frames`);
-console.log(`Duration: ${seconds}s`);
-console.log(`FPS: ~${fps}`);
+console.log(`Average FPS: ~${fps}`);
 
 await browser.close();
 
