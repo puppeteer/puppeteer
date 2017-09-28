@@ -99,6 +99,10 @@
     + [dialog.dismiss()](#dialogdismiss)
     + [dialog.message()](#dialogmessage)
     + [dialog.type](#dialogtype)
+  * [class: ConsoleMessage](#class-consolemessage)
+    + [consoleMessage.args](#consolemessageargs)
+    + [consoleMessage.text](#consolemessagetext)
+    + [consoleMessage.type](#consolemessagetype)
   * [class: Frame](#class-frame)
     + [frame.$(selector)](#frameselector)
     + [frame.$$(selector)](#frameselector)
@@ -249,7 +253,7 @@ puppeteer.launch().then(async browser => {
 ```
 
 #### event: 'console'
-- <[string]>
+- <[ConsoleMessage]>
 
 Emitted when JavaScript within the page calls one of console API methods, e.g. `console.log` or `console.dir`. Also emitted if the page throws an error or a warning.
 
@@ -257,11 +261,11 @@ The arguments passed into `console.log` appear as arguments on the event handler
 
 An example of handling `console` event:
 ```js
-page.on('console', (...args) => {
-  for (let i = 0; i < args.length; ++i)
+page.on('console', msg => {
+  for (let i = 0; i < msg.args.length; ++i)
     console.log(`${i}: ${args[i]}`);
 });
-page.evaluate(() => console.log(5, 'hello', {foo: 'bar'}));
+page.evaluate(() => console.log('hello', 5, {foo: 'bar'}));
 ```
 
 #### event: 'dialog'
@@ -1093,6 +1097,21 @@ puppeteer.launch().then(async browser => {
 
 Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `prompt`.
 
+### class: ConsoleMessage
+
+[ConsoleMessage] objects are dispatched by page via the ['console'](#event-console) event.
+
+#### consoleMessage.args
+- <[Array]<[string]>>
+
+#### consoleMessage.text
+- <[string]>
+
+#### consoleMessage.type
+- <[string]>
+
+One of the following values: `'log'`, `'debug'`, `'info'`, `'error'`, `'warning'`, `'dir'`, `'dirxml'`, `'table'`, `'trace'`, `'clear'`, `'startGroup'`, `'startGroupCollapsed'`, `'endGroup'`, `'assert'`, `'profile'`, `'profileEnd'`, `'count'`, `'timeEnd'`.
+
 ### class: Frame
 
 At every point of time, page exposes its current frame tree via the [page.mainFrame()](#pagemainframe) and [frame.childFrames()](#framechildframes) methods.
@@ -1432,6 +1451,7 @@ Contains the URL of the response.
 [stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable "stream.Readable"
 [Error]: https://nodejs.org/api/errors.html#errors_class_error "Error"
 [Frame]: #class-frame "Frame"
+[ConsoleMessage]: #class-consolemessage "ConsoleMessage"
 [iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols "Iterator"
 [Response]: #class-response  "Response"
 [Request]: #class-request  "Request"

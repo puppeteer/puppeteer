@@ -535,15 +535,17 @@ describe('Page', function() {
     }));
   });
 
-  describe('Page.Events.Console', function() {
+  fdescribe('Page.Events.Console', function() {
     it('should work', SX(async function() {
-      let commandArgs = [];
-      page.once('console', (...args) => commandArgs = args);
+      let message = null;
+      page.once('console', m => message = m);
       await Promise.all([
-        page.evaluate(() => console.log(5, 'hello', {foo: 'bar'})),
+        page.evaluate(() => console.log('hello', 5, {foo: 'bar'})),
         waitForEvents(page, 'console')
       ]);
-      expect(commandArgs).toEqual([5, 'hello', {foo: 'bar'}]);
+      expect(message.text).toEqual('hello');
+      expect(message.type).toEqual('log');
+      expect(message.args).toEqual(['hello', 5, {foo: 'bar'}]);
     }));
     it('should work for different console API calls', SX(async function() {
       const messages = [];
@@ -559,11 +561,14 @@ describe('Page', function() {
           console.error('calling console.error');
           console.log(Promise.resolve('should not wait until resolved!'));
         }),
-        // Wait for 5 events to hit.
+        // Wait for 5 events to hit - console.time is not reported
         waitForEvents(page, 'console', 5)
       ]);
-      expect(messages[0]).toContain('calling console.time');
-      expect(messages.slice(1)).toEqual([
+      expect(messages.map(msg => msg.type)).toEqual([
+        'timeEnd', 'trace', 'dir', 'warning', 'error', 'log'
+      ]);
+      expect(messages[0].text).toContain('calling console.time');
+      expect(messages.slice(1).map(msg => msg.text)).toEqual([
         'calling console.trace',
         'calling console.dir',
         'calling console.warn',
@@ -572,13 +577,13 @@ describe('Page', function() {
       ]);
     }));
     it('should not fail for window object', SX(async function() {
-      let windowObj = null;
-      page.once('console', arg => windowObj = arg);
+      let message = null;
+      page.once('console', msg => message = msg);
       await Promise.all([
         page.evaluate(() => console.error(window)),
         waitForEvents(page, 'console')
       ]);
-      expect(windowObj).toBe('Window');
+      expect(message.text).toBe('Window');
     }));
   });
 

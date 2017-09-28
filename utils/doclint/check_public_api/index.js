@@ -37,6 +37,7 @@ const EXCLUDE_CLASSES = new Set([
 const EXCLUDE_METHODS = new Set([
   'Body.constructor',
   'Browser.constructor',
+  'ConsoleMessage.constructor',
   'Dialog.constructor',
   'ElementHandle.constructor',
   'Frame.constructor',
