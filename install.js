@@ -18,6 +18,10 @@ if (process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD) {
   console.log('**INFO** Skipping Chromium download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" environment variable was found.');
   return;
 }
+if (process.env.NPM_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.env.npm_config_puppeteer_skip_chromium_download) {
+  console.log('**INFO** Skipping Chromium download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" was set in npm config.');
+  return;
+}
 
 const Downloader = require('./utils/ChromiumDownloader');
 const platform = Downloader.currentPlatform();

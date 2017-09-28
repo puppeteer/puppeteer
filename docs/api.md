@@ -1,6 +1,6 @@
-##### Released API: [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
+##### Released API: [v0.11.0](https://github.com/GoogleChrome/puppeteer/blob/v0.11.0/docs/api.md) | [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
 
-# Puppeteer API v<!-- GEN:version -->0.11.0-alpha<!-- GEN:stop-->
+# Puppeteer API v<!-- GEN:version -->0.12.0-alpha<!-- GEN:stop-->
 
 ##### Table of Contents
 
@@ -10,6 +10,7 @@
   * [Environment Variables](#environment-variables)
   * [class: Puppeteer](#class-puppeteer)
     + [puppeteer.connect(options)](#puppeteerconnectoptions)
+    + [puppeteer.executablePath()](#puppeteerexecutablepath)
     + [puppeteer.launch([options])](#puppeteerlaunchoptions)
   * [class: Browser](#class-browser)
     + [browser.close()](#browserclose)
@@ -59,6 +60,7 @@
     + [page.press(key[, options])](#pagepresskey-options)
     + [page.reload(options)](#pagereloadoptions)
     + [page.screenshot([options])](#pagescreenshotoptions)
+    + [page.select(selector, ...values)](#pageselectselector-values)
     + [page.setContent(html)](#pagesetcontenthtml)
     + [page.setCookie(...cookies)](#pagesetcookiecookies)
     + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
@@ -73,8 +75,8 @@
     + [page.type(text, options)](#pagetypetext-options)
     + [page.url()](#pageurl)
     + [page.viewport()](#pageviewport)
-    + [page.waitFor(selectorOrFunctionOrTimeout[, options])](#pagewaitforselectororfunctionortimeout-options)
-    + [page.waitForFunction(pageFunction[, options, ...args])](#pagewaitforfunctionpagefunction-options-args)
+    + [page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#pagewaitforselectororfunctionortimeout-options-args)
+    + [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
     + [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
     + [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [class: Keyboard](#class-keyboard)
@@ -110,8 +112,8 @@
     + [frame.parentFrame()](#frameparentframe)
     + [frame.title()](#frametitle)
     + [frame.url()](#frameurl)
-    + [frame.waitFor(selectorOrFunctionOrTimeout[, options])](#framewaitforselectororfunctionortimeout-options)
-    + [frame.waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args)
+    + [frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args)
+    + [frame.waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args)
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
   * [class: ElementHandle](#class-elementhandle)
     + [elementHandle.boundingBox()](#elementhandleboundingbox)
@@ -147,7 +149,7 @@ Puppeteer is a Node library which provides a high-level API to control Chromium 
 
 ### Environment Variables
 
-Puppeteer looks for certain environment variables to aid its operations:
+Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) to aid its operations. These variables could be either set in the environment or in the [npm config](https://docs.npmjs.com/cli/config).
 
 - `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
@@ -163,7 +165,7 @@ puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
   await page.goto('https://www.google.com');
   // other actions...
-  browser.close();
+  await browser.close();
 });
 ```
 
@@ -174,6 +176,9 @@ puppeteer.launch().then(async browser => {
 - returns: <[Promise]<[Browser]>>
 
 This methods attaches Puppeteer to an existing Chromium instance.
+
+#### puppeteer.executablePath()
+- returns: <[string]> A path where Puppeteer expects to find bundled Chromium. Chromium might not exist there if the download was skipped with [`PUPPETEER_SKIP_CHROMIUM_DOWNLOAD`](#environment-variables).
 
 #### puppeteer.launch([options])
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
@@ -203,11 +208,12 @@ const puppeteer = require('puppeteer');
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
   await page.goto('https://example.com');
-  browser.close();
+  await browser.close();
 });
 ```
 
 #### browser.close()
+- returns: <[Promise]>
 
 Closes browser with all the pages (if any were opened). The browser object itself is considered to be disposed and could not be used anymore.
 
@@ -223,7 +229,9 @@ Closes browser with all the pages (if any were opened). The browser object itsel
 - returns: <[string]> Browser websocket url.
 
 Browser websocket endpoint which could be used as an argument to
-[puppeteer.connect](#puppeteerconnectoptions).
+[puppeteer.connect](#puppeteerconnectoptions). The format is `ws://${host}:${port}/browser/<id>`
+
+You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/version`. Learn more about the [devtools protocol](https://chromedevtools.github.io/devtools-protocol) and the [browser endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
 
 ### class: Page
 
@@ -237,7 +245,7 @@ puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
   await page.goto('https://example.com');
   await page.screenshot({path: 'screenshot.png'});
-  browser.close();
+  await browser.close();
 });
 ```
 
@@ -438,7 +446,7 @@ puppeteer.launch().then(async browser => {
   await page.emulate(iPhone);
   await page.goto('https://www.google.com');
   // other actions...
-  browser.close();
+  await browser.close();
 });
 ```
 
@@ -517,7 +525,7 @@ puppeteer.launch().then(async browser => {
     const myHash = await window.md5(myString);
     console.log(`md5 of ${myString} is ${myHash}`);
   });
-  browser.close();
+  await browser.close();
 });
 ```
 
@@ -545,7 +553,7 @@ puppeteer.launch().then(async browser => {
     const content = await window.readfile('/etc/hosts');
     console.log(content);
   });
-  browser.close();
+  await browser.close();
 });
 
 ```
@@ -605,6 +613,7 @@ The `page.goto` will throw an error if:
 
 > **NOTE** `page.goto` either throw or return a main resource response. The only exception is navigation to `about:blank`, which would succeed and return `null`.
 
+> **NOTE** Headless mode doesn't support navigating to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
 
 #### page.hover(selector)
 - `selector` <[string]> A [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
@@ -721,6 +730,19 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
     - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
 - returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot
 
+#### page.select(selector, ...values)
+- `selector` <[string]> A [selector] to query page for
+- `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
+- returns: <[Promise]>
+
+Triggers a `change` and `input` event once all the provided options have been selected.
+If there's no `<select>` element matching `selector`, the method throws an error.
+
+```js
+page.select('select#colors', 'blue'); // single selection
+page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
+```
+
 #### page.setContent(html)
 - `html` <[string]> HTML markup to assign to the page.
 - returns: <[Promise]>
@@ -739,7 +761,7 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 - returns: <[Promise]>
 
 #### page.setExtraHTTPHeaders(headers)
-- `headers` <[Object]> An object containing additional http headers to be sent with every request.
+- `headers` <[Object]> An object containing additional http headers to be sent with every request. All header values must be strings.
 - returns: <[Promise]>
 
 The extra HTTP headers will be sent with every request the page initiates.
@@ -772,7 +794,7 @@ puppeteer.launch().then(async browser => {
       interceptedRequest.continue();
   });
   await page.goto('https://example.com');
-  browser.close();
+  await browser.close();
 });
 ```
 
@@ -841,9 +863,10 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
   - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
   - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
 
-#### page.waitFor(selectorOrFunctionOrTimeout[, options])
+#### page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])
 - `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
+- `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]>
 
 This method behaves differently with respect to the type of the first parameter:
@@ -852,9 +875,9 @@ This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
-Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options])](#framewaitforselectororfunctionortimeout-options).
+Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args).
 
-#### page.waitForFunction(pageFunction[, options, ...args])
+#### page.waitForFunction(pageFunction[, options[, ...args]])
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
   - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it could be one of the following values:
@@ -873,10 +896,10 @@ puppeteer.launch().then(async browser => {
   const watchDog = page.waitForFunction('window.innerWidth < 100');
   page.setViewport({width: 50, height: 50});
   await watchDog;
-  browser.close();
+  await browser.close();
 });
 ```
-Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options, ...args])](#framewaitforfunctionpagefunction-options-args).
+Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args).
 
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
@@ -911,7 +934,7 @@ puppeteer.launch().then(async browser => {
     .then(() => console.log('First URL with image: ' + currentURL));
   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
     await page.goto(currentURL);
-  browser.close();
+  await browser.close();
 });
 ```
 Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options).
@@ -977,7 +1000,7 @@ Dispatches a `keyup` event.
   - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
 
-Shortcut for [`mouse.move`](#mousemovex-y), [`mouse.down`](#mousedownoptions) and [`mouse.up`](#mouseupoptions).
+Shortcut for [`mouse.move`](#mousemovex-y-options), [`mouse.down`](#mousedownoptions) and [`mouse.up`](#mouseupoptions).
 
 #### mouse.down([options])
 - `options` <[Object]>
@@ -1047,7 +1070,7 @@ puppeteer.launch().then(async browser => {
   page.on('dialog', async dialog => {
     console.log(dialog.message());
     await dialog.dismiss();
-    browser.close();
+    await browser.close();
   });
   page.evaluate(() => alert('1'));
 });
@@ -1089,7 +1112,7 @@ puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
   await page.goto('https://www.google.com/chrome/browser/canary.html');
   dumpFrameTree(page.mainFrame(), '');
-  browser.close();
+  await browser.close();
 
   function dumpFrameTree(frame, indent) {
     console.log(indent + frame.url());
@@ -1193,9 +1216,10 @@ If the name is empty, returns the id attribute instead.
 
 Returns frame's url.
 
-#### frame.waitFor(selectorOrFunctionOrTimeout[, options])
+#### frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])
 - `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
+- `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]>
 
 This method behaves differently with respect to the type of the first parameter:
@@ -1205,7 +1229,7 @@ This method behaves differently with respect to the type of the first parameter:
 - otherwise, an exception is thrown
 
 
-#### frame.waitForFunction(pageFunction[, options, ...args])
+#### frame.waitForFunction(pageFunction[, options[, ...args]])
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
   - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it could be one of the following values:
@@ -1224,7 +1248,7 @@ puppeteer.launch().then(async browser => {
   const watchDog = page.mainFrame().waitForFunction('window.innerWidth < 100');
   page.setViewport({width: 50, height: 50});
   await watchDog;
-  browser.close();
+  await browser.close();
 });
 ```
 
@@ -1251,7 +1275,7 @@ puppeteer.launch().then(async browser => {
     .then(() => console.log('First URL with image: ' + currentURL));
   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
     await page.goto(currentURL);
-  browser.close();
+  await browser.close();
 });
 ```
 

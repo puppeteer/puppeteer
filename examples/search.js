@@ -37,6 +37,6 @@ const links = await page.evaluate(() => {
   return anchors.map(anchor => anchor.textContent);
 });
 console.log(links.join('\n'));
-browser.close();
+await browser.close();
 
 })();
