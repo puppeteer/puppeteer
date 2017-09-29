@@ -535,7 +535,7 @@ describe('Page', function() {
     }));
   });
 
-  fdescribe('Page.Events.Console', function() {
+  describe('Page.Events.Console', function() {
     it('should work', SX(async function() {
       let message = null;
       page.once('console', m => message = m);
@@ -543,7 +543,7 @@ describe('Page', function() {
         page.evaluate(() => console.log('hello', 5, {foo: 'bar'})),
         waitForEvents(page, 'console')
       ]);
-      expect(message.text).toEqual('hello');
+      expect(message.text).toEqual('hello 5 [object Object]');
       expect(message.type).toEqual('log');
       expect(message.args).toEqual(['hello', 5, {foo: 'bar'}]);
     }));
