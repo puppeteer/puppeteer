@@ -153,7 +153,7 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
    This is also handy when debugging code in `page.evaluate()`:
 
     ```js
-    page.on('console', (...args) => console.log('PAGE LOG:', ...args));
+    page.on('console', msg => console.log('PAGE LOG:', ...msg.args));
 
     await page.evaluate(() => console.log(`url is ${location.href}`));
     ```
