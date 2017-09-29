@@ -25,6 +25,7 @@
     + [event: 'framedetached'](#event-framedetached)
     + [event: 'framenavigated'](#event-framenavigated)
     + [event: 'load'](#event-load)
+    + [event: 'metrics'](#event-metrics)
     + [event: 'pageerror'](#event-pageerror)
     + [event: 'request'](#event-request)
     + [event: 'requestfailed'](#event-requestfailed)
@@ -47,6 +48,7 @@
     + [page.exposeFunction(name, puppeteerFunction)](#pageexposefunctionname-puppeteerfunction)
     + [page.focus(selector)](#pagefocusselector)
     + [page.frames()](#pageframes)
+    + [page.getMetrics()](#pagegetmetrics)
     + [page.goBack(options)](#pagegobackoptions)
     + [page.goForward(options)](#pagegoforwardoptions)
     + [page.goto(url, options)](#pagegotourl-options)
@@ -298,6 +300,15 @@ Emitted when a frame is navigated to a new url.
 #### event: 'load'
 
 Emitted when the JavaScript [`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load) event is dispatched.
+
+#### event: 'metrics'
+- <[Object]>
+  - `title` <[string]> The title passed to `console.timeStamp`.
+  - `metrics` <[Array]<[Object]>> The metrics array.
+    - `name` <[string]> Name of the metric.
+    - `value` <[number]> Value of the metric.
+
+Emitted when the JavaScript code makes a call to `console.timeStamp`.
 
 #### event: 'pageerror'
 - <[string]> The exception message
@@ -570,6 +581,11 @@ If there's no element matching `selector`, the method throws an error.
 
 #### page.frames()
 - returns: <[Array]<[Frame]>> An array of all frames attached to the page.
+
+#### page.getMetrics()
+- returns: <[Array]<[Object]>> An array of page metrics.
+  - `name` <[string]> Name of the metric.
+  - `value` <[number]> Value of the metric.
 
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
