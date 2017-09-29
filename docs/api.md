@@ -190,6 +190,7 @@ This methods attaches Puppeteer to an existing Chromium instance.
   - `timeout` <[number]> Maximum time in milliseconds to wait for the Chrome instance to start. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
   - `dumpio` <[boolean]> Whether to pipe browser process stdout and stderr into `process.stdout` and `process.stderr`. Defaults to `false`.
   - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
+  - `env` <[Object]> Specify environment variables that will be visible to Chromium. Defaults to `process.env`.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
 
 The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process is closed.
