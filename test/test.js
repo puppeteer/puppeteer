@@ -598,7 +598,7 @@ describe('Page', function() {
       expect(error.message).toContain('Cannot navigate to invalid URL');
     }));
     it('should fail when navigating to bad SSL', SX(async function() {
-      // Make sure that network events do not emit 'undefind'.
+      // Make sure that network events do not emit 'undefined'.
       // @see https://crbug.com/750469
       page.on('request', request => expect(request).toBeTruthy());
       page.on('requestfinished', request => expect(request).toBeTruthy());
@@ -739,7 +739,7 @@ describe('Page', function() {
       // Expect navigation to succeed.
       expect(response.ok).toBe(true);
     }));
-    it('should not leak listeners durint navigation', SX(async function() {
+    it('should not leak listeners during navigation', SX(async function() {
       let warning = null;
       const warningHandler = w => warning = w;
       process.on('warning', warningHandler);
@@ -1348,7 +1348,7 @@ describe('Page', function() {
             'Keypress: ^ 94 94 94 []',
             'Keyup: ^ 54 []'].join('\n'));
     }));
-    it('should send propery codes while typing with shift', SX(async function(){
+    it('should send proper codes while typing with shift', SX(async function(){
       await page.goto(PREFIX + '/input/keyboard.html');
       const keyboard = page.keyboard;
       await keyboard.down('Shift');
