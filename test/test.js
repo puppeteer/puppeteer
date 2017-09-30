@@ -622,11 +622,9 @@ describe('Page', function() {
     it('should disable timeout when its set to 0', SX(async function() {
       server.setRoute('/empty.html', (req, res) => {});
       let error = null;
-      page.goto(PREFIX + '/empty.html', {timeout: 0}).catch(e => error = e);
-      // const sleep = e => new Promise(ff => setTimeout(ff, e));
-      // await sleep(90000);
+      await page.goto(PREFIX + '/empty.html', {timeout: 0}).catch(e => error = e);
       expect(error).toBe(null);
-    }));// 100000
+    }));
     it('should work when navigating to valid url', SX(async function() {
       const response = await page.goto(EMPTY_PAGE);
       expect(response.ok).toBe(true);
