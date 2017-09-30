@@ -624,6 +624,11 @@ describe('Page', function() {
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
       process.removeListener('unhandledRejection', unhandledRejectionHandler);
     }));
+    it('should disable timeout when its set to 0', SX(async function() {
+      let error = null;
+      await page.goto(PREFIX + '/grid.html', {timeout: 0}).catch(e => error = e);
+      expect(error).toBe(null);
+    }));
     it('should work when navigating to valid url', SX(async function() {
       const response = await page.goto(EMPTY_PAGE);
       expect(response.ok).toBe(true);
