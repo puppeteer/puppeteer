@@ -753,6 +753,15 @@ describe('Page', function() {
       process.removeListener('warning', warningHandler);
       expect(warning).toBe(null);
     }));
+    it('should not leak listeners during bad navigation', SX(async function() {
+      let warning = null;
+      const warningHandler = w => warning = w;
+      process.on('warning', warningHandler);
+      for (let i = 0; i < 20; ++i)
+        await page.goto('asdf').catch(e => {/* swallow navigation error */});
+      process.removeListener('warning', warningHandler);
+      expect(warning).toBe(null);
+    }));
     it('should navigate to dataURL and fire dataURL requests', SX(async function() {
       const requests = [];
       page.on('request', request => requests.push(request));
