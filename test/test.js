@@ -620,9 +620,8 @@ describe('Page', function() {
       process.removeListener('unhandledRejection', unhandledRejectionHandler);
     }));
     it('should disable timeout when its set to 0', SX(async function() {
-      server.setRoute('/empty.html', (req, res) => {});
       let error = null;
-      await page.goto(PREFIX + '/empty.html', {timeout: 0}).catch(e => error = e);
+      await page.goto(PREFIX + '/grid.html', {timeout: 0}).catch(e => error = e);
       expect(error).toBe(null);
     }));
     it('should work when navigating to valid url', SX(async function() {
