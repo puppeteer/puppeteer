@@ -743,16 +743,14 @@ describe('Page', function() {
       process.removeListener('warning', warningHandler);
       expect(warning).toBe(null);
     }));
-    it('should remove event listeners when page is closed', SX(async function() {
-      const closedPage = await browser.newPage();
-      await closedPage.close();
-
-      process.once('warning', warning => expect(warning).toBe(null));
-      for (let i = 0; i < 20; ++i) {
-        try {
-          await closedPage.goto(EMPTY_PAGE);
-        } catch (e) { /** Ignore 'Protocol error (Page.navigate)' */ }
-      }
+    it('should not leak listeners during bad navigation', SX(async function() {
+      let warning = null;
+      const warningHandler = w => warning = w;
+      process.on('warning', warningHandler);
+      for (let i = 0; i < 20; ++i)
+        await page.goto('asdf').catch(e => {/* swallow navigation error */});
+      process.removeListener('warning', warningHandler);
+      expect(warning).toBe(null);
     }));
     it('should navigate to dataURL and fire dataURL requests', SX(async function() {
       const requests = [];
