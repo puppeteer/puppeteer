@@ -5,12 +5,21 @@ const puppeteer = require('../../puppeteer');
   const page = await browser.newPage();
   await page.goto('https://www.realestate.com.au/buy', {waitUntil: 'networkidle'});
 
-  const xpath = "/html/body/div[1]/header/div[2]/a/img/@src"
-  console.log(await page.waitForXpath(xpath))
+  var xpath = "/html/body/div[3]/main/section/div/div/div/article[2]/div/p[2]/@class"
+  await page.waitForXpath(xpath)
+  var val = await page.$XPath(xpath)
+  console.log(val)
 
-  const src = await page.$XPath(xpath)
+  xpath = "/html/body/div[3]/main/section/div/div/div/article[2]/div/p[1]"
+  await page.waitForXpath(xpath)  
+  val = await page.$XPath(xpath)
+  console.log(val)
+
+  xpath = "/html/body/div[1]/header/div[2]/a/img/@src"
+  await page.waitForXpath(xpath)  
+  val = await page.$XPath(xpath)
+  console.log(val)
   
-  console.log(src)
   await browser.close();
 
 })();
