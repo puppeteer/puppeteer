@@ -1,9 +1,9 @@
 {
-  "name": "puppeteer",
-  "version": "0.11.0-alpha",
-  "description": "A high-level API to control headless Chrome over the DevTools Protocol",
+  "name": "puppeteer-xpath",
+  "version": "0.1.0",
+  "description": "Puppeteer with XPath support. This is based on Google Puppeteer project.",
   "main": "index.js",
-  "repository": "github:GoogleChrome/puppeteer",
+  "repository": "git@github.com:bjlovegithub/puppeteer.git",
   "engines": {
     "node": ">=6.4.0"
   },
@@ -20,7 +20,7 @@
     "build": "node utils/node6-transform/index.js",
     "unit-node6": "jasmine node6-test/test.js"
   },
-  "author": "The Chromium Authors",
+  "author": "billjeff",
   "license": "Apache-2.0",
   "dependencies": {
     "debug": "^2.6.8",
