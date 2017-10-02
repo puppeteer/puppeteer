@@ -44,10 +44,6 @@ afterAll(SX(async function() {
   await browser.close();
 }));
 
-beforeEach(function() {
-  GoldenUtils.addMatchers(jasmine, GOLDEN_DIR, OUTPUT_DIR);
-});
-
 describe('checkPublicAPI', function() {
   it('01-class-errors', SX(test));
   it('02-method-errors', SX(test));
@@ -61,12 +57,13 @@ describe('checkPublicAPI', function() {
 
 async function test() {
   const dirPath = path.join(__dirname, specName);
+  GoldenUtils.addMatchers(jasmine, dirPath, dirPath);
   const factory = new SourceFactory();
   const mdSources = await factory.readdir(dirPath, '.md');
   const jsSources = await factory.readdir(dirPath, '.js');
   const messages = await checkPublicAPI(page, mdSources, jsSources);
   const errors = messages.map(message => message.text);
-  expect(errors.join('\n')).toBeGolden(specName + '.txt');
+  expect(errors.join('\n')).toBeGolden('result.txt');
 }
 
 // Since Jasmine doesn't like async functions, they should be wrapped

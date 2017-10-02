@@ -110,9 +110,13 @@ function compare(goldenPath, outputPath, actual, goldenName) {
   if (!result)
     return { pass: true };
   ensureOutputDir();
-  fs.writeFileSync(actualPath, actual);
-  // Copy expected to the output/ folder for convenience.
-  fs.writeFileSync(addSuffix(actualPath, '-expected'), expected);
+  if (goldenPath === outputPath) {
+    fs.writeFileSync(addSuffix(actualPath, '-actual'), actual);
+  } else {
+    fs.writeFileSync(actualPath, actual);
+    // Copy expected to the output/ folder for convenience.
+    fs.writeFileSync(addSuffix(actualPath, '-expected'), expected);
+  }
   if (result.diff) {
     const diffPath = addSuffix(actualPath, '-diff', result.diffExtension);
     fs.writeFileSync(diffPath, result.diff);
