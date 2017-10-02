@@ -10,8 +10,6 @@
 
 #### foo.ddd
 
-#### new Foo()
-
 #### foo.ccc()
 
 #### foo.bbb()
