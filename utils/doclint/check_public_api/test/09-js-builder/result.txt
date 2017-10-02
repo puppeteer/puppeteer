@@ -1,0 +1,56 @@
+{
+  "classes": [
+    {
+      "name": "A",
+      "members": [
+        {
+          "name": "property1",
+          "type": "property",
+          "hasReturn": false,
+          "async": false,
+          "args": []
+        },
+        {
+          "name": "_property2",
+          "type": "property",
+          "hasReturn": false,
+          "async": false,
+          "args": []
+        },
+        {
+          "name": "constructor",
+          "type": "method",
+          "hasReturn": false,
+          "async": false,
+          "args": [
+            "delegate"
+          ]
+        },
+        {
+          "name": "getter",
+          "type": "property",
+          "hasReturn": false,
+          "async": false,
+          "args": []
+        },
+        {
+          "name": "method",
+          "type": "method",
+          "hasReturn": true,
+          "async": true,
+          "args": [
+            "foo",
+            "bar"
+          ]
+        },
+        {
+          "name": "anevent",
+          "type": "event",
+          "hasReturn": false,
+          "async": false,
+          "args": []
+        }
+      ]
+    }
+  ]
+}
