@@ -70,4 +70,10 @@ describe('TransformAsyncFunctions', function() {
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
+  it('should work paren around arrow function', function(done) {
+    const input = `(async x => ( 123))()`;
+    const output = eval(transformAsyncFunctions(input));
+    expect(output instanceof Promise).toBe(true);
+    output.then(result => expect(result).toBe(123)).then(done);
+  });
 });
