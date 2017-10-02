@@ -2738,6 +2738,54 @@ describe('Page', function() {
 
     }));
   });
+
+  describe('Target', function() {
+    it('Browser.targets should return all of the targets', SX(async function() {
+      // The pages will be the testing page and the original newtab page
+      const targets = await Promise.all(browser.targets().map(async target => ({type: await target.type(), url: await target.url(), title: await target.title()})));
+      expect(targets.some(target => target.type === 'page' &&
+        target.url === 'about:blank' &&
+        target.title === 'about:blank')).toBeTruthy('Missing blank page');
+      expect(targets.some(target => target.type === 'browser' &&
+        target.url === '' &&
+        target.title === '')).toBeTruthy('Missing browser target');
+    }));
+    it('Browser.pages should return all of the pages', SX(async function() {
+      // The pages will be the testing page and the original newtab page
+      const allPages = await browser.pages();
+      expect(allPages.length).toBe(2);
+      expect(allPages).toContain(page);
+      expect(allPages[0]).not.toBe(allPages[1]);
+    }));
+    it('should be able to use the default page in the browser', SX(async function() {
+      // The pages will be the testing page and the original newtab page
+      const allPages = await browser.pages();
+      const originalPage = allPages.find(p => p !== page);
+      expect(await originalPage.evaluate(() => ['Hello', 'world'].join(' '))).toBe('Hello world');
+      expect(await originalPage.$('body')).toBeTruthy();
+    }));
+    it('should report when a new page is created and closed', SX(async function(){
+      const otherPagePromise = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target.page())));
+      await page.evaluate(url => window.open(url), CROSS_PROCESS_PREFIX);
+      const otherPage = await otherPagePromise;
+      expect(otherPage.url()).toContain(CROSS_PROCESS_PREFIX);
+
+      expect(await otherPage.evaluate(() => ['Hello', 'world'].join(' '))).toBe('Hello world');
+      expect(await otherPage.$('body')).toBeTruthy();
+
+      let allPages = await browser.pages();
+      expect(allPages).toContain(page);
+      expect(allPages).toContain(otherPage);
+
+      const closePagePromise = new Promise(fulfill => browser.once('targetdestroyed', target => fulfill(target.page())));
+      await otherPage.close();
+      expect(await closePagePromise).toBe(otherPage);
+
+      allPages = await Promise.all(browser.targets().map(target => target.page()));
+      expect(allPages).toContain(page);
+      expect(allPages).not.toContain(otherPage);
+    }));
+  });
 });
 
 if (process.env.COVERAGE) {
