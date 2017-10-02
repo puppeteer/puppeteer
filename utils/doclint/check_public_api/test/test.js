@@ -20,6 +20,8 @@ const path = require('path');
 const puppeteer = require('../../../..');
 const checkPublicAPI = require('..');
 const SourceFactory = require('../../SourceFactory');
+const mdBuilder = require('../MDBuilder');
+const jsBuilder = require('../JSBuilder');
 const GoldenUtils = require('../../../../test/golden-utils');
 
 const OUTPUT_DIR = path.join(__dirname, 'output');
@@ -45,17 +47,19 @@ afterAll(SX(async function() {
 }));
 
 describe('checkPublicAPI', function() {
-  it('01-class-errors', SX(test));
-  it('02-method-errors', SX(test));
-  it('03-property-errors', SX(test));
-  it('04-bad-arguments', SX(test));
-  it('05-event-errors', SX(test));
-  it('06-duplicates', SX(test));
-  it('07-sorting', SX(test));
-  it('08-return', SX(test));
+  it('01-class-errors', SX(testLint));
+  it('02-method-errors', SX(testLint));
+  it('03-property-errors', SX(testLint));
+  it('04-bad-arguments', SX(testLint));
+  it('05-event-errors', SX(testLint));
+  it('06-duplicates', SX(testLint));
+  it('07-sorting', SX(testLint));
+  it('08-return', SX(testLint));
+  it('09-js-builder', SX(testJSBuilder));
+  it('10-md-builder', SX(testMDBuilder));
 });
 
-async function test() {
+async function testLint() {
   const dirPath = path.join(__dirname, specName);
   GoldenUtils.addMatchers(jasmine, dirPath, dirPath);
   const factory = new SourceFactory();
@@ -64,6 +68,45 @@ async function test() {
   const messages = await checkPublicAPI(page, mdSources, jsSources);
   const errors = messages.map(message => message.text);
   expect(errors.join('\n')).toBeGolden('result.txt');
+}
+
+async function testMDBuilder() {
+  const dirPath = path.join(__dirname, specName);
+  GoldenUtils.addMatchers(jasmine, dirPath, dirPath);
+  const factory = new SourceFactory();
+  const sources = await factory.readdir(dirPath, '.md');
+  const {documentation} = await mdBuilder(page, sources);
+  expect(serialize(documentation)).toBeGolden('result.txt');
+}
+
+async function testJSBuilder() {
+  const dirPath = path.join(__dirname, specName);
+  GoldenUtils.addMatchers(jasmine, dirPath, dirPath);
+  const factory = new SourceFactory();
+  const sources = await factory.readdir(dirPath, '.js');
+  const {documentation} = await jsBuilder(sources);
+  expect(serialize(documentation)).toBeGolden('result.txt');
+}
+
+function serialize(doc) {
+  const result = {classes: []};
+  for (let cls of doc.classesArray) {
+    const classJSON = {
+      name: cls.name,
+      members: []
+    };
+    result.classes.push(classJSON);
+    for (let member of cls.membersArray) {
+      classJSON.members.push({
+        name: member.name,
+        type: member.type,
+        hasReturn: member.hasReturn,
+        async: member.async,
+        args: member.argsArray.map(arg => arg.name)
+      });
+    }
+  }
+  return JSON.stringify(result, null, 2);
 }
 
 // Since Jasmine doesn't like async functions, they should be wrapped
