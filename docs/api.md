@@ -99,6 +99,10 @@
     + [dialog.dismiss()](#dialogdismiss)
     + [dialog.message()](#dialogmessage)
     + [dialog.type](#dialogtype)
+  * [class: ConsoleMessage](#class-consolemessage)
+    + [consoleMessage.args](#consolemessageargs)
+    + [consoleMessage.text](#consolemessagetext)
+    + [consoleMessage.type](#consolemessagetype)
   * [class: Frame](#class-frame)
     + [frame.$(selector)](#frameselector)
     + [frame.$$(selector)](#frameselector)
@@ -229,7 +233,7 @@ Closes browser with all the pages (if any were opened). The browser object itsel
 - returns: <[string]> Browser websocket url.
 
 Browser websocket endpoint which could be used as an argument to
-[puppeteer.connect](#puppeteerconnectoptions). The format is `ws://${host}:${port}/browser/<id>`
+[puppeteer.connect](#puppeteerconnectoptions). The format is `ws://${host}:${port}/devtools/browser/<id>`
 
 You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/version`. Learn more about the [devtools protocol](https://chromedevtools.github.io/devtools-protocol) and the [browser endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
 
@@ -250,7 +254,7 @@ puppeteer.launch().then(async browser => {
 ```
 
 #### event: 'console'
-- <[string]>
+- <[ConsoleMessage]>
 
 Emitted when JavaScript within the page calls one of console API methods, e.g. `console.log` or `console.dir`. Also emitted if the page throws an error or a warning.
 
@@ -258,11 +262,11 @@ The arguments passed into `console.log` appear as arguments on the event handler
 
 An example of handling `console` event:
 ```js
-page.on('console', (...args) => {
-  for (let i = 0; i < args.length; ++i)
+page.on('console', msg => {
+  for (let i = 0; i < msg.args.length; ++i)
     console.log(`${i}: ${args[i]}`);
 });
-page.evaluate(() => console.log(5, 'hello', {foo: 'bar'}));
+page.evaluate(() => console.log('hello', 5, {foo: 'bar'}));
 ```
 
 #### event: 'dialog'
@@ -515,7 +519,7 @@ const crypto = require('crypto');
 
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
-  page.on('console', console.log);
+  page.on('console', msg => console.log(msg.text));
   await page.exposeFunction('md5', text =>
     crypto.createHash('md5').update(text).digest('hex')
   );
@@ -537,7 +541,7 @@ const fs = require('fs');
 
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
-  page.on('console', console.log);
+  page.on('console', msg => console.log(msg.text));
   await page.exposeFunction('readfile', async filePath => {
     return new Promise((resolve, reject) => {
       fs.readFile(filePath, 'utf8', (err, text) => {
@@ -570,7 +574,7 @@ If there's no element matching `selector`, the method throws an error.
 
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
   - `waitUntil` <[string]> When to consider a navigation finished, defaults to `load`. Could be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
@@ -583,7 +587,7 @@ Navigate to the previous page in history.
 
 #### page.goForward(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
@@ -597,7 +601,7 @@ Navigate to the next page in history.
 #### page.goto(url, options)
 - `url` <[string]> URL to navigate page to. The url should include scheme, e.g. `https://`.
 - `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
@@ -708,7 +712,7 @@ Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#ke
 
 #### page.reload(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
@@ -903,7 +907,7 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
 
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds.
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
@@ -1093,6 +1097,21 @@ puppeteer.launch().then(async browser => {
 - <[string]>
 
 Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `prompt`.
+
+### class: ConsoleMessage
+
+[ConsoleMessage] objects are dispatched by page via the ['console'](#event-console) event.
+
+#### consoleMessage.args
+- <[Array]<[string]>>
+
+#### consoleMessage.text
+- <[string]>
+
+#### consoleMessage.type
+- <[string]>
+
+One of the following values: `'log'`, `'debug'`, `'info'`, `'error'`, `'warning'`, `'dir'`, `'dirxml'`, `'table'`, `'trace'`, `'clear'`, `'startGroup'`, `'startGroupCollapsed'`, `'endGroup'`, `'assert'`, `'profile'`, `'profileEnd'`, `'count'`, `'timeEnd'`.
 
 ### class: Frame
 
@@ -1297,6 +1316,7 @@ puppeteer.launch().then(async browser => {
 
 ElementHandle prevents DOM element from garbage collection unless the handle is [disposed](#elementhandledispose). ElementHandles are auto-disposed when their origin frame gets navigated.
 
+ElementHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args) and [`page.evaluate()`](#pageevaluatepagefunction-args) methods.
 
 #### elementHandle.boundingBox()
 - returns: <[Object]>
@@ -1456,6 +1476,7 @@ Contains the URL of the response.
 [stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable "stream.Readable"
 [Error]: https://nodejs.org/api/errors.html#errors_class_error "Error"
 [Frame]: #class-frame "Frame"
+[ConsoleMessage]: #class-consolemessage "ConsoleMessage"
 [iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols "Iterator"
 [Response]: #class-response  "Response"
 [Request]: #class-request  "Request"
