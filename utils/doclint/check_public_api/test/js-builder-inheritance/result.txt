@@ -1,0 +1,62 @@
+{
+  "classes": [
+    {
+      "name": "A",
+      "members": [
+        {
+          "name": "constructor",
+          "type": "method",
+          "hasReturn": false,
+          "async": false,
+          "args": []
+        },
+        {
+          "name": "foo",
+          "type": "method",
+          "hasReturn": false,
+          "async": false,
+          "args": [
+            "a"
+          ]
+        },
+        {
+          "name": "bar",
+          "type": "method",
+          "hasReturn": false,
+          "async": false,
+          "args": []
+        }
+      ]
+    },
+    {
+      "name": "B",
+      "members": [
+        {
+          "name": "bar",
+          "type": "method",
+          "hasReturn": false,
+          "async": false,
+          "args": [
+            "override"
+          ]
+        },
+        {
+          "name": "foo",
+          "type": "event",
+          "hasReturn": false,
+          "async": false,
+          "args": []
+        },
+        {
+          "name": "foo",
+          "type": "method",
+          "hasReturn": false,
+          "async": false,
+          "args": [
+            "a"
+          ]
+        }
+      ]
+    }
+  ]
+}

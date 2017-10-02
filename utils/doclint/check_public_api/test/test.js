@@ -47,16 +47,17 @@ afterAll(SX(async function() {
 }));
 
 describe('checkPublicAPI', function() {
-  it('01-class-errors', SX(testLint));
-  it('02-method-errors', SX(testLint));
-  it('03-property-errors', SX(testLint));
-  it('04-bad-arguments', SX(testLint));
-  it('05-event-errors', SX(testLint));
-  it('06-duplicates', SX(testLint));
-  it('07-sorting', SX(testLint));
-  it('08-return', SX(testLint));
-  it('09-js-builder', SX(testJSBuilder));
-  it('10-md-builder', SX(testMDBuilder));
+  it('diff-classes', SX(testLint));
+  it('diff-methods', SX(testLint));
+  it('diff-properties', SX(testLint));
+  it('diff-arguments', SX(testLint));
+  it('diff-events', SX(testLint));
+  it('check-duplicates', SX(testLint));
+  it('check-sorting', SX(testLint));
+  it('check-returns', SX(testLint));
+  it('js-builder-common', SX(testJSBuilder));
+  it('js-builder-inheritance', SX(testJSBuilder));
+  it('md-builder-common', SX(testMDBuilder));
 });
 
 async function testLint() {
