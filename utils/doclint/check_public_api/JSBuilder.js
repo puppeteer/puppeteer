@@ -155,7 +155,7 @@ function recreateClassesWithInheritance(classes, inheritance) {
   return classes.map(cls => {
     const membersMap = new Map();
     for (let wp = cls; wp; wp = classesByName.get(inheritance.get(wp.name))) {
-      for (let member of wp.membersArray) {
+      for (const member of wp.membersArray) {
         // Member was overridden.
         const memberId = member.type + ':' + member.name;
         if (membersMap.has(memberId))
@@ -182,7 +182,7 @@ module.exports = async function(sources) {
     const outline = new JSOutline(source.text());
     classes.push(...outline.classes);
     errors.push(...outline.errors);
-    for (let entry of outline.inheritance)
+    for (const entry of outline.inheritance)
       inheritance.set(entry[0], entry[1]);
   }
   const documentation = new Documentation(recreateClassesWithInheritance(classes, inheritance));
