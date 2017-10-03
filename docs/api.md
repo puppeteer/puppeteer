@@ -34,6 +34,7 @@
     + [page.$$(selector)](#pageselector)
     + [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
+    + [page.addStyleTag(url)](#pageaddstyletagurl)
     + [page.authenticate(credentials)](#pageauthenticatecredentials)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
@@ -108,6 +109,7 @@
     + [frame.$$(selector)](#frameselector)
     + [frame.$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
     + [frame.addScriptTag(url)](#frameaddscripttagurl)
+    + [frame.addStyleTag(url)](#frameaddstyletagurl)
     + [frame.childFrames()](#framechildframes)
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
     + [frame.injectFile(filePath)](#frameinjectfilefilepath)
@@ -367,6 +369,14 @@ Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector
 Adds a `<script>` tag into the page with the desired url. Alternatively, a local JavaScript file could be injected via [`page.injectFile`](#pageinjectfilefilepath) method.
 
 Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
+
+#### page.addStyleTag(url)
+- `url` <[string]> Url of the `<link>` tag
+- returns: <[Promise]> which resolves when the stylesheet's onload fires.
+
+Adds a `<link rel="stylesheet">` tag into the page with the desired url.
+
+Shortcut for [page.mainFrame().addStyleTag(url)](#frameaddstyletagurl).
 
 #### page.authenticate(credentials)
 - `credentials` <[Object]>
@@ -1174,6 +1184,12 @@ const html = await frame.$eval('.main-container', e => e.outerHTML);
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
 
 Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScript could be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
+
+#### frame.addStyleTag(url)
+- `url` <[string]> Url of a stylesheet to be added
+- returns: <[Promise]> Promise which resolves when the script gets added and loads.
+
+Adds a `<link rel="stylesheet">` tag to the frame with the desired url.
 
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
