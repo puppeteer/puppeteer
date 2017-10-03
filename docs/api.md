@@ -304,9 +304,8 @@ Emitted when the JavaScript [`load`](https://developer.mozilla.org/en-US/docs/We
 #### event: 'metrics'
 - <[Object]>
   - `title` <[string]> The title passed to `console.timeStamp`.
-  - `metrics` <[Array]<[Object]>> The metrics array.
-    - `name` <[string]> Name of the metric.
-    - `value` <[number]> Value of the metric.
+  - `metrics` <[Object]> Object containing metrics as key/value pairs. The values
+    of metrics are of <[number]> type.
 
 Emitted when the JavaScript code makes a call to `console.timeStamp`. For the list
 of metrics see `page.getMetrics`.
@@ -584,27 +583,23 @@ If there's no element matching `selector`, the method throws an error.
 - returns: <[Array]<[Frame]>> An array of all frames attached to the page.
 
 #### page.getMetrics()
-- returns: <[Array]<[Object]>> An array of page metrics.
-  - `name` <[string]> Name of the metric.
-  - `value` <[number]> Value of the metric.
-
-The list includes the following metrics:
-  - `Timestamp` - The timestamp when the metrics sample was taken.
-  - `DocumentCount` - Number of documents in the page.
-  - `FrameCount` - Number of frames in the page.
-  - `JSEventListenerCount` - Number of events in the page.
-  - `NodeCount` - Number of DOM nodes in the page.
-  - `LayoutCount` - Total number of full or partial page layout.
-  - `RecalcStyleCount` - Total number of page style recalculations.
-  - `LayoutDuration` - Combined durations of all page layouts.
-  - `RecalcStyleDuration` - Combined duration of all page style recalculations.
-  - `ScriptDuration` - Combined duration of JavaScript execution.
-  - `TaskDuration` - Combined duration of all tasks performed by the browser.
-  - `JSHeapUsedSize` - Used JavaScript heap size.
-  - `JSHeapTotalSize` - Total JavaScript heap size.
-  - `FirstMeaningfulPaint` - Timestamp of the first meaningful paint event.
-  - `DomContentLoaded` - Timestamp of the DOM content loaded event.
-  - `NavigationStart` - Timestamp of the navigation start event.
+- returns: <[Object]> Object containing metrics as key/value pairs.
+  - `Timestamp` <[number]> The timestamp when the metrics sample was taken.
+  - `DocumentCount` <[number]> Number of documents in the page.
+  - `FrameCount` <[number]> Number of frames in the page.
+  - `JSEventListenerCount` <[number]> Number of events in the page.
+  - `NodeCount` <[number]> Number of DOM nodes in the page.
+  - `LayoutCount` <[number]> Total number of full or partial page layout.
+  - `RecalcStyleCount` <[number]> Total number of page style recalculations.
+  - `LayoutDuration` <[number]> Combined durations of all page layouts.
+  - `RecalcStyleDuration` <[number]> Combined duration of all page style recalculations.
+  - `ScriptDuration` <[number]> Combined duration of JavaScript execution.
+  - `TaskDuration` <[number]> Combined duration of all tasks performed by the browser.
+  - `JSHeapUsedSize` <[number]> Used JavaScript heap size.
+  - `JSHeapTotalSize` <[number]> Total JavaScript heap size.
+  - `FirstMeaningfulPaint` <[number]> Timestamp of the first meaningful paint event.
+  - `DomContentLoaded` <[number]> Timestamp of the DOM content loaded event.
+  - `NavigationStart` <[number]> Timestamp of the navigation start event.
 
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:

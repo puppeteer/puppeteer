@@ -601,24 +601,22 @@ describe('Page', function() {
       checkMetrics(metrics.metrics);
     }));
     function checkMetrics(metrics) {
-      const metric = name => metrics.find(m => m.name === name).value;
-      expect(metrics.length).toBeGreaterThan(0);
-      expect(metric('Timestamp')).toBeGreaterThan(0);
-      expect(metric('DocumentCount')).toBeGreaterThan(0);
-      expect(metric('FrameCount')).toBeGreaterThan(0);
-      expect(metric('JSEventListenerCount')).toBeGreaterThanOrEqual(0);
-      expect(metric('NodeCount')).toBeGreaterThan(0);
-      expect(metric('LayoutCount')).toBeGreaterThan(0);
-      expect(metric('RecalcStyleCount')).toBeGreaterThan(0);
-      expect(metric('LayoutDuration')).toBeGreaterThan(0);
-      expect(metric('RecalcStyleDuration')).toBeGreaterThan(0);
-      expect(metric('ScriptDuration')).toBeGreaterThanOrEqual(0);
-      expect(metric('TaskDuration')).toBeGreaterThan(0);
-      expect(metric('JSHeapUsedSize')).toBeGreaterThan(0);
-      expect(metric('JSHeapTotalSize')).toBeGreaterThan(0);
-      expect(metric('FirstMeaningfulPaint')).toBeGreaterThanOrEqual(0);
-      expect(metric('DomContentLoaded')).toBeGreaterThan(0);
-      expect(metric('NavigationStart')).toBeGreaterThan(0);
+      expect(metrics['Timestamp']).toBeGreaterThan(0);
+      expect(metrics['DocumentCount']).toBeGreaterThan(0);
+      expect(metrics['FrameCount']).toBeGreaterThan(0);
+      expect(metrics['JSEventListenerCount']).toBeGreaterThanOrEqual(0);
+      expect(metrics['NodeCount']).toBeGreaterThan(0);
+      expect(metrics['LayoutCount']).toBeGreaterThan(0);
+      expect(metrics['RecalcStyleCount']).toBeGreaterThan(0);
+      expect(metrics['LayoutDuration']).toBeGreaterThan(0);
+      expect(metrics['RecalcStyleDuration']).toBeGreaterThan(0);
+      expect(metrics['ScriptDuration']).toBeGreaterThanOrEqual(0);
+      expect(metrics['TaskDuration']).toBeGreaterThan(0);
+      expect(metrics['JSHeapUsedSize']).toBeGreaterThan(0);
+      expect(metrics['JSHeapTotalSize']).toBeGreaterThan(0);
+      expect(metrics['FirstMeaningfulPaint']).toBeGreaterThanOrEqual(0);
+      expect(metrics['DomContentLoaded']).toBeGreaterThan(0);
+      expect(metrics['NavigationStart']).toBeGreaterThan(0);
     }
   });
 
