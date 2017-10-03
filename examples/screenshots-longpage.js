@@ -27,7 +27,7 @@ await page.emulate(devices['iPhone 6']);
 await page.goto('http://www.spiegel.de');
 
 const {contentSize} = await page._client.send('Page.getLayoutMetrics');
-const dpr = page._viewport.deviceScaleFactor || 1;
+const dpr = page.viewport().deviceScaleFactor || 1;
 const maxScreenshotHeight = 16000 / dpr; // Hardcoded max texture size of 16,384 (crbug.com/770769)
 
 for (let ypos = 0; ypos < contentSize.height; ypos += maxScreenshotHeight) {
