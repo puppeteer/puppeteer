@@ -601,10 +601,24 @@ describe('Page', function() {
       checkMetrics(metrics.metrics);
     }));
     function checkMetrics(metrics) {
+      const metric = name => metrics.find(m => m.name === name).value;
       expect(metrics.length).toBeGreaterThan(0);
-      expect(metrics.find(m => m.name === 'Timestamp').value).toBeGreaterThan(0);
-      expect(metrics.find(m => m.name === 'DocumentCount').value).toBeGreaterThan(0);
-      expect(metrics.find(m => m.name === 'DomContentLoaded').value).toBeGreaterThan(0);
+      expect(metric('Timestamp')).toBeGreaterThan(0);
+      expect(metric('DocumentCount')).toBeGreaterThan(0);
+      expect(metric('FrameCount')).toBeGreaterThan(0);
+      expect(metric('JSEventListenerCount')).toBeGreaterThanOrEqual(0);
+      expect(metric('NodeCount')).toBeGreaterThan(0);
+      expect(metric('LayoutCount')).toBeGreaterThan(0);
+      expect(metric('RecalcStyleCount')).toBeGreaterThan(0);
+      expect(metric('LayoutDuration')).toBeGreaterThan(0);
+      expect(metric('RecalcStyleDuration')).toBeGreaterThan(0);
+      expect(metric('ScriptDuration')).toBeGreaterThanOrEqual(0);
+      expect(metric('TaskDuration')).toBeGreaterThan(0);
+      expect(metric('JSHeapUsedSize')).toBeGreaterThan(0);
+      expect(metric('JSHeapTotalSize')).toBeGreaterThan(0);
+      expect(metric('FirstMeaningfulPaint')).toBeGreaterThanOrEqual(0);
+      expect(metric('DomContentLoaded')).toBeGreaterThan(0);
+      expect(metric('NavigationStart')).toBeGreaterThan(0);
     }
   });
 

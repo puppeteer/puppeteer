@@ -308,7 +308,8 @@ Emitted when the JavaScript [`load`](https://developer.mozilla.org/en-US/docs/We
     - `name` <[string]> Name of the metric.
     - `value` <[number]> Value of the metric.
 
-Emitted when the JavaScript code makes a call to `console.timeStamp`.
+Emitted when the JavaScript code makes a call to `console.timeStamp`. For the list
+of metrics see `page.getMetrics`.
 
 #### event: 'pageerror'
 - <[string]> The exception message
@@ -586,6 +587,24 @@ If there's no element matching `selector`, the method throws an error.
 - returns: <[Array]<[Object]>> An array of page metrics.
   - `name` <[string]> Name of the metric.
   - `value` <[number]> Value of the metric.
+
+The list includes the following metrics:
+  - `Timestamp` - The timestamp when the metrics sample was taken.
+  - `DocumentCount` - Number of documents in the page.
+  - `FrameCount` - Number of frames in the page.
+  - `JSEventListenerCount` - Number of events in the page.
+  - `NodeCount` - Number of DOM nodes in the page.
+  - `LayoutCount` - Total number of full or partial page layout.
+  - `RecalcStyleCount` - Total number of page style recalculations.
+  - `LayoutDuration` - Combined durations of all page layouts.
+  - `RecalcStyleDuration` - Combined duration of all page style recalculations.
+  - `ScriptDuration` - Combined duration of JavaScript execution.
+  - `TaskDuration` - Combined duration of all tasks performed by the browser.
+  - `JSHeapUsedSize` - Used JavaScript heap size.
+  - `JSHeapTotalSize` - Total JavaScript heap size.
+  - `FirstMeaningfulPaint` - Timestamp of the first meaningful paint event.
+  - `DomContentLoaded` - Timestamp of the DOM content loaded event.
+  - `NavigationStart` - Timestamp of the navigation start event.
 
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
