@@ -38,7 +38,7 @@ for (let ypos = 0; ypos < contentSize.height; ypos += maxScreenshotHeight) {
       x: 0,
       y: ypos,
       width: contentSize.width,
-      height: height
+      height
     }
   });
 }
