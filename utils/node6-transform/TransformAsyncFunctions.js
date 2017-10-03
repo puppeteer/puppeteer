@@ -88,7 +88,19 @@ function transformAsyncFunctions(text) {
     if (node.body.type !== 'BlockStatement') {
       before += `{ return `;
       after = `; }` + after;
+
+      // Remove parentheses that might wrap an arrow function
+      const beforeBody = text.substring(node.range[0], node.body.range[0]);
+      if (/\(\s*$/.test(beforeBody)) {
+        const afterBody = text.substring(node.body.range[1], node.range[1]);
+        const openParen = node.range[0] + beforeBody.lastIndexOf('(');
+        insertText(openParen, openParen + 1, ' ');
+        const closeParen = node.body.range[1] + afterBody.indexOf(')');
+        insertText(closeParen, closeParen + 1, ' ');
+      }
     }
+
+
     insertText(node.body.range[0], node.body.range[0], before);
     insertText(node.body.range[1], node.body.range[1], after);
   }

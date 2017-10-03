@@ -1,5 +1,5 @@
 class Foo {
-  constructor(arg1, arg3 = {}) {
+  foo(arg1, arg3 = {}) {
   }
 
   test(...filePaths) {

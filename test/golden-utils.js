@@ -85,6 +85,8 @@ function compareText(actual, expectedBuffer) {
  * @return {!{pass: boolean, message: (undefined|string)}}
  */
 function compare(goldenPath, outputPath, actual, goldenName) {
+  goldenPath = path.normalize(goldenPath);
+  outputPath = path.normalize(outputPath);
   const expectedPath = path.join(goldenPath, goldenName);
   const actualPath = path.join(outputPath, goldenName);
 
@@ -110,9 +112,13 @@ function compare(goldenPath, outputPath, actual, goldenName) {
   if (!result)
     return { pass: true };
   ensureOutputDir();
-  fs.writeFileSync(actualPath, actual);
-  // Copy expected to the output/ folder for convenience.
-  fs.writeFileSync(addSuffix(actualPath, '-expected'), expected);
+  if (goldenPath === outputPath) {
+    fs.writeFileSync(addSuffix(actualPath, '-actual'), actual);
+  } else {
+    fs.writeFileSync(actualPath, actual);
+    // Copy expected to the output/ folder for convenience.
+    fs.writeFileSync(addSuffix(actualPath, '-expected'), expected);
+  }
   if (result.diff) {
     const diffPath = addSuffix(actualPath, '-diff', result.diffExtension);
     fs.writeFileSync(diffPath, result.diff);

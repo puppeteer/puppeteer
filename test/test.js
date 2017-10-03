@@ -537,13 +537,15 @@ describe('Page', function() {
 
   describe('Page.Events.Console', function() {
     it('should work', SX(async function() {
-      let commandArgs = [];
-      page.once('console', (...args) => commandArgs = args);
+      let message = null;
+      page.once('console', m => message = m);
       await Promise.all([
-        page.evaluate(() => console.log(5, 'hello', {foo: 'bar'})),
+        page.evaluate(() => console.log('hello', 5, {foo: 'bar'})),
         waitForEvents(page, 'console')
       ]);
-      expect(commandArgs).toEqual([5, 'hello', {foo: 'bar'}]);
+      expect(message.text).toEqual('hello 5 [object Object]');
+      expect(message.type).toEqual('log');
+      expect(message.args).toEqual(['hello', 5, {foo: 'bar'}]);
     }));
     it('should work for different console API calls', SX(async function() {
       const messages = [];
@@ -559,11 +561,14 @@ describe('Page', function() {
           console.error('calling console.error');
           console.log(Promise.resolve('should not wait until resolved!'));
         }),
-        // Wait for 5 events to hit.
+        // Wait for 5 events to hit - console.time is not reported
         waitForEvents(page, 'console', 5)
       ]);
-      expect(messages[0]).toContain('calling console.time');
-      expect(messages.slice(1)).toEqual([
+      expect(messages.map(msg => msg.type)).toEqual([
+        'timeEnd', 'trace', 'dir', 'warning', 'error', 'log'
+      ]);
+      expect(messages[0].text).toContain('calling console.time');
+      expect(messages.slice(1).map(msg => msg.text)).toEqual([
         'calling console.trace',
         'calling console.dir',
         'calling console.warn',
@@ -572,13 +577,13 @@ describe('Page', function() {
       ]);
     }));
     it('should not fail for window object', SX(async function() {
-      let windowObj = null;
-      page.once('console', arg => windowObj = arg);
+      let message = null;
+      page.once('console', msg => message = msg);
       await Promise.all([
         page.evaluate(() => console.error(window)),
         waitForEvents(page, 'console')
       ]);
-      expect(windowObj).toBe('Window');
+      expect(message.text).toBe('Window');
     }));
   });
 
@@ -593,7 +598,7 @@ describe('Page', function() {
       expect(error.message).toContain('Cannot navigate to invalid URL');
     }));
     it('should fail when navigating to bad SSL', SX(async function() {
-      // Make sure that network events do not emit 'undefind'.
+      // Make sure that network events do not emit 'undefined'.
       // @see https://crbug.com/750469
       page.on('request', request => expect(request).toBeTruthy());
       page.on('requestfinished', request => expect(request).toBeTruthy());
@@ -739,12 +744,21 @@ describe('Page', function() {
       // Expect navigation to succeed.
       expect(response.ok).toBe(true);
     }));
-    it('should not leak listeners durint navigation', SX(async function() {
+    it('should not leak listeners during navigation', SX(async function() {
       let warning = null;
       const warningHandler = w => warning = w;
       process.on('warning', warningHandler);
       for (let i = 0; i < 20; ++i)
         await page.goto(EMPTY_PAGE);
+      process.removeListener('warning', warningHandler);
+      expect(warning).toBe(null);
+    }));
+    it('should not leak listeners during bad navigation', SX(async function() {
+      let warning = null;
+      const warningHandler = w => warning = w;
+      process.on('warning', warningHandler);
+      for (let i = 0; i < 20; ++i)
+        await page.goto('asdf').catch(e => {/* swallow navigation error */});
       process.removeListener('warning', warningHandler);
       expect(warning).toBe(null);
     }));
@@ -983,6 +997,13 @@ describe('Page', function() {
       page.on('request', request => request.continue());
       const response = await page.goto(PREFIX + '/some nonexisting page');
       expect(response.status).toBe(404);
+    }));
+    it('should work with badly encoded URLs', SX(async function() {
+      await page.setRequestInterceptionEnabled(true);
+      server.setRoute('/malformed?rnd=%911', (req, res) => res.end());
+      page.on('request', request => request.continue());
+      const response = await page.goto(PREFIX + '/malformed?rnd=%911');
+      expect(response.status).toBe(200);
     }));
     it('should work with encoded URLs - 2', SX(async function() {
       // The requestWillBeSent will report URL as-is, whereas interception will
@@ -1341,7 +1362,7 @@ describe('Page', function() {
             'Keypress: ^ 94 94 94 []',
             'Keyup: ^ 54 []'].join('\n'));
     }));
-    it('should send propery codes while typing with shift', SX(async function(){
+    it('should send proper codes while typing with shift', SX(async function(){
       await page.goto(PREFIX + '/input/keyboard.html');
       const keyboard = page.keyboard;
       await keyboard.down('Shift');

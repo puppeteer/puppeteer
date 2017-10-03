@@ -99,6 +99,10 @@
     + [dialog.dismiss()](#dialogdismiss)
     + [dialog.message()](#dialogmessage)
     + [dialog.type](#dialogtype)
+  * [class: ConsoleMessage](#class-consolemessage)
+    + [consoleMessage.args](#consolemessageargs)
+    + [consoleMessage.text](#consolemessagetext)
+    + [consoleMessage.type](#consolemessagetype)
   * [class: Frame](#class-frame)
     + [frame.$(selector)](#frameselector)
     + [frame.$$(selector)](#frameselector)
@@ -228,7 +232,9 @@ Closes browser with all the pages (if any were opened). The browser object itsel
 - returns: <[string]> Browser websocket url.
 
 Browser websocket endpoint which could be used as an argument to
-[puppeteer.connect](#puppeteerconnectoptions).
+[puppeteer.connect](#puppeteerconnectoptions). The format is `ws://${host}:${port}/devtools/browser/<id>`
+
+You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/version`. Learn more about the [devtools protocol](https://chromedevtools.github.io/devtools-protocol) and the [browser endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
 
 ### class: Page
 
@@ -247,7 +253,7 @@ puppeteer.launch().then(async browser => {
 ```
 
 #### event: 'console'
-- <[string]>
+- <[ConsoleMessage]>
 
 Emitted when JavaScript within the page calls one of console API methods, e.g. `console.log` or `console.dir`. Also emitted if the page throws an error or a warning.
 
@@ -255,11 +261,11 @@ The arguments passed into `console.log` appear as arguments on the event handler
 
 An example of handling `console` event:
 ```js
-page.on('console', (...args) => {
-  for (let i = 0; i < args.length; ++i)
+page.on('console', msg => {
+  for (let i = 0; i < msg.args.length; ++i)
     console.log(`${i}: ${args[i]}`);
 });
-page.evaluate(() => console.log(5, 'hello', {foo: 'bar'}));
+page.evaluate(() => console.log('hello', 5, {foo: 'bar'}));
 ```
 
 #### event: 'dialog'
@@ -512,7 +518,7 @@ const crypto = require('crypto');
 
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
-  page.on('console', console.log);
+  page.on('console', msg => console.log(msg.text));
   await page.exposeFunction('md5', text =>
     crypto.createHash('md5').update(text).digest('hex')
   );
@@ -534,7 +540,7 @@ const fs = require('fs');
 
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
-  page.on('console', console.log);
+  page.on('console', msg => console.log(msg.text));
   await page.exposeFunction('readfile', async filePath => {
     return new Promise((resolve, reject) => {
       fs.readFile(filePath, 'utf8', (err, text) => {
@@ -1091,6 +1097,21 @@ puppeteer.launch().then(async browser => {
 
 Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `prompt`.
 
+### class: ConsoleMessage
+
+[ConsoleMessage] objects are dispatched by page via the ['console'](#event-console) event.
+
+#### consoleMessage.args
+- <[Array]<[string]>>
+
+#### consoleMessage.text
+- <[string]>
+
+#### consoleMessage.type
+- <[string]>
+
+One of the following values: `'log'`, `'debug'`, `'info'`, `'error'`, `'warning'`, `'dir'`, `'dirxml'`, `'table'`, `'trace'`, `'clear'`, `'startGroup'`, `'startGroupCollapsed'`, `'endGroup'`, `'assert'`, `'profile'`, `'profileEnd'`, `'count'`, `'timeEnd'`.
+
 ### class: Frame
 
 At every point of time, page exposes its current frame tree via the [page.mainFrame()](#pagemainframe) and [frame.childFrames()](#framechildframes) methods.
@@ -1294,6 +1315,8 @@ puppeteer.launch().then(async browser => {
 
 ElementHandle prevents DOM element from garbage collection unless the handle is [disposed](#elementhandledispose). ElementHandles are auto-disposed when their origin frame gets navigated.
 
+ElementHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args) and [`page.evaluate()`](#pageevaluatepagefunction-args) methods.
+
 #### elementHandle.click([options])
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
@@ -1430,6 +1453,7 @@ Contains the URL of the response.
 [stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable "stream.Readable"
 [Error]: https://nodejs.org/api/errors.html#errors_class_error "Error"
 [Frame]: #class-frame "Frame"
+[ConsoleMessage]: #class-consolemessage "ConsoleMessage"
 [iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols "Iterator"
 [Response]: #class-response  "Response"
 [Request]: #class-request  "Request"
