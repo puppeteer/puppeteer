@@ -180,7 +180,6 @@
   * [response.url](#responseurl)
 - [class: Target](#class-target)
   * [target.page()](#targetpage)
-  * [target.title()](#targettitle)
   * [target.type()](#targettype)
   * [target.url()](#targeturl)
 
@@ -312,7 +311,7 @@ Disconnects Puppeteer from the browser, but leaves the Chromium process running.
 - returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages.
 
 #### browser.targets()
-- returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages.
+- returns: <[Array]<[Target]>> An array of all active targets.
 
 #### browser.version()
 - returns: <[Promise]<[string]>> For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is similar to `Chrome/61.0.3153.0`.
@@ -1910,16 +1909,13 @@ Contains the status code of the response (e.g., 200 for a success).
 
 If the target is not of type `"page"`, returns `null`.
 
-#### target.title()
-- returns: <[Promise]<[string]>>
-
 #### target.type()
 - returns: <[string]>
 
 Identifies what kind of target this is such as `"page"` or `"service_worker"`.
 
 #### target.url()
-- returns: <[Promise]<[string]>>
+- returns: <[string]>
 
 Contains the URL of the response.
 

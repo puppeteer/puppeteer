@@ -2742,13 +2742,11 @@ describe('Page', function() {
   describe('Target', function() {
     it('Browser.targets should return all of the targets', SX(async function() {
       // The pages will be the testing page and the original newtab page
-      const targets = await Promise.all(browser.targets().map(async target => ({type: await target.type(), url: await target.url(), title: await target.title()})));
-      expect(targets.some(target => target.type === 'page' &&
-        target.url === 'about:blank' &&
-        target.title === 'about:blank')).toBeTruthy('Missing blank page');
-      expect(targets.some(target => target.type === 'browser' &&
-        target.url === '' &&
-        target.title === '')).toBeTruthy('Missing browser target');
+      const targets = browser.targets();
+      expect(targets.some(target => target.type() === 'page' &&
+        target.url() === 'about:blank')).toBeTruthy('Missing blank page');
+      expect(targets.some(target => target.type() === 'browser' &&
+        target.url() === '')).toBeTruthy('Missing browser target');
     }));
     it('Browser.pages should return all of the pages', SX(async function() {
       // The pages will be the testing page and the original newtab page
