@@ -333,25 +333,25 @@ describe('Page', function() {
         three: 3
       }));
       const twoHandle = await aHandle.get('two');
-      expect(await twoHandle.asJSON()).toEqual(2);
+      expect(await twoHandle.jsonValue()).toEqual(2);
     }));
   });
 
-  describe('JSHandle.asJSON', function() {
+  describe('JSHandle.jsonValue', function() {
     it('should work', SX(async function() {
       const aHandle = await page.evaluateHandle(() => ({foo: 'bar'}));
-      const json = await aHandle.asJSON();
+      const json = await aHandle.jsonValue();
       expect(json).toEqual({foo: 'bar'});
     }));
     it('should work with dates', SX(async function() {
       const dateHandle = await page.evaluateHandle(() => new Date('2017-09-26T00:00:00.000Z'));
-      const json = await dateHandle.asJSON();
+      const json = await dateHandle.jsonValue();
       expect(json).toBe('2017-09-26T00:00:00.000Z');
     }));
     it('should throw for circular objects', SX(async function() {
       const windowHandle = await page.evaluateHandle('window');
       let error = null;
-      await windowHandle.asJSON().catch(e => error = e);
+      await windowHandle.jsonValue().catch(e => error = e);
       expect(error.message).toContain('Converting circular structure to JSON');
     }));
   });
@@ -361,8 +361,8 @@ describe('Page', function() {
       const aHandle = await page.evaluateHandle(() => ([3,2]));
       const array = await aHandle.asArray();
       expect(array.length).toBe(2);
-      expect(await array[0].asJSON()).toBe(3);
-      expect(await array[1].asJSON()).toBe(2);
+      expect(await array[0].jsonValue()).toBe(3);
+      expect(await array[1].jsonValue()).toBe(2);
     }));
   });
 
@@ -373,7 +373,7 @@ describe('Page', function() {
       }));
       const object = await aHandle.asObject();
       expect(object.foo).toBeTruthy();
-      expect(await object.foo.asJSON()).toBe('bar');
+      expect(await object.foo.jsonValue()).toBe('bar');
     }));
   });
 
@@ -666,9 +666,9 @@ describe('Page', function() {
       ]);
       expect(message.text).toEqual('hello 5 JSHandle@object');
       expect(message.type).toEqual('log');
-      expect(await message.args[0].asJSON()).toEqual('hello');
-      expect(await message.args[1].asJSON()).toEqual(5);
-      expect(await message.args[2].asJSON()).toEqual({foo: 'bar'});
+      expect(await message.args[0].jsonValue()).toEqual('hello');
+      expect(await message.args[1].jsonValue()).toEqual(5);
+      expect(await message.args[2].jsonValue()).toEqual({foo: 'bar'});
     }));
     it('should work for different console API calls', SX(async function() {
       const messages = [];
