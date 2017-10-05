@@ -325,14 +325,14 @@ describe('Page', function() {
     }));
   });
 
-  describe('JSHandle.get', function() {
+  describe('JSHandle.getProperty', function() {
     it('should work', SX(async function() {
       const aHandle = await page.evaluateHandle(() => ({
         one: 1,
         two: 2,
         three: 3
       }));
-      const twoHandle = await aHandle.get('two');
+      const twoHandle = await aHandle.getProperty('two');
       expect(await twoHandle.jsonValue()).toEqual(2);
     }));
   });
@@ -356,24 +356,15 @@ describe('Page', function() {
     }));
   });
 
-  describe('JSHandle.asArray', function() {
-    it('should work', SX(async function() {
-      const aHandle = await page.evaluateHandle(() => ([3,2]));
-      const array = await aHandle.asArray();
-      expect(array.length).toBe(2);
-      expect(await array[0].jsonValue()).toBe(3);
-      expect(await array[1].jsonValue()).toBe(2);
-    }));
-  });
-
-  describe('JSHandle.asObject', function() {
+  describe('JSHandle.getProperties', function() {
     it('should work', SX(async function() {
       const aHandle = await page.evaluateHandle(() => ({
         foo: 'bar'
       }));
-      const object = await aHandle.asObject();
-      expect(object.foo).toBeTruthy();
-      expect(await object.foo.jsonValue()).toBe('bar');
+      const properties = await aHandle.getProperties();
+      const foo = properties.get('foo');
+      expect(foo).toBeTruthy();
+      expect(await foo.jsonValue()).toBe('bar');
     }));
   });
 
