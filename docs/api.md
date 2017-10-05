@@ -112,7 +112,7 @@
     + [frame.addScriptTag(url)](#frameaddscripttagurl)
     + [frame.addStyleTag(url)](#frameaddstyletagurl)
     + [frame.childFrames()](#framechildframes)
-    + [frame.context()](#framecontext)
+    + [frame.executionContext()](#framecontext)
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
     + [frame.injectFile(filePath)](#frameinjectfilefilepath)
     + [frame.isDetached()](#frameisdetached)
@@ -131,7 +131,7 @@
     + [objectHandle.asElement()](#objecthandleaselement)
     + [objectHandle.jsonValue()](#objecthandleasjson)
     + [objectHandle.asObject()](#objecthandleasobject)
-    + [objectHandle.context()](#objecthandlecontext)
+    + [objectHandle.executionContext()](#objecthandlecontext)
     + [objectHandle.dispose()](#objecthandledispose)
     + [objectHandle.get(propertyName)](#objecthandlegetpropertyname)
     + [objectHandle.toString()](#objecthandletostring)
@@ -142,7 +142,7 @@
     + [elementHandle.jsonValue()](#elementhandleasjson)
     + [elementHandle.asObject()](#elementhandleasobject)
     + [elementHandle.click([options])](#elementhandleclickoptions)
-    + [elementHandle.context()](#elementhandlecontext)
+    + [elementHandle.executionContext()](#elementhandlecontext)
     + [elementHandle.dispose()](#elementhandledispose)
     + [elementHandle.get(propertyName)](#elementhandlegetpropertyname)
     + [elementHandle.hover()](#elementhandlehover)
@@ -1249,7 +1249,7 @@ Adds a `<link rel="stylesheet">` tag to the frame with the desired url.
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
 
-#### frame.context()
+#### frame.executionContext()
 - returns: <[ExecutionContext]> Execution context associated with this frame.
 
 #### frame.evaluate(pageFunction, ...args)
@@ -1426,7 +1426,7 @@ const aHandle = await context.evaluateHandle('1 + 2'); // Handle on the '3' obje
 
 [JSHandle] instances could be passed as arguments to the `executionContext.evaluateHandle`:
 ```js
-const context = page.mainFrame().context();
+const context = page.mainFrame().executionContext();
 const aHandle = await context.evaluateHandle(() => document.body);
 const resultHandle = await context.evaluateHandle(body => body.innerHTML, aHandle);
 console.log(await resultHandle.jsonValue());
@@ -1480,7 +1480,7 @@ const {window, document} = await objectHandle.asObject();
 await arrayHandle.dispose();
 ```
 
-#### objectHandle.context()
+#### objectHandle.executionContext()
 - returns: [ExecutionContext]
 
 Returns execution context the handle belongs to.
@@ -1546,7 +1546,7 @@ ElementHandle instances can be used as arguments in [`page.$eval()`](#pageevalse
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
 If the element is detached from DOM, the method throws an error.
 
-#### elementHandle.context()
+#### elementHandle.executionContext()
 - returns: [ExecutionContext]
 
 #### elementHandle.dispose()
