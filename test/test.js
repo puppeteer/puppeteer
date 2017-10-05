@@ -295,7 +295,7 @@ describe('Page', function() {
       await element.dispose();
       let error = null;
       await page.evaluate(e => e.textContent, element).catch(e => error = e);
-      expect(error.message).toContain('ObjectHandle is disposed');
+      expect(error.message).toContain('JSHandle is disposed');
     }));
     it('should throw if elementHandles are from other frames', SX(async function() {
       const FrameUtils = require('./frame-utils');
@@ -304,7 +304,7 @@ describe('Page', function() {
       let error = null;
       await page.evaluate(body => body.innerHTML, bodyHandle).catch(e => error = e);
       expect(error).toBeTruthy();
-      expect(error.message).toContain('ObjectHandles can be evaluated only in the context they were created');
+      expect(error.message).toContain('JSHandles can be evaluated only in the context they were created');
     }));
     it('should accept object handle as an argument', SX(async function() {
       const navigatorHandle = await page.evaluateHandle(() => navigator);
@@ -325,7 +325,7 @@ describe('Page', function() {
     }));
   });
 
-  describe('ObjectHandle.get', function() {
+  describe('JSHandle.get', function() {
     it('should work', SX(async function() {
       const aHandle = await page.evaluateHandle(() => ({
         one: 1,
@@ -337,7 +337,7 @@ describe('Page', function() {
     }));
   });
 
-  describe('ObjectHandle.asJSON', function() {
+  describe('JSHandle.asJSON', function() {
     it('should work', SX(async function() {
       const aHandle = await page.evaluateHandle(() => ({foo: 'bar'}));
       const json = await aHandle.asJSON();
@@ -356,7 +356,7 @@ describe('Page', function() {
     }));
   });
 
-  describe('ObjectHandle.asArray', function() {
+  describe('JSHandle.asArray', function() {
     it('should work', SX(async function() {
       const aHandle = await page.evaluateHandle(() => ([3,2]));
       const array = await aHandle.asArray();
@@ -366,7 +366,7 @@ describe('Page', function() {
     }));
   });
 
-  describe('ObjectHandle.asObject', function() {
+  describe('JSHandle.asObject', function() {
     it('should work', SX(async function() {
       const aHandle = await page.evaluateHandle(() => ({
         foo: 'bar'
@@ -377,7 +377,7 @@ describe('Page', function() {
     }));
   });
 
-  describe('ObjectHandle.asElement', function() {
+  describe('JSHandle.asElement', function() {
     it('should work', SX(async function() {
       const aHandle = await page.evaluateHandle(() => document.body);
       const element = aHandle.asElement();
@@ -664,7 +664,7 @@ describe('Page', function() {
         page.evaluate(() => console.log('hello', 5, {foo: 'bar'})),
         waitForEvents(page, 'console')
       ]);
-      expect(message.text).toEqual('hello 5 ObjectHandle@object');
+      expect(message.text).toEqual('hello 5 JSHandle@object');
       expect(message.type).toEqual('log');
       expect(await message.args[0].asJSON()).toEqual('hello');
       expect(await message.args[1].asJSON()).toEqual(5);
@@ -696,7 +696,7 @@ describe('Page', function() {
         'calling console.dir',
         'calling console.warn',
         'calling console.error',
-        'ObjectHandle@promise',
+        'JSHandle@promise',
       ]);
     }));
     it('should not fail for window object', SX(async function() {
@@ -706,7 +706,7 @@ describe('Page', function() {
         page.evaluate(() => console.error(window)),
         waitForEvents(page, 'console')
       ]);
-      expect(message.text).toBe('ObjectHandle@object');
+      expect(message.text).toBe('JSHandle@object');
     }));
   });
 
