@@ -419,9 +419,9 @@ describe('Page', function() {
       await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
       expect(page.frames().length).toBe(2);
       const [frame1, frame2] = page.frames();
-      expect(frame1.context()).toBeTruthy();
-      expect(frame2.context()).toBeTruthy();
-      expect(frame1.context() !== frame2.context()).toBeTruthy();
+      expect(frame1.executionContext()).toBeTruthy();
+      expect(frame2.executionContext()).toBeTruthy();
+      expect(frame1.executionContext() !== frame2.executionContext()).toBeTruthy();
     }));
   });
 
