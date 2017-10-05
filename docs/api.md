@@ -18,6 +18,7 @@
     + [browser.version()](#browserversion)
     + [browser.wsEndpoint()](#browserwsendpoint)
   * [class: Page](#class-page)
+    + [event: 'closed'](#event-closed)
     + [event: 'console'](#event-console)
     + [event: 'dialog'](#event-dialog)
     + [event: 'error'](#event-error)
@@ -254,6 +255,9 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
+#### event: 'closed'
+- <[string]> page closed
+
 #### event: 'console'
 - <[ConsoleMessage]>
 
@@ -300,6 +304,7 @@ Emitted when a frame is navigated to a new url.
 #### event: 'load'
 
 Emitted when the JavaScript [`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load) event is dispatched.
+
 
 #### event: 'pageerror'
 - <[string]> The exception message

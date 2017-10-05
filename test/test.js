@@ -184,6 +184,19 @@ describe('Page', function() {
       await neverResolves.catch(e => error = e);
       expect(error.message).toContain('Protocol error');
     }));
+    it('should fire page closed event', SX(async function() {
+      const newPage = await browser.newPage();
+      // const neverResolves = newPage.evaluate(() => new Promise(r => {}));
+      let fired = false;
+      newPage.on('closed', closed => {
+        fired = true;
+        console.log('debug adi: fired: ', fired);
+        expect(closed).toBe('page closed');
+      });
+      await newPage.close();
+      console.log('debug adi: fired after closing page: ', fired);
+      expect(fired).toBeTruthy();
+    }));
   });
 
   describe('Page.Events.error', function() {
