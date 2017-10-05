@@ -133,7 +133,6 @@
     + [objectHandle.dispose()](#objecthandledispose)
     + [objectHandle.get(propertyName)](#objecthandlegetpropertyname)
     + [objectHandle.toString()](#objecthandletostring)
-    + [objectHandle.type()](#objecthandletype)
   * [class: ElementHandle](#class-elementhandle)
     + [elementHandle.asElement()](#elementhandleaselement)
     + [elementHandle.jsonValue()](#elementhandleasjson)
@@ -144,7 +143,6 @@
     + [elementHandle.hover()](#elementhandlehover)
     + [elementHandle.tap()](#elementhandletap)
     + [elementHandle.toString()](#elementhandletostring)
-    + [elementHandle.type()](#elementhandletype)
     + [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
   * [class: Request](#class-request)
     + [request.abort()](#requestabort)
@@ -1484,11 +1482,6 @@ The `objectHandle.dispose` method stops referencing the element handle.
 #### objectHandle.toString()
 - returns: <[string]>
 
-#### objectHandle.type()
-- returns: <[string]>
-
-Returns one of the following: `'object'`, `'function'`, `'undefined'`, `'string'`, `'number'`, `'boolean'`, `'symbol'`, `'array'`, `'null'`, `'node'`, `'regexp'`, `'date'`, `'map'`, `'set'`, `'weakmap'`, `'weakset'`, `'iterator'`, `'generator'`, `'error'`, `'proxy'`, `'typedarray'`.
-
 ### class: ElementHandle
 
 > **NOTE** Class [ElementHandle] extends [JSHandle].
@@ -1552,9 +1545,6 @@ This method scrolls element into view if needed, and then uses [touchscreen.tap]
 If the element is detached from DOM, the method throws an error.
 
 #### elementHandle.toString()
-- returns: <[string]>
-
-#### elementHandle.type()
 - returns: <[string]>
 
 #### elementHandle.uploadFile(...filePaths)
