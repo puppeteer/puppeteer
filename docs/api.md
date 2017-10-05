@@ -44,6 +44,7 @@
     + [page.emulate(options)](#pageemulateoptions)
     + [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
     + [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
+    + [page.evaluateHandle(pageFunction, ...args)](#pageevaluatehandlepagefunction-args)
     + [page.evaluateOnNewDocument(pageFunction, ...args)](#pageevaluateonnewdocumentpagefunction-args)
     + [page.exposeFunction(name, puppeteerFunction)](#pageexposefunctionname-puppeteerfunction)
     + [page.focus(selector)](#pagefocusselector)
@@ -56,7 +57,6 @@
     + [page.keyboard](#pagekeyboard)
     + [page.mainFrame()](#pagemainframe)
     + [page.mouse](#pagemouse)
-    + [page.object(pageFunction, ...args)](#pageobjectpagefunction-args)
     + [page.pdf(options)](#pagepdfoptions)
     + [page.plainText()](#pageplaintext)
     + [page.press(key[, options])](#pagepresskey-options)
@@ -117,7 +117,6 @@
     + [frame.injectFile(filePath)](#frameinjectfilefilepath)
     + [frame.isDetached()](#frameisdetached)
     + [frame.name()](#framename)
-    + [frame.object(pageFunction, ...args)](#frameobjectpagefunction-args)
     + [frame.parentFrame()](#frameparentframe)
     + [frame.title()](#frametitle)
     + [frame.url()](#frameurl)
@@ -126,7 +125,7 @@
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
   * [class: ExecutionContext](#class-executioncontext)
     + [executionContext.evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args)
-    + [executionContext.object(pageFunction, ...args)](#executioncontextobjectpagefunction-args)
+    + [executionContext.evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args)
   * [class: ObjectHandle](#class-objecthandle)
     + [objectHandle.asArray()](#objecthandleasarray)
     + [objectHandle.asElement()](#objecthandleaselement)
@@ -523,6 +522,37 @@ await bodyHandle.dispose();
 
 Shortcut for [page.mainFrame().evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args).
 
+#### page.evaluateHandle(pageFunction, ...args)
+- `pageFunction` <[function]|[string]> Function to be evaluated in the page context
+- `...args` <...[Serializable]|[ObjectHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[ObjectHandle]>> Resolves to the return value of `pageFunction`
+
+If the function, passed to the `page.evaluateHandle`, returns a [Promise], then `page.evaluateHandle` would wait for the promise to resolve and return it's value.
+
+```js
+const aHandle = await page.evaluateHandle(() => {
+  return Promise.resolve(window);
+});
+aHandle; // Handle on the window object.
+```
+
+A string can also be passed in instead of a function.
+
+```js
+const aHandle = await page.evaluateHandle('document'); // Handle on the 'document'.
+```
+
+[ObjectHandle] instances could be passed as arguments to the `page.evaluateHandle`:
+```js
+const aHandle = await page.evaluateHandle(() => document.body);
+const resultHandle = await page.evaluateHandle(body => body.innerHTML, aHandle);
+console.log(await resultHandle.asJSON());
+await resultHandle.dispose();
+```
+
+Shortcut for [page.mainFrame().executionContext().evaluateHandle(pageFunction, ...args)](#frameobjectpagefunction-args).
+
+
 #### page.evaluateOnNewDocument(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `...args` <...[Serializable]> Arguments to pass to `pageFunction`
@@ -678,36 +708,6 @@ Page is guaranteed to have a main frame which persists during navigations.
 #### page.mouse
 
 - returns: <[Mouse]>
-
-#### page.object(pageFunction, ...args)
-- `pageFunction` <[function]|[string]> Function to be evaluated in the page context
-- `...args` <...[Serializable]|[ObjectHandle]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[ObjectHandle]>> Resolves to the return value of `pageFunction`
-
-If the function, passed to the `page.object`, returns a [Promise], then `page.object` would wait for the promise to resolve and return it's value.
-
-```js
-const aHandle = await page.object(() => {
-  return Promise.resolve(window);
-});
-aHandle; // Handle on the window object.
-```
-
-A string can also be passed in instead of a function.
-
-```js
-const aHandle = await page.object('1 + 2'); // Handle on the '3' object.
-```
-
-[ObjectHandle] instances could be passed as arguments to the `page.object`:
-```js
-const aHandle = await page.object(() => document.body);
-const resultHandle = await page.object(body => body.innerHTML, aHandle);
-console.log(await resultHandle.asJSON());
-await resultHandle.dispose();
-```
-
-Shortcut for [page.mainFrame().object(pageFunction, ...args)](#frameobjectpagefunction-args).
 
 #### page.pdf(options)
 - `options` <[Object]> Options object which might have the following properties:
@@ -1297,34 +1297,6 @@ If the name is empty, returns the id attribute instead.
 
 > **NOTE** This value is calculated once when the frame is created, and will not update if the attribute is changed later.
 
-#### frame.object(pageFunction, ...args)
-- `pageFunction` <[function]|[string]> Function to be evaluated in the page context
-- `...args` <...[Serializable]|[ObjectHandle]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[ObjectHandle]>> Resolves to the return value of `pageFunction`
-
-If the function, passed to the `page.object`, returns a [Promise], then `page.object` would wait for the promise to resolve and return it's value.
-
-```js
-const aHandle = await page.object(() => {
-  return Promise.resolve(window);
-});
-aHandle; // Handle on the window object.
-```
-
-A string can also be passed in instead of a function.
-
-```js
-const aHandle = await page.object('1 + 2'); // Handle on the '3' object.
-```
-
-[ObjectHandle] instances could be passed as arguments to the `page.object`:
-```js
-const aHandle = await page.object(() => document.body);
-const resultHandle = await page.object(body => body.innerHTML, aHandle);
-console.log(await resultHandle.asJSON());
-await resultHandle.dispose();
-```
-
 #### frame.parentFrame()
 - returns: <[Frame]> Returns parent frame, if any. Detached frames and main frames return `null`.
 
@@ -1432,46 +1404,47 @@ const html = await frame.evaluate(body => body.innerHTML, bodyHandle);
 await bodyHandle.dispose();
 ```
 
-#### executionContext.object(pageFunction, ...args)
+#### executionContext.evaluateHandle(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context
 - `...args` <...[Serializable]|[ObjectHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[ObjectHandle]>> Resolves to the return value of `pageFunction`
 
-If the function, passed to the `page.object`, returns a [Promise], then `page.object` would wait for the promise to resolve and return it's value.
+If the function, passed to the `executionContext.evaluateHandle`, returns a [Promise], then `executionContext.evaluteHandle` would wait for the promise to resolve and return it's value.
 
 ```js
-const aHandle = await page.object(() => {
-  return Promise.resolve(window);
+const aHandle = await context.evaluateHandle(() => {
+  return Promise.resolve(self);
 });
-aHandle; // Handle on the window object.
+aHandle; // Handle on the global object.
 ```
 
 A string can also be passed in instead of a function.
 
 ```js
-const aHandle = await page.object('1 + 2'); // Handle on the '3' object.
+const aHandle = await context.evaluateHandle('1 + 2'); // Handle on the '3' object.
 ```
 
-[ObjectHandle] instances could be passed as arguments to the `page.object`:
+[ObjectHandle] instances could be passed as arguments to the `executionContext.evaluateHandle`:
 ```js
-const aHandle = await page.object(() => document.body);
-const resultHandle = await page.object(body => body.innerHTML, aHandle);
+const context = page.mainFrame().context();
+const aHandle = await context.evaluateHandle(() => document.body);
+const resultHandle = await context.evaluateHandle(body => body.innerHTML, aHandle);
 console.log(await resultHandle.asJSON());
 await resultHandle.dispose();
 ```
 
 ### class: ObjectHandle
 
-ObjectHandle represents an in-page javascript object. ObjectHandles could be created with the [page.object](#pageobjectpagefunction-args) method.
+ObjectHandle represents an in-page javascript object. ObjectHandles could be created with the [page.evaluateHandle](#pageobjectpagefunction-args) method.
 
 ```js
-await windowHandle = await page.object(() => window);
+await windowHandle = await page.evaluateHandle(() => window);
 // ...
 ```
 
 ObjectHandle prevents references javascript objects from garbage collection unless the handle is [disposed](#objecthandledispose). ObjectHandles are auto-disposed when their origin frame gets navigated.
 
-ObjectHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args), [`page.evaluate()`](#pageevaluatepagefunction-args) and [`page.object`](#pageobjectpagefunction-args) methods.
+ObjectHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args), [`page.evaluate()`](#pageevaluatepagefunction-args) and [`page.evaluateHandle`](#pageobjectpagefunction-args) methods.
 
 #### objectHandle.asArray()
 - returns: <[Promise]<[Array]<[ObjectHandle]>>>
@@ -1479,7 +1452,7 @@ ObjectHandle instances can be used as arguments in [`page.$eval()`](#pageevalsel
 The method returns an array which properties are ObjectHandle instances to the property values.
 
 ```js
-const arrayHandle = await page.object(() => [window, document]);
+const arrayHandle = await page.evaluateHandle(() => [window, document]);
 const [windowHandle, documentHandle] = await arrayHandle.asArray();
 await arrayHandle.dispose();
 ```

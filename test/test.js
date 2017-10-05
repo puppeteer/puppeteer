@@ -307,12 +307,12 @@ describe('Page', function() {
       expect(error.message).toContain('ObjectHandles can be evaluated only in the context they were created');
     }));
     it('should accept object handle as an argument', SX(async function() {
-      const navigatorHandle = await page.object(() => navigator);
+      const navigatorHandle = await page.evaluateHandle(() => navigator);
       const text = await page.evaluate(e => e.userAgent, navigatorHandle);
       expect(text).toContain('Mozilla');
     }));
     it('should accept object handle to primitive types', SX(async function() {
-      const aHandle = await page.object(() => 5);
+      const aHandle = await page.evaluateHandle(() => 5);
       const isFive = await page.evaluate(e => Object.is(e, 5), aHandle);
       expect(isFive).toBeTruthy();
     }));
@@ -320,14 +320,14 @@ describe('Page', function() {
 
   describe('Page.object', function() {
     it('should work', SX(async function() {
-      const windowHandle = await page.object(() => window);
+      const windowHandle = await page.evaluateHandle(() => window);
       expect(windowHandle).toBeTruthy();
     }));
   });
 
   describe('ObjectHandle.get', function() {
     it('should work', SX(async function() {
-      const aHandle = await page.object(() => ({
+      const aHandle = await page.evaluateHandle(() => ({
         one: 1,
         two: 2,
         three: 3
@@ -339,17 +339,17 @@ describe('Page', function() {
 
   describe('ObjectHandle.asJSON', function() {
     it('should work', SX(async function() {
-      const aHandle = await page.object(() => ({foo: 'bar'}));
+      const aHandle = await page.evaluateHandle(() => ({foo: 'bar'}));
       const json = await aHandle.asJSON();
       expect(json).toEqual({foo: 'bar'});
     }));
     it('should work with dates', SX(async function() {
-      const dateHandle = await page.object(() => new Date('2017-09-26T00:00:00.000Z'));
+      const dateHandle = await page.evaluateHandle(() => new Date('2017-09-26T00:00:00.000Z'));
       const json = await dateHandle.asJSON();
       expect(json).toBe('2017-09-26T00:00:00.000Z');
     }));
     it('should throw for circular objects', SX(async function() {
-      const windowHandle = await page.object('window');
+      const windowHandle = await page.evaluateHandle('window');
       let error = null;
       await windowHandle.asJSON().catch(e => error = e);
       expect(error.message).toContain('Converting circular structure to JSON');
@@ -358,7 +358,7 @@ describe('Page', function() {
 
   describe('ObjectHandle.asArray', function() {
     it('should work', SX(async function() {
-      const aHandle = await page.object(() => ([3,2]));
+      const aHandle = await page.evaluateHandle(() => ([3,2]));
       const array = await aHandle.asArray();
       expect(array.length).toBe(2);
       expect(await array[0].asJSON()).toBe(3);
@@ -368,7 +368,7 @@ describe('Page', function() {
 
   describe('ObjectHandle.asObject', function() {
     it('should work', SX(async function() {
-      const aHandle = await page.object(() => ({
+      const aHandle = await page.evaluateHandle(() => ({
         foo: 'bar'
       }));
       const object = await aHandle.asObject();
@@ -379,18 +379,18 @@ describe('Page', function() {
 
   describe('ObjectHandle.asElement', function() {
     it('should work', SX(async function() {
-      const aHandle = await page.object(() => document.body);
+      const aHandle = await page.evaluateHandle(() => document.body);
       const element = aHandle.asElement();
       expect(element).toBeTruthy();
     }));
     it('should return null for non-elements', SX(async function() {
-      const aHandle = await page.object(() => 2);
+      const aHandle = await page.evaluateHandle(() => 2);
       const element = aHandle.asElement();
       expect(element).toBeFalsy();
     }));
     it('should return ElementHandle for TextNodes', SX(async function() {
       await page.setContent('<div>ee!</div>');
-      const aHandle = await page.object(() => document.querySelector('div').firstChild);
+      const aHandle = await page.evaluateHandle(() => document.querySelector('div').firstChild);
       const element = aHandle.asElement();
       expect(element).toBeTruthy();
       expect(await page.evaluate(e => e.nodeType === HTMLElement.TEXT_NODE, element));
@@ -1351,7 +1351,7 @@ describe('Page', function() {
     }));
     it('should work for TextNodes', SX(async function() {
       await page.goto(PREFIX + '/input/button.html');
-      const buttonTextNode = await page.object(() => document.querySelector('button').firstChild);
+      const buttonTextNode = await page.evaluateHandle(() => document.querySelector('button').firstChild);
       await buttonTextNode.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     }));
