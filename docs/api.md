@@ -265,7 +265,7 @@ An example of handling `console` event:
 ```js
 page.on('console', msg => {
   for (let i = 0; i < msg.args.length; ++i)
-    console.log(`${i}: ${args[i]}`);
+    console.log(`${i}: ${msg.args[i]}`);
 });
 page.evaluate(() => console.log('hello', 5, {foo: 'bar'}));
 ```
