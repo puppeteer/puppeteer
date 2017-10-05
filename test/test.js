@@ -1769,6 +1769,14 @@ describe('Page', function() {
     }));
   });
 
+  describe('Page.addStyleTag', function() {
+    it('should work', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addStyleTag('/injectedstyle.css');
+      expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(255, 0, 0)');
+    }));
+  });
+
   describe('Page.url', function() {
     it('should work', SX(async function() {
       expect(page.url()).toBe('about:blank');
