@@ -200,8 +200,8 @@ describe('Page', function() {
     it('should emmited when page got crashed', SX(async function() {
       let emitted = false;
       page.on('closed', () => emitted = true);
-      page.goto('chrome://crash');
-      await waitForEvents(page, 'error');
+      await page.goto('chrome://crash');
+      //  waitForEvents(page, 'error');
       expect(emitted).toBe(true);
     }));
   });

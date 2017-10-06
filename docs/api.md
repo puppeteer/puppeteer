@@ -256,7 +256,7 @@ puppeteer.launch().then(async browser => {
 ```
 
 #### event: 'closed'
-Emitted when page closed or crashed.
+Emitted when page gets closed or page renderer crashes.
 
 #### event: 'console'
 - <[ConsoleMessage]>
