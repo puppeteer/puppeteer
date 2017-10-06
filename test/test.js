@@ -655,11 +655,9 @@ describe('Page', function() {
         page.evaluate(() => console.log('hello', 5, {foo: 'bar'})),
         waitForEvents(page, 'console')
       ]);
-      expect(message.text).toEqual('hello 5 JSHandle@object');
+      expect(message.text).toEqual('hello 5 [object Object]');
       expect(message.type).toEqual('log');
-      expect(await message.args[0].jsonValue()).toEqual('hello');
-      expect(await message.args[1].jsonValue()).toEqual(5);
-      expect(await message.args[2].jsonValue()).toEqual({foo: 'bar'});
+      expect(message.args).toEqual(['hello', 5, {foo: 'bar'}]);
     }));
     it('should work for different console API calls', SX(async function() {
       const messages = [];
@@ -687,7 +685,7 @@ describe('Page', function() {
         'calling console.dir',
         'calling console.warn',
         'calling console.error',
-        'JSHandle@promise',
+        'Promise',
       ]);
     }));
     it('should not fail for window object', SX(async function() {
@@ -697,7 +695,7 @@ describe('Page', function() {
         page.evaluate(() => console.error(window)),
         waitForEvents(page, 'console')
       ]);
-      expect(message.text).toBe('JSHandle@object');
+      expect(message.text).toBe('Window');
     }));
   });
 
