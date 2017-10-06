@@ -44,6 +44,7 @@
     + [page.emulate(options)](#pageemulateoptions)
     + [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
     + [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
+    + [page.evaluateHandle(pageFunction, ...args)](#pageevaluatehandlepagefunction-args)
     + [page.evaluateOnNewDocument(pageFunction, ...args)](#pageevaluateonnewdocumentpagefunction-args)
     + [page.exposeFunction(name, puppeteerFunction)](#pageexposefunctionname-puppeteerfunction)
     + [page.focus(selector)](#pagefocusselector)
@@ -112,6 +113,7 @@
     + [frame.addStyleTag(url)](#frameaddstyletagurl)
     + [frame.childFrames()](#framechildframes)
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
+    + [frame.executionContext()](#frameexecutioncontext)
     + [frame.injectFile(filePath)](#frameinjectfilefilepath)
     + [frame.isDetached()](#frameisdetached)
     + [frame.name()](#framename)
@@ -121,11 +123,28 @@
     + [frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args)
     + [frame.waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args)
     + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
+  * [class: ExecutionContext](#class-executioncontext)
+    + [executionContext.evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args)
+    + [executionContext.evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args)
+  * [class: JSHandle](#class-jshandle)
+    + [jsHandle.asElement()](#jshandleaselement)
+    + [jsHandle.dispose()](#jshandledispose)
+    + [jsHandle.executionContext()](#jshandleexecutioncontext)
+    + [jsHandle.getProperties()](#jshandlegetproperties)
+    + [jsHandle.getProperty(propertyName)](#jshandlegetpropertypropertyname)
+    + [jsHandle.jsonValue()](#jshandlejsonvalue)
+    + [jsHandle.toString()](#jshandletostring)
   * [class: ElementHandle](#class-elementhandle)
+    + [elementHandle.asElement()](#elementhandleaselement)
     + [elementHandle.click([options])](#elementhandleclickoptions)
     + [elementHandle.dispose()](#elementhandledispose)
+    + [elementHandle.executionContext()](#elementhandleexecutioncontext)
+    + [elementHandle.getProperties()](#elementhandlegetproperties)
+    + [elementHandle.getProperty(propertyName)](#elementhandlegetpropertypropertyname)
     + [elementHandle.hover()](#elementhandlehover)
+    + [elementHandle.jsonValue()](#elementhandlejsonvalue)
     + [elementHandle.tap()](#elementhandletap)
+    + [elementHandle.toString()](#elementhandletostring)
     + [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
   * [class: Request](#class-request)
     + [request.abort()](#requestabort)
@@ -352,7 +371,7 @@ Shortcut for [page.mainFrame().$$(selector)](#frameselector-1).
 
 This method runs `document.querySelector` within the page and passes it as the first argument to `pageFunction`. If there's no element matching `selector`, the method throws an error.
 
-If `pageFunction` returns a [Promise], then `page.$eval` would wait for the promise to resolve and return it's value.
+If `pageFunction` returns a [Promise], then `page.$eval` would wait for the promise to resolve and return its value.
 
 Examples:
 ```js
@@ -475,7 +494,7 @@ List of all available devices is available in the source code: [DeviceDescriptor
 - `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Resolves to the return value of `pageFunction`
 
-If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return it's value.
+If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return its value.
 
 ```js
 const result = await page.evaluate(() => {
@@ -498,6 +517,35 @@ await bodyHandle.dispose();
 ```
 
 Shortcut for [page.mainFrame().evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args).
+
+#### page.evaluateHandle(pageFunction, ...args)
+- `pageFunction` <[function]|[string]> Function to be evaluated in the page context
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[JSHandle]>> Resolves to the return value of `pageFunction`
+
+If the function, passed to the `page.evaluateHandle`, returns a [Promise], then `page.evaluateHandle` would wait for the promise to resolve and return its value.
+
+```js
+const aWindowHandle = await page.evaluateHandle(() => Promise.resolve(window));
+aWindowHandle; // Handle for the window object.
+```
+
+A string can also be passed in instead of a function.
+
+```js
+const aHandle = await page.evaluateHandle('document'); // Handle for the 'document'.
+```
+
+[JSHandle] instances could be passed as arguments to the `page.evaluateHandle`:
+```js
+const aHandle = await page.evaluateHandle(() => document.body);
+const resultHandle = await page.evaluateHandle(body => body.innerHTML, aHandle);
+console.log(await resultHandle.jsonValue());
+await resultHandle.dispose();
+```
+
+Shortcut for [page.mainFrame().executionContext().evaluateHandle(pageFunction, ...args)](#frameobjectpagefunction-args).
+
 
 #### page.evaluateOnNewDocument(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
@@ -1171,7 +1219,7 @@ The method runs `document.querySelectorAll` within the frame. If no elements mat
 
 This method runs `document.querySelector` within the frame and passes it as the first argument to `pageFunction`. If there's no element matching `selector`, the method throws an error.
 
-If `pageFunction` returns a [Promise], then `frame.$eval` would wait for the promise to resolve and return it's value.
+If `pageFunction` returns a [Promise], then `frame.$eval` would wait for the promise to resolve and return its value.
 
 Examples:
 ```js
@@ -1200,7 +1248,7 @@ Adds a `<link rel="stylesheet">` tag to the frame with the desired url.
 - `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
 
-If the function, passed to the `frame.evaluate`, returns a [Promise], then `frame.evaluate` would wait for the promise to resolve and return it's value.
+If the function, passed to the `frame.evaluate`, returns a [Promise], then `frame.evaluate` would wait for the promise to resolve and return its value.
 
 ```js
 const result = await frame.evaluate(() => {
@@ -1221,6 +1269,9 @@ const bodyHandle = await frame.$('body');
 const html = await frame.evaluate(body => body.innerHTML, bodyHandle);
 await bodyHandle.dispose();
 ```
+
+#### frame.executionContext()
+- returns: <[ExecutionContext]> Execution context associated with this frame.
 
 #### frame.injectFile(filePath)
 - `filePath` <[string]> Path to the JavaScript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
@@ -1314,7 +1365,128 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
+### class: ExecutionContext
+
+The class represents a context for JavaScript execution. Examples of JavaScript contexts are:
+- each [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) has a separate execution context
+- all kind of [workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) have their own contexts
+
+#### executionContext.evaluate(pageFunction, ...args)
+- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
+- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to  `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
+
+If the function, passed to the `executionContext.evaluate`, returns a [Promise], then `executionContext.evaluate` would wait for the promise to resolve and return its value.
+
+```js
+const result = await executionContext.evaluate(() => Promise.resolve(8 * 7));
+console.log(result); // prints "56"
+```
+
+A string can also be passed in instead of a function.
+
+```js
+console.log(await executionContext.evaluate('1 + 2')); // prints "3"
+```
+
+[JSHandle] instances can be passed as arguments to the `frame.evaluate`:
+```js
+const oneHandle = await executionContext.evaluateHandle(() => 1);
+const twoHandle = await executionContext.evaluateHandle(() => 2);
+const result = await executionContext.evaluate((a, b) => a + b, oneHandle, twoHandle);
+await oneHandle.dispose();
+await twoHandle.dispose();
+console.log(result); // prints '3'. 
+```
+
+#### executionContext.evaluateHandle(pageFunction, ...args)
+- `pageFunction` <[function]|[string]> Function to be evaluated in the page context
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[JSHandle]>> Resolves to the return value of `pageFunction`
+
+If the function, passed to the `executionContext.evaluateHandle`, returns a [Promise], then `executionContext.evaluteHandle` would wait for the promise to resolve and return its value.
+
+```js
+const aHandle = await context.evaluateHandle(() => Promise.resolve(self));
+aHandle; // Handle for the global object.
+```
+
+A string can also be passed in instead of a function.
+
+```js
+const aHandle = await context.evaluateHandle('1 + 2'); // Handle for the '3' object.
+```
+
+[JSHandle] instances could be passed as arguments to the `executionContext.evaluateHandle`:
+```js
+const context = page.mainFrame().executionContext();
+const aHandle = await context.evaluateHandle(() => document.body);
+const resultHandle = await context.evaluateHandle(body => body.innerHTML, aHandle);
+console.log(await resultHandle.jsonValue()); // prints body's innerHTML
+await aHandle.dispose();
+await resultHandle.dispose();
+```
+
+### class: JSHandle
+
+JSHandle represents an in-page javascript object. JSHandles could be created with the [page.evaluateHandle](#pageobjectpagefunction-args) method.
+
+```js
+await windowHandle = await page.evaluateHandle(() => window);
+// ...
+```
+
+JSHandle prevents references javascript objects from garbage collection unless the handle is [disposed](#objecthandledispose). JSHandles are auto-disposed when their origin frame gets navigated or the parent context gets destroyed.
+
+JSHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args), [`page.evaluate()`](#pageevaluatepagefunction-args) and [`page.evaluateHandle`](#pageobjectpagefunction-args) methods.
+
+#### jsHandle.asElement()
+- returns: <[ElementHandle]>
+
+Returns either `null` or the object handle itself, if the object handle is an instance of [ElementHandle].
+
+#### jsHandle.dispose()
+- returns: <[Promise]> Promise which resolves when the object handle is successfully disposed.
+
+The `jsHandle.dispose` method stops referencing the element handle.
+
+#### jsHandle.executionContext()
+- returns: [ExecutionContext]
+
+Returns execution context the handle belongs to.
+
+#### jsHandle.getProperties()
+- returns: <[Promise]<[Map]<[string], [JSHandle]>>>
+
+The method returns a map with property names as keys and JSHandle instances for the property values.
+
+```js
+const handle = await page.evaluateHandle(() => {window, document});
+const properties = await handle.getProperties();
+const windowHandle = properties.get('window');
+const documentHandle = properties.get('document');
+await handle.dispose();
+```
+
+#### jsHandle.getProperty(propertyName)
+- `propertyName` <[string]> property to get
+- returns: <[Promise]<[JSHandle]>>
+
+Fetches a single property from the referenced object.
+
+#### jsHandle.jsonValue()
+- returns: <[Promise]<[Object]>>
+
+Returns a JSON representation of the object. The JSON is generated by running [`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) on the object in page and consequent [`JSON.parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) in puppeteer.
+
+> **NOTE** The method will throw if the referenced object is not stringifiable.
+
+#### jsHandle.toString()
+- returns: <[string]>
+
 ### class: ElementHandle
+
+> **NOTE** Class [ElementHandle] extends [JSHandle].
 
 ElementHandle represents an in-page DOM element. ElementHandles could be created with the [page.$](#pageselector) method.
 
@@ -1334,6 +1506,9 @@ ElementHandle prevents DOM element from garbage collection unless the handle is 
 
 ElementHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args) and [`page.evaluate()`](#pageevaluatepagefunction-args) methods.
 
+#### elementHandle.asElement()
+- returns: <[ElementHandle]>
+
 #### elementHandle.click([options])
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
@@ -1349,17 +1524,53 @@ If the element is detached from DOM, the method throws an error.
 
 The `elementHandle.dispose` method stops referencing the element handle.
 
+#### elementHandle.executionContext()
+- returns: [ExecutionContext]
+
+#### elementHandle.getProperties()
+- returns: <[Promise]<[Map]<[string], [JSHandle]>>>
+
+The method returns a map with property names as keys and JSHandle instances for the property values.
+
+```js
+const listHandle = await page.evaluateHandle(() => document.body.children);
+const properties = await containerHandle.getProperties();
+const children = [];
+for (const property of properties.values()) {
+  const element = property.asElement();
+  if (element)
+    children.push(element);
+}
+children; // holds elementHandles to all children of document.body
+```
+
+#### elementHandle.getProperty(propertyName)
+- `propertyName` <[string]> property to get
+- returns: <[Promise]<[JSHandle]>>
+
+Fetches a single property from the objectHandle.
+
 #### elementHandle.hover()
 - returns: <[Promise]> Promise which resolves when the element is successfully hovered.
 
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
 If the element is detached from DOM, the method throws an error.
 
+#### elementHandle.jsonValue()
+- returns: <[Promise]<[Object]>>
+
+Returns a JSON representation of the object. The JSON is generated by running [`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) on the object in page and consequent [`JSON.parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) in puppeteer.
+
+> **NOTE** The method will throw if the referenced object is not stringifiable.
+
 #### elementHandle.tap()
 - returns: <[Promise]> Promise which resolves when the element is successfully tapped. Promise gets rejected if the element is detached from DOM.
 
 This method scrolls element into view if needed, and then uses [touchscreen.tap](#touchscreentapx-y) to tap in the center of the element.
 If the element is detached from DOM, the method throws an error.
+
+#### elementHandle.toString()
+- returns: <[string]>
 
 #### elementHandle.uploadFile(...filePaths)
 - `...filePaths` <...[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
@@ -1479,6 +1690,8 @@ Contains the URL of the response.
 [Element]: https://developer.mozilla.org/en-US/docs/Web/API/element "Element"
 [Keyboard]: #class-keyboard "Keyboard"
 [Dialog]: #class-dialog  "Dialog"
+[JSHandle]: #class-objecthandle "JSHandle"
+[ExecutionContext]: #class-executioncontext "ExecutionContext"
 [Mouse]: #class-mouse "Mouse"
 [Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map "Map"
 [selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors "selector"
