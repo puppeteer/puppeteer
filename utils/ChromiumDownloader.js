@@ -25,14 +25,23 @@ const removeRecursive = require('rimraf');
 const ProxyAgent = require('https-proxy-agent');
 const getProxyForUrl = require('proxy-from-env').getProxyForUrl;
 
-const DOWNLOADS_FOLDER = path.join(__dirname, '..', '.local-chromium');
+const DOWNLOADS_FOLDER = path.join(__dirname, '..', process.env.CONTENT_SHELL ? '.local-shell' : '.local-chromium');
 
-const downloadURLs = {
+const chromiumDownloadURLs = {
   linux: 'https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/%d/chrome-linux.zip',
   mac: 'https://storage.googleapis.com/chromium-browser-snapshots/Mac/%d/chrome-mac.zip',
   win32: 'https://storage.googleapis.com/chromium-browser-snapshots/Win/%d/chrome-win32.zip',
   win64: 'https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/%d/chrome-win32.zip',
 };
+
+const shellDownloadURLs = {
+  linux: 'https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/%d/content-shell.zip',
+  mac: 'https://storage.googleapis.com/chromium-browser-snapshots/Mac/%d/content-shell.zip',
+  win32: 'https://storage.googleapis.com/chromium-browser-snapshots/Win/%d/content-shell.zip',
+  win64: 'https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/%d/content-shell.zip',
+};
+
+const downloadURLs = process.env.CONTENT_SHELL ? shellDownloadURLs : chromiumDownloadURLs;
 
 module.exports = {
   /**
@@ -137,14 +146,25 @@ module.exports = {
     console.assert(downloadURLs[platform], `Unsupported platform: ${platform}`);
     const folderPath = getFolderPath(platform, revision);
     let executablePath = '';
-    if (platform === 'mac')
-      executablePath = path.join(folderPath, 'chrome-mac', 'Chromium.app', 'Contents', 'MacOS', 'Chromium');
-    else if (platform === 'linux')
-      executablePath = path.join(folderPath, 'chrome-linux', 'chrome');
-    else if (platform === 'win32' || platform === 'win64')
-      executablePath = path.join(folderPath, 'chrome-win32', 'chrome.exe');
-    else
-      throw 'Unsupported platfrom: ' + platfrom;
+    if (process.env.CONTENT_SHELL) {
+      if (platform === 'mac')
+        executablePath = path.join(folderPath, 'content-shell', 'Content Shell.app', 'Contents', 'MacOS', 'Content Shell');
+      else if (platform === 'linux')
+        executablePath = path.join(folderPath, 'content-shell', 'content_shell');
+      else if (platform === 'win32' || platform === 'win64')
+        executablePath = path.join(folderPath, 'content-shell', 'content_shell.exe');
+      else
+        throw 'Unsupported platform: ' + platform;
+    } else {
+      if (platform === 'mac')
+        executablePath = path.join(folderPath, 'chrome-mac', 'Chromium.app', 'Contents', 'MacOS', 'Chromium');
+      else if (platform === 'linux')
+        executablePath = path.join(folderPath, 'chrome-linux', 'chrome');
+      else if (platform === 'win32' || platform === 'win64')
+        executablePath = path.join(folderPath, 'chrome-win32', 'chrome.exe');
+      else
+        throw 'Unsupported platform: ' + platform;
+    }
     return {
       executablePath,
       folderPath,
