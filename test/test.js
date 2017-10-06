@@ -1706,6 +1706,17 @@ describe('Page', function() {
       await button.click();
       expect(await frame.evaluate(() => window.result)).toBe('Clicked');
     }));
+    it('should click the button with deviceScaleFactor set', SX(async function() {
+      await page.setViewport({width: 400, height: 400, deviceScaleFactor: 5});
+      expect(await page.evaluate(() => window.devicePixelRatio)).toBe(5);
+      await page.setContent('<div style="width:100px;height:100px">spacer</div>');
+      const FrameUtils = require('./frame-utils');
+      await FrameUtils.attachFrame(page, 'button-test', PREFIX + '/input/button.html');
+      const frame = page.frames()[1];
+      const button = await frame.$('button');
+      await button.click();
+      expect(await frame.evaluate(() => window.result)).toBe('Clicked');
+    }));
     function dimensions() {
       const rect = document.querySelector('textarea').getBoundingClientRect();
       return {
