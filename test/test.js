@@ -504,6 +504,27 @@ describe('Page', function() {
       expect(divFound).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.removeProperty('visibility'));
       expect(await waitForSelector).toBe(true);
+      expect(divFound).toBe(true);
+    }));
+    it('should wait for visibility: hidden', SX(async function() {
+      let divFound = false;
+      const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divFound = true);
+      await page.setContent(`<div style='display: block;'></div>`);
+      expect(divFound).toBe(false);
+      await page.evaluate(() => document.querySelector('div').style.setProperty('visibility', 'hidden'));
+      expect(divFound).toBe(false);
+      expect(await waitForSelector).toBe(true);
+      expect(divFound).toBe(true);
+    }));
+    it('should wait for display: none', SX(async function() {
+      let divFound = false;
+      const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divFound = true);
+      await page.setContent(`<div style='display: block;'></div>`);
+      expect(divFound).toBe(false);
+      await page.evaluate(() => document.querySelector('div').style.setProperty('display', 'none'));
+      expect(divFound).toBe(false);
+      expect(await waitForSelector).toBe(true);
+      expect(divFound).toBe(true);
     }));
     it('should respect timeout', SX(async function() {
       let error = null;
