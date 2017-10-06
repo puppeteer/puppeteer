@@ -318,7 +318,7 @@ describe('Page', function() {
     }));
   });
 
-  describe('Page.object', function() {
+  describe('Page.evaluateHandle', function() {
     it('should work', SX(async function() {
       const windowHandle = await page.evaluateHandle(() => window);
       expect(windowHandle).toBeTruthy();
@@ -385,6 +385,17 @@ describe('Page', function() {
       const element = aHandle.asElement();
       expect(element).toBeTruthy();
       expect(await page.evaluate(e => e.nodeType === HTMLElement.TEXT_NODE, element));
+    }));
+  });
+
+  describe('JSHandle.toString', function() {
+    it('should work for primitives', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => 2);
+      expect(aHandle.toString()).toBe('2');
+    }));
+    it('should work for complicated objects', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => window);
+      expect(aHandle.toString()).toBe('JSHandle@object');
     }));
   });
 
