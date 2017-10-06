@@ -366,6 +366,25 @@ describe('Page', function() {
       expect(foo).toBeTruthy();
       expect(await foo.jsonValue()).toBe('bar');
     }));
+    it('should return even non-own properties', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => {
+        class A {
+          constructor() {
+            this.a = '1';
+          }
+        }
+        class B extends A {
+          constructor() {
+            super();
+            this.b = '2';
+          }
+        }
+        return new B();
+      });
+      const properties = await aHandle.getProperties();
+      expect(await properties.get('a').jsonValue()).toBe('1');
+      expect(await properties.get('b').jsonValue()).toBe('2');
+    }));
   });
 
   describe('JSHandle.asElement', function() {
@@ -424,6 +443,17 @@ describe('Page', function() {
       expect(frame1.executionContext()).toBeTruthy();
       expect(frame2.executionContext()).toBeTruthy();
       expect(frame1.executionContext() !== frame2.executionContext()).toBeTruthy();
+
+      await Promise.all([
+        frame1.executionContext().evaluate(() => window.a = 1),
+        frame2.executionContext().evaluate(() => window.a = 2)
+      ]);
+      const [a1, a2] = await Promise.all([
+        frame1.executionContext().evaluate(() => window.a),
+        frame2.executionContext().evaluate(() => window.a)
+      ]);
+      expect(a1).toBe(1);
+      expect(a2).toBe(2);
     }));
   });
 
@@ -1346,14 +1376,23 @@ describe('Page', function() {
     it('should work', SX(async function() {
       await page.goto(PREFIX + '/input/button.html');
       const button = await page.$('button');
-      await button.click('button');
+      await button.click();
       expect(await page.evaluate(() => result)).toBe('Clicked');
     }));
     it('should work for TextNodes', SX(async function() {
       await page.goto(PREFIX + '/input/button.html');
       const buttonTextNode = await page.evaluateHandle(() => document.querySelector('button').firstChild);
-      await buttonTextNode.click('button');
-      expect(await page.evaluate(() => result)).toBe('Clicked');
+      let error = null;
+      await buttonTextNode.click().catch(err => error = err);
+      expect(error.message).toBe('Node is not of type HTMLElement');
+    }));
+    it('should throw for detached nodes', SX(async function() {
+      await page.goto(PREFIX + '/input/button.html');
+      const button = await page.$('button');
+      await page.evaluate(button => button.remove(), button);
+      let error = null;
+      await button.click().catch(err => error = err);
+      expect(error.message).toBe('Node is detached from document');
     }));
   });
 
