@@ -527,13 +527,13 @@ If the function, passed to the `page.evaluateHandle`, returns a [Promise], then 
 
 ```js
 const aWindowHandle = await page.evaluateHandle(() => Promise.resolve(window));
-aWindowHandle; // Handle on the window object.
+aWindowHandle; // Handle for the window object.
 ```
 
 A string can also be passed in instead of a function.
 
 ```js
-const aHandle = await page.evaluateHandle('document'); // Handle on the 'document'.
+const aHandle = await page.evaluateHandle('document'); // Handle for the 'document'.
 ```
 
 [JSHandle] instances could be passed as arguments to the `page.evaluateHandle`:
@@ -1367,9 +1367,9 @@ puppeteer.launch().then(async browser => {
 
 ### class: ExecutionContext
 
-The class represents a context for javascript execution. Examples of javascript contexts are:
-- each frame has a separate execution context
-- all kind of workers have their own contexts
+The class represents a context for JavaScript execution. Examples of JavaScript contexts are:
+- each [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) has a separate execution context
+- all kind of [workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) have their own contexts
 
 #### executionContext.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
@@ -1389,7 +1389,7 @@ A string can also be passed in instead of a function.
 console.log(await executionContext.evaluate('1 + 2')); // prints "3"
 ```
 
-[JSHandle] instances could be passed as arguments to the `frame.evaluate`:
+[JSHandle] instances can be passed as arguments to the `frame.evaluate`:
 ```js
 const oneHandle = await executionContext.evaluateHandle(() => 1);
 const twoHandle = await executionContext.evaluateHandle(() => 2);
@@ -1408,13 +1408,13 @@ If the function, passed to the `executionContext.evaluateHandle`, returns a [Pro
 
 ```js
 const aHandle = await context.evaluateHandle(() => Promise.resolve(self));
-aHandle; // Handle on the global object.
+aHandle; // Handle for the global object.
 ```
 
 A string can also be passed in instead of a function.
 
 ```js
-const aHandle = await context.evaluateHandle('1 + 2'); // Handle on the '3' object.
+const aHandle = await context.evaluateHandle('1 + 2'); // Handle for the '3' object.
 ```
 
 [JSHandle] instances could be passed as arguments to the `executionContext.evaluateHandle`:
