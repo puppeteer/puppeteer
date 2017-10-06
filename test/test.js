@@ -121,6 +121,24 @@ describe('Puppeteer', function() {
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
       rm(userDataDir);
     }));
+    // Headless has issues shutting down gracefully
+    // @see https://crbug.com/771830
+    (headless ? xit : it)('userDataDir option should restore state', SX(async function() {
+      const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+      const options = Object.assign({userDataDir}, defaultBrowserOptions);
+      const browser = await puppeteer.launch(options);
+      const page = await browser.newPage();
+      await page.goto(EMPTY_PAGE);
+      await page.evaluate(() => localStorage.hey = 'hello');
+      await browser.close();
+
+      const browser2 = await puppeteer.launch(options);
+      const page2 = await browser2.newPage();
+      await page2.goto(EMPTY_PAGE);
+      expect(await page2.evaluate(() => localStorage.hey)).toBe('hello');
+      await browser2.close();
+      rm(userDataDir);
+    }));
   });
   describe('Puppeteer.connect', function() {
     it('should work', SX(async function() {
