@@ -1161,7 +1161,7 @@ Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `promp
 [ConsoleMessage] objects are dispatched by page via the ['console'](#event-console) event.
 
 #### consoleMessage.args
-- <[Array]<[string]>>
+- <[Array]<[JSHandle]>>
 
 #### consoleMessage.text
 - <[string]>
