@@ -193,6 +193,22 @@ describe('Page', function() {
     }));
   });
 
+  describe('Browser.Events.closed', function() {
+    fit('should emitted when browser gets closed', SX(async function() {
+      newBrowser= await puppeteer.launch(defaultBrowserOptions);
+      let isClosed = false;
+      newBrowser.on('closed', closed => {
+        expect(closed).toBe('browser closed');
+        isClosed = true;
+      });
+      await newBrowser.close();
+      expect(isClosed).toBe(true);
+    }));
+    xit('should emitted when browser gets crashes', SX(async function() {
+      // @TODO
+    }));
+  });
+
   describe('Page.close', function() {
     it('should reject all promises when page is closed', SX(async function() {
       const newPage = await browser.newPage();

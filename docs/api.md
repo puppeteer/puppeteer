@@ -13,12 +13,13 @@
     + [puppeteer.executablePath()](#puppeteerexecutablepath)
     + [puppeteer.launch([options])](#puppeteerlaunchoptions)
   * [class: Browser](#class-browser)
+    + [event: 'closed'](#event-closed)
     + [browser.close()](#browserclose)
     + [browser.newPage()](#browsernewpage)
     + [browser.version()](#browserversion)
     + [browser.wsEndpoint()](#browserwsendpoint)
   * [class: Page](#class-page)
-    + [event: 'closed'](#event-closed)
+    + [event: 'closed'](#event-closed-1)
     + [event: 'console'](#event-console)
     + [event: 'dialog'](#event-dialog)
     + [event: 'error'](#event-error)
@@ -241,6 +242,8 @@ puppeteer.launch().then(async browser => {
   await browser.close();
 });
 ```
+#### event: 'closed'
+Emitter when browser gets closed or browser process crashes.
 
 #### browser.close()
 - returns: <[Promise]>
