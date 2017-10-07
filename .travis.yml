@@ -15,6 +15,7 @@ install:
 script:
   - 'if [ "$NODE7" = "true" ]; then yarn run lint; fi'
   - 'if [ "$NODE7" = "true" ]; then yarn run coverage; fi'
+  - 'if [ "$NODE7" = "true" ]; then yarn run test-doclint; fi'
   - 'if [ "$NODE6" = "true" ]; then yarn run test-node6-transformer; fi'
   - 'if [ "$NODE6" = "true" ]; then yarn run build; fi'
   - 'if [ "$NODE6" = "true" ]; then yarn run unit-node6; fi'
