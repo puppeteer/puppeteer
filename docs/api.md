@@ -900,7 +900,7 @@ Shortcut for [page.mainFrame().title()](#frametitle).
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
 
-To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#pagekeyboardpresskey-options).
+To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#keyboardpresskey-options).
 
 ```js
 page.type('#mytextarea', 'Hello'); // Types instantly
