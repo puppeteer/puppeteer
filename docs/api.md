@@ -1739,7 +1739,7 @@ Contains the URL of the response.
 [Element]: https://developer.mozilla.org/en-US/docs/Web/API/element "Element"
 [Keyboard]: #class-keyboard "Keyboard"
 [Dialog]: #class-dialog  "Dialog"
-[JSHandle]: #class-objecthandle "JSHandle"
+[JSHandle]: #class-jshandle "JSHandle"
 [ExecutionContext]: #class-executioncontext "ExecutionContext"
 [Mouse]: #class-mouse "Mouse"
 [Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map "Map"
