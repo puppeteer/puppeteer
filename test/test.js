@@ -2076,6 +2076,13 @@ describe('Page', function() {
       expect(await page.evaluate(() => result.onChange)).toEqual(['blue', 'green', 'red']);
     }));
 
+    it('should respect event bubbling', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      await page.select('select', 'blue');
+      expect(await page.evaluate(() => result.onBubblingInput)).toEqual(['blue']);
+      expect(await page.evaluate(() => result.onBubblingChange)).toEqual(['blue']);
+    }));
+
     it('should work with no options', SX(async function() {
       await page.goto(PREFIX + '/input/select.html');
       await page.evaluate(() => makeEmpty());
