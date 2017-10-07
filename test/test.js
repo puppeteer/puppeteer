@@ -195,7 +195,7 @@ describe('Page', function() {
 
   describe('Browser.Events.closed', function() {
     fit('should emitted when browser gets closed', SX(async function() {
-      newBrowser= await puppeteer.launch(defaultBrowserOptions);
+      const newBrowser= await puppeteer.launch(defaultBrowserOptions);
       let isClosed = false;
       newBrowser.on('closed', closed => {
         expect(closed).toBe('browser closed');
@@ -234,8 +234,8 @@ describe('Page', function() {
     it('should emmited when page got crashed', SX(async function() {
       let emitted = false;
       page.on('closed', () => emitted = true);
-      await page.goto('chrome://crash');
-      //  waitForEvents(page, 'error');
+      page.goto('chrome://crash');
+      await waitForEvents(page, 'error');
       expect(emitted).toBe(true);
     }));
   });
