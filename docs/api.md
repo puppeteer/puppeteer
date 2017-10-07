@@ -548,7 +548,7 @@ console.log(await resultHandle.jsonValue());
 await resultHandle.dispose();
 ```
 
-Shortcut for [page.mainFrame().executionContext().evaluateHandle(pageFunction, ...args)](#frameobjectpagefunction-args).
+Shortcut for [page.mainFrame().executionContext().evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args).
 
 
 #### page.evaluateOnNewDocument(pageFunction, ...args)
@@ -1392,13 +1392,14 @@ The class represents a context for JavaScript execution. Examples of JavaScript 
 - all kind of [workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) have their own contexts
 
 #### executionContext.evaluate(pageFunction, ...args)
-- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
-- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to  `pageFunction`
+- `pageFunction` <[function]|[string]> Function to be evaluated in `executionContext`
+- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
 
 If the function, passed to the `executionContext.evaluate`, returns a [Promise], then `executionContext.evaluate` would wait for the promise to resolve and return its value.
 
 ```js
+const executionContext = page.mainFrame().executionContext();
 const result = await executionContext.evaluate(() => Promise.resolve(8 * 7));
 console.log(result); // prints "56"
 ```
@@ -1409,7 +1410,7 @@ A string can also be passed in instead of a function.
 console.log(await executionContext.evaluate('1 + 2')); // prints "3"
 ```
 
-[JSHandle] instances can be passed as arguments to the `frame.evaluate`:
+[JSHandle] instances can be passed as arguments to the `executionContext.evaluate`:
 ```js
 const oneHandle = await executionContext.evaluateHandle(() => 1);
 const twoHandle = await executionContext.evaluateHandle(() => 2);
@@ -1420,13 +1421,14 @@ console.log(result); // prints '3'.
 ```
 
 #### executionContext.evaluateHandle(pageFunction, ...args)
-- `pageFunction` <[function]|[string]> Function to be evaluated in the page context
+- `pageFunction` <[function]|[string]> Function to be evaluated in the `executionContext`
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[JSHandle]>> Resolves to the return value of `pageFunction`
 
 If the function, passed to the `executionContext.evaluateHandle`, returns a [Promise], then `executionContext.evaluteHandle` would wait for the promise to resolve and return its value.
 
 ```js
+const context = page.mainFrame().executionContext();
 const aHandle = await context.evaluateHandle(() => Promise.resolve(self));
 aHandle; // Handle for the global object.
 ```
@@ -1439,7 +1441,6 @@ const aHandle = await context.evaluateHandle('1 + 2'); // Handle for the '3' obj
 
 [JSHandle] instances could be passed as arguments to the `executionContext.evaluateHandle`:
 ```js
-const context = page.mainFrame().executionContext();
 const aHandle = await context.evaluateHandle(() => document.body);
 const resultHandle = await context.evaluateHandle(body => body.innerHTML, aHandle);
 console.log(await resultHandle.jsonValue()); // prints body's innerHTML
@@ -1449,16 +1450,16 @@ await resultHandle.dispose();
 
 ### class: JSHandle
 
-JSHandle represents an in-page javascript object. JSHandles could be created with the [page.evaluateHandle](#pageobjectpagefunction-args) method.
+JSHandle represents an in-page javascript object. JSHandles could be created with the [page.evaluateHandle](#pageevaluatehandlepagefunction-args) method.
 
 ```js
-await windowHandle = await page.evaluateHandle(() => window);
+const windowHandle = await page.evaluateHandle(() => window);
 // ...
 ```
 
-JSHandle prevents references javascript objects from garbage collection unless the handle is [disposed](#objecthandledispose). JSHandles are auto-disposed when their origin frame gets navigated or the parent context gets destroyed.
+JSHandle prevents references JavaScript objects from garbage collection unless the handle is [disposed](#jshandledispose). JSHandles are auto-disposed when their origin frame gets navigated or the parent context gets destroyed.
 
-JSHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args), [`page.evaluate()`](#pageevaluatepagefunction-args) and [`page.evaluateHandle`](#pageobjectpagefunction-args) methods.
+JSHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args), [`page.evaluate()`](#pageevaluatepagefunction-args) and [`page.evaluateHandle`](#pageevaluatehandlepagefunction-args) methods.
 
 #### jsHandle.asElement()
 - returns: <[ElementHandle]>
@@ -1481,7 +1482,7 @@ Returns execution context the handle belongs to.
 The method returns a map with property names as keys and JSHandle instances for the property values.
 
 ```js
-const handle = await page.evaluateHandle(() => {window, document});
+const handle = await page.evaluateHandle(() => ({window, document}));
 const properties = await handle.getProperties();
 const windowHandle = properties.get('window');
 const documentHandle = properties.get('document');
@@ -1559,7 +1560,7 @@ The method returns a map with property names as keys and JSHandle instances for 
 
 ```js
 const listHandle = await page.evaluateHandle(() => document.body.children);
-const properties = await containerHandle.getProperties();
+const properties = await listHandle.getProperties();
 const children = [];
 for (const property of properties.values()) {
   const element = property.asElement();
