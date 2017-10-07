@@ -25,6 +25,8 @@
       window.result = {
         onInput: null,
         onChange: null,
+        onBubblingChange: null,
+        onBubblingInput: null,
       };
 
       let select = document.querySelector('select');
@@ -47,6 +49,18 @@
 
       select.addEventListener('change', () => {
         result.onChange = Array.from(select.querySelectorAll('option:checked')).map((option) => {
+          return option.value;
+        });
+      }, false);
+
+      document.body.addEventListener('input', () => {
+        result.onBubblingInput = Array.from(select.querySelectorAll('option:checked')).map((option) => {
+          return option.value;
+        });
+      }, false);
+
+      document.body.addEventListener('change', () => {
+        result.onBubblingChange = Array.from(select.querySelectorAll('option:checked')).map((option) => {
           return option.value;
         });
       }, false);
