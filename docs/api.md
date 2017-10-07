@@ -59,7 +59,6 @@
     + [page.mouse](#pagemouse)
     + [page.pdf(options)](#pagepdfoptions)
     + [page.plainText()](#pageplaintext)
-    + [page.press(key[, options])](#pagepresskey-options)
     + [page.reload(options)](#pagereloadoptions)
     + [page.screenshot([options])](#pagescreenshotoptions)
     + [page.select(selector, ...values)](#pageselectselector-values)
@@ -74,7 +73,7 @@
     + [page.title()](#pagetitle)
     + [page.touchscreen](#pagetouchscreen)
     + [page.tracing](#pagetracing)
-    + [page.type(text, options)](#pagetypetext-options)
+    + [page.type(selector, text[, options])](#pagetypeselector-text-options)
     + [page.url()](#pageurl)
     + [page.viewport()](#pageviewport)
     + [page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#pagewaitforselectororfunctionortimeout-options-args)
@@ -83,7 +82,9 @@
     + [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [class: Keyboard](#class-keyboard)
     + [keyboard.down(key[, options])](#keyboarddownkey-options)
+    + [keyboard.press(key[, options])](#keyboardpresskey-options)
     + [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
+    + [keyboard.type(text, options)](#keyboardtypetext-options)
     + [keyboard.up(key)](#keyboardupkey)
   * [class: Mouse](#class-mouse)
     + [mouse.click(x, y, [options])](#mouseclickx-y-options)
@@ -139,12 +140,15 @@
     + [elementHandle.click([options])](#elementhandleclickoptions)
     + [elementHandle.dispose()](#elementhandledispose)
     + [elementHandle.executionContext()](#elementhandleexecutioncontext)
+    + [elementHandle.focus()](#elementhandlefocus)
     + [elementHandle.getProperties()](#elementhandlegetproperties)
     + [elementHandle.getProperty(propertyName)](#elementhandlegetpropertypropertyname)
     + [elementHandle.hover()](#elementhandlehover)
     + [elementHandle.jsonValue()](#elementhandlejsonvalue)
+    + [elementHandle.press(key[, options])](#elementhandlepresskey-options)
     + [elementHandle.tap()](#elementhandletap)
     + [elementHandle.toString()](#elementhandletostring)
+    + [elementHandle.type(text[, options])](#elementhandletypetext-options)
     + [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
   * [class: Request](#class-request)
     + [request.abort()](#requestabort)
@@ -759,15 +763,6 @@ The `format` options are:
 #### page.plainText()
 - returns:  <[Promise]<[string]>> Returns page's inner text.
 
-#### page.press(key[, options])
-- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
-- `options` <[Object]>
-  - `text` <[string]> If specified, generates an input event with this text.
-  - `delay` <[number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
-- returns: <[Promise]>
-
-Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#keyboardupkey).
-
 #### page.reload(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
@@ -896,7 +891,8 @@ Shortcut for [page.mainFrame().title()](#frametitle).
 #### page.tracing
 - returns: <[Tracing]>
 
-#### page.type(text, options)
+#### page.type(selector, text[, options])
+- `selector` <[string]> A [selector] of an element to type into. If there are multiple elements satisfying the selector, the first will be used.
 - `text` <[string]> A text to type into a focused element.
 - `options` <[Object]>
   - `delay` <[number]> Time to wait between key presses in milliseconds. Defaults to 0.
@@ -904,11 +900,11 @@ Shortcut for [page.mainFrame().title()](#frametitle).
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
 
-To press a special key, use [`page.press`](#pagepresskey-options).
+To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#pagekeyboardpresskey-options).
 
 ```js
-page.type('Hello'); // Types instantly
-page.type('World', {delay: 100}); // Types slower, like a user
+page.type('#mytextarea', 'Hello'); // Types instantly
+page.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
 ```
 
 #### page.url()
@@ -1003,21 +999,21 @@ Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitf
 
 ### class: Keyboard
 
-Keyboard provides an api for managing a virtual keyboard. The high level api is [`page.type`](#pagetypetext-options), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
+Keyboard provides an api for managing a virtual keyboard. The high level api is [`keyboard.type`](#keyboardtypetext-options), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
 
 For finer control, you can use [`keyboard.down`](#keyboarddownkey-options), [`keyboard.up`](#keyboardupkey), and [`keyboard.sendCharacter`](#keyboardsendcharacterchar) to manually fire events as if they were generated from a real keyboard.
 
 An example of holding down `Shift` in order to select and delete some text:
 ```js
-page.type('Hello World!');
-page.press('ArrowLeft');
+page.keyboard.type('Hello World!');
+page.keyboard.press('ArrowLeft');
 
 page.keyboard.down('Shift');
 for (let i = 0; i < ' World'.length; i++)
-  page.press('ArrowLeft');
+  page.keyboard.press('ArrowLeft');
 page.keyboard.up('Shift');
 
-page.press('Backspace');
+page.keyboard.press('Backspace');
 // Result text will end up saying 'Hello!'
 ```
 
@@ -1035,6 +1031,15 @@ If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key
 
 After the key is pressed once, subsequent calls to [`keyboard.down`](#keyboarddownkey-options) will have [repeat](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat) set to true. To release the key, use [`keyboard.up`](#keyboardupkey).
 
+#### keyboard.press(key[, options])
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `options` <[Object]>
+  - `text` <[string]> If specified, generates an input event with this text.
+  - `delay` <[number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
+- returns: <[Promise]>
+
+Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#keyboardupkey).
+
 #### keyboard.sendCharacter(char)
 - `char` <[string]> Character to send into the page.
 - returns: <[Promise]>
@@ -1043,6 +1048,21 @@ Dispatches a `keypress` and `input` event. This does not send a `keydown` or `ke
 
 ```js
 page.keyboard.sendCharacter('嗨');
+```
+
+#### keyboard.type(text, options)
+- `text` <[string]> A text to type into a focused element.
+- `options` <[Object]>
+  - `delay` <[number]> Time to wait between key presses in milliseconds. Defaults to 0.
+- returns: <[Promise]>
+
+Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
+
+To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#keyboardpresskey-options).
+
+```js
+page.keyboard.type('Hello'); // Types instantly
+page.keyboard.type('World', {delay: 100}); // Types slower, like a user
 ```
 
 #### keyboard.up(key)
@@ -1396,7 +1416,7 @@ const twoHandle = await executionContext.evaluateHandle(() => 2);
 const result = await executionContext.evaluate((a, b) => a + b, oneHandle, twoHandle);
 await oneHandle.dispose();
 await twoHandle.dispose();
-console.log(result); // prints '3'. 
+console.log(result); // prints '3'.
 ```
 
 #### executionContext.evaluateHandle(pageFunction, ...args)
@@ -1527,6 +1547,11 @@ The `elementHandle.dispose` method stops referencing the element handle.
 #### elementHandle.executionContext()
 - returns: [ExecutionContext]
 
+#### elementHandle.focus()
+- returns: <[Promise]>
+
+Calls [focus](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus) on the element.
+
 #### elementHandle.getProperties()
 - returns: <[Promise]<[Map]<[string], [JSHandle]>>>
 
@@ -1563,6 +1588,15 @@ Returns a JSON representation of the object. The JSON is generated by running [`
 
 > **NOTE** The method will throw if the referenced object is not stringifiable.
 
+#### elementHandle.press(key[, options])
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `options` <[Object]>
+  - `text` <[string]> If specified, generates an input event with this text.
+  - `delay` <[number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
+- returns: <[Promise]>
+
+Focuses the element, and then uses [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#keyboardupkey).
+
 #### elementHandle.tap()
 - returns: <[Promise]> Promise which resolves when the element is successfully tapped. Promise gets rejected if the element is detached from DOM.
 
@@ -1571,6 +1605,21 @@ If the element is detached from DOM, the method throws an error.
 
 #### elementHandle.toString()
 - returns: <[string]>
+
+#### elementHandle.type(text[, options])
+- `text` <[string]> A text to type into a focused element.
+- `options` <[Object]>
+  - `delay` <[number]> Time to wait between key presses in milliseconds. Defaults to 0.
+- returns: <[Promise]>
+
+Focuses the element, and then sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
+
+To press a special key, like `Control` or `ArrowDown`, use [`elementHandle.press`](#elementhandlepresskey-options).
+
+```js
+elementHandle.type('Hello'); // Types instantly
+elementHandle.type('World', {delay: 100}); // Types slower, like a user
+```
 
 #### elementHandle.uploadFile(...filePaths)
 - `...filePaths` <...[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).

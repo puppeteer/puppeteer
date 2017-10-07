@@ -1426,8 +1426,9 @@ describe('Page', function() {
     }));
     it('should type into the textarea', SX(async function() {
       await page.goto(PREFIX + '/input/textarea.html');
-      await page.focus('textarea');
-      await page.type('Type in this text!');
+
+      const textarea = await page.$('textarea');
+      await textarea.type('Type in this text!');
       expect(await page.evaluate(() => result)).toBe('Type in this text!');
     }));
     it('should click the button after navigation ', SX(async function() {
@@ -1452,29 +1453,28 @@ describe('Page', function() {
     }));
     it('should move with the arrow keys', SX(async function(){
       await page.goto(PREFIX + '/input/textarea.html');
-      await page.focus('textarea');
-      await page.type('Hello World!');
+      await page.type('textarea', 'Hello World!');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
       for (let i = 0; i < 'World!'.length; i++)
-        page.press('ArrowLeft');
-      await page.type('inserted ');
+        page.keyboard.press('ArrowLeft');
+      await page.keyboard.type('inserted ');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello inserted World!');
       page.keyboard.down('Shift');
       for (let i = 0; i < 'inserted '.length; i++)
-        page.press('ArrowLeft');
+        page.keyboard.press('ArrowLeft');
       page.keyboard.up('Shift');
-      await page.press('Backspace');
+      await page.keyboard.press('Backspace');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
     }));
-    it('should send a character with Page.press', SX(async function() {
+    it('should send a character with ElementHandle.press', SX(async function() {
       await page.goto(PREFIX + '/input/textarea.html');
-      await page.focus('textarea');
-      await page.press('a', {text: 'f'});
+      const textarea = await page.$('textarea');
+      await textarea.press('a', {text: 'f'});
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('f');
 
       await page.evaluate(() => window.addEventListener('keydown', e => e.preventDefault(), true));
 
-      await page.press('a', {text: 'y'});
+      await textarea.press('a', {text: 'y'});
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('f');
     }));
     it('should send a character with sendCharacter', SX(async function() {
@@ -1519,12 +1519,12 @@ describe('Page', function() {
     }));
     it('should send proper codes while typing', SX(async function(){
       await page.goto(PREFIX + '/input/keyboard.html');
-      await page.type('!');
+      await page.keyboard.type('!');
       expect(await page.evaluate(() => getResult())).toBe(
           [ 'Keydown: ! 49 []',
             'Keypress: ! 33 33 33 []',
             'Keyup: ! 49 []'].join('\n'));
-      await page.type('^');
+      await page.keyboard.type('^');
       expect(await page.evaluate(() => getResult())).toBe(
           [ 'Keydown: ^ 54 []',
             'Keypress: ^ 94 94 94 []',
@@ -1534,7 +1534,7 @@ describe('Page', function() {
       await page.goto(PREFIX + '/input/keyboard.html');
       const keyboard = page.keyboard;
       await keyboard.down('Shift');
-      await page.type('~');
+      await page.keyboard.type('~');
       expect(await page.evaluate(() => getResult())).toBe(
           [ 'Keydown: Shift 16 [Shift]',
             'Keydown: ~ 192 [Shift]', // 192 is ` keyCode
@@ -1555,7 +1555,7 @@ describe('Page', function() {
             Promise.resolve().then(() => event.preventDefault());
         }, false);
       });
-      await page.type('Hello World!');
+      await page.keyboard.type('Hello World!');
       expect(await page.evaluate(() => textarea.value)).toBe('He Wrd!');
     }));
     it('keyboard.modifiers()', SX(async function(){
@@ -1603,7 +1603,7 @@ describe('Page', function() {
       await page.goto(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       const text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
-      await page.type(text);
+      await page.keyboard.type(text);
       await page.evaluate(() => document.querySelector('textarea').scrollTop = 0);
       const {x, y} = await page.evaluate(dimensions);
       await page.mouse.move(x + 2,y + 2);
@@ -1616,7 +1616,7 @@ describe('Page', function() {
       await page.goto(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       const text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
-      await page.type(text);
+      await page.keyboard.type(text);
       await page.click('textarea');
       await page.click('textarea', {clickCount: 2});
       await page.click('textarea', {clickCount: 3});
@@ -1659,7 +1659,7 @@ describe('Page', function() {
       await page.evaluate(() => document.querySelector('textarea').addEventListener('keydown', e => window.lastEvent = e, true));
       await page.keyboard.down('a', {text: 'a'});
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(false);
-      await page.press('a');
+      await page.keyboard.press('a');
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(true);
     }));
     // @see https://github.com/GoogleChrome/puppeteer/issues/206
