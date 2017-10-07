@@ -121,6 +121,24 @@ describe('Puppeteer', function() {
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
       rm(userDataDir);
     }));
+    // Headless has issues shutting down gracefully
+    // @see https://crbug.com/771830
+    (headless ? xit : it)('userDataDir option should restore state', SX(async function() {
+      const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+      const options = Object.assign({userDataDir}, defaultBrowserOptions);
+      const browser = await puppeteer.launch(options);
+      const page = await browser.newPage();
+      await page.goto(EMPTY_PAGE);
+      await page.evaluate(() => localStorage.hey = 'hello');
+      await browser.close();
+
+      const browser2 = await puppeteer.launch(options);
+      const page2 = await browser2.newPage();
+      await page2.goto(EMPTY_PAGE);
+      expect(await page2.evaluate(() => localStorage.hey)).toBe('hello');
+      await browser2.close();
+      rm(userDataDir);
+    }));
   });
   describe('Puppeteer.connect', function() {
     it('should work', SX(async function() {
@@ -267,9 +285,10 @@ describe('Page', function() {
       const result = await page.evaluate((a, b) => Object.is(a, undefined) && Object.is(b, 'foo'), undefined, 'foo');
       expect(result).toBe(true);
     }));
-    it('should not fail for window object', SX(async function() {
-      const result = await page.evaluate(() => window);
-      expect(result).toBe('Window');
+    it('should fail for window object', SX(async function() {
+      let error = null;
+      await page.evaluate(() => window).catch(e => error = e);
+      expect(error.message).toContain('Converting circular structure to JSON');
     }));
     it('should accept a string', SX(async function() {
       const result = await page.evaluate('1 + 2');
@@ -296,7 +315,7 @@ describe('Page', function() {
       await element.dispose();
       let error = null;
       await page.evaluate(e => e.textContent, element).catch(e => error = e);
-      expect(error.message).toContain('ElementHandle is disposed');
+      expect(error.message).toContain('JSHandle is disposed');
     }));
     it('should throw if elementHandles are from other frames', SX(async function() {
       const FrameUtils = require('./frame-utils');
@@ -305,7 +324,117 @@ describe('Page', function() {
       let error = null;
       await page.evaluate(body => body.innerHTML, bodyHandle).catch(e => error = e);
       expect(error).toBeTruthy();
-      expect(error.message).toContain('ElementHandles passed as arguments should belong');
+      expect(error.message).toContain('JSHandles can be evaluated only in the context they were created');
+    }));
+    it('should accept object handle as an argument', SX(async function() {
+      const navigatorHandle = await page.evaluateHandle(() => navigator);
+      const text = await page.evaluate(e => e.userAgent, navigatorHandle);
+      expect(text).toContain('Mozilla');
+    }));
+    it('should accept object handle to primitive types', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => 5);
+      const isFive = await page.evaluate(e => Object.is(e, 5), aHandle);
+      expect(isFive).toBeTruthy();
+    }));
+  });
+
+  describe('Page.evaluateHandle', function() {
+    it('should work', SX(async function() {
+      const windowHandle = await page.evaluateHandle(() => window);
+      expect(windowHandle).toBeTruthy();
+    }));
+  });
+
+  describe('JSHandle.getProperty', function() {
+    it('should work', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => ({
+        one: 1,
+        two: 2,
+        three: 3
+      }));
+      const twoHandle = await aHandle.getProperty('two');
+      expect(await twoHandle.jsonValue()).toEqual(2);
+    }));
+  });
+
+  describe('JSHandle.jsonValue', function() {
+    it('should work', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => ({foo: 'bar'}));
+      const json = await aHandle.jsonValue();
+      expect(json).toEqual({foo: 'bar'});
+    }));
+    it('should work with dates', SX(async function() {
+      const dateHandle = await page.evaluateHandle(() => new Date('2017-09-26T00:00:00.000Z'));
+      const json = await dateHandle.jsonValue();
+      expect(json).toBe('2017-09-26T00:00:00.000Z');
+    }));
+    it('should throw for circular objects', SX(async function() {
+      const windowHandle = await page.evaluateHandle('window');
+      let error = null;
+      await windowHandle.jsonValue().catch(e => error = e);
+      expect(error.message).toContain('Converting circular structure to JSON');
+    }));
+  });
+
+  describe('JSHandle.getProperties', function() {
+    it('should work', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => ({
+        foo: 'bar'
+      }));
+      const properties = await aHandle.getProperties();
+      const foo = properties.get('foo');
+      expect(foo).toBeTruthy();
+      expect(await foo.jsonValue()).toBe('bar');
+    }));
+    it('should return even non-own properties', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => {
+        class A {
+          constructor() {
+            this.a = '1';
+          }
+        }
+        class B extends A {
+          constructor() {
+            super();
+            this.b = '2';
+          }
+        }
+        return new B();
+      });
+      const properties = await aHandle.getProperties();
+      expect(await properties.get('a').jsonValue()).toBe('1');
+      expect(await properties.get('b').jsonValue()).toBe('2');
+    }));
+  });
+
+  describe('JSHandle.asElement', function() {
+    it('should work', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => document.body);
+      const element = aHandle.asElement();
+      expect(element).toBeTruthy();
+    }));
+    it('should return null for non-elements', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => 2);
+      const element = aHandle.asElement();
+      expect(element).toBeFalsy();
+    }));
+    it('should return ElementHandle for TextNodes', SX(async function() {
+      await page.setContent('<div>ee!</div>');
+      const aHandle = await page.evaluateHandle(() => document.querySelector('div').firstChild);
+      const element = aHandle.asElement();
+      expect(element).toBeTruthy();
+      expect(await page.evaluate(e => e.nodeType === HTMLElement.TEXT_NODE, element));
+    }));
+  });
+
+  describe('JSHandle.toString', function() {
+    it('should work for primitives', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => 2);
+      expect(aHandle.toString()).toBe('2');
+    }));
+    it('should work for complicated objects', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => window);
+      expect(aHandle.toString()).toBe('JSHandle@object');
     }));
   });
 
@@ -321,6 +450,30 @@ describe('Page', function() {
       await page.injectFile(helloPath);
       const result = await page.evaluate(() => __injectedError.stack);
       expect(result).toContain(path.join('assets', 'injectedfile.js'));
+    }));
+  });
+
+  describe('Frame.context', function() {
+    const FrameUtils = require('./frame-utils');
+    it('should work', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
+      expect(page.frames().length).toBe(2);
+      const [frame1, frame2] = page.frames();
+      expect(frame1.executionContext()).toBeTruthy();
+      expect(frame2.executionContext()).toBeTruthy();
+      expect(frame1.executionContext() !== frame2.executionContext()).toBeTruthy();
+
+      await Promise.all([
+        frame1.executionContext().evaluate(() => window.a = 1),
+        frame2.executionContext().evaluate(() => window.a = 2)
+      ]);
+      const [a1, a2] = await Promise.all([
+        frame1.executionContext().evaluate(() => window.a),
+        frame2.executionContext().evaluate(() => window.a)
+      ]);
+      expect(a1).toBe(1);
+      expect(a2).toBe(2);
     }));
   });
 
@@ -1243,8 +1396,23 @@ describe('Page', function() {
     it('should work', SX(async function() {
       await page.goto(PREFIX + '/input/button.html');
       const button = await page.$('button');
-      await button.click('button');
+      await button.click();
       expect(await page.evaluate(() => result)).toBe('Clicked');
+    }));
+    it('should work for TextNodes', SX(async function() {
+      await page.goto(PREFIX + '/input/button.html');
+      const buttonTextNode = await page.evaluateHandle(() => document.querySelector('button').firstChild);
+      let error = null;
+      await buttonTextNode.click().catch(err => error = err);
+      expect(error.message).toBe('Node is not of type HTMLElement');
+    }));
+    it('should throw for detached nodes', SX(async function() {
+      await page.goto(PREFIX + '/input/button.html');
+      const button = await page.$('button');
+      await page.evaluate(button => button.remove(), button);
+      let error = null;
+      await button.click().catch(err => error = err);
+      expect(error.message).toBe('Node is detached from document');
     }));
   });
 
@@ -1278,8 +1446,9 @@ describe('Page', function() {
     }));
     it('should type into the textarea', SX(async function() {
       await page.goto(PREFIX + '/input/textarea.html');
-      await page.focus('textarea');
-      await page.type('Type in this text!');
+
+      const textarea = await page.$('textarea');
+      await textarea.type('Type in this text!');
       expect(await page.evaluate(() => result)).toBe('Type in this text!');
     }));
     it('should click the button after navigation ', SX(async function() {
@@ -1304,29 +1473,28 @@ describe('Page', function() {
     }));
     it('should move with the arrow keys', SX(async function(){
       await page.goto(PREFIX + '/input/textarea.html');
-      await page.focus('textarea');
-      await page.type('Hello World!');
+      await page.type('textarea', 'Hello World!');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
       for (let i = 0; i < 'World!'.length; i++)
-        page.press('ArrowLeft');
-      await page.type('inserted ');
+        page.keyboard.press('ArrowLeft');
+      await page.keyboard.type('inserted ');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello inserted World!');
       page.keyboard.down('Shift');
       for (let i = 0; i < 'inserted '.length; i++)
-        page.press('ArrowLeft');
+        page.keyboard.press('ArrowLeft');
       page.keyboard.up('Shift');
-      await page.press('Backspace');
+      await page.keyboard.press('Backspace');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
     }));
-    it('should send a character with Page.press', SX(async function() {
+    it('should send a character with ElementHandle.press', SX(async function() {
       await page.goto(PREFIX + '/input/textarea.html');
-      await page.focus('textarea');
-      await page.press('a', {text: 'f'});
+      const textarea = await page.$('textarea');
+      await textarea.press('a', {text: 'f'});
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('f');
 
       await page.evaluate(() => window.addEventListener('keydown', e => e.preventDefault(), true));
 
-      await page.press('a', {text: 'y'});
+      await textarea.press('a', {text: 'y'});
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('f');
     }));
     it('should send a character with sendCharacter', SX(async function() {
@@ -1371,12 +1539,12 @@ describe('Page', function() {
     }));
     it('should send proper codes while typing', SX(async function(){
       await page.goto(PREFIX + '/input/keyboard.html');
-      await page.type('!');
+      await page.keyboard.type('!');
       expect(await page.evaluate(() => getResult())).toBe(
           [ 'Keydown: ! 49 []',
             'Keypress: ! 33 33 33 []',
             'Keyup: ! 49 []'].join('\n'));
-      await page.type('^');
+      await page.keyboard.type('^');
       expect(await page.evaluate(() => getResult())).toBe(
           [ 'Keydown: ^ 54 []',
             'Keypress: ^ 94 94 94 []',
@@ -1386,7 +1554,7 @@ describe('Page', function() {
       await page.goto(PREFIX + '/input/keyboard.html');
       const keyboard = page.keyboard;
       await keyboard.down('Shift');
-      await page.type('~');
+      await page.keyboard.type('~');
       expect(await page.evaluate(() => getResult())).toBe(
           [ 'Keydown: Shift 16 [Shift]',
             'Keydown: ~ 192 [Shift]', // 192 is ` keyCode
@@ -1407,7 +1575,7 @@ describe('Page', function() {
             Promise.resolve().then(() => event.preventDefault());
         }, false);
       });
-      await page.type('Hello World!');
+      await page.keyboard.type('Hello World!');
       expect(await page.evaluate(() => textarea.value)).toBe('He Wrd!');
     }));
     it('keyboard.modifiers()', SX(async function(){
@@ -1455,7 +1623,7 @@ describe('Page', function() {
       await page.goto(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       const text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
-      await page.type(text);
+      await page.keyboard.type(text);
       await page.evaluate(() => document.querySelector('textarea').scrollTop = 0);
       const {x, y} = await page.evaluate(dimensions);
       await page.mouse.move(x + 2,y + 2);
@@ -1468,7 +1636,7 @@ describe('Page', function() {
       await page.goto(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       const text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
-      await page.type(text);
+      await page.keyboard.type(text);
       await page.click('textarea');
       await page.click('textarea', {clickCount: 2});
       await page.click('textarea', {clickCount: 3});
@@ -1511,7 +1679,7 @@ describe('Page', function() {
       await page.evaluate(() => document.querySelector('textarea').addEventListener('keydown', e => window.lastEvent = e, true));
       await page.keyboard.down('a', {text: 'a'});
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(false);
-      await page.press('a');
+      await page.keyboard.press('a');
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(true);
     }));
     // @see https://github.com/GoogleChrome/puppeteer/issues/206
