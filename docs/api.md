@@ -500,6 +500,8 @@ List of all available devices is available in the source code: [DeviceDescriptor
 
 If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return its value.
 
+If the function passed into `page.evaluate` returns a non-[Serializable] value, then `page.evaluate` resolves to `undefined`.
+
 ```js
 const result = await page.evaluate(() => {
   return Promise.resolve(8 * 7);
@@ -1269,6 +1271,8 @@ Adds a `<link rel="stylesheet">` tag to the frame with the desired url.
 - returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
 
 If the function, passed to the `frame.evaluate`, returns a [Promise], then `frame.evaluate` would wait for the promise to resolve and return its value.
+
+If the function passed into `frame.evaluate` returns a non-[Serializable] value, then `frame.evaluate` resolves to `undefined`.
 
 ```js
 const result = await frame.evaluate(() => {
