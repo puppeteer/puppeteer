@@ -328,6 +328,25 @@ describe('Page', function() {
     }));
   });
 
+  describe('Page.setOfflineMode', function() {
+    it('should work', SX(async function() {
+      await page.setOfflineMode(true);
+      let error = null;
+      await page.goto(EMPTY_PAGE).catch(e => error = e);
+      expect(error).toBeTruthy();
+      await page.setOfflineMode(false);
+      const response = await page.reload();
+      expect(response.status).toBe(200);
+    }));
+    it('should emulate navigator.onLine', SX(async function() {
+      expect(await page.evaluate(() => window.navigator.onLine)).toBe(true);
+      await page.setOfflineMode(true);
+      expect(await page.evaluate(() => window.navigator.onLine)).toBe(false);
+      await page.setOfflineMode(false);
+      expect(await page.evaluate(() => window.navigator.onLine)).toBe(true);
+    }));
+  });
+
   describe('Page.evaluateHandle', function() {
     it('should work', SX(async function() {
       const windowHandle = await page.evaluateHandle(() => window);
