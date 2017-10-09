@@ -266,9 +266,8 @@ describe('Page', function() {
       expect(result).toBe(true);
     }));
     it('should fail for window object', SX(async function() {
-      let error = null;
-      await page.evaluate(() => window).catch(e => error = e);
-      expect(error.message).toContain('Converting circular structure to JSON');
+      const result = await page.evaluate(() => window);
+      expect(result).toBe(undefined);
     }));
     it('should accept a string', SX(async function() {
       const result = await page.evaluate('1 + 2');
@@ -1715,6 +1714,27 @@ describe('Page', function() {
       await button.tap();
       expect(await page.evaluate(() => getResult())).toEqual(['Touchstart: 0', 'Touchend: 0']);
     }));
+    it('should click the button inside an iframe', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.setContent('<div style="width:100px;height:100px">spacer</div>');
+      const FrameUtils = require('./frame-utils');
+      await FrameUtils.attachFrame(page, 'button-test', PREFIX + '/input/button.html');
+      const frame = page.frames()[1];
+      const button = await frame.$('button');
+      await button.click();
+      expect(await frame.evaluate(() => window.result)).toBe('Clicked');
+    }));
+    it('should click the button with deviceScaleFactor set', SX(async function() {
+      await page.setViewport({width: 400, height: 400, deviceScaleFactor: 5});
+      expect(await page.evaluate(() => window.devicePixelRatio)).toBe(5);
+      await page.setContent('<div style="width:100px;height:100px">spacer</div>');
+      const FrameUtils = require('./frame-utils');
+      await FrameUtils.attachFrame(page, 'button-test', PREFIX + '/input/button.html');
+      const frame = page.frames()[1];
+      const button = await frame.$('button');
+      await button.click();
+      expect(await frame.evaluate(() => window.result)).toBe('Clicked');
+    }));
     function dimensions() {
       const rect = document.querySelector('textarea').getBoundingClientRect();
       return {
@@ -2270,6 +2290,13 @@ describe('Page', function() {
       await page.select('select', 'blue', 'green', 'red');
       expect(await page.evaluate(() => result.onInput)).toEqual(['blue', 'green', 'red']);
       expect(await page.evaluate(() => result.onChange)).toEqual(['blue', 'green', 'red']);
+    }));
+
+    it('should respect event bubbling', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      await page.select('select', 'blue');
+      expect(await page.evaluate(() => result.onBubblingInput)).toEqual(['blue']);
+      expect(await page.evaluate(() => result.onBubblingChange)).toEqual(['blue']);
     }));
 
     it('should work with no options', SX(async function() {
