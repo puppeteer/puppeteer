@@ -1912,7 +1912,7 @@ If the target is not of type `"page"`, returns `null`.
 #### target.type()
 - returns: <[string]>
 
-Identifies what kind of target this is such as `"page"` or `"service_worker"`.
+Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, or `"other"`.
 
 #### target.url()
 - returns: <[string]>

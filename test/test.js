@@ -2745,7 +2745,7 @@ describe('Page', function() {
       const targets = browser.targets();
       expect(targets.some(target => target.type() === 'page' &&
         target.url() === 'about:blank')).toBeTruthy('Missing blank page');
-      expect(targets.some(target => target.type() === 'browser' &&
+      expect(targets.some(target => target.type() === 'other' &&
         target.url() === '')).toBeTruthy('Missing browser target');
     }));
     it('Browser.pages should return all of the pages', SX(async function() {
@@ -2782,6 +2782,18 @@ describe('Page', function() {
       allPages = await Promise.all(browser.targets().map(target => target.page()));
       expect(allPages).toContain(page);
       expect(allPages).not.toContain(otherPage);
+    }));
+    it('should report when a service worker is created and destroyed', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      const createdTarget = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
+      const registration = await page.evaluateHandle(() => navigator.serviceWorker.register('sw.js'));
+
+      expect((await createdTarget).type()).toBe('service_worker');
+      expect((await createdTarget).url()).toBe(PREFIX + '/sw.js');
+
+      const destroyedTarget = new Promise(fulfill => browser.once('targetdestroyed', target => fulfill(target)));
+      await page.evaluate(registration => registration.unregister(), registration);
+      expect(await destroyedTarget).toBe(await createdTarget);
     }));
   });
 });
