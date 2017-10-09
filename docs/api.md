@@ -177,7 +177,7 @@ Puppeteer is a Node library which provides a high-level API to control Chromium 
 
 ### Environment Variables
 
-Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) to aid its operations. These variables could be either set in the environment or in the [npm config](https://docs.npmjs.com/cli/config).
+Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) to aid its operations. These variables can either be set in the environment or in the [npm config](https://docs.npmjs.com/cli/config).
 
 - `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
@@ -244,7 +244,7 @@ puppeteer.launch().then(async browser => {
 #### browser.close()
 - returns: <[Promise]>
 
-Closes browser with all the pages (if any were opened). The browser object itself is considered to be disposed and could not be used anymore.
+Closes browser with all the pages (if any were opened). The browser object itself is considered to be disposed and can not be used anymore.
 
 #### browser.newPage()
 - returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.
@@ -257,7 +257,7 @@ Closes browser with all the pages (if any were opened). The browser object itsel
 #### browser.wsEndpoint()
 - returns: <[string]> Browser websocket url.
 
-Browser websocket endpoint which could be used as an argument to
+Browser websocket endpoint which can be used as an argument to
 [puppeteer.connect](#puppeteerconnectoptions). The format is `ws://${host}:${port}/devtools/browser/<id>`
 
 You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/version`. Learn more about the [devtools protocol](https://chromedevtools.github.io/devtools-protocol) and the [browser endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
@@ -390,7 +390,7 @@ Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector
 - `url` <[string]> Url of the `<script>` tag
 - returns: <[Promise]> which resolves when the script's onload fires.
 
-Adds a `<script>` tag into the page with the desired url. Alternatively, a local JavaScript file could be injected via [`page.injectFile`](#pageinjectfilefilepath) method.
+Adds a `<script>` tag into the page with the desired url. Alternatively, a local JavaScript file can be injected via [`page.injectFile`](#pageinjectfilefilepath) method.
 
 Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
 
@@ -460,7 +460,7 @@ If URLs are specified, only cookies for those URLs are returned.
   - `viewport` <[Object]>
     - `width` <[number]> page width in pixels.
     - `height` <[number]> page height in pixels.
-    - `deviceScaleFactor` <[number]> Specify device scale factor (could be thought of as dpr). Defaults to `1`.
+    - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
     - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
     - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
     - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
@@ -471,7 +471,7 @@ Emulates given device metrics and user agent. This method is a shortcut for call
 - [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
 - [page.setViewport(viewport)](#pagesetviewportviewport)
 
-To aid emulation, puppeteer provides a list of device descriptors which could be obtained via the `require('puppeteer/DeviceDescriptors')` command.
+To aid emulation, puppeteer provides a list of device descriptors which can be obtained via the `require('puppeteer/DeviceDescriptors')` command.
 Below is an example of emulating an iPhone 6 in puppeteer:
 ```js
 const puppeteer = require('puppeteer');
@@ -515,7 +515,7 @@ A string can also be passed in instead of a function.
 console.log(await page.evaluate('1 + 2')); // prints "3"
 ```
 
-[ElementHandle] instances could be passed as arguments to the `page.evaluate`:
+[ElementHandle] instances can be passed as arguments to the `page.evaluate`:
 ```js
 const bodyHandle = await page.$('body');
 const html = await page.evaluate(body => body.innerHTML, bodyHandle);
@@ -542,7 +542,7 @@ A string can also be passed in instead of a function.
 const aHandle = await page.evaluateHandle('document'); // Handle for the 'document'.
 ```
 
-[JSHandle] instances could be passed as arguments to the `page.evaluateHandle`:
+[JSHandle] instances can be passed as arguments to the `page.evaluateHandle`:
 ```js
 const aHandle = await page.evaluateHandle(() => document.body);
 const resultHandle = await page.evaluateHandle(body => body.innerHTML, aHandle);
@@ -639,7 +639,7 @@ If there's no element matching `selector`, the method throws an error.
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider a navigation finished, defaults to `load`. Could be either:
+  - `waitUntil` <[string]> When to consider a navigation finished, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
   - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
@@ -652,7 +652,7 @@ Navigate to the previous page in history.
 #### page.goForward(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
+  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
   - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
@@ -666,7 +666,7 @@ Navigate to the next page in history.
 - `url` <[string]> URL to navigate page to. The url should include scheme, e.g. `https://`.
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
+  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
   - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter. Defaults to 2.
@@ -768,7 +768,7 @@ The `format` options are:
 #### page.reload(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
+  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
   - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
@@ -778,7 +778,7 @@ The `format` options are:
 #### page.screenshot([options])
 - `options` <[Object]> Options object which might have the following properties:
     - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the image won't be saved to the disk.
-    - `type` <[string]> Specify screenshot type, could be either `jpeg` or `png`. Defaults to 'png'.
+    - `type` <[string]> Specify screenshot type, can be either `jpeg` or `png`. Defaults to 'png'.
     - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
     - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
     - `clip` <[Object]> An object which specifies clipping region of the page. Should have the following fields:
@@ -865,7 +865,7 @@ puppeteer.launch().then(async browser => {
 - `viewport` <[Object]>
   - `width` <[number]> page width in pixels.
   - `height` <[number]> page height in pixels.
-  - `deviceScaleFactor` <[number]> Specify device scale factor (could be thought of as dpr). Defaults to `1`.
+  - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
   - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
   - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
   - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
@@ -918,7 +918,7 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - returns: <[Object]>
   - `width` <[number]> page width in pixels.
   - `height` <[number]> page height in pixels.
-  - `deviceScaleFactor` <[number]> Specify device scale factor (could be though of as dpr). Defaults to `1`.
+  - `deviceScaleFactor` <[number]> Specify device scale factor (can be though of as dpr). Defaults to `1`.
   - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
   - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
   - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
@@ -940,14 +940,14 @@ Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, .
 #### page.waitForFunction(pageFunction[, options[, ...args]])
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
-  - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it could be one of the following values:
+  - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values:
     - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
     - `mutation` - to execute `pageFunction` on every DOM mutation.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]> Promise which resolves when the `pageFunction` returns a truthy value.
 
-The `waitForFunction` could be used to observe viewport size change:
+The `waitForFunction` can be used to observe viewport size change:
 ```js
 const puppeteer = require('puppeteer');
 
@@ -964,7 +964,7 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
+  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
   - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
@@ -1176,7 +1176,7 @@ puppeteer.launch().then(async browser => {
 #### dialog.type
 - <[string]>
 
-Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `prompt`.
+Dialog's type, can be one of `alert`, `beforeunload`, `confirm` or `prompt`.
 
 ### class: ConsoleMessage
 
@@ -1198,9 +1198,9 @@ One of the following values: `'log'`, `'debug'`, `'info'`, `'error'`, `'warning'
 At every point of time, page exposes its current frame tree via the [page.mainFrame()](#pagemainframe) and [frame.childFrames()](#framechildframes) methods.
 
 [Frame] object's lifecycle is controlled by three events, dispatched on the page object:
-- ['frameattached'](#event-frameattached) - fired when the frame gets attached to the page. Frame could be attached to the page only once.
+- ['frameattached'](#event-frameattached) - fired when the frame gets attached to the page. A Frame can be attached to the page only once.
 - ['framenavigated'](#event-framenavigated) - fired when the frame commits navigation to a different URL.
-- ['framedetached'](#event-framedetached) - fired when the frame gets detached from the page.  Frame could be detached from the page only once.
+- ['framedetached'](#event-framedetached) - fired when the frame gets detached from the page.  A Frame can be detached from the page only once.
 
 An example of dumping frame tree:
 
@@ -1254,7 +1254,7 @@ const html = await frame.$eval('.main-container', e => e.outerHTML);
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
 
-Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScript could be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
+Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScript can be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
 
 #### frame.addStyleTag(url)
 - `url` <[string]> Url of a stylesheet to be added
@@ -1287,7 +1287,7 @@ A string can also be passed in instead of a function.
 console.log(await frame.evaluate('1 + 2')); // prints "3"
 ```
 
-[ElementHandle] instances could be passed as arguments to the `frame.evaluate`:
+[ElementHandle] instances can be passed as arguments to the `frame.evaluate`:
 ```js
 const bodyHandle = await frame.$('body');
 const html = await frame.evaluate(body => body.innerHTML, bodyHandle);
@@ -1342,14 +1342,14 @@ This method behaves differently with respect to the type of the first parameter:
 #### frame.waitForFunction(pageFunction[, options[, ...args]])
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
-  - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it could be one of the following values:
+  - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values:
     - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
     - `mutation` - to execute `pageFunction` on every DOM mutation.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]> Promise which resolves when the `pageFunction` returns a truthy value.
 
-The `waitForFunction` could be used to observe viewport size change:
+The `waitForFunction` can be used to observe viewport size change:
 ```js
 const puppeteer = require('puppeteer');
 
@@ -1443,7 +1443,7 @@ A string can also be passed in instead of a function.
 const aHandle = await context.evaluateHandle('1 + 2'); // Handle for the '3' object.
 ```
 
-[JSHandle] instances could be passed as arguments to the `executionContext.evaluateHandle`:
+[JSHandle] instances can be passed as arguments to the `executionContext.evaluateHandle`:
 ```js
 const aHandle = await context.evaluateHandle(() => document.body);
 const resultHandle = await context.evaluateHandle(body => body.innerHTML, aHandle);
@@ -1454,7 +1454,7 @@ await resultHandle.dispose();
 
 ### class: JSHandle
 
-JSHandle represents an in-page javascript object. JSHandles could be created with the [page.evaluateHandle](#pageevaluatehandlepagefunction-args) method.
+JSHandle represents an in-page javascript object. JSHandles can be created with the [page.evaluateHandle](#pageevaluatehandlepagefunction-args) method.
 
 ```js
 const windowHandle = await page.evaluateHandle(() => window);
@@ -1513,7 +1513,7 @@ Returns a JSON representation of the object. The JSON is generated by running [`
 
 > **NOTE** Class [ElementHandle] extends [JSHandle].
 
-ElementHandle represents an in-page DOM element. ElementHandles could be created with the [page.$](#pageselector) method.
+ElementHandle represents an in-page DOM element. ElementHandles can be created with the [page.$](#pageselector) method.
 
 ```js
 const puppeteer = require('puppeteer');
@@ -1650,7 +1650,7 @@ Aborts request. To use this, request interception should be enabled with `page.s
 Exception is immediately thrown if the request interception is not enabled.
 
 #### request.continue([overrides])
-- `overrides` <[Object]> Optional request overwrites, which could be one of the following:
+- `overrides` <[Object]> Optional request overwrites, which can be one of the following:
   - `url` <[string]> If set, the request url will be changed
   - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`)
   - `postData` <[string]> If set changes the post data of request
