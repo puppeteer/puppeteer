@@ -266,9 +266,8 @@ describe('Page', function() {
       expect(result).toBe(true);
     }));
     it('should fail for window object', SX(async function() {
-      let error = null;
-      await page.evaluate(() => window).catch(e => error = e);
-      expect(error.message).toContain('Converting circular structure to JSON');
+      const result = await page.evaluate(() => window);
+      expect(result).toBe(undefined);
     }));
     it('should accept a string', SX(async function() {
       const result = await page.evaluate('1 + 2');
