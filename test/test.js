@@ -1008,7 +1008,7 @@ describe('Page', function() {
         expect(request.headers['user-agent']).toBeTruthy();
         expect(request.method).toBe('GET');
         expect(request.postData).toBe(undefined);
-        expect(request.resourceType).toBe('Document');
+        expect(request.resourceType).toBe('document');
         request.continue();
       });
       const response = await page.goto(EMPTY_PAGE);
@@ -1077,7 +1077,7 @@ describe('Page', function() {
       expect(response.status).toBe(200);
       expect(response.url).toContain('empty.html');
       expect(requests.length).toBe(5);
-      expect(requests[2].resourceType).toBe('Document');
+      expect(requests[2].resourceType).toBe('document');
     }));
     it('should be able to abort redirects', SX(async function() {
       await page.setRequestInterceptionEnabled(true);
@@ -1866,7 +1866,7 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       expect(requests.length).toBe(1);
       expect(requests[0].url).toBe(EMPTY_PAGE);
-      expect(requests[0].resourceType).toBe('Document');
+      expect(requests[0].resourceType).toBe('document');
       expect(requests[0].method).toBe('GET');
       expect(requests[0].response()).toBeTruthy();
     }));
@@ -1942,7 +1942,7 @@ describe('Page', function() {
       expect(failedRequests.length).toBe(1);
       expect(failedRequests[0].url).toContain('one-style.css');
       expect(failedRequests[0].response()).toBe(null);
-      expect(failedRequests[0].resourceType).toBe('Stylesheet');
+      expect(failedRequests[0].resourceType).toBe('stylesheet');
     }));
     it('Page.Events.RequestFinished', SX(async function() {
       const requests = [];
