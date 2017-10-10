@@ -2184,13 +2184,6 @@ describe('Page', function() {
     }));
   });
 
-  describe('Page.plainText', function() {
-    it('should return the page text', SX(async function(){
-      await page.setContent('<div>the result text</div>');
-      expect(await page.plainText()).toBe('the result text');
-    }));
-  });
-
   describe('Page.title', function() {
     it('should return the page title', SX(async function(){
       await page.goto(PREFIX + '/input/button.html');
