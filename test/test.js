@@ -408,8 +408,10 @@ describe('Page', function() {
 
   describe('JSHandle.toString', function() {
     it('should work for primitives', SX(async function() {
-      const aHandle = await page.evaluateHandle(() => 2);
-      expect(aHandle.toString()).toBe('2');
+      const numberHandle = await page.evaluateHandle(() => 2);
+      expect(numberHandle.toString()).toBe('JSHandle:2');
+      const stringHandle = await page.evaluateHandle(() => 'a');
+      expect(stringHandle.toString()).toBe('JSHandle:a');
     }));
     it('should work for complicated objects', SX(async function() {
       const aHandle = await page.evaluateHandle(() => window);
