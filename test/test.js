@@ -1422,6 +1422,17 @@ describe('Page', function() {
     }));
   });
 
+  describe('ElementHandle.screenshot', function() {
+    it('should work', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(PREFIX + '/grid.html');
+      await page.evaluate(() => window.scrollBy(50, 100));
+      const elementHandle = await page.$('.box:nth-of-type(3)');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
+    }));
+  });
+
   describe('input', function() {
     it('should click the button', SX(async function() {
       await page.goto(PREFIX + '/input/button.html');
@@ -2263,16 +2274,6 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       const screenshot = await page.screenshot({omitBackground: true});
       expect(screenshot).toBeGolden('transparent.png');
-    }));
-    it('should work with elementHandle.boundingBox', SX(async function() {
-      await page.setViewport({width: 500, height: 500});
-      await page.goto(PREFIX + '/grid.html');
-      await page.evaluate(() => window.scrollBy(50, 100));
-      const elementHandle = await page.$('.box:nth-of-type(3)');
-      await elementHandle.scrollIntoViewIfNeeded();
-      const clip = await elementHandle.boundingBox();
-      const screenshot = await page.screenshot({ clip });
-      expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
     }));
   });
 
