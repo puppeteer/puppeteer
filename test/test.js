@@ -749,6 +749,47 @@ describe('Page', function() {
     }));
   });
 
+  describe('Page.getMetrics', function() {
+    it('should get metrics from a page', SX(async function() {
+      await page.goto('about:blank');
+      const metrics = await page.getMetrics();
+      checkMetrics(metrics);
+    }));
+    it('metrics event fired on console.timeStamp', SX(async function() {
+      const metricsPromise = new Promise(fulfill => page.once('metrics', fulfill));
+      await page.evaluate(() => console.timeStamp('test42'));
+      const metrics = await metricsPromise;
+      expect(metrics.title).toBe('test42');
+      checkMetrics(metrics.metrics);
+    }));
+    function checkMetrics(metrics) {
+      const metricsToCheck = new Set([
+        'Timestamp',
+        'DocumentCount',
+        'FrameCount',
+        'JSEventListenerCount',
+        'NodeCount',
+        'LayoutCount',
+        'RecalcStyleCount',
+        'LayoutDuration',
+        'RecalcStyleDuration',
+        'ScriptDuration',
+        'TaskDuration',
+        'JSHeapUsedSize',
+        'JSHeapTotalSize',
+        'FirstMeaningfulPaint',
+        'DomContentLoaded',
+        'NavigationStart',
+      ]);
+      for (const name in metrics) {
+        expect(metricsToCheck.has(name)).toBeTruthy();
+        expect(metrics[name]).toBeGreaterThanOrEqual(0);
+        metricsToCheck.delete(name);
+      }
+      expect(metricsToCheck.size).toBe(0);
+    }
+  });
+
   describe('Page.goto', function() {
     it('should navigate to about:blank', SX(async function() {
       const response = await page.goto('about:blank');

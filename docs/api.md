@@ -25,6 +25,7 @@
     + [event: 'framedetached'](#event-framedetached)
     + [event: 'framenavigated'](#event-framenavigated)
     + [event: 'load'](#event-load)
+    + [event: 'metrics'](#event-metrics)
     + [event: 'pageerror'](#event-pageerror)
     + [event: 'request'](#event-request)
     + [event: 'requestfailed'](#event-requestfailed)
@@ -49,6 +50,7 @@
     + [page.exposeFunction(name, puppeteerFunction)](#pageexposefunctionname-puppeteerfunction)
     + [page.focus(selector)](#pagefocusselector)
     + [page.frames()](#pageframes)
+    + [page.getMetrics()](#pagegetmetrics)
     + [page.goBack(options)](#pagegobackoptions)
     + [page.goForward(options)](#pagegoforwardoptions)
     + [page.goto(url, options)](#pagegotourl-options)
@@ -325,6 +327,15 @@ Emitted when a frame is navigated to a new url.
 #### event: 'load'
 
 Emitted when the JavaScript [`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load) event is dispatched.
+
+#### event: 'metrics'
+- <[Object]>
+  - `title` <[string]> The title passed to `console.timeStamp`.
+  - `metrics` <[Object]> Object containing metrics as key/value pairs. The values
+    of metrics are of <[number]> type.
+
+Emitted when the JavaScript code makes a call to `console.timeStamp`. For the list
+of metrics see `page.getMetrics`.
 
 #### event: 'pageerror'
 - <[string]> The exception message
@@ -636,6 +647,27 @@ If there's no element matching `selector`, the method throws an error.
 
 #### page.frames()
 - returns: <[Array]<[Frame]>> An array of all frames attached to the page.
+
+#### page.getMetrics()
+- returns: <[Object]> Object containing metrics as key/value pairs.
+  - `Timestamp` <[number]> The timestamp when the metrics sample was taken.
+  - `DocumentCount` <[number]> Number of documents in the page.
+  - `FrameCount` <[number]> Number of frames in the page.
+  - `JSEventListenerCount` <[number]> Number of events in the page.
+  - `NodeCount` <[number]> Number of DOM nodes in the page.
+  - `LayoutCount` <[number]> Total number of full or partial page layout.
+  - `RecalcStyleCount` <[number]> Total number of page style recalculations.
+  - `LayoutDuration` <[number]> Combined durations of all page layouts.
+  - `RecalcStyleDuration` <[number]> Combined duration of all page style recalculations.
+  - `ScriptDuration` <[number]> Combined duration of JavaScript execution.
+  - `TaskDuration` <[number]> Combined duration of all tasks performed by the browser.
+  - `JSHeapUsedSize` <[number]> Used JavaScript heap size.
+  - `JSHeapTotalSize` <[number]> Total JavaScript heap size.
+  - `FirstMeaningfulPaint` <[number]> Timestamp of the first meaningful paint event.
+  - `DomContentLoaded` <[number]> Timestamp of the DOM content loaded event.
+  - `NavigationStart` <[number]> Timestamp of the navigation start event.
+
+> **NOTE** All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
 
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
