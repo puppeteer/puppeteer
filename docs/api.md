@@ -35,8 +35,8 @@
     + [page.$$(selector)](#pageselector)
     + [page.$$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
     + [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
-    + [page.addScriptTag(url)](#pageaddscripttagurl)
-    + [page.addStyleTag(url)](#pageaddstyletagurl)
+    + [page.addScriptTag(options)](#pageaddscripttagoptions)
+    + [page.addStyleTag(options)](#pageaddstyletagoptions)
     + [page.authenticate(credentials)](#pageauthenticatecredentials)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
@@ -56,7 +56,6 @@
     + [page.goForward(options)](#pagegoforwardoptions)
     + [page.goto(url, options)](#pagegotourl-options)
     + [page.hover(selector)](#pagehoverselector)
-    + [page.injectFile(filePath)](#pageinjectfilefilepath)
     + [page.keyboard](#pagekeyboard)
     + [page.mainFrame()](#pagemainframe)
     + [page.mouse](#pagemouse)
@@ -113,12 +112,11 @@
     + [frame.$$(selector)](#frameselector)
     + [frame.$$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
     + [frame.$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
-    + [frame.addScriptTag(url)](#frameaddscripttagurl)
-    + [frame.addStyleTag(url)](#frameaddstyletagurl)
+    + [frame.addScriptTag(options)](#frameaddscripttagoptions)
+    + [frame.addStyleTag(options)](#frameaddstyletagoptions)
     + [frame.childFrames()](#framechildframes)
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
     + [frame.executionContext()](#frameexecutioncontext)
-    + [frame.injectFile(filePath)](#frameinjectfilefilepath)
     + [frame.isDetached()](#frameisdetached)
     + [frame.name()](#framename)
     + [frame.parentFrame()](#frameparentframe)
@@ -416,21 +414,27 @@ const html = await page.$eval('.main-container', e => e.outerHTML);
 
 Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector-pagefunction-args).
 
-#### page.addScriptTag(url)
-- `url` <[string]> Url of the `<script>` tag
-- returns: <[Promise]> which resolves when the script's onload fires.
+#### page.addScriptTag(options)
+- `options` <[Object]>
+  - `url` <[string]> Url of a script to be added.
+  - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `content` <[string]> Raw JavaScript content to be injected into frame.
+- returns: <[Promise]> which resolves when the script's onload fires or when the script content was injected into frame.
 
-Adds a `<script>` tag into the page with the desired url. Alternatively, a local JavaScript file can be injected via [`page.injectFile`](#pageinjectfilefilepath) method.
+Adds a `<script>` tag into the page with the desired url or content.
 
-Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
+Shortcut for [page.mainFrame().addScriptTag(options)](#frameaddscripttagoptions).
 
 #### page.addStyleTag(url)
-- `url` <[string]> Url of the `<link>` tag
-- returns: <[Promise]> which resolves when the stylesheet's onload fires.
+- `options` <[Object]>
+  - `url` <[string]> Url of the `<link>` tag.
+  - `path` <[string]> Path to the CSS file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `content` <[string]> Raw CSS content to be injected into frame.
+- returns: <[Promise]> which resolves when the stylesheet's onload fires or when the CSS content was injected into frame.
 
-Adds a `<link rel="stylesheet">` tag into the page with the desired url.
+Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
 
-Shortcut for [page.mainFrame().addStyleTag(url)](#frameaddstyletagurl).
+Shortcut for [page.mainFrame().addStyleTag(options)](#frameaddstyletagoptions).
 
 #### page.authenticate(credentials)
 - `credentials` <[Object]>
@@ -737,12 +741,6 @@ The `page.goto` will throw an error if:
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
 If there's no element matching `selector`, the method throws an error.
-
-#### page.injectFile(filePath)
-- `filePath` <[string]> Path to the JavaScript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-- returns: <[Promise]> Promise which resolves when file gets successfully evaluated in frame.
-
-Shortcut for [page.mainFrame().injectFile(filePath)](#frameinjectfilefilepath).
 
 #### page.keyboard
 
@@ -1310,17 +1308,23 @@ const preloadHref = await frame.$eval('link[rel=preload]', el => el.href);
 const html = await frame.$eval('.main-container', e => e.outerHTML);
 ```
 
-#### frame.addScriptTag(url)
-- `url` <[string]> Url of a script to be added
-- returns: <[Promise]> Promise which resolves as the script gets added and loads.
+#### frame.addScriptTag(options)
+- `options` <[Object]>
+  - `url` <[string]> Url of a script to be added.
+  - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `content` <[string]> Raw JavaScript content to be injected into frame.
+- returns: <[Promise]> which resolves when the script's onload fires or when the script content was injected into frame.
 
-Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScript can be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
+Adds a `<script>` tag into the page with the desired url or content.
 
-#### frame.addStyleTag(url)
-- `url` <[string]> Url of a stylesheet to be added
-- returns: <[Promise]> Promise which resolves when the script gets added and loads.
+#### frame.addStyleTag(options)
+- `options` <[Object]>
+  - `url` <[string]> Url of the `<link>` tag.
+  - `path` <[string]> Path to the CSS file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `content` <[string]> Raw CSS content to be injected into frame.
+- returns: <[Promise]> which resolves when the stylesheet's onload fires or when the CSS content was injected into frame.
 
-Adds a `<link rel="stylesheet">` tag to the frame with the desired url.
+Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
 
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
@@ -1356,10 +1360,6 @@ await bodyHandle.dispose();
 
 #### frame.executionContext()
 - returns: <[ExecutionContext]> Execution context associated with this frame.
-
-#### frame.injectFile(filePath)
-- `filePath` <[string]> Path to the JavaScript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-- returns: <[Promise]> Promise which resolves when file gets successfully evaluated in frame.
 
 #### frame.isDetached()
 - returns: <[boolean]>
