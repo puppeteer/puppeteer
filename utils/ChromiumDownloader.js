@@ -109,7 +109,7 @@ module.exports = {
   },
 
   /**
-   * @return {!Array<{platform:string, revision: string}>}
+   * @return {!Array<!{platform:string, revision: string}>}
    */
   downloadedRevisions: function() {
     if (!fs.existsSync(DOWNLOADS_FOLDER))
