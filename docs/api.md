@@ -425,7 +425,7 @@ Adds a `<script>` tag into the page with the desired url or content.
 
 Shortcut for [page.mainFrame().addScriptTag(options)](#frameaddscripttagoptions).
 
-#### page.addStyleTag(url)
+#### page.addStyleTag(options)
 - `options` <[Object]>
   - `url` <[string]> Url of the `<link>` tag.
   - `path` <[string]> Path to the CSS file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
