@@ -601,6 +601,8 @@ If there's no element matching `selector`, the method throws an error.
   - `DomContentLoaded` <[number]> Timestamp of the DOM content loaded event.
   - `NavigationStart` <[number]> Timestamp of the navigation start event.
 
+> **NOTE** All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
+
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
