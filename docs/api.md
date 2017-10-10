@@ -663,9 +663,6 @@ If there's no element matching `selector`, the method throws an error.
   - `TaskDuration` <[number]> Combined duration of all tasks performed by the browser.
   - `JSHeapUsedSize` <[number]> Used JavaScript heap size.
   - `JSHeapTotalSize` <[number]> Total JavaScript heap size.
-  - `FirstMeaningfulPaint` <[number]> Timestamp of the first meaningful paint event.
-  - `DomContentLoaded` <[number]> Timestamp of the DOM content loaded event.
-  - `NavigationStart` <[number]> Timestamp of the navigation start event.
 
 > **NOTE** All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
 
