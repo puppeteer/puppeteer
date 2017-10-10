@@ -114,6 +114,8 @@ describe('Puppeteer', function() {
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
       rm(userDataDir);
     }));
+    // Windows has issues running Chromium using a custom user data dir. It hangs when closing the browser.
+    // @see https://github.com/GoogleChrome/puppeteer/issues/918
     (windows ? xit : it)('userDataDir argument', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({}, defaultBrowserOptions);
