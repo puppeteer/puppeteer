@@ -970,7 +970,7 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
   - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
   - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
-- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
+- returns: <[Promise]>
 
 #### page.waitForSelector(selector[, options])
 - `selector` <[string]> A [selector] of an element to wait for,

@@ -22,7 +22,9 @@ const extract = require('extract-zip');
 const util = require('util');
 const URL = require('url');
 const removeRecursive = require('rimraf');
+// @ts-ignore
 const ProxyAgent = require('https-proxy-agent');
+// @ts-ignore
 const getProxyForUrl = require('proxy-from-env').getProxyForUrl;
 
 const DOWNLOADS_FOLDER = path.join(__dirname, '..', '.local-chromium');
@@ -107,7 +109,7 @@ module.exports = {
   },
 
   /**
-   * @return {!Array<!{platform:string, revision: string}>}
+   * @return {!Array<{platform:string, revision: string}>}
    */
   downloadedRevisions: function() {
     if (!fs.existsSync(DOWNLOADS_FOLDER))
@@ -144,7 +146,7 @@ module.exports = {
     else if (platform === 'win32' || platform === 'win64')
       executablePath = path.join(folderPath, 'chrome-win32', 'chrome.exe');
     else
-      throw 'Unsupported platfrom: ' + platfrom;
+      throw 'Unsupported platfrom: ' + platform;
     return {
       executablePath,
       folderPath,
@@ -202,7 +204,7 @@ function downloadFile(url, destinationPath, progressCallback) {
     file.on('finish', () => fulfill());
     file.on('error', error => reject(error));
     response.pipe(file);
-    const totalBytes = parseInt(response.headers['content-length'], 10);
+    const totalBytes = parseInt(/** @type {string} */ (response.headers['content-length']), 10);
     if (progressCallback)
       response.on('data', onData.bind(null, totalBytes));
   });
@@ -224,11 +226,13 @@ function extractZip(zipPath, folderPath) {
 }
 
 function requestOptions(url, method = 'GET') {
+  /** @type {Object} */
   const result = URL.parse(url);
   result.method = method;
 
   const proxyURL = getProxyForUrl(url);
   if (proxyURL) {
+    /** @type {Object} */
     const parsedProxyURL = URL.parse(proxyURL);
     parsedProxyURL.secureProxy = parsedProxyURL.protocol === 'https:';
 
