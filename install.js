@@ -47,10 +47,17 @@ Downloader.downloadRevision(platform, revision, onProgress)
     .catch(onError);
 
 /**
+ * @return {string}
+ */
+function productName() {
+  return process.env.CONTENT_SHELL ? 'Content shell' : 'Chromium';
+}
+
+/**
  * @return {!Promise}
  */
 function onSuccess() {
-  console.log('Chromium downloaded to ' + revisionInfo.folderPath);
+  console.log(`${productName()} downloaded to ${revisionInfo.folderPath}`);
   // Remove previous chromium revisions.
   const cleanupOldVersions = allRevisions.map(({platform, revision}) => Downloader.removeRevision(platform, revision));
   return Promise.all(cleanupOldVersions);
@@ -60,7 +67,7 @@ function onSuccess() {
  * @param {!Error} error
  */
 function onError(error) {
-  console.error(`ERROR: Failed to download Chromium r${revision}! Set "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" env variable to skip download.`);
+  console.error(`ERROR: Failed to download ${productName()} r${revision}! Set "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" env variable to skip download.`);
   console.error(error);
   process.exit(1);
 }
@@ -68,7 +75,7 @@ function onError(error) {
 let progressBar = null;
 function onProgress(bytesTotal, delta) {
   if (!progressBar) {
-    progressBar = new ProgressBar(`Downloading Chromium r${revision} - ${toMegabytes(bytesTotal)} [:bar] :percent :etas `, {
+    progressBar = new ProgressBar(`Downloading ${productName()} r${revision} - ${toMegabytes(bytesTotal)} [:bar] :percent :etas `, {
       complete: '=',
       incomplete: ' ',
       width: 20,
