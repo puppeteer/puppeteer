@@ -777,9 +777,6 @@ describe('Page', function() {
         'TaskDuration',
         'JSHeapUsedSize',
         'JSHeapTotalSize',
-        'FirstMeaningfulPaint',
-        'DomContentLoaded',
-        'NavigationStart',
       ]);
       for (const name in metrics) {
         expect(metricsToCheck.has(name)).toBeTruthy();
