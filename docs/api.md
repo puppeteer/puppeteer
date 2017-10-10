@@ -1183,7 +1183,7 @@ Dialog's type, can be one of `alert`, `beforeunload`, `confirm` or `prompt`.
 [ConsoleMessage] objects are dispatched by page via the ['console'](#event-console) event.
 
 #### consoleMessage.args
-- <[Array]<[string]>>
+- <[Array]<[JSHandle]>>
 
 #### consoleMessage.text
 - <[string]>
