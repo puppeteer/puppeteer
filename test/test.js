@@ -1373,6 +1373,24 @@ describe('Page', function() {
     }));
   });
 
+  describe('ElementHandle.boundingBox', function() {
+    it('should work', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(PREFIX + '/grid.html');
+      const elementHandle = await page.$('.box:nth-of-type(13)');
+      const box = await elementHandle.boundingBox();
+      expect(box).toEqual({ x: 100, y: 50, width: 50, height: 50 });
+    }));
+    it('should handle nested frames', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(PREFIX + '/frames/nested-frames.html');
+      const nestedFrame = page.frames()[1].childFrames()[1];
+      const elementHandle = await nestedFrame.$('div');
+      const box = await elementHandle.boundingBox();
+      expect(box).toEqual({ x: 28, y: 260, width: 264, height: 18 });
+    }));
+  });
+
   describe('ElementHandle.click', function() {
     it('should work', SX(async function() {
       await page.goto(PREFIX + '/input/button.html');
@@ -1403,6 +1421,17 @@ describe('Page', function() {
       const button = await page.$('#button-6');
       await button.hover();
       expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-6');
+    }));
+  });
+
+  describe('ElementHandle.screenshot', function() {
+    it('should work', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(PREFIX + '/grid.html');
+      await page.evaluate(() => window.scrollBy(50, 100));
+      const elementHandle = await page.$('.box:nth-of-type(3)');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
     }));
   });
 
