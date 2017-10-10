@@ -58,7 +58,6 @@
     + [page.mainFrame()](#pagemainframe)
     + [page.mouse](#pagemouse)
     + [page.pdf(options)](#pagepdfoptions)
-    + [page.plainText()](#pageplaintext)
     + [page.reload(options)](#pagereloadoptions)
     + [page.screenshot([options])](#pagescreenshotoptions)
     + [page.select(selector, ...values)](#pageselectselector-values)
@@ -763,9 +762,6 @@ The `format` options are:
 - `A3`: 11.7in x 16.5in
 - `A4`: 8.27in x 11.7in
 - `A5`: 5.83in x 8.27in
-
-#### page.plainText()
-- returns:  <[Promise]<[string]>> Returns page's inner text.
 
 #### page.reload(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
