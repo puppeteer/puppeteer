@@ -213,7 +213,7 @@ This methods attaches Puppeteer to an existing Chromium instance.
 #### puppeteer.launch([options])
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
-  - `headless` <[boolean]> Whether to run Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true`.
+  - `headless` <[boolean]> Whether to run Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`.
   - `executablePath` <[string]> Path to a Chromium executable to run instead of bundled Chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
   - `args` <[Array]<[string]>> Additional arguments to pass to the Chromium instance. List of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
@@ -222,6 +222,7 @@ This methods attaches Puppeteer to an existing Chromium instance.
   - `dumpio` <[boolean]> Whether to pipe browser process stdout and stderr into `process.stdout` and `process.stderr`. Defaults to `false`.
   - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
   - `env` <[Object]> Specify environment variables that will be visible to Chromium. Defaults to `process.env`.
+  - `devtools` <[boolean]> Whether to auto-open DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
 
 The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process is closed.
@@ -1185,7 +1186,7 @@ Dialog's type, can be one of `alert`, `beforeunload`, `confirm` or `prompt`.
 [ConsoleMessage] objects are dispatched by page via the ['console'](#event-console) event.
 
 #### consoleMessage.args
-- <[Array]<[string]>>
+- <[Array]<[JSHandle]>>
 
 #### consoleMessage.text
 - <[string]>

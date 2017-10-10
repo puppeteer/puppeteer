@@ -13,12 +13,13 @@
     "test-doclint": "jasmine utils/doclint/check_public_api/test/test.js && jasmine utils/doclint/preprocessor/test.js",
     "test": "npm run lint --silent && npm run coverage && npm run test-doclint && npm run test-node6-transformer",
     "install": "node install.js",
-    "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .) && npm run doc",
+    "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .) && npm run tsc && npm run doc",
     "doc": "node utils/doclint/cli.js",
     "coverage": "COVERAGE=true npm run unit",
     "test-node6-transformer": "jasmine utils/node6-transform/test/test.js",
     "build": "node utils/node6-transform/index.js",
-    "unit-node6": "jasmine node6-test/test.js"
+    "unit-node6": "jasmine node6-test/test.js",
+    "tsc": "tsc -p ."
   },
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
@@ -36,6 +37,12 @@
     "chromium_revision": "503964"
   },
   "devDependencies": {
+    "@types/debug": "0.0.30",
+    "@types/extract-zip": "^1.6.2",
+    "@types/mime": "^1.3.1",
+    "@types/node": "^8.0.26",
+    "@types/rimraf": "^2.0.2",
+    "@types/ws": "^3.0.2",
     "commonmark": "^0.27.0",
     "eslint": "^4.0.0",
     "esprima": "^4.0.0",
@@ -46,6 +53,7 @@
     "pdfjs-dist": "^1.8.595",
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.2.0",
-    "text-diff": "^1.0.1"
+    "text-diff": "^1.0.1",
+    "typescript": "next"
   }
 }
