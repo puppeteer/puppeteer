@@ -103,6 +103,12 @@ describe('Puppeteer', function() {
       await neverResolves;
       expect(error.message).toContain('Protocol error');
     }));
+    it('should reject if executable path is invalid', SX(async function() {
+      let waitError = null;
+      const options = Object.assign({}, defaultBrowserOptions, {executablePath: 'random-invalid-path'});
+      await puppeteer.launch(options).catch(e => waitError = e);
+      expect(waitError.message.startsWith('Failed to launch chrome! spawn random-invalid-path ENOENT')).toBe(true);
+    }));    
     // Windows has issues running Chromium using a custom user data dir. It hangs when closing the browser.
     // @see https://github.com/GoogleChrome/puppeteer/issues/918
     (windows ? xit : it)('userDataDir option', SX(async function() {
@@ -413,8 +419,10 @@ describe('Page', function() {
 
   describe('JSHandle.toString', function() {
     it('should work for primitives', SX(async function() {
-      const aHandle = await page.evaluateHandle(() => 2);
-      expect(aHandle.toString()).toBe('2');
+      const numberHandle = await page.evaluateHandle(() => 2);
+      expect(numberHandle.toString()).toBe('JSHandle:2');
+      const stringHandle = await page.evaluateHandle(() => 'a');
+      expect(stringHandle.toString()).toBe('JSHandle:a');
     }));
     it('should work for complicated objects', SX(async function() {
       const aHandle = await page.evaluateHandle(() => window);
@@ -746,6 +754,44 @@ describe('Page', function() {
     }));
   });
 
+  describe('Page.getMetrics', function() {
+    it('should get metrics from a page', SX(async function() {
+      await page.goto('about:blank');
+      const metrics = await page.getMetrics();
+      checkMetrics(metrics);
+    }));
+    it('metrics event fired on console.timeStamp', SX(async function() {
+      const metricsPromise = new Promise(fulfill => page.once('metrics', fulfill));
+      await page.evaluate(() => console.timeStamp('test42'));
+      const metrics = await metricsPromise;
+      expect(metrics.title).toBe('test42');
+      checkMetrics(metrics.metrics);
+    }));
+    function checkMetrics(metrics) {
+      const metricsToCheck = new Set([
+        'Timestamp',
+        'DocumentCount',
+        'FrameCount',
+        'JSEventListenerCount',
+        'NodeCount',
+        'LayoutCount',
+        'RecalcStyleCount',
+        'LayoutDuration',
+        'RecalcStyleDuration',
+        'ScriptDuration',
+        'TaskDuration',
+        'JSHeapUsedSize',
+        'JSHeapTotalSize',
+      ]);
+      for (const name in metrics) {
+        expect(metricsToCheck.has(name)).toBeTruthy();
+        expect(metrics[name]).toBeGreaterThanOrEqual(0);
+        metricsToCheck.delete(name);
+      }
+      expect(metricsToCheck.size).toBe(0);
+    }
+  });
+
   describe('Page.goto', function() {
     it('should navigate to about:blank', SX(async function() {
       const response = await page.goto('about:blank');
@@ -1013,7 +1059,7 @@ describe('Page', function() {
         expect(request.headers['user-agent']).toBeTruthy();
         expect(request.method).toBe('GET');
         expect(request.postData).toBe(undefined);
-        expect(request.resourceType).toBe('Document');
+        expect(request.resourceType).toBe('document');
         request.continue();
       });
       const response = await page.goto(EMPTY_PAGE);
@@ -1082,7 +1128,7 @@ describe('Page', function() {
       expect(response.status).toBe(200);
       expect(response.url).toContain('empty.html');
       expect(requests.length).toBe(5);
-      expect(requests[2].resourceType).toBe('Document');
+      expect(requests[2].resourceType).toBe('document');
     }));
     it('should be able to abort redirects', SX(async function() {
       await page.setRequestInterceptionEnabled(true);
@@ -1351,6 +1397,14 @@ describe('Page', function() {
     }));
   });
 
+  describe('Page.$$eval', function() {
+    it('should work', SX(async function() {
+      await page.setContent('<div>hello</div><div>beautiful</div><div>world!</div>');
+      const divsCount = await page.$$eval('div', divs => divs.length);
+      expect(divsCount).toBe(3);
+    }));
+  });
+
   describe('Page.$', function() {
     it('should query existing element', SX(async function() {
       await page.setContent('<section>test</section>');
@@ -1375,6 +1429,24 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       const elements = await page.$$('div');
       expect(elements.length).toBe(0);
+    }));
+  });
+
+  describe('ElementHandle.boundingBox', function() {
+    it('should work', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(PREFIX + '/grid.html');
+      const elementHandle = await page.$('.box:nth-of-type(13)');
+      const box = await elementHandle.boundingBox();
+      expect(box).toEqual({ x: 100, y: 50, width: 50, height: 50 });
+    }));
+    it('should handle nested frames', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(PREFIX + '/frames/nested-frames.html');
+      const nestedFrame = page.frames()[1].childFrames()[1];
+      const elementHandle = await nestedFrame.$('div');
+      const box = await elementHandle.boundingBox();
+      expect(box).toEqual({ x: 28, y: 260, width: 264, height: 18 });
     }));
   });
 
@@ -1408,6 +1480,17 @@ describe('Page', function() {
       const button = await page.$('#button-6');
       await button.hover();
       expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-6');
+    }));
+  });
+
+  describe('ElementHandle.screenshot', function() {
+    it('should work', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(PREFIX + '/grid.html');
+      await page.evaluate(() => window.scrollBy(50, 100));
+      const elementHandle = await page.$('.box:nth-of-type(3)');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
     }));
   });
 
@@ -1842,7 +1925,7 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       expect(requests.length).toBe(1);
       expect(requests[0].url).toBe(EMPTY_PAGE);
-      expect(requests[0].resourceType).toBe('Document');
+      expect(requests[0].resourceType).toBe('document');
       expect(requests[0].method).toBe('GET');
       expect(requests[0].response()).toBeTruthy();
     }));
@@ -1918,7 +2001,7 @@ describe('Page', function() {
       expect(failedRequests.length).toBe(1);
       expect(failedRequests[0].url).toContain('one-style.css');
       expect(failedRequests[0].response()).toBe(null);
-      expect(failedRequests[0].resourceType).toBe('Stylesheet');
+      expect(failedRequests[0].resourceType).toBe('stylesheet');
     }));
     it('Page.Events.RequestFinished', SX(async function() {
       const requests = [];
@@ -2157,13 +2240,6 @@ describe('Page', function() {
       }
       expect(error).toBeTruthy();
       expect(error.message).toContain('Failed to parse parameter value');
-    }));
-  });
-
-  describe('Page.plainText', function() {
-    it('should return the page text', SX(async function(){
-      await page.setContent('<div>the result text</div>');
-      expect(await page.plainText()).toBe('the result text');
     }));
   });
 

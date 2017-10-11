@@ -25,6 +25,7 @@
     + [event: 'framedetached'](#event-framedetached)
     + [event: 'framenavigated'](#event-framenavigated)
     + [event: 'load'](#event-load)
+    + [event: 'metrics'](#event-metrics)
     + [event: 'pageerror'](#event-pageerror)
     + [event: 'request'](#event-request)
     + [event: 'requestfailed'](#event-requestfailed)
@@ -32,6 +33,7 @@
     + [event: 'response'](#event-response)
     + [page.$(selector)](#pageselector)
     + [page.$$(selector)](#pageselector)
+    + [page.$$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
     + [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
     + [page.addScriptTag(url)](#pageaddscripttagurl)
     + [page.addStyleTag(url)](#pageaddstyletagurl)
@@ -49,6 +51,7 @@
     + [page.exposeFunction(name, puppeteerFunction)](#pageexposefunctionname-puppeteerfunction)
     + [page.focus(selector)](#pagefocusselector)
     + [page.frames()](#pageframes)
+    + [page.getMetrics()](#pagegetmetrics)
     + [page.goBack(options)](#pagegobackoptions)
     + [page.goForward(options)](#pagegoforwardoptions)
     + [page.goto(url, options)](#pagegotourl-options)
@@ -58,7 +61,6 @@
     + [page.mainFrame()](#pagemainframe)
     + [page.mouse](#pagemouse)
     + [page.pdf(options)](#pagepdfoptions)
-    + [page.plainText()](#pageplaintext)
     + [page.reload(options)](#pagereloadoptions)
     + [page.screenshot([options])](#pagescreenshotoptions)
     + [page.select(selector, ...values)](#pageselectselector-values)
@@ -109,6 +111,7 @@
   * [class: Frame](#class-frame)
     + [frame.$(selector)](#frameselector)
     + [frame.$$(selector)](#frameselector)
+    + [frame.$$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
     + [frame.$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
     + [frame.addScriptTag(url)](#frameaddscripttagurl)
     + [frame.addStyleTag(url)](#frameaddstyletagurl)
@@ -134,9 +137,9 @@
     + [jsHandle.getProperties()](#jshandlegetproperties)
     + [jsHandle.getProperty(propertyName)](#jshandlegetpropertypropertyname)
     + [jsHandle.jsonValue()](#jshandlejsonvalue)
-    + [jsHandle.toString()](#jshandletostring)
   * [class: ElementHandle](#class-elementhandle)
     + [elementHandle.asElement()](#elementhandleaselement)
+    + [elementHandle.boundingBox()](#elementhandleboundingbox)
     + [elementHandle.click([options])](#elementhandleclickoptions)
     + [elementHandle.dispose()](#elementhandledispose)
     + [elementHandle.executionContext()](#elementhandleexecutioncontext)
@@ -146,6 +149,7 @@
     + [elementHandle.hover()](#elementhandlehover)
     + [elementHandle.jsonValue()](#elementhandlejsonvalue)
     + [elementHandle.press(key[, options])](#elementhandlepresskey-options)
+    + [elementHandle.screenshot([options])](#elementhandlescreenshotoptions)
     + [elementHandle.tap()](#elementhandletap)
     + [elementHandle.toString()](#elementhandletostring)
     + [elementHandle.type(text[, options])](#elementhandletypetext-options)
@@ -326,6 +330,15 @@ Emitted when a frame is navigated to a new url.
 
 Emitted when the JavaScript [`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load) event is dispatched.
 
+#### event: 'metrics'
+- <[Object]>
+  - `title` <[string]> The title passed to `console.timeStamp`.
+  - `metrics` <[Object]> Object containing metrics as key/value pairs. The values
+    of metrics are of <[number]> type.
+
+Emitted when the JavaScript code makes a call to `console.timeStamp`. For the list
+of metrics see `page.getMetrics`.
+
 #### event: 'pageerror'
 - <[string]> The exception message
 
@@ -367,6 +380,22 @@ Shortcut for [page.mainFrame().$(selector)](#frameselector).
 The method runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `[]`.
 
 Shortcut for [page.mainFrame().$$(selector)](#frameselector-1).
+
+
+#### page.$$eval(selector, pageFunction[, ...args])
+- `selector` <[string]> A [selector] to query frame for
+- `pageFunction` <[function]> Function to be evaluated in browser context
+- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
+
+This method runs `document.querySelectorAll` within the page and passes it as the first argument to `pageFunction`.
+
+If `pageFunction` returns a [Promise], then `page.$$eval` would wait for the promise to resolve and return its value.
+
+Examples:
+```js
+const divsCounts = await page.$$eval('div', divs => divs.length);
+```
 
 #### page.$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> A [selector] to query page for
@@ -637,6 +666,24 @@ If there's no element matching `selector`, the method throws an error.
 #### page.frames()
 - returns: <[Array]<[Frame]>> An array of all frames attached to the page.
 
+#### page.getMetrics()
+- returns: <[Object]> Object containing metrics as key/value pairs.
+  - `Timestamp` <[number]> The timestamp when the metrics sample was taken.
+  - `DocumentCount` <[number]> Number of documents in the page.
+  - `FrameCount` <[number]> Number of frames in the page.
+  - `JSEventListenerCount` <[number]> Number of events in the page.
+  - `NodeCount` <[number]> Number of DOM nodes in the page.
+  - `LayoutCount` <[number]> Total number of full or partial page layout.
+  - `RecalcStyleCount` <[number]> Total number of page style recalculations.
+  - `LayoutDuration` <[number]> Combined durations of all page layouts.
+  - `RecalcStyleDuration` <[number]> Combined duration of all page style recalculations.
+  - `ScriptDuration` <[number]> Combined duration of JavaScript execution.
+  - `TaskDuration` <[number]> Combined duration of all tasks performed by the browser.
+  - `JSHeapUsedSize` <[number]> Used JavaScript heap size.
+  - `JSHeapTotalSize` <[number]> Total JavaScript heap size.
+
+> **NOTE** All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
+
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
@@ -762,9 +809,6 @@ The `format` options are:
 - `A3`: 11.7in x 16.5in
 - `A4`: 8.27in x 11.7in
 - `A5`: 5.83in x 8.27in
-
-#### page.plainText()
-- returns:  <[Promise]<[string]>> Returns page's inner text.
 
 #### page.reload(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
@@ -931,9 +975,9 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - returns: <[Promise]>
 
 This method behaves differently with respect to the type of the first parameter:
-- if `selectorOrFunctionOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [page.waitForSelector](#pagewaitforselectorselector-options)
-- if `selectorOrFunctionOrTimeout` is a `function`, than the first argument is treated as a predicate to wait for and the method is a shortcut for [page.waitForFunction()](#pagewaitforfunctionpagefunction-options-args).
-- if `selectorOrFunctionOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
+- if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] to wait for and the method is a shortcut for [page.waitForSelector](#pagewaitforselectorselector-options)
+- if `selectorOrFunctionOrTimeout` is a `function`, then the first argument is treated as a predicate to wait for and the method is a shortcut for [page.waitForFunction()](#pagewaitforfunctionpagefunction-options-args).
+- if `selectorOrFunctionOrTimeout` is a `number`, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
 Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args).
@@ -1234,6 +1278,21 @@ The method queries frame for the selector. If there's no such element within the
 
 The method runs `document.querySelectorAll` within the frame. If no elements match the selector, the return value resolve to `[]`.
 
+#### frame.$$eval(selector, pageFunction[, ...args])
+- `selector` <[string]> A [selector] to query frame for
+- `pageFunction` <[function]> Function to be evaluated in browser context
+- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
+
+This method runs `document.querySelectorAll` within the frame and passes it as the first argument to `pageFunction`.
+
+If `pageFunction` returns a [Promise], then `frame.$$eval` would wait for the promise to resolve and return its value.
+
+Examples:
+```js
+const divsCounts = await frame.$$eval('div', divs => divs.length);
+```
+
 #### frame.$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> A [selector] to query frame for
 - `pageFunction` <[function]> Function to be evaluated in browser context
@@ -1334,9 +1393,9 @@ Returns frame's url.
 - returns: <[Promise]>
 
 This method behaves differently with respect to the type of the first parameter:
-- if `selectorOrFunctionOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
-- if `selectorOrFunctionOrTimeout` is a `function`, than the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
-- if `selectorOrFunctionOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
+- if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
+- if `selectorOrFunctionOrTimeout` is a `function`, then the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
+- if `selectorOrFunctionOrTimeout` is a `number`, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
 
@@ -1507,9 +1566,6 @@ Returns a JSON representation of the object. The JSON is generated by running [`
 
 > **NOTE** The method will throw if the referenced object is not stringifiable.
 
-#### jsHandle.toString()
-- returns: <[string]>
-
 ### class: ElementHandle
 
 > **NOTE** Class [ElementHandle] extends [JSHandle].
@@ -1534,6 +1590,15 @@ ElementHandle instances can be used as arguments in [`page.$eval()`](#pageevalse
 
 #### elementHandle.asElement()
 - returns: <[ElementHandle]>
+
+#### elementHandle.boundingBox()
+- returns: <[Object]>
+    - x <[number]> the x coordinate of the element in pixels.
+    - y <[number]> the y coordinate of the element in pixels.
+    - width <[number]> the width of the element in pixels.
+    - height <[number]> the height of the element in pixels.
+
+This method returns the bounding box of the element (relative to the main frame), or `null` if element is detached from dom.
 
 #### elementHandle.click([options])
 - `options` <[Object]>
@@ -1602,6 +1667,13 @@ Returns a JSON representation of the object. The JSON is generated by running [`
 - returns: <[Promise]>
 
 Focuses the element, and then uses [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#keyboardupkey).
+
+#### elementHandle.screenshot([options])
+- `options` <[Object]> Same options as in [page.screenshot](#pagescreenshotoptions).
+- returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot.
+
+This method scrolls element into view if needed, and then uses [page.screenshot](#pagescreenshotoptions) to take a screenshot of the element.
+If the element is detached from DOM, the method throws an error.
 
 #### elementHandle.tap()
 - returns: <[Promise]> Promise which resolves when the element is successfully tapped. Promise gets rejected if the element is detached from DOM.
@@ -1678,7 +1750,7 @@ Contains the request's post body, if any.
 - <[string]>
 
 Contains the request's resource type as it was perceived by the rendering engine.
-ResourceType will be one of the following: `Document`, `Stylesheet`, `Image`, `Media`, `Font`, `Script`, `TextTrack`, `XHR`, `Fetch`, `EventSource`, `WebSocket`, `Manifest`, `Other`.
+ResourceType will be one of the following: `document`, `stylesheet`, `image`, `media`, `font`, `script`, `texttrack`, `xhr`, `fetch`, `eventsource`, `websocket`, `manifest`, `other`.
 
 #### request.response()
 - returns: <[Response]> A matching [Response] object, or `null` if the response has not been received yet.
