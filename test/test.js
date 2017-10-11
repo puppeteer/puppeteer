@@ -2020,6 +2020,16 @@ describe('Page', function() {
   });
 
   describe('Page.addScriptTag', function() {
+    it('should throw an error if no options are provided', SX(async function () {
+      let error = null;
+      try {
+        await page.addScriptTag('/injectedfile.js');
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toBe('Provide an object with a `url`, `path` or `content` property');
+    }));
+
     it('should work with a url', SX(async function() {
       await page.goto(EMPTY_PAGE);
       await page.addScriptTag({ url: '/injectedfile.js' });
@@ -2032,6 +2042,13 @@ describe('Page', function() {
       expect(await page.evaluate(() => __injected)).toBe(42);
     }));
 
+    it('should include sourcemap when path is provided', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addScriptTag({ path: path.join(__dirname, 'assets/injectedfile.js') });
+      const result = await page.evaluate(() => __injectedError.stack);
+      expect(result).toContain(path.join('assets', 'injectedfile.js'));
+    }));
+
     it('should work with content', SX(async function() {
       await page.goto(EMPTY_PAGE);
       await page.addScriptTag({ content: 'window.__injected = 35;' });
@@ -2040,6 +2057,16 @@ describe('Page', function() {
   });
 
   describe('Page.addStyleTag', function() {
+    it('should throw an error if no options are provided', SX(async function () {
+      let error = null;
+      try {
+        await page.addStyleTag('/injectedstyle.css');
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toBe('Provide an object with a `url`, `path` or `content` property');
+    }));
+
     it('should work with a url', SX(async function() {
       await page.goto(EMPTY_PAGE);
       await page.addStyleTag({ url: '/injectedstyle.css' });
