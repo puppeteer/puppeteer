@@ -27,6 +27,7 @@
     + [event: 'framedetached'](#event-framedetached)
     + [event: 'framenavigated'](#event-framenavigated)
     + [event: 'load'](#event-load)
+    + [event: 'metrics'](#event-metrics)
     + [event: 'pageerror'](#event-pageerror)
     + [event: 'request'](#event-request)
     + [event: 'requestfailed'](#event-requestfailed)
@@ -51,6 +52,7 @@
     + [page.exposeFunction(name, puppeteerFunction)](#pageexposefunctionname-puppeteerfunction)
     + [page.focus(selector)](#pagefocusselector)
     + [page.frames()](#pageframes)
+    + [page.getMetrics()](#pagegetmetrics)
     + [page.goBack(options)](#pagegobackoptions)
     + [page.goForward(options)](#pagegoforwardoptions)
     + [page.goto(url, options)](#pagegotourl-options)
@@ -60,7 +62,6 @@
     + [page.mainFrame()](#pagemainframe)
     + [page.mouse](#pagemouse)
     + [page.pdf(options)](#pagepdfoptions)
-    + [page.plainText()](#pageplaintext)
     + [page.reload(options)](#pagereloadoptions)
     + [page.screenshot([options])](#pagescreenshotoptions)
     + [page.select(selector, ...values)](#pageselectselector-values)
@@ -136,9 +137,9 @@
     + [jsHandle.getProperties()](#jshandlegetproperties)
     + [jsHandle.getProperty(propertyName)](#jshandlegetpropertypropertyname)
     + [jsHandle.jsonValue()](#jshandlejsonvalue)
-    + [jsHandle.toString()](#jshandletostring)
   * [class: ElementHandle](#class-elementhandle)
     + [elementHandle.asElement()](#elementhandleaselement)
+    + [elementHandle.boundingBox()](#elementhandleboundingbox)
     + [elementHandle.click([options])](#elementhandleclickoptions)
     + [elementHandle.dispose()](#elementhandledispose)
     + [elementHandle.executionContext()](#elementhandleexecutioncontext)
@@ -148,6 +149,7 @@
     + [elementHandle.hover()](#elementhandlehover)
     + [elementHandle.jsonValue()](#elementhandlejsonvalue)
     + [elementHandle.press(key[, options])](#elementhandlepresskey-options)
+    + [elementHandle.screenshot([options])](#elementhandlescreenshotoptions)
     + [elementHandle.tap()](#elementhandletap)
     + [elementHandle.toString()](#elementhandletostring)
     + [elementHandle.type(text[, options])](#elementhandletypetext-options)
@@ -179,7 +181,7 @@ Puppeteer is a Node library which provides a high-level API to control Chromium 
 
 ### Environment Variables
 
-Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) to aid its operations. These variables could be either set in the environment or in the [npm config](https://docs.npmjs.com/cli/config).
+Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) to aid its operations. These variables can either be set in the environment or in the [npm config](https://docs.npmjs.com/cli/config).
 
 - `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
@@ -213,7 +215,7 @@ This methods attaches Puppeteer to an existing Chromium instance.
 #### puppeteer.launch([options])
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
-  - `headless` <[boolean]> Whether to run Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true`.
+  - `headless` <[boolean]> Whether to run Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`.
   - `executablePath` <[string]> Path to a Chromium executable to run instead of bundled Chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
   - `args` <[Array]<[string]>> Additional arguments to pass to the Chromium instance. List of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
@@ -222,6 +224,7 @@ This methods attaches Puppeteer to an existing Chromium instance.
   - `dumpio` <[boolean]> Whether to pipe browser process stdout and stderr into `process.stdout` and `process.stderr`. Defaults to `false`.
   - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
   - `env` <[Object]> Specify environment variables that will be visible to Chromium. Defaults to `process.env`.
+  - `devtools` <[boolean]> Whether to auto-open DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
 
 The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process is closed.
@@ -248,7 +251,7 @@ Emitter when browser gets closed or browser process crashes.
 #### browser.close()
 - returns: <[Promise]>
 
-Closes browser with all the pages (if any were opened). The browser object itself is considered to be disposed and could not be used anymore.
+Closes browser with all the pages (if any were opened). The browser object itself is considered to be disposed and can not be used anymore.
 
 #### browser.newPage()
 - returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.
@@ -261,7 +264,7 @@ Closes browser with all the pages (if any were opened). The browser object itsel
 #### browser.wsEndpoint()
 - returns: <[string]> Browser websocket url.
 
-Browser websocket endpoint which could be used as an argument to
+Browser websocket endpoint which can be used as an argument to
 [puppeteer.connect](#puppeteerconnectoptions). The format is `ws://${host}:${port}/devtools/browser/<id>`
 
 You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/version`. Learn more about the [devtools protocol](https://chromedevtools.github.io/devtools-protocol) and the [browser endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
@@ -332,6 +335,14 @@ Emitted when a frame is navigated to a new url.
 
 Emitted when the JavaScript [`load`](https://developer.mozilla.org/en-US/docs/Web/Events/load) event is dispatched.
 
+#### event: 'metrics'
+- <[Object]>
+  - `title` <[string]> The title passed to `console.timeStamp`.
+  - `metrics` <[Object]> Object containing metrics as key/value pairs. The values
+    of metrics are of <[number]> type.
+
+Emitted when the JavaScript code makes a call to `console.timeStamp`. For the list
+of metrics see `page.getMetrics`.
 
 #### event: 'pageerror'
 - <[string]> The exception message
@@ -398,7 +409,7 @@ Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector
 - `url` <[string]> Url of the `<script>` tag
 - returns: <[Promise]> which resolves when the script's onload fires.
 
-Adds a `<script>` tag into the page with the desired url. Alternatively, a local JavaScript file could be injected via [`page.injectFile`](#pageinjectfilefilepath) method.
+Adds a `<script>` tag into the page with the desired url. Alternatively, a local JavaScript file can be injected via [`page.injectFile`](#pageinjectfilefilepath) method.
 
 Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
 
@@ -468,7 +479,7 @@ If URLs are specified, only cookies for those URLs are returned.
   - `viewport` <[Object]>
     - `width` <[number]> page width in pixels.
     - `height` <[number]> page height in pixels.
-    - `deviceScaleFactor` <[number]> Specify device scale factor (could be thought of as dpr). Defaults to `1`.
+    - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
     - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
     - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
     - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
@@ -479,7 +490,7 @@ Emulates given device metrics and user agent. This method is a shortcut for call
 - [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
 - [page.setViewport(viewport)](#pagesetviewportviewport)
 
-To aid emulation, puppeteer provides a list of device descriptors which could be obtained via the `require('puppeteer/DeviceDescriptors')` command.
+To aid emulation, puppeteer provides a list of device descriptors which can be obtained via the `require('puppeteer/DeviceDescriptors')` command.
 Below is an example of emulating an iPhone 6 in puppeteer:
 ```js
 const puppeteer = require('puppeteer');
@@ -508,6 +519,8 @@ List of all available devices is available in the source code: [DeviceDescriptor
 
 If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return its value.
 
+If the function passed into `page.evaluate` returns a non-[Serializable] value, then `page.evaluate` resolves to `undefined`.
+
 ```js
 const result = await page.evaluate(() => {
   return Promise.resolve(8 * 7);
@@ -521,7 +534,7 @@ A string can also be passed in instead of a function.
 console.log(await page.evaluate('1 + 2')); // prints "3"
 ```
 
-[ElementHandle] instances could be passed as arguments to the `page.evaluate`:
+[ElementHandle] instances can be passed as arguments to the `page.evaluate`:
 ```js
 const bodyHandle = await page.$('body');
 const html = await page.evaluate(body => body.innerHTML, bodyHandle);
@@ -548,7 +561,7 @@ A string can also be passed in instead of a function.
 const aHandle = await page.evaluateHandle('document'); // Handle for the 'document'.
 ```
 
-[JSHandle] instances could be passed as arguments to the `page.evaluateHandle`:
+[JSHandle] instances can be passed as arguments to the `page.evaluateHandle`:
 ```js
 const aHandle = await page.evaluateHandle(() => document.body);
 const resultHandle = await page.evaluateHandle(body => body.innerHTML, aHandle);
@@ -556,7 +569,7 @@ console.log(await resultHandle.jsonValue());
 await resultHandle.dispose();
 ```
 
-Shortcut for [page.mainFrame().executionContext().evaluateHandle(pageFunction, ...args)](#frameobjectpagefunction-args).
+Shortcut for [page.mainFrame().executionContext().evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args).
 
 
 #### page.evaluateOnNewDocument(pageFunction, ...args)
@@ -642,10 +655,28 @@ If there's no element matching `selector`, the method throws an error.
 #### page.frames()
 - returns: <[Array]<[Frame]>> An array of all frames attached to the page.
 
+#### page.getMetrics()
+- returns: <[Object]> Object containing metrics as key/value pairs.
+  - `Timestamp` <[number]> The timestamp when the metrics sample was taken.
+  - `DocumentCount` <[number]> Number of documents in the page.
+  - `FrameCount` <[number]> Number of frames in the page.
+  - `JSEventListenerCount` <[number]> Number of events in the page.
+  - `NodeCount` <[number]> Number of DOM nodes in the page.
+  - `LayoutCount` <[number]> Total number of full or partial page layout.
+  - `RecalcStyleCount` <[number]> Total number of page style recalculations.
+  - `LayoutDuration` <[number]> Combined durations of all page layouts.
+  - `RecalcStyleDuration` <[number]> Combined duration of all page style recalculations.
+  - `ScriptDuration` <[number]> Combined duration of JavaScript execution.
+  - `TaskDuration` <[number]> Combined duration of all tasks performed by the browser.
+  - `JSHeapUsedSize` <[number]> Used JavaScript heap size.
+  - `JSHeapTotalSize` <[number]> Total JavaScript heap size.
+
+> **NOTE** All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
+
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider a navigation finished, defaults to `load`. Could be either:
+  - `waitUntil` <[string]> When to consider a navigation finished, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
   - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
@@ -658,7 +689,7 @@ Navigate to the previous page in history.
 #### page.goForward(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
+  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
   - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
@@ -672,7 +703,7 @@ Navigate to the next page in history.
 - `url` <[string]> URL to navigate page to. The url should include scheme, e.g. `https://`.
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
+  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
   - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter. Defaults to 2.
@@ -768,13 +799,10 @@ The `format` options are:
 - `A4`: 8.27in x 11.7in
 - `A5`: 5.83in x 8.27in
 
-#### page.plainText()
-- returns:  <[Promise]<[string]>> Returns page's inner text.
-
 #### page.reload(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
+  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
   - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
@@ -784,7 +812,7 @@ The `format` options are:
 #### page.screenshot([options])
 - `options` <[Object]> Options object which might have the following properties:
     - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the image won't be saved to the disk.
-    - `type` <[string]> Specify screenshot type, could be either `jpeg` or `png`. Defaults to 'png'.
+    - `type` <[string]> Specify screenshot type, can be either `jpeg` or `png`. Defaults to 'png'.
     - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
     - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
     - `clip` <[Object]> An object which specifies clipping region of the page. Should have the following fields:
@@ -871,7 +899,7 @@ puppeteer.launch().then(async browser => {
 - `viewport` <[Object]>
   - `width` <[number]> page width in pixels.
   - `height` <[number]> page height in pixels.
-  - `deviceScaleFactor` <[number]> Specify device scale factor (could be thought of as dpr). Defaults to `1`.
+  - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
   - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
   - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
   - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
@@ -908,7 +936,7 @@ Shortcut for [page.mainFrame().title()](#frametitle).
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
 
-To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#pagekeyboardpresskey-options).
+To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#keyboardpresskey-options).
 
 ```js
 page.type('#mytextarea', 'Hello'); // Types instantly
@@ -924,7 +952,7 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - returns: <[Object]>
   - `width` <[number]> page width in pixels.
   - `height` <[number]> page height in pixels.
-  - `deviceScaleFactor` <[number]> Specify device scale factor (could be though of as dpr). Defaults to `1`.
+  - `deviceScaleFactor` <[number]> Specify device scale factor (can be though of as dpr). Defaults to `1`.
   - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
   - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
   - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
@@ -936,9 +964,9 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - returns: <[Promise]>
 
 This method behaves differently with respect to the type of the first parameter:
-- if `selectorOrFunctionOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [page.waitForSelector](#pagewaitforselectorselector-options)
-- if `selectorOrFunctionOrTimeout` is a `function`, than the first argument is treated as a predicate to wait for and the method is a shortcut for [page.waitForFunction()](#pagewaitforfunctionpagefunction-options-args).
-- if `selectorOrFunctionOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
+- if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] to wait for and the method is a shortcut for [page.waitForSelector](#pagewaitforselectorselector-options)
+- if `selectorOrFunctionOrTimeout` is a `function`, then the first argument is treated as a predicate to wait for and the method is a shortcut for [page.waitForFunction()](#pagewaitforfunctionpagefunction-options-args).
+- if `selectorOrFunctionOrTimeout` is a `number`, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
 Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args).
@@ -946,14 +974,14 @@ Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, .
 #### page.waitForFunction(pageFunction[, options[, ...args]])
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
-  - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it could be one of the following values:
+  - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values:
     - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
     - `mutation` - to execute `pageFunction` on every DOM mutation.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]> Promise which resolves when the `pageFunction` returns a truthy value.
 
-The `waitForFunction` could be used to observe viewport size change:
+The `waitForFunction` can be used to observe viewport size change:
 ```js
 const puppeteer = require('puppeteer');
 
@@ -970,7 +998,7 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Could be either:
+  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
   - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
@@ -1182,14 +1210,14 @@ puppeteer.launch().then(async browser => {
 #### dialog.type
 - <[string]>
 
-Dialog's type, could be one of the `alert`, `beforeunload`, `confirm` and `prompt`.
+Dialog's type, can be one of `alert`, `beforeunload`, `confirm` or `prompt`.
 
 ### class: ConsoleMessage
 
 [ConsoleMessage] objects are dispatched by page via the ['console'](#event-console) event.
 
 #### consoleMessage.args
-- <[Array]<[string]>>
+- <[Array]<[JSHandle]>>
 
 #### consoleMessage.text
 - <[string]>
@@ -1204,9 +1232,9 @@ One of the following values: `'log'`, `'debug'`, `'info'`, `'error'`, `'warning'
 At every point of time, page exposes its current frame tree via the [page.mainFrame()](#pagemainframe) and [frame.childFrames()](#framechildframes) methods.
 
 [Frame] object's lifecycle is controlled by three events, dispatched on the page object:
-- ['frameattached'](#event-frameattached) - fired when the frame gets attached to the page. Frame could be attached to the page only once.
+- ['frameattached'](#event-frameattached) - fired when the frame gets attached to the page. A Frame can be attached to the page only once.
 - ['framenavigated'](#event-framenavigated) - fired when the frame commits navigation to a different URL.
-- ['framedetached'](#event-framedetached) - fired when the frame gets detached from the page.  Frame could be detached from the page only once.
+- ['framedetached'](#event-framedetached) - fired when the frame gets detached from the page.  A Frame can be detached from the page only once.
 
 An example of dumping frame tree:
 
@@ -1260,7 +1288,7 @@ const html = await frame.$eval('.main-container', e => e.outerHTML);
 - `url` <[string]> Url of a script to be added
 - returns: <[Promise]> Promise which resolves as the script gets added and loads.
 
-Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScript could be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
+Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScript can be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
 
 #### frame.addStyleTag(url)
 - `url` <[string]> Url of a stylesheet to be added
@@ -1278,6 +1306,8 @@ Adds a `<link rel="stylesheet">` tag to the frame with the desired url.
 
 If the function, passed to the `frame.evaluate`, returns a [Promise], then `frame.evaluate` would wait for the promise to resolve and return its value.
 
+If the function passed into `frame.evaluate` returns a non-[Serializable] value, then `frame.evaluate` resolves to `undefined`.
+
 ```js
 const result = await frame.evaluate(() => {
   return Promise.resolve(8 * 7);
@@ -1291,7 +1321,7 @@ A string can also be passed in instead of a function.
 console.log(await frame.evaluate('1 + 2')); // prints "3"
 ```
 
-[ElementHandle] instances could be passed as arguments to the `frame.evaluate`:
+[ElementHandle] instances can be passed as arguments to the `frame.evaluate`:
 ```js
 const bodyHandle = await frame.$('body');
 const html = await frame.evaluate(body => body.innerHTML, bodyHandle);
@@ -1337,23 +1367,23 @@ Returns frame's url.
 - returns: <[Promise]>
 
 This method behaves differently with respect to the type of the first parameter:
-- if `selectorOrFunctionOrTimeout` is a `string`, than the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
-- if `selectorOrFunctionOrTimeout` is a `function`, than the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
-- if `selectorOrFunctionOrTimeout` is a `number`, than the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
+- if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
+- if `selectorOrFunctionOrTimeout` is a `function`, then the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
+- if `selectorOrFunctionOrTimeout` is a `number`, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
 
 #### frame.waitForFunction(pageFunction[, options[, ...args]])
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
-  - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it could be one of the following values:
+  - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values:
     - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
     - `mutation` - to execute `pageFunction` on every DOM mutation.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]> Promise which resolves when the `pageFunction` returns a truthy value.
 
-The `waitForFunction` could be used to observe viewport size change:
+The `waitForFunction` can be used to observe viewport size change:
 ```js
 const puppeteer = require('puppeteer');
 
@@ -1400,13 +1430,14 @@ The class represents a context for JavaScript execution. Examples of JavaScript 
 - all kind of [workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) have their own contexts
 
 #### executionContext.evaluate(pageFunction, ...args)
-- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
-- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to  `pageFunction`
+- `pageFunction` <[function]|[string]> Function to be evaluated in `executionContext`
+- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
 
 If the function, passed to the `executionContext.evaluate`, returns a [Promise], then `executionContext.evaluate` would wait for the promise to resolve and return its value.
 
 ```js
+const executionContext = page.mainFrame().executionContext();
 const result = await executionContext.evaluate(() => Promise.resolve(8 * 7));
 console.log(result); // prints "56"
 ```
@@ -1417,7 +1448,7 @@ A string can also be passed in instead of a function.
 console.log(await executionContext.evaluate('1 + 2')); // prints "3"
 ```
 
-[JSHandle] instances can be passed as arguments to the `frame.evaluate`:
+[JSHandle] instances can be passed as arguments to the `executionContext.evaluate`:
 ```js
 const oneHandle = await executionContext.evaluateHandle(() => 1);
 const twoHandle = await executionContext.evaluateHandle(() => 2);
@@ -1428,13 +1459,14 @@ console.log(result); // prints '3'.
 ```
 
 #### executionContext.evaluateHandle(pageFunction, ...args)
-- `pageFunction` <[function]|[string]> Function to be evaluated in the page context
+- `pageFunction` <[function]|[string]> Function to be evaluated in the `executionContext`
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[JSHandle]>> Resolves to the return value of `pageFunction`
 
 If the function, passed to the `executionContext.evaluateHandle`, returns a [Promise], then `executionContext.evaluteHandle` would wait for the promise to resolve and return its value.
 
 ```js
+const context = page.mainFrame().executionContext();
 const aHandle = await context.evaluateHandle(() => Promise.resolve(self));
 aHandle; // Handle for the global object.
 ```
@@ -1445,9 +1477,8 @@ A string can also be passed in instead of a function.
 const aHandle = await context.evaluateHandle('1 + 2'); // Handle for the '3' object.
 ```
 
-[JSHandle] instances could be passed as arguments to the `executionContext.evaluateHandle`:
+[JSHandle] instances can be passed as arguments to the `executionContext.evaluateHandle`:
 ```js
-const context = page.mainFrame().executionContext();
 const aHandle = await context.evaluateHandle(() => document.body);
 const resultHandle = await context.evaluateHandle(body => body.innerHTML, aHandle);
 console.log(await resultHandle.jsonValue()); // prints body's innerHTML
@@ -1457,16 +1488,16 @@ await resultHandle.dispose();
 
 ### class: JSHandle
 
-JSHandle represents an in-page javascript object. JSHandles could be created with the [page.evaluateHandle](#pageobjectpagefunction-args) method.
+JSHandle represents an in-page javascript object. JSHandles can be created with the [page.evaluateHandle](#pageevaluatehandlepagefunction-args) method.
 
 ```js
-await windowHandle = await page.evaluateHandle(() => window);
+const windowHandle = await page.evaluateHandle(() => window);
 // ...
 ```
 
-JSHandle prevents references javascript objects from garbage collection unless the handle is [disposed](#objecthandledispose). JSHandles are auto-disposed when their origin frame gets navigated or the parent context gets destroyed.
+JSHandle prevents references JavaScript objects from garbage collection unless the handle is [disposed](#jshandledispose). JSHandles are auto-disposed when their origin frame gets navigated or the parent context gets destroyed.
 
-JSHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args), [`page.evaluate()`](#pageevaluatepagefunction-args) and [`page.evaluateHandle`](#pageobjectpagefunction-args) methods.
+JSHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args), [`page.evaluate()`](#pageevaluatepagefunction-args) and [`page.evaluateHandle`](#pageevaluatehandlepagefunction-args) methods.
 
 #### jsHandle.asElement()
 - returns: <[ElementHandle]>
@@ -1489,7 +1520,7 @@ Returns execution context the handle belongs to.
 The method returns a map with property names as keys and JSHandle instances for the property values.
 
 ```js
-const handle = await page.evaluateHandle(() => {window, document});
+const handle = await page.evaluateHandle(() => ({window, document}));
 const properties = await handle.getProperties();
 const windowHandle = properties.get('window');
 const documentHandle = properties.get('document');
@@ -1509,14 +1540,11 @@ Returns a JSON representation of the object. The JSON is generated by running [`
 
 > **NOTE** The method will throw if the referenced object is not stringifiable.
 
-#### jsHandle.toString()
-- returns: <[string]>
-
 ### class: ElementHandle
 
 > **NOTE** Class [ElementHandle] extends [JSHandle].
 
-ElementHandle represents an in-page DOM element. ElementHandles could be created with the [page.$](#pageselector) method.
+ElementHandle represents an in-page DOM element. ElementHandles can be created with the [page.$](#pageselector) method.
 
 ```js
 const puppeteer = require('puppeteer');
@@ -1536,6 +1564,15 @@ ElementHandle instances can be used as arguments in [`page.$eval()`](#pageevalse
 
 #### elementHandle.asElement()
 - returns: <[ElementHandle]>
+
+#### elementHandle.boundingBox()
+- returns: <[Object]>
+    - x <[number]> the x coordinate of the element in pixels.
+    - y <[number]> the y coordinate of the element in pixels.
+    - width <[number]> the width of the element in pixels.
+    - height <[number]> the height of the element in pixels.
+
+This method returns the bounding box of the element (relative to the main frame), or `null` if element is detached from dom.
 
 #### elementHandle.click([options])
 - `options` <[Object]>
@@ -1567,7 +1604,7 @@ The method returns a map with property names as keys and JSHandle instances for 
 
 ```js
 const listHandle = await page.evaluateHandle(() => document.body.children);
-const properties = await containerHandle.getProperties();
+const properties = await listHandle.getProperties();
 const children = [];
 for (const property of properties.values()) {
   const element = property.asElement();
@@ -1604,6 +1641,13 @@ Returns a JSON representation of the object. The JSON is generated by running [`
 - returns: <[Promise]>
 
 Focuses the element, and then uses [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#keyboardupkey).
+
+#### elementHandle.screenshot([options])
+- `options` <[Object]> Same options as in [page.screenshot](#pagescreenshotoptions).
+- returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot.
+
+This method scrolls element into view if needed, and then uses [page.screenshot](#pagescreenshotoptions) to take a screenshot of the element.
+If the element is detached from DOM, the method throws an error.
 
 #### elementHandle.tap()
 - returns: <[Promise]> Promise which resolves when the element is successfully tapped. Promise gets rejected if the element is detached from DOM.
@@ -1653,7 +1697,7 @@ Aborts request. To use this, request interception should be enabled with `page.s
 Exception is immediately thrown if the request interception is not enabled.
 
 #### request.continue([overrides])
-- `overrides` <[Object]> Optional request overwrites, which could be one of the following:
+- `overrides` <[Object]> Optional request overwrites, which can be one of the following:
   - `url` <[string]> If set, the request url will be changed
   - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`)
   - `postData` <[string]> If set changes the post data of request
@@ -1680,7 +1724,7 @@ Contains the request's post body, if any.
 - <[string]>
 
 Contains the request's resource type as it was perceived by the rendering engine.
-ResourceType will be one of the following: `Document`, `Stylesheet`, `Image`, `Media`, `Font`, `Script`, `TextTrack`, `XHR`, `Fetch`, `EventSource`, `WebSocket`, `Manifest`, `Other`.
+ResourceType will be one of the following: `document`, `stylesheet`, `image`, `media`, `font`, `script`, `texttrack`, `xhr`, `fetch`, `eventsource`, `websocket`, `manifest`, `other`.
 
 #### request.response()
 - returns: <[Response]> A matching [Response] object, or `null` if the response has not been received yet.
