@@ -333,11 +333,13 @@ describe('Page', function() {
   describe('ExecutionContext.queryObjects', function() {
     it('should work', SX(async function() {
       // Instantiate an object
-      await page.evaluate(() => window.map = new Map());
-      const prototypeHandle = await page.evaluateHandle(() => Map.prototype);
+      await page.evaluate(() => window.set = new Set(['hello', 'world']));
+      const prototypeHandle = await page.evaluateHandle(() => Set.prototype);
       const objectsHandle = await page.queryObjects(prototypeHandle);
       const count = await page.evaluate(objects => objects.length, objectsHandle);
       expect(count).toBe(1);
+      const values = await page.evaluate(objects => Array.from(objects[0].values()), objectsHandle);
+      expect(values).toEqual(['hello', 'world']);
     }));
     it('should fail for disposed handles', SX(async function() {
       const prototypeHandle = await page.evaluateHandle(() => HTMLBodyElement.prototype);
