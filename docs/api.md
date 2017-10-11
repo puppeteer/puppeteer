@@ -809,6 +809,7 @@ The `format` options are:
 - `A3`: 11.7in x 16.5in
 - `A4`: 8.27in x 11.7in
 - `A5`: 5.83in x 8.27in
+- `A6`: 4.13in x 5.83in
 
 #### page.reload(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
