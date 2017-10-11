@@ -1392,6 +1392,14 @@ describe('Page', function() {
     }));
   });
 
+  describe('Page.$$eval', function() {
+    it('should work', SX(async function() {
+      await page.setContent('<div>hello</div><div>beautiful</div><div>world!</div>');
+      const divsCount = await page.$$eval('div', divs => divs.length);
+      expect(divsCount).toBe(3);
+    }));
+  });
+
   describe('Page.$', function() {
     it('should query existing element', SX(async function() {
       await page.setContent('<section>test</section>');
