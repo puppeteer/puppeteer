@@ -2020,7 +2020,7 @@ describe('Page', function() {
   });
 
   describe('Page.addScriptTag', function() {
-    it('should throw an error if no options are provided', SX(async function () {
+    it('should throw an error if no options are provided', SX(async function() {
       let error = null;
       try {
         await page.addScriptTag('/injectedfile.js');
@@ -2057,7 +2057,7 @@ describe('Page', function() {
   });
 
   describe('Page.addStyleTag', function() {
-    it('should throw an error if no options are provided', SX(async function () {
+    it('should throw an error if no options are provided', SX(async function() {
       let error = null;
       try {
         await page.addStyleTag('/injectedstyle.css');
