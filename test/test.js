@@ -335,6 +335,32 @@ describe('Page', function() {
     }));
   });
 
+  describe('ExecutionContext.queryObjects', function() {
+    it('should work', SX(async function() {
+      // Instantiate an object
+      await page.evaluate(() => window.set = new Set(['hello', 'world']));
+      const prototypeHandle = await page.evaluateHandle(() => Set.prototype);
+      const objectsHandle = await page.queryObjects(prototypeHandle);
+      const count = await page.evaluate(objects => objects.length, objectsHandle);
+      expect(count).toBe(1);
+      const values = await page.evaluate(objects => Array.from(objects[0].values()), objectsHandle);
+      expect(values).toEqual(['hello', 'world']);
+    }));
+    it('should fail for disposed handles', SX(async function() {
+      const prototypeHandle = await page.evaluateHandle(() => HTMLBodyElement.prototype);
+      await prototypeHandle.dispose();
+      let error = null;
+      await page.queryObjects(prototypeHandle).catch(e => error = e);
+      expect(error.message).toBe('Prototype JSHandle is disposed!');
+    }));
+    it('should fail primitive values as prototypes', SX(async function() {
+      const prototypeHandle = await page.evaluateHandle(() => 42);
+      let error = null;
+      await page.queryObjects(prototypeHandle).catch(e => error = e);
+      expect(error.message).toBe('Prototype JSHandle must not be referencing primitive value');
+    }));
+  });
+
   describe('JSHandle.getProperty', function() {
     it('should work', SX(async function() {
       const aHandle = await page.evaluateHandle(() => ({
