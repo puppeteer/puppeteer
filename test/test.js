@@ -108,7 +108,7 @@ describe('Puppeteer', function() {
       const options = Object.assign({}, defaultBrowserOptions, {executablePath: 'random-invalid-path'});
       await puppeteer.launch(options).catch(e => waitError = e);
       expect(waitError.message.startsWith('Failed to launch chrome! spawn random-invalid-path ENOENT')).toBe(true);
-    }));    
+    }));
     // Windows has issues running Chromium using a custom user data dir. It hangs when closing the browser.
     // @see https://github.com/GoogleChrome/puppeteer/issues/918
     (windows ? xit : it)('userDataDir option', SX(async function() {
