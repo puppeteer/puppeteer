@@ -24,7 +24,7 @@ const browser = await puppeteer.launch();
 const page = await browser.newPage();
 await page.setRequestInterceptionEnabled(true);
 page.on('request', request => {
-  if (request.resourceType === 'Image')
+  if (request.resourceType === 'image')
     request.abort();
   else
     request.continue();

@@ -1,0 +1,32 @@
+{
+  "classes": [
+    {
+      "name": "Foo",
+      "members": [
+        {
+          "name": "frame",
+          "type": "event",
+          "hasReturn": false,
+          "async": false,
+          "args": []
+        },
+        {
+          "name": "$",
+          "type": "method",
+          "hasReturn": true,
+          "async": false,
+          "args": [
+            "selector"
+          ]
+        },
+        {
+          "name": "url",
+          "type": "property",
+          "hasReturn": false,
+          "async": false,
+          "args": []
+        }
+      ]
+    }
+  ]
+}

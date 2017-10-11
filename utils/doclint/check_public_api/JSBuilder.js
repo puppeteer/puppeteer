@@ -21,6 +21,8 @@ const Documentation = require('./Documentation');
 class JSOutline {
   constructor(text) {
     this.classes = [];
+    /** @type {!Map<string, string>} */
+    this.inheritance = new Map();
     this.errors = [];
     this._eventsByClassName = new Map();
     this._currentClassName = null;
@@ -44,6 +46,9 @@ class JSOutline {
   _onClassDeclaration(node) {
     this._flushClassIfNeeded();
     this._currentClassName = this._extractText(node.id);
+    const superClass = this._extractText(node.superClass);
+    if (superClass)
+      this.inheritance.set(this._currentClassName, superClass);
   }
 
   _onMethodDefinition(node) {
@@ -81,13 +86,13 @@ class JSOutline {
     }
     const args = [];
     for (const param of node.value.params) {
-      if (param.type === 'AssignmentPattern')
+      if (param.type === 'AssignmentPattern' && param.left.name)
         args.push(new Documentation.Argument(param.left.name));
       else if (param.type === 'RestElement')
         args.push(new Documentation.Argument('...' + param.argument.name));
       else if (param.type === 'Identifier')
         args.push(new Documentation.Argument(param.name));
-      else if (param.type === 'ObjectPattern')
+      else if (param.type === 'ObjectPattern' || param.type === 'AssignmentPattern')
         args.push(new Documentation.Argument('options'));
       else
         this.errors.push(`JS Parsing issue: unsupported syntax to define parameter in ${this._currentClassName}.${methodName}(): ${this._extractText(param)}`);
@@ -141,18 +146,46 @@ class JSOutline {
 }
 
 /**
+ * @param {!Array<!Documentation.Class>} classes
+ * @param {!Map<string, string>} inheritance
+ * @return {!Array<!Documentation.Class>}
+ */
+function recreateClassesWithInheritance(classes, inheritance) {
+  const classesByName = new Map(classes.map(cls => [cls.name, cls]));
+  return classes.map(cls => {
+    const membersMap = new Map();
+    for (let wp = cls; wp; wp = classesByName.get(inheritance.get(wp.name))) {
+      for (const member of wp.membersArray) {
+        // Member was overridden.
+        const memberId = member.type + ':' + member.name;
+        if (membersMap.has(memberId))
+          continue;
+        // Do not inherit constructors
+        if (wp !== cls && member.name === 'constructor' && member.type === 'method')
+          continue;
+        membersMap.set(memberId, member);
+      }
+    }
+    return new Documentation.Class(cls.name, Array.from(membersMap.values()));
+  });
+}
+
+/**
  * @param {!Array<!Source>} sources
  * @return {!Promise<{documentation: !Documentation, errors: !Array<string>}>}
  */
 module.exports = async function(sources) {
   const classes = [];
   const errors = [];
+  const inheritance = new Map();
   for (const source of sources) {
     const outline = new JSOutline(source.text());
     classes.push(...outline.classes);
     errors.push(...outline.errors);
+    for (const entry of outline.inheritance)
+      inheritance.set(entry[0], entry[1]);
   }
-  const documentation = new Documentation(classes);
+  const documentation = new Documentation(recreateClassesWithInheritance(classes, inheritance));
   return { documentation, errors };
 };
 
