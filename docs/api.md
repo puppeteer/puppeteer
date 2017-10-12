@@ -820,7 +820,7 @@ The `format` options are:
 The method iterates javascript heap and finds all the objects with the given prototype.
 
 ```js
-// Create a Map object 
+// Create a Map object
 await page.evaluate(() => window.map = new Map());
 // Get a handle to the Map object prototype
 const mapPrototype = await page.evaluateHandle(() => Map.prototype);
@@ -1096,7 +1096,7 @@ page.keyboard.press('Backspace');
 
 Dispatches a `keydown` event.
 
-This will not send input events unless `text` is specified.
+If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also generated. The `text` option can be specified to force an input event to be generated.
 
 If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key presses will be sent with that modifier active. To release the modifier key, use [`keyboard.up`](#keyboardupkey).
 
@@ -1543,7 +1543,7 @@ await resultHandle.dispose();
 The method iterates javascript heap and finds all the objects with the given prototype.
 
 ```js
-// Create a Map object 
+// Create a Map object
 await page.evaluate(() => window.map = new Map());
 // Get a handle to the Map object prototype
 const mapPrototype = await page.evaluateHandle(() => Map.prototype);
