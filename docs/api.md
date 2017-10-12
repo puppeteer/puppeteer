@@ -671,10 +671,10 @@ If there's no element matching `selector`, the method throws an error.
 #### page.getMetrics()
 - returns: <[Object]> Object containing metrics as key/value pairs.
   - `Timestamp` <[number]> The timestamp when the metrics sample was taken.
-  - `DocumentCount` <[number]> Number of documents in the page.
-  - `FrameCount` <[number]> Number of frames in the page.
-  - `JSEventListenerCount` <[number]> Number of events in the page.
-  - `NodeCount` <[number]> Number of DOM nodes in the page.
+  - `Documents` <[number]> Number of documents in the page.
+  - `Frames` <[number]> Number of frames in the page.
+  - `JSEventListeners` <[number]> Number of events in the page.
+  - `Nodes` <[number]> Number of DOM nodes in the page.
   - `LayoutCount` <[number]> Total number of full or partial page layout.
   - `RecalcStyleCount` <[number]> Total number of page style recalculations.
   - `LayoutDuration` <[number]> Combined durations of all page layouts.
@@ -820,7 +820,7 @@ The `format` options are:
 The method iterates javascript heap and finds all the objects with the given prototype.
 
 ```js
-// Create a Map object 
+// Create a Map object
 await page.evaluate(() => window.map = new Map());
 // Get a handle to the Map object prototype
 const mapPrototype = await page.evaluateHandle(() => Map.prototype);
@@ -1543,7 +1543,7 @@ await resultHandle.dispose();
 The method iterates javascript heap and finds all the objects with the given prototype.
 
 ```js
-// Create a Map object 
+// Create a Map object
 await page.evaluate(() => window.map = new Map());
 // Get a handle to the Map object prototype
 const mapPrototype = await page.evaluateHandle(() => Map.prototype);
