@@ -38,6 +38,7 @@ const EMPTY_PAGE = PREFIX + '/empty.html';
 const HTTPS_PORT = 8908;
 const HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
 
+const windows = /^win/.test(process.platform);
 const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
 const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
 const executablePath = process.env.CHROME;
@@ -102,7 +103,15 @@ describe('Puppeteer', function() {
       await neverResolves;
       expect(error.message).toContain('Protocol error');
     }));
-    it('userDataDir option', SX(async function() {
+    it('should reject if executable path is invalid', SX(async function() {
+      let waitError = null;
+      const options = Object.assign({}, defaultBrowserOptions, {executablePath: 'random-invalid-path'});
+      await puppeteer.launch(options).catch(e => waitError = e);
+      expect(waitError.message.startsWith('Failed to launch chrome! spawn random-invalid-path ENOENT')).toBe(true);
+    }));
+    // Windows has issues running Chromium using a custom user data dir. It hangs when closing the browser.
+    // @see https://github.com/GoogleChrome/puppeteer/issues/918
+    (windows ? xit : it)('userDataDir option', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
@@ -111,7 +120,9 @@ describe('Puppeteer', function() {
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
       rm(userDataDir);
     }));
-    it('userDataDir argument', SX(async function() {
+    // Windows has issues running Chromium using a custom user data dir. It hangs when closing the browser.
+    // @see https://github.com/GoogleChrome/puppeteer/issues/918
+    (windows ? xit : it)('userDataDir argument', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({}, defaultBrowserOptions);
       options.args = [`--user-data-dir=${userDataDir}`].concat(options.args);
@@ -119,6 +130,24 @@ describe('Puppeteer', function() {
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
       await browser.close();
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+      rm(userDataDir);
+    }));
+    // Headless has issues shutting down gracefully
+    // @see https://crbug.com/771830
+    (headless ? xit : it)('userDataDir option should restore state', SX(async function() {
+      const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+      const options = Object.assign({userDataDir}, defaultBrowserOptions);
+      const browser = await puppeteer.launch(options);
+      const page = await browser.newPage();
+      await page.goto(EMPTY_PAGE);
+      await page.evaluate(() => localStorage.hey = 'hello');
+      await browser.close();
+
+      const browser2 = await puppeteer.launch(options);
+      const page2 = await browser2.newPage();
+      await page2.goto(EMPTY_PAGE);
+      expect(await page2.evaluate(() => localStorage.hey)).toBe('hello');
+      await browser2.close();
       rm(userDataDir);
     }));
   });
@@ -247,9 +276,9 @@ describe('Page', function() {
       const result = await page.evaluate((a, b) => Object.is(a, undefined) && Object.is(b, 'foo'), undefined, 'foo');
       expect(result).toBe(true);
     }));
-    it('should not fail for window object', SX(async function() {
+    it('should fail for window object', SX(async function() {
       const result = await page.evaluate(() => window);
-      expect(result).toBe('Window');
+      expect(result).toBe(undefined);
     }));
     it('should accept a string', SX(async function() {
       const result = await page.evaluate('1 + 2');
@@ -276,7 +305,7 @@ describe('Page', function() {
       await element.dispose();
       let error = null;
       await page.evaluate(e => e.textContent, element).catch(e => error = e);
-      expect(error.message).toContain('ElementHandle is disposed');
+      expect(error.message).toContain('JSHandle is disposed');
     }));
     it('should throw if elementHandles are from other frames', SX(async function() {
       const FrameUtils = require('./frame-utils');
@@ -285,22 +314,169 @@ describe('Page', function() {
       let error = null;
       await page.evaluate(body => body.innerHTML, bodyHandle).catch(e => error = e);
       expect(error).toBeTruthy();
-      expect(error.message).toContain('ElementHandles passed as arguments should belong');
+      expect(error.message).toContain('JSHandles can be evaluated only in the context they were created');
+    }));
+    it('should accept object handle as an argument', SX(async function() {
+      const navigatorHandle = await page.evaluateHandle(() => navigator);
+      const text = await page.evaluate(e => e.userAgent, navigatorHandle);
+      expect(text).toContain('Mozilla');
+    }));
+    it('should accept object handle to primitive types', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => 5);
+      const isFive = await page.evaluate(e => Object.is(e, 5), aHandle);
+      expect(isFive).toBeTruthy();
     }));
   });
 
-  describe('Page.injectFile', function() {
+  describe('Page.evaluateHandle', function() {
     it('should work', SX(async function() {
-      const helloPath = path.join(__dirname, 'assets', 'injectedfile.js');
-      await page.injectFile(helloPath);
-      const result = await page.evaluate(() => __injected);
-      expect(result).toBe(42);
+      const windowHandle = await page.evaluateHandle(() => window);
+      expect(windowHandle).toBeTruthy();
     }));
-    it('should include sourcemap', SX(async function() {
-      const helloPath = path.join(__dirname, 'assets', 'injectedfile.js');
-      await page.injectFile(helloPath);
-      const result = await page.evaluate(() => __injectedError.stack);
-      expect(result).toContain(path.join('assets', 'injectedfile.js'));
+  });
+
+  describe('ExecutionContext.queryObjects', function() {
+    it('should work', SX(async function() {
+      // Instantiate an object
+      await page.evaluate(() => window.set = new Set(['hello', 'world']));
+      const prototypeHandle = await page.evaluateHandle(() => Set.prototype);
+      const objectsHandle = await page.queryObjects(prototypeHandle);
+      const count = await page.evaluate(objects => objects.length, objectsHandle);
+      expect(count).toBe(1);
+      const values = await page.evaluate(objects => Array.from(objects[0].values()), objectsHandle);
+      expect(values).toEqual(['hello', 'world']);
+    }));
+    it('should fail for disposed handles', SX(async function() {
+      const prototypeHandle = await page.evaluateHandle(() => HTMLBodyElement.prototype);
+      await prototypeHandle.dispose();
+      let error = null;
+      await page.queryObjects(prototypeHandle).catch(e => error = e);
+      expect(error.message).toBe('Prototype JSHandle is disposed!');
+    }));
+    it('should fail primitive values as prototypes', SX(async function() {
+      const prototypeHandle = await page.evaluateHandle(() => 42);
+      let error = null;
+      await page.queryObjects(prototypeHandle).catch(e => error = e);
+      expect(error.message).toBe('Prototype JSHandle must not be referencing primitive value');
+    }));
+  });
+
+  describe('JSHandle.getProperty', function() {
+    it('should work', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => ({
+        one: 1,
+        two: 2,
+        three: 3
+      }));
+      const twoHandle = await aHandle.getProperty('two');
+      expect(await twoHandle.jsonValue()).toEqual(2);
+    }));
+  });
+
+  describe('JSHandle.jsonValue', function() {
+    it('should work', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => ({foo: 'bar'}));
+      const json = await aHandle.jsonValue();
+      expect(json).toEqual({foo: 'bar'});
+    }));
+    it('should work with dates', SX(async function() {
+      const dateHandle = await page.evaluateHandle(() => new Date('2017-09-26T00:00:00.000Z'));
+      const json = await dateHandle.jsonValue();
+      expect(json).toBe('2017-09-26T00:00:00.000Z');
+    }));
+    it('should throw for circular objects', SX(async function() {
+      const windowHandle = await page.evaluateHandle('window');
+      let error = null;
+      await windowHandle.jsonValue().catch(e => error = e);
+      expect(error.message).toContain('Converting circular structure to JSON');
+    }));
+  });
+
+  describe('JSHandle.getProperties', function() {
+    it('should work', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => ({
+        foo: 'bar'
+      }));
+      const properties = await aHandle.getProperties();
+      const foo = properties.get('foo');
+      expect(foo).toBeTruthy();
+      expect(await foo.jsonValue()).toBe('bar');
+    }));
+    it('should return even non-own properties', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => {
+        class A {
+          constructor() {
+            this.a = '1';
+          }
+        }
+        class B extends A {
+          constructor() {
+            super();
+            this.b = '2';
+          }
+        }
+        return new B();
+      });
+      const properties = await aHandle.getProperties();
+      expect(await properties.get('a').jsonValue()).toBe('1');
+      expect(await properties.get('b').jsonValue()).toBe('2');
+    }));
+  });
+
+  describe('JSHandle.asElement', function() {
+    it('should work', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => document.body);
+      const element = aHandle.asElement();
+      expect(element).toBeTruthy();
+    }));
+    it('should return null for non-elements', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => 2);
+      const element = aHandle.asElement();
+      expect(element).toBeFalsy();
+    }));
+    it('should return ElementHandle for TextNodes', SX(async function() {
+      await page.setContent('<div>ee!</div>');
+      const aHandle = await page.evaluateHandle(() => document.querySelector('div').firstChild);
+      const element = aHandle.asElement();
+      expect(element).toBeTruthy();
+      expect(await page.evaluate(e => e.nodeType === HTMLElement.TEXT_NODE, element));
+    }));
+  });
+
+  describe('JSHandle.toString', function() {
+    it('should work for primitives', SX(async function() {
+      const numberHandle = await page.evaluateHandle(() => 2);
+      expect(numberHandle.toString()).toBe('JSHandle:2');
+      const stringHandle = await page.evaluateHandle(() => 'a');
+      expect(stringHandle.toString()).toBe('JSHandle:a');
+    }));
+    it('should work for complicated objects', SX(async function() {
+      const aHandle = await page.evaluateHandle(() => window);
+      expect(aHandle.toString()).toBe('JSHandle@object');
+    }));
+  });
+
+  describe('Frame.context', function() {
+    const FrameUtils = require('./frame-utils');
+    it('should work', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
+      expect(page.frames().length).toBe(2);
+      const [frame1, frame2] = page.frames();
+      expect(frame1.executionContext()).toBeTruthy();
+      expect(frame2.executionContext()).toBeTruthy();
+      expect(frame1.executionContext() !== frame2.executionContext()).toBeTruthy();
+
+      await Promise.all([
+        frame1.executionContext().evaluate(() => window.a = 1),
+        frame2.executionContext().evaluate(() => window.a = 2)
+      ]);
+      const [a1, a2] = await Promise.all([
+        frame1.executionContext().evaluate(() => window.a),
+        frame2.executionContext().evaluate(() => window.a)
+      ]);
+      expect(a1).toBe(1);
+      expect(a2).toBe(2);
     }));
   });
 
@@ -543,9 +719,11 @@ describe('Page', function() {
         page.evaluate(() => console.log('hello', 5, {foo: 'bar'})),
         waitForEvents(page, 'console')
       ]);
-      expect(message.text).toEqual('hello 5 [object Object]');
+      expect(message.text).toEqual('hello 5 JSHandle@object');
       expect(message.type).toEqual('log');
-      expect(message.args).toEqual(['hello', 5, {foo: 'bar'}]);
+      expect(await message.args[0].jsonValue()).toEqual('hello');
+      expect(await message.args[1].jsonValue()).toEqual(5);
+      expect(await message.args[2].jsonValue()).toEqual({foo: 'bar'});
     }));
     it('should work for different console API calls', SX(async function() {
       const messages = [];
@@ -573,7 +751,7 @@ describe('Page', function() {
         'calling console.dir',
         'calling console.warn',
         'calling console.error',
-        'Promise',
+        'JSHandle@promise',
       ]);
     }));
     it('should not fail for window object', SX(async function() {
@@ -583,8 +761,46 @@ describe('Page', function() {
         page.evaluate(() => console.error(window)),
         waitForEvents(page, 'console')
       ]);
-      expect(message.text).toBe('Window');
+      expect(message.text).toBe('JSHandle@object');
     }));
+  });
+
+  describe('Page.getMetrics', function() {
+    it('should get metrics from a page', SX(async function() {
+      await page.goto('about:blank');
+      const metrics = await page.getMetrics();
+      checkMetrics(metrics);
+    }));
+    it('metrics event fired on console.timeStamp', SX(async function() {
+      const metricsPromise = new Promise(fulfill => page.once('metrics', fulfill));
+      await page.evaluate(() => console.timeStamp('test42'));
+      const metrics = await metricsPromise;
+      expect(metrics.title).toBe('test42');
+      checkMetrics(metrics.metrics);
+    }));
+    function checkMetrics(metrics) {
+      const metricsToCheck = new Set([
+        'Timestamp',
+        'Documents',
+        'Frames',
+        'JSEventListeners',
+        'Nodes',
+        'LayoutCount',
+        'RecalcStyleCount',
+        'LayoutDuration',
+        'RecalcStyleDuration',
+        'ScriptDuration',
+        'TaskDuration',
+        'JSHeapUsedSize',
+        'JSHeapTotalSize',
+      ]);
+      for (const name in metrics) {
+        expect(metricsToCheck.has(name)).toBeTruthy();
+        expect(metrics[name]).toBeGreaterThanOrEqual(0);
+        metricsToCheck.delete(name);
+      }
+      expect(metricsToCheck.size).toBe(0);
+    }
   });
 
   describe('Page.goto', function() {
@@ -854,7 +1070,7 @@ describe('Page', function() {
         expect(request.headers['user-agent']).toBeTruthy();
         expect(request.method).toBe('GET');
         expect(request.postData).toBe(undefined);
-        expect(request.resourceType).toBe('Document');
+        expect(request.resourceType).toBe('document');
         request.continue();
       });
       const response = await page.goto(EMPTY_PAGE);
@@ -923,7 +1139,7 @@ describe('Page', function() {
       expect(response.status).toBe(200);
       expect(response.url).toContain('empty.html');
       expect(requests.length).toBe(5);
-      expect(requests[2].resourceType).toBe('Document');
+      expect(requests[2].resourceType).toBe('document');
     }));
     it('should be able to abort redirects', SX(async function() {
       await page.setRequestInterceptionEnabled(true);
@@ -1192,6 +1408,14 @@ describe('Page', function() {
     }));
   });
 
+  describe('Page.$$eval', function() {
+    it('should work', SX(async function() {
+      await page.setContent('<div>hello</div><div>beautiful</div><div>world!</div>');
+      const divsCount = await page.$$eval('div', divs => divs.length);
+      expect(divsCount).toBe(3);
+    }));
+  });
+
   describe('Page.$', function() {
     it('should query existing element', SX(async function() {
       await page.setContent('<section>test</section>');
@@ -1219,12 +1443,45 @@ describe('Page', function() {
     }));
   });
 
+  describe('ElementHandle.boundingBox', function() {
+    it('should work', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(PREFIX + '/grid.html');
+      const elementHandle = await page.$('.box:nth-of-type(13)');
+      const box = await elementHandle.boundingBox();
+      expect(box).toEqual({ x: 100, y: 50, width: 50, height: 50 });
+    }));
+    it('should handle nested frames', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(PREFIX + '/frames/nested-frames.html');
+      const nestedFrame = page.frames()[1].childFrames()[1];
+      const elementHandle = await nestedFrame.$('div');
+      const box = await elementHandle.boundingBox();
+      expect(box).toEqual({ x: 28, y: 260, width: 264, height: 18 });
+    }));
+  });
+
   describe('ElementHandle.click', function() {
     it('should work', SX(async function() {
       await page.goto(PREFIX + '/input/button.html');
       const button = await page.$('button');
-      await button.click('button');
+      await button.click();
       expect(await page.evaluate(() => result)).toBe('Clicked');
+    }));
+    it('should work for TextNodes', SX(async function() {
+      await page.goto(PREFIX + '/input/button.html');
+      const buttonTextNode = await page.evaluateHandle(() => document.querySelector('button').firstChild);
+      let error = null;
+      await buttonTextNode.click().catch(err => error = err);
+      expect(error.message).toBe('Node is not of type HTMLElement');
+    }));
+    it('should throw for detached nodes', SX(async function() {
+      await page.goto(PREFIX + '/input/button.html');
+      const button = await page.$('button');
+      await page.evaluate(button => button.remove(), button);
+      let error = null;
+      await button.click().catch(err => error = err);
+      expect(error.message).toBe('Node is detached from document');
     }));
   });
 
@@ -1234,6 +1491,17 @@ describe('Page', function() {
       const button = await page.$('#button-6');
       await button.hover();
       expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-6');
+    }));
+  });
+
+  describe('ElementHandle.screenshot', function() {
+    it('should work', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(PREFIX + '/grid.html');
+      await page.evaluate(() => window.scrollBy(50, 100));
+      const elementHandle = await page.$('.box:nth-of-type(3)');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
     }));
   });
 
@@ -1258,8 +1526,9 @@ describe('Page', function() {
     }));
     it('should type into the textarea', SX(async function() {
       await page.goto(PREFIX + '/input/textarea.html');
-      await page.focus('textarea');
-      await page.type('Type in this text!');
+
+      const textarea = await page.$('textarea');
+      await textarea.type('Type in this text!');
       expect(await page.evaluate(() => result)).toBe('Type in this text!');
     }));
     it('should click the button after navigation ', SX(async function() {
@@ -1284,29 +1553,28 @@ describe('Page', function() {
     }));
     it('should move with the arrow keys', SX(async function(){
       await page.goto(PREFIX + '/input/textarea.html');
-      await page.focus('textarea');
-      await page.type('Hello World!');
+      await page.type('textarea', 'Hello World!');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
       for (let i = 0; i < 'World!'.length; i++)
-        page.press('ArrowLeft');
-      await page.type('inserted ');
+        page.keyboard.press('ArrowLeft');
+      await page.keyboard.type('inserted ');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello inserted World!');
       page.keyboard.down('Shift');
       for (let i = 0; i < 'inserted '.length; i++)
-        page.press('ArrowLeft');
+        page.keyboard.press('ArrowLeft');
       page.keyboard.up('Shift');
-      await page.press('Backspace');
+      await page.keyboard.press('Backspace');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
     }));
-    it('should send a character with Page.press', SX(async function() {
+    it('should send a character with ElementHandle.press', SX(async function() {
       await page.goto(PREFIX + '/input/textarea.html');
-      await page.focus('textarea');
-      await page.press('a', {text: 'f'});
+      const textarea = await page.$('textarea');
+      await textarea.press('a', {text: 'f'});
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('f');
 
       await page.evaluate(() => window.addEventListener('keydown', e => e.preventDefault(), true));
 
-      await page.press('a', {text: 'y'});
+      await textarea.press('a', {text: 'y'});
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('f');
     }));
     it('should send a character with sendCharacter', SX(async function() {
@@ -1324,54 +1592,54 @@ describe('Page', function() {
       const codeForKey = {'Shift': 16, 'Alt': 18, 'Meta': 91, 'Control': 17};
       for (const modifierKey in codeForKey) {
         await keyboard.down(modifierKey);
-        expect(await page.evaluate(() => getResult())).toBe('Keydown: ' + modifierKey + ' ' + codeForKey[modifierKey] + ' [' + modifierKey + ']');
+        expect(await page.evaluate(() => getResult())).toBe('Keydown: ' + modifierKey + ' ' + modifierKey + 'Left ' + codeForKey[modifierKey] + ' [' + modifierKey + ']');
         await keyboard.down('!');
-        expect(await page.evaluate(() => getResult())).toBe('Keydown: ! 49 [' + modifierKey + ']');
+        expect(await page.evaluate(() => getResult())).toBe('Keydown: ! Digit1 49 [' + modifierKey + ']');
         await keyboard.up('!');
-        expect(await page.evaluate(() => getResult())).toBe('Keyup: ! 49 [' + modifierKey + ']');
+        expect(await page.evaluate(() => getResult())).toBe('Keyup: ! Digit1 49 [' + modifierKey + ']');
         await keyboard.up(modifierKey);
-        expect(await page.evaluate(() => getResult())).toBe('Keyup: ' + modifierKey + ' ' + codeForKey[modifierKey] + ' []');
+        expect(await page.evaluate(() => getResult())).toBe('Keyup: ' + modifierKey + ' ' + modifierKey + 'Left ' + codeForKey[modifierKey] + ' []');
       }
     }));
     it('should report multiple modifiers', SX(async function(){
       await page.goto(PREFIX + '/input/keyboard.html');
       const keyboard = page.keyboard;
       await keyboard.down('Control');
-      expect(await page.evaluate(() => getResult())).toBe('Keydown: Control 17 [Control]');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: Control ControlLeft 17 [Control]');
       await keyboard.down('Meta');
-      expect(await page.evaluate(() => getResult())).toBe('Keydown: Meta 91 [Control Meta]');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: Meta MetaLeft 91 [Control Meta]');
       await keyboard.down(';');
-      expect(await page.evaluate(() => getResult())).toBe('Keydown: ; 186 [Control Meta]');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: ; Semicolon 186 [Control Meta]');
       await keyboard.up(';');
-      expect(await page.evaluate(() => getResult())).toBe('Keyup: ; 186 [Control Meta]');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: ; Semicolon 186 [Control Meta]');
       await keyboard.up('Control');
-      expect(await page.evaluate(() => getResult())).toBe('Keyup: Control 17 [Meta]');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: Control ControlLeft 17 [Meta]');
       await keyboard.up('Meta');
-      expect(await page.evaluate(() => getResult())).toBe('Keyup: Meta 91 []');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: Meta MetaLeft 91 []');
     }));
     it('should send proper codes while typing', SX(async function(){
       await page.goto(PREFIX + '/input/keyboard.html');
-      await page.type('!');
+      await page.keyboard.type('!');
       expect(await page.evaluate(() => getResult())).toBe(
-          [ 'Keydown: ! 49 []',
-            'Keypress: ! 33 33 33 []',
-            'Keyup: ! 49 []'].join('\n'));
-      await page.type('^');
+          [ 'Keydown: ! Digit1 49 []',
+            'Keypress: ! Digit1 33 33 33 []',
+            'Keyup: ! Digit1 49 []'].join('\n'));
+      await page.keyboard.type('^');
       expect(await page.evaluate(() => getResult())).toBe(
-          [ 'Keydown: ^ 54 []',
-            'Keypress: ^ 94 94 94 []',
-            'Keyup: ^ 54 []'].join('\n'));
+          [ 'Keydown: ^ Digit6 54 []',
+            'Keypress: ^ Digit6 94 94 94 []',
+            'Keyup: ^ Digit6 54 []'].join('\n'));
     }));
     it('should send proper codes while typing with shift', SX(async function(){
       await page.goto(PREFIX + '/input/keyboard.html');
       const keyboard = page.keyboard;
       await keyboard.down('Shift');
-      await page.type('~');
+      await page.keyboard.type('~');
       expect(await page.evaluate(() => getResult())).toBe(
-          [ 'Keydown: Shift 16 [Shift]',
-            'Keydown: ~ 192 [Shift]', // 192 is ` keyCode
-            'Keypress: ~ 126 126 126 [Shift]', // 126 is ~ charCode
-            'Keyup: ~ 192 [Shift]'].join('\n'));
+          [ 'Keydown: Shift ShiftLeft 16 [Shift]',
+            'Keydown: ~ Backquote 192 [Shift]', // 192 is ` keyCode
+            'Keypress: ~ Backquote 126 126 126 [Shift]', // 126 is ~ charCode
+            'Keyup: ~ Backquote 192 [Shift]'].join('\n'));
       await keyboard.up('Shift');
     }));
     it('should not type canceled events', SX(async function(){
@@ -1387,7 +1655,7 @@ describe('Page', function() {
             Promise.resolve().then(() => event.preventDefault());
         }, false);
       });
-      await page.type('Hello World!');
+      await page.keyboard.type('Hello World!');
       expect(await page.evaluate(() => textarea.value)).toBe('He Wrd!');
     }));
     it('keyboard.modifiers()', SX(async function(){
@@ -1435,7 +1703,7 @@ describe('Page', function() {
       await page.goto(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       const text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
-      await page.type(text);
+      await page.keyboard.type(text);
       await page.evaluate(() => document.querySelector('textarea').scrollTop = 0);
       const {x, y} = await page.evaluate(dimensions);
       await page.mouse.move(x + 2,y + 2);
@@ -1448,7 +1716,7 @@ describe('Page', function() {
       await page.goto(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       const text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
-      await page.type(text);
+      await page.keyboard.type(text);
       await page.click('textarea');
       await page.click('textarea', {clickCount: 2});
       await page.click('textarea', {clickCount: 3});
@@ -1491,7 +1759,7 @@ describe('Page', function() {
       await page.evaluate(() => document.querySelector('textarea').addEventListener('keydown', e => window.lastEvent = e, true));
       await page.keyboard.down('a', {text: 'a'});
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(false);
-      await page.press('a');
+      await page.keyboard.press('a');
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(true);
     }));
     // @see https://github.com/GoogleChrome/puppeteer/issues/206
@@ -1528,6 +1796,27 @@ describe('Page', function() {
       const button = await page.$('button');
       await button.tap();
       expect(await page.evaluate(() => getResult())).toEqual(['Touchstart: 0', 'Touchend: 0']);
+    }));
+    it('should click the button inside an iframe', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.setContent('<div style="width:100px;height:100px">spacer</div>');
+      const FrameUtils = require('./frame-utils');
+      await FrameUtils.attachFrame(page, 'button-test', PREFIX + '/input/button.html');
+      const frame = page.frames()[1];
+      const button = await frame.$('button');
+      await button.click();
+      expect(await frame.evaluate(() => window.result)).toBe('Clicked');
+    }));
+    it('should click the button with deviceScaleFactor set', SX(async function() {
+      await page.setViewport({width: 400, height: 400, deviceScaleFactor: 5});
+      expect(await page.evaluate(() => window.devicePixelRatio)).toBe(5);
+      await page.setContent('<div style="width:100px;height:100px">spacer</div>');
+      const FrameUtils = require('./frame-utils');
+      await FrameUtils.attachFrame(page, 'button-test', PREFIX + '/input/button.html');
+      const frame = page.frames()[1];
+      const button = await frame.$('button');
+      await button.click();
+      expect(await frame.evaluate(() => window.result)).toBe('Clicked');
     }));
     function dimensions() {
       const rect = document.querySelector('textarea').getBoundingClientRect();
@@ -1647,7 +1936,7 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       expect(requests.length).toBe(1);
       expect(requests[0].url).toBe(EMPTY_PAGE);
-      expect(requests[0].resourceType).toBe('Document');
+      expect(requests[0].resourceType).toBe('document');
       expect(requests[0].method).toBe('GET');
       expect(requests[0].response()).toBeTruthy();
     }));
@@ -1723,7 +2012,7 @@ describe('Page', function() {
       expect(failedRequests.length).toBe(1);
       expect(failedRequests[0].url).toContain('one-style.css');
       expect(failedRequests[0].response()).toBe(null);
-      expect(failedRequests[0].resourceType).toBe('Stylesheet');
+      expect(failedRequests[0].resourceType).toBe('stylesheet');
     }));
     it('Page.Events.RequestFinished', SX(async function() {
       const requests = [];
@@ -1762,18 +2051,78 @@ describe('Page', function() {
   });
 
   describe('Page.addScriptTag', function() {
-    it('should work', SX(async function() {
+    it('should throw an error if no options are provided', SX(async function() {
+      let error = null;
+      try {
+        await page.addScriptTag('/injectedfile.js');
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toBe('Provide an object with a `url`, `path` or `content` property');
+    }));
+
+    it('should work with a url', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      await page.addScriptTag('/injectedfile.js');
+      await page.addScriptTag({ url: '/injectedfile.js' });
       expect(await page.evaluate(() => __injected)).toBe(42);
+    }));
+
+    it('should work with a path', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addScriptTag({ path: path.join(__dirname, 'assets/injectedfile.js') });
+      expect(await page.evaluate(() => __injected)).toBe(42);
+    }));
+
+    it('should include sourcemap when path is provided', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addScriptTag({ path: path.join(__dirname, 'assets/injectedfile.js') });
+      const result = await page.evaluate(() => __injectedError.stack);
+      expect(result).toContain(path.join('assets', 'injectedfile.js'));
+    }));
+
+    it('should work with content', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addScriptTag({ content: 'window.__injected = 35;' });
+      expect(await page.evaluate(() => __injected)).toBe(35);
     }));
   });
 
   describe('Page.addStyleTag', function() {
-    it('should work', SX(async function() {
+    it('should throw an error if no options are provided', SX(async function() {
+      let error = null;
+      try {
+        await page.addStyleTag('/injectedstyle.css');
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toBe('Provide an object with a `url`, `path` or `content` property');
+    }));
+
+    it('should work with a url', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      await page.addStyleTag('/injectedstyle.css');
+      await page.addStyleTag({ url: '/injectedstyle.css' });
       expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(255, 0, 0)');
+    }));
+
+    it('should work with a path', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addStyleTag({ path: path.join(__dirname, 'assets/injectedstyle.css') });
+      expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(255, 0, 0)');
+    }));
+
+    it('should include sourcemap when path is provided', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addStyleTag({ path: path.join(__dirname, 'assets/injectedstyle.css') });
+      const styleHandle = await page.$('style');
+      const styleContent = await page.evaluate(style => style.innerHTML, styleHandle);
+      expect(styleContent).toContain(path.join('assets', 'injectedstyle.css'));
+      styleHandle.dispose();
+    }));
+
+    it('should work with content', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addStyleTag({ content: 'body { background-color: green; }' });
+      expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(0, 128, 0)');
     }));
   });
 
@@ -1962,13 +2311,6 @@ describe('Page', function() {
       }
       expect(error).toBeTruthy();
       expect(error.message).toContain('Failed to parse parameter value');
-    }));
-  });
-
-  describe('Page.plainText', function() {
-    it('should return the page text', SX(async function(){
-      await page.setContent('<div>the result text</div>');
-      expect(await page.plainText()).toBe('the result text');
     }));
   });
 

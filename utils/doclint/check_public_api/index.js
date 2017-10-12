@@ -37,6 +37,7 @@ const EXCLUDE_CLASSES = new Set([
 const EXCLUDE_METHODS = new Set([
   'Headers.fromPayload',
   'Page.create',
+  'JSHandle.toString',
 ]);
 
 /**

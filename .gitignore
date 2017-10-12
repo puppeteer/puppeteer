@@ -1,5 +1,6 @@
 /node_modules/
 /test/output
+/test/test-user-data-dir*
 /.local-chromium/
 /.dev_profile*
 .DS_Store
