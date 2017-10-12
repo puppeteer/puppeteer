@@ -1520,10 +1520,23 @@ describe('Page', function() {
     }));
     it('should take into account padding and border', SX(async function() {
       await page.setViewport({width: 500, height: 500});
-      await page.setContent('something above<h1 style="border:2px solid blue; background: green;">&nbsp;</h1>');
+      await page.setContent('something above<h1 style="border:2px solid blue; background: green;transform: rotateZ(200deg);">&nbsp;</h1>');
       const elementHandle = await page.$('h1');
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
+    }));
+    it('should work with a rotated element', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent(`<div style="position:absolute;
+                                         top: 100px;
+                                         left: 100px;
+                                         width: 100px;
+                                         height: 100px;
+                                        background: green;
+                                        transform: rotateZ(200deg);">&nbsp;</div>`);
+      const elementHandle = await page.$('div');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-rotate.png');
     }));
     it('should fail to screenshot a detached element', SX(async function() {
       await page.setContent('<h1>remove this</h1>');
