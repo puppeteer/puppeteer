@@ -456,21 +456,6 @@ describe('Page', function() {
     }));
   });
 
-  describe('Page.injectFile', function() {
-    it('should work', SX(async function() {
-      const helloPath = path.join(__dirname, 'assets', 'injectedfile.js');
-      await page.injectFile(helloPath);
-      const result = await page.evaluate(() => __injected);
-      expect(result).toBe(42);
-    }));
-    it('should include sourcemap', SX(async function() {
-      const helloPath = path.join(__dirname, 'assets', 'injectedfile.js');
-      await page.injectFile(helloPath);
-      const result = await page.evaluate(() => __injectedError.stack);
-      expect(result).toContain(path.join('assets', 'injectedfile.js'));
-    }));
-  });
-
   describe('Frame.context', function() {
     const FrameUtils = require('./frame-utils');
     it('should work', SX(async function() {
@@ -2066,18 +2051,78 @@ describe('Page', function() {
   });
 
   describe('Page.addScriptTag', function() {
-    it('should work', SX(async function() {
+    it('should throw an error if no options are provided', SX(async function() {
+      let error = null;
+      try {
+        await page.addScriptTag('/injectedfile.js');
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toBe('Provide an object with a `url`, `path` or `content` property');
+    }));
+
+    it('should work with a url', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      await page.addScriptTag('/injectedfile.js');
+      await page.addScriptTag({ url: '/injectedfile.js' });
       expect(await page.evaluate(() => __injected)).toBe(42);
+    }));
+
+    it('should work with a path', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addScriptTag({ path: path.join(__dirname, 'assets/injectedfile.js') });
+      expect(await page.evaluate(() => __injected)).toBe(42);
+    }));
+
+    it('should include sourcemap when path is provided', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addScriptTag({ path: path.join(__dirname, 'assets/injectedfile.js') });
+      const result = await page.evaluate(() => __injectedError.stack);
+      expect(result).toContain(path.join('assets', 'injectedfile.js'));
+    }));
+
+    it('should work with content', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addScriptTag({ content: 'window.__injected = 35;' });
+      expect(await page.evaluate(() => __injected)).toBe(35);
     }));
   });
 
   describe('Page.addStyleTag', function() {
-    it('should work', SX(async function() {
+    it('should throw an error if no options are provided', SX(async function() {
+      let error = null;
+      try {
+        await page.addStyleTag('/injectedstyle.css');
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toBe('Provide an object with a `url`, `path` or `content` property');
+    }));
+
+    it('should work with a url', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      await page.addStyleTag('/injectedstyle.css');
+      await page.addStyleTag({ url: '/injectedstyle.css' });
       expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(255, 0, 0)');
+    }));
+
+    it('should work with a path', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addStyleTag({ path: path.join(__dirname, 'assets/injectedstyle.css') });
+      expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(255, 0, 0)');
+    }));
+
+    it('should include sourcemap when path is provided', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addStyleTag({ path: path.join(__dirname, 'assets/injectedstyle.css') });
+      const styleHandle = await page.$('style');
+      const styleContent = await page.evaluate(style => style.innerHTML, styleHandle);
+      expect(styleContent).toContain(path.join('assets', 'injectedstyle.css'));
+      styleHandle.dispose();
+    }));
+
+    it('should work with content', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addStyleTag({ content: 'body { background-color: green; }' });
+      expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(0, 128, 0)');
     }));
   });
 
