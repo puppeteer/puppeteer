@@ -796,10 +796,10 @@ describe('Page', function() {
     function checkMetrics(metrics) {
       const metricsToCheck = new Set([
         'Timestamp',
-        'DocumentCount',
-        'FrameCount',
-        'JSEventListenerCount',
-        'NodeCount',
+        'Documents',
+        'Frames',
+        'JSEventListeners',
+        'Nodes',
         'LayoutCount',
         'RecalcStyleCount',
         'LayoutDuration',
