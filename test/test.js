@@ -2795,6 +2795,16 @@ describe('Page', function() {
       await page.evaluate(registration => registration.unregister(), registration);
       expect(await destroyedTarget).toBe(await createdTarget);
     }));
+    it('should report when a target url changes', SX(async function(){
+      await page.goto(EMPTY_PAGE);
+      let changedTarget = new Promise(fulfill => browser.once('targeturlchanged', target => fulfill(target)));
+      await page.goto(CROSS_PROCESS_PREFIX + '/');
+      expect((await changedTarget).url()).toBe(CROSS_PROCESS_PREFIX + '/');
+
+      changedTarget = new Promise(fulfill => browser.once('targeturlchanged', target => fulfill(target)));
+      await page.goto(EMPTY_PAGE);
+      expect((await changedTarget).url()).toBe(EMPTY_PAGE);
+    }));
   });
 });
 

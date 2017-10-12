@@ -15,6 +15,7 @@
 - [class: Browser](#class-browser)
   * [event: 'targetcreated'](#event-targetcreated)
   * [event: 'targetdestroyed'](#event-targetdestroyed)
+  * [event: 'targeturlchanged'](#event-targeturlchanged)
   * [browser.close()](#browserclose)
   * [browser.disconnect()](#browserdisconnect)
   * [browser.newPage()](#browsernewpage)
@@ -294,6 +295,11 @@ Emitted when a target is created, for example when a new page is opened by [`win
 - <[Target]>
 
 Emitted when a target is destroyed, for example when a page is closed.
+
+#### event: 'targeturlchanged'
+- <[Target]>
+
+Emitted when the url of a target changes.
 
 #### browser.close()
 - returns: <[Promise]>
