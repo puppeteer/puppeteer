@@ -2079,6 +2079,15 @@ describe('Page', function() {
       expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(255, 0, 0)');
     }));
 
+    it('should include sourcemap when path is provided', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addStyleTag({ path: path.join(__dirname, 'assets/injectedstyle.css') });
+      const styleHandle = await page.$('style');
+      const styleContent = await page.evaluate(style => style.innerHTML, styleHandle);
+      expect(styleContent).toContain(path.join('assets', 'injectedstyle.css'));
+      styleHandle.dispose();
+    }));
+
     it('should work with content', SX(async function() {
       await page.goto(EMPTY_PAGE);
       await page.addStyleTag({ content: 'body { background-color: green; }' });
