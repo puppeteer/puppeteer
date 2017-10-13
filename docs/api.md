@@ -68,6 +68,7 @@
     + [page.setCookie(...cookies)](#pagesetcookiecookies)
     + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
     + [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
+    + [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
     + [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
     + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
     + [page.setViewport(viewport)](#pagesetviewportviewport)
@@ -899,6 +900,10 @@ The extra HTTP headers will be sent with every request the page initiates.
 - returns: <[Promise]>
 
 > **NOTE** changing this value won't affect scripts that have already been run. It will take full effect on the next [navigation](#pagegotourl-options).
+
+#### page.setOfflineMode(enabled)
+- `enabled` <[boolean]> When `true`, enables offline mode for the page.
+- returns: <[Promise]>
 
 #### page.setRequestInterceptionEnabled(value)
 - `value` <[boolean]> Whether to enable request interception.
