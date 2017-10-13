@@ -1100,7 +1100,7 @@ page.keyboard.press('Backspace');
 
 Dispatches a `keydown` event.
 
-This will not send input events unless `text` is specified.
+If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also generated. The `text` option can be specified to force an input event to be generated.
 
 If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key presses will be sent with that modifier active. To release the modifier key, use [`keyboard.up`](#keyboardupkey).
 
