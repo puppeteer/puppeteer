@@ -210,8 +210,14 @@ describe('Page', function() {
       await newBrowser.close();
       expect(isClosed).toBe(true);
     }));
-    xit('should emitted when browser gets crashes', SX(async function() {
-      // @TODO
+    fit('should emitted when underlying browser process gets crashes', SX(async function() {
+      const newBrowser = await puppeteer.launch(defaultBrowserOptions);
+      let isCrashed = false;
+      newBrowser.on('closed', closed => isCrashed = true);
+      const page = newBrowser.newPage();
+      expect(isCrashed).toBe(false);
+      await page.goto('chrome://crash/');
+      expect(isCrashed).toBe(true);
     }));
   });
 
