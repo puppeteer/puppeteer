@@ -38,6 +38,7 @@ const EMPTY_PAGE = PREFIX + '/empty.html';
 const HTTPS_PORT = 8908;
 const HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
 
+const windows = /^win/.test(process.platform);
 const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
 const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
 const executablePath = process.env.CHROME;
@@ -108,7 +109,9 @@ describe('Puppeteer', function() {
       await puppeteer.launch(options).catch(e => waitError = e);
       expect(waitError.message.startsWith('Failed to launch chrome! spawn random-invalid-path ENOENT')).toBe(true);
     }));
-    it('userDataDir option', SX(async function() {
+    // Windows has issues running Chromium using a custom user data dir. It hangs when closing the browser.
+    // @see https://github.com/GoogleChrome/puppeteer/issues/918
+    (windows ? xit : it)('userDataDir option', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
@@ -117,7 +120,9 @@ describe('Puppeteer', function() {
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
       rm(userDataDir);
     }));
-    it('userDataDir argument', SX(async function() {
+    // Windows has issues running Chromium using a custom user data dir. It hangs when closing the browser.
+    // @see https://github.com/GoogleChrome/puppeteer/issues/918
+    (windows ? xit : it)('userDataDir argument', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({}, defaultBrowserOptions);
       options.args = [`--user-data-dir=${userDataDir}`].concat(options.args);
@@ -372,6 +377,32 @@ describe('Page', function() {
     }));
   });
 
+  describe('ExecutionContext.queryObjects', function() {
+    it('should work', SX(async function() {
+      // Instantiate an object
+      await page.evaluate(() => window.set = new Set(['hello', 'world']));
+      const prototypeHandle = await page.evaluateHandle(() => Set.prototype);
+      const objectsHandle = await page.queryObjects(prototypeHandle);
+      const count = await page.evaluate(objects => objects.length, objectsHandle);
+      expect(count).toBe(1);
+      const values = await page.evaluate(objects => Array.from(objects[0].values()), objectsHandle);
+      expect(values).toEqual(['hello', 'world']);
+    }));
+    it('should fail for disposed handles', SX(async function() {
+      const prototypeHandle = await page.evaluateHandle(() => HTMLBodyElement.prototype);
+      await prototypeHandle.dispose();
+      let error = null;
+      await page.queryObjects(prototypeHandle).catch(e => error = e);
+      expect(error.message).toBe('Prototype JSHandle is disposed!');
+    }));
+    it('should fail primitive values as prototypes', SX(async function() {
+      const prototypeHandle = await page.evaluateHandle(() => 42);
+      let error = null;
+      await page.queryObjects(prototypeHandle).catch(e => error = e);
+      expect(error.message).toBe('Prototype JSHandle must not be referencing primitive value');
+    }));
+  });
+
   describe('JSHandle.getProperty', function() {
     it('should work', SX(async function() {
       const aHandle = await page.evaluateHandle(() => ({
@@ -464,21 +495,6 @@ describe('Page', function() {
     it('should work for complicated objects', SX(async function() {
       const aHandle = await page.evaluateHandle(() => window);
       expect(aHandle.toString()).toBe('JSHandle@object');
-    }));
-  });
-
-  describe('Page.injectFile', function() {
-    it('should work', SX(async function() {
-      const helloPath = path.join(__dirname, 'assets', 'injectedfile.js');
-      await page.injectFile(helloPath);
-      const result = await page.evaluate(() => __injected);
-      expect(result).toBe(42);
-    }));
-    it('should include sourcemap', SX(async function() {
-      const helloPath = path.join(__dirname, 'assets', 'injectedfile.js');
-      await page.injectFile(helloPath);
-      const result = await page.evaluate(() => __injectedError.stack);
-      expect(result).toContain(path.join('assets', 'injectedfile.js'));
     }));
   });
 
@@ -682,12 +698,38 @@ describe('Page', function() {
     it('should wait for visible', SX(async function() {
       let divFound = false;
       const waitForSelector = page.waitForSelector('div', {visible: true}).then(() => divFound = true);
-      await page.setContent(`<div style='display: none;visibility: hidden'></div>`);
+      await page.setContent(`<div style='display: none; visibility: hidden;'></div>`);
       expect(divFound).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.removeProperty('display'));
       expect(divFound).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.removeProperty('visibility'));
       expect(await waitForSelector).toBe(true);
+      expect(divFound).toBe(true);
+    }));
+    it('hidden should wait for visibility: hidden', SX(async function() {
+      let divHidden = false;
+      await page.setContent(`<div style='display: block;'></div>`);
+      const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divHidden = true);
+      await page.evaluate(() => document.querySelector('div').style.setProperty('visibility', 'hidden'));
+      expect(await waitForSelector).toBe(true);
+      expect(divHidden).toBe(true);
+    }));
+    it('hidden should wait for display: none', SX(async function() {
+      let divHidden = false;
+      await page.setContent(`<div style='display: block;'></div>`);
+      const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divHidden = true);
+      await page.evaluate(() => document.querySelector('div').style.setProperty('display', 'none'));
+      expect(await waitForSelector).toBe(true);
+      expect(divHidden).toBe(true);
+    }));
+    it('hidden should wait for removal', SX(async function() {
+      await page.setContent(`<div></div>`);
+      let divRemoved = false;
+      const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divRemoved = true);
+      expect(divRemoved).toBe(false);
+      await page.evaluate(() => document.querySelector('div').remove());
+      expect(await waitForSelector).toBe(true);
+      expect(divRemoved).toBe(true);
     }));
     it('should respect timeout', SX(async function() {
       let error = null;
@@ -807,10 +849,10 @@ describe('Page', function() {
     function checkMetrics(metrics) {
       const metricsToCheck = new Set([
         'Timestamp',
-        'DocumentCount',
-        'FrameCount',
-        'JSEventListenerCount',
-        'NodeCount',
+        'Documents',
+        'Frames',
+        'JSEventListeners',
+        'Nodes',
         'LayoutCount',
         'RecalcStyleCount',
         'LayoutDuration',
@@ -1434,6 +1476,14 @@ describe('Page', function() {
     }));
   });
 
+  describe('Page.$$eval', function() {
+    it('should work', SX(async function() {
+      await page.setContent('<div>hello</div><div>beautiful</div><div>world!</div>');
+      const divsCount = await page.$$eval('div', divs => divs.length);
+      expect(divsCount).toBe(3);
+    }));
+  });
+
   describe('Page.$', function() {
     it('should query existing element', SX(async function() {
       await page.setContent('<section>test</section>');
@@ -1520,6 +1570,43 @@ describe('Page', function() {
       const elementHandle = await page.$('.box:nth-of-type(3)');
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
+    }));
+    it('should take into account padding and border', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent(`
+        something above
+        <style>div {
+          border: 2px solid blue;
+          background: green;
+          width: 50px;
+          height: 50px;
+        }
+        </style>
+        <div></div>
+      `);
+      const elementHandle = await page.$('div');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
+    }));
+    it('should work with a rotated element', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent(`<div style="position:absolute;
+                                         top: 100px;
+                                         left: 100px;
+                                         width: 100px;
+                                         height: 100px;
+                                        background: green;
+                                        transform: rotateZ(200deg);">&nbsp;</div>`);
+      const elementHandle = await page.$('div');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-rotate.png');
+    }));
+    it('should fail to screenshot a detached element', SX(async function() {
+      await page.setContent('<h1>remove this</h1>');
+      const elementHandle = await page.$('h1');
+      await page.evaluate(element => element.remove(), elementHandle);
+      const screenshotError = await elementHandle.screenshot().catch(error => error);
+      expect(screenshotError.message).toBe('Node is detached from document');
     }));
   });
 
@@ -1610,43 +1697,43 @@ describe('Page', function() {
       const codeForKey = {'Shift': 16, 'Alt': 18, 'Meta': 91, 'Control': 17};
       for (const modifierKey in codeForKey) {
         await keyboard.down(modifierKey);
-        expect(await page.evaluate(() => getResult())).toBe('Keydown: ' + modifierKey + ' ' + codeForKey[modifierKey] + ' [' + modifierKey + ']');
+        expect(await page.evaluate(() => getResult())).toBe('Keydown: ' + modifierKey + ' ' + modifierKey + 'Left ' + codeForKey[modifierKey] + ' [' + modifierKey + ']');
         await keyboard.down('!');
-        expect(await page.evaluate(() => getResult())).toBe('Keydown: ! 49 [' + modifierKey + ']');
+        expect(await page.evaluate(() => getResult())).toBe('Keydown: ! Digit1 49 [' + modifierKey + ']');
         await keyboard.up('!');
-        expect(await page.evaluate(() => getResult())).toBe('Keyup: ! 49 [' + modifierKey + ']');
+        expect(await page.evaluate(() => getResult())).toBe('Keyup: ! Digit1 49 [' + modifierKey + ']');
         await keyboard.up(modifierKey);
-        expect(await page.evaluate(() => getResult())).toBe('Keyup: ' + modifierKey + ' ' + codeForKey[modifierKey] + ' []');
+        expect(await page.evaluate(() => getResult())).toBe('Keyup: ' + modifierKey + ' ' + modifierKey + 'Left ' + codeForKey[modifierKey] + ' []');
       }
     }));
     it('should report multiple modifiers', SX(async function(){
       await page.goto(PREFIX + '/input/keyboard.html');
       const keyboard = page.keyboard;
       await keyboard.down('Control');
-      expect(await page.evaluate(() => getResult())).toBe('Keydown: Control 17 [Control]');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: Control ControlLeft 17 [Control]');
       await keyboard.down('Meta');
-      expect(await page.evaluate(() => getResult())).toBe('Keydown: Meta 91 [Control Meta]');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: Meta MetaLeft 91 [Control Meta]');
       await keyboard.down(';');
-      expect(await page.evaluate(() => getResult())).toBe('Keydown: ; 186 [Control Meta]');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: ; Semicolon 186 [Control Meta]');
       await keyboard.up(';');
-      expect(await page.evaluate(() => getResult())).toBe('Keyup: ; 186 [Control Meta]');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: ; Semicolon 186 [Control Meta]');
       await keyboard.up('Control');
-      expect(await page.evaluate(() => getResult())).toBe('Keyup: Control 17 [Meta]');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: Control ControlLeft 17 [Meta]');
       await keyboard.up('Meta');
-      expect(await page.evaluate(() => getResult())).toBe('Keyup: Meta 91 []');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: Meta MetaLeft 91 []');
     }));
     it('should send proper codes while typing', SX(async function(){
       await page.goto(PREFIX + '/input/keyboard.html');
       await page.keyboard.type('!');
       expect(await page.evaluate(() => getResult())).toBe(
-          [ 'Keydown: ! 49 []',
-            'Keypress: ! 33 33 33 []',
-            'Keyup: ! 49 []'].join('\n'));
+          [ 'Keydown: ! Digit1 49 []',
+            'Keypress: ! Digit1 33 33 33 []',
+            'Keyup: ! Digit1 49 []'].join('\n'));
       await page.keyboard.type('^');
       expect(await page.evaluate(() => getResult())).toBe(
-          [ 'Keydown: ^ 54 []',
-            'Keypress: ^ 94 94 94 []',
-            'Keyup: ^ 54 []'].join('\n'));
+          [ 'Keydown: ^ Digit6 54 []',
+            'Keypress: ^ Digit6 94 94 94 []',
+            'Keyup: ^ Digit6 54 []'].join('\n'));
     }));
     it('should send proper codes while typing with shift', SX(async function(){
       await page.goto(PREFIX + '/input/keyboard.html');
@@ -1654,10 +1741,10 @@ describe('Page', function() {
       await keyboard.down('Shift');
       await page.keyboard.type('~');
       expect(await page.evaluate(() => getResult())).toBe(
-          [ 'Keydown: Shift 16 [Shift]',
-            'Keydown: ~ 192 [Shift]', // 192 is ` keyCode
-            'Keypress: ~ 126 126 126 [Shift]', // 126 is ~ charCode
-            'Keyup: ~ 192 [Shift]'].join('\n'));
+          [ 'Keydown: Shift ShiftLeft 16 [Shift]',
+            'Keydown: ~ Backquote 192 [Shift]', // 192 is ` keyCode
+            'Keypress: ~ Backquote 126 126 126 [Shift]', // 126 is ~ charCode
+            'Keyup: ~ Backquote 192 [Shift]'].join('\n'));
       await keyboard.up('Shift');
     }));
     it('should not type canceled events', SX(async function(){
@@ -2069,18 +2156,78 @@ describe('Page', function() {
   });
 
   describe('Page.addScriptTag', function() {
-    it('should work', SX(async function() {
+    it('should throw an error if no options are provided', SX(async function() {
+      let error = null;
+      try {
+        await page.addScriptTag('/injectedfile.js');
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toBe('Provide an object with a `url`, `path` or `content` property');
+    }));
+
+    it('should work with a url', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      await page.addScriptTag('/injectedfile.js');
+      await page.addScriptTag({ url: '/injectedfile.js' });
       expect(await page.evaluate(() => __injected)).toBe(42);
+    }));
+
+    it('should work with a path', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addScriptTag({ path: path.join(__dirname, 'assets/injectedfile.js') });
+      expect(await page.evaluate(() => __injected)).toBe(42);
+    }));
+
+    it('should include sourcemap when path is provided', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addScriptTag({ path: path.join(__dirname, 'assets/injectedfile.js') });
+      const result = await page.evaluate(() => __injectedError.stack);
+      expect(result).toContain(path.join('assets', 'injectedfile.js'));
+    }));
+
+    it('should work with content', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addScriptTag({ content: 'window.__injected = 35;' });
+      expect(await page.evaluate(() => __injected)).toBe(35);
     }));
   });
 
   describe('Page.addStyleTag', function() {
-    it('should work', SX(async function() {
+    it('should throw an error if no options are provided', SX(async function() {
+      let error = null;
+      try {
+        await page.addStyleTag('/injectedstyle.css');
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toBe('Provide an object with a `url`, `path` or `content` property');
+    }));
+
+    it('should work with a url', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      await page.addStyleTag('/injectedstyle.css');
+      await page.addStyleTag({ url: '/injectedstyle.css' });
       expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(255, 0, 0)');
+    }));
+
+    it('should work with a path', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addStyleTag({ path: path.join(__dirname, 'assets/injectedstyle.css') });
+      expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(255, 0, 0)');
+    }));
+
+    it('should include sourcemap when path is provided', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addStyleTag({ path: path.join(__dirname, 'assets/injectedstyle.css') });
+      const styleHandle = await page.$('style');
+      const styleContent = await page.evaluate(style => style.innerHTML, styleHandle);
+      expect(styleContent).toContain(path.join('assets', 'injectedstyle.css'));
+      styleHandle.dispose();
+    }));
+
+    it('should work with content', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      await page.addStyleTag({ content: 'body { background-color: green; }' });
+      expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(0, 128, 0)');
     }));
   });
 

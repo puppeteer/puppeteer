@@ -35,9 +35,10 @@
     + [event: 'response'](#event-response)
     + [page.$(selector)](#pageselector)
     + [page.$$(selector)](#pageselector)
+    + [page.$$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
     + [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
-    + [page.addScriptTag(url)](#pageaddscripttagurl)
-    + [page.addStyleTag(url)](#pageaddstyletagurl)
+    + [page.addScriptTag(options)](#pageaddscripttagoptions)
+    + [page.addStyleTag(options)](#pageaddstyletagoptions)
     + [page.authenticate(credentials)](#pageauthenticatecredentials)
     + [page.click(selector[, options])](#pageclickselector-options)
     + [page.close()](#pageclose)
@@ -57,11 +58,11 @@
     + [page.goForward(options)](#pagegoforwardoptions)
     + [page.goto(url, options)](#pagegotourl-options)
     + [page.hover(selector)](#pagehoverselector)
-    + [page.injectFile(filePath)](#pageinjectfilefilepath)
     + [page.keyboard](#pagekeyboard)
     + [page.mainFrame()](#pagemainframe)
     + [page.mouse](#pagemouse)
     + [page.pdf(options)](#pagepdfoptions)
+    + [page.queryObjects(prototypeHandle)](#pagequeryobjectsprototypehandle)
     + [page.reload(options)](#pagereloadoptions)
     + [page.screenshot([options])](#pagescreenshotoptions)
     + [page.select(selector, ...values)](#pageselectselector-values)
@@ -112,13 +113,13 @@
   * [class: Frame](#class-frame)
     + [frame.$(selector)](#frameselector)
     + [frame.$$(selector)](#frameselector)
+    + [frame.$$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
     + [frame.$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
-    + [frame.addScriptTag(url)](#frameaddscripttagurl)
-    + [frame.addStyleTag(url)](#frameaddstyletagurl)
+    + [frame.addScriptTag(options)](#frameaddscripttagoptions)
+    + [frame.addStyleTag(options)](#frameaddstyletagoptions)
     + [frame.childFrames()](#framechildframes)
     + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
     + [frame.executionContext()](#frameexecutioncontext)
-    + [frame.injectFile(filePath)](#frameinjectfilefilepath)
     + [frame.isDetached()](#frameisdetached)
     + [frame.name()](#framename)
     + [frame.parentFrame()](#frameparentframe)
@@ -130,6 +131,7 @@
   * [class: ExecutionContext](#class-executioncontext)
     + [executionContext.evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args)
     + [executionContext.evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args)
+    + [executionContext.queryObjects(prototypeHandle)](#executioncontextqueryobjectsprototypehandle)
   * [class: JSHandle](#class-jshandle)
     + [jsHandle.asElement()](#jshandleaselement)
     + [jsHandle.dispose()](#jshandledispose)
@@ -386,6 +388,22 @@ The method runs `document.querySelectorAll` within the page. If no elements matc
 
 Shortcut for [page.mainFrame().$$(selector)](#frameselector-1).
 
+
+#### page.$$eval(selector, pageFunction[, ...args])
+- `selector` <[string]> A [selector] to query frame for
+- `pageFunction` <[function]> Function to be evaluated in browser context
+- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
+
+This method runs `document.querySelectorAll` within the page and passes it as the first argument to `pageFunction`.
+
+If `pageFunction` returns a [Promise], then `page.$$eval` would wait for the promise to resolve and return its value.
+
+Examples:
+```js
+const divsCounts = await page.$$eval('div', divs => divs.length);
+```
+
 #### page.$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> A [selector] to query page for
 - `pageFunction` <[function]> Function to be evaluated in browser context
@@ -405,21 +423,27 @@ const html = await page.$eval('.main-container', e => e.outerHTML);
 
 Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector-pagefunction-args).
 
-#### page.addScriptTag(url)
-- `url` <[string]> Url of the `<script>` tag
-- returns: <[Promise]> which resolves when the script's onload fires.
+#### page.addScriptTag(options)
+- `options` <[Object]>
+  - `url` <[string]> Url of a script to be added.
+  - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `content` <[string]> Raw JavaScript content to be injected into frame.
+- returns: <[Promise]> which resolves when the script's onload fires or when the script content was injected into frame.
 
-Adds a `<script>` tag into the page with the desired url. Alternatively, a local JavaScript file can be injected via [`page.injectFile`](#pageinjectfilefilepath) method.
+Adds a `<script>` tag into the page with the desired url or content.
 
-Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
+Shortcut for [page.mainFrame().addScriptTag(options)](#frameaddscripttagoptions).
 
-#### page.addStyleTag(url)
-- `url` <[string]> Url of the `<link>` tag
-- returns: <[Promise]> which resolves when the stylesheet's onload fires.
+#### page.addStyleTag(options)
+- `options` <[Object]>
+  - `url` <[string]> Url of the `<link>` tag.
+  - `path` <[string]> Path to the CSS file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `content` <[string]> Raw CSS content to be injected into frame.
+- returns: <[Promise]> which resolves when the stylesheet's onload fires or when the CSS content was injected into frame.
 
-Adds a `<link rel="stylesheet">` tag into the page with the desired url.
+Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
 
-Shortcut for [page.mainFrame().addStyleTag(url)](#frameaddstyletagurl).
+Shortcut for [page.mainFrame().addStyleTag(options)](#frameaddstyletagoptions).
 
 #### page.authenticate(credentials)
 - `credentials` <[Object]>
@@ -658,10 +682,10 @@ If there's no element matching `selector`, the method throws an error.
 #### page.getMetrics()
 - returns: <[Object]> Object containing metrics as key/value pairs.
   - `Timestamp` <[number]> The timestamp when the metrics sample was taken.
-  - `DocumentCount` <[number]> Number of documents in the page.
-  - `FrameCount` <[number]> Number of frames in the page.
-  - `JSEventListenerCount` <[number]> Number of events in the page.
-  - `NodeCount` <[number]> Number of DOM nodes in the page.
+  - `Documents` <[number]> Number of documents in the page.
+  - `Frames` <[number]> Number of frames in the page.
+  - `JSEventListeners` <[number]> Number of events in the page.
+  - `Nodes` <[number]> Number of DOM nodes in the page.
   - `LayoutCount` <[number]> Total number of full or partial page layout.
   - `RecalcStyleCount` <[number]> Total number of page style recalculations.
   - `LayoutDuration` <[number]> Combined durations of all page layouts.
@@ -726,12 +750,6 @@ The `page.goto` will throw an error if:
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
 If there's no element matching `selector`, the method throws an error.
-
-#### page.injectFile(filePath)
-- `filePath` <[string]> Path to the JavaScript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-- returns: <[Promise]> Promise which resolves when file gets successfully evaluated in frame.
-
-Shortcut for [page.mainFrame().injectFile(filePath)](#frameinjectfilefilepath).
 
 #### page.keyboard
 
@@ -798,6 +816,28 @@ The `format` options are:
 - `A3`: 11.7in x 16.5in
 - `A4`: 8.27in x 11.7in
 - `A5`: 5.83in x 8.27in
+- `A6`: 4.13in x 5.83in
+
+#### page.queryObjects(prototypeHandle)
+- `prototypeHandle` <[JSHandle]> A handle to the object prototype.
+- returns: <[JSHandle]> A handle to an array of objects with this prototype
+
+The method iterates javascript heap and finds all the objects with the given prototype.
+
+```js
+// Create a Map object
+await page.evaluate(() => window.map = new Map());
+// Get a handle to the Map object prototype
+const mapPrototype = await page.evaluateHandle(() => Map.prototype);
+// Query all map instances into an array
+const mapInstances = await page.queryObjects(mapPrototype);
+// Count amount of map objects in heap
+const count = await page.evaluate(maps => maps.length, mapInstances);
+await mapInstances.dispose();
+await mapPrototype.dispose();
+```
+
+Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)](#executioncontextqueryobjectsprototypehandle).
 
 #### page.reload(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
@@ -1009,6 +1049,7 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
 - `selector` <[string]> A [selector] of an element to wait for,
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
 
@@ -1267,6 +1308,21 @@ The method queries frame for the selector. If there's no such element within the
 
 The method runs `document.querySelectorAll` within the frame. If no elements match the selector, the return value resolve to `[]`.
 
+#### frame.$$eval(selector, pageFunction[, ...args])
+- `selector` <[string]> A [selector] to query frame for
+- `pageFunction` <[function]> Function to be evaluated in browser context
+- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
+
+This method runs `document.querySelectorAll` within the frame and passes it as the first argument to `pageFunction`.
+
+If `pageFunction` returns a [Promise], then `frame.$$eval` would wait for the promise to resolve and return its value.
+
+Examples:
+```js
+const divsCounts = await frame.$$eval('div', divs => divs.length);
+```
+
 #### frame.$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> A [selector] to query frame for
 - `pageFunction` <[function]> Function to be evaluated in browser context
@@ -1284,17 +1340,23 @@ const preloadHref = await frame.$eval('link[rel=preload]', el => el.href);
 const html = await frame.$eval('.main-container', e => e.outerHTML);
 ```
 
-#### frame.addScriptTag(url)
-- `url` <[string]> Url of a script to be added
-- returns: <[Promise]> Promise which resolves as the script gets added and loads.
+#### frame.addScriptTag(options)
+- `options` <[Object]>
+  - `url` <[string]> Url of a script to be added.
+  - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `content` <[string]> Raw JavaScript content to be injected into frame.
+- returns: <[Promise]> which resolves when the script's onload fires or when the script content was injected into frame.
 
-Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScript can be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
+Adds a `<script>` tag into the page with the desired url or content.
 
-#### frame.addStyleTag(url)
-- `url` <[string]> Url of a stylesheet to be added
-- returns: <[Promise]> Promise which resolves when the script gets added and loads.
+#### frame.addStyleTag(options)
+- `options` <[Object]>
+  - `url` <[string]> Url of the `<link>` tag.
+  - `path` <[string]> Path to the CSS file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `content` <[string]> Raw CSS content to be injected into frame.
+- returns: <[Promise]> which resolves when the stylesheet's onload fires or when the CSS content was injected into frame.
 
-Adds a `<link rel="stylesheet">` tag to the frame with the desired url.
+Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
 
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
@@ -1330,10 +1392,6 @@ await bodyHandle.dispose();
 
 #### frame.executionContext()
 - returns: <[ExecutionContext]> Execution context associated with this frame.
-
-#### frame.injectFile(filePath)
-- `filePath` <[string]> Path to the JavaScript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-- returns: <[Promise]> Promise which resolves when file gets successfully evaluated in frame.
 
 #### frame.isDetached()
 - returns: <[boolean]>
@@ -1484,6 +1542,25 @@ const resultHandle = await context.evaluateHandle(body => body.innerHTML, aHandl
 console.log(await resultHandle.jsonValue()); // prints body's innerHTML
 await aHandle.dispose();
 await resultHandle.dispose();
+```
+
+#### executionContext.queryObjects(prototypeHandle)
+- `prototypeHandle` <[JSHandle]> A handle to the object prototype.
+- returns: <[JSHandle]> A handle to an array of objects with this prototype
+
+The method iterates javascript heap and finds all the objects with the given prototype.
+
+```js
+// Create a Map object
+await page.evaluate(() => window.map = new Map());
+// Get a handle to the Map object prototype
+const mapPrototype = await page.evaluateHandle(() => Map.prototype);
+// Query all map instances into an array
+const mapInstances = await page.queryObjects(mapPrototype);
+// Count amount of map objects in heap
+const count = await page.evaluate(maps => maps.length, mapInstances);
+await mapInstances.dispose();
+await mapPrototype.dispose();
 ```
 
 ### class: JSHandle
