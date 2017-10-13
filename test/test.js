@@ -2805,6 +2805,20 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       expect((await changedTarget).url()).toBe(EMPTY_PAGE);
     }));
+    it('should not report uninitialized pages', SX(async function(){
+      const targetPromise = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
+      const newPagePromise = browser.newPage();
+      const target = await targetPromise;
+      expect(target.url()).toBe('about:blank');
+
+      const newPage = await newPagePromise;
+      const targetPromise2 = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
+      const evaluatePromise = newPage.evaluate(() => window.open('about:blank'));
+      const target2 = await targetPromise2;
+      expect(target2.url()).toBe('about:blank');
+      await evaluatePromise;
+      await newPage.close();
+    }));
   });
 });
 
