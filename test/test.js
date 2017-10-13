@@ -509,7 +509,6 @@ describe('Page', function() {
     it('hidden should wait for visibility: hidden', SX(async function() {
       let divHidden = false;
       await page.setContent(`<div style='display: block;'></div>`);
-      expect(divHidden).toBe(false);
       const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divHidden = true);
       await page.evaluate(() => document.querySelector('div').style.setProperty('visibility', 'hidden'));
       expect(await waitForSelector).toBe(true);
@@ -518,7 +517,6 @@ describe('Page', function() {
     it('hidden should wait for display: none', SX(async function() {
       let divHidden = false;
       await page.setContent(`<div style='display: block;'></div>`);
-      expect(divHidden).toBe(false);
       const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divHidden = true);
       await page.evaluate(() => document.querySelector('div').style.setProperty('display', 'none'));
       expect(await waitForSelector).toBe(true);
