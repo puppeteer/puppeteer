@@ -1531,8 +1531,18 @@ describe('Page', function() {
     }));
     it('should take into account padding and border', SX(async function() {
       await page.setViewport({width: 500, height: 500});
-      await page.setContent('something above<h1 style="border:2px solid blue; background: green;">&nbsp;</h1>');
-      const elementHandle = await page.$('h1');
+      await page.setContent(`
+        something above
+        <style>div {
+          border: 2px solid blue;
+          background: green;
+          width: 50px;
+          height: 50px;
+        }
+        </style>
+        <div></div>
+      `);
+      const elementHandle = await page.$('div');
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
     }));
