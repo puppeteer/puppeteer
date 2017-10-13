@@ -656,12 +656,38 @@ describe('Page', function() {
     it('should wait for visible', SX(async function() {
       let divFound = false;
       const waitForSelector = page.waitForSelector('div', {visible: true}).then(() => divFound = true);
-      await page.setContent(`<div style='display: none;visibility: hidden'></div>`);
+      await page.setContent(`<div style='display: none; visibility: hidden;'></div>`);
       expect(divFound).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.removeProperty('display'));
       expect(divFound).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.removeProperty('visibility'));
       expect(await waitForSelector).toBe(true);
+      expect(divFound).toBe(true);
+    }));
+    it('hidden should wait for visibility: hidden', SX(async function() {
+      let divHidden = false;
+      await page.setContent(`<div style='display: block;'></div>`);
+      const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divHidden = true);
+      await page.evaluate(() => document.querySelector('div').style.setProperty('visibility', 'hidden'));
+      expect(await waitForSelector).toBe(true);
+      expect(divHidden).toBe(true);
+    }));
+    it('hidden should wait for display: none', SX(async function() {
+      let divHidden = false;
+      await page.setContent(`<div style='display: block;'></div>`);
+      const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divHidden = true);
+      await page.evaluate(() => document.querySelector('div').style.setProperty('display', 'none'));
+      expect(await waitForSelector).toBe(true);
+      expect(divHidden).toBe(true);
+    }));
+    it('hidden should wait for removal', SX(async function() {
+      await page.setContent(`<div></div>`);
+      let divRemoved = false;
+      const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divRemoved = true);
+      expect(divRemoved).toBe(false);
+      await page.evaluate(() => document.querySelector('div').remove());
+      expect(await waitForSelector).toBe(true);
+      expect(divRemoved).toBe(true);
     }));
     it('should respect timeout', SX(async function() {
       let error = null;
@@ -1502,6 +1528,33 @@ describe('Page', function() {
       const elementHandle = await page.$('.box:nth-of-type(3)');
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
+    }));
+    it('should take into account padding and border', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent('something above<h1 style="border:2px solid blue; background: green;">&nbsp;</h1>');
+      const elementHandle = await page.$('h1');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
+    }));
+    it('should work with a rotated element', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent(`<div style="position:absolute;
+                                         top: 100px;
+                                         left: 100px;
+                                         width: 100px;
+                                         height: 100px;
+                                        background: green;
+                                        transform: rotateZ(200deg);">&nbsp;</div>`);
+      const elementHandle = await page.$('div');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-rotate.png');
+    }));
+    it('should fail to screenshot a detached element', SX(async function() {
+      await page.setContent('<h1>remove this</h1>');
+      const elementHandle = await page.$('h1');
+      await page.evaluate(element => element.remove(), elementHandle);
+      const screenshotError = await elementHandle.screenshot().catch(error => error);
+      expect(screenshotError.message).toBe('Node is detached from document');
     }));
   });
 
