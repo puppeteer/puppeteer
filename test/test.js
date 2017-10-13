@@ -506,25 +506,7 @@ describe('Page', function() {
       expect(await waitForSelector).toBe(true);
       expect(divFound).toBe(true);
     }));
-    it('should check ancestors are visible', SX(async function() {
-      let divFound = false;
-      const waitForSelector = page.waitForSelector('.child', {visible: true}).then(() => divFound = true);
-      await page.setContent(`<div class="parent" style='display: none;'><div class="child"></div></div>`);
-      expect(divFound).toBe(false);
-      await page.evaluate(() => document.querySelector('.parent').style.removeProperty('display'));
-      expect(await waitForSelector).toBe(true);
-      expect(divFound).toBe(true);
-    }));
-    it('should check ancestors are hidden', SX(async function() {
-      let divHidden = false;
-      await page.setContent(`<div class="parent" style='display: block;'><div class="child"></div></div>`);
-      expect(divHidden).toBe(false);
-      const waitForSelector = page.waitForSelector('.child', {hidden: true}).then(() => divHidden = true);
-      await page.evaluate(() => document.querySelector('.parent').style.setProperty('display', 'none'));
-      expect(await waitForSelector).toBe(true);
-      expect(divHidden).toBe(true);
-    }));
-    it('should wait for visibility: hidden', SX(async function() {
+    it('hidden should wait for visibility: hidden', SX(async function() {
       let divHidden = false;
       await page.setContent(`<div style='display: block;'></div>`);
       expect(divHidden).toBe(false);
@@ -533,7 +515,7 @@ describe('Page', function() {
       expect(await waitForSelector).toBe(true);
       expect(divHidden).toBe(true);
     }));
-    it('should wait for display: none', SX(async function() {
+    it('hidden should wait for display: none', SX(async function() {
       let divHidden = false;
       await page.setContent(`<div style='display: block;'></div>`);
       expect(divHidden).toBe(false);
@@ -542,10 +524,11 @@ describe('Page', function() {
       expect(await waitForSelector).toBe(true);
       expect(divHidden).toBe(true);
     }));
-    it('should wait for removal', SX(async function() {
+    it('hidden should wait for removal', SX(async function() {
       await page.setContent(`<div></div>`);
       let divRemoved = false;
       const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divRemoved = true);
+      expect(divRemoved).toBe(false);
       await page.evaluate(() => document.querySelector('div').remove());
       expect(await waitForSelector).toBe(true);
       expect(divRemoved).toBe(true);
