@@ -2805,7 +2805,10 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       expect((await changedTarget).url()).toBe(EMPTY_PAGE);
     }));
-    it('should not report uninitialized pages', SX(async function(){
+    fit('should not report uninitialized pages', SX(async function() {
+      browser.on('targetchanged', () => {
+        expect(false).toBe(true, 'target should not be reported as changed');
+      });
       const targetPromise = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
       const newPagePromise = browser.newPage();
       const target = await targetPromise;
