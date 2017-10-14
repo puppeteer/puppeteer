@@ -60,6 +60,7 @@
     + [page.mainFrame()](#pagemainframe)
     + [page.mouse](#pagemouse)
     + [page.pdf(options)](#pagepdfoptions)
+    + [page.press(key[, options])](#pagepresskey-options)
     + [page.queryObjects(prototypeHandle)](#pagequeryobjectsprototypehandle)
     + [page.reload(options)](#pagereloadoptions)
     + [page.screenshot([options])](#pagescreenshotoptions)
@@ -85,7 +86,6 @@
     + [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [class: Keyboard](#class-keyboard)
     + [keyboard.down(key[, options])](#keyboarddownkey-options)
-    + [keyboard.press(key[, options])](#keyboardpresskey-options)
     + [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
     + [keyboard.type(text, options)](#keyboardtypetext-options)
     + [keyboard.up(key)](#keyboardupkey)
@@ -833,6 +833,15 @@ await mapPrototype.dispose();
 
 Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)](#executioncontextqueryobjectsprototypehandle).
 
+#### page.press(key[, options])
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `options` <[Object]>
+  - `text` <[string]> If specified, generates an input event with this text.
+  - `delay` <[number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
+- returns: <[Promise]>
+
+Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#keyboardupkey).
+
 #### page.reload(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
@@ -974,7 +983,7 @@ Shortcut for [page.mainFrame().title()](#frametitle).
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
 
-To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#keyboardpresskey-options).
+To press a special key, like `Control` or `ArrowDown`, use [`page.press`](#pagepresskey-options).
 
 ```js
 page.type('#mytextarea', 'Hello'); // Types instantly
@@ -1081,14 +1090,14 @@ For finer control, you can use [`keyboard.down`](#keyboarddownkey-options), [`ke
 An example of holding down `Shift` in order to select and delete some text:
 ```js
 page.keyboard.type('Hello World!');
-page.keyboard.press('ArrowLeft');
+page.press('ArrowLeft');
 
 page.keyboard.down('Shift');
 for (let i = 0; i < ' World'.length; i++)
-  page.keyboard.press('ArrowLeft');
+  page.press('ArrowLeft');
 page.keyboard.up('Shift');
 
-page.keyboard.press('Backspace');
+page.press('Backspace');
 // Result text will end up saying 'Hello!'
 ```
 
@@ -1105,15 +1114,6 @@ If `key` is a single character and no modifier keys besides `Shift` are being he
 If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key presses will be sent with that modifier active. To release the modifier key, use [`keyboard.up`](#keyboardupkey).
 
 After the key is pressed once, subsequent calls to [`keyboard.down`](#keyboarddownkey-options) will have [repeat](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat) set to true. To release the key, use [`keyboard.up`](#keyboardupkey).
-
-#### keyboard.press(key[, options])
-- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
-- `options` <[Object]>
-  - `text` <[string]> If specified, generates an input event with this text.
-  - `delay` <[number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
-- returns: <[Promise]>
-
-Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#keyboardupkey).
 
 #### keyboard.sendCharacter(char)
 - `char` <[string]> Character to send into the page.
@@ -1133,7 +1133,7 @@ page.keyboard.sendCharacter('嗨');
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
 
-To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#keyboardpresskey-options).
+To press a special key, like `Control` or `ArrowDown`, use [`page.press`](#pagepresskey-options).
 
 ```js
 page.keyboard.type('Hello'); // Types instantly
