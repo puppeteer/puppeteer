@@ -826,7 +826,7 @@ The `format` options are:
 
 #### page.queryObjects(prototypeHandle)
 - `prototypeHandle` <[JSHandle]> A handle to the object prototype.
-- returns: <[JSHandle]> A handle to an array of objects with this prototype
+- returns: <[Promise]<[JSHandle]>> Promise which resolves to a handle to an array of objects with this prototype.
 
 The method iterates javascript heap and finds all the objects with the given prototype.
 
