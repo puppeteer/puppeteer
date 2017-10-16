@@ -184,6 +184,11 @@ Puppeteer API is hierarchical and mirrors browser objects. On the following diag
 
 ![puppeteer overview 1](https://user-images.githubusercontent.com/746130/31592143-089f6f9a-b1db-11e7-9a20-16b7fc754fa1.png)
 
+- [Puppeteer](#class-puppeteer) communicates with browser using [devtools protocol](https://chromedevtools.github.io/devtools-protocol/)
+- [Browser](#class-browser) instance owns multiple pages
+- [Page](#class-page) has at least one frame - main frame, that might have a bunch of nested frames.
+- [Frame](#class-frame) has default execution context - a context where associated javascript is run. There might be additional execution contexts in frame associated with extensions.
+
 (Diagram source: [link](https://docs.google.com/drawings/d/1Q_AM6KYs9kbyLZF-Lpp5mtpAWth73Cq8IKCsWYgi8MM/edit?usp=sharing))
 
 
