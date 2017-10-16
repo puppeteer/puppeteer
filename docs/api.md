@@ -180,14 +180,14 @@
 
 Puppeteer is a Node library which provides a high-level API to control Chromium over the DevTools Protocol.
 
-Puppeteer API is hierarchical and mirrors browser objects. On the following diagram, faded entities are not currently represented in Puppeteer.
+Puppeteer API is hierarchical and mirrors browser structure. On the following diagram, faded entities are not currently represented in Puppeteer.
 
 ![puppeteer overview](https://user-images.githubusercontent.com/746130/31592143-089f6f9a-b1db-11e7-9a20-16b7fc754fa1.png)
 
 - [`Puppeteer`](#class-puppeteer) communicates with browser using [devtools protocol](https://chromedevtools.github.io/devtools-protocol/).
 - [`Browser`](#class-browser) instance owns multiple pages.
 - [`Page`](#class-page) has at least one frame: main frame. There might be other frames created by [iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) or [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frame) tags.
-- [`Frame`](#class-frame) has at least one execution context - default execution context - where frame's javascript is executed. Frame might have additional execution contexts associated with [extensions](https://developer.chrome.com/extensions).
+- [`Frame`](#class-frame) has at least one execution context - default execution context - where frame's JavaScript is executed. Frame might have additional execution contexts associated with [extensions](https://developer.chrome.com/extensions).
 
 (Diagram source: [link](https://docs.google.com/drawings/d/1Q_AM6KYs9kbyLZF-Lpp5mtpAWth73Cq8IKCsWYgi8MM/edit?usp=sharing))
 
