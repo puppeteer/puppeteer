@@ -1,0 +1,19 @@
+environment:
+  matrix:
+    - nodejs_version: "6"
+    - nodejs_version: "7"
+
+build: off
+
+install:
+  - ps: Install-Product node $env:nodejs_version
+  - yarn install
+  - if "%nodejs_version%" == "7" (
+      yarn run lint &
+      yarn run coverage  &
+      yarn run test-doclint
+    ) else (
+      yarn run test-node6-transformer  &
+      yarn run build  &
+      yarn run unit-node6  
+    )
