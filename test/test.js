@@ -38,7 +38,6 @@ const EMPTY_PAGE = PREFIX + '/empty.html';
 const HTTPS_PORT = 8908;
 const HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
 
-const windows = /^win/.test(process.platform);
 const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
 const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
 const executablePath = process.env.CHROME;
@@ -109,9 +108,7 @@ describe('Puppeteer', function() {
       await puppeteer.launch(options).catch(e => waitError = e);
       expect(waitError.message.startsWith('Failed to launch chrome! spawn random-invalid-path ENOENT')).toBe(true);
     }));
-    // Windows has issues running Chromium using a custom user data dir. It hangs when closing the browser.
-    // @see https://github.com/GoogleChrome/puppeteer/issues/918
-    (windows ? xit : it)('userDataDir option', SX(async function() {
+    it('userDataDir option', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
@@ -120,9 +117,7 @@ describe('Puppeteer', function() {
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
       rm(userDataDir);
     }));
-    // Windows has issues running Chromium using a custom user data dir. It hangs when closing the browser.
-    // @see https://github.com/GoogleChrome/puppeteer/issues/918
-    (windows ? xit : it)('userDataDir argument', SX(async function() {
+    it('userDataDir argument', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({}, defaultBrowserOptions);
       options.args = [`--user-data-dir=${userDataDir}`].concat(options.args);
@@ -132,9 +127,7 @@ describe('Puppeteer', function() {
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
       rm(userDataDir);
     }));
-    // Headless has issues shutting down gracefully
-    // @see https://crbug.com/771830
-    (headless ? xit : it)('userDataDir option should restore state', SX(async function() {
+    it('userDataDir option should restore state', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
@@ -177,7 +170,11 @@ describe('Puppeteer', function() {
       });
       const page = await browser.newPage();
       expect(await page.evaluate(() => 7 * 8)).toBe(56);
-      originalBrowser.close();
+      browser.disconnect();
+
+      const secondPage = await originalBrowser.newPage();
+      expect(await secondPage.evaluate(() => 7 * 6)).toBe(42, 'original browser should still work');
+      await originalBrowser.close();
     }));
   });
   describe('Puppeteer.executablePath', function() {

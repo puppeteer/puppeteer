@@ -14,6 +14,7 @@
   * [puppeteer.launch([options])](#puppeteerlaunchoptions)
 - [class: Browser](#class-browser)
   * [browser.close()](#browserclose)
+  * [browser.disconnect()](#browserdisconnect)
   * [browser.newPage()](#browsernewpage)
   * [browser.version()](#browserversion)
   * [browser.wsEndpoint()](#browserwsendpoint)
@@ -263,6 +264,10 @@ puppeteer.launch().then(async browser => {
 - returns: <[Promise]>
 
 Closes browser with all the pages (if any were opened). The browser object itself is considered to be disposed and can not be used anymore.
+
+#### browser.disconnect()
+
+Disconnects Puppeteer from the browser, but leaves the Chromium process running.
 
 #### browser.newPage()
 - returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.
