@@ -1803,6 +1803,14 @@ Exception is immediately thrown if the request interception is not enabled.
 The method returns null unless this request was failed, as reported by
 `requestfailed` event.
 
+Example of logging all failed requests:
+
+```js
+page.on('requestfailed', request => {
+  console.log(request.url + ' ' + request.failure().errorText);
+});
+```
+
 #### request.headers
 - <[Object]> An object with HTTP headers associated with the request. All header names are lower-case.
 
