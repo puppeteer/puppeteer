@@ -2805,7 +2805,7 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       expect((await changedTarget).url()).toBe(EMPTY_PAGE);
     }));
-    fit('should not report uninitialized pages', SX(async function() {
+    it('should not report uninitialized pages', SX(async function() {
       browser.on('targetchanged', () => {
         expect(false).toBe(true, 'target should not be reported as changed');
       });
