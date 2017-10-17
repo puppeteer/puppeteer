@@ -1798,7 +1798,7 @@ Exception is immediately thrown if the request interception is not enabled.
 
 #### request.failure()
 - returns: <[Object]> Object describing request failure, if any
-  - `errorText` <[string]> Human-readable error message
+  - `errorText` <[string]> Human-readable error message, e.g. `'net::ERR_FAILED'`.
 
 The method returns null unless this request was failed, as reported by
 `requestfailed` event.
