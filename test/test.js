@@ -163,7 +163,7 @@ describe('Puppeteer', function() {
     }));
   });
   describe('Puppeteer.connect', function() {
-    fit('should be able to connect multiple times to the same browser', SX(async function() {
+    it('should be able to connect multiple times to the same browser', SX(async function() {
       const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
       const browser = await puppeteer.connect({
         browserWSEndpoint: originalBrowser.wsEndpoint()
