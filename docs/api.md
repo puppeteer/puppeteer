@@ -296,10 +296,10 @@ Emitted when the url of a target changes.
 
 Emitted when a target is created, for example when a new page is opened by [`window.open`](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) or [`browser.newPage`](#browsernewpage).
 
-Emitted when a target is destroyed, for example when a page is closed.
-
 #### event: 'targetdestroyed'
 - <[Target]>
+
+Emitted when a target is destroyed, for example when a page is closed.
 
 #### browser.close()
 - returns: <[Promise]>
@@ -1908,6 +1908,8 @@ Contains the status code of the response (e.g., 200 for a success).
 #### response.url
 - <[string]>
 
+Contains the URL of the response.
+
 ### class: Target
 
 #### target.page()
@@ -1922,8 +1924,6 @@ Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, or 
 
 #### target.url()
 - returns: <[string]>
-
-Contains the URL of the response.
 
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
