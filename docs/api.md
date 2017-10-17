@@ -260,14 +260,31 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
+An example of disconnecting from and reconnecting to a [Browser]:
+```js
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
+  // Store the endpoint to be able to reconnect to Chromium
+  const browserWSEndpoint = browser.wsEndpoint();
+  // Disconnect puppeteer from Chromium
+  browser.disconnect();
+
+  // Use the endpoint to reestablish a connection
+  const browser2 = await puppeteer.connect({browserWSEndpoint});
+  // Close Chromium
+  await browser2.close();
+});
+```
+
 #### browser.close()
 - returns: <[Promise]>
 
-Closes browser with all the pages (if any were opened). The browser object itself is considered to be disposed and can not be used anymore.
+Closes Chromium and all of its pages (if any were opened). The browser object itself is considered disposed and cannot be used anymore.
 
 #### browser.disconnect()
 
-Disconnects Puppeteer from the browser, but leaves the Chromium process running.
+Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling `disconnect`, the browser object is considered disposed and cannot be used anymore.
 
 #### browser.newPage()
 - returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.

@@ -163,7 +163,7 @@ describe('Puppeteer', function() {
     }));
   });
   describe('Puppeteer.connect', function() {
-    it('should work', SX(async function() {
+    fit('should be able to connect multiple times to the same browser', SX(async function() {
       const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
       const browser = await puppeteer.connect({
         browserWSEndpoint: originalBrowser.wsEndpoint()
@@ -175,6 +175,16 @@ describe('Puppeteer', function() {
       const secondPage = await originalBrowser.newPage();
       expect(await secondPage.evaluate(() => 7 * 6)).toBe(42, 'original browser should still work');
       await originalBrowser.close();
+    }));
+    it('should be able to reconnect to a disconnected browser', SX(async function() {
+      const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+      const browserWSEndpoint = originalBrowser.wsEndpoint();
+      originalBrowser.disconnect();
+
+      const browser = await puppeteer.connect({browserWSEndpoint});
+      const page = await browser.newPage();
+      expect(await page.evaluate(() => 7 * 8)).toBe(56);
+      await browser.close();
     }));
   });
   describe('Puppeteer.executablePath', function() {
