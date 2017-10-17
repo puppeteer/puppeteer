@@ -167,6 +167,7 @@
   * [request.failure()](#requestfailure)
   * [request.headers](#requestheaders)
   * [request.method](#requestmethod)
+  * [request.mockResponse(response)](#requestmockresponseresponse)
   * [request.postData](#requestpostdata)
   * [request.resourceType](#requestresourcetype)
   * [request.response()](#requestresponse)
@@ -974,9 +975,10 @@ The extra HTTP headers will be sent with every request the page initiates.
 - `value` <[boolean]> Whether to enable request interception.
 - returns: <[Promise]>
 
-Activating request interception enables `request.abort` and `request.continue`.
+Activating request interception enables `request.abort`, `request.continue` and
+`request.mockResponse` methods.
 
-An example of a naïve request interceptor which aborts all image requests:
+An example of a naïve request interceptor that aborts all image requests:
 ```js
 const puppeteer = require('puppeteer');
 
@@ -1885,6 +1887,31 @@ page.on('requestfailed', request => {
 - <[string]>
 
 Contains the request's method (GET, POST, etc.)
+
+#### request.mockResponse(response)
+- `response` <[Object]> Response that will fulfill this request
+  - `status` <[number]> Response status code, defaults to `200`.
+  - `headers` <[Object]> Optional response headers
+  - `contentType` <[string]> If set, equals to setting `Content-Type` response header
+  - `body` <[Buffer]> Optional response body
+- returns: <[Promise]>
+
+Fulfills request with given response. To use this, request interception should
+be enabled with `page.setRequestInterceptionEnabled`. Exception is immediately
+thrown if the request interception is not enabled.
+
+An example of fulfilling all requests with 404 responses:
+
+```js
+await page.setRequestInterceptionEnabled(true);
+page.on('request', request => {
+  request.mockResponse({
+    status: 404,
+    contentType: 'text/plain',
+    body: 'Not Found!'
+  });
+});
+```
 
 #### request.postData
 - <[string]>

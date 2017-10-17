@@ -1339,6 +1339,44 @@ describe('Page', function() {
     }));
   });
 
+  describe('Request.mockResponse', function() {
+    it('should work', SX(async function() {
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
+        request.mockResponse({
+          status: 201,
+          headers: {
+            foo: 'bar'
+          },
+          body: Buffer.from('Yo, page!', 'utf8')
+        });
+      });
+      const response = await page.goto(EMPTY_PAGE);
+      expect(response.status).toBe(201);
+      expect(response.headers.foo).toBe('bar');
+      expect(await page.evaluate(() => document.body.textContent)).toBe('Yo, page!');
+    }));
+    it('should allow mocking binary responses', SX(async function() {
+      await page.setRequestInterceptionEnabled(true);
+      const imageBuffer = fs.readFileSync(path.join(__dirname, 'assets', 'pptr.png'));
+      page.on('request', request => {
+        request.mockResponse({
+          contentType: 'image/png',
+          body: imageBuffer
+        });
+      });
+      await page.goto(EMPTY_PAGE);
+      await page.evaluate(() => {
+        const img = document.createElement('img');
+        img.src = '/pptr.png';
+        document.body.appendChild(img);
+        return new Promise(fulfill => img.onload = fulfill);
+      });
+      const img = await page.$('img');
+      expect(await img.screenshot()).toBeGolden('mock-binary-response.png');
+    }));
+  });
+
   describe('Page.Events.Dialog', function() {
     it('should fire', SX(async function() {
       page.on('dialog', dialog => {
