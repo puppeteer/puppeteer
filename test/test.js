@@ -149,9 +149,7 @@ describe('Puppeteer', function() {
       await browser2.close();
       rm(userDataDir);
     }));
-    // Headless has issues storing cookies
-    // @see https://crbug.com/775261
-    (headless ? xit : it)('userDataDir option should restore cookies', SX(async function() {
+    it('userDataDir option should restore cookies', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
