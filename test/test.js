@@ -74,6 +74,12 @@ beforeAll(SX(async function() {
     rm(OUTPUT_DIR);
 }));
 
+beforeEach(SX(async function() {
+  server.reset();
+  httpsServer.reset();
+  GoldenUtils.addMatchers(jasmine, GOLDEN_DIR, OUTPUT_DIR);
+}));
+
 afterAll(SX(async function() {
   await Promise.all([
     server.stop(),
@@ -179,11 +185,16 @@ describe('Puppeteer', function() {
     it('should be able to reconnect to a disconnected browser', SX(async function() {
       const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
       const browserWSEndpoint = originalBrowser.wsEndpoint();
+      const page = await originalBrowser.newPage();
+      await page.goto(PREFIX + '/frames/nested-frames.html');
       originalBrowser.disconnect();
 
+      const FrameUtils = require('./frame-utils');
       const browser = await puppeteer.connect({browserWSEndpoint});
-      const page = await browser.newPage();
-      expect(await page.evaluate(() => 7 * 8)).toBe(56);
+      const pages = await browser.pages();
+      const restoredPage = pages.find(page => page.url() === PREFIX + '/frames/nested-frames.html');
+      expect(FrameUtils.dumpFrames(restoredPage.mainFrame())).toBeGolden('reconnect-nested-frames.txt');
+      expect(await restoredPage.evaluate(() => 7 * 8)).toBe(56);
       await browser.close();
     }));
   });
@@ -212,9 +223,6 @@ describe('Page', function() {
 
   beforeEach(SX(async function() {
     page = await browser.newPage();
-    server.reset();
-    httpsServer.reset();
-    GoldenUtils.addMatchers(jasmine, GOLDEN_DIR, OUTPUT_DIR);
   }));
 
   afterEach(SX(async function() {
