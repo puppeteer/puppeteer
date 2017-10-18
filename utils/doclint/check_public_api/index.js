@@ -35,6 +35,7 @@ const EXCLUDE_CLASSES = new Set([
 ]);
 
 const EXCLUDE_METHODS = new Set([
+  'Browser.create',
   'Headers.fromPayload',
   'Page.create',
   'JSHandle.toString',

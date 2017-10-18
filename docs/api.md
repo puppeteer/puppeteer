@@ -13,9 +13,14 @@
   * [puppeteer.executablePath()](#puppeteerexecutablepath)
   * [puppeteer.launch([options])](#puppeteerlaunchoptions)
 - [class: Browser](#class-browser)
+  * [event: 'targetchanged'](#event-targetchanged)
+  * [event: 'targetcreated'](#event-targetcreated)
+  * [event: 'targetdestroyed'](#event-targetdestroyed)
   * [browser.close()](#browserclose)
   * [browser.disconnect()](#browserdisconnect)
   * [browser.newPage()](#browsernewpage)
+  * [browser.pages()](#browserpages)
+  * [browser.targets()](#browsertargets)
   * [browser.version()](#browserversion)
   * [browser.wsEndpoint()](#browserwsendpoint)
 - [class: Page](#class-page)
@@ -175,6 +180,10 @@
   * [response.status](#responsestatus)
   * [response.text()](#responsetext)
   * [response.url](#responseurl)
+- [class: Target](#class-target)
+  * [target.page()](#targetpage)
+  * [target.type()](#targettype)
+  * [target.url()](#targeturl)
 
 <!-- tocstop -->
 
@@ -278,6 +287,21 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
+#### event: 'targetchanged'
+- <[Target]>
+
+Emitted when the url of a target changes.
+
+#### event: 'targetcreated'
+- <[Target]>
+
+Emitted when a target is created, for example when a new page is opened by [`window.open`](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) or [`browser.newPage`](#browsernewpage).
+
+#### event: 'targetdestroyed'
+- <[Target]>
+
+Emitted when a target is destroyed, for example when a page is closed.
+
 #### browser.close()
 - returns: <[Promise]>
 
@@ -289,6 +313,12 @@ Disconnects Puppeteer from the browser, but leaves the Chromium process running.
 
 #### browser.newPage()
 - returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.
+
+#### browser.pages()
+- returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages.
+
+#### browser.targets()
+- returns: <[Array]<[Target]>> An array of all active targets.
 
 #### browser.version()
 - returns: <[Promise]<[string]>> For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is similar to `Chrome/61.0.3153.0`.
@@ -1896,6 +1926,21 @@ Contains the status code of the response (e.g., 200 for a success).
 
 Contains the URL of the response.
 
+### class: Target
+
+#### target.page()
+- returns: <[Promise]<[Page]>>
+
+If the target is not of type `"page"`, returns `null`.
+
+#### target.type()
+- returns: <[string]>
+
+Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, or `"other"`.
+
+#### target.url()
+- returns: <[string]>
+
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
 [Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer "Buffer"
@@ -1927,3 +1972,4 @@ Contains the URL of the response.
 [UIEvent.detail]: https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail "UIEvent.detail"
 [Serializable]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Description "Serializable"
 [Touchscreen]: #class-touchscreen "Touchscreen"
+[Target]: #class-target "Target"

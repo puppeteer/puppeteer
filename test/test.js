@@ -74,6 +74,12 @@ beforeAll(SX(async function() {
     rm(OUTPUT_DIR);
 }));
 
+beforeEach(SX(async function() {
+  server.reset();
+  httpsServer.reset();
+  GoldenUtils.addMatchers(jasmine, GOLDEN_DIR, OUTPUT_DIR);
+}));
+
 afterAll(SX(async function() {
   await Promise.all([
     server.stop(),
@@ -179,11 +185,16 @@ describe('Puppeteer', function() {
     it('should be able to reconnect to a disconnected browser', SX(async function() {
       const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
       const browserWSEndpoint = originalBrowser.wsEndpoint();
+      const page = await originalBrowser.newPage();
+      await page.goto(PREFIX + '/frames/nested-frames.html');
       originalBrowser.disconnect();
 
+      const FrameUtils = require('./frame-utils');
       const browser = await puppeteer.connect({browserWSEndpoint});
-      const page = await browser.newPage();
-      expect(await page.evaluate(() => 7 * 8)).toBe(56);
+      const pages = await browser.pages();
+      const restoredPage = pages.find(page => page.url() === PREFIX + '/frames/nested-frames.html');
+      expect(FrameUtils.dumpFrames(restoredPage.mainFrame())).toBeGolden('reconnect-nested-frames.txt');
+      expect(await restoredPage.evaluate(() => 7 * 8)).toBe(56);
       await browser.close();
     }));
   });
@@ -212,9 +223,6 @@ describe('Page', function() {
 
   beforeEach(SX(async function() {
     page = await browser.newPage();
-    server.reset();
-    httpsServer.reset();
-    GoldenUtils.addMatchers(jasmine, GOLDEN_DIR, OUTPUT_DIR);
   }));
 
   afterEach(SX(async function() {
@@ -2737,6 +2745,91 @@ describe('Page', function() {
         session: true
       }]);
 
+    }));
+  });
+
+  describe('Target', function() {
+    it('Browser.targets should return all of the targets', SX(async function() {
+      // The pages will be the testing page and the original newtab page
+      const targets = browser.targets();
+      expect(targets.some(target => target.type() === 'page' &&
+        target.url() === 'about:blank')).toBeTruthy('Missing blank page');
+      expect(targets.some(target => target.type() === 'other' &&
+        target.url() === '')).toBeTruthy('Missing browser target');
+    }));
+    it('Browser.pages should return all of the pages', SX(async function() {
+      // The pages will be the testing page and the original newtab page
+      const allPages = await browser.pages();
+      expect(allPages.length).toBe(2);
+      expect(allPages).toContain(page);
+      expect(allPages[0]).not.toBe(allPages[1]);
+    }));
+    it('should be able to use the default page in the browser', SX(async function() {
+      // The pages will be the testing page and the original newtab page
+      const allPages = await browser.pages();
+      const originalPage = allPages.find(p => p !== page);
+      expect(await originalPage.evaluate(() => ['Hello', 'world'].join(' '))).toBe('Hello world');
+      expect(await originalPage.$('body')).toBeTruthy();
+    }));
+    it('should report when a new page is created and closed', SX(async function(){
+      const otherPagePromise = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target.page())));
+      await page.evaluate(url => window.open(url), CROSS_PROCESS_PREFIX);
+      const otherPage = await otherPagePromise;
+      expect(otherPage.url()).toContain(CROSS_PROCESS_PREFIX);
+
+      expect(await otherPage.evaluate(() => ['Hello', 'world'].join(' '))).toBe('Hello world');
+      expect(await otherPage.$('body')).toBeTruthy();
+
+      let allPages = await browser.pages();
+      expect(allPages).toContain(page);
+      expect(allPages).toContain(otherPage);
+
+      const closePagePromise = new Promise(fulfill => browser.once('targetdestroyed', target => fulfill(target.page())));
+      await otherPage.close();
+      expect(await closePagePromise).toBe(otherPage);
+
+      allPages = await Promise.all(browser.targets().map(target => target.page()));
+      expect(allPages).toContain(page);
+      expect(allPages).not.toContain(otherPage);
+    }));
+    it('should report when a service worker is created and destroyed', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      const createdTarget = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
+      const registration = await page.evaluateHandle(() => navigator.serviceWorker.register('sw.js'));
+
+      expect((await createdTarget).type()).toBe('service_worker');
+      expect((await createdTarget).url()).toBe(PREFIX + '/sw.js');
+
+      const destroyedTarget = new Promise(fulfill => browser.once('targetdestroyed', target => fulfill(target)));
+      await page.evaluate(registration => registration.unregister(), registration);
+      expect(await destroyedTarget).toBe(await createdTarget);
+    }));
+    it('should report when a target url changes', SX(async function(){
+      await page.goto(EMPTY_PAGE);
+      let changedTarget = new Promise(fulfill => browser.once('targetchanged', target => fulfill(target)));
+      await page.goto(CROSS_PROCESS_PREFIX + '/');
+      expect((await changedTarget).url()).toBe(CROSS_PROCESS_PREFIX + '/');
+
+      changedTarget = new Promise(fulfill => browser.once('targetchanged', target => fulfill(target)));
+      await page.goto(EMPTY_PAGE);
+      expect((await changedTarget).url()).toBe(EMPTY_PAGE);
+    }));
+    it('should not report uninitialized pages', SX(async function() {
+      browser.on('targetchanged', () => {
+        expect(false).toBe(true, 'target should not be reported as changed');
+      });
+      const targetPromise = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
+      const newPagePromise = browser.newPage();
+      const target = await targetPromise;
+      expect(target.url()).toBe('about:blank');
+
+      const newPage = await newPagePromise;
+      const targetPromise2 = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
+      const evaluatePromise = newPage.evaluate(() => window.open('about:blank'));
+      const target2 = await targetPromise2;
+      expect(target2.url()).toBe('about:blank');
+      await evaluatePromise;
+      await newPage.close();
     }));
   });
 });
