@@ -1831,7 +1831,7 @@ If request fails at some point, then instead of 'requestfinished' event (and pos
 
 If request gets a 'redirect' response, the request is successfully finished with the 'requestfinished' event, and a new request is  issued to a redirected url.
 
-#### request.abort(errorCode)
+#### request.abort([errorCode])
 - `errorCode` <[string]> Optional error code. Defaults to `failed`, could be
   one of the following:
   - `aborted` - An operation was aborted (due to user action)
