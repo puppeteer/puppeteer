@@ -1176,7 +1176,7 @@ describe('Page', function() {
       page.on('requestfailed', event => ++failedRequests);
       const response = await page.goto(PREFIX + '/one-style.html');
       expect(response.ok).toBe(true);
-      expect(response.failure()).toBe(null);
+      expect(response.request().failure()).toBe(null);
       expect(failedRequests).toBe(1);
     }));
     it('should be abortable with custom error codes', SX(async function() {
