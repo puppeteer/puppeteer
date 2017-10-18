@@ -162,7 +162,7 @@
   * [elementHandle.type(text[, options])](#elementhandletypetext-options)
   * [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
 - [class: Request](#class-request)
-  * [request.abort()](#requestabort)
+  * [request.abort([errorCode])](#requestaborterrorcode)
   * [request.continue([overrides])](#requestcontinueoverrides)
   * [request.failure()](#requestfailure)
   * [request.headers](#requestheaders)
