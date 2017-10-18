@@ -2125,6 +2125,7 @@ describe('Page', function() {
       expect(failedRequests[0].url).toContain('one-style.css');
       expect(failedRequests[0].response()).toBe(null);
       expect(failedRequests[0].resourceType).toBe('stylesheet');
+      expect(failedRequests[0].failure().errorText).toBe('net::ERR_FAILED');
     }));
     it('Page.Events.RequestFinished', SX(async function() {
       const requests = [];

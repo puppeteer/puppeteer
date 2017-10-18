@@ -159,6 +159,7 @@
 - [class: Request](#class-request)
   * [request.abort()](#requestabort)
   * [request.continue([overrides])](#requestcontinueoverrides)
+  * [request.failure()](#requestfailure)
   * [request.headers](#requestheaders)
   * [request.method](#requestmethod)
   * [request.postData](#requestpostdata)
@@ -1816,6 +1817,21 @@ Exception is immediately thrown if the request interception is not enabled.
 
 Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
 Exception is immediately thrown if the request interception is not enabled.
+
+#### request.failure()
+- returns: <[Object]> Object describing request failure, if any
+  - `errorText` <[string]> Human-readable error message, e.g. `'net::ERR_FAILED'`.
+
+The method returns null unless this request was failed, as reported by
+`requestfailed` event.
+
+Example of logging all failed requests:
+
+```js
+page.on('requestfailed', request => {
+  console.log(request.url + ' ' + request.failure().errorText);
+});
+```
 
 #### request.headers
 - <[Object]> An object with HTTP headers associated with the request. All header names are lower-case.
