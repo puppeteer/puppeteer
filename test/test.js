@@ -1176,7 +1176,19 @@ describe('Page', function() {
       page.on('requestfailed', event => ++failedRequests);
       const response = await page.goto(PREFIX + '/one-style.html');
       expect(response.ok).toBe(true);
+      expect(response.request().failure()).toBe(null);
       expect(failedRequests).toBe(1);
+    }));
+    it('should be abortable with custom error codes', SX(async function() {
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
+        request.abort('internetdisconnected');
+      });
+      let failedRequest = null;
+      page.on('requestfailed', request => failedRequest = request);
+      await page.goto(EMPTY_PAGE).catch(e => {});
+      expect(failedRequest).toBeTruthy();
+      expect(failedRequest.failure().errorText).toBe('net::ERR_INTERNET_DISCONNECTED');
     }));
     it('should amend HTTP headers', SX(async function() {
       await page.setRequestInterceptionEnabled(true);
