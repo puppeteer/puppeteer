@@ -167,9 +167,9 @@
   * [request.failure()](#requestfailure)
   * [request.headers](#requestheaders)
   * [request.method](#requestmethod)
-  * [request.respond(response)](#requestmockresponseresponse)
   * [request.postData](#requestpostdata)
   * [request.resourceType](#requestresourcetype)
+  * [request.respond(response)](#requestrespondresponse)
   * [request.response()](#requestresponse)
   * [request.url](#requesturl)
 - [class: Response](#class-response)
@@ -1888,6 +1888,17 @@ page.on('requestfailed', request => {
 
 Contains the request's method (GET, POST, etc.)
 
+#### request.postData
+- <[string]>
+
+Contains the request's post body, if any.
+
+#### request.resourceType
+- <[string]>
+
+Contains the request's resource type as it was perceived by the rendering engine.
+ResourceType will be one of the following: `document`, `stylesheet`, `image`, `media`, `font`, `script`, `texttrack`, `xhr`, `fetch`, `eventsource`, `websocket`, `manifest`, `other`.
+
 #### request.respond(response)
 - `response` <[Object]> Response that will fulfill this request
   - `status` <[number]> Response status code, defaults to `200`.
@@ -1913,16 +1924,6 @@ page.on('request', request => {
 });
 ```
 
-#### request.postData
-- <[string]>
-
-Contains the request's post body, if any.
-
-#### request.resourceType
-- <[string]>
-
-Contains the request's resource type as it was perceived by the rendering engine.
-ResourceType will be one of the following: `document`, `stylesheet`, `image`, `media`, `font`, `script`, `texttrack`, `xhr`, `fetch`, `eventsource`, `websocket`, `manifest`, `other`.
 
 #### request.response()
 - returns: <[Response]> A matching [Response] object, or `null` if the response has not been received yet.
