@@ -13,6 +13,7 @@
   * [puppeteer.executablePath()](#puppeteerexecutablepath)
   * [puppeteer.launch([options])](#puppeteerlaunchoptions)
 - [class: Browser](#class-browser)
+  * [event: 'closed'](#event-closed)
   * [event: 'targetchanged'](#event-targetchanged)
   * [event: 'targetcreated'](#event-targetcreated)
   * [event: 'targetdestroyed'](#event-targetdestroyed)
@@ -24,6 +25,7 @@
   * [browser.version()](#browserversion)
   * [browser.wsEndpoint()](#browserwsendpoint)
 - [class: Page](#class-page)
+  * [event: 'closed'](#event-closed-1)
   * [event: 'console'](#event-console)
   * [event: 'dialog'](#event-dialog)
   * [event: 'error'](#event-error)
@@ -270,7 +272,7 @@ puppeteer.launch().then(async browser => {
 });
 ```
 #### event: 'closed'
-Emitter when browser gets closed or browser process crashes.
+Emitter when browser gets closed.
 
 An example of disconnecting from and reconnecting to a [Browser]:
 ```js
