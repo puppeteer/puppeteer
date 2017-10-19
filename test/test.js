@@ -1339,11 +1339,11 @@ describe('Page', function() {
     }));
   });
 
-  describe('Request.mockResponse', function() {
+  describe('Request.respond', function() {
     it('should work', SX(async function() {
       await page.setRequestInterceptionEnabled(true);
       page.on('request', request => {
-        request.mockResponse({
+        request.respond({
           status: 201,
           headers: {
             foo: 'bar'
@@ -1360,7 +1360,7 @@ describe('Page', function() {
       await page.setRequestInterceptionEnabled(true);
       const imageBuffer = fs.readFileSync(path.join(__dirname, 'assets', 'pptr.png'));
       page.on('request', request => {
-        request.mockResponse({
+        request.respond({
           contentType: 'image/png',
           body: imageBuffer
         });
