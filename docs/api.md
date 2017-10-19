@@ -167,7 +167,7 @@
   * [request.failure()](#requestfailure)
   * [request.headers](#requestheaders)
   * [request.method](#requestmethod)
-  * [request.mockResponse(response)](#requestmockresponseresponse)
+  * [request.respond(response)](#requestmockresponseresponse)
   * [request.postData](#requestpostdata)
   * [request.resourceType](#requestresourcetype)
   * [request.response()](#requestresponse)
@@ -976,7 +976,7 @@ The extra HTTP headers will be sent with every request the page initiates.
 - returns: <[Promise]>
 
 Activating request interception enables `request.abort`, `request.continue` and
-`request.mockResponse` methods.
+`request.respond` methods.
 
 An example of a naïve request interceptor that aborts all image requests:
 ```js
@@ -1888,7 +1888,7 @@ page.on('requestfailed', request => {
 
 Contains the request's method (GET, POST, etc.)
 
-#### request.mockResponse(response)
+#### request.respond(response)
 - `response` <[Object]> Response that will fulfill this request
   - `status` <[number]> Response status code, defaults to `200`.
   - `headers` <[Object]> Optional response headers
@@ -1905,7 +1905,7 @@ An example of fulfilling all requests with 404 responses:
 ```js
 await page.setRequestInterceptionEnabled(true);
 page.on('request', request => {
-  request.mockResponse({
+  request.respond({
     status: 404,
     contentType: 'text/plain',
     body: 'Not Found!'
