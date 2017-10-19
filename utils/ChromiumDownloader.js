@@ -146,7 +146,7 @@ module.exports = {
     else if (platform === 'win32' || platform === 'win64')
       executablePath = path.join(folderPath, 'chrome-win32', 'chrome.exe');
     else
-      throw 'Unsupported platfrom: ' + platform;
+      throw 'Unsupported platform: ' + platform;
     return {
       executablePath,
       folderPath,

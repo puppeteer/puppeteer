@@ -1,185 +1,207 @@
-##### Released API: [v0.11.0](https://github.com/GoogleChrome/puppeteer/blob/v0.11.0/docs/api.md) | [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
+##### Released API: [v0.12.0](https://github.com/GoogleChrome/puppeteer/blob/v0.12.0/docs/api.md) | [v0.11.0](https://github.com/GoogleChrome/puppeteer/blob/v0.11.0/docs/api.md) | [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
 
-# Puppeteer API v<!-- GEN:version -->0.12.0-alpha<!-- GEN:stop-->
+# Puppeteer API v<!-- GEN:version -->0.13.0-alpha<!-- GEN:stop-->
 
 ##### Table of Contents
 
 <!-- toc -->
 
-- [Puppeteer](#puppeteer)
-  * [Environment Variables](#environment-variables)
-  * [class: Puppeteer](#class-puppeteer)
-    + [puppeteer.connect(options)](#puppeteerconnectoptions)
-    + [puppeteer.executablePath()](#puppeteerexecutablepath)
-    + [puppeteer.launch([options])](#puppeteerlaunchoptions)
-  * [class: Browser](#class-browser)
-    + [event: 'closed'](#event-closed)
-    + [browser.close()](#browserclose)
-    + [browser.newPage()](#browsernewpage)
-    + [browser.version()](#browserversion)
-    + [browser.wsEndpoint()](#browserwsendpoint)
-  * [class: Page](#class-page)
-    + [event: 'closed'](#event-closed-1)
-    + [event: 'console'](#event-console)
-    + [event: 'dialog'](#event-dialog)
-    + [event: 'error'](#event-error)
-    + [event: 'frameattached'](#event-frameattached)
-    + [event: 'framedetached'](#event-framedetached)
-    + [event: 'framenavigated'](#event-framenavigated)
-    + [event: 'load'](#event-load)
-    + [event: 'metrics'](#event-metrics)
-    + [event: 'pageerror'](#event-pageerror)
-    + [event: 'request'](#event-request)
-    + [event: 'requestfailed'](#event-requestfailed)
-    + [event: 'requestfinished'](#event-requestfinished)
-    + [event: 'response'](#event-response)
-    + [page.$(selector)](#pageselector)
-    + [page.$$(selector)](#pageselector)
-    + [page.$$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
-    + [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
-    + [page.addScriptTag(options)](#pageaddscripttagoptions)
-    + [page.addStyleTag(options)](#pageaddstyletagoptions)
-    + [page.authenticate(credentials)](#pageauthenticatecredentials)
-    + [page.click(selector[, options])](#pageclickselector-options)
-    + [page.close()](#pageclose)
-    + [page.content()](#pagecontent)
-    + [page.cookies(...urls)](#pagecookiesurls)
-    + [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
-    + [page.emulate(options)](#pageemulateoptions)
-    + [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
-    + [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
-    + [page.evaluateHandle(pageFunction, ...args)](#pageevaluatehandlepagefunction-args)
-    + [page.evaluateOnNewDocument(pageFunction, ...args)](#pageevaluateonnewdocumentpagefunction-args)
-    + [page.exposeFunction(name, puppeteerFunction)](#pageexposefunctionname-puppeteerfunction)
-    + [page.focus(selector)](#pagefocusselector)
-    + [page.frames()](#pageframes)
-    + [page.getMetrics()](#pagegetmetrics)
-    + [page.goBack(options)](#pagegobackoptions)
-    + [page.goForward(options)](#pagegoforwardoptions)
-    + [page.goto(url, options)](#pagegotourl-options)
-    + [page.hover(selector)](#pagehoverselector)
-    + [page.keyboard](#pagekeyboard)
-    + [page.mainFrame()](#pagemainframe)
-    + [page.mouse](#pagemouse)
-    + [page.pdf(options)](#pagepdfoptions)
-    + [page.queryObjects(prototypeHandle)](#pagequeryobjectsprototypehandle)
-    + [page.reload(options)](#pagereloadoptions)
-    + [page.screenshot([options])](#pagescreenshotoptions)
-    + [page.select(selector, ...values)](#pageselectselector-values)
-    + [page.setContent(html)](#pagesetcontenthtml)
-    + [page.setCookie(...cookies)](#pagesetcookiecookies)
-    + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
-    + [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
-    + [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
-    + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
-    + [page.setViewport(viewport)](#pagesetviewportviewport)
-    + [page.tap(selector)](#pagetapselector)
-    + [page.title()](#pagetitle)
-    + [page.touchscreen](#pagetouchscreen)
-    + [page.tracing](#pagetracing)
-    + [page.type(selector, text[, options])](#pagetypeselector-text-options)
-    + [page.url()](#pageurl)
-    + [page.viewport()](#pageviewport)
-    + [page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#pagewaitforselectororfunctionortimeout-options-args)
-    + [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
-    + [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
-    + [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
-  * [class: Keyboard](#class-keyboard)
-    + [keyboard.down(key[, options])](#keyboarddownkey-options)
-    + [keyboard.press(key[, options])](#keyboardpresskey-options)
-    + [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
-    + [keyboard.type(text, options)](#keyboardtypetext-options)
-    + [keyboard.up(key)](#keyboardupkey)
-  * [class: Mouse](#class-mouse)
-    + [mouse.click(x, y, [options])](#mouseclickx-y-options)
-    + [mouse.down([options])](#mousedownoptions)
-    + [mouse.move(x, y, [options])](#mousemovex-y-options)
-    + [mouse.up([options])](#mouseupoptions)
-  * [class: Touchscreen](#class-touchscreen)
-    + [touchscreen.tap(x, y)](#touchscreentapx-y)
-  * [class: Tracing](#class-tracing)
-    + [tracing.start(options)](#tracingstartoptions)
-    + [tracing.stop()](#tracingstop)
-  * [class: Dialog](#class-dialog)
-    + [dialog.accept([promptText])](#dialogacceptprompttext)
-    + [dialog.defaultValue()](#dialogdefaultvalue)
-    + [dialog.dismiss()](#dialogdismiss)
-    + [dialog.message()](#dialogmessage)
-    + [dialog.type](#dialogtype)
-  * [class: ConsoleMessage](#class-consolemessage)
-    + [consoleMessage.args](#consolemessageargs)
-    + [consoleMessage.text](#consolemessagetext)
-    + [consoleMessage.type](#consolemessagetype)
-  * [class: Frame](#class-frame)
-    + [frame.$(selector)](#frameselector)
-    + [frame.$$(selector)](#frameselector)
-    + [frame.$$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
-    + [frame.$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
-    + [frame.addScriptTag(options)](#frameaddscripttagoptions)
-    + [frame.addStyleTag(options)](#frameaddstyletagoptions)
-    + [frame.childFrames()](#framechildframes)
-    + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
-    + [frame.executionContext()](#frameexecutioncontext)
-    + [frame.isDetached()](#frameisdetached)
-    + [frame.name()](#framename)
-    + [frame.parentFrame()](#frameparentframe)
-    + [frame.title()](#frametitle)
-    + [frame.url()](#frameurl)
-    + [frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args)
-    + [frame.waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args)
-    + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
-  * [class: ExecutionContext](#class-executioncontext)
-    + [executionContext.evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args)
-    + [executionContext.evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args)
-    + [executionContext.queryObjects(prototypeHandle)](#executioncontextqueryobjectsprototypehandle)
-  * [class: JSHandle](#class-jshandle)
-    + [jsHandle.asElement()](#jshandleaselement)
-    + [jsHandle.dispose()](#jshandledispose)
-    + [jsHandle.executionContext()](#jshandleexecutioncontext)
-    + [jsHandle.getProperties()](#jshandlegetproperties)
-    + [jsHandle.getProperty(propertyName)](#jshandlegetpropertypropertyname)
-    + [jsHandle.jsonValue()](#jshandlejsonvalue)
-  * [class: ElementHandle](#class-elementhandle)
-    + [elementHandle.asElement()](#elementhandleaselement)
-    + [elementHandle.boundingBox()](#elementhandleboundingbox)
-    + [elementHandle.click([options])](#elementhandleclickoptions)
-    + [elementHandle.dispose()](#elementhandledispose)
-    + [elementHandle.executionContext()](#elementhandleexecutioncontext)
-    + [elementHandle.focus()](#elementhandlefocus)
-    + [elementHandle.getProperties()](#elementhandlegetproperties)
-    + [elementHandle.getProperty(propertyName)](#elementhandlegetpropertypropertyname)
-    + [elementHandle.hover()](#elementhandlehover)
-    + [elementHandle.jsonValue()](#elementhandlejsonvalue)
-    + [elementHandle.press(key[, options])](#elementhandlepresskey-options)
-    + [elementHandle.screenshot([options])](#elementhandlescreenshotoptions)
-    + [elementHandle.tap()](#elementhandletap)
-    + [elementHandle.toString()](#elementhandletostring)
-    + [elementHandle.type(text[, options])](#elementhandletypetext-options)
-    + [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
-  * [class: Request](#class-request)
-    + [request.abort()](#requestabort)
-    + [request.continue([overrides])](#requestcontinueoverrides)
-    + [request.headers](#requestheaders)
-    + [request.method](#requestmethod)
-    + [request.postData](#requestpostdata)
-    + [request.resourceType](#requestresourcetype)
-    + [request.response()](#requestresponse)
-    + [request.url](#requesturl)
-  * [class: Response](#class-response)
-    + [response.buffer()](#responsebuffer)
-    + [response.headers](#responseheaders)
-    + [response.json()](#responsejson)
-    + [response.ok](#responseok)
-    + [response.request()](#responserequest)
-    + [response.status](#responsestatus)
-    + [response.text()](#responsetext)
-    + [response.url](#responseurl)
+- [Overview](#overview)
+- [Environment Variables](#environment-variables)
+- [class: Puppeteer](#class-puppeteer)
+  * [puppeteer.connect(options)](#puppeteerconnectoptions)
+  * [puppeteer.executablePath()](#puppeteerexecutablepath)
+  * [puppeteer.launch([options])](#puppeteerlaunchoptions)
+- [class: Browser](#class-browser)
+  * [event: 'targetchanged'](#event-targetchanged)
+  * [event: 'targetcreated'](#event-targetcreated)
+  * [event: 'targetdestroyed'](#event-targetdestroyed)
+  * [browser.close()](#browserclose)
+  * [browser.disconnect()](#browserdisconnect)
+  * [browser.newPage()](#browsernewpage)
+  * [browser.pages()](#browserpages)
+  * [browser.targets()](#browsertargets)
+  * [browser.version()](#browserversion)
+  * [browser.wsEndpoint()](#browserwsendpoint)
+- [class: Page](#class-page)
+  * [event: 'console'](#event-console)
+  * [event: 'dialog'](#event-dialog)
+  * [event: 'error'](#event-error)
+  * [event: 'frameattached'](#event-frameattached)
+  * [event: 'framedetached'](#event-framedetached)
+  * [event: 'framenavigated'](#event-framenavigated)
+  * [event: 'load'](#event-load)
+  * [event: 'metrics'](#event-metrics)
+  * [event: 'pageerror'](#event-pageerror)
+  * [event: 'request'](#event-request)
+  * [event: 'requestfailed'](#event-requestfailed)
+  * [event: 'requestfinished'](#event-requestfinished)
+  * [event: 'response'](#event-response)
+  * [page.$(selector)](#pageselector)
+  * [page.$$(selector)](#pageselector)
+  * [page.$$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
+  * [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
+  * [page.addScriptTag(options)](#pageaddscripttagoptions)
+  * [page.addStyleTag(options)](#pageaddstyletagoptions)
+  * [page.authenticate(credentials)](#pageauthenticatecredentials)
+  * [page.click(selector[, options])](#pageclickselector-options)
+  * [page.close()](#pageclose)
+  * [page.content()](#pagecontent)
+  * [page.cookies(...urls)](#pagecookiesurls)
+  * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
+  * [page.emulate(options)](#pageemulateoptions)
+  * [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
+  * [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
+  * [page.evaluateHandle(pageFunction, ...args)](#pageevaluatehandlepagefunction-args)
+  * [page.evaluateOnNewDocument(pageFunction, ...args)](#pageevaluateonnewdocumentpagefunction-args)
+  * [page.exposeFunction(name, puppeteerFunction)](#pageexposefunctionname-puppeteerfunction)
+  * [page.focus(selector)](#pagefocusselector)
+  * [page.frames()](#pageframes)
+  * [page.getMetrics()](#pagegetmetrics)
+  * [page.goBack(options)](#pagegobackoptions)
+  * [page.goForward(options)](#pagegoforwardoptions)
+  * [page.goto(url, options)](#pagegotourl-options)
+  * [page.hover(selector)](#pagehoverselector)
+  * [page.keyboard](#pagekeyboard)
+  * [page.mainFrame()](#pagemainframe)
+  * [page.mouse](#pagemouse)
+  * [page.pdf(options)](#pagepdfoptions)
+  * [page.queryObjects(prototypeHandle)](#pagequeryobjectsprototypehandle)
+  * [page.reload(options)](#pagereloadoptions)
+  * [page.screenshot([options])](#pagescreenshotoptions)
+  * [page.select(selector, ...values)](#pageselectselector-values)
+  * [page.setContent(html)](#pagesetcontenthtml)
+  * [page.setCookie(...cookies)](#pagesetcookiecookies)
+  * [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
+  * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
+  * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
+  * [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
+  * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
+  * [page.setViewport(viewport)](#pagesetviewportviewport)
+  * [page.tap(selector)](#pagetapselector)
+  * [page.title()](#pagetitle)
+  * [page.touchscreen](#pagetouchscreen)
+  * [page.tracing](#pagetracing)
+  * [page.type(selector, text[, options])](#pagetypeselector-text-options)
+  * [page.url()](#pageurl)
+  * [page.viewport()](#pageviewport)
+  * [page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#pagewaitforselectororfunctionortimeout-options-args)
+  * [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
+  * [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
+  * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
+- [class: Keyboard](#class-keyboard)
+  * [keyboard.down(key[, options])](#keyboarddownkey-options)
+  * [keyboard.press(key[, options])](#keyboardpresskey-options)
+  * [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
+  * [keyboard.type(text, options)](#keyboardtypetext-options)
+  * [keyboard.up(key)](#keyboardupkey)
+- [class: Mouse](#class-mouse)
+  * [mouse.click(x, y, [options])](#mouseclickx-y-options)
+  * [mouse.down([options])](#mousedownoptions)
+  * [mouse.move(x, y, [options])](#mousemovex-y-options)
+  * [mouse.up([options])](#mouseupoptions)
+- [class: Touchscreen](#class-touchscreen)
+  * [touchscreen.tap(x, y)](#touchscreentapx-y)
+- [class: Tracing](#class-tracing)
+  * [tracing.start(options)](#tracingstartoptions)
+  * [tracing.stop()](#tracingstop)
+- [class: Dialog](#class-dialog)
+  * [dialog.accept([promptText])](#dialogacceptprompttext)
+  * [dialog.defaultValue()](#dialogdefaultvalue)
+  * [dialog.dismiss()](#dialogdismiss)
+  * [dialog.message()](#dialogmessage)
+  * [dialog.type](#dialogtype)
+- [class: ConsoleMessage](#class-consolemessage)
+  * [consoleMessage.args](#consolemessageargs)
+  * [consoleMessage.text](#consolemessagetext)
+  * [consoleMessage.type](#consolemessagetype)
+- [class: Frame](#class-frame)
+  * [frame.$(selector)](#frameselector)
+  * [frame.$$(selector)](#frameselector)
+  * [frame.$$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
+  * [frame.$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
+  * [frame.addScriptTag(options)](#frameaddscripttagoptions)
+  * [frame.addStyleTag(options)](#frameaddstyletagoptions)
+  * [frame.childFrames()](#framechildframes)
+  * [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
+  * [frame.executionContext()](#frameexecutioncontext)
+  * [frame.isDetached()](#frameisdetached)
+  * [frame.name()](#framename)
+  * [frame.parentFrame()](#frameparentframe)
+  * [frame.title()](#frametitle)
+  * [frame.url()](#frameurl)
+  * [frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args)
+  * [frame.waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args)
+  * [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
+- [class: ExecutionContext](#class-executioncontext)
+  * [executionContext.evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args)
+  * [executionContext.evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args)
+  * [executionContext.queryObjects(prototypeHandle)](#executioncontextqueryobjectsprototypehandle)
+- [class: JSHandle](#class-jshandle)
+  * [jsHandle.asElement()](#jshandleaselement)
+  * [jsHandle.dispose()](#jshandledispose)
+  * [jsHandle.executionContext()](#jshandleexecutioncontext)
+  * [jsHandle.getProperties()](#jshandlegetproperties)
+  * [jsHandle.getProperty(propertyName)](#jshandlegetpropertypropertyname)
+  * [jsHandle.jsonValue()](#jshandlejsonvalue)
+- [class: ElementHandle](#class-elementhandle)
+  * [elementHandle.asElement()](#elementhandleaselement)
+  * [elementHandle.boundingBox()](#elementhandleboundingbox)
+  * [elementHandle.click([options])](#elementhandleclickoptions)
+  * [elementHandle.dispose()](#elementhandledispose)
+  * [elementHandle.executionContext()](#elementhandleexecutioncontext)
+  * [elementHandle.focus()](#elementhandlefocus)
+  * [elementHandle.getProperties()](#elementhandlegetproperties)
+  * [elementHandle.getProperty(propertyName)](#elementhandlegetpropertypropertyname)
+  * [elementHandle.hover()](#elementhandlehover)
+  * [elementHandle.jsonValue()](#elementhandlejsonvalue)
+  * [elementHandle.press(key[, options])](#elementhandlepresskey-options)
+  * [elementHandle.screenshot([options])](#elementhandlescreenshotoptions)
+  * [elementHandle.tap()](#elementhandletap)
+  * [elementHandle.toString()](#elementhandletostring)
+  * [elementHandle.type(text[, options])](#elementhandletypetext-options)
+  * [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
+- [class: Request](#class-request)
+  * [request.abort([errorCode])](#requestaborterrorcode)
+  * [request.continue([overrides])](#requestcontinueoverrides)
+  * [request.failure()](#requestfailure)
+  * [request.headers](#requestheaders)
+  * [request.method](#requestmethod)
+  * [request.postData](#requestpostdata)
+  * [request.resourceType](#requestresourcetype)
+  * [request.response()](#requestresponse)
+  * [request.url](#requesturl)
+- [class: Response](#class-response)
+  * [response.buffer()](#responsebuffer)
+  * [response.headers](#responseheaders)
+  * [response.json()](#responsejson)
+  * [response.ok](#responseok)
+  * [response.request()](#responserequest)
+  * [response.status](#responsestatus)
+  * [response.text()](#responsetext)
+  * [response.url](#responseurl)
+- [class: Target](#class-target)
+  * [target.page()](#targetpage)
+  * [target.type()](#targettype)
+  * [target.url()](#targeturl)
 
 <!-- tocstop -->
 
-## Puppeteer
+### Overview
 
 Puppeteer is a Node library which provides a high-level API to control Chromium over the DevTools Protocol.
+
+Puppeteer API is hierarchical and mirrors browser structure. On the following diagram, faded entities are not currently represented in Puppeteer.
+
+![puppeteer overview](https://user-images.githubusercontent.com/746130/31592143-089f6f9a-b1db-11e7-9a20-16b7fc754fa1.png)
+
+- [`Puppeteer`](#class-puppeteer) communicates with browser using [devtools protocol](https://chromedevtools.github.io/devtools-protocol/).
+- [`Browser`](#class-browser) instance owns multiple pages.
+- [`Page`](#class-page) has at least one frame: main frame. There might be other frames created by [iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) or [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frame) tags.
+- [`Frame`](#class-frame) has at least one execution context - default execution context - where frame's JavaScript is executed. Frame might have additional execution contexts associated with [extensions](https://developer.chrome.com/extensions).
+
+(Diagram source: [link](https://docs.google.com/drawings/d/1Q_AM6KYs9kbyLZF-Lpp5mtpAWth73Cq8IKCsWYgi8MM/edit?usp=sharing))
+
 
 ### Environment Variables
 
@@ -250,13 +272,55 @@ puppeteer.launch().then(async browser => {
 #### event: 'closed'
 Emitter when browser gets closed or browser process crashes.
 
+An example of disconnecting from and reconnecting to a [Browser]:
+```js
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
+  // Store the endpoint to be able to reconnect to Chromium
+  const browserWSEndpoint = browser.wsEndpoint();
+  // Disconnect puppeteer from Chromium
+  browser.disconnect();
+
+  // Use the endpoint to reestablish a connection
+  const browser2 = await puppeteer.connect({browserWSEndpoint});
+  // Close Chromium
+  await browser2.close();
+});
+```
+
+#### event: 'targetchanged'
+- <[Target]>
+
+Emitted when the url of a target changes.
+
+#### event: 'targetcreated'
+- <[Target]>
+
+Emitted when a target is created, for example when a new page is opened by [`window.open`](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) or [`browser.newPage`](#browsernewpage).
+
+#### event: 'targetdestroyed'
+- <[Target]>
+
+Emitted when a target is destroyed, for example when a page is closed.
+
 #### browser.close()
 - returns: <[Promise]>
 
-Closes browser with all the pages (if any were opened). The browser object itself is considered to be disposed and can not be used anymore.
+Closes Chromium and all of its pages (if any were opened). The browser object itself is considered disposed and cannot be used anymore.
+
+#### browser.disconnect()
+
+Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling `disconnect`, the browser object is considered disposed and cannot be used anymore.
 
 #### browser.newPage()
 - returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.
+
+#### browser.pages()
+- returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages.
+
+#### browser.targets()
+- returns: <[Array]<[Target]>> An array of all active targets.
 
 #### browser.version()
 - returns: <[Promise]<[string]>> For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is similar to `Chrome/61.0.3153.0`.
@@ -820,7 +884,7 @@ The `format` options are:
 
 #### page.queryObjects(prototypeHandle)
 - `prototypeHandle` <[JSHandle]> A handle to the object prototype.
-- returns: <[JSHandle]> A handle to an array of objects with this prototype
+- returns: <[Promise]<[JSHandle]>> Promise which resolves to a handle to an array of objects with this prototype.
 
 The method iterates javascript heap and finds all the objects with the given prototype.
 
@@ -906,6 +970,10 @@ The extra HTTP headers will be sent with every request the page initiates.
 - returns: <[Promise]>
 
 > **NOTE** changing this value won't affect scripts that have already been run. It will take full effect on the next [navigation](#pagegotourl-options).
+
+#### page.setOfflineMode(enabled)
+- `enabled` <[boolean]> When `true`, enables offline mode for the page.
+- returns: <[Promise]>
 
 #### page.setRequestInterceptionEnabled(value)
 - `value` <[boolean]> Whether to enable request interception.
@@ -1102,7 +1170,7 @@ page.keyboard.press('Backspace');
 
 Dispatches a `keydown` event.
 
-This will not send input events unless `text` is specified.
+If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also generated. The `text` option can be specified to force an input event to be generated.
 
 If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key presses will be sent with that modifier active. To release the modifier key, use [`keyboard.up`](#keyboardupkey).
 
@@ -1458,6 +1526,7 @@ puppeteer.launch().then(async browser => {
 - `selector` <[string]> A [selector] of an element to wait for,
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
 
@@ -1767,7 +1836,22 @@ If request fails at some point, then instead of 'requestfinished' event (and pos
 
 If request gets a 'redirect' response, the request is successfully finished with the 'requestfinished' event, and a new request is  issued to a redirected url.
 
-#### request.abort()
+#### request.abort([errorCode])
+- `errorCode` <[string]> Optional error code. Defaults to `failed`, could be
+  one of the following:
+  - `aborted` - An operation was aborted (due to user action)
+  - `accessdenied` - Permission to access a resource, other than the network, was denied
+  - `addressunreachable` - The IP address is unreachable. This usually means
+    that there is no route to the specified host or network.
+  - `connectionaborted` - A connection timed out as a result of not receiving an ACK for data sent.
+  - `connectionclosed` - A connection was closed (corresponding to a TCP FIN).
+  - `connectionfailed` - A connection attempt failed.
+  - `connectionrefused` - A connection attempt was refused.
+  - `connectionreset` - A connection was reset (corresponding to a TCP RST).
+  - `internetdisconnected` - The Internet connection has been lost.
+  - `namenotresolved` - The host name could not be resolved.
+  - `timedout` - An operation timed out.
+  - `failed` - A generic failure occurred.
 - returns: <[Promise]>
 
 Aborts request. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
@@ -1783,6 +1867,21 @@ Exception is immediately thrown if the request interception is not enabled.
 
 Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
 Exception is immediately thrown if the request interception is not enabled.
+
+#### request.failure()
+- returns: <[Object]> Object describing request failure, if any
+  - `errorText` <[string]> Human-readable error message, e.g. `'net::ERR_FAILED'`.
+
+The method returns null unless this request was failed, as reported by
+`requestfailed` event.
+
+Example of logging all failed requests:
+
+```js
+page.on('requestfailed', request => {
+  console.log(request.url + ' ' + request.failure().errorText);
+});
+```
 
 #### request.headers
 - <[Object]> An object with HTTP headers associated with the request. All header names are lower-case.
@@ -1847,6 +1946,21 @@ Contains the status code of the response (e.g., 200 for a success).
 
 Contains the URL of the response.
 
+### class: Target
+
+#### target.page()
+- returns: <[Promise]<[Page]>>
+
+If the target is not of type `"page"`, returns `null`.
+
+#### target.type()
+- returns: <[string]>
+
+Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, or `"other"`.
+
+#### target.url()
+- returns: <[string]>
+
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
 [Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer "Buffer"
@@ -1878,3 +1992,4 @@ Contains the URL of the response.
 [UIEvent.detail]: https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail "UIEvent.detail"
 [Serializable]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Description "Serializable"
 [Touchscreen]: #class-touchscreen "Touchscreen"
+[Target]: #class-target "Target"

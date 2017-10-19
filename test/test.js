@@ -38,7 +38,6 @@ const EMPTY_PAGE = PREFIX + '/empty.html';
 const HTTPS_PORT = 8908;
 const HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
 
-const windows = /^win/.test(process.platform);
 const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
 const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
 const executablePath = process.env.CHROME;
@@ -75,6 +74,12 @@ beforeAll(SX(async function() {
     rm(OUTPUT_DIR);
 }));
 
+beforeEach(SX(async function() {
+  server.reset();
+  httpsServer.reset();
+  GoldenUtils.addMatchers(jasmine, GOLDEN_DIR, OUTPUT_DIR);
+}));
+
 afterAll(SX(async function() {
   await Promise.all([
     server.stop(),
@@ -109,9 +114,7 @@ describe('Puppeteer', function() {
       await puppeteer.launch(options).catch(e => waitError = e);
       expect(waitError.message.startsWith('Failed to launch chrome! spawn random-invalid-path ENOENT')).toBe(true);
     }));
-    // Windows has issues running Chromium using a custom user data dir. It hangs when closing the browser.
-    // @see https://github.com/GoogleChrome/puppeteer/issues/918
-    (windows ? xit : it)('userDataDir option', SX(async function() {
+    it('userDataDir option', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
@@ -120,9 +123,7 @@ describe('Puppeteer', function() {
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
       rm(userDataDir);
     }));
-    // Windows has issues running Chromium using a custom user data dir. It hangs when closing the browser.
-    // @see https://github.com/GoogleChrome/puppeteer/issues/918
-    (windows ? xit : it)('userDataDir argument', SX(async function() {
+    it('userDataDir argument', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({}, defaultBrowserOptions);
       options.args = [`--user-data-dir=${userDataDir}`].concat(options.args);
@@ -132,9 +133,7 @@ describe('Puppeteer', function() {
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
       rm(userDataDir);
     }));
-    // Headless has issues shutting down gracefully
-    // @see https://crbug.com/771830
-    (headless ? xit : it)('userDataDir option should restore state', SX(async function() {
+    it('userDataDir option should restore state', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
@@ -150,16 +149,51 @@ describe('Puppeteer', function() {
       await browser2.close();
       rm(userDataDir);
     }));
+    it('userDataDir option should restore cookies', SX(async function() {
+      const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+      const options = Object.assign({userDataDir}, defaultBrowserOptions);
+      const browser = await puppeteer.launch(options);
+      const page = await browser.newPage();
+      await page.goto(EMPTY_PAGE);
+      await page.evaluate(() => document.cookie = 'doSomethingOnlyOnce=true; expires=Fri, 31 Dec 9999 23:59:59 GMT');
+      await browser.close();
+
+      const browser2 = await puppeteer.launch(options);
+      const page2 = await browser2.newPage();
+      await page2.goto(EMPTY_PAGE);
+      expect(await page2.evaluate(() => document.cookie)).toBe('doSomethingOnlyOnce=true');
+      await browser2.close();
+      rm(userDataDir);
+    }));
   });
   describe('Puppeteer.connect', function() {
-    it('should work', SX(async function() {
+    it('should be able to connect multiple times to the same browser', SX(async function() {
       const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
       const browser = await puppeteer.connect({
         browserWSEndpoint: originalBrowser.wsEndpoint()
       });
       const page = await browser.newPage();
       expect(await page.evaluate(() => 7 * 8)).toBe(56);
-      originalBrowser.close();
+      browser.disconnect();
+
+      const secondPage = await originalBrowser.newPage();
+      expect(await secondPage.evaluate(() => 7 * 6)).toBe(42, 'original browser should still work');
+      await originalBrowser.close();
+    }));
+    it('should be able to reconnect to a disconnected browser', SX(async function() {
+      const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+      const browserWSEndpoint = originalBrowser.wsEndpoint();
+      const page = await originalBrowser.newPage();
+      await page.goto(PREFIX + '/frames/nested-frames.html');
+      originalBrowser.disconnect();
+
+      const FrameUtils = require('./frame-utils');
+      const browser = await puppeteer.connect({browserWSEndpoint});
+      const pages = await browser.pages();
+      const restoredPage = pages.find(page => page.url() === PREFIX + '/frames/nested-frames.html');
+      expect(FrameUtils.dumpFrames(restoredPage.mainFrame())).toBeGolden('reconnect-nested-frames.txt');
+      expect(await restoredPage.evaluate(() => 7 * 8)).toBe(56);
+      await browser.close();
     }));
   });
   describe('Puppeteer.executablePath', function() {
@@ -187,9 +221,6 @@ describe('Page', function() {
 
   beforeEach(SX(async function() {
     page = await browser.newPage();
-    server.reset();
-    httpsServer.reset();
-    GoldenUtils.addMatchers(jasmine, GOLDEN_DIR, OUTPUT_DIR);
   }));
 
   afterEach(SX(async function() {
@@ -367,6 +398,25 @@ describe('Page', function() {
       const aHandle = await page.evaluateHandle(() => 5);
       const isFive = await page.evaluate(e => Object.is(e, 5), aHandle);
       expect(isFive).toBeTruthy();
+    }));
+  });
+
+  describe('Page.setOfflineMode', function() {
+    it('should work', SX(async function() {
+      await page.setOfflineMode(true);
+      let error = null;
+      await page.goto(EMPTY_PAGE).catch(e => error = e);
+      expect(error).toBeTruthy();
+      await page.setOfflineMode(false);
+      const response = await page.reload();
+      expect(response.status).toBe(200);
+    }));
+    it('should emulate navigator.onLine', SX(async function() {
+      expect(await page.evaluate(() => window.navigator.onLine)).toBe(true);
+      await page.setOfflineMode(true);
+      expect(await page.evaluate(() => window.navigator.onLine)).toBe(false);
+      await page.setOfflineMode(false);
+      expect(await page.evaluate(() => window.navigator.onLine)).toBe(true);
     }));
   });
 
@@ -1168,7 +1218,19 @@ describe('Page', function() {
       page.on('requestfailed', event => ++failedRequests);
       const response = await page.goto(PREFIX + '/one-style.html');
       expect(response.ok).toBe(true);
+      expect(response.request().failure()).toBe(null);
       expect(failedRequests).toBe(1);
+    }));
+    it('should be abortable with custom error codes', SX(async function() {
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
+        request.abort('internetdisconnected');
+      });
+      let failedRequest = null;
+      page.on('requestfailed', request => failedRequest = request);
+      await page.goto(EMPTY_PAGE).catch(e => {});
+      expect(failedRequest).toBeTruthy();
+      expect(failedRequest.failure().errorText).toBe('net::ERR_INTERNET_DISCONNECTED');
     }));
     it('should amend HTTP headers', SX(async function() {
       await page.setRequestInterceptionEnabled(true);
@@ -1699,7 +1761,12 @@ describe('Page', function() {
         await keyboard.down(modifierKey);
         expect(await page.evaluate(() => getResult())).toBe('Keydown: ' + modifierKey + ' ' + modifierKey + 'Left ' + codeForKey[modifierKey] + ' [' + modifierKey + ']');
         await keyboard.down('!');
-        expect(await page.evaluate(() => getResult())).toBe('Keydown: ! Digit1 49 [' + modifierKey + ']');
+        // Shift+! will generate a keypress
+        if (modifierKey === 'Shift')
+          expect(await page.evaluate(() => getResult())).toBe('Keydown: ! Digit1 49 [' + modifierKey + ']\nKeypress: ! Digit1 33 33 33 [' + modifierKey + ']');
+        else
+          expect(await page.evaluate(() => getResult())).toBe('Keydown: ! Digit1 49 [' + modifierKey + ']');
+
         await keyboard.up('!');
         expect(await page.evaluate(() => getResult())).toBe('Keyup: ! Digit1 49 [' + modifierKey + ']');
         await keyboard.up(modifierKey);
@@ -2118,6 +2185,7 @@ describe('Page', function() {
       expect(failedRequests[0].url).toContain('one-style.css');
       expect(failedRequests[0].response()).toBe(null);
       expect(failedRequests[0].resourceType).toBe('stylesheet');
+      expect(failedRequests[0].failure().errorText).toBe('net::ERR_FAILED');
     }));
     it('Page.Events.RequestFinished', SX(async function() {
       const requests = [];
@@ -2729,6 +2797,91 @@ describe('Page', function() {
         session: true
       }]);
 
+    }));
+  });
+
+  describe('Target', function() {
+    it('Browser.targets should return all of the targets', SX(async function() {
+      // The pages will be the testing page and the original newtab page
+      const targets = browser.targets();
+      expect(targets.some(target => target.type() === 'page' &&
+        target.url() === 'about:blank')).toBeTruthy('Missing blank page');
+      expect(targets.some(target => target.type() === 'other' &&
+        target.url() === '')).toBeTruthy('Missing browser target');
+    }));
+    it('Browser.pages should return all of the pages', SX(async function() {
+      // The pages will be the testing page and the original newtab page
+      const allPages = await browser.pages();
+      expect(allPages.length).toBe(2);
+      expect(allPages).toContain(page);
+      expect(allPages[0]).not.toBe(allPages[1]);
+    }));
+    it('should be able to use the default page in the browser', SX(async function() {
+      // The pages will be the testing page and the original newtab page
+      const allPages = await browser.pages();
+      const originalPage = allPages.find(p => p !== page);
+      expect(await originalPage.evaluate(() => ['Hello', 'world'].join(' '))).toBe('Hello world');
+      expect(await originalPage.$('body')).toBeTruthy();
+    }));
+    it('should report when a new page is created and closed', SX(async function(){
+      const otherPagePromise = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target.page())));
+      await page.evaluate(url => window.open(url), CROSS_PROCESS_PREFIX);
+      const otherPage = await otherPagePromise;
+      expect(otherPage.url()).toContain(CROSS_PROCESS_PREFIX);
+
+      expect(await otherPage.evaluate(() => ['Hello', 'world'].join(' '))).toBe('Hello world');
+      expect(await otherPage.$('body')).toBeTruthy();
+
+      let allPages = await browser.pages();
+      expect(allPages).toContain(page);
+      expect(allPages).toContain(otherPage);
+
+      const closePagePromise = new Promise(fulfill => browser.once('targetdestroyed', target => fulfill(target.page())));
+      await otherPage.close();
+      expect(await closePagePromise).toBe(otherPage);
+
+      allPages = await Promise.all(browser.targets().map(target => target.page()));
+      expect(allPages).toContain(page);
+      expect(allPages).not.toContain(otherPage);
+    }));
+    it('should report when a service worker is created and destroyed', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      const createdTarget = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
+      const registration = await page.evaluateHandle(() => navigator.serviceWorker.register('sw.js'));
+
+      expect((await createdTarget).type()).toBe('service_worker');
+      expect((await createdTarget).url()).toBe(PREFIX + '/sw.js');
+
+      const destroyedTarget = new Promise(fulfill => browser.once('targetdestroyed', target => fulfill(target)));
+      await page.evaluate(registration => registration.unregister(), registration);
+      expect(await destroyedTarget).toBe(await createdTarget);
+    }));
+    it('should report when a target url changes', SX(async function(){
+      await page.goto(EMPTY_PAGE);
+      let changedTarget = new Promise(fulfill => browser.once('targetchanged', target => fulfill(target)));
+      await page.goto(CROSS_PROCESS_PREFIX + '/');
+      expect((await changedTarget).url()).toBe(CROSS_PROCESS_PREFIX + '/');
+
+      changedTarget = new Promise(fulfill => browser.once('targetchanged', target => fulfill(target)));
+      await page.goto(EMPTY_PAGE);
+      expect((await changedTarget).url()).toBe(EMPTY_PAGE);
+    }));
+    it('should not report uninitialized pages', SX(async function() {
+      browser.on('targetchanged', () => {
+        expect(false).toBe(true, 'target should not be reported as changed');
+      });
+      const targetPromise = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
+      const newPagePromise = browser.newPage();
+      const target = await targetPromise;
+      expect(target.url()).toBe('about:blank');
+
+      const newPage = await newPagePromise;
+      const targetPromise2 = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
+      const evaluatePromise = newPage.evaluate(() => window.open('about:blank'));
+      const target2 = await targetPromise2;
+      expect(target2.url()).toBe('about:blank');
+      await evaluatePromise;
+      await newPage.close();
     }));
   });
 });
