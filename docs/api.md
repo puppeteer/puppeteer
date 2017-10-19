@@ -1677,10 +1677,9 @@ Fetches a single property from the referenced object.
 #### jsHandle.jsonValue()
 - returns: <[Promise]<[Object]>>
 
-Returns a JSON representation of the object. If the method has a
-[`toJSON`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON()_behavior),
-it will be **ignored**.
-
+Returns a JSON representation of the object. If the object has a
+[`toJSON`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON()_behavior)
+function, it **will not be called**.
 
 > **NOTE** The method will throw if the referenced object is not stringifiable.
 
