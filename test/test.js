@@ -2531,6 +2531,19 @@ describe('Page', function() {
       const screenshot = await page.screenshot({omitBackground: true});
       expect(screenshot).toBeGolden('transparent.png');
     }));
+    // Doesn't work on retina displays.
+    // @see https://github.com/GoogleChrome/puppeteer/issues/733
+    xit('should work with odd clip size on Retina displays', SX(async function() {
+      const screenshot = await page.screenshot({
+        clip: {
+          x: 0,
+          y: 0,
+          width: 11,
+          height: 11,
+        }
+      });
+      expect(screenshot).toBeGolden('screenshot-clip-odd-size.png');
+    }));
   });
 
   describe('Page.select', function() {
