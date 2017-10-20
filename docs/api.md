@@ -169,6 +169,7 @@
   * [request.method](#requestmethod)
   * [request.postData](#requestpostdata)
   * [request.resourceType](#requestresourcetype)
+  * [request.respond(response)](#requestrespondresponse)
   * [request.response()](#requestresponse)
   * [request.url](#requesturl)
 - [class: Response](#class-response)
@@ -974,9 +975,10 @@ The extra HTTP headers will be sent with every request the page initiates.
 - `value` <[boolean]> Whether to enable request interception.
 - returns: <[Promise]>
 
-Activating request interception enables `request.abort` and `request.continue`.
+Activating request interception enables `request.abort`, `request.continue` and
+`request.respond` methods.
 
-An example of a naïve request interceptor which aborts all image requests:
+An example of a naïve request interceptor that aborts all image requests:
 ```js
 const puppeteer = require('puppeteer');
 
@@ -993,6 +995,9 @@ puppeteer.launch().then(async browser => {
   await browser.close();
 });
 ```
+
+> **NOTE** Request interception doesn't work with data URLs. Calling `abort`,
+> `continue` or `respond` on requests for data URLs is a noop.
 
 #### page.setUserAgent(userAgent)
 - `userAgent` <[string]> Specific user agent to use in this page
@@ -1898,6 +1903,32 @@ Contains the request's post body, if any.
 
 Contains the request's resource type as it was perceived by the rendering engine.
 ResourceType will be one of the following: `document`, `stylesheet`, `image`, `media`, `font`, `script`, `texttrack`, `xhr`, `fetch`, `eventsource`, `websocket`, `manifest`, `other`.
+
+#### request.respond(response)
+- `response` <[Object]> Response that will fulfill this request
+  - `status` <[number]> Response status code, defaults to `200`.
+  - `headers` <[Object]> Optional response headers
+  - `contentType` <[string]> If set, equals to setting `Content-Type` response header
+  - `body` <[Buffer]|[string]> Optional response body
+- returns: <[Promise]>
+
+Fulfills request with given response. To use this, request interception should
+be enabled with `page.setRequestInterceptionEnabled`. Exception is thrown if
+request interception is not enabled.
+
+An example of fulfilling all requests with 404 responses:
+
+```js
+await page.setRequestInterceptionEnabled(true);
+page.on('request', request => {
+  request.respond({
+    status: 404,
+    contentType: 'text/plain',
+    body: 'Not Found!'
+  });
+});
+```
+
 
 #### request.response()
 - returns: <[Response]> A matching [Response] object, or `null` if the response has not been received yet.

@@ -1337,6 +1337,55 @@ describe('Page', function() {
       await request.continue().catch(e => error = e);
       expect(error).toBe(null);
     }));
+    it('should throw if interception is not enabled', SX(async function() {
+      let error = null;
+      page.on('request', async request => {
+        try {
+          await request.continue();
+        } catch (e) {
+          error = e;
+        }
+      });
+      await page.goto(EMPTY_PAGE);
+      expect(error.message).toContain('Request Interception is not enabled');
+    }));
+  });
+
+  describe('Request.respond', function() {
+    it('should work', SX(async function() {
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
+        request.respond({
+          status: 201,
+          headers: {
+            foo: 'bar'
+          },
+          body: 'Yo, page!'
+        });
+      });
+      const response = await page.goto(EMPTY_PAGE);
+      expect(response.status).toBe(201);
+      expect(response.headers.foo).toBe('bar');
+      expect(await page.evaluate(() => document.body.textContent)).toBe('Yo, page!');
+    }));
+    it('should allow mocking binary responses', SX(async function() {
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
+        const imageBuffer = fs.readFileSync(path.join(__dirname, 'assets', 'pptr.png'));
+        request.respond({
+          contentType: 'image/png',
+          body: imageBuffer
+        });
+      });
+      await page.evaluate(PREFIX => {
+        const img = document.createElement('img');
+        img.src = PREFIX + '/does-not-exist.png';
+        document.body.appendChild(img);
+        return new Promise(fulfill => img.onload = fulfill);
+      }, PREFIX);
+      const img = await page.$('img');
+      expect(await img.screenshot()).toBeGolden('mock-binary-response.png');
+    }));
   });
 
   describe('Page.Events.Dialog', function() {
