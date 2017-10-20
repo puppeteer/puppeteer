@@ -1154,9 +1154,9 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
-typescript@next:
-  version "2.6.0-dev.20171007"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.6.0-dev.20171007.tgz#feead6b2bd906771c95fb8ae27e146d5b5ff6cd6"
+typescript@^2.6.0-rc:
+  version "2.6.0-rc"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.6.0-rc.tgz#6a8022e2dd3e7033f2dcf187cff7925ea3c8ac25"
 
 ultron@~1.1.0:
   version "1.1.0"
