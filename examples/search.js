@@ -23,10 +23,9 @@ const puppeteer = require('puppeteer');
 const browser = await puppeteer.launch();
 const page = await browser.newPage();
 await page.goto('https://google.com', {waitUntil: 'networkidle'});
-// Type our query into the search bar
-await page.type('input[name=q]', 'puppeteer');
 
 await page.click('input[type="submit"]');
+await page.keyboard.type('puppeteer');
 
 // Wait for the results to show up
 await page.waitForSelector('h3 a');
