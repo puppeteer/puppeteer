@@ -34,7 +34,7 @@
     "ws": "^3.0.0"
   },
   "puppeteer": {
-    "chromium_revision": "510141"
+    "chromium_revision": "510398"
   },
   "devDependencies": {
     "@types/debug": "0.0.30",
