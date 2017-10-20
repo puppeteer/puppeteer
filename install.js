@@ -42,7 +42,8 @@ if (NPM_HTTP_PROXY)
   process.env.HTTP_PROXY = NPM_HTTP_PROXY;
 
 const allRevisions = Downloader.downloadedRevisions();
-Downloader.downloadRevision(platform, revision, onProgress)
+const DOWNLOAD_HOST = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host;
+Downloader.downloadRevision(platform, revision, DOWNLOAD_HOST, onProgress)
     .then(onSuccess)
     .catch(onError);
 
