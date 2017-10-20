@@ -2577,6 +2577,16 @@ describe('Page', function() {
       await page.select('body', '').catch(e => error = e);
       expect(error.message).toContain('Element is not a <select> element.');
     }));
+
+
+
+     it('should throw on selecting non existent option', SX(async function() {
+      let error = null;
+      await page.goto(PREFIX + '/input/select.html');
+      await page.select('select', '42').catch(e => error = e);
+      expect(error.message).toContain('Option does not exist.');
+    }));
+
   });
 
   describe('Tracing', function() {
