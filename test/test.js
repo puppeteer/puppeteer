@@ -429,16 +429,16 @@ describe('Page', function() {
       const json = await aHandle.jsonValue();
       expect(json).toEqual({foo: 'bar'});
     }));
-    it('should work with dates', SX(async function() {
+    it('should not work with dates', SX(async function() {
       const dateHandle = await page.evaluateHandle(() => new Date('2017-09-26T00:00:00.000Z'));
       const json = await dateHandle.jsonValue();
-      expect(json).toBe('2017-09-26T00:00:00.000Z');
+      expect(json).toEqual({});
     }));
     it('should throw for circular objects', SX(async function() {
       const windowHandle = await page.evaluateHandle('window');
       let error = null;
       await windowHandle.jsonValue().catch(e => error = e);
-      expect(error.message).toContain('Converting circular structure to JSON');
+      expect(error.message).toContain('Object reference chain is too long');
     }));
   });
 
@@ -2568,6 +2568,17 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       const screenshot = await page.screenshot({omitBackground: true});
       expect(screenshot).toBeGolden('transparent.png');
+    }));
+    it('should work with odd clip size on Retina displays', SX(async function() {
+      const screenshot = await page.screenshot({
+        clip: {
+          x: 0,
+          y: 0,
+          width: 11,
+          height: 11,
+        }
+      });
+      expect(screenshot).toBeGolden('screenshot-clip-odd-size.png');
     }));
   });
 
