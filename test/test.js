@@ -1337,6 +1337,18 @@ describe('Page', function() {
       await request.continue().catch(e => error = e);
       expect(error).toBe(null);
     }));
+    it('should throw if interception is not enabled', SX(async function() {
+      let error = null;
+      page.on('request', async request => {
+        try {
+          await request.continue();
+        } catch (e) {
+          error = e;
+        }
+      });
+      await page.goto(EMPTY_PAGE);
+      expect(error.message).toContain('Request Interception is not enabled');
+    }));
   });
 
   describe('Request.respond', function() {
@@ -1348,7 +1360,7 @@ describe('Page', function() {
           headers: {
             foo: 'bar'
           },
-          body: Buffer.from('Yo, page!', 'utf8')
+          body: 'Yo, page!'
         });
       });
       const response = await page.goto(EMPTY_PAGE);
@@ -1358,20 +1370,19 @@ describe('Page', function() {
     }));
     it('should allow mocking binary responses', SX(async function() {
       await page.setRequestInterceptionEnabled(true);
-      const imageBuffer = fs.readFileSync(path.join(__dirname, 'assets', 'pptr.png'));
       page.on('request', request => {
+        const imageBuffer = fs.readFileSync(path.join(__dirname, 'assets', 'pptr.png'));
         request.respond({
           contentType: 'image/png',
           body: imageBuffer
         });
       });
-      await page.goto(EMPTY_PAGE);
-      await page.evaluate(() => {
+      await page.evaluate(PREFIX => {
         const img = document.createElement('img');
-        img.src = '/pptr.png';
+        img.src = PREFIX + '/does-not-exist.png';
         document.body.appendChild(img);
         return new Promise(fulfill => img.onload = fulfill);
-      });
+      }, PREFIX);
       const img = await page.$('img');
       expect(await img.screenshot()).toBeGolden('mock-binary-response.png');
     }));

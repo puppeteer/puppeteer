@@ -996,6 +996,9 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
+> **NOTE** Request interception doesn't work with data URLs. Calling `abort`,
+> `continue` or `respond` on requests for data URLs is a noop.
+
 #### page.setUserAgent(userAgent)
 - `userAgent` <[string]> Specific user agent to use in this page
 - returns: <[Promise]> Promise which resolves when the user agent is set.
@@ -1906,12 +1909,12 @@ ResourceType will be one of the following: `document`, `stylesheet`, `image`, `m
   - `status` <[number]> Response status code, defaults to `200`.
   - `headers` <[Object]> Optional response headers
   - `contentType` <[string]> If set, equals to setting `Content-Type` response header
-  - `body` <[Buffer]> Optional response body
+  - `body` <[Buffer]|[string]> Optional response body
 - returns: <[Promise]>
 
 Fulfills request with given response. To use this, request interception should
-be enabled with `page.setRequestInterceptionEnabled`. Exception is immediately
-thrown if the request interception is not enabled.
+be enabled with `page.setRequestInterceptionEnabled`. Exception is thrown if
+request interception is not enabled.
 
 An example of fulfilling all requests with 404 responses:
 
