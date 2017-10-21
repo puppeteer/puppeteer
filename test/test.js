@@ -235,18 +235,28 @@ describe('Page', function() {
     }));
   });
 
-  describe('Browser.Events.closed', function() {
+  describe('Browser.Events.disconnected', function() {
     it('should emitted when browser gets closed', SX(async function() {
       const newBrowser = await puppeteer.launch(defaultBrowserOptions);
-      let isClosed = false;
-      newBrowser.on('closed', closed => {
-        expect(closed).toBe('browser closed');
-        isClosed = true;
+      let isDisconnected = false;
+      newBrowser.on('disconnected', dc => {
+        expect(dc).toBe('connection disconnected');
+        isDisconnected = true;
       });
       await newBrowser.close();
-      await setTimeout(() => {
-        expect(isClosed).toBe(true);
-      }, 700);
+      expect(isDisconnected).toBe(true);
+    }));
+    it('should emitted when browser.disconnect() called', SX(async function() {
+      const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+      const newBrowser = await puppeteer.connect({
+        browserWSEndpoint: originalBrowser.wsEndpoint()
+      });
+      let isDisconnected = false;
+      newBrowser.on('disconnected', dc => {
+        isDisconnected = true;
+      });
+      newBrowser.disconnect();
+      expect(isDisconnected).toBe(true);
     }));
   });
 
@@ -258,26 +268,6 @@ describe('Page', function() {
       let error = null;
       await neverResolves.catch(e => error = e);
       expect(error.message).toContain('Protocol error');
-    }));
-    it('should fire page closed event', SX(async function() {
-      const newPage = await browser.newPage();
-      let fired = false;
-      newPage.on('closed', closed => {
-        fired = true;
-        expect(closed).toBe('page closed');
-      });
-      await newPage.close();
-      expect(fired).toBe(true);
-    }));
-  });
-
-  describe('Page.Events.closed', function(){
-    it('should emmited when page got crashed', SX(async function() {
-      let emitted = false;
-      page.on('closed', () => emitted = true);
-      page.goto('chrome://crash');
-      await waitForEvents(page, 'error');
-      expect(emitted).toBe(true);
     }));
   });
 
