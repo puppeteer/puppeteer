@@ -464,16 +464,16 @@ describe('Page', function() {
       const json = await aHandle.jsonValue();
       expect(json).toEqual({foo: 'bar'});
     }));
-    it('should work with dates', SX(async function() {
+    it('should not work with dates', SX(async function() {
       const dateHandle = await page.evaluateHandle(() => new Date('2017-09-26T00:00:00.000Z'));
       const json = await dateHandle.jsonValue();
-      expect(json).toBe('2017-09-26T00:00:00.000Z');
+      expect(json).toEqual({});
     }));
     it('should throw for circular objects', SX(async function() {
       const windowHandle = await page.evaluateHandle('window');
       let error = null;
       await windowHandle.jsonValue().catch(e => error = e);
-      expect(error.message).toContain('Converting circular structure to JSON');
+      expect(error.message).toContain('Object reference chain is too long');
     }));
   });
 
@@ -1371,6 +1371,55 @@ describe('Page', function() {
       let error = null;
       await request.continue().catch(e => error = e);
       expect(error).toBe(null);
+    }));
+    it('should throw if interception is not enabled', SX(async function() {
+      let error = null;
+      page.on('request', async request => {
+        try {
+          await request.continue();
+        } catch (e) {
+          error = e;
+        }
+      });
+      await page.goto(EMPTY_PAGE);
+      expect(error.message).toContain('Request Interception is not enabled');
+    }));
+  });
+
+  describe('Request.respond', function() {
+    it('should work', SX(async function() {
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
+        request.respond({
+          status: 201,
+          headers: {
+            foo: 'bar'
+          },
+          body: 'Yo, page!'
+        });
+      });
+      const response = await page.goto(EMPTY_PAGE);
+      expect(response.status).toBe(201);
+      expect(response.headers.foo).toBe('bar');
+      expect(await page.evaluate(() => document.body.textContent)).toBe('Yo, page!');
+    }));
+    it('should allow mocking binary responses', SX(async function() {
+      await page.setRequestInterceptionEnabled(true);
+      page.on('request', request => {
+        const imageBuffer = fs.readFileSync(path.join(__dirname, 'assets', 'pptr.png'));
+        request.respond({
+          contentType: 'image/png',
+          body: imageBuffer
+        });
+      });
+      await page.evaluate(PREFIX => {
+        const img = document.createElement('img');
+        img.src = PREFIX + '/does-not-exist.png';
+        document.body.appendChild(img);
+        return new Promise(fulfill => img.onload = fulfill);
+      }, PREFIX);
+      const img = await page.$('img');
+      expect(await img.screenshot()).toBeGolden('mock-binary-response.png');
     }));
   });
 
@@ -2565,6 +2614,17 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       const screenshot = await page.screenshot({omitBackground: true});
       expect(screenshot).toBeGolden('transparent.png');
+    }));
+    it('should work with odd clip size on Retina displays', SX(async function() {
+      const screenshot = await page.screenshot({
+        clip: {
+          x: 0,
+          y: 0,
+          width: 11,
+          height: 11,
+        }
+      });
+      expect(screenshot).toBeGolden('screenshot-clip-odd-size.png');
     }));
   });
 
