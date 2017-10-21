@@ -1975,8 +1975,14 @@ describe('Page', function() {
       expect(await page.evaluate('keyLocation')).toBe(3);
     }));
     it('should throw on unknown keys', SX(async function() {
-      const error = await page.keyboard.press('NotARealKey').catch(e => e);
+      let error = await page.keyboard.press('NotARealKey').catch(e => e);
       expect(error.message).toBe('Unknown key: "NotARealKey"');
+
+      error = await page.keyboard.press('ё').catch(e => e);
+      expect(error && error.message).toBe('Unknown key: "ё"');
+
+      error = await page.keyboard.press('😊').catch(e => e);
+      expect(error && error.message).toBe('Unknown key: "😊"');
     }));
     function dimensions() {
       const rect = document.querySelector('textarea').getBoundingClientRect();
