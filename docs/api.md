@@ -929,6 +929,7 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
 
 Triggers a `change` and `input` event once all the provided options have been selected.
 If there's no `<select>` element matching `selector`, the method throws an error.
+If no value in the provided values array matches any `<option>` element, the method throws an error. 
 
 ```js
 page.select('select#colors', 'blue'); // single selection

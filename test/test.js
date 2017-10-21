@@ -2556,21 +2556,6 @@ describe('Page', function() {
       expect(await page.evaluate(() => result.onBubblingChange)).toEqual(['blue']);
     }));
 
-    it('should work with no options', SX(async function() {
-      await page.goto(PREFIX + '/input/select.html');
-      await page.evaluate(() => makeEmpty());
-      await page.select('select', '42');
-      expect(await page.evaluate(() => result.onInput)).toEqual([]);
-      expect(await page.evaluate(() => result.onChange)).toEqual([]);
-    }));
-
-    it('should not select a non-existent option', SX(async function() {
-      await page.goto(PREFIX + '/input/select.html');
-      await page.select('select', '42');
-      expect(await page.evaluate(() => result.onInput)).toEqual([]);
-      expect(await page.evaluate(() => result.onChange)).toEqual([]);
-    }));
-
     it('should throw', SX(async function() {
       let error = null;
       await page.goto(PREFIX + '/input/select.html');
@@ -2578,9 +2563,7 @@ describe('Page', function() {
       expect(error.message).toContain('Element is not a <select> element.');
     }));
 
-
-
-     it('should throw on selecting non existent option', SX(async function() {
+    it('should throw on selecting non existent option', SX(async function() {
       let error = null;
       await page.goto(PREFIX + '/input/select.html');
       await page.select('select', '42').catch(e => error = e);
