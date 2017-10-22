@@ -1685,6 +1685,32 @@ describe('Page', function() {
       await page.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     }));
+
+    it('should click on checkbox input and toggle', SX(async function() {
+      await page.goto(PREFIX + '/input/checkbox.html');
+      await page.click('input#agree');
+      expect(await page.evaluate(() => result.check)).toBe(true);
+      expect(await page.evaluate(() => result.events)).toEqual([
+        'mouseover',
+        'mouseenter',
+        'mousemove',
+        'mousedown',
+        'mouseup',
+        'click',
+        'change',
+      ]);
+    }));
+
+    it('should click on checkbox label and toggle', SX(async function() {
+      await page.goto(PREFIX + '/input/checkbox.html');
+      await page.click('label[for="agree"]');
+      expect(await page.evaluate(() => result.check)).toBe(true);
+      expect(await page.evaluate(() => result.events)).toEqual([
+        'click',
+        'change',
+      ]);
+    }));
+
     it('should fail to click a missing button', SX(async function() {
       await page.goto(PREFIX + '/input/button.html');
       let error = null;
