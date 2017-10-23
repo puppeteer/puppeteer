@@ -1001,6 +1001,61 @@ describe('Page', function() {
       // Expect navigation to succeed.
       expect(response.ok).toBe(true);
     }));
+    it('should wait for message', SX(async function() {
+      // Navigate to a page which loads immediately and then does a bunch of
+      // requests via javascript's fetch method.
+      const navigationPromise = page.goto(PREFIX + '/consolemessage.html', {
+        waitUntil: 'consolemessage',
+      });
+      // Track when the navigation gets completed.
+      let navigationFinished = false;
+      navigationPromise.then(() => navigationFinished = true);
+
+      // Wait for the page's 'load' event.
+      await new Promise(fulfill => page.once('load', fulfill));
+      expect(navigationFinished).toBe(false);
+
+      const response = await navigationPromise;
+      // Expect navigation to succeed.
+      expect(response.ok).toBe(true);
+    }));
+    it('should wait for custom message', SX(async function() {
+      // Navigate to a page which loads immediately and then does a bunch of
+      // requests via javascript's fetch method.
+      const navigationPromise = page.goto(PREFIX + '/customconsolemessage.html', {
+        waitUntil: 'consolemessage',
+        consoleMessage: 'customConsoleMessage'
+      });
+      // Track when the navigation gets completed.
+      let navigationFinished = false;
+      navigationPromise.then(() => navigationFinished = true);
+
+      // Wait for the page's 'load' event.
+      await new Promise(fulfill => page.once('load', fulfill));
+      expect(navigationFinished).toBe(false);
+
+      const response = await navigationPromise;
+      // Expect navigation to succeed.
+      expect(response.ok).toBe(true);
+    }));
+    it('should timeout if browser never prints message', SX(async function() {
+      // Navigate to a page which loads immediately and then does a bunch of
+      // requests via javascript's fetch method.
+      let hasUnhandledRejection = false;
+      const unhandledRejectionHandler = () => hasUnhandledRejection = true;
+      process.on('unhandledRejection', unhandledRejectionHandler);
+      // Hang for request to the empty.html
+      server.setRoute('/empty.html', (req, res) => { });
+      let error = null;
+      await page.goto(PREFIX + '/customconsolemessage.html', {
+        waitUntil: 'consolemessage',
+        consoleMessage: 'invalidMessage',
+        timeout: 7500
+      }).catch(e => error = e);
+      expect(hasUnhandledRejection).toBe(false);
+      expect(error.message).toContain('Navigation Timeout Exceeded: 7500ms');
+      process.removeListener('unhandledRejection', unhandledRejectionHandler);
+    }));
     it('should wait for websockets to succeed navigation', SX(async function() {
       const responses = [];
       // Hold on to the fetch request without answering.
