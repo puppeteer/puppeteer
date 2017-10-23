@@ -2563,11 +2563,29 @@ describe('Page', function() {
       expect(error.message).toContain('Element is not a <select> element.');
     }));
 
-    it('should throw on selecting non existent option', SX(async function() {
-      let error = null;
+    it('should return [] on no matched values', SX(async function() {
       await page.goto(PREFIX + '/input/select.html');
-      await page.select('select', '42').catch(e => error = e);
-      expect(error.message).toContain('Option does not exist.');
+      const result = await page.select('select','42','abc');
+      expect(result).toEqual([]);
+    }));
+
+    it('should return an array of matched values', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      await page.evaluate(() => makeMultiple());
+      const result = await page.select('select','blue','black','magenta');
+      expect(result).toEqual(['blue','black','magenta']);
+    }));
+
+    it('should return an array of one element when multiple is not set', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      const result = await page.select('select','42','blue','black','magenta');
+      expect(result).toEqual(['blue']);
+    }));
+
+    it('should return [] on no values',SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      const result = await page.select('select');
+      expect(result).toEqual([]);
     }));
 
   });
