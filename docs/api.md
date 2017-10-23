@@ -763,9 +763,8 @@ If there's no element matching `selector`, the method throws an error.
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
   - `waitUntil` <[string]> When to consider a navigation finished, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
-  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
+    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
 can not go back, resolves to null.
 
@@ -776,9 +775,8 @@ Navigate to the previous page in history.
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
-  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
+    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
 can not go back, resolves to null.
 
@@ -790,9 +788,8 @@ Navigate to the next page in history.
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter. Defaults to 2.
-  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter. Defaults to 1000 ms.
+    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 The `page.goto` will throw an error if:
@@ -905,9 +902,8 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
-  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
+    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.screenshot([options])
@@ -1109,9 +1105,8 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
-  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
+    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.waitForSelector(selector[, options])
