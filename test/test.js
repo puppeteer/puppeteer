@@ -1997,6 +1997,42 @@ describe('Page', function() {
       await button.click();
       expect(await frame.evaluate(() => window.result)).toBe('Clicked');
     }));
+    it('should type all kinds of characters', SX(async function() {
+      await page.goto(PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      const text = 'This text goes onto two lines.\nThis character is 嗨.';
+      await page.keyboard.type(text);
+      expect(await page.evaluate('result')).toBe(text);
+    }));
+    it('should specify location', SX(async function() {
+      await page.goto(PREFIX + '/input/textarea.html');
+      await page.evaluate(() => {
+        window.addEventListener('keydown', event => window.keyLocation = event.location, true);
+      });
+      const textarea = await page.$('textarea');
+
+      await textarea.press('Digit5');
+      expect(await page.evaluate('keyLocation')).toBe(0);
+
+      await textarea.press('ControlLeft');
+      expect(await page.evaluate('keyLocation')).toBe(1);
+
+      await textarea.press('ControlRight');
+      expect(await page.evaluate('keyLocation')).toBe(2);
+
+      await textarea.press('NumpadSubtract');
+      expect(await page.evaluate('keyLocation')).toBe(3);
+    }));
+    it('should throw on unknown keys', SX(async function() {
+      let error = await page.keyboard.press('NotARealKey').catch(e => e);
+      expect(error.message).toBe('Unknown key: "NotARealKey"');
+
+      error = await page.keyboard.press('ё').catch(e => e);
+      expect(error && error.message).toBe('Unknown key: "ё"');
+
+      error = await page.keyboard.press('😊').catch(e => e);
+      expect(error && error.message).toBe('Unknown key: "😊"');
+    }));
     function dimensions() {
       const rect = document.querySelector('textarea').getBoundingClientRect();
       return {
