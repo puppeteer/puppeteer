@@ -884,6 +884,10 @@ describe('Page', function() {
       const response = await page.goto('about:blank');
       expect(response).toBe(null);
     }));
+    it('should navigate to empty page with domcontentloaded', SX(async function() {
+      const response = await page.goto(EMPTY_PAGE, {waitUntil: 'domcontentloaded'});
+      expect(response.status).toBe(200);
+    }));
     it('should navigate to empty page with networkidle0', SX(async function() {
       const response = await page.goto(EMPTY_PAGE, {waitUntil: 'networkidle0'});
       expect(response.status).toBe(200);
