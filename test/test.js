@@ -2179,7 +2179,7 @@ describe('Page', function() {
       let imgResponse = null;
       server.setRoute(imgPath, (req, res) => imgResponse = res);
       let loaded = false;
-      let contentPromise = page.setContent(`<img src="${PREFIX + imgPath}"></img>`).then(() => loaded = true);
+      const contentPromise = page.setContent(`<img src="${PREFIX + imgPath}"></img>`).then(() => loaded = true);
       await server.waitForRequest(imgPath);
       expect(loaded).toBe(false);
       imgResponse.end();
