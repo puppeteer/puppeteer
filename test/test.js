@@ -888,8 +888,8 @@ describe('Page', function() {
       const response = await page.goto(EMPTY_PAGE, {waitUntil: 'networkidle0'});
       expect(response.status).toBe(200);
     }));
-    it('should navigate to empty page with networkidle', SX(async function() {
-      const response = await page.goto(EMPTY_PAGE, {waitUntil: 'networkidle'});
+    it('should navigate to empty page with networkidle2', SX(async function() {
+      const response = await page.goto(EMPTY_PAGE, {waitUntil: 'networkidle2'});
       expect(response.status).toBe(200);
     }));
     it('should fail when navigating to bad url', SX(async function() {

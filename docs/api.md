@@ -764,7 +764,7 @@ If there's no element matching `selector`, the method throws an error.
   - `waitUntil` <[string]> When to consider a navigation finished, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
-    - `networkidle` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
 can not go back, resolves to null.
 
@@ -776,7 +776,7 @@ Navigate to the previous page in history.
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
-    - `networkidle` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
 can not go back, resolves to null.
 
@@ -789,7 +789,7 @@ Navigate to the next page in history.
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
-    - `networkidle` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 The `page.goto` will throw an error if:
@@ -903,7 +903,7 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
-    - `networkidle` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.screenshot([options])
@@ -1106,7 +1106,7 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
   - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
-    - `networkidle` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.waitForSelector(selector[, options])
