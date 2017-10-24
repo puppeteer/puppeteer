@@ -1170,9 +1170,9 @@ describe('Page', function() {
     }));
   });
 
-  describe('Page.setRequestInterceptionEnabled', function() {
+  describe('Page.setRequestInterception', function() {
     it('should intercept', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => {
         expect(request.url).toContain('empty.html');
         expect(request.headers['user-agent']).toBeTruthy();
@@ -1184,11 +1184,18 @@ describe('Page', function() {
       const response = await page.goto(EMPTY_PAGE);
       expect(response.ok).toBe(true);
     }));
+    it('should stop intercepting', SX(async function() {
+      await page.setRequestInterception(true);
+      page.once('request', request => request.continue());
+      await page.goto(EMPTY_PAGE);
+      await page.setRequestInterception(false);
+      await page.goto(EMPTY_PAGE);
+    }));
     it('should show custom HTTP headers', SX(async function() {
       await page.setExtraHTTPHeaders({
         foo: 'bar'
       });
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => {
         expect(request.headers['foo']).toBe('bar');
         request.continue();
@@ -1197,7 +1204,7 @@ describe('Page', function() {
       expect(response.ok).toBe(true);
     }));
     it('should be abortable', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => {
         if (request.url.endsWith('.css'))
           request.abort();
@@ -1212,7 +1219,7 @@ describe('Page', function() {
       expect(failedRequests).toBe(1);
     }));
     it('should be abortable with custom error codes', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => {
         request.abort('internetdisconnected');
       });
@@ -1223,7 +1230,7 @@ describe('Page', function() {
       expect(failedRequest.failure().errorText).toBe('net::ERR_INTERNET_DISCONNECTED');
     }));
     it('should amend HTTP headers', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => {
         const headers = Object.assign({}, request.headers);
         headers['FOO'] = 'bar';
@@ -1237,7 +1244,7 @@ describe('Page', function() {
       expect(request.headers['foo']).toBe('bar');
     }));
     it('should fail navigation when aborting main resource', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => request.abort());
       let error = null;
       await page.goto(EMPTY_PAGE).catch(e => error = e);
@@ -1245,7 +1252,7 @@ describe('Page', function() {
       expect(error.message).toContain('Failed to navigate');
     }));
     it('should work with redirects', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       const requests = [];
       page.on('request', request => {
         request.continue();
@@ -1262,7 +1269,7 @@ describe('Page', function() {
       expect(requests[2].resourceType).toBe('document');
     }));
     it('should be able to abort redirects', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       server.setRedirect('/non-existing.json', '/non-existing-2.json');
       server.setRedirect('/non-existing-2.json', '/simple.html');
       page.on('request', request => {
@@ -1285,7 +1292,7 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       let responseCount = 1;
       server.setRoute('/zzz', (req, res) => res.end((responseCount++) * 11 + ''));
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
 
       let spinner = false;
       // Cancel 2nd request.
@@ -1301,7 +1308,7 @@ describe('Page', function() {
       expect(results).toEqual(['11', 'FAILED', '22']);
     }));
     it('should navigate to dataURL and fire dataURL requests', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       const requests = [];
       page.on('request', request => {
         requests.push(request);
@@ -1314,7 +1321,7 @@ describe('Page', function() {
       expect(requests[0].url).toBe(dataURL);
     }));
     it('should navigate to URL with hash and and fire requests without hash', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       const requests = [];
       page.on('request', request => {
         requests.push(request);
@@ -1329,13 +1336,13 @@ describe('Page', function() {
     it('should work with encoded URLs', SX(async function() {
       // The requestWillBeSent will report encoded URL, whereas interception will
       // report URL as-is. @see crbug.com/759388
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => request.continue());
       const response = await page.goto(PREFIX + '/some nonexisting page');
       expect(response.status).toBe(404);
     }));
     it('should work with badly encoded URLs', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       server.setRoute('/malformed?rnd=%911', (req, res) => res.end());
       page.on('request', request => request.continue());
       const response = await page.goto(PREFIX + '/malformed?rnd=%911');
@@ -1344,7 +1351,7 @@ describe('Page', function() {
     it('should work with encoded URLs - 2', SX(async function() {
       // The requestWillBeSent will report URL as-is, whereas interception will
       // report encoded URL for stylesheet. @see crbug.com/759388
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       const requests = [];
       page.on('request', request => {
         request.continue();
@@ -1357,7 +1364,7 @@ describe('Page', function() {
     }));
     it('should not throw "Invalid Interception Id" if the request was cancelled', SX(async function() {
       await page.setContent('<iframe></iframe>');
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       let request = null;
       page.on('request', async r => request = r);
       page.$eval('iframe', (frame, url) => frame.src = url, EMPTY_PAGE),
@@ -1385,7 +1392,7 @@ describe('Page', function() {
 
   describe('Request.respond', function() {
     it('should work', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => {
         request.respond({
           status: 201,
@@ -1401,7 +1408,7 @@ describe('Page', function() {
       expect(await page.evaluate(() => document.body.textContent)).toBe('Yo, page!');
     }));
     it('should allow mocking binary responses', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => {
         const imageBuffer = fs.readFileSync(path.join(__dirname, 'assets', 'pptr.png'));
         request.respond({
@@ -2257,7 +2264,7 @@ describe('Page', function() {
       expect(await responseText).toBe('hello world!');
     }));
     it('Page.Events.RequestFailed', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => {
         if (request.url.endsWith('css'))
           request.abort();

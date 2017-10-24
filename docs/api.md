@@ -75,7 +75,7 @@
   * [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
-  * [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
+  * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
   * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
   * [page.setViewport(viewport)](#pagesetviewportviewport)
   * [page.tap(selector)](#pagetapselector)
@@ -416,7 +416,7 @@ Emitted when an uncaught exception happens within the page.
 - <[Request]>
 
 Emitted when a page issues a request. The [request] object is read-only.
-In order to intercept and mutate requests, see `page.setRequestInterceptionEnabled`.
+In order to intercept and mutate requests, see `page.setRequestInterception`.
 
 #### event: 'requestfailed'
 - <[Request]>
@@ -979,7 +979,7 @@ The extra HTTP headers will be sent with every request the page initiates.
 - `enabled` <[boolean]> When `true`, enables offline mode for the page.
 - returns: <[Promise]>
 
-#### page.setRequestInterceptionEnabled(value)
+#### page.setRequestInterception(value)
 - `value` <[boolean]> Whether to enable request interception.
 - returns: <[Promise]>
 
@@ -992,7 +992,7 @@ const puppeteer = require('puppeteer');
 
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
-  await page.setRequestInterceptionEnabled(true);
+  await page.setRequestInterception(true);
   page.on('request', interceptedRequest => {
     if (interceptedRequest.url.endsWith('.png') || interceptedRequest.url.endsWith('.jpg'))
       interceptedRequest.abort();
@@ -1864,7 +1864,7 @@ If request gets a 'redirect' response, the request is successfully finished with
   - `failed` - A generic failure occurred.
 - returns: <[Promise]>
 
-Aborts request. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
+Aborts request. To use this, request interception should be enabled with `page.setRequestInterception`.
 Exception is immediately thrown if the request interception is not enabled.
 
 #### request.continue([overrides])
@@ -1875,7 +1875,7 @@ Exception is immediately thrown if the request interception is not enabled.
   - `headers` <[Object]> If set changes the request HTTP headers
 - returns: <[Promise]>
 
-Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
+Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterception`.
 Exception is immediately thrown if the request interception is not enabled.
 
 #### request.failure()
@@ -1921,13 +1921,13 @@ ResourceType will be one of the following: `document`, `stylesheet`, `image`, `m
 - returns: <[Promise]>
 
 Fulfills request with given response. To use this, request interception should
-be enabled with `page.setRequestInterceptionEnabled`. Exception is thrown if
+be enabled with `page.setRequestInterception`. Exception is thrown if
 request interception is not enabled.
 
 An example of fulfilling all requests with 404 responses:
 
 ```js
-await page.setRequestInterceptionEnabled(true);
+await page.setRequestInterception(true);
 page.on('request', request => {
   request.respond({
     status: 404,
