@@ -1098,6 +1098,25 @@ describe('Page', function() {
       expect(response.ok).toBe(true);
       expect(response.url).toContain('grid.html');
     }));
+    it('should work with both domcontentloaded and load', SX(async function() {
+      let response = null;
+      server.setRoute('/one-style.css', (req, res) => response = res);
+      page.goto(PREFIX + '/one-style.html');
+      const domContentLoadedPromise = page.waitForNavigation({
+        waitUntil: 'domcontentloaded'
+      });
+
+      let bothFired = false;
+      const bothFiredPromise = page.waitForNavigation({
+        waitUntil: ['load', 'domcontentloaded']
+      }).then(() => bothFired = true);
+
+      await server.waitForRequest('/one-style.css');
+      await domContentLoadedPromise;
+      expect(bothFired).toBe(false);
+      response.end();
+      await bothFiredPromise;
+    }));
   });
 
   describe('Page.goBack', function() {
