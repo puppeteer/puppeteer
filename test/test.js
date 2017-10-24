@@ -884,6 +884,14 @@ describe('Page', function() {
       const response = await page.goto('about:blank');
       expect(response).toBe(null);
     }));
+    it('should navigate to empty page with networkidle0', SX(async function() {
+      const response = await page.goto(EMPTY_PAGE, {waitUntil: 'networkidle0'});
+      expect(response.status).toBe(200);
+    }));
+    it('should navigate to empty page with networkidle2', SX(async function() {
+      const response = await page.goto(EMPTY_PAGE, {waitUntil: 'networkidle2'});
+      expect(response.status).toBe(200);
+    }));
     it('should fail when navigating to bad url', SX(async function() {
       let error = null;
       await page.goto('asdfasdf').catch(e => error = e);
@@ -898,6 +906,11 @@ describe('Page', function() {
       let error = null;
       await page.goto(HTTPS_PREFIX + '/empty.html').catch(e => error = e);
       expect(error.message).toContain('SSL Certificate error');
+    }));
+    it('should throw if networkidle is passed as an option', SX(async function() {
+      let error = null;
+      await page.goto(EMPTY_PAGE, {waitUntil: 'networkidle'}).catch(err => error = err);
+      expect(error.message).toContain('"networkidle" option is no longer supported');
     }));
     it('should fail when main resources failed to load', SX(async function() {
       let error = null;
@@ -959,9 +972,7 @@ describe('Page', function() {
       // Navigate to a page which loads immediately and then does a bunch of
       // requests via javascript's fetch method.
       const navigationPromise = page.goto(PREFIX + '/networkidle.html', {
-        waitUntil: 'networkidle',
-        networkIdleTimeout: 100,
-        networkIdleInflight: 0, // Only be idle when there are 0 inflight requests
+        waitUntil: 'networkidle0',
       });
       // Track when the navigation gets completed.
       let navigationFinished = false;
@@ -1009,9 +1020,7 @@ describe('Page', function() {
       // Navigate to a page which loads immediately and then opens a bunch of
       // websocket connections and then a fetch request.
       const navigationPromise = page.goto(PREFIX + '/websocket.html', {
-        waitUntil: 'networkidle',
-        networkIdleTimeout: 100,
-        networkIdleInflight: 0, // Only be idle when there are 0 inflight requests/connections
+        waitUntil: 'networkidle0',
       });
       // Track when the navigation gets completed.
       let navigationFinished = false;
