@@ -884,6 +884,18 @@ describe('Page', function() {
       const response = await page.goto('about:blank');
       expect(response).toBe(null);
     }));
+    it('should navigate to empty page with domcontentloaded', SX(async function() {
+      const response = await page.goto(EMPTY_PAGE, {waitUntil: 'domcontentloaded'});
+      expect(response.status).toBe(200);
+    }));
+    it('should navigate to empty page with networkidle0', SX(async function() {
+      const response = await page.goto(EMPTY_PAGE, {waitUntil: 'networkidle0'});
+      expect(response.status).toBe(200);
+    }));
+    it('should navigate to empty page with networkidle2', SX(async function() {
+      const response = await page.goto(EMPTY_PAGE, {waitUntil: 'networkidle2'});
+      expect(response.status).toBe(200);
+    }));
     it('should fail when navigating to bad url', SX(async function() {
       let error = null;
       await page.goto('asdfasdf').catch(e => error = e);
@@ -898,6 +910,11 @@ describe('Page', function() {
       let error = null;
       await page.goto(HTTPS_PREFIX + '/empty.html').catch(e => error = e);
       expect(error.message).toContain('SSL Certificate error');
+    }));
+    it('should throw if networkidle is passed as an option', SX(async function() {
+      let error = null;
+      await page.goto(EMPTY_PAGE, {waitUntil: 'networkidle'}).catch(err => error = err);
+      expect(error.message).toContain('"networkidle" option is no longer supported');
     }));
     it('should fail when main resources failed to load', SX(async function() {
       let error = null;
@@ -959,9 +976,7 @@ describe('Page', function() {
       // Navigate to a page which loads immediately and then does a bunch of
       // requests via javascript's fetch method.
       const navigationPromise = page.goto(PREFIX + '/networkidle.html', {
-        waitUntil: 'networkidle',
-        networkIdleTimeout: 100,
-        networkIdleInflight: 0, // Only be idle when there are 0 inflight requests
+        waitUntil: 'networkidle0',
       });
       // Track when the navigation gets completed.
       let navigationFinished = false;
@@ -1009,9 +1024,7 @@ describe('Page', function() {
       // Navigate to a page which loads immediately and then opens a bunch of
       // websocket connections and then a fetch request.
       const navigationPromise = page.goto(PREFIX + '/websocket.html', {
-        waitUntil: 'networkidle',
-        networkIdleTimeout: 100,
-        networkIdleInflight: 0, // Only be idle when there are 0 inflight requests/connections
+        waitUntil: 'networkidle0',
       });
       // Track when the navigation gets completed.
       let navigationFinished = false;
@@ -1996,6 +2009,42 @@ describe('Page', function() {
       const button = await frame.$('button');
       await button.click();
       expect(await frame.evaluate(() => window.result)).toBe('Clicked');
+    }));
+    it('should type all kinds of characters', SX(async function() {
+      await page.goto(PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      const text = 'This text goes onto two lines.\nThis character is 嗨.';
+      await page.keyboard.type(text);
+      expect(await page.evaluate('result')).toBe(text);
+    }));
+    it('should specify location', SX(async function() {
+      await page.goto(PREFIX + '/input/textarea.html');
+      await page.evaluate(() => {
+        window.addEventListener('keydown', event => window.keyLocation = event.location, true);
+      });
+      const textarea = await page.$('textarea');
+
+      await textarea.press('Digit5');
+      expect(await page.evaluate('keyLocation')).toBe(0);
+
+      await textarea.press('ControlLeft');
+      expect(await page.evaluate('keyLocation')).toBe(1);
+
+      await textarea.press('ControlRight');
+      expect(await page.evaluate('keyLocation')).toBe(2);
+
+      await textarea.press('NumpadSubtract');
+      expect(await page.evaluate('keyLocation')).toBe(3);
+    }));
+    it('should throw on unknown keys', SX(async function() {
+      let error = await page.keyboard.press('NotARealKey').catch(e => e);
+      expect(error.message).toBe('Unknown key: "NotARealKey"');
+
+      error = await page.keyboard.press('ё').catch(e => e);
+      expect(error && error.message).toBe('Unknown key: "ё"');
+
+      error = await page.keyboard.press('😊').catch(e => e);
+      expect(error && error.message).toBe('Unknown key: "😊"');
     }));
     function dimensions() {
       const rect = document.querySelector('textarea').getBoundingClientRect();
