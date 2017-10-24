@@ -937,9 +937,16 @@ page.select('select#colors', 'blue'); // single selection
 page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 ```
 
-#### page.setContent(html)
+#### page.setContent(html, options)
 - `html` <[string]> HTML markup to assign to the page.
-- returns: <[Promise]>
+- `options` <[Object]> Navigation parameters which might have the following properties:
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider setting content complete, defaults to `load`. Given an array of event strings, setting content is considered to be successful after all events have been fired. Events Can be either:
+    - `load` - consider setting content to be finished when the `load` event is fired.
+    - `domcontentloaded` - consider setting content to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider setting content to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle2` - consider setting content to be finished when there are no more then 2 network connections for at least `500` ms.
+- returns: <[Promise]> Promise which resolves when content is set and all events are triggered.
 
 #### page.setCookie(...cookies)
 - `...cookies` <...[Object]>
