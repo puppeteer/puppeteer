@@ -70,7 +70,7 @@
   * [page.reload(options)](#pagereloadoptions)
   * [page.screenshot([options])](#pagescreenshotoptions)
   * [page.select(selector, ...values)](#pageselectselector-values)
-  * [page.setContent(html)](#pagesetcontenthtml)
+  * [page.setContent(html, options)](#pagesetcontenthtml-options)
   * [page.setCookie(...cookies)](#pagesetcookiecookies)
   * [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
