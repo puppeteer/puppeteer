@@ -909,6 +909,18 @@ describe('Page', function() {
       const response = await page.goto('about:blank');
       expect(response).toBe(null);
     }));
+    it('should navigate to empty page with domcontentloaded', SX(async function() {
+      const response = await page.goto(EMPTY_PAGE, {waitUntil: 'domcontentloaded'});
+      expect(response.status).toBe(200);
+    }));
+    it('should navigate to empty page with networkidle0', SX(async function() {
+      const response = await page.goto(EMPTY_PAGE, {waitUntil: 'networkidle0'});
+      expect(response.status).toBe(200);
+    }));
+    it('should navigate to empty page with networkidle2', SX(async function() {
+      const response = await page.goto(EMPTY_PAGE, {waitUntil: 'networkidle2'});
+      expect(response.status).toBe(200);
+    }));
     it('should fail when navigating to bad url', SX(async function() {
       let error = null;
       await page.goto('asdfasdf').catch(e => error = e);
@@ -923,6 +935,11 @@ describe('Page', function() {
       let error = null;
       await page.goto(HTTPS_PREFIX + '/empty.html').catch(e => error = e);
       expect(error.message).toContain('SSL Certificate error');
+    }));
+    it('should throw if networkidle is passed as an option', SX(async function() {
+      let error = null;
+      await page.goto(EMPTY_PAGE, {waitUntil: 'networkidle'}).catch(err => error = err);
+      expect(error.message).toContain('"networkidle" option is no longer supported');
     }));
     it('should fail when main resources failed to load', SX(async function() {
       let error = null;
@@ -984,9 +1001,7 @@ describe('Page', function() {
       // Navigate to a page which loads immediately and then does a bunch of
       // requests via javascript's fetch method.
       const navigationPromise = page.goto(PREFIX + '/networkidle.html', {
-        waitUntil: 'networkidle',
-        networkIdleTimeout: 100,
-        networkIdleInflight: 0, // Only be idle when there are 0 inflight requests
+        waitUntil: 'networkidle0',
       });
       // Track when the navigation gets completed.
       let navigationFinished = false;
@@ -1034,9 +1049,7 @@ describe('Page', function() {
       // Navigate to a page which loads immediately and then opens a bunch of
       // websocket connections and then a fetch request.
       const navigationPromise = page.goto(PREFIX + '/websocket.html', {
-        waitUntil: 'networkidle',
-        networkIdleTimeout: 100,
-        networkIdleInflight: 0, // Only be idle when there are 0 inflight requests/connections
+        waitUntil: 'networkidle0',
       });
       // Track when the navigation gets completed.
       let navigationFinished = false;
@@ -1110,6 +1123,25 @@ describe('Page', function() {
       expect(response.ok).toBe(true);
       expect(response.url).toContain('grid.html');
     }));
+    it('should work with both domcontentloaded and load', SX(async function() {
+      let response = null;
+      server.setRoute('/one-style.css', (req, res) => response = res);
+      page.goto(PREFIX + '/one-style.html');
+      const domContentLoadedPromise = page.waitForNavigation({
+        waitUntil: 'domcontentloaded'
+      });
+
+      let bothFired = false;
+      const bothFiredPromise = page.waitForNavigation({
+        waitUntil: ['load', 'domcontentloaded']
+      }).then(() => bothFired = true);
+
+      await server.waitForRequest('/one-style.css');
+      await domContentLoadedPromise;
+      expect(bothFired).toBe(false);
+      response.end();
+      await bothFiredPromise;
+    }));
   });
 
   describe('Page.goBack', function() {
@@ -1163,9 +1195,9 @@ describe('Page', function() {
     }));
   });
 
-  describe('Page.setRequestInterceptionEnabled', function() {
+  describe('Page.setRequestInterception', function() {
     it('should intercept', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => {
         expect(request.url).toContain('empty.html');
         expect(request.headers['user-agent']).toBeTruthy();
@@ -1177,11 +1209,18 @@ describe('Page', function() {
       const response = await page.goto(EMPTY_PAGE);
       expect(response.ok).toBe(true);
     }));
+    it('should stop intercepting', SX(async function() {
+      await page.setRequestInterception(true);
+      page.once('request', request => request.continue());
+      await page.goto(EMPTY_PAGE);
+      await page.setRequestInterception(false);
+      await page.goto(EMPTY_PAGE);
+    }));
     it('should show custom HTTP headers', SX(async function() {
       await page.setExtraHTTPHeaders({
         foo: 'bar'
       });
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => {
         expect(request.headers['foo']).toBe('bar');
         request.continue();
@@ -1190,7 +1229,7 @@ describe('Page', function() {
       expect(response.ok).toBe(true);
     }));
     it('should be abortable', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => {
         if (request.url.endsWith('.css'))
           request.abort();
@@ -1205,7 +1244,7 @@ describe('Page', function() {
       expect(failedRequests).toBe(1);
     }));
     it('should be abortable with custom error codes', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => {
         request.abort('internetdisconnected');
       });
@@ -1216,7 +1255,7 @@ describe('Page', function() {
       expect(failedRequest.failure().errorText).toBe('net::ERR_INTERNET_DISCONNECTED');
     }));
     it('should amend HTTP headers', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => {
         const headers = Object.assign({}, request.headers);
         headers['FOO'] = 'bar';
@@ -1230,7 +1269,7 @@ describe('Page', function() {
       expect(request.headers['foo']).toBe('bar');
     }));
     it('should fail navigation when aborting main resource', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => request.abort());
       let error = null;
       await page.goto(EMPTY_PAGE).catch(e => error = e);
@@ -1238,7 +1277,7 @@ describe('Page', function() {
       expect(error.message).toContain('Failed to navigate');
     }));
     it('should work with redirects', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       const requests = [];
       page.on('request', request => {
         request.continue();
@@ -1255,7 +1294,7 @@ describe('Page', function() {
       expect(requests[2].resourceType).toBe('document');
     }));
     it('should be able to abort redirects', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       server.setRedirect('/non-existing.json', '/non-existing-2.json');
       server.setRedirect('/non-existing-2.json', '/simple.html');
       page.on('request', request => {
@@ -1278,7 +1317,7 @@ describe('Page', function() {
       await page.goto(EMPTY_PAGE);
       let responseCount = 1;
       server.setRoute('/zzz', (req, res) => res.end((responseCount++) * 11 + ''));
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
 
       let spinner = false;
       // Cancel 2nd request.
@@ -1294,7 +1333,7 @@ describe('Page', function() {
       expect(results).toEqual(['11', 'FAILED', '22']);
     }));
     it('should navigate to dataURL and fire dataURL requests', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       const requests = [];
       page.on('request', request => {
         requests.push(request);
@@ -1307,7 +1346,7 @@ describe('Page', function() {
       expect(requests[0].url).toBe(dataURL);
     }));
     it('should navigate to URL with hash and and fire requests without hash', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       const requests = [];
       page.on('request', request => {
         requests.push(request);
@@ -1322,13 +1361,13 @@ describe('Page', function() {
     it('should work with encoded URLs', SX(async function() {
       // The requestWillBeSent will report encoded URL, whereas interception will
       // report URL as-is. @see crbug.com/759388
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => request.continue());
       const response = await page.goto(PREFIX + '/some nonexisting page');
       expect(response.status).toBe(404);
     }));
     it('should work with badly encoded URLs', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       server.setRoute('/malformed?rnd=%911', (req, res) => res.end());
       page.on('request', request => request.continue());
       const response = await page.goto(PREFIX + '/malformed?rnd=%911');
@@ -1337,7 +1376,7 @@ describe('Page', function() {
     it('should work with encoded URLs - 2', SX(async function() {
       // The requestWillBeSent will report URL as-is, whereas interception will
       // report encoded URL for stylesheet. @see crbug.com/759388
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       const requests = [];
       page.on('request', request => {
         request.continue();
@@ -1350,7 +1389,7 @@ describe('Page', function() {
     }));
     it('should not throw "Invalid Interception Id" if the request was cancelled', SX(async function() {
       await page.setContent('<iframe></iframe>');
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       let request = null;
       page.on('request', async r => request = r);
       page.$eval('iframe', (frame, url) => frame.src = url, EMPTY_PAGE),
@@ -1378,7 +1417,7 @@ describe('Page', function() {
 
   describe('Request.respond', function() {
     it('should work', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => {
         request.respond({
           status: 201,
@@ -1394,7 +1433,7 @@ describe('Page', function() {
       expect(await page.evaluate(() => document.body.textContent)).toBe('Yo, page!');
     }));
     it('should allow mocking binary responses', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => {
         const imageBuffer = fs.readFileSync(path.join(__dirname, 'assets', 'pptr.png'));
         request.respond({
@@ -2022,6 +2061,42 @@ describe('Page', function() {
       await button.click();
       expect(await frame.evaluate(() => window.result)).toBe('Clicked');
     }));
+    it('should type all kinds of characters', SX(async function() {
+      await page.goto(PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      const text = 'This text goes onto two lines.\nThis character is 嗨.';
+      await page.keyboard.type(text);
+      expect(await page.evaluate('result')).toBe(text);
+    }));
+    it('should specify location', SX(async function() {
+      await page.goto(PREFIX + '/input/textarea.html');
+      await page.evaluate(() => {
+        window.addEventListener('keydown', event => window.keyLocation = event.location, true);
+      });
+      const textarea = await page.$('textarea');
+
+      await textarea.press('Digit5');
+      expect(await page.evaluate('keyLocation')).toBe(0);
+
+      await textarea.press('ControlLeft');
+      expect(await page.evaluate('keyLocation')).toBe(1);
+
+      await textarea.press('ControlRight');
+      expect(await page.evaluate('keyLocation')).toBe(2);
+
+      await textarea.press('NumpadSubtract');
+      expect(await page.evaluate('keyLocation')).toBe(3);
+    }));
+    it('should throw on unknown keys', SX(async function() {
+      let error = await page.keyboard.press('NotARealKey').catch(e => e);
+      expect(error.message).toBe('Unknown key: "NotARealKey"');
+
+      error = await page.keyboard.press('ё').catch(e => e);
+      expect(error && error.message).toBe('Unknown key: "ё"');
+
+      error = await page.keyboard.press('😊').catch(e => e);
+      expect(error && error.message).toBe('Unknown key: "😊"');
+    }));
     function dimensions() {
       const rect = document.querySelector('textarea').getBoundingClientRect();
       return {
@@ -2131,6 +2206,17 @@ describe('Page', function() {
       const result = await page.content();
       expect(result).toBe(`${doctype}${expectedOutput}`);
     }));
+    it('should await resources to load', SX(async function() {
+      const imgPath = '/img.png';
+      let imgResponse = null;
+      server.setRoute(imgPath, (req, res) => imgResponse = res);
+      let loaded = false;
+      const contentPromise = page.setContent(`<img src="${PREFIX + imgPath}"></img>`).then(() => loaded = true);
+      await server.waitForRequest(imgPath);
+      expect(loaded).toBe(false);
+      imgResponse.end();
+      await contentPromise;
+    }));
   });
 
   describe('Network Events', function() {
@@ -2203,7 +2289,7 @@ describe('Page', function() {
       expect(await responseText).toBe('hello world!');
     }));
     it('Page.Events.RequestFailed', SX(async function() {
-      await page.setRequestInterceptionEnabled(true);
+      await page.setRequestInterception(true);
       page.on('request', request => {
         if (request.url.endsWith('css'))
           request.abort();

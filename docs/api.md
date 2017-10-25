@@ -71,12 +71,12 @@
   * [page.reload(options)](#pagereloadoptions)
   * [page.screenshot([options])](#pagescreenshotoptions)
   * [page.select(selector, ...values)](#pageselectselector-values)
-  * [page.setContent(html)](#pagesetcontenthtml)
+  * [page.setContent(html, options)](#pagesetcontenthtml-options)
   * [page.setCookie(...cookies)](#pagesetcookiecookies)
   * [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
-  * [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
+  * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
   * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
   * [page.setViewport(viewport)](#pagesetviewportviewport)
   * [page.tap(selector)](#pagetapselector)
@@ -211,6 +211,7 @@ Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wik
 
 - `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
+- `PUPPETEER_DOWNLOAD_HOST` - overwrite host part of URL that is used to download Chromium
 
 ### class: Puppeteer
 
@@ -418,7 +419,7 @@ Emitted when an uncaught exception happens within the page.
 - <[Request]>
 
 Emitted when a page issues a request. The [request] object is read-only.
-In order to intercept and mutate requests, see `page.setRequestInterceptionEnabled`.
+In order to intercept and mutate requests, see `page.setRequestInterception`.
 
 #### event: 'requestfailed'
 - <[Request]>
@@ -763,11 +764,11 @@ If there's no element matching `selector`, the method throws an error.
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider a navigation finished, defaults to `load`. Can be either:
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
-  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
+    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
 can not go back, resolves to null.
 
@@ -776,11 +777,11 @@ Navigate to the previous page in history.
 #### page.goForward(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
-  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
+    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
 can not go back, resolves to null.
 
@@ -790,11 +791,11 @@ Navigate to the next page in history.
 - `url` <[string]> URL to navigate page to. The url should include scheme, e.g. `https://`.
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter. Defaults to 2.
-  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter. Defaults to 1000 ms.
+    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 The `page.goto` will throw an error if:
@@ -905,11 +906,11 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
 #### page.reload(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
-  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
+    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.screenshot([options])
@@ -939,9 +940,16 @@ page.select('select#colors', 'blue'); // single selection
 page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 ```
 
-#### page.setContent(html)
+#### page.setContent(html, options)
 - `html` <[string]> HTML markup to assign to the page.
-- returns: <[Promise]>
+- `options` <[Object]> Navigation parameters which might have the following properties:
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider setting content complete, defaults to `load`. Given an array of event strings, setting content is considered to be successful after all events have been fired. Events can be either:
+    - `load` - consider setting content to be finished when the `load` event is fired.
+    - `domcontentloaded` - consider setting content to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider setting content to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle2` - consider setting content to be finished when there are no more then 2 network connections for at least `500` ms.
+- returns: <[Promise]> Promise which resolves when content is set and all events are triggered.
 
 #### page.setCookie(...cookies)
 - `...cookies` <...[Object]>
@@ -974,7 +982,7 @@ The extra HTTP headers will be sent with every request the page initiates.
 - `enabled` <[boolean]> When `true`, enables offline mode for the page.
 - returns: <[Promise]>
 
-#### page.setRequestInterceptionEnabled(value)
+#### page.setRequestInterception(value)
 - `value` <[boolean]> Whether to enable request interception.
 - returns: <[Promise]>
 
@@ -987,7 +995,7 @@ const puppeteer = require('puppeteer');
 
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
-  await page.setRequestInterceptionEnabled(true);
+  await page.setRequestInterception(true);
   page.on('request', interceptedRequest => {
     if (interceptedRequest.url.endsWith('.png') || interceptedRequest.url.endsWith('.jpg'))
       interceptedRequest.abort();
@@ -1001,6 +1009,8 @@ puppeteer.launch().then(async browser => {
 
 > **NOTE** Request interception doesn't work with data URLs. Calling `abort`,
 > `continue` or `respond` on requests for data URLs is a noop.
+
+> **NOTE** Enabling request interception disables page caching.
 
 #### page.setUserAgent(userAgent)
 - `userAgent` <[string]> Specific user agent to use in this page
@@ -1109,11 +1119,11 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
-  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
+    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.waitForSelector(selector[, options])
@@ -1166,7 +1176,7 @@ page.keyboard.press('Backspace');
 ```
 
 #### keyboard.down(key[, options])
-- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
 - `options` <[Object]>
   - `text` <[string]> If specified, generates an input event with this text.
 - returns: <[Promise]>
@@ -1180,7 +1190,7 @@ If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key
 After the key is pressed once, subsequent calls to [`keyboard.down`](#keyboarddownkey-options) will have [repeat](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat) set to true. To release the key, use [`keyboard.up`](#keyboardupkey).
 
 #### keyboard.press(key[, options])
-- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
 - `options` <[Object]>
   - `text` <[string]> If specified, generates an input event with this text.
   - `delay` <[number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
@@ -1214,7 +1224,7 @@ page.keyboard.type('World', {delay: 100}); // Types slower, like a user
 ```
 
 #### keyboard.up(key)
-- `key` <[string]> Name of key to release, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `key` <[string]> Name of key to release, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
 - returns: <[Promise]>
 
 Dispatches a `keyup` event.
@@ -1689,7 +1699,7 @@ Returns a JSON representation of the object. If the object has a
 [`toJSON`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON()_behavior)
 function, it **will not be called**.
 
-> **NOTE** The method will throw if the referenced object is not stringifiable.
+> **NOTE** The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references.
 
 ### class: ElementHandle
 
@@ -1785,7 +1795,7 @@ Returns a JSON representation of the object. The JSON is generated by running [`
 > **NOTE** The method will throw if the referenced object is not stringifiable.
 
 #### elementHandle.press(key[, options])
-- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
 - `options` <[Object]>
   - `text` <[string]> If specified, generates an input event with this text.
   - `delay` <[number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
@@ -1859,7 +1869,7 @@ If request gets a 'redirect' response, the request is successfully finished with
   - `failed` - A generic failure occurred.
 - returns: <[Promise]>
 
-Aborts request. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
+Aborts request. To use this, request interception should be enabled with `page.setRequestInterception`.
 Exception is immediately thrown if the request interception is not enabled.
 
 #### request.continue([overrides])
@@ -1870,7 +1880,7 @@ Exception is immediately thrown if the request interception is not enabled.
   - `headers` <[Object]> If set changes the request HTTP headers
 - returns: <[Promise]>
 
-Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
+Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterception`.
 Exception is immediately thrown if the request interception is not enabled.
 
 #### request.failure()
@@ -1916,13 +1926,13 @@ ResourceType will be one of the following: `document`, `stylesheet`, `image`, `m
 - returns: <[Promise]>
 
 Fulfills request with given response. To use this, request interception should
-be enabled with `page.setRequestInterceptionEnabled`. Exception is thrown if
+be enabled with `page.setRequestInterception`. Exception is thrown if
 request interception is not enabled.
 
 An example of fulfilling all requests with 404 responses:
 
 ```js
-await page.setRequestInterceptionEnabled(true);
+await page.setRequestInterception(true);
 page.on('request', request => {
   request.respond({
     status: 404,
@@ -2024,3 +2034,4 @@ Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, or 
 [Serializable]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Description "Serializable"
 [Touchscreen]: #class-touchscreen "Touchscreen"
 [Target]: #class-target "Target"
+[USKeyboardLayout]: ../lib/USKeyboardLayout.js "USKeyboardLayout"
