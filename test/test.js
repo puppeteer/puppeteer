@@ -89,7 +89,7 @@ afterAll(SX(async function() {
 
 describe('Puppeteer', function() {
   describe('Puppeteer.launch', function() {
-    it('should support ignoreHTTPSErrors option', SX(async function() {
+    xit('should support ignoreHTTPSErrors option', SX(async function() {
       const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
       const page = await browser.newPage();
