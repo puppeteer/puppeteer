@@ -145,6 +145,8 @@
   * [jsHandle.getProperty(propertyName)](#jshandlegetpropertypropertyname)
   * [jsHandle.jsonValue()](#jshandlejsonvalue)
 - [class: ElementHandle](#class-elementhandle)
+  * [elementHandle.$(selector)](#elementhandleselector)
+  * [elementHandle.$$(selector)](#elementhandleselector)
   * [elementHandle.asElement()](#elementhandleaselement)
   * [elementHandle.boundingBox()](#elementhandleboundingbox)
   * [elementHandle.click([options])](#elementhandleclickoptions)
@@ -1711,8 +1713,20 @@ ElementHandle prevents DOM element from garbage collection unless the handle is 
 
 ElementHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args) and [`page.evaluate()`](#pageevaluatepagefunction-args) methods.
 
+#### elementHandle.$(selector)
+- `selector` <[string]> A [selector] to query element for
+- returns: <[Promise]<[ElementHandle]>>
+
+The method runs `element.querySelector` within the page. If no element matches the selector, the return value resolve to `null`.
+
+#### elementHandle.$$(selector)
+- `selector` <[string]> A [selector] to query element for
+- returns: <[Promise]<[Array]<[ElementHandle]>>>
+
+The method runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `[]`.
+
 #### elementHandle.asElement()
-- returns: <[ElementHandle]>
+- returns: <[elementhandle]>
 
 #### elementHandle.boundingBox()
 - returns: <[Object]>
