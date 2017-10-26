@@ -2518,6 +2518,30 @@ describe('Page', function() {
       expect(pages[0].width).toBeCloseTo(8.5, 2);
       expect(pages[0].height).toBeCloseTo(11, 2);
     }));
+    it('should default to printing backgrounds', SX(async function() {
+      spyOn(page._client, 'send').and.callThrough();
+      await page.pdf();
+      const [/* ignored */, opts] = page._client.send.calls.argsFor(0);
+      expect(opts.printBackground).toBe(true);
+    }));
+    it('should allow printBackground to be set and coalesced to boolean', SX(async function() {
+      spyOn(page._client, 'send').and.callThrough();
+      await page.pdf({printBackground: false});
+      let [/* ignored */, opts] = page._client.send.calls.argsFor(0);
+      expect(opts.printBackground).toBe(false);
+
+      await page.pdf({printBackground: 0});
+      [/* ignored */, opts] = page._client.send.calls.argsFor(1);
+      expect(opts.printBackground).toBe(false);
+
+      await page.pdf({printBackground: 'true'});
+      [/* ignored */, opts] = page._client.send.calls.argsFor(2);
+      expect(opts.printBackground).toBe(true);
+
+      await page.pdf({printBackground: 1});
+      [/* ignored */, opts] = page._client.send.calls.argsFor(3);
+      expect(opts.printBackground).toBe(true);
+    }));
     it('should support setting custom format', SX(async function() {
       const pages = await getPDFPages(await page.pdf({
         format: 'a4'
