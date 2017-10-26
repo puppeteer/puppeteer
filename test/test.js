@@ -65,9 +65,9 @@ let chromeVersion = Infinity;
   const chromiumRevision = require('../package.json').puppeteer.chromium_revision;
   const revisionInfo = Downloader.revisionInfo(Downloader.currentPlatform(), chromiumRevision);
   console.assert(revisionInfo.downloaded, `Chromium r${chromiumRevision} is not downloaded. Run 'npm install' and try to re-run tests.`);
-  let chromePath = executablePath || revisionInfo.executablePath;
+  const chromePath = executablePath || revisionInfo.executablePath;
   const {stdout} = child_process.spawnSync(chromePath, ['--version'], {encoding: 'utf8'});
-  chromeVersion = parseInt(stdout.replace(/[^0-9.]/g, '').split('.')[0]);
+  chromeVersion = parseInt(stdout.replace(/[^0-9.]/g, '').split('.')[0], 10);
   console.log(`Running under ${YELLOW_COLOR}Chrome M${chromeVersion}${RESET_COLOR}`);
 }
 

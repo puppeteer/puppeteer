@@ -15,8 +15,6 @@
  * limitations under the License.
  */
 
-const util = require('util');
-const fs = require('fs');
 const path = require('path');
 const Downloader = require('./ChromiumDownloader');
 const platform = Downloader.currentPlatform();
