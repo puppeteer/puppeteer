@@ -1016,39 +1016,6 @@ describe('Page', function() {
       // Expect navigation to succeed.
       expect(response.ok).toBe(true);
     }));
-    it('should wait for websockets to succeed navigation', SX(async function() {
-      const responses = [];
-      // Hold on to the fetch request without answering.
-      server.setRoute('/fetch-request.js', (req, res) => responses.push(res));
-      const fetchResourceRequested = server.waitForRequest('/fetch-request.js');
-      // Navigate to a page which loads immediately and then opens a bunch of
-      // websocket connections and then a fetch request.
-      const navigationPromise = page.goto(PREFIX + '/websocket.html', {
-        waitUntil: 'networkidle0',
-      });
-      // Track when the navigation gets completed.
-      let navigationFinished = false;
-      navigationPromise.then(() => navigationFinished = true);
-
-      // Wait for the page's 'load' event.
-      await new Promise(fulfill => page.once('load', fulfill));
-      expect(navigationFinished).toBe(false);
-
-      // Wait for the resource to be requested.
-      await fetchResourceRequested;
-
-      // Expect navigation still to be not finished.
-      expect(navigationFinished).toBe(false);
-
-      // Respond to the request.
-      for (const response of responses) {
-        response.statusCode = 404;
-        response.end(`File not found`);
-      }
-      const response = await navigationPromise;
-      // Expect navigation to succeed.
-      expect(response.ok).toBe(true);
-    }));
     it('should not leak listeners during navigation', SX(async function() {
       let warning = null;
       const warningHandler = w => warning = w;
