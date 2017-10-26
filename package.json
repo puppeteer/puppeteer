@@ -3,6 +3,7 @@
   "version": "0.13.0-alpha",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "main": "index.js",
+  "types": "./out/types.d.ts",
   "repository": "github:GoogleChrome/puppeteer",
   "engines": {
     "node": ">=6.4.0"
@@ -19,7 +20,8 @@
     "test-node6-transformer": "jasmine utils/node6-transform/test/test.js",
     "build": "node utils/node6-transform/index.js",
     "unit-node6": "jasmine node6-test/test.js",
-    "tsc": "tsc -p ."
+    "tsc": "tsc -p .",
+    "ts-definitions": "jsdoc -t node_modules/tsd-jsdoc -r lib"
   },
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
@@ -48,6 +50,7 @@
     "eslint": "^4.0.0",
     "esprima": "^4.0.0",
     "jasmine": "^2.6.0",
+    "jsdoc": "^3.5.5",
     "markdown-toc": "^1.1.0",
     "minimist": "^1.2.0",
     "ncp": "^2.0.0",
@@ -55,6 +58,7 @@
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.2.0",
     "text-diff": "^1.0.1",
+    "tsd-jsdoc": "^2.0.0-beta.3",
     "typescript": "^2.6.0-rc"
   }
 }
