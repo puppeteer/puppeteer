@@ -9,6 +9,7 @@
   },
   "scripts": {
     "unit": "jasmine test/test.js",
+    "unit-chrome-63": "node ./utils/downloader.js --download 508578 && CHROME=$(node ./utils/downloader.js --path 508578) npm run unit",
     "debug-unit": "cross-env DEBUG_TEST=true node --inspect-brk ./node_modules/jasmine/bin/jasmine.js test/test.js",
     "test-doclint": "jasmine utils/doclint/check_public_api/test/test.js && jasmine utils/doclint/preprocessor/test.js",
     "test": "npm run lint --silent && npm run coverage && npm run test-doclint && npm run test-node6-transformer",

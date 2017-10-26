@@ -56,16 +56,24 @@ if (process.env.DEBUG_TEST || slowMo)
 else
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
 
+let chromeVersion = Infinity;
+
 // Make sure the `npm install` was run after the chromium roll.
 {
+  const child_process = require('child_process');
   const Downloader = require('../utils/ChromiumDownloader');
   const chromiumRevision = require('../package.json').puppeteer.chromium_revision;
   const revisionInfo = Downloader.revisionInfo(Downloader.currentPlatform(), chromiumRevision);
   console.assert(revisionInfo.downloaded, `Chromium r${chromiumRevision} is not downloaded. Run 'npm install' and try to re-run tests.`);
+  let chromePath = executablePath || revisionInfo.executablePath;
+  const {stdout} = child_process.spawnSync(chromePath, ['--version'], {encoding: 'utf8'});
+  chromeVersion = parseInt(stdout.replace(/[^0-9.]/g, '').split('.')[0]);
+  console.log(`Running under ${YELLOW_COLOR}Chrome M${chromeVersion}${RESET_COLOR}`);
 }
 
 let server;
 let httpsServer;
+
 beforeAll(SX(async function() {
   const assetsPath = path.join(__dirname, 'assets');
   server = await SimpleServer.create(assetsPath, PORT);
@@ -149,7 +157,7 @@ describe('Puppeteer', function() {
       await browser2.close();
       rm(userDataDir);
     }));
-    it('userDataDir option should restore cookies', SX(async function() {
+    (CHROME_M(64) ? it : xit)('userDataDir option should restore cookies', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
@@ -2043,7 +2051,7 @@ describe('Page', function() {
       await page.keyboard.type(text);
       expect(await page.evaluate('result')).toBe(text);
     }));
-    it('should specify location', SX(async function() {
+    (CHROME_M(64) ? it : xit)('should specify location', SX(async function() {
       await page.goto(PREFIX + '/input/textarea.html');
       await page.evaluate(() => {
         window.addEventListener('keydown', event => window.keyLocation = event.location, true);
@@ -2666,7 +2674,7 @@ describe('Page', function() {
       const screenshot = await page.screenshot({omitBackground: true});
       expect(screenshot).toBeGolden('transparent.png');
     }));
-    it('should work with odd clip size on Retina displays', SX(async function() {
+    (CHROME_M(64) ? it : xit)('should work with odd clip size on Retina displays', SX(async function() {
       const screenshot = await page.screenshot({
         clip: {
           x: 0,
@@ -3023,6 +3031,15 @@ function waitForEvents(emitter, eventName, eventCount = 1) {
     emitter.removeListener(eventName, onEvent);
     fulfill();
   }
+}
+
+/**
+ * @param {number} fromVersion
+ * @param {number=} toVersion
+ * @return {boolean}
+ */
+function CHROME_M(fromVersion, toVersion = Infinity) {
+  return fromVersion <= chromeVersion && chromeVersion <= Infinity;
 }
 
 /**

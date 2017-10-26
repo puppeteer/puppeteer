@@ -13,6 +13,7 @@ install:
   - yarn install
   # puppeteer's install script downloads Chrome
 script:
+  - 'if [ "$NODE7" = "true" ]; then yarn run unit-chrome-63; fi'
   - 'if [ "$NODE7" = "true" ]; then yarn run lint; fi'
   - 'if [ "$NODE7" = "true" ]; then yarn run coverage; fi'
   - 'if [ "$NODE7" = "true" ]; then yarn run test-doclint; fi'
