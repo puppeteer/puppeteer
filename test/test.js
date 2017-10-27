@@ -901,7 +901,8 @@ describe('Page', function() {
       await page.goto('asdfasdf').catch(e => error = e);
       expect(error.message).toContain('Cannot navigate to invalid URL');
     }));
-    it('should fail when navigating to bad SSL', SX(async function() {
+    // this test is flaky, see @https://github.com/GoogleChrome/puppeteer/issues/1195
+    xit('should fail when navigating to bad SSL', SX(async function() {
       // Make sure that network events do not emit 'undefined'.
       // @see https://crbug.com/750469
       page.on('request', request => expect(request).toBeTruthy());
