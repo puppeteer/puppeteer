@@ -1718,6 +1718,43 @@ describe('Page', function() {
     }));
   });
 
+  describe('ElementHandle.$', function() {
+    it('should query existing element', SX(async function() {
+      await page.goto(PREFIX + '/playground.html');
+      await page.setContent('<html><body><div class="second"><div class="inner">A</div></div></body></html>');
+      const html = await page.$('html');
+      const second = await html.$('.second');
+      const inner = await second.$('.inner');
+      const content = await page.evaluate(e => e.textContent, inner);
+      expect(content).toBe('A');
+    }));
+
+    it('should return null for non-existing element', SX(async function() {
+      await page.setContent('<html><body><div class="second"><div class="inner">B</div></div></body></html>');
+      const html = await page.$('html');
+      const second = await html.$('.third');
+      expect(second).toBe(null);
+    }));
+  });
+
+  describe('ElementHandle.$$', function() {
+    it('should query existing elements', SX(async function() {
+      await page.setContent('<html><body><div>A</div><br/><div>B</div></body></html>');
+      const html = await page.$('html');
+      const elements = await html.$$('div');
+      expect(elements.length).toBe(2);
+      const promises = elements.map(element => page.evaluate(e => e.textContent, element));
+      expect(await Promise.all(promises)).toEqual(['A', 'B']);
+    }));
+
+    it('should return empty array for non-existing elements', SX(async function() {
+      await page.setContent('<html><body><span>A</span><br/><span>B</span></body></html>');
+      const html = await page.$('html');
+      const elements = await html.$$('div');
+      expect(elements.length).toBe(0);
+    }));
+  });
+
   describe('input', function() {
     it('should click the button', SX(async function() {
       await page.goto(PREFIX + '/input/button.html');
