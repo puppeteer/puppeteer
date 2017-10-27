@@ -832,7 +832,7 @@ Page is guaranteed to have a main frame which persists during navigations.
   - `path` <[string]> The file path to save the PDF to. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the PDF won't be saved to the disk.
   - `scale` <[number]> Scale of the webpage rendering. Defaults to `1`.
   - `displayHeaderFooter` <[boolean]> Display header and footer. Defaults to `false`.
-  - `printBackground` <[boolean]> Print background graphics. Defaults to `false`.
+  - `printBackground` <[boolean]> Print background graphics. Defaults to `true`.
   - `landscape` <[boolean]> Paper orientation. Defaults to `false`.
   - `pageRanges` <[string]> Paper ranges to print, e.g., '1-5, 8, 11-13'. Defaults to the empty string, which means print all pages.
   - `format` <[string]> Paper format. If set, takes priority over `width` or `height` options. Defaults to 'Letter'.
