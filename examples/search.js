@@ -22,9 +22,11 @@ const puppeteer = require('puppeteer');
 
 const browser = await puppeteer.launch();
 const page = await browser.newPage();
-await page.goto('https://google.com', {waitUntil: 'networkidle'});
+await page.goto('https://google.com', {waitUntil: 'networkidle2'});
+
+await page.waitFor('input[name=q]');
 // Type our query into the search bar
-await page.type('puppeteer');
+await page.type('input[name=q]', 'puppeteer');
 
 await page.click('input[type="submit"]');
 

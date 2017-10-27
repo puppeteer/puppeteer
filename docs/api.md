@@ -1,185 +1,210 @@
-##### Released API: [v0.11.0](https://github.com/GoogleChrome/puppeteer/blob/v0.11.0/docs/api.md) | [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
+##### Released API: [v0.12.0](https://github.com/GoogleChrome/puppeteer/blob/v0.12.0/docs/api.md) | [v0.11.0](https://github.com/GoogleChrome/puppeteer/blob/v0.11.0/docs/api.md) | [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
 
-# Puppeteer API v<!-- GEN:version -->0.12.0-alpha<!-- GEN:stop-->
+# Puppeteer API v<!-- GEN:version -->0.13.0-alpha<!-- GEN:stop-->
 
 ##### Table of Contents
 
 <!-- toc -->
 
-- [Puppeteer](#puppeteer)
-  * [Environment Variables](#environment-variables)
-  * [class: Puppeteer](#class-puppeteer)
-    + [puppeteer.connect(options)](#puppeteerconnectoptions)
-    + [puppeteer.executablePath()](#puppeteerexecutablepath)
-    + [puppeteer.launch([options])](#puppeteerlaunchoptions)
-  * [class: Browser](#class-browser)
-    + [browser.close()](#browserclose)
-    + [browser.newPage()](#browsernewpage)
-    + [browser.version()](#browserversion)
-    + [browser.wsEndpoint()](#browserwsendpoint)
-  * [class: Page](#class-page)
-    + [event: 'console'](#event-console)
-    + [event: 'dialog'](#event-dialog)
-    + [event: 'error'](#event-error)
-    + [event: 'frameattached'](#event-frameattached)
-    + [event: 'framedetached'](#event-framedetached)
-    + [event: 'framenavigated'](#event-framenavigated)
-    + [event: 'load'](#event-load)
-    + [event: 'metrics'](#event-metrics)
-    + [event: 'pageerror'](#event-pageerror)
-    + [event: 'request'](#event-request)
-    + [event: 'requestfailed'](#event-requestfailed)
-    + [event: 'requestfinished'](#event-requestfinished)
-    + [event: 'response'](#event-response)
-    + [page.$(selector)](#pageselector)
-    + [page.$$(selector)](#pageselector)
-    + [page.$$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
-    + [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
-    + [page.addScriptTag(url)](#pageaddscripttagurl)
-    + [page.addStyleTag(url)](#pageaddstyletagurl)
-    + [page.authenticate(credentials)](#pageauthenticatecredentials)
-    + [page.click(selector[, options])](#pageclickselector-options)
-    + [page.close()](#pageclose)
-    + [page.content()](#pagecontent)
-    + [page.cookies(...urls)](#pagecookiesurls)
-    + [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
-    + [page.emulate(options)](#pageemulateoptions)
-    + [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
-    + [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
-    + [page.evaluateHandle(pageFunction, ...args)](#pageevaluatehandlepagefunction-args)
-    + [page.evaluateOnNewDocument(pageFunction, ...args)](#pageevaluateonnewdocumentpagefunction-args)
-    + [page.exposeFunction(name, puppeteerFunction)](#pageexposefunctionname-puppeteerfunction)
-    + [page.focus(selector)](#pagefocusselector)
-    + [page.frames()](#pageframes)
-    + [page.getMetrics()](#pagegetmetrics)
-    + [page.goBack(options)](#pagegobackoptions)
-    + [page.goForward(options)](#pagegoforwardoptions)
-    + [page.goto(url, options)](#pagegotourl-options)
-    + [page.hover(selector)](#pagehoverselector)
-    + [page.injectFile(filePath)](#pageinjectfilefilepath)
-    + [page.keyboard](#pagekeyboard)
-    + [page.mainFrame()](#pagemainframe)
-    + [page.mouse](#pagemouse)
-    + [page.pdf(options)](#pagepdfoptions)
-    + [page.queryObjects(prototypeHandle)](#pagequeryobjectsprototypehandle)
-    + [page.reload(options)](#pagereloadoptions)
-    + [page.screenshot([options])](#pagescreenshotoptions)
-    + [page.select(selector, ...values)](#pageselectselector-values)
-    + [page.setContent(html)](#pagesetcontenthtml)
-    + [page.setCookie(...cookies)](#pagesetcookiecookies)
-    + [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
-    + [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
-    + [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
-    + [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
-    + [page.setViewport(viewport)](#pagesetviewportviewport)
-    + [page.tap(selector)](#pagetapselector)
-    + [page.title()](#pagetitle)
-    + [page.touchscreen](#pagetouchscreen)
-    + [page.tracing](#pagetracing)
-    + [page.type(selector, text[, options])](#pagetypeselector-text-options)
-    + [page.url()](#pageurl)
-    + [page.viewport()](#pageviewport)
-    + [page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#pagewaitforselectororfunctionortimeout-options-args)
-    + [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
-    + [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
-    + [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
-  * [class: Keyboard](#class-keyboard)
-    + [keyboard.down(key[, options])](#keyboarddownkey-options)
-    + [keyboard.press(key[, options])](#keyboardpresskey-options)
-    + [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
-    + [keyboard.type(text, options)](#keyboardtypetext-options)
-    + [keyboard.up(key)](#keyboardupkey)
-  * [class: Mouse](#class-mouse)
-    + [mouse.click(x, y, [options])](#mouseclickx-y-options)
-    + [mouse.down([options])](#mousedownoptions)
-    + [mouse.move(x, y, [options])](#mousemovex-y-options)
-    + [mouse.up([options])](#mouseupoptions)
-  * [class: Touchscreen](#class-touchscreen)
-    + [touchscreen.tap(x, y)](#touchscreentapx-y)
-  * [class: Tracing](#class-tracing)
-    + [tracing.start(options)](#tracingstartoptions)
-    + [tracing.stop()](#tracingstop)
-  * [class: Dialog](#class-dialog)
-    + [dialog.accept([promptText])](#dialogacceptprompttext)
-    + [dialog.defaultValue()](#dialogdefaultvalue)
-    + [dialog.dismiss()](#dialogdismiss)
-    + [dialog.message()](#dialogmessage)
-    + [dialog.type](#dialogtype)
-  * [class: ConsoleMessage](#class-consolemessage)
-    + [consoleMessage.args](#consolemessageargs)
-    + [consoleMessage.text](#consolemessagetext)
-    + [consoleMessage.type](#consolemessagetype)
-  * [class: Frame](#class-frame)
-    + [frame.$(selector)](#frameselector)
-    + [frame.$$(selector)](#frameselector)
-    + [frame.$$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
-    + [frame.$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
-    + [frame.addScriptTag(url)](#frameaddscripttagurl)
-    + [frame.addStyleTag(url)](#frameaddstyletagurl)
-    + [frame.childFrames()](#framechildframes)
-    + [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
-    + [frame.executionContext()](#frameexecutioncontext)
-    + [frame.injectFile(filePath)](#frameinjectfilefilepath)
-    + [frame.isDetached()](#frameisdetached)
-    + [frame.name()](#framename)
-    + [frame.parentFrame()](#frameparentframe)
-    + [frame.title()](#frametitle)
-    + [frame.url()](#frameurl)
-    + [frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args)
-    + [frame.waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args)
-    + [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
-  * [class: ExecutionContext](#class-executioncontext)
-    + [executionContext.evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args)
-    + [executionContext.evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args)
-    + [executionContext.queryObjects(prototypeHandle)](#executioncontextqueryobjectsprototypehandle)
-  * [class: JSHandle](#class-jshandle)
-    + [jsHandle.asElement()](#jshandleaselement)
-    + [jsHandle.dispose()](#jshandledispose)
-    + [jsHandle.executionContext()](#jshandleexecutioncontext)
-    + [jsHandle.getProperties()](#jshandlegetproperties)
-    + [jsHandle.getProperty(propertyName)](#jshandlegetpropertypropertyname)
-    + [jsHandle.jsonValue()](#jshandlejsonvalue)
-  * [class: ElementHandle](#class-elementhandle)
-    + [elementHandle.asElement()](#elementhandleaselement)
-    + [elementHandle.boundingBox()](#elementhandleboundingbox)
-    + [elementHandle.click([options])](#elementhandleclickoptions)
-    + [elementHandle.dispose()](#elementhandledispose)
-    + [elementHandle.executionContext()](#elementhandleexecutioncontext)
-    + [elementHandle.focus()](#elementhandlefocus)
-    + [elementHandle.getProperties()](#elementhandlegetproperties)
-    + [elementHandle.getProperty(propertyName)](#elementhandlegetpropertypropertyname)
-    + [elementHandle.hover()](#elementhandlehover)
-    + [elementHandle.jsonValue()](#elementhandlejsonvalue)
-    + [elementHandle.press(key[, options])](#elementhandlepresskey-options)
-    + [elementHandle.screenshot([options])](#elementhandlescreenshotoptions)
-    + [elementHandle.tap()](#elementhandletap)
-    + [elementHandle.toString()](#elementhandletostring)
-    + [elementHandle.type(text[, options])](#elementhandletypetext-options)
-    + [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
-  * [class: Request](#class-request)
-    + [request.abort()](#requestabort)
-    + [request.continue([overrides])](#requestcontinueoverrides)
-    + [request.headers](#requestheaders)
-    + [request.method](#requestmethod)
-    + [request.postData](#requestpostdata)
-    + [request.resourceType](#requestresourcetype)
-    + [request.response()](#requestresponse)
-    + [request.url](#requesturl)
-  * [class: Response](#class-response)
-    + [response.buffer()](#responsebuffer)
-    + [response.headers](#responseheaders)
-    + [response.json()](#responsejson)
-    + [response.ok](#responseok)
-    + [response.request()](#responserequest)
-    + [response.status](#responsestatus)
-    + [response.text()](#responsetext)
-    + [response.url](#responseurl)
+- [Overview](#overview)
+- [Environment Variables](#environment-variables)
+- [class: Puppeteer](#class-puppeteer)
+  * [puppeteer.connect(options)](#puppeteerconnectoptions)
+  * [puppeteer.executablePath()](#puppeteerexecutablepath)
+  * [puppeteer.launch([options])](#puppeteerlaunchoptions)
+- [class: Browser](#class-browser)
+  * [event: 'targetchanged'](#event-targetchanged)
+  * [event: 'targetcreated'](#event-targetcreated)
+  * [event: 'targetdestroyed'](#event-targetdestroyed)
+  * [browser.close()](#browserclose)
+  * [browser.disconnect()](#browserdisconnect)
+  * [browser.newPage()](#browsernewpage)
+  * [browser.pages()](#browserpages)
+  * [browser.targets()](#browsertargets)
+  * [browser.version()](#browserversion)
+  * [browser.wsEndpoint()](#browserwsendpoint)
+- [class: Page](#class-page)
+  * [event: 'console'](#event-console)
+  * [event: 'dialog'](#event-dialog)
+  * [event: 'error'](#event-error)
+  * [event: 'frameattached'](#event-frameattached)
+  * [event: 'framedetached'](#event-framedetached)
+  * [event: 'framenavigated'](#event-framenavigated)
+  * [event: 'load'](#event-load)
+  * [event: 'metrics'](#event-metrics)
+  * [event: 'pageerror'](#event-pageerror)
+  * [event: 'request'](#event-request)
+  * [event: 'requestfailed'](#event-requestfailed)
+  * [event: 'requestfinished'](#event-requestfinished)
+  * [event: 'response'](#event-response)
+  * [page.$(selector)](#pageselector)
+  * [page.$$(selector)](#pageselector)
+  * [page.$$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
+  * [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
+  * [page.addScriptTag(options)](#pageaddscripttagoptions)
+  * [page.addStyleTag(options)](#pageaddstyletagoptions)
+  * [page.authenticate(credentials)](#pageauthenticatecredentials)
+  * [page.click(selector[, options])](#pageclickselector-options)
+  * [page.close()](#pageclose)
+  * [page.content()](#pagecontent)
+  * [page.cookies(...urls)](#pagecookiesurls)
+  * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
+  * [page.emulate(options)](#pageemulateoptions)
+  * [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
+  * [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
+  * [page.evaluateHandle(pageFunction, ...args)](#pageevaluatehandlepagefunction-args)
+  * [page.evaluateOnNewDocument(pageFunction, ...args)](#pageevaluateonnewdocumentpagefunction-args)
+  * [page.exposeFunction(name, puppeteerFunction)](#pageexposefunctionname-puppeteerfunction)
+  * [page.focus(selector)](#pagefocusselector)
+  * [page.frames()](#pageframes)
+  * [page.getMetrics()](#pagegetmetrics)
+  * [page.goBack(options)](#pagegobackoptions)
+  * [page.goForward(options)](#pagegoforwardoptions)
+  * [page.goto(url, options)](#pagegotourl-options)
+  * [page.hover(selector)](#pagehoverselector)
+  * [page.keyboard](#pagekeyboard)
+  * [page.mainFrame()](#pagemainframe)
+  * [page.mouse](#pagemouse)
+  * [page.pdf(options)](#pagepdfoptions)
+  * [page.queryObjects(prototypeHandle)](#pagequeryobjectsprototypehandle)
+  * [page.reload(options)](#pagereloadoptions)
+  * [page.screenshot([options])](#pagescreenshotoptions)
+  * [page.select(selector, ...values)](#pageselectselector-values)
+  * [page.setContent(html, options)](#pagesetcontenthtml-options)
+  * [page.setCookie(...cookies)](#pagesetcookiecookies)
+  * [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
+  * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
+  * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
+  * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
+  * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
+  * [page.setViewport(viewport)](#pagesetviewportviewport)
+  * [page.tap(selector)](#pagetapselector)
+  * [page.title()](#pagetitle)
+  * [page.touchscreen](#pagetouchscreen)
+  * [page.tracing](#pagetracing)
+  * [page.type(selector, text[, options])](#pagetypeselector-text-options)
+  * [page.url()](#pageurl)
+  * [page.viewport()](#pageviewport)
+  * [page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#pagewaitforselectororfunctionortimeout-options-args)
+  * [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
+  * [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
+  * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
+- [class: Keyboard](#class-keyboard)
+  * [keyboard.down(key[, options])](#keyboarddownkey-options)
+  * [keyboard.press(key[, options])](#keyboardpresskey-options)
+  * [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
+  * [keyboard.type(text, options)](#keyboardtypetext-options)
+  * [keyboard.up(key)](#keyboardupkey)
+- [class: Mouse](#class-mouse)
+  * [mouse.click(x, y, [options])](#mouseclickx-y-options)
+  * [mouse.down([options])](#mousedownoptions)
+  * [mouse.move(x, y, [options])](#mousemovex-y-options)
+  * [mouse.up([options])](#mouseupoptions)
+- [class: Touchscreen](#class-touchscreen)
+  * [touchscreen.tap(x, y)](#touchscreentapx-y)
+- [class: Tracing](#class-tracing)
+  * [tracing.start(options)](#tracingstartoptions)
+  * [tracing.stop()](#tracingstop)
+- [class: Dialog](#class-dialog)
+  * [dialog.accept([promptText])](#dialogacceptprompttext)
+  * [dialog.defaultValue()](#dialogdefaultvalue)
+  * [dialog.dismiss()](#dialogdismiss)
+  * [dialog.message()](#dialogmessage)
+  * [dialog.type](#dialogtype)
+- [class: ConsoleMessage](#class-consolemessage)
+  * [consoleMessage.args](#consolemessageargs)
+  * [consoleMessage.text](#consolemessagetext)
+  * [consoleMessage.type](#consolemessagetype)
+- [class: Frame](#class-frame)
+  * [frame.$(selector)](#frameselector)
+  * [frame.$$(selector)](#frameselector)
+  * [frame.$$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
+  * [frame.$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
+  * [frame.addScriptTag(options)](#frameaddscripttagoptions)
+  * [frame.addStyleTag(options)](#frameaddstyletagoptions)
+  * [frame.childFrames()](#framechildframes)
+  * [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
+  * [frame.executionContext()](#frameexecutioncontext)
+  * [frame.isDetached()](#frameisdetached)
+  * [frame.name()](#framename)
+  * [frame.parentFrame()](#frameparentframe)
+  * [frame.title()](#frametitle)
+  * [frame.url()](#frameurl)
+  * [frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args)
+  * [frame.waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args)
+  * [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
+- [class: ExecutionContext](#class-executioncontext)
+  * [executionContext.evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args)
+  * [executionContext.evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args)
+  * [executionContext.queryObjects(prototypeHandle)](#executioncontextqueryobjectsprototypehandle)
+- [class: JSHandle](#class-jshandle)
+  * [jsHandle.asElement()](#jshandleaselement)
+  * [jsHandle.dispose()](#jshandledispose)
+  * [jsHandle.executionContext()](#jshandleexecutioncontext)
+  * [jsHandle.getProperties()](#jshandlegetproperties)
+  * [jsHandle.getProperty(propertyName)](#jshandlegetpropertypropertyname)
+  * [jsHandle.jsonValue()](#jshandlejsonvalue)
+- [class: ElementHandle](#class-elementhandle)
+  * [elementHandle.$(selector)](#elementhandleselector)
+  * [elementHandle.$$(selector)](#elementhandleselector)
+  * [elementHandle.asElement()](#elementhandleaselement)
+  * [elementHandle.boundingBox()](#elementhandleboundingbox)
+  * [elementHandle.click([options])](#elementhandleclickoptions)
+  * [elementHandle.dispose()](#elementhandledispose)
+  * [elementHandle.executionContext()](#elementhandleexecutioncontext)
+  * [elementHandle.focus()](#elementhandlefocus)
+  * [elementHandle.getProperties()](#elementhandlegetproperties)
+  * [elementHandle.getProperty(propertyName)](#elementhandlegetpropertypropertyname)
+  * [elementHandle.hover()](#elementhandlehover)
+  * [elementHandle.jsonValue()](#elementhandlejsonvalue)
+  * [elementHandle.press(key[, options])](#elementhandlepresskey-options)
+  * [elementHandle.screenshot([options])](#elementhandlescreenshotoptions)
+  * [elementHandle.tap()](#elementhandletap)
+  * [elementHandle.toString()](#elementhandletostring)
+  * [elementHandle.type(text[, options])](#elementhandletypetext-options)
+  * [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
+- [class: Request](#class-request)
+  * [request.abort([errorCode])](#requestaborterrorcode)
+  * [request.continue([overrides])](#requestcontinueoverrides)
+  * [request.failure()](#requestfailure)
+  * [request.headers](#requestheaders)
+  * [request.method](#requestmethod)
+  * [request.postData](#requestpostdata)
+  * [request.resourceType](#requestresourcetype)
+  * [request.respond(response)](#requestrespondresponse)
+  * [request.response()](#requestresponse)
+  * [request.url](#requesturl)
+- [class: Response](#class-response)
+  * [response.buffer()](#responsebuffer)
+  * [response.headers](#responseheaders)
+  * [response.json()](#responsejson)
+  * [response.ok](#responseok)
+  * [response.request()](#responserequest)
+  * [response.status](#responsestatus)
+  * [response.text()](#responsetext)
+  * [response.url](#responseurl)
+- [class: Target](#class-target)
+  * [target.page()](#targetpage)
+  * [target.type()](#targettype)
+  * [target.url()](#targeturl)
 
 <!-- tocstop -->
 
-## Puppeteer
+### Overview
 
 Puppeteer is a Node library which provides a high-level API to control Chromium over the DevTools Protocol.
+
+Puppeteer API is hierarchical and mirrors browser structure. On the following diagram, faded entities are not currently represented in Puppeteer.
+
+![puppeteer overview](https://user-images.githubusercontent.com/746130/31592143-089f6f9a-b1db-11e7-9a20-16b7fc754fa1.png)
+
+- [`Puppeteer`](#class-puppeteer) communicates with browser using [devtools protocol](https://chromedevtools.github.io/devtools-protocol/).
+- [`Browser`](#class-browser) instance owns multiple pages.
+- [`Page`](#class-page) has at least one frame: main frame. There might be other frames created by [iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) or [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frame) tags.
+- [`Frame`](#class-frame) has at least one execution context - default execution context - where frame's JavaScript is executed. Frame might have additional execution contexts associated with [extensions](https://developer.chrome.com/extensions).
+
+(Diagram source: [link](https://docs.google.com/drawings/d/1Q_AM6KYs9kbyLZF-Lpp5mtpAWth73Cq8IKCsWYgi8MM/edit?usp=sharing))
+
 
 ### Environment Variables
 
@@ -187,6 +212,7 @@ Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wik
 
 - `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
+- `PUPPETEER_DOWNLOAD_HOST` - overwrite host part of URL that is used to download Chromium
 
 ### class: Puppeteer
 
@@ -248,13 +274,55 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
+An example of disconnecting from and reconnecting to a [Browser]:
+```js
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
+  // Store the endpoint to be able to reconnect to Chromium
+  const browserWSEndpoint = browser.wsEndpoint();
+  // Disconnect puppeteer from Chromium
+  browser.disconnect();
+
+  // Use the endpoint to reestablish a connection
+  const browser2 = await puppeteer.connect({browserWSEndpoint});
+  // Close Chromium
+  await browser2.close();
+});
+```
+
+#### event: 'targetchanged'
+- <[Target]>
+
+Emitted when the url of a target changes.
+
+#### event: 'targetcreated'
+- <[Target]>
+
+Emitted when a target is created, for example when a new page is opened by [`window.open`](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) or [`browser.newPage`](#browsernewpage).
+
+#### event: 'targetdestroyed'
+- <[Target]>
+
+Emitted when a target is destroyed, for example when a page is closed.
+
 #### browser.close()
 - returns: <[Promise]>
 
-Closes browser with all the pages (if any were opened). The browser object itself is considered to be disposed and can not be used anymore.
+Closes Chromium and all of its pages (if any were opened). The browser object itself is considered disposed and cannot be used anymore.
+
+#### browser.disconnect()
+
+Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling `disconnect`, the browser object is considered disposed and cannot be used anymore.
 
 #### browser.newPage()
 - returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.
+
+#### browser.pages()
+- returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages.
+
+#### browser.targets()
+- returns: <[Array]<[Target]>> An array of all active targets.
 
 #### browser.version()
 - returns: <[Promise]<[string]>> For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is similar to `Chrome/61.0.3153.0`.
@@ -350,7 +418,7 @@ Emitted when an uncaught exception happens within the page.
 - <[Request]>
 
 Emitted when a page issues a request. The [request] object is read-only.
-In order to intercept and mutate requests, see `page.setRequestInterceptionEnabled`.
+In order to intercept and mutate requests, see `page.setRequestInterception`.
 
 #### event: 'requestfailed'
 - <[Request]>
@@ -418,21 +486,27 @@ const html = await page.$eval('.main-container', e => e.outerHTML);
 
 Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector-pagefunction-args).
 
-#### page.addScriptTag(url)
-- `url` <[string]> Url of the `<script>` tag
-- returns: <[Promise]> which resolves when the script's onload fires.
+#### page.addScriptTag(options)
+- `options` <[Object]>
+  - `url` <[string]> Url of a script to be added.
+  - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `content` <[string]> Raw JavaScript content to be injected into frame.
+- returns: <[Promise]> which resolves when the script's onload fires or when the script content was injected into frame.
 
-Adds a `<script>` tag into the page with the desired url. Alternatively, a local JavaScript file can be injected via [`page.injectFile`](#pageinjectfilefilepath) method.
+Adds a `<script>` tag into the page with the desired url or content.
 
-Shortcut for [page.mainFrame().addScriptTag(url)](#frameaddscripttagurl).
+Shortcut for [page.mainFrame().addScriptTag(options)](#frameaddscripttagoptions).
 
-#### page.addStyleTag(url)
-- `url` <[string]> Url of the `<link>` tag
-- returns: <[Promise]> which resolves when the stylesheet's onload fires.
+#### page.addStyleTag(options)
+- `options` <[Object]>
+  - `url` <[string]> Url of the `<link>` tag.
+  - `path` <[string]> Path to the CSS file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `content` <[string]> Raw CSS content to be injected into frame.
+- returns: <[Promise]> which resolves when the stylesheet's onload fires or when the CSS content was injected into frame.
 
-Adds a `<link rel="stylesheet">` tag into the page with the desired url.
+Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
 
-Shortcut for [page.mainFrame().addStyleTag(url)](#frameaddstyletagurl).
+Shortcut for [page.mainFrame().addStyleTag(options)](#frameaddstyletagoptions).
 
 #### page.authenticate(credentials)
 - `credentials` <[Object]>
@@ -671,10 +745,10 @@ If there's no element matching `selector`, the method throws an error.
 #### page.getMetrics()
 - returns: <[Object]> Object containing metrics as key/value pairs.
   - `Timestamp` <[number]> The timestamp when the metrics sample was taken.
-  - `DocumentCount` <[number]> Number of documents in the page.
-  - `FrameCount` <[number]> Number of frames in the page.
-  - `JSEventListenerCount` <[number]> Number of events in the page.
-  - `NodeCount` <[number]> Number of DOM nodes in the page.
+  - `Documents` <[number]> Number of documents in the page.
+  - `Frames` <[number]> Number of frames in the page.
+  - `JSEventListeners` <[number]> Number of events in the page.
+  - `Nodes` <[number]> Number of DOM nodes in the page.
   - `LayoutCount` <[number]> Total number of full or partial page layout.
   - `RecalcStyleCount` <[number]> Total number of page style recalculations.
   - `LayoutDuration` <[number]> Combined durations of all page layouts.
@@ -689,11 +763,11 @@ If there's no element matching `selector`, the method throws an error.
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider a navigation finished, defaults to `load`. Can be either:
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
-  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
+    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
 can not go back, resolves to null.
 
@@ -702,11 +776,11 @@ Navigate to the previous page in history.
 #### page.goForward(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
-  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
+    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
 can not go back, resolves to null.
 
@@ -716,11 +790,11 @@ Navigate to the next page in history.
 - `url` <[string]> URL to navigate page to. The url should include scheme, e.g. `https://`.
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter. Defaults to 2.
-  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter. Defaults to 1000 ms.
+    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 The `page.goto` will throw an error if:
@@ -739,12 +813,6 @@ The `page.goto` will throw an error if:
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
 If there's no element matching `selector`, the method throws an error.
-
-#### page.injectFile(filePath)
-- `filePath` <[string]> Path to the JavaScript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-- returns: <[Promise]> Promise which resolves when file gets successfully evaluated in frame.
-
-Shortcut for [page.mainFrame().injectFile(filePath)](#frameinjectfilefilepath).
 
 #### page.keyboard
 
@@ -815,12 +883,12 @@ The `format` options are:
 
 #### page.queryObjects(prototypeHandle)
 - `prototypeHandle` <[JSHandle]> A handle to the object prototype.
-- returns: <[JSHandle]> A handle to an array of objects with this prototype
+- returns: <[Promise]<[JSHandle]>> Promise which resolves to a handle to an array of objects with this prototype.
 
 The method iterates javascript heap and finds all the objects with the given prototype.
 
 ```js
-// Create a Map object 
+// Create a Map object
 await page.evaluate(() => window.map = new Map());
 // Get a handle to the Map object prototype
 const mapPrototype = await page.evaluateHandle(() => Map.prototype);
@@ -837,11 +905,11 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
 #### page.reload(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
-  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
+    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.screenshot([options])
@@ -871,9 +939,16 @@ page.select('select#colors', 'blue'); // single selection
 page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 ```
 
-#### page.setContent(html)
+#### page.setContent(html, options)
 - `html` <[string]> HTML markup to assign to the page.
-- returns: <[Promise]>
+- `options` <[Object]> Navigation parameters which might have the following properties:
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider setting content complete, defaults to `load`. Given an array of event strings, setting content is considered to be successful after all events have been fired. Events can be either:
+    - `load` - consider setting content to be finished when the `load` event is fired.
+    - `domcontentloaded` - consider setting content to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider setting content to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle2` - consider setting content to be finished when there are no more then 2 network connections for at least `500` ms.
+- returns: <[Promise]> Promise which resolves when content is set and all events are triggered.
 
 #### page.setCookie(...cookies)
 - `...cookies` <...[Object]>
@@ -902,19 +977,24 @@ The extra HTTP headers will be sent with every request the page initiates.
 
 > **NOTE** changing this value won't affect scripts that have already been run. It will take full effect on the next [navigation](#pagegotourl-options).
 
-#### page.setRequestInterceptionEnabled(value)
+#### page.setOfflineMode(enabled)
+- `enabled` <[boolean]> When `true`, enables offline mode for the page.
+- returns: <[Promise]>
+
+#### page.setRequestInterception(value)
 - `value` <[boolean]> Whether to enable request interception.
 - returns: <[Promise]>
 
-Activating request interception enables `request.abort` and `request.continue`.
+Activating request interception enables `request.abort`, `request.continue` and
+`request.respond` methods.
 
-An example of a naïve request interceptor which aborts all image requests:
+An example of a naïve request interceptor that aborts all image requests:
 ```js
 const puppeteer = require('puppeteer');
 
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
-  await page.setRequestInterceptionEnabled(true);
+  await page.setRequestInterception(true);
   page.on('request', interceptedRequest => {
     if (interceptedRequest.url.endsWith('.png') || interceptedRequest.url.endsWith('.jpg'))
       interceptedRequest.abort();
@@ -925,6 +1005,11 @@ puppeteer.launch().then(async browser => {
   await browser.close();
 });
 ```
+
+> **NOTE** Request interception doesn't work with data URLs. Calling `abort`,
+> `continue` or `respond` on requests for data URLs is a noop.
+
+> **NOTE** Enabling request interception disables page caching.
 
 #### page.setUserAgent(userAgent)
 - `userAgent` <[string]> Specific user agent to use in this page
@@ -1033,17 +1118,18 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
-    - `networkidle` - consider navigation to be finished when the network activity stays "idle" for at least `networkIdleTimeout` ms.
-  - `networkIdleInflight` <[number]> Maximum amount of inflight requests which are considered "idle". Takes effect only with `waitUntil: 'networkidle'` parameter.
-  - `networkIdleTimeout` <[number]> A timeout to wait before completing navigation. Takes effect only with `waitUntil: 'networkidle'` parameter.
+    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.waitForSelector(selector[, options])
 - `selector` <[string]> A [selector] of an element to wait for,
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
 
@@ -1076,38 +1162,51 @@ For finer control, you can use [`keyboard.down`](#keyboarddownkey-options), [`ke
 
 An example of holding down `Shift` in order to select and delete some text:
 ```js
-page.keyboard.type('Hello World!');
-page.keyboard.press('ArrowLeft');
+await page.keyboard.type('Hello World!');
+await page.keyboard.press('ArrowLeft');
 
-page.keyboard.down('Shift');
+await page.keyboard.down('Shift');
 for (let i = 0; i < ' World'.length; i++)
-  page.keyboard.press('ArrowLeft');
-page.keyboard.up('Shift');
+  await page.keyboard.press('ArrowLeft');
+await page.keyboard.up('Shift');
 
-page.keyboard.press('Backspace');
+await page.keyboard.press('Backspace');
 // Result text will end up saying 'Hello!'
 ```
 
+An example of pressing `A`
+```js
+await page.keyboard.down('Shift');
+await page.keyboard.press('KeyA');
+await page.keyboard.up('Shift');
+```
+
 #### keyboard.down(key[, options])
-- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
 - `options` <[Object]>
   - `text` <[string]> If specified, generates an input event with this text.
 - returns: <[Promise]>
 
 Dispatches a `keydown` event.
 
-This will not send input events unless `text` is specified.
+If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also generated. The `text` option can be specified to force an input event to be generated.
 
 If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key presses will be sent with that modifier active. To release the modifier key, use [`keyboard.up`](#keyboardupkey).
 
 After the key is pressed once, subsequent calls to [`keyboard.down`](#keyboarddownkey-options) will have [repeat](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat) set to true. To release the key, use [`keyboard.up`](#keyboardupkey).
 
+> **NOTE** Modifier keys DO effect `keyboard.down`. Holding down `Shift` will type the text in upper case.
+
 #### keyboard.press(key[, options])
-- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
 - `options` <[Object]>
   - `text` <[string]> If specified, generates an input event with this text.
   - `delay` <[number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
+
+If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also generated. The `text` option can be specified to force an input event to be generated.
+
+> **NOTE** Modifier keys DO effect `elementHandle.press`. Holding down `Shift` will type the text in upper case.
 
 Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#keyboardupkey).
 
@@ -1120,6 +1219,8 @@ Dispatches a `keypress` and `input` event. This does not send a `keydown` or `ke
 ```js
 page.keyboard.sendCharacter('嗨');
 ```
+
+> **NOTE** Modifier keys DO NOT effect `keyboard.sendCharacter`. Holding down `Shift` will not type the text in upper case.
 
 #### keyboard.type(text, options)
 - `text` <[string]> A text to type into a focused element.
@@ -1136,8 +1237,10 @@ page.keyboard.type('Hello'); // Types instantly
 page.keyboard.type('World', {delay: 100}); // Types slower, like a user
 ```
 
+> **NOTE** Modifier keys DO NOT effect `keyboard.type`. Holding down `Shift` will not type the text in upper case.
+
 #### keyboard.up(key)
-- `key` <[string]> Name of key to release, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `key` <[string]> Name of key to release, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
 - returns: <[Promise]>
 
 Dispatches a `keyup` event.
@@ -1334,17 +1437,23 @@ const preloadHref = await frame.$eval('link[rel=preload]', el => el.href);
 const html = await frame.$eval('.main-container', e => e.outerHTML);
 ```
 
-#### frame.addScriptTag(url)
-- `url` <[string]> Url of a script to be added
-- returns: <[Promise]> Promise which resolves as the script gets added and loads.
+#### frame.addScriptTag(options)
+- `options` <[Object]>
+  - `url` <[string]> Url of a script to be added.
+  - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `content` <[string]> Raw JavaScript content to be injected into frame.
+- returns: <[Promise]> which resolves when the script's onload fires or when the script content was injected into frame.
 
-Adds a `<script>` tag to the frame with the desired url. Alternatively, JavaScript can be injected to the frame via [`frame.injectFile`](#frameinjectfilefilepath) method.
+Adds a `<script>` tag into the page with the desired url or content.
 
-#### frame.addStyleTag(url)
-- `url` <[string]> Url of a stylesheet to be added
-- returns: <[Promise]> Promise which resolves when the script gets added and loads.
+#### frame.addStyleTag(options)
+- `options` <[Object]>
+  - `url` <[string]> Url of the `<link>` tag.
+  - `path` <[string]> Path to the CSS file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `content` <[string]> Raw CSS content to be injected into frame.
+- returns: <[Promise]> which resolves when the stylesheet's onload fires or when the CSS content was injected into frame.
 
-Adds a `<link rel="stylesheet">` tag to the frame with the desired url.
+Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
 
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
@@ -1380,10 +1489,6 @@ await bodyHandle.dispose();
 
 #### frame.executionContext()
 - returns: <[ExecutionContext]> Execution context associated with this frame.
-
-#### frame.injectFile(filePath)
-- `filePath` <[string]> Path to the JavaScript file to be injected into frame. If `filePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-- returns: <[Promise]> Promise which resolves when file gets successfully evaluated in frame.
 
 #### frame.isDetached()
 - returns: <[boolean]>
@@ -1450,6 +1555,7 @@ puppeteer.launch().then(async browser => {
 - `selector` <[string]> A [selector] of an element to wait for,
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
 
@@ -1543,7 +1649,7 @@ await resultHandle.dispose();
 The method iterates javascript heap and finds all the objects with the given prototype.
 
 ```js
-// Create a Map object 
+// Create a Map object
 await page.evaluate(() => window.map = new Map());
 // Get a handle to the Map object prototype
 const mapPrototype = await page.evaluateHandle(() => Map.prototype);
@@ -1605,9 +1711,11 @@ Fetches a single property from the referenced object.
 #### jsHandle.jsonValue()
 - returns: <[Promise]<[Object]>>
 
-Returns a JSON representation of the object. The JSON is generated by running [`JSON.stringify`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify) on the object in page and consequent [`JSON.parse`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse) in puppeteer.
+Returns a JSON representation of the object. If the object has a
+[`toJSON`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#toJSON()_behavior)
+function, it **will not be called**.
 
-> **NOTE** The method will throw if the referenced object is not stringifiable.
+> **NOTE** The method will return an empty JSON if the referenced object is not stringifiable. It will throw an error if the object has circular references.
 
 ### class: ElementHandle
 
@@ -1631,8 +1739,20 @@ ElementHandle prevents DOM element from garbage collection unless the handle is 
 
 ElementHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args) and [`page.evaluate()`](#pageevaluatepagefunction-args) methods.
 
+#### elementHandle.$(selector)
+- `selector` <[string]> A [selector] to query element for
+- returns: <[Promise]<[ElementHandle]>>
+
+The method runs `element.querySelector` within the page. If no element matches the selector, the return value resolve to `null`.
+
+#### elementHandle.$$(selector)
+- `selector` <[string]> A [selector] to query element for
+- returns: <[Promise]<[Array]<[ElementHandle]>>>
+
+The method runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `[]`.
+
 #### elementHandle.asElement()
-- returns: <[ElementHandle]>
+- returns: <[elementhandle]>
 
 #### elementHandle.boundingBox()
 - returns: <[Object]>
@@ -1703,13 +1823,17 @@ Returns a JSON representation of the object. The JSON is generated by running [`
 > **NOTE** The method will throw if the referenced object is not stringifiable.
 
 #### elementHandle.press(key[, options])
-- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [KeyboardEvent.key](https://www.w3.org/TR/uievents-key/)
+- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
 - `options` <[Object]>
   - `text` <[string]> If specified, generates an input event with this text.
   - `delay` <[number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
 
 Focuses the element, and then uses [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#keyboardupkey).
+
+If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also be generated. The `text` option can be specified to force an input event to be generated.
+
+> **NOTE** Modifier keys DO effect `elementHandle.press`. Holding down `Shift` will type the text in upper case.
 
 #### elementHandle.screenshot([options])
 - `options` <[Object]> Same options as in [page.screenshot](#pagescreenshotoptions).
@@ -1742,6 +1866,13 @@ elementHandle.type('Hello'); // Types instantly
 elementHandle.type('World', {delay: 100}); // Types slower, like a user
 ```
 
+An example of typing into a text field and then submitting the form:
+```js
+const elementHandle = await page.$('input');
+await elementHandle.type('some text');
+await elementHandle.press('Enter');
+```
+
 #### elementHandle.uploadFile(...filePaths)
 - `...filePaths` <...[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]>
@@ -1759,10 +1890,25 @@ If request fails at some point, then instead of 'requestfinished' event (and pos
 
 If request gets a 'redirect' response, the request is successfully finished with the 'requestfinished' event, and a new request is  issued to a redirected url.
 
-#### request.abort()
+#### request.abort([errorCode])
+- `errorCode` <[string]> Optional error code. Defaults to `failed`, could be
+  one of the following:
+  - `aborted` - An operation was aborted (due to user action)
+  - `accessdenied` - Permission to access a resource, other than the network, was denied
+  - `addressunreachable` - The IP address is unreachable. This usually means
+    that there is no route to the specified host or network.
+  - `connectionaborted` - A connection timed out as a result of not receiving an ACK for data sent.
+  - `connectionclosed` - A connection was closed (corresponding to a TCP FIN).
+  - `connectionfailed` - A connection attempt failed.
+  - `connectionrefused` - A connection attempt was refused.
+  - `connectionreset` - A connection was reset (corresponding to a TCP RST).
+  - `internetdisconnected` - The Internet connection has been lost.
+  - `namenotresolved` - The host name could not be resolved.
+  - `timedout` - An operation timed out.
+  - `failed` - A generic failure occurred.
 - returns: <[Promise]>
 
-Aborts request. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
+Aborts request. To use this, request interception should be enabled with `page.setRequestInterception`.
 Exception is immediately thrown if the request interception is not enabled.
 
 #### request.continue([overrides])
@@ -1773,8 +1919,23 @@ Exception is immediately thrown if the request interception is not enabled.
   - `headers` <[Object]> If set changes the request HTTP headers
 - returns: <[Promise]>
 
-Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
+Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterception`.
 Exception is immediately thrown if the request interception is not enabled.
+
+#### request.failure()
+- returns: <[Object]> Object describing request failure, if any
+  - `errorText` <[string]> Human-readable error message, e.g. `'net::ERR_FAILED'`.
+
+The method returns null unless this request was failed, as reported by
+`requestfailed` event.
+
+Example of logging all failed requests:
+
+```js
+page.on('requestfailed', request => {
+  console.log(request.url + ' ' + request.failure().errorText);
+});
+```
 
 #### request.headers
 - <[Object]> An object with HTTP headers associated with the request. All header names are lower-case.
@@ -1794,6 +1955,32 @@ Contains the request's post body, if any.
 
 Contains the request's resource type as it was perceived by the rendering engine.
 ResourceType will be one of the following: `document`, `stylesheet`, `image`, `media`, `font`, `script`, `texttrack`, `xhr`, `fetch`, `eventsource`, `websocket`, `manifest`, `other`.
+
+#### request.respond(response)
+- `response` <[Object]> Response that will fulfill this request
+  - `status` <[number]> Response status code, defaults to `200`.
+  - `headers` <[Object]> Optional response headers
+  - `contentType` <[string]> If set, equals to setting `Content-Type` response header
+  - `body` <[Buffer]|[string]> Optional response body
+- returns: <[Promise]>
+
+Fulfills request with given response. To use this, request interception should
+be enabled with `page.setRequestInterception`. Exception is thrown if
+request interception is not enabled.
+
+An example of fulfilling all requests with 404 responses:
+
+```js
+await page.setRequestInterception(true);
+page.on('request', request => {
+  request.respond({
+    status: 404,
+    contentType: 'text/plain',
+    body: 'Not Found!'
+  });
+});
+```
+
 
 #### request.response()
 - returns: <[Response]> A matching [Response] object, or `null` if the response has not been received yet.
@@ -1839,6 +2026,21 @@ Contains the status code of the response (e.g., 200 for a success).
 
 Contains the URL of the response.
 
+### class: Target
+
+#### target.page()
+- returns: <[Promise]<[Page]>>
+
+If the target is not of type `"page"`, returns `null`.
+
+#### target.type()
+- returns: <[string]>
+
+Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, or `"other"`.
+
+#### target.url()
+- returns: <[string]>
+
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
 [Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer "Buffer"
@@ -1870,3 +2072,5 @@ Contains the URL of the response.
 [UIEvent.detail]: https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail "UIEvent.detail"
 [Serializable]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Description "Serializable"
 [Touchscreen]: #class-touchscreen "Touchscreen"
+[Target]: #class-target "Target"
+[USKeyboardLayout]: ../lib/USKeyboardLayout.js "USKeyboardLayout"
