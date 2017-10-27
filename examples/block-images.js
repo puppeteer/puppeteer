@@ -29,7 +29,7 @@ page.on('request', request => {
   else
     request.continue();
 });
-await page.goto('https://www.reuters.com/');
+await page.goto('https://news.google.com/news/');
 await page.screenshot({path: 'news.png', fullPage: true});
 
 await browser.close();
