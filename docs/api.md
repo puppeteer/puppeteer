@@ -159,6 +159,7 @@
   * [elementHandle.jsonValue()](#elementhandlejsonvalue)
   * [elementHandle.press(key[, options])](#elementhandlepresskey-options)
   * [elementHandle.screenshot([options])](#elementhandlescreenshotoptions)
+  * [elementHandle.select(selector, ...values)](#elementhandleselectselector-values)
   * [elementHandle.tap()](#elementhandletap)
   * [elementHandle.toString()](#elementhandletostring)
   * [elementHandle.type(text[, options])](#elementhandletypetext-options)
@@ -1841,6 +1842,19 @@ If `key` is a single character and no modifier keys besides `Shift` are being he
 
 This method scrolls element into view if needed, and then uses [page.screenshot](#pagescreenshotoptions) to take a screenshot of the element.
 If the element is detached from DOM, the method throws an error.
+
+#### elementHandle.select(selector, ...values)
+- `selector` <[string]> A [selector] to query page for
+- `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
+- returns: <[Promise]>
+
+Triggers a `change` and `input` event once all the provided options have been selected.
+If there's no `<select>` element matching `selector`, the method throws an error.
+
+```js
+elementHandle.select('select#colors', 'blue'); // single selection
+elementHandle.select('select#colors', 'red', 'green', 'blue'); // multiple selections
+```
 
 #### elementHandle.tap()
 - returns: <[Promise]> Promise which resolves when the element is successfully tapped. Promise gets rejected if the element is detached from DOM.

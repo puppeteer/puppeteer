@@ -2087,6 +2087,59 @@ describe('Page', function() {
     }
   });
 
+  describe('input.select', function() {
+
+    it('should select a single option', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      const input = await page.$('select');
+      await input.select('select', 'blue');
+      expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
+      expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
+    }));
+
+    it('should select multiple options', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      await page.evaluate(() => makeMultiple());
+      const input = await page.$('select');
+      await input.select('select', 'blue', 'green', 'red');
+      expect(await page.evaluate(() => result.onInput)).toEqual(['blue', 'green', 'red']);
+      expect(await page.evaluate(() => result.onChange)).toEqual(['blue', 'green', 'red']);
+    }));
+
+    it('should respect event bubbling', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      const input = await page.$('select');
+      await input.select('select', 'blue', 'green', 'red');
+      expect(await page.evaluate(() => result.onBubblingInput)).toEqual(['blue']);
+      expect(await page.evaluate(() => result.onBubblingChange)).toEqual(['blue']);
+    }));
+
+    it('should work with no options', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      await page.evaluate(() => makeEmpty());
+      const input = await page.$('select');
+      await input.select('select', '42');
+      expect(await page.evaluate(() => result.onInput)).toEqual([]);
+      expect(await page.evaluate(() => result.onChange)).toEqual([]);
+    }));
+
+    it('should not select a non-existent option', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      const input = await page.$('select');
+      await input.select('select', '42');
+      expect(await page.evaluate(() => result.onInput)).toEqual([]);
+      expect(await page.evaluate(() => result.onChange)).toEqual([]);
+    }));
+
+    it('should throw', SX(async function() {
+      let error = null;
+      await page.goto(PREFIX + '/input/select.html');
+      const input = await page.$('select');
+      await input.select('body', '').catch(e => error = e);
+      expect(error.message).toContain('Element is not a <select> element.');
+    }));
+  });
+
   describe('Page.setUserAgent', function() {
     it('should work', SX(async function() {
       expect(await page.evaluate(() => navigator.userAgent)).toContain('Mozilla');
