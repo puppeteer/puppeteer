@@ -155,6 +155,8 @@ how to run this setup from a webserver running on App Engine Flex (Node).
 
 Running Puppeteer on Heroku requires some additional dependencies that aren't included on the Linux box that Heroku spins up for you. To add the dependencies on deploy, add the Puppeteer Heroku buildpack to the list of buildpacks for your app under Settings > Buildpacks.
 
+Simple Guide: https://timleland.com/headless-chrome-on-heroku/
+
 The url for the buildpack is https://github.com/jontewks/puppeteer-heroku-buildpack
 
 When you click add buildpack, simply paste that url into the input, and click save. On the next deploy, your app will also install the dependencies that Puppeteer needs to run.
