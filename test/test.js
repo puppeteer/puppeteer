@@ -758,7 +758,7 @@ describe('Page', function() {
 
   describe('Frame.select', function() {
     it('should select single option', SX(async function() {
-      await page.goto(EMPTY_PAGE);
+      await page.goto(PREFIX + '/input/select.html');
       const frame = page.mainFrame();
       await frame.select('select', 'blue');
       expect(await frame.evaluate(() => result.onInput)).toEqual(['blue']);
@@ -766,7 +766,7 @@ describe('Page', function() {
     }));
 
     it('should select multiple options', SX(async function() {
-      await page.goto(EMPTY_PAGE);
+      await page.goto(PREFIX + '/input/select.html');
       const frame = page.mainFrame();
       await frame.evaluate(() => makeMultiple());
       await frame.select('select', 'blue', 'green', 'red');
@@ -775,7 +775,7 @@ describe('Page', function() {
     }));
 
     it('should respect event bubbling', SX(async function() {
-      await page.goto(EMPTY_PAGE);
+      await page.goto(PREFIX + '/input/select.html');
       const frame = page.mainFrame();
       await frame.select('select', 'blue');
       expect(await frame.evaluate(() => result.onBubblingInput)).toEqual(['blue']);
@@ -784,7 +784,7 @@ describe('Page', function() {
 
 
     it('should work with no options', SX(async function() {
-      await page.goto(EMPTY_PAGE);
+      await page.goto(PREFIX + '/input/select.html');
       const frame = page.mainFrame();
       await frame.evaluate(() => makeEmpty());
       await frame.select('select', '42');
@@ -793,7 +793,7 @@ describe('Page', function() {
     }));
 
     it('should not select a non-existent option', SX(async function() {
-      await page.goto(EMPTY_PAGE);
+      await page.goto(PREFIX + '/input/select.html');
       const frame = page.mainFrame();
       await frame.select('select', '42');
       expect(await frame.evaluate(() => result.onInput)).toEqual([]);
@@ -802,7 +802,7 @@ describe('Page', function() {
 
     it('should throw', SX(async function() {
       let error = null;
-      await page.goto(EMPTY_PAGE);
+      await page.goto(PREFIX + '/input/select.html');
       const frame = page.mainFrame();
       await frame.select('body', '').catch(e => error = e);
       expect(error.message).toContain('Element is not a <select> element.');
