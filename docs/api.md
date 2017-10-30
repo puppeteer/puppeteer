@@ -70,12 +70,12 @@
   * [page.reload(options)](#pagereloadoptions)
   * [page.screenshot([options])](#pagescreenshotoptions)
   * [page.select(selector, ...values)](#pageselectselector-values)
-  * [page.setContent(html)](#pagesetcontenthtml)
+  * [page.setContent(html, options)](#pagesetcontenthtml-options)
   * [page.setCookie(...cookies)](#pagesetcookiecookies)
   * [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
-  * [page.setRequestInterceptionEnabled(value)](#pagesetrequestinterceptionenabledvalue)
+  * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
   * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
   * [page.setViewport(viewport)](#pagesetviewportviewport)
   * [page.tap(selector)](#pagetapselector)
@@ -145,6 +145,8 @@
   * [jsHandle.getProperty(propertyName)](#jshandlegetpropertypropertyname)
   * [jsHandle.jsonValue()](#jshandlejsonvalue)
 - [class: ElementHandle](#class-elementhandle)
+  * [elementHandle.$(selector)](#elementhandleselector)
+  * [elementHandle.$$(selector)](#elementhandleselector)
   * [elementHandle.asElement()](#elementhandleaselement)
   * [elementHandle.boundingBox()](#elementhandleboundingbox)
   * [elementHandle.click([options])](#elementhandleclickoptions)
@@ -416,7 +418,7 @@ Emitted when an uncaught exception happens within the page.
 - <[Request]>
 
 Emitted when a page issues a request. The [request] object is read-only.
-In order to intercept and mutate requests, see `page.setRequestInterceptionEnabled`.
+In order to intercept and mutate requests, see `page.setRequestInterception`.
 
 #### event: 'requestfailed'
 - <[Request]>
@@ -761,7 +763,7 @@ If there's no element matching `selector`, the method throws an error.
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider a navigation finished, defaults to `load`. Can be either:
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
@@ -774,7 +776,7 @@ Navigate to the previous page in history.
 #### page.goForward(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
@@ -788,7 +790,7 @@ Navigate to the next page in history.
 - `url` <[string]> URL to navigate page to. The url should include scheme, e.g. `https://`.
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
@@ -903,7 +905,7 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
 #### page.reload(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
@@ -937,9 +939,16 @@ page.select('select#colors', 'blue'); // single selection
 page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 ```
 
-#### page.setContent(html)
+#### page.setContent(html, options)
 - `html` <[string]> HTML markup to assign to the page.
-- returns: <[Promise]>
+- `options` <[Object]> Navigation parameters which might have the following properties:
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider setting content complete, defaults to `load`. Given an array of event strings, setting content is considered to be successful after all events have been fired. Events can be either:
+    - `load` - consider setting content to be finished when the `load` event is fired.
+    - `domcontentloaded` - consider setting content to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider setting content to be finished when there are no more then 0 network connections for at least `500` ms.
+    - `networkidle2` - consider setting content to be finished when there are no more then 2 network connections for at least `500` ms.
+- returns: <[Promise]> Promise which resolves when content is set and all events are triggered.
 
 #### page.setCookie(...cookies)
 - `...cookies` <...[Object]>
@@ -972,7 +981,7 @@ The extra HTTP headers will be sent with every request the page initiates.
 - `enabled` <[boolean]> When `true`, enables offline mode for the page.
 - returns: <[Promise]>
 
-#### page.setRequestInterceptionEnabled(value)
+#### page.setRequestInterception(value)
 - `value` <[boolean]> Whether to enable request interception.
 - returns: <[Promise]>
 
@@ -985,7 +994,7 @@ const puppeteer = require('puppeteer');
 
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
-  await page.setRequestInterceptionEnabled(true);
+  await page.setRequestInterception(true);
   page.on('request', interceptedRequest => {
     if (interceptedRequest.url.endsWith('.png') || interceptedRequest.url.endsWith('.jpg'))
       interceptedRequest.abort();
@@ -999,6 +1008,8 @@ puppeteer.launch().then(async browser => {
 
 > **NOTE** Request interception doesn't work with data URLs. Calling `abort`,
 > `continue` or `respond` on requests for data URLs is a noop.
+
+> **NOTE** Enabling request interception disables page caching.
 
 #### page.setUserAgent(userAgent)
 - `userAgent` <[string]> Specific user agent to use in this page
@@ -1107,7 +1118,7 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]> When to consider navigation succeeded, defaults to `load`. Can be either:
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
@@ -1151,16 +1162,23 @@ For finer control, you can use [`keyboard.down`](#keyboarddownkey-options), [`ke
 
 An example of holding down `Shift` in order to select and delete some text:
 ```js
-page.keyboard.type('Hello World!');
-page.keyboard.press('ArrowLeft');
+await page.keyboard.type('Hello World!');
+await page.keyboard.press('ArrowLeft');
 
-page.keyboard.down('Shift');
+await page.keyboard.down('Shift');
 for (let i = 0; i < ' World'.length; i++)
-  page.keyboard.press('ArrowLeft');
-page.keyboard.up('Shift');
+  await page.keyboard.press('ArrowLeft');
+await page.keyboard.up('Shift');
 
-page.keyboard.press('Backspace');
+await page.keyboard.press('Backspace');
 // Result text will end up saying 'Hello!'
+```
+
+An example of pressing `A`
+```js
+await page.keyboard.down('Shift');
+await page.keyboard.press('KeyA');
+await page.keyboard.up('Shift');
 ```
 
 #### keyboard.down(key[, options])
@@ -1177,12 +1195,18 @@ If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key
 
 After the key is pressed once, subsequent calls to [`keyboard.down`](#keyboarddownkey-options) will have [repeat](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat) set to true. To release the key, use [`keyboard.up`](#keyboardupkey).
 
+> **NOTE** Modifier keys DO effect `keyboard.down`. Holding down `Shift` will type the text in upper case.
+
 #### keyboard.press(key[, options])
 - `key` <[string]> Name of key to press, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
 - `options` <[Object]>
   - `text` <[string]> If specified, generates an input event with this text.
   - `delay` <[number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
+
+If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also generated. The `text` option can be specified to force an input event to be generated.
+
+> **NOTE** Modifier keys DO effect `elementHandle.press`. Holding down `Shift` will type the text in upper case.
 
 Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#keyboardupkey).
 
@@ -1195,6 +1219,8 @@ Dispatches a `keypress` and `input` event. This does not send a `keydown` or `ke
 ```js
 page.keyboard.sendCharacter('嗨');
 ```
+
+> **NOTE** Modifier keys DO NOT effect `keyboard.sendCharacter`. Holding down `Shift` will not type the text in upper case.
 
 #### keyboard.type(text, options)
 - `text` <[string]> A text to type into a focused element.
@@ -1210,6 +1236,8 @@ To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#k
 page.keyboard.type('Hello'); // Types instantly
 page.keyboard.type('World', {delay: 100}); // Types slower, like a user
 ```
+
+> **NOTE** Modifier keys DO NOT effect `keyboard.type`. Holding down `Shift` will not type the text in upper case.
 
 #### keyboard.up(key)
 - `key` <[string]> Name of key to release, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
@@ -1711,8 +1739,20 @@ ElementHandle prevents DOM element from garbage collection unless the handle is 
 
 ElementHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args) and [`page.evaluate()`](#pageevaluatepagefunction-args) methods.
 
+#### elementHandle.$(selector)
+- `selector` <[string]> A [selector] to query element for
+- returns: <[Promise]<[ElementHandle]>>
+
+The method runs `element.querySelector` within the page. If no element matches the selector, the return value resolve to `null`.
+
+#### elementHandle.$$(selector)
+- `selector` <[string]> A [selector] to query element for
+- returns: <[Promise]<[Array]<[ElementHandle]>>>
+
+The method runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `[]`.
+
 #### elementHandle.asElement()
-- returns: <[ElementHandle]>
+- returns: <[elementhandle]>
 
 #### elementHandle.boundingBox()
 - returns: <[Object]>
@@ -1791,6 +1831,10 @@ Returns a JSON representation of the object. The JSON is generated by running [`
 
 Focuses the element, and then uses [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#keyboardupkey).
 
+If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also be generated. The `text` option can be specified to force an input event to be generated.
+
+> **NOTE** Modifier keys DO effect `elementHandle.press`. Holding down `Shift` will type the text in upper case.
+
 #### elementHandle.screenshot([options])
 - `options` <[Object]> Same options as in [page.screenshot](#pagescreenshotoptions).
 - returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot.
@@ -1820,6 +1864,13 @@ To press a special key, like `Control` or `ArrowDown`, use [`elementHandle.press
 ```js
 elementHandle.type('Hello'); // Types instantly
 elementHandle.type('World', {delay: 100}); // Types slower, like a user
+```
+
+An example of typing into a text field and then submitting the form:
+```js
+const elementHandle = await page.$('input');
+await elementHandle.type('some text');
+await elementHandle.press('Enter');
 ```
 
 #### elementHandle.uploadFile(...filePaths)
@@ -1857,7 +1908,7 @@ If request gets a 'redirect' response, the request is successfully finished with
   - `failed` - A generic failure occurred.
 - returns: <[Promise]>
 
-Aborts request. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
+Aborts request. To use this, request interception should be enabled with `page.setRequestInterception`.
 Exception is immediately thrown if the request interception is not enabled.
 
 #### request.continue([overrides])
@@ -1868,7 +1919,7 @@ Exception is immediately thrown if the request interception is not enabled.
   - `headers` <[Object]> If set changes the request HTTP headers
 - returns: <[Promise]>
 
-Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterceptionEnabled`.
+Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterception`.
 Exception is immediately thrown if the request interception is not enabled.
 
 #### request.failure()
@@ -1914,13 +1965,13 @@ ResourceType will be one of the following: `document`, `stylesheet`, `image`, `m
 - returns: <[Promise]>
 
 Fulfills request with given response. To use this, request interception should
-be enabled with `page.setRequestInterceptionEnabled`. Exception is thrown if
+be enabled with `page.setRequestInterception`. Exception is thrown if
 request interception is not enabled.
 
 An example of fulfilling all requests with 404 responses:
 
 ```js
-await page.setRequestInterceptionEnabled(true);
+await page.setRequestInterception(true);
 page.on('request', request => {
   request.respond({
     status: 404,

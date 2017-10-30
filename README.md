@@ -160,19 +160,19 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
 
 
 1. Enable verbose logging - All public API calls and internal protocol traffic
-   will be logged via the [`debug`](https://github.com/visionmedia/debug) module.
+   will be logged via the [`debug`](https://github.com/visionmedia/debug) module under the `puppeteer` namespace.
 
    ```sh
    # Basic verbose logging
-   env DEBUG="*" node script.js
+   env DEBUG="puppeteer:*" node script.js
 
    # Debug output can be enabled/disabled by namespace
-   env DEBUG="*,-*:protocol" node script.js # everything BUT protocol messages
-   env DEBUG="*:session" node script.js # protocol session messages (protocol messages to targets)
-   env DEBUG="*:mouse,*:keyboard" node script.js # only Mouse and Keyboard API calls
+   env DEBUG="puppeteer:*,-puppeteer:protocol" node script.js # everything BUT protocol messages
+   env DEBUG="puppeteer:session" node script.js # protocol session messages (protocol messages to targets)
+   env DEBUG="puppeteer:mouse,puppeteer:keyboard" node script.js # only Mouse and Keyboard API calls
 
    # Protocol traffic can be rather noisy. This example filters out all Network domain messages
-   env DEBUG="*" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
+   env DEBUG="puppeteer:*" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
    ```
 
 
