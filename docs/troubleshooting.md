@@ -161,4 +161,4 @@ When you click add buildpack, simply paste that url into the input, and click sa
 
 If you need to render Chinese, Japanese, or Korean characters you may need to use a buildpack with additional font files like https://github.com/CoffeeAndCode/puppeteer-heroku-buildpack
 
-There's also another [simple guide](https://timleland.com/headless-chrome-on-heroku/) from @timleland includes a sample project: https://timleland.com/headless-chrome-on-heroku/.
+There's also another [simple guide](https://timleland.com/headless-chrome-on-heroku/) from @timleland that includes a sample project: https://timleland.com/headless-chrome-on-heroku/.
