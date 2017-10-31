@@ -1,10 +1,9 @@
 # Running the examples
 
-(The follow assumes you have checked out the complete puppeteer repository, and installed puppeteer's dependencies via `yarn`.)
+Assuming you have a checked out the puppeteer repo and run yarn (or `npm i`) to install the dependencies, the examples can be run from the root folder like so:
 
 ```sh
-# creates example.png
-$ env NODE_PATH=../.. node screenshot.js
+NODE_PATH=../ node examples/search.js
 ```
 
 # Other resources
