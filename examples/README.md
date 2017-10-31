@@ -1,3 +1,12 @@
+# Running the examples
+
+(The follow assumes you have checked out the complete puppeteer repository, and installed puppeteer's dependencies via `yarn`.)
+
+```sh
+# creates example.png
+$ env NODE_PATH=../.. node screenshot.js
+```
+
 # Other resources
 
 > Other useful tools, articles, and projects that use Puppeteer.
