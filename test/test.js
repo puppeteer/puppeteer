@@ -17,7 +17,11 @@
 const fs = require('fs');
 const rm = require('rimraf').sync;
 const path = require('path');
+// const WebSocket = require('ws');
+
 const {helper} = require('../lib/helper');
+// const Browser = require('../lib/Browser');
+// const Connection = require('../lib/Connection');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
 console.log('Testing on Node', process.version);
@@ -237,13 +241,13 @@ describe('Page', function() {
 
   describe('Browser.Events.disconnected', function() {
     it('should emitted when browser gets closed', SX(async function() {
-      const newBrowser = await puppeteer.launch(defaultBrowserOptions);
+      const browser = await puppeteer.launch(defaultBrowserOptions);
       let isDisconnected = false;
-      newBrowser.on('disconnected', dc => {
+      browser.on('disconnected', dc => {
         expect(dc).toBe('connection disconnected');
         isDisconnected = true;
       });
-      await newBrowser.close();
+      await browser.close();
       expect(isDisconnected).toBe(true);
     }));
     it('should emitted when browser.disconnect() called', SX(async function() {
@@ -257,6 +261,8 @@ describe('Page', function() {
       });
       newBrowser.disconnect();
       expect(isDisconnected).toBe(true);
+    }));
+    xit('should be emitted when underlying websocket gets closed', SX(async function() {
     }));
   });
 
