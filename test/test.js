@@ -2579,7 +2579,7 @@ describe('Page', function() {
     it('should return an array of one element when multiple is not set', SX(async function() {
       await page.goto(PREFIX + '/input/select.html');
       const result = await page.select('select','42','blue','black','magenta');
-      expect(result).toEqual(['blue']);
+      expect(result.length).toEqual(1);
     }));
 
     it('should return [] on no values',SX(async function() {
