@@ -1611,6 +1611,12 @@ describe('Page', function() {
       await button.click();
       expect(await page.evaluate(() => result)).toBe('Clicked');
     }));
+    it('should work for Shadow DOM v1', SX(async function() {
+      await page.goto(PREFIX + '/shadow.html');
+      const buttonHandle = await page.evaluateHandle(() => button);
+      await buttonHandle.click();
+      expect(await page.evaluate(() => clicked)).toBe(true);
+    }));
     it('should work for TextNodes', SX(async function() {
       await page.goto(PREFIX + '/input/button.html');
       const buttonTextNode = await page.evaluateHandle(() => document.querySelector('button').firstChild);
