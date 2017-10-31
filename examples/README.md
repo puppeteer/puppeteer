@@ -1,6 +1,6 @@
 # Running the examples
 
-Assuming you have a checked out the puppeteer repo and run yarn (or `npm i`) to install the dependencies, the examples can be run from the root folder like so:
+Assuming you have a checkout of the Puppeteer repo and have run yarn (or npm i) to install the dependencies, the examples can be run from the root folder like so:
 
 ```sh
 NODE_PATH=../ node examples/search.js
