@@ -45,6 +45,36 @@ To run code linter, use:
 npm run lint
 ```
 
+## Commit Messages
+
+Commit messages should follow the Semantic Commit Messages format.
+
+Example:
+
+```
+fix(Page): fix page.pizza method
+
+This patch fixes page.pizza so that it works with iframes.
+
+Fixes #123, Fixes #234
+
+BREAKING CHANGE: page.pizza now delivers pizza at home by default.
+To deliver to a different location, use "deliver" option:
+  `page.pizza({deliver: 'work'})`.
+```
+1. *label* is one of the following:
+    - `fix` - puppeteer bug fixes
+    - `feat` - puppeteer features
+    - `docs` - changes to docs, e.g. `docs(api.md): ..` to change documentation
+    - `test` - changes to puppeteer tests infrastructure
+    - `style` - puppeteer code style: spaces/alignment/wrapping etc
+    - `chore` - build-related work, e.g. doclint changes / travis / appveyour
+1. *namespace* is put in parenthesis after label and is optional
+2. *description* is optional, new-line separated from title and is in present tense
+3. *footer* is optional, new-line separated from *description* and contains "fixes" / "references" attribution to github issues
+4. *footer* should also include "BREAKING CHANGE" if current API clients will break. It should explain what changed and how to get the old behavior.
+
+
 ## Writing Documentation
 
 All public API should have a descriptive entry in the [docs/api.md](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md). There's a [documentation linter](https://github.com/GoogleChrome/puppeteer/tree/master/utils/doclint) which makes sure documentation is aligned with the codebase.
