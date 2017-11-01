@@ -806,7 +806,7 @@ If there's no element matching `selector`, the method throws an error.
 Page is guaranteed to have a main frame which persists during navigations.
 
 #### page.metrics()
-- returns: <[Object]> Object containing metrics as key/value pairs.
+- returns: <[Promise]<[Object]>> Object containing metrics as key/value pairs.
   - `Timestamp` <[number]> The timestamp when the metrics sample was taken.
   - `Documents` <[number]> Number of documents in the page.
   - `Frames` <[number]> Number of frames in the page.
