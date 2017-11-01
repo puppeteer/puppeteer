@@ -929,10 +929,10 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
 #### page.select(selector, ...values)
 - `selector` <[string]> A [selector] to query page for
 - `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
-- returns: <[Promise]>
+- returns: <[Promise]<[Array]<[string]>>> Returns an array of option values that have been successfully selected.
 
 Triggers a `change` and `input` event once all the provided options have been selected.
-If there's no `<select>` element matching `selector`, the method throws an error.
+If there's no `<select>` element matching `selector`, the method throws an error. 
 
 ```js
 page.select('select#colors', 'blue'); // single selection
