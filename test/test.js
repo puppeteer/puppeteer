@@ -89,7 +89,7 @@ afterAll(SX(async function() {
 
 describe('Puppeteer', function() {
   describe('Puppeteer.launch', function() {
-    xit('should support ignoreHTTPSErrors option', SX(async function() {
+    it('should support ignoreHTTPSErrors option', SX(async function() {
       const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
       const page = await browser.newPage();
@@ -909,7 +909,14 @@ describe('Page', function() {
       page.on('requestfailed', request => expect(request).toBeTruthy());
       let error = null;
       await page.goto(HTTPS_PREFIX + '/empty.html').catch(e => error = e);
-      expect(error.message).toContain('SSL Certificate error');
+      expect(error.message).toContain('net::ERR_INSECURE_RESPONSE');
+    }));
+    it('should fail when navigating to bad SSL after redirects', SX(async function() {
+      server.setRedirect('/redirect/1.html', '/redirect/2.html');
+      server.setRedirect('/redirect/2.html', '/empty.html');
+      let error = null;
+      await page.goto(HTTPS_PREFIX + '/redirect/1.html').catch(e => error = e);
+      expect(error.message).toContain('net::ERR_INSECURE_RESPONSE');
     }));
     it('should throw if networkidle is passed as an option', SX(async function() {
       let error = null;
