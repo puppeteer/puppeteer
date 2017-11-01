@@ -57,13 +57,13 @@
   * [page.exposeFunction(name, puppeteerFunction)](#pageexposefunctionname-puppeteerfunction)
   * [page.focus(selector)](#pagefocusselector)
   * [page.frames()](#pageframes)
-  * [page.getMetrics()](#pagegetmetrics)
   * [page.goBack(options)](#pagegobackoptions)
   * [page.goForward(options)](#pagegoforwardoptions)
   * [page.goto(url, options)](#pagegotourl-options)
   * [page.hover(selector)](#pagehoverselector)
   * [page.keyboard](#pagekeyboard)
   * [page.mainFrame()](#pagemainframe)
+  * [page.metrics()](#pagemetrics)
   * [page.mouse](#pagemouse)
   * [page.pdf(options)](#pagepdfoptions)
   * [page.queryObjects(prototypeHandle)](#pagequeryobjectsprototypehandle)
@@ -407,7 +407,7 @@ Emitted when the JavaScript [`load`](https://developer.mozilla.org/en-US/docs/We
     of metrics are of <[number]> type.
 
 Emitted when the JavaScript code makes a call to `console.timeStamp`. For the list
-of metrics see `page.getMetrics`.
+of metrics see `page.metrics`.
 
 #### event: 'pageerror'
 - <[string]> The exception message
@@ -742,24 +742,6 @@ If there's no element matching `selector`, the method throws an error.
 #### page.frames()
 - returns: <[Array]<[Frame]>> An array of all frames attached to the page.
 
-#### page.getMetrics()
-- returns: <[Object]> Object containing metrics as key/value pairs.
-  - `Timestamp` <[number]> The timestamp when the metrics sample was taken.
-  - `Documents` <[number]> Number of documents in the page.
-  - `Frames` <[number]> Number of frames in the page.
-  - `JSEventListeners` <[number]> Number of events in the page.
-  - `Nodes` <[number]> Number of DOM nodes in the page.
-  - `LayoutCount` <[number]> Total number of full or partial page layout.
-  - `RecalcStyleCount` <[number]> Total number of page style recalculations.
-  - `LayoutDuration` <[number]> Combined durations of all page layouts.
-  - `RecalcStyleDuration` <[number]> Combined duration of all page style recalculations.
-  - `ScriptDuration` <[number]> Combined duration of JavaScript execution.
-  - `TaskDuration` <[number]> Combined duration of all tasks performed by the browser.
-  - `JSHeapUsedSize` <[number]> Used JavaScript heap size.
-  - `JSHeapTotalSize` <[number]> Total JavaScript heap size.
-
-> **NOTE** All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
-
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
@@ -822,6 +804,24 @@ If there's no element matching `selector`, the method throws an error.
 - returns: <[Frame]> returns page's main frame.
 
 Page is guaranteed to have a main frame which persists during navigations.
+
+#### page.metrics()
+- returns: <[Object]> Object containing metrics as key/value pairs.
+  - `Timestamp` <[number]> The timestamp when the metrics sample was taken.
+  - `Documents` <[number]> Number of documents in the page.
+  - `Frames` <[number]> Number of frames in the page.
+  - `JSEventListeners` <[number]> Number of events in the page.
+  - `Nodes` <[number]> Number of DOM nodes in the page.
+  - `LayoutCount` <[number]> Total number of full or partial page layout.
+  - `RecalcStyleCount` <[number]> Total number of page style recalculations.
+  - `LayoutDuration` <[number]> Combined durations of all page layouts.
+  - `RecalcStyleDuration` <[number]> Combined duration of all page style recalculations.
+  - `ScriptDuration` <[number]> Combined duration of JavaScript execution.
+  - `TaskDuration` <[number]> Combined duration of all tasks performed by the browser.
+  - `JSHeapUsedSize` <[number]> Used JavaScript heap size.
+  - `JSHeapTotalSize` <[number]> Total JavaScript heap size.
+
+> **NOTE** All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
 
 #### page.mouse
 
