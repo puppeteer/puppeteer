@@ -47,7 +47,28 @@ npm run lint
 
 ## Commit Messages
 
-Commit messages should follow the Semantic Commit Messages format.
+Commit messages should follow the Semantic Commit Messages format:
+
+```
+label(namespace): title
+
+description
+
+footer
+```
+
+1. *label* is one of the following:
+    - `fix` - puppeteer bug fixes
+    - `feat` - puppeteer features
+    - `docs` - changes to docs, e.g. `docs(api.md): ..` to change documentation
+    - `test` - changes to puppeteer tests infrastructure
+    - `style` - puppeteer code style: spaces/alignment/wrapping etc
+    - `chore` - build-related work, e.g. doclint changes / travis / appveyour
+1. *namespace* is put in parenthesis after label and is optional
+2. *title* is a brief summary of changes
+3. *description* is **optional**, new-line separated from title and is in present tense
+4. *footer* is **optional**, new-line separated from *description* and contains "fixes" / "references" attribution to github issues
+5. *footer* should also include "BREAKING CHANGE" if current API clients will break due to this change. It should explain what changed and how to get the old behavior.
 
 Example:
 
@@ -62,17 +83,6 @@ BREAKING CHANGE: page.pizza now delivers pizza at home by default.
 To deliver to a different location, use "deliver" option:
   `page.pizza({deliver: 'work'})`.
 ```
-1. *label* is one of the following:
-    - `fix` - puppeteer bug fixes
-    - `feat` - puppeteer features
-    - `docs` - changes to docs, e.g. `docs(api.md): ..` to change documentation
-    - `test` - changes to puppeteer tests infrastructure
-    - `style` - puppeteer code style: spaces/alignment/wrapping etc
-    - `chore` - build-related work, e.g. doclint changes / travis / appveyour
-1. *namespace* is put in parenthesis after label and is optional
-2. *description* is optional, new-line separated from title and is in present tense
-3. *footer* is optional, new-line separated from *description* and contains "fixes" / "references" attribution to github issues
-4. *footer* should also include "BREAKING CHANGE" if current API clients will break. It should explain what changed and how to get the old behavior.
 
 
 ## Writing Documentation
