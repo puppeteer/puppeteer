@@ -841,10 +841,10 @@ describe('Page', function() {
     }));
   });
 
-  describe('Page.getMetrics', function() {
+  describe('Page.metrics', function() {
     it('should get metrics from a page', SX(async function() {
       await page.goto('about:blank');
-      const metrics = await page.getMetrics();
+      const metrics = await page.metrics();
       checkMetrics(metrics);
     }));
     it('metrics event fired on console.timeStamp', SX(async function() {
