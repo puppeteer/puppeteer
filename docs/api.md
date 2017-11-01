@@ -767,8 +767,8 @@ If there's no element matching `selector`, the method throws an error.
   - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
-    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
-    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
+    - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
 can not go back, resolves to null.
 
@@ -780,8 +780,8 @@ Navigate to the previous page in history.
   - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
-    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
-    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
+    - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
 can not go back, resolves to null.
 
@@ -794,8 +794,8 @@ Navigate to the next page in history.
   - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
-    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
-    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
+    - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 The `page.goto` will throw an error if:
@@ -909,8 +909,8 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
   - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
-    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
-    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
+    - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.screenshot([options])
@@ -930,10 +930,10 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
 #### page.select(selector, ...values)
 - `selector` <[string]> A [selector] to query page for
 - `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
-- returns: <[Promise]>
+- returns: <[Promise]<[Array]<[string]>>> Returns an array of option values that have been successfully selected.
 
 Triggers a `change` and `input` event once all the provided options have been selected.
-If there's no `<select>` element matching `selector`, the method throws an error.
+If there's no `<select>` element matching `selector`, the method throws an error. 
 
 ```js
 page.select('select#colors', 'blue'); // single selection
@@ -947,8 +947,8 @@ page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
   - `waitUntil` <[string]|[Array]<[string]>> When to consider setting content complete, defaults to `load`. Given an array of event strings, setting content is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider setting content to be finished when the `load` event is fired.
     - `domcontentloaded` - consider setting content to be finished when the `DOMContentLoaded` event is fired.
-    - `networkidle0` - consider setting content to be finished when there are no more then 0 network connections for at least `500` ms.
-    - `networkidle2` - consider setting content to be finished when there are no more then 2 network connections for at least `500` ms.
+    - `networkidle0` - consider setting content to be finished when there are no more than 0 network connections for at least `500` ms.
+    - `networkidle2` - consider setting content to be finished when there are no more than 2 network connections for at least `500` ms.
 - returns: <[Promise]> Promise which resolves when content is set and all events are triggered.
 
 #### page.setCookie(...cookies)
@@ -1122,8 +1122,8 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
   - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
-    - `networkidle0` - consider navigation to be finished when there are no more then 0 network connections for at least `500` ms.
-    - `networkidle2` - consider navigation to be finished when there are no more then 2 network connections for at least `500` ms.
+    - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.waitForSelector(selector[, options])
