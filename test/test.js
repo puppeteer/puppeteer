@@ -756,6 +756,58 @@ describe('Page', function() {
     }));
   });
 
+  describe('Frame.select', function() {
+    it('should select single option', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      const frame = page.mainFrame();
+      await frame.select('select', 'blue');
+      expect(await frame.evaluate(() => result.onInput)).toEqual(['blue']);
+      expect(await frame.evaluate(() => result.onChange)).toEqual(['blue']);
+    }));
+
+    it('should select multiple options', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      const frame = page.mainFrame();
+      await frame.evaluate(() => makeMultiple());
+      await frame.select('select', 'blue', 'green', 'red');
+      expect(await frame.evaluate(() => result.onInput)).toEqual(['blue', 'green', 'red']);
+      expect(await frame.evaluate(() => result.onChange)).toEqual(['blue', 'green', 'red']);
+    }));
+
+    it('should respect event bubbling', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      const frame = page.mainFrame();
+      await frame.select('select', 'blue');
+      expect(await frame.evaluate(() => result.onBubblingInput)).toEqual(['blue']);
+      expect(await frame.evaluate(() => result.onBubblingChange)).toEqual(['blue']);
+    }));
+
+
+    it('should work with no options', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      const frame = page.mainFrame();
+      await frame.evaluate(() => makeEmpty());
+      await frame.select('select', '42');
+      expect(await frame.evaluate(() => result.onInput)).toEqual([]);
+      expect(await frame.evaluate(() => result.onChange)).toEqual([]);
+    }));
+
+    it('should not select a non-existent option', SX(async function() {
+      await page.goto(PREFIX + '/input/select.html');
+      const frame = page.mainFrame();
+      await frame.select('select', '42');
+      expect(await frame.evaluate(() => result.onInput)).toEqual([]);
+      expect(await frame.evaluate(() => result.onChange)).toEqual([]);
+    }));
+
+    it('should throw', SX(async function() {
+      let error = null;
+      await page.goto(PREFIX + '/input/select.html');
+      const frame = page.mainFrame();
+      await frame.select('body', '').catch(e => error = e);
+      expect(error.message).toContain('Element is not a <select> element.');
+    }));
+  });
   describe('Page.waitFor', function() {
     it('should wait for selector', SX(async function() {
       let found = false;
@@ -901,7 +953,7 @@ describe('Page', function() {
       await page.goto('asdfasdf').catch(e => error = e);
       expect(error.message).toContain('Cannot navigate to invalid URL');
     }));
-    it('should fail when navigating to bad SSL', SX(async function() {
+    xit('should fail when navigating to bad SSL', SX(async function() {
       // Make sure that network events do not emit 'undefined'.
       // @see https://crbug.com/750469
       page.on('request', request => expect(request).toBeTruthy());

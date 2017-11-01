@@ -126,6 +126,7 @@
   * [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
   * [frame.executionContext()](#frameexecutioncontext)
   * [frame.isDetached()](#frameisdetached)
+  * [frame.select(selector, ...values)](#frameselectselector-values)
   * [frame.name()](#framename)
   * [frame.parentFrame()](#frameparentframe)
   * [frame.title()](#frametitle)
@@ -1443,6 +1444,8 @@ const html = await frame.$eval('.main-container', e => e.outerHTML);
 
 Adds a `<script>` tag into the page with the desired url or content.
 
+
+
 #### frame.addStyleTag(options)
 - `options` <[Object]>
   - `url` <[string]> Url of the `<link>` tag.
@@ -1503,6 +1506,19 @@ If the name is empty, returns the id attribute instead.
 
 #### frame.parentFrame()
 - returns: <[Frame]> Returns parent frame, if any. Detached frames and main frames return `null`.
+
+#### frame.select(selector, ...values)
+- `selector` <[string]> A [selector] to query page for
+- `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
+- returns: <[Promise]>
+
+Triggers a `change` and `input` event once all the provided options have been selected.
+If there's no `<select>` element matching `selector`, the method throws an error.
+
+```js
+page.select('select#colors', 'blue'); // single selection
+page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
+```
 
 #### frame.title()
 - returns: <[Promise]<[string]>> Returns page's title.
