@@ -901,7 +901,7 @@ describe('Page', function() {
       await page.goto('asdfasdf').catch(e => error = e);
       expect(error.message).toContain('Cannot navigate to invalid URL');
     }));
-    xit('should fail when navigating to bad SSL', SX(async function() {
+    it('should fail when navigating to bad SSL', SX(async function() {
       // Make sure that network events do not emit 'undefined'.
       // @see https://crbug.com/750469
       page.on('request', request => expect(request).toBeTruthy());
