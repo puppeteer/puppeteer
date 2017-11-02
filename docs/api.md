@@ -519,6 +519,10 @@ Provide credentials for [http authentication](https://developer.mozilla.org/en-U
 
 To disable authentication, pass `null`.
 
+#### page.bringToFront()
+
+Brings page to front (activates tab).
+
 #### page.click(selector[, options])
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
 - `options` <[Object]>
