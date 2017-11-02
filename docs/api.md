@@ -44,6 +44,7 @@
   * [page.addScriptTag(options)](#pageaddscripttagoptions)
   * [page.addStyleTag(options)](#pageaddstyletagoptions)
   * [page.authenticate(credentials)](#pageauthenticatecredentials)
+  * [page.bringToFront()](#pagebringtofront)
   * [page.click(selector[, options])](#pageclickselector-options)
   * [page.close()](#pageclose)
   * [page.content()](#pagecontent)
