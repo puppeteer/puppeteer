@@ -1511,7 +1511,7 @@ If the name is empty, returns the id attribute instead.
 - returns: <[Frame]> Returns parent frame, if any. Detached frames and main frames return `null`.
 
 #### frame.select(selector, ...values)
-- `selector` <[string]> A [selector] to query page for
+- `selector` <[string]> A [selector] to query frame for
 - `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
 - returns: <[Promise]<[string]>>
 
