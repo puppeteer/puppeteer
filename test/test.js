@@ -236,33 +236,28 @@ describe('Page', function() {
   });
 
   describe('Browser.Events.disconnected', function() {
-    it('should emitted when browser gets closed', SX(async function() {
+    it('should emitted when: browser gets closed, disconnected or underlying websocket gets closed', SX(async function() {
       const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
-      let isDisconnected = false;
-      originalBrowser.on('disconnected', () => { isDisconnected = true; });
+      const browserWSEndpoint = originalBrowser.wsEndpoint();
+      const remoteBrowser1 = await puppeteer.connect({browserWSEndpoint});
+      const remoteBrowser2 = await puppeteer.connect({browserWSEndpoint});
+
+      let disconnectedOriginal = 0;
+      let disconnectedRemote1 = 0;
+      let disconnectedRemote2 = 0;
+      originalBrowser.on('disconnected', () => ++disconnectedOriginal);
+      remoteBrowser1.on('disconnected', () => ++disconnectedRemote1);
+      remoteBrowser2.on('disconnected', () => ++disconnectedRemote2);
+
+      await remoteBrowser2.disconnect();
+      expect(disconnectedOriginal).toBe(0);
+      expect(disconnectedRemote1).toBe(0);
+      expect(disconnectedRemote2).toBe(1);
+
       await originalBrowser.close();
-      expect(isDisconnected).toBe(true);
-    }));
-    it('should emitted when browser.disconnect() called', SX(async function() {
-      const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
-      const newBrowser = await puppeteer.connect({
-        browserWSEndpoint: originalBrowser.wsEndpoint()
-      });
-      let isDisconnected = false;
-      newBrowser.on('disconnected', () => { isDisconnected = true; });
-      newBrowser.disconnect();
-      expect(isDisconnected).toBe(true);
-      await originalBrowser.close();
-    }));
-    it('should be emitted when underlying websocket gets closed', SX(async function() {
-      const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
-      const newBrowser = await puppeteer.connect({
-        browserWSEndpoint: originalBrowser.wsEndpoint()
-      });
-      let isDisconnected = false;
-      newBrowser.once('disconnected', () => { isDisconnected = true; });
-      await originalBrowser.close();
-      expect(isDisconnected).toBe(true);
+      expect(disconnectedOriginal).toBe(1);
+      expect(disconnectedRemote1).toBe(1);
+      expect(disconnectedRemote2).toBe(1);
     }));
   });
 
