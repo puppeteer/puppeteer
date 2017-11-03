@@ -165,7 +165,7 @@ describe('Puppeteer', function() {
       await browser2.close();
       rm(userDataDir);
     }));
-    it('headless/headful should be able to read cookies of each other', SX(async function() {
+    xit('headless should be able to read cookies written by headful', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       // Write a cookie in headful chrome
