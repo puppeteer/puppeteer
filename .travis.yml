@@ -9,6 +9,10 @@ cache:
   yarn: true
   directories:
     - node_modules
+# allow headful tests
+before_install:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
 install:
   - yarn install
   # puppeteer's install script downloads Chrome

@@ -165,6 +165,26 @@ describe('Puppeteer', function() {
       await browser2.close();
       rm(userDataDir);
     }));
+    xit('headless should be able to read cookies written by headful', SX(async function() {
+      const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+      const options = Object.assign({userDataDir}, defaultBrowserOptions);
+      // Write a cookie in headful chrome
+      options.headless = false;
+      const headfulBrowser = await puppeteer.launch(options);
+      const headfulPage = await headfulBrowser.newPage();
+      await headfulPage.goto(EMPTY_PAGE);
+      await headfulPage.evaluate(() => document.cookie = 'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT');
+      await headfulBrowser.close();
+      // Read the cookie from headless chrome
+      options.headless = true;
+      const headlessBrowser = await puppeteer.launch(options);
+      const headlessPage = await headlessBrowser.newPage();
+      await headlessPage.goto(EMPTY_PAGE);
+      const cookie = await headlessPage.evaluate(() => document.cookie);
+      await headlessBrowser.close();
+      rm(userDataDir);
+      expect(cookie).toBe('foo=true');
+    }));
   });
   describe('Puppeteer.connect', function() {
     it('should be able to connect multiple times to the same browser', SX(async function() {
