@@ -237,13 +237,10 @@ describe('Page', function() {
 
   describe('Browser.Events.disconnected', function() {
     it('should emitted when browser gets closed', SX(async function() {
-      const browser = await puppeteer.launch(defaultBrowserOptions);
+      const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
       let isDisconnected = false;
-      browser.on('disconnected', dc => {
-        expect(dc).toBe('connection disconnected');
-        isDisconnected = true;
-      });
-      await browser.close();
+      originalBrowser.on('disconnected', () => { isDisconnected = true; });
+      await originalBrowser.close();
       expect(isDisconnected).toBe(true);
     }));
     it('should emitted when browser.disconnect() called', SX(async function() {
@@ -252,25 +249,19 @@ describe('Page', function() {
         browserWSEndpoint: originalBrowser.wsEndpoint()
       });
       let isDisconnected = false;
-      newBrowser.on('disconnected', dc => {
-        isDisconnected = true;
-      });
+      newBrowser.on('disconnected', () => { isDisconnected = true; });
       newBrowser.disconnect();
       expect(isDisconnected).toBe(true);
+      await originalBrowser.close();
     }));
     it('should be emitted when underlying websocket gets closed', SX(async function() {
-      const browser = await puppeteer.launch(defaultBrowserOptions);
-      let resolver = null;
-      const promise = new Promise((res, rej) => {
-        resolver = res;
+      const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+      const newBrowser = await puppeteer.connect({
+        browserWSEndpoint: originalBrowser.wsEndpoint()
       });
       let isDisconnected = false;
-      browser.on('disconnected', dc => {
-        isDisconnected = true;
-        resolver();
-      });
-      browser._connection._ws.close(3006, 'intentionally kill it');
-      await promise;
+      newBrowser.once('disconnected', () => { isDisconnected = true; });
+      await originalBrowser.close();
       expect(isDisconnected).toBe(true);
     }));
   });

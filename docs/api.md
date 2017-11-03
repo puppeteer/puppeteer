@@ -290,7 +290,9 @@ puppeteer.launch().then(async browser => {
 });
 ```
 #### event: 'disconnected'
-emitted whenever the connection is closed `Browser.close() Browser.disconnect()`.
+Emitted when puppeteer gets disconnected from the browser instance. This might happen because one of the following:
+- browser closed or crashed
+- `browser.disconnect` method was called
 
 #### event: 'targetchanged'
 - <[Target]>
