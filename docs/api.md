@@ -492,7 +492,7 @@ Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector
   - `url` <[string]> Url of a script to be added.
   - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `content` <[string]> Raw JavaScript content to be injected into frame.
-- returns: <[Promise]> which resolves when the script's onload fires or when the script content was injected into frame.
+- returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
 
 Adds a `<script>` tag into the page with the desired url or content.
 
@@ -503,7 +503,7 @@ Shortcut for [page.mainFrame().addScriptTag(options)](#frameaddscripttagoptions)
   - `url` <[string]> Url of the `<link>` tag.
   - `path` <[string]> Path to the CSS file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `content` <[string]> Raw CSS content to be injected into frame.
-- returns: <[Promise]> which resolves when the stylesheet's onload fires or when the CSS content was injected into frame.
+- returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame.
 
 Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
 
