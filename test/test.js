@@ -2375,13 +2375,15 @@ describe('Page', function() {
 
     it('should work with a url', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      await page.addScriptTag({ url: '/injectedfile.js' });
+      const scriptHandle = await page.addScriptTag({ url: '/injectedfile.js' });
+      expect(scriptHandle.asElement()).not.toBeNull();
       expect(await page.evaluate(() => __injected)).toBe(42);
     }));
 
     it('should work with a path', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      await page.addScriptTag({ path: path.join(__dirname, 'assets/injectedfile.js') });
+      const scriptHandle = await page.addScriptTag({ path: path.join(__dirname, 'assets/injectedfile.js') });
+      expect(scriptHandle.asElement()).not.toBeNull();
       expect(await page.evaluate(() => __injected)).toBe(42);
     }));
 
@@ -2394,7 +2396,8 @@ describe('Page', function() {
 
     it('should work with content', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      await page.addScriptTag({ content: 'window.__injected = 35;' });
+      const scriptHandle = await page.addScriptTag({ content: 'window.__injected = 35;' });
+      expect(scriptHandle.asElement()).not.toBeNull();
       expect(await page.evaluate(() => __injected)).toBe(35);
     }));
   });
@@ -2412,13 +2415,15 @@ describe('Page', function() {
 
     it('should work with a url', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      await page.addStyleTag({ url: '/injectedstyle.css' });
+      const styleHandle = await page.addStyleTag({ url: '/injectedstyle.css' });
+      expect(styleHandle.asElement()).not.toBeNull();
       expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(255, 0, 0)');
     }));
 
     it('should work with a path', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      await page.addStyleTag({ path: path.join(__dirname, 'assets/injectedstyle.css') });
+      const styleHandle = await page.addStyleTag({ path: path.join(__dirname, 'assets/injectedstyle.css') });
+      expect(styleHandle.asElement()).not.toBeNull();
       expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(255, 0, 0)');
     }));
 
@@ -2428,12 +2433,12 @@ describe('Page', function() {
       const styleHandle = await page.$('style');
       const styleContent = await page.evaluate(style => style.innerHTML, styleHandle);
       expect(styleContent).toContain(path.join('assets', 'injectedstyle.css'));
-      styleHandle.dispose();
     }));
 
     it('should work with content', SX(async function() {
       await page.goto(EMPTY_PAGE);
-      await page.addStyleTag({ content: 'body { background-color: green; }' });
+      const styleHandle = await page.addStyleTag({ content: 'body { background-color: green; }' });
+      expect(styleHandle.asElement()).not.toBeNull();
       expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(0, 128, 0)');
     }));
   });
