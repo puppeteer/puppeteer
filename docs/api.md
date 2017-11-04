@@ -13,6 +13,7 @@
   * [puppeteer.executablePath()](#puppeteerexecutablepath)
   * [puppeteer.launch([options])](#puppeteerlaunchoptions)
 - [class: Browser](#class-browser)
+  * [event: 'disconnected'](#event-disconnected)
   * [event: 'targetchanged'](#event-targetchanged)
   * [event: 'targetcreated'](#event-targetcreated)
   * [event: 'targetdestroyed'](#event-targetdestroyed)
@@ -291,6 +292,10 @@ puppeteer.launch().then(async browser => {
   await browser2.close();
 });
 ```
+#### event: 'disconnected'
+Emitted when puppeteer gets disconnected from the browser instance. This might happen because one of the following:
+- browser closed or crashed
+- `browser.disconnect` method was called
 
 #### event: 'targetchanged'
 - <[Target]>
