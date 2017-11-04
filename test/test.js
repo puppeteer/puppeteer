@@ -2737,7 +2737,6 @@ describe('Page', function() {
       expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
       expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
     }));
-
     it('should select multiple options', SX(async function() {
       await page.goto(PREFIX + '/input/select.html');
       await page.evaluate(() => makeMultiple());
@@ -2745,46 +2744,39 @@ describe('Page', function() {
       expect(await page.evaluate(() => result.onInput)).toEqual(['blue', 'green', 'red']);
       expect(await page.evaluate(() => result.onChange)).toEqual(['blue', 'green', 'red']);
     }));
-
     it('should respect event bubbling', SX(async function() {
       await page.goto(PREFIX + '/input/select.html');
       await page.select('select', 'blue');
       expect(await page.evaluate(() => result.onBubblingInput)).toEqual(['blue']);
       expect(await page.evaluate(() => result.onBubblingChange)).toEqual(['blue']);
     }));
-
     it('should throw when element is not a <select>', SX(async function() {
       let error = null;
       await page.goto(PREFIX + '/input/select.html');
       await page.select('body', '').catch(e => error = e);
       expect(error.message).toContain('Element is not a <select> element.');
     }));
-
     it('should return [] on no matched values', SX(async function() {
       await page.goto(PREFIX + '/input/select.html');
       const result = await page.select('select','42','abc');
       expect(result).toEqual([]);
     }));
-
     it('should return an array of matched values', SX(async function() {
       await page.goto(PREFIX + '/input/select.html');
       await page.evaluate(() => makeMultiple());
       const result = await page.select('select','blue','black','magenta');
       expect(result.reduce((accumulator,current) => ['blue', 'black', 'magenta'].includes(current) && accumulator, true)).toEqual(true);
     }));
-
     it('should return an array of one element when multiple is not set', SX(async function() {
       await page.goto(PREFIX + '/input/select.html');
       const result = await page.select('select','42','blue','black','magenta');
       expect(result.length).toEqual(1);
     }));
-
     it('should return [] on no values',SX(async function() {
       await page.goto(PREFIX + '/input/select.html');
       const result = await page.select('select');
       expect(result).toEqual([]);
     }));
-
     it('should deselect all options when passed no values for a multiple select',SX(async function() {
       await page.goto(PREFIX + '/input/select.html');
       await page.evaluate(() => makeMultiple());
@@ -2792,14 +2784,22 @@ describe('Page', function() {
       await page.select('select');
       expect(await page.$eval('select', select => Array.from(select.options).every(option => !option.selected))).toEqual(true);
     }));
-
     it('should deselect all options when passed no values for a select without multiple',SX(async function() {
       await page.goto(PREFIX + '/input/select.html');
       await page.select('select','blue','black','magenta');
       await page.select('select');
       expect(await page.$eval('select', select => Array.from(select.options).every(option => !option.selected))).toEqual(true);
     }));
-
+    it('should throw if passed in non-strings', SX(async function() {
+      await page.setContent('<select><option value="12"/></select>');
+      let error = null;
+      try {
+        await page.select('select', 12);
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toContain('Values must be strings');
+    }));
   });
 
   describe('Tracing', function() {
