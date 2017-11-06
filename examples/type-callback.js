@@ -28,13 +28,12 @@ await page.goto('https://github.com/');
 await page.waitFor('input[name=q]');
 // Type our query into the search bar
 await page.type('input[name=q]', 'puppeteer', {delay: 20}, function(char, text){
-  console.log(text)
+  console.log(text);
 });
 
-
-let t = await page.$('input[name=q]')
+const t = await page.$('input[name=q]');
 await t.type('aaaaaa', {delay: 20}, function(char, text){
-  console.log(text)
+  console.log(text);
 });
 
 await browser.close();

@@ -83,7 +83,7 @@
   * [page.title()](#pagetitle)
   * [page.touchscreen](#pagetouchscreen)
   * [page.tracing](#pagetracing)
-  * [page.type(selector, text[, options])](#pagetypeselector-text-options)
+  * [page.type(selector, text[, options, callback])](#pagetypeselector-text-options-callback)
   * [page.url()](#pageurl)
   * [page.viewport()](#pageviewport)
   * [page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#pagewaitforselectororfunctionortimeout-options-args)
@@ -94,7 +94,7 @@
   * [keyboard.down(key[, options])](#keyboarddownkey-options)
   * [keyboard.press(key[, options])](#keyboardpresskey-options)
   * [keyboard.sendCharacter(char)](#keyboardsendcharacterchar)
-  * [keyboard.type(text, options)](#keyboardtypetext-options)
+  * [keyboard.type(text, options[, callback])](#keyboardtypetext-options-callback)
   * [keyboard.up(key)](#keyboardupkey)
 - [class: Mouse](#class-mouse)
   * [mouse.click(x, y, [options])](#mouseclickx-y-options)
@@ -163,7 +163,7 @@
   * [elementHandle.screenshot([options])](#elementhandlescreenshotoptions)
   * [elementHandle.tap()](#elementhandletap)
   * [elementHandle.toString()](#elementhandletostring)
-  * [elementHandle.type(text[, options])](#elementhandletypetext-options)
+  * [elementHandle.type(text[, options, callback])](#elementhandletypetext-options-callback)
   * [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
 - [class: Request](#class-request)
   * [request.abort([errorCode])](#requestaborterrorcode)
@@ -1052,11 +1052,12 @@ Shortcut for [page.mainFrame().title()](#frametitle).
 #### page.tracing
 - returns: <[Tracing]>
 
-#### page.type(selector, text[, options])
+#### page.type(selector, text[, options, callback])
 - `selector` <[string]> A [selector] of an element to type into. If there are multiple elements satisfying the selector, the first will be used.
 - `text` <[string]> A text to type into a focused element.
 - `options` <[Object]>
   - `delay` <[number]> Time to wait between key presses in milliseconds. Defaults to 0.
+- `callback` <Function> callback when typing each char in text
 - returns: <[Promise]>
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
@@ -1066,6 +1067,9 @@ To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#k
 ```js
 page.type('#mytextarea', 'Hello'); // Types instantly
 page.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
+await page.type('input[name=q]', 'puppeteer', {delay: 20}, function(char, text){  // Type callback
+  console.log(text);
+});
 ```
 
 #### page.url()
@@ -1227,10 +1231,11 @@ page.keyboard.sendCharacter('嗨');
 
 > **NOTE** Modifier keys DO NOT effect `keyboard.sendCharacter`. Holding down `Shift` will not type the text in upper case.
 
-#### keyboard.type(text, options)
+#### keyboard.type(text, options[, callback])
 - `text` <[string]> A text to type into a focused element.
 - `options` <[Object]>
   - `delay` <[number]> Time to wait between key presses in milliseconds. Defaults to 0.
+- `callback` <Function> callback when typing each char in text
 - returns: <[Promise]>
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
@@ -1240,6 +1245,9 @@ To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#k
 ```js
 page.keyboard.type('Hello'); // Types instantly
 page.keyboard.type('World', {delay: 100}); // Types slower, like a user
+page.keyboard.type('puppeteer', {delay: 20}, function(char, text){
+  console.log(text);
+});
 ```
 
 > **NOTE** Modifier keys DO NOT effect `keyboard.type`. Holding down `Shift` will not type the text in upper case.
@@ -1869,10 +1877,11 @@ If the element is detached from DOM, the method throws an error.
 #### elementHandle.toString()
 - returns: <[string]>
 
-#### elementHandle.type(text[, options])
+#### elementHandle.type(text[, options, callback])
 - `text` <[string]> A text to type into a focused element.
 - `options` <[Object]>
   - `delay` <[number]> Time to wait between key presses in milliseconds. Defaults to 0.
+- `callback` <Function> callback when typing each char in text
 - returns: <[Promise]>
 
 Focuses the element, and then sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
@@ -1889,6 +1898,14 @@ An example of typing into a text field and then submitting the form:
 const elementHandle = await page.$('input');
 await elementHandle.type('some text');
 await elementHandle.press('Enter');
+```
+
+Callback when typing each char in text
+```
+const elementHandle = await page.$('input');
+await elementHandle.type('puppeteer', {delay: 20}, function(char, text){
+  console.log(text);
+});
 ```
 
 #### elementHandle.uploadFile(...filePaths)
