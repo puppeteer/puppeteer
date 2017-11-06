@@ -165,6 +165,11 @@ If you're seeing other weird errors when launching Chrome, try running the conta
 with `docker run --cap-add=SYS_ADMIN` when developing locally. Since the Dockerfile
 adds a `pptr` user as a non-privileged user, it may not have all the necessary privileges.
 
+[dumb-init](https://github.com/Yelp/dumb-init) is worth checking out if you're 
+experiencing a lot of zombies Chrome processes sticking around. There's special
+treatment for processes with PID=1, which makes it hard to terminate Chrome
+properly in some cases (e.g. in Docker).
+
 ## Running Puppeteer on Heroku
 
 Running Puppeteer on Heroku requires some additional dependencies that aren't included on the Linux box that Heroku spins up for you. To add the dependencies on deploy, add the Puppeteer Heroku buildpack to the list of buildpacks for your app under Settings > Buildpacks.
