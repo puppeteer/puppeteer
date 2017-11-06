@@ -3045,7 +3045,7 @@ describe('Page', function() {
 if (process.env.COVERAGE) {
   describe('COVERAGE', function(){
     const coverage = helper.publicAPICoverage();
-    const disabled = new Set();
+    const disabled = new Set(['page.bringToFront']);
     if (!headless)
       disabled.add('page.pdf');
 
