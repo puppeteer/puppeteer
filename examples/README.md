@@ -13,6 +13,7 @@ NODE_PATH=../ node examples/search.js
 ## Web scraping
 - [Puppetron](https://github.com/cheeaun/puppetron) - Demo site that shows how to use Puppeteer and Headless Chrome to render pages. Inspired by [GoogleChrome/rendertron](https://github.com/GoogleChrome/rendertron).
  - [Thal](https://medium.com/@e_mad_ehsan/getting-started-with-puppeteer-and-chrome-headless-for-web-scrapping-6bf5979dee3e "An article on medium") - Getting started with Puppeteer and Chrome Headless for Web Scraping.
+ - [pupperender](https://github.com/LasaleFamine/pupperender) - ExpressJs middleware that checks the User-Agent header of incoming requests, and if it matches one of a configurable set of bots, render the page using Puppeteer. Useful for PWA rendering.
 
 ## Testing
 - [angular-puppeteer-demo](https://github.com/Quramy/angular-puppeteer-demo) - Demo repository explaining how to use Puppeteer in Karma.
