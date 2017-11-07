@@ -2406,6 +2406,17 @@ describe('Page', function() {
       expect(await page.evaluate(() => __injected)).toBe(42);
     }));
 
+    it('should throw an error if loading from url fail', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      let error = null;
+      try {
+        await page.addScriptTag({ url: '/nonexistfile.js' });
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toBe('Loading script from /nonexistfile.js failed');
+    }));
+
     it('should work with a path', SX(async function() {
       await page.goto(EMPTY_PAGE);
       const scriptHandle = await page.addScriptTag({ path: path.join(__dirname, 'assets/injectedfile.js') });
@@ -2444,6 +2455,17 @@ describe('Page', function() {
       const styleHandle = await page.addStyleTag({ url: '/injectedstyle.css' });
       expect(styleHandle.asElement()).not.toBeNull();
       expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(255, 0, 0)');
+    }));
+
+    it('should throw an error if loading from url fail', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      let error = null;
+      try {
+        await page.addStyleTag({ url: '/nonexistfile.js' });
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toBe('Loading style from /nonexistfile.js failed');
     }));
 
     it('should work with a path', SX(async function() {
