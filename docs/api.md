@@ -1779,7 +1779,7 @@ The method runs `element.querySelectorAll` within the page. If no elements match
     - width <[number]> the width of the element in pixels.
     - height <[number]> the height of the element in pixels.
 
-This method returns the bounding box of the element (relative to the main frame), or `null` if element is detached from dom.
+This method returns the bounding box of the element (relative to the main frame), or `null` if the element is not visible.
 
 #### elementHandle.click([options])
 - `options` <[Object]>
