@@ -15,6 +15,7 @@ extension using:
 
 ```js
 const browser = await puppeteer.launch({
+  headless: false,
   args: [
     '--disable-extensions-except=/path/to/extension/',
     '--load-extension=/path/to/extension/',
