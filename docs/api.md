@@ -45,6 +45,7 @@
   * [page.addScriptTag(options)](#pageaddscripttagoptions)
   * [page.addStyleTag(options)](#pageaddstyletagoptions)
   * [page.authenticate(credentials)](#pageauthenticatecredentials)
+  * [page.bringToFront()](#pagebringtofront)
   * [page.click(selector[, options])](#pageclickselector-options)
   * [page.close()](#pageclose)
   * [page.content()](#pagecontent)
@@ -523,6 +524,12 @@ Shortcut for [page.mainFrame().addStyleTag(options)](#frameaddstyletagoptions).
 Provide credentials for [http authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication).
 
 To disable authentication, pass `null`.
+
+#### page.bringToFront()
+
+- returns: <[Promise]>
+
+Brings page to front (activates tab).
 
 #### page.click(selector[, options])
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
