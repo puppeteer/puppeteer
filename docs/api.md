@@ -74,6 +74,7 @@
   * [page.setContent(html, options)](#pagesetcontenthtml-options)
   * [page.setCookie(...cookies)](#pagesetcookiecookies)
   * [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
+  * [page.setGeolocationOverride(options)](#pagesetgeolocationoverrideoptions)
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
   * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
@@ -979,11 +980,17 @@ The extra HTTP headers will be sent with every request the page initiates.
 
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
+#### page.setGeolocationOverride(options)
+- `options` <[Object]> Contains latitude, longitude and accuracy numbers.
+- returns: <[Promise]>
+
 #### page.setJavaScriptEnabled(enabled)
 - `enabled` <[boolean]> Whether or not to enable JavaScript on the page.
 - returns: <[Promise]>
 
 > **NOTE** changing this value won't affect scripts that have already been run. It will take full effect on the next [navigation](#pagegotourl-options).
+
+
 
 #### page.setOfflineMode(enabled)
 - `enabled` <[boolean]> When `true`, enables offline mode for the page.
