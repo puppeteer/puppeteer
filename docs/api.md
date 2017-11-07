@@ -71,7 +71,7 @@
   * [page.reload(options)](#pagereloadoptions)
   * [page.screenshot([options])](#pagescreenshotoptions)
   * [page.select(selector, ...values)](#pageselectselector-values)
-  * [page.setContent(html, options)](#pagesetcontenthtml-options)
+  * [page.setContent(html)](#pagesetcontenthtml)
   * [page.setCookie(...cookies)](#pagesetcookiecookies)
   * [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
@@ -947,16 +947,9 @@ page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 
 Shortcut for [page.mainFrame.select()](#frameselectselector-values)
 
-#### page.setContent(html, options)
+#### page.setContent(html)
 - `html` <[string]> HTML markup to assign to the page.
-- `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]|[Array]<[string]>> When to consider setting content complete, defaults to `load`. Given an array of event strings, setting content is considered to be successful after all events have been fired. Events can be either:
-    - `load` - consider setting content to be finished when the `load` event is fired.
-    - `domcontentloaded` - consider setting content to be finished when the `DOMContentLoaded` event is fired.
-    - `networkidle0` - consider setting content to be finished when there are no more than 0 network connections for at least `500` ms.
-    - `networkidle2` - consider setting content to be finished when there are no more than 2 network connections for at least `500` ms.
-- returns: <[Promise]> Promise which resolves when content is set and all events are triggered.
+- returns: <[Promise]>
 
 #### page.setCookie(...cookies)
 - `...cookies` <...[Object]>
