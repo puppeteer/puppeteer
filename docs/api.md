@@ -522,6 +522,8 @@ To disable authentication, pass `null`.
 
 #### page.bringToFront()
 
+- returns: <[Promise]>
+
 Brings page to front (activates tab).
 
 #### page.click(selector[, options])
