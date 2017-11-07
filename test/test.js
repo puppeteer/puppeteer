@@ -2302,17 +2302,6 @@ describe('Page', function() {
       const result = await page.content();
       expect(result).toBe(`${doctype}${expectedOutput}`);
     }));
-    it('should await resources to load', SX(async function() {
-      const imgPath = '/img.png';
-      let imgResponse = null;
-      server.setRoute(imgPath, (req, res) => imgResponse = res);
-      let loaded = false;
-      const contentPromise = page.setContent(`<img src="${PREFIX + imgPath}"></img>`).then(() => loaded = true);
-      await server.waitForRequest(imgPath);
-      expect(loaded).toBe(false);
-      imgResponse.end();
-      await contentPromise;
-    }));
   });
 
   describe('Network Events', function() {
