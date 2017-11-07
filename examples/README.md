@@ -6,6 +6,23 @@ Assuming you have a checkout of the Puppeteer repo and have run yarn (or npm i) 
 NODE_PATH=../ node examples/search.js
 ```
 
+# Tips & Tricks
+
+### Load a Chrome extension
+
+By default, Puppeteer disables extensions when launching Chrome. You can load a specific
+extension using: 
+
+```js
+const browser = await puppeteer.launch({
+  headless: false,
+  args: [
+    '--disable-extensions-except=/path/to/extension/',
+    '--load-extension=/path/to/extension/',
+  ]
+});
+```
+
 # Other resources
 
 > Other useful tools, articles, and projects that use Puppeteer.
