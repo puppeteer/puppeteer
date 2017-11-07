@@ -13,6 +13,7 @@
   * [puppeteer.executablePath()](#puppeteerexecutablepath)
   * [puppeteer.launch([options])](#puppeteerlaunchoptions)
 - [class: Browser](#class-browser)
+  * [event: 'disconnected'](#event-disconnected)
   * [event: 'targetchanged'](#event-targetchanged)
   * [event: 'targetcreated'](#event-targetcreated)
   * [event: 'targetdestroyed'](#event-targetdestroyed)
@@ -57,13 +58,13 @@
   * [page.exposeFunction(name, puppeteerFunction)](#pageexposefunctionname-puppeteerfunction)
   * [page.focus(selector)](#pagefocusselector)
   * [page.frames()](#pageframes)
-  * [page.getMetrics()](#pagegetmetrics)
   * [page.goBack(options)](#pagegobackoptions)
   * [page.goForward(options)](#pagegoforwardoptions)
   * [page.goto(url, options)](#pagegotourl-options)
   * [page.hover(selector)](#pagehoverselector)
   * [page.keyboard](#pagekeyboard)
   * [page.mainFrame()](#pagemainframe)
+  * [page.metrics()](#pagemetrics)
   * [page.mouse](#pagemouse)
   * [page.pdf(options)](#pagepdfoptions)
   * [page.queryObjects(prototypeHandle)](#pagequeryobjectsprototypehandle)
@@ -128,6 +129,7 @@
   * [frame.isDetached()](#frameisdetached)
   * [frame.name()](#framename)
   * [frame.parentFrame()](#frameparentframe)
+  * [frame.select(selector, ...values)](#frameselectselector-values)
   * [frame.title()](#frametitle)
   * [frame.url()](#frameurl)
   * [frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args)
@@ -290,6 +292,10 @@ puppeteer.launch().then(async browser => {
   await browser2.close();
 });
 ```
+#### event: 'disconnected'
+Emitted when puppeteer gets disconnected from the browser instance. This might happen because one of the following:
+- browser closed or crashed
+- `browser.disconnect` method was called
 
 #### event: 'targetchanged'
 - <[Target]>
@@ -407,7 +413,7 @@ Emitted when the JavaScript [`load`](https://developer.mozilla.org/en-US/docs/We
     of metrics are of <[number]> type.
 
 Emitted when the JavaScript code makes a call to `console.timeStamp`. For the list
-of metrics see `page.getMetrics`.
+of metrics see `page.metrics`.
 
 #### event: 'pageerror'
 - <[string]> The exception message
@@ -491,7 +497,7 @@ Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector
   - `url` <[string]> Url of a script to be added.
   - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `content` <[string]> Raw JavaScript content to be injected into frame.
-- returns: <[Promise]> which resolves when the script's onload fires or when the script content was injected into frame.
+- returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
 
 Adds a `<script>` tag into the page with the desired url or content.
 
@@ -502,7 +508,7 @@ Shortcut for [page.mainFrame().addScriptTag(options)](#frameaddscripttagoptions)
   - `url` <[string]> Url of the `<link>` tag.
   - `path` <[string]> Path to the CSS file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `content` <[string]> Raw CSS content to be injected into frame.
-- returns: <[Promise]> which resolves when the stylesheet's onload fires or when the CSS content was injected into frame.
+- returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame.
 
 Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
 
@@ -742,24 +748,6 @@ If there's no element matching `selector`, the method throws an error.
 #### page.frames()
 - returns: <[Array]<[Frame]>> An array of all frames attached to the page.
 
-#### page.getMetrics()
-- returns: <[Object]> Object containing metrics as key/value pairs.
-  - `Timestamp` <[number]> The timestamp when the metrics sample was taken.
-  - `Documents` <[number]> Number of documents in the page.
-  - `Frames` <[number]> Number of frames in the page.
-  - `JSEventListeners` <[number]> Number of events in the page.
-  - `Nodes` <[number]> Number of DOM nodes in the page.
-  - `LayoutCount` <[number]> Total number of full or partial page layout.
-  - `RecalcStyleCount` <[number]> Total number of page style recalculations.
-  - `LayoutDuration` <[number]> Combined durations of all page layouts.
-  - `RecalcStyleDuration` <[number]> Combined duration of all page style recalculations.
-  - `ScriptDuration` <[number]> Combined duration of JavaScript execution.
-  - `TaskDuration` <[number]> Combined duration of all tasks performed by the browser.
-  - `JSHeapUsedSize` <[number]> Used JavaScript heap size.
-  - `JSHeapTotalSize` <[number]> Total JavaScript heap size.
-
-> **NOTE** All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
-
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
@@ -822,6 +810,24 @@ If there's no element matching `selector`, the method throws an error.
 - returns: <[Frame]> returns page's main frame.
 
 Page is guaranteed to have a main frame which persists during navigations.
+
+#### page.metrics()
+- returns: <[Promise]<[Object]>> Object containing metrics as key/value pairs.
+  - `Timestamp` <[number]> The timestamp when the metrics sample was taken.
+  - `Documents` <[number]> Number of documents in the page.
+  - `Frames` <[number]> Number of frames in the page.
+  - `JSEventListeners` <[number]> Number of events in the page.
+  - `Nodes` <[number]> Number of DOM nodes in the page.
+  - `LayoutCount` <[number]> Total number of full or partial page layout.
+  - `RecalcStyleCount` <[number]> Total number of page style recalculations.
+  - `LayoutDuration` <[number]> Combined durations of all page layouts.
+  - `RecalcStyleDuration` <[number]> Combined duration of all page style recalculations.
+  - `ScriptDuration` <[number]> Combined duration of JavaScript execution.
+  - `TaskDuration` <[number]> Combined duration of all tasks performed by the browser.
+  - `JSHeapUsedSize` <[number]> Used JavaScript heap size.
+  - `JSHeapTotalSize` <[number]> Total JavaScript heap size.
+
+> **NOTE** All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
 
 #### page.mouse
 
@@ -929,7 +935,7 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
 #### page.select(selector, ...values)
 - `selector` <[string]> A [selector] to query page for
 - `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
-- returns: <[Promise]>
+- returns: <[Promise]<[Array]<[string]>>> Returns an array of option values that have been successfully selected.
 
 Triggers a `change` and `input` event once all the provided options have been selected.
 If there's no `<select>` element matching `selector`, the method throws an error.
@@ -938,6 +944,8 @@ If there's no `<select>` element matching `selector`, the method throws an error
 page.select('select#colors', 'blue'); // single selection
 page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 ```
+
+Shortcut for [page.mainFrame.select()](#frameselectselector-values)
 
 #### page.setContent(html, options)
 - `html` <[string]> HTML markup to assign to the page.
@@ -1005,9 +1013,6 @@ puppeteer.launch().then(async browser => {
   await browser.close();
 });
 ```
-
-> **NOTE** Request interception doesn't work with data URLs. Calling `abort`,
-> `continue` or `respond` on requests for data URLs is a noop.
 
 > **NOTE** Enabling request interception disables page caching.
 
@@ -1442,7 +1447,7 @@ const html = await frame.$eval('.main-container', e => e.outerHTML);
   - `url` <[string]> Url of a script to be added.
   - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `content` <[string]> Raw JavaScript content to be injected into frame.
-- returns: <[Promise]> which resolves when the script's onload fires or when the script content was injected into frame.
+- returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
 
 Adds a `<script>` tag into the page with the desired url or content.
 
@@ -1451,7 +1456,7 @@ Adds a `<script>` tag into the page with the desired url or content.
   - `url` <[string]> Url of the `<link>` tag.
   - `path` <[string]> Path to the CSS file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `content` <[string]> Raw CSS content to be injected into frame.
-- returns: <[Promise]> which resolves when the stylesheet's onload fires or when the CSS content was injected into frame.
+- returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame.
 
 Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
 
@@ -1506,6 +1511,19 @@ If the name is empty, returns the id attribute instead.
 
 #### frame.parentFrame()
 - returns: <[Frame]> Returns parent frame, if any. Detached frames and main frames return `null`.
+
+#### frame.select(selector, ...values)
+- `selector` <[string]> A [selector] to query frame for
+- `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
+- returns: <[Promise]<[Array]<[string]>>> Returns an array of option values that have been successfully selected.
+
+Triggers a `change` and `input` event once all the provided options have been selected.
+If there's no `<select>` element matching `selector`, the method throws an error.
+
+```js
+frame.select('select#colors', 'blue'); // single selection
+frame.select('select#colors', 'red', 'green', 'blue'); // multiple selections
+```
 
 #### frame.title()
 - returns: <[Promise]<[string]>> Returns page's title.
@@ -1981,6 +1999,8 @@ page.on('request', request => {
 });
 ```
 
+> **NOTE** Mocking responses for dataURL requests is not supported.
+> Calling `request.respond` for a dataURL request is a noop.
 
 #### request.response()
 - returns: <[Response]> A matching [Response] object, or `null` if the response has not been received yet.
