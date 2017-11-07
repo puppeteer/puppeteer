@@ -1188,6 +1188,30 @@ describe('Page', function() {
       });
       expect(result).toBe(15);
     }));
+    it('should work on frames', SX(async function() {
+      await page.exposeFunction('compute', function(a, b) {
+        return Promise.resolve(a * b);
+      });
+
+      await page.goto(PREFIX + '/frames/nested-frames.html');
+      const frame = page.frames()[1];
+      const result = await frame.evaluate(async function() {
+        return await compute(3, 5);
+      });
+      expect(result).toBe(15);
+    }));
+    it('should work on frames before navigation', SX(async function() {
+      await page.goto(PREFIX + '/frames/nested-frames.html');
+      await page.exposeFunction('compute', function(a, b) {
+        return Promise.resolve(a * b);
+      });
+
+      const frame = page.frames()[1];
+      const result = await frame.evaluate(async function() {
+        return await compute(3, 5);
+      });
+      expect(result).toBe(15);
+    }));
   });
 
   describe('Page.setRequestInterception', function() {
