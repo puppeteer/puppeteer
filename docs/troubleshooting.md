@@ -145,11 +145,30 @@ docker build -t puppeteer-chrome-linux .
 Run the container by passing `node -e "<yourscript.js content as a string>` as the command:
 
 ```bash
- docker run -i --rm --name puppeteer-chrome puppeteer-chrome-linux node -e "`cat yourscript.js`"
+ docker run -i --rm --cap-add=SYS_ADMIN \
+   --name puppeteer-chrome puppeteer-chrome-linux \
+   node -e "`cat yourscript.js`"
 ```
 
 There's a full example at https://github.com/ebidel/try-puppeteer that shows
-how to run this setup from a webserver running on App Engine Flex (Node).
+how to run this Dockerfile from a webserver running on App Engine Flex (Node).
+
+#### Tips
+
+By default, Docker runs a container with a `/dev/shm` shared memory space 6MB.
+This is [typically too small](https://github.com/c0b/chrome-in-docker/issues/1) for Chrome
+and will cause Chrome to crash when rendering large pages. To fix, run the container
+with `docker run --shm-size=1gb` to increase the size of `/dev/shm`. In the future,
+this won't be necessary. See [crbug.com/736452](https://bugs.chromium.org/p/chromium/issues/detail?id=736452).
+
+If you're seeing other weird errors when launching Chrome, try running the container
+with `docker run --cap-add=SYS_ADMIN` when developing locally. Since the Dockerfile
+adds a `pptr` user as a non-privileged user, it may not have all the necessary privileges.
+
+[dumb-init](https://github.com/Yelp/dumb-init) is worth checking out if you're 
+experiencing a lot of zombies Chrome processes sticking around. There's special
+treatment for processes with PID=1, which makes it hard to terminate Chrome
+properly in some cases (e.g. in Docker).
 
 ## Running Puppeteer on Heroku
 
