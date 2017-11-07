@@ -1694,6 +1694,26 @@ describe('Page', function() {
       await button.click().catch(err => error = err);
       expect(error.message).toBe('Node is detached from document');
     }));
+    it('should throw for hidden nodes', SX(async function() {
+      await page.goto(PREFIX + '/input/button.html');
+      const button = await page.$('button');
+      await page.evaluate(button => button.style.display = 'none', button);
+      const error = await button.click().catch(err => err);
+      expect(error.message).toBe('Node is not visible');
+    }));
+    it('should throw for recursively hidden nodes', SX(async function() {
+      await page.goto(PREFIX + '/input/button.html');
+      const button = await page.$('button');
+      await page.evaluate(button => button.parentElement.style.display = 'none', button);
+      const error = await button.click().catch(err => err);
+      expect(error.message).toBe('Node is not visible');
+    }));
+    it('should throw for <br> elements', SX(async function() {
+      await page.setContent('hello<br>goodbye');
+      const br = await page.$('br');
+      const error = await br.click().catch(err => err);
+      expect(error.message).toBe('Node is not visible');
+    }));
   });
 
   describe('ElementHandle.hover', function() {
@@ -2558,6 +2578,15 @@ describe('Page', function() {
       await page.emulate(iPhone);
       expect(await page.evaluate(() => window.innerWidth)).toBe(375);
       expect(await page.evaluate(() => navigator.userAgent)).toContain('Safari');
+    }));
+    it('should support clicking', SX(async function() {
+      await page.goto(PREFIX + '/mobile.html');
+      await page.emulate(iPhone);
+      await page.goto(PREFIX + '/input/button.html');
+      const button = await page.$('button');
+      await page.evaluate(button => button.style.marginTop = '200px', button);
+      await button.click();
+      expect(await page.evaluate(() => result)).toBe('Clicked');
     }));
   });
 
