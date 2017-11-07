@@ -36,7 +36,8 @@ async function run() {
 
   // Documentation checks.
   {
-    const mdSources = await sourceFactory.readdir(path.join(PROJECT_DIR, 'docs'), '.md');
+    const apiSource = await sourceFactory.readFile(path.join(PROJECT_DIR, 'docs', 'api.md'));
+    const mdSources = [apiSource];
 
     const toc = require('./toc');
     messages.push(...await toc(mdSources));
