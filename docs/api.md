@@ -670,23 +670,22 @@ Adds a function which would be invoked in one of the following scenarios:
 
 The function is invoked after the document was created but before any of its scripts were run. This is useful to amend JavaScript environment, e.g. to seed `Math.random`.
 
-An example of using preloading some functions from an external file would be following,
+An example of overriding the navigator.languages property before the page loads:
 
 ```js
 // preload.js
-module.exports = function(){
-    console.log("Adding some fake languages to navigator property");
-    
+module.exports = function() {
     // overwrite the `languages` property to use a custom getter
     Object.defineProperty(navigator, "languages", {
       get: function() {
         return ["en-US", "en", "c", "js"];
-      }
+      };
     });
-}
+};
 
-// on the puppeteer script, assuming the preload.js file is in same folder of our script
-await page.evaluateOnNewDocument(require("./preload"));
+// In your puppeteer script, assuming the preload.js file is in same folder of our script
+const preloadFile = fs.readFileSync('filepath.js', 'utf8');
+await page.evaluateOnNewDocument(preloadFile);
 ```
 
 #### page.exposeFunction(name, puppeteerFunction)
