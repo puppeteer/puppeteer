@@ -2281,7 +2281,7 @@ describe('Page', function() {
       await page.setBlockedURLs([ '*://*/playground*' ]);
       await Promise.all([
         server.waitForRequest('/playground.html'),
-        page.goto('/playground.html'),
+        page.goto(`${PREFIX}/playground.html`),
       ]);
       expect(await page.title()).toBe('');
     }));
