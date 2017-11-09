@@ -898,7 +898,7 @@ The `format` options are:
 - `prototypeHandle` <[JSHandle]> A handle to the object prototype.
 - returns: <[Promise]<[JSHandle]>> Promise which resolves to a handle to an array of objects with this prototype.
 
-The method iterates javascript heap and finds all the objects with the given prototype.
+The method iterates JavaScript heap and finds all the objects with the given prototype.
 
 ```js
 // Create a Map object
