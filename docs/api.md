@@ -1666,7 +1666,7 @@ await resultHandle.dispose();
 - `prototypeHandle` <[JSHandle]> A handle to the object prototype.
 - returns: <[JSHandle]> A handle to an array of objects with this prototype
 
-The method iterates javascript heap and finds all the objects with the given prototype.
+The method iterates JavaScript heap and finds all the objects with the given prototype.
 
 ```js
 // Create a Map object
@@ -1683,7 +1683,7 @@ await mapPrototype.dispose();
 
 ### class: JSHandle
 
-JSHandle represents an in-page javascript object. JSHandles can be created with the [page.evaluateHandle](#pageevaluatehandlepagefunction-args) method.
+JSHandle represents an in-page JavaScript object. JSHandles can be created with the [page.evaluateHandle](#pageevaluatehandlepagefunction-args) method.
 
 ```js
 const windowHandle = await page.evaluateHandle(() => window);
