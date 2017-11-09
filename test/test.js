@@ -2283,6 +2283,7 @@ describe('Page', function() {
         server.waitForRequest('/playground.html'),
         page.goto(`${PREFIX}/playground.html`),
       ]);
+      await page.setBlockedURLs([]); // clean up
       expect(await page.title()).toBe('');
     }));
     it('should throw for non-string url values', SX(async function() {
