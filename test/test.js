@@ -972,7 +972,7 @@ describe('Page', function() {
     it('should fail when main resources failed to load', SX(async function() {
       let error = null;
       await page.goto('http://localhost:44123/non-existing-url').catch(e => error = e);
-      expect(error.message).toContain('Failed to navigate');
+      expect(error.message).toContain('net::ERR_CONNECTION_REFUSED');
     }));
     it('should fail when exceeding maximum navigation timeout', SX(async function() {
       let hasUnhandledRejection = false;
@@ -1293,7 +1293,7 @@ describe('Page', function() {
       let error = null;
       await page.goto(EMPTY_PAGE).catch(e => error = e);
       expect(error).toBeTruthy();
-      expect(error.message).toContain('Failed to navigate');
+      expect(error.message).toContain('net::ERR_FAILED');
     }));
     it('should work with redirects', SX(async function() {
       await page.setRequestInterception(true);
@@ -1371,7 +1371,7 @@ describe('Page', function() {
       });
       let error = null;
       await page.goto('data:text/html,No way!').catch(err => error = err);
-      expect(error.message).toContain('Failed to navigate');
+      expect(error.message).toContain('net::ERR_FAILED');
     }));
     it('should navigate to URL with hash and and fire requests without hash', SX(async function() {
       await page.setRequestInterception(true);
