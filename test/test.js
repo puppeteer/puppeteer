@@ -752,7 +752,7 @@ describe('Page', function() {
     it('should wait for visible', SX(async function() {
       let divFound = false;
       const waitForSelector = page.waitForSelector('div', {visible: true}).then(() => divFound = true);
-      await page.setContent(`<div style='display: none; visibility: hidden;'></div>`);
+      await page.setContent(`<div style='display: none; visibility: hidden;'>1</div>`);
       expect(divFound).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.removeProperty('display'));
       expect(divFound).toBe(false);
@@ -760,10 +760,23 @@ describe('Page', function() {
       expect(await waitForSelector).toBe(true);
       expect(divFound).toBe(true);
     }));
+    it('should wait for visible recursively', SX(async function() {
+      let divVisible = false;
+      const waitForSelector = page.waitForSelector('div#inner', {visible: true}).then(() => divVisible = true);
+      await page.setContent(`<div style='display: none; visibility: hidden;'><div id="inner">hi</div></div>`);
+      expect(divVisible).toBe(false);
+      await page.evaluate(() => document.querySelector('div').style.removeProperty('display'));
+      expect(divVisible).toBe(false);
+      await page.evaluate(() => document.querySelector('div').style.removeProperty('visibility'));
+      expect(await waitForSelector).toBe(true);
+      expect(divVisible).toBe(true);
+    }));
     it('hidden should wait for visibility: hidden', SX(async function() {
       let divHidden = false;
       await page.setContent(`<div style='display: block;'></div>`);
       const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divHidden = true);
+      await page.evaluate('1'); // do a round trip
+      expect(divHidden).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.setProperty('visibility', 'hidden'));
       expect(await waitForSelector).toBe(true);
       expect(divHidden).toBe(true);
@@ -772,6 +785,8 @@ describe('Page', function() {
       let divHidden = false;
       await page.setContent(`<div style='display: block;'></div>`);
       const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divHidden = true);
+      await page.evaluate('1'); // do a round trip
+      expect(divHidden).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.setProperty('display', 'none'));
       expect(await waitForSelector).toBe(true);
       expect(divHidden).toBe(true);
@@ -780,6 +795,7 @@ describe('Page', function() {
       await page.setContent(`<div></div>`);
       let divRemoved = false;
       const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divRemoved = true);
+      await page.evaluate('1'); // do a round trip
       expect(divRemoved).toBe(false);
       await page.evaluate(() => document.querySelector('div').remove());
       expect(await waitForSelector).toBe(true);
