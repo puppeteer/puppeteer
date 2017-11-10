@@ -775,7 +775,7 @@ describe('Page', function() {
       let divHidden = false;
       await page.setContent(`<div style='display: block;'></div>`);
       const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divHidden = true);
-      await page.evaluate('1'); // do a round trip
+      await page.waitForSelector('div'); // do a round trip
       expect(divHidden).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.setProperty('visibility', 'hidden'));
       expect(await waitForSelector).toBe(true);
@@ -785,7 +785,7 @@ describe('Page', function() {
       let divHidden = false;
       await page.setContent(`<div style='display: block;'></div>`);
       const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divHidden = true);
-      await page.evaluate('1'); // do a round trip
+      await page.waitForSelector('div'); // do a round trip
       expect(divHidden).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.setProperty('display', 'none'));
       expect(await waitForSelector).toBe(true);
@@ -795,7 +795,7 @@ describe('Page', function() {
       await page.setContent(`<div></div>`);
       let divRemoved = false;
       const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divRemoved = true);
-      await page.evaluate('1'); // do a round trip
+      await page.waitForSelector('div'); // do a round trip
       expect(divRemoved).toBe(false);
       await page.evaluate(() => document.querySelector('div').remove());
       expect(await waitForSelector).toBe(true);
