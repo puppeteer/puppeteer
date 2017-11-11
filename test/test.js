@@ -1796,6 +1796,29 @@ describe('Page', function() {
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
     }));
+    it('should scroll element into view', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent(`
+        something above
+        <style>div.above {
+          border: 2px solid blue;
+          background: red;
+          height: 1500px;
+        }
+        div.to-screenshot {
+          border: 2px solid blue;
+          background: green;
+          width: 50px;
+          height: 50px;
+        }
+        </style>
+        <div class="above"></div>
+        <div class="to-screenshot"></div>
+      `);
+      const elementHandle = await page.$('div.to-screenshot');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-scrolled-into-view.png');
+    }));
     it('should work with a rotated element', SX(async function() {
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`<div style="position:absolute;
