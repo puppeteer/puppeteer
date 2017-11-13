@@ -37,6 +37,21 @@ const downloadURLs = {
   win64: '%s/chromium-browser-snapshots/Win_x64/%d/chrome-win32.zip',
 };
 
+const protocolSelector = (function() {
+  const protocols = {
+    'http:': require('http'),
+    'https:': require('https'),
+  };
+
+  /**
+   * @param {string} inputUrl
+   * @return {?function} protocol
+   */
+  return function(inputUrl) {
+    return protocols[URL.parse(inputUrl).protocol];
+  };
+})();
+
 module.exports = {
   /**
    * @return {!Array<string>}
@@ -193,7 +208,7 @@ function downloadFile(url, destinationPath, progressCallback) {
   const promise = new Promise((x, y) => { fulfill = x; reject = y; });
 
   const options = requestOptions(url);
-  const request = https.get(options, response => {
+  const request = protocolSelector(url).get(options, response => {
     if (response.statusCode !== 200) {
       const error = new Error(`Download failed: server returned code ${response.statusCode}. URL: ${url}`);
       // consume response data to free up memory
