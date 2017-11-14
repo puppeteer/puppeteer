@@ -15,7 +15,6 @@
  */
 
 const os = require('os');
-const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const extract = require('extract-zip');
@@ -86,7 +85,7 @@ module.exports = {
 
     let resolve;
     const promise = new Promise(x => resolve = x);
-    const request = https.request(options, response => {
+    const request = protocolSelector(options.href).request(options, response => {
       resolve(response.statusCode === 200);
     });
     request.on('error', error => {
