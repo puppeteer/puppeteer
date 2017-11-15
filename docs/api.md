@@ -444,7 +444,7 @@ Emitted when a [response] is received.
 
 #### page.$(selector)
 - `selector` <[string]> A [selector] to query page for
-- returns: <[Promise]<[ElementHandle]>>
+- returns: <[Promise]<?[ElementHandle]>>
 
 The method runs `document.querySelector` within the page. If no element matches the selector, the return value resolve to `null`.
 
@@ -516,7 +516,7 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<s
 Shortcut for [page.mainFrame().addStyleTag(options)](#frameaddstyletagoptions).
 
 #### page.authenticate(credentials)
-- `credentials` <[Object]>
+- `credentials` <?[Object]>
   - `username` <[string]>
   - `password` <[string]>
 - returns: <[Promise]>
@@ -609,7 +609,7 @@ puppeteer.launch().then(async browser => {
 List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js).
 
 #### page.emulateMedia(mediaType)
-  - `mediaType` <[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation.
+  - `mediaType` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation.
   - returns: <[Promise]>
 
 #### page.evaluate(pageFunction, ...args)
@@ -763,8 +763,8 @@ If there's no element matching `selector`, the method throws an error.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
     - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
-- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
-can not go back, resolves to null.
+- returns: <[Promise]<?[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
+can not go back, resolves to `null`.
 
 Navigate to the previous page in history.
 
@@ -776,8 +776,8 @@ Navigate to the previous page in history.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
     - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
-- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
-can not go back, resolves to null.
+- returns: <[Promise]<?[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
+can not go back, resolves to `null`.
 
 Navigate to the next page in history.
 
@@ -790,7 +790,7 @@ Navigate to the next page in history.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
     - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
-- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
+- returns: <[Promise]<?[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 The `page.goto` will throw an error if:
 - there's an SSL error (e.g. in case of self-signed certificates).
@@ -1402,7 +1402,7 @@ puppeteer.launch().then(async browser => {
 
 #### frame.$(selector)
 - `selector` <[string]> Selector to query page for
-- returns: <[Promise]<[ElementHandle]>> Promise which resolves to ElementHandle pointing to the frame element.
+- returns: <[Promise]<?[ElementHandle]>> Promise which resolves to ElementHandle pointing to the frame element.
 
 The method queries frame for the selector. If there's no such element within the frame, the method will resolve to `null`.
 
@@ -1512,7 +1512,7 @@ If the name is empty, returns the id attribute instead.
 > **NOTE** This value is calculated once when the frame is created, and will not update if the attribute is changed later.
 
 #### frame.parentFrame()
-- returns: <[Frame]> Returns parent frame, if any. Detached frames and main frames return `null`.
+- returns: <?[Frame]> Returns parent frame, if any. Detached frames and main frames return `null`.
 
 #### frame.select(selector, ...values)
 - `selector` <[string]> A [selector] to query frame for
@@ -1695,7 +1695,7 @@ JSHandle prevents references JavaScript objects from garbage collection unless t
 JSHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args), [`page.evaluate()`](#pageevaluatepagefunction-args) and [`page.evaluateHandle`](#pageevaluatehandlepagefunction-args) methods.
 
 #### jsHandle.asElement()
-- returns: <[ElementHandle]>
+- returns: <?[ElementHandle]>
 
 Returns either `null` or the object handle itself, if the object handle is an instance of [ElementHandle].
 
@@ -1761,7 +1761,7 @@ ElementHandle instances can be used as arguments in [`page.$eval()`](#pageevalse
 
 #### elementHandle.$(selector)
 - `selector` <[string]> A [selector] to query element for
-- returns: <[Promise]<[ElementHandle]>>
+- returns: <[Promise]<?[ElementHandle]>>
 
 The method runs `element.querySelector` within the page. If no element matches the selector, the return value resolve to `null`.
 
@@ -1775,7 +1775,7 @@ The method runs `element.querySelectorAll` within the page. If no elements match
 - returns: <[elementhandle]>
 
 #### elementHandle.boundingBox()
-- returns: <[Object]>
+- returns: <?[Object]>
     - x <[number]> the x coordinate of the element in pixels.
     - y <[number]> the y coordinate of the element in pixels.
     - width <[number]> the width of the element in pixels.
@@ -1943,10 +1943,10 @@ Continues request with optional request overrides. To use this, request intercep
 Exception is immediately thrown if the request interception is not enabled.
 
 #### request.failure()
-- returns: <[Object]> Object describing request failure, if any
+- returns: <?[Object]> Object describing request failure, if any
   - `errorText` <[string]> Human-readable error message, e.g. `'net::ERR_FAILED'`.
 
-The method returns null unless this request was failed, as reported by
+The method returns `null` unless this request was failed, as reported by
 `requestfailed` event.
 
 Example of logging all failed requests:
@@ -2005,7 +2005,7 @@ page.on('request', request => {
 > Calling `request.respond` for a dataURL request is a noop.
 
 #### request.response()
-- returns: <[Response]> A matching [Response] object, or `null` if the response has not been received yet.
+- returns: <?[Response]> A matching [Response] object, or `null` if the response has not been received yet.
 
 #### request.url
 - <[string]>
@@ -2051,7 +2051,7 @@ Contains the URL of the response.
 ### class: Target
 
 #### target.page()
-- returns: <[Promise]<[Page]>>
+- returns: <[Promise]<?[Page]>>
 
 If the target is not of type `"page"`, returns `null`.
 
