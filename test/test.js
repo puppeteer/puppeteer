@@ -17,6 +17,7 @@
 const fs = require('fs');
 const rm = require('rimraf').sync;
 const path = require('path');
+const url = require('url');
 const {helper} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
@@ -278,6 +279,15 @@ describe('Page', function() {
       expect(disconnectedOriginal).toBe(1);
       expect(disconnectedRemote1).toBe(1);
       expect(disconnectedRemote2).toBe(1);
+    }));
+  });
+
+  describe('Browser.remoteDebuggingPort', function() {
+    it('should return the same port as in wsEndpoint', SX(async function() {
+      const wsEndpoint = browser.wsEndpoint();
+      const endpointPort = parseInt(url.parse(wsEndpoint).port, 10);
+      const remoteDebuggingPort = browser.remoteDebuggingPort();
+      expect(remoteDebuggingPort).toBe(endpointPort);
     }));
   });
 
