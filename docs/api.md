@@ -685,6 +685,23 @@ Adds a function which would be invoked in one of the following scenarios:
 
 The function is invoked after the document was created but before any of its scripts were run. This is useful to amend JavaScript environment, e.g. to seed `Math.random`.
 
+An example of overriding the navigator.languages property before the page loads:
+
+```js
+// preload.js
+
+// overwrite the `languages` property to use a custom getter
+Object.defineProperty(navigator, "languages", {
+  get: function() {
+    return ["en-US", "en", "bn"];
+  };
+});
+
+// In your puppeteer script, assuming the preload.js file is in same folder of our script
+const preloadFile = fs.readFileSync('./preload.js', 'utf8');
+await page.evaluateOnNewDocument(preloadFile);
+```
+
 #### page.exposeFunction(name, puppeteerFunction)
 - `name` <[string]> Name of the function on the window object
 - `puppeteerFunction` <[function]> Callback function which will be called in Puppeteer's context.
