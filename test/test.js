@@ -311,6 +311,14 @@ describe('Page', function() {
       const result = await page.evaluate(() => Promise.resolve(8 * 7));
       expect(result).toBe(56);
     }));
+    it('should work right after framenavigated', SX(async function() {
+      let frameEvaluation = null;
+      page.on('framenavigated', async frame => {
+        frameEvaluation = frame.evaluate(() => 6 * 7);
+      });
+      await page.goto(EMPTY_PAGE);
+      expect(await frameEvaluation).toBe(42);
+    }));
     it('should work from-inside an exposed function', SX(async function() {
       // Setup inpage callback, which calls Page.evaluate
       await page.exposeFunction('callController', async function(a, b) {

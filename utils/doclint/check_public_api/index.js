@@ -28,7 +28,7 @@ const EXCLUDE_CLASSES = new Set([
   'Multimap',
   'NavigatorWatcher',
   'NetworkManager',
-  'ProxyStream',
+  'PendingContext',
   'Session',
   'TaskQueue',
   'WaitTask',
