@@ -1514,7 +1514,7 @@ await bodyHandle.dispose();
 ```
 
 #### frame.executionContext()
-- returns: <[ExecutionContext]> Execution context associated with this frame.
+- returns: <[Promise]<[ExecutionContext]>> Execution context associated with this frame.
 
 #### frame.isDetached()
 - returns: <[boolean]>

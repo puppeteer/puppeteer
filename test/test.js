@@ -311,6 +311,14 @@ describe('Page', function() {
       const result = await page.evaluate(() => Promise.resolve(8 * 7));
       expect(result).toBe(56);
     }));
+    it('should work right after framenavigated', SX(async function() {
+      let frameEvaluation = null;
+      page.on('framenavigated', async frame => {
+        frameEvaluation = frame.evaluate(() => 6 * 7);
+      });
+      await page.goto(EMPTY_PAGE);
+      expect(await frameEvaluation).toBe(42);
+    }));
     it('should work from-inside an exposed function', SX(async function() {
       // Setup inpage callback, which calls Page.evaluate
       await page.exposeFunction('callController', async function(a, b) {
@@ -559,17 +567,19 @@ describe('Page', function() {
       await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
       expect(page.frames().length).toBe(2);
       const [frame1, frame2] = page.frames();
-      expect(frame1.executionContext()).toBeTruthy();
-      expect(frame2.executionContext()).toBeTruthy();
-      expect(frame1.executionContext() !== frame2.executionContext()).toBeTruthy();
+      const context1 = await frame1.executionContext();
+      const context2 = await frame2.executionContext();
+      expect(context1).toBeTruthy();
+      expect(context2).toBeTruthy();
+      expect(context1 !== context2).toBeTruthy();
 
       await Promise.all([
-        frame1.executionContext().evaluate(() => window.a = 1),
-        frame2.executionContext().evaluate(() => window.a = 2)
+        context1.evaluate(() => window.a = 1),
+        context2.evaluate(() => window.a = 2)
       ]);
       const [a1, a2] = await Promise.all([
-        frame1.executionContext().evaluate(() => window.a),
-        frame2.executionContext().evaluate(() => window.a)
+        context1.evaluate(() => window.a),
+        context2.evaluate(() => window.a)
       ]);
       expect(a1).toBe(1);
       expect(a2).toBe(2);
