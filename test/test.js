@@ -73,7 +73,6 @@ jasmine.getEnv().addReporter({
 
 // Setup unhandledRejectionHandlers
 let hasUnhandledRejection = false;
-const unhandledRejectionHandler = () => hasUnhandledRejection = true;
 process.on('unhandledRejection', error => {
   hasUnhandledRejection = true;
   const textLines = [
