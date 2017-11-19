@@ -26,6 +26,7 @@ const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
 
 const YELLOW_COLOR = '\x1b[33m';
+const RED_COLOR = '\x1b[31m';
 const RESET_COLOR = '\x1b[0m';
 
 const GOLDEN_DIR = path.join(__dirname, 'golden');
@@ -63,6 +64,26 @@ else
   const revisionInfo = Downloader.revisionInfo(Downloader.currentPlatform(), chromiumRevision);
   console.assert(revisionInfo.downloaded, `Chromium r${chromiumRevision} is not downloaded. Run 'npm install' and try to re-run tests.`);
 }
+
+// Hack to get the currently-running spec name.
+let specName = null;
+jasmine.getEnv().addReporter({
+  specStarted: result => specName = result.fullName
+});
+
+// Setup unhandledRejectionHandlers
+let hasUnhandledRejection = false;
+const unhandledRejectionHandler = () => hasUnhandledRejection = true;
+process.on('unhandledRejection', error => {
+  hasUnhandledRejection = true;
+  const textLines = [
+    '',
+    `${RED_COLOR}[UNHANDLED PROMISE REJECTION]${RESET_COLOR} "${specName}"`,
+    error.stack,
+    '',
+  ];
+  console.error(textLines.join('\n'));
+});
 
 let server;
 let httpsServer;
@@ -1001,16 +1022,11 @@ describe('Page', function() {
       expect(error.message).toContain('net::ERR_CONNECTION_REFUSED');
     }));
     it('should fail when exceeding maximum navigation timeout', SX(async function() {
-      let hasUnhandledRejection = false;
-      const unhandledRejectionHandler = () => hasUnhandledRejection = true;
-      process.on('unhandledRejection', unhandledRejectionHandler);
       // Hang for request to the empty.html
       server.setRoute('/empty.html', (req, res) => { });
       let error = null;
       await page.goto(PREFIX + '/empty.html', {timeout: 1}).catch(e => error = e);
-      expect(hasUnhandledRejection).toBe(false);
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
-      process.removeListener('unhandledRejection', unhandledRejectionHandler);
     }));
     it('should disable timeout when its set to 0', SX(async function() {
       let error = null;
@@ -3239,7 +3255,33 @@ describe('Page', function() {
       await evaluatePromise;
       await newPage.close();
     }));
+    it('should not crash while redirecting if original request was missed', SX(async function() {
+      let serverResponse = null;
+      server.setRoute('/one-style.css', (req, res) => serverResponse = res);
+      // Open a new page. Use window.open to connect to the page later.
+      await Promise.all([
+        page.evaluate(url => window.open(url), PREFIX + '/one-style.html'),
+        server.waitForRequest('/one-style.css')
+      ]);
+      // Connect to the opened page.
+      const target = browser.targets().find(target => target.url().includes('one-style.html'));
+      const newPage = await target.page();
+      // Issue a redirect.
+      serverResponse.writeHead(302, { location: '/injectedstyle.css' });
+      serverResponse.end();
+      // Wait for the new page to load.
+      await waitForEvents(newPage, 'load');
+
+      expect(hasUnhandledRejection).toBe(false);
+
+      // Cleanup.
+      await newPage.close();
+    }));
   });
+});
+
+it('Unhandled promise rejections should not be thrown', function() {
+  expect(hasUnhandledRejection).toBe(false);
 });
 
 if (process.env.COVERAGE) {
