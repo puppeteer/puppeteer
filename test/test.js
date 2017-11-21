@@ -1029,8 +1029,11 @@ describe('Page', function() {
     }));
     it('should disable timeout when its set to 0', SX(async function() {
       let error = null;
-      await page.goto(PREFIX + '/grid.html', {timeout: 0}).catch(e => error = e);
+      let loaded = false;
+      page.once('load', () => loaded = true);
+      await page.goto(PREFIX + '/grid.html', {timeout: 0, waitUntil: ['load']}).catch(e => error = e);
       expect(error).toBe(null);
+      expect(loaded).toBe(true);
     }));
     it('should work when navigating to valid url', SX(async function() {
       const response = await page.goto(EMPTY_PAGE);
