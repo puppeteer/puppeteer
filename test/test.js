@@ -2995,6 +2995,31 @@ describe('Page', function() {
     }));
   });
 
+  describe('Page.connection', function() {
+    it('should allow sending and listening to events', SX(async function() {
+      const pageConnection = page.connection();
+
+      await pageConnection.send('DOM.enable');
+      const doc = await pageConnection.send('DOM.getDocument');
+      const body = await pageConnection.send('DOM.querySelector', {
+        nodeId: doc.root.nodeId,
+        selector: 'body'
+      });
+
+      const eventPromise = new Promise(resolve => {
+        const badListener = () => { throw 'should be removed!'; };
+        pageConnection.on('DOM.attributeModified', badListener);
+        pageConnection.removeListener('DOM.attributeModified', badListener);
+        pageConnection.on('DOM.attributeModified', result => {
+          expect(result.nodeId).toEqual(body.nodeId);
+          resolve();
+        });
+      });
+      await page.evaluate(() => { document.body.setAttribute('data-status', 'working'); });
+      return eventPromise;
+    }));
+  });
+
   describe('Tracing', function() {
     const outputFile = path.join(__dirname, 'assets', 'trace.json');
     afterEach(function() {
