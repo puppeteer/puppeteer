@@ -1306,6 +1306,7 @@ await page.tracing.stop();
 - `options` <[Object]>
   - `path` <[string]> A path to write the trace file to. **required**
   - `screenshots` <[boolean]> captures screenshots in the trace.
+  - `categories` <[Array]<[string]>> specify custom categories to use instead of default. 
 - returns: <[Promise]>
 
 Only one trace can be active at a time per browser.
