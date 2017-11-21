@@ -21,6 +21,7 @@
   * [browser.disconnect()](#browserdisconnect)
   * [browser.newPage()](#browsernewpage)
   * [browser.pages()](#browserpages)
+  * [browser.remoteDebuggingPort()](#browserremotedebuggingport)
   * [browser.targets()](#browsertargets)
   * [browser.version()](#browserversion)
   * [browser.wsEndpoint()](#browserwsendpoint)
@@ -329,6 +330,9 @@ Disconnects Puppeteer from the browser, but leaves the Chromium process running.
 
 #### browser.pages()
 - returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages.
+
+#### browser.remoteDebuggingPort()
+- returns: <[number]> Browser remote debugging port.
 
 #### browser.targets()
 - returns: <[Array]<[Target]>> An array of all active targets.
