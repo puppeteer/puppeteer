@@ -1794,7 +1794,7 @@ The method runs `element.querySelectorAll` within the page. If no elements match
 - returns: <[elementhandle]>
 
 #### elementHandle.boundingBox()
-- returns: <?[Object]>
+- returns: <[Promise]<?[Object]>>
     - x <[number]> the x coordinate of the element in pixels.
     - y <[number]> the y coordinate of the element in pixels.
     - width <[number]> the width of the element in pixels.
