@@ -2343,6 +2343,27 @@ describe('Page', function() {
     }));
   });
 
+  describe('Page.setBlockedURLs', function() {
+    it('should block loading of page', SX(async function() {
+      await page.setBlockedURLs([ '*://*/playground*' ]);
+      await Promise.all([
+        server.waitForRequest('/playground.html'),
+        page.goto(`${PREFIX}/playground.html`),
+      ]);
+      await page.setBlockedURLs([]); // clean up
+      expect(await page.title()).toBe('');
+    }));
+    it('should throw for non-string url values', SX(async function() {
+      let error = null;
+      try {
+        await page.setBlockedURLs([ 1 ]);
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toBe('Expected url "1" to be a String, but "number" is found');
+    }));
+  });
+
   describe('Page.authenticate', function() {
     it('should work', SX(async function() {
       server.setAuth('/empty.html', 'user', 'pass');

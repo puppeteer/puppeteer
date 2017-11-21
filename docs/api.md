@@ -72,6 +72,7 @@
   * [page.reload(options)](#pagereloadoptions)
   * [page.screenshot([options])](#pagescreenshotoptions)
   * [page.select(selector, ...values)](#pageselectselector-values)
+  * [page.setBlockedURLs(blockedUrls)](#pagesetblockedurlsblockedurls)
   * [page.setContent(html)](#pagesetcontenthtml)
   * [page.setCookie(...cookies)](#pagesetcookiecookies)
   * [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
@@ -972,6 +973,10 @@ page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 ```
 
 Shortcut for [page.mainFrame.select()](#frameselectselector-values)
+
+#### page.setBlockedURLs(blockedUrls)
+- `blockedUrls` <[Array]<[string]>> Urls to block, may also be a [match pattern](https://developer.chrome.com/apps/match_patterns).
+- returns: <[Promise]>
 
 #### page.setContent(html)
 - `html` <[string]> HTML markup to assign to the page.
