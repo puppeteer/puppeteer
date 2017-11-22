@@ -248,4 +248,5 @@ function httpRequest(url, method = 'GET', response) {
     'https:': require('https')
   };
 
+  return protocols[URL.parse(url).protocol].request(options, response);
 }
