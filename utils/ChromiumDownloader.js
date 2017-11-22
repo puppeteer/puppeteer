@@ -36,21 +36,6 @@ const downloadURLs = {
   win64: '%s/chromium-browser-snapshots/Win_x64/%d/chrome-win32.zip',
 };
 
-const protocolSelector = (function() {
-  const protocols = {
-    'http:': require('http'),
-    'https:': require('https'),
-  };
-
-  /**
-   * @param {string} inputUrl
-   * @return {?function} protocol
-   */
-  return function(inputUrl) {
-    return protocols[URL.parse(inputUrl).protocol];
-  };
-})();
-
 module.exports = {
   /**
    * @return {!Array<string>}
@@ -81,11 +66,11 @@ module.exports = {
   canDownloadRevision: function(platform, revision) {
     console.assert(downloadURLs[platform], 'Unknown platform: ' + platform);
 
-    const options = requestOptions(util.format(downloadURLs[platform], DEFAULT_DOWNLOAD_HOST, revision), 'HEAD');
+    const url = util.format(downloadURLs[platform], DEFAULT_DOWNLOAD_HOST, revision);
 
     let resolve;
     const promise = new Promise(x => resolve = x);
-    const request = protocolSelector(options.href).request(options, response => {
+    const request = httpRequest(url, 'HEAD', response => {
       resolve(response.statusCode === 200);
     });
     request.on('error', error => {
@@ -206,8 +191,7 @@ function downloadFile(url, destinationPath, progressCallback) {
 
   const promise = new Promise((x, y) => { fulfill = x; reject = y; });
 
-  const options = requestOptions(url);
-  const request = protocolSelector(url).get(options, response => {
+  const request = httpRequest(url, 'GET', response => {
     if (response.statusCode !== 200) {
       const error = new Error(`Download failed: server returned code ${response.statusCode}. URL: ${url}`);
       // consume response data to free up memory
@@ -240,10 +224,15 @@ function extractZip(zipPath, folderPath) {
   return new Promise(fulfill => extract(zipPath, {dir: folderPath}, fulfill));
 }
 
-function requestOptions(url, method = 'GET') {
+/**
+ * @param {string} url
+ * @param {?string} method
+ * @param {?function} response
+ */
+function httpRequest(url, method = 'GET', response) {
   /** @type {Object} */
-  const result = URL.parse(url);
-  result.method = method;
+  const options = URL.parse(url);
+  options.method = method;
 
   const proxyURL = getProxyForUrl(url);
   if (proxyURL) {
@@ -251,8 +240,12 @@ function requestOptions(url, method = 'GET') {
     const parsedProxyURL = URL.parse(proxyURL);
     parsedProxyURL.secureProxy = parsedProxyURL.protocol === 'https:';
 
-    result.agent = new ProxyAgent(parsedProxyURL);
+    options.agent = new ProxyAgent(parsedProxyURL);
   }
 
-  return result;
+  const protocols = {
+    'http:': require('http'),
+    'https:': require('https')
+  };
+
 }
