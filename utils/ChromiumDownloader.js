@@ -228,6 +228,7 @@ function extractZip(zipPath, folderPath) {
  * @param {string} url
  * @param {?string} method
  * @param {?function} response
+ * @return {?function} http.ClientRequest
  */
 function httpRequest(url, method = 'GET', response) {
   /** @type {Object} */
