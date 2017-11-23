@@ -125,12 +125,14 @@
   * [frame.addScriptTag(options)](#frameaddscripttagoptions)
   * [frame.addStyleTag(options)](#frameaddstyletagoptions)
   * [frame.childFrames()](#framechildframes)
+  * [frame.content()](#framecontent)
   * [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
   * [frame.executionContext()](#frameexecutioncontext)
   * [frame.isDetached()](#frameisdetached)
   * [frame.name()](#framename)
   * [frame.parentFrame()](#frameparentframe)
   * [frame.select(selector, ...values)](#frameselectselector-values)
+  * [frame.setContent(html)](#framesetcontenthtml)
   * [frame.title()](#frametitle)
   * [frame.url()](#frameurl)
   * [frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args)
@@ -1484,6 +1486,11 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<s
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
 
+#### frame.content()
+- returns: <[Promise]<[String]>>
+
+Gets the full HTML contents of the frame, including the doctype.
+
 #### frame.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to  `pageFunction`
@@ -1545,6 +1552,10 @@ If there's no `<select>` element matching `selector`, the method throws an error
 frame.select('select#colors', 'blue'); // single selection
 frame.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 ```
+
+#### frame.setContent(html)
+- `html` <[string]> HTML markup to assign to the page.
+- returns: <[Promise]>
 
 #### frame.title()
 - returns: <[Promise]<[string]>> Returns page's title.
