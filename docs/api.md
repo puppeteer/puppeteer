@@ -236,30 +236,30 @@ puppeteer.launch().then(async browser => {
 
 #### puppeteer.connect(options)
 - `options` <[Object]>
-  - `browserWSEndpoint` <[string]> a [browser websocket endpoint](#browserwsendpoint) to connect to.
-  - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
+  - `browserWSEndpoint` <[String]> a [browser websocket endpoint](#browserwsendpoint) to connect to.
+  - `ignoreHTTPSErrors` <[Boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
 - returns: <[Promise]<[Browser]>>
 
 This methods attaches Puppeteer to an existing Chromium instance.
 
 #### puppeteer.executablePath()
-- returns: <[string]> A path where Puppeteer expects to find bundled Chromium. Chromium might not exist there if the download was skipped with [`PUPPETEER_SKIP_CHROMIUM_DOWNLOAD`](#environment-variables).
+- returns: <[String]> A path where Puppeteer expects to find bundled Chromium. Chromium might not exist there if the download was skipped with [`PUPPETEER_SKIP_CHROMIUM_DOWNLOAD`](#environment-variables).
 
 #### puppeteer.launch([options])
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
-  - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
-  - `headless` <[boolean]> Whether to run Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`.
-  - `executablePath` <[string]> Path to a Chromium executable to run instead of bundled Chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-  - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
-  - `args` <[Array]<[string]>> Additional arguments to pass to the Chromium instance. List of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
-  - `handleSIGINT` <[boolean]> Close chrome process on Ctrl-C. Defaults to `true`.
-  - `handleSIGTERM` <[boolean]> Close chrome process on SIGTERM. Defaults to `true`.
-  - `handleSIGHUP` <[boolean]> Close chrome process on SIGHUP. Defaults to `true`.
-  - `timeout` <[number]> Maximum time in milliseconds to wait for the Chrome instance to start. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
-  - `dumpio` <[boolean]> Whether to pipe browser process stdout and stderr into `process.stdout` and `process.stderr`. Defaults to `false`.
-  - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
+  - `ignoreHTTPSErrors` <[Boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
+  - `headless` <[Boolean]> Whether to run Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`.
+  - `executablePath` <[String]> Path to a Chromium executable to run instead of bundled Chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `slowMo` <[Number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
+  - `args` <[Array]<[String]>> Additional arguments to pass to the Chromium instance. List of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
+  - `handleSIGINT` <[Boolean]> Close chrome process on Ctrl-C. Defaults to `true`.
+  - `handleSIGTERM` <[Boolean]> Close chrome process on SIGTERM. Defaults to `true`.
+  - `handleSIGHUP` <[Boolean]> Close chrome process on SIGHUP. Defaults to `true`.
+  - `timeout` <[Number]> Maximum time in milliseconds to wait for the Chrome instance to start. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
+  - `dumpio` <[Boolean]> Whether to pipe browser process stdout and stderr into `process.stdout` and `process.stderr`. Defaults to `false`.
+  - `userDataDir` <[String]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
   - `env` <[Object]> Specify environment variables that will be visible to Chromium. Defaults to `process.env`.
-  - `devtools` <[boolean]> Whether to auto-open DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
+  - `devtools` <[Boolean]> Whether to auto-open DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
 
 The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process is closed.
@@ -336,12 +336,12 @@ Disconnects Puppeteer from the browser, but leaves the Chromium process running.
 - returns: <[Array]<[Target]>> An array of all active targets.
 
 #### browser.version()
-- returns: <[Promise]<[string]>> For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is similar to `Chrome/61.0.3153.0`.
+- returns: <[Promise]<[String]>> For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is similar to `Chrome/61.0.3153.0`.
 
 > **NOTE** the format of browser.version() might change with future releases of Chromium.
 
 #### browser.wsEndpoint()
-- returns: <[string]> Browser websocket url.
+- returns: <[String]> Browser websocket url.
 
 Browser websocket endpoint which can be used as an argument to
 [puppeteer.connect](#puppeteerconnectoptions). The format is `ws://${host}:${port}/devtools/browser/<id>`
@@ -413,15 +413,15 @@ Emitted when the JavaScript [`load`](https://developer.mozilla.org/en-US/docs/We
 
 #### event: 'metrics'
 - <[Object]>
-  - `title` <[string]> The title passed to `console.timeStamp`.
+  - `title` <[String]> The title passed to `console.timeStamp`.
   - `metrics` <[Object]> Object containing metrics as key/value pairs. The values
-    of metrics are of <[number]> type.
+    of metrics are of <[Number]> type.
 
 Emitted when the JavaScript code makes a call to `console.timeStamp`. For the list
 of metrics see `page.metrics`.
 
 #### event: 'pageerror'
-- <[string]> The exception message
+- <[String]> The exception message
 
 Emitted when an uncaught exception happens within the page.
 
@@ -447,7 +447,7 @@ Emitted when a request finishes successfully.
 Emitted when a [response] is received.
 
 #### page.$(selector)
-- `selector` <[string]> A [selector] to query page for
+- `selector` <[String]> A [selector] to query page for
 - returns: <[Promise]<?[ElementHandle]>>
 
 The method runs `document.querySelector` within the page. If no element matches the selector, the return value resolve to `null`.
@@ -455,7 +455,7 @@ The method runs `document.querySelector` within the page. If no element matches 
 Shortcut for [page.mainFrame().$(selector)](#frameselector).
 
 #### page.$$(selector)
-- `selector` <[string]> A [selector] to query page for
+- `selector` <[String]> A [selector] to query page for
 - returns: <[Promise]<[Array]<[ElementHandle]>>>
 
 The method runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `[]`.
@@ -464,8 +464,8 @@ Shortcut for [page.mainFrame().$$(selector)](#frameselector-1).
 
 
 #### page.$$eval(selector, pageFunction[, ...args])
-- `selector` <[string]> A [selector] to query frame for
-- `pageFunction` <[function]> Function to be evaluated in browser context
+- `selector` <[String]> A [selector] to query frame for
+- `pageFunction` <[Function]> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 
@@ -479,8 +479,8 @@ const divsCounts = await page.$$eval('div', divs => divs.length);
 ```
 
 #### page.$eval(selector, pageFunction[, ...args])
-- `selector` <[string]> A [selector] to query page for
-- `pageFunction` <[function]> Function to be evaluated in browser context
+- `selector` <[String]> A [selector] to query page for
+- `pageFunction` <[Function]> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 
@@ -499,9 +499,9 @@ Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector
 
 #### page.addScriptTag(options)
 - `options` <[Object]>
-  - `url` <[string]> Url of a script to be added.
-  - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-  - `content` <[string]> Raw JavaScript content to be injected into frame.
+  - `url` <[String]> Url of a script to be added.
+  - `path` <[String]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `content` <[String]> Raw JavaScript content to be injected into frame.
 - returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
 
 Adds a `<script>` tag into the page with the desired url or content.
@@ -510,9 +510,9 @@ Shortcut for [page.mainFrame().addScriptTag(options)](#frameaddscripttagoptions)
 
 #### page.addStyleTag(options)
 - `options` <[Object]>
-  - `url` <[string]> Url of the `<link>` tag.
-  - `path` <[string]> Path to the CSS file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-  - `content` <[string]> Raw CSS content to be injected into frame.
+  - `url` <[String]> Url of the `<link>` tag.
+  - `path` <[String]> Path to the CSS file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `content` <[String]> Raw CSS content to be injected into frame.
 - returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame.
 
 Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
@@ -521,8 +521,8 @@ Shortcut for [page.mainFrame().addStyleTag(options)](#frameaddstyletagoptions).
 
 #### page.authenticate(credentials)
 - `credentials` <?[Object]>
-  - `username` <[string]>
-  - `password` <[string]>
+  - `username` <[String]>
+  - `password` <[String]>
 - returns: <[Promise]>
 
 Provide credentials for [http authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication).
@@ -536,11 +536,11 @@ To disable authentication, pass `null`.
 Brings page to front (activates tab).
 
 #### page.click(selector[, options])
-- `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
+- `selector` <[String]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
 - `options` <[Object]>
-  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
-  - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
-  - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
+  - `button` <[String]> `left`, `right`, or `middle`, defaults to `left`.
+  - `clickCount` <[Number]> defaults to 1. See [UIEvent.detail].
+  - `delay` <[Number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. The Promise will be rejected if there is no element matching `selector`.
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
@@ -555,39 +555,39 @@ If there's no element matching `selector`, the method throws an error.
 Gets the full HTML contents of the page, including the doctype.
 
 #### page.cookies(...urls)
-- `...urls` <...[string]>
+- `...urls` <...[String]>
 - returns: <[Promise]<[Array]<[Object]>>>
-  - `name` <[string]>
-  - `value` <[string]>
-  - `domain` <[string]>
-  - `path` <[string]>
-  - `expires` <[number]> Unix time in seconds.
-  - `httpOnly` <[boolean]>
-  - `secure` <[boolean]>
-  - `sameSite` <[string]> `"Strict"` or `"Lax"`.
+  - `name` <[String]>
+  - `value` <[String]>
+  - `domain` <[String]>
+  - `path` <[String]>
+  - `expires` <[Number]> Unix time in seconds.
+  - `httpOnly` <[Boolean]>
+  - `secure` <[Boolean]>
+  - `sameSite` <[String]> `"Strict"` or `"Lax"`.
 
 If no URLs are specified, this method returns cookies for the current page URL.
 If URLs are specified, only cookies for those URLs are returned.
 
 #### page.deleteCookie(...cookies)
 - `...cookies` <...[Object]>
-  - `name` <[string]> **required**
-  - `url` <[string]>
-  - `domain` <[string]>
-  - `path` <[string]>
-  - `secure` <[boolean]>
+  - `name` <[String]> **required**
+  - `url` <[String]>
+  - `domain` <[String]>
+  - `path` <[String]>
+  - `secure` <[Boolean]>
 - returns: <[Promise]>
 
 #### page.emulate(options)
 - `options` <[Object]>
   - `viewport` <[Object]>
-    - `width` <[number]> page width in pixels.
-    - `height` <[number]> page height in pixels.
-    - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
-    - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
-    - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
-    - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
-  - `userAgent` <[string]>
+    - `width` <[Number]> page width in pixels.
+    - `height` <[Number]> page height in pixels.
+    - `deviceScaleFactor` <[Number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
+    - `isMobile` <[Boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
+    - `hasTouch`<[Boolean]> Specifies if viewport supports touch events. Defaults to `false`
+    - `isLandscape` <[Boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
+  - `userAgent` <[String]>
 - returns: <[Promise]>
 
 Emulates given device metrics and user agent. This method is a shortcut for calling two methods:
@@ -613,11 +613,11 @@ puppeteer.launch().then(async browser => {
 List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js).
 
 #### page.emulateMedia(mediaType)
-  - `mediaType` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation.
+  - `mediaType` <?[String]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation.
   - returns: <[Promise]>
 
 #### page.evaluate(pageFunction, ...args)
-- `pageFunction` <[function]|[string]> Function to be evaluated in the page context
+- `pageFunction` <[Function]|[String]> Function to be evaluated in the page context
 - `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Resolves to the return value of `pageFunction`
 
@@ -648,7 +648,7 @@ await bodyHandle.dispose();
 Shortcut for [page.mainFrame().evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args).
 
 #### page.evaluateHandle(pageFunction, ...args)
-- `pageFunction` <[function]|[string]> Function to be evaluated in the page context
+- `pageFunction` <[Function]|[String]> Function to be evaluated in the page context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[JSHandle]>> Resolves to the return value of `pageFunction`
 
@@ -677,7 +677,7 @@ Shortcut for [page.mainFrame().executionContext().evaluateHandle(pageFunction, .
 
 
 #### page.evaluateOnNewDocument(pageFunction, ...args)
-- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
+- `pageFunction` <[Function]|[String]> Function to be evaluated in browser context
 - `...args` <...[Serializable]> Arguments to pass to `pageFunction`
 - returns: <[Promise]>
 
@@ -705,8 +705,8 @@ await page.evaluateOnNewDocument(preloadFile);
 ```
 
 #### page.exposeFunction(name, puppeteerFunction)
-- `name` <[string]> Name of the function on the window object
-- `puppeteerFunction` <[function]> Callback function which will be called in Puppeteer's context.
+- `name` <[String]> Name of the function on the window object
+- `puppeteerFunction` <[Function]> Callback function which will be called in Puppeteer's context.
 - returns: <[Promise]>
 
 The method adds a function called `name` on the page's `window` object.
@@ -767,7 +767,7 @@ puppeteer.launch().then(async browser => {
 ```
 
 #### page.focus(selector)
-- `selector` <[string]> A [selector] of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
+- `selector` <[String]> A [selector] of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. The promise will be rejected if there is no element matching `selector`.
 
 This method fetches an element with `selector` and focuses it.
@@ -778,8 +778,8 @@ If there's no element matching `selector`, the method throws an error.
 
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
+  - `timeout` <[Number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
+  - `waitUntil` <[String]|[Array]<[String]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
@@ -791,8 +791,8 @@ Navigate to the previous page in history.
 
 #### page.goForward(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
+  - `timeout` <[Number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
+  - `waitUntil` <[String]|[Array]<[String]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
@@ -803,10 +803,10 @@ can not go back, resolves to `null`.
 Navigate to the next page in history.
 
 #### page.goto(url, options)
-- `url` <[string]> URL to navigate page to. The url should include scheme, e.g. `https://`.
+- `url` <[String]> URL to navigate page to. The url should include scheme, e.g. `https://`.
 - `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
+  - `timeout` <[Number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
+  - `waitUntil` <[String]|[Array]<[String]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
@@ -824,7 +824,7 @@ The `page.goto` will throw an error if:
 > **NOTE** Headless mode doesn't support navigating to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
 
 #### page.hover(selector)
-- `selector` <[string]> A [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
+- `selector` <[String]> A [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
@@ -841,19 +841,19 @@ Page is guaranteed to have a main frame which persists during navigations.
 
 #### page.metrics()
 - returns: <[Promise]<[Object]>> Object containing metrics as key/value pairs.
-  - `Timestamp` <[number]> The timestamp when the metrics sample was taken.
-  - `Documents` <[number]> Number of documents in the page.
-  - `Frames` <[number]> Number of frames in the page.
-  - `JSEventListeners` <[number]> Number of events in the page.
-  - `Nodes` <[number]> Number of DOM nodes in the page.
-  - `LayoutCount` <[number]> Total number of full or partial page layout.
-  - `RecalcStyleCount` <[number]> Total number of page style recalculations.
-  - `LayoutDuration` <[number]> Combined durations of all page layouts.
-  - `RecalcStyleDuration` <[number]> Combined duration of all page style recalculations.
-  - `ScriptDuration` <[number]> Combined duration of JavaScript execution.
-  - `TaskDuration` <[number]> Combined duration of all tasks performed by the browser.
-  - `JSHeapUsedSize` <[number]> Used JavaScript heap size.
-  - `JSHeapTotalSize` <[number]> Total JavaScript heap size.
+  - `Timestamp` <[Number]> The timestamp when the metrics sample was taken.
+  - `Documents` <[Number]> Number of documents in the page.
+  - `Frames` <[Number]> Number of frames in the page.
+  - `JSEventListeners` <[Number]> Number of events in the page.
+  - `Nodes` <[Number]> Number of DOM nodes in the page.
+  - `LayoutCount` <[Number]> Total number of full or partial page layout.
+  - `RecalcStyleCount` <[Number]> Total number of page style recalculations.
+  - `LayoutDuration` <[Number]> Combined durations of all page layouts.
+  - `RecalcStyleDuration` <[Number]> Combined duration of all page style recalculations.
+  - `ScriptDuration` <[Number]> Combined duration of JavaScript execution.
+  - `TaskDuration` <[Number]> Combined duration of all tasks performed by the browser.
+  - `JSHeapUsedSize` <[Number]> Used JavaScript heap size.
+  - `JSHeapTotalSize` <[Number]> Total JavaScript heap size.
 
 > **NOTE** All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
 
@@ -863,20 +863,20 @@ Page is guaranteed to have a main frame which persists during navigations.
 
 #### page.pdf(options)
 - `options` <[Object]> Options object which might have the following properties:
-  - `path` <[string]> The file path to save the PDF to. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the PDF won't be saved to the disk.
-  - `scale` <[number]> Scale of the webpage rendering. Defaults to `1`.
-  - `displayHeaderFooter` <[boolean]> Display header and footer. Defaults to `false`.
-  - `printBackground` <[boolean]> Print background graphics. Defaults to `false`.
-  - `landscape` <[boolean]> Paper orientation. Defaults to `false`.
-  - `pageRanges` <[string]> Paper ranges to print, e.g., '1-5, 8, 11-13'. Defaults to the empty string, which means print all pages.
-  - `format` <[string]> Paper format. If set, takes priority over `width` or `height` options. Defaults to 'Letter'.
-  - `width` <[string]> Paper width, accepts values labeled with units.
-  - `height` <[string]> Paper height, accepts values labeled with units.
+  - `path` <[String]> The file path to save the PDF to. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the PDF won't be saved to the disk.
+  - `scale` <[Number]> Scale of the webpage rendering. Defaults to `1`.
+  - `displayHeaderFooter` <[Boolean]> Display header and footer. Defaults to `false`.
+  - `printBackground` <[Boolean]> Print background graphics. Defaults to `false`.
+  - `landscape` <[Boolean]> Paper orientation. Defaults to `false`.
+  - `pageRanges` <[String]> Paper ranges to print, e.g., '1-5, 8, 11-13'. Defaults to the empty string, which means print all pages.
+  - `format` <[String]> Paper format. If set, takes priority over `width` or `height` options. Defaults to 'Letter'.
+  - `width` <[String]> Paper width, accepts values labeled with units.
+  - `height` <[String]> Paper height, accepts values labeled with units.
   - `margin` <[Object]> Paper margins, defaults to none.
-    - `top` <[string]> Top margin, accepts values labeled with units.
-    - `right` <[string]> Right margin, accepts values labeled with units.
-    - `bottom` <[string]> Bottom margin, accepts values labeled with units.
-    - `left` <[string]> Left margin, accepts values labeled with units.
+    - `top` <[String]> Top margin, accepts values labeled with units.
+    - `right` <[String]> Right margin, accepts values labeled with units.
+    - `bottom` <[String]> Bottom margin, accepts values labeled with units.
+    - `left` <[String]> Left margin, accepts values labeled with units.
 - returns: <[Promise]<[Buffer]>> Promise which resolves with PDF buffer.
 
 > **NOTE** Generating a pdf is currently only supported in Chrome headless.
@@ -938,8 +938,8 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
 
 #### page.reload(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
+  - `timeout` <[Number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
+  - `waitUntil` <[String]|[Array]<[String]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
@@ -948,22 +948,22 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
 
 #### page.screenshot([options])
 - `options` <[Object]> Options object which might have the following properties:
-    - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the image won't be saved to the disk.
-    - `type` <[string]> Specify screenshot type, can be either `jpeg` or `png`. Defaults to 'png'.
-    - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
-    - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
+    - `path` <[String]> The file path to save the image to. The screenshot type will be inferred from file extension. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the image won't be saved to the disk.
+    - `type` <[String]> Specify screenshot type, can be either `jpeg` or `png`. Defaults to 'png'.
+    - `quality` <[Number]> The quality of the image, between 0-100. Not applicable to `png` images.
+    - `fullPage` <[Boolean]> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
     - `clip` <[Object]> An object which specifies clipping region of the page. Should have the following fields:
-        - `x` <[number]> x-coordinate of top-left corner of clip area
-        - `y` <[number]> y-coordinate of top-left corner of clip area
-        - `width` <[number]> width of clipping area
-        - `height` <[number]> height of clipping area
-    - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
+        - `x` <[Number]> x-coordinate of top-left corner of clip area
+        - `y` <[Number]> y-coordinate of top-left corner of clip area
+        - `width` <[Number]> width of clipping area
+        - `height` <[Number]> height of clipping area
+    - `omitBackground` <[Boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
 - returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot
 
 #### page.select(selector, ...values)
-- `selector` <[string]> A [selector] to query page for
-- `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
-- returns: <[Promise]<[Array]<[string]>>> Returns an array of option values that have been successfully selected.
+- `selector` <[String]> A [selector] to query page for
+- `...values` <...[String]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
+- returns: <[Promise]<[Array]<[String]>>> Returns an array of option values that have been successfully selected.
 
 Triggers a `change` and `input` event once all the provided options have been selected.
 If there's no `<select>` element matching `selector`, the method throws an error.
@@ -976,20 +976,20 @@ page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 Shortcut for [page.mainFrame.select()](#frameselectselector-values)
 
 #### page.setContent(html)
-- `html` <[string]> HTML markup to assign to the page.
+- `html` <[String]> HTML markup to assign to the page.
 - returns: <[Promise]>
 
 #### page.setCookie(...cookies)
 - `...cookies` <...[Object]>
-  - `name` <[string]> **required**
-  - `value` <[string]> **required**
-  - `url` <[string]>
-  - `domain` <[string]>
-  - `path` <[string]>
-  - `expires` <[number]> Unix time in seconds.
-  - `httpOnly` <[boolean]>
-  - `secure` <[boolean]>
-  - `sameSite` <[string]> `"Strict"` or `"Lax"`.
+  - `name` <[String]> **required**
+  - `value` <[String]> **required**
+  - `url` <[String]>
+  - `domain` <[String]>
+  - `path` <[String]>
+  - `expires` <[Number]> Unix time in seconds.
+  - `httpOnly` <[Boolean]>
+  - `secure` <[Boolean]>
+  - `sameSite` <[String]> `"Strict"` or `"Lax"`.
 - returns: <[Promise]>
 
 #### page.setExtraHTTPHeaders(headers)
@@ -1001,17 +1001,17 @@ The extra HTTP headers will be sent with every request the page initiates.
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
 #### page.setJavaScriptEnabled(enabled)
-- `enabled` <[boolean]> Whether or not to enable JavaScript on the page.
+- `enabled` <[Boolean]> Whether or not to enable JavaScript on the page.
 - returns: <[Promise]>
 
 > **NOTE** changing this value won't affect scripts that have already been run. It will take full effect on the next [navigation](#pagegotourl-options).
 
 #### page.setOfflineMode(enabled)
-- `enabled` <[boolean]> When `true`, enables offline mode for the page.
+- `enabled` <[Boolean]> When `true`, enables offline mode for the page.
 - returns: <[Promise]>
 
 #### page.setRequestInterception(value)
-- `value` <[boolean]> Whether to enable request interception.
+- `value` <[Boolean]> Whether to enable request interception.
 - returns: <[Promise]>
 
 Activating request interception enables `request.abort`, `request.continue` and
@@ -1038,17 +1038,17 @@ puppeteer.launch().then(async browser => {
 > **NOTE** Enabling request interception disables page caching.
 
 #### page.setUserAgent(userAgent)
-- `userAgent` <[string]> Specific user agent to use in this page
+- `userAgent` <[String]> Specific user agent to use in this page
 - returns: <[Promise]> Promise which resolves when the user agent is set.
 
 #### page.setViewport(viewport)
 - `viewport` <[Object]>
-  - `width` <[number]> page width in pixels.
-  - `height` <[number]> page height in pixels.
-  - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
-  - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
-  - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
-  - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
+  - `width` <[Number]> page width in pixels.
+  - `height` <[Number]> page height in pixels.
+  - `deviceScaleFactor` <[Number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
+  - `isMobile` <[Boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
+  - `hasTouch`<[Boolean]> Specifies if viewport supports touch events. Defaults to `false`
+  - `isLandscape` <[Boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
 - returns: <[Promise]>
 
 > **NOTE** in certain cases, setting viewport will reload the page in order to set the `isMobile` or `hasTouch` properties.
@@ -1056,14 +1056,14 @@ puppeteer.launch().then(async browser => {
 In the case of multiple pages in a single browser, each page can have its own viewport size.
 
 #### page.tap(selector)
-- `selector` <[string]> A [selector] to search for element to tap. If there are multiple elements satisfying the selector, the first will be tapped.
+- `selector` <[String]> A [selector] to search for element to tap. If there are multiple elements satisfying the selector, the first will be tapped.
 - returns: <[Promise]>
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.touchscreen](#pagetouchscreen) to tap in the center of the element.
 If there's no element matching `selector`, the method throws an error.
 
 #### page.title()
-- returns: <[Promise]<[string]>> Returns page's title.
+- returns: <[Promise]<[String]>> Returns page's title.
 
 Shortcut for [page.mainFrame().title()](#frametitle).
 
@@ -1074,10 +1074,10 @@ Shortcut for [page.mainFrame().title()](#frametitle).
 - returns: <[Tracing]>
 
 #### page.type(selector, text[, options])
-- `selector` <[string]> A [selector] of an element to type into. If there are multiple elements satisfying the selector, the first will be used.
-- `text` <[string]> A text to type into a focused element.
+- `selector` <[String]> A [selector] of an element to type into. If there are multiple elements satisfying the selector, the first will be used.
+- `text` <[String]> A text to type into a focused element.
 - `options` <[Object]>
-  - `delay` <[number]> Time to wait between key presses in milliseconds. Defaults to 0.
+  - `delay` <[Number]> Time to wait between key presses in milliseconds. Defaults to 0.
 - returns: <[Promise]>
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
@@ -1090,21 +1090,21 @@ page.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
 ```
 
 #### page.url()
-- returns: <[string]>
+- returns: <[String]>
 
 This is a shortcut for [page.mainFrame().url()](#frameurl)
 
 #### page.viewport()
 - returns: <[Object]>
-  - `width` <[number]> page width in pixels.
-  - `height` <[number]> page height in pixels.
-  - `deviceScaleFactor` <[number]> Specify device scale factor (can be though of as dpr). Defaults to `1`.
-  - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
-  - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
-  - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
+  - `width` <[Number]> page width in pixels.
+  - `height` <[Number]> page height in pixels.
+  - `deviceScaleFactor` <[Number]> Specify device scale factor (can be though of as dpr). Defaults to `1`.
+  - `isMobile` <[Boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
+  - `hasTouch`<[Boolean]> Specifies if viewport supports touch events. Defaults to `false`
+  - `isLandscape` <[Boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
 
 #### page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])
-- `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
+- `selectorOrFunctionOrTimeout` <[String]|[Number]|[Function]> A [selector], predicate or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
 - `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]>
@@ -1118,12 +1118,12 @@ This method behaves differently with respect to the type of the first parameter:
 Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args).
 
 #### page.waitForFunction(pageFunction[, options[, ...args]])
-- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
+- `pageFunction` <[Function]|[String]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
-  - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values:
+  - `polling` <[String]|[Number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values:
     - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
     - `mutation` - to execute `pageFunction` on every DOM mutation.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+  - `timeout` <[Number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]> Promise which resolves when the `pageFunction` returns a truthy value.
 
@@ -1143,8 +1143,8 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
 
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
+  - `timeout` <[Number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
+  - `waitUntil` <[String]|[Array]<[String]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
@@ -1152,11 +1152,11 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 #### page.waitForSelector(selector[, options])
-- `selector` <[string]> A [selector] of an element to wait for,
+- `selector` <[String]> A [selector] of an element to wait for,
 - `options` <[Object]> Optional waiting parameters
-  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+  - `visible` <[Boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `hidden` <[Boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `timeout` <[Number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
 
 Wait for the `selector` to appear in page. If at the moment of calling
@@ -1210,9 +1210,9 @@ await page.keyboard.up('Shift');
 > **NOTE** On MacOS, keyboard shortcuts like `⌘ A` -> Select All do not work. See [#1313](https://github.com/GoogleChrome/puppeteer/issues/1313)
 
 #### keyboard.down(key[, options])
-- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
+- `key` <[String]> Name of key to press, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
 - `options` <[Object]>
-  - `text` <[string]> If specified, generates an input event with this text.
+  - `text` <[String]> If specified, generates an input event with this text.
 - returns: <[Promise]>
 
 Dispatches a `keydown` event.
@@ -1226,10 +1226,10 @@ After the key is pressed once, subsequent calls to [`keyboard.down`](#keyboarddo
 > **NOTE** Modifier keys DO effect `keyboard.down`. Holding down `Shift` will type the text in upper case.
 
 #### keyboard.press(key[, options])
-- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
+- `key` <[String]> Name of key to press, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
 - `options` <[Object]>
-  - `text` <[string]> If specified, generates an input event with this text.
-  - `delay` <[number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
+  - `text` <[String]> If specified, generates an input event with this text.
+  - `delay` <[Number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
 
 If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also generated. The `text` option can be specified to force an input event to be generated.
@@ -1239,7 +1239,7 @@ If `key` is a single character and no modifier keys besides `Shift` are being he
 Shortcut for [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#keyboardupkey).
 
 #### keyboard.sendCharacter(char)
-- `char` <[string]> Character to send into the page.
+- `char` <[String]> Character to send into the page.
 - returns: <[Promise]>
 
 Dispatches a `keypress` and `input` event. This does not send a `keydown` or `keyup` event.
@@ -1251,9 +1251,9 @@ page.keyboard.sendCharacter('嗨');
 > **NOTE** Modifier keys DO NOT effect `keyboard.sendCharacter`. Holding down `Shift` will not type the text in upper case.
 
 #### keyboard.type(text, options)
-- `text` <[string]> A text to type into a focused element.
+- `text` <[String]> A text to type into a focused element.
 - `options` <[Object]>
-  - `delay` <[number]> Time to wait between key presses in milliseconds. Defaults to 0.
+  - `delay` <[Number]> Time to wait between key presses in milliseconds. Defaults to 0.
 - returns: <[Promise]>
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
@@ -1268,7 +1268,7 @@ page.keyboard.type('World', {delay: 100}); // Types slower, like a user
 > **NOTE** Modifier keys DO NOT effect `keyboard.type`. Holding down `Shift` will not type the text in upper case.
 
 #### keyboard.up(key)
-- `key` <[string]> Name of key to release, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
+- `key` <[String]> Name of key to release, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
 - returns: <[Promise]>
 
 Dispatches a `keyup` event.
@@ -1276,37 +1276,37 @@ Dispatches a `keyup` event.
 ### class: Mouse
 
 #### mouse.click(x, y, [options])
-- `x` <[number]>
-- `y` <[number]>
+- `x` <[Number]>
+- `y` <[Number]>
 - `options` <[Object]>
-  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
-  - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
-  - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
+  - `button` <[String]> `left`, `right`, or `middle`, defaults to `left`.
+  - `clickCount` <[Number]> defaults to 1. See [UIEvent.detail].
+  - `delay` <[Number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
 
 Shortcut for [`mouse.move`](#mousemovex-y-options), [`mouse.down`](#mousedownoptions) and [`mouse.up`](#mouseupoptions).
 
 #### mouse.down([options])
 - `options` <[Object]>
-  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
-  - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
+  - `button` <[String]> `left`, `right`, or `middle`, defaults to `left`.
+  - `clickCount` <[Number]> defaults to 1. See [UIEvent.detail].
 - returns: <[Promise]>
 
 Dispatches a `mousedown` event.
 
 #### mouse.move(x, y, [options])
-- `x` <[number]>
-- `y` <[number]>
+- `x` <[Number]>
+- `y` <[Number]>
 - `options` <[Object]>
-  - `steps` <[number]> defaults to 1. Sends intermediate `mousemove` events.
+  - `steps` <[Number]> defaults to 1. Sends intermediate `mousemove` events.
 - returns: <[Promise]>
 
 Dispatches a `mousemove` event.
 
 #### mouse.up([options])
 - `options` <[Object]>
-  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
-  - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
+  - `button` <[String]> `left`, `right`, or `middle`, defaults to `left`.
+  - `clickCount` <[Number]> defaults to 1. See [UIEvent.detail].
 - returns: <[Promise]>
 
 Dispatches a `mouseup` event.
@@ -1314,8 +1314,8 @@ Dispatches a `mouseup` event.
 ### class: Touchscreen
 
 #### touchscreen.tap(x, y)
-- `x` <[number]>
-- `y` <[number]>
+- `x` <[Number]>
+- `y` <[Number]>
 - returns: <[Promise]>
 
 Dispatches a `touchstart` and `touchend` event.
@@ -1332,8 +1332,8 @@ await page.tracing.stop();
 
 #### tracing.start(options)
 - `options` <[Object]>
-  - `path` <[string]> A path to write the trace file to. **required**
-  - `screenshots` <[boolean]> captures screenshots in the trace.
+  - `path` <[String]> A path to write the trace file to. **required**
+  - `screenshots` <[Boolean]> captures screenshots in the trace.
 - returns: <[Promise]>
 
 Only one trace can be active at a time per browser.
@@ -1361,20 +1361,20 @@ puppeteer.launch().then(async browser => {
 ```
 
 #### dialog.accept([promptText])
-- `promptText` <[string]> A text to enter in prompt. Does not cause any effects if the dialog's `type` is not prompt.
+- `promptText` <[String]> A text to enter in prompt. Does not cause any effects if the dialog's `type` is not prompt.
 - returns: <[Promise]> Promise which resolves when the dialog has been accepted.
 
 #### dialog.defaultValue()
-- returns: <[string]> If dialog is prompt, returns default prompt value. Otherwise, returns empty string.
+- returns: <[String]> If dialog is prompt, returns default prompt value. Otherwise, returns empty string.
 
 #### dialog.dismiss()
 - returns: <[Promise]> Promise which resolves when the dialog has been dismissed.
 
 #### dialog.message()
-- returns: <[string]> A message displayed in the dialog.
+- returns: <[String]> A message displayed in the dialog.
 
 #### dialog.type
-- <[string]>
+- <[String]>
 
 Dialog's type, can be one of `alert`, `beforeunload`, `confirm` or `prompt`.
 
@@ -1386,10 +1386,10 @@ Dialog's type, can be one of `alert`, `beforeunload`, `confirm` or `prompt`.
 - <[Array]<[JSHandle]>>
 
 #### consoleMessage.text
-- <[string]>
+- <[String]>
 
 #### consoleMessage.type
-- <[string]>
+- <[String]>
 
 One of the following values: `'log'`, `'debug'`, `'info'`, `'error'`, `'warning'`, `'dir'`, `'dirxml'`, `'table'`, `'trace'`, `'clear'`, `'startGroup'`, `'startGroupCollapsed'`, `'endGroup'`, `'assert'`, `'profile'`, `'profileEnd'`, `'count'`, `'timeEnd'`.
 
@@ -1422,20 +1422,20 @@ puppeteer.launch().then(async browser => {
 ```
 
 #### frame.$(selector)
-- `selector` <[string]> Selector to query page for
+- `selector` <[String]> Selector to query page for
 - returns: <[Promise]<?[ElementHandle]>> Promise which resolves to ElementHandle pointing to the frame element.
 
 The method queries frame for the selector. If there's no such element within the frame, the method will resolve to `null`.
 
 #### frame.$$(selector)
-- `selector` <[string]> Selector to query page for
+- `selector` <[String]> Selector to query page for
 - returns: <[Promise]<[Array]<[ElementHandle]>>> Promise which resolves to ElementHandles pointing to the frame elements.
 
 The method runs `document.querySelectorAll` within the frame. If no elements match the selector, the return value resolve to `[]`.
 
 #### frame.$$eval(selector, pageFunction[, ...args])
-- `selector` <[string]> A [selector] to query frame for
-- `pageFunction` <[function]> Function to be evaluated in browser context
+- `selector` <[String]> A [selector] to query frame for
+- `pageFunction` <[Function]> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 
@@ -1449,8 +1449,8 @@ const divsCounts = await frame.$$eval('div', divs => divs.length);
 ```
 
 #### frame.$eval(selector, pageFunction[, ...args])
-- `selector` <[string]> A [selector] to query frame for
-- `pageFunction` <[function]> Function to be evaluated in browser context
+- `selector` <[String]> A [selector] to query frame for
+- `pageFunction` <[Function]> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 
@@ -1467,18 +1467,18 @@ const html = await frame.$eval('.main-container', e => e.outerHTML);
 
 #### frame.addScriptTag(options)
 - `options` <[Object]>
-  - `url` <[string]> Url of a script to be added.
-  - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-  - `content` <[string]> Raw JavaScript content to be injected into frame.
+  - `url` <[String]> Url of a script to be added.
+  - `path` <[String]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `content` <[String]> Raw JavaScript content to be injected into frame.
 - returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
 
 Adds a `<script>` tag into the page with the desired url or content.
 
 #### frame.addStyleTag(options)
 - `options` <[Object]>
-  - `url` <[string]> Url of the `<link>` tag.
-  - `path` <[string]> Path to the CSS file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
-  - `content` <[string]> Raw CSS content to be injected into frame.
+  - `url` <[String]> Url of the `<link>` tag.
+  - `path` <[String]> Path to the CSS file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+  - `content` <[String]> Raw CSS content to be injected into frame.
 - returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame.
 
 Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
@@ -1492,7 +1492,7 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<s
 Gets the full HTML contents of the frame, including the doctype.
 
 #### frame.evaluate(pageFunction, ...args)
-- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
+- `pageFunction` <[Function]|[String]> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
 
@@ -1524,12 +1524,12 @@ await bodyHandle.dispose();
 - returns: <[Promise]<[ExecutionContext]>> Execution context associated with this frame.
 
 #### frame.isDetached()
-- returns: <[boolean]>
+- returns: <[Boolean]>
 
 Returns `true` if the frame has been detached, or `false` otherwise.
 
 #### frame.name()
-- returns: <[string]>
+- returns: <[String]>
 
 Returns frame's name attribute as specified in the tag.
 
@@ -1541,9 +1541,9 @@ If the name is empty, returns the id attribute instead.
 - returns: <?[Frame]> Returns parent frame, if any. Detached frames and main frames return `null`.
 
 #### frame.select(selector, ...values)
-- `selector` <[string]> A [selector] to query frame for
-- `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
-- returns: <[Promise]<[Array]<[string]>>> Returns an array of option values that have been successfully selected.
+- `selector` <[String]> A [selector] to query frame for
+- `...values` <...[String]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
+- returns: <[Promise]<[Array]<[String]>>> Returns an array of option values that have been successfully selected.
 
 Triggers a `change` and `input` event once all the provided options have been selected.
 If there's no `<select>` element matching `selector`, the method throws an error.
@@ -1554,19 +1554,19 @@ frame.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 ```
 
 #### frame.setContent(html)
-- `html` <[string]> HTML markup to assign to the page.
+- `html` <[String]> HTML markup to assign to the page.
 - returns: <[Promise]>
 
 #### frame.title()
-- returns: <[Promise]<[string]>> Returns page's title.
+- returns: <[Promise]<[String]>> Returns page's title.
 
 #### frame.url()
-- returns: <[string]>
+- returns: <[String]>
 
 Returns frame's url.
 
 #### frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])
-- `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
+- `selectorOrFunctionOrTimeout` <[String]|[Number]|[Function]> A [selector], predicate or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
 - `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]>
@@ -1579,12 +1579,12 @@ This method behaves differently with respect to the type of the first parameter:
 
 
 #### frame.waitForFunction(pageFunction[, options[, ...args]])
-- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
+- `pageFunction` <[Function]|[String]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
-  - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values:
+  - `polling` <[String]|[Number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values:
     - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
     - `mutation` - to execute `pageFunction` on every DOM mutation.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+  - `timeout` <[Number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]> Promise which resolves when the `pageFunction` returns a truthy value.
 
@@ -1602,11 +1602,11 @@ puppeteer.launch().then(async browser => {
 ```
 
 #### frame.waitForSelector(selector[, options])
-- `selector` <[string]> A [selector] of an element to wait for,
+- `selector` <[String]> A [selector] of an element to wait for,
 - `options` <[Object]> Optional waiting parameters
-  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+  - `visible` <[Boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `hidden` <[Boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `timeout` <[Number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
 - returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
 
 Wait for the `selector` to appear in page. If at the moment of calling
@@ -1636,7 +1636,7 @@ The class represents a context for JavaScript execution. Examples of JavaScript 
 - all kind of [workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) have their own contexts
 
 #### executionContext.evaluate(pageFunction, ...args)
-- `pageFunction` <[function]|[string]> Function to be evaluated in `executionContext`
+- `pageFunction` <[Function]|[String]> Function to be evaluated in `executionContext`
 - `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
 
@@ -1665,7 +1665,7 @@ console.log(result); // prints '3'.
 ```
 
 #### executionContext.evaluateHandle(pageFunction, ...args)
-- `pageFunction` <[function]|[string]> Function to be evaluated in the `executionContext`
+- `pageFunction` <[Function]|[String]> Function to be evaluated in the `executionContext`
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[JSHandle]>> Resolves to the return value of `pageFunction`
 
@@ -1740,7 +1740,7 @@ The `jsHandle.dispose` method stops referencing the element handle.
 Returns execution context the handle belongs to.
 
 #### jsHandle.getProperties()
-- returns: <[Promise]<[Map]<[string], [JSHandle]>>>
+- returns: <[Promise]<[Map]<[String], [JSHandle]>>>
 
 The method returns a map with property names as keys and JSHandle instances for the property values.
 
@@ -1753,7 +1753,7 @@ await handle.dispose();
 ```
 
 #### jsHandle.getProperty(propertyName)
-- `propertyName` <[string]> property to get
+- `propertyName` <[String]> property to get
 - returns: <[Promise]<[JSHandle]>>
 
 Fetches a single property from the referenced object.
@@ -1790,13 +1790,13 @@ ElementHandle prevents DOM element from garbage collection unless the handle is 
 ElementHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args) and [`page.evaluate()`](#pageevaluatepagefunction-args) methods.
 
 #### elementHandle.$(selector)
-- `selector` <[string]> A [selector] to query element for
+- `selector` <[String]> A [selector] to query element for
 - returns: <[Promise]<?[ElementHandle]>>
 
 The method runs `element.querySelector` within the page. If no element matches the selector, the return value resolve to `null`.
 
 #### elementHandle.$$(selector)
-- `selector` <[string]> A [selector] to query element for
+- `selector` <[String]> A [selector] to query element for
 - returns: <[Promise]<[Array]<[ElementHandle]>>>
 
 The method runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `[]`.
@@ -1806,18 +1806,18 @@ The method runs `element.querySelectorAll` within the page. If no elements match
 
 #### elementHandle.boundingBox()
 - returns: <[Promise]<?[Object]>>
-    - x <[number]> the x coordinate of the element in pixels.
-    - y <[number]> the y coordinate of the element in pixels.
-    - width <[number]> the width of the element in pixels.
-    - height <[number]> the height of the element in pixels.
+    - x <[Number]> the x coordinate of the element in pixels.
+    - y <[Number]> the y coordinate of the element in pixels.
+    - width <[Number]> the width of the element in pixels.
+    - height <[Number]> the height of the element in pixels.
 
 This method returns the bounding box of the element (relative to the main frame), or `null` if the element is not visible.
 
 #### elementHandle.click([options])
 - `options` <[Object]>
-  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
-  - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
-  - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
+  - `button` <[String]> `left`, `right`, or `middle`, defaults to `left`.
+  - `clickCount` <[Number]> defaults to 1. See [UIEvent.detail].
+  - `delay` <[Number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
 - returns: <[Promise]> Promise which resolves when the element is successfully clicked. Promise gets rejected if the element is detached from DOM.
 
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
@@ -1837,7 +1837,7 @@ The `elementHandle.dispose` method stops referencing the element handle.
 Calls [focus](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus) on the element.
 
 #### elementHandle.getProperties()
-- returns: <[Promise]<[Map]<[string], [JSHandle]>>>
+- returns: <[Promise]<[Map]<[String], [JSHandle]>>>
 
 The method returns a map with property names as keys and JSHandle instances for the property values.
 
@@ -1854,7 +1854,7 @@ children; // holds elementHandles to all children of document.body
 ```
 
 #### elementHandle.getProperty(propertyName)
-- `propertyName` <[string]> property to get
+- `propertyName` <[String]> property to get
 - returns: <[Promise]<[JSHandle]>>
 
 Fetches a single property from the objectHandle.
@@ -1873,10 +1873,10 @@ Returns a JSON representation of the object. The JSON is generated by running [`
 > **NOTE** The method will throw if the referenced object is not stringifiable.
 
 #### elementHandle.press(key[, options])
-- `key` <[string]> Name of key to press, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
+- `key` <[String]> Name of key to press, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
 - `options` <[Object]>
-  - `text` <[string]> If specified, generates an input event with this text.
-  - `delay` <[number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
+  - `text` <[String]> If specified, generates an input event with this text.
+  - `delay` <[Number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
 
 Focuses the element, and then uses [`keyboard.down`](#keyboarddownkey-options) and [`keyboard.up`](#keyboardupkey).
@@ -1899,12 +1899,12 @@ This method scrolls element into view if needed, and then uses [touchscreen.tap]
 If the element is detached from DOM, the method throws an error.
 
 #### elementHandle.toString()
-- returns: <[string]>
+- returns: <[String]>
 
 #### elementHandle.type(text[, options])
-- `text` <[string]> A text to type into a focused element.
+- `text` <[String]> A text to type into a focused element.
 - `options` <[Object]>
-  - `delay` <[number]> Time to wait between key presses in milliseconds. Defaults to 0.
+  - `delay` <[Number]> Time to wait between key presses in milliseconds. Defaults to 0.
 - returns: <[Promise]>
 
 Focuses the element, and then sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
@@ -1924,7 +1924,7 @@ await elementHandle.press('Enter');
 ```
 
 #### elementHandle.uploadFile(...filePaths)
-- `...filePaths` <...[string]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
+- `...filePaths` <...[String]> Sets the value of the file input these paths. If some of the  `filePaths` are relative paths, then they are resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
 - returns: <[Promise]>
 
 This method expects `elementHandle` to point to an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
@@ -1941,7 +1941,7 @@ If request fails at some point, then instead of 'requestfinished' event (and pos
 If request gets a 'redirect' response, the request is successfully finished with the 'requestfinished' event, and a new request is  issued to a redirected url.
 
 #### request.abort([errorCode])
-- `errorCode` <[string]> Optional error code. Defaults to `failed`, could be
+- `errorCode` <[String]> Optional error code. Defaults to `failed`, could be
   one of the following:
   - `aborted` - An operation was aborted (due to user action)
   - `accessdenied` - Permission to access a resource, other than the network, was denied
@@ -1963,9 +1963,9 @@ Exception is immediately thrown if the request interception is not enabled.
 
 #### request.continue([overrides])
 - `overrides` <[Object]> Optional request overwrites, which can be one of the following:
-  - `url` <[string]> If set, the request url will be changed
-  - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`)
-  - `postData` <[string]> If set changes the post data of request
+  - `url` <[String]> If set, the request url will be changed
+  - `method` <[String]> If set changes the request method (e.g. `GET` or `POST`)
+  - `postData` <[String]> If set changes the post data of request
   - `headers` <[Object]> If set changes the request HTTP headers
 - returns: <[Promise]>
 
@@ -1974,7 +1974,7 @@ Exception is immediately thrown if the request interception is not enabled.
 
 #### request.failure()
 - returns: <?[Object]> Object describing request failure, if any
-  - `errorText` <[string]> Human-readable error message, e.g. `'net::ERR_FAILED'`.
+  - `errorText` <[String]> Human-readable error message, e.g. `'net::ERR_FAILED'`.
 
 The method returns `null` unless this request was failed, as reported by
 `requestfailed` event.
@@ -1991,27 +1991,27 @@ page.on('requestfailed', request => {
 - <[Object]> An object with HTTP headers associated with the request. All header names are lower-case.
 
 #### request.method
-- <[string]>
+- <[String]>
 
 Contains the request's method (GET, POST, etc.)
 
 #### request.postData
-- <[string]>
+- <[String]>
 
 Contains the request's post body, if any.
 
 #### request.resourceType
-- <[string]>
+- <[String]>
 
 Contains the request's resource type as it was perceived by the rendering engine.
 ResourceType will be one of the following: `document`, `stylesheet`, `image`, `media`, `font`, `script`, `texttrack`, `xhr`, `fetch`, `eventsource`, `websocket`, `manifest`, `other`.
 
 #### request.respond(response)
 - `response` <[Object]> Response that will fulfill this request
-  - `status` <[number]> Response status code, defaults to `200`.
+  - `status` <[Number]> Response status code, defaults to `200`.
   - `headers` <[Object]> Optional response headers
-  - `contentType` <[string]> If set, equals to setting `Content-Type` response header
-  - `body` <[Buffer]|[string]> Optional response body
+  - `contentType` <[String]> If set, equals to setting `Content-Type` response header
+  - `body` <[Buffer]|[String]> Optional response body
 - returns: <[Promise]>
 
 Fulfills request with given response. To use this, request interception should
@@ -2038,7 +2038,7 @@ page.on('request', request => {
 - returns: <?[Response]> A matching [Response] object, or `null` if the response has not been received yet.
 
 #### request.url
-- <[string]>
+- <[String]>
 
 Contains the URL of the request.
 
@@ -2058,7 +2058,7 @@ Contains the URL of the request.
 This method will throw if the response body is not parsable via `JSON.parse`.
 
 #### response.ok
-- <[boolean]>
+- <[Boolean]>
 
 Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
 
@@ -2066,15 +2066,15 @@ Contains a boolean stating whether the response was successful (status in the ra
 - returns: <[Request]> A matching [Request] object.
 
 #### response.status
-- <[number]>
+- <[Number]>
 
 Contains the status code of the response (e.g., 200 for a success).
 
 #### response.text()
-- returns: <[Promise]<[string]>> Promise which resolves to a text representation of response body.
+- returns: <[Promise]<[String]>> Promise which resolves to a text representation of response body.
 
 #### response.url
-- <[string]>
+- <[String]>
 
 Contains the URL of the response.
 
@@ -2086,22 +2086,22 @@ Contains the URL of the response.
 If the target is not of type `"page"`, returns `null`.
 
 #### target.type()
-- returns: <[string]>
+- returns: <[String]>
 
 Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, or `"other"`.
 
 #### target.url()
-- returns: <[string]>
+- returns: <[String]>
 
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
-[boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
+[Boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
 [Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer "Buffer"
-[function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function "Function"
-[number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type "Number"
+[Function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function "Function"
+[Number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type "Number"
 [Object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object "Object"
 [Page]: #class-page "Page"
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
-[string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
+[String]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
 [stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable "stream.Readable"
 [Error]: https://nodejs.org/api/errors.html#errors_class_error "Error"
 [Frame]: #class-frame "Frame"
