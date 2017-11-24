@@ -26,6 +26,7 @@ const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
 
 const YELLOW_COLOR = '\x1b[33m';
+const RED_COLOR = '\x1b[31m';
 const RESET_COLOR = '\x1b[0m';
 
 const GOLDEN_DIR = path.join(__dirname, 'golden');
@@ -63,6 +64,25 @@ else
   const revisionInfo = Downloader.revisionInfo(Downloader.currentPlatform(), chromiumRevision);
   console.assert(revisionInfo.downloaded, `Chromium r${chromiumRevision} is not downloaded. Run 'npm install' and try to re-run tests.`);
 }
+
+// Hack to get the currently-running spec name.
+let specName = null;
+jasmine.getEnv().addReporter({
+  specStarted: result => specName = result.fullName
+});
+
+// Setup unhandledRejectionHandlers
+let hasUnhandledRejection = false;
+process.on('unhandledRejection', error => {
+  hasUnhandledRejection = true;
+  const textLines = [
+    '',
+    `${RED_COLOR}[UNHANDLED PROMISE REJECTION]${RESET_COLOR} "${specName}"`,
+    error.stack,
+    '',
+  ];
+  console.error(textLines.join('\n'));
+});
 
 let server;
 let httpsServer;
@@ -310,6 +330,14 @@ describe('Page', function() {
     it('should await promise', SX(async function() {
       const result = await page.evaluate(() => Promise.resolve(8 * 7));
       expect(result).toBe(56);
+    }));
+    it('should work right after framenavigated', SX(async function() {
+      let frameEvaluation = null;
+      page.on('framenavigated', async frame => {
+        frameEvaluation = frame.evaluate(() => 6 * 7);
+      });
+      await page.goto(EMPTY_PAGE);
+      expect(await frameEvaluation).toBe(42);
     }));
     it('should work from-inside an exposed function', SX(async function() {
       // Setup inpage callback, which calls Page.evaluate
@@ -559,17 +587,19 @@ describe('Page', function() {
       await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
       expect(page.frames().length).toBe(2);
       const [frame1, frame2] = page.frames();
-      expect(frame1.executionContext()).toBeTruthy();
-      expect(frame2.executionContext()).toBeTruthy();
-      expect(frame1.executionContext() !== frame2.executionContext()).toBeTruthy();
+      const context1 = await frame1.executionContext();
+      const context2 = await frame2.executionContext();
+      expect(context1).toBeTruthy();
+      expect(context2).toBeTruthy();
+      expect(context1 !== context2).toBeTruthy();
 
       await Promise.all([
-        frame1.executionContext().evaluate(() => window.a = 1),
-        frame2.executionContext().evaluate(() => window.a = 2)
+        context1.evaluate(() => window.a = 1),
+        context2.evaluate(() => window.a = 2)
       ]);
       const [a1, a2] = await Promise.all([
-        frame1.executionContext().evaluate(() => window.a),
-        frame2.executionContext().evaluate(() => window.a)
+        context1.evaluate(() => window.a),
+        context2.evaluate(() => window.a)
       ]);
       expect(a1).toBe(1);
       expect(a2).toBe(2);
@@ -752,7 +782,7 @@ describe('Page', function() {
     it('should wait for visible', SX(async function() {
       let divFound = false;
       const waitForSelector = page.waitForSelector('div', {visible: true}).then(() => divFound = true);
-      await page.setContent(`<div style='display: none; visibility: hidden;'></div>`);
+      await page.setContent(`<div style='display: none; visibility: hidden;'>1</div>`);
       expect(divFound).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.removeProperty('display'));
       expect(divFound).toBe(false);
@@ -760,10 +790,23 @@ describe('Page', function() {
       expect(await waitForSelector).toBe(true);
       expect(divFound).toBe(true);
     }));
+    it('should wait for visible recursively', SX(async function() {
+      let divVisible = false;
+      const waitForSelector = page.waitForSelector('div#inner', {visible: true}).then(() => divVisible = true);
+      await page.setContent(`<div style='display: none; visibility: hidden;'><div id="inner">hi</div></div>`);
+      expect(divVisible).toBe(false);
+      await page.evaluate(() => document.querySelector('div').style.removeProperty('display'));
+      expect(divVisible).toBe(false);
+      await page.evaluate(() => document.querySelector('div').style.removeProperty('visibility'));
+      expect(await waitForSelector).toBe(true);
+      expect(divVisible).toBe(true);
+    }));
     it('hidden should wait for visibility: hidden', SX(async function() {
       let divHidden = false;
       await page.setContent(`<div style='display: block;'></div>`);
       const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divHidden = true);
+      await page.waitForSelector('div'); // do a round trip
+      expect(divHidden).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.setProperty('visibility', 'hidden'));
       expect(await waitForSelector).toBe(true);
       expect(divHidden).toBe(true);
@@ -772,6 +815,8 @@ describe('Page', function() {
       let divHidden = false;
       await page.setContent(`<div style='display: block;'></div>`);
       const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divHidden = true);
+      await page.waitForSelector('div'); // do a round trip
+      expect(divHidden).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.setProperty('display', 'none'));
       expect(await waitForSelector).toBe(true);
       expect(divHidden).toBe(true);
@@ -780,6 +825,7 @@ describe('Page', function() {
       await page.setContent(`<div></div>`);
       let divRemoved = false;
       const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divRemoved = true);
+      await page.waitForSelector('div'); // do a round trip
       expect(divRemoved).toBe(false);
       await page.evaluate(() => document.querySelector('div').remove());
       expect(await waitForSelector).toBe(true);
@@ -972,24 +1018,22 @@ describe('Page', function() {
     it('should fail when main resources failed to load', SX(async function() {
       let error = null;
       await page.goto('http://localhost:44123/non-existing-url').catch(e => error = e);
-      expect(error.message).toContain('Failed to navigate');
+      expect(error.message).toContain('net::ERR_CONNECTION_REFUSED');
     }));
     it('should fail when exceeding maximum navigation timeout', SX(async function() {
-      let hasUnhandledRejection = false;
-      const unhandledRejectionHandler = () => hasUnhandledRejection = true;
-      process.on('unhandledRejection', unhandledRejectionHandler);
       // Hang for request to the empty.html
       server.setRoute('/empty.html', (req, res) => { });
       let error = null;
       await page.goto(PREFIX + '/empty.html', {timeout: 1}).catch(e => error = e);
-      expect(hasUnhandledRejection).toBe(false);
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
-      process.removeListener('unhandledRejection', unhandledRejectionHandler);
     }));
     it('should disable timeout when its set to 0', SX(async function() {
       let error = null;
-      await page.goto(PREFIX + '/grid.html', {timeout: 0}).catch(e => error = e);
+      let loaded = false;
+      page.once('load', () => loaded = true);
+      await page.goto(PREFIX + '/grid.html', {timeout: 0, waitUntil: ['load']}).catch(e => error = e);
       expect(error).toBe(null);
+      expect(loaded).toBe(true);
     }));
     it('should work when navigating to valid url', SX(async function() {
       const response = await page.goto(EMPTY_PAGE);
@@ -1188,6 +1232,30 @@ describe('Page', function() {
       });
       expect(result).toBe(15);
     }));
+    it('should work on frames', SX(async function() {
+      await page.exposeFunction('compute', function(a, b) {
+        return Promise.resolve(a * b);
+      });
+
+      await page.goto(PREFIX + '/frames/nested-frames.html');
+      const frame = page.frames()[1];
+      const result = await frame.evaluate(async function() {
+        return await compute(3, 5);
+      });
+      expect(result).toBe(15);
+    }));
+    it('should work on frames before navigation', SX(async function() {
+      await page.goto(PREFIX + '/frames/nested-frames.html');
+      await page.exposeFunction('compute', function(a, b) {
+        return Promise.resolve(a * b);
+      });
+
+      const frame = page.frames()[1];
+      const result = await frame.evaluate(async function() {
+        return await compute(3, 5);
+      });
+      expect(result).toBe(15);
+    }));
   });
 
   describe('Page.setRequestInterception', function() {
@@ -1269,7 +1337,7 @@ describe('Page', function() {
       let error = null;
       await page.goto(EMPTY_PAGE).catch(e => error = e);
       expect(error).toBeTruthy();
-      expect(error.message).toContain('Failed to navigate');
+      expect(error.message).toContain('net::ERR_FAILED');
     }));
     it('should work with redirects', SX(async function() {
       await page.setRequestInterception(true);
@@ -1347,7 +1415,7 @@ describe('Page', function() {
       });
       let error = null;
       await page.goto('data:text/html,No way!').catch(err => error = err);
-      expect(error.message).toContain('Failed to navigate');
+      expect(error.message).toContain('net::ERR_FAILED');
     }));
     it('should navigate to URL with hash and and fire requests without hash', SX(async function() {
       await page.setRequestInterception(true);
@@ -1664,6 +1732,11 @@ describe('Page', function() {
       const box = await elementHandle.boundingBox();
       expect(box).toEqual({ x: 28, y: 260, width: 264, height: 18 });
     }));
+    it('should return null for invisible elements', SX(async function() {
+      await page.setContent('<div style="display:none">hi</div>');
+      const element = await page.$('div');
+      expect(await element.boundingBox()).toBe(null);
+    }));
   });
 
   describe('ElementHandle.click', function() {
@@ -1693,6 +1766,26 @@ describe('Page', function() {
       let error = null;
       await button.click().catch(err => error = err);
       expect(error.message).toBe('Node is detached from document');
+    }));
+    it('should throw for hidden nodes', SX(async function() {
+      await page.goto(PREFIX + '/input/button.html');
+      const button = await page.$('button');
+      await page.evaluate(button => button.style.display = 'none', button);
+      const error = await button.click().catch(err => err);
+      expect(error.message).toBe('Node is not visible');
+    }));
+    it('should throw for recursively hidden nodes', SX(async function() {
+      await page.goto(PREFIX + '/input/button.html');
+      const button = await page.$('button');
+      await page.evaluate(button => button.parentElement.style.display = 'none', button);
+      const error = await button.click().catch(err => err);
+      expect(error.message).toBe('Node is not visible');
+    }));
+    it('should throw for <br> elements', SX(async function() {
+      await page.setContent('hello<br>goodbye');
+      const br = await page.$('br');
+      const error = await br.click().catch(err => err);
+      expect(error.message).toBe('Node is not visible');
     }));
   });
 
@@ -1730,6 +1823,29 @@ describe('Page', function() {
       const elementHandle = await page.$('div');
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
+    }));
+    it('should scroll element into view', SX(async function() {
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent(`
+        something above
+        <style>div.above {
+          border: 2px solid blue;
+          background: red;
+          height: 1500px;
+        }
+        div.to-screenshot {
+          border: 2px solid blue;
+          background: green;
+          width: 50px;
+          height: 50px;
+        }
+        </style>
+        <div class="above"></div>
+        <div class="to-screenshot"></div>
+      `);
+      const elementHandle = await page.$('div.to-screenshot');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-scrolled-into-view.png');
     }));
     it('should work with a rotated element', SX(async function() {
       await page.setViewport({width: 500, height: 500});
@@ -1796,6 +1912,38 @@ describe('Page', function() {
       await page.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     }));
+
+    it('should click on checkbox input and toggle', SX(async function() {
+      await page.goto(PREFIX + '/input/checkbox.html');
+      expect(await page.evaluate(() => result.check)).toBe(null);
+      await page.click('input#agree');
+      expect(await page.evaluate(() => result.check)).toBe(true);
+      expect(await page.evaluate(() => result.events)).toEqual([
+        'mouseover',
+        'mouseenter',
+        'mousemove',
+        'mousedown',
+        'mouseup',
+        'click',
+        'change',
+      ]);
+      await page.click('input#agree');
+      expect(await page.evaluate(() => result.check)).toBe(false);
+    }));
+
+    it('should click on checkbox label and toggle', SX(async function() {
+      await page.goto(PREFIX + '/input/checkbox.html');
+      expect(await page.evaluate(() => result.check)).toBe(null);
+      await page.click('label[for="agree"]');
+      expect(await page.evaluate(() => result.check)).toBe(true);
+      expect(await page.evaluate(() => result.events)).toEqual([
+        'click',
+        'change',
+      ]);
+      await page.click('label[for="agree"]');
+      expect(await page.evaluate(() => result.check)).toBe(false);
+    }));
+
     it('should fail to click a missing button', SX(async function() {
       await page.goto(PREFIX + '/input/button.html');
       let error = null;
@@ -2253,17 +2401,6 @@ describe('Page', function() {
       const result = await page.content();
       expect(result).toBe(`${doctype}${expectedOutput}`);
     }));
-    it('should await resources to load', SX(async function() {
-      const imgPath = '/img.png';
-      let imgResponse = null;
-      server.setRoute(imgPath, (req, res) => imgResponse = res);
-      let loaded = false;
-      const contentPromise = page.setContent(`<img src="${PREFIX + imgPath}"></img>`).then(() => loaded = true);
-      await server.waitForRequest(imgPath);
-      expect(loaded).toBe(false);
-      imgResponse.end();
-      await contentPromise;
-    }));
   });
 
   describe('Network Events', function() {
@@ -2406,6 +2543,17 @@ describe('Page', function() {
       expect(await page.evaluate(() => __injected)).toBe(42);
     }));
 
+    it('should throw an error if loading from url fail', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      let error = null;
+      try {
+        await page.addScriptTag({ url: '/nonexistfile.js' });
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toBe('Loading script from /nonexistfile.js failed');
+    }));
+
     it('should work with a path', SX(async function() {
       await page.goto(EMPTY_PAGE);
       const scriptHandle = await page.addScriptTag({ path: path.join(__dirname, 'assets/injectedfile.js') });
@@ -2444,6 +2592,17 @@ describe('Page', function() {
       const styleHandle = await page.addStyleTag({ url: '/injectedstyle.css' });
       expect(styleHandle.asElement()).not.toBeNull();
       expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(255, 0, 0)');
+    }));
+
+    it('should throw an error if loading from url fail', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      let error = null;
+      try {
+        await page.addStyleTag({ url: '/nonexistfile.js' });
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toBe('Loading style from /nonexistfile.js failed');
     }));
 
     it('should work with a path', SX(async function() {
@@ -2536,6 +2695,14 @@ describe('Page', function() {
       await page.emulate(iPhone);
       expect(await page.evaluate(() => window.innerWidth)).toBe(375);
       expect(await page.evaluate(() => navigator.userAgent)).toContain('Safari');
+    }));
+    it('should support clicking', SX(async function() {
+      await page.emulate(iPhone);
+      await page.goto(PREFIX + '/input/button.html');
+      const button = await page.$('button');
+      await page.evaluate(button => button.style.marginTop = '200px', button);
+      await button.click();
+      expect(await page.evaluate(() => result)).toBe('Clicked');
     }));
   });
 
@@ -3090,13 +3257,39 @@ describe('Page', function() {
       await evaluatePromise;
       await newPage.close();
     }));
+    it('should not crash while redirecting if original request was missed', SX(async function() {
+      let serverResponse = null;
+      server.setRoute('/one-style.css', (req, res) => serverResponse = res);
+      // Open a new page. Use window.open to connect to the page later.
+      await Promise.all([
+        page.evaluate(url => window.open(url), PREFIX + '/one-style.html'),
+        server.waitForRequest('/one-style.css')
+      ]);
+      // Connect to the opened page.
+      const target = browser.targets().find(target => target.url().includes('one-style.html'));
+      const newPage = await target.page();
+      // Issue a redirect.
+      serverResponse.writeHead(302, { location: '/injectedstyle.css' });
+      serverResponse.end();
+      // Wait for the new page to load.
+      await waitForEvents(newPage, 'load');
+
+      expect(hasUnhandledRejection).toBe(false);
+
+      // Cleanup.
+      await newPage.close();
+    }));
   });
+});
+
+it('Unhandled promise rejections should not be thrown', function() {
+  expect(hasUnhandledRejection).toBe(false);
 });
 
 if (process.env.COVERAGE) {
   describe('COVERAGE', function(){
     const coverage = helper.publicAPICoverage();
-    const disabled = new Set();
+    const disabled = new Set(['page.bringToFront']);
     if (!headless)
       disabled.add('page.pdf');
 
