@@ -31,6 +31,7 @@ const EXCLUDE_CLASSES = new Set([
   'Session',
   'TaskQueue',
   'WaitTask',
+  'ExitEmitter'
 ]);
 
 const EXCLUDE_METHODS = new Set([
@@ -311,4 +312,3 @@ function diff(actual, expected) {
     return i < 0 || j < 0 ? 0 : d[i][j];
   }
 }
-
