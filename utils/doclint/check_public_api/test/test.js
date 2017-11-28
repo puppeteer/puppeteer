@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-const fs = require('fs');
-const rm = require('rimraf').sync;
 const path = require('path');
 const puppeteer = require('../../../..');
 const checkPublicAPI = require('..');
@@ -24,45 +22,48 @@ const mdBuilder = require('../MDBuilder');
 const jsBuilder = require('../JSBuilder');
 const GoldenUtils = require('../../../../test/golden-utils');
 
-const OUTPUT_DIR = path.join(__dirname, 'output');
-const GOLDEN_DIR = path.join(__dirname, 'golden');
+const {TestRunner, Reporter, Matchers}  = require('../../../testrunner/');
+const runner = new TestRunner();
+const reporter = new Reporter(runner);
+
+const {describe, xdescribe, fdescribe} = runner;
+const {it, fit, xit} = runner;
+const {beforeAll, beforeEach, afterAll, afterEach} = runner;
 
 let browser;
 let page;
-let specName;
 
-jasmine.getEnv().addReporter({
-  specStarted: result => specName = result.description
-});
-
-beforeAll(SX(async function() {
+beforeAll(async function() {
   browser = await puppeteer.launch({args: ['--no-sandbox']});
   page = await browser.newPage();
-  if (fs.existsSync(OUTPUT_DIR))
-    rm(OUTPUT_DIR);
-}));
-
-afterAll(SX(async function() {
-  await browser.close();
-}));
-
-describe('checkPublicAPI', function() {
-  it('diff-classes', SX(testLint));
-  it('diff-methods', SX(testLint));
-  it('diff-properties', SX(testLint));
-  it('diff-arguments', SX(testLint));
-  it('diff-events', SX(testLint));
-  it('check-duplicates', SX(testLint));
-  it('check-sorting', SX(testLint));
-  it('check-returns', SX(testLint));
-  it('js-builder-common', SX(testJSBuilder));
-  it('js-builder-inheritance', SX(testJSBuilder));
-  it('md-builder-common', SX(testMDBuilder));
 });
 
-async function testLint() {
-  const dirPath = path.join(__dirname, specName);
-  GoldenUtils.addMatchers(jasmine, dirPath, dirPath);
+afterAll(async function() {
+  await browser.close();
+});
+
+describe('checkPublicAPI', function() {
+  it('diff-classes', testLint);
+  it('diff-methods', testLint);
+  it('diff-properties', testLint);
+  it('diff-arguments', testLint);
+  it('diff-events', testLint);
+  it('check-duplicates', testLint);
+  it('check-sorting', testLint);
+  it('check-returns', testLint);
+  it('js-builder-common', testJSBuilder);
+  it('js-builder-inheritance', testJSBuilder);
+  it('md-builder-common', testMDBuilder);
+});
+
+runner.run();
+
+async function testLint(state, test) {
+  const dirPath = path.join(__dirname, test.name);
+  const {expect} = new Matchers({
+    toBeGolden: GoldenUtils.compare.bind(null, dirPath, dirPath)
+  });
+
   const factory = new SourceFactory();
   const mdSources = await factory.readdir(dirPath, '.md');
   const jsSources = await factory.readdir(dirPath, '.js');
@@ -71,18 +72,22 @@ async function testLint() {
   expect(errors.join('\n')).toBeGolden('result.txt');
 }
 
-async function testMDBuilder() {
-  const dirPath = path.join(__dirname, specName);
-  GoldenUtils.addMatchers(jasmine, dirPath, dirPath);
+async function testMDBuilder(state, test) {
+  const dirPath = path.join(__dirname, test.name);
+  const {expect} = new Matchers({
+    toBeGolden: GoldenUtils.compare.bind(null, dirPath, dirPath)
+  });
   const factory = new SourceFactory();
   const sources = await factory.readdir(dirPath, '.md');
   const {documentation} = await mdBuilder(page, sources);
   expect(serialize(documentation)).toBeGolden('result.txt');
 }
 
-async function testJSBuilder() {
-  const dirPath = path.join(__dirname, specName);
-  GoldenUtils.addMatchers(jasmine, dirPath, dirPath);
+async function testJSBuilder(state, test) {
+  const dirPath = path.join(__dirname, test.name);
+  const {expect} = new Matchers({
+    toBeGolden: GoldenUtils.compare.bind(null, dirPath, dirPath)
+  });
   const factory = new SourceFactory();
   const sources = await factory.readdir(dirPath, '.js');
   const {documentation} = await jsBuilder(sources);
@@ -110,8 +115,3 @@ function serialize(doc) {
   return JSON.stringify(result, null, 2);
 }
 
-// Since Jasmine doesn't like async functions, they should be wrapped
-// in a SX function.
-function SX(fun) {
-  return done => Promise.resolve(fun()).then(done).catch(done.fail);
-}

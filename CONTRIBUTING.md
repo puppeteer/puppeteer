@@ -111,7 +111,8 @@ A barrier for introducing new installation dependencies is especially high:
 - tests should work on all three platforms: Mac, Linux and Win. This is especially important for screenshot tests.
 
 Puppeteer tests are located in [test/test.js](https://github.com/GoogleChrome/puppeteer/blob/master/test/test.js)
-and are written using [Jasmine](https://jasmine.github.io/) testing framework. Despite being named 'unit', these are integration tests, making sure public API methods and events work as expected.
+and are written with a [TestRunner](https://github.com/GoogleChrome/puppeteer/tree/master/utils/testrunner) framework.
+Despite being named 'unit', these are integration tests, making sure public API methods and events work as expected.
 
 - To run all tests:
 ```
