@@ -15,11 +15,12 @@
  */
 
 // If node does not support async await, use the compiled version.
-let folder = 'lib';
+let asyncawait = true;
 try {
   new Function('async function test(){await 1}');
 } catch (error) {
-  folder = 'node6';
+  module.exports = require('./node6/Puppeteer');
+  asyncawait = false;
 }
 
-module.exports = require(`./${folder}/Puppeteer`);
+if (asyncawait) module.exports = require('./lib/Puppeteer');
