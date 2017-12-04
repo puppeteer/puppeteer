@@ -26,6 +26,7 @@ const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
 
 const YELLOW_COLOR = '\x1b[33m';
+const RED_COLOR = '\x1b[31m';
 const RESET_COLOR = '\x1b[0m';
 
 const GOLDEN_DIR = path.join(__dirname, 'golden');
@@ -63,6 +64,25 @@ else
   const revisionInfo = Downloader.revisionInfo(Downloader.currentPlatform(), chromiumRevision);
   console.assert(revisionInfo.downloaded, `Chromium r${chromiumRevision} is not downloaded. Run 'npm install' and try to re-run tests.`);
 }
+
+// Hack to get the currently-running spec name.
+let specName = null;
+jasmine.getEnv().addReporter({
+  specStarted: result => specName = result.fullName
+});
+
+// Setup unhandledRejectionHandlers
+let hasUnhandledRejection = false;
+process.on('unhandledRejection', error => {
+  hasUnhandledRejection = true;
+  const textLines = [
+    '',
+    `${RED_COLOR}[UNHANDLED PROMISE REJECTION]${RESET_COLOR} "${specName}"`,
+    error.stack,
+    '',
+  ];
+  console.error(textLines.join('\n'));
+});
 
 let server;
 let httpsServer;
@@ -310,6 +330,14 @@ describe('Page', function() {
     it('should await promise', SX(async function() {
       const result = await page.evaluate(() => Promise.resolve(8 * 7));
       expect(result).toBe(56);
+    }));
+    it('should work right after framenavigated', SX(async function() {
+      let frameEvaluation = null;
+      page.on('framenavigated', async frame => {
+        frameEvaluation = frame.evaluate(() => 6 * 7);
+      });
+      await page.goto(EMPTY_PAGE);
+      expect(await frameEvaluation).toBe(42);
     }));
     it('should work from-inside an exposed function', SX(async function() {
       // Setup inpage callback, which calls Page.evaluate
@@ -559,17 +587,19 @@ describe('Page', function() {
       await FrameUtils.attachFrame(page, 'frame1', EMPTY_PAGE);
       expect(page.frames().length).toBe(2);
       const [frame1, frame2] = page.frames();
-      expect(frame1.executionContext()).toBeTruthy();
-      expect(frame2.executionContext()).toBeTruthy();
-      expect(frame1.executionContext() !== frame2.executionContext()).toBeTruthy();
+      const context1 = await frame1.executionContext();
+      const context2 = await frame2.executionContext();
+      expect(context1).toBeTruthy();
+      expect(context2).toBeTruthy();
+      expect(context1 !== context2).toBeTruthy();
 
       await Promise.all([
-        frame1.executionContext().evaluate(() => window.a = 1),
-        frame2.executionContext().evaluate(() => window.a = 2)
+        context1.evaluate(() => window.a = 1),
+        context2.evaluate(() => window.a = 2)
       ]);
       const [a1, a2] = await Promise.all([
-        frame1.executionContext().evaluate(() => window.a),
-        frame2.executionContext().evaluate(() => window.a)
+        context1.evaluate(() => window.a),
+        context2.evaluate(() => window.a)
       ]);
       expect(a1).toBe(1);
       expect(a2).toBe(2);
@@ -991,21 +1021,19 @@ describe('Page', function() {
       expect(error.message).toContain('net::ERR_CONNECTION_REFUSED');
     }));
     it('should fail when exceeding maximum navigation timeout', SX(async function() {
-      let hasUnhandledRejection = false;
-      const unhandledRejectionHandler = () => hasUnhandledRejection = true;
-      process.on('unhandledRejection', unhandledRejectionHandler);
       // Hang for request to the empty.html
       server.setRoute('/empty.html', (req, res) => { });
       let error = null;
       await page.goto(PREFIX + '/empty.html', {timeout: 1}).catch(e => error = e);
-      expect(hasUnhandledRejection).toBe(false);
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
-      process.removeListener('unhandledRejection', unhandledRejectionHandler);
     }));
     it('should disable timeout when its set to 0', SX(async function() {
       let error = null;
-      await page.goto(PREFIX + '/grid.html', {timeout: 0}).catch(e => error = e);
+      let loaded = false;
+      page.once('load', () => loaded = true);
+      await page.goto(PREFIX + '/grid.html', {timeout: 0, waitUntil: ['load']}).catch(e => error = e);
       expect(error).toBe(null);
+      expect(loaded).toBe(true);
     }));
     it('should work when navigating to valid url', SX(async function() {
       const response = await page.goto(EMPTY_PAGE);
@@ -2179,16 +2207,15 @@ describe('Page', function() {
       await page.click('a');
     }));
     it('should tween mouse movement', SX(async function() {
+      await page.mouse.move(100, 100);
       await page.evaluate(() => {
         window.result = [];
         document.addEventListener('mousemove', event => {
           window.result.push([event.clientX, event.clientY]);
         });
       });
-      await page.mouse.move(100, 100);
       await page.mouse.move(200, 300, {steps: 5});
       expect(await page.evaluate('result')).toEqual([
-        [100, 100],
         [120, 140],
         [140, 180],
         [160, 220],
@@ -3229,7 +3256,33 @@ describe('Page', function() {
       await evaluatePromise;
       await newPage.close();
     }));
+    it('should not crash while redirecting if original request was missed', SX(async function() {
+      let serverResponse = null;
+      server.setRoute('/one-style.css', (req, res) => serverResponse = res);
+      // Open a new page. Use window.open to connect to the page later.
+      await Promise.all([
+        page.evaluate(url => window.open(url), PREFIX + '/one-style.html'),
+        server.waitForRequest('/one-style.css')
+      ]);
+      // Connect to the opened page.
+      const target = browser.targets().find(target => target.url().includes('one-style.html'));
+      const newPage = await target.page();
+      // Issue a redirect.
+      serverResponse.writeHead(302, { location: '/injectedstyle.css' });
+      serverResponse.end();
+      // Wait for the new page to load.
+      await waitForEvents(newPage, 'load');
+
+      expect(hasUnhandledRejection).toBe(false);
+
+      // Cleanup.
+      await newPage.close();
+    }));
   });
+});
+
+it('Unhandled promise rejections should not be thrown', function() {
+  expect(hasUnhandledRejection).toBe(false);
 });
 
 if (process.env.COVERAGE) {

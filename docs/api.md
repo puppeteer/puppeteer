@@ -1,6 +1,6 @@
-##### Released API: [v0.12.0](https://github.com/GoogleChrome/puppeteer/blob/v0.12.0/docs/api.md) | [v0.11.0](https://github.com/GoogleChrome/puppeteer/blob/v0.11.0/docs/api.md) | [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
+##### Released API: [v0.13.0](https://github.com/GoogleChrome/puppeteer/blob/v0.13.0/docs/api.md) | [v0.12.0](https://github.com/GoogleChrome/puppeteer/blob/v0.12.0/docs/api.md) | [v0.11.0](https://github.com/GoogleChrome/puppeteer/blob/v0.11.0/docs/api.md) | [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
 
-# Puppeteer API v<!-- GEN:version -->0.13.0<!-- GEN:stop-->
+# Puppeteer API v<!-- GEN:version -->1.0.0-rc<!-- GEN:stop-->
 
 ##### Table of Contents
 
@@ -125,12 +125,14 @@
   * [frame.addScriptTag(options)](#frameaddscripttagoptions)
   * [frame.addStyleTag(options)](#frameaddstyletagoptions)
   * [frame.childFrames()](#framechildframes)
+  * [frame.content()](#framecontent)
   * [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
   * [frame.executionContext()](#frameexecutioncontext)
   * [frame.isDetached()](#frameisdetached)
   * [frame.name()](#framename)
   * [frame.parentFrame()](#frameparentframe)
   * [frame.select(selector, ...values)](#frameselectselector-values)
+  * [frame.setContent(html)](#framesetcontenthtml)
   * [frame.title()](#frametitle)
   * [frame.url()](#frameurl)
   * [frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args)
@@ -251,6 +253,8 @@ This methods attaches Puppeteer to an existing Chromium instance.
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
   - `args` <[Array]<[string]>> Additional arguments to pass to the Chromium instance. List of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
   - `handleSIGINT` <[boolean]> Close chrome process on Ctrl-C. Defaults to `true`.
+  - `handleSIGTERM` <[boolean]> Close chrome process on SIGTERM. Defaults to `true`.
+  - `handleSIGHUP` <[boolean]> Close chrome process on SIGHUP. Defaults to `true`.
   - `timeout` <[number]> Maximum time in milliseconds to wait for the Chrome instance to start. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
   - `dumpio` <[boolean]> Whether to pipe browser process stdout and stderr into `process.stdout` and `process.stderr`. Defaults to `false`.
   - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
@@ -444,7 +448,7 @@ Emitted when a [response] is received.
 
 #### page.$(selector)
 - `selector` <[string]> A [selector] to query page for
-- returns: <[Promise]<[ElementHandle]>>
+- returns: <[Promise]<?[ElementHandle]>>
 
 The method runs `document.querySelector` within the page. If no element matches the selector, the return value resolve to `null`.
 
@@ -516,7 +520,7 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<s
 Shortcut for [page.mainFrame().addStyleTag(options)](#frameaddstyletagoptions).
 
 #### page.authenticate(credentials)
-- `credentials` <[Object]>
+- `credentials` <?[Object]>
   - `username` <[string]>
   - `password` <[string]>
 - returns: <[Promise]>
@@ -609,7 +613,7 @@ puppeteer.launch().then(async browser => {
 List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js).
 
 #### page.emulateMedia(mediaType)
-  - `mediaType` <[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation.
+  - `mediaType` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation.
   - returns: <[Promise]>
 
 #### page.evaluate(pageFunction, ...args)
@@ -682,6 +686,23 @@ Adds a function which would be invoked in one of the following scenarios:
 - whenever the child frame is attached or navigated. In this case, the function is invoked in the context of the newly attached frame
 
 The function is invoked after the document was created but before any of its scripts were run. This is useful to amend JavaScript environment, e.g. to seed `Math.random`.
+
+An example of overriding the navigator.languages property before the page loads:
+
+```js
+// preload.js
+
+// overwrite the `languages` property to use a custom getter
+Object.defineProperty(navigator, "languages", {
+  get: function() {
+    return ["en-US", "en", "bn"];
+  };
+});
+
+// In your puppeteer script, assuming the preload.js file is in same folder of our script
+const preloadFile = fs.readFileSync('./preload.js', 'utf8');
+await page.evaluateOnNewDocument(preloadFile);
+```
 
 #### page.exposeFunction(name, puppeteerFunction)
 - `name` <[string]> Name of the function on the window object
@@ -763,8 +784,8 @@ If there's no element matching `selector`, the method throws an error.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
     - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
-- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
-can not go back, resolves to null.
+- returns: <[Promise]<?[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
+can not go back, resolves to `null`.
 
 Navigate to the previous page in history.
 
@@ -776,8 +797,8 @@ Navigate to the previous page in history.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
     - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
-- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
-can not go back, resolves to null.
+- returns: <[Promise]<?[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
+can not go back, resolves to `null`.
 
 Navigate to the next page in history.
 
@@ -790,7 +811,7 @@ Navigate to the next page in history.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
     - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
-- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
+- returns: <[Promise]<?[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 The `page.goto` will throw an error if:
 - there's an SSL error (e.g. in case of self-signed certificates).
@@ -1402,7 +1423,7 @@ puppeteer.launch().then(async browser => {
 
 #### frame.$(selector)
 - `selector` <[string]> Selector to query page for
-- returns: <[Promise]<[ElementHandle]>> Promise which resolves to ElementHandle pointing to the frame element.
+- returns: <[Promise]<?[ElementHandle]>> Promise which resolves to ElementHandle pointing to the frame element.
 
 The method queries frame for the selector. If there's no such element within the frame, the method will resolve to `null`.
 
@@ -1465,6 +1486,11 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<s
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
 
+#### frame.content()
+- returns: <[Promise]<[String]>>
+
+Gets the full HTML contents of the frame, including the doctype.
+
 #### frame.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to  `pageFunction`
@@ -1495,7 +1521,7 @@ await bodyHandle.dispose();
 ```
 
 #### frame.executionContext()
-- returns: <[ExecutionContext]> Execution context associated with this frame.
+- returns: <[Promise]<[ExecutionContext]>> Execution context associated with this frame.
 
 #### frame.isDetached()
 - returns: <[boolean]>
@@ -1512,7 +1538,7 @@ If the name is empty, returns the id attribute instead.
 > **NOTE** This value is calculated once when the frame is created, and will not update if the attribute is changed later.
 
 #### frame.parentFrame()
-- returns: <[Frame]> Returns parent frame, if any. Detached frames and main frames return `null`.
+- returns: <?[Frame]> Returns parent frame, if any. Detached frames and main frames return `null`.
 
 #### frame.select(selector, ...values)
 - `selector` <[string]> A [selector] to query frame for
@@ -1526,6 +1552,10 @@ If there's no `<select>` element matching `selector`, the method throws an error
 frame.select('select#colors', 'blue'); // single selection
 frame.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 ```
+
+#### frame.setContent(html)
+- `html` <[string]> HTML markup to assign to the page.
+- returns: <[Promise]>
 
 #### frame.title()
 - returns: <[Promise]<[string]>> Returns page's title.
@@ -1695,7 +1725,7 @@ JSHandle prevents references JavaScript objects from garbage collection unless t
 JSHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args), [`page.evaluate()`](#pageevaluatepagefunction-args) and [`page.evaluateHandle`](#pageevaluatehandlepagefunction-args) methods.
 
 #### jsHandle.asElement()
-- returns: <[ElementHandle]>
+- returns: <?[ElementHandle]>
 
 Returns either `null` or the object handle itself, if the object handle is an instance of [ElementHandle].
 
@@ -1761,7 +1791,7 @@ ElementHandle instances can be used as arguments in [`page.$eval()`](#pageevalse
 
 #### elementHandle.$(selector)
 - `selector` <[string]> A [selector] to query element for
-- returns: <[Promise]<[ElementHandle]>>
+- returns: <[Promise]<?[ElementHandle]>>
 
 The method runs `element.querySelector` within the page. If no element matches the selector, the return value resolve to `null`.
 
@@ -1775,7 +1805,7 @@ The method runs `element.querySelectorAll` within the page. If no elements match
 - returns: <[elementhandle]>
 
 #### elementHandle.boundingBox()
-- returns: <[Object]>
+- returns: <[Promise]<?[Object]>>
     - x <[number]> the x coordinate of the element in pixels.
     - y <[number]> the y coordinate of the element in pixels.
     - width <[number]> the width of the element in pixels.
@@ -1943,10 +1973,10 @@ Continues request with optional request overrides. To use this, request intercep
 Exception is immediately thrown if the request interception is not enabled.
 
 #### request.failure()
-- returns: <[Object]> Object describing request failure, if any
+- returns: <?[Object]> Object describing request failure, if any
   - `errorText` <[string]> Human-readable error message, e.g. `'net::ERR_FAILED'`.
 
-The method returns null unless this request was failed, as reported by
+The method returns `null` unless this request was failed, as reported by
 `requestfailed` event.
 
 Example of logging all failed requests:
@@ -2005,7 +2035,7 @@ page.on('request', request => {
 > Calling `request.respond` for a dataURL request is a noop.
 
 #### request.response()
-- returns: <[Response]> A matching [Response] object, or `null` if the response has not been received yet.
+- returns: <?[Response]> A matching [Response] object, or `null` if the response has not been received yet.
 
 #### request.url
 - <[string]>
@@ -2051,7 +2081,7 @@ Contains the URL of the response.
 ### class: Target
 
 #### target.page()
-- returns: <[Promise]<[Page]>>
+- returns: <[Promise]<?[Page]>>
 
 If the target is not of type `"page"`, returns `null`.
 
