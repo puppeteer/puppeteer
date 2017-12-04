@@ -2207,16 +2207,15 @@ describe('Page', function() {
       await page.click('a');
     }));
     it('should tween mouse movement', SX(async function() {
+      await page.mouse.move(100, 100);
       await page.evaluate(() => {
         window.result = [];
         document.addEventListener('mousemove', event => {
           window.result.push([event.clientX, event.clientY]);
         });
       });
-      await page.mouse.move(100, 100);
       await page.mouse.move(200, 300, {steps: 5});
       expect(await page.evaluate('result')).toEqual([
-        [100, 100],
         [120, 140],
         [140, 180],
         [160, 220],
