@@ -48,6 +48,7 @@
   * [page.bringToFront()](#pagebringtofront)
   * [page.click(selector[, options])](#pageclickselector-options)
   * [page.close()](#pageclose)
+  * [page.connection()](#pageconnection)
   * [page.content()](#pagecontent)
   * [page.cookies(...urls)](#pagecookiesurls)
   * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
@@ -91,6 +92,10 @@
   * [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
   * [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
+- [class: PageConnection](#class-pageconnection)
+  * [pageConnection.on(event, listener)](#pageconnectiononevent-listener)
+  * [pageConnection.removeListener(event, listener)](#pageconnectionremovelistenerevent-listener)
+  * [pageConnection.send(method[, params])](#pageconnectionsendmethod-params)
 - [class: Keyboard](#class-keyboard)
   * [keyboard.down(key[, options])](#keyboarddownkey-options)
   * [keyboard.press(key[, options])](#keyboardpresskey-options)
@@ -548,6 +553,11 @@ If there's no element matching `selector`, the method throws an error.
 
 #### page.close()
 - returns: <[Promise]>
+
+#### page.connection()
+- returns: <PageConnection>
+
+Gets the connection for sending and listening to protocol events for the page.
 
 #### page.content()
 - returns: <[Promise]<[String]>>
@@ -1179,6 +1189,44 @@ puppeteer.launch().then(async browser => {
 });
 ```
 Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options).
+
+### class: PageConnection
+
+PageConnection provides methods to communicate with a Page via the raw protocol.
+
+This example gets the connection for a Page, sends instructions, and then listens for events:
+```js
+const pageConnection = page.connection();
+
+// send()
+const layerTree = await pageConnection.send('LayerTree.getLayerTree');
+
+// listen to events
+await pageConnection.send('LayerTree.enable');
+pageConnection.on('LayerTree.layerTreeChanged', data => { ... });
+```
+
+#### pageConnection.on(event, listener)
+
+- `event` <[string]> Name of the event to trigger on.
+- `listener` <[function]> Callback function to trigger on the event.
+
+Listens for events of the given name and triggers a callback.
+
+#### pageConnection.removeListener(event, listener)
+
+- `event` <[string]> Name of the event to remove the listener from.
+- `listener` <[function]> Callback function to remove.
+
+Removes a specific listener from an event.
+
+#### pageConnection.send(method[, params])
+
+- `method` <[string]> Name of the protocol method to send to the page.
+- `params` <[Object]> Optional parameters to send along with the method.
+- returns: <[Promise]>
+
+Sends a protocol method to the Page with optional parameters. Will return a Promise that resolves with the result of the method.
 
 ### class: Keyboard
 
