@@ -169,6 +169,7 @@ describe('Puppeteer', function() {
       await browser2.close();
       rm(userDataDir);
     }));
+    // @see https://github.com/GoogleChrome/puppeteer/issues/1537
     xit('userDataDir option should restore cookies', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
