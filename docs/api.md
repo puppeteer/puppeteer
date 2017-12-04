@@ -992,6 +992,8 @@ Shortcut for [page.mainFrame.select()](#frameselectselector-values)
   - `sameSite` <[string]> `"Strict"` or `"Lax"`.
 - returns: <[Promise]>
 
+> **NOTE** For each cookie object, at least one of `url` and `domain` must be specified.
+
 #### page.setExtraHTTPHeaders(headers)
 - `headers` <[Object]> An object containing additional http headers to be sent with every request. All header values must be strings.
 - returns: <[Promise]>
