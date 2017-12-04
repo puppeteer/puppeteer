@@ -77,7 +77,6 @@ module.exports = {
       console.error(error);
       resolve(false);
     });
-    request.end();
     return promise;
   },
 
@@ -226,11 +225,11 @@ function extractZip(zipPath, folderPath) {
 
 /**
  * @param {string} url
- * @param {?string} method
+ * @param {string} method
  * @param {?function} response
  * @return {?function} http.ClientRequest
  */
-function httpRequest(url, method = 'GET', response) {
+function httpRequest(url, method, response) {
   /** @type {Object} */
   const options = URL.parse(url);
   options.method = method;
@@ -244,10 +243,8 @@ function httpRequest(url, method = 'GET', response) {
     options.agent = new ProxyAgent(parsedProxyURL);
   }
 
-  const protocols = {
-    'http:': require('http'),
-    'https:': require('https')
-  };
-
-  return protocols[URL.parse(url).protocol].request(options, response);
+  const driver = options.protocol === 'https:' ? require('https') : require('http');
+  const request = driver.request(options, response);
+  request.end();
+  return request;
 }
