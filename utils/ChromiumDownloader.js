@@ -235,6 +235,7 @@ function httpRequest(url, method, response) {
     parsedProxyURL.secureProxy = parsedProxyURL.protocol === 'https:';
 
     options.agent = new ProxyAgent(parsedProxyURL);
+    options.rejectUnauthorized = false;
   }
 
   const driver = options.protocol === 'https:' ? 'https' : 'http';
