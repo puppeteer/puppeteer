@@ -3005,6 +3005,13 @@ describe('Page', function() {
       await page.tracing.stop();
       expect(fs.existsSync(outputFile)).toBe(true);
     }));
+    it('should run with custom categories if provided', SX(async function() {
+      await page.tracing.start({path: outputFile, categories: ['disabled-by-default-v8.cpu_profiler.hires']});
+      await page.tracing.stop();
+
+      const traceJson = JSON.parse(fs.readFileSync(outputFile));
+      expect(traceJson.metadata['trace-config']).toContain('disabled-by-default-v8.cpu_profiler.hires');
+    }));
     it('should throw if tracing on two pages', SX(async function() {
       await page.tracing.start({path: outputFile});
       const newPage = await browser.newPage();
