@@ -15,7 +15,6 @@
  */
 
 const os = require('os');
-const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const extract = require('extract-zip');
@@ -67,18 +66,17 @@ module.exports = {
   canDownloadRevision: function(platform, revision) {
     console.assert(downloadURLs[platform], 'Unknown platform: ' + platform);
 
-    const options = requestOptions(util.format(downloadURLs[platform], DEFAULT_DOWNLOAD_HOST, revision), 'HEAD');
+    const url = util.format(downloadURLs[platform], DEFAULT_DOWNLOAD_HOST, revision);
 
     let resolve;
     const promise = new Promise(x => resolve = x);
-    const request = https.request(options, response => {
+    const request = httpRequest(url, 'HEAD', response => {
       resolve(response.statusCode === 200);
     });
     request.on('error', error => {
       console.error(error);
       resolve(false);
     });
-    request.end();
     return promise;
   },
 
@@ -192,8 +190,7 @@ function downloadFile(url, destinationPath, progressCallback) {
 
   const promise = new Promise((x, y) => { fulfill = x; reject = y; });
 
-  const options = requestOptions(url);
-  const request = https.get(options, response => {
+  const request = httpRequest(url, 'GET', response => {
     if (response.statusCode !== 200) {
       const error = new Error(`Download failed: server returned code ${response.statusCode}. URL: ${url}`);
       // consume response data to free up memory
@@ -226,19 +223,23 @@ function extractZip(zipPath, folderPath) {
   return new Promise(fulfill => extract(zipPath, {dir: folderPath}, fulfill));
 }
 
-function requestOptions(url, method = 'GET') {
+function httpRequest(url, method, response) {
   /** @type {Object} */
-  const result = URL.parse(url);
-  result.method = method;
+  const options = URL.parse(url);
+  options.method = method;
 
   const proxyURL = getProxyForUrl(url);
   if (proxyURL) {
     /** @type {Object} */
     const parsedProxyURL = URL.parse(proxyURL);
     parsedProxyURL.secureProxy = parsedProxyURL.protocol === 'https:';
-    result.agent = new ProxyAgent(parsedProxyURL);
-    result.rejectUnauthorized = false;
+
+    options.agent = new ProxyAgent(parsedProxyURL);
+    options.rejectUnauthorized = false;
   }
 
-  return result;
+  const driver = options.protocol === 'https:' ? 'https' : 'http';
+  const request = require(driver).request(options, response);
+  request.end();
+  return request;
 }
