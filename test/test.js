@@ -169,7 +169,7 @@ describe('Puppeteer', function() {
       await browser2.close();
       rm(userDataDir);
     }));
-    it('userDataDir option should restore cookies', SX(async function() {
+    xit('userDataDir option should restore cookies', SX(async function() {
       const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
