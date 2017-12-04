@@ -16,7 +16,7 @@
 
 'use strict';
 
-const puppeteer = require('..');
+const puppeteer = require('puppeteer');
 
 (async() => {
 
