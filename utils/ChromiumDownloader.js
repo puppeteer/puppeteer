@@ -236,8 +236,8 @@ function requestOptions(url, method = 'GET') {
     /** @type {Object} */
     const parsedProxyURL = URL.parse(proxyURL);
     parsedProxyURL.secureProxy = parsedProxyURL.protocol === 'https:';
-
     result.agent = new ProxyAgent(parsedProxyURL);
+    result.rejectUnauthorized = false;
   }
 
   return result;
