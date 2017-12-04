@@ -223,12 +223,6 @@ function extractZip(zipPath, folderPath) {
   return new Promise(fulfill => extract(zipPath, {dir: folderPath}, fulfill));
 }
 
-/**
- * @param {string} url
- * @param {string} method
- * @param {?function} response
- * @return {?function} http.ClientRequest
- */
 function httpRequest(url, method, response) {
   /** @type {Object} */
   const options = URL.parse(url);
