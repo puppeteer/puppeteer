@@ -237,8 +237,8 @@ function httpRequest(url, method, response) {
     options.agent = new ProxyAgent(parsedProxyURL);
   }
 
-  const driver = options.protocol === 'https:' ? require('https') : require('http');
-  const request = driver.request(options, response);
+  const driver = options.protocol === 'https:' ? 'https' : 'http';
+  const request = require(driver).request(options, response);
   request.end();
   return request;
 }
