@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-// If node does not support async await, use the compiled version.
 let asyncawait = true;
 try {
   new Function('async function test(){await 1}');
 } catch (error) {
-  module.exports = require('./node6/Puppeteer');
   asyncawait = false;
 }
 
-if (asyncawait) module.exports = require('./lib/Puppeteer');
+// If node does not support async await, use the compiled version.
+if (asyncawait)
+  module.exports = require('./lib/Puppeteer');
+else
+  module.exports = require('./node6/Puppeteer');
