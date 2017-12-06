@@ -268,6 +268,8 @@ The method launches a browser instance with given arguments. The browser will be
 
 ### class: Browser
 
+* extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)
+
 A Browser is created when Puppeteer connects to a Chromium instance, either through [`puppeteer.launch`](#puppeteerlaunchoptions) or [`puppeteer.connect`](#puppeteerconnectoptions).
 
 An example of using a [Browser] to create a [Page]:
@@ -350,6 +352,8 @@ You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/versio
 
 ### class: Page
 
+* extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)
+
 Page provides methods to interact with a single tab in Chromium. One [Browser] instance might have multiple [Page] instances.
 
 This example creates a page, navigates it to a URL, and then saves a screenshot:
@@ -362,6 +366,13 @@ puppeteer.launch().then(async browser => {
   await page.screenshot({path: 'screenshot.png'});
   await browser.close();
 });
+```
+
+The Page class emits various events (described below) which can be handled using any of Node's native EventEmitter methods, such as `on` or `once`.
+
+This example logs a message for a single page `load` event:
+```js
+page.once('load', () => console.log('Page loaded!'));
 ```
 
 #### event: 'console'
@@ -1334,7 +1345,7 @@ await page.tracing.stop();
 - `options` <[Object]>
   - `path` <[string]> A path to write the trace file to. **required**
   - `screenshots` <[boolean]> captures screenshots in the trace.
-  - `categories` <[Array]<[string]>> specify custom categories to use instead of default. 
+  - `categories` <[Array]<[string]>> specify custom categories to use instead of default.
 - returns: <[Promise]>
 
 Only one trace can be active at a time per browser.
