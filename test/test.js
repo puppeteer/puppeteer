@@ -20,7 +20,7 @@ const {helper} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
 console.log('Testing on Node', process.version);
-const puppeteer = require('..');
+const puppeteer = require(helper.projectRoot());
 const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
 
@@ -51,12 +51,7 @@ const defaultBrowserOptions = {
 };
 
 // Make sure the `npm install` was run after the chromium roll.
-{
-  const Downloader = require('../utils/ChromiumDownloader');
-  const chromiumRevision = require('../package.json').puppeteer.chromium_revision;
-  const revisionInfo = Downloader.revisionInfo(Downloader.currentPlatform(), chromiumRevision);
-  console.assert(revisionInfo.downloaded, `Chromium r${chromiumRevision} is not downloaded. Run 'npm install' and try to re-run tests.`);
-}
+console.assert(fs.existsSync(puppeteer.executablePath()), `Chromium is not Downloaded. Run 'npm install' and try to re-run tests`);
 
 const timeout = process.env.DEBUG_TEST || slowMo ?  0 : 10 * 1000;
 

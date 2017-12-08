@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-const Downloader = require('./ChromiumDownloader');
+const Downloader = require('../lib/Downloader');
 const https = require('https');
 const OMAHA_PROXY = 'https://omahaproxy.appspot.com/all.json';
+
+const downloader = Downloader.createDefault();
 
 const colors = {
   reset: '\x1b[0m',
@@ -71,7 +73,7 @@ async function checkOmahaProxyAvailability() {
     return;
   }
   const table = new Table([27, 7, 7, 7, 7]);
-  table.drawRow([''].concat(Downloader.supportedPlatforms()));
+  table.drawRow([''].concat(downloader.supportedPlatforms()));
   for (const platform of platforms) {
     // Trust only to the main platforms.
     if (platform.os !== 'mac' && platform.os !== 'win' && platform.os !== 'win64' && platform.os !== 'linux')
@@ -93,7 +95,7 @@ async function checkOmahaProxyAvailability() {
  */
 async function checkRangeAvailability(fromRevision, toRevision) {
   const table = new Table([10, 7, 7, 7, 7]);
-  table.drawRow([''].concat(Downloader.supportedPlatforms()));
+  table.drawRow([''].concat(downloader.supportedPlatforms()));
   const inc = fromRevision < toRevision ? 1 : -1;
   for (let revision = fromRevision; revision !== toRevision; revision += inc)
     await checkAndDrawRevisionAvailability(table, '', revision);
@@ -106,8 +108,8 @@ async function checkRangeAvailability(fromRevision, toRevision) {
  */
 async function checkAndDrawRevisionAvailability(table, name, revision) {
   const promises = [];
-  for (const platform of Downloader.supportedPlatforms())
-    promises.push(Downloader.canDownloadRevision(platform, revision));
+  for (const platform of downloader.supportedPlatforms())
+    promises.push(downloader.canDownloadRevision(platform, revision));
   const availability = await Promise.all(promises);
   const allAvailable = availability.every(e => !!e);
   const values = [name + ' ' + (allAvailable ? colors.green + revision + colors.reset : revision)];

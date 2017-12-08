@@ -23,12 +23,15 @@ if (process.env.NPM_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.env.npm_c
   return;
 }
 
-const Downloader = require('./utils/ChromiumDownloader');
-const platform = Downloader.currentPlatform();
-const revision = require('./package').puppeteer.chromium_revision;
+const {helper} = require('./lib/helper');
+const Downloader = require('./lib/Downloader');
+const downloader = Downloader.createDefault();
+
+const platform = downloader.currentPlatform();
+const revision = helper.packageJSON().puppeteer.chromium_revision;
 const ProgressBar = require('progress');
 
-const revisionInfo = Downloader.revisionInfo(platform, revision);
+const revisionInfo = downloader.revisionInfo(platform, revision);
 // Do nothing if the revision is already downloaded.
 if (revisionInfo.downloaded)
   return;
@@ -45,9 +48,11 @@ if (NPM_HTTP_PROXY)
 if (NPM_NO_PROXY)
   process.env.NO_PROXY = NPM_NO_PROXY;
 
-const allRevisions = Downloader.downloadedRevisions();
-const DOWNLOAD_HOST = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host;
-Downloader.downloadRevision(platform, revision, DOWNLOAD_HOST, onProgress)
+const allRevisions = downloader.downloadedRevisions();
+const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host;
+if (downloadHost)
+  downloader.setDownloadHost(downloadHost);
+downloader.downloadRevision(platform, revision, onProgress)
     .then(onSuccess)
     .catch(onError);
 
@@ -57,7 +62,7 @@ Downloader.downloadRevision(platform, revision, DOWNLOAD_HOST, onProgress)
 function onSuccess() {
   console.log('Chromium downloaded to ' + revisionInfo.folderPath);
   // Remove previous chromium revisions.
-  const cleanupOldVersions = allRevisions.map(({platform, revision}) => Downloader.removeRevision(platform, revision));
+  const cleanupOldVersions = allRevisions.map(({platform, revision}) => downloader.removeRevision(platform, revision));
   return Promise.all(cleanupOldVersions);
 }
 
