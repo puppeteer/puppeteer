@@ -19,8 +19,12 @@ const path = require('path');
 const {helper} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
-console.log('Testing on Node', process.version);
-const puppeteer = require('..');
+
+const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ? path.join(__dirname, '..') : path.join(__dirname, '..', '..');
+
+const puppeteer = require(PROJECT_ROOT);
+const DeviceDescriptors = require(path.join(PROJECT_ROOT, 'DeviceDescriptors'));
+
 const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
 
@@ -40,8 +44,12 @@ const HTTPS_PREFIX = 'https://localhost:' + HTTPS_PORT;
 const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
 const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
 const executablePath = process.env.CHROME;
+
+console.log('Testing on Node', process.version);
 if (executablePath)
   console.warn(`${YELLOW_COLOR}WARN: running tests with ${executablePath}${RESET_COLOR}`);
+// Make sure the `npm install` was run after the chromium roll.
+console.assert(fs.existsSync(puppeteer.executablePath()), `Chromium is not Downloaded. Run 'npm install' and try to re-run tests`);
 
 const defaultBrowserOptions = {
   executablePath,
@@ -49,9 +57,6 @@ const defaultBrowserOptions = {
   headless,
   args: ['--no-sandbox']
 };
-
-// Make sure the `npm install` was run after the chromium roll.
-console.assert(fs.existsSync(puppeteer.executablePath()), `Chromium is not Downloaded. Run 'npm install' and try to re-run tests`);
 
 const timeout = process.env.DEBUG_TEST || slowMo ?  0 : 10 * 1000;
 
@@ -228,8 +233,8 @@ describe('Puppeteer', function() {
 });
 
 describe('Page', function() {
-  const iPhone = require('../DeviceDescriptors')['iPhone 6'];
-  const iPhoneLandscape = require('../DeviceDescriptors')['iPhone 6 landscape'];
+  const iPhone = DeviceDescriptors['iPhone 6'];
+  const iPhoneLandscape = DeviceDescriptors['iPhone 6 landscape'];
 
   let browser;
   let page;

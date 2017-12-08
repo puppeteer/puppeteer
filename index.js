@@ -25,4 +25,4 @@ try {
 if (asyncawait)
   module.exports = require('./lib/Puppeteer');
 else
-  module.exports = require('./node6/Puppeteer');
+  module.exports = require('./node6/lib/Puppeteer');
