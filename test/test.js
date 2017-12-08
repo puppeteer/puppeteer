@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 const fs = require('fs');
 const rm = require('rimraf').sync;
 const path = require('path');
@@ -26,7 +25,6 @@ const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
 
 const YELLOW_COLOR = '\x1b[33m';
-const RED_COLOR = '\x1b[31m';
 const RESET_COLOR = '\x1b[0m';
 
 const GOLDEN_DIR = path.join(__dirname, 'golden');
@@ -52,11 +50,6 @@ const defaultBrowserOptions = {
   args: ['--no-sandbox']
 };
 
-if (process.env.DEBUG_TEST || slowMo)
-  jasmine.DEFAULT_TIMEOUT_INTERVAL = 1000 * 1000 * 1000;
-else
-  jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
-
 // Make sure the `npm install` was run after the chromium roll.
 {
   const Downloader = require('../utils/ChromiumDownloader');
@@ -65,23 +58,18 @@ else
   console.assert(revisionInfo.downloaded, `Chromium r${chromiumRevision} is not downloaded. Run 'npm install' and try to re-run tests.`);
 }
 
-// Hack to get the currently-running spec name.
-let specName = null;
-jasmine.getEnv().addReporter({
-  specStarted: result => specName = result.fullName
-});
+const timeout = process.env.DEBUG_TEST || slowMo ?  0 : 10 * 1000;
 
-// Setup unhandledRejectionHandlers
-let hasUnhandledRejection = false;
-process.on('unhandledRejection', error => {
-  hasUnhandledRejection = true;
-  const textLines = [
-    '',
-    `${RED_COLOR}[UNHANDLED PROMISE REJECTION]${RESET_COLOR} "${specName}"`,
-    error.stack,
-    '',
-  ];
-  console.error(textLines.join('\n'));
+const {TestRunner, Reporter, Matchers}  = require('../utils/testrunner/');
+const runner = new TestRunner({timeout});
+new Reporter(runner);
+
+const {describe, xdescribe, fdescribe} = runner;
+const {it, fit, xit} = runner;
+const {beforeAll, beforeEach, afterAll, afterEach} = runner;
+
+const {expect} = new Matchers({
+  toBeGolden: GoldenUtils.compare.bind(null, GOLDEN_DIR, OUTPUT_DIR)
 });
 
 let server;
@@ -97,7 +85,6 @@ beforeAll(SX(async function() {
 beforeEach(SX(async function() {
   server.reset();
   httpsServer.reset();
-  GoldenUtils.addMatchers(jasmine, GOLDEN_DIR, OUTPUT_DIR);
 }));
 
 afterAll(SX(async function() {
@@ -3280,17 +3267,10 @@ describe('Page', function() {
       serverResponse.end();
       // Wait for the new page to load.
       await waitForEvents(newPage, 'load');
-
-      expect(hasUnhandledRejection).toBe(false);
-
       // Cleanup.
       await newPage.close();
     }));
   });
-});
-
-it('Unhandled promise rejections should not be thrown', function() {
-  expect(hasUnhandledRejection).toBe(false);
 });
 
 if (process.env.COVERAGE) {
@@ -3307,6 +3287,8 @@ if (process.env.COVERAGE) {
     }
   });
 }
+
+runner.run();
 /**
  * @param {!EventEmitter} emitter
  * @param {string} eventName
@@ -3361,8 +3343,7 @@ function cssPixelsToInches(px) {
   return px / 96;
 }
 
-// Since Jasmine doesn't like async functions, they should be wrapped
-// in a SX function.
+// TODO: remove
 function SX(fun) {
-  return done => Promise.resolve(fun()).then(done).catch(done.fail);
+  return fun;
 }

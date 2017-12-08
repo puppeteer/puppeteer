@@ -21,7 +21,7 @@ const transformAsyncFunctions = require('./TransformAsyncFunctions');
 
 copyFolder(path.join(__dirname, '..', '..', 'lib'), path.join(__dirname, '..', '..', 'node6'));
 copyFolder(path.join(__dirname, '..', '..', 'test'), path.join(__dirname, '..', '..', 'node6-test'));
-
+copyFolder(path.join(__dirname, '..', '..', 'utils', 'testrunner'), path.join(__dirname, '..', '..', 'node6-testrunner'));
 
 function copyFolder(source, target) {
   if (fs.existsSync(target))
@@ -35,8 +35,11 @@ function copyFolder(source, target) {
       copyFolder(from, to);
     } else {
       let text = fs.readFileSync(from);
-      if (file.endsWith('.js'))
-        text = transformAsyncFunctions(text.toString()).replace(/require\('\.\.\/lib\//g, `require('../node6/`);
+      if (file.endsWith('.js')) {
+        text = transformAsyncFunctions(text.toString());
+        text = text.replace(/require\('\.\.\/lib\//g, `require('../node6/`);
+        text = text.replace(/require\('\.\.\/utils\/testrunner\//g, `require('../node6-testrunner/`);
+      }
       fs.writeFileSync(to, text);
     }
   });
