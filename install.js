@@ -23,8 +23,14 @@ if (process.env.NPM_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.env.npm_c
   return;
 }
 
-const {helper} = require('./lib/helper');
-const Downloader = require('./lib/Downloader');
+let asyncawait = true;
+try {
+  new Function('async function test(){await 1}');
+} catch (error) {
+  asyncawait = false;
+}
+
+const Downloader = asyncawait ? require('./lib/Downloader') : require('./node6/Downloader');
 const downloader = Downloader.createDefault();
 
 const platform = downloader.currentPlatform();
