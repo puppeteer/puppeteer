@@ -11,4 +11,9 @@ node_modules
 *.pyc
 .vscode
 package-lock.json
-/node6-test
+/node6/test
+/node6/utils
+/test
+/utils
+/docs
+yarn.lock
