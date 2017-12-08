@@ -28,7 +28,7 @@ const Downloader = require('./lib/Downloader');
 const downloader = Downloader.createDefault();
 
 const platform = downloader.currentPlatform();
-const revision = helper.packageJSON().puppeteer.chromium_revision;
+const revision = Downloader.defaultRevision();
 const ProgressBar = require('progress');
 
 const revisionInfo = downloader.revisionInfo(platform, revision);

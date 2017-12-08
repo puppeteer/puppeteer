@@ -20,7 +20,7 @@ const {helper} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
 console.log('Testing on Node', process.version);
-const puppeteer = require(helper.projectRoot());
+const puppeteer = require('../lib/Puppeteer');
 const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
 
