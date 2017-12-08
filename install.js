@@ -30,7 +30,7 @@ try {
   asyncawait = false;
 }
 
-const Downloader = asyncawait ? require('./lib/Downloader') : require('./node6/Downloader');
+const Downloader = require('./lib/Downloader');
 const downloader = Downloader.createDefault();
 
 const platform = downloader.currentPlatform();
