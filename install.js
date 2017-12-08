@@ -23,13 +23,6 @@ if (process.env.NPM_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.env.npm_c
   return;
 }
 
-let asyncawait = true;
-try {
-  new Function('async function test(){await 1}');
-} catch (error) {
-  asyncawait = false;
-}
-
 const Downloader = require('./lib/Downloader');
 const downloader = Downloader.createDefault();
 
