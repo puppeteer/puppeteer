@@ -21,6 +21,7 @@ const Message = require('../Message');
 
 const EXCLUDE_CLASSES = new Set([
   'Connection',
+  'Downloader',
   'EmulationManager',
   'FrameManager',
   'Helper',
