@@ -51,7 +51,7 @@ function copyFile(from, to) {
   if (from.endsWith('.js')) {
     text = text.toString();
     const prefix = text.startsWith('#!') ? text.substring(0, text.indexOf('\n')) : '';
-    text = prefix + transformAsyncFunctions(text.substring(prefix.length))
+    text = prefix + transformAsyncFunctions(text.substring(prefix.length));
   }
   fs.writeFileSync(to, text);
 }
