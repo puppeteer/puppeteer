@@ -3286,6 +3286,17 @@ describe('Page', function() {
       await newPage.close();
     }));
   });
+
+  describe('Connection', function() {
+    it('should throw nice errors', SX(async function() {
+      const error = await theSourceOfTheProblems().catch(error => error);
+      expect(error.stack).toContain('theSourceOfTheProblems');
+      expect(error.message).toContain('ThisCommand.DoesNotExist');
+      async function theSourceOfTheProblems() {
+        await page._client.send('ThisCommand.DoesNotExist');
+      }
+    }));
+  });
 });
 
 it('Unhandled promise rejections should not be thrown', function() {
