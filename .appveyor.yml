@@ -13,6 +13,5 @@ install:
       yarn run coverage  &&
       yarn run test-doclint
     ) else (
-      yarn run build  &&
       yarn run unit-node6
     )
