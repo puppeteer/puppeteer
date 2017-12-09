@@ -28,7 +28,7 @@ await page.waitFor('input[name=q]');
 // Type our query into the search bar
 await page.type('input[name=q]', 'puppeteer');
 
-await page.click('input[type="submit"]');
+await page.keyboard.press('Enter');
 
 // Wait for the results to show up
 await page.waitForSelector('h3 a');
