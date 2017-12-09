@@ -34,8 +34,6 @@ class UserCallback {
 
   async run(...args) {
     const timeoutPromise = new Promise(resolve => {
-      if (!this.timeout)
-        return;
       setTimeout(resolve.bind(null, TimeoutError), this.timeout);
     });
     try {
@@ -264,7 +262,8 @@ class TestRunner extends EventEmitter {
     this._rootSuite = new Suite(null, '', TestMode.Run);
     this._currentSuite = this._rootSuite;
     this._tests = [];
-    this._timeout = options.timeout || 10 * 1000; // 10 seconds.
+    // Default timeout is 10 seconds.
+    this._timeout = options.timeout === 0 ? 2147483647 : options.timeout ||  10 * 1000;
     this._parallel = options.parallel || 1;
     this._retryFailures = !!options.retryFailures;
 
