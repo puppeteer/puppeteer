@@ -3107,6 +3107,30 @@ describe('Page', function() {
       expect(await page.evaluate('document.cookie')).toBe('cookie1=1; cookie3=3');
     }));
 
+    it('should not set a cookie on a blank page', SX(async function() {
+      let error = null;
+      await page.goto('about:blank');
+      try {
+        await page.setCookie({name: 'example-cookie', value: 'best'});
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeTruthy();
+      expect(error.message).toEqual('Protocol error (Network.deleteCookies): At least one of the url and domain needs to be specified undefined');
+    }));
+
+    it('should not set a cookie with blank page URL', SX(async function() {
+      let error = null;
+      await page.goto(PREFIX + '/grid.html');
+      try {
+        await page.setCookie({name: 'example-cookie', value: 'best'}, {url: 'about:blank', name: 'example-cookie-blank', value: 'best'});
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeTruthy();
+      expect(error.message).toEqual(`Blank page can not have cookie "example-cookie-blank"`);
+    }));
+
     it('should set a cookie on a different domain', SX(async function() {
       await page.goto(PREFIX + '/grid.html');
       await page.setCookie({name: 'example-cookie', value: 'best',  url: 'https://www.example.com'});
