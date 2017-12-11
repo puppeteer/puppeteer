@@ -2008,6 +2008,13 @@ describe('Page', function() {
       await textarea.press('a', {text: 'y'});
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('f');
     }));
+    it('should not focus non-focusable elements', SX(async function() {
+      await page.setContent('<input disabled></input>');
+      const input = await page.$('input');
+      let error = null;
+      await input.focus().catch(e => error = e);
+      expect(error.message).toContain('not focusable');
+    }));
     it('should send a character with sendCharacter', SX(async function() {
       await page.goto(PREFIX + '/input/textarea.html');
       await page.focus('textarea');
