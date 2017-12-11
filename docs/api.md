@@ -21,6 +21,7 @@
   * [browser.disconnect()](#browserdisconnect)
   * [browser.newPage()](#browsernewpage)
   * [browser.pages()](#browserpages)
+  * [browser.process()](#browserprocess)
   * [browser.targets()](#browsertargets)
   * [browser.version()](#browserversion)
   * [browser.wsEndpoint()](#browserwsendpoint)
@@ -333,6 +334,9 @@ Disconnects Puppeteer from the browser, but leaves the Chromium process running.
 
 #### browser.pages()
 - returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages.
+
+#### browser.process()
+- returns: <?[ChildProcess]> Spawned browser process. Returns `null` if the browser instance was created with `puppeteer.connect` method.
 
 #### browser.targets()
 - returns: <[Array]<[Target]>> An array of all active targets.
@@ -2118,6 +2122,7 @@ Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, or 
 [Error]: https://nodejs.org/api/errors.html#errors_class_error "Error"
 [Frame]: #class-frame "Frame"
 [ConsoleMessage]: #class-consolemessage "ConsoleMessage"
+[ChildProcess]: https://nodejs.org/api/child_process.html "ChildProcess"
 [iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols "Iterator"
 [Response]: #class-response  "Response"
 [Request]: #class-request  "Request"
