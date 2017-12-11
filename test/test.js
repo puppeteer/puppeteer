@@ -819,6 +819,16 @@ describe('Page', function() {
       expect(await waitForSelector).toBe(true);
       expect(divHidden).toBe(true);
     }));
+    it('hidden should wait for opacity: 0', SX(async function() {
+      let divHidden = false;
+      await page.setContent(`<div style='opacity: 1;'></div>`);
+      const waitForSelector = page.waitForSelector('div', {hidden: true}).then(() => divHidden = true);
+      await page.waitForSelector('div'); // do a round trip
+      expect(divHidden).toBe(false);
+      await page.evaluate(() => document.querySelector('div').style.setProperty('display', '0'));
+      expect(await waitForSelector).toBe(true);
+      expect(divHidden).toBe(true);
+    }));
     it('hidden should wait for removal', SX(async function() {
       await page.setContent(`<div></div>`);
       let divRemoved = false;
