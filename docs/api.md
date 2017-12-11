@@ -21,6 +21,7 @@
   * [browser.disconnect()](#browserdisconnect)
   * [browser.newPage()](#browsernewpage)
   * [browser.pages()](#browserpages)
+  * [browser.process()](#browserprocess)
   * [browser.targets()](#browsertargets)
   * [browser.version()](#browserversion)
   * [browser.wsEndpoint()](#browserwsendpoint)
