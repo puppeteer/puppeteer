@@ -263,6 +263,16 @@ describe('Page', function() {
     }));
   });
 
+  describe('Browser.process', function() {
+    it('should return child_process instance', SX(async function() {
+      const process = await browser.process();
+      expect(process.pid).toBeGreaterThan(0);
+      const browserWSEndpoint = browser.wsEndpoint();
+      const remoteBrowser = await puppeteer.connect({browserWSEndpoint});
+      expect(remoteBrowser.process()).toBe(null);
+    }));
+  });
+
   describe('Browser.Events.disconnected', function() {
     it('should emitted when: browser gets closed, disconnected or underlying websocket gets closed', SX(async function() {
       const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
