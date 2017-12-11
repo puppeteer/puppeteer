@@ -4,7 +4,7 @@
 
 ###### [API](docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md)
 
-> Puppeteer is a Node library which provides a high-level API to control [headless](https://developers.google.com/web/updates/2017/04/headless-chrome) Chrome over the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/). It can also be configured to use full (non-headless) Chrome.
+> Puppeteer is a Node library which provides a high-level API to control [headless](https://developers.google.com/web/updates/2017/04/headless-chrome) Chrome or Chromium over the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/). It can also be configured to use full (non-headless) Chrome or Chromium.
 
 ###### What can I do?
 
@@ -112,7 +112,7 @@ const browser = await puppeteer.launch({headless: false}); // default is true
 **2. Runs a bundled version of Chromium**
 
 By default, Puppeteer downloads and uses a specific version of Chromium so its API
-is guaranteed to work out of the box. To use Puppeteer with a different version of Chrome,
+is guaranteed to work out of the box. To use Puppeteer with a different version of Chrome or Chromium,
 pass in the executable's path when creating a `Browser` instance:
 
 ```js
@@ -120,6 +120,9 @@ const browser = await puppeteer.launch({executablePath: '/path/to/Chrome'});
 ```
 
 See [`Puppeteer.launch()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions) for more information.
+
+See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description 
+of the differences between Chromium and Chrome. [`This article`](https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users.
 
 **3. Creates a fresh user profile**
 
@@ -133,7 +136,7 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
 
 1. Turn off headless mode - sometimes it's useful to see what the browser is
    displaying. Instead of launching in headless mode, launch a full version of
-   Chrome using  `headless: false`:
+   the browser using  `headless: false`:
 
     ```js
     const browser = await puppeteer.launch({headless: false});
@@ -194,9 +197,9 @@ Puppeteer bundles Chromium to ensure that the latest features it uses are guaran
 
 Selenium / WebDriver is a well-established cross-browser API that is useful for testing cross-browser support.
 
-Puppeteer works only with Chrome. However, many teams only run unit tests with a single browser (e.g. PhantomJS). In non-testing use cases, Puppeteer provides a powerful but simple API because it's only targeting one browser that enables you to rapidly develop automation scripts.
+Puppeteer works only with Chromium or Chrome. However, many teams only run unit tests with a single browser (e.g. PhantomJS). In non-testing use cases, Puppeteer provides a powerful but simple API because it's only targeting one browser that enables you to rapidly develop automation scripts.
 
-Puppeteer uses the latest versions of Chromium.
+Puppeteer bundles the latest versions of Chromium.
 
 #### Q: Who maintains Puppeteer?
 
