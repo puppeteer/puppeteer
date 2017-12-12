@@ -1,6 +1,6 @@
 # TestRunner
 
-- no additional binary required; tests are `node.js` scripts
+- testrunner is a library: no additional binary required; tests are `node.js` scripts
 - parallel wrt IO operations
 - supports async/await
 - modular
@@ -25,7 +25,7 @@ const {it, fit, xit} = runner;
 const {beforeAll, beforeEach, afterAll, afterEach} = runner;
 
 beforeAll(state => {
-  state.parallel; // this will be set with the execution thread id, either 0 or 1 in this example
+  state.parallelIndex; // either 0 or 1 in this example, depending on the executing thread
   state.foo = 'bar'; // set state for every test
 });
 

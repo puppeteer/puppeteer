@@ -67,7 +67,7 @@ const utils = module.exports = {
    */
   dumpFrames: function(frame, indentation) {
     indentation = indentation || '';
-    let result = indentation + frame.url();
+    let result = indentation + frame.url().replace(/:\d{4}\//, ':<PORT>/');
     for (const child of frame.childFrames())
       result += '\n' + utils.dumpFrames(child, '    ' + indentation);
     return result;
