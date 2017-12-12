@@ -242,20 +242,20 @@ describe('Puppeteer', function() {
 });
 
 describe('Page', function() {
-  beforeAll(async state  => {
+  beforeAll(async state => {
     state.browser = await puppeteer.launch(defaultBrowserOptions);
   });
 
-  afterAll(async state  => {
+  afterAll(async state => {
     await state.browser.close();
     state.browser = null;
   });
 
-  beforeEach(async state  => {
+  beforeEach(async state => {
     state.page = await state.browser.newPage();
   });
 
-  afterEach(async state  => {
+  afterEach(async state => {
     await state.page.close();
     state.page = null;
   });
