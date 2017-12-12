@@ -59,7 +59,7 @@ if (process.env.PPTR_PARALLEL_TESTS)
   parallel = parseInt(process.env.PPTR_PARALLEL_TESTS.trim(), 10);
 const parallelArgIndex = process.argv.indexOf('-j');
 if (parallelArgIndex !== -1)
-  parallel = parseInt(process.argv[parallelArgIndex + 1], 10)
+  parallel = parseInt(process.argv[parallelArgIndex + 1], 10);
 
 const {TestRunner, Reporter, Matchers}  = require('../utils/testrunner/');
 const runner = new TestRunner({timeout, parallel});
