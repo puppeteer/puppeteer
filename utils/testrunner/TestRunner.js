@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+const inspector = require('inspector');
 const path = require('path');
 const EventEmitter = require('events');
 const Multimap = require('./Multimap');
@@ -268,6 +269,14 @@ class TestRunner extends EventEmitter {
     this._retryFailures = !!options.retryFailures;
 
     this._hasFocusedTestsOrSuites = false;
+
+    if (inspector.url()) {
+      console.log('TestRunner detected inspector; overriding certain properties to be debugger-friendly');
+      console.log('  - timeout = 0 (Infinite)');
+      console.log('  - parallel = 1');
+      this._timeout = 2147483647;
+      this._parallel = 1;
+    }
 
     // bind methods so that they can be used as a DSL.
     this.describe = this._addSuite.bind(this, TestMode.Run);
