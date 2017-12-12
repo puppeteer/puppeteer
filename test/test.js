@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 const fs = require('fs');
-const os = require('os');
 const rm = require('rimraf').sync;
 const path = require('path');
 const {helper} = require('../lib/helper');
