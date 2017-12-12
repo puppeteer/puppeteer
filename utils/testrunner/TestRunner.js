@@ -162,7 +162,7 @@ class TestPass {
 
     const workerPromises = [];
     for (let i = 0; i < this._parallel; ++i)
-      workerPromises.push(this._runSuite(i, [this._rootSuite], {parallel: i}));
+      workerPromises.push(this._runSuite(i, [this._rootSuite], {parallelIndex: i}));
     await Promise.all(workerPromises);
 
     for (const termination of terminations)

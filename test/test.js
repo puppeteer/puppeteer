@@ -57,9 +57,9 @@ const timeout = process.env.DEBUG_TEST || slowMo ?  0 : 10 * 1000;
 let parallel = 1;
 if (process.env.PPTR_PARALLEL_TESTS)
   parallel = parseInt(process.env.PPTR_PARALLEL_TESTS.trim(), 10);
-const parallelArg = process.argv.find(arg => /^-\d+$/.test(arg));
-if (parallelArg)
-  parallel = parseInt(parallelArg.substring(1), 10)
+const parallelArgIndex = process.argv.indexOf('-j');
+if (parallelArgIndex !== -1)
+  parallel = parseInt(process.argv[parallelArgIndex + 1], 10)
 
 const {TestRunner, Reporter, Matchers}  = require('../utils/testrunner/');
 const runner = new TestRunner({timeout, parallel});
@@ -78,7 +78,7 @@ if (fs.existsSync(OUTPUT_DIR))
 
 beforeAll(async state  => {
   const assetsPath = path.join(__dirname, 'assets');
-  const port = 8907 + state.parallel * 2;
+  const port = 8907 + state.parallelIndex * 2;
   state.server = await SimpleServer.create(assetsPath, port);
   state.server.PREFIX = `http://localhost:${port}`;
   state.server.CROSS_PROCESS_PREFIX = `http://127.0.0.1:${port}`;
