@@ -54,9 +54,15 @@ const defaultBrowserOptions = {
 };
 
 const timeout = process.env.DEBUG_TEST || slowMo ?  0 : 10 * 1000;
+let parallel = 1;
+if (process.env.PPTR_PARALLEL_TESTS)
+  parallel = parseInt(process.env.PPTR_PARALLEL_TESTS.trim(), 10);
+const parallelArg = process.argv.find(arg => /^-\d+$/.test(arg));
+if (parallelArg)
+  parallel = parseInt(parallelArg.substring(1), 10)
 
 const {TestRunner, Reporter, Matchers}  = require('../utils/testrunner/');
-const runner = new TestRunner({timeout, parallel: process.argv.includes('-f') ? 4 : 1});
+const runner = new TestRunner({timeout, parallel});
 new Reporter(runner);
 
 const {describe, xdescribe, fdescribe} = runner;
