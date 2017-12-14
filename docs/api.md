@@ -187,6 +187,8 @@
   * [request.url()](#requesturl)
 - [class: Response](#class-response)
   * [response.buffer()](#responsebuffer)
+  * [response.fromDiskCache](#responsefromdiskcache)
+  * [response.fromServiceWorker](#responsefromserviceworker)
   * [response.headers()](#responseheaders)
   * [response.json()](#responsejson)
   * [response.ok()](#responseok)
@@ -2110,6 +2112,16 @@ page.on('request', request => {
 
 #### response.buffer()
 - returns: <Promise<[Buffer]>> Promise which resolves to a buffer with response body.
+
+#### response.fromDiskCache
+- <[boolean]>
+
+True if the response was served from the browser's disk cache.
+
+#### response.fromServiceWorker
+- <[boolean]>
+
+True if the response was served by a service worker.
 
 #### response.headers()
 - returns: <[Object]> An object with HTTP headers associated with the response. All header names are lower-case.

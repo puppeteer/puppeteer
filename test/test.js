@@ -3589,7 +3589,7 @@ describe('Page', function() {
         if (response.url.includes('.js'))
           responses.push(response);
       });
-      let response = await page.goto('https://www.chromestatus.com/features', {waitUntil: 'networkidle2'});
+      await page.goto('https://www.chromestatus.com/features', {waitUntil: 'networkidle2'});
       expect(responses[0].fromDiskCache).toBe(false);
       expect(responses[0].fromServiceWorker).toBe(false);
       responses = [];
