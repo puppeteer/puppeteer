@@ -2497,6 +2497,8 @@ describe('Page', function() {
       expect(responses[0].url()).toBe(server.EMPTY_PAGE);
       expect(responses[0].status()).toBe(200);
       expect(responses[0].ok()).toBe(true);
+      expect(responses[0].fromDiskCache).toBe(false);
+      expect(responses[0].fromServiceWorker).toBe(false);
       expect(responses[0].request()).toBeTruthy();
     });
     it('Page.Events.Response should provide body', async({page, server}) => {
@@ -3576,6 +3578,24 @@ describe('Page', function() {
         const coverage = await page.coverage.stopCSSCoverage();
         expect(coverage.length).toBe(0);
       });
+    });
+  });
+
+  describe('Response', function() {
+    it('specifies when response comes from cache and service worker', async({page, server}) => {
+      // Use known site that uses server caching and service worker caching.
+      let responses = [];
+      page.on('response', response => {
+        if (response.url.includes('.js'))
+          responses.push(response);
+      });
+      let response = await page.goto('https://www.chromestatus.com/features', {waitUntil: 'networkidle2'});
+      expect(responses[0].fromDiskCache).toBe(false);
+      expect(responses[0].fromServiceWorker).toBe(false);
+      responses = [];
+      response = await page.reload({waitUntil: 'networkidle2'});
+      expect(responses[0].fromDiskCache).toBe(true);
+      expect(responses[0].fromServiceWorker).toBe(true);
     });
   });
 });
