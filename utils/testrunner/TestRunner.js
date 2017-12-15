@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-const inspector = require('inspector');
 const path = require('path');
 const EventEmitter = require('events');
 const Multimap = require('./Multimap');
 
 const TimeoutError = new Error('Timeout');
 const TerminatedError = new Error('Terminated');
+
+const MAJOR_NODEJS_VERSION = parseInt(process.version.substring(1).split('.')[0], 10);
 
 class UserCallback {
   constructor(callback, timeout) {
@@ -270,12 +271,15 @@ class TestRunner extends EventEmitter {
 
     this._hasFocusedTestsOrSuites = false;
 
-    if (inspector.url()) {
-      console.log('TestRunner detected inspector; overriding certain properties to be debugger-friendly');
-      console.log('  - timeout = 0 (Infinite)');
-      console.log('  - parallel = 1');
-      this._timeout = 2147483647;
-      this._parallel = 1;
+    if (MAJOR_NODEJS_VERSION >= 8) {
+      const inspector = require('inspector');
+      if (inspector.url()) {
+        console.log('TestRunner detected inspector; overriding certain properties to be debugger-friendly');
+        console.log('  - timeout = 0 (Infinite)');
+        console.log('  - parallel = 1');
+        this._timeout = 2147483647;
+        this._parallel = 1;
+      }
     }
 
     // bind methods so that they can be used as a DSL.
