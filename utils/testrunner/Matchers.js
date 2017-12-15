@@ -43,7 +43,7 @@ class Expect {
 
     function applyMatcher(matcherName, matcher, inverse, value, ...args) {
       const result = matcher.call(null, value, ...args);
-      const message = result.message || `expect.${matcherName} failed`;
+      const message = `expect.${matcherName} failed` + (result.message ? `: ${result.message}` : '');
       console.assert(result.pass !== inverse, message);
     }
   }
@@ -51,42 +51,52 @@ class Expect {
 
 const DefaultMatchers = {
   toBe: function(value, other, message) {
+    message = message || `${value} == ${other}`;
     return { pass: value === other, message };
   },
 
   toBeFalsy: function(value, message) {
+    message = message || `${value}`;
     return { pass: !value, message };
   },
 
   toBeTruthy: function(value, message) {
+    message = message || `${value}`;
     return { pass: !!value, message };
   },
 
   toBeGreaterThan: function(value, other, message) {
+    message = message || `${value} > ${other}`;
     return { pass: value > other, message };
   },
 
   toBeGreaterThanOrEqual: function(value, other, message) {
+    message = message || `${value} >= ${other}`;
     return { pass: value >= other, message };
   },
 
   toBeLessThan: function(value, other, message) {
+    message = message || `${value} < ${other}`;
     return { pass: value < other, message };
   },
 
   toBeLessThanOrEqual: function(value, other, message) {
+    message = message || `${value} <= ${other}`;
     return { pass: value <= other, message };
   },
 
   toBeNull: function(value, message) {
+    message = message || `${value} == null`;
     return { pass: value === null, message };
   },
 
   toContain: function(value, other, message) {
+    message = message || `${value} ⊇ ${other}`;
     return { pass: value.includes(other), message };
   },
 
   toEqual: function(value, other, message) {
+    message = message || `${JSON.stringify(value)} ≈ ${JSON.stringify(other)}`;
     return { pass: JSON.stringify(value) === JSON.stringify(other), message };
   },
 
