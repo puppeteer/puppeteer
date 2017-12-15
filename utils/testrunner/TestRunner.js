@@ -276,7 +276,6 @@ class TestRunner extends EventEmitter {
       if (inspector.url()) {
         console.log('TestRunner detected inspector; overriding certain properties to be debugger-friendly');
         console.log('  - timeout = 0 (Infinite)');
-        console.log('  - parallel = 1');
         this._timeout = 2147483647;
         this._parallel = 1;
       }
