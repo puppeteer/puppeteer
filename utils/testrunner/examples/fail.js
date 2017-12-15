@@ -24,10 +24,6 @@ const {describe, xdescribe, fdescribe} = runner;
 const {it, fit, xit} = runner;
 const {beforeAll, beforeEach, afterAll, afterEach} = runner;
 
-class A {
-}
-a = new A();
-
 describe('testsuite', () => {
   it('toBe', async (state) => {
     expect(2 + 2).toBe(5);
@@ -48,7 +44,7 @@ describe('testsuite', () => {
     expect('asdf').toContain('e');
   });
   it('toEqual', async (state) => {
-    expect(a).toEqual({bar: 2});
+    expect([1,2,3]).toEqual([1,2,3,4]);
   });
 });
 

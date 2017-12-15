@@ -96,7 +96,7 @@ const DefaultMatchers = {
   },
 
   toEqual: function(value, other, message) {
-    message = message || `Object::${value.constructor.name} ≈ Object::${other.constructor.name}`;
+    message = message || `${JSON.stringify(value)} ≈ ${JSON.stringify(other)}`;
     return { pass: JSON.stringify(value) === JSON.stringify(other), message };
   },
 
