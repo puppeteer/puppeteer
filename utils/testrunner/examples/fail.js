@@ -24,9 +24,31 @@ const {describe, xdescribe, fdescribe} = runner;
 const {it, fit, xit} = runner;
 const {beforeAll, beforeEach, afterAll, afterEach} = runner;
 
+class A {
+}
+a = new A();
+
 describe('testsuite', () => {
-  it('failure', async (state) => {
+  it('toBe', async (state) => {
+    expect(2 + 2).toBe(5);
+  });
+  it('toBeFalsy', async (state) => {
+    expect(true).toBeFalsy();
+  });
+  it('toBeTruthy', async (state) => {
     expect(false).toBeTruthy();
+  });
+  it('toBeGreaterThan', async (state) => {
+    expect(2).toBeGreaterThan(3);
+  });
+  it('toBeNull', async (state) => {
+    expect(2).toBeNull();
+  });
+  it('toContain', async (state) => {
+    expect('asdf').toContain('e');
+  });
+  it('toEqual', async (state) => {
+    expect(a).toEqual({bar: 2});
   });
 });
 
