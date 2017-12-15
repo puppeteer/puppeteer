@@ -21,6 +21,8 @@ const Multimap = require('./Multimap');
 const TimeoutError = new Error('Timeout');
 const TerminatedError = new Error('Terminated');
 
+const MAJOR_NODEJS_VERSION = parseInt(process.version.substring(1).split('.')[0], 10);
+
 class UserCallback {
   constructor(callback, timeout) {
     this._callback = callback;
@@ -268,6 +270,16 @@ class TestRunner extends EventEmitter {
     this._retryFailures = !!options.retryFailures;
 
     this._hasFocusedTestsOrSuites = false;
+
+    if (MAJOR_NODEJS_VERSION >= 8) {
+      const inspector = require('inspector');
+      if (inspector.url()) {
+        console.log('TestRunner detected inspector; overriding certain properties to be debugger-friendly');
+        console.log('  - timeout = 0 (Infinite)');
+        this._timeout = 2147483647;
+        this._parallel = 1;
+      }
+    }
 
     // bind methods so that they can be used as a DSL.
     this.describe = this._addSuite.bind(this, TestMode.Run);
