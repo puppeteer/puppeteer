@@ -163,7 +163,7 @@ longer necessary. Instead, launch the browser with the `--disable-dev-shm-usage`
 
 ```js
 const browser = await puppeteer.launch({
-  args; ['--disable-dev-shm-usage']
+  args: ['--disable-dev-shm-usage']
 });
 ```
 
