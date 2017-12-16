@@ -3582,7 +3582,7 @@ describe('Page', function() {
   });
 
   describe('Response', function() {
-    it('specifies when response comes from cache and service worker', async({page, server}) => {
+    it('specifies when response comes from cache and service worker', async({page}) => {
       // Use known site that uses server caching and service worker caching.
       let responses = [];
       page.on('response', response => {
@@ -3593,7 +3593,7 @@ describe('Page', function() {
       expect(responses[0].fromDiskCache).toBe(false);
       expect(responses[0].fromServiceWorker).toBe(false);
       responses = [];
-      response = await page.reload({waitUntil: 'networkidle2'});
+      await page.reload({waitUntil: 'networkidle2'});
       expect(responses[0].fromDiskCache).toBe(true);
       expect(responses[0].fromServiceWorker).toBe(true);
     });
