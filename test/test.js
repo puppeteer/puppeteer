@@ -3137,7 +3137,7 @@ describe('Page', function() {
       expect(error).toBeTruthy();
       expect(error.message).toEqual('Protocol error (Network.deleteCookies): At least one of the url and domain needs to be specified undefined');
     });
-    
+
     it('should not set a cookie with blank page URL', async function({page, server}) {
       let error = null;
       await page.goto(server.PREFIX + '/grid.html');
@@ -3154,7 +3154,7 @@ describe('Page', function() {
           `Blank page can not have cookie "example-cookie-blank"`
       );
     });
-    
+
     it('should not set a cookie on a data URL page', async function({page}) {
       let error = null;
       await page.goto('data:,Hello%2C%20World!');
