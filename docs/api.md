@@ -106,6 +106,7 @@
 - [class: Touchscreen](#class-touchscreen)
   * [touchscreen.tap(x, y)](#touchscreentapx-y)
 - [class: Tracing](#class-tracing)
+  * [tracing.getResult()](#tracinggetresult)
   * [tracing.start(options)](#tracingstartoptions)
   * [tracing.stop()](#tracingstop)
 - [class: Dialog](#class-dialog)
@@ -1346,15 +1347,27 @@ Dispatches a `touchstart` and `touchend` event.
 
 You can use [`tracing.start`](#tracingstartoptions) and [`tracing.stop`](#tracingstop) to create a trace file which can be opened in Chrome DevTools or [timeline viewer](https://chromedevtools.github.io/timeline-viewer/).
 
+Save trace result to file:
 ```js
 await page.tracing.start({path: 'trace.json'});
 await page.goto('https://www.google.com');
 await page.tracing.stop();
 ```
 
+Read the trace result:
+```js
+await page.tracing.start();
+await page.goto('https://www.google.com');
+await page.tracing.stop();
+let tracingResult = await page.tracing.getResult();
+```
+
+#### tracing.getResult()
+- returns: <[string]> The trace result in JSON format.
+
 #### tracing.start(options)
 - `options` <[Object]>
-  - `path` <[string]> A path to write the trace file to. **required**
+  - `path` <[string]> A path to write the trace file to.
   - `screenshots` <[boolean]> captures screenshots in the trace.
   - `categories` <[Array]<[string]>> specify custom categories to use instead of default.
 - returns: <[Promise]>
