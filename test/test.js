@@ -3000,7 +3000,7 @@ describe('Page', function() {
 
   describe('Tracing', function() {
     beforeEach(function(state) {
-      state.outputFile = path.join(__dirname, 'assets', `trace-${state.parallel}.json`);
+      state.outputFile = path.join(__dirname, 'assets', `trace-${state.parallelIndex}.json`);
     });
     afterEach(function(state) {
       fs.unlinkSync(state.outputFile);
