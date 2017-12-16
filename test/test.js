@@ -3582,20 +3582,26 @@ describe('Page', function() {
   });
 
   describe('Response', function() {
-    it('specifies when response comes from cache and service worker', async({page}) => {
+    it('specifies when response comes from cache and service worker', async() => {
+      const browser = await puppeteer.launch(defaultBrowserOptions);
+      const newPage = await browser.newPage();
+
       // Use known site that uses server caching and service worker caching.
       let responses = [];
-      page.on('response', response => {
+      newPage.on('response', response => {
         if (response.url.includes('.js'))
           responses.push(response);
       });
-      await page.goto('https://www.chromestatus.com/features', {waitUntil: 'networkidle2'});
+
+      await newPage.goto('https://www.chromestatus.com/features', {waitUntil: 'networkidle2'});
       expect(responses[0].fromDiskCache).toBe(false);
       expect(responses[0].fromServiceWorker).toBe(false);
+
       responses = [];
-      await page.reload({waitUntil: 'networkidle2'});
+      await newPage.reload({waitUntil: 'networkidle2'});
       expect(responses[0].fromDiskCache).toBe(true);
       expect(responses[0].fromServiceWorker).toBe(true);
+      await browser.close();
     });
   });
 });
