@@ -2996,6 +2996,12 @@ describe('Page', function() {
       }
       expect(error.message).toContain('Values must be strings');
     });
+    it('should throw if select doesn\'t contain a given value', async function({page}) {
+      let error;
+      await page.setContent('<select><option value="foo">Foo</option></select>');
+      await page.select('select', 'bar', 'foo', 'pptr').catch(e => error = e);
+      expect(error.message).toContain('Option(s) not found: bar, pptr');
+    });
   });
 
   describe('Tracing', function() {
