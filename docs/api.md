@@ -113,11 +113,11 @@
   * [dialog.defaultValue()](#dialogdefaultvalue)
   * [dialog.dismiss()](#dialogdismiss)
   * [dialog.message()](#dialogmessage)
-  * [dialog.type](#dialogtype)
+  * [dialog.type()](#dialogtype)
 - [class: ConsoleMessage](#class-consolemessage)
-  * [consoleMessage.args](#consolemessageargs)
-  * [consoleMessage.text](#consolemessagetext)
-  * [consoleMessage.type](#consolemessagetype)
+  * [consoleMessage.args()](#consolemessageargs)
+  * [consoleMessage.text()](#consolemessagetext)
+  * [consoleMessage.type()](#consolemessagetype)
 - [class: Frame](#class-frame)
   * [frame.$(selector)](#frameselector)
   * [frame.$$(selector)](#frameselector)
@@ -173,22 +173,22 @@
   * [request.abort([errorCode])](#requestaborterrorcode)
   * [request.continue([overrides])](#requestcontinueoverrides)
   * [request.failure()](#requestfailure)
-  * [request.headers](#requestheaders)
-  * [request.method](#requestmethod)
-  * [request.postData](#requestpostdata)
-  * [request.resourceType](#requestresourcetype)
+  * [request.headers()](#requestheaders)
+  * [request.method()](#requestmethod)
+  * [request.postData()](#requestpostdata)
+  * [request.resourceType()](#requestresourcetype)
   * [request.respond(response)](#requestrespondresponse)
   * [request.response()](#requestresponse)
-  * [request.url](#requesturl)
+  * [request.url()](#requesturl)
 - [class: Response](#class-response)
   * [response.buffer()](#responsebuffer)
-  * [response.headers](#responseheaders)
+  * [response.headers()](#responseheaders)
   * [response.json()](#responsejson)
-  * [response.ok](#responseok)
+  * [response.ok()](#responseok)
   * [response.request()](#responserequest)
-  * [response.status](#responsestatus)
+  * [response.status()](#responsestatus)
   * [response.text()](#responsetext)
-  * [response.url](#responseurl)
+  * [response.url()](#responseurl)
 - [class: Target](#class-target)
   * [target.page()](#targetpage)
   * [target.type()](#targettype)
@@ -1396,23 +1396,21 @@ puppeteer.launch().then(async browser => {
 #### dialog.message()
 - returns: <[string]> A message displayed in the dialog.
 
-#### dialog.type
-- <[string]>
-
-Dialog's type, can be one of `alert`, `beforeunload`, `confirm` or `prompt`.
+#### dialog.type()
+- returns: <[string]> Dialog's type, can be one of `alert`, `beforeunload`, `confirm` or `prompt`.
 
 ### class: ConsoleMessage
 
 [ConsoleMessage] objects are dispatched by page via the ['console'](#event-console) event.
 
-#### consoleMessage.args
-- <[Array]<[JSHandle]>>
+#### consoleMessage.args()
+- returns: <[Array]<[JSHandle]>>
 
-#### consoleMessage.text
-- <[string]>
+#### consoleMessage.text()
+- returns: <[string]>
 
-#### consoleMessage.type
-- <[string]>
+#### consoleMessage.type()
+- returns: <[string]>
 
 One of the following values: `'log'`, `'debug'`, `'info'`, `'error'`, `'warning'`, `'dir'`, `'dirxml'`, `'table'`, `'trace'`, `'clear'`, `'startGroup'`, `'startGroupCollapsed'`, `'endGroup'`, `'assert'`, `'profile'`, `'profileEnd'`, `'count'`, `'timeEnd'`.
 
@@ -2010,21 +2008,17 @@ page.on('requestfailed', request => {
 });
 ```
 
-#### request.headers
-- <[Object]> An object with HTTP headers associated with the request. All header names are lower-case.
+#### request.headers()
+- returns: <[Object]> An object with HTTP headers associated with the request. All header names are lower-case.
 
-#### request.method
-- <[string]>
+#### request.method()
+- returns: <[string]> Request's method (GET, POST, etc.)
 
-Contains the request's method (GET, POST, etc.)
+#### request.postData()
+- returns: <[string]> Request's post body, if any.
 
-#### request.postData
-- <[string]>
-
-Contains the request's post body, if any.
-
-#### request.resourceType
-- <[string]>
+#### request.resourceType()
+- returns: <[string]>
 
 Contains the request's resource type as it was perceived by the rendering engine.
 ResourceType will be one of the following: `document`, `stylesheet`, `image`, `media`, `font`, `script`, `texttrack`, `xhr`, `fetch`, `eventsource`, `websocket`, `manifest`, `other`.
@@ -2060,10 +2054,8 @@ page.on('request', request => {
 #### request.response()
 - returns: <?[Response]> A matching [Response] object, or `null` if the response has not been received yet.
 
-#### request.url
-- <[string]>
-
-Contains the URL of the request.
+#### request.url()
+- returns: <[string]> URL of the request.
 
 ### class: Response
 
@@ -2072,32 +2064,32 @@ Contains the URL of the request.
 #### response.buffer()
 - returns: <Promise<[Buffer]>> Promise which resolves to a buffer with response body.
 
-#### response.headers
-- <[Object]> An object with HTTP headers associated with the response. All header names are lower-case.
+#### response.headers()
+- returns: <[Object]> An object with HTTP headers associated with the response. All header names are lower-case.
 
 #### response.json()
 - returns: <Promise<[Object]>> Promise which resolves to a JSON representation of response body.
 
 This method will throw if the response body is not parsable via `JSON.parse`.
 
-#### response.ok
-- <[boolean]>
+#### response.ok()
+- returns: <[boolean]>
 
 Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
 
 #### response.request()
 - returns: <[Request]> A matching [Request] object.
 
-#### response.status
-- <[number]>
+#### response.status()
+- returns: <[number]>
 
 Contains the status code of the response (e.g., 200 for a success).
 
 #### response.text()
 - returns: <[Promise]<[string]>> Promise which resolves to a text representation of response body.
 
-#### response.url
-- <[string]>
+#### response.url()
+- returns: <[string]>
 
 Contains the URL of the response.
 
