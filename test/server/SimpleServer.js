@@ -198,6 +198,7 @@ class SimpleServer {
         return;
       }
       response.setHeader('Content-Type', mime.lookup(pathName));
+      response.setHeader('Cache-Control', 'max-age=5');
       response.end(data);
     });
   }

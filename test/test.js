@@ -2497,8 +2497,8 @@ describe('Page', function() {
       expect(responses[0].url()).toBe(server.EMPTY_PAGE);
       expect(responses[0].status()).toBe(200);
       expect(responses[0].ok()).toBe(true);
-      expect(responses[0].fromDiskCache).toBe(false);
-      expect(responses[0].fromServiceWorker).toBe(false);
+      expect(responses[0].fromDiskCache()).toBe(false);
+      expect(responses[0].fromServiceWorker()).toBe(false);
       expect(responses[0].request()).toBeTruthy();
     });
     it('Page.Events.Response should provide body', async({page, server}) => {
@@ -3582,26 +3582,21 @@ describe('Page', function() {
   });
 
   describe('Response', function() {
-    it('specifies when response comes from cache and service worker', async() => {
-      const browser = await puppeteer.launch(defaultBrowserOptions);
-      const newPage = await browser.newPage();
-
-      // Use known site that uses server caching and service worker caching.
+    it('specifies when response comes from cache and service worker', async({page, server}) => {
       let responses = [];
-      newPage.on('response', response => {
-        if (response.url.includes('.js'))
+      page.on('response', response => {
+        if (response.url.includes('.css'))
           responses.push(response);
       });
 
-      await newPage.goto('https://www.chromestatus.com/features', {waitUntil: 'networkidle2'});
-      expect(responses[0].fromDiskCache).toBe(false);
-      expect(responses[0].fromServiceWorker).toBe(false);
+      await page.goto(server.PREFIX + '/sw-fetch.html', {waitUntil: 'networkidle2'});
+      expect(responses[0].fromDiskCache()).toBe(false);
+      expect(responses[0].fromServiceWorker()).toBe(false);
 
       responses = [];
-      await newPage.reload({waitUntil: 'networkidle2'});
-      expect(responses[0].fromDiskCache).toBe(true);
-      expect(responses[0].fromServiceWorker).toBe(true);
-      await browser.close();
+      await page.reload({waitUntil: 'networkidle2'});
+      expect(responses[0].fromDiskCache()).toBe(true);
+      expect(responses[0].fromServiceWorker()).toBe(true);
     });
   });
 });
