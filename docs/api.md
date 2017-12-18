@@ -154,7 +154,7 @@
   * [elementHandle.$(selector)](#elementhandleselector)
   * [elementHandle.$$(selector)](#elementhandleselector)
   * [elementHandle.asElement()](#elementhandleaselement)
-  * [elementHandle.boundingBox()](#elementhandleboundingbox)
+  * [elementHandle.boundingBox([model])](#elementhandleboundingboxmodel)
   * [elementHandle.click([options])](#elementhandleclickoptions)
   * [elementHandle.dispose()](#elementhandledispose)
   * [elementHandle.executionContext()](#elementhandleexecutioncontext)
@@ -1827,7 +1827,8 @@ The method runs `element.querySelectorAll` within the page. If no elements match
 #### elementHandle.asElement()
 - returns: <[elementhandle]>
 
-#### elementHandle.boundingBox()
+#### elementHandle.boundingBox([model])
+- `model` <[string]> name of the box model (`content`, `padding`, `border` (by default) or `margin`)
 - returns: <[Promise]<?[Object]>>
     - x <[number]> the x coordinate of the element in pixels.
     - y <[number]> the y coordinate of the element in pixels.
