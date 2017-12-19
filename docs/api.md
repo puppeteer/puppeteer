@@ -154,7 +154,7 @@
   * [elementHandle.$(selector)](#elementhandleselector)
   * [elementHandle.$$(selector)](#elementhandleselector)
   * [elementHandle.asElement()](#elementhandleaselement)
-  * [elementHandle.boundingBox([model])](#elementhandleboundingboxmodel)
+  * [elementHandle.boundingBox()](#elementhandleboundingbox)
   * [elementHandle.click([options])](#elementhandleclickoptions)
   * [elementHandle.dispose()](#elementhandledispose)
   * [elementHandle.executionContext()](#elementhandleexecutioncontext)
@@ -1827,13 +1827,30 @@ The method runs `element.querySelectorAll` within the page. If no elements match
 #### elementHandle.asElement()
 - returns: <[elementhandle]>
 
-#### elementHandle.boundingBox([model])
-- `model` <[string]> name of the box model (`content`, `padding`, `border` (by default) or `margin`)
+#### elementHandle.boundingBox()
 - returns: <[Promise]<?[Object]>>
-    - x <[number]> the x coordinate of the element in pixels.
-    - y <[number]> the y coordinate of the element in pixels.
-    - width <[number]> the width of the element in pixels.
-    - height <[number]> the height of the element in pixels.
+  - border <[Object]>
+    - x <[number]> the x coordinate of the box in pixels.
+    - y <[number]> the y coordinate of the box in pixels.
+    - width <[number]> the width of the box in pixels.
+    - height <[number]> the height of the box in pixels.
+  - content <[Object]>
+    - x <[number]> the x coordinate of the box in pixels.
+    - y <[number]> the y coordinate of the box in pixels.
+    - width <[number]> the width of the box in pixels.
+    - height <[number]> the height of the box in pixels.
+  - margin <[Object]>
+    - x <[number]> the x coordinate of the box in pixels.
+    - y <[number]> the y coordinate of the box in pixels.
+    - width <[number]> the width of the box in pixels.
+    - height <[number]> the height of the box in pixels.
+  - padding <[Object]>
+    - x <[number]> the x coordinate of the box in pixels.
+    - y <[number]> the y coordinate of the box in pixels.
+    - width <[number]> the width of the box in pixels.
+    - height <[number]> the height of the box in pixels.
+  - width <[number]> the width of the element in pixels.
+  - height <[number]> the height of the element in pixels.
 
 This method returns the bounding box of the element (relative to the main frame), or `null` if the element is not visible.
 
