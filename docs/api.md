@@ -92,6 +92,7 @@
   * [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
   * [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
+  * [page.xpath(expression)](#pagexpathexpression)
 - [class: Keyboard](#class-keyboard)
   * [keyboard.down(key[, options])](#keyboarddownkey-options)
   * [keyboard.press(key[, options])](#keyboardpresskey-options)
@@ -139,6 +140,7 @@
   * [frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args)
   * [frame.waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args)
   * [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
+  * [frame.xpath(expression)](#framexpathexpression)
 - [class: ExecutionContext](#class-executioncontext)
   * [executionContext.evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args)
   * [executionContext.evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args)
@@ -169,6 +171,7 @@
   * [elementHandle.toString()](#elementhandletostring)
   * [elementHandle.type(text[, options])](#elementhandletypetext-options)
   * [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
+  * [elementHandle.xpath(expression)](#elementhandlexpathexpression)
 - [class: Request](#class-request)
   * [request.abort([errorCode])](#requestaborterrorcode)
   * [request.continue([overrides])](#requestcontinueoverrides)
@@ -1202,6 +1205,14 @@ puppeteer.launch().then(async browser => {
 ```
 Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options).
 
+#### page.xpath(expression)
+- `expression` <[string]> Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate).
+- returns: <[Promise]<?[ElementHandle]>> Promise which resolves to ElementHandle pointing to the page element.
+
+The method evluates the XPath expression. If there's no such element within the page, the method will resolve to `null`.
+
+Shortcut for [page.mainFrame().xpath(expression)](#framexpathexpression)
+
 ### class: Keyboard
 
 Keyboard provides an api for managing a virtual keyboard. The high level api is [`keyboard.type`](#keyboardtypetext-options), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
@@ -1652,6 +1663,12 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
+#### frame.xpath(expression)
+- `expression` <[string]> Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate).
+- returns: <[Promise]<?[ElementHandle]>> Promise which resolves to ElementHandle pointing to the frame element.
+
+The method evluates the XPath expression. If there's no such element within the frame, the method will resolve to `null`.
+
 ### class: ExecutionContext
 
 The class represents a context for JavaScript execution. Examples of JavaScript contexts are:
@@ -1951,6 +1968,12 @@ await elementHandle.press('Enter');
 - returns: <[Promise]>
 
 This method expects `elementHandle` to point to an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
+
+#### elementHandle.xpath(expression)
+- `expression` <[string]> Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate).
+- returns: <[Promise]<?[ElementHandle]>> Promise which resolves to ElementHandle pointing to the frame element.
+
+The method evluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to `null`.
 
 ### class: Request
 
