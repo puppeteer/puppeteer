@@ -2749,7 +2749,7 @@ describe('Page', function() {
       expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(0, 128, 0)');
     });
 
-    it('Refused to apply inline style because it violates the following Content Security Policy directive', async({page, server}) => {
+    it('throw an error if content violates Content Security Policy', async({page, server}) => {
       server.setCSP(true);
       await page.goto(server.EMPTY_PAGE);
       let error = null;
