@@ -2684,6 +2684,18 @@ describe('Page', function() {
       expect(scriptHandle.asElement()).not.toBeNull();
       expect(await page.evaluate(() => __injected)).toBe(35);
     });
+
+    it('throw an error if content violates Content Security Policy', async({page, server}) => {
+      server.setCSP(true);
+      await page.goto(server.EMPTY_PAGE);
+      let error = null;
+      try {
+        await page.addScriptTag({ content: 'window.__injected = 36;' });
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toContain('Refused to execute inline script because it violates the following Content Security Policy directive');
+    });
   });
 
   describe('Page.addStyleTag', function() {
@@ -2735,6 +2747,18 @@ describe('Page', function() {
       const styleHandle = await page.addStyleTag({ content: 'body { background-color: green; }' });
       expect(styleHandle.asElement()).not.toBeNull();
       expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(0, 128, 0)');
+    });
+
+    it('Refused to apply inline style because it violates the following Content Security Policy directive', async({page, server}) => {
+      server.setCSP(true);
+      await page.goto(server.EMPTY_PAGE);
+      let error = null;
+      try {
+        await page.addStyleTag({ content: 'body { background-color: blue; }' });
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toContain('Refused to apply inline style because it violates the following Content Security Policy directive');
     });
   });
 

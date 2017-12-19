@@ -77,6 +77,8 @@ class SimpleServer {
     this._auths = new Map();
     /** @type {!Map<string, !Promise>} */
     this._requestSubscribers = new Map();
+    /** @type {boolean} */
+    this._cspEnabled = false;
   }
 
   _onSocket(socket) {
@@ -97,6 +99,10 @@ class SimpleServer {
    */
   setAuth(path, username, password) {
     this._auths.set(path, {username, password});
+  }
+
+  setCSP(cspEnabled) {
+    this._cspEnabled = cspEnabled;
   }
 
   async stop() {
@@ -148,6 +154,7 @@ class SimpleServer {
   reset() {
     this._routes.clear();
     this._auths.clear();
+    this._cspEnabled = false;
     const error = new Error('Static Server has been reset');
     for (const subscriber of this._requestSubscribers.values())
       subscriber[rejectSymbol].call(null, error);
@@ -174,6 +181,10 @@ class SimpleServer {
     // Notify request subscriber.
     if (this._requestSubscribers.has(pathName))
       this._requestSubscribers.get(pathName)[fulfillSymbol].call(null, request);
+
+    if (this._cspEnabled)
+      response.setHeader('Content-Security-Policy', "default-src 'self'");
+
     const handler = this._routes.get(pathName);
     if (handler)
       handler.call(null, request, response);
