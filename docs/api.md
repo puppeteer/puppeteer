@@ -257,7 +257,7 @@ This methods attaches Puppeteer to an existing Chromium instance.
   - `executablePath` <[string]> Path to a Chromium or Chrome executable to run instead of bundled Chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
   - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. List of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
-  - `disableDefaultArgs` <[boolean]> Do not use [`puppeteer.defaultArgs()`](#puppeteerdefaultargs). Defaults to `false`.
+  - `ignoreDefaultArgs` <[boolean]> Do not use [`puppeteer.defaultArgs()`](#puppeteerdefaultargs). Dangerous option; use with care. Defaults to `false`.
   - `handleSIGINT` <[boolean]> Close browser process on Ctrl-C. Defaults to `true`.
   - `handleSIGTERM` <[boolean]> Close browser process on SIGTERM. Defaults to `true`.
   - `handleSIGHUP` <[boolean]> Close browser process on SIGHUP. Defaults to `true`.
