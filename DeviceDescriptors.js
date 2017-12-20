@@ -340,6 +340,18 @@ module.exports = [
     }
   },
   {
+    'name': 'iPhone X landscape',
+    'userAgent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1',
+    'viewport': {
+      'width': 724,
+      'height': 354,
+      'deviceScaleFactor': 3,
+      'isMobile': true,
+      'hasTouch': true,
+      'isLandscape': true
+    }
+  },
+  {
     'name': 'Kindle Fire HDX',
     'userAgent': 'Mozilla/5.0 (Linux; U; en-us; KFAPWI Build/JDQ39) AppleWebKit/535.19 (KHTML, like Gecko) Silk/3.13 Safari/535.19 Silk-Accelerated=true',
     'viewport': {
