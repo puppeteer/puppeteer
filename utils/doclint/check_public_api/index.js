@@ -24,6 +24,7 @@ const EXCLUDE_CLASSES = new Set([
   'Downloader',
   'EmulationManager',
   'FrameManager',
+  'JSCoverage',
   'Helper',
   'Launcher',
   'Multimap',

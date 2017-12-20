@@ -52,6 +52,7 @@
   * [page.close()](#pageclose)
   * [page.content()](#pagecontent)
   * [page.cookies(...urls)](#pagecookiesurls)
+  * [page.coverage](#pagecoverage)
   * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
   * [page.emulate(options)](#pageemulateoptions)
   * [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
@@ -197,6 +198,9 @@
   * [target.page()](#targetpage)
   * [target.type()](#targettype)
   * [target.url()](#targeturl)
+- [class: Coverage](#class-coverage)
+  * [coverage.startJSCoverage(options)](#coveragestartjscoverageoptions)
+  * [coverage.stopJSCoverage()](#coveragestopjscoverage)
 
 <!-- tocstop -->
 
@@ -599,6 +603,10 @@ Gets the full HTML contents of the page, including the doctype.
 
 If no URLs are specified, this method returns cookies for the current page URL.
 If URLs are specified, only cookies for those URLs are returned.
+
+#### page.coverage
+
+- returns: <[Coverage]>
 
 #### page.deleteCookie(...cookies)
 - `...cookies` <...[Object]>
@@ -2144,6 +2152,41 @@ Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, or 
 #### target.url()
 - returns: <[string]>
 
+### class: Coverage
+
+#### coverage.startJSCoverage(options)
+- `options` <[Object]>  Set of configurable options for coverage
+  - `resetOnNavigation` <[boolean]> Whether to reset coverage on every navigation. Defaults to `true`.
+- returns: <[Promise]> Promise that resolves when coverage is started
+
+#### coverage.stopJSCoverage()
+- returns: <[Promise]<[Array]<[Object]>>> Promise that resolves to the array of coverage reports for all non-anonymous scripts
+  - `url` <[string]> Script URL
+  - `text` <[string]> Script content
+  - `ranges` <[Array]<[Object]>> Script ranges that were executed. Ranges are sorted and non-overlapping.
+    - `startOffset` <[number]>
+    - `endOffset` <[number]>
+
+> **NOTE** JavaScript Coverage doesn't include anonymous scripts; however, scripts with sourceURLs are
+reported.
+
+An example of using JavaScript coverage to get percentage of executed
+code:
+
+```js
+await page.startJSCoverage();
+await page.goto('https://example.com');
+const coverage = await page.stopJSCoverage();
+let totalBytes = 0;
+let usedBytes = 0;
+for (const entry of coverage) {
+  totalBytes += entry.text.length;
+  for (const range of entry.ranges)
+    usedBytes += range.endOffset - range.startOffset - 1;
+}
+console.log(`Coverage is ${usedBytes / totalBytes * 100}%`);
+```
+
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
 [Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer "Buffer"
@@ -2158,6 +2201,7 @@ Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, or 
 [Frame]: #class-frame "Frame"
 [ConsoleMessage]: #class-consolemessage "ConsoleMessage"
 [ChildProcess]: https://nodejs.org/api/child_process.html "ChildProcess"
+[Coverage]: #class-coverage "Coverage"
 [iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols "Iterator"
 [Response]: #class-response  "Response"
 [Request]: #class-request  "Request"

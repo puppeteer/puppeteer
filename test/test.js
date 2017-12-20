@@ -3411,6 +3411,84 @@ describe('Page', function() {
       }
     });
   });
+
+  describe('JSCoverage', function() {
+    it('should work', async function({page, server}) {
+      await page.coverage.startJSCoverage();
+      await page.goto(server.PREFIX + '/jscoverage/simple.html');
+      const coverage = await page.coverage.stopJSCoverage();
+      expect(coverage.length).toBe(1);
+      expect(coverage[0].url).toContain('/jscoverage/simple.html');
+      expect(coverage[0].ranges).toEqual([
+        { startOffset: 0, endOffset: 17 },
+        { startOffset: 35, endOffset: 61 },
+      ]);
+    });
+    it('should report sourceURLs', async function({page, server}) {
+      await page.coverage.startJSCoverage();
+      await page.goto(server.PREFIX + '/jscoverage/sourceurl.html');
+      const coverage = await page.coverage.stopJSCoverage();
+      expect(coverage.length).toBe(1);
+      expect(coverage[0].url).toBe('nicename.js');
+    });
+    it('should ignore anonymous scripts', async function({page, server}) {
+      await page.coverage.startJSCoverage();
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => console.log(1));
+      const coverage = await page.coverage.stopJSCoverage();
+      expect(coverage.length).toBe(0);
+    });
+    it('should report multiple scripts', async function({page, server}) {
+      await page.coverage.startJSCoverage();
+      await page.goto(server.PREFIX + '/jscoverage/multiple.html');
+      const coverage = await page.coverage.stopJSCoverage();
+      expect(coverage.length).toBe(2);
+      coverage.sort((a, b) => a.url.localeCompare(b.url));
+      expect(coverage[0].url).toContain('/jscoverage/script1.js');
+      expect(coverage[1].url).toContain('/jscoverage/script2.js');
+    });
+    it('should report right ranges', async function({page, server}) {
+      await page.coverage.startJSCoverage();
+      await page.goto(server.PREFIX + '/jscoverage/ranges.html');
+      const coverage = await page.coverage.stopJSCoverage();
+      expect(coverage.length).toBe(1);
+      const entry = coverage[0];
+      expect(entry.ranges.length).toBe(1);
+      const range = entry.ranges[0];
+      expect(entry.text.substring(range.startOffset, range.endOffset)).toBe(`console.log('used!');`);
+    });
+    it('should report scripts that have no coverage', async function({page, server}) {
+      await page.coverage.startJSCoverage();
+      await page.goto(server.PREFIX + '/jscoverage/unused.html');
+      const coverage = await page.coverage.stopJSCoverage();
+      expect(coverage.length).toBe(1);
+      const entry = coverage[0];
+      expect(entry.url).toContain('unused.html');
+      expect(entry.ranges.length).toBe(0);
+    });
+    it('should work with conditionals', async function({page, server}) {
+      await page.coverage.startJSCoverage();
+      await page.goto(server.PREFIX + '/jscoverage/involved.html');
+      const coverage = await page.coverage.stopJSCoverage();
+      expect(JSON.stringify(coverage, null, 2)).toBeGolden('jscoverage-involved.txt');
+    });
+    describe('resetOnNavigation', function() {
+      it('should report scripts across navigations when disabled', async function({page, server}) {
+        await page.coverage.startJSCoverage({resetOnNavigation: false});
+        await page.goto(server.PREFIX + '/jscoverage/multiple.html');
+        await page.goto(server.EMPTY_PAGE);
+        const coverage = await page.coverage.stopJSCoverage();
+        expect(coverage.length).toBe(2);
+      });
+      it('should NOT report scripts across navigations when enabled', async function({page, server}) {
+        await page.coverage.startJSCoverage(); // Enabled by default.
+        await page.goto(server.PREFIX + '/jscoverage/multiple.html');
+        await page.goto(server.EMPTY_PAGE);
+        const coverage = await page.coverage.stopJSCoverage();
+        expect(coverage.length).toBe(0);
+      });
+    });
+  });
 });
 
 if (process.env.COVERAGE) {
