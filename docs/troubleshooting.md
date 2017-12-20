@@ -158,7 +158,7 @@ how to run this Dockerfile from a webserver running on App Engine Flex (Node).
 By default, Docker runs a container with a `/dev/shm` shared memory space 64MB.
 This is [typically too small](https://github.com/c0b/chrome-in-docker/issues/1) for Chrome
 and will cause Chrome to crash when rendering large pages. To fix, run the container with
-`docker run --shm-size=1gb` to increase the size of `/dev/shm`. Howevers of Chrome 65, this is no
+`docker run --shm-size=1gb` to increase the size of `/dev/shm`. Since Chrome 65, this is no
 longer necessary. Instead, launch the browser with the `--disable-dev-shm-usage` flag:
 
 ```js
