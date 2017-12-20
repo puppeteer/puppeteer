@@ -1720,6 +1720,18 @@ describe('Page', function() {
     });
   });
 
+  describe('Path.xpath', function() {
+    it('should query existing element', async({page, server}) => {
+      await page.setContent('<section>test</section>');
+      const element = await page.xpath('/html/body/section');
+      expect(element).toBeTruthy();
+    });
+    it('should return null for non-existing element', async({page, server}) => {
+      const element = await page.xpath('/html/body/non-existing-element');
+      expect(element).toBe(null);
+    });
+  });
+
   describe('ElementHandle.boundingBox', function() {
     it('should work', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
@@ -1907,6 +1919,26 @@ describe('Page', function() {
       const html = await page.$('html');
       const elements = await html.$$('div');
       expect(elements.length).toBe(0);
+    });
+  });
+
+
+  describe('ElementHandle.xpath', function() {
+    it('should query existing element', async({page, server}) => {
+      await page.goto(server.PREFIX + '/playground.html');
+      await page.setContent('<html><body><div class="second"><div class="inner">A</div></div></body></html>');
+      const html = await page.$('html');
+      const second = await html.xpath(`./body/div[contains(@class, 'second')]`);
+      const inner = await second.xpath(`./div[contains(@class, 'inner')]`);
+      const content = await page.evaluate(e => e.textContent, inner);
+      expect(content).toBe('A');
+    });
+
+    it('should return null for non-existing element', async({page, server}) => {
+      await page.setContent('<html><body><div class="second"><div class="inner">B</div></div></body></html>');
+      const html = await page.$('html');
+      const second = await html.xpath(`/div[contains(@class, 'third')]`);
+      expect(second).toBe(null);
     });
   });
 
