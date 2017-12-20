@@ -202,6 +202,10 @@ describe('Puppeteer', function() {
       rm(userDataDir);
       expect(cookie).toBe('foo=true');
     });
+    it('should return the default chrome arguments', async() => {
+      const args = puppeteer.defaultArgs();
+      expect(args).toContain('--no-first-run');
+    });
   });
   describe('Puppeteer.connect', function() {
     it('should be able to connect multiple times to the same browser', async({server}) => {
