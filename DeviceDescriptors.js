@@ -329,22 +329,22 @@ module.exports = [
   },
   {
     'name': 'iPhone X',
-    'userAgent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1',
+    'userAgent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
     'viewport': {
       'width': 375,
-      'height': 734,
+      'height': 812,
       'deviceScaleFactor': 3,
       'isMobile': true,
       'hasTouch': true,
-      'isLandscape': true
+      'isLandscape': false
     }
   },
   {
     'name': 'iPhone X landscape',
-    'userAgent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1',
+    'userAgent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1',
     'viewport': {
-      'width': 724,
-      'height': 354,
+      'width': 812,
+      'height': 375,
       'deviceScaleFactor': 3,
       'isMobile': true,
       'hasTouch': true,
