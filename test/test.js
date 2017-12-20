@@ -1169,7 +1169,7 @@ describe('Page', function() {
     it('should work with both domcontentloaded and load', async({page, server}) => {
       let response = null;
       server.setRoute('/one-style.css', (req, res) => response = res);
-      page.goto(server.PREFIX + '/one-style.html');
+      const navigationPromise = page.goto(server.PREFIX + '/one-style.html');
       const domContentLoadedPromise = page.waitForNavigation({
         waitUntil: 'domcontentloaded'
       });
@@ -1184,6 +1184,7 @@ describe('Page', function() {
       expect(bothFired).toBe(false);
       response.end();
       await bothFiredPromise;
+      await navigationPromise;
     });
   });
 
@@ -1561,8 +1562,10 @@ describe('Page', function() {
     it('should fire', async({page, server}) => {
       let error = null;
       page.once('pageerror', e => error = e);
-      page.goto(server.PREFIX + '/error.html');
-      await waitForEvents(page, 'pageerror');
+      await Promise.all([
+        page.goto(server.PREFIX + '/error.html'),
+        waitForEvents(page, 'pageerror')
+      ]);
       expect(error.message).toContain('Fancy');
     });
   });
