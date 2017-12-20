@@ -154,7 +154,7 @@
   * [elementHandle.$(selector)](#elementhandleselector)
   * [elementHandle.$$(selector)](#elementhandleselector)
   * [elementHandle.asElement()](#elementhandleaselement)
-  * [elementHandle.boundingBox()](#elementhandleboundingbox)
+  * [elementHandle.boxModel()](#elementhandleboxmodel)
   * [elementHandle.click([options])](#elementhandleclickoptions)
   * [elementHandle.dispose()](#elementhandledispose)
   * [elementHandle.executionContext()](#elementhandleexecutioncontext)
@@ -1827,7 +1827,7 @@ The method runs `element.querySelectorAll` within the page. If no elements match
 #### elementHandle.asElement()
 - returns: <[elementhandle]>
 
-#### elementHandle.boundingBox()
+#### elementHandle.boxModel()
 - returns: <[Promise]<?[Object]>>
   - border <[Object]>
     - x <[number]> the x coordinate of the box in pixels.
@@ -1849,10 +1849,8 @@ The method runs `element.querySelectorAll` within the page. If no elements match
     - y <[number]> the y coordinate of the box in pixels.
     - width <[number]> the width of the box in pixels.
     - height <[number]> the height of the box in pixels.
-  - width <[number]> the width of the element in pixels.
-  - height <[number]> the height of the element in pixels.
 
-This method returns the bounding box of the element (relative to the main frame), or `null` if the element is not visible.
+This method returns boxes for the given element (relative to the main frame), or `null` if the element is not visible.
 
 #### elementHandle.click([options])
 - `options` <[Object]>
