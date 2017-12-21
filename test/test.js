@@ -1276,6 +1276,7 @@ describe('Page', function() {
         expect(request.method()).toBe('GET');
         expect(request.postData()).toBe(undefined);
         expect(request.resourceType()).toBe('document');
+        expect(request.frame()).toBeTruthy();
         request.continue();
       });
       const response = await page.goto(server.EMPTY_PAGE);
@@ -1581,6 +1582,7 @@ describe('Page', function() {
       await page.goto(server.EMPTY_PAGE);
       expect(requests.length).toBe(1);
       expect(requests[0].url()).toContain('empty.html');
+      expect(requests[0].frame()).toBeTruthy();
     });
   });
 
@@ -2455,6 +2457,7 @@ describe('Page', function() {
       expect(requests[0].resourceType()).toBe('document');
       expect(requests[0].method()).toBe('GET');
       expect(requests[0].response()).toBeTruthy();
+      expect(requests[0].frame()).toBeTruthy();
     });
     it('Page.Events.Request should report post data', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
@@ -2530,6 +2533,7 @@ describe('Page', function() {
       expect(failedRequests[0].response()).toBe(null);
       expect(failedRequests[0].resourceType()).toBe('stylesheet');
       expect(failedRequests[0].failure().errorText).toBe('net::ERR_FAILED');
+      expect(failedRequests[0].frame()).toBeTruthy();
     });
     it('Page.Events.RequestFinished', async({page, server}) => {
       const requests = [];
@@ -2538,6 +2542,7 @@ describe('Page', function() {
       expect(requests.length).toBe(1);
       expect(requests[0].url()).toBe(server.EMPTY_PAGE);
       expect(requests[0].response()).toBeTruthy();
+      expect(requests[0].frame()).toBeTruthy();
     });
     it('should fire events in proper order', async({page, server}) => {
       const events = [];

@@ -177,6 +177,7 @@
   * [request.abort([errorCode])](#requestaborterrorcode)
   * [request.continue([overrides])](#requestcontinueoverrides)
   * [request.failure()](#requestfailure)
+  * [request.frame()](#requestframe)
   * [request.headers()](#requestheaders)
   * [request.method()](#requestmethod)
   * [request.postData()](#requestpostdata)
@@ -2042,6 +2043,9 @@ page.on('requestfailed', request => {
   console.log(request.url + ' ' + request.failure().errorText);
 });
 ```
+
+#### request.frame()
+- returns: <?[Frame]> A matching [Frame] object, or `null` for offline mode or navigating to error pages.
 
 #### request.headers()
 - returns: <[Object]> An object with HTTP headers associated with the request. All header names are lower-case.
