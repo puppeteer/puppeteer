@@ -50,7 +50,7 @@ const defaultBrowserOptions = {
   executablePath,
   slowMo,
   headless,
-  args: ['--no-sandbox']
+  args: ['--no-sandbox', '--disable-dev-shm-usage']
 };
 
 const timeout = slowMo ?  0 : 10 * 1000;
