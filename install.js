@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const ProgressBar = require('progress');
+const mri = require('mri');
 
 buildNode6IfNecessary();
 
@@ -28,9 +30,11 @@ if (process.env.NPM_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.env.npm_c
 const Downloader = require('./lib/Downloader');
 const downloader = Downloader.createDefault();
 
-const platform = downloader.currentPlatform();
-const revision = Downloader.defaultRevision();
-const ProgressBar = require('progress');
+const {
+  platform = downloader.currentPlatform(),
+  revision = Downloader.defaultRevision()
+} = mri(process.argv.slice(2));
+
 
 const revisionInfo = downloader.revisionInfo(platform, revision);
 // Do nothing if the revision is already downloaded.
@@ -79,7 +83,7 @@ function onError(error) {
 let progressBar = null;
 function onProgress(bytesTotal, delta) {
   if (!progressBar) {
-    progressBar = new ProgressBar(`Downloading Chromium r${revision} - ${toMegabytes(bytesTotal)} [:bar] :percent :etas `, {
+    progressBar = new ProgressBar(`Downloading Chromium r${revision} for ${platform} - ${toMegabytes(bytesTotal)} [:bar] :percent :etas `, {
       complete: '=',
       incomplete: ' ',
       width: 20,
