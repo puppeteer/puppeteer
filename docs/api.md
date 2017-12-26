@@ -1252,7 +1252,13 @@ await page.keyboard.press('KeyA');
 await page.keyboard.up('Shift');
 ```
 
-> **NOTE** On MacOS, keyboard shortcuts like `⌘ A` -> Select All do not work. See [#1313](https://github.com/GoogleChrome/puppeteer/issues/1313)
+> **NOTE** On MacOS, keyboard shortcuts like `⌘ A` -> There are some conditions to work properly. See [#776](https://github.com/GoogleChrome/puppeteer/issues/776#issuecomment-329589760) and the code below:
+```js
+const browser = await puppeteer.launch({headless: false}); // headless: false is required
+const page = await browser.newPage();
+await page.bringToFront();                                 // required
+await page.keyboard.press('Meta', {text: 'a'});
+```
 
 #### keyboard.down(key[, options])
 - `key` <[string]> Name of key to press, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
