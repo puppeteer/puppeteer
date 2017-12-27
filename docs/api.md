@@ -594,6 +594,7 @@ Gets the full HTML contents of the page, including the doctype.
   - `expires` <[number]> Unix time in seconds.
   - `httpOnly` <[boolean]>
   - `secure` <[boolean]>
+  - `session` <[boolean]>
   - `sameSite` <[string]> `"Strict"` or `"Lax"`.
 
 If no URLs are specified, this method returns cookies for the current page URL.
