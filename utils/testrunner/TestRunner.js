@@ -360,6 +360,10 @@ class TestRunner extends EventEmitter {
     return tests;
   }
 
+  hasFocusedTestsOrSuites() {
+    return this._hasFocusedTestsOrSuites;
+  }
+
   tests() {
     return this._tests.slice();
   }
