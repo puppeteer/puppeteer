@@ -156,6 +156,10 @@ HEADLESS=false SLOW_MO=500 npm run unit
 ```
 npm run debug-unit
 ```
+- To run tests in concurrent mode:
+```
+npm run unit-concurrent
+```
 
 ## Public API Coverage
 

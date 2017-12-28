@@ -16,6 +16,7 @@
 const fs = require('fs');
 const rm = require('rimraf').sync;
 const path = require('path');
+const os = require('os');
 const {helper} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
@@ -54,12 +55,23 @@ const defaultBrowserOptions = {
 };
 
 const timeout = slowMo ?  0 : 10 * 1000;
-let parallel = 1;
-if (process.env.PPTR_PARALLEL_TESTS)
-  parallel = parseInt(process.env.PPTR_PARALLEL_TESTS.trim(), 10);
-const parallelArgIndex = process.argv.indexOf('-j');
-if (parallelArgIndex !== -1)
-  parallel = parseInt(process.argv[parallelArgIndex + 1], 10);
+const getThreadCount = () => {
+  const parallelArgIndex = process.argv.indexOf('-j');
+  let value;
+
+  if (process.env.PPTR_PARALLEL_TESTS)
+    value = process.env.PPTR_PARALLEL_TESTS;
+  if (parallelArgIndex !== -1)
+    value = process.argv[parallelArgIndex + 1];
+
+  if (value === 'MAX')
+    return os.cpus().length;
+  else if (value)
+    return parseInt(value.trim(), 10);
+  else
+    return 1;
+};
+const parallel = getThreadCount();
 
 const {TestRunner, Reporter, Matchers}  = require('../utils/testrunner/');
 const runner = new TestRunner({timeout, parallel});
