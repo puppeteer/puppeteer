@@ -2169,6 +2169,20 @@ describe('Page', function() {
       await page.click('#button-80');
       expect(await page.evaluate(() => document.querySelector('#button-80').textContent)).toBe('clicked');
     });
+    it('should double click the button', async({page, server}) => {
+      await page.goto(server.PREFIX + '/input/button.html');
+      await page.evaluate(() => {
+        window.double = false;
+        const button = document.querySelector('button');
+        button.addEventListener('dblclick', event => {
+          window.double = true;
+        });
+      });
+      const button = await page.$('button');
+      await button.click({ clickCount: 2 });
+      expect(await page.evaluate('double')).toBe(true);
+      expect(await page.evaluate('result')).toBe('Clicked');
+    });
     it('should click a partially obscured button', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
       await page.evaluate(() => {
