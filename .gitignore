@@ -6,6 +6,7 @@
 .DS_Store
 *.swp
 *.pyc
+.idea
 .vscode
 package-lock.json
 /node6

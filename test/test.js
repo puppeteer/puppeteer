@@ -3042,10 +3042,11 @@ describe('Page', function() {
       state.outputFile = path.join(__dirname, 'assets', `trace-${state.parallelIndex}.json`);
     });
     afterEach(function(state) {
-      fs.unlinkSync(state.outputFile);
+      if (fs.existsSync(state.outputFile))
+        fs.unlinkSync(state.outputFile);
       state.outputFile = null;
     });
-    it('should output a trace', async({page, server, outputFile}) => {
+    it('should write a trace to file if path specified', async({page, server, outputFile}) => {
       await page.tracing.start({screenshots: true, path: outputFile});
       await page.goto(server.PREFIX + '/grid.html');
       await page.tracing.stop();
@@ -3066,6 +3067,26 @@ describe('Page', function() {
       await newPage.close();
       expect(error).toBeTruthy();
       await page.tracing.stop();
+    });
+    it('should return the tracing result', async({page, server}) => {
+      await page.tracing.start();
+      await page.goto(server.PREFIX + '/grid.html');
+      await page.tracing.stop();
+
+      const result = await page.tracing.getResult();
+      expect(result.length).toBeGreaterThan(0);
+    });
+    it('should throw if calling .getResult() while tracing is in progress', async({page, server}) => {
+      let error = null;
+      await page.tracing.start();
+      await page.goto(server.PREFIX + '/grid.html');
+
+      try {
+        page.tracing.getResult();
+      } catch (e) {
+        error = e;
+      }
+      expect(error).toBeTruthy();
     });
   });
 
