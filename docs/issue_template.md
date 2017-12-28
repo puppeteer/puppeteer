@@ -23,6 +23,7 @@ For issues, feature requests, or setup troubles with Puppeteer, file an issue ri
 * Puppeteer version:
 * Platform / OS version:
 * URLs (if applicable):
+* Node.js version:
 
 **What steps will reproduce the problem?**
 
