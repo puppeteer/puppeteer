@@ -2179,7 +2179,6 @@ describe('Page', function() {
         });
       });
       const button = await page.$('button');
-      await button.click();
       await button.click({ clickCount: 2 });
       expect(await page.evaluate('double')).toBe(true);
     });
