@@ -33,7 +33,7 @@ deploy:
   api_key:
     secure: bDJf8CKi0Epgd/S6uCBzqoFWTKxF6l+WblBt9UHPh0kxV9v9p1dt4NECtzkTJaSyKAmFjJ3oagHpcOm5r7At1XmsiCxgD+NcN2kRoioTnfchpo2WU7JlZtDiCTFBJoYd2Os2Z3fUx75Xp1wvG+x1C82mogU4DY06mcrIDrkY77MSclxhYt/bSigMbOM24cZ1I6moBro7snsEijWnhWZyqYgNHG8zI/wQgU1Q6ohEpPrJpoh/mY6FyE3Hi0TOdD3WQDJFNOp30UFbpqoLnryNgyMbLr9roP0S6W4oPuxL73CTie9YYMT1kG19Gl2YRUETgwoOfuLznzwo7AGFNqSkCO3iO0i9bPZ4wBlT6sSmrBxYhCzPUqG95WxbvjKUoCfkBfBHqqQaoVe3S8BhxbtesoirQ4HiHARXUbhgWcZx9XtrrI5JLJi9gKYRP+x/80P3BiUOYYm0e9dGW0p5/xGMKZ05Z6UMFFFuPig8IOFlstL4RogxWGPdpFww278DYl7Jy2zjbQn8lvbTSK/62OOYuxBHU/JenZrHkjt7UZDHInHNOWwf/L+H8WbJMfuADTaVu1oEtl4dyzFuwDJE17jiTB2KhfjC5oCH/iv8McR+uE1XL4vbQANIZDhK1+PuSxBsiv6I/dD/ebcYH7zh5ItITCTX22S9i/L2189GQtZLGXs=
   on:
-    tags: true
     branch: master
+    condition: "$NODE7 = true"
   skip_cleanup: true
   tag: next
