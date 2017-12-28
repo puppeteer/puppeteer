@@ -1276,7 +1276,8 @@ describe('Page', function() {
         expect(request.method()).toBe('GET');
         expect(request.postData()).toBe(undefined);
         expect(request.resourceType()).toBe('document');
-        expect(request.frame()).toBeTruthy();
+        expect(request.frame() === page.mainFrame()).toBe(true);
+        expect(request.frame().url()).toBe('about:blank');
         request.continue();
       });
       const response = await page.goto(server.EMPTY_PAGE);
@@ -1581,8 +1582,9 @@ describe('Page', function() {
       page.on('request', request => requests.push(request));
       await page.goto(server.EMPTY_PAGE);
       expect(requests.length).toBe(1);
-      expect(requests[0].url()).toContain('empty.html');
-      expect(requests[0].frame()).toBeTruthy();
+      expect(requests[0].url()).toBe(server.EMPTY_PAGE);
+      expect(requests[0].frame() === page.mainFrame()).toBe(true);
+      expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
     });
   });
 
@@ -1606,7 +1608,7 @@ describe('Page', function() {
       page.on('framenavigated', frame => navigatedFrames.push(frame));
       await FrameUtils.navigateFrame(page, 'frame1', './empty.html');
       expect(navigatedFrames.length).toBe(1);
-      expect(navigatedFrames[0].url()).toContain('/empty.html');
+      expect(navigatedFrames[0].url()).toBe(server.EMPTY_PAGE);
 
       // validate framedetached events
       const detachedFrames = [];
@@ -2457,7 +2459,8 @@ describe('Page', function() {
       expect(requests[0].resourceType()).toBe('document');
       expect(requests[0].method()).toBe('GET');
       expect(requests[0].response()).toBeTruthy();
-      expect(requests[0].frame()).toBeTruthy();
+      expect(requests[0].frame() === page.mainFrame()).toBe(true);
+      expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
     });
     it('Page.Events.Request should report post data', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
@@ -2542,7 +2545,8 @@ describe('Page', function() {
       expect(requests.length).toBe(1);
       expect(requests[0].url()).toBe(server.EMPTY_PAGE);
       expect(requests[0].response()).toBeTruthy();
-      expect(requests[0].frame()).toBeTruthy();
+      expect(requests[0].frame() === page.mainFrame()).toBe(true);
+      expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
     });
     it('should fire events in proper order', async({page, server}) => {
       const events = [];
