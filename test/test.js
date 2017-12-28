@@ -3348,9 +3348,9 @@ describe('Page', function() {
       expect((await changedTarget).url()).toBe(server.EMPTY_PAGE);
     });
     it('should not report uninitialized pages', async({page, server, browser}) => {
-      browser.on('targetchanged', () => {
-        expect(false).toBe(true, 'target should not be reported as changed');
-      });
+      let targetChanged = false;
+      const listener = () => targetChanged = true;
+      browser.on('targetchanged', listener);
       const targetPromise = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
       const newPagePromise = browser.newPage();
       const target = await targetPromise;
@@ -3363,6 +3363,8 @@ describe('Page', function() {
       expect(target2.url()).toBe('about:blank');
       await evaluatePromise;
       await newPage.close();
+      expect(targetChanged).toBe(false, 'target should not be reported as changed');
+      browser.removeListener('targetchanged', listener);
     });
     it('should not crash while redirecting if original request was missed', async({page, server, browser}) => {
       let serverResponse = null;
