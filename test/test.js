@@ -29,6 +29,7 @@ const iPhoneLandscape = DeviceDescriptors['iPhone 6 landscape'];
 
 const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
+const FrameUtils = require('./frame-utils');
 
 const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
@@ -228,7 +229,6 @@ describe('Puppeteer', function() {
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
       originalBrowser.disconnect();
 
-      const FrameUtils = require('./frame-utils');
       const browser = await puppeteer.connect({browserWSEndpoint});
       const pages = await browser.pages();
       const restoredPage = pages.find(page => page.url() === server.PREFIX + '/frames/nested-frames.html');
@@ -421,7 +421,6 @@ describe('Page', function() {
       expect(error.message).toContain('JSHandle is disposed');
     });
     it('should throw if elementHandles are from other frames', async({page, server}) => {
-      const FrameUtils = require('./frame-utils');
       await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const bodyHandle = await page.frames()[1].$('body');
       let error = null;
@@ -589,7 +588,6 @@ describe('Page', function() {
   });
 
   describe('Frame.context', function() {
-    const FrameUtils = require('./frame-utils');
     it('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -615,7 +613,6 @@ describe('Page', function() {
   });
 
   describe('Frame.evaluate', function() {
-    const FrameUtils = require('./frame-utils');
     it('should have different execution contexts', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -691,7 +688,6 @@ describe('Page', function() {
   });
 
   describe('Frame.waitForSelector', function() {
-    const FrameUtils = require('./frame-utils');
     const addElement = tag => document.body.appendChild(document.createElement(tag));
 
     it('should immediately resolve promise if node exists', async({page, server}) => {
@@ -1577,7 +1573,7 @@ describe('Page', function() {
   });
 
   describe('Page.Events.Request', function() {
-    it('should fire', async({page, server}) => {
+    it('should fire on main frame', async({page, server}) => {
       const requests = [];
       page.on('request', request => requests.push(request));
       await page.goto(server.EMPTY_PAGE);
@@ -1586,10 +1582,20 @@ describe('Page', function() {
       expect(requests[0].frame() === page.mainFrame()).toBe(true);
       expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
     });
+
+    it('should fire on child frames', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const requests = [];
+      page.on('request', request => requests.push(request));
+      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      expect(requests.length).toBe(1);
+      expect(requests[0].url()).toBe(server.EMPTY_PAGE);
+      expect(requests[0].frame() === page.mainFrame()).toBe(false);
+      expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
+    });
   });
 
   describe('Frame Management', function() {
-    const FrameUtils = require('./frame-utils');
     it('should handle nested frames', async({page, server}) => {
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
       expect(FrameUtils.dumpFrames(page.mainFrame())).toBeGolden('nested-frames.txt');
@@ -2284,7 +2290,6 @@ describe('Page', function() {
     it('should click the button inside an iframe', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent('<div style="width:100px;height:100px">spacer</div>');
-      const FrameUtils = require('./frame-utils');
       await FrameUtils.attachFrame(page, 'button-test', server.PREFIX + '/input/button.html');
       const frame = page.frames()[1];
       const button = await frame.$('button');
@@ -2295,7 +2300,6 @@ describe('Page', function() {
       await page.setViewport({width: 400, height: 400, deviceScaleFactor: 5});
       expect(await page.evaluate(() => window.devicePixelRatio)).toBe(5);
       await page.setContent('<div style="width:100px;height:100px">spacer</div>');
-      const FrameUtils = require('./frame-utils');
       await FrameUtils.attachFrame(page, 'button-test', server.PREFIX + '/input/button.html');
       const frame = page.frames()[1];
       const button = await frame.$('button');
