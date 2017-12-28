@@ -2181,6 +2181,7 @@ describe('Page', function() {
       const button = await page.$('button');
       await button.click({ clickCount: 2 });
       expect(await page.evaluate('double')).toBe(true);
+      expect(await page.evaluate('result')).toBe('Clicked');
     });
     it('should click a partially obscured button', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
