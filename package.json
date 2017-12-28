@@ -19,7 +19,8 @@
     "test-node6-transformer": "node utils/node6-transform/test/test.js",
     "build": "node utils/node6-transform/index.js",
     "unit-node6": "node node6/test/test.js",
-    "tsc": "tsc -p ."
+    "tsc": "tsc -p .",
+    "prepublishOnly": "npm run build"
   },
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
