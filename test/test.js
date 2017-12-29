@@ -1573,25 +1573,18 @@ describe('Page', function() {
   });
 
   describe('Page.Events.Request', function() {
-    it('should fire on main frame', async({page, server}) => {
+    it('should fire', async({page, server}) => {
       const requests = [];
       page.on('request', request => requests.push(request));
       await page.goto(server.EMPTY_PAGE);
-      expect(requests.length).toBe(1);
+      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      expect(requests.length).toBe(2);
       expect(requests[0].url()).toBe(server.EMPTY_PAGE);
       expect(requests[0].frame() === page.mainFrame()).toBe(true);
       expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
-    });
-
-    it('should fire on child frames', async({page, server}) => {
-      await page.goto(server.EMPTY_PAGE);
-      const requests = [];
-      page.on('request', request => requests.push(request));
-      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      expect(requests.length).toBe(1);
-      expect(requests[0].url()).toBe(server.EMPTY_PAGE);
-      expect(requests[0].frame() === page.mainFrame()).toBe(false);
-      expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
+      expect(requests[1].url()).toBe(server.EMPTY_PAGE);
+      expect(requests[1].frame() === page.mainFrame()).toBe(false);
+      expect(requests[1].frame().url()).toBe(server.EMPTY_PAGE);
     });
   });
 
