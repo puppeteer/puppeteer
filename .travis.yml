@@ -27,6 +27,7 @@ jobs:
       env: NODE7=true
     - node_js: "6.4.0"
       env: NODE6=true
+before_deploy: "yarn run apply-next-version"
 deploy:
   provider: npm
   email: aslushnikov@gmail.com
