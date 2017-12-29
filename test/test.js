@@ -1583,7 +1583,7 @@ describe('Page', function() {
       expect(requests[0].frame() === page.mainFrame()).toBe(true);
       expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
       expect(requests[1].url()).toBe(server.EMPTY_PAGE);
-      expect(requests[1].frame() === page.mainFrame()).toBe(false);
+      expect(requests[1].frame() === page.frames()[1]).toBe(true);
       expect(requests[1].frame().url()).toBe(server.EMPTY_PAGE);
     });
   });
