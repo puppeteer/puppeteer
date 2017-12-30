@@ -2045,7 +2045,7 @@ page.on('requestfailed', request => {
 ```
 
 #### request.frame()
-- returns: <?[Frame]> A matching [Frame] object, or `null` for offline mode or navigating to error pages.
+- returns: <?[Frame]> A matching [Frame] object, or `null` if navigating to error pages.
 
 #### request.headers()
 - returns: <[Object]> An object with HTTP headers associated with the request. All header names are lower-case.
