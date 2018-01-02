@@ -3420,8 +3420,8 @@ describe('Page', function() {
       expect(coverage.length).toBe(1);
       expect(coverage[0].url).toContain('/jscoverage/simple.html');
       expect(coverage[0].ranges).toEqual([
-        { startOffset: 0, endOffset: 17 },
-        { startOffset: 35, endOffset: 61 },
+        { start: 0, end: 17 },
+        { start: 35, end: 61 },
       ]);
     });
     it('should report sourceURLs', async function({page, server}) {
@@ -3455,7 +3455,7 @@ describe('Page', function() {
       const entry = coverage[0];
       expect(entry.ranges.length).toBe(1);
       const range = entry.ranges[0];
-      expect(entry.text.substring(range.startOffset, range.endOffset)).toBe(`console.log('used!');`);
+      expect(entry.text.substring(range.start, range.end)).toBe(`console.log('used!');`);
     });
     it('should report scripts that have no coverage', async function({page, server}) {
       await page.coverage.startJSCoverage();

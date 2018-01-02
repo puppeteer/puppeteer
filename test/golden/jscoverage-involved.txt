@@ -3,24 +3,24 @@
     "url": "http://localhost:8907/jscoverage/involved.html",
     "ranges": [
       {
-        "startOffset": 0,
-        "endOffset": 35
+        "start": 0,
+        "end": 35
       },
       {
-        "startOffset": 50,
-        "endOffset": 100
+        "start": 50,
+        "end": 100
       },
       {
-        "startOffset": 107,
-        "endOffset": 141
+        "start": 107,
+        "end": 141
       },
       {
-        "startOffset": 148,
-        "endOffset": 160
+        "start": 148,
+        "end": 160
       },
       {
-        "startOffset": 168,
-        "endOffset": 207
+        "start": 168,
+        "end": 207
       }
     ],
     "text": "\nfunction foo() {\n  if (1 > 2)\n    console.log(1);\n  if (1 < 2)\n    console.log(2);\n  let x = 1 > 2 ? 'foo' : 'bar';\n  let y = 1 < 2 ? 'foo' : 'bar';\n  let z = () => {};\n  let q = () => {};\n  q();\n}\n\nfoo();\n"

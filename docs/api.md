@@ -2164,8 +2164,8 @@ Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, or 
   - `url` <[string]> Script URL
   - `text` <[string]> Script content
   - `ranges` <[Array]<[Object]>> Script ranges that were executed. Ranges are sorted and non-overlapping.
-    - `startOffset` <[number]>
-    - `endOffset` <[number]>
+    - `start` <[number]> A start offset in text, inclusive
+    - `end` <[number]> An end offset in text, exclusive
 
 > **NOTE** JavaScript Coverage doesn't include anonymous scripts; however, scripts with sourceURLs are
 reported.
@@ -2182,7 +2182,7 @@ let usedBytes = 0;
 for (const entry of coverage) {
   totalBytes += entry.text.length;
   for (const range of entry.ranges)
-    usedBytes += range.endOffset - range.startOffset - 1;
+    usedBytes += range.end - range.start - 1;
 }
 console.log(`Coverage is ${usedBytes / totalBytes * 100}%`);
 ```
