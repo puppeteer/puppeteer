@@ -3585,7 +3585,7 @@ describe('Page', function() {
     it('specifies when response comes from cache and service worker', async({page, server}) => {
       let responses = [];
       page.on('response', response => {
-        if (response.url.includes('.css'))
+        if (response.url().includes('.css'))
           responses.push(response);
       });
 
