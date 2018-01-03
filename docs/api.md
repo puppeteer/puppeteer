@@ -44,6 +44,7 @@
   * [page.$$(selector)](#pageselector)
   * [page.$$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
   * [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
+  * [page.$x(expression)](#pagexexpression)
   * [page.addScriptTag(options)](#pageaddscripttagoptions)
   * [page.addStyleTag(options)](#pageaddstyletagoptions)
   * [page.authenticate(credentials)](#pageauthenticatecredentials)
@@ -94,7 +95,6 @@
   * [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
   * [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
-  * [page.xpath(expression)](#pagexpathexpression)
 - [class: Keyboard](#class-keyboard)
   * [keyboard.down(key[, options])](#keyboarddownkey-options)
   * [keyboard.press(key[, options])](#keyboardpresskey-options)
@@ -126,6 +126,7 @@
   * [frame.$$(selector)](#frameselector)
   * [frame.$$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
   * [frame.$eval(selector, pageFunction[, ...args])](#frameevalselector-pagefunction-args)
+  * [frame.$x(expression)](#framexexpression)
   * [frame.addScriptTag(options)](#frameaddscripttagoptions)
   * [frame.addStyleTag(options)](#frameaddstyletagoptions)
   * [frame.childFrames()](#framechildframes)
@@ -142,7 +143,6 @@
   * [frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args)
   * [frame.waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args)
   * [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
-  * [frame.xpath(expression)](#framexpathexpression)
 - [class: ExecutionContext](#class-executioncontext)
   * [executionContext.evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args)
   * [executionContext.evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args)
@@ -157,6 +157,7 @@
 - [class: ElementHandle](#class-elementhandle)
   * [elementHandle.$(selector)](#elementhandleselector)
   * [elementHandle.$$(selector)](#elementhandleselector)
+  * [elementHandle.$x(expression)](#elementhandlexexpression)
   * [elementHandle.asElement()](#elementhandleaselement)
   * [elementHandle.boundingBox()](#elementhandleboundingbox)
   * [elementHandle.click([options])](#elementhandleclickoptions)
@@ -173,7 +174,6 @@
   * [elementHandle.toString()](#elementhandletostring)
   * [elementHandle.type(text[, options])](#elementhandletypetext-options)
   * [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
-  * [elementHandle.xpath(expression)](#elementhandlexpathexpression)
 - [class: Request](#class-request)
   * [request.abort([errorCode])](#requestaborterrorcode)
   * [request.continue([overrides])](#requestcontinueoverrides)
@@ -530,6 +530,14 @@ const html = await page.$eval('.main-container', e => e.outerHTML);
 ```
 
 Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector-pagefunction-args).
+
+#### page.$x(expression)
+- `expression` <[string]> Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate).
+- returns: <[Promise]<[Array]<[ElementHandle]>>>
+
+The method evluates the XPath expression.
+
+Shortcut for [page.mainFrame().$x(expression)](#frameexpression)
 
 #### page.addScriptTag(options)
 - `options` <[Object]>
@@ -1226,13 +1234,6 @@ puppeteer.launch().then(async browser => {
 ```
 Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options).
 
-#### page.xpath(expression)
-- `expression` <[string]> Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate).
-- returns: <[Promise]<?[ElementHandle]>> Promise which resolves to ElementHandle pointing to the page element.
-
-The method evluates the XPath expression. If there's no such element within the page, the method will resolve to `null`.
-
-Shortcut for [page.mainFrame().xpath(expression)](#framexpathexpression)
 
 ### class: Keyboard
 
@@ -1518,6 +1519,12 @@ const preloadHref = await frame.$eval('link[rel=preload]', el => el.href);
 const html = await frame.$eval('.main-container', e => e.outerHTML);
 ```
 
+#### frame.$x(expression)
+- `expression` <[string]> Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate).
+- returns: <[Promise]<[Array]<[ElementHandle]>>>
+
+The method evluates the XPath expression.
+
 #### frame.addScriptTag(options)
 - `options` <[Object]>
   - `url` <[string]> Url of a script to be added.
@@ -1681,12 +1688,6 @@ puppeteer.launch().then(async browser => {
   await browser.close();
 });
 ```
-
-#### frame.xpath(expression)
-- `expression` <[string]> Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate).
-- returns: <[Promise]<?[ElementHandle]>> Promise which resolves to ElementHandle pointing to the frame element.
-
-The method evluates the XPath expression. If there's no such element within the frame, the method will resolve to `null`.
 
 ### class: ExecutionContext
 
@@ -1860,6 +1861,12 @@ The method runs `element.querySelector` within the page. If no element matches t
 
 The method runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `[]`.
 
+#### elementHandle.$x(expression)
+- `expression` <[string]> Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate).
+- returns: <[Promise]<?[ElementHandle]>> Promise which resolves to ElementHandle pointing to the frame element.
+
+The method evluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to `null`.
+
 #### elementHandle.asElement()
 - returns: <[elementhandle]>
 
@@ -1987,12 +1994,6 @@ await elementHandle.press('Enter');
 - returns: <[Promise]>
 
 This method expects `elementHandle` to point to an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
-
-#### elementHandle.xpath(expression)
-- `expression` <[string]> Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate).
-- returns: <[Promise]<?[ElementHandle]>> Promise which resolves to ElementHandle pointing to the frame element.
-
-The method evluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to `null`.
 
 ### class: Request
 

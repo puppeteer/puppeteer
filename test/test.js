@@ -1727,15 +1727,21 @@ describe('Page', function() {
     });
   });
 
-  describe('Path.xpath', function() {
+  describe('Path.$x', function() {
     it('should query existing element', async({page, server}) => {
       await page.setContent('<section>test</section>');
-      const element = await page.xpath('/html/body/section');
-      expect(element).toBeTruthy();
+      const elements = await page.$x('/html/body/section');
+      expect(elements[0]).toBeTruthy();
+      expect(elements.length).toBe(1);
     });
-    it('should return null for non-existing element', async({page, server}) => {
-      const element = await page.xpath('/html/body/non-existing-element');
-      expect(element).toBe(null);
+    it('should return empty array for non-existing element', async({page, server}) => {
+      const element = await page.$x('/html/body/non-existing-element');
+      expect(element).toEqual([]);
+    });
+    it('should return multiple elements', async({page, sever}) => {
+      await page.setContent('<div></div><div></div>');
+      const elements = await page.$x('/html/body/div');
+      expect(elements.length).toBe(2);
     });
   });
 
@@ -1930,22 +1936,22 @@ describe('Page', function() {
   });
 
 
-  describe('ElementHandle.xpath', function() {
+  describe('ElementHandle.$x', function() {
     it('should query existing element', async({page, server}) => {
       await page.goto(server.PREFIX + '/playground.html');
       await page.setContent('<html><body><div class="second"><div class="inner">A</div></div></body></html>');
       const html = await page.$('html');
-      const second = await html.xpath(`./body/div[contains(@class, 'second')]`);
-      const inner = await second.xpath(`./div[contains(@class, 'inner')]`);
-      const content = await page.evaluate(e => e.textContent, inner);
+      const second = await html.$x(`./body/div[contains(@class, 'second')]`);
+      const inner = await second[0].$x(`./div[contains(@class, 'inner')]`);
+      const content = await page.evaluate(e => e.textContent, inner[0]);
       expect(content).toBe('A');
     });
 
     it('should return null for non-existing element', async({page, server}) => {
       await page.setContent('<html><body><div class="second"><div class="inner">B</div></div></body></html>');
       const html = await page.$('html');
-      const second = await html.xpath(`/div[contains(@class, 'third')]`);
-      expect(second).toBe(null);
+      const second = await html.$x(`/div[contains(@class, 'third')]`);
+      expect(second).toEqual([]);
     });
   });
 
