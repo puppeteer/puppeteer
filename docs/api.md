@@ -496,7 +496,7 @@ Shortcut for [page.mainFrame().$$(selector)](#frameselector-1).
 #### page.$$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> A [selector] to query frame for
 - `pageFunction` <[function]> Function to be evaluated in browser context
-- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 
 This method runs `document.querySelectorAll` within the page and passes it as the first argument to `pageFunction`.
@@ -511,7 +511,7 @@ const divsCounts = await page.$$eval('div', divs => divs.length);
 #### page.$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> A [selector] to query page for
 - `pageFunction` <[function]> Function to be evaluated in browser context
-- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 
 This method runs `document.querySelector` within the page and passes it as the first argument to `pageFunction`. If there's no element matching `selector`, the method throws an error.
@@ -649,7 +649,7 @@ List of all available devices is available in the source code: [DeviceDescriptor
 
 #### page.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context
-- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Resolves to the return value of `pageFunction`
 
 If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return its value.
@@ -1144,8 +1144,8 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 #### page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])
 - `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
-- `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
-- returns: <[Promise]>
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction`
+- returns: <[Promise]<[JSHandle]>> Promise which resolves to a JSHandle of the success value
 
 This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] to wait for and the method is a shortcut for [page.waitForSelector](#pagewaitforselectorselector-options)
@@ -1162,8 +1162,8 @@ Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, .
     - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
     - `mutation` - to execute `pageFunction` on every DOM mutation.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
-- `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
-- returns: <[Promise]> Promise which resolves when the `pageFunction` returns a truthy value.
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction`
+- returns: <[Promise]<[JSHandle]>> Promise which resolves when the `pageFunction` returns a truthy value. It resolves to a JSHandle of the truthy value.
 
 The `waitForFunction` can be used to observe viewport size change:
 ```js
@@ -1195,7 +1195,7 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
-- returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
+- returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by selector string is added to DOM.
 
 Wait for the `selector` to appear in page. If at the moment of calling
 the method the `selector` already exists, the method will return
@@ -1481,7 +1481,7 @@ The method runs `document.querySelectorAll` within the frame. If no elements mat
 #### frame.$$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> A [selector] to query frame for
 - `pageFunction` <[function]> Function to be evaluated in browser context
-- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 
 This method runs `document.querySelectorAll` within the frame and passes it as the first argument to `pageFunction`.
@@ -1496,7 +1496,7 @@ const divsCounts = await frame.$$eval('div', divs => divs.length);
 #### frame.$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> A [selector] to query frame for
 - `pageFunction` <[function]> Function to be evaluated in browser context
-- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 
 This method runs `document.querySelector` within the frame and passes it as the first argument to `pageFunction`. If there's no element matching `selector`, the method throws an error.
@@ -1538,7 +1538,7 @@ Gets the full HTML contents of the frame, including the doctype.
 
 #### frame.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
-- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to  `pageFunction`
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
 
 If the function, passed to the `frame.evaluate`, returns a [Promise], then `frame.evaluate` would wait for the promise to resolve and return its value.
@@ -1613,8 +1613,8 @@ Returns frame's url.
 #### frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])
 - `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
 - `options` <[Object]> Optional waiting parameters
-- `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
-- returns: <[Promise]>
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction`
+- returns: <[Promise]<[JSHandle]>> Promise which resolves to a JSHandle of the success value
 
 This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
@@ -1630,8 +1630,8 @@ This method behaves differently with respect to the type of the first parameter:
     - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
     - `mutation` - to execute `pageFunction` on every DOM mutation.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
-- `...args` <...[Serializable]> Arguments to pass to  `pageFunction`
-- returns: <[Promise]> Promise which resolves when the `pageFunction` returns a truthy value.
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction`
+- returns: <[Promise]<[JSHandle]>> Promise which resolves when the `pageFunction` returns a truthy value. It resolves to a JSHandle of the truthy value.
 
 The `waitForFunction` can be used to observe viewport size change:
 ```js
@@ -1652,7 +1652,7 @@ puppeteer.launch().then(async browser => {
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
-- returns: <[Promise]> Promise which resolves when element specified by selector string is added to DOM.
+- returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by selector string is added to DOM.
 
 Wait for the `selector` to appear in page. If at the moment of calling
 the method the `selector` already exists, the method will return
@@ -1688,7 +1688,7 @@ The class represents a context for JavaScript execution. Examples of JavaScript 
 
 #### executionContext.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in `executionContext`
-- `...args` <...[Serializable]|[ElementHandle]> Arguments to pass to `pageFunction`
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
 
 If the function, passed to the `executionContext.evaluate`, returns a [Promise], then `executionContext.evaluate` would wait for the promise to resolve and return its value.
