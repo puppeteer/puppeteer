@@ -533,7 +533,7 @@ Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector
 
 The method evluates the XPath expression.
 
-Shortcut for [page.mainFrame().$x(expression)](#framexpathexpression)
+Shortcut for [page.mainFrame().$x(expression)](#frameexpression)
 
 #### page.addScriptTag(options)
 - `options` <[Object]>
