@@ -364,9 +364,9 @@ Disconnects Puppeteer from the browser, but leaves the Chromium process running.
 - returns: <[Array]<[Target]>> An array of all active targets.
 
 #### browser.userAgent()
-- returns: <[Promise]<[string]>> Promise which resolves to the browser's user agent. For headless Chromium, this includes string like `HeadlessChrome/61.0.3153.0`.
+- returns: <[Promise]<[string]>> Promise which resolves to the browser's original user agent. For headless Chromium, this includes a string like `HeadlessChrome/61.0.3153.0`.
 
-> **NOTE** browser.userAgent() does not always match the actual user agent if it's overridden by `page.setUserAgent(userAgent)` or `page.emulate(options)`.
+> **NOTE** browser.userAgent() does not always match the actual user agent if it's overridden by page.setUserAgent(userAgent) or page.emulate(options).
 
 #### browser.version()
 - returns: <[Promise]<[string]>> For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is similar to `Chrome/61.0.3153.0`.
