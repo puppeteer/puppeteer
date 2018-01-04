@@ -167,6 +167,7 @@
 - [class: ExecutionContext](#class-executioncontext)
   * [executionContext.evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args)
   * [executionContext.evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args)
+  * [executionContext.frame()](#executioncontextframe)
   * [executionContext.queryObjects(prototypeHandle)](#executioncontextqueryobjectsprototypehandle)
 - [class: JSHandle](#class-jshandle)
   * [jsHandle.asElement()](#jshandleaselement)
@@ -2040,6 +2041,11 @@ console.log(await resultHandle.jsonValue()); // prints body's innerHTML
 await aHandle.dispose();
 await resultHandle.dispose();
 ```
+
+#### executionContext.frame()
+- returns: <?[Frame]> Frame associated with this execution context.
+
+> **NOTE** Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.
 
 #### executionContext.queryObjects(prototypeHandle)
 - `prototypeHandle` <[JSHandle]> A handle to the object prototype.
