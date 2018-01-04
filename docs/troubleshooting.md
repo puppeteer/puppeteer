@@ -160,11 +160,19 @@ how to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
 By default, Docker runs a container with a `/dev/shm` shared memory space 64MB.
 This is [typically too small](https://github.com/c0b/chrome-in-docker/issues/1) for Chrome
-and will cause Chrome to crash when rendering large pages. To fix, run the container
-with `docker run --shm-size=1gb` to increase the size of `/dev/shm`. In the future,
-this won't be necessary. See [crbug.com/736452](https://bugs.chromium.org/p/chromium/issues/detail?id=736452).
+and will cause Chrome to crash when rendering large pages. To fix, run the container with
+`docker run --shm-size=1gb` to increase the size of `/dev/shm`. Since Chrome 65, this is no
+longer necessary. Instead, launch the browser with the `--disable-dev-shm-usage` flag:
 
-If you're seeing other weird errors when launching Chrome, try running the container
+```js
+const browser = await puppeteer.launch({
+  args: ['--disable-dev-shm-usage']
+});
+```
+
+This will write shared memory files into `/tmp` instead of `/dev/shm`. See [crbug.com/736452](https://bugs.chromium.org/p/chromium/issues/detail?id=736452) for more details.
+
+Seeing other weird errors when launching Chrome? Try running your container
 with `docker run --cap-add=SYS_ADMIN` when developing locally. Since the Dockerfile
 adds a `pptr` user as a non-privileged user, it may not have all the necessary privileges.
 
