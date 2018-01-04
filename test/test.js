@@ -3479,7 +3479,7 @@ describe('Page', function() {
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/involved.html');
       const coverage = await page.coverage.stopJSCoverage();
-      expect(JSON.stringify(coverage, null, 2)).toBeGolden('jscoverage-involved.txt');
+      expect(JSON.stringify(coverage, null, 2).replace(/:\d{4}\//g, ':<PORT>/')).toBeGolden('jscoverage-involved.txt');
     });
     describe('resetOnNavigation', function() {
       it('should report scripts across navigations when disabled', async function({page, server}) {
@@ -3549,7 +3549,7 @@ describe('Page', function() {
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/involved.html');
       const coverage = await page.coverage.stopCSSCoverage();
-      expect(JSON.stringify(coverage, null, 2)).toBeGolden('csscoverage-involved.txt');
+      expect(JSON.stringify(coverage, null, 2).replace(/:\d{4}\//g, ':<PORT>/')).toBeGolden('csscoverage-involved.txt');
     });
     it('should ignore injected stylesheets', async function({page, server}) {
       await page.coverage.startCSSCoverage();

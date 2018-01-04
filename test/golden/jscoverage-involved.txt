@@ -1,6 +1,6 @@
 [
   {
-    "url": "http://localhost:8907/jscoverage/involved.html",
+    "url": "http://localhost:<PORT>/jscoverage/involved.html",
     "ranges": [
       {
         "start": 0,
