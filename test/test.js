@@ -273,10 +273,10 @@ describe('Page', function() {
   });
 
   describe('Browser.userAgent', function() {
-    it('should return whether we are in headless', async({browser}) => {
+    it('should includes WebKit', async({browser}) => {
       const userAgent = await browser.userAgent();
       expect(userAgent.length).toBeGreaterThan(0);
-      expect(userAgent.includes('Headless')).toBe(headless);
+      expect(userAgent.includes('WebKit')).toBe(headless);
     });
   });
 
