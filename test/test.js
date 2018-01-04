@@ -272,6 +272,14 @@ describe('Page', function() {
     });
   });
 
+  describe('Browser.userAgent', function() {
+    it('should return whether we are in headless', async({browser}) => {
+      const userAgent = await browser.userAgent();
+      expect(userAgent.length).toBeGreaterThan(0);
+      expect(userAgent.includes('Headless')).toBe(headless);
+    });
+  });
+
   describe('Browser.process', function() {
     it('should return child_process instance', async function({browser}) {
       const process = await browser.process();
