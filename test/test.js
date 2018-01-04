@@ -389,7 +389,7 @@ describe('Page', function() {
       const result = await page.evaluate((a, b) => Object.is(a, undefined) && Object.is(b, 'foo'), undefined, 'foo');
       expect(result).toBe(true);
     });
-    it('should properly serialize null fields', async ({page}) => {
+    it('should properly serialize null fields', async({page}) => {
       expect(await page.evaluate(() => ({a: undefined}))).toEqual({});
     });
     it('should fail for window object', async({page, server}) => {
