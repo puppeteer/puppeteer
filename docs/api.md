@@ -2203,6 +2203,9 @@ console.log(`Bytes used: ${usedBytes / totalBytes * 100}%`);
     - `start` <[number]> A start offset in text, inclusive
     - `end` <[number]> An end offset in text, exclusive
 
+> **NOTE** CSS Coverage doesn't include dynamically injected style tags without sourceURLs.
+
+
 #### coverage.stopJSCoverage()
 - returns: <[Promise]<[Array]<[Object]>>> Promise that resolves to the array of coverage reports for all non-anonymous scripts
   - `url` <[string]> Script URL
