@@ -3542,6 +3542,15 @@ describe('Page', function() {
       const coverage = await page.coverage.stopCSSCoverage();
       expect(JSON.stringify(coverage, null, 2)).toBeGolden('csscoverage-involved.txt');
     });
+    it('should ignore injected stylesheets', async function({page, server}) {
+      await page.coverage.startCSSCoverage();
+      await page.addStyleTag({content: 'body { margin: 10px;}'});
+      // trigger style recalc
+      const margin = await page.evaluate(() => window.getComputedStyle(document.body).margin);
+      expect(margin).toBe('10px');
+      const coverage = await page.coverage.stopCSSCoverage();
+      expect(coverage.length).toBe(0);
+    });
     describe('resetOnNavigation', function() {
       it('should report stylesheets across navigations', async function({page, server}) {
         await page.coverage.startCSSCoverage({resetOnNavigation: false});
