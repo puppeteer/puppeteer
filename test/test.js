@@ -60,8 +60,9 @@ if (process.env.PPTR_PARALLEL_TESTS)
 const parallelArgIndex = process.argv.indexOf('-j');
 if (parallelArgIndex !== -1)
   parallel = parseInt(process.argv[parallelArgIndex + 1], 10);
+require('events').defaultMaxListeners *= parallel;
 
-const {TestRunner, Reporter, Matchers}  = require('../utils/testrunner/');
+const {TestRunner, Reporter, Matchers} = require('../utils/testrunner/');
 const runner = new TestRunner({timeout, parallel});
 new Reporter(runner);
 
