@@ -3536,6 +3536,12 @@ describe('Page', function() {
         {start: 17, end: 38}
       ]);
     });
+    it('should work with complicated usecases', async function({page, server}) {
+      await page.coverage.startCSSCoverage();
+      await page.goto(server.PREFIX + '/csscoverage/involved.html');
+      const coverage = await page.coverage.stopCSSCoverage();
+      expect(JSON.stringify(coverage, null, 2)).toBeGolden('csscoverage-involved.txt');
+    });
     describe('resetOnNavigation', function() {
       it('should report stylesheets across navigations', async function({page, server}) {
         await page.coverage.startCSSCoverage({resetOnNavigation: false});
