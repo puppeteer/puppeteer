@@ -322,8 +322,8 @@ puppeteer.launch().then(async browser => {
 });
 ```
 #### event: 'disconnected'
-Emitted when puppeteer gets disconnected from the browser instance. This might happen because one of the following:
-- browser closed or crashed
+Emitted when puppeteer gets disconnected from the Chromium instance. This might happen because one of the following:
+- Chromium is closed or crashed
 - `browser.disconnect` method was called
 
 #### event: 'targetchanged'
