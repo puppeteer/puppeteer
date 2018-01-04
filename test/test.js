@@ -692,6 +692,18 @@ describe('Page', function() {
       expect(error).toBeTruthy();
       expect(error.message).toContain('Cannot poll with non-positive interval');
     });
+    it('should return the success value as a JSHandle', async({page}) => {
+      expect(await (await page.waitForFunction(() => 5)).jsonValue()).toBe(5);
+    });
+    it('should accept ElementHandle arguments', async({page}) => {
+      await page.setContent('<div></div>');
+      const div = await page.$('div');
+      let resolved = false;
+      const waitForFunction = page.waitForFunction(element => !element.parentElement, {}, div).then(() => resolved = true);
+      expect(resolved).toBe(false);
+      await page.evaluate(element => element.remove(), div);
+      await waitForFunction;
+    });
   });
 
   describe('Frame.waitForSelector', function() {
@@ -857,6 +869,11 @@ describe('Page', function() {
       expect(divFound).toBe(false);
       await page.evaluate(() => document.querySelector('div').className = 'zombo');
       expect(await waitForSelector).toBe(true);
+    });
+    it('should return the element handle', async({page, server}) => {
+      const waitForSelector = page.waitForSelector('.zombo');
+      await page.setContent(`<div class='zombo'>anything</div>`);
+      expect(await page.evaluate(x => x.textContent, await waitForSelector)).toBe('anything');
     });
   });
 
