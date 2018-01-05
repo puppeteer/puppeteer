@@ -276,7 +276,7 @@ describe('Page', function() {
     it('should includes WebKit', async({browser}) => {
       const userAgent = await browser.userAgent();
       expect(userAgent.length).toBeGreaterThan(0);
-      expect(userAgent.includes('WebKit')).toBe(headless);
+      expect(userAgent).toContain('WebKit');
     });
   });
 
