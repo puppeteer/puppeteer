@@ -273,6 +273,14 @@ describe('Page', function() {
     });
   });
 
+  describe('Browser.userAgent', function() {
+    it('should include WebKit', async({browser}) => {
+      const userAgent = await browser.userAgent();
+      expect(userAgent.length).toBeGreaterThan(0);
+      expect(userAgent).toContain('WebKit');
+    });
+  });
+
   describe('Browser.process', function() {
     it('should return child_process instance', async function({browser}) {
       const process = await browser.process();
