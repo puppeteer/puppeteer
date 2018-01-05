@@ -273,7 +273,7 @@ describe('Page', function() {
   });
 
   describe('Browser.userAgent', function() {
-    it('should includes WebKit', async({browser}) => {
+    it('should include WebKit', async({browser}) => {
       const userAgent = await browser.userAgent();
       expect(userAgent.length).toBeGreaterThan(0);
       expect(userAgent).toContain('WebKit');
