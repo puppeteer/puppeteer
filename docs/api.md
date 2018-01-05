@@ -78,6 +78,7 @@
   * [page.select(selector, ...values)](#pageselectselector-values)
   * [page.setContent(html)](#pagesetcontenthtml)
   * [page.setCookie(...cookies)](#pagesetcookiecookies)
+  * [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout)
   * [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
@@ -1047,6 +1048,9 @@ Shortcut for [page.mainFrame.select()](#frameselectselector-values)
   - `secure` <[boolean]>
   - `sameSite` <[string]> `"Strict"` or `"Lax"`.
 - returns: <[Promise]>
+
+#### page.setDefaultNavigationTimeout(timeout)
+- `timeout` <[number]> Maximum navigation time in milliseconds
 
 #### page.setExtraHTTPHeaders(headers)
 - `headers` <[Object]> An object containing additional http headers to be sent with every request. All header values must be strings.

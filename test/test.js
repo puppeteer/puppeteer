@@ -464,6 +464,14 @@ describe('Page', function() {
     });
   });
 
+  describe('Page.setDefaultNavigationTimeout', function() {
+    it('should work', async({page, server}) => {
+      const timeout = 20000;
+      page.setDefaultNavigationTimeout(timeout);
+      expect(page._defaultNavigationTimeout).toEqual(timeout);
+    });
+  });
+
   describe('Page.evaluateHandle', function() {
     it('should work', async({page, server}) => {
       const windowHandle = await page.evaluateHandle(() => window);
@@ -1054,6 +1062,14 @@ describe('Page', function() {
       server.setRoute('/empty.html', (req, res) => { });
       let error = null;
       await page.goto(server.PREFIX + '/empty.html', {timeout: 1}).catch(e => error = e);
+      expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
+    });
+    it('should fail when exceeding default maximum navigation timeout', async({page, server}) => {
+      // Hang for request to the empty.html
+      server.setRoute('/empty.html', (req, res) => { });
+      let error = null;
+      page.setDefaultNavigationTimeout(1);
+      await page.goto(server.PREFIX + '/empty.html').catch(e => error = e);
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
     });
     it('should disable timeout when its set to 0', async({page, server}) => {
