@@ -2116,7 +2116,7 @@ page.on('request', request => {
 #### response.fromCache()
 - returns: <[boolean]>
 
-True if the response was served from the browser's disk cache.
+True if the response was served from either the browser's disk cache or memory cache.
 
 #### response.fromServiceWorker()
 - returns: <[boolean]>
