@@ -27,3 +27,14 @@ jobs:
       env: NODE7=true
     - node_js: "6.4.0"
       env: NODE6=true
+before_deploy: "yarn run apply-next-version"
+deploy:
+  provider: npm
+  email: aslushnikov@gmail.com
+  api_key:
+    secure: S/cwhamxKh0dsI46jewA6AkFXhDQWqfGkEe19WP3uoBg69jBqxs3DMcqGmd7og8RgqFUhhnBon8cDyJD25XHhDSSVANY9sFhwAPsty+Pjc9NHlG9My59tzpKSuhxOHxUaUd4Ug1gjYKTRNh4yYQKuGFm1mS3X34AbHg+eAFz6gVk3oVoc8Uu/rYH/dTP/ZGa29U7tn8DrEiyxoxv1pIEoX66AmAA649+nULwZw1MlhTaZZgYYIHlMC91dY6N6ql3ESj0zZSmQmrdZbWcGkTZDfBmdHMfFhnX9n0D7AgNvKNL+LDBcu7yiGO3hM2BrVOlGv24FFaHF5cLU4wuRuBvRG8cx3j1rG5w8c8jkEN1iL6qcmo76++YfILi3DIzD2n4RAsKeGILTcQOHhY4wqViuy0bb5zc5i/pqbtUERb3ngCZbNYTY8MQ5ertckmEw8daS/irREZfmThY90EPitsYw39f1+tdm9YUpWz/q2MpjqNByk6ycr17i2zFdqy4j/5CwrlmtewCw7Np8ubNITuqL7rst5GojlJvKSA3onuGyJLtSshUFn6lwwAHpkptZ5JWDwkxHiW+ofQ50Td6+NouJrSobOd1JzJ5om4eH2V1hkD5RP5saeDgojbRTMX+j8lQaQAnYQLYj0C2I1i6yl+VP0HUt7L//3zTRUetNTzGdA4=
+  on:
+    branch: master
+    condition: "$NODE7 = true"
+  skip_cleanup: true
+  tag: next

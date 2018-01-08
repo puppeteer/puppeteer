@@ -63,7 +63,7 @@ footer
     - `docs` - changes to docs, e.g. `docs(api.md): ..` to change documentation
     - `test` - changes to puppeteer tests infrastructure
     - `style` - puppeteer code style: spaces/alignment/wrapping etc
-    - `chore` - build-related work, e.g. doclint changes / travis / appveyour
+    - `chore` - build-related work, e.g. doclint changes / travis / appveyor
 1. *namespace* is put in parenthesis after label and is optional
 2. *title* is a brief summary of changes
 3. *description* is **optional**, new-line separated from title and is in present tense

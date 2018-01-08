@@ -20,10 +20,12 @@ const Documentation = require('./Documentation');
 const Message = require('../Message');
 
 const EXCLUDE_CLASSES = new Set([
+  'CSSCoverage',
   'Connection',
   'Downloader',
   'EmulationManager',
   'FrameManager',
+  'JSCoverage',
   'Helper',
   'Launcher',
   'Multimap',

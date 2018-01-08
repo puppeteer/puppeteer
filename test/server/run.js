@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Google Inc., PhantomJS Authors All rights reserved.
+ * Copyright 2017 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const path = require('path');
+const SimpleServer = require('./SimpleServer');
 
-'use strict';
-
-const puppeteer = require('puppeteer');
-
-(async() => {
-
-const browser = await puppeteer.launch();
-const page = await browser.newPage();
-await page.setRequestInterception(true);
-page.on('request', request => {
-  if (request.resourceType() === 'image')
-    request.abort();
-  else
-    request.continue();
+const port = 8907;
+const httpsPort = 8908;
+const assetsPath = path.join(__dirname, '..', 'assets');
+Promise.all([
+  SimpleServer.create(assetsPath, port),
+  SimpleServer.createHTTPS(assetsPath, httpsPort)
+]).then(([server, httpsServer]) => {
+  console.log(`HTTP: server is running on http://localhost:${port}`);
+  console.log(`HTTPS: server is running on https://localhost:${httpsPort}`);
 });
-await page.goto('https://news.google.com/news/');
-await page.screenshot({path: 'news.png', fullPage: true});
-
-await browser.close();
-
-})();
-
