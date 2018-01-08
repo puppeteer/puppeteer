@@ -51,6 +51,7 @@
     "esprima": "^4.0.0",
     "markdown-toc": "^1.1.0",
     "minimist": "^1.2.0",
+    "mri": "~1.1.0",
     "ncp": "^2.0.0",
     "pdfjs-dist": "^1.8.595",
     "pixelmatch": "^4.0.2",
