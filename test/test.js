@@ -703,6 +703,9 @@ describe('Page', function() {
     it('should return the success value as a JSHandle', async({page}) => {
       expect(await (await page.waitForFunction(() => 5)).jsonValue()).toBe(5);
     });
+    it('should return the window as a success value', async({ page }) => {
+      expect(await page.waitForFunction(() => window)).toBeTruthy();
+    });
     it('should accept ElementHandle arguments', async({page}) => {
       await page.setContent('<div></div>');
       const div = await page.$('div');
