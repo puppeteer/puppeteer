@@ -187,7 +187,7 @@
   * [request.url()](#requesturl)
 - [class: Response](#class-response)
   * [response.buffer()](#responsebuffer)
-  * [response.fromDiskCache()](#responsefromdiskcache)
+  * [response.fromCache()](#responsefromcache)
   * [response.fromServiceWorker()](#responsefromserviceworker)
   * [response.headers()](#responseheaders)
   * [response.json()](#responsejson)
@@ -2113,7 +2113,7 @@ page.on('request', request => {
 #### response.buffer()
 - returns: <Promise<[Buffer]>> Promise which resolves to a buffer with response body.
 
-#### response.fromDiskCache()
+#### response.fromCache()
 - returns: <[boolean]>
 
 True if the response was served from the browser's disk cache.

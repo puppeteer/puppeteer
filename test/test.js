@@ -2497,7 +2497,7 @@ describe('Page', function() {
       expect(responses[0].url()).toBe(server.EMPTY_PAGE);
       expect(responses[0].status()).toBe(200);
       expect(responses[0].ok()).toBe(true);
-      expect(responses[0].fromDiskCache()).toBe(false);
+      expect(responses[0].fromCache()).toBe(false);
       expect(responses[0].fromServiceWorker()).toBe(false);
       expect(responses[0].request()).toBeTruthy();
     });
@@ -3590,12 +3590,12 @@ describe('Page', function() {
       });
 
       await page.goto(server.PREFIX + '/sw-fetch.html', {waitUntil: 'networkidle2'});
-      expect(responses[0].fromDiskCache()).toBe(false);
+      expect(responses[0].fromCache()).toBe(false);
       expect(responses[0].fromServiceWorker()).toBe(false);
 
       responses = [];
       await page.reload({waitUntil: 'networkidle2'});
-      expect(responses[0].fromDiskCache()).toBe(true);
+      expect(responses[0].fromCache()).toBe(true);
       expect(responses[0].fromServiceWorker()).toBe(true);
     });
   });
