@@ -1035,7 +1035,7 @@ page.select('select#colors', 'blue'); // single selection
 page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 ```
 
-Shortcut for [page.mainFrame.select()](#frameselectselector-values)
+Shortcut for [page.mainFrame().select()](#frameselectselector-values)
 
 #### page.setContent(html)
 - `html` <[string]> HTML markup to assign to the page.
