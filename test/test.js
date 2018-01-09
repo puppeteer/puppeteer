@@ -464,14 +464,6 @@ describe('Page', function() {
     });
   });
 
-  describe('Page.setDefaultNavigationTimeout', function() {
-    it('should work', async({page, server}) => {
-      const timeout = 20000;
-      page.setDefaultNavigationTimeout(timeout);
-      expect(page._defaultNavigationTimeout).toEqual(timeout);
-    });
-  });
-
   describe('Page.evaluateHandle', function() {
     it('should work', async({page, server}) => {
       const windowHandle = await page.evaluateHandle(() => window);
