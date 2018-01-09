@@ -160,7 +160,7 @@
   * [elementHandle.$$(selector)](#elementhandleselector)
   * [elementHandle.$x(expression)](#elementhandlexexpression)
   * [elementHandle.asElement()](#elementhandleaselement)
-  * [elementHandle.boundingBox()](#elementhandleboundingbox)
+  * [elementHandle.boxModel()](#elementhandleboxmodel)
   * [elementHandle.click([options])](#elementhandleclickoptions)
   * [elementHandle.dispose()](#elementhandledispose)
   * [elementHandle.executionContext()](#elementhandleexecutioncontext)
@@ -1878,14 +1878,10 @@ The method evluates the XPath expression relative to the elementHandle. If there
 #### elementHandle.asElement()
 - returns: <[elementhandle]>
 
-#### elementHandle.boundingBox()
+#### elementHandle.boxModel()
 - returns: <[Promise]<?[Object]>>
-    - x <[number]> the x coordinate of the element in pixels.
-    - y <[number]> the y coordinate of the element in pixels.
-    - width <[number]> the width of the element in pixels.
-    - height <[number]> the height of the element in pixels.
 
-This method returns the bounding box of the element (relative to the main frame), or `null` if the element is not visible.
+This method returns [box model](https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-BoxModel) for the given element, or `null` if the element is not visible.
 
 #### elementHandle.click([options])
 - `options` <[Object]>
