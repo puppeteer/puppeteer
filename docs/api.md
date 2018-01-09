@@ -672,9 +672,10 @@ const result = await page.evaluate(x => {
 console.log(result); // prints "56"
 ```
 
-A template string can also be passed in instead of a function.
+A string can also be passed in instead of a function.
 
 ```js
+console.log(await page.evaluate('1 + 2')); // prints "3"
 const x = 10;
 console.log(await page.evaluate(`1 + ${x}`)); // prints "11"
 ```
