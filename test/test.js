@@ -1777,26 +1777,26 @@ describe('Page', function() {
     });
   });
 
-  describe('ElementHandle.boxModel', function() {
+  describe('ElementHandle.boundingBox', function() {
     it('should work', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/grid.html');
       const elementHandle = await page.$('.box:nth-of-type(13)');
-      const box = await elementHandle.boxModel();
-      expect(box.border).toEqual({ x: 100, y: 50, width: 50, height: 50 });
+      const box = await elementHandle.boundingBox();
+      expect(box).toEqual({ x: 100, y: 50, width: 50, height: 50 });
     });
     it('should handle nested frames', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
       const nestedFrame = page.frames()[1].childFrames()[1];
       const elementHandle = await nestedFrame.$('div');
-      const box = await elementHandle.boxModel();
-      expect(box.border).toEqual({ x: 28, y: 260, width: 264, height: 18 });
+      const box = await elementHandle.boundingBox();
+      expect(box).toEqual({ x: 28, y: 260, width: 264, height: 18 });
     });
     it('should return null for invisible elements', async({page, server}) => {
       await page.setContent('<div style="display:none">hi</div>');
       const element = await page.$('div');
-      expect(await element.boxModel()).toBe(null);
+      expect(await element.boundingBox()).toBe(null);
     });
   });
 
