@@ -1777,6 +1777,16 @@ describe('Page', function() {
     });
   });
 
+  describe('ElementHandle.boxModel', function() {
+    it('should work', async({page, server}) => {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(server.PREFIX + '/grid.html');
+      const elementHandle = await page.$('.box:nth-of-type(13)');
+      const box = await elementHandle.boxModel();
+      expect(box).not.toBe(null);
+    });
+  });
+
   describe('ElementHandle.boundingBox', function() {
     it('should work', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
