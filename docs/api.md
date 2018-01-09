@@ -1880,28 +1880,8 @@ The method evluates the XPath expression relative to the elementHandle. If there
 
 #### elementHandle.boxModel()
 - returns: <[Promise]<?[Object]>>
-  - border <[Object]>
-    - x <[number]> the x coordinate of the box in pixels.
-    - y <[number]> the y coordinate of the box in pixels.
-    - width <[number]> the width of the box in pixels.
-    - height <[number]> the height of the box in pixels.
-  - content <[Object]>
-    - x <[number]> the x coordinate of the box in pixels.
-    - y <[number]> the y coordinate of the box in pixels.
-    - width <[number]> the width of the box in pixels.
-    - height <[number]> the height of the box in pixels.
-  - margin <[Object]>
-    - x <[number]> the x coordinate of the box in pixels.
-    - y <[number]> the y coordinate of the box in pixels.
-    - width <[number]> the width of the box in pixels.
-    - height <[number]> the height of the box in pixels.
-  - padding <[Object]>
-    - x <[number]> the x coordinate of the box in pixels.
-    - y <[number]> the y coordinate of the box in pixels.
-    - width <[number]> the width of the box in pixels.
-    - height <[number]> the height of the box in pixels.
 
-This method returns boxes for the given element (relative to the main frame), or `null` if the element is not visible.
+This method returns [box model](https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-BoxModel) for the given element, or `null` if the element is not visible.
 
 #### elementHandle.click([options])
 - `options` <[Object]>
