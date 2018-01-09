@@ -1960,7 +1960,13 @@ If `key` is a single character and no modifier keys besides `Shift` are being he
 > **NOTE** Modifier keys DO effect `elementHandle.press`. Holding down `Shift` will type the text in upper case.
 
 #### elementHandle.screenshot([options])
-- `options` <[Object]> Same options as in [page.screenshot](#pagescreenshotoptions).
+- `options` <[Object]> Options object which might have the following properties:
+    - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the image won't be saved to the disk.
+    - `type` <[string]> Specify screenshot type, can be either `jpeg` or `png`. Defaults to 'png'.
+    - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
+    - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
+    - `padding` <[Array<[number]>]> The amount of pixels we need to pad to the element, if possible, using [CSS shorthand](https://developer.mozilla.org/en-US/docs/Web/CSS/Shorthand_properties#Tricky_edge_cases) style notation.
+    - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
 - returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot.
 
 This method scrolls element into view if needed, and then uses [page.screenshot](#pagescreenshotoptions) to take a screenshot of the element.
