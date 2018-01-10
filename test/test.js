@@ -1783,7 +1783,14 @@ describe('Page', function() {
       await page.goto(server.PREFIX + '/grid.html');
       const elementHandle = await page.$('.box:nth-of-type(13)');
       const box = await elementHandle.boxModel();
+
       expect(box).not.toBe(null);
+      expect(box.content).not.toBe(null);
+      expect(box.padding).not.toBe(null);
+      expect(box.border).not.toBe(null);
+      expect(box.margin).not.toBe(null);
+      expect(box.width).not.toBe(null);
+      expect(box.height).not.toBe(null);
     });
   });
 
