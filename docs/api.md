@@ -96,6 +96,7 @@
   * [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
   * [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
+  * [page.wsEndpoint()](#pagewsendpoint)
 - [class: Keyboard](#class-keyboard)
   * [keyboard.down(key[, options])](#keyboarddownkey-options)
   * [keyboard.press(key[, options])](#keyboardpresskey-options)
@@ -1246,6 +1247,12 @@ puppeteer.launch().then(async browser => {
 ```
 Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options).
 
+#### page.wsEndpoint()
+- returns: <[string]> Page websocket url.
+
+The websocket endpoint used to drive the browser tab via the devtools protocol.
+The format is `ws://${host}:${port}/devtools/page/<id>`. Learn more about the
+[devtools protocol](https://chromedevtools.github.io/devtools-protocol).
 
 ### class: Keyboard
 

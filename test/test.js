@@ -292,6 +292,12 @@ describe('Page', function() {
     });
   });
 
+  describe('Browser.wsEndpont', function() {
+    it('should return a devtools browser WebSocket URL', async({browser}) => {
+      expect(/^ws?:\/\/.*\/devtools\/browser\//.test(browser.wsEndpoint())).toBe(true);
+    });
+  });
+
   describe('Browser.Events.disconnected', function() {
     it('should emitted when: browser gets closed, disconnected or underlying websocket gets closed', async() => {
       const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
@@ -3102,6 +3108,12 @@ describe('Page', function() {
         error = e;
       }
       expect(error.message).toContain('Values must be strings');
+    });
+  });
+
+  describe('Page.wsEndpont', function() {
+    it('should return a devtools page WebSocket URL', async({page}) => {
+      expect(/^ws?:\/\/.*\/devtools\/page\//.test(page.wsEndpoint())).toBe(true);
     });
   });
 
