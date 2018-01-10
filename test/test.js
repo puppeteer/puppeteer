@@ -1063,6 +1063,14 @@ describe('Page', function() {
       await page.goto(server.PREFIX + '/empty.html', {timeout: 1}).catch(e => error = e);
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
     });
+    it('should fail when exceeding default maximum navigation timeout', async({page, server}) => {
+      // Hang for request to the empty.html
+      server.setRoute('/empty.html', (req, res) => { });
+      let error = null;
+      page.setDefaultNavigationTimeout(1);
+      await page.goto(server.PREFIX + '/empty.html').catch(e => error = e);
+      expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
+    });
     it('should disable timeout when its set to 0', async({page, server}) => {
       let error = null;
       let loaded = false;
