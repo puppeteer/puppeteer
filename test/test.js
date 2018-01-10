@@ -1332,6 +1332,16 @@ describe('Page', function() {
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.ok()).toBe(true);
     });
+    it('should works with customizing referer headers', async({page, server}) => {
+      await page.setExtraHTTPHeaders({ 'referer': server.EMPTY_PAGE });
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        expect(request.headers()['referer']).toBe(server.EMPTY_PAGE);
+        request.continue();
+      });
+      const response = await page.goto(server.EMPTY_PAGE);
+      expect(response.ok()).toBe(true);
+    });
     it('should be abortable', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
