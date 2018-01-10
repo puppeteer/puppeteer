@@ -29,6 +29,7 @@ const iPhoneLandscape = DeviceDescriptors['iPhone 6 landscape'];
 
 const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
+const FrameUtils = require('./frame-utils');
 
 const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
@@ -229,7 +230,6 @@ describe('Puppeteer', function() {
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
       originalBrowser.disconnect();
 
-      const FrameUtils = require('./frame-utils');
       const browser = await puppeteer.connect({browserWSEndpoint});
       const pages = await browser.pages();
       const restoredPage = pages.find(page => page.url() === server.PREFIX + '/frames/nested-frames.html');
@@ -433,7 +433,6 @@ describe('Page', function() {
       expect(error.message).toContain('JSHandle is disposed');
     });
     it('should throw if elementHandles are from other frames', async({page, server}) => {
-      const FrameUtils = require('./frame-utils');
       await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const bodyHandle = await page.frames()[1].$('body');
       let error = null;
@@ -601,7 +600,6 @@ describe('Page', function() {
   });
 
   describe('Frame.context', function() {
-    const FrameUtils = require('./frame-utils');
     it('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -627,7 +625,6 @@ describe('Page', function() {
   });
 
   describe('Frame.evaluate', function() {
-    const FrameUtils = require('./frame-utils');
     it('should have different execution contexts', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -718,7 +715,6 @@ describe('Page', function() {
   });
 
   describe('Frame.waitForSelector', function() {
-    const FrameUtils = require('./frame-utils');
     const addElement = tag => document.body.appendChild(document.createElement(tag));
 
     it('should immediately resolve promise if node exists', async({page, server}) => {
@@ -1308,6 +1304,8 @@ describe('Page', function() {
         expect(request.method()).toBe('GET');
         expect(request.postData()).toBe(undefined);
         expect(request.resourceType()).toBe('document');
+        expect(request.frame() === page.mainFrame()).toBe(true);
+        expect(request.frame().url()).toBe('about:blank');
         request.continue();
       });
       const response = await page.goto(server.EMPTY_PAGE);
@@ -1621,13 +1619,18 @@ describe('Page', function() {
       const requests = [];
       page.on('request', request => requests.push(request));
       await page.goto(server.EMPTY_PAGE);
-      expect(requests.length).toBe(1);
-      expect(requests[0].url()).toContain('empty.html');
+      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      expect(requests.length).toBe(2);
+      expect(requests[0].url()).toBe(server.EMPTY_PAGE);
+      expect(requests[0].frame() === page.mainFrame()).toBe(true);
+      expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
+      expect(requests[1].url()).toBe(server.EMPTY_PAGE);
+      expect(requests[1].frame() === page.frames()[1]).toBe(true);
+      expect(requests[1].frame().url()).toBe(server.EMPTY_PAGE);
     });
   });
 
   describe('Frame Management', function() {
-    const FrameUtils = require('./frame-utils');
     it('should handle nested frames', async({page, server}) => {
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
       expect(FrameUtils.dumpFrames(page.mainFrame())).toBeGolden('nested-frames.txt');
@@ -1646,7 +1649,7 @@ describe('Page', function() {
       page.on('framenavigated', frame => navigatedFrames.push(frame));
       await FrameUtils.navigateFrame(page, 'frame1', './empty.html');
       expect(navigatedFrames.length).toBe(1);
-      expect(navigatedFrames[0].url()).toContain('/empty.html');
+      expect(navigatedFrames[0].url()).toBe(server.EMPTY_PAGE);
 
       // validate framedetached events
       const detachedFrames = [];
@@ -2342,7 +2345,6 @@ describe('Page', function() {
     it('should click the button inside an iframe', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent('<div style="width:100px;height:100px">spacer</div>');
-      const FrameUtils = require('./frame-utils');
       await FrameUtils.attachFrame(page, 'button-test', server.PREFIX + '/input/button.html');
       const frame = page.frames()[1];
       const button = await frame.$('button');
@@ -2353,7 +2355,6 @@ describe('Page', function() {
       await page.setViewport({width: 400, height: 400, deviceScaleFactor: 5});
       expect(await page.evaluate(() => window.devicePixelRatio)).toBe(5);
       await page.setContent('<div style="width:100px;height:100px">spacer</div>');
-      const FrameUtils = require('./frame-utils');
       await FrameUtils.attachFrame(page, 'button-test', server.PREFIX + '/input/button.html');
       const frame = page.frames()[1];
       const button = await frame.$('button');
@@ -2517,6 +2518,8 @@ describe('Page', function() {
       expect(requests[0].resourceType()).toBe('document');
       expect(requests[0].method()).toBe('GET');
       expect(requests[0].response()).toBeTruthy();
+      expect(requests[0].frame() === page.mainFrame()).toBe(true);
+      expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
     });
     it('Page.Events.Request should report post data', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
@@ -2592,6 +2595,7 @@ describe('Page', function() {
       expect(failedRequests[0].response()).toBe(null);
       expect(failedRequests[0].resourceType()).toBe('stylesheet');
       expect(failedRequests[0].failure().errorText).toBe('net::ERR_FAILED');
+      expect(failedRequests[0].frame()).toBeTruthy();
     });
     it('Page.Events.RequestFinished', async({page, server}) => {
       const requests = [];
@@ -2600,6 +2604,8 @@ describe('Page', function() {
       expect(requests.length).toBe(1);
       expect(requests[0].url()).toBe(server.EMPTY_PAGE);
       expect(requests[0].response()).toBeTruthy();
+      expect(requests[0].frame() === page.mainFrame()).toBe(true);
+      expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
     });
     it('should fire events in proper order', async({page, server}) => {
       const events = [];
