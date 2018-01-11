@@ -2087,6 +2087,44 @@ describe('Page', function() {
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
     });
+    it('should capture full element when larger than viewport', async({page, server}) => {
+      // compare with .to-screenshot size
+      await page.setViewport({width: 500, height: 500});
+
+      await page.setContent(`
+        something above
+        <style>div.spacer {
+          border: 2px solid red;
+          background: red;
+          height: 600px;
+          width: 52px;
+        }
+        div.to-screenshot {
+          border: 2px solid blue;
+          background: rgba(0, 0, 0, 0.5);
+          width: 600px;
+          height: 200.5px;
+          margin-left: 50px;
+          transform: scaleY(1.2);
+        }
+        </style>
+        <div class="spacer"></div>
+        <div class="to-screenshot"></div>
+        <div class="spacer"></div>
+      `);
+
+      await page.evaluate(function() {
+        window.scrollTo(11, 12);
+      });
+
+      const elementHandle = await page.$('div.to-screenshot');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-larger-than-viewport.png');
+
+      expect(await page.evaluate(function() {
+        return { w: window.innerWidth, h: window.innerHeight };
+      })).toEqual({ w: 500, h: 500 });
+    });
     it('should scroll element into view', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
