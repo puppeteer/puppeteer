@@ -3495,16 +3495,15 @@ describe('Page', function() {
     });
     it('should enable and disable domains independently', async function({page, server}) {
       const client = await page.target().createCDPSession();
-      await client.send('DOM.enable');
-      await client.send('CSS.enable');
-      // CSS coverage enables and then disables CSS domain.
-      await page.coverage.startCSSCoverage();
-      await page.coverage.stopCSSCoverage();
+      await client.send('Runtime.enable');
+      await client.send('Debugger.enable');
+      // JS coverage enables and then disables Debugger domain.
+      await page.coverage.startJSCoverage();
+      await page.coverage.stopJSCoverage();
       const events = [];
-      client.on('CSS.styleSheetAdded', event => events.push(event));
-      // add style tag and force style recalc
-      await page.addStyleTag({content: '*{color: blue}'});
-      await page.evaluate(() => getComputedStyle(document.body).color);
+      client.on('Debugger.scriptParsed', event => events.push(event));
+      // generate a script in page.
+      await page.evaluate(() => {});
       // expect events to be dispatched.
       expect(events.length).toBe(1);
     });
