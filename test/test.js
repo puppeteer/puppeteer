@@ -3500,12 +3500,13 @@ describe('Page', function() {
       // JS coverage enables and then disables Debugger domain.
       await page.coverage.startJSCoverage();
       await page.coverage.stopJSCoverage();
-      const events = [];
-      client.on('Debugger.scriptParsed', event => events.push(event));
-      // generate a script in page.
-      await page.evaluate(() => {});
+      // generate a script in page and wait for the event.
+      const [event] = await Promise.all([
+        waitForEvents(client, 'Debugger.scriptParsed'),
+        page.evaluate('//# sourceURL=foo.js')
+      ]);
       // expect events to be dispatched.
-      expect(events.length).toBe(1);
+      expect(event.url).toBe('foo.js');
     });
     it('should be able to detach session', async function({page, server}) {
       const client = await page.target().createCDPSession();
@@ -3705,7 +3706,7 @@ runner.run();
  * @param {!EventEmitter} emitter
  * @param {string} eventName
  * @param {number=} eventCount
- * @return {!Promise}
+ * @return {!Promise<!Object>}
  */
 function waitForEvents(emitter, eventName, eventCount = 1) {
   let fulfill;
@@ -3713,12 +3714,12 @@ function waitForEvents(emitter, eventName, eventCount = 1) {
   emitter.on(eventName, onEvent);
   return promise;
 
-  function onEvent() {
+  function onEvent(event) {
     --eventCount;
     if (eventCount)
       return;
     emitter.removeListener(eventName, onEvent);
-    fulfill();
+    fulfill(event);
   }
 }
 
