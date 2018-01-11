@@ -2223,7 +2223,7 @@ to send messages.
 #### cdpSession.send(method[, params])
 - `method` <[string]> protocol method name
 - `params` <[Object]> Optional method parameters
-- returns: <[Promise]<Object>>
+- returns: <[Promise]<[Object]>>
 
 
 ### class: Coverage
