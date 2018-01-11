@@ -1189,6 +1189,11 @@ describe('Page', function() {
       expect(requests.length).toBe(1);
       expect(requests[0].url()).toBe(server.EMPTY_PAGE);
     });
+    it('should work with self requesting page', async({page, server}) => {
+      const response = await page.goto(server.PREFIX + '/self-request.html');
+      expect(response.status()).toBe(200);
+      expect(response.url()).toContain('self-request.html');
+    });
   });
 
   describe('Page.waitForNavigation', function() {
@@ -1397,7 +1402,6 @@ describe('Page', function() {
       expect(requests.length).toBe(5);
       expect(requests[2].resourceType()).toBe('document');
     });
-
     it('should work with self requesting page', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => request.continue());
@@ -1405,7 +1409,6 @@ describe('Page', function() {
       expect(response.status()).toBe(200);
       expect(response.url()).toContain('self-request.html');
     });
-
     it('should be able to abort redirects', async({page, server}) => {
       await page.setRequestInterception(true);
       server.setRedirect('/non-existing.json', '/non-existing-2.json');
