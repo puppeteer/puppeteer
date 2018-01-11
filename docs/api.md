@@ -2225,6 +2225,7 @@ to send messages.
 - `params` <[Object]> Optional method parameters
 - returns: <[Promise]<Object>>
 
+
 ### class: Coverage
 
 Coverage gathers information about parts of JavaScript and CSS that were used by the page.
