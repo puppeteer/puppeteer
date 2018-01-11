@@ -1891,7 +1891,8 @@ This method returns the bounding box of the element (relative to the main frame)
 #### elementHandle.boxModel()
 - returns: <[Promise]<?[Object]>>
 
-This method returns the [box model](https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-BoxModel) for the given element, or `null` if the element is not visible.
+This method returns the [box model](https://chromedevtools.github.io/devtools-protocol/tot/DOM/#type-BoxModel) for the given element with calculated quads, or `null` if the element is not visible.
+Each box from model contains `x` and `y` values of the element box.
 
 #### elementHandle.click([options])
 - `options` <[Object]>
