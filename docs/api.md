@@ -87,6 +87,7 @@
   * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
   * [page.setViewport(viewport)](#pagesetviewportviewport)
   * [page.tap(selector)](#pagetapselector)
+  * [page.target()](#pagetarget)
   * [page.title()](#pagetitle)
   * [page.touchscreen](#pagetouchscreen)
   * [page.tracing](#pagetracing)
@@ -198,9 +199,13 @@
   * [response.text()](#responsetext)
   * [response.url()](#responseurl)
 - [class: Target](#class-target)
+  * [target.createCDPSession()](#targetcreatecdpsession)
   * [target.page()](#targetpage)
   * [target.type()](#targettype)
   * [target.url()](#targeturl)
+- [class: CDPSession](#class-cdpsession)
+  * [cdpSession.detach()](#cdpsessiondetach)
+  * [cdpSession.send(method[, params])](#cdpsessionsendmethod-params)
 - [class: Coverage](#class-coverage)
   * [coverage.startCSSCoverage(options)](#coveragestartcsscoverageoptions)
   * [coverage.startJSCoverage(options)](#coveragestartjscoverageoptions)
@@ -1138,6 +1143,9 @@ In the case of multiple pages in a single browser, each page can have its own vi
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.touchscreen](#pagetouchscreen) to tap in the center of the element.
 If there's no element matching `selector`, the method throws an error.
+
+#### page.target()
+- returns: <[Target]> a target this page was created from.
 
 #### page.title()
 - returns: <[Promise]<[string]>> Returns page's title.
@@ -2166,6 +2174,11 @@ Contains the URL of the response.
 
 ### class: Target
 
+#### target.createCDPSession()
+- returns: <[Promise]<[CDPSession]>>
+
+Creates a Chrome Devtools Protocol session attached to the target.
+
 #### target.page()
 - returns: <[Promise]<?[Page]>>
 
@@ -2178,6 +2191,40 @@ Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, or 
 
 #### target.url()
 - returns: <[string]>
+
+
+### class: CDPSession
+
+* extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)
+
+The `CDPSession` instances are used to talk raw Chrome Devtools Protocol:
+- protocol methods can be called with `session.send` method.
+- protocol events can be subscribed to with `session.on` method.
+
+Documentation on DevTools Protocol can be found here: [DevTools Protocol Viewer](https://chromedevtools.github.io/devtools-protocol/).
+
+```js
+const client = await page.target().createCDPSession();
+await client.send('Animation.enable');
+await client.on('Animation.animationCreated', () => console.log('Animation created!'));
+const response = await client.send('Animation.getPlaybackRate');
+console.log('playback rate is ' + response.playbackRate);
+await client.send('Animation.setPlaybackRate', {
+  playbackRate: response.playbackRate / 2
+});
+```
+
+#### cdpSession.detach()
+- returns: <[Promise]>
+
+Detaches session from target. Once detached, session won't emit any events and can't be used
+to send messages.
+
+#### cdpSession.send(method[, params])
+- `method` <[string]> protocol method name
+- `params` <[Object]> Optional method parameters
+- returns: <[Promise]<[Object]>>
+
 
 ### class: Coverage
 
@@ -2253,6 +2300,7 @@ reported.
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
 [stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable "stream.Readable"
+[CDPSession]: #class-cdpsession  "CDPSession"
 [Error]: https://nodejs.org/api/errors.html#errors_class_error "Error"
 [Frame]: #class-frame "Frame"
 [ConsoleMessage]: #class-consolemessage "ConsoleMessage"
