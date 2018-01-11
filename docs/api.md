@@ -2175,9 +2175,9 @@ Contains the URL of the response.
 ### class: Target
 
 #### target.createCDPSession()
-- returns: <[CDPSession]>
+- returns: <[Promise]<[CDPSession]>>
 
-Creates a *C*hrome *D*evtools *P*rotocol session attached to the target.
+Creates a Chrome Devtools Protocol session attached to the target.
 
 #### target.page()
 - returns: <[Promise]<?[Page]>>
@@ -2191,6 +2191,7 @@ Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, or 
 
 #### target.url()
 - returns: <[string]>
+
 
 ### class: CDPSession
 
@@ -2298,6 +2299,7 @@ reported.
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
 [stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable "stream.Readable"
+[CDPSession]: #class-cdpsession  "CDPSession"
 [Error]: https://nodejs.org/api/errors.html#errors_class_error "Error"
 [Frame]: #class-frame "Frame"
 [ConsoleMessage]: #class-consolemessage "ConsoleMessage"
