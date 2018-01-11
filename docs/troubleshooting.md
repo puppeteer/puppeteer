@@ -2,7 +2,8 @@
 
 ## Chrome headless doesn't launch
 
-- Make sure all the necessary dependencies are installed:
+Make sure all the necessary dependencies are installed. You can run `ldd chrome | grep not` on a Linux
+machine to check which dependencies are missing. The common ones are provided below.
 
 <details>
 <summary>Debian (e.g. Ubuntu) Dependencies</summary>
@@ -80,7 +81,6 @@ xorg-x11-fonts-misc
 - Check out discussions:
   - [#290](https://github.com/GoogleChrome/puppeteer/issues/290) - Debian troubleshooting
   - [#391](https://github.com/GoogleChrome/puppeteer/issues/391) - CentOS troubleshooting
-
 
 ## Chrome Headless fails due to sandbox issues
 
