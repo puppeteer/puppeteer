@@ -1193,6 +1193,11 @@ describe('Page', function() {
       expect(requests.length).toBe(1);
       expect(requests[0].url()).toBe(server.EMPTY_PAGE);
     });
+    it('should work with self requesting page', async({page, server}) => {
+      const response = await page.goto(server.PREFIX + '/self-request.html');
+      expect(response.status()).toBe(200);
+      expect(response.url()).toContain('self-request.html');
+    });
   });
 
   describe('Page.waitForNavigation', function() {
