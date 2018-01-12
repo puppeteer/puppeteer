@@ -603,6 +603,15 @@ Brings page to front (activates tab).
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
 If there's no element matching `selector`, the method throws an error.
 
+Bare in mind that if `click()` triggers a navigation event and there's a separate `page.waitForNavigation()` promise to be resolved, you may end up with a race condition that yields unexpected results. The correct pattern for click and wait for navigation is the following:
+
+```javascript
+const [response] = await Promise.all([
+  this.waitForNavigation(waitOptions),
+  this.click(selector, clickOptions),
+]);
+```
+
 #### page.close()
 - returns: <[Promise]>
 
