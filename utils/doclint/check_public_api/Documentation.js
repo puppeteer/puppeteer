@@ -16,7 +16,7 @@
 
 class Documentation {
   /**
-   * @param {!Array<!Documentation.Class>} clasesArray
+   * @param {!Array<!Documentation.Class>} classesArray
    */
   constructor(classesArray) {
     this.classesArray = classesArray;
