@@ -95,7 +95,7 @@ All public API should have a descriptive entry in the [docs/api.md](https://gith
 To run documentation linter, use
 
 ```bash
-yarn run doc
+yarn doc
 ```
 
 ## Adding New Dependencies
@@ -121,13 +121,13 @@ Despite being named 'unit', these are integration tests, making sure public API 
 - To run all tests:
 
 ```bash
-yarn run unit
+yarn unit
 ```
 
 - To filter tests by name:
 
 ```bash
-yarn run unit -- --filter=waitFor
+yarn unit --filter=waitFor
 ```
 
 - To run a specific test, substitute the `it` with `fit` (mnemonic rule: '*focus it*'):
@@ -155,25 +155,25 @@ yarn run unit -- --filter=waitFor
 - To run tests in non-headless mode:
 
 ```bash
-HEADLESS=false yarn run unit
+HEADLESS=false yarn unit
 ```
 
 - To run tests with custom Chromium executable:
 
 ```bash
-CHROME=<path-to-executable> yarn run unit
+CHROME=<path-to-executable> yarn unit
 ```
 
 - To run tests in slow-mode:
 
 ```bash
-HEADLESS=false SLOW_MO=500 yarn run unit
+HEADLESS=false SLOW_MO=500 yarn unit
 ```
 
 - To debug a test, "focus" a test first and then run:
 
 ```bash
-yarn run debug-unit
+yarn debug-unit
 ```
 
 ## Public API Coverage
@@ -183,7 +183,7 @@ Every public API method or event should be called at least once in tests. To ens
 Run coverage:
 
 ``` bash
-yarn run coverage
+yarn coverage
 ```
 
 ## Debugging Puppeteer
