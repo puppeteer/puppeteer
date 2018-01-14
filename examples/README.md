@@ -8,7 +8,7 @@ NODE_PATH=../ node examples/search.js
 
 # Tips & Tricks
 
-### Load a Chrome extension
+## Load a Chrome extension
 
 By default, Puppeteer disables extensions when launching Chrome. You can load a specific
 extension using:

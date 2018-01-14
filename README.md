@@ -1,4 +1,4 @@
-# Puppeteer 
+# Puppeteer
 
 <!-- [START badges] -->
 [![Linux Build Status](https://img.shields.io/travis/GoogleChrome/puppeteer/master.svg)](https://travis-ci.org/GoogleChrome/puppeteer) [![Windows Build Status](https://img.shields.io/appveyor/ci/aslushnikov/puppeteer/master.svg?logo=appveyor)](https://ci.appveyor.com/project/aslushnikov/puppeteer/branch/master) [![NPM puppeteer package](https://img.shields.io/npm/v/puppeteer.svg)](https://npmjs.org/package/puppeteer)
@@ -31,7 +31,8 @@ Give it a spin: https://try-puppeteer.appspot.com/
 ### Installation
 
 To use Puppeteer in your project, run:
-```
+
+```bash
 npm i --save puppeteer
 # or "yarn add puppeteer"
 ```
@@ -131,8 +132,7 @@ const browser = await puppeteer.launch({executablePath: '/path/to/Chrome'});
 
 See [`Puppeteer.launch()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions) for more information.
 
-See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description
-of the differences between Chromium and Chrome. [`This article`](https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users.
+See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description of the differences between Chromium and Chrome. [`This article`](https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users.
 
 **3. Creates a fresh user profile**
 
@@ -166,9 +166,10 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
    This is also handy when debugging code in `page.evaluate()`:
 
         page.on('console', msg => console.log('PAGE LOG:', msg.text()));
-        
+
         await page.evaluate(() => console.log(`url is ${location.href}`));
 
+        await page.evaluate(() => console.log(`url is ${location.href}`));
 
 1. Enable verbose logging - All public API calls and internal protocol traffic
    will be logged via the [`debug`](https://github.com/visionmedia/debug) module under the `puppeteer` namespace.
@@ -218,8 +219,7 @@ See [Contributing](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIB
 The goals of the project are simple:
 
 - Provide a slim, canonical library that highlights the capabilities of the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
-- Provide a reference implementation for similar testing libraries. Eventually, these
-other frameworks could adopt Puppeteer as their foundational layer.
+- Provide a reference implementation for similar testing libraries. Eventually, these other frameworks could adopt Puppeteer as their foundational layer.
 - Grow the adoption of headless/automated browser testing.
 - Help dogfood new DevTools Protocol features...and catch bugs!
 - Learn more about the pain points of automated browser testing and help fill those gaps.

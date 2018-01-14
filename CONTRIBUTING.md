@@ -18,11 +18,14 @@ again.
 ## Getting setup
 
 1. Clone this repository
+
 ```bash
 git clone https://github.com/GoogleChrome/puppeteer
 cd puppeteer
 ```
-2.  Install dependencies
+
+2. Install dependencies
+
 ```bash
 yarn # or 'npm install'
 ```
@@ -41,8 +44,9 @@ information on using pull requests.
 - comments should be generally avoided. If the code would not be understood without comments, consider re-writing the code to make it self-explanatory
 
 To run code linter, use:
-```
-npm run lint
+
+```bash
+yarn run lint
 ```
 
 ## Commit Messages
@@ -84,14 +88,14 @@ To deliver to a different location, use "deliver" option:
   `page.pizza({deliver: 'work'})`.
 ```
 
-
 ## Writing Documentation
 
 All public API should have a descriptive entry in the [docs/api.md](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md). There's a [documentation linter](https://github.com/GoogleChrome/puppeteer/tree/master/utils/doclint) which makes sure documentation is aligned with the codebase.
 
 To run documentation linter, use
-```
-npm run doc
+
+```bash
+yarn run doc
 ```
 
 ## Adding New Dependencies
@@ -115,14 +119,19 @@ and are written with a [TestRunner](https://github.com/GoogleChrome/puppeteer/tr
 Despite being named 'unit', these are integration tests, making sure public API methods and events work as expected.
 
 - To run all tests:
+
+```bash
+yarn run unit
 ```
-npm run unit
-```
+
 - To filter tests by name:
+
+```bash
+yarn run unit -- --filter=waitFor
 ```
-npm run unit -- --filter=waitFor
-```
+
 - To run a specific test, substitute the `it` with `fit` (mnemonic rule: '*focus it*'):
+
 ```js
   ...
   // Using "fit" to run specific test
@@ -131,7 +140,9 @@ npm run unit -- --filter=waitFor
     expect(response.ok).toBe(true);
   }))
 ```
+
 - To disable a specific test, substitute the `it` with `xit` (mnemonic rule: '*cross it*'):
+
 ```js
   ...
   // Using "xit" to skip specific test
@@ -140,21 +151,29 @@ npm run unit -- --filter=waitFor
     expect(response.ok).toBe(true);
   }))
 ```
+
 - To run tests in non-headless mode:
+
+```bash
+HEADLESS=false yarn run unit
 ```
-HEADLESS=false npm run unit
-```
+
 - To run tests with custom Chromium executable:
+
+```bash
+CHROME=<path-to-executable> yarn run unit
 ```
-CHROME=<path-to-executable> npm run unit
-```
+
 - To run tests in slow-mode:
+
+```bash
+HEADLESS=false SLOW_MO=500 yarn run unit
 ```
-HEADLESS=false SLOW_MO=500 npm run unit
-```
+
 - To debug a test, "focus" a test first and then run:
-```
-npm run debug-unit
+
+```bash
+yarn run debug-unit
 ```
 
 ## Public API Coverage
@@ -163,10 +182,9 @@ Every public API method or event should be called at least once in tests. To ens
 
 Run coverage:
 
-```
-npm run coverage
+``` bash
+yarn run coverage
 ```
 
 ## Debugging Puppeteer
 See [Debugging Tips](README.md#debugging-tips) in the readme
-
