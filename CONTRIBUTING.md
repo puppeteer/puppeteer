@@ -46,7 +46,7 @@ information on using pull requests.
 To run code linter, use:
 
 ```bash
-yarn run lint
+yarn lint
 ```
 
 ## Commit Messages
