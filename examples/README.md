@@ -32,6 +32,7 @@ const browser = await puppeteer.launch({
 - [Thal](https://medium.com/@e_mad_ehsan/getting-started-with-puppeteer-and-chrome-headless-for-web-scrapping-6bf5979dee3e "An article on medium") - Getting started with Puppeteer and Chrome Headless for Web Scraping.
 - [pupperender](https://github.com/LasaleFamine/pupperender) - Express middleware that checks the User-Agent header of incoming requests, and if it matches one of a configurable set of bots, render the page using Puppeteer. Useful for PWA rendering.
 - [headless-chrome-crawler](https://github.com/yujiosaka/headless-chrome-crawler) - Crawler that provides simple APIs to manipulate Headless Chrome and allows you to crawl dynamic websites.
+- [proxy-chain](https://medium.com/@jancurn/how-to-make-headless-chrome-and-puppeteer-use-a-proxy-server-with-authentication-249a21a79212) - How to make headless Chrome and Puppeteer use a proxy server with authentication
 
 ## Testing
 - [angular-puppeteer-demo](https://github.com/Quramy/angular-puppeteer-demo) - Demo repository explaining how to use Puppeteer in Karma.
