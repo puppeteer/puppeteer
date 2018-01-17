@@ -30,6 +30,7 @@
 - [class: Page](#class-page)
   * [event: 'console'](#event-console)
   * [event: 'dialog'](#event-dialog)
+  * [event: 'domcontentloaded'](#event-domcontentloaded)
   * [event: 'error'](#event-error)
   * [event: 'frameattached'](#event-frameattached)
   * [event: 'framedetached'](#event-framedetached)
@@ -433,6 +434,10 @@ page.evaluate(() => console.log('hello', 5, {foo: 'bar'}));
 - <[Dialog]>
 
 Emitted when a JavaScript dialog appears, such as `alert`, `prompt`, `confirm` or `beforeunload`. Puppeteer can respond to the dialog via [Dialog]'s [accept](#dialogacceptprompttext) or [dismiss](#dialogdismiss) methods.
+
+#### event: 'domcontentloaded'
+
+Emitted when the JavaScript [`DOMContentLoaded`](https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded) event is dispatched.
 
 #### event: 'error'
 - <[Error]>

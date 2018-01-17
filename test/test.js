@@ -969,6 +969,13 @@ describe('Page', function() {
     });
   });
 
+  describe('Page.Events.DOMContentLoaded', function() {
+    it('should fire when expected', async({page, server}) => {
+      page.goto('about:blank');
+      await waitForEvents(page, 'domcontentloaded', 1);
+    });
+  });
+
   describe('Page.metrics', function() {
     it('should get metrics from a page', async({page, server}) => {
       await page.goto('about:blank');
