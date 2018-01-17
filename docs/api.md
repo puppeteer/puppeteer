@@ -1743,7 +1743,7 @@ The class represents a context for JavaScript execution. Examples of JavaScript 
 If the function, passed to the `executionContext.evaluate`, returns a [Promise], then `executionContext.evaluate` would wait for the promise to resolve and return its value.
 
 ```js
-const executionContext = page.mainFrame().executionContext();
+const executionContext = await page.mainFrame().executionContext();
 const result = await executionContext.evaluate(() => Promise.resolve(8 * 7));
 console.log(result); // prints "56"
 ```
@@ -1772,7 +1772,7 @@ console.log(result); // prints '3'.
 If the function, passed to the `executionContext.evaluateHandle`, returns a [Promise], then `executionContext.evaluteHandle` would wait for the promise to resolve and return its value.
 
 ```js
-const context = page.mainFrame().executionContext();
+const context = await page.mainFrame().executionContext();
 const aHandle = await context.evaluateHandle(() => Promise.resolve(self));
 aHandle; // Handle for the global object.
 ```
