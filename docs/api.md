@@ -49,6 +49,7 @@
   * [page.$x(expression)](#pagexexpression)
   * [page.addScriptTag(options)](#pageaddscripttagoptions)
   * [page.addStyleTag(options)](#pageaddstyletagoptions)
+  * [page.allCookies(...urls)](#pageallcookiesurls)
   * [page.authenticate(credentials)](#pageauthenticatecredentials)
   * [page.bringToFront()](#pagebringtofront)
   * [page.click(selector[, options])](#pageclickselector-options)
@@ -580,6 +581,22 @@ Shortcut for [page.mainFrame().addScriptTag(options)](#frameaddscripttagoptions)
 Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
 
 Shortcut for [page.mainFrame().addStyleTag(options)](#frameaddstyletagoptions).
+
+#### page.allCookies(...urls)
+- `...urls` <...[string]>
+- returns: <[Promise]<[Array]<[Object]>>>
+  - `name` <[string]>
+  - `value` <[string]>
+  - `domain` <[string]>
+  - `path` <[string]>
+  - `expires` <[number]> Unix time in seconds.
+  - `httpOnly` <[boolean]>
+  - `secure` <[boolean]>
+  - `session` <[boolean]>
+  - `sameSite` <[string]> `"Strict"` or `"Lax"`.
+
+If no URLs are specified, this method returns all cookies for the current session.
+If URLs are specified, only cookies for those URLs are returned.
 
 #### page.authenticate(credentials)
 - `credentials` <?[Object]>
