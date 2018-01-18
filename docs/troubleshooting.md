@@ -81,7 +81,7 @@ xorg-x11-fonts-misc
 - Check out discussions:
   - [#290](https://github.com/GoogleChrome/puppeteer/issues/290) - Debian troubleshooting
   - [#391](https://github.com/GoogleChrome/puppeteer/issues/391) - CentOS troubleshooting
-  - [#379]() - Alpine troubleshooting
+  - [#379](https://github.com/GoogleChrome/puppeteer/issues/379) - Alpine troubleshooting
 
 ## Chrome Headless fails due to sandbox issues
 
