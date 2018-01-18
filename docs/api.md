@@ -555,7 +555,7 @@ Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector
 - `expression` <[string]> Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate).
 - returns: <[Promise]<[Array]<[ElementHandle]>>>
 
-The method evluates the XPath expression.
+The method evaluates the XPath expression.
 
 Shortcut for [page.mainFrame().$x(expression)](#frameexpression)
 
@@ -1568,7 +1568,7 @@ const html = await frame.$eval('.main-container', e => e.outerHTML);
 - `expression` <[string]> Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate).
 - returns: <[Promise]<[Array]<[ElementHandle]>>>
 
-The method evluates the XPath expression.
+The method evaluates the XPath expression.
 
 #### frame.addScriptTag(options)
 - `options` <[Object]>
@@ -1910,7 +1910,7 @@ The method runs `element.querySelectorAll` within the page. If no elements match
 - `expression` <[string]> Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate).
 - returns: <[Promise]<?[ElementHandle]>> Promise which resolves to ElementHandle pointing to the frame element.
 
-The method evluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to `null`.
+The method evaluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to `null`.
 
 #### elementHandle.asElement()
 - returns: <[elementhandle]>
