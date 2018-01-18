@@ -81,6 +81,7 @@ xorg-x11-fonts-misc
 - Check out discussions:
   - [#290](https://github.com/GoogleChrome/puppeteer/issues/290) - Debian troubleshooting
   - [#391](https://github.com/GoogleChrome/puppeteer/issues/391) - CentOS troubleshooting
+  - [#379]() - Alpine troubleshooting
 
 ## Chrome Headless fails due to sandbox issues
 
@@ -93,12 +94,12 @@ const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid
 
 ## Running Puppeteer in Docker
 
-Using headless Chrome Linux to run Puppeteer in Docker container can be tricky.
-The bundled version Chromium that Puppeteer installs is missing the necessary
+Getting headless Chrome up and running in Docker can be tricky.
+The bundled Chromium that Puppeteer installs is missing the necessary
 shared library dependencies.
 
-To fix this, you'll need to install the latest version of Chrome dev in your
-Dockerfile:
+To fix, you'll need to install the missing dependencies and the
+latest Chromium package in your Dockerfile:
 
 ```
 FROM node:8-slim
@@ -119,6 +120,10 @@ RUN apt-get update && apt-get install -y wget --no-install-recommends \
     && apt-get purge --auto-remove -y curl \
     && rm -rf /src/*.deb
 
+# It's a good idea to use dumb-init to help prevent zombie chrome processes.
+ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 /usr/local/bin/dumb-init
+RUN chmod +x /usr/local/bin/dumb-init
+
 # Uncomment to skip the chromium download when installing puppeteer. If you do,
 # you'll need to launch puppeteer with:
 #     browser.launch({executablePath: 'google-chrome-unstable'})
@@ -127,15 +132,16 @@ RUN apt-get update && apt-get install -y wget --no-install-recommends \
 # Install puppeteer so it's available in the container.
 RUN yarn add puppeteer
 
-# Add pptr user.
+# Add user so we don't need --no-sandbox.
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
     && mkdir -p /home/pptruser/Downloads \
     && chown -R pptruser:pptruser /home/pptruser \
     && chown -R pptruser:pptruser /node_modules
 
-# Run user as non privileged.
+# Run everything after as non-privileged user.
 USER pptruser
 
+ENTRYPOINT ["dumb-init", "--"]
 CMD ["google-chrome-unstable"]
 ```
 
@@ -155,6 +161,51 @@ Run the container by passing `node -e "<yourscript.js content as a string>` as t
 
 There's a full example at https://github.com/ebidel/try-puppeteer that shows
 how to run this Dockerfile from a webserver running on App Engine Flex (Node).
+
+### Running on Alpine
+
+The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 63, which was corresponds to [Puppeteer v0.11.0](https://github.com/GoogleChrome/puppeteer/releases/tag/v0.11.0).
+
+Example Dockerfile:
+
+```
+FROM node:9-alpine
+
+# Installs latest Chromium (63) package.
+RUN apk update && apk upgrade && \
+    echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
+    echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
+    apk add --no-cache \
+      chromium@edge \
+      nss@edge
+
+...
+
+# Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+
+# Puppeteer v0.11.0 works with Chromium 63.
+RUN yarn add puppeteer@0.11.0
+
+# Add user so we don't need --no-sandbox.
+RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
+    && mkdir -p /home/pptruser/Downloads \
+    && chown -R pptruser:pptruser /home/pptruser \
+    && chown -R pptruser:pptruser /app
+
+# Run everything after as non-privileged user.
+USER pptruser
+
+...
+```
+
+And when launching Chrome, be sure to use the `chromium-browser` executable:
+
+```js
+const browser = await puppeteer.launch({
+  executablePath: '/usr/bin/chromium-browser'
+});
+```
 
 #### Tips
 
