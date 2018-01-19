@@ -612,8 +612,8 @@ Bare in mind that if `click()` triggers a navigation event and there's a separat
 
 ```javascript
 const [response] = await Promise.all([
-  this.waitForNavigation(waitOptions),
-  this.click(selector, clickOptions),
+  page.waitForNavigation(waitOptions),
+  page.click(selector, clickOptions),
 ]);
 ```
 
@@ -1121,7 +1121,7 @@ puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
   await page.setRequestInterception(true);
   page.on('request', interceptedRequest => {
-    if (interceptedRequest.url.endsWith('.png') || interceptedRequest.url.endsWith('.jpg'))
+    if (interceptedRequest.url().endsWith('.png') || interceptedRequest.url().endsWith('.jpg'))
       interceptedRequest.abort();
     else
       interceptedRequest.continue();
@@ -2250,19 +2250,19 @@ executed code:
 ```js
 // Enable both JavaScript and CSS coverage
 await Promise.all([
-  page.startJSCoverage(),
-  page.startCSSCoverage()
+  page.coverage.startJSCoverage(),
+  page.coverage.startCSSCoverage()
 ]);
 // Navigate to page
 await page.goto('https://example.com');
 // Disable both JavaScript and CSS coverage
 const [jsCoverage, cssCoverage] = await Promise.all([
-  page.stopJSCoverage(),
-  page.stopCSSCoverage(),
+  page.coverage.stopJSCoverage(),
+  page.coverage.stopCSSCoverage(),
 ]);
 let totalBytes = 0;
 let usedBytes = 0;
-const coverage = [].concat(jsCoverage, cssCoverage);
+const coverage = [...jsCoverage, ...cssCoverage];
 for (const entry of coverage) {
   totalBytes += entry.text.length;
   for (const range of entry.ranges)
