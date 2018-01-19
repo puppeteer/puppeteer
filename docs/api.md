@@ -612,8 +612,8 @@ Bare in mind that if `click()` triggers a navigation event and there's a separat
 
 ```javascript
 const [response] = await Promise.all([
-  this.waitForNavigation(waitOptions),
-  this.click(selector, clickOptions),
+  page.waitForNavigation(waitOptions),
+  page.click(selector, clickOptions),
 ]);
 ```
 
