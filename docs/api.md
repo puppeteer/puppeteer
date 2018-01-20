@@ -258,6 +258,7 @@ puppeteer.launch().then(async browser => {
 - `options` <[Object]>
   - `browserWSEndpoint` <[string]> a [browser websocket endpoint](#browserwsendpoint) to connect to.
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
+  - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
 - returns: <[Promise]<[Browser]>>
 
 This methods attaches Puppeteer to an existing Chromium instance.
