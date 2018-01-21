@@ -695,13 +695,13 @@ List of all available devices is available in the source code: [DeviceDescriptor
 #### page.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[Serializable]>> Resolves to the return value of `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction` as a javascript-object
 
-If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return its value.
+If the function passed to the `page.evaluate` returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return its value.
 
 If the function passed into `page.evaluate` returns a non-[Serializable] value, then `page.evaluate` resolves to `undefined`.
-Passing arguments to ```pageFunction```.
 
+Passing arguments to `pageFunction`:
 ```js
 const result = await page.evaluate(x => {
   return Promise.resolve(8 * x);
@@ -709,8 +709,7 @@ const result = await page.evaluate(x => {
 console.log(result); // prints "56"
 ```
 
-A string can also be passed in instead of a function.
-
+A string can also be passed in instead of a function:
 ```js
 console.log(await page.evaluate('1 + 2')); // prints "3"
 const x = 10;
@@ -729,19 +728,18 @@ Shortcut for [page.mainFrame().evaluate(pageFunction, ...args)](#frameevaluatepa
 #### page.evaluateHandle(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[JSHandle]>> Resolves to the return value of `pageFunction`
+- returns: <[Promise]<[JSHandle]>> Promise which resolves to the return value of `pageFunction` as in-page object (JSHandle)
 
-If the function, passed to the `page.evaluateHandle`, returns a [Promise], then `page.evaluateHandle` would wait for the promise to resolve and return its value.
+If the function passed to the `page.evaluateHandle` returns a [Promise], then `page.evaluateHandle` would wait for the promise to resolve and return its value.
 
+The only differnce between `page.evaluate` and `page.evaluateHandler` is that the former returns JSON representation of the object and the latter returns in-page object (JSHandle):
 ```js
-const aWindowHandle = await page.evaluateHandle(() => Promise.resolve(window));
-aWindowHandle; // Handle for the window object.
+const aWindowHandle = await page.evaluateHandle(() => Promise.resolve(window)); // Handle for the window object
 ```
 
-A string can also be passed in instead of a function.
-
+A string can also be passed in instead of a function:
 ```js
-const aHandle = await page.evaluateHandle('document'); // Handle for the 'document'.
+const aHandle = await page.evaluateHandle('document'); // Handle for the 'document'
 ```
 
 [JSHandle] instances can be passed as arguments to the `page.evaluateHandle`:
