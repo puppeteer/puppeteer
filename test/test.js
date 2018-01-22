@@ -2128,7 +2128,7 @@ describe('Page', function() {
         return { w: window.innerWidth, h: window.innerHeight };
       })).toEqual({ w: 500, h: 500 });
     });
-    fit('should screenshot element with scroll container', async({page, server}) => {
+    it('should screenshot element with scroll container', async({page, server}) => {
       // compare with .to-screenshot size
       await page.setViewport({width: 500, height: 500});
 
@@ -2157,6 +2157,7 @@ describe('Page', function() {
           height: 580px;
           margin-top: 50px;
           margin-left: 200px;
+          margin-right: 50px;
         }
         ::-webkit-scrollbar {
           display: none;
