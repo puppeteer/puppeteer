@@ -970,6 +970,12 @@ describe('Page', function() {
       await waitFor;
       expect(found).toBe(true);
     });
+    it('should not allow you to select an element with single slash xpath', async({page, server}) => {
+      await page.setContent(`<div>some text</div>`);
+      let error = null;
+      await page.waitFor('/html/body/div').catch(e => error = e);
+      expect(error).toBeTruthy();
+    });
     it('should timeout', async({page, server}) => {
       const startTime = Date.now();
       const timeout = 42;
