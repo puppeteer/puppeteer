@@ -2107,6 +2107,9 @@ describe('Page', function() {
           margin-left: 50px;
           transform: scaleY(1.2);
         }
+        ::-webkit-scrollbar {
+          display: none;
+        }
         </style>
         <div class="spacer"></div>
         <div class="to-screenshot"></div>
