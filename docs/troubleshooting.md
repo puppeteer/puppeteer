@@ -125,7 +125,7 @@ RUN apt-get update && apt-get install -y wget --no-install-recommends \
 # ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
 # Install puppeteer so it's available in the container.
-RUN yarn add puppeteer
+RUN npm i puppeteer
 
 # Add pptr user.
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
@@ -176,7 +176,7 @@ Seeing other weird errors when launching Chrome? Try running your container
 with `docker run --cap-add=SYS_ADMIN` when developing locally. Since the Dockerfile
 adds a `pptr` user as a non-privileged user, it may not have all the necessary privileges.
 
-[dumb-init](https://github.com/Yelp/dumb-init) is worth checking out if you're 
+[dumb-init](https://github.com/Yelp/dumb-init) is worth checking out if you're
 experiencing a lot of zombies Chrome processes sticking around. There's special
 treatment for processes with PID=1, which makes it hard to terminate Chrome
 properly in some cases (e.g. in Docker).
