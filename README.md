@@ -165,7 +165,7 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
 1. Capture console output - You can listen for the `console` event.
    This is also handy when debugging code in `page.evaluate()`:
 
-        page.on('console', msg => console.log('PAGE LOG:', ...msg.args));
+        page.on('console', msg => console.log('PAGE LOG:', msg.text()));
         
         await page.evaluate(() => console.log(`url is ${location.href}`));
 
