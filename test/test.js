@@ -3142,6 +3142,12 @@ describe('Page', function() {
       expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
       expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
     });
+    it('should select only first option', async({page, server}) => {
+      await page.goto(server.PREFIX + '/input/select.html');
+      await page.select('select', 'blue', 'green', 'red');
+      expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
+      expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
+    });
     it('should select multiple options', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/select.html');
       await page.evaluate(() => makeMultiple());
