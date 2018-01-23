@@ -695,7 +695,7 @@ List of all available devices is available in the source code: [DeviceDescriptor
 #### page.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction` as a javascript-object
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction` as a JavaScript object
 
 If the function passed to the `page.evaluate` returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return its value.
 
@@ -732,10 +732,17 @@ Shortcut for [page.mainFrame().evaluate(pageFunction, ...args)](#frameevaluatepa
 
 If the function passed to the `page.evaluateHandle` returns a [Promise], then `page.evaluateHandle` would wait for the promise to resolve and return its value.
 
-The only difference between `page.evaluate` and `page.evaluateHandler` is that the former returns JSON representation of the object and the latter returns in-page object (JSHandle):
+The only difference between `page.evaluate` and `page.evaluateHandler` is that `page.evaluate` returns JSON representation of the object and `page.evaluateHandler` returns in-page object (JSHandle):
 ```js
-const aWindowHandle = await page.evaluateHandle(() => Promise.resolve(window)); 
-aWindowHandle; // Handle for the window object
+// returns JavaScript object
+const jsObject = await page.evaluate(pageFunction, elementHandle);
+
+// returns in-page object (JSHandle)
+const jsHandle = await page.evaluateHandle(pageFunction, elementHandle);
+
+// both lines below print true
+console.log(`jsObject is NOT equal to jsHandle: ${jsObject !== jsHandle}`);
+console.log(`jsObject is equal to jsHandle.jsonValue(): ${jsObject === (await jsHandle.jsonValue())}`);
 ```
 
 A string can also be passed in instead of a function:
