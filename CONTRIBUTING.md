@@ -27,7 +27,7 @@ cd puppeteer
 2. Install dependencies
 
 ```bash
-yarn # or 'npm install'
+npm install # or 'yarn'
 ```
 
 ## Code reviews
@@ -46,7 +46,7 @@ information on using pull requests.
 To run code linter, use:
 
 ```bash
-yarn lint
+npm run lint
 ```
 
 ## Commit Messages
@@ -95,7 +95,7 @@ All public API should have a descriptive entry in the [docs/api.md](https://gith
 To run documentation linter, use
 
 ```bash
-yarn doc
+npm run doc
 ```
 
 ## Adding New Dependencies
@@ -121,13 +121,13 @@ Despite being named 'unit', these are integration tests, making sure public API 
 - To run all tests:
 
 ```bash
-yarn unit
+npm run unit
 ```
 
 - To filter tests by name:
 
 ```bash
-yarn unit --filter=waitFor
+npm run unit --filter=waitFor
 ```
 
 - To run a specific test, substitute the `it` with `fit` (mnemonic rule: '*focus it*'):
@@ -155,25 +155,25 @@ yarn unit --filter=waitFor
 - To run tests in non-headless mode:
 
 ```bash
-HEADLESS=false yarn unit
+HEADLESS=false npm run unit
 ```
 
 - To run tests with custom Chromium executable:
 
 ```bash
-CHROME=<path-to-executable> yarn unit
+CHROME=<path-to-executable> npm run unit
 ```
 
 - To run tests in slow-mode:
 
 ```bash
-HEADLESS=false SLOW_MO=500 yarn unit
+HEADLESS=false SLOW_MO=500 npm run unit
 ```
 
 - To debug a test, "focus" a test first and then run:
 
 ```bash
-yarn debug-unit
+npm run debug-unit
 ```
 
 ## Public API Coverage
@@ -183,8 +183,9 @@ Every public API method or event should be called at least once in tests. To ens
 Run coverage:
 
 ``` bash
-yarn coverage
+npm run coverage
 ```
 
 ## Debugging Puppeteer
+
 See [Debugging Tips](README.md#debugging-tips) in the readme
