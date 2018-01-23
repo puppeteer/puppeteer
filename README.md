@@ -32,8 +32,8 @@ Give it a spin: https://try-puppeteer.appspot.com/
 
 To use Puppeteer in your project, run:
 ```
-yarn add puppeteer
-# or "npm i puppeteer"
+npm i --save puppeteer
+# or "yarn add puppeteer"
 ```
 
 Note: When you install Puppeteer, it downloads a recent version of Chromium (~71Mb Mac, ~90Mb Linux, ~110Mb Win) that is guaranteed to work with the API. To skip the download, see [Environment variables](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#environment-variables).
@@ -131,7 +131,7 @@ const browser = await puppeteer.launch({executablePath: '/path/to/Chrome'});
 
 See [`Puppeteer.launch()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteerlaunchoptions) for more information.
 
-See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description 
+See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description
 of the differences between Chromium and Chrome. [`This article`](https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users.
 
 **3. Creates a fresh user profile**
