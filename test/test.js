@@ -624,6 +624,15 @@ describe('Page', function() {
     });
   });
 
+  describe('Frame.evaluateHandle', function() {
+    it('should work', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const mainFrame = page.mainFrame();
+      const windowHandle = await mainFrame.evaluateHandle(() => window);
+      expect(windowHandle).toBeTruthy();
+    });
+  });
+
   describe('Frame.evaluate', function() {
     it('should have different execution contexts', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
