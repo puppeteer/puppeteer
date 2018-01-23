@@ -196,6 +196,7 @@
   * [response.json()](#responsejson)
   * [response.ok()](#responseok)
   * [response.request()](#responserequest)
+  * [response.securityDetails()](#responsesecuritydetails)
   * [response.status()](#responsestatus)
   * [response.text()](#responsetext)
   * [response.url()](#responseurl)
@@ -2172,6 +2173,9 @@ Contains a boolean stating whether the response was successful (status in the ra
 
 #### response.request()
 - returns: <[Request]> A matching [Request] object.
+
+#### response.securityDetails()
+- returns: <[Object]> An object with security details associated with the response. All item are preserved in form as returned by Chrome DevTools protocol.
 
 #### response.status()
 - returns: <[number]>

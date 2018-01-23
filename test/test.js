@@ -249,20 +249,27 @@ describe('Puppeteer', function() {
 describe('Page', function() {
   beforeAll(async state => {
     state.browser = await puppeteer.launch(defaultBrowserOptions);
+    const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
+    state.browser_https = await puppeteer.launch(options);
   });
 
   afterAll(async state => {
     await state.browser.close();
+    await state.browser_https.close();
     state.browser = null;
+    state.browser_https = null;
   });
 
   beforeEach(async state => {
     state.page = await state.browser.newPage();
+    state.page_https = await state.browser_https.newPage();
   });
 
   afterEach(async state => {
     await state.page.close();
+    await state.page_https.close();
     state.page = null;
+    state.page_https = null;
   });
 
   describe('Browser.version', function() {
@@ -1204,6 +1211,15 @@ describe('Page', function() {
       const response = await page.goto(server.PREFIX + '/self-request.html');
       expect(response.status()).toBe(200);
       expect(response.url()).toContain('self-request.html');
+    });
+    // TODO edit to vefify that results are retrieved
+    it('should support ignoreHTTPSErrors option', async({page_https, httpsServer}) => {
+      let error = null;
+      const response = await page_https.goto(httpsServer.EMPTY_PAGE).catch(e => error = e);
+      expect(error).toBe(null);
+      expect(response.ok()).toBe(true);
+      expect(response.securityDetails()).toBeTruthy();
+      expect(response.securityDetails().protocol).toBe("TLS 1.2");
     });
   });
 
