@@ -732,9 +732,9 @@ Shortcut for [page.mainFrame().evaluate(pageFunction, ...args)](#frameevaluatepa
 
 If the function passed to the `page.evaluateHandle` returns a [Promise], then `page.evaluateHandle` would wait for the promise to resolve and return its value.
 
-The only difference between `page.evaluate` and `page.evaluateHandler` is that `page.evaluate` returns JSON representation of the object and `page.evaluateHandler` returns in-page object (JSHandle):
+The only difference between `page.evaluate` and `page.evaluateHandle` is that `page.evaluate` returns a JSON representation of the object and `page.evaluateHandle` returns in-page object (JSHandle):
 ```js
-// returns JavaScript object
+// returns a JSON object
 const jsObject = await page.evaluate(pageFunction, elementHandle);
 
 // returns in-page object (JSHandle)
