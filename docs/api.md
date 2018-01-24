@@ -2156,7 +2156,7 @@ Example of logging all failed requests:
 
 ```js
 page.on('requestfailed', request => {
-  console.log(request.url + ' ' + request.failure().errorText);
+  console.log(request.url() + ' ' + request.failure().errorText);
 });
 ```
 
