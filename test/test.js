@@ -318,6 +318,40 @@ describe('Page', function() {
     });
   });
 
+  describe('Browser.newIsolatedPage', function() {
+    beforeEach(async state => {
+      state.incognitoPage = await state.browser.newIsolatedPage();
+    });
+
+    afterEach(async state => {
+      await state.incognitoPage.close();
+      state.incognitoPage = null;
+    });
+
+    it('should use a separate browser context', async function({page, incognitoPage, server}) {
+      await page.goto(server.PREFIX + '/grid.html');
+      await incognitoPage.goto(server.PREFIX + '/grid.html');
+      expect(await page.cookies()).toEqual([]);
+      expect(await incognitoPage.cookies()).toEqual([]);
+      await incognitoPage.setCookie({
+        name: 'password',
+        value: '123456'
+      });
+      expect(await incognitoPage.cookies()).toEqual([{
+        name: 'password',
+        value: '123456',
+        domain: 'localhost',
+        path: '/',
+        expires: -1,
+        size: 14,
+        httpOnly: false,
+        secure: false,
+        session: true
+      }]);
+      expect(await page.cookies()).toEqual([]);
+    });
+  });
+
   describe('Page.close', function() {
     it('should reject all promises when page is closed', async({browser}) => {
       const newPage = await browser.newPage();
