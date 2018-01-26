@@ -624,6 +624,15 @@ describe('Page', function() {
     });
   });
 
+  describe('Frame.evaluateHandle', function() {
+    it('should work', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const mainFrame = page.mainFrame();
+      const windowHandle = await mainFrame.evaluateHandle(() => window);
+      expect(windowHandle).toBeTruthy();
+    });
+  });
+
   describe('Frame.evaluate', function() {
     it('should have different execution contexts', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
@@ -797,7 +806,7 @@ describe('Page', function() {
       await FrameUtils.detachFrame(page, 'frame1');
       await waitPromise;
       expect(waitError).toBeTruthy();
-      expect(waitError.message).toContain('waitForSelector failed: frame got detached.');
+      expect(waitError.message).toContain('waitForFunction failed: frame got detached.');
     });
     it('should survive cross-process navigation', async({page, server}) => {
       let boxFound = false;
@@ -884,6 +893,73 @@ describe('Page', function() {
     });
   });
 
+  describe('Frame.waitForXPath', function() {
+    const addElement = tag => document.body.appendChild(document.createElement(tag));
+
+    it('should support some fancy xpath', async({page, server}) => {
+      await page.setContent(`<p>red herring</p><p>hello  world  </p>`);
+      const waitForXPath = page.waitForXPath('//p[normalize-space(.)="hello world"]');
+      expect(await page.evaluate(x => x.textContent, await waitForXPath)).toBe('hello  world  ');
+    });
+    it('should run in specified frame', async({page, server}) => {
+      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await FrameUtils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
+      const frame1 = page.frames()[1];
+      const frame2 = page.frames()[2];
+      let added = false;
+      frame2.waitForXPath('//div').then(() => added = true);
+      expect(added).toBe(false);
+      await frame1.evaluate(addElement, 'div');
+      expect(added).toBe(false);
+      await frame2.evaluate(addElement, 'div');
+      expect(added).toBe(true);
+    });
+    it('should throw if evaluation failed', async({page, server}) => {
+      await page.evaluateOnNewDocument(function() {
+        document.evaluate = null;
+      });
+      await page.goto(server.EMPTY_PAGE);
+      let error = null;
+      await page.waitForXPath('*').catch(e => error = e);
+      expect(error.message).toContain('document.evaluate is not a function');
+    });
+    it('should throw when frame is detached', async({page, server}) => {
+      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      const frame = page.frames()[1];
+      let waitError = null;
+      const waitPromise = frame.waitForXPath('//*[@class="box"]').catch(e => waitError = e);
+      await FrameUtils.detachFrame(page, 'frame1');
+      await waitPromise;
+      expect(waitError).toBeTruthy();
+      expect(waitError.message).toContain('waitForFunction failed: frame got detached.');
+    });
+    it('hidden should wait for display: none', async({page, server}) => {
+      let divHidden = false;
+      await page.setContent(`<div style='display: block;'></div>`);
+      const waitForXPath = page.waitForXPath('//div', {hidden: true}).then(() => divHidden = true);
+      await page.waitForXPath('//div'); // do a round trip
+      expect(divHidden).toBe(false);
+      await page.evaluate(() => document.querySelector('div').style.setProperty('display', 'none'));
+      expect(await waitForXPath).toBe(true);
+      expect(divHidden).toBe(true);
+    });
+    it('should return the element handle', async({page, server}) => {
+      const waitForXPath = page.waitForXPath('//*[@class="zombo"]');
+      await page.setContent(`<div class='zombo'>anything</div>`);
+      expect(await page.evaluate(x => x.textContent, await waitForXPath)).toBe('anything');
+    });
+    it('should allow you to select a text node', async({page, server}) => {
+      await page.setContent(`<div>some text</div>`);
+      const text = await page.waitForXPath('//div/text()');
+      expect(await (await text.getProperty('nodeType')).jsonValue()).toBe(3 /* Node.TEXT_NODE */);
+    });
+    it('should allow you to select an element with single slash', async({page, server}) => {
+      await page.setContent(`<div>some text</div>`);
+      const waitForXPath = page.waitForXPath('/html/body/div');
+      expect(await page.evaluate(x => x.textContent, await waitForXPath)).toBe('some text');
+    });
+  });
+
   describe('Page.waitFor', function() {
     it('should wait for selector', async({page, server}) => {
       let found = false;
@@ -893,6 +969,21 @@ describe('Page', function() {
       await page.goto(server.PREFIX + '/grid.html');
       await waitFor;
       expect(found).toBe(true);
+    });
+    it('should wait for an xpath', async({page, server}) => {
+      let found = false;
+      const waitFor = page.waitFor('//div').then(() => found = true);
+      await page.goto(server.EMPTY_PAGE);
+      expect(found).toBe(false);
+      await page.goto(server.PREFIX + '/grid.html');
+      await waitFor;
+      expect(found).toBe(true);
+    });
+    it('should not allow you to select an element with single slash xpath', async({page, server}) => {
+      await page.setContent(`<div>some text</div>`);
+      let error = null;
+      await page.waitFor('/html/body/div').catch(e => error = e);
+      expect(error).toBeTruthy();
     });
     it('should timeout', async({page, server}) => {
       const startTime = Date.now();
@@ -3057,6 +3148,12 @@ describe('Page', function() {
     it('should select single option', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/select.html');
       await page.select('select', 'blue');
+      expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
+      expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
+    });
+    it('should select only first option', async({page, server}) => {
+      await page.goto(server.PREFIX + '/input/select.html');
+      await page.select('select', 'blue', 'green', 'red');
       expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
       expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
     });

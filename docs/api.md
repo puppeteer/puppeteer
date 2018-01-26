@@ -99,6 +99,7 @@
   * [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
   * [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
+  * [page.waitForXPath(xpath[, options])](#pagewaitforxpathxpath-options)
 - [class: Keyboard](#class-keyboard)
   * [keyboard.down(key[, options])](#keyboarddownkey-options)
   * [keyboard.press(key[, options])](#keyboardpresskey-options)
@@ -136,6 +137,7 @@
   * [frame.childFrames()](#framechildframes)
   * [frame.content()](#framecontent)
   * [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
+  * [frame.evaluateHandle(pageFunction, ...args)](#frameevaluatehandlepagefunction-args)
   * [frame.executionContext()](#frameexecutioncontext)
   * [frame.isDetached()](#frameisdetached)
   * [frame.name()](#framename)
@@ -147,6 +149,7 @@
   * [frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args)
   * [frame.waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args)
   * [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
+  * [frame.waitForXPath(xpath[, options])](#framewaitforxpathxpath-options)
 - [class: ExecutionContext](#class-executioncontext)
   * [executionContext.evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args)
   * [executionContext.evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args)
@@ -258,6 +261,7 @@ puppeteer.launch().then(async browser => {
 - `options` <[Object]>
   - `browserWSEndpoint` <[string]> a [browser websocket endpoint](#browserwsendpoint) to connect to.
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
+  - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
 - returns: <[Promise]<[Browser]>>
 
 This methods attaches Puppeteer to an existing Chromium instance.
@@ -802,7 +806,7 @@ const crypto = require('crypto');
 
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
-  page.on('console', msg => console.log(msg.text));
+  page.on('console', msg => console.log(msg.text()));
   await page.exposeFunction('md5', text =>
     crypto.createHash('md5').update(text).digest('hex')
   );
@@ -824,7 +828,7 @@ const fs = require('fs');
 
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
-  page.on('console', msg => console.log(msg.text));
+  page.on('console', msg => console.log(msg.text()));
   await page.exposeFunction('readfile', async filePath => {
     return new Promise((resolve, reject) => {
       fs.readFile(filePath, 'utf8', (err, text) => {
@@ -1209,7 +1213,8 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - returns: <[Promise]<[JSHandle]>> Promise which resolves to a JSHandle of the success value
 
 This method behaves differently with respect to the type of the first parameter:
-- if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] to wait for and the method is a shortcut for [page.waitForSelector](#pagewaitforselectorselector-options)
+- if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] or [xpath], depending on whether or not it starts with '//', and the method is a shortcut for
+  [page.waitForSelector](#pagewaitforselectorselector-options) or [page.waitForXPath](#pagewaitforxpathxpath-options)
 - if `selectorOrFunctionOrTimeout` is a `function`, then the first argument is treated as a predicate to wait for and the method is a shortcut for [page.waitForFunction()](#pagewaitforfunctionpagefunction-options-args).
 - if `selectorOrFunctionOrTimeout` is a `number`, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
@@ -1278,6 +1283,35 @@ puppeteer.launch().then(async browser => {
 });
 ```
 Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options).
+
+#### page.waitForXPath(xpath[, options])
+- `xpath` <[string]> A [xpath] of an element to wait for,
+- `options` <[Object]> Optional waiting parameters
+  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+- returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by xpath string is added to DOM.
+
+Wait for the `xpath` to appear in page. If at the moment of calling
+the method the `xpath` already exists, the method will return
+immediately. If the xpath doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
+
+This method works across navigations:
+```js
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
+  const page = await browser.newPage();
+  let currentURL;
+  page
+    .waitForXPath('//img')
+    .then(() => console.log('First URL with image: ' + currentURL));
+  for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
+    await page.goto(currentURL);
+  await browser.close();
+});
+```
+Shortcut for [page.mainFrame().waitForXPath(xpath[, options])](#framewaitforxpathxpath-options).
 
 
 ### class: Keyboard
@@ -1625,6 +1659,33 @@ const html = await frame.evaluate(body => body.innerHTML, bodyHandle);
 await bodyHandle.dispose();
 ```
 
+#### frame.evaluateHandle(pageFunction, ...args)
+- `pageFunction` <[function]|[string]> Function to be evaluated in the page context
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[JSHandle]>> Resolves to the return value of `pageFunction`
+
+If the function, passed to the `frame.evaluateHandle`, returns a [Promise], then `frame.evaluateHandle` would wait for the promise to resolve and return its value.
+
+```js
+const aWindowHandle = await frame.evaluateHandle(() => Promise.resolve(window));
+aWindowHandle; // Handle for the window object.
+```
+
+A string can also be passed in instead of a function.
+
+```js
+const aHandle = await frame.evaluateHandle('document'); // Handle for the 'document'.
+```
+
+[JSHandle] instances can be passed as arguments to the `frame.evaluateHandle`:
+```js
+const aHandle = await frame.evaluateHandle(() => document.body);
+const resultHandle = await frame.evaluateHandle(body => body.innerHTML, aHandle);
+console.log(await resultHandle.jsonValue());
+await resultHandle.dispose();
+```
+
+
 #### frame.executionContext()
 - returns: <[Promise]<[ExecutionContext]>> Execution context associated with this frame.
 
@@ -1677,7 +1738,8 @@ Returns frame's url.
 - returns: <[Promise]<[JSHandle]>> Promise which resolves to a JSHandle of the success value
 
 This method behaves differently with respect to the type of the first parameter:
-- if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
+- if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] or [xpath], depending on whether or not it starts with '//', and the method is a shortcut for
+  [frame.waitForSelector](#framewaitforselectorselector-options) or [frame.waitForXPath](#framewaitforsxpathxpath-options)
 - if `selectorOrFunctionOrTimeout` is a `function`, then the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
 - if `selectorOrFunctionOrTimeout` is a `number`, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
@@ -1727,6 +1789,34 @@ puppeteer.launch().then(async browser => {
   let currentURL;
   page.mainFrame()
     .waitForSelector('img')
+    .then(() => console.log('First URL with image: ' + currentURL));
+  for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
+    await page.goto(currentURL);
+  await browser.close();
+});
+```
+
+#### frame.waitForXPath(xpath[, options])
+- `xpath` <[string]> A [xpath] of an element to wait for
+- `options` <[Object]> Optional waiting parameters
+  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+- returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by xpath string is added to DOM.
+
+Wait for the `xpath` to appear in page. If at the moment of calling
+the method the `xpath` already exists, the method will return
+immediately. If the xpath doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
+
+This method works across navigations:
+```js
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
+  const page = await browser.newPage();
+  let currentURL;
+  page.mainFrame()
+    .waitForXPath('//img')
     .then(() => console.log('First URL with image: ' + currentURL));
   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
     await page.goto(currentURL);
@@ -2094,7 +2184,7 @@ Example of logging all failed requests:
 
 ```js
 page.on('requestfailed', request => {
-  console.log(request.url + ' ' + request.failure().errorText);
+  console.log(request.url() + ' ' + request.failure().errorText);
 });
 ```
 
@@ -2340,3 +2430,4 @@ reported.
 [Touchscreen]: #class-touchscreen "Touchscreen"
 [Target]: #class-target "Target"
 [USKeyboardLayout]: ../lib/USKeyboardLayout.js "USKeyboardLayout"
+[xpath]: https://developer.mozilla.org/en-US/docs/Web/XPath "xpath"
