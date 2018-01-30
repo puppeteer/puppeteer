@@ -1477,6 +1477,18 @@ describe('Page', function() {
       expect(failedRequest).toBeTruthy();
       expect(failedRequest.failure().errorText).toBe('net::ERR_INTERNET_DISCONNECTED');
     });
+    it('should send referer', async({page, server}) => {
+      await page.setExtraHTTPHeaders({
+        referer: 'http://google.com/'
+      });
+      await page.setRequestInterception(true);
+      page.on('request', request => request.continue());
+      const [request] = await Promise.all([
+        server.waitForRequest('/grid.html'),
+        page.goto(server.PREFIX + '/grid.html'),
+      ]);
+      expect(request.headers['referer']).toBe('http://google.com/');
+    });
     it('should amend HTTP headers', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
@@ -2130,6 +2142,7 @@ describe('Page', function() {
         'mousedown',
         'mouseup',
         'click',
+        'input',
         'change',
       ]);
       await page.click('input#agree');
@@ -2143,6 +2156,7 @@ describe('Page', function() {
       expect(await page.evaluate(() => result.check)).toBe(true);
       expect(await page.evaluate(() => result.events)).toEqual([
         'click',
+        'input',
         'change',
       ]);
       await page.click('label[for="agree"]');
