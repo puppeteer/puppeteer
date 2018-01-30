@@ -70,14 +70,14 @@ class Reporter {
           console.log(`    ${RED_COLOR}${test.error.message || test.error}${RESET_COLOR}`);
           console.log('  Stack:');
           if (test.error.stack) {
-            let stack = test.error.stack.split('\n').map(line => '    ' + line);
+            const stack = test.error.stack.split('\n').map(line => '    ' + line);
             let i = 0;
             while (i < stack.length && !stack[i].includes(__dirname))
               ++i;
             while (i < stack.length && stack[i].includes(__dirname))
               ++i;
             if (i < stack.length) {
-              let indent = stack[i].match(/^\s*/)[0];
+              const indent = stack[i].match(/^\s*/)[0];
               stack[i] = stack[i].substring(0, indent.length - 3) + YELLOW_COLOR + '⇨ ' + RESET_COLOR +  stack[i].substring(indent.length - 1);
             }
             console.log(stack.join('\n'));
