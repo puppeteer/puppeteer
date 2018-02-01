@@ -43,7 +43,7 @@
   * [event: 'requestfinished'](#event-requestfinished)
   * [event: 'response'](#event-response)
   * [page.$(selector)](#pageselector)
-  * [page.$$(selector)](#pageselector)
+  * [page.$$(selector)](#pageselector-1)
   * [page.$$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
   * [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
   * [page.$x(expression)](#pagexexpression)
@@ -561,7 +561,7 @@ Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector
 
 The method evaluates the XPath expression.
 
-Shortcut for [page.mainFrame().$x(expression)](#frameexpression)
+Shortcut for [page.mainFrame().$x(expression)](#framexexpression)
 
 #### page.addScriptTag(options)
 - `options` <[Object]>
