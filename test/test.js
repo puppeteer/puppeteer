@@ -2301,6 +2301,18 @@ describe('Page', function() {
       await page.keyboard.type('Hello World!');
       expect(await page.evaluate(() => textarea.value)).toBe('He Wrd!');
     });
+    it('should remove keys from _pressedKeys after keyboard.up()', async({page, server}) => {
+      await page.goto(server.PREFIX + '/input/textarea.html');
+      await page.focus('textarea');
+      await page.keyboard.down('w');
+      expect(await page.keyboard._pressedKeys.size).toEqual(1);
+      await page.keyboard.down('1');
+      expect(await page.keyboard._pressedKeys.size).toEqual(2);
+      await page.keyboard.up('w');
+      expect(await page.keyboard._pressedKeys.size).toEqual(1);
+      await page.keyboard.up('1');
+      expect(await page.keyboard._pressedKeys.size).toEqual(0);
+    });
     it('keyboard.modifiers()', async({page, server}) => {
       const keyboard = page.keyboard;
       expect(keyboard._modifiers).toBe(0);
