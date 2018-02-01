@@ -200,6 +200,12 @@
   * [response.status()](#responsestatus)
   * [response.text()](#responsetext)
   * [response.url()](#responseurl)
+- [class: SecurityDetails](#class-securitydetails)
+  * [securityDetails.issuer()](#securitydetailsissuer)
+  * [securityDetails.protocol()](#securitydetailsprotocol)
+  * [securityDetails.subjectName()](#securitydetailssubjectname)
+  * [securityDetails.validFrom()](#securitydetailsvalidfrom)
+  * [securityDetails.validTo()](#securitydetailsvalidto)
 - [class: Target](#class-target)
   * [target.createCDPSession()](#targetcreatecdpsession)
   * [target.page()](#targetpage)
@@ -2175,7 +2181,7 @@ Contains a boolean stating whether the response was successful (status in the ra
 - returns: <[Request]> A matching [Request] object.
 
 #### response.securityDetails()
-- returns: <[Object]> An object with security details associated with the response. All item are preserved in form as returned by Chrome DevTools protocol.
+- returns: <[SecurityDetails]> An object with security details associated with the response. From the original object only the fields `subjectName`, `"issuer"`, `"validFrom"`, `"validTo"`, `"protocol"` are extracted.
 
 #### response.status()
 - returns: <[number]>
@@ -2189,6 +2195,25 @@ Contains the status code of the response (e.g., 200 for a success).
 - returns: <[string]>
 
 Contains the URL of the response.
+
+### class: SecurityDetails
+
+[SecurityDetails] class represents responses which are received by page.
+
+#### securityDetails.issuer()
+- returns: <[string]> A string with the name of issuer of the certificate.
+
+#### securityDetails.protocol()
+- returns: <[string]> String with the security protocol, eg. "TLS 1.2".
+
+#### securityDetails.subjectName()
+- returns: <[string]> Name of the subject to which the certificate was issued to.
+
+#### securityDetails.validFrom()
+- returns: <[number]> Timestamp stating the start of validity of the certificate.
+
+#### securityDetails.validTo()
+- returns: <[number]> Timestamp stating the end of validity of the certificate.
 
 ### class: Target
 

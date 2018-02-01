@@ -1219,7 +1219,7 @@ describe('Page', function() {
       expect(error).toBe(null);
       expect(response.ok()).toBe(true);
       expect(response.securityDetails()).toBeTruthy();
-      expect(response.securityDetails().protocol).toBe('TLS 1.2');
+      expect(response.securityDetails().protocol()).toBe('TLS 1.2');
     });
   });
 
