@@ -288,6 +288,7 @@ This methods attaches Puppeteer to an existing Chromium instance.
   - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
   - `env` <[Object]> Specify environment variables that will be visible to browser. Defaults to `process.env`.
   - `devtools` <[boolean]> Whether to auto-open DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
+  - `appMode` <[boolean]> If this option is set to `true`, the browser opens in headful mode and Puppeteer does not set a default viewport of 800x600 for new pages. Overrides the `headless` option if both options are used together.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
 
 The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process is closed.
