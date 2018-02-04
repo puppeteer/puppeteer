@@ -37,7 +37,9 @@ module.exports = {
         "spaced-comment": [2, "always", {
             "markers": ["*"]
         }],
-        "eqeqeq": [2],
+        "eqeqeq": [2, "always", {
+          "null": "ignore"
+        }],
         "arrow-body-style": [2, "as-needed"],
         "accessor-pairs": [2, {
             "getWithoutSet": false,
