@@ -243,3 +243,11 @@ When you click add buildpack, simply paste that url into the input, and click sa
 If you need to render Chinese, Japanese, or Korean characters you may need to use a buildpack with additional font files like https://github.com/CoffeeAndCode/puppeteer-heroku-buildpack
 
 There's also another [simple guide](https://timleland.com/headless-chrome-on-heroku/) from @timleland that includes a sample project: https://timleland.com/headless-chrome-on-heroku/.
+
+## Running Puppeteer on AWS Lambda
+
+AWS Lambda [limits](https://docs.aws.amazon.com/lambda/latest/dg/limits.html) deployment package sizes to ~50MB. This presents challenges for running headless Chrome (and therefore Puppeteer) on Lambda. The community has put together a few resources that work around the issues:
+
+- https://github.com/adieuadieu/serverless-chrome/blob/master/docs/chrome.md (tracks the latest Chromium snapshots)
+- https://github.com/sambaiz/puppeteer-lambda-starter-kit (uses an old version of Chromium)
+- https://github.com/universalbasket/aws-lambda-chrome
