@@ -251,3 +251,7 @@ AWS Lambda [limits](https://docs.aws.amazon.com/lambda/latest/dg/limits.html) de
 - https://github.com/adieuadieu/serverless-chrome/blob/master/docs/chrome.md (tracks the latest Chromium snapshots)
 - https://github.com/sambaiz/puppeteer-lambda-starter-kit (uses an old version of Chromium)
 - https://github.com/universalbasket/aws-lambda-chrome
+
+## Running Puppeteer on browserless
+
+browserless is a third-party service that has built-in support for [running puppeteer](https://docs.browserless.io/libraries/puppeteer/). browserless is a paid-for service, but has open-sourced their work which can be found on [GitHub](https://github.com/joelgriffith/browserless) as well as [docker](https://hub.docker.com/r/browserless/chrome/).
