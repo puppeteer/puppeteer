@@ -264,8 +264,8 @@ class TestRunner extends EventEmitter {
     this._rootSuite = new Suite(null, '', TestMode.Run);
     this._currentSuite = this._rootSuite;
     this._tests = [];
-    // Default timeout is 10 seconds.
-    this._timeout = options.timeout === 0 ? 2147483647 : options.timeout ||  10 * 1000;
+    // Default timeout is 15 seconds.
+    this._timeout = options.timeout === 0 ? 2147483647 : options.timeout || 15 * 1000;
     this._parallel = options.parallel || 1;
     this._retryFailures = !!options.retryFailures;
 
