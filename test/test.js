@@ -2663,6 +2663,8 @@ describe('Page', function() {
       expect(responses[0].url()).toBe(server.EMPTY_PAGE);
       expect(responses[0].status()).toBe(200);
       expect(responses[0].ok()).toBe(true);
+      expect(responses[0].fromCache()).toBe(false);
+      expect(responses[0].fromServiceWorker()).toBe(false);
       expect(responses[0].request()).toBeTruthy();
     });
     it('Page.Events.Response should provide body', async({page, server}) => {
@@ -3801,6 +3803,25 @@ describe('Page', function() {
         const coverage = await page.coverage.stopCSSCoverage();
         expect(coverage.length).toBe(0);
       });
+    });
+  });
+
+  describe('Response', function() {
+    it('specifies when response comes from cache and service worker', async({page, server}) => {
+      let responses = [];
+      page.on('response', response => {
+        if (response.url().includes('.css'))
+          responses.push(response);
+      });
+
+      await page.goto(server.PREFIX + '/sw-fetch.html', {waitUntil: 'networkidle2'});
+      expect(responses[0].fromCache()).toBe(false);
+      expect(responses[0].fromServiceWorker()).toBe(false);
+
+      responses = [];
+      await page.reload({waitUntil: 'networkidle2'});
+      expect(responses[0].fromCache()).toBe(true);
+      expect(responses[0].fromServiceWorker()).toBe(true);
     });
   });
 });
