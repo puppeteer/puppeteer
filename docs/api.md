@@ -135,16 +135,21 @@
   * [frame.addScriptTag(options)](#frameaddscripttagoptions)
   * [frame.addStyleTag(options)](#frameaddstyletagoptions)
   * [frame.childFrames()](#framechildframes)
+  * [frame.click(selector[, options])](#frameclickselector-options)
   * [frame.content()](#framecontent)
   * [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
   * [frame.evaluateHandle(pageFunction, ...args)](#frameevaluatehandlepagefunction-args)
   * [frame.executionContext()](#frameexecutioncontext)
+  * [frame.focus(selector)](#framefocusselector)
+  * [frame.hover(selector)](#framehoverselector)
   * [frame.isDetached()](#frameisdetached)
   * [frame.name()](#framename)
   * [frame.parentFrame()](#frameparentframe)
   * [frame.select(selector, ...values)](#frameselectselector-values)
   * [frame.setContent(html)](#framesetcontenthtml)
+  * [frame.tap(selector)](#frametapselector)
   * [frame.title()](#frametitle)
+  * [frame.type(selector, text[, options])](#frametypeselector-text-options)
   * [frame.url()](#frameurl)
   * [frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args)
   * [frame.waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args)
@@ -621,6 +626,8 @@ const [response] = await Promise.all([
 ]);
 ```
 
+Shortcut for [page.mainFrame().click(selector[, options])](#frameclickselector-options).
+
 #### page.close()
 - returns: <[Promise]>
 
@@ -856,6 +863,8 @@ puppeteer.launch().then(async browser => {
 This method fetches an element with `selector` and focuses it.
 If there's no element matching `selector`, the method throws an error.
 
+Shortcut for [page.mainFrame().focus(selector)](#framefocusselector).
+
 #### page.frames()
 - returns: <[Array]<[Frame]>> An array of all frames attached to the page.
 
@@ -912,6 +921,8 @@ The `page.goto` will throw an error if:
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
 If there's no element matching `selector`, the method throws an error.
+
+Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
 
 #### page.keyboard
 
@@ -1162,6 +1173,8 @@ In the case of multiple pages in a single browser, each page can have its own vi
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.touchscreen](#pagetouchscreen) to tap in the center of the element.
 If there's no element matching `selector`, the method throws an error.
 
+Shortcut for [page.mainFrame().tap(selector)](#frametapselector).
+
 #### page.target()
 - returns: <[Target]> a target this page was created from.
 
@@ -1191,6 +1204,8 @@ To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#k
 page.type('#mytextarea', 'Hello'); // Types instantly
 page.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
 ```
+
+Shortcut for [page.mainFrame().type(selector, text[, options])](#frametypeselector-text-options).
 
 #### page.url()
 - returns: <[string]>
@@ -1625,6 +1640,26 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<s
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
 
+#### frame.click(selector[, options])
+- `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
+- `options` <[Object]>
+  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
+  - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
+  - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
+- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. The Promise will be rejected if there is no element matching `selector`.
+
+This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
+If there's no element matching `selector`, the method throws an error.
+
+Bare in mind that if `click()` triggers a navigation event and there's a separate `page.waitForNavigation()` promise to be resolved, you may end up with a race condition that yields unexpected results. The correct pattern for click and wait for navigation is the following:
+
+```javascript
+const [response] = await Promise.all([
+  page.waitForNavigation(waitOptions),
+  frame.click(selector, clickOptions),
+]);
+```
+
 #### frame.content()
 - returns: <[Promise]<[String]>>
 
@@ -1689,6 +1724,20 @@ await resultHandle.dispose();
 #### frame.executionContext()
 - returns: <[Promise]<[ExecutionContext]>> Execution context associated with this frame.
 
+#### frame.focus(selector)
+- `selector` <[string]> A [selector] of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
+- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. The promise will be rejected if there is no element matching `selector`.
+
+This method fetches an element with `selector` and focuses it.
+If there's no element matching `selector`, the method throws an error.
+
+#### frame.hover(selector)
+- `selector` <[string]> A [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
+- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
+
+This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
+If there's no element matching `selector`, the method throws an error.
+
 #### frame.isDetached()
 - returns: <[boolean]>
 
@@ -1723,8 +1772,31 @@ frame.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 - `html` <[string]> HTML markup to assign to the page.
 - returns: <[Promise]>
 
+#### frame.tap(selector)
+- `selector` <[string]> A [selector] to search for element to tap. If there are multiple elements satisfying the selector, the first will be tapped.
+- returns: <[Promise]>
+
+This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.touchscreen](#pagetouchscreen) to tap in the center of the element.
+If there's no element matching `selector`, the method throws an error.
+
 #### frame.title()
 - returns: <[Promise]<[string]>> Returns page's title.
+
+#### frame.type(selector, text[, options])
+- `selector` <[string]> A [selector] of an element to type into. If there are multiple elements satisfying the selector, the first will be used.
+- `text` <[string]> A text to type into a focused element.
+- `options` <[Object]>
+  - `delay` <[number]> Time to wait between key presses in milliseconds. Defaults to 0.
+- returns: <[Promise]>
+
+Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
+
+To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#keyboardpresskey-options).
+
+```js
+frame.type('#mytextarea', 'Hello'); // Types instantly
+frame.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
+```
 
 #### frame.url()
 - returns: <[string]>
