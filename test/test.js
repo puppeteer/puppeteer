@@ -54,7 +54,7 @@ const defaultBrowserOptions = {
   args: ['--no-sandbox', '--disable-dev-shm-usage']
 };
 
-const timeout = slowMo ?  0 : 10 * 1000;
+const timeout = slowMo ? 0 : 10 * 1000;
 let parallel = 1;
 if (process.env.PPTR_PARALLEL_TESTS)
   parallel = parseInt(process.env.PPTR_PARALLEL_TESTS.trim(), 10);
