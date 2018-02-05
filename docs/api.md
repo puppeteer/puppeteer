@@ -479,7 +479,7 @@ Emitted when the JavaScript code makes a call to `console.timeStamp`. For the li
 of metrics see `page.metrics`.
 
 #### event: 'pageerror'
-- <[string]> The exception message
+- <[Error]> The exception message
 
 Emitted when an uncaught exception happens within the page.
 
