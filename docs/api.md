@@ -363,7 +363,7 @@ The method initiates a GET request to download revision from the host.
   - `folderPath` <[string]> path to the extracted revision folder
   - `executablePath` <[string]> path to the revision executable
   - `url` <[string]> URL this revision can be downloaded from
-  - `downloaded` <[boolean]> weather the revision is downloaded or not
+  - `downloaded` <[boolean]> wether the revision is downloaded or not
 
 ### class: Browser
 
