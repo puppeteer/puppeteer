@@ -20,15 +20,7 @@ const mime = require('mime');
 const PNG = require('pngjs').PNG;
 const pixelmatch = require('pixelmatch');
 
-module.exports = {
-  addMatchers: function(jasmine, goldenPath, outputPath) {
-    jasmine.addMatchers({
-      toBeGolden: function(util, customEqualityTesters) {
-        return { compare: compare.bind(null, goldenPath, outputPath) };
-      }
-    });
-  },
-};
+module.exports = {compare};
 
 const GoldenComparators = {
   'image/png': compareImages,

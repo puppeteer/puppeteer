@@ -20,23 +20,26 @@ const Documentation = require('./Documentation');
 const Message = require('../Message');
 
 const EXCLUDE_CLASSES = new Set([
+  'CSSCoverage',
   'Connection',
+  'Downloader',
   'EmulationManager',
   'FrameManager',
+  'JSCoverage',
   'Helper',
   'Launcher',
   'Multimap',
   'NavigatorWatcher',
   'NetworkManager',
-  'ProxyStream',
-  'Session',
   'TaskQueue',
   'WaitTask',
 ]);
 
 const EXCLUDE_METHODS = new Set([
+  'Browser.create',
   'Headers.fromPayload',
   'Page.create',
+  'JSHandle.toString',
 ]);
 
 /**

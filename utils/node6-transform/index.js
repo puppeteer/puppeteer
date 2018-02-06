@@ -19,9 +19,17 @@ const path = require('path');
 const removeRecursive = require('rimraf').sync;
 const transformAsyncFunctions = require('./TransformAsyncFunctions');
 
-copyFolder(path.join(__dirname, '..', '..', 'lib'), path.join(__dirname, '..', '..', 'node6'));
-copyFolder(path.join(__dirname, '..', '..', 'test'), path.join(__dirname, '..', '..', 'node6-test'));
+const root = path.join(__dirname, '..', '..');
+const dest = path.join(__dirname, '..', '..', 'node6');
 
+if (fs.existsSync(dest))
+  removeRecursive(dest);
+fs.mkdirSync(dest);
+fs.mkdirSync(path.join(dest, 'utils'));
+
+copyFolder(path.join(root, 'lib'), path.join(dest, 'lib'));
+copyFolder(path.join(root, 'test'), path.join(dest, 'test'));
+copyFolder(path.join(root, 'utils'), path.join(dest, 'utils'));
 
 function copyFolder(source, target) {
   if (fs.existsSync(target))
@@ -31,13 +39,19 @@ function copyFolder(source, target) {
   fs.readdirSync(source).forEach(file => {
     const from = path.join(source, file);
     const to = path.join(target, file);
-    if (fs.lstatSync(from).isDirectory()) {
+    if (fs.lstatSync(from).isDirectory())
       copyFolder(from, to);
-    } else {
-      let text = fs.readFileSync(from);
-      if (file.endsWith('.js'))
-        text = transformAsyncFunctions(text.toString()).replace(/require\('\.\.\/lib\//g, `require('../node6/`);
-      fs.writeFileSync(to, text);
-    }
+    else
+      copyFile(from, to);
   });
+}
+
+function copyFile(from, to) {
+  let text = fs.readFileSync(from);
+  if (from.endsWith('.js')) {
+    text = text.toString();
+    const prefix = text.startsWith('#!') ? text.substring(0, text.indexOf('\n')) : '';
+    text = prefix + transformAsyncFunctions(text.substring(prefix.length));
+  }
+  fs.writeFileSync(to, text);
 }

@@ -1,5 +1,6 @@
 /node_modules/
 /test/output
+/test/test-user-data-dir*
 /.local-chromium/
 /.dev_profile*
 .DS_Store
@@ -7,6 +8,5 @@
 *.pyc
 .vscode
 package-lock.json
+yarn.lock
 /node6
-/node6-test
-.idea

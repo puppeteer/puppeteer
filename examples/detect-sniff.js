@@ -34,13 +34,11 @@ function sniffDetector() {
 }
 
 (async() => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.evaluateOnNewDocument(sniffDetector);
+  await page.goto('https://www.google.com', {waitUntil: 'networkidle2'});
+  console.log('Sniffed: ' + (await page.evaluate(() => !!navigator.sniffed)));
 
-const browser = await puppeteer.launch();
-const page = await browser.newPage();
-await page.evaluateOnNewDocument(sniffDetector);
-await page.goto('https://www.google.com', {waitUntil: 'networkidle'});
-console.log('Sniffed: ' + (await page.evaluate(() => !!navigator.sniffed)));
-
-await browser.close();
-
+  await browser.close();
 })();

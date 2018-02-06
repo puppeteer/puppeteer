@@ -14,29 +14,42 @@
  * limitations under the License.
  */
 
+/**
+ * @fileoverview Search developers.google.com/web for articles tagged
+ * "Headless Chrome" and scrape results from the results page.
+ */
+
 'use strict';
 
 const puppeteer = require('puppeteer');
 
 (async() => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
 
-const browser = await puppeteer.launch();
-const page = await browser.newPage();
-await page.goto('https://google.com', {waitUntil: 'networkidle'});
-// Type our query into the search bar
-await page.type('puppeteer');
+  await page.goto('https://developers.google.com/web/');
 
-await page.click('input[type="submit"]');
+  // Type into search box.
+  await page.type('#searchbox input', 'Headless Chrome');
 
-// Wait for the results to show up
-await page.waitForSelector('h3 a');
+  // Wait for suggest overlay to appear and click "show all results".
+  const allResultsSelector = '.devsite-suggest-all-results';
+  await page.waitForSelector(allResultsSelector);
+  await page.click(allResultsSelector);
 
-// Extract the results from the page
-const links = await page.evaluate(() => {
-  const anchors = Array.from(document.querySelectorAll('h3 a'));
-  return anchors.map(anchor => anchor.textContent);
-});
-console.log(links.join('\n'));
-await browser.close();
+  // Wait for the results page to load and display the results.
+  const resultsSelector = '.gsc-results .gsc-thumbnail-inside a.gs-title';
+  await page.waitForSelector(resultsSelector);
 
+  // Extract the results from the page.
+  const links = await page.evaluate(resultsSelector => {
+    const anchors = Array.from(document.querySelectorAll(resultsSelector));
+    return anchors.map(anchor => {
+      const title = anchor.textContent.split('|')[0].trim();
+      return `${title} - ${anchor.href}`;
+    });
+  }, resultsSelector);
+  console.log(links.join('\n'));
+
+  await browser.close();
 })();

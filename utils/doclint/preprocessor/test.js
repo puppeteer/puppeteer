@@ -19,6 +19,15 @@ const SourceFactory = require('../SourceFactory');
 const factory = new SourceFactory();
 const VERSION = require('../../../package.json').version;
 
+const {TestRunner, Reporter, Matchers}  = require('../../testrunner/');
+const runner = new TestRunner();
+new Reporter(runner);
+
+const {describe, xdescribe, fdescribe} = runner;
+const {it, fit, xit} = runner;
+const {beforeAll, beforeEach, afterAll, afterEach} = runner;
+const {expect} = new Matchers();
+
 describe('preprocessor', function() {
   it('should throw for unknown command', function() {
     const source = factory.createForTest('doc.md', getCommand('unknownCommand()'));
@@ -53,6 +62,8 @@ describe('preprocessor', function() {
     });
   });
 });
+
+runner.run();
 
 function getCommand(name, body = '') {
   return `<!--gen:${name}-->${body}<!--gen:stop-->`;
