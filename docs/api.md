@@ -15,12 +15,12 @@
   * [puppeteer.executablePath()](#puppeteerexecutablepath)
   * [puppeteer.launch([options])](#puppeteerlaunchoptions)
 - [class: Downloader](#class-downloader)
-  * [downloader.canDownloadRevision(revision)](#downloadercandownloadrevisionrevision)
-  * [downloader.downloadRevision(revision[, progressCallback])](#downloaderdownloadrevisionrevision-progresscallback)
-  * [downloader.downloadedRevisions()](#downloaderdownloadedrevisions)
+  * [downloader.canDownload(revision)](#downloadercandownloadrevision)
+  * [downloader.download(revision[, progressCallback])](#downloaderdownloadrevision-progresscallback)
   * [downloader.platform()](#downloaderplatform)
-  * [downloader.removeRevision(revision)](#downloaderremoverevisionrevision)
+  * [downloader.remove(revision)](#downloaderremoverevision)
   * [downloader.revisionInfo(revision)](#downloaderrevisioninforevision)
+  * [downloader.storedRevisions()](#downloaderstoredrevisions)
 - [class: Browser](#class-browser)
   * [event: 'disconnected'](#event-disconnected)
   * [event: 'targetchanged'](#event-targetchanged)
@@ -331,30 +331,27 @@ The Downloader operates on revision strings that specify a precise version of Ch
 
 > **NOTE** Downloader class is not designed to work concurrently with other instances of Downloader class.
 
-#### downloader.canDownloadRevision(revision)
+#### downloader.canDownload(revision)
 - `revision` <[string]> a revision to check availability.
 - returns: <[Promise]<[boolean]>>  returns `true` if the revision could be downloaded from the host.
 
 The method initiates a HEAD request to check if revision is available.
 
-#### downloader.downloadRevision(revision[, progressCallback])
+#### downloader.download(revision[, progressCallback])
 - `revision` <[string]> a revision to download.
 - `progressCallback` <[function]> A function that will be called with two arguments:
   - `downloadedBytes` <[number]> how many bytes are downloaded
   - `totalBytes` <[number]> how many bytes is the total download
 - returns: <[Promise]> Resolves when the revision is downloaded and extracted
 
-The method initiates a GET request to download revision from the host. 
-
-#### downloader.downloadedRevisions()
-- returns: <[Promise]<[Array]<[string]>>> a list of all revisions downloaded for the given platform
+The method initiates a GET request to download revision from the host.
 
 #### downloader.platform()
 - returns: <[string]> Downloader target platform. Returns one of the `mac`, `linux`, `win32` or `win64`.
 
-#### downloader.removeRevision(revision)
+#### downloader.remove(revision)
 - `revision` <[string]> a revision to remove. The method will throw if the revision is not downloaded.
-- returns: <[Promise]> Resolves when the revision is downloaded
+- returns: <[Promise]> Resolves when the revision is removed.
 
 #### downloader.revisionInfo(revision)
 - `revision` <[string]> a revision to get info for.
@@ -364,6 +361,10 @@ The method initiates a GET request to download revision from the host.
   - `executablePath` <[string]> path to the revision executable
   - `url` <[string]> URL this revision can be downloaded from
   - `downloaded` <[boolean]> wether the revision is downloaded or not
+
+#### downloader.storedRevisions()
+- returns: <[Promise]<[Array]<[string]>>> a list of all revisions downloaded for the given platform
+
 
 ### class: Browser
 

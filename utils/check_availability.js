@@ -108,7 +108,7 @@ async function checkRangeAvailability(fromRevision, toRevision) {
  * @param {number} revision
  */
 async function checkAndDrawRevisionAvailability(table, name, revision) {
-  const promises = downloaders.map(downloader => downloader.canDownloadRevision(revision));
+  const promises = downloaders.map(downloader => downloader.canDownload(revision));
   const availability = await Promise.all(promises);
   const allAvailable = availability.every(e => !!e);
   const values = [name + ' ' + (allAvailable ? colors.green + revision + colors.reset : revision)];

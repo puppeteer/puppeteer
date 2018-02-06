@@ -128,13 +128,13 @@ describe('Puppeteer', function() {
       });
 
       expect(downloader.platform()).toBe('linux');
-      expect(await downloader.canDownloadRevision('100000')).toBe(false);
-      expect(await downloader.canDownloadRevision('123456')).toBe(true);
+      expect(await downloader.canDownload('100000')).toBe(false);
+      expect(await downloader.canDownload('123456')).toBe(true);
 
-      await downloader.downloadRevision('123456');
+      await downloader.download('123456');
       expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe('LINUX BINARY\n');
       expect(await downloader.storedRevisions()).toEqual(['123456']);
-      await downloader.removeRevision('123456');
+      await downloader.remove('123456');
       expect(await downloader.storedRevisions()).toEqual([]);
       rm(downloadsFolder);
     });
