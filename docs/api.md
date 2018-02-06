@@ -357,7 +357,7 @@ The method initiates a GET request to download revision from the host.
 - returns: <[Promise]> Resolves when the revision is downloaded
 
 #### downloader.revisionInfo(revision)
-- `revision` <[string]> a revision to get info.
+- `revision` <[string]> a revision to get info for.
 - returns: <[Object]>
   - `revision` <[string]> the revision the info was created from
   - `folderPath` <[string]> path to the extracted revision folder
