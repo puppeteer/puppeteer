@@ -48,7 +48,7 @@ npm run lint
 ## API guidelines
 
 When authoring new API methods, consider the following:
-- expose as little as needed. When in doubt, don't expose
+- expose as little information as needed. When in doubt, don’t expose new information
 - methods are used in favor of getters/setters
   - the only exception is namespaces, e.g. `page.keyboard` and `page.coverage`
 - all string literals must be small case. This includes event names and option values
