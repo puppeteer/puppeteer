@@ -339,19 +339,19 @@ The method initiates a HEAD request to check if the revision is available.
 
 #### downloader.download(revision[, progressCallback])
 - `revision` <[string]> a revision to download.
-- `progressCallback` <[function]> A function that will be called with two arguments:
+- `progressCallback` <[function]([number], [number])> A function that will be called with two arguments:
   - `downloadedBytes` <[number]> how many bytes have been downloaded
   - `totalBytes` <[number]> how large is the total download.
 - returns: <[Promise]> Resolves when the revision is downloaded and extracted
 
-The method initiates a GET request to download revision from the host.
+The method initiates a GET request to download the revision from the host.
 
 #### downloader.platform()
-- returns: <[string]> Downloader target platform. Returns one of the `mac`, `linux`, `win32` or `win64`.
+- returns: <[string]> Downloader target platform. Returns one of `mac`, `linux`, `win32` or `win64`.
 
 #### downloader.remove(revision)
-- `revision` <[string]> a revision to remove. The method will throw if the revision is not downloaded.
-- returns: <[Promise]> Resolves when the revision is removed.
+- `revision` <[string]> a revision to remove. The method will throw if the revision has not been downloaded.
+- returns: <[Promise]> Resolves when the revision has been removed.
 
 #### downloader.revisionInfo(revision)
 - `revision` <[string]> a revision to get info for.
@@ -360,7 +360,7 @@ The method initiates a GET request to download revision from the host.
   - `folderPath` <[string]> path to the extracted revision folder
   - `executablePath` <[string]> path to the revision executable
   - `url` <[string]> URL this revision can be downloaded from
-  - `downloaded` <[boolean]> wether the revision is downloaded or not
+  - `downloaded` <[boolean]> wether the revision has been downloaded or not
 
 #### downloader.storedRevisions()
 - returns: <[Promise]<[Array]<[string]>>> A list of all revisions previously downloaded.
@@ -2547,6 +2547,7 @@ reported.
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
 [stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable "stream.Readable"
 [CDPSession]: #class-cdpsession  "CDPSession"
+[Downloader]: #class-downloader  "Downloader"
 [Error]: https://nodejs.org/api/errors.html#errors_class_error "Error"
 [Frame]: #class-frame "Frame"
 [ConsoleMessage]: #class-consolemessage "ConsoleMessage"
