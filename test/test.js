@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 const fs = require('fs');
+const os = require('os');
 const rm = require('rimraf').sync;
 const path = require('path');
 const {helper} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
+const mkdtempAsync = helper.promisify(fs.mkdtemp);
+const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 
 const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ? path.join(__dirname, '..') : path.join(__dirname, '..', '..');
 
@@ -137,7 +140,7 @@ describe('Puppeteer', function() {
       expect(waitError.message.startsWith('Failed to launch chrome! spawn random-invalid-path ENOENT')).toBe(true);
     });
     it('userDataDir option', async({server}) => {
-      const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+      const userDataDir = await mkdtempAsync(TMP_FOLDER);
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
@@ -146,7 +149,7 @@ describe('Puppeteer', function() {
       rm(userDataDir);
     });
     it('userDataDir argument', async({server}) => {
-      const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+      const userDataDir = await mkdtempAsync(TMP_FOLDER);
       const options = Object.assign({}, defaultBrowserOptions);
       options.args = [`--user-data-dir=${userDataDir}`].concat(options.args);
       const browser = await puppeteer.launch(options);
@@ -156,7 +159,7 @@ describe('Puppeteer', function() {
       rm(userDataDir);
     });
     it('userDataDir option should restore state', async({server}) => {
-      const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+      const userDataDir = await mkdtempAsync(TMP_FOLDER);
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
       const page = await browser.newPage();
@@ -173,7 +176,7 @@ describe('Puppeteer', function() {
     });
     // @see https://github.com/GoogleChrome/puppeteer/issues/1537
     xit('userDataDir option should restore cookies', async({server}) => {
-      const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+      const userDataDir = await mkdtempAsync(TMP_FOLDER);
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
       const page = await browser.newPage();
@@ -189,7 +192,7 @@ describe('Puppeteer', function() {
       rm(userDataDir);
     });
     xit('headless should be able to read cookies written by headful', async({server}) => {
-      const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+      const userDataDir = await mkdtempAsync(TMP_FOLDER);
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       // Write a cookie in headful chrome
       options.headless = false;
