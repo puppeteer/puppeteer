@@ -115,7 +115,7 @@ afterAll(async({server, httpsServer}) => {
 
 describe('Puppeteer', function() {
   describe('Downloader', function() {
-    it('should download and extract linux binary', async ({server}) => {
+    it('should download and extract linux binary', async({server}) => {
       const downloadsFolder = await mkdtempAsync(TMP_FOLDER);
       const downloader = puppeteer.createDownloader({
         platform: 'linux',

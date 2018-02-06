@@ -87,7 +87,7 @@ function onProgress(downloadedBytes, totalBytes) {
       total: totalBytes,
     });
   }
-  let delta = downloadedBytes - lastDownloadedBytes;
+  const delta = downloadedBytes - lastDownloadedBytes;
   lastDownloadedBytes = downloadedBytes;
   progressBar.tick(delta);
 }

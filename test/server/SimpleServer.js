@@ -188,7 +188,7 @@ class SimpleServer {
     if (handler) {
       handler.call(null, request, response);
     } else {
-      let pathName = url.parse(request.url).path;
+      const pathName = url.parse(request.url).path;
       this.serveFile(request, response, pathName);
     }
   }
