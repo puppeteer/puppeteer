@@ -327,7 +327,7 @@ If Google Chrome (rather than Chromium) is preferred, a [Chrome Canary](https://
 
 A Downloader can download and manage different versions of Chromium.
 
-The Downloader operates on revision strings that specify a precise version of Chromium, e.g. "533271". Revision strings can be obtained from [omahaproxy.appspot.com](http://omahaproxy.appspot.com/).
+The Downloader operates on revision strings that specify a precise version of Chromium, e.g. `"533271"`. Revision strings can be obtained from [omahaproxy.appspot.com](http://omahaproxy.appspot.com/).
 
 > **NOTE** Downloader class is not designed to work concurrently with other instances of Downloader class.
 
