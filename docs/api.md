@@ -338,7 +338,7 @@ Downloader is created per platform and operates revisions: strings representing 
 The method initiates a HEAD request to check if revision is available.
 
 #### downloader.downloadRevision(revision[, progressCallback])
-- `revision` <[string]> a revision to check availability.
+- `revision` <[string]> a revision to download.
 - `progressCallback` <[function]> A function that will be called with two arguments:
   - `downloadedBytes` <[number]> how many bytes are downloaded
   - `totalBytes` <[number]> how many bytes is the total download
