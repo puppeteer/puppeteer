@@ -45,6 +45,14 @@ To run code linter, use:
 npm run lint
 ```
 
+## API guidelines
+
+When authoring new API methods, consider the following:
+- expose as little as needed. When in doubt, don't expose
+- methods are used in favor of getters/setters
+  - the only exception is namespaces, e.g. `page.keyboard` and `page.coverage`
+- all string literals must be small case. This includes event names and option values
+
 ## Commit Messages
 
 Commit messages should follow the Semantic Commit Messages format:
@@ -118,9 +126,9 @@ Despite being named 'unit', these are integration tests, making sure public API 
 ```
 npm run unit
 ```
-- To filter tests by name:
+- To run tests in parallel, use `-j` flag:
 ```
-npm run unit -- --filter=waitFor
+npm run unit -- -j 4
 ```
 - To run a specific test, substitute the `it` with `fit` (mnemonic rule: '*focus it*'):
 ```js
@@ -154,7 +162,7 @@ HEADLESS=false SLOW_MO=500 npm run unit
 ```
 - To debug a test, "focus" a test first and then run:
 ```
-npm run debug-unit
+node --inspect-brk test/test.js
 ```
 
 ## Public API Coverage
