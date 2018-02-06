@@ -133,9 +133,9 @@ describe('Puppeteer', function() {
 
       await downloader.downloadRevision('123456');
       expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe('LINUX BINARY\n');
-      expect(await downloader.downloadedRevisions()).toEqual(['123456']);
+      expect(await downloader.storedRevisions()).toEqual(['123456']);
       await downloader.removeRevision('123456');
-      expect(await downloader.downloadedRevisions()).toEqual([]);
+      expect(await downloader.storedRevisions()).toEqual([]);
       rm(downloadsFolder);
     });
   });

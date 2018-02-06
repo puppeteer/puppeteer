@@ -50,7 +50,7 @@ if (NPM_NO_PROXY)
   process.env.NO_PROXY = NPM_NO_PROXY;
 
 downloader.downloadRevision(revisionInfo.revision, onProgress)
-    .then(() => downloader.downloadedRevisions())
+    .then(() => downloader.storedRevisions())
     .then(onSuccess)
     .catch(onError);
 
@@ -58,11 +58,11 @@ downloader.downloadRevision(revisionInfo.revision, onProgress)
  * @param {!Array<string>}
  * @return {!Promise}
  */
-function onSuccess(downloadedRevisions) {
+function onSuccess(storedRevisions) {
   console.log('Chromium downloaded to ' + revisionInfo.folderPath);
-  downloadedRevisions = downloadedRevisions.filter(revision => revision !== revisionInfo.revision);
+  storedRevisions = storedRevisions.filter(revision => revision !== revisionInfo.revision);
   // Remove previous chromium revisions.
-  const cleanupOldVersions = downloadedRevisions.map(revision => downloader.removeRevision(revision));
+  const cleanupOldVersions = storedRevisions.map(revision => downloader.removeRevision(revision));
   return Promise.all(cleanupOldVersions);
 }
 
