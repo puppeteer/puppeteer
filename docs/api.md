@@ -99,6 +99,7 @@
   * [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
   * [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
+  * [page.waitForXPath(xpath[, options])](#pagewaitforxpathxpath-options)
 - [class: Keyboard](#class-keyboard)
   * [keyboard.down(key[, options])](#keyboarddownkey-options)
   * [keyboard.press(key[, options])](#keyboardpresskey-options)
@@ -134,19 +135,26 @@
   * [frame.addScriptTag(options)](#frameaddscripttagoptions)
   * [frame.addStyleTag(options)](#frameaddstyletagoptions)
   * [frame.childFrames()](#framechildframes)
+  * [frame.click(selector[, options])](#frameclickselector-options)
   * [frame.content()](#framecontent)
   * [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
+  * [frame.evaluateHandle(pageFunction, ...args)](#frameevaluatehandlepagefunction-args)
   * [frame.executionContext()](#frameexecutioncontext)
+  * [frame.focus(selector)](#framefocusselector)
+  * [frame.hover(selector)](#framehoverselector)
   * [frame.isDetached()](#frameisdetached)
   * [frame.name()](#framename)
   * [frame.parentFrame()](#frameparentframe)
   * [frame.select(selector, ...values)](#frameselectselector-values)
   * [frame.setContent(html)](#framesetcontenthtml)
+  * [frame.tap(selector)](#frametapselector)
   * [frame.title()](#frametitle)
+  * [frame.type(selector, text[, options])](#frametypeselector-text-options)
   * [frame.url()](#frameurl)
   * [frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args)
   * [frame.waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args)
   * [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
+  * [frame.waitForXPath(xpath[, options])](#framewaitforxpathxpath-options)
 - [class: ExecutionContext](#class-executioncontext)
   * [executionContext.evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args)
   * [executionContext.evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args)
@@ -192,6 +200,8 @@
   * [request.url()](#requesturl)
 - [class: Response](#class-response)
   * [response.buffer()](#responsebuffer)
+  * [response.fromCache()](#responsefromcache)
+  * [response.fromServiceWorker()](#responsefromserviceworker)
   * [response.headers()](#responseheaders)
   * [response.json()](#responsejson)
   * [response.ok()](#responseok)
@@ -265,6 +275,7 @@ puppeteer.launch().then(async browser => {
 - `options` <[Object]>
   - `browserWSEndpoint` <[string]> a [browser websocket endpoint](#browserwsendpoint) to connect to.
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
+  - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
 - returns: <[Promise]<[Browser]>>
 
 This methods attaches Puppeteer to an existing Chromium instance.
@@ -431,8 +442,8 @@ The arguments passed into `console.log` appear as arguments on the event handler
 An example of handling `console` event:
 ```js
 page.on('console', msg => {
-  for (let i = 0; i < msg.args.length; ++i)
-    console.log(`${i}: ${msg.args[i]}`);
+  for (let i = 0; i < msg.args().length; ++i)
+    console.log(`${i}: ${msg.args()[i]}`);
 });
 page.evaluate(() => console.log('hello', 5, {foo: 'bar'}));
 ```
@@ -482,7 +493,7 @@ Emitted when the JavaScript code makes a call to `console.timeStamp`. For the li
 of metrics see `page.metrics`.
 
 #### event: 'pageerror'
-- <[string]> The exception message
+- <[Error]> The exception message
 
 Emitted when an uncaught exception happens within the page.
 
@@ -623,6 +634,8 @@ const [response] = await Promise.all([
   page.click(selector, clickOptions),
 ]);
 ```
+
+Shortcut for [page.mainFrame().click(selector[, options])](#frameclickselector-options).
 
 #### page.close()
 - returns: <[Promise]>
@@ -809,7 +822,7 @@ const crypto = require('crypto');
 
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
-  page.on('console', msg => console.log(msg.text));
+  page.on('console', msg => console.log(msg.text()));
   await page.exposeFunction('md5', text =>
     crypto.createHash('md5').update(text).digest('hex')
   );
@@ -831,7 +844,7 @@ const fs = require('fs');
 
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
-  page.on('console', msg => console.log(msg.text));
+  page.on('console', msg => console.log(msg.text()));
   await page.exposeFunction('readfile', async filePath => {
     return new Promise((resolve, reject) => {
       fs.readFile(filePath, 'utf8', (err, text) => {
@@ -858,6 +871,8 @@ puppeteer.launch().then(async browser => {
 
 This method fetches an element with `selector` and focuses it.
 If there's no element matching `selector`, the method throws an error.
+
+Shortcut for [page.mainFrame().focus(selector)](#framefocusselector).
 
 #### page.frames()
 - returns: <[Array]<[Frame]>> An array of all frames attached to the page.
@@ -915,6 +930,8 @@ The `page.goto` will throw an error if:
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
 If there's no element matching `selector`, the method throws an error.
+
+Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
 
 #### page.keyboard
 
@@ -1165,6 +1182,8 @@ In the case of multiple pages in a single browser, each page can have its own vi
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.touchscreen](#pagetouchscreen) to tap in the center of the element.
 If there's no element matching `selector`, the method throws an error.
 
+Shortcut for [page.mainFrame().tap(selector)](#frametapselector).
+
 #### page.target()
 - returns: <[Target]> a target this page was created from.
 
@@ -1195,6 +1214,8 @@ page.type('#mytextarea', 'Hello'); // Types instantly
 page.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
 ```
 
+Shortcut for [page.mainFrame().type(selector, text[, options])](#frametypeselector-text-options).
+
 #### page.url()
 - returns: <[string]>
 
@@ -1216,7 +1237,8 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - returns: <[Promise]<[JSHandle]>> Promise which resolves to a JSHandle of the success value
 
 This method behaves differently with respect to the type of the first parameter:
-- if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] to wait for and the method is a shortcut for [page.waitForSelector](#pagewaitforselectorselector-options)
+- if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] or [xpath], depending on whether or not it starts with '//', and the method is a shortcut for
+  [page.waitForSelector](#pagewaitforselectorselector-options) or [page.waitForXPath](#pagewaitforxpathxpath-options)
 - if `selectorOrFunctionOrTimeout` is a `function`, then the first argument is treated as a predicate to wait for and the method is a shortcut for [page.waitForFunction()](#pagewaitforfunctionpagefunction-options-args).
 - if `selectorOrFunctionOrTimeout` is a `number`, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
@@ -1285,6 +1307,35 @@ puppeteer.launch().then(async browser => {
 });
 ```
 Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options).
+
+#### page.waitForXPath(xpath[, options])
+- `xpath` <[string]> A [xpath] of an element to wait for,
+- `options` <[Object]> Optional waiting parameters
+  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+- returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by xpath string is added to DOM.
+
+Wait for the `xpath` to appear in page. If at the moment of calling
+the method the `xpath` already exists, the method will return
+immediately. If the xpath doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
+
+This method works across navigations:
+```js
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
+  const page = await browser.newPage();
+  let currentURL;
+  page
+    .waitForXPath('//img')
+    .then(() => console.log('First URL with image: ' + currentURL));
+  for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
+    await page.goto(currentURL);
+  await browser.close();
+});
+```
+Shortcut for [page.mainFrame().waitForXPath(xpath[, options])](#framewaitforxpathxpath-options).
 
 
 ### class: Keyboard
@@ -1598,6 +1649,26 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<s
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
 
+#### frame.click(selector[, options])
+- `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
+- `options` <[Object]>
+  - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
+  - `clickCount` <[number]> defaults to 1. See [UIEvent.detail].
+  - `delay` <[number]> Time to wait between `mousedown` and `mouseup` in milliseconds. Defaults to 0.
+- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully clicked. The Promise will be rejected if there is no element matching `selector`.
+
+This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
+If there's no element matching `selector`, the method throws an error.
+
+Bare in mind that if `click()` triggers a navigation event and there's a separate `page.waitForNavigation()` promise to be resolved, you may end up with a race condition that yields unexpected results. The correct pattern for click and wait for navigation is the following:
+
+```javascript
+const [response] = await Promise.all([
+  page.waitForNavigation(waitOptions),
+  frame.click(selector, clickOptions),
+]);
+```
+
 #### frame.content()
 - returns: <[Promise]<[String]>>
 
@@ -1632,8 +1703,49 @@ const html = await frame.evaluate(body => body.innerHTML, bodyHandle);
 await bodyHandle.dispose();
 ```
 
+#### frame.evaluateHandle(pageFunction, ...args)
+- `pageFunction` <[function]|[string]> Function to be evaluated in the page context
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[JSHandle]>> Resolves to the return value of `pageFunction`
+
+If the function, passed to the `frame.evaluateHandle`, returns a [Promise], then `frame.evaluateHandle` would wait for the promise to resolve and return its value.
+
+```js
+const aWindowHandle = await frame.evaluateHandle(() => Promise.resolve(window));
+aWindowHandle; // Handle for the window object.
+```
+
+A string can also be passed in instead of a function.
+
+```js
+const aHandle = await frame.evaluateHandle('document'); // Handle for the 'document'.
+```
+
+[JSHandle] instances can be passed as arguments to the `frame.evaluateHandle`:
+```js
+const aHandle = await frame.evaluateHandle(() => document.body);
+const resultHandle = await frame.evaluateHandle(body => body.innerHTML, aHandle);
+console.log(await resultHandle.jsonValue());
+await resultHandle.dispose();
+```
+
+
 #### frame.executionContext()
 - returns: <[Promise]<[ExecutionContext]>> Execution context associated with this frame.
+
+#### frame.focus(selector)
+- `selector` <[string]> A [selector] of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
+- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. The promise will be rejected if there is no element matching `selector`.
+
+This method fetches an element with `selector` and focuses it.
+If there's no element matching `selector`, the method throws an error.
+
+#### frame.hover(selector)
+- `selector` <[string]> A [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
+- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
+
+This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
+If there's no element matching `selector`, the method throws an error.
 
 #### frame.isDetached()
 - returns: <[boolean]>
@@ -1669,8 +1781,31 @@ frame.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 - `html` <[string]> HTML markup to assign to the page.
 - returns: <[Promise]>
 
+#### frame.tap(selector)
+- `selector` <[string]> A [selector] to search for element to tap. If there are multiple elements satisfying the selector, the first will be tapped.
+- returns: <[Promise]>
+
+This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.touchscreen](#pagetouchscreen) to tap in the center of the element.
+If there's no element matching `selector`, the method throws an error.
+
 #### frame.title()
 - returns: <[Promise]<[string]>> Returns page's title.
+
+#### frame.type(selector, text[, options])
+- `selector` <[string]> A [selector] of an element to type into. If there are multiple elements satisfying the selector, the first will be used.
+- `text` <[string]> A text to type into a focused element.
+- `options` <[Object]>
+  - `delay` <[number]> Time to wait between key presses in milliseconds. Defaults to 0.
+- returns: <[Promise]>
+
+Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
+
+To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#keyboardpresskey-options).
+
+```js
+frame.type('#mytextarea', 'Hello'); // Types instantly
+frame.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
+```
 
 #### frame.url()
 - returns: <[string]>
@@ -1684,7 +1819,8 @@ Returns frame's url.
 - returns: <[Promise]<[JSHandle]>> Promise which resolves to a JSHandle of the success value
 
 This method behaves differently with respect to the type of the first parameter:
-- if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] to wait for and the method is a shortcut for [frame.waitForSelector](#framewaitforselectorselector-options)
+- if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] or [xpath], depending on whether or not it starts with '//', and the method is a shortcut for
+  [frame.waitForSelector](#framewaitforselectorselector-options) or [frame.waitForXPath](#framewaitforsxpathxpath-options)
 - if `selectorOrFunctionOrTimeout` is a `function`, then the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
 - if `selectorOrFunctionOrTimeout` is a `number`, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
@@ -1734,6 +1870,34 @@ puppeteer.launch().then(async browser => {
   let currentURL;
   page.mainFrame()
     .waitForSelector('img')
+    .then(() => console.log('First URL with image: ' + currentURL));
+  for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
+    await page.goto(currentURL);
+  await browser.close();
+});
+```
+
+#### frame.waitForXPath(xpath[, options])
+- `xpath` <[string]> A [xpath] of an element to wait for
+- `options` <[Object]> Optional waiting parameters
+  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+- returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by xpath string is added to DOM.
+
+Wait for the `xpath` to appear in page. If at the moment of calling
+the method the `xpath` already exists, the method will return
+immediately. If the xpath doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
+
+This method works across navigations:
+```js
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
+  const page = await browser.newPage();
+  let currentURL;
+  page.mainFrame()
+    .waitForXPath('//img')
     .then(() => console.log('First URL with image: ' + currentURL));
   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com'])
     await page.goto(currentURL);
@@ -2101,7 +2265,7 @@ Example of logging all failed requests:
 
 ```js
 page.on('requestfailed', request => {
-  console.log(request.url + ' ' + request.failure().errorText);
+  console.log(request.url() + ' ' + request.failure().errorText);
 });
 ```
 
@@ -2163,6 +2327,16 @@ page.on('request', request => {
 
 #### response.buffer()
 - returns: <Promise<[Buffer]>> Promise which resolves to a buffer with response body.
+
+#### response.fromCache()
+- returns: <[boolean]>
+
+True if the response was served from either the browser's disk cache or memory cache.
+
+#### response.fromServiceWorker()
+- returns: <[boolean]>
+
+True if the response was served by a service worker.
 
 #### response.headers()
 - returns: <[Object]> An object with HTTP headers associated with the response. All header names are lower-case.
@@ -2369,3 +2543,4 @@ reported.
 [Touchscreen]: #class-touchscreen "Touchscreen"
 [Target]: #class-target "Target"
 [USKeyboardLayout]: ../lib/USKeyboardLayout.js "USKeyboardLayout"
+[xpath]: https://developer.mozilla.org/en-US/docs/Web/XPath "xpath"

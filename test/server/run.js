@@ -19,10 +19,14 @@ const SimpleServer = require('./SimpleServer');
 const port = 8907;
 const httpsPort = 8908;
 const assetsPath = path.join(__dirname, '..', 'assets');
+const cachedPath = path.join(__dirname, '..', 'assets', 'cached');
+
 Promise.all([
   SimpleServer.create(assetsPath, port),
   SimpleServer.createHTTPS(assetsPath, httpsPort)
 ]).then(([server, httpsServer]) => {
+  server.enableHTTPCache(cachedPath);
+  httpsServer.enableHTTPCache(cachedPath);
   console.log(`HTTP: server is running on http://localhost:${port}`);
   console.log(`HTTPS: server is running on https://localhost:${httpsPort}`);
 });
