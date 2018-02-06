@@ -21,6 +21,7 @@ const {helper} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
+const readFileAsync = helper.promisify(fs.readFile);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 
 const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ? path.join(__dirname, '..') : path.join(__dirname, '..', '..');
@@ -113,6 +114,31 @@ afterAll(async({server, httpsServer}) => {
 });
 
 describe('Puppeteer', function() {
+  describe('Downloader', function() {
+    it('should download and extract linux binary', async ({server}) => {
+      const downloadsFolder = await mkdtempAsync(TMP_FOLDER);
+      const downloader = puppeteer.createDownloader({
+        platform: 'linux',
+        path: downloadsFolder,
+        host: server.PREFIX
+      });
+      const revisionInfo = downloader.revisionInfo('123456');
+      server.setRoute(revisionInfo.url.substring(server.PREFIX.length), (req, res) => {
+        server.serveFile(req, res, '/chromium-linux.zip');
+      });
+
+      expect(downloader.platform()).toBe('linux');
+      expect(await downloader.canDownloadRevision('100000')).toBe(false);
+      expect(await downloader.canDownloadRevision('123456')).toBe(true);
+
+      await downloader.downloadRevision('123456');
+      expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe('LINUX BINARY\n');
+      expect(await downloader.downloadedRevisions()).toEqual(['123456']);
+      await downloader.removeRevision('123456');
+      expect(await downloader.downloadedRevisions()).toEqual([]);
+      rm(downloadsFolder);
+    });
+  });
   describe('Puppeteer.launch', function() {
     it('should support ignoreHTTPSErrors option', async({httpsServer}) => {
       const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);

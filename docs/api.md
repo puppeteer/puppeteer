@@ -10,9 +10,17 @@
 - [Environment Variables](#environment-variables)
 - [class: Puppeteer](#class-puppeteer)
   * [puppeteer.connect(options)](#puppeteerconnectoptions)
+  * [puppeteer.createDownloader(options)](#puppeteercreatedownloaderoptions)
   * [puppeteer.defaultArgs()](#puppeteerdefaultargs)
   * [puppeteer.executablePath()](#puppeteerexecutablepath)
   * [puppeteer.launch([options])](#puppeteerlaunchoptions)
+- [class: Downloader](#class-downloader)
+  * [downloader.canDownloadRevision(revision)](#downloadercandownloadrevisionrevision)
+  * [downloader.downloadRevision(revision, progressCallback)](#downloaderdownloadrevisionrevision-progresscallback)
+  * [downloader.downloadedRevisions()](#downloaderdownloadedrevisions)
+  * [downloader.platform()](#downloaderplatform)
+  * [downloader.removeRevision(revision)](#downloaderremoverevisionrevision)
+  * [downloader.revisionInfo(revision)](#downloaderrevisioninforevision)
 - [class: Browser](#class-browser)
   * [event: 'disconnected'](#event-disconnected)
   * [event: 'targetchanged'](#event-targetchanged)
@@ -273,6 +281,13 @@ puppeteer.launch().then(async browser => {
 
 This methods attaches Puppeteer to an existing Chromium instance.
 
+#### puppeteer.createDownloader([options])
+- `options` <[Object]>
+  - `host` <[string]> A download host to be used. Defaults to `https://storage.googleapis.com`.
+  - `path` <[string]> A path for the downloads folder. Defaults `<root>/.local-chromium`, where `<root>` is puppeteer's package root.
+  - `platform` <[string]> Specify binary type. Possible values are: `mac`, `win32`, `win64`, `linux`. Defaults to the current platform.
+- returns: <[Downloader]>
+
 #### puppeteer.defaultArgs()
 - returns: <[Array]<[string]>> The default flags that Chromium will be launched with.
 
@@ -307,6 +322,48 @@ If Google Chrome (rather than Chromium) is preferred, a [Chrome Canary](https://
 >
 > See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description
   of the differences between Chromium and Chrome. [`This article`](https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users.
+  
+### class: Downloader
+
+A Downloader is manages downloaded chromium instances.
+
+Downloader is created per platform and operates revisions: strings representing 6-digit numbers, e.g. `"533271"`. Revisions could be checked with [omahaproxy.appspot.com](http://omahaproxy.appspot.com/).
+
+> **NOTE** Downloader class is not designed to work concurrently with other instances of Downloader class.
+
+#### downloader.canDownloadRevision(revision)
+- `revision` <[string]> a revision to check availability.
+- returns: <[Promise]<[boolean]>>  returns `true` if the revision could be downloaded from the host.
+
+The method initiates a HEAD request to check if revision is available.
+
+#### downloader.downloadRevision(revision[, progressCallback])
+- `revision` <[string]> a revision to check availability.
+- `progressCallback` <[function]> A function that will be called with two arguments:
+  - `downloadedBytes` <[number]> how many bytes are downloaded
+  - `totalBytes` <[number]> how many bytes is the total download
+- returns: <[Promise]> Resolves when the revision is downloaded and extracted
+
+The method initiates a GET request to download revision from the host. 
+
+#### downloader.downloadedRevisions()
+- returns: <[Promise]<[Array]<[string]>>> a list of all revisions downloaded for the given platform
+
+#### downloader.platform()
+- returns: <[string]> Downloader target platform. Returns one of the `mac`, `linux`, `win32` or `win64`.
+
+#### downloader.removeRevision(revision)
+- `revision` <[string]> a revision to remove. The method will throw if the revision is not downloaded.
+- returns: <[Promise]> Resolves when the revision is downloaded
+
+#### downloader.revisionInfo(revision)
+- `revision` <[string]> a revision to get info.
+- returns: <[Object]>
+  - `revision` <[string]> the revision the info was created from
+  - `folderPath` <[string]> path to the extracted revision folder
+  - `executablePath` <[string]> path to the revision executable
+  - `url` <[string]> URL this revision can be downloaded from
+  - `downloaded` <[boolean]> weather the revision is downloaded or not
 
 ### class: Browser
 
