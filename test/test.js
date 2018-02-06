@@ -215,6 +215,59 @@ describe('Puppeteer', function() {
       const args = puppeteer.defaultArgs();
       expect(args).toContain('--no-first-run');
     });
+    describe('prefs option', () => {
+      it('should reject if prefs used in headless mode', async() => {
+        let waitError = null;
+        const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+        const options = Object.assign({}, defaultBrowserOptions, {
+          headless: true,
+          userDataDir,
+          prefs: {},
+        });
+        await puppeteer.launch(options).catch(e => waitError = e);
+        expect(waitError.message).toBe(`Custom preferences can't be used in headless mode`);
+      });
+      it('should reject if prefs used in conjunction with userDataDir option', async() => {
+        let waitError = null;
+        const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+        const options = Object.assign({}, defaultBrowserOptions, {
+          headless: false,
+          userDataDir,
+          prefs: {},
+        });
+        await puppeteer.launch(options).catch(e => waitError = e);
+        expect(waitError.message).toBe(`Custom preferences can't be used with custom userDataDir`);
+      });
+      it('should reject if prefs used in conjunction with userDataDir argument', async() => {
+        let waitError = null;
+        const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+        const options = Object.assign({}, defaultBrowserOptions, {
+          headless: false,
+          prefs: {},
+        });
+        options.args = [`--user-data-dir=${userDataDir}`].concat(options.args);
+        await puppeteer.launch(options).catch(e => waitError = e);
+        expect(waitError.message).toBe(`Custom preferences can't be used with custom userDataDir`);
+      });
+      it('should apply custom prefs', async() => {
+        const customDefaultFontSize = 10;
+        const options = Object.assign({}, defaultBrowserOptions, {
+          headless: false,
+          prefs: {
+            webkit: {
+              webprefs: {
+                default_font_size: customDefaultFontSize,
+              },
+            },
+          },
+        });
+        const browser = await puppeteer.launch(options);
+        const [page] = await browser.pages();
+        const pageFontSize = await page.evaluate(() => window.getComputedStyle(document.documentElement)['font-size']);
+        expect(pageFontSize).toBe(`${customDefaultFontSize}px`);
+        await browser.close();
+      });
+    });
   });
   describe('Puppeteer.connect', function() {
     it('should be able to connect multiple times to the same browser', async({server}) => {
