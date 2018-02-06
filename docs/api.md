@@ -284,8 +284,8 @@ This methods attaches Puppeteer to an existing Chromium instance.
 #### puppeteer.createDownloader([options])
 - `options` <[Object]>
   - `host` <[string]> A download host to be used. Defaults to `https://storage.googleapis.com`.
-  - `path` <[string]> A path for the downloads folder. Defaults `<root>/.local-chromium`, where `<root>` is puppeteer's package root.
-  - `platform` <[string]> Specify binary type. Possible values are: `mac`, `win32`, `win64`, `linux`. Defaults to the current platform.
+  - `path` <[string]> A path for the downloads folder. Defaults to `<root>/.local-chromium`, where `<root>` is puppeteer's package root.
+  - `platform` <[string]> Possible values are: `mac`, `win32`, `win64`, `linux`. Defaults to the current platform.
 - returns: <[Downloader]>
 
 #### puppeteer.defaultArgs()
@@ -335,13 +335,13 @@ The Downloader operates on revision strings that specify a precise version of Ch
 - `revision` <[string]> a revision to check availability.
 - returns: <[Promise]<[boolean]>>  returns `true` if the revision could be downloaded from the host.
 
-The method initiates a HEAD request to check if revision is available.
+The method initiates a HEAD request to check if the revision is available.
 
 #### downloader.download(revision[, progressCallback])
 - `revision` <[string]> a revision to download.
 - `progressCallback` <[function]> A function that will be called with two arguments:
-  - `downloadedBytes` <[number]> how many bytes are downloaded
-  - `totalBytes` <[number]> how many bytes is the total download
+  - `downloadedBytes` <[number]> how many bytes have been downloaded
+  - `totalBytes` <[number]> how large is the total download.
 - returns: <[Promise]> Resolves when the revision is downloaded and extracted
 
 The method initiates a GET request to download revision from the host.
@@ -363,7 +363,7 @@ The method initiates a GET request to download revision from the host.
   - `downloaded` <[boolean]> wether the revision is downloaded or not
 
 #### downloader.storedRevisions()
-- returns: <[Promise]<[Array]<[string]>>> a list of all revisions downloaded for the given platform
+- returns: <[Promise]<[Array]<[string]>>> A list of all revisions previously downloaded.
 
 
 ### class: Browser
