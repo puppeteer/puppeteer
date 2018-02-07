@@ -185,18 +185,20 @@ class SimpleServer {
     if (this._requestSubscribers.has(pathName))
       this._requestSubscribers.get(pathName)[fulfillSymbol].call(null, request);
     const handler = this._routes.get(pathName);
-    if (handler)
+    if (handler) {
       handler.call(null, request, response);
-    else
-      this.defaultHandler(request, response);
+    } else {
+      const pathName = url.parse(request.url).path;
+      this.serveFile(request, response, pathName);
+    }
   }
 
   /**
    * @param {!IncomingMessage} request
    * @param {!ServerResponse} response
+   * @param {string} pathName
    */
-  defaultHandler(request, response) {
-    let pathName = url.parse(request.url).path;
+  serveFile(request, response, pathName) {
     if (pathName === '/')
       pathName = '/index.html';
     const filePath = path.join(this._dirPath, pathName.substring(1));

@@ -10,9 +10,17 @@
 - [Environment Variables](#environment-variables)
 - [class: Puppeteer](#class-puppeteer)
   * [puppeteer.connect(options)](#puppeteerconnectoptions)
+  * [puppeteer.createBrowserFetcher([options])](#puppeteercreatebrowserfetcheroptions)
   * [puppeteer.defaultArgs()](#puppeteerdefaultargs)
   * [puppeteer.executablePath()](#puppeteerexecutablepath)
   * [puppeteer.launch([options])](#puppeteerlaunchoptions)
+- [class: BrowserFetcher](#class-browserfetcher)
+  * [browserFetcher.canDownload(revision)](#browserfetchercandownloadrevision)
+  * [browserFetcher.download(revision[, progressCallback])](#browserfetcherdownloadrevision-progresscallback)
+  * [browserFetcher.localRevisions()](#browserfetcherlocalrevisions)
+  * [browserFetcher.platform()](#browserfetcherplatform)
+  * [browserFetcher.remove(revision)](#browserfetcherremoverevision)
+  * [browserFetcher.revisionInfo(revision)](#browserfetcherrevisioninforevision)
 - [class: Browser](#class-browser)
   * [event: 'disconnected'](#event-disconnected)
   * [event: 'targetchanged'](#event-targetchanged)
@@ -273,6 +281,13 @@ puppeteer.launch().then(async browser => {
 
 This methods attaches Puppeteer to an existing Chromium instance.
 
+#### puppeteer.createBrowserFetcher([options])
+- `options` <[Object]>
+  - `host` <[string]> A download host to be used. Defaults to `https://storage.googleapis.com`.
+  - `path` <[string]> A path for the downloads folder. Defaults to `<root>/.local-chromium`, where `<root>` is puppeteer's package root.
+  - `platform` <[string]> Possible values are: `mac`, `win32`, `win64`, `linux`. Defaults to the current platform.
+- returns: <[BrowserFetcher]>
+
 #### puppeteer.defaultArgs()
 - returns: <[Array]<[string]>> The default flags that Chromium will be launched with.
 
@@ -307,6 +322,63 @@ If Google Chrome (rather than Chromium) is preferred, a [Chrome Canary](https://
 >
 > See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description
   of the differences between Chromium and Chrome. [`This article`](https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users.
+  
+### class: BrowserFetcher
+
+BrowserFetcher can download and manage different versions of Chromium.
+
+BrowserFetcher operates on revision strings that specify a precise version of Chromium, e.g. `"533271"`. Revision strings can be obtained from [omahaproxy.appspot.com](http://omahaproxy.appspot.com/).
+
+Example on how to use BrowserFetcher to download a specific version of Chromium and run
+puppeteer against it:
+
+```js
+const browserFetcher = puppeteer.createBrowserFetcher();
+const revisionInfo = await browserFetcher.download('533271');
+const browser = await puppeteer.launch({executablePath: revisionInfo.executablePath})
+```
+
+> **NOTE** BrowserFetcher is not designed to work concurrently with other
+> instances of BrowserFetcher that share the same downloads directory.
+
+#### browserFetcher.canDownload(revision)
+- `revision` <[string]> a revision to check availability.
+- returns: <[Promise]<[boolean]>>  returns `true` if the revision could be downloaded from the host.
+
+The method initiates a HEAD request to check if the revision is available.
+
+#### browserFetcher.download(revision[, progressCallback])
+- `revision` <[string]> a revision to download.
+- `progressCallback` <[function]([number], [number])> A function that will be called with two arguments:
+  - `downloadedBytes` <[number]> how many bytes have been downloaded
+  - `totalBytes` <[number]> how large is the total download.
+- returns: <[Promise]<[Object]>> Resolves with revision information when the revision is downloaded and extracted
+  - `revision` <[string]> the revision the info was created from
+  - `folderPath` <[string]> path to the extracted revision folder
+  - `executablePath` <[string]> path to the revision executable
+  - `url` <[string]> URL this revision can be downloaded from
+  - `local` <[boolean]> whether the revision is locally available on disk
+
+The method initiates a GET request to download the revision from the host.
+
+#### browserFetcher.localRevisions()
+- returns: <[Promise]<[Array]<[string]>>> A list of all revisions available locally on disk.
+
+#### browserFetcher.platform()
+- returns: <[string]> Returns one of `mac`, `linux`, `win32` or `win64`.
+
+#### browserFetcher.remove(revision)
+- `revision` <[string]> a revision to remove. The method will throw if the revision has not been downloaded.
+- returns: <[Promise]> Resolves when the revision has been removed.
+
+#### browserFetcher.revisionInfo(revision)
+- `revision` <[string]> a revision to get info for.
+- returns: <[Object]>
+  - `revision` <[string]> the revision the info was created from
+  - `folderPath` <[string]> path to the extracted revision folder
+  - `executablePath` <[string]> path to the revision executable
+  - `url` <[string]> URL this revision can be downloaded from
+  - `local` <[boolean]> whether the revision is locally available on disk
 
 ### class: Browser
 
@@ -2489,6 +2561,7 @@ reported.
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
 [stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable "stream.Readable"
 [CDPSession]: #class-cdpsession  "CDPSession"
+[BrowserFetcher]: #class-browserfetcher  "BrowserFetcher"
 [Error]: https://nodejs.org/api/errors.html#errors_class_error "Error"
 [Frame]: #class-frame "Frame"
 [ConsoleMessage]: #class-consolemessage "ConsoleMessage"
