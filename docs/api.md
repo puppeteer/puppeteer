@@ -338,7 +338,8 @@ const revisionInfo = await browserFetcher.download('533271');
 const browser = await puppeteer.launch({executablePath: revisionInfo.executablePath})
 ```
 
-> **NOTE** Downloader class is not designed to work concurrently with other instances of Downloader class.
+> **NOTE** BrowserFetcher is not designed to work concurrently with other
+> instances of BrowserFetcher that share the same downloads directory.
 
 #### browserFetcher.canDownload(revision)
 - `revision` <[string]> a revision to check availability.
@@ -364,7 +365,7 @@ The method initiates a GET request to download the revision from the host.
 - returns: <[Promise]<[Array]<[string]>>> A list of all revisions available locally on disk.
 
 #### browserFetcher.platform()
-- returns: <[string]> Downloader target platform. Returns one of `mac`, `linux`, `win32` or `win64`.
+- returns: <[string]> Returns one of `mac`, `linux`, `win32` or `win64`.
 
 #### browserFetcher.remove(revision)
 - `revision` <[string]> a revision to remove. The method will throw if the revision has not been downloaded.
