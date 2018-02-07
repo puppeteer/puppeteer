@@ -52,6 +52,7 @@ When authoring new API methods, consider the following:
 - methods are used in favor of getters/setters
   - the only exception is namespaces, e.g. `page.keyboard` and `page.coverage`
 - all string literals must be small case. This includes event names and option values
+- avoid adding "sugar" API (API that is trivially implementable in user-space) unless they're **very** demanded
 
 ## Commit Messages
 
