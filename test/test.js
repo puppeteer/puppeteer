@@ -114,30 +114,30 @@ afterAll(async({server, httpsServer}) => {
 });
 
 describe('Puppeteer', function() {
-  describe('Downloader', function() {
+  describe('BrowserFetcher', function() {
     it('should download and extract linux binary', async({server}) => {
       const downloadsFolder = await mkdtempAsync(TMP_FOLDER);
-      const downloader = puppeteer.createDownloader({
+      const browserFetcher = puppeteer.createBrowserFetcher({
         platform: 'linux',
         path: downloadsFolder,
         host: server.PREFIX
       });
-      let revisionInfo = downloader.revisionInfo('123456');
+      let revisionInfo = browserFetcher.revisionInfo('123456');
       server.setRoute(revisionInfo.url.substring(server.PREFIX.length), (req, res) => {
         server.serveFile(req, res, '/chromium-linux.zip');
       });
 
       expect(revisionInfo.local).toBe(false);
-      expect(downloader.platform()).toBe('linux');
-      expect(await downloader.canDownload('100000')).toBe(false);
-      expect(await downloader.canDownload('123456')).toBe(true);
+      expect(browserFetcher.platform()).toBe('linux');
+      expect(await browserFetcher.canDownload('100000')).toBe(false);
+      expect(await browserFetcher.canDownload('123456')).toBe(true);
 
-      revisionInfo = await downloader.download('123456');
+      revisionInfo = await browserFetcher.download('123456');
       expect(revisionInfo.local).toBe(true);
       expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe('LINUX BINARY\n');
-      expect(await downloader.localRevisions()).toEqual(['123456']);
-      await downloader.remove('123456');
-      expect(await downloader.localRevisions()).toEqual([]);
+      expect(await browserFetcher.localRevisions()).toEqual(['123456']);
+      await browserFetcher.remove('123456');
+      expect(await browserFetcher.localRevisions()).toEqual([]);
       rm(downloadsFolder);
     });
   });

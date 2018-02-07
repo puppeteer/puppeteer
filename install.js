@@ -28,10 +28,10 @@ if (process.env.NPM_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.env.npm_c
 const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host;
 
 const puppeteer = require('./index');
-const downloader = puppeteer.createDownloader({ host: downloadHost });
+const browserFetcher = puppeteer.createBrowserFetcher({ host: downloadHost });
 
 const revision = require('./package.json').puppeteer.chromium_revision;
-const revisionInfo = downloader.revisionInfo(revision);
+const revisionInfo = browserFetcher.revisionInfo(revision);
 
 // Do nothing if the revision is already downloaded.
 if (revisionInfo.local)
@@ -49,8 +49,8 @@ if (NPM_HTTP_PROXY)
 if (NPM_NO_PROXY)
   process.env.NO_PROXY = NPM_NO_PROXY;
 
-downloader.download(revisionInfo.revision, onProgress)
-    .then(() => downloader.localRevisions())
+browserFetcher.download(revisionInfo.revision, onProgress)
+    .then(() => browserFetcher.localRevisions())
     .then(onSuccess)
     .catch(onError);
 
@@ -62,7 +62,7 @@ function onSuccess(localRevisions) {
   console.log('Chromium downloaded to ' + revisionInfo.folderPath);
   localRevisions = localRevisions.filter(revision => revision !== revisionInfo.revision);
   // Remove previous chromium revisions.
-  const cleanupOldVersions = localRevisions.map(revision => downloader.remove(revision));
+  const cleanupOldVersions = localRevisions.map(revision => browserFetcher.remove(revision));
   return Promise.all(cleanupOldVersions);
 }
 

@@ -20,7 +20,7 @@ const https = require('https');
 const OMAHA_PROXY = 'https://omahaproxy.appspot.com/all.json';
 const SUPPORTER_PLATFORMS = ['linux', 'mac', 'win32', 'win64'];
 
-const downloaders = SUPPORTER_PLATFORMS.map(platform => puppeteer.createDownloader({platform}));
+const fetchers = SUPPORTER_PLATFORMS.map(platform => puppeteer.createBrowserFetcher({platform}));
 
 const colors = {
   reset: '\x1b[0m',
@@ -108,7 +108,7 @@ async function checkRangeAvailability(fromRevision, toRevision) {
  * @param {number} revision
  */
 async function checkAndDrawRevisionAvailability(table, name, revision) {
-  const promises = downloaders.map(downloader => downloader.canDownload(revision));
+  const promises = fetchers.map(fetcher => fetcher.canDownload(revision));
   const availability = await Promise.all(promises);
   const allAvailable = availability.every(e => !!e);
   const values = [name + ' ' + (allAvailable ? colors.green + revision + colors.reset : revision)];
