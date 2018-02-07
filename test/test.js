@@ -122,7 +122,7 @@ describe('Puppeteer', function() {
         path: downloadsFolder,
         host: server.PREFIX
       });
-      const revisionInfo = downloader.revisionInfo('123456');
+      let revisionInfo = downloader.revisionInfo('123456');
       server.setRoute(revisionInfo.url.substring(server.PREFIX.length), (req, res) => {
         server.serveFile(req, res, '/chromium-linux.zip');
       });
@@ -131,7 +131,7 @@ describe('Puppeteer', function() {
       expect(await downloader.canDownload('100000')).toBe(false);
       expect(await downloader.canDownload('123456')).toBe(true);
 
-      await downloader.download('123456');
+      revisionInfo = await downloader.download('123456');
       expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe('LINUX BINARY\n');
       expect(await downloader.storedRevisions()).toEqual(['123456']);
       await downloader.remove('123456');

@@ -342,7 +342,12 @@ The method initiates a HEAD request to check if the revision is available.
 - `progressCallback` <[function]([number], [number])> A function that will be called with two arguments:
   - `downloadedBytes` <[number]> how many bytes have been downloaded
   - `totalBytes` <[number]> how large is the total download.
-- returns: <[Promise]> Resolves when the revision is downloaded and extracted
+- returns: <[Promise]<[Object]>> Resolves with revision information when the revision is downloaded and extracted
+  - `revision` <[string]> the revision the info was created from
+  - `folderPath` <[string]> path to the extracted revision folder
+  - `executablePath` <[string]> path to the revision executable
+  - `url` <[string]> URL this revision can be downloaded from
+  - `downloaded` <[boolean]> whether the revision has been downloaded or not
 
 The method initiates a GET request to download the revision from the host.
 
