@@ -283,15 +283,10 @@ This methods attaches Puppeteer to an existing Chromium instance.
 
 #### puppeteer.createBrowserFetcher([options])
 - `options` <[Object]>
-  - `product` <[string]> Possible values are: `'chromium'`, `'content_shell'`. Defaults to `'chromium'`.
   - `host` <[string]> A download host to be used. Defaults to `https://storage.googleapis.com`.
   - `path` <[string]> A path for the downloads folder. Defaults to `<root>/.local-chromium`, where `<root>` is puppeteer's package root.
-  - `platform` <[string]> Possible values are: `'mac'`, `'win32'`, `'win64'`, `'linux'`. Defaults to the current platform.
+  - `platform` <[string]> Possible values are: `mac`, `win32`, `win64`, `linux`. Defaults to the current platform.
 - returns: <[BrowserFetcher]>
-
-> **NOTE** ` 'content_shell'` is a basic browser built atop of `content/` layer as a part of Chromium project. Puppeteer API is not guaranteed to work with content_shell; **use on your own risk**.
->
-> More about the `content/` layer here: [content module](https://www.chromium.org/developers/content-module).
 
 #### puppeteer.defaultArgs()
 - returns: <[Array]<[string]>> The default flags that Chromium will be launched with.
