@@ -140,6 +140,26 @@ describe('Puppeteer', function() {
       expect(await browserFetcher.localRevisions()).toEqual([]);
       rm(downloadsFolder);
     });
+    it('should download content_shell', async({server}) => {
+      const downloadsFolder = await mkdtempAsync(TMP_FOLDER);
+      const browserFetcher = puppeteer.createBrowserFetcher({
+        platform: 'linux',
+        path: downloadsFolder,
+        host: server.PREFIX,
+        product: 'content_shell',
+      });
+      let revisionInfo = browserFetcher.revisionInfo('777777');
+      server.setRoute(revisionInfo.url.substring(server.PREFIX.length), (req, res) => {
+        server.serveFile(req, res, '/contentshell-linux.zip');
+      });
+      revisionInfo = await browserFetcher.download('777777');
+      expect(revisionInfo.local).toBe(true);
+      expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe('CONTENT_SHELL BINARY\n');
+      expect(await browserFetcher.localRevisions()).toEqual(['777777']);
+      await browserFetcher.remove('777777');
+      expect(await browserFetcher.localRevisions()).toEqual([]);
+      rm(downloadsFolder);
+    });
   });
   describe('Puppeteer.launch', function() {
     it('should support ignoreHTTPSErrors option', async({httpsServer}) => {
