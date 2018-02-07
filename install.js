@@ -34,7 +34,7 @@ const revision = require('./package.json').puppeteer.chromium_revision;
 const revisionInfo = downloader.revisionInfo(revision);
 
 // Do nothing if the revision is already downloaded.
-if (revisionInfo.downloaded)
+if (revisionInfo.local)
   return;
 
 // Override current environment proxy settings with npm configuration, if any.
@@ -50,7 +50,7 @@ if (NPM_NO_PROXY)
   process.env.NO_PROXY = NPM_NO_PROXY;
 
 downloader.download(revisionInfo.revision, onProgress)
-    .then(() => downloader.storedRevisions())
+    .then(() => downloader.localRevisions())
     .then(onSuccess)
     .catch(onError);
 
@@ -58,11 +58,11 @@ downloader.download(revisionInfo.revision, onProgress)
  * @param {!Array<string>}
  * @return {!Promise}
  */
-function onSuccess(storedRevisions) {
+function onSuccess(localRevisions) {
   console.log('Chromium downloaded to ' + revisionInfo.folderPath);
-  storedRevisions = storedRevisions.filter(revision => revision !== revisionInfo.revision);
+  localRevisions = localRevisions.filter(revision => revision !== revisionInfo.revision);
   // Remove previous chromium revisions.
-  const cleanupOldVersions = storedRevisions.map(revision => downloader.remove(revision));
+  const cleanupOldVersions = localRevisions.map(revision => downloader.remove(revision));
   return Promise.all(cleanupOldVersions);
 }
 

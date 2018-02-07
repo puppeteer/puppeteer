@@ -17,10 +17,10 @@
 - [class: Downloader](#class-downloader)
   * [downloader.canDownload(revision)](#downloadercandownloadrevision)
   * [downloader.download(revision[, progressCallback])](#downloaderdownloadrevision-progresscallback)
+  * [downloader.localRevisions()](#downloaderlocalrevisions)
   * [downloader.platform()](#downloaderplatform)
   * [downloader.remove(revision)](#downloaderremoverevision)
   * [downloader.revisionInfo(revision)](#downloaderrevisioninforevision)
-  * [downloader.storedRevisions()](#downloaderstoredrevisions)
 - [class: Browser](#class-browser)
   * [event: 'disconnected'](#event-disconnected)
   * [event: 'targetchanged'](#event-targetchanged)
@@ -347,9 +347,12 @@ The method initiates a HEAD request to check if the revision is available.
   - `folderPath` <[string]> path to the extracted revision folder
   - `executablePath` <[string]> path to the revision executable
   - `url` <[string]> URL this revision can be downloaded from
-  - `downloaded` <[boolean]> whether the revision has been downloaded or not
+  - `local` <[boolean]> whether the revision is locally available on disk
 
 The method initiates a GET request to download the revision from the host.
+
+#### downloader.localRevisions()
+- returns: <[Promise]<[Array]<[string]>>> A list of all revisions available locally on disk.
 
 #### downloader.platform()
 - returns: <[string]> Downloader target platform. Returns one of `mac`, `linux`, `win32` or `win64`.
@@ -365,11 +368,7 @@ The method initiates a GET request to download the revision from the host.
   - `folderPath` <[string]> path to the extracted revision folder
   - `executablePath` <[string]> path to the revision executable
   - `url` <[string]> URL this revision can be downloaded from
-  - `downloaded` <[boolean]> wether the revision has been downloaded or not
-
-#### downloader.storedRevisions()
-- returns: <[Promise]<[Array]<[string]>>> A list of all revisions previously downloaded.
-
+  - `local` <[boolean]> whether the revision is locally available on disk
 
 ### class: Browser
 

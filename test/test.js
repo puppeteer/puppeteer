@@ -127,15 +127,17 @@ describe('Puppeteer', function() {
         server.serveFile(req, res, '/chromium-linux.zip');
       });
 
+      expect(revisionInfo.local).toBe(false);
       expect(downloader.platform()).toBe('linux');
       expect(await downloader.canDownload('100000')).toBe(false);
       expect(await downloader.canDownload('123456')).toBe(true);
 
       revisionInfo = await downloader.download('123456');
+      expect(revisionInfo.local).toBe(true);
       expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe('LINUX BINARY\n');
-      expect(await downloader.storedRevisions()).toEqual(['123456']);
+      expect(await downloader.localRevisions()).toEqual(['123456']);
       await downloader.remove('123456');
-      expect(await downloader.storedRevisions()).toEqual([]);
+      expect(await downloader.localRevisions()).toEqual([]);
       rm(downloadsFolder);
     });
   });
