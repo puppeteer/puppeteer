@@ -329,6 +329,15 @@ BrowserFetcher can download and manage different versions of Chromium.
 
 BrowserFetcher operates on revision strings that specify a precise version of Chromium, e.g. `"533271"`. Revision strings can be obtained from [omahaproxy.appspot.com](http://omahaproxy.appspot.com/).
 
+Example on how to use BrowserFetcher to download a specific version of Chromium and run
+puppeteer against it:
+
+```js
+const browserFetcher = puppeteer.createBrowserFetcher();
+const revisionInfo = await browserFetcher.download('533271');
+const browser = await puppeteer.launch({executablePath: revisionInfo.executablePath})
+```
+
 > **NOTE** Downloader class is not designed to work concurrently with other instances of Downloader class.
 
 #### browserFetcher.canDownload(revision)
