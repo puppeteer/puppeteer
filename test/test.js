@@ -3401,7 +3401,51 @@ describe('Page', function() {
         session: true
       }]);
     });
-
+    it('should set and get all cookies', async({page, server}) => {
+      await page.goto(server.PREFIX + '/grid.html');
+      expect(await page.allCookies()).toEqual([]);
+      await page.evaluate(() => {
+        document.cookie = 'username=John Doe';
+      });
+      expect(await page.allCookies()).toEqual([{
+        name: 'username',
+        value: 'John Doe',
+        domain: 'localhost',
+        path: '/',
+        expires: -1,
+        size: 16,
+        httpOnly: false,
+        secure: false,
+        session: true }
+      ]);
+      await page.setCookie({
+        name: 'password',
+        value: '123456'
+      });
+      expect(await page.evaluate('document.cookie')).toBe('username=John Doe; password=123456');
+      const cookies = await page.allCookies();
+      expect(cookies.sort((a, b) => a.name.localeCompare(b.name))).toEqual([{
+        name: 'password',
+        value: '123456',
+        domain: 'localhost',
+        path: '/',
+        expires: -1,
+        size: 14,
+        httpOnly: false,
+        secure: false,
+        session: true
+      }, {
+        name: 'username',
+        value: 'John Doe',
+        domain: 'localhost',
+        path: '/',
+        expires: -1,
+        size: 16,
+        httpOnly: false,
+        secure: false,
+        session: true
+      }]);
+    });
     it('should set a cookie with a path', async({page, server}) => {
       await page.goto(server.PREFIX + '/grid.html');
       await page.setCookie({
