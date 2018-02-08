@@ -169,7 +169,7 @@ The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/communit
 
 Example Dockerfile:
 
-```
+```Dockerfile
 FROM node:9-alpine
 
 # Installs latest Chromium (63) package.

@@ -27,7 +27,7 @@ cd puppeteer
 2. Install dependencies
 
 ```bash
-npm install # or 'yarn'
+npm install
 ```
 
 ## Code reviews
