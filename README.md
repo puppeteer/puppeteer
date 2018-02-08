@@ -154,7 +154,7 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
 
         const browser = await puppeteer.launch({headless: false});
 
-1. Slow it down - the `slowMo` option slows down Puppeteer operations by the
+2. Slow it down - the `slowMo` option slows down Puppeteer operations by the
    specified amount of milliseconds. It's another way to help see what's going on.
 
         const browser = await puppeteer.launch({
@@ -162,7 +162,7 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
           slowMo: 250 // slow down by 250ms
         });
 
-1. Capture console output - You can listen for the `console` event.
+3. Capture console output - You can listen for the `console` event.
    This is also handy when debugging code in `page.evaluate()`:
 
         page.on('console', msg => console.log('PAGE LOG:', msg.text()));
@@ -171,7 +171,7 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
 
         await page.evaluate(() => console.log(`url is ${location.href}`));
 
-1. Enable verbose logging - All public API calls and internal protocol traffic
+4. Enable verbose logging - All public API calls and internal protocol traffic
    will be logged via the [`debug`](https://github.com/visionmedia/debug) module under the `puppeteer` namespace.
 
         # Basic verbose logging
