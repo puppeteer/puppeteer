@@ -105,7 +105,7 @@ For all dependencies (both installation and development):
 - if adding a dependency, it should be well-maintained and trustworthy
 
 A barrier for introducing new installation dependencies is especially high:
-- **do not add** installation dependency unless it's critical to project success
+- **Do not add** installation dependency unless it's critical to project success
 
 ## Writing Tests
 
