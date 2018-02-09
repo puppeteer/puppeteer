@@ -2957,7 +2957,7 @@ describe('Page', function() {
       expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(false);
       await page.setViewport(iPhone.viewport);
       expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(true);
-      expect(await page.evaluate(dispatchTouch)).toBe('Recieved touch');
+      expect(await page.evaluate(dispatchTouch)).toBe('Received touch');
       await page.setViewport({width: 100, height: 100});
       expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(false);
 
@@ -2965,11 +2965,11 @@ describe('Page', function() {
         let fulfill;
         const promise = new Promise(x => fulfill = x);
         window.ontouchstart = function(e) {
-          fulfill('Recieved touch');
+          fulfill('Received touch');
         };
         window.dispatchEvent(new Event('touchstart'));
 
-        fulfill('Did not recieve touch');
+        fulfill('Did not receive touch');
 
         return promise;
       }

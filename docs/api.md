@@ -249,7 +249,6 @@ The Puppeteer API is hierarchical and mirrors the browser structure. On the foll
 
 (Diagram source: [link](https://docs.google.com/drawings/d/1Q_AM6KYs9kbyLZF-Lpp5mtpAWth73Cq8IKCsWYgi8MM/edit?usp=sharing))
 
-
 ### Environment Variables
 
 Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) to aid its operations. These variables can either be set in the environment or in the [npm config](https://docs.npmjs.com/cli/config).
@@ -315,14 +314,13 @@ This methods attaches Puppeteer to an existing Chromium instance.
 
 The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process is closed.
 
-> **NOTE** Puppeteer can also be used to control the Chrome browser, but it works best with the version of Chromium it is bundled with. There is no
- guarantee it will work with any other version. Use `executablePath` option with extreme caution.
-If Google Chrome (rather than Chromium) is preferred, a [Chrome Canary](https://www.google.com/chrome/browser/canary.html) or [Dev Channel](https://www.chromium.org/getting-involved/dev-channel) build is suggested.
+> **NOTE** Puppeteer can also be used to control the Chrome browser, but it works best with the version of Chromium it is bundled with. There is no guarantee it will work with any other version. Use `executablePath` option with extreme caution.
+>
+> If Google Chrome (rather than Chromium) is preferred, a [Chrome Canary](https://www.google.com/chrome/browser/canary.html) or [Dev Channel](https://www.chromium.org/getting-involved/dev-channel) build is suggested.
 >
 > In [puppeteer.launch([options])](#puppeteerlaunchoptions) above, any mention of Chromium also applies to Chrome.
 >
-> See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description
-  of the differences between Chromium and Chrome. [`This article`](https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users.
+> See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description of the differences between Chromium and Chrome. [`This article`](https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users.
 
 ### class: BrowserFetcher
 
@@ -600,7 +598,6 @@ The method runs `document.querySelectorAll` within the page. If no elements matc
 
 Shortcut for [page.mainFrame().$$(selector)](#frameselector-1).
 
-
 #### page.$$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> A [selector] to query frame for
 - `pageFunction` <[function]> Function to be evaluated in browser context
@@ -775,8 +772,8 @@ puppeteer.launch().then(async browser => {
 List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js).
 
 #### page.emulateMedia(mediaType)
-  - `mediaType` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation.
-  - returns: <[Promise]>
+- `mediaType` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation.
+- returns: <[Promise]>
 
 #### page.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context
@@ -839,7 +836,6 @@ await resultHandle.dispose();
 ```
 
 Shortcut for [page.mainFrame().executionContext().evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args).
-
 
 #### page.evaluateOnNewDocument(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
@@ -1124,16 +1120,16 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
 
 #### page.screenshot([options])
 - `options` <[Object]> Options object which might have the following properties:
-    - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the image won't be saved to the disk.
-    - `type` <[string]> Specify screenshot type, can be either `jpeg` or `png`. Defaults to 'png'.
-    - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
-    - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
-    - `clip` <[Object]> An object which specifies clipping region of the page. Should have the following fields:
-        - `x` <[number]> x-coordinate of top-left corner of clip area
-        - `y` <[number]> y-coordinate of top-left corner of clip area
-        - `width` <[number]> width of clipping area
-        - `height` <[number]> height of clipping area
-    - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
+  - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the image won't be saved to the disk.
+  - `type` <[string]> Specify screenshot type, can be either `jpeg` or `png`. Defaults to 'png'.
+  - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
+  - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
+  - `clip` <[Object]> An object which specifies clipping region of the page. Should have the following fields:
+    - `x` <[number]> x-coordinate of top-left corner of clip area
+    - `y` <[number]> y-coordinate of top-left corner of clip area
+    - `width` <[number]> width of clipping area
+    - `height` <[number]> height of clipping area
+  - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
 - returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot
 
 #### page.select(selector, ...values)
@@ -1408,7 +1404,6 @@ puppeteer.launch().then(async browser => {
 });
 ```
 Shortcut for [page.mainFrame().waitForXPath(xpath[, options])](#framewaitforxpathxpath-options).
-
 
 ### class: Keyboard
 
@@ -1897,7 +1892,6 @@ This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `number`, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
-
 #### frame.waitForFunction(pageFunction[, options[, ...args]])
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
@@ -2160,10 +2154,10 @@ The method evaluates the XPath expression relative to the elementHandle. If ther
 
 #### elementHandle.boundingBox()
 - returns: <[Promise]<?[Object]>>
-    - x <[number]> the x coordinate of the element in pixels.
-    - y <[number]> the y coordinate of the element in pixels.
-    - width <[number]> the width of the element in pixels.
-    - height <[number]> the height of the element in pixels.
+  - x <[number]> the x coordinate of the element in pixels.
+  - y <[number]> the y coordinate of the element in pixels.
+  - width <[number]> the width of the element in pixels.
+  - height <[number]> the height of the element in pixels.
 
 This method returns the bounding box of the element (relative to the main frame), or `null` if the element is not visible.
 
@@ -2459,7 +2453,6 @@ Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, or 
 #### target.url()
 - returns: <[string]>
 
-
 ### class: CDPSession
 
 * extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)
@@ -2491,7 +2484,6 @@ to send messages.
 - `method` <[string]> protocol method name
 - `params` <[Object]> Optional method parameters
 - returns: <[Promise]<[Object]>>
-
 
 ### class: Coverage
 
@@ -2544,7 +2536,6 @@ console.log(`Bytes used: ${usedBytes / totalBytes * 100}%`);
 
 > **NOTE** CSS Coverage doesn't include dynamically injected style tags without sourceURLs.
 
-
 #### coverage.stopJSCoverage()
 - returns: <[Promise]<[Array]<[Object]>>> Promise that resolves to the array of coverage reports for all non-anonymous scripts
   - `url` <[string]> Script URL
@@ -2555,7 +2546,6 @@ console.log(`Bytes used: ${usedBytes / totalBytes * 100}%`);
 
 > **NOTE** JavaScript Coverage doesn't include anonymous scripts. However, scripts with sourceURLs are
 reported.
-
 
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
