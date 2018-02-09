@@ -141,6 +141,16 @@ describe('Puppeteer', function() {
       rm(downloadsFolder);
     });
   });
+  describe('AppMode', function() {
+    it('should work', async() => {
+      const options = Object.assign({appMode: true}, defaultBrowserOptions);
+      const browser = await puppeteer.launch(options);
+      const page = await browser.newPage();
+      expect(await page.evaluate('11 * 11')).toBe(121);
+      await page.close();
+      await browser.close();
+    });
+  });
   describe('Puppeteer.launch', function() {
     it('should support ignoreHTTPSErrors option', async({httpsServer}) => {
       const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);

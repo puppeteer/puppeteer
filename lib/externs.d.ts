@@ -25,5 +25,9 @@ export class JSHandle extends RealJSHandle {}
 export class ExecutionContext extends RealExecutionContext {}
 export class Page extends RealPage {}
 
+export interface ConnectionTransport extends NodeJS.EventEmitter {
+  send(any);
+  close();
+}
 
 export interface ChildProcess extends child_process.ChildProcess {}
