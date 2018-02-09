@@ -49,6 +49,15 @@ To run code linter, use:
 npm run lint
 ```
 
+## API guidelines
+
+When authoring new API methods, consider the following:
+- expose as little information as needed. When in doubt, don’t expose new information
+- methods are used in favor of getters/setters
+  - the only exception is namespaces, e.g. `page.keyboard` and `page.coverage`
+- all string literals must be small case. This includes event names and option values
+- avoid adding "sugar" API (API that is trivially implementable in user-space) unless they're **very** demanded
+
 ## Commit Messages
 
 Commit messages should follow the Semantic Commit Messages format:
@@ -130,6 +139,12 @@ npm run unit
 npm run unit --filter=waitFor
 ```
 
+- To run tests in parallel, use `-j` flag:
+
+```bash
+npm run unit -- -j 4
+```
+
 - To run a specific test, substitute the `it` with `fit` (mnemonic rule: '*focus it*'):
 
 ```js
@@ -173,7 +188,7 @@ HEADLESS=false SLOW_MO=500 npm run unit
 - To debug a test, "focus" a test first and then run:
 
 ```bash
-npm run debug-unit
+node --inspect-brk test/test.js
 ```
 
 ## Public API Coverage
@@ -182,7 +197,7 @@ Every public API method or event should be called at least once in tests. To ens
 
 Run coverage:
 
-``` bash
+```bash
 npm run coverage
 ```
 

@@ -3050,6 +3050,21 @@ describe('Page', function() {
     });
   });
 
+  describe('Page.setCacheEnabled', function() {
+    it('should enable or disable the cache based on the state passed', async({page, server}) => {
+      const responses = new Map();
+      page.on('response', r => responses.set(r.url().split('/').pop(), r));
+
+      await page.goto(server.PREFIX + '/cached/one-style.html', {waitUntil: 'networkidle2'});
+      await page.reload({waitUntil: 'networkidle2'});
+      expect(responses.get('one-style.css').fromCache()).toBe(true);
+
+      await page.setCacheEnabled(false);
+      await page.reload({waitUntil: 'networkidle2'});
+      expect(responses.get('one-style.css').fromCache()).toBe(false);
+    });
+  });
+
   // Printing to pdf is currently only supported in headless
   (headless ? describe : xdescribe)('Page.pdf', function() {
     it('should be able to save file', async({page, server}) => {

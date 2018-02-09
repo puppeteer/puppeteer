@@ -86,6 +86,7 @@
   * [page.reload(options)](#pagereloadoptions)
   * [page.screenshot([options])](#pagescreenshotoptions)
   * [page.select(selector, ...values)](#pageselectselector-values)
+  * [page.setCacheEnabled(enabled)](#pagesetcacheenabledenabled)
   * [page.setContent(html)](#pagesetcontenthtml)
   * [page.setCookie(...cookies)](#pagesetcookiecookies)
   * [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout)
@@ -1145,6 +1146,12 @@ page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 ```
 
 Shortcut for [page.mainFrame().select()](#frameselectselector-values)
+
+#### page.setCacheEnabled(enabled)
+- `enabled` <[boolean]> sets the `enabled` state of the cache.
+- returns: <[Promise]>
+
+Toggles ignoring cache for each request based on the enabled state. By default, caching is enabled.
 
 #### page.setContent(html)
 - `html` <[string]> HTML markup to assign to the page.
