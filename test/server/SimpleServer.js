@@ -22,7 +22,7 @@ const path = require('path');
 const mime = require('mime');
 const WebSocketServer = require('ws').Server;
 
-const fulfillSymbol = Symbol('fullfill callback');
+const fulfillSymbol = Symbol('fullfil callback');
 const rejectSymbol = Symbol('reject callback');
 
 class SimpleServer {

@@ -53,7 +53,7 @@ class MDOutline {
           currentClass.members.push(member);
         } else if (element.matches('li') && element.firstChild.matches && element.firstChild.matches('code')) {
           member.args.push(element.firstChild.textContent);
-        } else if (element.matches('li') && element.firstChild.nodeType === Element.TEXT_NODE && element.firstChild.textContent.toLowerCase().startsWith('retur')) {
+        } else if (element.matches('li') && element.firstChild.nodeType === Element.TEXT_NODE && element.firstChild.textContent.toLowerCase().startsWith('return')) {
           member.hasReturn = true;
           const expectedText = 'returns: ';
           let actualText = element.firstChild.textContent;

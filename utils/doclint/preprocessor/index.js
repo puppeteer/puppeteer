@@ -31,7 +31,7 @@ module.exports = function(sources) {
       commandEndRegex.lastIndex = commandStartRegex.lastIndex;
       const end = commandEndRegex.exec(text);
       if (!end) {
-        messages.push(Message.error(`Failed to find 'gen:stop' for comamnd ${start[0]}`));
+        messages.push(Message.error(`Failed to find 'gen:stop' for command ${start[0]}`));
         break;
       }
       const name = start[1];
