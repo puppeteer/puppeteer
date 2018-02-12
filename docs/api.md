@@ -206,6 +206,7 @@
   * [request.resourceType()](#requestresourcetype)
   * [request.respond(response)](#requestrespondresponse)
   * [request.response()](#requestresponse)
+  * [request.timestamp()](#requesttimestamp)
   * [request.url()](#requesturl)
 - [class: Response](#class-response)
   * [response.buffer()](#responsebuffer)
@@ -217,6 +218,7 @@
   * [response.request()](#responserequest)
   * [response.status()](#responsestatus)
   * [response.text()](#responsetext)
+  * [response.timestamp()](#responsetimestamp)
   * [response.url()](#responseurl)
 - [class: Target](#class-target)
   * [target.createCDPSession()](#targetcreatecdpsession)
@@ -2384,6 +2386,9 @@ page.on('request', request => {
 #### request.response()
 - returns: <?[Response]> A matching [Response] object, or `null` if the response has not been received yet.
 
+#### request.timestamp()
+- returns: <[number]> The MonotonicTime timestamp when this request happened.
+
 #### request.url()
 - returns: <[string]> URL of the request.
 
@@ -2427,6 +2432,9 @@ Contains the status code of the response (e.g., 200 for a success).
 
 #### response.text()
 - returns: <[Promise]<[string]>> Promise which resolves to a text representation of response body.
+
+#### response.timestamp()
+- returns: <[number]> The MonotonicTime timestamp when this response happened.
 
 #### response.url()
 - returns: <[string]>
