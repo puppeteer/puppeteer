@@ -185,6 +185,7 @@
   * [elementHandle.dispose()](#elementhandledispose)
   * [elementHandle.executionContext()](#elementhandleexecutioncontext)
   * [elementHandle.focus()](#elementhandlefocus)
+  * [elementHandle.getFrame()](#elementhandlegetframe)
   * [elementHandle.getProperties()](#elementhandlegetproperties)
   * [elementHandle.getProperty(propertyName)](#elementhandlegetpropertypropertyname)
   * [elementHandle.hover()](#elementhandlehover)
@@ -2183,6 +2184,11 @@ The `elementHandle.dispose` method stops referencing the element handle.
 - returns: <[Promise]>
 
 Calls [focus](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus) on the element.
+
+#### elementHandle.getFrame()
+- returns: <[Promise]<?[Frame]>> A matching [Frame] object, or `null`.
+
+This method returns corresponding frame for iframe element or `null` for elements without frame.
 
 #### elementHandle.getProperties()
 - returns: <[Promise]<[Map]<[string], [JSHandle]>>>
