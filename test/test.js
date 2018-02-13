@@ -160,7 +160,7 @@ describe('Puppeteer', function() {
       const page = await browser.newPage();
       let error = null;
       const neverResolves = page.evaluate(() => new Promise(r => {})).catch(e => error = e);
-      browser.close();
+      await browser.close();
       await neverResolves;
       expect(error.message).toContain('Protocol error');
     });
