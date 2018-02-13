@@ -2350,18 +2350,6 @@ describe('Page', function() {
       await page.keyboard.type('Hello World!');
       expect(await page.evaluate(() => textarea.value)).toBe('He Wrd!');
     });
-    it('should remove keys from _pressedKeys after keyboard.up()', async({page, server}) => {
-      await page.goto(server.PREFIX + '/input/textarea.html');
-      await page.focus('textarea');
-      await page.keyboard.down('w');
-      expect(await page.keyboard._pressedKeys.size).toEqual(1);
-      await page.keyboard.down('1');
-      expect(await page.keyboard._pressedKeys.size).toEqual(2);
-      await page.keyboard.up('w');
-      expect(await page.keyboard._pressedKeys.size).toEqual(1);
-      await page.keyboard.up('1');
-      expect(await page.keyboard._pressedKeys.size).toEqual(0);
-    });
     it('keyboard.modifiers()', async({page, server}) => {
       const keyboard = page.keyboard;
       expect(keyboard._modifiers).toBe(0);
@@ -2475,10 +2463,19 @@ describe('Page', function() {
       await page.goto(server.PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       await page.evaluate(() => document.querySelector('textarea').addEventListener('keydown', e => window.lastEvent = e, true));
-      await page.keyboard.down('a', {text: 'a'});
+      await page.keyboard.down('a');
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(false);
       await page.keyboard.press('a');
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(true);
+
+      await page.keyboard.down('b');
+      expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(false);
+      await page.keyboard.down('b');
+      expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(true);
+
+      await page.keyboard.up('a');
+      await page.keyboard.down('a');
+      expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(false);
     });
     // @see https://github.com/GoogleChrome/puppeteer/issues/206
     it('should click links which cause navigation', async({page, server}) => {
