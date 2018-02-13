@@ -152,14 +152,15 @@ describe('Puppeteer', function() {
       expect(response.ok()).toBe(true);
       expect(response.securityDetails()).toBeTruthy();
       expect(response.securityDetails().protocol()).toBe('TLS 1.2');
-      browser.close();
+      await page.close();
+      await browser.close();
     });
     it('should reject all promises when browser is closed', async() => {
       const browser = await puppeteer.launch(defaultBrowserOptions);
       const page = await browser.newPage();
       let error = null;
       const neverResolves = page.evaluate(() => new Promise(r => {})).catch(e => error = e);
-      browser.close();
+      await browser.close();
       await neverResolves;
       expect(error.message).toContain('Protocol error');
     });
