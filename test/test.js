@@ -816,12 +816,12 @@ describe('Page', function() {
       const frame1 = page.frames()[1];
       const frame2 = page.frames()[2];
       let added = false;
-      frame2.waitForSelector('div').then(() => added = true);
+      const waitForSelectorPromise = frame2.waitForSelector('div').then(() => added = true);
       expect(added).toBe(false);
       await frame1.evaluate(addElement, 'div');
       expect(added).toBe(false);
       await frame2.evaluate(addElement, 'div');
-      expect(added).toBe(true);
+      await waitForSelectorPromise;
     });
 
     it('should throw if evaluation failed', async({page, server}) => {
@@ -942,12 +942,12 @@ describe('Page', function() {
       const frame1 = page.frames()[1];
       const frame2 = page.frames()[2];
       let added = false;
-      frame2.waitForXPath('//div').then(() => added = true);
+      const waitForXPathPromise = frame2.waitForXPath('//div').then(() => added = true);
       expect(added).toBe(false);
       await frame1.evaluate(addElement, 'div');
       expect(added).toBe(false);
       await frame2.evaluate(addElement, 'div');
-      expect(added).toBe(true);
+      await waitForXPathPromise;
     });
     it('should throw if evaluation failed', async({page, server}) => {
       await page.evaluateOnNewDocument(function() {
