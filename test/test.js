@@ -2035,20 +2035,20 @@ describe('Page', function() {
       const button = await page.$('button');
       await page.evaluate(button => button.style.display = 'none', button);
       const error = await button.click().catch(err => err);
-      expect(error.message).toBe('Node is not visible');
+      expect(error.message).toBe('Node is either not visible or not an HTMLElement');
     });
     it('should throw for recursively hidden nodes', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
       const button = await page.$('button');
       await page.evaluate(button => button.parentElement.style.display = 'none', button);
       const error = await button.click().catch(err => err);
-      expect(error.message).toBe('Node is not visible');
+      expect(error.message).toBe('Node is either not visible or not an HTMLElement');
     });
     it('should throw for <br> elements', async({page, server}) => {
       await page.setContent('hello<br>goodbye');
       const br = await page.$('br');
       const error = await br.click().catch(err => err);
-      expect(error.message).toBe('Node is not visible');
+      expect(error.message).toBe('Node is either not visible or not an HTMLElement');
     });
   });
 
@@ -2229,7 +2229,7 @@ describe('Page', function() {
       const elementHandle = await page.$('h1');
       await page.evaluate(element => element.remove(), elementHandle);
       const screenshotError = await elementHandle.screenshot().catch(error => error);
-      expect(screenshotError.message).toBe('Node is detached from document');
+      expect(screenshotError.message).toBe('Node is either not visible or not an HTMLElement');
     });
   });
 
