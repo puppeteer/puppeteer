@@ -250,5 +250,5 @@ There's also another [simple guide](https://timleland.com/headless-chrome-on-her
 AWS Lambda [limits](https://docs.aws.amazon.com/lambda/latest/dg/limits.html) deployment package sizes to ~50MB. This presents challenges for running headless Chrome (and therefore Puppeteer) on Lambda. The community has put together a few resources that work around the issues:
 
 - https://github.com/adieuadieu/serverless-chrome/blob/master/docs/chrome.md (tracks the latest Chromium snapshots)
-- https://github.com/sambaiz/puppeteer-lambda-starter-kit (uses an old version of Chromium)
 - https://github.com/universalbasket/aws-lambda-chrome
+- https://github.com/Kikobeats/aws-lambda-chrome
