@@ -150,6 +150,8 @@ describe('Puppeteer', function() {
       const response = await page.goto(httpsServer.EMPTY_PAGE).catch(e => error = e);
       expect(error).toBe(null);
       expect(response.ok()).toBe(true);
+      expect(response.securityDetails()).toBeTruthy();
+      expect(response.securityDetails().protocol()).toBe('TLS 1.2');
       browser.close();
     });
     it('should reject all promises when browser is closed', async() => {
