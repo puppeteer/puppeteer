@@ -61,16 +61,27 @@ class Reporter {
       console.log('\nFailures:');
       for (let i = 0; i < failedTests.length; ++i) {
         const test = failedTests[i];
-        console.log(`${i + 1}) ${test.fullName}`);
+        console.log(`${i + 1}) ${test.fullName} (${formatLocation(test)})`);
         if (test.result === 'timedout') {
           console.log('  Message:');
-          console.log(`    ${YELLOW_COLOR}Timeout Exceeded ${this._runner.timeout()}ms${RESET_COLOR} ${formatLocation(test)}`);
+          console.log(`    ${YELLOW_COLOR}Timeout Exceeded ${this._runner.timeout()}ms${RESET_COLOR}`);
         } else {
           console.log('  Message:');
-          console.log(`    ${RED_COLOR}${test.error.message || test.error}${RESET_COLOR} ${formatLocation(test)}`);
+          console.log(`    ${RED_COLOR}${test.error.message || test.error}${RESET_COLOR}`);
           console.log('  Stack:');
-          if (test.error.stack)
-            console.log(test.error.stack.split('\n').map(line => '    ' + line).join('\n'));
+          if (test.error.stack) {
+            const stack = test.error.stack.split('\n').map(line => '    ' + line);
+            let i = 0;
+            while (i < stack.length && !stack[i].includes(__dirname))
+              ++i;
+            while (i < stack.length && stack[i].includes(__dirname))
+              ++i;
+            if (i < stack.length) {
+              const indent = stack[i].match(/^\s*/)[0];
+              stack[i] = stack[i].substring(0, indent.length - 3) + YELLOW_COLOR + '⇨ ' + RESET_COLOR +  stack[i].substring(indent.length - 1);
+            }
+            console.log(stack.join('\n'));
+          }
         }
         console.log('');
       }
@@ -97,7 +108,7 @@ class Reporter {
       const location = test.location;
       if (!location)
         return '';
-      return `@ ${location.fileName}:${location.lineNumber}:${location.columnNumber}`;
+      return `${location.fileName}:${location.lineNumber}:${location.columnNumber}`;
     }
   }
 

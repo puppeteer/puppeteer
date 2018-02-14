@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 const fs = require('fs');
+const os = require('os');
 const rm = require('rimraf').sync;
 const path = require('path');
 const {helper} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
+const mkdtempAsync = helper.promisify(fs.mkdtemp);
+const readFileAsync = helper.promisify(fs.readFile);
+const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 
 const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ? path.join(__dirname, '..') : path.join(__dirname, '..', '..');
 
@@ -54,7 +58,7 @@ const defaultBrowserOptions = {
   args: ['--no-sandbox', '--disable-dev-shm-usage']
 };
 
-const timeout = slowMo ?  0 : 10 * 1000;
+const timeout = slowMo ? 0 : 10 * 1000;
 let parallel = 1;
 if (process.env.PPTR_PARALLEL_TESTS)
   parallel = parseInt(process.env.PPTR_PARALLEL_TESTS.trim(), 10);
@@ -80,14 +84,18 @@ if (fs.existsSync(OUTPUT_DIR))
 
 beforeAll(async state  => {
   const assetsPath = path.join(__dirname, 'assets');
+  const cachedPath = path.join(__dirname, 'assets', 'cached');
+
   const port = 8907 + state.parallelIndex * 2;
   state.server = await SimpleServer.create(assetsPath, port);
+  state.server.enableHTTPCache(cachedPath);
   state.server.PREFIX = `http://localhost:${port}`;
   state.server.CROSS_PROCESS_PREFIX = `http://127.0.0.1:${port}`;
   state.server.EMPTY_PAGE = `http://localhost:${port}/empty.html`;
 
   const httpsPort = port + 1;
   state.httpsServer = await SimpleServer.createHTTPS(assetsPath, httpsPort);
+  state.httpsServer.enableHTTPCache(cachedPath);
   state.httpsServer.PREFIX = `https://localhost:${httpsPort}`;
   state.httpsServer.CROSS_PROCESS_PREFIX = `https://127.0.0.1:${httpsPort}`;
   state.httpsServer.EMPTY_PAGE = `https://localhost:${httpsPort}/empty.html`;
@@ -106,6 +114,33 @@ afterAll(async({server, httpsServer}) => {
 });
 
 describe('Puppeteer', function() {
+  describe('BrowserFetcher', function() {
+    it('should download and extract linux binary', async({server}) => {
+      const downloadsFolder = await mkdtempAsync(TMP_FOLDER);
+      const browserFetcher = puppeteer.createBrowserFetcher({
+        platform: 'linux',
+        path: downloadsFolder,
+        host: server.PREFIX
+      });
+      let revisionInfo = browserFetcher.revisionInfo('123456');
+      server.setRoute(revisionInfo.url.substring(server.PREFIX.length), (req, res) => {
+        server.serveFile(req, res, '/chromium-linux.zip');
+      });
+
+      expect(revisionInfo.local).toBe(false);
+      expect(browserFetcher.platform()).toBe('linux');
+      expect(await browserFetcher.canDownload('100000')).toBe(false);
+      expect(await browserFetcher.canDownload('123456')).toBe(true);
+
+      revisionInfo = await browserFetcher.download('123456');
+      expect(revisionInfo.local).toBe(true);
+      expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe('LINUX BINARY\n');
+      expect(await browserFetcher.localRevisions()).toEqual(['123456']);
+      await browserFetcher.remove('123456');
+      expect(await browserFetcher.localRevisions()).toEqual([]);
+      rm(downloadsFolder);
+    });
+  });
   describe('Puppeteer.launch', function() {
     it('should support ignoreHTTPSErrors option', async({httpsServer}) => {
       const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
@@ -115,14 +150,17 @@ describe('Puppeteer', function() {
       const response = await page.goto(httpsServer.EMPTY_PAGE).catch(e => error = e);
       expect(error).toBe(null);
       expect(response.ok()).toBe(true);
-      browser.close();
+      expect(response.securityDetails()).toBeTruthy();
+      expect(response.securityDetails().protocol()).toBe('TLS 1.2');
+      await page.close();
+      await browser.close();
     });
     it('should reject all promises when browser is closed', async() => {
       const browser = await puppeteer.launch(defaultBrowserOptions);
       const page = await browser.newPage();
       let error = null;
       const neverResolves = page.evaluate(() => new Promise(r => {})).catch(e => error = e);
-      browser.close();
+      await browser.close();
       await neverResolves;
       expect(error.message).toContain('Protocol error');
     });
@@ -133,7 +171,7 @@ describe('Puppeteer', function() {
       expect(waitError.message.startsWith('Failed to launch chrome! spawn random-invalid-path ENOENT')).toBe(true);
     });
     it('userDataDir option', async({server}) => {
-      const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+      const userDataDir = await mkdtempAsync(TMP_FOLDER);
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
       expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
@@ -142,7 +180,7 @@ describe('Puppeteer', function() {
       rm(userDataDir);
     });
     it('userDataDir argument', async({server}) => {
-      const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+      const userDataDir = await mkdtempAsync(TMP_FOLDER);
       const options = Object.assign({}, defaultBrowserOptions);
       options.args = [`--user-data-dir=${userDataDir}`].concat(options.args);
       const browser = await puppeteer.launch(options);
@@ -152,7 +190,7 @@ describe('Puppeteer', function() {
       rm(userDataDir);
     });
     it('userDataDir option should restore state', async({server}) => {
-      const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+      const userDataDir = await mkdtempAsync(TMP_FOLDER);
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
       const page = await browser.newPage();
@@ -169,7 +207,7 @@ describe('Puppeteer', function() {
     });
     // @see https://github.com/GoogleChrome/puppeteer/issues/1537
     xit('userDataDir option should restore cookies', async({server}) => {
-      const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+      const userDataDir = await mkdtempAsync(TMP_FOLDER);
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       const browser = await puppeteer.launch(options);
       const page = await browser.newPage();
@@ -185,7 +223,7 @@ describe('Puppeteer', function() {
       rm(userDataDir);
     });
     xit('headless should be able to read cookies written by headful', async({server}) => {
-      const userDataDir = fs.mkdtempSync(path.join(__dirname, 'test-user-data-dir'));
+      const userDataDir = await mkdtempAsync(TMP_FOLDER);
       const options = Object.assign({userDataDir}, defaultBrowserOptions);
       // Write a cookie in headful chrome
       options.headless = false;
@@ -610,6 +648,8 @@ describe('Page', function() {
       expect(context1).toBeTruthy();
       expect(context2).toBeTruthy();
       expect(context1 !== context2).toBeTruthy();
+      expect(context1.frame()).toBe(frame1);
+      expect(context2.frame()).toBe(frame2);
 
       await Promise.all([
         context1.evaluate(() => window.a = 1),
@@ -621,6 +661,15 @@ describe('Page', function() {
       ]);
       expect(a1).toBe(1);
       expect(a2).toBe(2);
+    });
+  });
+
+  describe('Frame.evaluateHandle', function() {
+    it('should work', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const mainFrame = page.mainFrame();
+      const windowHandle = await mainFrame.evaluateHandle(() => window);
+      expect(windowHandle).toBeTruthy();
     });
   });
 
@@ -772,12 +821,12 @@ describe('Page', function() {
       const frame1 = page.frames()[1];
       const frame2 = page.frames()[2];
       let added = false;
-      frame2.waitForSelector('div').then(() => added = true);
+      const waitForSelectorPromise = frame2.waitForSelector('div').then(() => added = true);
       expect(added).toBe(false);
       await frame1.evaluate(addElement, 'div');
       expect(added).toBe(false);
       await frame2.evaluate(addElement, 'div');
-      expect(added).toBe(true);
+      await waitForSelectorPromise;
     });
 
     it('should throw if evaluation failed', async({page, server}) => {
@@ -797,7 +846,7 @@ describe('Page', function() {
       await FrameUtils.detachFrame(page, 'frame1');
       await waitPromise;
       expect(waitError).toBeTruthy();
-      expect(waitError.message).toContain('waitForSelector failed: frame got detached.');
+      expect(waitError.message).toContain('waitForFunction failed: frame got detached.');
     });
     it('should survive cross-process navigation', async({page, server}) => {
       let boxFound = false;
@@ -884,6 +933,73 @@ describe('Page', function() {
     });
   });
 
+  describe('Frame.waitForXPath', function() {
+    const addElement = tag => document.body.appendChild(document.createElement(tag));
+
+    it('should support some fancy xpath', async({page, server}) => {
+      await page.setContent(`<p>red herring</p><p>hello  world  </p>`);
+      const waitForXPath = page.waitForXPath('//p[normalize-space(.)="hello world"]');
+      expect(await page.evaluate(x => x.textContent, await waitForXPath)).toBe('hello  world  ');
+    });
+    it('should run in specified frame', async({page, server}) => {
+      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await FrameUtils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
+      const frame1 = page.frames()[1];
+      const frame2 = page.frames()[2];
+      let added = false;
+      const waitForXPathPromise = frame2.waitForXPath('//div').then(() => added = true);
+      expect(added).toBe(false);
+      await frame1.evaluate(addElement, 'div');
+      expect(added).toBe(false);
+      await frame2.evaluate(addElement, 'div');
+      await waitForXPathPromise;
+    });
+    it('should throw if evaluation failed', async({page, server}) => {
+      await page.evaluateOnNewDocument(function() {
+        document.evaluate = null;
+      });
+      await page.goto(server.EMPTY_PAGE);
+      let error = null;
+      await page.waitForXPath('*').catch(e => error = e);
+      expect(error.message).toContain('document.evaluate is not a function');
+    });
+    it('should throw when frame is detached', async({page, server}) => {
+      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      const frame = page.frames()[1];
+      let waitError = null;
+      const waitPromise = frame.waitForXPath('//*[@class="box"]').catch(e => waitError = e);
+      await FrameUtils.detachFrame(page, 'frame1');
+      await waitPromise;
+      expect(waitError).toBeTruthy();
+      expect(waitError.message).toContain('waitForFunction failed: frame got detached.');
+    });
+    it('hidden should wait for display: none', async({page, server}) => {
+      let divHidden = false;
+      await page.setContent(`<div style='display: block;'></div>`);
+      const waitForXPath = page.waitForXPath('//div', {hidden: true}).then(() => divHidden = true);
+      await page.waitForXPath('//div'); // do a round trip
+      expect(divHidden).toBe(false);
+      await page.evaluate(() => document.querySelector('div').style.setProperty('display', 'none'));
+      expect(await waitForXPath).toBe(true);
+      expect(divHidden).toBe(true);
+    });
+    it('should return the element handle', async({page, server}) => {
+      const waitForXPath = page.waitForXPath('//*[@class="zombo"]');
+      await page.setContent(`<div class='zombo'>anything</div>`);
+      expect(await page.evaluate(x => x.textContent, await waitForXPath)).toBe('anything');
+    });
+    it('should allow you to select a text node', async({page, server}) => {
+      await page.setContent(`<div>some text</div>`);
+      const text = await page.waitForXPath('//div/text()');
+      expect(await (await text.getProperty('nodeType')).jsonValue()).toBe(3 /* Node.TEXT_NODE */);
+    });
+    it('should allow you to select an element with single slash', async({page, server}) => {
+      await page.setContent(`<div>some text</div>`);
+      const waitForXPath = page.waitForXPath('/html/body/div');
+      expect(await page.evaluate(x => x.textContent, await waitForXPath)).toBe('some text');
+    });
+  });
+
   describe('Page.waitFor', function() {
     it('should wait for selector', async({page, server}) => {
       let found = false;
@@ -893,6 +1009,21 @@ describe('Page', function() {
       await page.goto(server.PREFIX + '/grid.html');
       await waitFor;
       expect(found).toBe(true);
+    });
+    it('should wait for an xpath', async({page, server}) => {
+      let found = false;
+      const waitFor = page.waitFor('//div').then(() => found = true);
+      await page.goto(server.EMPTY_PAGE);
+      expect(found).toBe(false);
+      await page.goto(server.PREFIX + '/grid.html');
+      await waitFor;
+      expect(found).toBe(true);
+    });
+    it('should not allow you to select an element with single slash xpath', async({page, server}) => {
+      await page.setContent(`<div>some text</div>`);
+      let error = null;
+      await page.waitFor('/html/body/div').catch(e => error = e);
+      expect(error).toBeTruthy();
     });
     it('should timeout', async({page, server}) => {
       const startTime = Date.now();
@@ -1385,6 +1516,18 @@ describe('Page', function() {
       await page.goto(server.EMPTY_PAGE).catch(e => {});
       expect(failedRequest).toBeTruthy();
       expect(failedRequest.failure().errorText).toBe('net::ERR_INTERNET_DISCONNECTED');
+    });
+    it('should send referer', async({page, server}) => {
+      await page.setExtraHTTPHeaders({
+        referer: 'http://google.com/'
+      });
+      await page.setRequestInterception(true);
+      page.on('request', request => request.continue());
+      const [request] = await Promise.all([
+        server.waitForRequest('/grid.html'),
+        page.goto(server.PREFIX + '/grid.html'),
+      ]);
+      expect(request.headers['referer']).toBe('http://google.com/');
     });
     it('should amend HTTP headers', async({page, server}) => {
       await page.setRequestInterception(true);
@@ -2039,6 +2182,7 @@ describe('Page', function() {
         'mousedown',
         'mouseup',
         'click',
+        'input',
         'change',
       ]);
       await page.click('input#agree');
@@ -2052,6 +2196,7 @@ describe('Page', function() {
       expect(await page.evaluate(() => result.check)).toBe(true);
       expect(await page.evaluate(() => result.events)).toEqual([
         'click',
+        'input',
         'change',
       ]);
       await page.click('label[for="agree"]');
@@ -2323,10 +2468,19 @@ describe('Page', function() {
       await page.goto(server.PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       await page.evaluate(() => document.querySelector('textarea').addEventListener('keydown', e => window.lastEvent = e, true));
-      await page.keyboard.down('a', {text: 'a'});
+      await page.keyboard.down('a');
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(false);
       await page.keyboard.press('a');
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(true);
+
+      await page.keyboard.down('b');
+      expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(false);
+      await page.keyboard.down('b');
+      expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(true);
+
+      await page.keyboard.up('a');
+      await page.keyboard.down('a');
+      expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(false);
     });
     // @see https://github.com/GoogleChrome/puppeteer/issues/206
     it('should click links which cause navigation', async({page, server}) => {
@@ -2558,8 +2712,40 @@ describe('Page', function() {
       expect(responses[0].url()).toBe(server.EMPTY_PAGE);
       expect(responses[0].status()).toBe(200);
       expect(responses[0].ok()).toBe(true);
+      expect(responses[0].fromCache()).toBe(false);
+      expect(responses[0].fromServiceWorker()).toBe(false);
       expect(responses[0].request()).toBeTruthy();
     });
+
+    it('Response.fromCache()', async({page, server}) => {
+      const responses = new Map();
+      page.on('response', r => responses.set(r.url().split('/').pop(), r));
+
+      // Load and re-load to make sure it's cached.
+      await page.goto(server.PREFIX + '/cached/one-style.html');
+      await page.reload();
+
+      expect(responses.size).toBe(2);
+      expect(responses.get('one-style.html').status()).toBe(304);
+      expect(responses.get('one-style.html').fromCache()).toBe(false);
+      expect(responses.get('one-style.css').status()).toBe(200);
+      expect(responses.get('one-style.css').fromCache()).toBe(true);
+    });
+    it('Response.fromServiceWorker', async({page, server}) => {
+      const responses = new Map();
+      page.on('response', r => responses.set(r.url().split('/').pop(), r));
+
+      // Load and re-load to make sure serviceworker is installed and running.
+      await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html', {waitUntil: 'networkidle2'});
+      await page.reload();
+
+      expect(responses.size).toBe(2);
+      expect(responses.get('sw.html').status()).toBe(200);
+      expect(responses.get('sw.html').fromServiceWorker()).toBe(true);
+      expect(responses.get('style.css').status()).toBe(200);
+      expect(responses.get('style.css').fromServiceWorker()).toBe(true);
+    });
+
     it('Page.Events.Response should provide body', async({page, server}) => {
       let response = null;
       page.on('response', r => response = r);
@@ -2785,7 +2971,7 @@ describe('Page', function() {
       expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(false);
       await page.setViewport(iPhone.viewport);
       expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(true);
-      expect(await page.evaluate(dispatchTouch)).toBe('Recieved touch');
+      expect(await page.evaluate(dispatchTouch)).toBe('Received touch');
       await page.setViewport({width: 100, height: 100});
       expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(false);
 
@@ -2793,11 +2979,11 @@ describe('Page', function() {
         let fulfill;
         const promise = new Promise(x => fulfill = x);
         window.ontouchstart = function(e) {
-          fulfill('Recieved touch');
+          fulfill('Received touch');
         };
         window.dispatchEvent(new Event('touchstart'));
 
-        fulfill('Did not recieve touch');
+        fulfill('Did not receive touch');
 
         return promise;
       }
@@ -2875,6 +3061,21 @@ describe('Page', function() {
       });
       await page.goto(server.PREFIX + '/tamperable.html');
       expect(await page.evaluate(() => window.result)).toBe(123);
+    });
+  });
+
+  describe('Page.setCacheEnabled', function() {
+    it('should enable or disable the cache based on the state passed', async({page, server}) => {
+      const responses = new Map();
+      page.on('response', r => responses.set(r.url().split('/').pop(), r));
+
+      await page.goto(server.PREFIX + '/cached/one-style.html', {waitUntil: 'networkidle2'});
+      await page.reload({waitUntil: 'networkidle2'});
+      expect(responses.get('one-style.css').fromCache()).toBe(true);
+
+      await page.setCacheEnabled(false);
+      await page.reload({waitUntil: 'networkidle2'});
+      expect(responses.get('one-style.css').fromCache()).toBe(false);
     });
   });
 
@@ -3057,6 +3258,12 @@ describe('Page', function() {
     it('should select single option', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/select.html');
       await page.select('select', 'blue');
+      expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
+      expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
+    });
+    it('should select only first option', async({page, server}) => {
+      await page.goto(server.PREFIX + '/input/select.html');
+      await page.select('select', 'blue', 'green', 'red');
       expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
       expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
     });
@@ -3416,13 +3623,13 @@ describe('Page', function() {
     it('should report when a service worker is created and destroyed', async({page, server, browser}) => {
       await page.goto(server.EMPTY_PAGE);
       const createdTarget = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
-      const registration = await page.evaluateHandle(() => navigator.serviceWorker.register('sw.js'));
+      await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
 
       expect((await createdTarget).type()).toBe('service_worker');
-      expect((await createdTarget).url()).toBe(server.PREFIX + '/sw.js');
+      expect((await createdTarget).url()).toBe(server.PREFIX + '/serviceworkers/empty/sw.js');
 
       const destroyedTarget = new Promise(fulfill => browser.once('targetdestroyed', target => fulfill(target)));
-      await page.evaluate(registration => registration.unregister(), registration);
+      await page.evaluate(() => window.registrationPromise.then(registration => registration.unregister()));
       expect(await destroyedTarget).toBe(await createdTarget);
     });
     it('should report when a target url changes', async({page, server, browser}) => {

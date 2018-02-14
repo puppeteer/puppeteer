@@ -88,6 +88,7 @@ xorg-x11-fonts-misc
 - make sure kernel version is up-to-date
 - read about linux sandbox here: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_suid_sandbox_development.md
 - try running without the sandbox (**Note: running without the sandbox is not recommended due to security reasons!**)
+
 ```js
 const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
 ```
@@ -101,7 +102,7 @@ shared library dependencies.
 To fix, you'll need to install the missing dependencies and the
 latest Chromium package in your Dockerfile:
 
-```
+```Dockerfile
 FROM node:8-slim
 
 # See https://crbug.com/795759
@@ -130,7 +131,7 @@ RUN chmod +x /usr/local/bin/dumb-init
 # ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
 # Install puppeteer so it's available in the container.
-RUN yarn add puppeteer
+RUN npm i puppeteer
 
 # Add user so we don't need --no-sandbox.
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
@@ -164,11 +165,11 @@ how to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
 ### Running on Alpine
 
-The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 63, which was corresponds to [Puppeteer v0.11.0](https://github.com/GoogleChrome/puppeteer/releases/tag/v0.11.0).
+The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 63, which was corresponding to [Puppeteer v0.11.0](https://github.com/GoogleChrome/puppeteer/releases/tag/v0.11.0).
 
 Example Dockerfile:
 
-```
+```Dockerfile
 FROM node:9-alpine
 
 # Installs latest Chromium (63) package.
@@ -227,7 +228,7 @@ Seeing other weird errors when launching Chrome? Try running your container
 with `docker run --cap-add=SYS_ADMIN` when developing locally. Since the Dockerfile
 adds a `pptr` user as a non-privileged user, it may not have all the necessary privileges.
 
-[dumb-init](https://github.com/Yelp/dumb-init) is worth checking out if you're 
+[dumb-init](https://github.com/Yelp/dumb-init) is worth checking out if you're
 experiencing a lot of zombies Chrome processes sticking around. There's special
 treatment for processes with PID=1, which makes it hard to terminate Chrome
 properly in some cases (e.g. in Docker).
@@ -243,3 +244,11 @@ When you click add buildpack, simply paste that url into the input, and click sa
 If you need to render Chinese, Japanese, or Korean characters you may need to use a buildpack with additional font files like https://github.com/CoffeeAndCode/puppeteer-heroku-buildpack
 
 There's also another [simple guide](https://timleland.com/headless-chrome-on-heroku/) from @timleland that includes a sample project: https://timleland.com/headless-chrome-on-heroku/.
+
+## Running Puppeteer on AWS Lambda
+
+AWS Lambda [limits](https://docs.aws.amazon.com/lambda/latest/dg/limits.html) deployment package sizes to ~50MB. This presents challenges for running headless Chrome (and therefore Puppeteer) on Lambda. The community has put together a few resources that work around the issues:
+
+- https://github.com/adieuadieu/serverless-chrome/blob/master/docs/chrome.md (tracks the latest Chromium snapshots)
+- https://github.com/universalbasket/aws-lambda-chrome
+- https://github.com/Kikobeats/aws-lambda-chrome

@@ -7,11 +7,11 @@ build: off
 
 install:
   - ps: Install-Product node $env:nodejs_version
-  - yarn install
+  - npm install
   - if "%nodejs_version%" == "7" (
-      yarn run lint &&
-      yarn run coverage  &&
-      yarn run test-doclint
+      npm run lint &&
+      npm run coverage  &&
+      npm run test-doclint
     ) else (
-      yarn run unit-node6
+      npm run unit-node6
     )
