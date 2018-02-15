@@ -28,6 +28,7 @@
   * [event: 'targetdestroyed'](#event-targetdestroyed)
   * [browser.close()](#browserclose)
   * [browser.disconnect()](#browserdisconnect)
+  * [browser.newIsolatedPage()](#browsernewisolatedpage)
   * [browser.newPage()](#browsernewpage)
   * [browser.pages()](#browserpages)
   * [browser.process()](#browserprocess)
@@ -448,6 +449,11 @@ Closes Chromium and all of its pages (if any were opened). The [Browser] object 
 #### browser.disconnect()
 
 Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling `disconnect`, the [Browser] object is considered disposed and cannot be used anymore.
+
+#### browser.newIsolatedPage()
+- returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object. The page will be created in a new browser context. Like an incognito window but for each tab.
+
+> **NOTE** Browser contexts are only supported in Chrome headless.
 
 #### browser.newPage()
 - returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.
