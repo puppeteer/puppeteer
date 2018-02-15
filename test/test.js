@@ -3608,8 +3608,7 @@ describe('Page', function() {
       const targets = browser.targets();
       expect(targets.some(target => target.type() === 'page' &&
         target.url() === 'about:blank')).toBeTruthy('Missing blank page');
-      expect(targets.some(target => target.type() === 'other' &&
-        target.url() === '')).toBeTruthy('Missing browser target');
+      expect(targets.some(target => target.type() === 'browser')).toBeTruthy('Missing browser target');
     });
     it('Browser.pages should return all of the pages', async({page, server, browser}) => {
       // The pages will be the testing page and the original newtab page
