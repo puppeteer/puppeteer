@@ -26,7 +26,7 @@ export class ExecutionContext extends RealExecutionContext {}
 export class Page extends RealPage {}
 
 export interface ConnectionTransport extends NodeJS.EventEmitter {
-  send(any);
+  send(string);
   close();
 }
 
