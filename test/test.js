@@ -3608,8 +3608,7 @@ describe('Page', function() {
       const targets = browser.targets();
       expect(targets.some(target => target.type() === 'page' &&
         target.url() === 'about:blank')).toBeTruthy('Missing blank page');
-      expect(targets.some(target => target.type() === 'other' &&
-        target.url() === '')).toBeTruthy('Missing browser target');
+      expect(targets.some(target => target.type() === 'browser')).toBeTruthy('Missing browser target');
     });
     it('Browser.pages should return all of the pages', async({page, server, browser}) => {
       // The pages will be the testing page and the original newtab page
@@ -3617,6 +3616,11 @@ describe('Page', function() {
       expect(allPages.length).toBe(2);
       expect(allPages).toContain(page);
       expect(allPages[0]).not.toBe(allPages[1]);
+    });
+    it('should contain browser target', async({browser}) => {
+      const targets = browser.targets();
+      const browserTarget = targets.find(target => target.type() === 'browser');
+      expect(browserTarget).toBeTruthy();
     });
     it('should be able to use the default page in the browser', async({page, server, browser}) => {
       // The pages will be the testing page and the original newtab page
