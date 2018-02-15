@@ -2434,7 +2434,7 @@ Contains a boolean stating whether the response was successful (status in the ra
 - returns: <[Request]> A matching [Request] object.
 
 #### response.securityDetails()
-- returns: <[SecurityDetails]> An object with security details associated with the response. From the original object only the fields `subjectName`, `"issuer"`, `"validFrom"`, `"validTo"`, `"protocol"` are extracted.
+- returns: <?[SecurityDetails]> Security details if the response was received over the secure connection, or `null` otherwise.
 
 #### response.status()
 - returns: <[number]>
@@ -2463,10 +2463,10 @@ Contains the URL of the response.
 - returns: <[string]> Name of the subject to which the certificate was issued to.
 
 #### securityDetails.validFrom()
-- returns: <[number]> Timestamp stating the start of validity of the certificate.
+- returns: <[number]> [UnixTime] stating the start of validity of the certificate.
 
 #### securityDetails.validTo()
-- returns: <[number]> Timestamp stating the end of validity of the certificate.
+- returns: <[number]> [UnixTime] stating the end of validity of the certificate.
 
 ### class: Target
 
@@ -2620,3 +2620,4 @@ reported.
 [Target]: #class-target "Target"
 [USKeyboardLayout]: ../lib/USKeyboardLayout.js "USKeyboardLayout"
 [xpath]: https://developer.mozilla.org/en-US/docs/Web/XPath "xpath"
+[UnixTime]: https://en.wikipedia.org/wiki/Unix_time "Unix Time"

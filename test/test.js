@@ -155,6 +155,21 @@ describe('Puppeteer', function() {
       await page.close();
       await browser.close();
     });
+    it('Network redirects should report SecurityDetails', async({httpsServer}) => {
+      const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
+      const browser = await puppeteer.launch(options);
+      const page = await browser.newPage();
+      httpsServer.setRedirect('/plzredirect', '/empty.html');
+      const responses =  [];
+      page.on('response', response => responses.push(response));
+      await page.goto(httpsServer.PREFIX + '/plzredirect');
+      expect(responses.length).toBe(2);
+      expect(responses[0].status()).toBe(302);
+      const securityDetails = responses[0].securityDetails();
+      expect(securityDetails.protocol()).toBe('TLS 1.2');
+      await page.close();
+      await browser.close();
+    });
     it('should reject all promises when browser is closed', async() => {
       const browser = await puppeteer.launch(defaultBrowserOptions);
       const page = await browser.newPage();
@@ -1153,6 +1168,7 @@ describe('Page', function() {
     it('should navigate to empty page with domcontentloaded', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'domcontentloaded'});
       expect(response.status()).toBe(200);
+      expect(response.securityDetails()).toBe(null);
     });
     it('should navigate to empty page with networkidle0', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle0'});
