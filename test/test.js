@@ -2002,6 +2002,21 @@ describe('Page', function() {
     });
   });
 
+  describe('ElementHandle.getFrame', function() {
+    it('should work', async({page, server}) => {
+      await page.goto(server.PREFIX + '/frames/two-frames.html');
+      const frameElement = await page.$('iframe');
+      const frame = await frameElement.getFrame();
+      expect(typeof frame).toBe('object');
+    });
+    it('should return null for non-iframe elements', async({page, server}) => {
+      await page.goto(server.PREFIX + '/frames/frame.html');
+      const textElement = await page.$('div');
+      const frame = await textElement.getFrame();
+      expect(frame).toBe(null);
+    });
+  });
+
   describe('ElementHandle.click', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
