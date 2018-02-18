@@ -1,6 +1,10 @@
-##### Released API: [v1.0.0](https://github.com/GoogleChrome/puppeteer/blob/v1.0.0/docs/api.md) | [v0.13.0](https://github.com/GoogleChrome/puppeteer/blob/v0.13.0/docs/api.md) | [v0.12.0](https://github.com/GoogleChrome/puppeteer/blob/v0.12.0/docs/api.md) | [v0.11.0](https://github.com/GoogleChrome/puppeteer/blob/v0.11.0/docs/api.md) | [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
+##### Released API: [v1.1.0](https://github.com/GoogleChrome/puppeteer/blob/v1.1.0/docs/api.md) | [v1.0.0](https://github.com/GoogleChrome/puppeteer/blob/v1.0.0/docs/api.md) | [v0.13.0](https://github.com/GoogleChrome/puppeteer/blob/v0.13.0/docs/api.md) | [v0.12.0](https://github.com/GoogleChrome/puppeteer/blob/v0.12.0/docs/api.md) | [v0.11.0](https://github.com/GoogleChrome/puppeteer/blob/v0.11.0/docs/api.md) | [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
 
-# Puppeteer API v<!-- GEN:version -->1.0.0-post<!-- GEN:stop-->
+# Puppeteer API v<!-- GEN:version -->1.1.0-post<!-- GEN:stop--> \*\*NOT RELEASED\*\*
+
+> **NOTE** This API is **not released** yet.
+>
+> Release Date: March 15, 2018.
 
 ##### Table of Contents
 
@@ -167,6 +171,7 @@
 - [class: ExecutionContext](#class-executioncontext)
   * [executionContext.evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args)
   * [executionContext.evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args)
+  * [executionContext.frame()](#executioncontextframe)
   * [executionContext.queryObjects(prototypeHandle)](#executioncontextqueryobjectsprototypehandle)
 - [class: JSHandle](#class-jshandle)
   * [jsHandle.asElement()](#jshandleaselement)
@@ -216,10 +221,17 @@
   * [response.json()](#responsejson)
   * [response.ok()](#responseok)
   * [response.request()](#responserequest)
+  * [response.securityDetails()](#responsesecuritydetails)
   * [response.status()](#responsestatus)
   * [response.text()](#responsetext)
   * [response.timestamp()](#responsetimestamp)
   * [response.url()](#responseurl)
+- [class: SecurityDetails](#class-securitydetails)
+  * [securityDetails.issuer()](#securitydetailsissuer)
+  * [securityDetails.protocol()](#securitydetailsprotocol)
+  * [securityDetails.subjectName()](#securitydetailssubjectname)
+  * [securityDetails.validFrom()](#securitydetailsvalidfrom)
+  * [securityDetails.validTo()](#securitydetailsvalidto)
 - [class: Target](#class-target)
   * [target.createCDPSession()](#targetcreatecdpsession)
   * [target.page()](#targetpage)
@@ -2036,6 +2048,11 @@ await aHandle.dispose();
 await resultHandle.dispose();
 ```
 
+#### executionContext.frame()
+- returns: <?[Frame]> Frame associated with this execution context.
+
+> **NOTE** Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.
+
 #### executionContext.queryObjects(prototypeHandle)
 - `prototypeHandle` <[JSHandle]> A handle to the object prototype.
 - returns: <[JSHandle]> A handle to an array of objects with this prototype
@@ -2425,6 +2442,9 @@ Contains a boolean stating whether the response was successful (status in the ra
 #### response.request()
 - returns: <[Request]> A matching [Request] object.
 
+#### response.securityDetails()
+- returns: <?[SecurityDetails]> Security details if the response was received over the secure connection, or `null` otherwise.
+
 #### response.status()
 - returns: <[number]>
 
@@ -2441,6 +2461,25 @@ Contains the status code of the response (e.g., 200 for a success).
 
 Contains the URL of the response.
 
+### class: SecurityDetails
+
+[SecurityDetails] class represents responses which are received by page.
+
+#### securityDetails.issuer()
+- returns: <[string]> A string with the name of issuer of the certificate.
+
+#### securityDetails.protocol()
+- returns: <[string]> String with the security protocol, eg. "TLS 1.2".
+
+#### securityDetails.subjectName()
+- returns: <[string]> Name of the subject to which the certificate was issued to.
+
+#### securityDetails.validFrom()
+- returns: <[number]> [UnixTime] stating the start of validity of the certificate.
+
+#### securityDetails.validTo()
+- returns: <[number]> [UnixTime] stating the end of validity of the certificate.
+
 ### class: Target
 
 #### target.createCDPSession()
@@ -2456,7 +2495,7 @@ If the target is not of type `"page"`, returns `null`.
 #### target.type()
 - returns: <[string]>
 
-Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, or `"other"`.
+Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, `"browser"` or `"other"`.
 
 #### target.url()
 - returns: <[string]>
@@ -2593,3 +2632,5 @@ reported.
 [Target]: #class-target "Target"
 [USKeyboardLayout]: ../lib/USKeyboardLayout.js "USKeyboardLayout"
 [xpath]: https://developer.mozilla.org/en-US/docs/Web/XPath "xpath"
+[UnixTime]: https://en.wikipedia.org/wiki/Unix_time "Unix Time"
+[SecurityDetails]: #class-securitydetails "SecurityDetails"

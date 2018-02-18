@@ -141,6 +141,16 @@ describe('Puppeteer', function() {
       rm(downloadsFolder);
     });
   });
+  describe('AppMode', function() {
+    it('should work', async() => {
+      const options = Object.assign({appMode: true}, defaultBrowserOptions);
+      const browser = await puppeteer.launch(options);
+      const page = await browser.newPage();
+      expect(await page.evaluate('11 * 11')).toBe(121);
+      await page.close();
+      await browser.close();
+    });
+  });
   describe('Puppeteer.launch', function() {
     it('should support ignoreHTTPSErrors option', async({httpsServer}) => {
       const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
@@ -150,14 +160,32 @@ describe('Puppeteer', function() {
       const response = await page.goto(httpsServer.EMPTY_PAGE).catch(e => error = e);
       expect(error).toBe(null);
       expect(response.ok()).toBe(true);
-      browser.close();
+      expect(response.securityDetails()).toBeTruthy();
+      expect(response.securityDetails().protocol()).toBe('TLS 1.2');
+      await page.close();
+      await browser.close();
+    });
+    it('Network redirects should report SecurityDetails', async({httpsServer}) => {
+      const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
+      const browser = await puppeteer.launch(options);
+      const page = await browser.newPage();
+      httpsServer.setRedirect('/plzredirect', '/empty.html');
+      const responses =  [];
+      page.on('response', response => responses.push(response));
+      await page.goto(httpsServer.PREFIX + '/plzredirect');
+      expect(responses.length).toBe(2);
+      expect(responses[0].status()).toBe(302);
+      const securityDetails = responses[0].securityDetails();
+      expect(securityDetails.protocol()).toBe('TLS 1.2');
+      await page.close();
+      await browser.close();
     });
     it('should reject all promises when browser is closed', async() => {
       const browser = await puppeteer.launch(defaultBrowserOptions);
       const page = await browser.newPage();
       let error = null;
       const neverResolves = page.evaluate(() => new Promise(r => {})).catch(e => error = e);
-      browser.close();
+      await browser.close();
       await neverResolves;
       expect(error.message).toContain('Protocol error');
     });
@@ -645,6 +673,8 @@ describe('Page', function() {
       expect(context1).toBeTruthy();
       expect(context2).toBeTruthy();
       expect(context1 !== context2).toBeTruthy();
+      expect(context1.frame()).toBe(frame1);
+      expect(context2.frame()).toBe(frame2);
 
       await Promise.all([
         context1.evaluate(() => window.a = 1),
@@ -816,12 +846,12 @@ describe('Page', function() {
       const frame1 = page.frames()[1];
       const frame2 = page.frames()[2];
       let added = false;
-      frame2.waitForSelector('div').then(() => added = true);
+      const waitForSelectorPromise = frame2.waitForSelector('div').then(() => added = true);
       expect(added).toBe(false);
       await frame1.evaluate(addElement, 'div');
       expect(added).toBe(false);
       await frame2.evaluate(addElement, 'div');
-      expect(added).toBe(true);
+      await waitForSelectorPromise;
     });
 
     it('should throw if evaluation failed', async({page, server}) => {
@@ -942,12 +972,12 @@ describe('Page', function() {
       const frame1 = page.frames()[1];
       const frame2 = page.frames()[2];
       let added = false;
-      frame2.waitForXPath('//div').then(() => added = true);
+      const waitForXPathPromise = frame2.waitForXPath('//div').then(() => added = true);
       expect(added).toBe(false);
       await frame1.evaluate(addElement, 'div');
       expect(added).toBe(false);
       await frame2.evaluate(addElement, 'div');
-      expect(added).toBe(true);
+      await waitForXPathPromise;
     });
     it('should throw if evaluation failed', async({page, server}) => {
       await page.evaluateOnNewDocument(function() {
@@ -1148,6 +1178,7 @@ describe('Page', function() {
     it('should navigate to empty page with domcontentloaded', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'domcontentloaded'});
       expect(response.status()).toBe(200);
+      expect(response.securityDetails()).toBe(null);
     });
     it('should navigate to empty page with networkidle0', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle0'});
@@ -2465,10 +2496,19 @@ describe('Page', function() {
       await page.goto(server.PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       await page.evaluate(() => document.querySelector('textarea').addEventListener('keydown', e => window.lastEvent = e, true));
-      await page.keyboard.down('a', {text: 'a'});
+      await page.keyboard.down('a');
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(false);
       await page.keyboard.press('a');
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(true);
+
+      await page.keyboard.down('b');
+      expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(false);
+      await page.keyboard.down('b');
+      expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(true);
+
+      await page.keyboard.up('a');
+      await page.keyboard.down('a');
+      expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(false);
     });
     // @see https://github.com/GoogleChrome/puppeteer/issues/206
     it('should click links which cause navigation', async({page, server}) => {
@@ -3570,8 +3610,7 @@ describe('Page', function() {
       const targets = browser.targets();
       expect(targets.some(target => target.type() === 'page' &&
         target.url() === 'about:blank')).toBeTruthy('Missing blank page');
-      expect(targets.some(target => target.type() === 'other' &&
-        target.url() === '')).toBeTruthy('Missing browser target');
+      expect(targets.some(target => target.type() === 'browser')).toBeTruthy('Missing browser target');
     });
     it('Browser.pages should return all of the pages', async({page, server, browser}) => {
       // The pages will be the testing page and the original newtab page
@@ -3579,6 +3618,11 @@ describe('Page', function() {
       expect(allPages.length).toBe(2);
       expect(allPages).toContain(page);
       expect(allPages[0]).not.toBe(allPages[1]);
+    });
+    it('should contain browser target', async({browser}) => {
+      const targets = browser.targets();
+      const browserTarget = targets.find(target => target.type() === 'browser');
+      expect(browserTarget).toBeTruthy();
     });
     it('should be able to use the default page in the browser', async({page, server, browser}) => {
       // The pages will be the testing page and the original newtab page
