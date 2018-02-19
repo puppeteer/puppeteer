@@ -22,6 +22,7 @@ const Message = require('../Message');
 const EXCLUDE_CLASSES = new Set([
   'CSSCoverage',
   'Connection',
+  'CompositorController',
   'EmulationManager',
   'FrameManager',
   'JSCoverage',
@@ -32,6 +33,10 @@ const EXCLUDE_CLASSES = new Set([
   'NetworkManager',
   'Pipe',
   'TaskQueue',
+  'VirtualTimeController',
+  'VirtualTimeObserver',
+  'VirtualTimeRepeatingTask',
+  'VirtualTimeTaskInfo',
   'WaitTask',
 ]);
 
