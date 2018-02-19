@@ -141,6 +141,16 @@ describe('Puppeteer', function() {
       rm(downloadsFolder);
     });
   });
+  describe('AppMode', function() {
+    it('should work', async() => {
+      const options = Object.assign({appMode: true}, defaultBrowserOptions);
+      const browser = await puppeteer.launch(options);
+      const page = await browser.newPage();
+      expect(await page.evaluate('11 * 11')).toBe(121);
+      await page.close();
+      await browser.close();
+    });
+  });
   describe('Puppeteer.launch', function() {
     it('should support ignoreHTTPSErrors option', async({httpsServer}) => {
       const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
@@ -152,6 +162,21 @@ describe('Puppeteer', function() {
       expect(response.ok()).toBe(true);
       expect(response.securityDetails()).toBeTruthy();
       expect(response.securityDetails().protocol()).toBe('TLS 1.2');
+      await page.close();
+      await browser.close();
+    });
+    it('Network redirects should report SecurityDetails', async({httpsServer}) => {
+      const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
+      const browser = await puppeteer.launch(options);
+      const page = await browser.newPage();
+      httpsServer.setRedirect('/plzredirect', '/empty.html');
+      const responses =  [];
+      page.on('response', response => responses.push(response));
+      await page.goto(httpsServer.PREFIX + '/plzredirect');
+      expect(responses.length).toBe(2);
+      expect(responses[0].status()).toBe(302);
+      const securityDetails = responses[0].securityDetails();
+      expect(securityDetails.protocol()).toBe('TLS 1.2');
       await page.close();
       await browser.close();
     });
@@ -1153,6 +1178,7 @@ describe('Page', function() {
     it('should navigate to empty page with domcontentloaded', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'domcontentloaded'});
       expect(response.status()).toBe(200);
+      expect(response.securityDetails()).toBe(null);
     });
     it('should navigate to empty page with networkidle0', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle0'});
@@ -3582,8 +3608,7 @@ describe('Page', function() {
       const targets = browser.targets();
       expect(targets.some(target => target.type() === 'page' &&
         target.url() === 'about:blank')).toBeTruthy('Missing blank page');
-      expect(targets.some(target => target.type() === 'other' &&
-        target.url() === '')).toBeTruthy('Missing browser target');
+      expect(targets.some(target => target.type() === 'browser')).toBeTruthy('Missing browser target');
     });
     it('Browser.pages should return all of the pages', async({page, server, browser}) => {
       // The pages will be the testing page and the original newtab page
@@ -3591,6 +3616,11 @@ describe('Page', function() {
       expect(allPages.length).toBe(2);
       expect(allPages).toContain(page);
       expect(allPages[0]).not.toBe(allPages[1]);
+    });
+    it('should contain browser target', async({browser}) => {
+      const targets = browser.targets();
+      const browserTarget = targets.find(target => target.type() === 'browser');
+      expect(browserTarget).toBeTruthy();
     });
     it('should be able to use the default page in the browser', async({page, server, browser}) => {
       // The pages will be the testing page and the original newtab page
