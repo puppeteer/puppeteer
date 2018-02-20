@@ -113,6 +113,7 @@
   * [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [page.waitForXPath(xpath[, options])](#pagewaitforxpathxpath-options)
+  * [page.workers()](#pageworkers)
 - [class: Keyboard](#class-keyboard)
   * [keyboard.down(key[, options])](#keyboarddownkey-options)
   * [keyboard.press(key[, options])](#keyboardpresskey-options)
@@ -243,6 +244,9 @@
   * [coverage.startJSCoverage(options)](#coveragestartjscoverageoptions)
   * [coverage.stopCSSCoverage()](#coveragestopcsscoverage)
   * [coverage.stopJSCoverage()](#coveragestopjscoverage)
+- [class: Worker](#class-worker)
+  * [worker.executionContext()](#workerexecutioncontext)
+  * [worker.url()](#workerurl)
 
 <!-- tocstop -->
 
@@ -1417,6 +1421,9 @@ puppeteer.launch().then(async browser => {
 ```
 Shortcut for [page.mainFrame().waitForXPath(xpath[, options])](#framewaitforxpathxpath-options).
 
+#### page.workers()
+- returns: <[Array]<[Worker]>>
+
 ### class: Keyboard
 
 Keyboard provides an api for managing a virtual keyboard. The high level api is [`keyboard.type`](#keyboardtypetext-options), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
@@ -2586,6 +2593,14 @@ console.log(`Bytes used: ${usedBytes / totalBytes * 100}%`);
 > **NOTE** JavaScript Coverage doesn't include anonymous scripts. However, scripts with sourceURLs are
 reported.
 
+### class: Worker
+
+#### worker.executionContext()
+- returns: <[Promise]<[ExecutionContext]>>
+
+#### worker.url()
+- returns: <[string]>
+
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
 [Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer "Buffer"
@@ -2626,3 +2641,4 @@ reported.
 [xpath]: https://developer.mozilla.org/en-US/docs/Web/XPath "xpath"
 [UnixTime]: https://en.wikipedia.org/wiki/Unix_time "Unix Time"
 [SecurityDetails]: #class-securitydetails "SecurityDetails"
+[Worker]: #class-worker "Worker"

@@ -3929,6 +3929,19 @@ describe('Page', function() {
       });
     });
   });
+  describe('Worker', function() {
+    fit('should work', async function({page, server}) {
+      await page.goto(server.PREFIX + '/worker/worker.html');
+      await page.waitForFunction(() => !!worker);
+      const worker = page.workers()[0];
+      expect(worker.url()).toContain('worker.js');
+      const executionContext = await worker.executionContext();
+      expect(await executionContext.evaluate(() => self.workerFunction())).toBe('worker function result');
+
+      await page.goto(server.EMPTY_PAGE);
+      expect(page.workers()).toEqual([]);
+    });
+  });
 });
 
 if (process.env.COVERAGE) {
