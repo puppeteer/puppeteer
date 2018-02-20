@@ -22,7 +22,7 @@ const path = require('path');
 const mime = require('mime');
 const WebSocketServer = require('ws').Server;
 
-const fulfillSymbol = Symbol('fullfill callback');
+const fulfillSymbol = Symbol('fullfil callback');
 const rejectSymbol = Symbol('reject callback');
 
 class SimpleServer {
@@ -68,6 +68,9 @@ class SimpleServer {
     this._server.listen(port);
     this._dirPath = dirPath;
 
+    this._startTime = new Date();
+    this._cachedPathPrefix = null;
+
     /** @type {!Set<!net.Socket>} */
     this._sockets = new Set();
 
@@ -88,6 +91,13 @@ class SimpleServer {
         throw error;
     });
     socket.once('close', () => this._sockets.delete(socket));
+  }
+
+  /**
+   * @param {string} pathPrefix
+   */
+  enableHTTPCache(pathPrefix) {
+    this._cachedPathPrefix = pathPrefix;
   }
 
   /**
@@ -175,29 +185,43 @@ class SimpleServer {
     if (this._requestSubscribers.has(pathName))
       this._requestSubscribers.get(pathName)[fulfillSymbol].call(null, request);
     const handler = this._routes.get(pathName);
-    if (handler)
+    if (handler) {
       handler.call(null, request, response);
-    else
-      this.defaultHandler(request, response);
+    } else {
+      const pathName = url.parse(request.url).path;
+      this.serveFile(request, response, pathName);
+    }
   }
 
   /**
    * @param {!IncomingMessage} request
    * @param {!ServerResponse} response
+   * @param {string} pathName
    */
-  defaultHandler(request, response) {
-    let pathName = url.parse(request.url).path;
+  serveFile(request, response, pathName) {
     if (pathName === '/')
       pathName = '/index.html';
-    pathName = path.join(this._dirPath, pathName.substring(1));
+    const filePath = path.join(this._dirPath, pathName.substring(1));
 
-    fs.readFile(pathName, function(err, data) {
-      if (err) {
-        response.statusCode = 404;
-        response.end(`File not found: ${pathName}`);
+    if (this._cachedPathPrefix !== null && filePath.startsWith(this._cachedPathPrefix)) {
+      if (request.headers['if-modified-since']) {
+        response.statusCode = 304; // not modified
+        response.end();
         return;
       }
-      response.setHeader('Content-Type', mime.lookup(pathName));
+      response.setHeader('Cache-Control', 'public, max-age=31536000');
+      response.setHeader('Last-Modified', this._startTime.toString());
+    } else {
+      response.setHeader('Cache-Control', 'no-cache, no-store');
+    }
+
+    fs.readFile(filePath, function(err, data) {
+      if (err) {
+        response.statusCode = 404;
+        response.end(`File not found: ${filePath}`);
+        return;
+      }
+      response.setHeader('Content-Type', mime.lookup(filePath));
       response.end(data);
     });
   }
