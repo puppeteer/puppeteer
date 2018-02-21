@@ -275,7 +275,8 @@ describe('Puppeteer', function() {
       const {spawn} = require('child_process');
       const path = require('path');
       const options = Object.assign({dumpio: true}, defaultBrowserOptions);
-      const res = spawn('node', [path.resolve('./test/fixtures/dumpio.js'), PROJECT_ROOT, JSON.stringify(options), server.EMPTY_PAGE]);
+      const res = spawn('node',
+          [path.resolve('test', 'fixtures', 'dumpio.js'), PROJECT_ROOT, JSON.stringify(options), server.EMPTY_PAGE]);
       const response = await new Promise(resolve => res.stderr.on('data', data => {
         if (data.toString('utf8').indexOf('test') >= 0)
           resolve(data.toString('utf8'));
