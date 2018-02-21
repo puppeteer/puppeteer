@@ -3930,7 +3930,7 @@ describe('Page', function() {
     });
   });
   describe('Worker', function() {
-    fit('should work', async function({page, server}) {
+    it('should work', async function({page, server}) {
       await page.goto(server.PREFIX + '/worker/worker.html');
       await page.waitForFunction(() => !!worker);
       const worker = page.workers()[0];
