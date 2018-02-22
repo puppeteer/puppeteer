@@ -484,6 +484,15 @@ describe('Page', function() {
       const result = await page.evaluate(() => window);
       expect(result).toBe(undefined);
     });
+    it('should fail for circular object', async({page, server}) => {
+      const result = await page.evaluate(() => {
+        const a = {};
+        const b = {a};
+        a.b = b;
+        return a;
+      });
+      expect(result).toBe(undefined);
+    });
     it('should accept a string', async({page, server}) => {
       const result = await page.evaluate('1 + 2');
       expect(result).toBe(3);
