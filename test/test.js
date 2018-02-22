@@ -1050,11 +1050,25 @@ describe('Page', function() {
       await waitFor;
       expect(found).toBe(true);
     });
-    it('should not allow you to select an element with single slash xpath', async({page, server}) => {
+    it('should wait for an absolute xpath', async({page, server}) => {
+      let found = false;
       await page.setContent(`<div>some text</div>`);
-      let error = null;
-      await page.waitFor('/html/body/div').catch(e => error = e);
-      expect(error).toBeTruthy();
+      await page.waitFor('/html/body/div').then(() => found = true);
+      expect(found).toBe(true);
+    });
+    it('should wait for an xpath group', async({page, server}) => {
+      let found = false;
+      await page.setContent(`<div>some text</div><div>more text</div>`);
+      await page.waitFor('(//div)[1]').then(() => found = true).catch(() => found = false);
+      expect(found).toBe(true);
+      await page.waitFor('(//div)[2]').then(() => found = true).catch(() => found = false);
+      expect(found).toBe(true);
+    });
+    it('should wait for the xpath id function', async({page, server}) => {
+      let found = false;
+      await page.setContent(`<div id="foo">some text</div>`);
+      await page.waitFor('id("foo")').then(() => found = true);
+      expect(found).toBe(true);
     });
     it('should timeout', async({page, server}) => {
       const startTime = Date.now();
