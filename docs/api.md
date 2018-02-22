@@ -790,13 +790,13 @@ List of all available devices is available in the source code: [DeviceDescriptor
 #### page.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[Serializable]>> Resolves to the return value of `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 
-If the function, passed to the `page.evaluate`, returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return its value.
+If the function passed to the `page.evaluate` returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return its value.
 
-If the function passed into `page.evaluate` returns a non-[Serializable] value, then `page.evaluate` resolves to `undefined`.
-Passing arguments to ```pageFunction```.
+If the function passed to the `page.evaluate` returns a non-[Serializable] value, then `page.evaluate` resolves to `undefined`.
 
+Passing arguments to `pageFunction`:
 ```js
 const result = await page.evaluate(x => {
   return Promise.resolve(8 * x);
@@ -804,8 +804,7 @@ const result = await page.evaluate(x => {
 console.log(result); // prints "56"
 ```
 
-A string can also be passed in instead of a function.
-
+A string can also be passed in instead of a function:
 ```js
 console.log(await page.evaluate('1 + 2')); // prints "3"
 const x = 10;
@@ -824,19 +823,15 @@ Shortcut for [page.mainFrame().evaluate(pageFunction, ...args)](#frameevaluatepa
 #### page.evaluateHandle(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[JSHandle]>> Resolves to the return value of `pageFunction`
+- returns: <[Promise]<[JSHandle]>> Promise which resolves to the return value of `pageFunction` as in-page object (JSHandle)
 
-If the function, passed to the `page.evaluateHandle`, returns a [Promise], then `page.evaluateHandle` would wait for the promise to resolve and return its value.
+The only difference between `page.evaluate` and `page.evaluateHandle` is that `page.evaluateHandle` returns in-page object (JSHandle).
 
+If the function passed to the `page.evaluateHandle` returns a [Promise], then `page.evaluateHandle` would wait for the promise to resolve and return its value.
+
+A string can also be passed in instead of a function:
 ```js
-const aWindowHandle = await page.evaluateHandle(() => Promise.resolve(window));
-aWindowHandle; // Handle for the window object.
-```
-
-A string can also be passed in instead of a function.
-
-```js
-const aHandle = await page.evaluateHandle('document'); // Handle for the 'document'.
+const aHandle = await page.evaluateHandle('document'); // Handle for the 'document'
 ```
 
 [JSHandle] instances can be passed as arguments to the `page.evaluateHandle`:
@@ -1756,11 +1751,11 @@ Gets the full HTML contents of the frame, including the doctype.
 #### frame.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction`
-- returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 
-If the function, passed to the `frame.evaluate`, returns a [Promise], then `frame.evaluate` would wait for the promise to resolve and return its value.
+If the function passed to the `frame.evaluate` returns a [Promise], then `frame.evaluate` would wait for the promise to resolve and return its value.
 
-If the function passed into `frame.evaluate` returns a non-[Serializable] value, then `frame.evaluate` resolves to `undefined`.
+If the function passed to the `frame.evaluate` returns a non-[Serializable] value, then `frame.evaluate` resolves to `undefined`.
 
 ```js
 const result = await frame.evaluate(() => {
@@ -1785,7 +1780,9 @@ await bodyHandle.dispose();
 #### frame.evaluateHandle(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[JSHandle]>> Resolves to the return value of `pageFunction`
+- returns: <[Promise]<[JSHandle]>> Promise which resolves to the return value of `pageFunction` as in-page object (JSHandle)
+
+The only difference between `frame.evaluate` and `frame.evaluateHandle` is that `frame.evaluateHandle` returns in-page object (JSHandle).
 
 If the function, passed to the `frame.evaluateHandle`, returns a [Promise], then `frame.evaluateHandle` would wait for the promise to resolve and return its value.
 
@@ -1992,9 +1989,9 @@ The class represents a context for JavaScript execution. Examples of JavaScript 
 #### executionContext.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in `executionContext`
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[Serializable]>> Promise which resolves to function return value
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 
-If the function, passed to the `executionContext.evaluate`, returns a [Promise], then `executionContext.evaluate` would wait for the promise to resolve and return its value.
+If the function passed to the `executionContext.evaluate` returns a [Promise], then `executionContext.evaluate` would wait for the promise to resolve and return its value.
 
 ```js
 const executionContext = await page.mainFrame().executionContext();
@@ -2021,9 +2018,11 @@ console.log(result); // prints '3'.
 #### executionContext.evaluateHandle(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in the `executionContext`
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[JSHandle]>> Resolves to the return value of `pageFunction`
+- returns: <[Promise]<[JSHandle]>> Promise which resolves to the return value of `pageFunction` as in-page object (JSHandle)
 
-If the function, passed to the `executionContext.evaluateHandle`, returns a [Promise], then `executionContext.evaluteHandle` would wait for the promise to resolve and return its value.
+The only difference between `executionContext.evaluate` and `executionContext.evaluateHandle` is that `executionContext.evaluateHandle` returns in-page object (JSHandle).
+
+If the function passed to the `executionContext.evaluateHandle` returns a [Promise], then `executionContext.evaluteHandle` would wait for the promise to resolve and return its value.
 
 ```js
 const context = await page.mainFrame().executionContext();
