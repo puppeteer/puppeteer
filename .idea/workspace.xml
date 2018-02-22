@@ -2,60 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="bd2286a9-d797-4947-b1db-3d8f48174095" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.eslintignore" afterPath="$PROJECT_DIR$/.eslintignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.eslintrc.js" afterPath="$PROJECT_DIR$/.eslintrc.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.npmignore" afterPath="$PROJECT_DIR$/.npmignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.travis.yml" afterPath="$PROJECT_DIR$/.travis.yml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CONTRIBUTING.md" afterPath="$PROJECT_DIR$/CONTRIBUTING.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/DeviceDescriptors.js" afterPath="$PROJECT_DIR$/DeviceDescriptors.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/LICENSE" afterPath="$PROJECT_DIR$/LICENSE" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/api.md" afterPath="$PROJECT_DIR$/docs/api.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/issue_template.md" afterPath="$PROJECT_DIR$/docs/issue_template.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/docs/troubleshooting.md" afterPath="$PROJECT_DIR$/docs/troubleshooting.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/README.md" afterPath="$PROJECT_DIR$/examples/README.md" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/block-images.js" afterPath="$PROJECT_DIR$/examples/block-images.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/custom-event.js" afterPath="$PROJECT_DIR$/examples/custom-event.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/detect-sniff.js" afterPath="$PROJECT_DIR$/examples/detect-sniff.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/pdf.js" afterPath="$PROJECT_DIR$/examples/pdf.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/proxy.js" afterPath="$PROJECT_DIR$/examples/proxy.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/screenshot-fullpage.js" afterPath="$PROJECT_DIR$/examples/screenshot-fullpage.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/screenshot.js" afterPath="$PROJECT_DIR$/examples/screenshot.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/examples/search.js" afterPath="$PROJECT_DIR$/examples/search.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/index.js" afterPath="$PROJECT_DIR$/index.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/install.js" afterPath="$PROJECT_DIR$/install.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Browser.js" afterPath="$PROJECT_DIR$/lib/Browser.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Connection.js" afterPath="$PROJECT_DIR$/lib/Connection.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Dialog.js" afterPath="$PROJECT_DIR$/lib/Dialog.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/ElementHandle.js" afterPath="$PROJECT_DIR$/lib/ElementHandle.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/EmulationManager.js" afterPath="$PROJECT_DIR$/lib/EmulationManager.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/ExecutionContext.js" afterPath="$PROJECT_DIR$/lib/ExecutionContext.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/FrameManager.js" afterPath="$PROJECT_DIR$/lib/FrameManager.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Input.js" afterPath="$PROJECT_DIR$/lib/Input.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Launcher.js" afterPath="$PROJECT_DIR$/lib/Launcher.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Multimap.js" afterPath="$PROJECT_DIR$/lib/Multimap.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/NavigatorWatcher.js" afterPath="$PROJECT_DIR$/lib/NavigatorWatcher.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/NetworkManager.js" afterPath="$PROJECT_DIR$/lib/NetworkManager.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Page.js" afterPath="$PROJECT_DIR$/lib/Page.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Puppeteer.js" afterPath="$PROJECT_DIR$/lib/Puppeteer.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/Tracing.js" afterPath="$PROJECT_DIR$/lib/Tracing.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/helper.js" afterPath="$PROJECT_DIR$/lib/helper.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/assets/input/keyboard.html" afterPath="$PROJECT_DIR$/test/assets/input/keyboard.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/frame-utils.js" afterPath="$PROJECT_DIR$/test/frame-utils.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/golden-utils.js" afterPath="$PROJECT_DIR$/test/golden-utils.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/golden/nested-frames.txt" afterPath="$PROJECT_DIR$/test/golden/nested-frames.txt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/server/SimpleServer.js" afterPath="$PROJECT_DIR$/test/server/SimpleServer.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/test/test.js" afterPath="$PROJECT_DIR$/test/test.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utils/check_availability.js" afterPath="$PROJECT_DIR$/utils/check_availability.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utils/doclint/check_public_api/JSBuilder.js" afterPath="$PROJECT_DIR$/utils/doclint/check_public_api/JSBuilder.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utils/doclint/check_public_api/index.js" afterPath="$PROJECT_DIR$/utils/doclint/check_public_api/index.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utils/doclint/check_public_api/test/test.js" afterPath="$PROJECT_DIR$/utils/doclint/check_public_api/test/test.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utils/doclint/cli.js" afterPath="$PROJECT_DIR$/utils/doclint/cli.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utils/doclint/preprocessor/test.js" afterPath="$PROJECT_DIR$/utils/doclint/preprocessor/test.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utils/node6-transform/index.js" afterPath="$PROJECT_DIR$/utils/node6-transform/index.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/utils/node6-transform/test/test.js" afterPath="$PROJECT_DIR$/utils/node6-transform/test/test.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -70,27 +18,25 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="package.json" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/package.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="36">
-              <caret line="2" column="19" lean-forward="false" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="ElementHandle.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/ElementHandle.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="401">
+              <caret line="50" column="13" lean-forward="true" selection-start-line="50" selection-start-column="13" selection-end-line="50" selection-end-column="13" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>wa</find>
+      <find>waitfor</find>
+      <find>waitforx</find>
+      <find>waitforxp</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -116,10 +62,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="24" />
-    <option name="y" value="295" />
-    <option name="width" value="1343" />
-    <option name="height" value="786" />
+    <option name="x" value="3311" />
+    <option name="y" value="-3" />
+    <option name="width" value="1895" />
+    <option name="height" value="1083" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -136,8 +82,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -166,11 +110,13 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="nodejs_interpreter_path" value="$USER_HOME$/.nvm/versions/node/v7.7.2/bin/node" />
-    <property name="settings.editor.selected.configurable" value="settings.nodejs" />
+    <property name="settings.editor.selected.configurable" value="settings.javascript.linters.eslint" />
     <property name="javascript.nodejs.core.library.configured.version" value="7.7.2" />
     <property name="JavaScriptPreferStrict" value="false" />
     <property name="JavaScriptWeakerCompletionTypeGuess" value="true" />
@@ -179,6 +125,10 @@
     <property name="HbShouldOpenHtmlAsHb" value="" />
     <property name="node.js.path.for.package.eslint" value="project" />
     <property name="node.js.selected.package.eslint" value="$PROJECT_DIR$/node_modules/eslint" />
+    <property name="node.js.path.for.package.jscs" value="project" />
+    <property name="node.js.selected.package.jscs" value="" />
+    <property name="node.js.path.for.package.standard" value="project" />
+    <property name="node.js.selected.package.standard" value="$PROJECT_DIR$/node_modules/eslint" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -236,6 +186,12 @@
       <method />
     </configuration>
     <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-interpreter>project</node-interpreter>
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <envs />
       <method />
     </configuration>
     <configuration default="true" type="js.build_tools.npm" factoryName="npm">
@@ -270,30 +226,31 @@
       <option name="presentableId" value="Default" />
       <updated>1517507852425</updated>
       <workItem from="1517507854046" duration="1400000" />
-      <workItem from="1517919005159" duration="8951000" />
+      <workItem from="1517919005159" duration="9731000" />
+      <workItem from="1517997964563" duration="655000" />
+      <workItem from="1519305038766" duration="2501000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="10351000" />
+    <option name="totallyTimeSpent" value="14287000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="24" y="295" width="1343" height="786" extended-state="6" />
+    <frame x="3311" y="-3" width="1895" height="1083" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="DB Browser" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="DB Execution Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32911393" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23417722" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20227273" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.15677966" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14247599" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="MaxCompute Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="MaxCompute Job Explorer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Running Info" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -303,10 +260,11 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -320,6 +278,38 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="2" column="19" lean-forward="false" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/ElementHandle.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4320">
+          <caret line="240" column="0" lean-forward="false" selection-start-line="240" selection-start-column="0" selection-end-line="240" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="36">
+          <caret line="2" column="19" lean-forward="false" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/ElementHandle.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4320">
+          <caret line="240" column="0" lean-forward="false" selection-start-line="240" selection-start-column="0" selection-end-line="240" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/lib/ElementHandle.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -340,9 +330,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#93#0" expanded="false" />
-          </folding>
+          <folding />
         </state>
       </provider>
     </entry>
@@ -350,7 +338,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="918">
           <caret line="87" column="32" lean-forward="false" selection-start-line="87" selection-start-column="32" selection-end-line="87" selection-end-column="32" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -359,49 +346,6 @@
         <state split_layout="SPLIT">
           <first_editor relative-caret-position="0">
             <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-            <folding>
-              <marker date="1517929238000" expanded="true" signature="14395:14530" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="19112:19222" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="19384:19723" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="22684:22845" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="23493:23585" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="31249:31329" ph="[...]" />
-              <marker date="1517929238000" expanded="true" signature="33584:33749" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="34809:34845" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="37346:37421" ph="//..." />
-              <marker date="1517929238000" expanded="true" signature="37468:37527" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="37488:37527" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="38517:38958" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="38751:38929" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="39146:39708" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="39300:39500" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="39346:39494" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="39399:39486" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="39537:39679" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="56428:56808" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="56556:56737" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="62696:62895" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="65406:65716" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="66922:67231" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="73996:74208" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="74074:74169" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="76203:76554" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="76422:76552" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="81580:81661" ph="[...]" />
-              <marker date="1517929238000" expanded="true" signature="82414:82450" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="90207:90418" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="91540:91862" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="92959:93280" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="99351:99533" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="102784:102870" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="109799:109868" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="111294:111394" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="111314:111390" ph="{&quot;contentType&quot;: 'text/plain'...}" />
-              <marker date="1517929238000" expanded="true" signature="114295:114340" ph="{...}" />
-              <marker date="1517929238000" expanded="true" signature="114950:115023" ph="[...]" />
-              <marker date="1517929238000" expanded="true" signature="115182:115254" ph="[...]" />
-              <marker date="1517929238000" expanded="true" signature="115376:115496" ph="{...}" />
-            </folding>
           </first_editor>
           <second_editor />
         </state>
@@ -411,22 +355,37 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2646">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DeviceDescriptors.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1134">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/package.json">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="36">
-          <caret line="2" column="19" lean-forward="false" selection-start-line="2" selection-start-column="19" selection-end-line="2" selection-end-column="19" />
+        <state relative-caret-position="612">
+          <caret line="34" column="16" lean-forward="false" selection-start-line="34" selection-start-column="16" selection-end-line="34" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/Page.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="203">
+          <caret line="879" column="30" lean-forward="true" selection-start-line="879" selection-start-column="30" selection-end-line="879" selection-end-column="30" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/ElementHandle.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="401">
+          <caret line="50" column="13" lean-forward="true" selection-start-line="50" selection-start-column="13" selection-end-line="50" selection-end-column="13" />
           <folding />
         </state>
       </provider>
