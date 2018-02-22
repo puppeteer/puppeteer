@@ -390,6 +390,12 @@ describe('Page', function() {
       await neverResolves.catch(e => error = e);
       expect(error.message).toContain('Protocol error');
     });
+    it('should not be visible in browser.pages', async({browser}) => {
+      const newPage = await browser.newPage();
+      expect(await browser.pages()).toContain(newPage);
+      await newPage.close();
+      expect(await browser.pages()).not.toContain(newPage);
+    });
   });
 
   describe('Page.Events.error', function() {
