@@ -415,7 +415,7 @@ describe('Page', function() {
     });
     it('should throw when evaluation triggers reload', async({page, server}) => {
       let error = null;
-      const result = await page.evaluate(() => {
+      await page.evaluate(() => {
         location.reload();
         return new Promise(resolve => {
           setTimeout(() => resolve(1), 0);
