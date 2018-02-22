@@ -413,6 +413,16 @@ describe('Page', function() {
       const result = await page.evaluate(() => 7 * 3);
       expect(result).toBe(21);
     });
+    it('should throw when evaluation triggers reload', async({page, server}) => {
+      let error = null;
+      const result = await page.evaluate(() => {
+        location.reload();
+        return new Promise(resolve => {
+          setTimeout(() => resolve(1), 0);
+        });
+      }).catch(e => error = e);
+      expect(error.message).toContain('Protocol error');
+    });
     it('should await promise', async({page, server}) => {
       const result = await page.evaluate(() => Promise.resolve(8 * 7));
       expect(result).toBe(56);
