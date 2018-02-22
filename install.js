@@ -25,16 +25,16 @@ if (process.env.NPM_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.env.npm_c
   return;
 }
 
-const Downloader = require('./lib/Downloader');
-const downloader = Downloader.createDefault();
+const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host;
 
-const platform = downloader.currentPlatform();
-const revision = Downloader.defaultRevision();
-const ProgressBar = require('progress');
+const puppeteer = require('./index');
+const browserFetcher = puppeteer.createBrowserFetcher({ host: downloadHost });
 
-const revisionInfo = downloader.revisionInfo(platform, revision);
+const revision = require('./package.json').puppeteer.chromium_revision;
+const revisionInfo = browserFetcher.revisionInfo(revision);
+
 // Do nothing if the revision is already downloaded.
-if (revisionInfo.downloaded)
+if (revisionInfo.local)
   return;
 
 // Override current environment proxy settings with npm configuration, if any.
@@ -49,21 +49,20 @@ if (NPM_HTTP_PROXY)
 if (NPM_NO_PROXY)
   process.env.NO_PROXY = NPM_NO_PROXY;
 
-const allRevisions = downloader.downloadedRevisions();
-const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host;
-if (downloadHost)
-  downloader.setDownloadHost(downloadHost);
-downloader.downloadRevision(platform, revision, onProgress)
+browserFetcher.download(revisionInfo.revision, onProgress)
+    .then(() => browserFetcher.localRevisions())
     .then(onSuccess)
     .catch(onError);
 
 /**
+ * @param {!Array<string>}
  * @return {!Promise}
  */
-function onSuccess() {
+function onSuccess(localRevisions) {
   console.log('Chromium downloaded to ' + revisionInfo.folderPath);
+  localRevisions = localRevisions.filter(revision => revision !== revisionInfo.revision);
   // Remove previous chromium revisions.
-  const cleanupOldVersions = allRevisions.map(({platform, revision}) => downloader.removeRevision(platform, revision));
+  const cleanupOldVersions = localRevisions.map(revision => browserFetcher.remove(revision));
   return Promise.all(cleanupOldVersions);
 }
 
@@ -77,15 +76,19 @@ function onError(error) {
 }
 
 let progressBar = null;
-function onProgress(bytesTotal, delta) {
+let lastDownloadedBytes = 0;
+function onProgress(downloadedBytes, totalBytes) {
   if (!progressBar) {
-    progressBar = new ProgressBar(`Downloading Chromium r${revision} - ${toMegabytes(bytesTotal)} [:bar] :percent :etas `, {
+    const ProgressBar = require('progress');
+    progressBar = new ProgressBar(`Downloading Chromium r${revision} - ${toMegabytes(totalBytes)} [:bar] :percent :etas `, {
       complete: '=',
       incomplete: ' ',
       width: 20,
-      total: bytesTotal,
+      total: totalBytes,
     });
   }
+  const delta = downloadedBytes - lastDownloadedBytes;
+  lastDownloadedBytes = downloadedBytes;
   progressBar.tick(delta);
 }
 
