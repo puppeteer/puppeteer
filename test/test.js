@@ -2977,8 +2977,8 @@ describe('Page', function() {
     it('should work with a url and type=module', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const scriptHandle = await page.addScriptTag({ url: '/injectedfile.js', type: 'module' });
-      expect(scriptHandle.asElement()).not.toBeNull();
       const documentHTML = await page.evaluate(() => document.documentElement.innerHTML);
+      expect(scriptHandle.asElement()).not.toBeNull();
       expect(documentHTML).toContain('<script src="/injectedfile.js" type="module"></script>');
     });
 
