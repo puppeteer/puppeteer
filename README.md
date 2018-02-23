@@ -239,4 +239,14 @@ You may find that Puppeteer does not behave as expected when controlling pages t
 #### Q: I am having trouble installing / running Puppeteer in my test environment?
 We have a [troubleshooting](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md) guide for various operating systems that lists the required dependencies.
 
+#### Q: How do I try/test a prelease version of Puppeteer?
+
+You can check out this repo or install the latest prelease from npm:
+
+```bash
+npm i --save puppeteer@next
+```
+
+Please note that preleases may be unstable and contain bugs.
+
 <!-- [END faq] -->
