@@ -275,10 +275,9 @@ describe('Puppeteer', function() {
       const dumpioTextToLog = 'MAGIC_DUMPIO_TEST';
       let dumpioData = '';
       const {spawn} = require('child_process');
-      const path = require('path');
       const options = Object.assign({dumpio: true}, defaultBrowserOptions);
       const res = spawn('node',
-          [path.resolve('test', 'fixtures', 'dumpio.js'), PROJECT_ROOT, JSON.stringify(options), server.EMPTY_PAGE, dumpioTextToLog]);
+          [path.join(__dirname, 'fixtures', 'dumpio.js'), PROJECT_ROOT, JSON.stringify(options), server.EMPTY_PAGE, dumpioTextToLog]);
       res.stderr.on('data', data => dumpioData += data.toString('utf8'));
       await new Promise(resolve => res.on('close', resolve));
 
