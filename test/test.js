@@ -2072,20 +2072,20 @@ describe('Page', function() {
       const button = await page.$('button');
       await page.evaluate(button => button.style.display = 'none', button);
       const error = await button.click().catch(err => err);
-      expect(error.message).toBe('Node is not visible');
+      expect(error.message).toBe('Node is either not visible or not an HTMLElement');
     });
     it('should throw for recursively hidden nodes', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
       const button = await page.$('button');
       await page.evaluate(button => button.parentElement.style.display = 'none', button);
       const error = await button.click().catch(err => err);
-      expect(error.message).toBe('Node is not visible');
+      expect(error.message).toBe('Node is either not visible or not an HTMLElement');
     });
     it('should throw for <br> elements', async({page, server}) => {
       await page.setContent('hello<br>goodbye');
       const br = await page.$('br');
       const error = await br.click().catch(err => err);
-      expect(error.message).toBe('Node is not visible');
+      expect(error.message).toBe('Node is either not visible or not an HTMLElement');
     });
   });
 
@@ -2123,6 +2123,107 @@ describe('Page', function() {
       const elementHandle = await page.$('div');
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
+    });
+    it('should capture full element when larger than viewport', async({page, server}) => {
+      // compare with .to-screenshot size
+      await page.setViewport({width: 500, height: 500});
+
+      await page.setContent(`
+        something above
+        <style>div.spacer {
+          border: 2px solid red;
+          background: red;
+          height: 600px;
+          width: 52px;
+        }
+        div.to-screenshot {
+          border: 2px solid blue;
+          background: rgba(0, 0, 0, 0.5);
+          width: 600px;
+          height: 200.5px;
+          margin-left: 50px;
+          transform: scaleY(1.2);
+        }
+        ::-webkit-scrollbar {
+          display: none;
+        }
+        </style>
+        <div class="spacer"></div>
+        <div class="to-screenshot"></div>
+        <div class="spacer"></div>
+      `);
+
+      await page.evaluate(function() {
+        window.scrollTo(11, 12);
+      });
+
+      const elementHandle = await page.$('div.to-screenshot');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-larger-than-viewport.png');
+
+      expect(await page.evaluate(function() {
+        return { w: window.innerWidth, h: window.innerHeight };
+      })).toEqual({ w: 500, h: 500 });
+    });
+    it('should screenshot element with scroll container', async({page, server}) => {
+      // compare with .to-screenshot size
+      await page.setViewport({width: 500, height: 500});
+
+      await page.setContent(`
+        something above
+        <style>div.spacer {
+          border: 2px solid red;
+          background: red;
+          height: 600px;
+          width: 52px;
+        }
+        div.container1 {
+          width: 600px;
+          height: 600px;
+          overflow: auto;
+        }
+        div.container2 {
+          width: 620px;
+          height: 620px;
+          overflow: auto;
+        }
+        div.to-screenshot {
+          border: 2px solid blue;
+          background: rgba(0, 0, 0, 0.5);
+          width: 580px;
+          height: 580px;
+          margin-top: 50px;
+          margin-left: 200px;
+          margin-right: 50px;
+        }
+        ::-webkit-scrollbar {
+          display: none;
+        }
+        </style>
+        <div class="spacer"></div>
+        <div class="container1">
+          <div class="container2">
+            <div class="to-screenshot"></div>
+          </div>
+        </div>
+        <div class="spacer"></div>
+      `);
+
+      await page.evaluate(function() {
+        window.scrollTo(11, 12);
+      });
+
+      await page.$eval('div.container1', function(element) {
+        element.scrollTo(100, 0);
+      });
+
+      await page.$eval('div.container2', function(element) {
+        element.scrollTo(10, 30);
+      });
+
+      const elementHandle = await page.$('div.to-screenshot');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-with-scroll-container.png');
     });
     it('should scroll element into view', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
@@ -2165,7 +2266,7 @@ describe('Page', function() {
       const elementHandle = await page.$('h1');
       await page.evaluate(element => element.remove(), elementHandle);
       const screenshotError = await elementHandle.screenshot().catch(error => error);
-      expect(screenshotError.message).toBe('Node is detached from document');
+      expect(screenshotError.message).toBe('Node is either not visible or not an HTMLElement');
     });
   });
 
