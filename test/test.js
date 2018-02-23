@@ -425,6 +425,16 @@ describe('Page', function() {
       const result = await page.evaluate(() => 7 * 3);
       expect(result).toBe(21);
     });
+    it('should throw when evaluation triggers reload', async({page, server}) => {
+      let error = null;
+      await page.evaluate(() => {
+        location.reload();
+        return new Promise(resolve => {
+          setTimeout(() => resolve(1), 0);
+        });
+      }).catch(e => error = e);
+      expect(error.message).toContain('Protocol error');
+    });
     it('should await promise', async({page, server}) => {
       const result = await page.evaluate(() => Promise.resolve(8 * 7));
       expect(result).toBe(56);
@@ -484,6 +494,15 @@ describe('Page', function() {
     });
     it('should fail for window object', async({page, server}) => {
       const result = await page.evaluate(() => window);
+      expect(result).toBe(undefined);
+    });
+    it('should fail for circular object', async({page, server}) => {
+      const result = await page.evaluate(() => {
+        const a = {};
+        const b = {a};
+        a.b = b;
+        return a;
+      });
       expect(result).toBe(undefined);
     });
     it('should accept a string', async({page, server}) => {
