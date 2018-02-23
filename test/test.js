@@ -271,6 +271,18 @@ describe('Puppeteer', function() {
       const args = puppeteer.defaultArgs();
       expect(args).toContain('--no-first-run');
     });
+    it('should dump browser process stderr', async({server}) => {
+      const dumpioTextToLog = 'MAGIC_DUMPIO_TEST';
+      let dumpioData = '';
+      const {spawn} = require('child_process');
+      const options = Object.assign({dumpio: true}, defaultBrowserOptions);
+      const res = spawn('node',
+          [path.join(__dirname, 'fixtures', 'dumpio.js'), PROJECT_ROOT, JSON.stringify(options), server.EMPTY_PAGE, dumpioTextToLog]);
+      res.stderr.on('data', data => dumpioData += data.toString('utf8'));
+      await new Promise(resolve => res.on('close', resolve));
+
+      expect(dumpioData).toContain(dumpioTextToLog);
+    });
   });
   describe('Puppeteer.connect', function() {
     it('should be able to connect multiple times to the same browser', async({server}) => {
