@@ -187,6 +187,7 @@
   * [elementHandle.asElement()](#elementhandleaselement)
   * [elementHandle.boundingBox()](#elementhandleboundingbox)
   * [elementHandle.click([options])](#elementhandleclickoptions)
+  * [elementHandle.contentFrame()](#elementhandlecontentframe)
   * [elementHandle.dispose()](#elementhandledispose)
   * [elementHandle.executionContext()](#elementhandleexecutioncontext)
   * [elementHandle.focus()](#elementhandlefocus)
@@ -2186,6 +2187,9 @@ This method returns the bounding box of the element (relative to the main frame)
 
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
 If the element is detached from DOM, the method throws an error.
+
+#### elementHandle.contentFrame()
+- returns: <[Promise]<?[Frame]>> Resolves to the content frame for element handles referencing iframe nodes, or null otherwise
 
 #### elementHandle.dispose()
 - returns: <[Promise]> Promise which resolves when the element handle is successfully disposed.
