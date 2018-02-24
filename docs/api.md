@@ -2,7 +2,7 @@
 
 # Puppeteer API v<!-- GEN:version -->1.1.1-post<!-- GEN:stop--> \*\*NOT RELEASED\*\*
 
-> **NOTE** This version of API **will be released** on **March 15, 2018**.
+> **NOTE** This version of API **is expected to be released** on **March 15, 2018**.
 
 
 ##### Table of Contents
