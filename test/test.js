@@ -271,6 +271,18 @@ describe('Puppeteer', function() {
       const args = puppeteer.defaultArgs();
       expect(args).toContain('--no-first-run');
     });
+    it('should dump browser process stderr', async({server}) => {
+      const dumpioTextToLog = 'MAGIC_DUMPIO_TEST';
+      let dumpioData = '';
+      const {spawn} = require('child_process');
+      const options = Object.assign({dumpio: true}, defaultBrowserOptions);
+      const res = spawn('node',
+          [path.join(__dirname, 'fixtures', 'dumpio.js'), PROJECT_ROOT, JSON.stringify(options), server.EMPTY_PAGE, dumpioTextToLog]);
+      res.stderr.on('data', data => dumpioData += data.toString('utf8'));
+      await new Promise(resolve => res.on('close', resolve));
+
+      expect(dumpioData).toContain(dumpioTextToLog);
+    });
   });
   describe('Puppeteer.connect', function() {
     it('should be able to connect multiple times to the same browser', async({server}) => {
@@ -390,6 +402,12 @@ describe('Page', function() {
       await neverResolves.catch(e => error = e);
       expect(error.message).toContain('Protocol error');
     });
+    it('should not be visible in browser.pages', async({browser}) => {
+      const newPage = await browser.newPage();
+      expect(await browser.pages()).toContain(newPage);
+      await newPage.close();
+      expect(await browser.pages()).not.toContain(newPage);
+    });
   });
 
   describe('Page.Events.error', function() {
@@ -406,6 +424,16 @@ describe('Page', function() {
     it('should work', async({page, server}) => {
       const result = await page.evaluate(() => 7 * 3);
       expect(result).toBe(21);
+    });
+    it('should throw when evaluation triggers reload', async({page, server}) => {
+      let error = null;
+      await page.evaluate(() => {
+        location.reload();
+        return new Promise(resolve => {
+          setTimeout(() => resolve(1), 0);
+        });
+      }).catch(e => error = e);
+      expect(error.message).toContain('Protocol error');
     });
     it('should await promise', async({page, server}) => {
       const result = await page.evaluate(() => Promise.resolve(8 * 7));
@@ -466,6 +494,15 @@ describe('Page', function() {
     });
     it('should fail for window object', async({page, server}) => {
       const result = await page.evaluate(() => window);
+      expect(result).toBe(undefined);
+    });
+    it('should fail for circular object', async({page, server}) => {
+      const result = await page.evaluate(() => {
+        const a = {};
+        const b = {a};
+        a.b = b;
+        return a;
+      });
       expect(result).toBe(undefined);
     });
     it('should accept a string', async({page, server}) => {
@@ -2002,6 +2039,16 @@ describe('Page', function() {
     });
   });
 
+  describe('ElementHandle.contentFrame', function() {
+    it('should work', async({page,server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      const elementHandle = await page.$('#frame1');
+      const frame = await elementHandle.contentFrame();
+      expect(frame).toBe(page.frames()[1]);
+    });
+  });
+
   describe('ElementHandle.click', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
@@ -2035,20 +2082,20 @@ describe('Page', function() {
       const button = await page.$('button');
       await page.evaluate(button => button.style.display = 'none', button);
       const error = await button.click().catch(err => err);
-      expect(error.message).toBe('Node is not visible');
+      expect(error.message).toBe('Node is either not visible or not an HTMLElement');
     });
     it('should throw for recursively hidden nodes', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
       const button = await page.$('button');
       await page.evaluate(button => button.parentElement.style.display = 'none', button);
       const error = await button.click().catch(err => err);
-      expect(error.message).toBe('Node is not visible');
+      expect(error.message).toBe('Node is either not visible or not an HTMLElement');
     });
     it('should throw for <br> elements', async({page, server}) => {
       await page.setContent('hello<br>goodbye');
       const br = await page.$('br');
       const error = await br.click().catch(err => err);
-      expect(error.message).toBe('Node is not visible');
+      expect(error.message).toBe('Node is either not visible or not an HTMLElement');
     });
   });
 
@@ -2086,6 +2133,27 @@ describe('Page', function() {
       const elementHandle = await page.$('div');
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
+    });
+    it('should capture full element when larger than viewport', async({page, server}) => {
+      await page.setViewport({width: 500, height: 500});
+
+      await page.setContent(`
+        something above
+        <style>
+        div.to-screenshot {
+          border: 1px solid blue;
+          width: 600px;
+          height: 600px;
+          margin-left: 50px;
+        }
+        </style>
+        <div class="to-screenshot"></div>
+      `);
+      const elementHandle = await page.$('div.to-screenshot');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-larger-than-viewport.png');
+
+      expect(await page.evaluate(() => ({ w: window.innerWidth, h: window.innerHeight }))).toEqual({ w: 500, h: 500 });
     });
     it('should scroll element into view', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
@@ -2128,7 +2196,7 @@ describe('Page', function() {
       const elementHandle = await page.$('h1');
       await page.evaluate(element => element.remove(), elementHandle);
       const screenshotError = await elementHandle.screenshot().catch(error => error);
-      expect(screenshotError.message).toBe('Node is detached from document');
+      expect(screenshotError.message).toBe('Node is either not visible or not an HTMLElement');
     });
   });
 

@@ -17,7 +17,6 @@ Most things that you can do manually in the browser can be done using Puppeteer!
 
 * Generate screenshots and PDFs of pages.
 * Crawl a SPA and generate pre-rendered content (i.e. "SSR").
-* Scrape content from websites.
 * Automate form submission, UI testing, keyboard input, etc.
 * Create an up-to-date, automated testing environment. Run your tests directly in the latest version of Chrome using the latest JavaScript and browser features.
 * Capture a [timeline trace](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/reference) of your site to help diagnose performance issues.
@@ -239,5 +238,15 @@ You may find that Puppeteer does not behave as expected when controlling pages t
 
 #### Q: I am having trouble installing / running Puppeteer in my test environment?
 We have a [troubleshooting](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md) guide for various operating systems that lists the required dependencies.
+
+#### Q: How do I try/test a prerelease version of Puppeteer?
+
+You can check out this repo or install the latest prerelease from npm:
+
+```bash
+npm i --save puppeteer@next
+```
+
+Please note that prerelease may be unstable and contain bugs.
 
 <!-- [END faq] -->
