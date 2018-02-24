@@ -2039,6 +2039,16 @@ describe('Page', function() {
     });
   });
 
+  describe('ElementHandle.contentFrame', function() {
+    it('should work', async({page,server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      const elementHandle = await page.$('#frame1');
+      const frame = await elementHandle.contentFrame();
+      expect(frame).toBe(page.frames()[1]);
+    });
+  });
+
   describe('ElementHandle.click', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
