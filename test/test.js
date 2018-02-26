@@ -3291,23 +3291,25 @@ describe('Page', function() {
       });
       expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
     });
-    it('should run in parallel', async({page, server}) => {
-      await page.setViewport({width: 500, height: 500});
-      await page.goto(server.PREFIX + '/grid.html');
-      const promises = [];
-      for (let i = 0; i < 3; ++i) {
-        promises.push(page.screenshot({
-          clip: {
-            x: 50 * i,
-            y: 0,
-            width: 50,
-            height: 50
-          }
-        }));
-      }
-      const screenshots = await Promise.all(promises);
-      expect(screenshots[1]).toBeGolden('grid-cell-1.png');
-    });
+    for (let i = 0; i < 10; i++) {
+      it('should run in parallel ' + i, async({page, server}) => {
+        await page.setViewport({width: 500, height: 500});
+        await page.goto(server.PREFIX + '/grid.html');
+        const promises = [];
+        for (let i = 0; i < 3; ++i) {
+          promises.push(page.screenshot({
+            clip: {
+              x: 50 * i,
+              y: 0,
+              width: 50,
+              height: 50
+            }
+          }));
+        }
+        const screenshots = await Promise.all(promises);
+        expect(screenshots[1]).toBeGolden('grid-cell-1.png');
+      });
+    }
     it('should take fullPage screenshots', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/grid.html');
