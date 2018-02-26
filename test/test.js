@@ -2108,17 +2108,16 @@ describe('Page', function() {
     });
   });
 
-  describe('ElementHandle.screenshot', function() {
-    for (var i = 0; i < 25; i++) {
-      fit('should work', async ({page, server}) => {
-        await page.setViewport({width: 500, height: 500});
-        await page.goto(server.PREFIX + '/grid.html');
-        await page.evaluate(() => window.scrollBy(50, 100));
-        const elementHandle = await page.$('.box:nth-of-type(3)');
-        const screenshot = await elementHandle.screenshot();
-        expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
-      });
-    }
+  for (var i = 0; i < 30; i++)
+  fdescribe('ElementHandle.screenshot ' + i, function() {
+    it('should work', async ({page, server}) => {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(server.PREFIX + '/grid.html');
+      await page.evaluate(() => window.scrollBy(50, 100));
+      const elementHandle = await page.$('.box:nth-of-type(3)');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
+    });
     it('should take into account padding and border', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
