@@ -2108,19 +2108,19 @@ describe('Page', function() {
     });
   });
 
-  for (var i = 0; i < 30; i++)
-  fdescribe('ElementHandle.screenshot ' + i, function() {
-    it('should work', async ({page, server}) => {
-      await page.setViewport({width: 500, height: 500});
-      await page.goto(server.PREFIX + '/grid.html');
-      await page.evaluate(() => window.scrollBy(50, 100));
-      const elementHandle = await page.$('.box:nth-of-type(3)');
-      const screenshot = await elementHandle.screenshot();
-      expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
-    });
-    it('should take into account padding and border', async({page, server}) => {
-      await page.setViewport({width: 500, height: 500});
-      await page.setContent(`
+  for (let i = 0; i < 30; i++) {
+    describe('ElementHandle.screenshot ' + i, function() {
+      it('should work', async({page, server}) => {
+        await page.setViewport({width: 500, height: 500});
+        await page.goto(server.PREFIX + '/grid.html');
+        await page.evaluate(() => window.scrollBy(50, 100));
+        const elementHandle = await page.$('.box:nth-of-type(3)');
+        const screenshot = await elementHandle.screenshot();
+        expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
+      });
+      it('should take into account padding and border', async({page, server}) => {
+        await page.setViewport({width: 500, height: 500});
+        await page.setContent(`
         something above
         <style>div {
           border: 2px solid blue;
@@ -2131,14 +2131,14 @@ describe('Page', function() {
         </style>
         <div></div>
       `);
-      const elementHandle = await page.$('div');
-      const screenshot = await elementHandle.screenshot();
-      expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
-    });
-    it('should capture full element when larger than viewport', async({page, server}) => {
-      await page.setViewport({width: 500, height: 500});
+        const elementHandle = await page.$('div');
+        const screenshot = await elementHandle.screenshot();
+        expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
+      });
+      it('should capture full element when larger than viewport', async({page, server}) => {
+        await page.setViewport({width: 500, height: 500});
 
-      await page.setContent(`
+        await page.setContent(`
         something above
         <style>
         div.to-screenshot {
@@ -2150,15 +2150,15 @@ describe('Page', function() {
         </style>
         <div class="to-screenshot"></div>
       `);
-      const elementHandle = await page.$('div.to-screenshot');
-      const screenshot = await elementHandle.screenshot();
-      expect(screenshot).toBeGolden('screenshot-element-larger-than-viewport.png');
+        const elementHandle = await page.$('div.to-screenshot');
+        const screenshot = await elementHandle.screenshot();
+        expect(screenshot).toBeGolden('screenshot-element-larger-than-viewport.png');
 
-      expect(await page.evaluate(() => ({ w: window.innerWidth, h: window.innerHeight }))).toEqual({ w: 500, h: 500 });
-    });
-    it('should scroll element into view', async({page, server}) => {
-      await page.setViewport({width: 500, height: 500});
-      await page.setContent(`
+        expect(await page.evaluate(() => ({w: window.innerWidth, h: window.innerHeight}))).toEqual({w: 500, h: 500});
+      });
+      it('should scroll element into view', async({page, server}) => {
+        await page.setViewport({width: 500, height: 500});
+        await page.setContent(`
         something above
         <style>div.above {
           border: 2px solid blue;
@@ -2175,31 +2175,32 @@ describe('Page', function() {
         <div class="above"></div>
         <div class="to-screenshot"></div>
       `);
-      const elementHandle = await page.$('div.to-screenshot');
-      const screenshot = await elementHandle.screenshot();
-      expect(screenshot).toBeGolden('screenshot-element-scrolled-into-view.png');
-    });
-    it('should work with a rotated element', async({page, server}) => {
-      await page.setViewport({width: 500, height: 500});
-      await page.setContent(`<div style="position:absolute;
+        const elementHandle = await page.$('div.to-screenshot');
+        const screenshot = await elementHandle.screenshot();
+        expect(screenshot).toBeGolden('screenshot-element-scrolled-into-view.png');
+      });
+      it('should work with a rotated element', async({page, server}) => {
+        await page.setViewport({width: 500, height: 500});
+        await page.setContent(`<div style="position:absolute;
                                          top: 100px;
                                          left: 100px;
                                          width: 100px;
                                          height: 100px;
                                         background: green;
                                         transform: rotateZ(200deg);">&nbsp;</div>`);
-      const elementHandle = await page.$('div');
-      const screenshot = await elementHandle.screenshot();
-      expect(screenshot).toBeGolden('screenshot-element-rotate.png');
+        const elementHandle = await page.$('div');
+        const screenshot = await elementHandle.screenshot();
+        expect(screenshot).toBeGolden('screenshot-element-rotate.png');
+      });
+      it('should fail to screenshot a detached element', async({page, server}) => {
+        await page.setContent('<h1>remove this</h1>');
+        const elementHandle = await page.$('h1');
+        await page.evaluate(element => element.remove(), elementHandle);
+        const screenshotError = await elementHandle.screenshot().catch(error => error);
+        expect(screenshotError.message).toBe('Node is either not visible or not an HTMLElement');
+      });
     });
-    it('should fail to screenshot a detached element', async({page, server}) => {
-      await page.setContent('<h1>remove this</h1>');
-      const elementHandle = await page.$('h1');
-      await page.evaluate(element => element.remove(), elementHandle);
-      const screenshotError = await elementHandle.screenshot().catch(error => error);
-      expect(screenshotError.message).toBe('Node is either not visible or not an HTMLElement');
-    });
-  });
+  }
 
   describe('ElementHandle.$', function() {
     it('should query existing element', async({page, server}) => {
@@ -4015,11 +4016,11 @@ if (process.env.COVERAGE) {
   });
 }
 
+if (process.env.CI && runner.hasFocusedTestsOrSuites()) {
+  console.error('ERROR: "focused" tests/suites are prohibitted on bots. Remove any "fit"/"fdescribe" declarations.');
+  process.exit(1);
+}
 runner.run();
-// if (process.env.CI && runner.hasFocusedTestsOrSuites()) {
-//   console.error('ERROR: "focused" tests/suites are prohibitted on bots. Remove any "fit"/"fdescribe" declarations.');
-//   process.exit(1);
-// }
 
 /**
  * @param {!EventEmitter} emitter
