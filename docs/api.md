@@ -864,7 +864,7 @@ An example of overriding the navigator.languages property before the page loads:
 Object.defineProperty(navigator, "languages", {
   get: function() {
     return ["en-US", "en", "bn"];
-  };
+  }
 });
 
 // In your puppeteer script, assuming the preload.js file is in same folder of our script
