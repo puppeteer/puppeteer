@@ -18,93 +18,119 @@ module.exports = [
   {
     "name": "Chrome Linux 57",
     "viewport": {
-      "width": 1920,
-      "height": 1080,
+      "width": 768,
+      "height": 1360,
       "isMobile": false,
       "hasTouch": false,
       "isLandscape": true
     },
     "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36",
-    "navigator": {
-      "vendorSub": "",
-      "productSub": "20030107",
-      "vendor": "Google Inc.",
-      "maxTouchPoints": 0,
-      "hardwareConcurrency": 4,
-      "appCodeName": "Mozilla",
-      "appName": "Netscape",
-      "appVersion": "5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36",
-      "platform": "Linux x86_64",
-      "product": "Gecko",
-      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36",
-      "language": "en-GB",
+    "navigator":{
+      "mimeTypes": [
+        {
+          "enabledPlugin": [
+            "Chrome PDF Viewer"
+          ],
+          "description": "",
+          "suffixes": "pdf",
+          "type": "application/pdf"
+        },
+        {
+          "enabledPlugin": [
+            "Chrome PDF Plugin"
+          ],
+          "description": "Portable Document Format",
+          "suffixes": "pdf",
+          "type": "application/x-google-chrome-pdf"
+        },
+        {
+          "enabledPlugin": [
+            "Native Client"
+          ],
+          "description": "Native Client Executable",
+          "suffixes": "",
+          "type": "application/x-nacl"
+        },
+        {
+          "enabledPlugin": [
+            "Native Client"
+          ],
+          "description": "Portable Native Client Executable",
+          "suffixes": "",
+          "type": "application/x-pnacl"
+        },
+        {
+          "enabledPlugin": [
+            "Widevine Content Decryption Module"
+          ],
+          "description": "Widevine Content Decryption Module",
+          "suffixes": "",
+          "type": "application/x-ppapi-widevine-cdm"
+        }
+      ],
+      "plugins": [
+        {
+          "mimeType": [
+            "application/x-google-chrome-pdf"
+          ],
+          "length": 1,
+          "description": "Portable Document Format",
+          "filename": "internal-pdf-viewer",
+          "name": "Chrome PDF Plugin"
+        },
+        {
+          "mimeType": [
+            "application/pdf"
+          ],
+          "length": 1,
+          "description": "",
+          "filename": "mhjfbmdgcfjbbpaeojofohoefgiehjai",
+          "name": "Chrome PDF Viewer"
+        },
+        {
+          "mimeType": [
+            "application/x-nacl",
+            "application/x-pnacl"
+          ],
+          "length": 2,
+          "description": "",
+          "filename": "internal-nacl-plugin",
+          "name": "Native Client"
+        },
+        {
+          "mimeType": [
+            "application/x-ppapi-widevine-cdm"
+          ],
+          "length": 1,
+          "description": "Enables Widevine licenses for playback of HTML audio/video content. (version: 1.4.9.1070)",
+          "filename": "libwidevinecdmadapter.so",
+          "name": "Widevine Content Decryption Module"
+        }
+      ],
+      "doNotTrack": null,
+      "onLine": true,
       "languages": [
         "en-GB",
         "en-US",
         "en"
       ],
-      "onLine": true,
+      "language": "en-GB",
+      "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36",
+      "product": "Gecko",
+      "platform": "Linux x86_64",
+      "appVersion": "5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36",
+      "appName": "Netscape",
+      "appCodeName": "Mozilla",
       "cookieEnabled": true,
-      "doNotTrack": null,
-      "plugins": [
-        {
-          "name": "Widevine Content Decryption Module",
-          "filename": "libwidevinecdmadapter.so",
-          "description": "Enables Widevine licenses for playback of HTML audio/video content. (version: 1.4.8.970)",
-          "mimeType":["application/x-ppapi-widevine-cdm"],
-          "length": 1
-        },
-        {
-          "name": "Native Client",
-          "filename": "internal-nacl-plugin",
-          "description": "",
-          "mimeType":["application/x-nacl","application/x-pnacl"],
-          "length": 2
-        },
-        {
-          "name": "Chrome PDF Viewer",
-          "filename": "internal-pdf-viewer",
-          "description": "Portable Document Format",
-          "mimeType":["application/pdf"],
-          "length": 1
-        }
-      ],
-      "mimeTypes": [
-        {
-          "type": "application/pdf",
-          "suffixes": "pdf",
-          "description": "",
-          "enabledPlugin":["Chrome PDF Viewer"]
-        },
-        {
-          "type": "application/x-ppapi-widevine-cdm",
-          "suffixes": "",
-          "description": "Widevine Content Decryption Module",
-          "enabledPlugin":["Widevine Content Decryption Module"]
-        },
-        {
-          "type": "application/x-nacl",
-          "suffixes": "",
-          "description": "Native Client Executable",
-          "enabledPlugin": ["Native Client"]
-        },
-        {
-          "type": "application/x-pnacl",
-          "suffixes": "",
-          "description": "Portable Native Client Executable",
-          "enabledPlugin": ["Native Client"]
-        },
-        {
-          "type": "application/x-google-chrome-pdf",
-          "suffixes": "pdf",
-          "description": "Portable Document Format",
-          "enabledPlugin": ["Chrome PDF Plugin"]
-        }
-      ]
+      "hardwareConcurrency": 4,
+      "maxTouchPoints": 0,
+      "vendor": "Google Inc.",
+      "productSub": "20030107",
+      "vendorSub": ""
     },
     "webGLInfo": {
-      "renderer": "Mesa DRI Intel(R) 2 HD Graphics 520 (Skylake GT2) ",
-      "vendor": "Intel Open Source 5 Technology Center",
+      "renderer": "Mesa DRI Intel(R) HD Graphics 520 (Skylake GT2) ",
+      "vendor": "Intel Open Source Technology Center",
       "unmaskedRenderer": 37446,
       "unmaskedVendor": 37445
     },
