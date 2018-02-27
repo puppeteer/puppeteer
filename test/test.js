@@ -301,7 +301,7 @@ describe('Puppeteer', function() {
       if (process.platform === 'win32')
         execSync(`taskkill /pid ${res.pid} /T /F`);
       else
-        process.kill(-res.pid, 'SIGKILL');
+        process.kill(res.pid);
       await Promise.all(promises);
     });
   });
