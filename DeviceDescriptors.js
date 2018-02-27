@@ -47,23 +47,25 @@ module.exports = [
       "cookieEnabled": true,
       "doNotTrack": null,
       "plugins": [
-        ,
         {
           "name": "Widevine Content Decryption Module",
           "filename": "libwidevinecdmadapter.so",
           "description": "Enables Widevine licenses for playback of HTML audio/video content. (version: 1.4.8.970)",
+          "mimeType":["application/x-ppapi-widevine-cdm"],
           "length": 1
         },
         {
           "name": "Native Client",
           "filename": "internal-nacl-plugin",
           "description": "",
+          "mimeType":["application/x-nacl","application/x-pnacl"],
           "length": 2
         },
         {
           "name": "Chrome PDF Viewer",
           "filename": "internal-pdf-viewer",
           "description": "Portable Document Format",
+          "mimeType":["application/pdf"],
           "length": 1
         }
       ],
@@ -72,52 +74,31 @@ module.exports = [
           "type": "application/pdf",
           "suffixes": "pdf",
           "description": "",
+          "enabledPlugin":["Chrome PDF Viewer"]
         },
         {
           "type": "application/x-ppapi-widevine-cdm",
           "suffixes": "",
           "description": "Widevine Content Decryption Module",
-          "enabledPlugin": {
-            "0": {
-
-            }
-          }
+          "enabledPlugin":["Widevine Content Decryption Module"]
         },
         {
           "type": "application/x-nacl",
           "suffixes": "",
           "description": "Native Client Executable",
-          "enabledPlugin": {
-            "0": {
-
-            },
-            "1": {
-
-            }
-          }
+          "enabledPlugin": ["Native Client"]
         },
         {
           "type": "application/x-pnacl",
           "suffixes": "",
           "description": "Portable Native Client Executable",
-          "enabledPlugin": {
-            "0": {
-
-            },
-            "1": {
-
-            }
-          }
+          "enabledPlugin": ["Native Client"]
         },
         {
           "type": "application/x-google-chrome-pdf",
           "suffixes": "pdf",
           "description": "Portable Document Format",
-          "enabledPlugin": {
-            "0": {
-
-            }
-          }
+          "enabledPlugin": ["Chrome PDF Plugin"]
         }
       ]
     },
