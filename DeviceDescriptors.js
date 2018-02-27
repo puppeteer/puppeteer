@@ -46,198 +46,34 @@ module.exports = [
       "onLine": true,
       "cookieEnabled": true,
       "doNotTrack": null,
-      "geolocation": {
-        "getCurrentPosition": "Function(function getCurrentPosition() { [native code] })",
-        "watchPosition": "Function(function watchPosition() { [native code] })",
-        "clearWatch": "Function(function clearWatch() { [native code] })"
-      },
-      "mediaDevices": {
-        "enumerateDevices": "Function(function enumerateDevices() { [native code] })",
-        "getSupportedConstraints": "Function(function getSupportedConstraints() { [native code] })",
-        "getUserMedia": "Function(function getUserMedia() { [native code] })",
-        "addEventListener": "Function(function addEventListener() { [native code] })",
-        "removeEventListener": "Function(function removeEventListener() { [native code] })",
-        "dispatchEvent": "Function(function dispatchEvent() { [native code] })"
-      },
-      "plugins": {
-        "0": {
-          "0": {
-            "type": "application/pdf",
-            "suffixes": "pdf",
-            "description": "",
-            "enabledPlugin": {
-              "0": {
-                "type": "application/pdf",
-                "suffixes": "pdf",
-                "description": "",
-                "enabledPlugin": {
-                  "0": {
-
-                  }
-                }
-              },
-              "name": "Chrome PDF Viewer",
-              "filename": "mhjfbmdgcfjbbpaeojofohoefgiehjai",
-              "description": "",
-              "length": 1
-            }
-          },
-          "name": "Chrome PDF Viewer",
-          "filename": "mhjfbmdgcfjbbpaeojofohoefgiehjai",
-          "description": "",
-          "length": 1
-        },
-        "1": {
-          "0": {
-            "type": "application/x-ppapi-widevine-cdm",
-            "suffixes": "",
-            "description": "Widevine Content Decryption Module",
-            "enabledPlugin": {
-              "0": {
-                "type": "application/x-ppapi-widevine-cdm",
-                "suffixes": "",
-                "description": "Widevine Content Decryption Module",
-                "enabledPlugin": {
-                  "0": {
-
-                  }
-                }
-              },
-              "name": "Widevine Content Decryption Module",
-              "filename": "libwidevinecdmadapter.so",
-              "description": "Enables Widevine licenses for playback of HTML audio/video content. (version: 1.4.8.970)",
-              "length": 1
-            }
-          },
+      "plugins": [
+        ,
+        {
           "name": "Widevine Content Decryption Module",
           "filename": "libwidevinecdmadapter.so",
           "description": "Enables Widevine licenses for playback of HTML audio/video content. (version: 1.4.8.970)",
           "length": 1
         },
-        "2": {
-          "0": {
-            "type": "application/x-nacl",
-            "suffixes": "",
-            "description": "Native Client Executable",
-            "enabledPlugin": {
-              "0": {
-                "type": "application/x-nacl",
-                "suffixes": "",
-                "description": "Native Client Executable",
-                "enabledPlugin": {
-                  "0": {
-
-                  },
-                  "1": {
-
-                  }
-                }
-              },
-              "1": {
-                "type": "application/x-pnacl",
-                "suffixes": "",
-                "description": "Portable Native Client Executable",
-                "enabledPlugin": {
-                  "0": {
-
-                  },
-                  "1": {
-
-                  }
-                }
-              },
-              "name": "Native Client",
-              "filename": "internal-nacl-plugin",
-              "description": "",
-              "length": 2
-            }
-          },
-          "1": {
-            "type": "application/x-pnacl",
-            "suffixes": "",
-            "description": "Portable Native Client Executable",
-            "enabledPlugin": {
-              "0": {
-                "type": "application/x-nacl",
-                "suffixes": "",
-                "description": "Native Client Executable",
-                "enabledPlugin": {
-                  "0": {
-
-                  },
-                  "1": {
-
-                  }
-                }
-              },
-              "1": {
-                "type": "application/x-pnacl",
-                "suffixes": "",
-                "description": "Portable Native Client Executable",
-                "enabledPlugin": {
-                  "0": {
-
-                  },
-                  "1": {
-
-                  }
-                }
-              },
-              "name": "Native Client",
-              "filename": "internal-nacl-plugin",
-              "description": "",
-              "length": 2
-            }
-          },
+        {
           "name": "Native Client",
           "filename": "internal-nacl-plugin",
           "description": "",
           "length": 2
         },
-        "3": {
-          "0": {
-            "type": "application/x-google-chrome-pdf",
-            "suffixes": "pdf",
-            "description": "Portable Document Format",
-            "enabledPlugin": {
-              "0": {
-                "type": "application/x-google-chrome-pdf",
-                "suffixes": "pdf",
-                "description": "Portable Document Format",
-                "enabledPlugin": {
-                  "0": {
-
-                  }
-                }
-              },
-              "name": "Chrome PDF Viewer",
-              "filename": "internal-pdf-viewer",
-              "description": "Portable Document Format",
-              "length": 1
-            }
-          },
+        {
           "name": "Chrome PDF Viewer",
           "filename": "internal-pdf-viewer",
           "description": "Portable Document Format",
           "length": 1
-        },
-        "length": 4,
-        "item": "Function(function item() { [native code] })",
-        "namedItem": "Function(function namedItem() { [native code] })",
-        "refresh": "Function(function refresh() { [native code] })"
-      },
-      "mimeTypes": {
-        "0": {
+        }
+      ],
+      "mimeTypes": [
+        {
           "type": "application/pdf",
           "suffixes": "pdf",
           "description": "",
-          "enabledPlugin": {
-            "0": {
-
-            }
-          }
         },
-        "1": {
+        {
           "type": "application/x-ppapi-widevine-cdm",
           "suffixes": "",
           "description": "Widevine Content Decryption Module",
@@ -247,7 +83,7 @@ module.exports = [
             }
           }
         },
-        "2": {
+        {
           "type": "application/x-nacl",
           "suffixes": "",
           "description": "Native Client Executable",
@@ -260,7 +96,7 @@ module.exports = [
             }
           }
         },
-        "3": {
+        {
           "type": "application/x-pnacl",
           "suffixes": "",
           "description": "Portable Native Client Executable",
@@ -273,7 +109,7 @@ module.exports = [
             }
           }
         },
-        "4": {
+        {
           "type": "application/x-google-chrome-pdf",
           "suffixes": "pdf",
           "description": "Portable Document Format",
@@ -282,49 +118,12 @@ module.exports = [
 
             }
           }
-        },
-        "length": 5,
-        "item": "Function(function item() { [native code] })",
-        "namedItem": "Function(function namedItem() { [native code] })"
-      },
-      "webkitTemporaryStorage": {
-        "queryUsageAndQuota": "Function(function queryUsageAndQuota() { [native code] })",
-        "requestQuota": "Function(function requestQuota() { [native code] })"
-      },
-      "webkitPersistentStorage": {
-        "queryUsageAndQuota": "Function(function queryUsageAndQuota() { [native code] })",
-        "requestQuota": "Function(function requestQuota() { [native code] })"
-      },
-      "serviceWorker": {
-        "ready": {
-
-        },
-        "register": "Function(function register() { [native code] })",
-        "getRegistration": "Function(function getRegistration() { [native code] })",
-        "getRegistrations": "Function(function getRegistrations() { [native code] })",
-        "addEventListener": "Function(function addEventListener() { [native code] })",
-        "removeEventListener": "Function(function removeEventListener() { [native code] })",
-        "dispatchEvent": "Function(function dispatchEvent() { [native code] })"
-      },
-      "credentials": {
-        "get": "Function(function get() { [native code] })",
-        "store": "Function(function store() { [native code] })",
-        "requireUserMediation": "Function(function requireUserMediation() { [native code] })"
-      },
-      "storage": {
-        "persisted": "Function(function persisted() { [native code] })",
-        "persist": "Function(function () { [native code] })"
-      },
-      "permissions": {
-        "query": "Function(function query() { [native code] })"
-      },
-      "presentation": {
-
-      }
+        }
+      ]
     },
     "webGLInfo": {
-      "renderer": "Mesa DRI Intel(R) HD Graphics 520 (Skylake GT2) ",
-      "vendor": "Intel Open Source Technology Center",
+      "renderer": "Mesa DRI Intel(R) 2 HD Graphics 520 (Skylake GT2) ",
+      "vendor": "Intel Open Source 5 Technology Center",
       "unmaskedRenderer": 37446,
       "unmaskedVendor": 37445
     },
