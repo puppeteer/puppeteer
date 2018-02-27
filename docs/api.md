@@ -1633,6 +1633,41 @@ At every point of time, page exposes its current frame tree via the [page.mainFr
 - ['framenavigated'](#event-framenavigated) - fired when the frame commits navigation to a different URL.
 - ['framedetached'](#event-framedetached) - fired when the frame gets detached from the page.  A Frame can be detached from the page only once.
 
+Waiting for a frame to be loaded
+
+Waiting for a frame to be loaded is done in two steps:
+1. Frame is attached.
+2. Frame is loaded.
+
+Step 1 is needed because looking for a specific frame on a page (using [`page.frames`](#pageframes)) might be too early, before the frame is actually attached.
+
+Step 2 in important because both `frameattached` and `framenavigated` events will happen before frame's `window.onLoad` event.
+
+An example for such implementation:
+
+```js
+function waitForFrame(page) {
+  let fulfill;
+  const promise = new Promise(x => fulfill = x);
+  checkFrame();
+  return promise;
+
+  function checkFrame() {
+    const frame = page.frames().find(f => f.name() === 'ifrw');
+    if (frame)
+      fulfill(frame);
+    else
+      page.once('frameattached', checkFrame);
+  }
+}
+
+// 1. waiting for frame with name 'ifrw' to get attached
+const frame = await waitForFrame(page);
+// 2. waiting for the frame to contain the necessary selector
+await frame.waitForSelector('#selector');
+```
+
+
 An example of dumping frame tree:
 
 ```js
