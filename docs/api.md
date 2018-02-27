@@ -1337,7 +1337,7 @@ const puppeteer = require('puppeteer');
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
   const watchDog = page.waitForFunction('window.innerWidth < 100');
-  page.setViewport({width: 50, height: 50});
+  await page.setViewport({width: 50, height: 50});
   await watchDog;
   await browser.close();
 });
