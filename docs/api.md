@@ -1637,29 +1637,29 @@ Waiting for a frame to be loaded is done in two steps:
 1. Wait for Frame to be attached - needed because looking for a specific frame on a page (using [`page.frames()`](#pageframes)) might be too early, before the frame is actually attached.
 2. Wait for Frame to be loaded - needed because both `frameattached` and `framenavigated` events will happen before frame's `window.onLoad` event.
 
-  An example for such implementation:
+    An example for such implementation:
 
-  ```js
-  function waitForFrame(page) {
-    let fulfill;
-    const promise = new Promise(x => fulfill = x);
-    checkFrame();
-    return promise;
+    ```js
+    function waitForFrame(page) {
+      let fulfill;
+      const promise = new Promise(x => fulfill = x);
+      checkFrame();
+      return promise;
 
-    function checkFrame() {
-      const frame = page.frames().find(f => f.name() === 'ifrw');
-      if (frame)
-        fulfill(frame);
-      else
-        page.once('frameattached', checkFrame);
+      function checkFrame() {
+        const frame = page.frames().find(f => f.name() === 'ifrw');
+        if (frame)
+          fulfill(frame);
+        else
+          page.once('frameattached', checkFrame);
+      }
     }
-  }
 
-  // 1. waiting for frame with name 'ifrw' to get attached
-  const frame = await waitForFrame(page);
-  // 2. waiting for the frame to contain the necessary selector
-  await frame.waitForSelector('#selector');
-  ```
+    // 1. waiting for frame with name 'ifrw' to get attached
+    const frame = await waitForFrame(page);
+    // 2. waiting for the frame to contain the necessary selector
+    await frame.waitForSelector('#selector');
+    ```
 
 
 An example of dumping frame tree:
