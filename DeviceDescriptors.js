@@ -24,8 +24,8 @@ module.exports = [
       "hasTouch": false,
       "isLandscape": true
     },
-    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/57.0.2987.110 Safari/537.36",
-    "navigator":{
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36",
+    "navigator": {
       "mimeTypes": [
         {
           "enabledPlugin": [
@@ -114,6 +114,7 @@ module.exports = [
         "en-US",
         "en"
       ],
+      "webdriver":false,
       "language": "en-GB",
       "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.140 Safari/537.36",
       "product": "Gecko",
