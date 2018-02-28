@@ -508,6 +508,17 @@ This example logs a message for a single page `load` event:
 page.once('load', () => console.log('Page loaded!'));
 ```
 
+To unsubscribe from events use the `removeListener` method:
+
+```js
+function onLoad() {
+  console.log('Page loaded!');
+}
+page.on('load', onLoad);
+// Sometime later...
+page.removeListener('load', onLoad);
+```
+
 #### event: 'console'
 - <[ConsoleMessage]>
 
