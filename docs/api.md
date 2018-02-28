@@ -511,8 +511,8 @@ page.once('load', () => console.log('Page loaded!'));
 To unsubscribe from events use the `removeListener` method:
 
 ```js
-function logRequest() {
-  console.log('A request was made!');
+function logRequest(interceptedRequest) {
+  console.log('A request was made:', interceptedRequest.url());
 }
 page.on('request', logRequest);
 // Sometime later...
