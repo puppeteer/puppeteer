@@ -162,6 +162,47 @@ module.exports = [
       "unmaskedRenderer": 37446,
       "unmaskedVendor": 37445
     },
+    "chrome" : {
+      "runtime" : {
+        "OnRestartRequiredReason" : {
+          "PERIODIC" : "periodic",
+          "OS_UPDATE" : "os_update",
+          "APP_UPDATE" : "app_update"
+        },
+        "OnInstalledReason" : {
+          "SHARED_MODULE_UPDATE" : "shared_module_update",
+          "CHROME_UPDATE" : "chrome_update",
+          "UPDATE" : "update",
+          "INSTALL" : "install"
+        },
+        "RequestUpdateCheckStatus" : {
+          "UPDATE_AVAILABLE" : "update_available",
+          "NO_UPDATE" : "no_update",
+          "THROTTLED" : "throttled"
+        },
+        "PlatformNaclArch" : {
+          "X86_64" : "x86-64",
+          "X86_32" : "x86-32",
+          "ARM" : "arm"
+        },
+        "PlatformArch" : {
+          "X86_64" : "x86-64",
+          "X86_32" : "x86-32",
+          "ARM" : "arm"
+        },
+        "PlatformOs" : {
+          "OPENBSD" : "openbsd",
+          "LINUX" : "linux",
+          "CROS" : "cros",
+          "ANDROID" : "android",
+          "WIN" : "win",
+          "MAC" : "mac"
+        }
+      },
+      "app" : {
+        "isInstalled" : "false"
+      }
+    },
     "requestHeaders": {
       "upgrade-insecure-requests": "1",
       "accept-language": "en-GB,en-US;q=0.8,en;q=0.6"
