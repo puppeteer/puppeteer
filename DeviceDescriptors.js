@@ -109,6 +109,31 @@ module.exports = [
           "name": "Widevine Content Decryption Module"
         }
       ],
+      "permissions": [
+        {
+          "name": "geolocation",
+          "state": "prompt"
+        },
+        {
+          "name": "notifications",
+          "state": "prompt"
+        },
+        {
+          "name": "midi",
+          "state": "granted"
+        },
+        {
+          "name": "midi",
+          "state": "granted",
+          "sysex": true
+        },
+        {
+          "name":"push",
+          "userVisibleOnly":true,
+          "userVisible":true,
+          "state": "prompt"
+        }
+      ],
       "doNotTrack": null,
       "onLine": true,
       "languages": [
