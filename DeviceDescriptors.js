@@ -109,31 +109,6 @@ module.exports = [
           "name": "Widevine Content Decryption Module"
         }
       ],
-      "permissions": [
-        {
-          "name": "geolocation",
-          "state": "prompt"
-        },
-        {
-          "name": "notifications",
-          "state": "prompt"
-        },
-        {
-          "name": "midi",
-          "state": "granted"
-        },
-        {
-          "name": "midi",
-          "state": "granted",
-          "sysex": true
-        },
-        {
-          "name":"push",
-          "userVisibleOnly":true,
-          "userVisible":true,
-          "state": "prompt"
-        }
-      ],
       "doNotTrack": null,
       "onLine": true,
       "languages": [
@@ -156,6 +131,31 @@ module.exports = [
       "productSub": "20030107",
       "vendorSub": ""
     },
+    "permissions": [
+      {
+        "name": "geolocation",
+        "state": "prompt"
+      },
+      {
+        "name": "notifications",
+        "state": "prompt"
+      },
+      {
+        "name": "midi",
+        "state": "granted"
+      },
+      {
+        "name": "midi",
+        "state": "granted",
+        "sysex": true
+      },
+      {
+        "name":"push",
+        "userVisibleOnly":true,
+        "userVisible":true,
+        "state": "prompt"
+      }
+    ],
     "webGLInfo": {
       "renderer": "Mesa DRI Intel(R) HD Graphics 520 (Skylake GT2) ",
       "vendor": "Intel Open Source Technology Center",
