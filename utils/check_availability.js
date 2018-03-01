@@ -111,6 +111,7 @@ async function checkAndDrawRevisionAvailability(table, name, revision) {
   const promises = fetchers.map(fetcher => fetcher.canDownload(revision));
   const availability = await Promise.all(promises);
   const allAvailable = availability.every(e => !!e);
+  if (!availability[0] || !availability[2]) return;
   const values = [name + ' ' + (allAvailable ? colors.green + revision + colors.reset : revision)];
   for (let i = 0; i < availability.length; ++i) {
     const decoration = availability[i] ? '+' : '-';
