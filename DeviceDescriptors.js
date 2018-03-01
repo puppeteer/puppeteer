@@ -18,8 +18,10 @@ module.exports = [
   {
     "name": "Chrome Linux 57",
     "viewport": {
-      "width": 768,
-      "height": 1360,
+      "width": 1920,
+      "height": 1080,
+      "availWidth":1920,
+      "availHeight":1080,
       "isMobile": false,
       "hasTouch": false,
       "isLandscape": true
@@ -74,7 +76,7 @@ module.exports = [
             "application/x-google-chrome-pdf"
           ],
           "length": 1,
-          "description": "Portable Document Format",
+          "description": "Portable Document 12 Format",
           "filename": "internal-pdf-viewer",
           "name": "Chrome PDF Plugin"
         },
