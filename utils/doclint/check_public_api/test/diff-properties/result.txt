@@ -1,2 +1,0 @@
-[MarkDown] Non-existing property found: Foo.c
-[MarkDown] Property not found: Foo.b
