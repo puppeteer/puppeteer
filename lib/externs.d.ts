@@ -7,7 +7,7 @@ import {Mouse as RealMouse, Keyboard as RealKeyboard, Touchscreen as RealTouchsc
 import {Frame as RealFrame, FrameManager as RealFrameManager}  from './FrameManager.js';
 import {JSHandle as RealJSHandle, ExecutionContext as RealExecutionContext}  from './ExecutionContext.js';
 import * as RealElementHandle  from './ElementHandle.js';
-import * as RealNetworkManager from './NetworkManager.js';
+import { NetworkManager as RealNetworkManager, Request as RealRequest, Response as RealResponse } from './NetworkManager.js';
 import * as child_process from 'child_process';
 export as namespace Puppeteer;
 
@@ -25,7 +25,9 @@ export class NetworkManager extends RealNetworkManager {}
 export class ElementHandle extends RealElementHandle {}
 export class JSHandle extends RealJSHandle {}
 export class ExecutionContext extends RealExecutionContext {}
-export class Page extends RealPage {}
+export class Page extends RealPage { }
+export class Response extends RealResponse { }
+export class Request extends RealRequest { }
 
 export interface ConnectionTransport extends NodeJS.EventEmitter {
   send(string);
