@@ -47,6 +47,8 @@ of `Browser`, open pages, and then manipulate them with [Puppeteer's API](https:
 
 **Example** - navigating to https://example.com and saving a screenshot as *example.png*:
 
+Save file as **example.js**
+
 ```js
 const puppeteer = require('puppeteer');
 
@@ -60,9 +62,17 @@ const puppeteer = require('puppeteer');
 })();
 ```
 
+Execute script on the command line
+
+```bash
+node example.js
+```
+
 Puppeteer sets an initial page size to 800px x 600px, which defines the screenshot size. The page size can be customized  with [`Page.setViewport()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pagesetviewportviewport).
 
 **Example** - create a PDF.
+
+Save file as **hn.js**
 
 ```js
 const puppeteer = require('puppeteer');
@@ -77,9 +87,17 @@ const puppeteer = require('puppeteer');
 })();
 ```
 
+Execute script on the command line
+
+```bash
+node hn.js
+```
+
 See [`Page.pdf()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pagepdfoptions) for more information about creating pdfs.
 
 **Example** - evaluate script in the context of the page
+
+Save file as **get-dimensions.js**
 
 ```js
 const puppeteer = require('puppeteer');
@@ -102,6 +120,12 @@ const puppeteer = require('puppeteer');
 
   await browser.close();
 })();
+```
+
+Execute script on the command line
+
+```bash
+node get-dimensions.js
 ```
 
 See [`Page.evaluate()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pageevaluatepagefunction-args) for more information on `evaluate` and related methods like `evaluateOnNewDocument` and `exposeFunction`.
