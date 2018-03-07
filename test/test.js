@@ -283,6 +283,27 @@ describe('Puppeteer', function() {
 
       expect(dumpioData).toContain(dumpioTextToLog);
     });
+    it('should close the browser when the node process closes', async({ server }) => {
+      const {spawn, execSync} = require('child_process');
+      const res = spawn('node', [path.join(__dirname, 'fixtures', 'closeme.js'), PROJECT_ROOT, JSON.stringify(defaultBrowserOptions)]);
+      let wsEndPointCallback;
+      const wsEndPointPromise = new Promise(x => wsEndPointCallback = x);
+      let output = '';
+      res.stdout.on('data', data => {
+        output += data;
+        if (output.indexOf('\n'))
+          wsEndPointCallback(output.substring(0, output.indexOf('\n')));
+      });
+      const browser = await puppeteer.connect({ browserWSEndpoint: await wsEndPointPromise });
+      const promises = [
+        new Promise(resolve => browser.once('disconnected', resolve)),
+        new Promise(resolve => res.on('close', resolve))];
+      if (process.platform === 'win32')
+        execSync(`taskkill /pid ${res.pid} /T /F`);
+      else
+        process.kill(res.pid);
+      await Promise.all(promises);
+    });
   });
   describe('Puppeteer.connect', function() {
     it('should be able to connect multiple times to the same browser', async({server}) => {
