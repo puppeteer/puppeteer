@@ -2976,10 +2976,8 @@ describe('Page', function() {
 
     it('should work with a url and type=module', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
-      const scriptHandle = await page.addScriptTag({ url: '/injectedfile.js', type: 'module' });
-      const documentHTML = await page.evaluate(() => document.documentElement.innerHTML);
-      expect(scriptHandle.asElement()).not.toBeNull();
-      expect(documentHTML).toContain('<script src="/injectedfile.js" type="module"></script>');
+      await page.addScriptTag({ url: '/es6/es6import.js', type: 'module' });
+      expect(await page.evaluate(() => __es6injected)).toBe(42);
     });
 
     it('should throw an error if loading from url fail', async({page, server}) => {
