@@ -864,7 +864,7 @@ An example of overriding the navigator.languages property before the page loads:
 Object.defineProperty(navigator, "languages", {
   get: function() {
     return ["en-US", "en", "bn"];
-  };
+  }
 });
 
 // In your puppeteer script, assuming the preload.js file is in same folder of our script
@@ -1337,7 +1337,7 @@ const puppeteer = require('puppeteer');
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
   const watchDog = page.waitForFunction('window.innerWidth < 100');
-  page.setViewport({width: 50, height: 50});
+  await page.setViewport({width: 50, height: 50});
   await watchDog;
   await browser.close();
 });
@@ -2556,6 +2556,9 @@ for (const entry of coverage) {
 }
 console.log(`Bytes used: ${usedBytes / totalBytes * 100}%`);
 ```
+
+_To output coverage in a form consumable by [Istanbul](https://github.com/istanbuljs),
+  see [puppeteer-to-istanbul](https://github.com/istanbuljs/puppeteer-to-istanbul)._
 
 #### coverage.startCSSCoverage(options)
 - `options` <[Object]>  Set of configurable options for coverage
