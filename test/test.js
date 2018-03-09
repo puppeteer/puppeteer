@@ -2797,6 +2797,15 @@ describe('Page', function() {
     });
   });
 
+  describe('Page.elementText', function() {
+    it('should get element\'s text', async({page}) => {
+      const innerText = 'hello';
+      await page.setContent(`<div>${innerText}</div>`);
+      const divText = await page.elementText('div');
+      expect(divText).toBe(innerText);
+    });
+  });
+
   describe('Network Events', function() {
     it('Page.Events.Request', async({page, server}) => {
       const requests = [];
