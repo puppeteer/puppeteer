@@ -68,6 +68,7 @@
   * [page.cookies(...urls)](#pagecookiesurls)
   * [page.coverage](#pagecoverage)
   * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
+  * [page.elementText(selector)](#pageelementtextselector)
   * [page.emulate(options)](#pageemulateoptions)
   * [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
   * [page.evaluate(pageFunction, ...args)](#pageevaluatepagefunction-args)
@@ -149,6 +150,7 @@
   * [frame.childFrames()](#framechildframes)
   * [frame.click(selector[, options])](#frameclickselector-options)
   * [frame.content()](#framecontent)
+  * [frame.elementText(selector)](#frameelementtextselector)
   * [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
   * [frame.evaluateHandle(pageFunction, ...args)](#frameevaluatehandlepagefunction-args)
   * [frame.executionContext()](#frameexecutioncontext)
@@ -748,6 +750,10 @@ If URLs are specified, only cookies for those URLs are returned.
   - `path` <[string]>
   - `secure` <[boolean]>
 - returns: <[Promise]>
+
+#### page.elementText(selector)
+- `selector` <[string]> A [selector] to query page for.
+- returns: <[Promise]<[string]>> Element's innerText.
 
 #### page.emulate(options)
 - `options` <[Object]>
@@ -1747,6 +1753,10 @@ const [response] = await Promise.all([
 - returns: <[Promise]<[String]>>
 
 Gets the full HTML contents of the frame, including the doctype.
+
+#### frame.elementText(selector)
+- `selector` <[string]> A [selector] to query page for.
+- returns: <[Promise]<[string]>> Element's innerText.
 
 #### frame.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
