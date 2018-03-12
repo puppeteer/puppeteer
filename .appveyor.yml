@@ -8,7 +8,7 @@ build: off
 install:
   - ps: Install-Product node $env:nodejs_version
   - npm install
-  - if "%nodejs_version%" == "7" (
+  - if "%nodejs_version%" == "7.10.1" (
       npm run lint &&
       npm run coverage  &&
       npm run test-doclint
