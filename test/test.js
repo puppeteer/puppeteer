@@ -1420,6 +1420,16 @@ describe('Page', function() {
       expect(response.status()).toBe(200);
       expect(response.url()).toContain('self-request.html');
     });
+    it('should fail when navigating and show the url at the error message', async function({page, server, httpsServer}) {
+      const url = httpsServer.PREFIX + '/redirect/1.html';
+      let error = null;
+      try {
+        await page.goto(url);
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toContain(url);
+    });
   });
 
   describe('Page.waitForNavigation', function() {
