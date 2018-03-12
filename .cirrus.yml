@@ -1,0 +1,16 @@
+environement:
+  DISPLAY: :99.0
+
+node6_task:
+  windows_container:
+    dockerfile: .ci/node6/Dockerfile.windows
+  install_script: npm install
+  test_script: npm run unit-node6
+
+node7_task:
+  windows_container:
+    dockerfile: .ci/node7/Dockerfile.windows
+  install_script: npm install
+  lint_script: npm run lint
+  coverage_script: npm run coverage
+  test_doclint_script: npm run test-doclint
