@@ -2022,7 +2022,7 @@ console.log(result); // prints '3'.
 
 The only difference between `executionContext.evaluate` and `executionContext.evaluateHandle` is that `executionContext.evaluateHandle` returns in-page object (JSHandle).
 
-If the function passed to the `executionContext.evaluateHandle` returns a [Promise], then `executionContext.evaluteHandle` would wait for the promise to resolve and return its value.
+If the function passed to the `executionContext.evaluateHandle` returns a [Promise], then `executionContext.evaluateHandle` would wait for the promise to resolve and return its value.
 
 ```js
 const context = await page.mainFrame().executionContext();
