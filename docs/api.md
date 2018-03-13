@@ -31,7 +31,7 @@
   * [event: 'targetdestroyed'](#event-targetdestroyed)
   * [browser.close()](#browserclose)
   * [browser.disconnect()](#browserdisconnect)
-  * [browser.newPage()](#browsernewpage)
+  * [browser.newPage(url)](#browsernewpageurl)
   * [browser.pages()](#browserpages)
   * [browser.process()](#browserprocess)
   * [browser.targets()](#browsertargets)
@@ -453,7 +453,8 @@ Closes Chromium and all of its pages (if any were opened). The [Browser] object 
 
 Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling `disconnect`, the [Browser] object is considered disposed and cannot be used anymore.
 
-#### browser.newPage()
+#### browser.newPage(url)
+- `url` <[string]> URL of the page (defaults to about:blank).
 - returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.
 
 #### browser.pages()

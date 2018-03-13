@@ -10,3 +10,4 @@
 package-lock.json
 yarn.lock
 /node6
+.idea/
