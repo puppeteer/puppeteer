@@ -501,11 +501,22 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
-The Page class emits various events (described below) which can be handled using any of Node's native [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter) methods, such as `on` or `once`.
+The Page class emits various events (described below) which can be handled using any of Node's native [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter) methods, such as `on`, `once` or `removeListener`.
 
 This example logs a message for a single page `load` event:
 ```js
 page.once('load', () => console.log('Page loaded!'));
+```
+
+To unsubscribe from events use the `removeListener` method:
+
+```js
+function logRequest(interceptedRequest) {
+  console.log('A request was made:', interceptedRequest.url());
+}
+page.on('request', logRequest);
+// Sometime later...
+page.removeListener('request', logRequest);
 ```
 
 #### event: 'console'
