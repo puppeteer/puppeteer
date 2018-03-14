@@ -1646,6 +1646,15 @@ describe('Page', function() {
       expect(response.url()).toContain('empty.html');
       expect(requests.length).toBe(5);
       expect(requests[2].resourceType()).toBe('document');
+      // Check redirect chain
+      const redirectChain = response.request().redirectChain();
+      expect(redirectChain.length).toBe(4);
+      expect(redirectChain[0].url()).toContain('/non-existing-page.html');
+      expect(redirectChain[2].url()).toContain('/non-existing-page-3.html');
+      for (let i = 0; i < redirectChain.length; ++i) {
+        const request = redirectChain[i];
+        expect(request.redirectChain().indexOf(request)).toBe(i);
+      }
     });
     it('should be able to abort redirects', async({page, server}) => {
       await page.setRequestInterception(true);
@@ -2948,7 +2957,7 @@ describe('Page', function() {
       page.on('requestfailed', request => events.push(`FAIL ${request.url()}`));
       server.setRedirect('/foo.html', '/empty.html');
       const FOO_URL = server.PREFIX + '/foo.html';
-      await page.goto(FOO_URL);
+      const response = await page.goto(FOO_URL);
       expect(events).toEqual([
         `GET ${FOO_URL}`,
         `302 ${FOO_URL}`,
@@ -2957,6 +2966,11 @@ describe('Page', function() {
         `200 ${server.EMPTY_PAGE}`,
         `DONE ${server.EMPTY_PAGE}`
       ]);
+
+      // Check redirect chain
+      const redirectChain = response.request().redirectChain();
+      expect(redirectChain.length).toBe(1);
+      expect(redirectChain[0].url()).toContain('/foo.html');
     });
   });
 
