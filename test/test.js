@@ -22,6 +22,10 @@ const GOLDEN_DIR = path.join(__dirname, 'golden');
 const OUTPUT_DIR = path.join(__dirname, 'output');
 const {TestRunner, Reporter, Matchers} = require('../utils/testrunner/');
 
+const {helper} = require('../lib/helper');
+if (process.env.COVERAGE)
+  helper.recordPublicAPICoverage();
+
 const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
 let parallel = 1;
 if (process.env.PPTR_PARALLEL_TESTS)

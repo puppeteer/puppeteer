@@ -18,8 +18,6 @@ const os = require('os');
 const rm = require('rimraf').sync;
 const path = require('path');
 const {helper} = require('../lib/helper');
-if (process.env.COVERAGE)
-  helper.recordPublicAPICoverage();
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
 const readFileAsync = helper.promisify(fs.readFile);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
