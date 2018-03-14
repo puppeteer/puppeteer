@@ -1126,6 +1126,16 @@ describe('Page', function() {
       expect(response.status()).toBe(200);
       expect(response.url()).toContain('self-request.html');
     });
+    it('should fail when navigating and show the url at the error message', async function({page, server, httpsServer}) {
+      const url = httpsServer.PREFIX + '/redirect/1.html';
+      let error = null;
+      try {
+        await page.goto(url);
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toContain(url);
+    });
   });
 
   describe('Page.waitForNavigation', function() {
@@ -2679,6 +2689,26 @@ describe('Page', function() {
       const scriptHandle = await page.addScriptTag({ url: '/injectedfile.js' });
       expect(scriptHandle.asElement()).not.toBeNull();
       expect(await page.evaluate(() => __injected)).toBe(42);
+    });
+
+    it('should work with a url and type=module', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.addScriptTag({ url: '/es6/es6import.js', type: 'module' });
+      expect(await page.evaluate(() => __es6injected)).toBe(42);
+    });
+
+    it('should work with a path and type=module', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.addScriptTag({ path: path.join(__dirname, 'assets/es6/es6pathimport.js'), type: 'module' });
+      await page.waitForFunction('window.__es6injected');
+      expect(await page.evaluate(() => __es6injected)).toBe(42);
+    });
+
+    it('should work with a content and type=module', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.addScriptTag({ content: `import num from '/es6/es6module.js';window.__es6injected = num;`, type: 'module' });
+      await page.waitForFunction('window.__es6injected');
+      expect(await page.evaluate(() => __es6injected)).toBe(42);
     });
 
     it('should throw an error if loading from url fail', async({page, server}) => {
