@@ -93,8 +93,11 @@ afterAll(async({server, httpsServer}) => {
   ]);
 });
 
-const files = glob.sync('**/*.spec.js', {ignore: 'node_modules/**'});
-files.map(file => path.join(process.cwd(), file)).forEach(require);
+const files = glob.sync('**/*.spec.js', {
+  cwd: __dirname
+});
+
+files.map(file => path.join(__dirname, file)).forEach(require);
 
 if (process.env.CI && runner.hasFocusedTestsOrSuites()) {
   console.error('ERROR: "focused" tests/suites are prohibitted on bots. Remove any "fit"/"fdescribe" declarations.');
