@@ -2870,7 +2870,7 @@ describe('Page', function() {
 
       // Load and re-load to make sure serviceworker is installed and running.
       await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html', {waitUntil: 'networkidle2'});
-      await page.evaluate(async() => await window.registrationPromise);
+      await page.evaluate(async() => await window.activationPromise);
       await page.reload();
 
       expect(responses.size).toBe(2);
@@ -3781,6 +3781,7 @@ describe('Page', function() {
     it('should report when a service worker is created and destroyed', async({page, server, browser}) => {
       await page.goto(server.EMPTY_PAGE);
       const createdTarget = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
+
       await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
 
       expect((await createdTarget).type()).toBe('service_worker');
