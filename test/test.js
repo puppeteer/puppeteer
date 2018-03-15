@@ -852,30 +852,20 @@ describe('Page', function() {
     it('should immediately resolve promise if node exists', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const frame = page.mainFrame();
-      let added = false;
-      await frame.waitForSelector('*').then(() => added = true);
-      expect(added).toBe(true);
-
-      added = false;
+      await frame.waitForSelector('*');
       await frame.evaluate(addElement, 'div');
-      await frame.waitForSelector('div').then(() => added = true);
-      expect(added).toBe(true);
+      await frame.waitForSelector('div');
     });
 
     it('should resolve promise when node is added', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const frame = page.mainFrame();
-      let added = false;
-      const watchdog = frame.waitForSelector('div').then(() => added = true);
-      // run nop function..
-      await frame.evaluate(() => 42);
-      // .. to be sure that waitForSelector promise is not resolved yet.
-      expect(added).toBe(false);
+      const watchdog = frame.waitForSelector('div');
       await frame.evaluate(addElement, 'br');
-      expect(added).toBe(false);
       await frame.evaluate(addElement, 'div');
-      await watchdog;
-      expect(added).toBe(true);
+      const eHandle = await watchdog;
+      const tagName = await eHandle.getProperty('tagName').then(e => e.jsonValue());
+      expect(tagName).toBe('DIV');
     });
 
     it('should work when node is added through innerHTML', async({page, server}) => {
@@ -890,12 +880,11 @@ describe('Page', function() {
       await page.goto(server.EMPTY_PAGE);
       await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const otherFrame = page.frames()[1];
-      let added = false;
-      page.waitForSelector('div').then(() => added = true);
+      const watchdog = page.waitForSelector('div');
       await otherFrame.evaluate(addElement, 'div');
-      expect(added).toBe(false);
       await page.evaluate(addElement, 'div');
-      expect(added).toBe(true);
+      const eHandle = await watchdog;
+      expect(eHandle.executionContext().frame()).toBe(page.mainFrame());
     });
 
     it('should run in specified frame', async({page, server}) => {
@@ -903,13 +892,11 @@ describe('Page', function() {
       await FrameUtils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
       const frame1 = page.frames()[1];
       const frame2 = page.frames()[2];
-      let added = false;
-      const waitForSelectorPromise = frame2.waitForSelector('div').then(() => added = true);
-      expect(added).toBe(false);
+      const waitForSelectorPromise = frame2.waitForSelector('div');
       await frame1.evaluate(addElement, 'div');
-      expect(added).toBe(false);
       await frame2.evaluate(addElement, 'div');
-      await waitForSelectorPromise;
+      const eHandle = await waitForSelectorPromise;
+      expect(eHandle.executionContext().frame()).toBe(frame2);
     });
 
     it('should throw if evaluation failed', async({page, server}) => {
@@ -1029,13 +1016,11 @@ describe('Page', function() {
       await FrameUtils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
       const frame1 = page.frames()[1];
       const frame2 = page.frames()[2];
-      let added = false;
-      const waitForXPathPromise = frame2.waitForXPath('//div').then(() => added = true);
-      expect(added).toBe(false);
+      const waitForXPathPromise = frame2.waitForXPath('//div');
       await frame1.evaluate(addElement, 'div');
-      expect(added).toBe(false);
       await frame2.evaluate(addElement, 'div');
-      await waitForXPathPromise;
+      const eHandle = await waitForXPathPromise;
+      expect(eHandle.executionContext().frame()).toBe(frame2);
     });
     it('should throw if evaluation failed', async({page, server}) => {
       await page.evaluateOnNewDocument(function() {
