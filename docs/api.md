@@ -61,6 +61,7 @@
   * [page.addScriptTag(options)](#pageaddscripttagoptions)
   * [page.addStyleTag(options)](#pageaddstyletagoptions)
   * [page.authenticate(credentials)](#pageauthenticatecredentials)
+  * [page.authenticateProxy(credentials)](#pageauthenticateproxycredentials)
   * [page.bringToFront()](#pagebringtofront)
   * [page.click(selector[, options])](#pageclickselector-options)
   * [page.close()](#pageclose)
@@ -693,6 +694,16 @@ Shortcut for [page.mainFrame().addStyleTag(options)](#frameaddstyletagoptions).
 - returns: <[Promise]>
 
 Provide credentials for [http authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication).
+
+To disable authentication, pass `null`.
+
+#### page.authenticateProxy(credentials)
+- `credentials` <?[Object]>
+  - `username` <[string]>
+  - `password` <[string]>
+- returns: <[Promise]>
+
+Provide credentials for HTTP proxy authentication
 
 To disable authentication, pass `null`.
 
