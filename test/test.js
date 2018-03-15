@@ -2862,6 +2862,7 @@ describe('Page', function() {
 
       // Load and re-load to make sure serviceworker is installed and running.
       await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html', {waitUntil: 'networkidle2'});
+      await page.evaluate(async () => await window.registrationPromise);
       await page.reload();
 
       expect(responses.size).toBe(2);
