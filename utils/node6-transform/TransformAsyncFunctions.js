@@ -52,18 +52,26 @@ const asyncToGenerator = fn => {
  * @return {string}
  */
 function transformAsyncFunctions(text) {
+  /**
+   * @type {!Array<{from: number, to: number, replacement: string}>}
+   */
   const edits = [];
 
   const ast = esprima.parseScript(text, {range: true, tolerant: true});
   const walker = new ESTreeWalker(node => {
     if (node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration' || node.type === 'ArrowFunctionExpression')
-      onFunction(node);
+      onBeforeFunction(node);
     else if (node.type === 'AwaitExpression')
-      onAwait(node);
+      onBeforeAwait(node);
+  }, node => {
+    if (node.type === 'FunctionExpression' || node.type === 'FunctionDeclaration' || node.type === 'ArrowFunctionExpression')
+      onAfterFunction(node);
+    else if (node.type === 'AwaitExpression')
+      onAfterAwait(node);
   });
   walker.walk(ast);
 
-  edits.sort((a, b) => b.from - a.from);
+  edits.reverse();
   for (const {replacement, from, to} of edits)
     text = text.substring(0, from) + replacement + text.substring(to);
 
@@ -72,7 +80,7 @@ function transformAsyncFunctions(text) {
   /**
    * @param {ESTree.Node} node
    */
-  function onFunction(node) {
+  function onBeforeFunction(node) {
     if (!node.async) return;
 
     let range;
@@ -84,40 +92,61 @@ function transformAsyncFunctions(text) {
     insertText(index, index + 'async'.length, '/* async */');
 
     let before = `{return (${asyncToGenerator.toString()})(function*()`;
-    let after = `);}`;
     if (node.body.type !== 'BlockStatement') {
       before += `{ return `;
-      after = `; }` + after;
 
       // Remove parentheses that might wrap an arrow function
       const beforeBody = text.substring(node.range[0], node.body.range[0]);
       if (/\(\s*$/.test(beforeBody)) {
-        const afterBody = text.substring(node.body.range[1], node.range[1]);
         const openParen = node.range[0] + beforeBody.lastIndexOf('(');
         insertText(openParen, openParen + 1, ' ');
-        const closeParen = node.body.range[1] + afterBody.indexOf(')');
-        insertText(closeParen, closeParen + 1, ' ');
       }
     }
 
 
     insertText(node.body.range[0], node.body.range[0], before);
-    insertText(node.body.range[1], node.body.range[1], after);
   }
 
   /**
    * @param {ESTree.Node} node
    */
-  function onAwait(node) {
+  function onAfterFunction(node) {
+    if (!node.async) return;
+
+    let after = `);}`;
+    if (node.body.type !== 'BlockStatement')
+      after = `; }` + after;
+    insertText(node.body.range[1], node.body.range[1], after);
+
+    if (node.body.type !== 'BlockStatement') {
+      // Remove parentheses that might wrap an arrow function
+      const beforeBody = text.substring(node.range[0], node.body.range[0]);
+      if (/\(\s*$/.test(beforeBody)) {
+        const afterBody = text.substring(node.body.range[1], node.range[1]);
+        const closeParen = node.body.range[1] + afterBody.indexOf(')');
+        insertText(closeParen, closeParen + 1, ' ');
+      }
+    }
+  }
+
+  /**
+   * @param {ESTree.Node} node
+   */
+  function onBeforeAwait(node) {
     const index = text.substring(node.range[0], node.range[1]).indexOf('await') + node.range[0];
     insertText(index, index + 'await'.length, '(yield');
+  }
+
+  /**
+   * @param {ESTree.Node} node
+   */
+  function onAfterAwait(node) {
     insertText(node.range[1], node.range[1], ')');
   }
 
   /**
    * @param {number} from
    * @param {number} to
-   * @param {string} replacement
    */
   function insertText(from, to, replacement) {
     edits.push({from, to, replacement});
