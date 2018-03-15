@@ -2068,6 +2068,14 @@ describe('Page', function() {
       const element = await page.$('div');
       expect(await element.boundingBox()).toBe(null);
     });
+    it('should force a layout', async({page, server}) => {
+      await page.setViewport({ width: 500, height: 500 });
+      await page.setContent('<div style="width: 100px; height: 100px">hello</div>');
+      const elementHandle = await page.$('div');
+      await page.evaluate(element => element.style.height = '200px', elementHandle);
+      const box = await elementHandle.boundingBox();
+      expect(box).toEqual({ x: 8, y: 8, width: 100, height: 200 });
+    });
   });
 
   describe('ElementHandle.contentFrame', function() {
