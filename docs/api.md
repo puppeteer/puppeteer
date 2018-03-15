@@ -207,6 +207,8 @@
   * [request.frame()](#requestframe)
   * [request.headers()](#requestheaders)
   * [request.method()](#requestmethod)
+  * [request.monotonicTimeEnd()](#requestmonotonictimeend)
+  * [request.monotonicTimeStart()](#requestmonotonictimestart)
   * [request.postData()](#requestpostdata)
   * [request.resourceType()](#requestresourcetype)
   * [request.respond(response)](#requestrespondresponse)
@@ -218,6 +220,7 @@
   * [response.fromServiceWorker()](#responsefromserviceworker)
   * [response.headers()](#responseheaders)
   * [response.json()](#responsejson)
+  * [response.monotonicTimeEnd()](#responsemonotonictimeend)
   * [response.ok()](#responseok)
   * [response.request()](#responserequest)
   * [response.securityDetails()](#responsesecuritydetails)
@@ -2376,6 +2379,12 @@ page.on('requestfailed', request => {
 #### request.method()
 - returns: <[string]> Request's method (GET, POST, etc.)
 
+#### request.monotonicTimeEnd()
+- returns: <[number]> The monotonic timestamp when this request finished or failed.
+
+#### request.monotonicTimeStart()
+- returns: <[number]> The monotonic timestamp when this request started.
+
 #### request.postData()
 - returns: <[string]> Request's post body, if any.
 
@@ -2443,6 +2452,9 @@ True if the response was served by a service worker.
 - returns: <Promise<[Object]>> Promise which resolves to a JSON representation of response body.
 
 This method will throw if the response body is not parsable via `JSON.parse`.
+
+#### response.monotonicTimeEnd()
+- returns: <[number]> The MonotonicTime timestamp when this response happened.
 
 #### response.ok()
 - returns: <[boolean]>

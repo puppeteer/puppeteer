@@ -1551,10 +1551,13 @@ describe('Page', function() {
         expect(request.resourceType()).toBe('document');
         expect(request.frame() === page.mainFrame()).toBe(true);
         expect(request.frame().url()).toBe('about:blank');
+        expect(request.monotonicTimeStart()).toBeNull();
+        expect(request.monotonicTimeEnd()).toBeNull();
         request.continue();
       });
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.ok()).toBe(true);
+      expect(response.monotonicTimeEnd()).not.toBeNull();
     });
     it('should stop intercepting', async({page, server}) => {
       await page.setRequestInterception(true);
