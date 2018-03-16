@@ -22,11 +22,33 @@ const GOLDEN_DIR = path.join(__dirname, 'golden');
 const OUTPUT_DIR = path.join(__dirname, 'output');
 const {TestRunner, Reporter, Matchers} = require('../utils/testrunner/');
 
+const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ? path.join(__dirname, '..') : path.join(__dirname, '..', '..');
+
 const {helper} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
 
+const puppeteer = require(PROJECT_ROOT);
+
+const YELLOW_COLOR = '\x1b[33m';
+const RESET_COLOR = '\x1b[0m';
+
+const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
+const executablePath = process.env.CHROME;
+
+if (executablePath)
+  console.warn(`${YELLOW_COLOR}WARN: running tests with ${executablePath}${RESET_COLOR}`);
+// Make sure the `npm install` was run after the chromium roll.
+console.assert(fs.existsSync(puppeteer.executablePath()), `Chromium is not Downloaded. Run 'npm install' and try to re-run tests`);
+
 const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
+const defaultBrowserOptions = {
+  executablePath,
+  slowMo,
+  headless,
+  args: ['--no-sandbox', '--disable-dev-shm-usage']
+};
+
 let parallel = 1;
 if (process.env.PPTR_PARALLEL_TESTS)
   parallel = parseInt(process.env.PPTR_PARALLEL_TESTS.trim(), 10);
@@ -39,30 +61,14 @@ const timeout = slowMo ? 0 : 10 * 1000;
 const runner = new TestRunner({timeout, parallel});
 new Reporter(runner);
 
-const {describe, xdescribe, fdescribe} = runner;
-const {it, fit, xit} = runner;
-const {beforeAll, beforeEach, afterAll, afterEach} = runner;
-
 const {expect} = new Matchers({
   toBeGolden: GoldenUtils.compare.bind(null, GOLDEN_DIR, OUTPUT_DIR)
 });
 
-global.expect = expect;
-global.describe = describe;
-global.xdescribe = xdescribe;
-global.fdescribe = fdescribe;
-global.it = it;
-global.fit = fit;
-global.xit = xit;
-global.beforeAll = beforeAll;
-global.beforeEach = beforeEach;
-global.afterAll = afterAll;
-global.afterEach = afterEach;
-
 if (fs.existsSync(OUTPUT_DIR))
   rm(OUTPUT_DIR);
 
-beforeAll(async state  => {
+runner.beforeAll(async state  => {
   const assetsPath = path.join(__dirname, 'assets');
   const cachedPath = path.join(__dirname, 'assets', 'cached');
 
@@ -81,23 +87,31 @@ beforeAll(async state  => {
   state.httpsServer.EMPTY_PAGE = `https://localhost:${httpsPort}/empty.html`;
 });
 
-beforeEach(async({server, httpsServer}) => {
+runner.beforeEach(async({server, httpsServer}) => {
   server.reset();
   httpsServer.reset();
 });
 
-afterAll(async({server, httpsServer}) => {
+runner.afterAll(async({server, httpsServer}) => {
   await Promise.all([
     server.stop(),
     httpsServer.stop(),
   ]);
 });
 
+console.log('Testing on Node', process.version);
+
 const files = glob.sync('**/*.spec.js', {
   cwd: __dirname
 });
 
-files.map(file => path.join(__dirname, file)).forEach(require);
+files.map(file => path.join(__dirname, file)).forEach(file => require(file).addTests(
+    runner,
+    expect,
+    defaultBrowserOptions,
+    puppeteer,
+    PROJECT_ROOT
+));
 
 if (process.env.CI && runner.hasFocusedTestsOrSuites()) {
   console.error('ERROR: "focused" tests/suites are prohibitted on bots. Remove any "fit"/"fdescribe" declarations.');
