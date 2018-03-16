@@ -208,6 +208,7 @@
   * [request.headers()](#requestheaders)
   * [request.method()](#requestmethod)
   * [request.postData()](#requestpostdata)
+  * [request.redirectChain()](#requestredirectchain)
   * [request.resourceType()](#requestresourcetype)
   * [request.respond(response)](#requestrespondresponse)
   * [request.response()](#requestresponse)
@@ -2378,6 +2379,33 @@ page.on('requestfailed', request => {
 
 #### request.postData()
 - returns: <[string]> Request's post body, if any.
+
+#### request.redirectChain()
+- returns: <[Array]<[Request]>>
+
+A `redirectChain` is a chain of requests initiated to fetch a resource.
+- If there are no redirects and the request was successful, the chain will be empty.
+- If a server responds with at least a single redirect, then the chain will
+contain all the requests that were redirected.
+
+`redirectChain` is shared between all the requests of the same chain.
+
+For example, if the website `http://example.com` has a single redirect to
+`https://example.com`, then the chain will contain one request:
+
+```js
+const response = await page.goto('http://example.com');
+const chain = response.request().redirectChain();
+console.log(chain.length); // 1
+console.log(chain[0].url()); // 'http://example.com'
+```
+
+If the website `https://google.com` has no redirects, then the chain will be empty:
+```js
+const response = await page.goto('https://google.com');
+const chain = response.request().redirectChain();
+console.log(chain.length); // 0
+```
 
 #### request.resourceType()
 - returns: <[string]>
