@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 const fs = require('fs');
-const glob = require('glob');
 const path = require('path');
 const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
@@ -22,12 +21,12 @@ const GOLDEN_DIR = path.join(__dirname, 'golden');
 const OUTPUT_DIR = path.join(__dirname, 'output');
 const {TestRunner, Reporter, Matchers} = require('../utils/testrunner/');
 
-const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ? path.join(__dirname, '..') : path.join(__dirname, '..', '..');
 
 const {helper} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
 
+const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ? path.join(__dirname, '..') : path.join(__dirname, '..', '..');
 const puppeteer = require(PROJECT_ROOT);
 
 const YELLOW_COLOR = '\x1b[33m';
@@ -68,6 +67,8 @@ const {expect} = new Matchers({
 if (fs.existsSync(OUTPUT_DIR))
   rm(OUTPUT_DIR);
 
+console.log('Testing on Node', process.version);
+
 runner.beforeAll(async state  => {
   const assetsPath = path.join(__dirname, 'assets');
   const cachedPath = path.join(__dirname, 'assets', 'cached');
@@ -99,19 +100,22 @@ runner.afterAll(async({server, httpsServer}) => {
   ]);
 });
 
-console.log('Testing on Node', process.version);
+const testFiles = [
+  'page.spec.js',
+  'puppeteer.spec.js'
+];
 
-const files = glob.sync('**/*.spec.js', {
-  cwd: __dirname
-});
-
-files.map(file => path.join(__dirname, file)).forEach(file => require(file).addTests(
-    runner,
-    expect,
-    defaultBrowserOptions,
-    puppeteer,
-    PROJECT_ROOT
-));
+testFiles
+    .map(file => path.join(__dirname, file))
+    .forEach(file =>
+      require(file).addTests(
+          runner,
+          expect,
+          defaultBrowserOptions,
+          puppeteer,
+          PROJECT_ROOT
+      )
+    );
 
 if (process.env.CI && runner.hasFocusedTestsOrSuites()) {
   console.error('ERROR: "focused" tests/suites are prohibitted on bots. Remove any "fit"/"fdescribe" declarations.');
