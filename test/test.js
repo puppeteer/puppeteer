@@ -985,7 +985,7 @@ describe('Page', function() {
       let error = null;
       await page.waitForSelector('div', {timeout: 10}).catch(e => error = e);
       expect(error).toBeTruthy();
-      expect(error.message).toContain('waiting failed: timeout');
+      expect(error.message).toContain('waiting for selector "div" failed: timeout');
     });
 
     it('should respond to node attribute mutation', async({page, server}) => {
