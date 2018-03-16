@@ -2384,8 +2384,7 @@ page.on('requestfailed', request => {
 - returns: <[Array]<[Request]>>
 
 A `redirectChain` is a chain of requests initiated to fetch a resource.
-- If there are no redirects and the request was successful, the chain will contain
-no request.
+- If there are no redirects and the request was successful, the chain will be empty.
 - If a server responds with at least a single redirect, then the chain will
 contain all the requests that were redirected.
 
