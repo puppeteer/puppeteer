@@ -25,7 +25,7 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
   const DeviceDescriptors = require(path.join(PROJECT_ROOT, 'DeviceDescriptors'));
   const iPhone = DeviceDescriptors['iPhone 6'];
   const iPhoneLandscape = DeviceDescriptors['iPhone 6 landscape'];
-
+  const headless = defaultBrowserOptions.headless;
 
   describe('Page', function() {
     beforeAll(async state => {
@@ -50,7 +50,7 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
       it('should return whether we are in headless', async({browser}) => {
         const version = await browser.version();
         expect(version.length).toBeGreaterThan(0);
-        expect(version.startsWith('Headless')).toBe(defaultBrowserOptions.headless);
+        expect(version.startsWith('Headless')).toBe(headless);
       });
     });
 
@@ -537,30 +537,20 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
       it('should immediately resolve promise if node exists', async({page, server}) => {
         await page.goto(server.EMPTY_PAGE);
         const frame = page.mainFrame();
-        let added = false;
-        await frame.waitForSelector('*').then(() => added = true);
-        expect(added).toBe(true);
-
-        added = false;
+        await frame.waitForSelector('*');
         await frame.evaluate(addElement, 'div');
-        await frame.waitForSelector('div').then(() => added = true);
-        expect(added).toBe(true);
+        await frame.waitForSelector('div');
       });
 
       it('should resolve promise when node is added', async({page, server}) => {
         await page.goto(server.EMPTY_PAGE);
         const frame = page.mainFrame();
-        let added = false;
-        const watchdog = frame.waitForSelector('div').then(() => added = true);
-        // run nop function..
-        await frame.evaluate(() => 42);
-        // .. to be sure that waitForSelector promise is not resolved yet.
-        expect(added).toBe(false);
+        const watchdog = frame.waitForSelector('div');
         await frame.evaluate(addElement, 'br');
-        expect(added).toBe(false);
         await frame.evaluate(addElement, 'div');
-        await watchdog;
-        expect(added).toBe(true);
+        const eHandle = await watchdog;
+        const tagName = await eHandle.getProperty('tagName').then(e => e.jsonValue());
+        expect(tagName).toBe('DIV');
       });
 
       it('should work when node is added through innerHTML', async({page, server}) => {
@@ -575,12 +565,11 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
         await page.goto(server.EMPTY_PAGE);
         await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
         const otherFrame = page.frames()[1];
-        let added = false;
-        page.waitForSelector('div').then(() => added = true);
+        const watchdog = page.waitForSelector('div');
         await otherFrame.evaluate(addElement, 'div');
-        expect(added).toBe(false);
         await page.evaluate(addElement, 'div');
-        expect(added).toBe(true);
+        const eHandle = await watchdog;
+        expect(eHandle.executionContext().frame()).toBe(page.mainFrame());
       });
 
       it('should run in specified frame', async({page, server}) => {
@@ -588,13 +577,11 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
         await FrameUtils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
         const frame1 = page.frames()[1];
         const frame2 = page.frames()[2];
-        let added = false;
-        const waitForSelectorPromise = frame2.waitForSelector('div').then(() => added = true);
-        expect(added).toBe(false);
+        const waitForSelectorPromise = frame2.waitForSelector('div');
         await frame1.evaluate(addElement, 'div');
-        expect(added).toBe(false);
         await frame2.evaluate(addElement, 'div');
-        await waitForSelectorPromise;
+        const eHandle = await waitForSelectorPromise;
+        expect(eHandle.executionContext().frame()).toBe(frame2);
       });
 
       it('should throw if evaluation failed', async({page, server}) => {
@@ -714,13 +701,11 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
         await FrameUtils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
         const frame1 = page.frames()[1];
         const frame2 = page.frames()[2];
-        let added = false;
-        const waitForXPathPromise = frame2.waitForXPath('//div').then(() => added = true);
-        expect(added).toBe(false);
+        const waitForXPathPromise = frame2.waitForXPath('//div');
         await frame1.evaluate(addElement, 'div');
-        expect(added).toBe(false);
         await frame2.evaluate(addElement, 'div');
-        await waitForXPathPromise;
+        const eHandle = await waitForXPathPromise;
+        expect(eHandle.executionContext().frame()).toBe(frame2);
       });
       it('should throw if evaluation failed', async({page, server}) => {
         await page.evaluateOnNewDocument(function() {
@@ -1346,6 +1331,15 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
         expect(response.url()).toContain('empty.html');
         expect(requests.length).toBe(5);
         expect(requests[2].resourceType()).toBe('document');
+        // Check redirect chain
+        const redirectChain = response.request().redirectChain();
+        expect(redirectChain.length).toBe(4);
+        expect(redirectChain[0].url()).toContain('/non-existing-page.html');
+        expect(redirectChain[2].url()).toContain('/non-existing-page-3.html');
+        for (let i = 0; i < redirectChain.length; ++i) {
+          const request = redirectChain[i];
+          expect(request.redirectChain().indexOf(request)).toBe(i);
+        }
       });
       it('should be able to abort redirects', async({page, server}) => {
         await page.setRequestInterception(true);
@@ -1753,6 +1747,14 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
         const element = await page.$('div');
         expect(await element.boundingBox()).toBe(null);
       });
+      it('should force a layout', async({page, server}) => {
+        await page.setViewport({ width: 500, height: 500 });
+        await page.setContent('<div style="width: 100px; height: 100px">hello</div>');
+        const elementHandle = await page.$('div');
+        await page.evaluate(element => element.style.height = '200px', elementHandle);
+        const box = await elementHandle.boundingBox();
+        expect(box).toEqual({ x: 8, y: 8, width: 100, height: 200 });
+      });
     });
 
     describe('ElementHandle.contentFrame', function() {
@@ -1897,10 +1899,10 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
       it('should work with a rotated element', async({page, server}) => {
         await page.setViewport({width: 500, height: 500});
         await page.setContent(`<div style="position:absolute;
-                                          top: 100px;
-                                          left: 100px;
-                                          width: 100px;
-                                          height: 100px;
+                                           top: 100px;
+                                           left: 100px;
+                                           width: 100px;
+                                           height: 100px;
                                           background: green;
                                           transform: rotateZ(200deg);">&nbsp;</div>`);
         const elementHandle = await page.$('div');
@@ -2547,7 +2549,7 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
 
         // Load and re-load to make sure serviceworker is installed and running.
         await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html', {waitUntil: 'networkidle2'});
-        await page.evaluate(async() => await window.registrationPromise);
+        await page.evaluate(async() => await window.activationPromise);
         await page.reload();
 
         expect(responses.size).toBe(2);
@@ -2640,7 +2642,7 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
         page.on('requestfailed', request => events.push(`FAIL ${request.url()}`));
         server.setRedirect('/foo.html', '/empty.html');
         const FOO_URL = server.PREFIX + '/foo.html';
-        await page.goto(FOO_URL);
+        const response = await page.goto(FOO_URL);
         expect(events).toEqual([
           `GET ${FOO_URL}`,
           `302 ${FOO_URL}`,
@@ -2649,6 +2651,11 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
           `200 ${server.EMPTY_PAGE}`,
           `DONE ${server.EMPTY_PAGE}`
         ]);
+
+        // Check redirect chain
+        const redirectChain = response.request().redirectChain();
+        expect(redirectChain.length).toBe(1);
+        expect(redirectChain[0].url()).toContain('/foo.html');
       });
     });
 
@@ -2911,7 +2918,7 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
     });
 
     // Printing to pdf is currently only supported in headless
-    (defaultBrowserOptions.headless ? describe : xdescribe)('Page.pdf', function() {
+    (headless ? describe : xdescribe)('Page.pdf', function() {
       it('should be able to save file', async({page, server}) => {
         const outputFile = __dirname + '/assets/output.pdf';
         await page.pdf({path: outputFile});
@@ -3458,6 +3465,7 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
       it('should report when a service worker is created and destroyed', async({page, server, browser}) => {
         await page.goto(server.EMPTY_PAGE);
         const createdTarget = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
+
         await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
 
         expect((await createdTarget).type()).toBe('service_worker');
@@ -3735,6 +3743,7 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
       });
     });
   });
+
 
   /**
    * @param {!EventEmitter} emitter
