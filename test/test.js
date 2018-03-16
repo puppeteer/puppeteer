@@ -3207,6 +3207,25 @@ describe('Page', function() {
     });
   });
 
+  describe('Page.setGeolocationOverride', function() {
+    fit('should work', SX(async function() {
+      await page.goto(EMPTY_PAGE);
+      let error = null;
+      await page.setGeolocationOverride({longitude: 0, accuracy: 1}).catch(e => error = e);
+      expect(error.message).toContain('Must pass in');
+
+      await page.setGeolocationOverride({latitude: 10, longitude: 12, accuracy: 1})
+      const result = await page.evaluate(() => {
+        return new Promise(callback => navigator.geolocation.getCurrentPosition(result => {
+          // do something with result
+          callback('');
+        }));
+      });
+
+      expect(result).toBe(null);
+    }));
+  });
+
   describe('Page.evaluateOnNewDocument', function() {
     it('should evaluate before anything else on the page', async({page, server}) => {
       await page.evaluateOnNewDocument(function(){
