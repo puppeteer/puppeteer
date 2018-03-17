@@ -1,7 +1,7 @@
-module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT) {
-  const {describe, xdescribe, fdescribe} = runner;
-  const {it, fit, xit} = runner;
-  const {beforeAll, beforeEach, afterAll, afterEach} = runner;
+module.exports.addTests = function({
+  describe, xdescribe, fdescribe, it, fit, xit, beforeAll, beforeEach, afterAll, afterEach
+}, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT) {
+
   const headless = defaultBrowserOptions.headless;
 
   describe('Browser.version', function() {

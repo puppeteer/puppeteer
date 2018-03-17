@@ -17,10 +17,9 @@ const fs = require('fs');
 const path = require('path');
 const FrameUtils = require('./frame-utils');
 
-module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT) {
-  const {describe, xdescribe, fdescribe} = runner;
-  const {it, fit, xit} = runner;
-  const {beforeAll, beforeEach, afterAll, afterEach} = runner;
+module.exports.addTests = function({
+  describe, xdescribe, fdescribe, it, fit, xit, beforeAll, beforeEach, afterAll, afterEach
+}, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT) {
 
   const DeviceDescriptors = require(path.join(PROJECT_ROOT, 'DeviceDescriptors'));
   const iPhone = DeviceDescriptors['iPhone 6'];
@@ -55,7 +54,9 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
         .map(file => path.join(__dirname, file))
         .forEach(file =>
           require(file).addTests(
-              runner,
+              {
+                describe, xdescribe, fdescribe, it, fit, xit, beforeAll, beforeEach, afterAll, afterEach
+              },
               expect,
               defaultBrowserOptions,
               puppeteer,
