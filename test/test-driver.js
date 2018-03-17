@@ -20,7 +20,7 @@
    * @param {number=} eventCount
    * @return {!Promise<!Object>}
    */
-module.exports.waitForEvents = function waitForEvents(emitter, eventName, eventCount = 1) {
+module.exports.waitForEvents = function(emitter, eventName, eventCount = 1) {
   let fulfill;
   const promise = new Promise(x => fulfill = x);
   emitter.on(eventName, onEvent);
@@ -33,4 +33,37 @@ module.exports.waitForEvents = function waitForEvents(emitter, eventName, eventC
     emitter.removeListener(eventName, onEvent);
     fulfill(event);
   }
+};
+
+/**
+* @param {!Buffer} pdfBuffer
+* @return {!Promise<!Array<!Object>>}
+*/
+module.exports.getPDFPages = async function(pdfBuffer) {
+  const PDFJS = require('pdfjs-dist');
+  PDFJS.disableWorker = true;
+  const data = new Uint8Array(pdfBuffer);
+  const doc = await PDFJS.getDocument(data);
+  const pages = [];
+  for (let i = 0; i < doc.numPages; ++i) {
+    const page = await doc.getPage(i + 1);
+    const viewport = page.getViewport(1);
+    // Viewport width and height is in PDF points, which is
+    // 1/72 of an inch.
+    pages.push({
+      width: viewport.width / 72,
+      height: viewport.height / 72,
+    });
+    page.cleanup();
+  }
+  doc.cleanup();
+  return pages;
+};
+
+/**
+ * @param {number} px
+ * @return {number}
+ */
+module.exports.cssPixelsToInches = function(px) {
+  return px / 96;
 };

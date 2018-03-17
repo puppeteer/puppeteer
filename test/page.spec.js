@@ -16,7 +16,7 @@
 const fs = require('fs');
 const path = require('path');
 const FrameUtils = require('./frame-utils');
-const {waitForEvents} = require('./test-driver');
+const {waitForEvents, getPDFPages, cssPixelsToInches} = require('./test-driver');
 
 module.exports.addTests = function({
   describe, xdescribe, fdescribe, it, fit, xit, beforeAll, beforeEach, afterAll, afterEach
@@ -2407,36 +2407,3 @@ module.exports.addTests = function({
     });
   });
 };
-
-/**
- * @param {!Buffer} pdfBuffer
- * @return {!Promise<!Array<!Object>>}
- */
-async function getPDFPages(pdfBuffer) {
-  const PDFJS = require('pdfjs-dist');
-  PDFJS.disableWorker = true;
-  const data = new Uint8Array(pdfBuffer);
-  const doc = await PDFJS.getDocument(data);
-  const pages = [];
-  for (let i = 0; i < doc.numPages; ++i) {
-    const page = await doc.getPage(i + 1);
-    const viewport = page.getViewport(1);
-    // Viewport width and height is in PDF points, which is
-    // 1/72 of an inch.
-    pages.push({
-      width: viewport.width / 72,
-      height: viewport.height / 72,
-    });
-    page.cleanup();
-  }
-  doc.cleanup();
-  return pages;
-}
-
-/**
- * @param {number} px
- * @return {number}
- */
-function cssPixelsToInches(px) {
-  return px / 96;
-}
