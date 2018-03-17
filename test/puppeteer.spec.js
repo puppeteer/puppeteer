@@ -255,19 +255,4 @@ module.exports.addTests = function({
       });
     });
   });
-
-  if (process.env.COVERAGE) {
-    describe('COVERAGE', function(){
-      const coverage = helper.publicAPICoverage();
-      const disabled = new Set(['page.bringToFront']);
-      if (!defaultBrowserOptions.headless)
-        disabled.add('page.pdf');
-
-      for (const method of coverage.keys()) {
-        (disabled.has(method) ? xit : it)(`public api '${method}' should be called`, async({page, server}) => {
-          expect(coverage.get(method)).toBe(true);
-        });
-      }
-    });
-  }
 };

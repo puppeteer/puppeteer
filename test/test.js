@@ -102,7 +102,8 @@ runner.afterAll(async({server, httpsServer}) => {
 
 const testFiles = [
   'page.spec.js',
-  'puppeteer.spec.js'
+  'puppeteer.spec.js',
+  'coverage.spec.js'
 ];
 
 testFiles
