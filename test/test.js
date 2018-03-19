@@ -108,13 +108,13 @@ const testFiles = [
 testFiles
     .map(file => path.join(__dirname, file))
     .forEach(file =>
-      require(file).addTests(
-          runner,
-          expect,
-          defaultBrowserOptions,
-          puppeteer,
-          PROJECT_ROOT
-      )
+      require(file).addTests({
+        testRunner: runner,
+        expect,
+        defaultBrowserOptions,
+        puppeteer,
+        PROJECT_ROOT
+      })
     );
 
 if (process.env.COVERAGE) {
