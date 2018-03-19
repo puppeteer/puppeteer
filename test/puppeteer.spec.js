@@ -315,15 +315,15 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await page.click('button');
         await page.waitFor(() => window.title === 'Title B');
         expect(logs).toEqual([
-          'Button clicked at Tue, 01 Jan 1990 00:00:05 GMT',
-          'Title B set at Tue, 01 Jan 1990 00:00:08 GMT'
+          'Button clicked at Mon, 01 Jan 1990 00:00:05 GMT',
+          'Title B set at Mon, 01 Jan 1990 00:00:08 GMT'
         ]);
 
         await page.waitFor(() => window.title === 'Title C');
         expect(logs).toEqual([
-          'Button clicked at Tue, 01 Jan 1990 00:00:05 GMT',
-          'Title B set at Tue, 01 Jan 1990 00:00:08 GMT',
-          'Title C set at Tue, 01 Jan 1990 00:00:11 GMT'
+          'Button clicked at Mon, 01 Jan 1990 00:00:05 GMT',
+          'Title B set at Mon, 01 Jan 1990 00:00:08 GMT',
+          'Title C set at Mon, 01 Jan 1990 00:00:11 GMT'
         ]);
         await browser.close();
       });
