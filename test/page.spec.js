@@ -59,13 +59,7 @@ module.exports.addTests = function(testRunner, expect, defaultBrowserOptions, pu
     testFiles
         .map(file => path.join(__dirname, file))
         .forEach(file =>
-          require(file).addTests(
-              testRunner,
-              expect,
-              defaultBrowserOptions,
-              puppeteer,
-              PROJECT_ROOT
-          )
+          require(file).addTests(testRunner, expect, defaultBrowserOptions, PROJECT_ROOT, puppeteer)
         );
 
     describe('Page.close', function() {
