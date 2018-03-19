@@ -18,10 +18,10 @@ const path = require('path');
 const FrameUtils = require('./frame-utils');
 const {waitForEvents, getPDFPages, cssPixelsToInches} = require('./test-driver');
 
-module.exports.addTests = function({
-  describe, xdescribe, fdescribe, it, fit, xit, beforeAll, beforeEach, afterAll, afterEach
-}, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT) {
-
+module.exports.addTests = function(testRunner, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT) {
+  const {describe, xdescribe, fdescribe} = testRunner;
+  const {it, fit, xit} = testRunner;
+  const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
   const DeviceDescriptors = require(path.join(PROJECT_ROOT, 'DeviceDescriptors'));
   const iPhone = DeviceDescriptors['iPhone 6'];
   const iPhoneLandscape = DeviceDescriptors['iPhone 6 landscape'];
@@ -60,9 +60,7 @@ module.exports.addTests = function({
         .map(file => path.join(__dirname, file))
         .forEach(file =>
           require(file).addTests(
-              {
-                describe, xdescribe, fdescribe, it, fit, xit, beforeAll, beforeEach, afterAll, afterEach
-              },
+              testRunner,
               expect,
               defaultBrowserOptions,
               puppeteer,

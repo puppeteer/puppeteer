@@ -23,9 +23,10 @@ const readFileAsync = helper.promisify(fs.readFile);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const FrameUtils = require('./frame-utils');
 
-module.exports.addTests = function({
-  describe, xdescribe, fdescribe, it, fit, xit, beforeAll, beforeEach, afterAll, afterEach
-}, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT) {
+module.exports.addTests = function(testRunner, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT) {
+  const {describe, xdescribe, fdescribe} = testRunner;
+  const {it, fit, xit} = testRunner;
+  const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Puppeteer', function() {
     describe('BrowserFetcher', function() {

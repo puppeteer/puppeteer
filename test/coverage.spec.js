@@ -16,9 +16,10 @@
 
 const {helper} = require('../lib/helper');
 
-module.exports.addTests = function({
-  describe, xdescribe, fdescribe, it, fit, xit, beforeAll, beforeEach, afterAll, afterEach
-}, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT) {
+module.exports.addTests = function(testRunner, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT) {
+  const {describe, xdescribe, fdescribe} = testRunner;
+  const {it, fit, xit} = testRunner;
+  const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   if (process.env.COVERAGE) {
     describe('COVERAGE', function(){
