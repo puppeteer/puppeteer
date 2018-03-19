@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const {waitForEvents} = require('./test-driver');
+const {waitForEvents} = require('./utils');
 
 module.exports.addTests = function(testRunner, expect) {
   const {describe, xdescribe, fdescribe} = testRunner;

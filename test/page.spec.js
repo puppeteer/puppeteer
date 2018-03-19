@@ -15,8 +15,8 @@
  */
 const fs = require('fs');
 const path = require('path');
-const FrameUtils = require('./frame-utils');
-const {waitForEvents, getPDFPages, cssPixelsToInches} = require('./test-driver');
+const utils = require('./utils');
+const {waitForEvents, getPDFPages, cssPixelsToInches} = require('./utils');
 
 module.exports.addTests = function(testRunner, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT) {
   const {describe, xdescribe, fdescribe} = testRunner;
@@ -202,7 +202,7 @@ module.exports.addTests = function(testRunner, expect, defaultBrowserOptions, pu
         expect(error.message).toContain('JSHandle is disposed');
       });
       it('should throw if elementHandles are from other frames', async({page, server}) => {
-        await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+        await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
         const bodyHandle = await page.frames()[1].$('body');
         let error = null;
         await page.evaluate(body => body.innerHTML, bodyHandle).catch(e => error = e);
@@ -1075,7 +1075,7 @@ module.exports.addTests = function(testRunner, expect, defaultBrowserOptions, pu
         const requests = [];
         page.on('request', request => requests.push(request));
         await page.goto(server.EMPTY_PAGE);
-        await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+        await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
         expect(requests.length).toBe(2);
         expect(requests[0].url()).toBe(server.EMPTY_PAGE);
         expect(requests[0].frame() === page.mainFrame()).toBe(true);
@@ -1089,28 +1089,28 @@ module.exports.addTests = function(testRunner, expect, defaultBrowserOptions, pu
     describe('Frame Management', function() {
       it('should handle nested frames', async({page, server}) => {
         await page.goto(server.PREFIX + '/frames/nested-frames.html');
-        expect(FrameUtils.dumpFrames(page.mainFrame())).toBeGolden('nested-frames.txt');
+        expect(utils.dumpFrames(page.mainFrame())).toBeGolden('nested-frames.txt');
       });
       it('should send events when frames are manipulated dynamically', async({page, server}) => {
         await page.goto(server.EMPTY_PAGE);
         // validate frameattached events
         const attachedFrames = [];
         page.on('frameattached', frame => attachedFrames.push(frame));
-        await FrameUtils.attachFrame(page, 'frame1', './assets/frame.html');
+        await utils.attachFrame(page, 'frame1', './assets/frame.html');
         expect(attachedFrames.length).toBe(1);
         expect(attachedFrames[0].url()).toContain('/assets/frame.html');
 
         // validate framenavigated events
         const navigatedFrames = [];
         page.on('framenavigated', frame => navigatedFrames.push(frame));
-        await FrameUtils.navigateFrame(page, 'frame1', './empty.html');
+        await utils.navigateFrame(page, 'frame1', './empty.html');
         expect(navigatedFrames.length).toBe(1);
         expect(navigatedFrames[0].url()).toBe(server.EMPTY_PAGE);
 
         // validate framedetached events
         const detachedFrames = [];
         page.on('framedetached', frame => detachedFrames.push(frame));
-        await FrameUtils.detachFrame(page, 'frame1');
+        await utils.detachFrame(page, 'frame1');
         expect(detachedFrames.length).toBe(1);
         expect(detachedFrames[0].isDetached()).toBe(true);
       });
@@ -1148,7 +1148,7 @@ module.exports.addTests = function(testRunner, expect, defaultBrowserOptions, pu
         expect(navigatedFrames.length).toBe(1);
       });
       it('should report frame.name()', async({page, server}) => {
-        await FrameUtils.attachFrame(page, 'theFrameId', server.EMPTY_PAGE);
+        await utils.attachFrame(page, 'theFrameId', server.EMPTY_PAGE);
         await page.evaluate(url => {
           const frame = document.createElement('iframe');
           frame.name = 'theFrameName';
@@ -1161,8 +1161,8 @@ module.exports.addTests = function(testRunner, expect, defaultBrowserOptions, pu
         expect(page.frames()[2].name()).toBe('theFrameName');
       });
       it('should report frame.parent()', async({page, server}) => {
-        await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
-        await FrameUtils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
+        await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+        await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
         expect(page.frames()[0].parentFrame()).toBe(null);
         expect(page.frames()[1].parentFrame()).toBe(page.mainFrame());
         expect(page.frames()[2].parentFrame()).toBe(page.mainFrame());

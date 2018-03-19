@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const FrameUtils = require('./frame-utils');
+const utils = require('./utils');
 
 module.exports.addTests = function(testRunner, expect) {
   const {describe, xdescribe, fdescribe} = testRunner;
@@ -55,7 +55,7 @@ module.exports.addTests = function(testRunner, expect) {
   describe('ElementHandle.contentFrame', function() {
     it('should work', async({page,server}) => {
       await page.goto(server.EMPTY_PAGE);
-      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const elementHandle = await page.$('#frame1');
       const frame = await elementHandle.contentFrame();
       expect(frame).toBe(page.frames()[1]);

@@ -15,7 +15,7 @@
  */
 
 const path = require('path');
-const FrameUtils = require('./frame-utils');
+const utils = require('./utils');
 
 module.exports.addTests = function(testRunner, expect, defaultBrowserOptions, PROJECT_ROOT) {
   const {describe, xdescribe, fdescribe} = testRunner;
@@ -379,7 +379,7 @@ module.exports.addTests = function(testRunner, expect, defaultBrowserOptions, PR
     it('should click the button inside an iframe', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent('<div style="width:100px;height:100px">spacer</div>');
-      await FrameUtils.attachFrame(page, 'button-test', server.PREFIX + '/input/button.html');
+      await utils.attachFrame(page, 'button-test', server.PREFIX + '/input/button.html');
       const frame = page.frames()[1];
       const button = await frame.$('button');
       await button.click();
@@ -389,7 +389,7 @@ module.exports.addTests = function(testRunner, expect, defaultBrowserOptions, PR
       await page.setViewport({width: 400, height: 400, deviceScaleFactor: 5});
       expect(await page.evaluate(() => window.devicePixelRatio)).toBe(5);
       await page.setContent('<div style="width:100px;height:100px">spacer</div>');
-      await FrameUtils.attachFrame(page, 'button-test', server.PREFIX + '/input/button.html');
+      await utils.attachFrame(page, 'button-test', server.PREFIX + '/input/button.html');
       const frame = page.frames()[1];
       const button = await frame.$('button');
       await button.click();

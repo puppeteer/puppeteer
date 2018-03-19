@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const FrameUtils = require('./frame-utils');
+const utils = require('./utils');
 
 module.exports.addTests = function(testRunner, expect) {
   const {describe, xdescribe, fdescribe} = testRunner;
@@ -24,7 +24,7 @@ module.exports.addTests = function(testRunner, expect) {
   describe('Frame.context', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
-      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       expect(page.frames().length).toBe(2);
       const [frame1, frame2] = page.frames();
       const context1 = await frame1.executionContext();
@@ -60,7 +60,7 @@ module.exports.addTests = function(testRunner, expect) {
   describe('Frame.evaluate', function() {
     it('should have different execution contexts', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
-      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       expect(page.frames().length).toBe(2);
       const frame1 = page.frames()[0];
       const frame2 = page.frames()[1];
@@ -179,7 +179,7 @@ module.exports.addTests = function(testRunner, expect) {
 
     it('Page.waitForSelector is shortcut for main frame', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
-      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const otherFrame = page.frames()[1];
       const watchdog = page.waitForSelector('div');
       await otherFrame.evaluate(addElement, 'div');
@@ -189,8 +189,8 @@ module.exports.addTests = function(testRunner, expect) {
     });
 
     it('should run in specified frame', async({page, server}) => {
-      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      await FrameUtils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
       const frame1 = page.frames()[1];
       const frame2 = page.frames()[2];
       const waitForSelectorPromise = frame2.waitForSelector('div');
@@ -210,11 +210,11 @@ module.exports.addTests = function(testRunner, expect) {
       expect(error.message).toContain('document.querySelector is not a function');
     });
     it('should throw when frame is detached', async({page, server}) => {
-      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const frame = page.frames()[1];
       let waitError = null;
       const waitPromise = frame.waitForSelector('.box').catch(e => waitError = e);
-      await FrameUtils.detachFrame(page, 'frame1');
+      await utils.detachFrame(page, 'frame1');
       await waitPromise;
       expect(waitError).toBeTruthy();
       expect(waitError.message).toContain('waitForFunction failed: frame got detached.');
@@ -313,8 +313,8 @@ module.exports.addTests = function(testRunner, expect) {
       expect(await page.evaluate(x => x.textContent, await waitForXPath)).toBe('hello  world  ');
     });
     it('should run in specified frame', async({page, server}) => {
-      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      await FrameUtils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
       const frame1 = page.frames()[1];
       const frame2 = page.frames()[2];
       const waitForXPathPromise = frame2.waitForXPath('//div');
@@ -333,11 +333,11 @@ module.exports.addTests = function(testRunner, expect) {
       expect(error.message).toContain('document.evaluate is not a function');
     });
     it('should throw when frame is detached', async({page, server}) => {
-      await FrameUtils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const frame = page.frames()[1];
       let waitError = null;
       const waitPromise = frame.waitForXPath('//*[@class="box"]').catch(e => waitError = e);
-      await FrameUtils.detachFrame(page, 'frame1');
+      await utils.detachFrame(page, 'frame1');
       await waitPromise;
       expect(waitError).toBeTruthy();
       expect(waitError.message).toContain('waitForFunction failed: frame got detached.');

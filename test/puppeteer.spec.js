@@ -21,7 +21,7 @@ const {helper} = require('../lib/helper');
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
 const readFileAsync = helper.promisify(fs.readFile);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
-const FrameUtils = require('./frame-utils');
+const utils = require('./utils');
 
 module.exports.addTests = function(testRunner, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT) {
   const {describe, xdescribe, fdescribe} = testRunner;
@@ -244,7 +244,7 @@ module.exports.addTests = function(testRunner, expect, defaultBrowserOptions, pu
         const browser = await puppeteer.connect({browserWSEndpoint});
         const pages = await browser.pages();
         const restoredPage = pages.find(page => page.url() === server.PREFIX + '/frames/nested-frames.html');
-        expect(FrameUtils.dumpFrames(restoredPage.mainFrame())).toBeGolden('reconnect-nested-frames.txt');
+        expect(utils.dumpFrames(restoredPage.mainFrame())).toBeGolden('reconnect-nested-frames.txt');
         expect(await restoredPage.evaluate(() => 7 * 8)).toBe(56);
         await browser.close();
       });

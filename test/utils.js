@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Google Inc. All rights reserved.
+ * Copyright 2018 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,5 +71,59 @@ const utils = module.exports = {
     for (const child of frame.childFrames())
       result += '\n' + utils.dumpFrames(child, '    ' + indentation);
     return result;
+  },
+
+  /**
+   * @param {!EventEmitter} emitter
+   * @param {string} eventName
+   * @param {number=} eventCount
+   * @return {!Promise<!Object>}
+   */
+  waitForEvents: function(emitter, eventName, eventCount = 1) {
+    let fulfill;
+    const promise = new Promise(x => fulfill = x);
+    emitter.on(eventName, onEvent);
+    return promise;
+
+    function onEvent(event) {
+      --eventCount;
+      if (eventCount)
+        return;
+      emitter.removeListener(eventName, onEvent);
+      fulfill(event);
+    }
+  },
+
+  /**
+  * @param {!Buffer} pdfBuffer
+  * @return {!Promise<!Array<!Object>>}
+  */
+  getPDFPages: async function(pdfBuffer) {
+    const PDFJS = require('pdfjs-dist');
+    PDFJS.disableWorker = true;
+    const data = new Uint8Array(pdfBuffer);
+    const doc = await PDFJS.getDocument(data);
+    const pages = [];
+    for (let i = 0; i < doc.numPages; ++i) {
+      const page = await doc.getPage(i + 1);
+      const viewport = page.getViewport(1);
+      // Viewport width and height is in PDF points, which is
+      // 1/72 of an inch.
+      pages.push({
+        width: viewport.width / 72,
+        height: viewport.height / 72,
+      });
+      page.cleanup();
+    }
+    doc.cleanup();
+    return pages;
+  },
+
+  /**
+   * @param {number} px
+   * @return {number}
+   */
+  cssPixelsToInches: function(px) {
+    return px / 96;
   },
 };
