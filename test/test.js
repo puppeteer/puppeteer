@@ -59,7 +59,7 @@ require('events').defaultMaxListeners *= parallel;
 const timeout = slowMo ? 0 : 10 * 1000;
 const runner = new TestRunner({timeout, parallel});
 new Reporter(runner);
-
+const {beforeAll, beforeEach, afterAll, describe, xit, it} = runner;
 const {expect} = new Matchers({
   toBeGolden: GoldenUtils.compare.bind(null, GOLDEN_DIR, OUTPUT_DIR)
 });
@@ -69,7 +69,7 @@ if (fs.existsSync(OUTPUT_DIR))
 
 console.log('Testing on Node', process.version);
 
-runner.beforeAll(async state  => {
+beforeAll(async state  => {
   const assetsPath = path.join(__dirname, 'assets');
   const cachedPath = path.join(__dirname, 'assets', 'cached');
 
@@ -88,12 +88,12 @@ runner.beforeAll(async state  => {
   state.httpsServer.EMPTY_PAGE = `https://localhost:${httpsPort}/empty.html`;
 });
 
-runner.beforeEach(async({server, httpsServer}) => {
+beforeEach(async({server, httpsServer}) => {
   server.reset();
   httpsServer.reset();
 });
 
-runner.afterAll(async({server, httpsServer}) => {
+afterAll(async({server, httpsServer}) => {
   await Promise.all([
     server.stop(),
     httpsServer.stop(),
@@ -108,14 +108,29 @@ const testFiles = [
 testFiles
     .map(file => path.join(__dirname, file))
     .forEach(file =>
-      require(file).addTests(
-          runner,
-          expect,
-          defaultBrowserOptions,
-          puppeteer,
-          PROJECT_ROOT
-      )
+      require(file).addTests({
+        testRunner: runner,
+        expect,
+        defaultBrowserOptions,
+        puppeteer,
+        PROJECT_ROOT
+      })
     );
+
+if (process.env.COVERAGE) {
+  describe('COVERAGE', function(){
+    const coverage = helper.publicAPICoverage();
+    const disabled = new Set(['page.bringToFront']);
+    if (!defaultBrowserOptions.headless)
+      disabled.add('page.pdf');
+
+    for (const method of coverage.keys()) {
+      (disabled.has(method) ? xit : it)(`public api '${method}' should be called`, async({page, server}) => {
+        expect(coverage.get(method)).toBe(true);
+      });
+    }
+  });
+}
 
 if (process.env.CI && runner.hasFocusedTestsOrSuites()) {
   console.error('ERROR: "focused" tests/suites are prohibitted on bots. Remove any "fit"/"fdescribe" declarations.');

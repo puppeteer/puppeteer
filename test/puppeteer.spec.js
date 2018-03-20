@@ -21,12 +21,12 @@ const {helper} = require('../lib/helper');
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
 const readFileAsync = helper.promisify(fs.readFile);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
-const FrameUtils = require('./frame-utils');
+const utils = require('./utils');
 
-module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT) {
-  const {describe, xdescribe, fdescribe} = runner;
-  const {it, fit, xit} = runner;
-  const {beforeAll, beforeEach, afterAll, afterEach} = runner;
+module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT}) {
+  const {describe, xdescribe, fdescribe} = testRunner;
+  const {it, fit, xit} = testRunner;
+  const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Puppeteer', function() {
     describe('BrowserFetcher', function() {
@@ -244,7 +244,7 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
         const browser = await puppeteer.connect({browserWSEndpoint});
         const pages = await browser.pages();
         const restoredPage = pages.find(page => page.url() === server.PREFIX + '/frames/nested-frames.html');
-        expect(FrameUtils.dumpFrames(restoredPage.mainFrame())).toBeGolden('reconnect-nested-frames.txt');
+        expect(utils.dumpFrames(restoredPage.mainFrame())).toBeGolden('reconnect-nested-frames.txt');
         expect(await restoredPage.evaluate(() => 7 * 8)).toBe(56);
         await browser.close();
       });
@@ -256,19 +256,4 @@ module.exports.addTests = function(runner, expect, defaultBrowserOptions, puppet
       });
     });
   });
-
-  if (process.env.COVERAGE) {
-    describe('COVERAGE', function(){
-      const coverage = helper.publicAPICoverage();
-      const disabled = new Set(['page.bringToFront']);
-      if (!defaultBrowserOptions.headless)
-        disabled.add('page.pdf');
-
-      for (const method of coverage.keys()) {
-        (disabled.has(method) ? xit : it)(`public api '${method}' should be called`, async({page, server}) => {
-          expect(coverage.get(method)).toBe(true);
-        });
-      }
-    });
-  }
 };
