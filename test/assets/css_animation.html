@@ -1,0 +1,32 @@
+<!doctype html>
+<style>
+* {
+  margin: 0px;
+  background-color: red;
+}
+
+#box {
+  width: 100px;
+  height: 100px;
+  background-color: blue;
+
+  animation: flash 1s steps(1, end) 4;
+}
+
+@keyframes flash {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+</style>
+<div id="box"></div>
+<script>
+var box = document.getElementById("box");
+box.addEventListener("animationstart", onAnimationEvent, false);
+box.addEventListener("animationiteration", onAnimationEvent, false);
+box.addEventListener("animationend", onAnimationEvent, false);
+
+function onAnimationEvent(event) {
+  console.log("event " + event.type + " at " + Date.now() + "ms");
+}
+</script>
