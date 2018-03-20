@@ -274,7 +274,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(logs).toEqual([
           'Initial time Tue, 01 Jan 1980 00:00:00 GMT',
           'Timer with 0ms delay fired at Tue, 01 Jan 1980 00:00:00 GMT',
-          'rAF timestamp 200 @ 315532800100ms',
+          'rAF timestamp 0 @ 315532800100ms',
           'Timer with 1000ms delay fired at Tue, 01 Jan 1980 00:00:01 GMT',
           'Timer with 2000ms delay fired at Tue, 01 Jan 1980 00:00:02 GMT',
           'Timer with 3000ms delay fired at Tue, 01 Jan 1980 00:00:03 GMT',
@@ -286,7 +286,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(logs).toEqual([
           'Initial time Tue, 01 Jan 1980 00:00:00 GMT',
           'Timer with 0ms delay fired at Tue, 01 Jan 1980 00:00:00 GMT',
-          'rAF timestamp 200 @ 315532800100ms',
+          'rAF timestamp 0 @ 315532800100ms',
           'Timer with 1000ms delay fired at Tue, 01 Jan 1980 00:00:01 GMT',
           'Timer with 2000ms delay fired at Tue, 01 Jan 1980 00:00:02 GMT',
           'Timer with 3000ms delay fired at Tue, 01 Jan 1980 00:00:03 GMT',

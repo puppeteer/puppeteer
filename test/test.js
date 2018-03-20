@@ -101,7 +101,7 @@ afterAll(async({server, httpsServer}) => {
 });
 
 const testFiles = [
-  'page.spec.js',
+ // 'page.spec.js',
   'puppeteer.spec.js'
 ];
 
