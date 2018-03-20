@@ -2397,5 +2397,21 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         });
       });
     });
+    describe('Page.Events.Close', function() {
+      it('should work with window.close', async function({ page, browser, server }) {
+        const newPagePromise = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target.page())));
+        await page.evaluate(() => window['newPage'] = window.open('about:blank'));
+        const newPage = await newPagePromise;
+        const closedPromise = new Promise(x => newPage.on('close', x));
+        await page.evaluate(() => window['newPage'].close());
+        await closedPromise;
+      });
+      it('should work with page.close', async function({ page, browser, server }) {
+        const newPage = await browser.newPage();
+        const closedPromise = new Promise(x => newPage.on('close', x));
+        await newPage.close();
+        await closedPromise;
+      });
+    });
   });
 };

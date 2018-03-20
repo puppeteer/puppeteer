@@ -39,6 +39,7 @@
   * [browser.version()](#browserversion)
   * [browser.wsEndpoint()](#browserwsendpoint)
 - [class: Page](#class-page)
+  * [event: 'close'](#event-close)
   * [event: 'console'](#event-console)
   * [event: 'dialog'](#event-dialog)
   * [event: 'domcontentloaded'](#event-domcontentloaded)
@@ -519,6 +520,10 @@ page.on('request', logRequest);
 // Sometime later...
 page.removeListener('request', logRequest);
 ```
+
+#### event: 'close'
+
+Emitted when the page closes.
 
 #### event: 'console'
 - <[ConsoleMessage]>
