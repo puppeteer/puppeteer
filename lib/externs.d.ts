@@ -9,6 +9,8 @@ import {JSHandle as RealJSHandle, ExecutionContext as RealExecutionContext}  fro
 import * as RealElementHandle  from './ElementHandle.js';
 import { NetworkManager as RealNetworkManager, Request as RealRequest, Response as RealResponse } from './NetworkManager.js';
 import * as child_process from 'child_process';
+import * as RealCompositorController from './CompositorController.js';
+import {VirtualTimeController, VirtualTimeContinuePolicy, VirtualTimeStartPolicy, VirtualTimeRepeatingTask} from './VirtualTimeController.js';
 export as namespace Puppeteer;
 
 export class Connection extends RealConnection {}

@@ -1,0 +1,21 @@
+<html>
+ <head>
+   <title>Title A</title>
+ </head>
+ <body>
+  <button onclick="clicked();">Click me to change the title to B then C.</button>
+   <script>
+      function clicked() {
+        console.log('Button clicked at ' + new Date().toUTCString());
+        setTimeout(()=>{
+          window.title = "Title B";
+          console.log('Title B set at ' + new Date().toUTCString());
+        }, 3333);
+        setTimeout(()=>{
+          window.title = "Title C";
+          console.log('Title C set at ' + new Date().toUTCString());
+        }, 6666);
+      };
+   </script>
+ </body>
+</html>

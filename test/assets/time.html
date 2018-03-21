@@ -1,0 +1,12 @@
+<html>
+<script>
+console.log("Initial time " + new Date().toUTCString());
+requestAnimationFrame((timestamp) => console.log('rAF timestamp ' + Math.round(timestamp) + ' @ ' + Date.now() + 'ms'));
+for (let i = 0; i < 10; i++) {
+  let delay = i * 1000;
+  setTimeout(() => {
+    console.log('Timer with ' + delay + 'ms delay fired at ' + new Date().toUTCString());
+  }, delay);
+}
+</script>
+</html>

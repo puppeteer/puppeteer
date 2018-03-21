@@ -255,5 +255,105 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(fs.existsSync(executablePath)).toBe(true);
       });
     });
+    describe('DeterministicMode', function() {
+      it('should let us override the date', async({server}) => {
+        const options = Object.assign({deterministic: {date: new Date('Jan 2, 2000')}}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
+        const page = await browser.newPage();
+        const logs = [];
+        page.on('console', msg => logs.push(msg.text()));
+        await page.goto(server.PREFIX + '/time.html');
+        await browser.close();
+        expect(logs[0]).toEqual('Initial time Sun, 02 Jan 2000 00:00:00 GMT');
+      });
+      it('should make timers deterministic', async({server}) => {
+        const options = Object.assign({deterministic: {date: new Date('Jan 1, 1980')}}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
+        const page = await browser.newPage();
+        const logs = [];
+        page.on('console', msg => logs.push(msg.text()));
+        await page.goto(server.PREFIX + '/time.html');
+        expect(logs).toEqual([
+          'Initial time Tue, 01 Jan 1980 00:00:00 GMT',
+          'Timer with 0ms delay fired at Tue, 01 Jan 1980 00:00:00 GMT',
+          'rAF timestamp 0 @ 315532800100ms',
+          'Timer with 1000ms delay fired at Tue, 01 Jan 1980 00:00:01 GMT',
+          'Timer with 2000ms delay fired at Tue, 01 Jan 1980 00:00:02 GMT',
+          'Timer with 3000ms delay fired at Tue, 01 Jan 1980 00:00:03 GMT',
+          'Timer with 4000ms delay fired at Tue, 01 Jan 1980 00:00:04 GMT'
+        ]);
+
+        await page.waitFor(2000);
+        await browser.close();
+        expect(logs).toEqual([
+          'Initial time Tue, 01 Jan 1980 00:00:00 GMT',
+          'Timer with 0ms delay fired at Tue, 01 Jan 1980 00:00:00 GMT',
+          'rAF timestamp 0 @ 315532800100ms',
+          'Timer with 1000ms delay fired at Tue, 01 Jan 1980 00:00:01 GMT',
+          'Timer with 2000ms delay fired at Tue, 01 Jan 1980 00:00:02 GMT',
+          'Timer with 3000ms delay fired at Tue, 01 Jan 1980 00:00:03 GMT',
+          'Timer with 4000ms delay fired at Tue, 01 Jan 1980 00:00:04 GMT',
+          'Timer with 5000ms delay fired at Tue, 01 Jan 1980 00:00:05 GMT',
+          'Timer with 6000ms delay fired at Tue, 01 Jan 1980 00:00:06 GMT'
+        ]);
+      });
+      it('should make animated gifs deterministic', async({server}) => {
+        const options = Object.assign({deterministic: {date: new Date()}}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
+        const page = await browser.newPage();
+        await page.goto(server.PREFIX + '/animated_gif.html', {timeout: 500});
+        const screenshot1 = await page.screenshot({omitBackground: true});
+        expect(screenshot1).toBeGolden('blue.png');
+        await page.waitFor(1000);
+        const screenshot2 = await page.screenshot({omitBackground: true});
+        expect(screenshot2).toBeGolden('red.png');
+        await page.waitFor(1000);
+        const screenshot3 = await page.screenshot({omitBackground: true});
+        expect(screenshot3).toBeGolden('yellow.png');
+        await browser.close();
+      });
+      it('should make waitForFunction deterministic', async({server}) => {
+        const options = Object.assign({deterministic: {date: new Date('Jan 1, 1990')}}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
+        const page = await browser.newPage();
+        const logs = [];
+        page.on('console', msg => logs.push(msg.text()));
+        await page.goto(server.PREFIX + '/time2.html');
+        await page.click('button');
+        await page.waitFor(() => window.title === 'Title B');
+        expect(logs).toEqual([
+          'Button clicked at Mon, 01 Jan 1990 00:00:05 GMT',
+          'Title B set at Mon, 01 Jan 1990 00:00:08 GMT'
+        ]);
+
+        await page.waitFor(() => window.title === 'Title C');
+        expect(logs).toEqual([
+          'Button clicked at Mon, 01 Jan 1990 00:00:05 GMT',
+          'Title B set at Mon, 01 Jan 1990 00:00:08 GMT',
+          'Title C set at Mon, 01 Jan 1990 00:00:11 GMT'
+        ]);
+        await browser.close();
+      });
+      it('should make css animations deterministic', async({server}) => {
+        const options = Object.assign({deterministic: {date: new Date('Jan 1, 2000')}}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
+        const page = await browser.newPage();
+        const logs = [];
+        page.on('console', msg => logs.push(msg.text()));
+        await page.goto(server.PREFIX + '/css_animation.html', {timeout: 2000});
+        expect(logs).toEqual([
+          'event animationstart at 946684800200ms',
+          'event animationiteration at 946684801100ms',
+        ]);
+        await page.waitFor(4000);
+        expect(logs).toEqual([
+          'event animationstart at 946684800200ms',
+          'event animationiteration at 946684801100ms',
+          'event animationiteration at 946684802100ms',
+          'event animationiteration at 946684803100ms',
+          'event animationend at 946684804100ms',
+        ]);
+      });
+    });
   });
 };
