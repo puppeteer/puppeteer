@@ -257,16 +257,18 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
     });
     describe('DeterministicMode', function() {
       it('should let us override the date', async({server}) => {
-        const browser = await puppeteer.launch({deterministic: {date: new Date('Jan 1, 1980')} });
+        const options = Object.assign({deterministic: {date: new Date('Jan 2, 2000')}}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
         const page = await browser.newPage();
         const logs = [];
         page.on('console', msg => logs.push(msg.text()));
         await page.goto(server.PREFIX + '/time.html');
         await browser.close();
-        expect(logs[0]).toEqual('Initial time Tue, 01 Jan 1980 00:00:00 GMT');
+        expect(logs[0]).toEqual('Initial time Sun, 02 Jan 2000 00:00:00 GMT');
       });
       it('should make timers deterministic', async({server}) => {
-        const browser = await puppeteer.launch({deterministic: {date: new Date('Jan 1, 1980')} });
+        const options = Object.assign({deterministic: {date: new Date('Jan 1, 1980')}}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
         const page = await browser.newPage();
         const logs = [];
         page.on('console', msg => logs.push(msg.text()));
@@ -296,7 +298,8 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         ]);
       });
       it('should make animated gifs deterministic', async({server}) => {
-        const browser = await puppeteer.launch({deterministic: {date: new Date()} });
+        const options = Object.assign({deterministic: {date: new Date()}}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
         const page = await browser.newPage();
         await page.goto(server.PREFIX + '/animated_gif.html', {timeout: 500});
         const screenshot1 = await page.screenshot({omitBackground: true});
@@ -310,7 +313,8 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await browser.close();
       });
       it('should make waitForFunction deterministic', async({server}) => {
-        const browser = await puppeteer.launch({deterministic: {date: new Date('Jan 1, 1990')} });
+        const options = Object.assign({deterministic: {date: new Date('Jan 1, 1990')}}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
         const page = await browser.newPage();
         const logs = [];
         page.on('console', msg => logs.push(msg.text()));
@@ -331,7 +335,8 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await browser.close();
       });
       it('should make css animations deterministic', async({server}) => {
-        const browser = await puppeteer.launch({deterministic: {date: new Date('Jan 1, 2000')}});
+        const options = Object.assign({deterministic: {date: new Date('Jan 1, 2000')}}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
         const page = await browser.newPage();
         const logs = [];
         page.on('console', msg => logs.push(msg.text()));
