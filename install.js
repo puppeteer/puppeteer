@@ -30,7 +30,7 @@ const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_conf
 const puppeteer = require('./index');
 const browserFetcher = puppeteer.createBrowserFetcher({ host: downloadHost });
 
-const revision = require('./package.json').puppeteer.chromium_revision;
+const revision = process.env.PUPPETEER_CHROMIUM_REVISION || require('./package.json').puppeteer.chromium_revision;
 const revisionInfo = browserFetcher.revisionInfo(revision);
 
 // Do nothing if the revision is already downloaded.
