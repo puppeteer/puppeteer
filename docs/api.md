@@ -662,7 +662,7 @@ Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector
 
 The method evaluates the XPath expression.
 
-Shortcut for [page.mainFrame().$x(expression)](#frameexpression)
+Shortcut for [page.mainFrame().$x(expression)](#framexexpression)
 
 #### page.addScriptTag(options)
 - `options` <[Object]>
@@ -1910,7 +1910,7 @@ Returns frame's url.
 
 This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] or [xpath], depending on whether or not it starts with '//', and the method is a shortcut for
-  [frame.waitForSelector](#framewaitforselectorselector-options) or [frame.waitForXPath](#framewaitforsxpathxpath-options)
+  [frame.waitForSelector](#framewaitforselectorselector-options) or [frame.waitForXPath](#framewaitforxpathxpath-options)
 - if `selectorOrFunctionOrTimeout` is a `function`, then the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
 - if `selectorOrFunctionOrTimeout` is a `number`, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
