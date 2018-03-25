@@ -52,6 +52,28 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
+  describe('ElementHandle.boxModel', function() {
+    it('should work', async({page, server}) => {
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent('<div style="width: 100px; height: 100px; margin: 5px; padding: 4px; border: 1px solid black;top: 0; left: 0; position: absolute;"></div>');
+      const elementHandle = await page.$('div');
+      const box = await elementHandle.boxModel();
+
+      expect(box.content).toEqual([10, 10, 110, 10, 110, 110, 10, 110]);
+      expect(box.padding).toEqual([6, 6, 114, 6, 114, 114, 6, 114]);
+      expect(box.border).toEqual([5, 5, 115, 5, 115, 115, 5, 115]);
+      expect(box.margin).toEqual([0, 0, 120, 0, 120, 120, 0, 120]);
+      expect(box.height).toBe(110);
+      expect(box.width).toBe(110);
+    });
+
+    it('should return null for invisible elements', async({page, server}) => {
+      await page.setContent('<div style="display:none">hi</div>');
+      const element = await page.$('div');
+      expect(await element.boxModel()).toBe(null);
+    });
+  });
+
   describe('ElementHandle.contentFrame', function() {
     it('should work', async({page,server}) => {
       await page.goto(server.EMPTY_PAGE);
