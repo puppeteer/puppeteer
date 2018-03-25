@@ -1,0 +1,2401 @@
+/**
+ * Copyright 2017 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+const fs = require('fs');
+const path = require('path');
+const utils = require('./utils');
+const {waitForEvents, getPDFPages, cssPixelsToInches} = require('./utils');
+
+module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT}) {
+  const {describe, xdescribe, fdescribe} = testRunner;
+  const {it, fit, xit} = testRunner;
+  const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+  const DeviceDescriptors = require(path.join(PROJECT_ROOT, 'DeviceDescriptors'));
+  const iPhone = DeviceDescriptors['iPhone 6'];
+  const iPhoneLandscape = DeviceDescriptors['iPhone 6 landscape'];
+  const headless = defaultBrowserOptions.headless;
+
+  describe('Page', function() {
+    beforeAll(async state => {
+      state.browser = await puppeteer.launch(defaultBrowserOptions);
+    });
+
+    afterAll(async state => {
+      await state.browser.close();
+      state.browser = null;
+    });
+
+    beforeEach(async state => {
+      state.page = await state.browser.newPage();
+    });
+
+    afterEach(async state => {
+      await state.page.close();
+      state.page = null;
+    });
+
+    const testFiles = [
+      'browser.spec.js',
+      'elementhandle.spec.js',
+      'jshandle.spec.js',
+      'tracing.spec.js',
+      'frame.spec.js',
+      'input.spec.js',
+      'network.spec.js'
+    ];
+
+    testFiles
+        .map(file => path.join(__dirname, file))
+        .forEach(file =>
+          require(file).addTests({testRunner, expect, defaultBrowserOptions, PROJECT_ROOT, puppeteer})
+        );
+
+    describe('Page.close', function() {
+      it('should reject all promises when page is closed', async({browser}) => {
+        const newPage = await browser.newPage();
+        const neverResolves = newPage.evaluate(() => new Promise(r => {}));
+        newPage.close();
+        let error = null;
+        await neverResolves.catch(e => error = e);
+        expect(error.message).toContain('Protocol error');
+      });
+      it('should not be visible in browser.pages', async({browser}) => {
+        const newPage = await browser.newPage();
+        expect(await browser.pages()).toContain(newPage);
+        await newPage.close();
+        expect(await browser.pages()).not.toContain(newPage);
+      });
+    });
+
+    describe('Page.Events.error', function() {
+      it('should throw when page crashes', async({page}) => {
+        let error = null;
+        page.on('error', err => error = err);
+        page.goto('chrome://crash').catch(e => {});
+        await waitForEvents(page, 'error');
+        expect(error.message).toBe('Page crashed!');
+      });
+    });
+
+    describe('Page.evaluate', function() {
+      it('should work', async({page, server}) => {
+        const result = await page.evaluate(() => 7 * 3);
+        expect(result).toBe(21);
+      });
+      it('should throw when evaluation triggers reload', async({page, server}) => {
+        let error = null;
+        await page.evaluate(() => {
+          location.reload();
+          return new Promise(resolve => {
+            setTimeout(() => resolve(1), 0);
+          });
+        }).catch(e => error = e);
+        expect(error.message).toContain('Protocol error');
+      });
+      it('should await promise', async({page, server}) => {
+        const result = await page.evaluate(() => Promise.resolve(8 * 7));
+        expect(result).toBe(56);
+      });
+      it('should work right after framenavigated', async({page, server}) => {
+        let frameEvaluation = null;
+        page.on('framenavigated', async frame => {
+          frameEvaluation = frame.evaluate(() => 6 * 7);
+        });
+        await page.goto(server.EMPTY_PAGE);
+        expect(await frameEvaluation).toBe(42);
+      });
+      it('should work from-inside an exposed function', async({page, server}) => {
+        // Setup inpage callback, which calls Page.evaluate
+        await page.exposeFunction('callController', async function(a, b) {
+          return await page.evaluate((a, b) => a * b, a, b);
+        });
+        const result = await page.evaluate(async function() {
+          return await callController(9, 3);
+        });
+        expect(result).toBe(27);
+      });
+      it('should reject promise with exception', async({page, server}) => {
+        let error = null;
+        await page.evaluate(() => not.existing.object.property).catch(e => error = e);
+        expect(error).toBeTruthy();
+        expect(error.message).toContain('not is not defined');
+      });
+      it('should return complex objects', async({page, server}) => {
+        const object = {foo: 'bar!'};
+        const result = await page.evaluate(a => a, object);
+        expect(result).not.toBe(object);
+        expect(result).toEqual(object);
+      });
+      it('should return NaN', async({page, server}) => {
+        const result = await page.evaluate(() => NaN);
+        expect(Object.is(result, NaN)).toBe(true);
+      });
+      it('should return -0', async({page, server}) => {
+        const result = await page.evaluate(() => -0);
+        expect(Object.is(result, -0)).toBe(true);
+      });
+      it('should return Infinity', async({page, server}) => {
+        const result = await page.evaluate(() => Infinity);
+        expect(Object.is(result, Infinity)).toBe(true);
+      });
+      it('should return -Infinity', async({page, server}) => {
+        const result = await page.evaluate(() => -Infinity);
+        expect(Object.is(result, -Infinity)).toBe(true);
+      });
+      it('should accept "undefined" as one of multiple parameters', async({page, server}) => {
+        const result = await page.evaluate((a, b) => Object.is(a, undefined) && Object.is(b, 'foo'), undefined, 'foo');
+        expect(result).toBe(true);
+      });
+      it('should properly serialize null fields', async({page}) => {
+        expect(await page.evaluate(() => ({a: undefined}))).toEqual({});
+      });
+      it('should fail for window object', async({page, server}) => {
+        const result = await page.evaluate(() => window);
+        expect(result).toBe(undefined);
+      });
+      it('should fail for circular object', async({page, server}) => {
+        const result = await page.evaluate(() => {
+          const a = {};
+          const b = {a};
+          a.b = b;
+          return a;
+        });
+        expect(result).toBe(undefined);
+      });
+      it('should accept a string', async({page, server}) => {
+        const result = await page.evaluate('1 + 2');
+        expect(result).toBe(3);
+      });
+      it('should accept a string with semi colons', async({page, server}) => {
+        const result = await page.evaluate('1 + 5;');
+        expect(result).toBe(6);
+      });
+      it('should accept a string with comments', async({page, server}) => {
+        const result = await page.evaluate('2 + 5;\n// do some math!');
+        expect(result).toBe(7);
+      });
+      it('should accept element handle as an argument', async({page, server}) => {
+        await page.setContent('<section>42</section>');
+        const element = await page.$('section');
+        const text = await page.evaluate(e => e.textContent, element);
+        expect(text).toBe('42');
+      });
+      it('should throw if underlying element was disposed', async({page, server}) => {
+        await page.setContent('<section>39</section>');
+        const element = await page.$('section');
+        expect(element).toBeTruthy();
+        await element.dispose();
+        let error = null;
+        await page.evaluate(e => e.textContent, element).catch(e => error = e);
+        expect(error.message).toContain('JSHandle is disposed');
+      });
+      it('should throw if elementHandles are from other frames', async({page, server}) => {
+        await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+        const bodyHandle = await page.frames()[1].$('body');
+        let error = null;
+        await page.evaluate(body => body.innerHTML, bodyHandle).catch(e => error = e);
+        expect(error).toBeTruthy();
+        expect(error.message).toContain('JSHandles can be evaluated only in the context they were created');
+      });
+      it('should accept object handle as an argument', async({page, server}) => {
+        const navigatorHandle = await page.evaluateHandle(() => navigator);
+        const text = await page.evaluate(e => e.userAgent, navigatorHandle);
+        expect(text).toContain('Mozilla');
+      });
+      it('should accept object handle to primitive types', async({page, server}) => {
+        const aHandle = await page.evaluateHandle(() => 5);
+        const isFive = await page.evaluate(e => Object.is(e, 5), aHandle);
+        expect(isFive).toBeTruthy();
+      });
+    });
+
+    describe('Page.setOfflineMode', function() {
+      it('should work', async({page, server}) => {
+        await page.setOfflineMode(true);
+        let error = null;
+        await page.goto(server.EMPTY_PAGE).catch(e => error = e);
+        expect(error).toBeTruthy();
+        await page.setOfflineMode(false);
+        const response = await page.reload();
+        expect(response.status()).toBe(200);
+      });
+      it('should emulate navigator.onLine', async({page, server}) => {
+        expect(await page.evaluate(() => window.navigator.onLine)).toBe(true);
+        await page.setOfflineMode(true);
+        expect(await page.evaluate(() => window.navigator.onLine)).toBe(false);
+        await page.setOfflineMode(false);
+        expect(await page.evaluate(() => window.navigator.onLine)).toBe(true);
+      });
+    });
+
+    describe('Page.evaluateHandle', function() {
+      it('should work', async({page, server}) => {
+        const windowHandle = await page.evaluateHandle(() => window);
+        expect(windowHandle).toBeTruthy();
+      });
+    });
+
+    describe('ExecutionContext.queryObjects', function() {
+      it('should work', async({page, server}) => {
+        // Instantiate an object
+        await page.evaluate(() => window.set = new Set(['hello', 'world']));
+        const prototypeHandle = await page.evaluateHandle(() => Set.prototype);
+        const objectsHandle = await page.queryObjects(prototypeHandle);
+        const count = await page.evaluate(objects => objects.length, objectsHandle);
+        expect(count).toBe(1);
+        const values = await page.evaluate(objects => Array.from(objects[0].values()), objectsHandle);
+        expect(values).toEqual(['hello', 'world']);
+      });
+      it('should fail for disposed handles', async({page, server}) => {
+        const prototypeHandle = await page.evaluateHandle(() => HTMLBodyElement.prototype);
+        await prototypeHandle.dispose();
+        let error = null;
+        await page.queryObjects(prototypeHandle).catch(e => error = e);
+        expect(error.message).toBe('Prototype JSHandle is disposed!');
+      });
+      it('should fail primitive values as prototypes', async({page, server}) => {
+        const prototypeHandle = await page.evaluateHandle(() => 42);
+        let error = null;
+        await page.queryObjects(prototypeHandle).catch(e => error = e);
+        expect(error.message).toBe('Prototype JSHandle must not be referencing primitive value');
+      });
+    });
+
+    describe('Page.waitFor', function() {
+      it('should wait for selector', async({page, server}) => {
+        let found = false;
+        const waitFor = page.waitFor('div').then(() => found = true);
+        await page.goto(server.EMPTY_PAGE);
+        expect(found).toBe(false);
+        await page.goto(server.PREFIX + '/grid.html');
+        await waitFor;
+        expect(found).toBe(true);
+      });
+      it('should wait for an xpath', async({page, server}) => {
+        let found = false;
+        const waitFor = page.waitFor('//div').then(() => found = true);
+        await page.goto(server.EMPTY_PAGE);
+        expect(found).toBe(false);
+        await page.goto(server.PREFIX + '/grid.html');
+        await waitFor;
+        expect(found).toBe(true);
+      });
+      it('should not allow you to select an element with single slash xpath', async({page, server}) => {
+        await page.setContent(`<div>some text</div>`);
+        let error = null;
+        await page.waitFor('/html/body/div').catch(e => error = e);
+        expect(error).toBeTruthy();
+      });
+      it('should timeout', async({page, server}) => {
+        const startTime = Date.now();
+        const timeout = 42;
+        await page.waitFor(timeout);
+        expect(Date.now() - startTime).not.toBeLessThan(timeout / 2);
+      });
+      it('should wait for predicate', async({page, server}) => {
+        const watchdog = page.waitFor(() => window.innerWidth < 100);
+        page.setViewport({width: 10, height: 10});
+        await watchdog;
+      });
+      it('should throw when unknown type', async({page, server}) => {
+        let error = null;
+        await page.waitFor({foo: 'bar'}).catch(e => error = e);
+        expect(error.message).toContain('Unsupported target type');
+      });
+      it('should wait for predicate with arguments', async({page, server}) => {
+        await page.waitFor((arg1, arg2) => arg1 !== arg2, {}, 1, 2);
+      });
+    });
+
+    describe('Page.Events.Console', function() {
+      it('should work', async({page, server}) => {
+        let message = null;
+        page.once('console', m => message = m);
+        await Promise.all([
+          page.evaluate(() => console.log('hello', 5, {foo: 'bar'})),
+          waitForEvents(page, 'console')
+        ]);
+        expect(message.text()).toEqual('hello 5 JSHandle@object');
+        expect(message.type()).toEqual('log');
+        expect(await message.args()[0].jsonValue()).toEqual('hello');
+        expect(await message.args()[1].jsonValue()).toEqual(5);
+        expect(await message.args()[2].jsonValue()).toEqual({foo: 'bar'});
+      });
+      it('should work for different console API calls', async({page, server}) => {
+        const messages = [];
+        page.on('console', msg => messages.push(msg));
+        await Promise.all([
+          page.evaluate(() => {
+            // A pair of time/timeEnd generates only one Console API call.
+            console.time('calling console.time');
+            console.timeEnd('calling console.time');
+            console.trace('calling console.trace');
+            console.dir('calling console.dir');
+            console.warn('calling console.warn');
+            console.error('calling console.error');
+            console.log(Promise.resolve('should not wait until resolved!'));
+          }),
+          // Wait for 5 events to hit - console.time is not reported
+          waitForEvents(page, 'console', 5)
+        ]);
+        expect(messages.map(msg => msg.type())).toEqual([
+          'timeEnd', 'trace', 'dir', 'warning', 'error', 'log'
+        ]);
+        expect(messages[0].text()).toContain('calling console.time');
+        expect(messages.slice(1).map(msg => msg.text())).toEqual([
+          'calling console.trace',
+          'calling console.dir',
+          'calling console.warn',
+          'calling console.error',
+          'JSHandle@promise',
+        ]);
+      });
+      it('should not fail for window object', async({page, server}) => {
+        let message = null;
+        page.once('console', msg => message = msg);
+        await Promise.all([
+          page.evaluate(() => console.error(window)),
+          waitForEvents(page, 'console')
+        ]);
+        expect(message.text()).toBe('JSHandle@object');
+      });
+    });
+
+    describe('Page.Events.DOMContentLoaded', function() {
+      it('should fire when expected', async({page, server}) => {
+        page.goto('about:blank');
+        await waitForEvents(page, 'domcontentloaded', 1);
+      });
+    });
+
+    describe('Page.metrics', function() {
+      it('should get metrics from a page', async({page, server}) => {
+        await page.goto('about:blank');
+        const metrics = await page.metrics();
+        checkMetrics(metrics);
+      });
+      it('metrics event fired on console.timeStamp', async({page, server}) => {
+        const metricsPromise = new Promise(fulfill => page.once('metrics', fulfill));
+        await page.evaluate(() => console.timeStamp('test42'));
+        const metrics = await metricsPromise;
+        expect(metrics.title).toBe('test42');
+        checkMetrics(metrics.metrics);
+      });
+      function checkMetrics(metrics) {
+        const metricsToCheck = new Set([
+          'Timestamp',
+          'Documents',
+          'Frames',
+          'JSEventListeners',
+          'Nodes',
+          'LayoutCount',
+          'RecalcStyleCount',
+          'LayoutDuration',
+          'RecalcStyleDuration',
+          'ScriptDuration',
+          'TaskDuration',
+          'JSHeapUsedSize',
+          'JSHeapTotalSize',
+        ]);
+        for (const name in metrics) {
+          expect(metricsToCheck.has(name)).toBeTruthy();
+          expect(metrics[name]).toBeGreaterThanOrEqual(0);
+          metricsToCheck.delete(name);
+        }
+        expect(metricsToCheck.size).toBe(0);
+      }
+    });
+
+    describe('Page.goto', function() {
+      it('should navigate to about:blank', async({page, server}) => {
+        const response = await page.goto('about:blank');
+        expect(response).toBe(null);
+      });
+      it('should navigate to empty page with domcontentloaded', async({page, server}) => {
+        const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'domcontentloaded'});
+        expect(response.status()).toBe(200);
+        expect(response.securityDetails()).toBe(null);
+      });
+      it('should navigate to empty page with networkidle0', async({page, server}) => {
+        const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle0'});
+        expect(response.status()).toBe(200);
+      });
+      it('should navigate to empty page with networkidle2', async({page, server}) => {
+        const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle2'});
+        expect(response.status()).toBe(200);
+      });
+      it('should fail when navigating to bad url', async({page, server}) => {
+        let error = null;
+        await page.goto('asdfasdf').catch(e => error = e);
+        expect(error.message).toContain('Cannot navigate to invalid URL');
+      });
+      it('should fail when navigating to bad SSL', async({page, httpsServer}) => {
+        // Make sure that network events do not emit 'undefined'.
+        // @see https://crbug.com/750469
+        page.on('request', request => expect(request).toBeTruthy());
+        page.on('requestfinished', request => expect(request).toBeTruthy());
+        page.on('requestfailed', request => expect(request).toBeTruthy());
+        let error = null;
+        await page.goto(httpsServer.EMPTY_PAGE).catch(e => error = e);
+        expect(error.message).toContain('net::ERR_CERT_AUTHORITY_INVALID');
+      });
+      it('should fail when navigating to bad SSL after redirects', async({page, server, httpsServer}) => {
+        server.setRedirect('/redirect/1.html', '/redirect/2.html');
+        server.setRedirect('/redirect/2.html', '/empty.html');
+        let error = null;
+        await page.goto(httpsServer.PREFIX + '/redirect/1.html').catch(e => error = e);
+        expect(error.message).toContain('net::ERR_CERT_AUTHORITY_INVALID');
+      });
+      it('should throw if networkidle is passed as an option', async({page, server}) => {
+        let error = null;
+        await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle'}).catch(err => error = err);
+        expect(error.message).toContain('"networkidle" option is no longer supported');
+      });
+      it('should fail when main resources failed to load', async({page, server}) => {
+        let error = null;
+        await page.goto('http://localhost:44123/non-existing-url').catch(e => error = e);
+        expect(error.message).toContain('net::ERR_CONNECTION_REFUSED');
+      });
+      it('should fail when exceeding maximum navigation timeout', async({page, server}) => {
+        // Hang for request to the empty.html
+        server.setRoute('/empty.html', (req, res) => { });
+        let error = null;
+        await page.goto(server.PREFIX + '/empty.html', {timeout: 1}).catch(e => error = e);
+        expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
+      });
+      it('should fail when exceeding default maximum navigation timeout', async({page, server}) => {
+        // Hang for request to the empty.html
+        server.setRoute('/empty.html', (req, res) => { });
+        let error = null;
+        page.setDefaultNavigationTimeout(1);
+        await page.goto(server.PREFIX + '/empty.html').catch(e => error = e);
+        expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
+      });
+      it('should disable timeout when its set to 0', async({page, server}) => {
+        let error = null;
+        let loaded = false;
+        page.once('load', () => loaded = true);
+        await page.goto(server.PREFIX + '/grid.html', {timeout: 0, waitUntil: ['load']}).catch(e => error = e);
+        expect(error).toBe(null);
+        expect(loaded).toBe(true);
+      });
+      it('should work when navigating to valid url', async({page, server}) => {
+        const response = await page.goto(server.EMPTY_PAGE);
+        expect(response.ok()).toBe(true);
+      });
+      it('should work when navigating to data url', async({page, server}) => {
+        const response = await page.goto('data:text/html,hello');
+        expect(response.ok()).toBe(true);
+      });
+      it('should work when navigating to 404', async({page, server}) => {
+        const response = await page.goto(server.PREFIX + '/not-found');
+        expect(response.ok()).toBe(false);
+        expect(response.status()).toBe(404);
+      });
+      it('should return last response in redirect chain', async({page, server}) => {
+        server.setRedirect('/redirect/1.html', '/redirect/2.html');
+        server.setRedirect('/redirect/2.html', '/redirect/3.html');
+        server.setRedirect('/redirect/3.html', server.EMPTY_PAGE);
+        const response = await page.goto(server.PREFIX + '/redirect/1.html');
+        expect(response.ok()).toBe(true);
+        expect(response.url()).toBe(server.EMPTY_PAGE);
+      });
+      it('should wait for network idle to succeed navigation', async({page, server}) => {
+        let responses = [];
+        // Hold on to a bunch of requests without answering.
+        server.setRoute('/fetch-request-a.js', (req, res) => responses.push(res));
+        server.setRoute('/fetch-request-b.js', (req, res) => responses.push(res));
+        server.setRoute('/fetch-request-c.js', (req, res) => responses.push(res));
+        server.setRoute('/fetch-request-d.js', (req, res) => responses.push(res));
+        const initialFetchResourcesRequested = Promise.all([
+          server.waitForRequest('/fetch-request-a.js'),
+          server.waitForRequest('/fetch-request-b.js'),
+          server.waitForRequest('/fetch-request-c.js'),
+        ]);
+        const secondFetchResourceRequested = server.waitForRequest('/fetch-request-d.js');
+
+        // Navigate to a page which loads immediately and then does a bunch of
+        // requests via javascript's fetch method.
+        const navigationPromise = page.goto(server.PREFIX + '/networkidle.html', {
+          waitUntil: 'networkidle0',
+        });
+        // Track when the navigation gets completed.
+        let navigationFinished = false;
+        navigationPromise.then(() => navigationFinished = true);
+
+        // Wait for the page's 'load' event.
+        await new Promise(fulfill => page.once('load', fulfill));
+        expect(navigationFinished).toBe(false);
+
+        // Wait for the initial three resources to be requested.
+        await initialFetchResourcesRequested;
+
+        // Expect navigation still to be not finished.
+        expect(navigationFinished).toBe(false);
+
+        // Respond to initial requests.
+        for (const response of responses) {
+          response.statusCode = 404;
+          response.end(`File not found`);
+        }
+
+        // Reset responses array
+        responses = [];
+
+        // Wait for the second round to be requested.
+        await secondFetchResourceRequested;
+        // Expect navigation still to be not finished.
+        expect(navigationFinished).toBe(false);
+
+        // Respond to requests.
+        for (const response of responses) {
+          response.statusCode = 404;
+          response.end(`File not found`);
+        }
+
+        const response = await navigationPromise;
+        // Expect navigation to succeed.
+        expect(response.ok()).toBe(true);
+      });
+      it('should not leak listeners during navigation', async({page, server}) => {
+        let warning = null;
+        const warningHandler = w => warning = w;
+        process.on('warning', warningHandler);
+        for (let i = 0; i < 20; ++i)
+          await page.goto(server.EMPTY_PAGE);
+        process.removeListener('warning', warningHandler);
+        expect(warning).toBe(null);
+      });
+      it('should not leak listeners during bad navigation', async({page, server}) => {
+        let warning = null;
+        const warningHandler = w => warning = w;
+        process.on('warning', warningHandler);
+        for (let i = 0; i < 20; ++i)
+          await page.goto('asdf').catch(e => {/* swallow navigation error */});
+        process.removeListener('warning', warningHandler);
+        expect(warning).toBe(null);
+      });
+      it('should navigate to dataURL and fire dataURL requests', async({page, server}) => {
+        const requests = [];
+        page.on('request', request => requests.push(request));
+        const dataURL = 'data:text/html,<div>yo</div>';
+        const response = await page.goto(dataURL);
+        expect(response.status()).toBe(200);
+        expect(requests.length).toBe(1);
+        expect(requests[0].url()).toBe(dataURL);
+      });
+      it('should navigate to URL with hash and fire requests without hash', async({page, server}) => {
+        const requests = [];
+        page.on('request', request => requests.push(request));
+        const response = await page.goto(server.EMPTY_PAGE + '#hash');
+        expect(response.status()).toBe(200);
+        expect(response.url()).toBe(server.EMPTY_PAGE);
+        expect(requests.length).toBe(1);
+        expect(requests[0].url()).toBe(server.EMPTY_PAGE);
+      });
+      it('should work with self requesting page', async({page, server}) => {
+        const response = await page.goto(server.PREFIX + '/self-request.html');
+        expect(response.status()).toBe(200);
+        expect(response.url()).toContain('self-request.html');
+      });
+      it('should fail when navigating and show the url at the error message', async function({page, server, httpsServer}) {
+        const url = httpsServer.PREFIX + '/redirect/1.html';
+        let error = null;
+        try {
+          await page.goto(url);
+        } catch (e) {
+          error = e;
+        }
+        expect(error.message).toContain(url);
+      });
+    });
+
+    describe('Page.waitForNavigation', function() {
+      it('should work', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        const [result] = await Promise.all([
+          page.waitForNavigation(),
+          page.evaluate(url => window.location.href = url, server.PREFIX + '/grid.html')
+        ]);
+        const response = await result;
+        expect(response.ok()).toBe(true);
+        expect(response.url()).toContain('grid.html');
+      });
+      it('should work with both domcontentloaded and load', async({page, server}) => {
+        let response = null;
+        server.setRoute('/one-style.css', (req, res) => response = res);
+        const navigationPromise = page.goto(server.PREFIX + '/one-style.html');
+        const domContentLoadedPromise = page.waitForNavigation({
+          waitUntil: 'domcontentloaded'
+        });
+
+        let bothFired = false;
+        const bothFiredPromise = page.waitForNavigation({
+          waitUntil: ['load', 'domcontentloaded']
+        }).then(() => bothFired = true);
+
+        await server.waitForRequest('/one-style.css');
+        await domContentLoadedPromise;
+        expect(bothFired).toBe(false);
+        response.end();
+        await bothFiredPromise;
+        await navigationPromise;
+      });
+    });
+
+    describe('Page.goBack', function() {
+      it('should work', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        await page.goto(server.PREFIX + '/grid.html');
+
+        let response = await page.goBack();
+        expect(response.ok()).toBe(true);
+        expect(response.url()).toContain(server.EMPTY_PAGE);
+
+        response = await page.goForward();
+        expect(response.ok()).toBe(true);
+        expect(response.url()).toContain('/grid.html');
+
+        response = await page.goForward();
+        expect(response).toBe(null);
+      });
+    });
+
+    describe('Page.exposeFunction', function() {
+      it('should work', async({page, server}) => {
+        await page.exposeFunction('compute', function(a, b) {
+          return a * b;
+        });
+        const result = await page.evaluate(async function() {
+          return await compute(9, 4);
+        });
+        expect(result).toBe(36);
+      });
+      it('should survive navigation', async({page, server}) => {
+        await page.exposeFunction('compute', function(a, b) {
+          return a * b;
+        });
+
+        await page.goto(server.EMPTY_PAGE);
+        const result = await page.evaluate(async function() {
+          return await compute(9, 4);
+        });
+        expect(result).toBe(36);
+      });
+      it('should await returned promise', async({page, server}) => {
+        await page.exposeFunction('compute', function(a, b) {
+          return Promise.resolve(a * b);
+        });
+
+        const result = await page.evaluate(async function() {
+          return await compute(3, 5);
+        });
+        expect(result).toBe(15);
+      });
+      it('should work on frames', async({page, server}) => {
+        await page.exposeFunction('compute', function(a, b) {
+          return Promise.resolve(a * b);
+        });
+
+        await page.goto(server.PREFIX + '/frames/nested-frames.html');
+        const frame = page.frames()[1];
+        const result = await frame.evaluate(async function() {
+          return await compute(3, 5);
+        });
+        expect(result).toBe(15);
+      });
+      it('should work on frames before navigation', async({page, server}) => {
+        await page.goto(server.PREFIX + '/frames/nested-frames.html');
+        await page.exposeFunction('compute', function(a, b) {
+          return Promise.resolve(a * b);
+        });
+
+        const frame = page.frames()[1];
+        const result = await frame.evaluate(async function() {
+          return await compute(3, 5);
+        });
+        expect(result).toBe(15);
+      });
+    });
+
+    describe('Page.setRequestInterception', function() {
+      it('should intercept', async({page, server}) => {
+        await page.setRequestInterception(true);
+        page.on('request', request => {
+          expect(request.url()).toContain('empty.html');
+          expect(request.headers()['user-agent']).toBeTruthy();
+          expect(request.method()).toBe('GET');
+          expect(request.postData()).toBe(undefined);
+          expect(request.resourceType()).toBe('document');
+          expect(request.frame() === page.mainFrame()).toBe(true);
+          expect(request.frame().url()).toBe('about:blank');
+          request.continue();
+        });
+        const response = await page.goto(server.EMPTY_PAGE);
+        expect(response.ok()).toBe(true);
+      });
+      it('should stop intercepting', async({page, server}) => {
+        await page.setRequestInterception(true);
+        page.once('request', request => request.continue());
+        await page.goto(server.EMPTY_PAGE);
+        await page.setRequestInterception(false);
+        await page.goto(server.EMPTY_PAGE);
+      });
+      it('should show custom HTTP headers', async({page, server}) => {
+        await page.setExtraHTTPHeaders({
+          foo: 'bar'
+        });
+        await page.setRequestInterception(true);
+        page.on('request', request => {
+          expect(request.headers()['foo']).toBe('bar');
+          request.continue();
+        });
+        const response = await page.goto(server.EMPTY_PAGE);
+        expect(response.ok()).toBe(true);
+      });
+      it('should works with customizing referer headers', async({page, server}) => {
+        await page.setExtraHTTPHeaders({ 'referer': server.EMPTY_PAGE });
+        await page.setRequestInterception(true);
+        page.on('request', request => {
+          expect(request.headers()['referer']).toBe(server.EMPTY_PAGE);
+          request.continue();
+        });
+        const response = await page.goto(server.EMPTY_PAGE);
+        expect(response.ok()).toBe(true);
+      });
+      it('should be abortable', async({page, server}) => {
+        await page.setRequestInterception(true);
+        page.on('request', request => {
+          if (request.url().endsWith('.css'))
+            request.abort();
+          else
+            request.continue();
+        });
+        let failedRequests = 0;
+        page.on('requestfailed', event => ++failedRequests);
+        const response = await page.goto(server.PREFIX + '/one-style.html');
+        expect(response.ok()).toBe(true);
+        expect(response.request().failure()).toBe(null);
+        expect(failedRequests).toBe(1);
+      });
+      it('should be abortable with custom error codes', async({page, server}) => {
+        await page.setRequestInterception(true);
+        page.on('request', request => {
+          request.abort('internetdisconnected');
+        });
+        let failedRequest = null;
+        page.on('requestfailed', request => failedRequest = request);
+        await page.goto(server.EMPTY_PAGE).catch(e => {});
+        expect(failedRequest).toBeTruthy();
+        expect(failedRequest.failure().errorText).toBe('net::ERR_INTERNET_DISCONNECTED');
+      });
+      it('should send referer', async({page, server}) => {
+        await page.setExtraHTTPHeaders({
+          referer: 'http://google.com/'
+        });
+        await page.setRequestInterception(true);
+        page.on('request', request => request.continue());
+        const [request] = await Promise.all([
+          server.waitForRequest('/grid.html'),
+          page.goto(server.PREFIX + '/grid.html'),
+        ]);
+        expect(request.headers['referer']).toBe('http://google.com/');
+      });
+      it('should amend HTTP headers', async({page, server}) => {
+        await page.setRequestInterception(true);
+        page.on('request', request => {
+          const headers = Object.assign({}, request.headers());
+          headers['FOO'] = 'bar';
+          request.continue({ headers });
+        });
+        await page.goto(server.EMPTY_PAGE);
+        const [request] = await Promise.all([
+          server.waitForRequest('/sleep.zzz'),
+          page.evaluate(() => fetch('/sleep.zzz'))
+        ]);
+        expect(request.headers['foo']).toBe('bar');
+      });
+      it('should fail navigation when aborting main resource', async({page, server}) => {
+        await page.setRequestInterception(true);
+        page.on('request', request => request.abort());
+        let error = null;
+        await page.goto(server.EMPTY_PAGE).catch(e => error = e);
+        expect(error).toBeTruthy();
+        expect(error.message).toContain('net::ERR_FAILED');
+      });
+      it('should work with redirects', async({page, server}) => {
+        await page.setRequestInterception(true);
+        const requests = [];
+        page.on('request', request => {
+          request.continue();
+          requests.push(request);
+        });
+        server.setRedirect('/non-existing-page.html', '/non-existing-page-2.html');
+        server.setRedirect('/non-existing-page-2.html', '/non-existing-page-3.html');
+        server.setRedirect('/non-existing-page-3.html', '/non-existing-page-4.html');
+        server.setRedirect('/non-existing-page-4.html', '/empty.html');
+        const response = await page.goto(server.PREFIX + '/non-existing-page.html');
+        expect(response.status()).toBe(200);
+        expect(response.url()).toContain('empty.html');
+        expect(requests.length).toBe(5);
+        expect(requests[2].resourceType()).toBe('document');
+        // Check redirect chain
+        const redirectChain = response.request().redirectChain();
+        expect(redirectChain.length).toBe(4);
+        expect(redirectChain[0].url()).toContain('/non-existing-page.html');
+        expect(redirectChain[2].url()).toContain('/non-existing-page-3.html');
+        for (let i = 0; i < redirectChain.length; ++i) {
+          const request = redirectChain[i];
+          expect(request.redirectChain().indexOf(request)).toBe(i);
+        }
+      });
+      it('should be able to abort redirects', async({page, server}) => {
+        await page.setRequestInterception(true);
+        server.setRedirect('/non-existing.json', '/non-existing-2.json');
+        server.setRedirect('/non-existing-2.json', '/simple.html');
+        page.on('request', request => {
+          if (request.url().includes('non-existing-2'))
+            request.abort();
+          else
+            request.continue();
+        });
+        await page.goto(server.EMPTY_PAGE);
+        const result = await page.evaluate(async() => {
+          try {
+            await fetch('/non-existing.json');
+          } catch (e) {
+            return e.message;
+          }
+        });
+        expect(result).toContain('Failed to fetch');
+      });
+      it('should work with equal requests', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        let responseCount = 1;
+        server.setRoute('/zzz', (req, res) => res.end((responseCount++) * 11 + ''));
+        await page.setRequestInterception(true);
+
+        let spinner = false;
+        // Cancel 2nd request.
+        page.on('request', request => {
+          spinner ? request.abort() : request.continue();
+          spinner = !spinner;
+        });
+        const results = await page.evaluate(() => Promise.all([
+          fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
+          fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
+          fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
+        ]));
+        expect(results).toEqual(['11', 'FAILED', '22']);
+      });
+      it('should navigate to dataURL and fire dataURL requests', async({page, server}) => {
+        await page.setRequestInterception(true);
+        const requests = [];
+        page.on('request', request => {
+          requests.push(request);
+          request.continue();
+        });
+        const dataURL = 'data:text/html,<div>yo</div>';
+        const response = await page.goto(dataURL);
+        expect(response.status()).toBe(200);
+        expect(requests.length).toBe(1);
+        expect(requests[0].url()).toBe(dataURL);
+      });
+      it('should abort data server', async({page, server}) => {
+        await page.setRequestInterception(true);
+        page.on('request', request => {
+          request.abort();
+        });
+        let error = null;
+        await page.goto('data:text/html,No way!').catch(err => error = err);
+        expect(error.message).toContain('net::ERR_FAILED');
+      });
+      it('should navigate to URL with hash and and fire requests without hash', async({page, server}) => {
+        await page.setRequestInterception(true);
+        const requests = [];
+        page.on('request', request => {
+          requests.push(request);
+          request.continue();
+        });
+        const response = await page.goto(server.EMPTY_PAGE + '#hash');
+        expect(response.status()).toBe(200);
+        expect(response.url()).toBe(server.EMPTY_PAGE);
+        expect(requests.length).toBe(1);
+        expect(requests[0].url()).toBe(server.EMPTY_PAGE);
+      });
+      it('should work with encoded server', async({page, server}) => {
+        // The requestWillBeSent will report encoded URL, whereas interception will
+        // report URL as-is. @see crbug.com/759388
+        await page.setRequestInterception(true);
+        page.on('request', request => request.continue());
+        const response = await page.goto(server.PREFIX + '/some nonexisting page');
+        expect(response.status()).toBe(404);
+      });
+      it('should work with badly encoded server', async({page, server}) => {
+        await page.setRequestInterception(true);
+        server.setRoute('/malformed?rnd=%911', (req, res) => res.end());
+        page.on('request', request => request.continue());
+        const response = await page.goto(server.PREFIX + '/malformed?rnd=%911');
+        expect(response.status()).toBe(200);
+      });
+      it('should work with encoded server - 2', async({page, server}) => {
+        // The requestWillBeSent will report URL as-is, whereas interception will
+        // report encoded URL for stylesheet. @see crbug.com/759388
+        await page.setRequestInterception(true);
+        const requests = [];
+        page.on('request', request => {
+          request.continue();
+          requests.push(request);
+        });
+        const response = await page.goto(`data:text/html,<link rel="stylesheet" href="${server.PREFIX}/fonts?helvetica|arial"/>`);
+        expect(response.status()).toBe(200);
+        expect(requests.length).toBe(2);
+        expect(requests[1].response().status()).toBe(404);
+      });
+      it('should not throw "Invalid Interception Id" if the request was cancelled', async({page, server}) => {
+        await page.setContent('<iframe></iframe>');
+        await page.setRequestInterception(true);
+        let request = null;
+        page.on('request', async r => request = r);
+        page.$eval('iframe', (frame, url) => frame.src = url, server.EMPTY_PAGE),
+        // Wait for request interception.
+        await waitForEvents(page, 'request');
+        // Delete frame to cause request to be canceled.
+        await page.$eval('iframe', frame => frame.remove());
+        let error = null;
+        await request.continue().catch(e => error = e);
+        expect(error).toBe(null);
+      });
+      it('should throw if interception is not enabled', async({page, server}) => {
+        let error = null;
+        page.on('request', async request => {
+          try {
+            await request.continue();
+          } catch (e) {
+            error = e;
+          }
+        });
+        await page.goto(server.EMPTY_PAGE);
+        expect(error.message).toContain('Request Interception is not enabled');
+      });
+    });
+
+    describe('Request.respond', function() {
+      it('should work', async({page, server}) => {
+        await page.setRequestInterception(true);
+        page.on('request', request => {
+          request.respond({
+            status: 201,
+            headers: {
+              foo: 'bar'
+            },
+            body: 'Yo, page!'
+          });
+        });
+        const response = await page.goto(server.EMPTY_PAGE);
+        expect(response.status()).toBe(201);
+        expect(response.headers().foo).toBe('bar');
+        expect(await page.evaluate(() => document.body.textContent)).toBe('Yo, page!');
+      });
+      it('should allow mocking binary responses', async({page, server}) => {
+        await page.setRequestInterception(true);
+        page.on('request', request => {
+          const imageBuffer = fs.readFileSync(path.join(__dirname, 'assets', 'pptr.png'));
+          request.respond({
+            contentType: 'image/png',
+            body: imageBuffer
+          });
+        });
+        await page.evaluate(PREFIX => {
+          const img = document.createElement('img');
+          img.src = PREFIX + '/does-not-exist.png';
+          document.body.appendChild(img);
+          return new Promise(fulfill => img.onload = fulfill);
+        }, server.PREFIX);
+        const img = await page.$('img');
+        expect(await img.screenshot()).toBeGolden('mock-binary-response.png');
+      });
+    });
+
+    describe('Page.Events.Dialog', function() {
+      it('should fire', async({page, server}) => {
+        page.on('dialog', dialog => {
+          expect(dialog.type()).toBe('alert');
+          expect(dialog.defaultValue()).toBe('');
+          expect(dialog.message()).toBe('yo');
+          dialog.accept();
+        });
+        await page.evaluate(() => alert('yo'));
+      });
+      it('should allow accepting prompts', async({page, server}) => {
+        page.on('dialog', dialog => {
+          expect(dialog.type()).toBe('prompt');
+          expect(dialog.defaultValue()).toBe('yes.');
+          expect(dialog.message()).toBe('question?');
+          dialog.accept('answer!');
+        });
+        const result = await page.evaluate(() => prompt('question?', 'yes.'));
+        expect(result).toBe('answer!');
+      });
+      it('should dismiss the prompt', async({page, server}) => {
+        page.on('dialog', dialog => {
+          dialog.dismiss();
+        });
+        const result = await page.evaluate(() => prompt('question?'));
+        expect(result).toBe(null);
+      });
+    });
+
+    describe('Page.Events.PageError', function() {
+      it('should fire', async({page, server}) => {
+        let error = null;
+        page.once('pageerror', e => error = e);
+        await Promise.all([
+          page.goto(server.PREFIX + '/error.html'),
+          waitForEvents(page, 'pageerror')
+        ]);
+        expect(error.message).toContain('Fancy');
+      });
+    });
+
+    describe('Page.Events.Request', function() {
+      it('should fire', async({page, server}) => {
+        const requests = [];
+        page.on('request', request => requests.push(request));
+        await page.goto(server.EMPTY_PAGE);
+        await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+        expect(requests.length).toBe(2);
+        expect(requests[0].url()).toBe(server.EMPTY_PAGE);
+        expect(requests[0].frame() === page.mainFrame()).toBe(true);
+        expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
+        expect(requests[1].url()).toBe(server.EMPTY_PAGE);
+        expect(requests[1].frame() === page.frames()[1]).toBe(true);
+        expect(requests[1].frame().url()).toBe(server.EMPTY_PAGE);
+      });
+    });
+
+    describe('Frame Management', function() {
+      it('should handle nested frames', async({page, server}) => {
+        await page.goto(server.PREFIX + '/frames/nested-frames.html');
+        expect(utils.dumpFrames(page.mainFrame())).toBeGolden('nested-frames.txt');
+      });
+      it('should send events when frames are manipulated dynamically', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        // validate frameattached events
+        const attachedFrames = [];
+        page.on('frameattached', frame => attachedFrames.push(frame));
+        await utils.attachFrame(page, 'frame1', './assets/frame.html');
+        expect(attachedFrames.length).toBe(1);
+        expect(attachedFrames[0].url()).toContain('/assets/frame.html');
+
+        // validate framenavigated events
+        const navigatedFrames = [];
+        page.on('framenavigated', frame => navigatedFrames.push(frame));
+        await utils.navigateFrame(page, 'frame1', './empty.html');
+        expect(navigatedFrames.length).toBe(1);
+        expect(navigatedFrames[0].url()).toBe(server.EMPTY_PAGE);
+
+        // validate framedetached events
+        const detachedFrames = [];
+        page.on('framedetached', frame => detachedFrames.push(frame));
+        await utils.detachFrame(page, 'frame1');
+        expect(detachedFrames.length).toBe(1);
+        expect(detachedFrames[0].isDetached()).toBe(true);
+      });
+      it('should persist mainFrame on cross-process navigation', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        const mainFrame = page.mainFrame();
+        await page.goto(server.CROSS_PROCESS_PREFIX + '/empty.html');
+        expect(page.mainFrame() === mainFrame).toBeTruthy();
+      });
+      it('should not send attach/detach events for main frame', async({page, server}) => {
+        let hasEvents = false;
+        page.on('frameattached', frame => hasEvents = true);
+        page.on('framedetached', frame => hasEvents = true);
+        await page.goto(server.EMPTY_PAGE);
+        expect(hasEvents).toBe(false);
+      });
+      it('should detach child frames on navigation', async({page, server}) => {
+        let attachedFrames = [];
+        let detachedFrames = [];
+        let navigatedFrames = [];
+        page.on('frameattached', frame => attachedFrames.push(frame));
+        page.on('framedetached', frame => detachedFrames.push(frame));
+        page.on('framenavigated', frame => navigatedFrames.push(frame));
+        await page.goto(server.PREFIX + '/frames/nested-frames.html');
+        expect(attachedFrames.length).toBe(4);
+        expect(detachedFrames.length).toBe(0);
+        expect(navigatedFrames.length).toBe(5);
+
+        attachedFrames = [];
+        detachedFrames = [];
+        navigatedFrames = [];
+        await page.goto(server.EMPTY_PAGE);
+        expect(attachedFrames.length).toBe(0);
+        expect(detachedFrames.length).toBe(4);
+        expect(navigatedFrames.length).toBe(1);
+      });
+      it('should report frame.name()', async({page, server}) => {
+        await utils.attachFrame(page, 'theFrameId', server.EMPTY_PAGE);
+        await page.evaluate(url => {
+          const frame = document.createElement('iframe');
+          frame.name = 'theFrameName';
+          frame.src = url;
+          document.body.appendChild(frame);
+          return new Promise(x => frame.onload = x);
+        }, server.EMPTY_PAGE);
+        expect(page.frames()[0].name()).toBe('');
+        expect(page.frames()[1].name()).toBe('theFrameId');
+        expect(page.frames()[2].name()).toBe('theFrameName');
+      });
+      it('should report frame.parent()', async({page, server}) => {
+        await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+        await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
+        expect(page.frames()[0].parentFrame()).toBe(null);
+        expect(page.frames()[1].parentFrame()).toBe(page.mainFrame());
+        expect(page.frames()[2].parentFrame()).toBe(page.mainFrame());
+      });
+    });
+
+    describe('Page.$eval', function() {
+      it('should work', async({page, server}) => {
+        await page.setContent('<section id="testAttribute">43543</section>');
+        const idAttribute = await page.$eval('section', e => e.id);
+        expect(idAttribute).toBe('testAttribute');
+      });
+      it('should accept arguments', async({page, server}) => {
+        await page.setContent('<section>hello</section>');
+        const text = await page.$eval('section', (e, suffix) => e.textContent + suffix, ' world!');
+        expect(text).toBe('hello world!');
+      });
+      it('should accept ElementHandles as arguments', async({page, server}) => {
+        await page.setContent('<section>hello</section><div> world</div>');
+        const divHandle = await page.$('div');
+        const text = await page.$eval('section', (e, div) => e.textContent + div.textContent, divHandle);
+        expect(text).toBe('hello world');
+      });
+      it('should throw error if no element is found', async({page, server}) => {
+        let error = null;
+        await page.$eval('section', e => e.id).catch(e => error = e);
+        expect(error.message).toContain('failed to find element matching selector "section"');
+      });
+    });
+
+    describe('Page.$$eval', function() {
+      it('should work', async({page, server}) => {
+        await page.setContent('<div>hello</div><div>beautiful</div><div>world!</div>');
+        const divsCount = await page.$$eval('div', divs => divs.length);
+        expect(divsCount).toBe(3);
+      });
+    });
+
+    describe('Page.$', function() {
+      it('should query existing element', async({page, server}) => {
+        await page.setContent('<section>test</section>');
+        const element = await page.$('section');
+        expect(element).toBeTruthy();
+      });
+      it('should return null for non-existing element', async({page, server}) => {
+        const element = await page.$('non-existing-element');
+        expect(element).toBe(null);
+      });
+    });
+
+    describe('Page.$$', function() {
+      it('should query existing elements', async({page, server}) => {
+        await page.setContent('<div>A</div><br/><div>B</div>');
+        const elements = await page.$$('div');
+        expect(elements.length).toBe(2);
+        const promises = elements.map(element => page.evaluate(e => e.textContent, element));
+        expect(await Promise.all(promises)).toEqual(['A', 'B']);
+      });
+      it('should return empty array if nothing is found', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        const elements = await page.$$('div');
+        expect(elements.length).toBe(0);
+      });
+    });
+
+    describe('Path.$x', function() {
+      it('should query existing element', async({page, server}) => {
+        await page.setContent('<section>test</section>');
+        const elements = await page.$x('/html/body/section');
+        expect(elements[0]).toBeTruthy();
+        expect(elements.length).toBe(1);
+      });
+      it('should return empty array for non-existing element', async({page, server}) => {
+        const element = await page.$x('/html/body/non-existing-element');
+        expect(element).toEqual([]);
+      });
+      it('should return multiple elements', async({page, sever}) => {
+        await page.setContent('<div></div><div></div>');
+        const elements = await page.$x('/html/body/div');
+        expect(elements.length).toBe(2);
+      });
+    });
+
+    describe('Page.setUserAgent', function() {
+      it('should work', async({page, server}) => {
+        expect(await page.evaluate(() => navigator.userAgent)).toContain('Mozilla');
+        page.setUserAgent('foobar');
+        const [request] = await Promise.all([
+          server.waitForRequest('/empty.html'),
+          page.goto(server.EMPTY_PAGE),
+        ]);
+        expect(request.headers['user-agent']).toBe('foobar');
+      });
+      it('should emulate device user-agent', async({page, server}) => {
+        await page.goto(server.PREFIX + '/mobile.html');
+        expect(await page.evaluate(() => navigator.userAgent)).toContain('Chrome');
+        await page.setUserAgent(iPhone.userAgent);
+        expect(await page.evaluate(() => navigator.userAgent)).toContain('Safari');
+      });
+    });
+
+    describe('Page.setExtraHTTPHeaders', function() {
+      it('should work', async({page, server}) => {
+        await page.setExtraHTTPHeaders({
+          foo: 'bar'
+        });
+        const [request] = await Promise.all([
+          server.waitForRequest('/empty.html'),
+          page.goto(server.EMPTY_PAGE),
+        ]);
+        expect(request.headers['foo']).toBe('bar');
+      });
+      it('should throw for non-string header values', async({page, server}) => {
+        let error = null;
+        try {
+          await page.setExtraHTTPHeaders({ 'foo': 1 });
+        } catch (e) {
+          error = e;
+        }
+        expect(error.message).toBe('Expected value of header "foo" to be String, but "number" is found.');
+      });
+    });
+
+    describe('Page.authenticate', function() {
+      it('should work', async({page, server}) => {
+        server.setAuth('/empty.html', 'user', 'pass');
+        let response = await page.goto(server.EMPTY_PAGE);
+        expect(response.status()).toBe(401);
+        await page.authenticate({
+          username: 'user',
+          password: 'pass'
+        });
+        response = await page.reload();
+        expect(response.status()).toBe(200);
+      });
+      it('should fail if wrong credentials', async({page, server}) => {
+        // Use unique user/password since Chrome caches credentials per origin.
+        server.setAuth('/empty.html', 'user2', 'pass2');
+        await page.authenticate({
+          username: 'foo',
+          password: 'bar'
+        });
+        const response = await page.goto(server.EMPTY_PAGE);
+        expect(response.status()).toBe(401);
+      });
+      it('should allow disable authentication', async({page, server}) => {
+        // Use unique user/password since Chrome caches credentials per origin.
+        server.setAuth('/empty.html', 'user3', 'pass3');
+        await page.authenticate({
+          username: 'user3',
+          password: 'pass3'
+        });
+        let response = await page.goto(server.EMPTY_PAGE);
+        expect(response.status()).toBe(200);
+        await page.authenticate(null);
+        // Navigate to a different origin to bust Chrome's credential caching.
+        response = await page.goto(server.CROSS_PROCESS_PREFIX + '/empty.html');
+        expect(response.status()).toBe(401);
+      });
+    });
+
+    describe('Page.setContent', function() {
+      const expectedOutput = '<html><head></head><body><div>hello</div></body></html>';
+      it('should work', async({page, server}) => {
+        await page.setContent('<div>hello</div>');
+        const result = await page.content();
+        expect(result).toBe(expectedOutput);
+      });
+      it('should work with doctype', async({page, server}) => {
+        const doctype = '<!DOCTYPE html>';
+        await page.setContent(`${doctype}<div>hello</div>`);
+        const result = await page.content();
+        expect(result).toBe(`${doctype}${expectedOutput}`);
+      });
+      it('should work with HTML 4 doctype', async({page, server}) => {
+        const doctype = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" ' +
+          '"http://www.w3.org/TR/html4/strict.dtd">';
+        await page.setContent(`${doctype}<div>hello</div>`);
+        const result = await page.content();
+        expect(result).toBe(`${doctype}${expectedOutput}`);
+      });
+    });
+
+    describe('Page.addScriptTag', function() {
+      it('should throw an error if no options are provided', async({page, server}) => {
+        let error = null;
+        try {
+          await page.addScriptTag('/injectedfile.js');
+        } catch (e) {
+          error = e;
+        }
+        expect(error.message).toBe('Provide an object with a `url`, `path` or `content` property');
+      });
+
+      it('should work with a url', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        const scriptHandle = await page.addScriptTag({ url: '/injectedfile.js' });
+        expect(scriptHandle.asElement()).not.toBeNull();
+        expect(await page.evaluate(() => __injected)).toBe(42);
+      });
+
+      it('should work with a url and type=module', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        await page.addScriptTag({ url: '/es6/es6import.js', type: 'module' });
+        expect(await page.evaluate(() => __es6injected)).toBe(42);
+      });
+
+      it('should work with a path and type=module', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        await page.addScriptTag({ path: path.join(__dirname, 'assets/es6/es6pathimport.js'), type: 'module' });
+        await page.waitForFunction('window.__es6injected');
+        expect(await page.evaluate(() => __es6injected)).toBe(42);
+      });
+
+      it('should work with a content and type=module', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        await page.addScriptTag({ content: `import num from '/es6/es6module.js';window.__es6injected = num;`, type: 'module' });
+        await page.waitForFunction('window.__es6injected');
+        expect(await page.evaluate(() => __es6injected)).toBe(42);
+      });
+
+      it('should throw an error if loading from url fail', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        let error = null;
+        try {
+          await page.addScriptTag({ url: '/nonexistfile.js' });
+        } catch (e) {
+          error = e;
+        }
+        expect(error.message).toBe('Loading script from /nonexistfile.js failed');
+      });
+
+      it('should work with a path', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        const scriptHandle = await page.addScriptTag({ path: path.join(__dirname, 'assets/injectedfile.js') });
+        expect(scriptHandle.asElement()).not.toBeNull();
+        expect(await page.evaluate(() => __injected)).toBe(42);
+      });
+
+      it('should include sourcemap when path is provided', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        await page.addScriptTag({ path: path.join(__dirname, 'assets/injectedfile.js') });
+        const result = await page.evaluate(() => __injectedError.stack);
+        expect(result).toContain(path.join('assets', 'injectedfile.js'));
+      });
+
+      it('should work with content', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        const scriptHandle = await page.addScriptTag({ content: 'window.__injected = 35;' });
+        expect(scriptHandle.asElement()).not.toBeNull();
+        expect(await page.evaluate(() => __injected)).toBe(35);
+      });
+    });
+
+    describe('Page.addStyleTag', function() {
+      it('should throw an error if no options are provided', async({page, server}) => {
+        let error = null;
+        try {
+          await page.addStyleTag('/injectedstyle.css');
+        } catch (e) {
+          error = e;
+        }
+        expect(error.message).toBe('Provide an object with a `url`, `path` or `content` property');
+      });
+
+      it('should work with a url', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        const styleHandle = await page.addStyleTag({ url: '/injectedstyle.css' });
+        expect(styleHandle.asElement()).not.toBeNull();
+        expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(255, 0, 0)');
+      });
+
+      it('should throw an error if loading from url fail', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        let error = null;
+        try {
+          await page.addStyleTag({ url: '/nonexistfile.js' });
+        } catch (e) {
+          error = e;
+        }
+        expect(error.message).toBe('Loading style from /nonexistfile.js failed');
+      });
+
+      it('should work with a path', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        const styleHandle = await page.addStyleTag({ path: path.join(__dirname, 'assets/injectedstyle.css') });
+        expect(styleHandle.asElement()).not.toBeNull();
+        expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(255, 0, 0)');
+      });
+
+      it('should include sourcemap when path is provided', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        await page.addStyleTag({ path: path.join(__dirname, 'assets/injectedstyle.css') });
+        const styleHandle = await page.$('style');
+        const styleContent = await page.evaluate(style => style.innerHTML, styleHandle);
+        expect(styleContent).toContain(path.join('assets', 'injectedstyle.css'));
+      });
+
+      it('should work with content', async({page, server}) => {
+        await page.goto(server.EMPTY_PAGE);
+        const styleHandle = await page.addStyleTag({ content: 'body { background-color: green; }' });
+        expect(styleHandle.asElement()).not.toBeNull();
+        expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(0, 128, 0)');
+      });
+    });
+
+    describe('Page.url', function() {
+      it('should work', async({page, server}) => {
+        expect(page.url()).toBe('about:blank');
+        await page.goto(server.EMPTY_PAGE);
+        expect(page.url()).toBe(server.EMPTY_PAGE);
+      });
+    });
+
+    describe('Page.viewport', function() {
+      it('should get the proper viewport size', async({page, server}) => {
+        expect(page.viewport()).toEqual({width: 800, height: 600});
+        await page.setViewport({width: 123, height: 456});
+        expect(page.viewport()).toEqual({width: 123, height: 456});
+      });
+      it('should support mobile emulation', async({page, server}) => {
+        await page.goto(server.PREFIX + '/mobile.html');
+        expect(await page.evaluate(() => window.innerWidth)).toBe(800);
+        await page.setViewport(iPhone.viewport);
+        expect(await page.evaluate(() => window.innerWidth)).toBe(375);
+        await page.setViewport({width: 400, height: 300});
+        expect(await page.evaluate(() => window.innerWidth)).toBe(400);
+      });
+      it('should support touch emulation', async({page, server}) => {
+        await page.goto(server.PREFIX + '/mobile.html');
+        expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(false);
+        await page.setViewport(iPhone.viewport);
+        expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(true);
+        expect(await page.evaluate(dispatchTouch)).toBe('Received touch');
+        await page.setViewport({width: 100, height: 100});
+        expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(false);
+
+        function dispatchTouch() {
+          let fulfill;
+          const promise = new Promise(x => fulfill = x);
+          window.ontouchstart = function(e) {
+            fulfill('Received touch');
+          };
+          window.dispatchEvent(new Event('touchstart'));
+
+          fulfill('Did not receive touch');
+
+          return promise;
+        }
+      });
+      it('should be detectable by Modernizr', async({page, server}) => {
+        await page.goto(server.PREFIX + '/detect-touch.html');
+        expect(await page.evaluate(() => document.body.textContent.trim())).toBe('NO');
+        await page.setViewport(iPhone.viewport);
+        await page.goto(server.PREFIX + '/detect-touch.html');
+        expect(await page.evaluate(() => document.body.textContent.trim())).toBe('YES');
+      });
+      it('should support landscape emulation', async({page, server}) => {
+        await page.goto(server.PREFIX + '/mobile.html');
+        expect(await page.evaluate(() => screen.orientation.type)).toBe('portrait-primary');
+        await page.setViewport(iPhoneLandscape.viewport);
+        expect(await page.evaluate(() => screen.orientation.type)).toBe('landscape-primary');
+        await page.setViewport({width: 100, height: 100});
+        expect(await page.evaluate(() => screen.orientation.type)).toBe('portrait-primary');
+      });
+    });
+
+    describe('Page.emulate', function() {
+      it('should work', async({page, server}) => {
+        await page.goto(server.PREFIX + '/mobile.html');
+        await page.emulate(iPhone);
+        expect(await page.evaluate(() => window.innerWidth)).toBe(375);
+        expect(await page.evaluate(() => navigator.userAgent)).toContain('Safari');
+      });
+      it('should support clicking', async({page, server}) => {
+        await page.emulate(iPhone);
+        await page.goto(server.PREFIX + '/input/button.html');
+        const button = await page.$('button');
+        await page.evaluate(button => button.style.marginTop = '200px', button);
+        await button.click();
+        expect(await page.evaluate(() => result)).toBe('Clicked');
+      });
+    });
+
+    describe('Page.emulateMedia', function() {
+      it('should work', async({page, server}) => {
+        expect(await page.evaluate(() => window.matchMedia('screen').matches)).toBe(true);
+        expect(await page.evaluate(() => window.matchMedia('print').matches)).toBe(false);
+        await page.emulateMedia('print');
+        expect(await page.evaluate(() => window.matchMedia('screen').matches)).toBe(false);
+        expect(await page.evaluate(() => window.matchMedia('print').matches)).toBe(true);
+        await page.emulateMedia(null);
+        expect(await page.evaluate(() => window.matchMedia('screen').matches)).toBe(true);
+        expect(await page.evaluate(() => window.matchMedia('print').matches)).toBe(false);
+      });
+      it('should throw in case of bad argument', async({page, server}) => {
+        let error = null;
+        await page.emulateMedia('bad').catch(e => error = e);
+        expect(error.message).toBe('Unsupported media type: bad');
+      });
+    });
+
+    describe('Page.setJavaScriptEnabled', function() {
+      it('should work', async({page, server}) => {
+        await page.setJavaScriptEnabled(false);
+        await page.goto('data:text/html, <script>var something = "forbidden"</script>');
+        let error = null;
+        await page.evaluate('something').catch(e => error = e);
+        expect(error.message).toContain('something is not defined');
+
+        await page.setJavaScriptEnabled(true);
+        await page.goto('data:text/html, <script>var something = "forbidden"</script>');
+        expect(await page.evaluate('something')).toBe('forbidden');
+      });
+    });
+
+    describe('Page.evaluateOnNewDocument', function() {
+      it('should evaluate before anything else on the page', async({page, server}) => {
+        await page.evaluateOnNewDocument(function(){
+          window.injected = 123;
+        });
+        await page.goto(server.PREFIX + '/tamperable.html');
+        expect(await page.evaluate(() => window.result)).toBe(123);
+      });
+    });
+
+    describe('Page.setCacheEnabled', function() {
+      it('should enable or disable the cache based on the state passed', async({page, server}) => {
+        const responses = new Map();
+        page.on('response', r => responses.set(r.url().split('/').pop(), r));
+
+        await page.goto(server.PREFIX + '/cached/one-style.html', {waitUntil: 'networkidle2'});
+        await page.reload({waitUntil: 'networkidle2'});
+        expect(responses.get('one-style.css').fromCache()).toBe(true);
+
+        await page.setCacheEnabled(false);
+        await page.reload({waitUntil: 'networkidle2'});
+        expect(responses.get('one-style.css').fromCache()).toBe(false);
+      });
+    });
+
+    // Printing to pdf is currently only supported in headless
+    (headless ? describe : xdescribe)('Page.pdf', function() {
+      it('should be able to save file', async({page, server}) => {
+        const outputFile = __dirname + '/assets/output.pdf';
+        await page.pdf({path: outputFile});
+        expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
+        fs.unlinkSync(outputFile);
+      });
+      it('should default to printing in Letter format', async({page, server}) => {
+        const pages = await getPDFPages(await page.pdf());
+        expect(pages.length).toBe(1);
+        expect(pages[0].width).toBeCloseTo(8.5, 2);
+        expect(pages[0].height).toBeCloseTo(11, 2);
+      });
+      it('should support setting custom format', async({page, server}) => {
+        const pages = await getPDFPages(await page.pdf({
+          format: 'a4'
+        }));
+        expect(pages.length).toBe(1);
+        expect(pages[0].width).toBeCloseTo(8.27, 1);
+        expect(pages[0].height).toBeCloseTo(11.7, 1);
+      });
+      it('should support setting paper width and height', async({page, server}) => {
+        const pages = await getPDFPages(await page.pdf({
+          width: '10in',
+          height: '10in',
+        }));
+        expect(pages.length).toBe(1);
+        expect(pages[0].width).toBeCloseTo(10, 2);
+        expect(pages[0].height).toBeCloseTo(10, 2);
+      });
+      it('should print multiple pages', async({page, server}) => {
+        await page.goto(server.PREFIX + '/grid.html');
+        // Define width and height in CSS pixels.
+        const width = 50 * 5 + 1;
+        const height = 50 * 5 + 1;
+        const pages = await getPDFPages(await page.pdf({width, height}));
+        expect(pages.length).toBe(8);
+        expect(pages[0].width).toBeCloseTo(cssPixelsToInches(width), 2);
+        expect(pages[0].height).toBeCloseTo(cssPixelsToInches(height), 2);
+      });
+      it('should support page ranges', async({page, server}) => {
+        await page.goto(server.PREFIX + '/grid.html');
+        // Define width and height in CSS pixels.
+        const width = 50 * 5 + 1;
+        const height = 50 * 5 + 1;
+        const pages = await getPDFPages(await page.pdf({width, height, pageRanges: '1,4-7'}));
+        expect(pages.length).toBe(5);
+      });
+      it('should throw if format is unknown', async({page, server}) => {
+        let error = null;
+        try {
+          await getPDFPages(await page.pdf({
+            format: 'something'
+          }));
+        } catch (e) {
+          error = e;
+        }
+        expect(error).toBeTruthy();
+        expect(error.message).toContain('Unknown paper format');
+      });
+      it('should throw if units are unknown', async({page, server}) => {
+        let error = null;
+        try {
+          await getPDFPages(await page.pdf({
+            width: '10em',
+            height: '10em',
+          }));
+        } catch (e) {
+          error = e;
+        }
+        expect(error).toBeTruthy();
+        expect(error.message).toContain('Failed to parse parameter value');
+      });
+    });
+
+    describe('Page.title', function() {
+      it('should return the page title', async({page, server}) => {
+        await page.goto(server.PREFIX + '/input/button.html');
+        expect(await page.title()).toBe('Button test');
+      });
+    });
+
+    describe('Page.screenshot', function() {
+      it('should work', async({page, server}) => {
+        await page.setViewport({width: 500, height: 500});
+        await page.goto(server.PREFIX + '/grid.html');
+        const screenshot = await page.screenshot();
+        expect(screenshot).toBeGolden('screenshot-sanity.png');
+      });
+      it('should clip rect', async({page, server}) => {
+        await page.setViewport({width: 500, height: 500});
+        await page.goto(server.PREFIX + '/grid.html');
+        const screenshot = await page.screenshot({
+          clip: {
+            x: 50,
+            y: 100,
+            width: 150,
+            height: 100
+          }
+        });
+        expect(screenshot).toBeGolden('screenshot-clip-rect.png');
+      });
+      it('should work for offscreen clip', async({page, server}) => {
+        await page.setViewport({width: 500, height: 500});
+        await page.goto(server.PREFIX + '/grid.html');
+        const screenshot = await page.screenshot({
+          clip: {
+            x: 50,
+            y: 600,
+            width: 100,
+            height: 100
+          }
+        });
+        expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
+      });
+      it('should run in parallel', async({page, server}) => {
+        await page.setViewport({width: 500, height: 500});
+        await page.goto(server.PREFIX + '/grid.html');
+        const promises = [];
+        for (let i = 0; i < 3; ++i) {
+          promises.push(page.screenshot({
+            clip: {
+              x: 50 * i,
+              y: 0,
+              width: 50,
+              height: 50
+            }
+          }));
+        }
+        const screenshots = await Promise.all(promises);
+        expect(screenshots[1]).toBeGolden('grid-cell-1.png');
+      });
+      it('should take fullPage screenshots', async({page, server}) => {
+        await page.setViewport({width: 500, height: 500});
+        await page.goto(server.PREFIX + '/grid.html');
+        const screenshot = await page.screenshot({
+          fullPage: true
+        });
+        expect(screenshot).toBeGolden('screenshot-grid-fullpage.png');
+      });
+      it('should run in parallel in multiple pages', async({page, server, browser}) => {
+        const N = 2;
+        const pages = await Promise.all(Array(N).fill(0).map(async() => {
+          const page = await browser.newPage();
+          await page.goto(server.PREFIX + '/grid.html');
+          return page;
+        }));
+        const promises = [];
+        for (let i = 0; i < N; ++i)
+          promises.push(pages[i].screenshot({ clip: { x: 50 * i, y: 0, width: 50, height: 50 } }));
+        const screenshots = await Promise.all(promises);
+        for (let i = 0; i < N; ++i)
+          expect(screenshots[i]).toBeGolden(`grid-cell-${i}.png`);
+        await Promise.all(pages.map(page => page.close()));
+      });
+      it('should allow transparency', async({page, server}) => {
+        await page.setViewport({ width: 100, height: 100 });
+        await page.goto(server.EMPTY_PAGE);
+        const screenshot = await page.screenshot({omitBackground: true});
+        expect(screenshot).toBeGolden('transparent.png');
+      });
+      it('should work with odd clip size on Retina displays', async({page, server}) => {
+        const screenshot = await page.screenshot({
+          clip: {
+            x: 0,
+            y: 0,
+            width: 11,
+            height: 11,
+          }
+        });
+        expect(screenshot).toBeGolden('screenshot-clip-odd-size.png');
+      });
+    });
+
+    describe('Page.select', function() {
+      it('should select single option', async({page, server}) => {
+        await page.goto(server.PREFIX + '/input/select.html');
+        await page.select('select', 'blue');
+        expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
+        expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
+      });
+      it('should select only first option', async({page, server}) => {
+        await page.goto(server.PREFIX + '/input/select.html');
+        await page.select('select', 'blue', 'green', 'red');
+        expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
+        expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
+      });
+      it('should select multiple options', async({page, server}) => {
+        await page.goto(server.PREFIX + '/input/select.html');
+        await page.evaluate(() => makeMultiple());
+        await page.select('select', 'blue', 'green', 'red');
+        expect(await page.evaluate(() => result.onInput)).toEqual(['blue', 'green', 'red']);
+        expect(await page.evaluate(() => result.onChange)).toEqual(['blue', 'green', 'red']);
+      });
+      it('should respect event bubbling', async({page, server}) => {
+        await page.goto(server.PREFIX + '/input/select.html');
+        await page.select('select', 'blue');
+        expect(await page.evaluate(() => result.onBubblingInput)).toEqual(['blue']);
+        expect(await page.evaluate(() => result.onBubblingChange)).toEqual(['blue']);
+      });
+      it('should throw when element is not a <select>', async({page, server}) => {
+        let error = null;
+        await page.goto(server.PREFIX + '/input/select.html');
+        await page.select('body', '').catch(e => error = e);
+        expect(error.message).toContain('Element is not a <select> element.');
+      });
+      it('should return [] on no matched values', async({page, server}) => {
+        await page.goto(server.PREFIX + '/input/select.html');
+        const result = await page.select('select','42','abc');
+        expect(result).toEqual([]);
+      });
+      it('should return an array of matched values', async({page, server}) => {
+        await page.goto(server.PREFIX + '/input/select.html');
+        await page.evaluate(() => makeMultiple());
+        const result = await page.select('select','blue','black','magenta');
+        expect(result.reduce((accumulator,current) => ['blue', 'black', 'magenta'].includes(current) && accumulator, true)).toEqual(true);
+      });
+      it('should return an array of one element when multiple is not set', async({page, server}) => {
+        await page.goto(server.PREFIX + '/input/select.html');
+        const result = await page.select('select','42','blue','black','magenta');
+        expect(result.length).toEqual(1);
+      });
+      it('should return [] on no values',async({page, server}) => {
+        await page.goto(server.PREFIX + '/input/select.html');
+        const result = await page.select('select');
+        expect(result).toEqual([]);
+      });
+      it('should deselect all options when passed no values for a multiple select',async({page, server}) => {
+        await page.goto(server.PREFIX + '/input/select.html');
+        await page.evaluate(() => makeMultiple());
+        await page.select('select','blue','black','magenta');
+        await page.select('select');
+        expect(await page.$eval('select', select => Array.from(select.options).every(option => !option.selected))).toEqual(true);
+      });
+      it('should deselect all options when passed no values for a select without multiple',async({page, server}) => {
+        await page.goto(server.PREFIX + '/input/select.html');
+        await page.select('select','blue','black','magenta');
+        await page.select('select');
+        expect(await page.$eval('select', select => Array.from(select.options).every(option => !option.selected))).toEqual(true);
+      });
+      it('should throw if passed in non-strings', async({page, server}) => {
+        await page.setContent('<select><option value="12"/></select>');
+        let error = null;
+        try {
+          await page.select('select', 12);
+        } catch (e) {
+          error = e;
+        }
+        expect(error.message).toContain('Values must be strings');
+      });
+    });
+
+    describe('Cookies', function() {
+      afterEach(async({page, server}) => {
+        const cookies = await page.cookies(server.PREFIX + '/grid.html', server.CROSS_PROCESS_PREFIX);
+        for (const cookie of cookies)
+          await page.deleteCookie(cookie);
+      });
+      it('should set and get cookies', async({page, server}) => {
+        await page.goto(server.PREFIX + '/grid.html');
+        expect(await page.cookies()).toEqual([]);
+        await page.evaluate(() => {
+          document.cookie = 'username=John Doe';
+        });
+        expect(await page.cookies()).toEqual([{
+          name: 'username',
+          value: 'John Doe',
+          domain: 'localhost',
+          path: '/',
+          expires: -1,
+          size: 16,
+          httpOnly: false,
+          secure: false,
+          session: true }
+        ]);
+        await page.setCookie({
+          name: 'password',
+          value: '123456'
+        });
+        expect(await page.evaluate('document.cookie')).toBe('username=John Doe; password=123456');
+        const cookies = await page.cookies();
+        expect(cookies.sort((a, b) => a.name.localeCompare(b.name))).toEqual([{
+          name: 'password',
+          value: '123456',
+          domain: 'localhost',
+          path: '/',
+          expires: -1,
+          size: 14,
+          httpOnly: false,
+          secure: false,
+          session: true
+        }, {
+          name: 'username',
+          value: 'John Doe',
+          domain: 'localhost',
+          path: '/',
+          expires: -1,
+          size: 16,
+          httpOnly: false,
+          secure: false,
+          session: true
+        }]);
+      });
+
+      it('should set a cookie with a path', async({page, server}) => {
+        await page.goto(server.PREFIX + '/grid.html');
+        await page.setCookie({
+          name: 'gridcookie',
+          value: 'GRID',
+          path: '/grid.html'
+        });
+        expect(await page.cookies()).toEqual([{
+          name: 'gridcookie',
+          value: 'GRID',
+          domain: 'localhost',
+          path: '/grid.html',
+          expires: -1,
+          size: 14,
+          httpOnly: false,
+          secure: false,
+          session: true
+        }]);
+        expect(await page.evaluate('document.cookie')).toBe('gridcookie=GRID');
+        await page.goto(server.PREFIX + '/empty.html');
+        expect(await page.cookies()).toEqual([]);
+        expect(await page.evaluate('document.cookie')).toBe('');
+        await page.goto(server.PREFIX + '/grid.html');
+        expect(await page.evaluate('document.cookie')).toBe('gridcookie=GRID');
+      });
+
+
+      it('should delete a cookie', async({page, server}) => {
+        await page.goto(server.PREFIX + '/grid.html');
+        await page.setCookie({
+          name: 'cookie1',
+          value: '1'
+        }, {
+          name: 'cookie2',
+          value: '2'
+        }, {
+          name: 'cookie3',
+          value: '3'
+        });
+        expect(await page.evaluate('document.cookie')).toBe('cookie1=1; cookie2=2; cookie3=3');
+        await page.deleteCookie({name: 'cookie2'});
+        expect(await page.evaluate('document.cookie')).toBe('cookie1=1; cookie3=3');
+      });
+
+      it('should not set a cookie on a blank page', async function({page}) {
+        let error = null;
+        await page.goto('about:blank');
+        try {
+          await page.setCookie({name: 'example-cookie', value: 'best'});
+        } catch (e) {
+          error = e;
+        }
+        expect(error).toBeTruthy();
+        expect(error.message).toEqual('Protocol error (Network.deleteCookies): At least one of the url and domain needs to be specified undefined');
+      });
+
+      it('should not set a cookie with blank page URL', async function({page, server}) {
+        let error = null;
+        await page.goto(server.PREFIX + '/grid.html');
+        try {
+          await page.setCookie(
+              {name: 'example-cookie', value: 'best'},
+              {url: 'about:blank', name: 'example-cookie-blank', value: 'best'}
+          );
+        } catch (e) {
+          error = e;
+        }
+        expect(error).toBeTruthy();
+        expect(error.message).toEqual(
+            `Blank page can not have cookie "example-cookie-blank"`
+        );
+      });
+
+      it('should not set a cookie on a data URL page', async function({page}) {
+        let error = null;
+        await page.goto('data:,Hello%2C%20World!');
+        try {
+          await page.setCookie({name: 'example-cookie', value: 'best'});
+        } catch (e) {
+          error = e;
+        }
+        expect(error).toBeTruthy();
+        expect(error.message).toEqual(
+            'Protocol error (Network.deleteCookies): At least one of the url and domain needs to be specified undefined'
+        );
+      });
+
+      it('should not set a cookie with blank page URL', async function({page, server}) {
+        let error = null;
+        await page.goto(server.PREFIX + '/grid.html');
+        try {
+          await page.setCookie({name: 'example-cookie', value: 'best'}, {url: 'about:blank', name: 'example-cookie-blank', value: 'best'});
+        } catch (e) {
+          error = e;
+        }
+        expect(error).toBeTruthy();
+        expect(error.message).toEqual(`Blank page can not have cookie "example-cookie-blank"`);
+      });
+
+      it('should set a cookie on a different domain', async({page, server}) => {
+        await page.goto(server.PREFIX + '/grid.html');
+        await page.setCookie({name: 'example-cookie', value: 'best',  url: 'https://www.example.com'});
+        expect(await page.evaluate('document.cookie')).toBe('');
+        expect(await page.cookies()).toEqual([]);
+        expect(await page.cookies('https://www.example.com')).toEqual([{
+          name: 'example-cookie',
+          value: 'best',
+          domain: 'www.example.com',
+          path: '/',
+          expires: -1,
+          size: 18,
+          httpOnly: false,
+          secure: true,
+          session: true
+        }]);
+      });
+
+      it('should set cookies from a frame', async({page, server}) => {
+        await page.goto(server.PREFIX + '/grid.html');
+        await page.setCookie({name: 'localhost-cookie', value: 'best'});
+        await page.evaluate(src => {
+          let fulfill;
+          const promise = new Promise(x => fulfill = x);
+          const iframe = document.createElement('iframe');
+          document.body.appendChild(iframe);
+          iframe.onload = fulfill;
+          iframe.src = src;
+          return promise;
+        }, server.CROSS_PROCESS_PREFIX);
+        await page.setCookie({name: '127-cookie', value: 'worst', url: server.CROSS_PROCESS_PREFIX});
+        expect(await page.evaluate('document.cookie')).toBe('localhost-cookie=best');
+        expect(await page.frames()[1].evaluate('document.cookie')).toBe('127-cookie=worst');
+
+        expect(await page.cookies()).toEqual([{
+          name: 'localhost-cookie',
+          value: 'best',
+          domain: 'localhost',
+          path: '/',
+          expires: -1,
+          size: 20,
+          httpOnly: false,
+          secure: false,
+          session: true
+        }]);
+
+        expect(await page.cookies(server.CROSS_PROCESS_PREFIX)).toEqual([{
+          name: '127-cookie',
+          value: 'worst',
+          domain: '127.0.0.1',
+          path: '/',
+          expires: -1,
+          size: 15,
+          httpOnly: false,
+          secure: false,
+          session: true
+        }]);
+
+      });
+    });
+
+    describe('Target', function() {
+      it('Browser.targets should return all of the targets', async({page, server, browser}) => {
+        // The pages will be the testing page and the original newtab page
+        const targets = browser.targets();
+        expect(targets.some(target => target.type() === 'page' &&
+          target.url() === 'about:blank')).toBeTruthy('Missing blank page');
+        expect(targets.some(target => target.type() === 'browser')).toBeTruthy('Missing browser target');
+      });
+      it('Browser.pages should return all of the pages', async({page, server, browser}) => {
+        // The pages will be the testing page and the original newtab page
+        const allPages = await browser.pages();
+        expect(allPages.length).toBe(2);
+        expect(allPages).toContain(page);
+        expect(allPages[0]).not.toBe(allPages[1]);
+      });
+      it('should contain browser target', async({browser}) => {
+        const targets = browser.targets();
+        const browserTarget = targets.find(target => target.type() === 'browser');
+        expect(browserTarget).toBeTruthy();
+      });
+      it('should be able to use the default page in the browser', async({page, server, browser}) => {
+        // The pages will be the testing page and the original newtab page
+        const allPages = await browser.pages();
+        const originalPage = allPages.find(p => p !== page);
+        expect(await originalPage.evaluate(() => ['Hello', 'world'].join(' '))).toBe('Hello world');
+        expect(await originalPage.$('body')).toBeTruthy();
+      });
+      it('should report when a new page is created and closed', async({page, server, browser}) => {
+        const otherPagePromise = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target.page())));
+        await page.evaluate(url => window.open(url), server.CROSS_PROCESS_PREFIX);
+        const otherPage = await otherPagePromise;
+        expect(otherPage.url()).toContain(server.CROSS_PROCESS_PREFIX);
+
+        expect(await otherPage.evaluate(() => ['Hello', 'world'].join(' '))).toBe('Hello world');
+        expect(await otherPage.$('body')).toBeTruthy();
+
+        let allPages = await browser.pages();
+        expect(allPages).toContain(page);
+        expect(allPages).toContain(otherPage);
+
+        const closePagePromise = new Promise(fulfill => browser.once('targetdestroyed', target => fulfill(target.page())));
+        await otherPage.close();
+        expect(await closePagePromise).toBe(otherPage);
+
+        allPages = await Promise.all(browser.targets().map(target => target.page()));
+        expect(allPages).toContain(page);
+        expect(allPages).not.toContain(otherPage);
+      });
+      it('should report when a service worker is created and destroyed', async({page, server, browser}) => {
+        await page.goto(server.EMPTY_PAGE);
+        const createdTarget = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
+
+        await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+
+        expect((await createdTarget).type()).toBe('service_worker');
+        expect((await createdTarget).url()).toBe(server.PREFIX + '/serviceworkers/empty/sw.js');
+
+        const destroyedTarget = new Promise(fulfill => browser.once('targetdestroyed', target => fulfill(target)));
+        await page.evaluate(() => window.registrationPromise.then(registration => registration.unregister()));
+        expect(await destroyedTarget).toBe(await createdTarget);
+      });
+      it('should report when a target url changes', async({page, server, browser}) => {
+        await page.goto(server.EMPTY_PAGE);
+        let changedTarget = new Promise(fulfill => browser.once('targetchanged', target => fulfill(target)));
+        await page.goto(server.CROSS_PROCESS_PREFIX + '/');
+        expect((await changedTarget).url()).toBe(server.CROSS_PROCESS_PREFIX + '/');
+
+        changedTarget = new Promise(fulfill => browser.once('targetchanged', target => fulfill(target)));
+        await page.goto(server.EMPTY_PAGE);
+        expect((await changedTarget).url()).toBe(server.EMPTY_PAGE);
+      });
+      it('should not report uninitialized pages', async({page, server, browser}) => {
+        let targetChanged = false;
+        const listener = () => targetChanged = true;
+        browser.on('targetchanged', listener);
+        const targetPromise = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
+        const newPagePromise = browser.newPage();
+        const target = await targetPromise;
+        expect(target.url()).toBe('about:blank');
+
+        const newPage = await newPagePromise;
+        const targetPromise2 = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target)));
+        const evaluatePromise = newPage.evaluate(() => window.open('about:blank'));
+        const target2 = await targetPromise2;
+        expect(target2.url()).toBe('about:blank');
+        await evaluatePromise;
+        await newPage.close();
+        expect(targetChanged).toBe(false, 'target should not be reported as changed');
+        browser.removeListener('targetchanged', listener);
+      });
+      it('should not crash while redirecting if original request was missed', async({page, server, browser}) => {
+        let serverResponse = null;
+        server.setRoute('/one-style.css', (req, res) => serverResponse = res);
+        // Open a new page. Use window.open to connect to the page later.
+        await Promise.all([
+          page.evaluate(url => window.open(url), server.PREFIX + '/one-style.html'),
+          server.waitForRequest('/one-style.css')
+        ]);
+        // Connect to the opened page.
+        const target = browser.targets().find(target => target.url().includes('one-style.html'));
+        const newPage = await target.page();
+        // Issue a redirect.
+        serverResponse.writeHead(302, { location: '/injectedstyle.css' });
+        serverResponse.end();
+        // Wait for the new page to load.
+        await waitForEvents(newPage, 'load');
+        // Cleanup.
+        await newPage.close();
+      });
+    });
+
+    describe('Connection', function() {
+      it('should throw nice errors', async function({page}) {
+        const error = await theSourceOfTheProblems().catch(error => error);
+        expect(error.stack).toContain('theSourceOfTheProblems');
+        expect(error.message).toContain('ThisCommand.DoesNotExist');
+        async function theSourceOfTheProblems() {
+          await page._client.send('ThisCommand.DoesNotExist');
+        }
+      });
+    });
+
+    describe('Target.createCDPSession', function() {
+      it('should work', async function({page, server}) {
+        const client = await page.target().createCDPSession();
+
+        await Promise.all([
+          client.send('Runtime.enable'),
+          client.send('Runtime.evaluate', { expression: 'window.foo = "bar"' })
+        ]);
+        const foo = await page.evaluate(() => window.foo);
+        expect(foo).toBe('bar');
+      });
+      it('should send events', async function({page, server}) {
+        const client = await page.target().createCDPSession();
+        await client.send('Network.enable');
+        const events = [];
+        client.on('Network.requestWillBeSent', event => events.push(event));
+        await page.goto(server.EMPTY_PAGE);
+        expect(events.length).toBe(1);
+      });
+      it('should enable and disable domains independently', async function({page, server}) {
+        const client = await page.target().createCDPSession();
+        await client.send('Runtime.enable');
+        await client.send('Debugger.enable');
+        // JS coverage enables and then disables Debugger domain.
+        await page.coverage.startJSCoverage();
+        await page.coverage.stopJSCoverage();
+        // generate a script in page and wait for the event.
+        const [event] = await Promise.all([
+          waitForEvents(client, 'Debugger.scriptParsed'),
+          page.evaluate('//# sourceURL=foo.js')
+        ]);
+        // expect events to be dispatched.
+        expect(event.url).toBe('foo.js');
+      });
+      it('should be able to detach session', async function({page, server}) {
+        const client = await page.target().createCDPSession();
+        await client.send('Runtime.enable');
+        const evalResponse = await client.send('Runtime.evaluate', {expression: '1 + 2', returnByValue: true});
+        expect(evalResponse.result.value).toBe(3);
+        await client.detach();
+        let error = null;
+        try {
+          await client.send('Runtime.evaluate', {expression: '3 + 1', returnByValue: true});
+        } catch (e) {
+          error = e;
+        }
+        expect(error.message).toContain('Session closed.');
+      });
+    });
+
+    describe('JSCoverage', function() {
+      it('should work', async function({page, server}) {
+        await page.coverage.startJSCoverage();
+        await page.goto(server.PREFIX + '/jscoverage/simple.html');
+        const coverage = await page.coverage.stopJSCoverage();
+        expect(coverage.length).toBe(1);
+        expect(coverage[0].url).toContain('/jscoverage/simple.html');
+        expect(coverage[0].ranges).toEqual([
+          { start: 0, end: 17 },
+          { start: 35, end: 61 },
+        ]);
+      });
+      it('should report sourceURLs', async function({page, server}) {
+        await page.coverage.startJSCoverage();
+        await page.goto(server.PREFIX + '/jscoverage/sourceurl.html');
+        const coverage = await page.coverage.stopJSCoverage();
+        expect(coverage.length).toBe(1);
+        expect(coverage[0].url).toBe('nicename.js');
+      });
+      it('should ignore anonymous scripts', async function({page, server}) {
+        await page.coverage.startJSCoverage();
+        await page.goto(server.EMPTY_PAGE);
+        await page.evaluate(() => console.log(1));
+        const coverage = await page.coverage.stopJSCoverage();
+        expect(coverage.length).toBe(0);
+      });
+      it('should report multiple scripts', async function({page, server}) {
+        await page.coverage.startJSCoverage();
+        await page.goto(server.PREFIX + '/jscoverage/multiple.html');
+        const coverage = await page.coverage.stopJSCoverage();
+        expect(coverage.length).toBe(2);
+        coverage.sort((a, b) => a.url.localeCompare(b.url));
+        expect(coverage[0].url).toContain('/jscoverage/script1.js');
+        expect(coverage[1].url).toContain('/jscoverage/script2.js');
+      });
+      it('should report right ranges', async function({page, server}) {
+        await page.coverage.startJSCoverage();
+        await page.goto(server.PREFIX + '/jscoverage/ranges.html');
+        const coverage = await page.coverage.stopJSCoverage();
+        expect(coverage.length).toBe(1);
+        const entry = coverage[0];
+        expect(entry.ranges.length).toBe(1);
+        const range = entry.ranges[0];
+        expect(entry.text.substring(range.start, range.end)).toBe(`console.log('used!');`);
+      });
+      it('should report scripts that have no coverage', async function({page, server}) {
+        await page.coverage.startJSCoverage();
+        await page.goto(server.PREFIX + '/jscoverage/unused.html');
+        const coverage = await page.coverage.stopJSCoverage();
+        expect(coverage.length).toBe(1);
+        const entry = coverage[0];
+        expect(entry.url).toContain('unused.html');
+        expect(entry.ranges.length).toBe(0);
+      });
+      it('should work with conditionals', async function({page, server}) {
+        await page.coverage.startJSCoverage();
+        await page.goto(server.PREFIX + '/jscoverage/involved.html');
+        const coverage = await page.coverage.stopJSCoverage();
+        expect(JSON.stringify(coverage, null, 2).replace(/:\d{4}\//g, ':<PORT>/')).toBeGolden('jscoverage-involved.txt');
+      });
+      describe('resetOnNavigation', function() {
+        it('should report scripts across navigations when disabled', async function({page, server}) {
+          await page.coverage.startJSCoverage({resetOnNavigation: false});
+          await page.goto(server.PREFIX + '/jscoverage/multiple.html');
+          await page.goto(server.EMPTY_PAGE);
+          const coverage = await page.coverage.stopJSCoverage();
+          expect(coverage.length).toBe(2);
+        });
+        it('should NOT report scripts across navigations when enabled', async function({page, server}) {
+          await page.coverage.startJSCoverage(); // Enabled by default.
+          await page.goto(server.PREFIX + '/jscoverage/multiple.html');
+          await page.goto(server.EMPTY_PAGE);
+          const coverage = await page.coverage.stopJSCoverage();
+          expect(coverage.length).toBe(0);
+        });
+      });
+    });
+    describe('CSSCoverage', function() {
+      it('should work', async function({page, server}) {
+        await page.coverage.startCSSCoverage();
+        await page.goto(server.PREFIX + '/csscoverage/simple.html');
+        const coverage = await page.coverage.stopCSSCoverage();
+        expect(coverage.length).toBe(1);
+        expect(coverage[0].url).toContain('/csscoverage/simple.html');
+        expect(coverage[0].ranges).toEqual([
+          {start: 1, end: 22}
+        ]);
+        const range = coverage[0].ranges[0];
+        expect(coverage[0].text.substring(range.start, range.end)).toBe('div { color: green; }');
+      });
+      it('should report sourceURLs', async function({page, server}) {
+        await page.coverage.startCSSCoverage();
+        await page.goto(server.PREFIX + '/csscoverage/sourceurl.html');
+        const coverage = await page.coverage.stopCSSCoverage();
+        expect(coverage.length).toBe(1);
+        expect(coverage[0].url).toBe('nicename.css');
+      });
+      it('should report multiple stylesheets', async function({page, server}) {
+        await page.coverage.startCSSCoverage();
+        await page.goto(server.PREFIX + '/csscoverage/multiple.html');
+        const coverage = await page.coverage.stopCSSCoverage();
+        expect(coverage.length).toBe(2);
+        coverage.sort((a, b) => a.url.localeCompare(b.url));
+        expect(coverage[0].url).toContain('/csscoverage/stylesheet1.css');
+        expect(coverage[1].url).toContain('/csscoverage/stylesheet2.css');
+      });
+      it('should report stylesheets that have no coverage', async function({page, server}) {
+        await page.coverage.startCSSCoverage();
+        await page.goto(server.PREFIX + '/csscoverage/unused.html');
+        const coverage = await page.coverage.stopCSSCoverage();
+        expect(coverage.length).toBe(1);
+        expect(coverage[0].url).toBe('unused.css');
+        expect(coverage[0].ranges.length).toBe(0);
+      });
+      it('should work with media queries', async function({page, server}) {
+        await page.coverage.startCSSCoverage();
+        await page.goto(server.PREFIX + '/csscoverage/media.html');
+        const coverage = await page.coverage.stopCSSCoverage();
+        expect(coverage.length).toBe(1);
+        expect(coverage[0].url).toContain('/csscoverage/media.html');
+        expect(coverage[0].ranges).toEqual([
+          {start: 17, end: 38}
+        ]);
+      });
+      it('should work with complicated usecases', async function({page, server}) {
+        await page.coverage.startCSSCoverage();
+        await page.goto(server.PREFIX + '/csscoverage/involved.html');
+        const coverage = await page.coverage.stopCSSCoverage();
+        expect(JSON.stringify(coverage, null, 2).replace(/:\d{4}\//g, ':<PORT>/')).toBeGolden('csscoverage-involved.txt');
+      });
+      it('should ignore injected stylesheets', async function({page, server}) {
+        await page.coverage.startCSSCoverage();
+        await page.addStyleTag({content: 'body { margin: 10px;}'});
+        // trigger style recalc
+        const margin = await page.evaluate(() => window.getComputedStyle(document.body).margin);
+        expect(margin).toBe('10px');
+        const coverage = await page.coverage.stopCSSCoverage();
+        expect(coverage.length).toBe(0);
+      });
+      describe('resetOnNavigation', function() {
+        it('should report stylesheets across navigations', async function({page, server}) {
+          await page.coverage.startCSSCoverage({resetOnNavigation: false});
+          await page.goto(server.PREFIX + '/csscoverage/multiple.html');
+          await page.goto(server.EMPTY_PAGE);
+          const coverage = await page.coverage.stopCSSCoverage();
+          expect(coverage.length).toBe(2);
+        });
+        it('should NOT report scripts across navigations', async function({page, server}) {
+          await page.coverage.startCSSCoverage(); // Enabled by default.
+          await page.goto(server.PREFIX + '/csscoverage/multiple.html');
+          await page.goto(server.EMPTY_PAGE);
+          const coverage = await page.coverage.stopCSSCoverage();
+          expect(coverage.length).toBe(0);
+        });
+      });
+    });
+  });
+};

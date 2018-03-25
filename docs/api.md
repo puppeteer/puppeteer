@@ -1,8 +1,8 @@
-##### Released APIs: [v1.1.1](https://github.com/GoogleChrome/puppeteer/blob/v1.1.1/docs/api.md) | [v1.1.0](https://github.com/GoogleChrome/puppeteer/blob/v1.1.0/docs/api.md) | [v1.0.0](https://github.com/GoogleChrome/puppeteer/blob/v1.0.0/docs/api.md) | [v0.13.0](https://github.com/GoogleChrome/puppeteer/blob/v0.13.0/docs/api.md) | [v0.12.0](https://github.com/GoogleChrome/puppeteer/blob/v0.12.0/docs/api.md) | [v0.11.0](https://github.com/GoogleChrome/puppeteer/blob/v0.11.0/docs/api.md) | [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
+##### Released APIs: [v1.2.0](https://github.com/GoogleChrome/puppeteer/blob/v1.2.0/docs/api.md) | [v1.1.1](https://github.com/GoogleChrome/puppeteer/blob/v1.1.1/docs/api.md) | [v1.1.0](https://github.com/GoogleChrome/puppeteer/blob/v1.1.0/docs/api.md) | [v1.0.0](https://github.com/GoogleChrome/puppeteer/blob/v1.0.0/docs/api.md) | [v0.13.0](https://github.com/GoogleChrome/puppeteer/blob/v0.13.0/docs/api.md) | [v0.12.0](https://github.com/GoogleChrome/puppeteer/blob/v0.12.0/docs/api.md) | [v0.11.0](https://github.com/GoogleChrome/puppeteer/blob/v0.11.0/docs/api.md) | [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
 
-# Puppeteer API v<!-- GEN:version -->1.1.1-post<!-- GEN:stop--> \*\*NOT RELEASED\*\*
+# Puppeteer API v<!-- GEN:version -->1.2.0-post<!-- GEN:stop--> \*\*NOT RELEASED\*\*
 
-> **NOTE** This version of API **is expected to be released** on **March 15, 2018**.
+> **NOTE** This version of API **is expected to be released** on **April 12, 2018**.
 
 
 ##### Table of Contents
@@ -208,6 +208,7 @@
   * [request.headers()](#requestheaders)
   * [request.method()](#requestmethod)
   * [request.postData()](#requestpostdata)
+  * [request.redirectChain()](#requestredirectchain)
   * [request.resourceType()](#requestresourcetype)
   * [request.respond(response)](#requestrespondresponse)
   * [request.response()](#requestresponse)
@@ -501,11 +502,22 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
-The Page class emits various events (described below) which can be handled using any of Node's native [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter) methods, such as `on` or `once`.
+The Page class emits various events (described below) which can be handled using any of Node's native [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter) methods, such as `on`, `once` or `removeListener`.
 
 This example logs a message for a single page `load` event:
 ```js
 page.once('load', () => console.log('Page loaded!'));
+```
+
+To unsubscribe from events use the `removeListener` method:
+
+```js
+function logRequest(interceptedRequest) {
+  console.log('A request was made:', interceptedRequest.url());
+}
+page.on('request', logRequest);
+// Sometime later...
+page.removeListener('request', logRequest);
 ```
 
 #### event: 'console'
@@ -657,6 +669,7 @@ Shortcut for [page.mainFrame().$x(expression)](#frameexpression)
   - `url` <[string]> URL of a script to be added.
   - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `content` <[string]> Raw JavaScript content to be injected into frame.
+  - `type` <[string]> Script type. Use 'module' in order to load a Javascript ES6 module. See [script](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script) for more details.
 - returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
 
 Adds a `<script>` tag into the page with the desired url or content.
@@ -1707,6 +1720,7 @@ The method evaluates the XPath expression.
   - `url` <[string]> URL of a script to be added.
   - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `content` <[string]> Raw JavaScript content to be injected into frame.
+  - `type` <[string]> Script type. Use 'module' in order to load a Javascript ES6 module. See [script](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script) for more details.
 - returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
 
 Adds a `<script>` tag into the page with the desired url or content.
@@ -2022,7 +2036,7 @@ console.log(result); // prints '3'.
 
 The only difference between `executionContext.evaluate` and `executionContext.evaluateHandle` is that `executionContext.evaluateHandle` returns in-page object (JSHandle).
 
-If the function passed to the `executionContext.evaluateHandle` returns a [Promise], then `executionContext.evaluteHandle` would wait for the promise to resolve and return its value.
+If the function passed to the `executionContext.evaluateHandle` returns a [Promise], then `executionContext.evaluateHandle` would wait for the promise to resolve and return its value.
 
 ```js
 const context = await page.mainFrame().executionContext();
@@ -2365,6 +2379,33 @@ page.on('requestfailed', request => {
 
 #### request.postData()
 - returns: <[string]> Request's post body, if any.
+
+#### request.redirectChain()
+- returns: <[Array]<[Request]>>
+
+A `redirectChain` is a chain of requests initiated to fetch a resource.
+- If there are no redirects and the request was successful, the chain will be empty.
+- If a server responds with at least a single redirect, then the chain will
+contain all the requests that were redirected.
+
+`redirectChain` is shared between all the requests of the same chain.
+
+For example, if the website `http://example.com` has a single redirect to
+`https://example.com`, then the chain will contain one request:
+
+```js
+const response = await page.goto('http://example.com');
+const chain = response.request().redirectChain();
+console.log(chain.length); // 1
+console.log(chain[0].url()); // 'http://example.com'
+```
+
+If the website `https://google.com` has no redirects, then the chain will be empty:
+```js
+const response = await page.goto('https://google.com');
+const chain = response.request().redirectChain();
+console.log(chain.length); // 0
+```
 
 #### request.resourceType()
 - returns: <[string]>
