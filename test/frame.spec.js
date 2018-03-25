@@ -368,4 +368,87 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(await page.evaluate(x => x.textContent, await waitForXPath)).toBe('some text');
     });
   });
+
+  describe('Frame Management', function() {
+    it('should handle nested frames', async({page, server}) => {
+      await page.goto(server.PREFIX + '/frames/nested-frames.html');
+      expect(utils.dumpFrames(page.mainFrame())).toBeGolden('nested-frames.txt');
+    });
+    it('should send events when frames are manipulated dynamically', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      // validate frameattached events
+      const attachedFrames = [];
+      page.on('frameattached', frame => attachedFrames.push(frame));
+      await utils.attachFrame(page, 'frame1', './assets/frame.html');
+      expect(attachedFrames.length).toBe(1);
+      expect(attachedFrames[0].url()).toContain('/assets/frame.html');
+
+      // validate framenavigated events
+      const navigatedFrames = [];
+      page.on('framenavigated', frame => navigatedFrames.push(frame));
+      await utils.navigateFrame(page, 'frame1', './empty.html');
+      expect(navigatedFrames.length).toBe(1);
+      expect(navigatedFrames[0].url()).toBe(server.EMPTY_PAGE);
+
+      // validate framedetached events
+      const detachedFrames = [];
+      page.on('framedetached', frame => detachedFrames.push(frame));
+      await utils.detachFrame(page, 'frame1');
+      expect(detachedFrames.length).toBe(1);
+      expect(detachedFrames[0].isDetached()).toBe(true);
+    });
+    it('should persist mainFrame on cross-process navigation', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const mainFrame = page.mainFrame();
+      await page.goto(server.CROSS_PROCESS_PREFIX + '/empty.html');
+      expect(page.mainFrame() === mainFrame).toBeTruthy();
+    });
+    it('should not send attach/detach events for main frame', async({page, server}) => {
+      let hasEvents = false;
+      page.on('frameattached', frame => hasEvents = true);
+      page.on('framedetached', frame => hasEvents = true);
+      await page.goto(server.EMPTY_PAGE);
+      expect(hasEvents).toBe(false);
+    });
+    it('should detach child frames on navigation', async({page, server}) => {
+      let attachedFrames = [];
+      let detachedFrames = [];
+      let navigatedFrames = [];
+      page.on('frameattached', frame => attachedFrames.push(frame));
+      page.on('framedetached', frame => detachedFrames.push(frame));
+      page.on('framenavigated', frame => navigatedFrames.push(frame));
+      await page.goto(server.PREFIX + '/frames/nested-frames.html');
+      expect(attachedFrames.length).toBe(4);
+      expect(detachedFrames.length).toBe(0);
+      expect(navigatedFrames.length).toBe(5);
+
+      attachedFrames = [];
+      detachedFrames = [];
+      navigatedFrames = [];
+      await page.goto(server.EMPTY_PAGE);
+      expect(attachedFrames.length).toBe(0);
+      expect(detachedFrames.length).toBe(4);
+      expect(navigatedFrames.length).toBe(1);
+    });
+    it('should report frame.name()', async({page, server}) => {
+      await utils.attachFrame(page, 'theFrameId', server.EMPTY_PAGE);
+      await page.evaluate(url => {
+        const frame = document.createElement('iframe');
+        frame.name = 'theFrameName';
+        frame.src = url;
+        document.body.appendChild(frame);
+        return new Promise(x => frame.onload = x);
+      }, server.EMPTY_PAGE);
+      expect(page.frames()[0].name()).toBe('');
+      expect(page.frames()[1].name()).toBe('theFrameId');
+      expect(page.frames()[2].name()).toBe('theFrameName');
+    });
+    it('should report frame.parent()', async({page, server}) => {
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
+      expect(page.frames()[0].parentFrame()).toBe(null);
+      expect(page.frames()[1].parentFrame()).toBe(page.mainFrame());
+      expect(page.frames()[2].parentFrame()).toBe(page.mainFrame());
+    });
+  });
 };
