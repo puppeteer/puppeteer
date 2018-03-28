@@ -59,10 +59,10 @@ module.exports.addTests = function({testRunner, expect}) {
       const elementHandle = await page.$('div');
       const box = await elementHandle.boxModel();
 
-      expect(box.content).toEqual([10, 10, 110, 10, 110, 110, 10, 110]);
-      expect(box.padding).toEqual([6, 6, 114, 6, 114, 114, 6, 114]);
-      expect(box.border).toEqual([5, 5, 115, 5, 115, 115, 5, 115]);
-      expect(box.margin).toEqual([0, 0, 120, 0, 120, 120, 0, 120]);
+      expect(box.content).toEqual([{x: 10, y: 10}, {x: 110, y: 10}, {x: 110, y: 110}, {x: 10, y: 110}]);
+      expect(box.padding).toEqual([{x: 6, y: 6}, {x: 114, y: 6}, {x: 114, y: 114}, {x: 6, y: 114}]);
+      expect(box.border).toEqual([{x: 5, y: 5}, {x: 115, y: 5}, {x: 115, y: 115}, {x: 5, y: 115}]);
+      expect(box.margin).toEqual([{x: 0, y: 0}, {x: 120, y: 0}, {x: 120, y: 120}, {x: 0, y: 120}]);
       expect(box.height).toBe(110);
       expect(box.width).toBe(110);
     });
