@@ -147,7 +147,7 @@ module.exports.addTests = function({testRunner, expect}) {
     });
     it('should disable timeout when its set to 0', async({page}) => {
       let error = null;
-      const res = await page.waitForFunction(() => new Promise(res => setTimeout(() => res(42), 1000)), {timeout: 0}).catch(e => error = e);
+      const res = await page.waitForFunction(() => new Promise(res => setTimeout(() => res(42), 100)), {timeout: 0}).catch(e => error = e);
       expect(error).toBe(null);
       expect(await res.jsonValue()).toBe(42);
     });
