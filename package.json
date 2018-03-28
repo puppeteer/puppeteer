@@ -56,6 +56,6 @@
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.2.0",
     "text-diff": "^1.0.1",
-    "typescript": "^2.6.0-rc"
+    "typescript": "~2.7.0"
   }
 }
