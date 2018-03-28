@@ -54,17 +54,22 @@ module.exports.addTests = function({testRunner, expect}) {
 
   describe('ElementHandle.boxModel', function() {
     it('should work', async({page, server}) => {
-      await page.setViewport({width: 500, height: 500});
-      await page.setContent('<div style="width: 100px; height: 100px; margin: 5px; padding: 4px; border: 1px solid black;top: 0; left: 0; position: absolute;"></div>');
-      const elementHandle = await page.$('div');
-      const box = await elementHandle.boxModel();
+      const leftTop = {x: 28, y: 260};
+      const rightTop = {x: 292, y: 260};
+      const rightBottom = {x: 292, y: 278};
+      const leftBottom = {x: 28, y: 278};
 
-      expect(box.content).toEqual([{x: 10, y: 10}, {x: 110, y: 10}, {x: 110, y: 110}, {x: 10, y: 110}]);
-      expect(box.padding).toEqual([{x: 6, y: 6}, {x: 114, y: 6}, {x: 114, y: 114}, {x: 6, y: 114}]);
-      expect(box.border).toEqual([{x: 5, y: 5}, {x: 115, y: 5}, {x: 115, y: 115}, {x: 5, y: 115}]);
-      expect(box.margin).toEqual([{x: 0, y: 0}, {x: 120, y: 0}, {x: 120, y: 120}, {x: 0, y: 120}]);
-      expect(box.height).toBe(110);
-      expect(box.width).toBe(110);
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(server.PREFIX + '/frames/nested-frames.html');
+      const nestedFrame = page.frames()[1].childFrames()[1];
+      const elementHandle = await nestedFrame.$('div');
+      const box = await elementHandle.boxModel();
+      expect(box.content).toEqual([leftTop, rightTop, rightBottom, leftBottom]);
+      expect(box.padding).toEqual([leftTop, rightTop, rightBottom, leftBottom]);
+      expect(box.border).toEqual([leftTop, rightTop, rightBottom, leftBottom]);
+      expect(box.margin).toEqual([leftTop, rightTop, rightBottom, leftBottom]);
+      expect(box.height).toBe(18);
+      expect(box.width).toBe(264);
     });
 
     it('should return null for invisible elements', async({page, server}) => {
