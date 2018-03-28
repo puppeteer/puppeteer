@@ -1805,7 +1805,5 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await closedPromise;
       });
     });
-=======
->>>>>>> Health: break page.spec.js to smaller files
   });
 };
