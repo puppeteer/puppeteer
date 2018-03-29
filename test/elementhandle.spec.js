@@ -52,6 +52,33 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
+  describe('ElementHandle.boxModel', function() {
+    it('should work', async({page, server}) => {
+      const leftTop = {x: 28, y: 260};
+      const rightTop = {x: 292, y: 260};
+      const rightBottom = {x: 292, y: 278};
+      const leftBottom = {x: 28, y: 278};
+
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(server.PREFIX + '/frames/nested-frames.html');
+      const nestedFrame = page.frames()[1].childFrames()[1];
+      const elementHandle = await nestedFrame.$('div');
+      const box = await elementHandle.boxModel();
+      expect(box.content).toEqual([leftTop, rightTop, rightBottom, leftBottom]);
+      expect(box.padding).toEqual([leftTop, rightTop, rightBottom, leftBottom]);
+      expect(box.border).toEqual([leftTop, rightTop, rightBottom, leftBottom]);
+      expect(box.margin).toEqual([leftTop, rightTop, rightBottom, leftBottom]);
+      expect(box.height).toBe(18);
+      expect(box.width).toBe(264);
+    });
+
+    it('should return null for invisible elements', async({page, server}) => {
+      await page.setContent('<div style="display:none">hi</div>');
+      const element = await page.$('div');
+      expect(await element.boxModel()).toBe(null);
+    });
+  });
+
   describe('ElementHandle.contentFrame', function() {
     it('should work', async({page,server}) => {
       await page.goto(server.EMPTY_PAGE);

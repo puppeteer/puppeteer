@@ -186,6 +186,7 @@
   * [elementHandle.$x(expression)](#elementhandlexexpression)
   * [elementHandle.asElement()](#elementhandleaselement)
   * [elementHandle.boundingBox()](#elementhandleboundingbox)
+  * [elementHandle.boxModel()](#elementhandleboxmodel)
   * [elementHandle.click([options])](#elementhandleclickoptions)
   * [elementHandle.contentFrame()](#elementhandlecontentframe)
   * [elementHandle.dispose()](#elementhandledispose)
@@ -2196,6 +2197,17 @@ The method evaluates the XPath expression relative to the elementHandle. If ther
   - height <[number]> the height of the element in pixels.
 
 This method returns the bounding box of the element (relative to the main frame), or `null` if the element is not visible.
+
+#### elementHandle.boxModel()
+- returns: <[Promise]<?[Object]>>
+  - content <[Array]<[Object]>> Content box, represented as an array of {x, y} points.
+  - padding <[Array]<[Object]>> Padding box, represented as an array of {x, y} points.
+  - border <[Array]<[Object]>> Border box, represented as an array of {x, y} points.
+  - margin <[Array]<[Object]>> Margin box, represented as an array of {x, y} points.
+  - width <[number]> Element's width.
+  - height <[number]> Element's height.
+
+This method returns boxes of the element, or `null` if the element is not visible. Boxes are represented as an array of objects, {x, y} for each point, points clock-wise. See [getBoxModel](https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-getBoxModel) for more details.
 
 #### elementHandle.click([options])
 - `options` <[Object]>
