@@ -219,6 +219,35 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
           process.kill(res.pid);
         await Promise.all(promises);
       });
+      it('should support the pipe option', async() => {
+        const options = Object.assign({pipe: true}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
+        expect(browser.wsEndpoint()).toBe('');
+        const page = await browser.newPage();
+        expect(await page.evaluate('11 * 11')).toBe(121);
+        await page.close();
+        await browser.close();
+      });
+      it('should support the pipe argument', async() => {
+        const options = Object.assign({}, defaultBrowserOptions);
+        options.ignoreDefaultArgs = true;
+        options.args = ['--remote-debugging-pipe'];
+        const browser = await puppeteer.launch(options);
+        expect(browser.wsEndpoint()).toBe('');
+        const page = await browser.newPage();
+        expect(await page.evaluate('11 * 11')).toBe(121);
+        await page.close();
+        await browser.close();
+      });
+      it('should work with no default arguments', async() => {
+        const options = Object.assign({}, defaultBrowserOptions);
+        options.ignoreDefaultArgs = true;
+        const browser = await puppeteer.launch(options);
+        const page = await browser.newPage();
+        expect(await page.evaluate('11 * 11')).toBe(121);
+        await page.close();
+        await browser.close();
+      });
     });
     describe('Puppeteer.connect', function() {
       it('should be able to connect multiple times to the same browser', async({server}) => {
