@@ -145,6 +145,12 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.evaluate(element => element.remove(), div);
       await waitForFunction;
     });
+    it('should respect timeout', async({page}) => {
+      let error = null;
+      await page.waitForFunction('false', {timeout: 10}).catch(e => error = e);
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('waiting for function failed: timeout');
+    });
     it('should disable timeout when its set to 0', async({page}) => {
       let error = null;
       const res = await page.waitForFunction(() => new Promise(res => setTimeout(() => res(42), 100)), {timeout: 0}).catch(e => error = e);
@@ -292,7 +298,7 @@ module.exports.addTests = function({testRunner, expect}) {
       let error = null;
       await page.waitForSelector('div', {timeout: 10}).catch(e => error = e);
       expect(error).toBeTruthy();
-      expect(error.message).toContain('waiting failed: timeout');
+      expect(error.message).toContain('waiting for selector "div" failed: timeout');
     });
 
     it('should respond to node attribute mutation', async({page, server}) => {
@@ -317,6 +323,12 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.setContent(`<p>red herring</p><p>hello  world  </p>`);
       const waitForXPath = page.waitForXPath('//p[normalize-space(.)="hello world"]');
       expect(await page.evaluate(x => x.textContent, await waitForXPath)).toBe('hello  world  ');
+    });
+    it('should respect timeout', async({page}) => {
+      let error = null;
+      await page.waitForXPath('//div', {timeout: 10}).catch(e => error = e);
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('waiting for XPath "//div" failed: timeout');
     });
     it('should run in specified frame', async({page, server}) => {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
