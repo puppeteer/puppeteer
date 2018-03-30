@@ -1508,6 +1508,13 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await page.goto(server.PREFIX + '/tamperable.html');
         expect(await page.evaluate(() => window.result)).toBe(123);
       });
+      it('should work with CSP', async({page, server}) => {
+        await page.evaluateOnNewDocument(function(){
+          window.injected = 123;
+        });
+        await page.goto(server.PREFIX + '/csp.html');
+        expect(await page.evaluate(() => window.injected)).toBe(123);
+      });
     });
 
     describe('Page.setCacheEnabled', function() {
