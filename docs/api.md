@@ -2207,7 +2207,7 @@ This method returns the bounding box of the element (relative to the main frame)
   - width <[number]> Element's width.
   - height <[number]> Element's height.
 
-This method returns boxes of the element, or `null` if the element is not visible. Boxes are represented as an array of objects, {x, y} for each point, points clock-wise. See [getBoxModel](https://chromedevtools.github.io/devtools-protocol/tot/DOM#method-getBoxModel) for more details.
+This method returns boxes of the element, or `null` if the element is not visible. Boxes are represented as an array of points; each Point is an object `{x, y}`. Box points are sorted clock-wise.
 
 #### elementHandle.click([options])
 - `options` <[Object]>
