@@ -39,6 +39,7 @@
   * [browser.version()](#browserversion)
   * [browser.wsEndpoint()](#browserwsendpoint)
 - [class: Page](#class-page)
+  * [event: 'close'](#event-close)
   * [event: 'console'](#event-console)
   * [event: 'dialog'](#event-dialog)
   * [event: 'domcontentloaded'](#event-domcontentloaded)
@@ -185,6 +186,7 @@
   * [elementHandle.$x(expression)](#elementhandlexexpression)
   * [elementHandle.asElement()](#elementhandleaselement)
   * [elementHandle.boundingBox()](#elementhandleboundingbox)
+  * [elementHandle.boxModel()](#elementhandleboxmodel)
   * [elementHandle.click([options])](#elementhandleclickoptions)
   * [elementHandle.contentFrame()](#elementhandlecontentframe)
   * [elementHandle.dispose()](#elementhandledispose)
@@ -264,11 +266,13 @@ The Puppeteer API is hierarchical and mirrors the browser structure. On the foll
 
 ### Environment Variables
 
-Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) to aid its operations. These variables can either be set in the environment or in the [npm config](https://docs.npmjs.com/cli/config).
+Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) to aid its operations.
+If puppeteer doesn't find them in environment, lowercased variant of these variables will be used from the [npm config](https://docs.npmjs.com/cli/config).
 
 - `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
 - `PUPPETEER_DOWNLOAD_HOST` - overwrite host part of URL that is used to download Chromium
+- `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of chrome you'd like puppeteer to use during the installation step.
 
 ### class: Puppeteer
 
@@ -520,6 +524,10 @@ page.on('request', logRequest);
 page.removeListener('request', logRequest);
 ```
 
+#### event: 'close'
+
+Emitted when the page closes.
+
 #### event: 'console'
 - <[ConsoleMessage]>
 
@@ -662,7 +670,7 @@ Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector
 
 The method evaluates the XPath expression.
 
-Shortcut for [page.mainFrame().$x(expression)](#frameexpression)
+Shortcut for [page.mainFrame().$x(expression)](#framexexpression)
 
 #### page.addScriptTag(options)
 - `options` <[Object]>
@@ -1339,7 +1347,7 @@ Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, .
   - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values:
     - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
     - `mutation` - to execute `pageFunction` on every DOM mutation.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[JSHandle]>> Promise which resolves when the `pageFunction` returns a truthy value. It resolves to a JSHandle of the truthy value.
 
@@ -1372,7 +1380,7 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
 - returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by selector string is added to DOM.
 
 Wait for the `selector` to appear in page. If at the moment of calling
@@ -1401,7 +1409,7 @@ Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitf
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
 - returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by xpath string is added to DOM.
 
 Wait for the `xpath` to appear in page. If at the moment of calling
@@ -1910,7 +1918,7 @@ Returns frame's url.
 
 This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] or [xpath], depending on whether or not it starts with '//', and the method is a shortcut for
-  [frame.waitForSelector](#framewaitforselectorselector-options) or [frame.waitForXPath](#framewaitforsxpathxpath-options)
+  [frame.waitForSelector](#framewaitforselectorselector-options) or [frame.waitForXPath](#framewaitforxpathxpath-options)
 - if `selectorOrFunctionOrTimeout` is a `function`, then the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
 - if `selectorOrFunctionOrTimeout` is a `number`, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
@@ -1921,7 +1929,7 @@ This method behaves differently with respect to the type of the first parameter:
   - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values:
     - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
     - `mutation` - to execute `pageFunction` on every DOM mutation.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[JSHandle]>> Promise which resolves when the `pageFunction` returns a truthy value. It resolves to a JSHandle of the truthy value.
 
@@ -1943,7 +1951,7 @@ puppeteer.launch().then(async browser => {
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
 - returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by selector string is added to DOM.
 
 Wait for the `selector` to appear in page. If at the moment of calling
@@ -1971,7 +1979,7 @@ puppeteer.launch().then(async browser => {
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
 - returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by xpath string is added to DOM.
 
 Wait for the `xpath` to appear in page. If at the moment of calling
@@ -2190,6 +2198,17 @@ The method evaluates the XPath expression relative to the elementHandle. If ther
   - height <[number]> the height of the element in pixels.
 
 This method returns the bounding box of the element (relative to the main frame), or `null` if the element is not visible.
+
+#### elementHandle.boxModel()
+- returns: <[Promise]<?[Object]>>
+  - content <[Array]<[Object]>> Content box, represented as an array of {x, y} points.
+  - padding <[Array]<[Object]>> Padding box, represented as an array of {x, y} points.
+  - border <[Array]<[Object]>> Border box, represented as an array of {x, y} points.
+  - margin <[Array]<[Object]>> Margin box, represented as an array of {x, y} points.
+  - width <[number]> Element's width.
+  - height <[number]> Element's height.
+
+This method returns boxes of the element, or `null` if the element is not visible. Boxes are represented as an array of points; each Point is an object `{x, y}`. Box points are sorted clock-wise.
 
 #### elementHandle.click([options])
 - `options` <[Object]>
