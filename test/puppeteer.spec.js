@@ -231,7 +231,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       it('should support the pipe argument', async() => {
         const options = Object.assign({}, defaultBrowserOptions);
         options.ignoreDefaultArgs = true;
-        options.args = ['--remote-debugging-pipe'];
+        options.args = ['--remote-debugging-pipe'].concat(options.args);
         const browser = await puppeteer.launch(options);
         expect(browser.wsEndpoint()).toBe('');
         const page = await browser.newPage();
