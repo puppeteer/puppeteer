@@ -9,37 +9,40 @@ import {JSHandle as RealJSHandle, ExecutionContext as RealExecutionContext}  fro
 import * as RealElementHandle  from './ElementHandle.js';
 import { NetworkManager as RealNetworkManager, Request as RealRequest, Response as RealResponse } from './NetworkManager.js';
 import * as child_process from 'child_process';
-export as namespace Puppeteer;
+declare global {
+  module Puppeteer {
+    export class Connection extends RealConnection {}
+    export class CDPSession extends RealCDPSession {}
+    export class Mouse extends RealMouse {}
+    export class Keyboard extends RealKeyboard {}
+    export class Touchscreen extends RealTouchscreen {}
+    export class TaskQueue extends RealTaskQueue {}
+    export class Browser extends RealBrowser {}
+    export class Target extends RealTarget {}
+    export class Frame extends RealFrame {}
+    export class FrameManager extends RealFrameManager {}
+    export class NetworkManager extends RealNetworkManager {}
+    export class ElementHandle extends RealElementHandle {}
+    export class JSHandle extends RealJSHandle {}
+    export class ExecutionContext extends RealExecutionContext {}
+    export class Page extends RealPage { }
+    export class Response extends RealResponse { }
+    export class Request extends RealRequest { }
 
-export class Connection extends RealConnection {}
-export class CDPSession extends RealCDPSession {}
-export class Mouse extends RealMouse {}
-export class Keyboard extends RealKeyboard {}
-export class Touchscreen extends RealTouchscreen {}
-export class TaskQueue extends RealTaskQueue {}
-export class Browser extends RealBrowser {}
-export class Target extends RealTarget {}
-export class Frame extends RealFrame {}
-export class FrameManager extends RealFrameManager {}
-export class NetworkManager extends RealNetworkManager {}
-export class ElementHandle extends RealElementHandle {}
-export class JSHandle extends RealJSHandle {}
-export class ExecutionContext extends RealExecutionContext {}
-export class Page extends RealPage { }
-export class Response extends RealResponse { }
-export class Request extends RealRequest { }
+    export interface ConnectionTransport extends NodeJS.EventEmitter {
+      send(string);
+      close();
+    }
 
-export interface ConnectionTransport extends NodeJS.EventEmitter {
-  send(string);
-  close();
+    export interface TargetInfo {
+      type: string;
+      targetId: string;
+      title: string;
+      url: string;
+      attached: boolean;
+    }
+
+    export interface ChildProcess extends child_process.ChildProcess {}
+
+  }
 }
-
-export interface TargetInfo {
-  type: string;
-  targetId: string;
-  title: string;
-  url: string;
-  attached: boolean;
-}
-
-export interface ChildProcess extends child_process.ChildProcess {}
