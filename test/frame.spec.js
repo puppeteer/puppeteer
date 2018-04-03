@@ -110,6 +110,13 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.evaluate(() => window.__FOO = 'hit');
       await watchdog;
     });
+    it('should work with strict CSP policy', async({page, server}) => {
+      server.setCSP('/empty.html', 'script-src ' + server.PREFIX);
+      await page.goto(server.EMPTY_PAGE);
+      const watchdog = page.waitForFunction(() => window.__FOO === 'hit', {polling: 'raf'});
+      await page.evaluate(() => window.__FOO = 'hit');
+      await watchdog;
+    });
     it('should throw on bad polling value', async({page, server}) => {
       let error = null;
       try {
