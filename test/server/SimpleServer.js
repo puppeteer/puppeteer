@@ -78,6 +78,8 @@ class SimpleServer {
     this._routes = new Map();
     /** @type {!Map<string, !{username:string, password:string}>} */
     this._auths = new Map();
+    /** @type {!Map<string, string>} */
+    this._csp = new Map();
     /** @type {!Map<string, !Promise>} */
     this._requestSubscribers = new Map();
   }
@@ -107,6 +109,14 @@ class SimpleServer {
    */
   setAuth(path, username, password) {
     this._auths.set(path, {username, password});
+  }
+
+  /**
+   * @param {string} path
+   * @param {string} csp
+   */
+  setCSP(path, csp) {
+    this._csp.set(path, csp);
   }
 
   async stop() {
@@ -158,6 +168,7 @@ class SimpleServer {
   reset() {
     this._routes.clear();
     this._auths.clear();
+    this._csp.clear();
     const error = new Error('Static Server has been reset');
     for (const subscriber of this._requestSubscribers.values())
       subscriber[rejectSymbol].call(null, error);
@@ -214,6 +225,8 @@ class SimpleServer {
     } else {
       response.setHeader('Cache-Control', 'no-cache, no-store');
     }
+    if (this._csp.has(pathName))
+      response.setHeader('Content-Security-Policy', this._csp.get(pathName));
 
     fs.readFile(filePath, function(err, data) {
       if (err) {
