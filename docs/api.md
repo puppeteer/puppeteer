@@ -90,6 +90,7 @@
   * [page.reload(options)](#pagereloadoptions)
   * [page.screenshot([options])](#pagescreenshotoptions)
   * [page.select(selector, ...values)](#pageselectselector-values)
+  * [page.setBypassCSP(enabled)](#pagesetbypasscspenabled)
   * [page.setCacheEnabled(enabled)](#pagesetcacheenabledenabled)
   * [page.setContent(html)](#pagesetcontenthtml)
   * [page.setCookie(...cookies)](#pagesetcookiecookies)
@@ -1175,6 +1176,15 @@ page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 ```
 
 Shortcut for [page.mainFrame().select()](#frameselectselector-values)
+
+#### page.setBypassCSP(enabled)
+- `enabled` <[boolean]> sets by-passing of page's Content-Security-Policy.
+- returns: <[Promise]>
+
+Toggles by-passing page's Content-Security-Policy.
+
+> **NOTE** CSP by-passing happens at the moment of CSP initialization rather then evaluation. Usually this means
+that `page.setBypassCSP` should be called before navigating to the domain.
 
 #### page.setCacheEnabled(enabled)
 - `enabled` <[boolean]> sets the `enabled` state of the cache.
