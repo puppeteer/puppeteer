@@ -25,7 +25,8 @@ if (process.env.NPM_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.env.npm_c
   return;
 }
 
-const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host;
+const inGFW = require('in-gfw');
+const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host || (inGFW.osSync() && 'https://npm.taobao.org/mirrors');
 
 const puppeteer = require('./index');
 const browserFetcher = puppeteer.createBrowserFetcher({ host: downloadHost });
@@ -82,7 +83,7 @@ let lastDownloadedBytes = 0;
 function onProgress(downloadedBytes, totalBytes) {
   if (!progressBar) {
     const ProgressBar = require('progress');
-    progressBar = new ProgressBar(`Downloading Chromium r${revision} - ${toMegabytes(totalBytes)} [:bar] :percent :etas `, {
+    progressBar = new ProgressBar(`Downloading Chromium r${revision}${downloadHost ? ' from ' + downloadHost : ''} - ${toMegabytes(totalBytes)} [:bar] :percent :etas `, {
       complete: '=',
       incomplete: ' ',
       width: 20,
