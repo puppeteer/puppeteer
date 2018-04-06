@@ -1336,6 +1336,20 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(scriptHandle.asElement()).not.toBeNull();
         expect(await page.evaluate(() => __injected)).toBe(35);
       });
+
+      it('should throw when added with content to the CSP page', async({page, server}) => {
+        await page.goto(server.PREFIX + '/csp.html');
+        let error = null;
+        await page.addScriptTag({ content: 'window.__injected = 35;' }).catch(e => error = e);
+        expect(error).toBeTruthy();
+      });
+
+      it('should throw when added with URL to the CSP page', async({page, server}) => {
+        await page.goto(server.PREFIX + '/csp.html');
+        let error = null;
+        await page.addScriptTag({ url: server.CROSS_PROCESS_PREFIX + '/injectedfile.js' }).catch(e => error = e);
+        expect(error).toBeTruthy();
+      });
     });
 
     describe('Page.addStyleTag', function() {
@@ -1387,6 +1401,20 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         const styleHandle = await page.addStyleTag({ content: 'body { background-color: green; }' });
         expect(styleHandle.asElement()).not.toBeNull();
         expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(0, 128, 0)');
+      });
+
+      it('should throw when added with content to the CSP page', async({page, server}) => {
+        await page.goto(server.PREFIX + '/csp.html');
+        let error = null;
+        await page.addStyleTag({ content: 'body { background-color: green; }' }).catch(e => error = e);
+        expect(error).toBeTruthy();
+      });
+
+      it('should throw when added with URL to the CSP page', async({page, server}) => {
+        await page.goto(server.PREFIX + '/csp.html');
+        let error = null;
+        await page.addStyleTag({ url: server.CROSS_PROCESS_PREFIX + '/injectedstyle.css' }).catch(e => error = e);
+        expect(error).toBeTruthy();
       });
     });
 
