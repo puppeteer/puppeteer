@@ -1178,12 +1178,12 @@ page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 Shortcut for [page.mainFrame().select()](#frameselectselector-values)
 
 #### page.setBypassCSP(enabled)
-- `enabled` <[boolean]> sets by-passing of page's Content-Security-Policy.
+- `enabled` <[boolean]> sets bypassing of page's Content-Security-Policy.
 - returns: <[Promise]>
 
-Toggles by-passing page's Content-Security-Policy.
+Toggles bypassing page's Content-Security-Policy.
 
-> **NOTE** CSP by-passing happens at the moment of CSP initialization rather then evaluation. Usually this means
+> **NOTE** CSP bypassing happens at the moment of CSP initialization rather then evaluation. Usually this means
 that `page.setBypassCSP` should be called before navigating to the domain.
 
 #### page.setCacheEnabled(enabled)

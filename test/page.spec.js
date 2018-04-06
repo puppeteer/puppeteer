@@ -1268,7 +1268,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
     });
 
     describe('Page.setBypassCSP', function() {
-      it('should by-pass CSP meta tag', async({page, server}) => {
+      it('should bypass CSP meta tag', async({page, server}) => {
         // Make sure CSP prohibits addScriptTag.
         await page.goto(server.PREFIX + '/csp.html');
         await page.addScriptTag({content: 'window.__injected = 42;'}).catch(e => void e);
@@ -1281,7 +1281,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(await page.evaluate(() => window.__injected)).toBe(42);
       });
 
-      it('should by-pass CSP header', async({page, server}) => {
+      it('should bypass CSP header', async({page, server}) => {
         // Make sure CSP prohibits addScriptTag.
         server.setCSP('/empty.html', 'default-src "self"');
         await page.goto(server.EMPTY_PAGE);
@@ -1295,7 +1295,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(await page.evaluate(() => window.__injected)).toBe(42);
       });
 
-      it('should by-pass after cross-process navigation', async({page, server}) => {
+      it('should bypass after cross-process navigation', async({page, server}) => {
         await page.setBypassCSP(true);
         await page.goto(server.PREFIX + '/csp.html');
         await page.addScriptTag({content: 'window.__injected = 42;'});
