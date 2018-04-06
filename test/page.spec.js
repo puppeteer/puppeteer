@@ -1267,6 +1267,46 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       });
     });
 
+    describe('Page.setBypassCSP', function() {
+      it('should bypass CSP meta tag', async({page, server}) => {
+        // Make sure CSP prohibits addScriptTag.
+        await page.goto(server.PREFIX + '/csp.html');
+        await page.addScriptTag({content: 'window.__injected = 42;'}).catch(e => void e);
+        expect(await page.evaluate(() => window.__injected)).toBe(undefined);
+
+        // By-pass CSP and try one more time.
+        await page.setBypassCSP(true);
+        await page.reload();
+        await page.addScriptTag({content: 'window.__injected = 42;'});
+        expect(await page.evaluate(() => window.__injected)).toBe(42);
+      });
+
+      it('should bypass CSP header', async({page, server}) => {
+        // Make sure CSP prohibits addScriptTag.
+        server.setCSP('/empty.html', 'default-src "self"');
+        await page.goto(server.EMPTY_PAGE);
+        await page.addScriptTag({content: 'window.__injected = 42;'}).catch(e => void e);
+        expect(await page.evaluate(() => window.__injected)).toBe(undefined);
+
+        // By-pass CSP and try one more time.
+        await page.setBypassCSP(true);
+        await page.reload();
+        await page.addScriptTag({content: 'window.__injected = 42;'});
+        expect(await page.evaluate(() => window.__injected)).toBe(42);
+      });
+
+      it('should bypass after cross-process navigation', async({page, server}) => {
+        await page.setBypassCSP(true);
+        await page.goto(server.PREFIX + '/csp.html');
+        await page.addScriptTag({content: 'window.__injected = 42;'});
+        expect(await page.evaluate(() => window.__injected)).toBe(42);
+
+        await page.goto(server.CROSS_PROCESS_PREFIX + '/csp.html');
+        await page.addScriptTag({content: 'window.__injected = 42;'});
+        expect(await page.evaluate(() => window.__injected)).toBe(42);
+      });
+    });
+
     describe('Page.addScriptTag', function() {
       it('should throw an error if no options are provided', async({page, server}) => {
         let error = null;
