@@ -236,6 +236,7 @@
 - [class: Target](#class-target)
   * [target.createCDPSession()](#targetcreatecdpsession)
   * [target.page()](#targetpage)
+  * [target.targetId()](#targettargetid)
   * [target.type()](#targettype)
   * [target.url()](#targeturl)
 - [class: CDPSession](#class-cdpsession)
@@ -2546,6 +2547,9 @@ Creates a Chrome Devtools Protocol session attached to the target.
 - returns: <[Promise]<?[Page]>>
 
 If the target is not of type `"page"`, returns `null`.
+
+#### target.targetId()
+- returns: <[string]>
 
 #### target.type()
 - returns: <[string]>
