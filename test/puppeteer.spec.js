@@ -145,8 +145,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await browser2.close();
         rm(userDataDir);
       });
-      // @see https://github.com/GoogleChrome/puppeteer/issues/1537
-      xit('userDataDir option should restore cookies', async({server}) => {
+      it('userDataDir option should restore cookies', async({server}) => {
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
