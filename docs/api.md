@@ -1162,6 +1162,8 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
   - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
 - returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot
 
+> **NOTE** Screenshots take at least 1/6 second on OS X. See https://crbug.com/741689 for discussion.
+
 #### page.select(selector, ...values)
 - `selector` <[string]> A [selector] to query page for
 - `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
