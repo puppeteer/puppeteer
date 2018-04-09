@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const {waitForEvents} = require('./utils');
+const {waitEvent} = require('./utils');
 
 module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
@@ -110,7 +110,7 @@ module.exports.addTests = function({testRunner, expect}) {
       // send request and wait for server response
       await Promise.all([
         page.evaluate(() => fetch('./get', { method: 'GET'})),
-        waitForEvents(page, 'response')
+        waitEvent(page, 'response')
       ]);
 
       expect(serverResponse).toBeTruthy();

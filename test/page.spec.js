@@ -16,7 +16,7 @@
 const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
-const {waitForEvents, getPDFPages, cssPixelsToInches} = require('./utils');
+const {waitEvent, getPDFPages, cssPixelsToInches} = require('./utils');
 
 module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT}) {
   const {describe, xdescribe, fdescribe} = testRunner;
@@ -88,7 +88,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         let error = null;
         page.on('error', err => error = err);
         page.goto('chrome://crash').catch(e => {});
-        await waitForEvents(page, 'error');
+        await waitEvent(page, 'error');
         expect(error.message).toBe('Page crashed!');
       });
     });
@@ -329,7 +329,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         page.once('console', m => message = m);
         await Promise.all([
           page.evaluate(() => console.log('hello', 5, {foo: 'bar'})),
-          waitForEvents(page, 'console')
+          waitEvent(page, 'console')
         ]);
         expect(message.text()).toEqual('hello 5 JSHandle@object');
         expect(message.type()).toEqual('log');
@@ -340,20 +340,17 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       it('should work for different console API calls', async({page, server}) => {
         const messages = [];
         page.on('console', msg => messages.push(msg));
-        await Promise.all([
-          page.evaluate(() => {
-            // A pair of time/timeEnd generates only one Console API call.
-            console.time('calling console.time');
-            console.timeEnd('calling console.time');
-            console.trace('calling console.trace');
-            console.dir('calling console.dir');
-            console.warn('calling console.warn');
-            console.error('calling console.error');
-            console.log(Promise.resolve('should not wait until resolved!'));
-          }),
-          // Wait for 5 events to hit - console.time is not reported
-          waitForEvents(page, 'console', 5)
-        ]);
+        // All console events will be reported before `page.evaluate` is finished.
+        await page.evaluate(() => {
+          // A pair of time/timeEnd generates only one Console API call.
+          console.time('calling console.time');
+          console.timeEnd('calling console.time');
+          console.trace('calling console.trace');
+          console.dir('calling console.dir');
+          console.warn('calling console.warn');
+          console.error('calling console.error');
+          console.log(Promise.resolve('should not wait until resolved!'));
+        });
         expect(messages.map(msg => msg.type())).toEqual([
           'timeEnd', 'trace', 'dir', 'warning', 'error', 'log'
         ]);
@@ -371,7 +368,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         page.once('console', msg => message = msg);
         await Promise.all([
           page.evaluate(() => console.error(window)),
-          waitForEvents(page, 'console')
+          waitEvent(page, 'console')
         ]);
         expect(message.text()).toBe('JSHandle@object');
       });
@@ -380,7 +377,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
     describe('Page.Events.DOMContentLoaded', function() {
       it('should fire when expected', async({page, server}) => {
         page.goto('about:blank');
-        await waitForEvents(page, 'domcontentloaded', 1);
+        await waitEvent(page, 'domcontentloaded');
       });
     });
 
@@ -975,7 +972,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         page.on('request', async r => request = r);
         page.$eval('iframe', (frame, url) => frame.src = url, server.EMPTY_PAGE),
         // Wait for request interception.
-        await waitForEvents(page, 'request');
+        await waitEvent(page, 'request');
         // Delete frame to cause request to be canceled.
         await page.$eval('iframe', frame => frame.remove());
         let error = null;
@@ -1068,7 +1065,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         page.once('pageerror', e => error = e);
         await Promise.all([
           page.goto(server.PREFIX + '/error.html'),
-          waitForEvents(page, 'pageerror')
+          waitEvent(page, 'pageerror')
         ]);
         expect(error.message).toContain('Fancy');
       });

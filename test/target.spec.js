@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const {waitForEvents} = require('./utils');
+const {waitEvent} = require('./utils');
 
 module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
@@ -126,7 +126,7 @@ module.exports.addTests = function({testRunner, expect}) {
       serverResponse.writeHead(302, { location: '/injectedstyle.css' });
       serverResponse.end();
       // Wait for the new page to load.
-      await waitForEvents(newPage, 'load');
+      await waitEvent(newPage, 'load');
       // Cleanup.
       await newPage.close();
     });

@@ -64,7 +64,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       remoteBrowser2.on('disconnected', () => ++disconnectedRemote2);
 
       await Promise.all([
-        utils.waitForEvents(remoteBrowser2, 'disconnected'),
+        utils.waitEvent(remoteBrowser2, 'disconnected'),
         remoteBrowser2.disconnect(),
       ]);
 
@@ -73,8 +73,8 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       expect(disconnectedRemote2).toBe(1);
 
       await Promise.all([
-        utils.waitForEvents(remoteBrowser1, 'disconnected'),
-        utils.waitForEvents(originalBrowser, 'disconnected'),
+        utils.waitEvent(remoteBrowser1, 'disconnected'),
+        utils.waitEvent(originalBrowser, 'disconnected'),
         originalBrowser.close(),
       ]);
 
