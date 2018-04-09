@@ -185,6 +185,7 @@
   * [elementHandle.$(selector)](#elementhandleselector)
   * [elementHandle.$$(selector)](#elementhandleselector)
   * [elementHandle.$x(expression)](#elementhandlexexpression)
+  * [elementHandle.accessibleName()](#elementhandleaccessiblename)
   * [elementHandle.asElement()](#elementhandleaselement)
   * [elementHandle.boundingBox()](#elementhandleboundingbox)
   * [elementHandle.boxModel()](#elementhandleboxmodel)
@@ -2204,8 +2205,14 @@ The method runs `element.querySelectorAll` within the page. If no elements match
 
 The method evaluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to `null`.
 
+#### elementHandle.accessibleName()
+- returns: <[Promise]<?[string]>>
+
+This method computed the acessible name of the element that would exposed to a screen reader.
+Might return `null` if the element is ignored for accessibility, e.g. a hidden element or a simple container element.
+
 #### elementHandle.asElement()
-- returns: <[elementhandle]>
+- returns: <[ElementHandle]>
 
 #### elementHandle.boundingBox()
 - returns: <[Promise]<?[Object]>>

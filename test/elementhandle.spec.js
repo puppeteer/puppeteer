@@ -332,4 +332,39 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(second).toEqual([]);
     });
   });
+
+  describe('Accessibility', function() {
+    it('ElemetnHandle.accessibleName', async({page, server}) => {
+      await page.setContent(`
+        <div class="test" tabIndex=0>hello</div>
+
+        <div class="test" aria-label="hello">aria label</div>
+
+        <div class="test" title="hello">title</div>
+
+        <style> div.psuedo::before{content:'hello'} </style>
+        <div class="test psuedo" tabIndex=0"></div>
+
+        <span id="mylabel">hello</span>
+        <div class="test" aria-labeledby="mylabel">labeledby</diV>
+
+        <div class="test" tabIndex=0><span>h</span>el<span>l</span>o</div>
+
+        <input class="test" placeholder="hello">
+
+        <img class="test" alt="hello"></img>
+
+        <div class="antitest"><div>hello</div></div>
+
+        <div class="antitest" tabIndex=0 style="display:none">hello</div>
+
+        <div class="antitest" tabIndex=0 style="visibility:hidden">hello</div>
+        `);
+      for (const div of await page.$$('.test'))
+        expect(await div.accessibleName()).toBe('hello');
+      for (const div of await page.$$('.antitest'))
+        expect(await div.accessibleName()).toBe(null);
+
+    });
+  });
 };
