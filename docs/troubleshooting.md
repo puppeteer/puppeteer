@@ -94,7 +94,7 @@ const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid
 ```
 ## Running Puppeteer on Travis CI
 
-To run headless Chrome on Travis, you *must* call launch with the sandbox disabled, like to:
+To run headless Chrome on Travis, you *must* call `launch()` with flags to disable Chrome's sandbox, like so:
 
 ```js
 const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
