@@ -92,6 +92,13 @@ xorg-x11-fonts-misc
 ```js
 const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
 ```
+## Running Puppeteer on Travis CI
+
+To run headless Chrome on Travis, you *must* call launch with the sandbox disabled, like to:
+
+```js
+const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
+```
 
 ## Running Puppeteer in Docker
 
