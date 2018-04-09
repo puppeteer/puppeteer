@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-const utils = require('./utils.js');
-
 module.exports.addTests = function({testRunner, expect, puppeteer, headless}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
