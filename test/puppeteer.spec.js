@@ -23,10 +23,11 @@ const readFileAsync = helper.promisify(fs.readFile);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const utils = require('./utils');
 
-module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT}) {
+module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+  const puppeteer = require(PROJECT_ROOT);
 
   describe('Puppeteer', function() {
     describe('BrowserFetcher', function() {
@@ -284,4 +285,40 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       });
     });
   });
+
+  describe('Browser.Events.disconnected', function() {
+    it('should be emitted when: browser gets closed, disconnected or underlying websocket gets closed', async() => {
+      const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+      const browserWSEndpoint = originalBrowser.wsEndpoint();
+      const remoteBrowser1 = await puppeteer.connect({browserWSEndpoint});
+      const remoteBrowser2 = await puppeteer.connect({browserWSEndpoint});
+
+      let disconnectedOriginal = 0;
+      let disconnectedRemote1 = 0;
+      let disconnectedRemote2 = 0;
+      originalBrowser.on('disconnected', () => ++disconnectedOriginal);
+      remoteBrowser1.on('disconnected', () => ++disconnectedRemote1);
+      remoteBrowser2.on('disconnected', () => ++disconnectedRemote2);
+
+      await Promise.all([
+        utils.waitEvent(remoteBrowser2, 'disconnected'),
+        remoteBrowser2.disconnect(),
+      ]);
+
+      expect(disconnectedOriginal).toBe(0);
+      expect(disconnectedRemote1).toBe(0);
+      expect(disconnectedRemote2).toBe(1);
+
+      await Promise.all([
+        utils.waitEvent(remoteBrowser1, 'disconnected'),
+        utils.waitEvent(originalBrowser, 'disconnected'),
+        originalBrowser.close(),
+      ]);
+
+      expect(disconnectedOriginal).toBe(1);
+      expect(disconnectedRemote1).toBe(1);
+      expect(disconnectedRemote2).toBe(1);
+    });
+  });
+
 };

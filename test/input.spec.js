@@ -17,11 +17,10 @@
 const path = require('path');
 const utils = require('./utils');
 
-module.exports.addTests = function({testRunner, expect, PROJECT_ROOT}) {
+module.exports.addTests = function({testRunner, expect, DeviceDescriptors}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  const DeviceDescriptors = require(path.join(PROJECT_ROOT, 'DeviceDescriptors'));
   const iPhone = DeviceDescriptors['iPhone 6'];
   describe('input', function() {
     it('should click the button', async({page, server}) => {
