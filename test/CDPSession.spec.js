@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const {waitForEvents} = require('./utils');
+const {waitEvent} = require('./utils');
 
 module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
@@ -49,7 +49,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.coverage.stopJSCoverage();
       // generate a script in page and wait for the event.
       const [event] = await Promise.all([
-        waitForEvents(client, 'Debugger.scriptParsed'),
+        waitEvent(client, 'Debugger.scriptParsed'),
         page.evaluate('//# sourceURL=foo.js')
       ]);
       // expect events to be dispatched.
