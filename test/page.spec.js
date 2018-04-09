@@ -377,7 +377,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
     describe('Page.Events.DOMContentLoaded', function() {
       it('should fire when expected', async({page, server}) => {
         page.goto('about:blank');
-        await waitEvent(page, 'domcontentloaded', 1);
+        await waitEvent(page, 'domcontentloaded');
       });
     });
 
