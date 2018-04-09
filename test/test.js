@@ -99,9 +99,6 @@ beforeEach(async({server, httpsServer}) => {
   httpsServer.reset();
 });
 
-// Top-level tests that launch Browser themselves.
-require('./puppeteer.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
-
 describe('Page', function() {
   beforeAll(async state => {
     state.browser = await puppeteer.launch(defaultBrowserOptions);
@@ -135,6 +132,9 @@ describe('Page', function() {
   require('./target.spec.js').addTests({testRunner, expect});
   require('./tracing.spec.js').addTests({testRunner, expect});
 });
+
+// Top-level tests that launch Browser themselves.
+require('./puppeteer.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
 
 if (process.env.COVERAGE) {
   describe('COVERAGE', function(){

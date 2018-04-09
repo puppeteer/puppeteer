@@ -613,6 +613,67 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       await bothFiredPromise;
       await navigationPromise;
     });
+    it('should work with clicking on anchor links', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(`<a href='#foobar'>foobar</a>`);
+      await Promise.all([
+        page.click('a'),
+        page.waitForNavigation()
+      ]);
+      expect(page.url()).toBe(server.EMPTY_PAGE + '#foobar');
+    });
+    it('should work with history.pushState()', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(`
+        <a onclick='javascript:pushState()'>SPA</a>
+        <script>
+          function pushState() { history.pushState({}, '', 'wow.html') }
+        </script>
+      `);
+      await Promise.all([
+        page.click('a'),
+        page.waitForNavigation()
+      ]);
+      expect(page.url()).toBe(server.PREFIX + '/wow.html');
+    });
+    it('should work with history.replaceState()', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(`
+        <a onclick='javascript:replaceState()'>SPA</a>
+        <script>
+          function replaceState() { history.replaceState({}, '', '/replaced.html') }
+        </script>
+      `);
+      await Promise.all([
+        page.click('a'),
+        page.waitForNavigation()
+      ]);
+      expect(page.url()).toBe(server.PREFIX + '/replaced.html');
+    });
+    it('should work with DOM history.back()/history.forward()', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(`
+        <a id=back onclick='javascript:goBack()'>back</a>
+        <a id=forward onclick='javascript:goForward()'>forward</a>
+        <script>
+          function goBack() { history.back(); }
+          function goForward() { history.forward(); }
+          history.pushState({}, '', '/first.html');
+          history.pushState({}, '', '/second.html');
+        </script>
+      `);
+      expect(page.url()).toBe(server.PREFIX + '/second.html');
+      await Promise.all([
+        page.click('a#back'),
+        page.waitForNavigation()
+      ]);
+      expect(page.url()).toBe(server.PREFIX + '/first.html');
+      await Promise.all([
+        page.click('a#forward'),
+        page.waitForNavigation()
+      ]);
+      expect(page.url()).toBe(server.PREFIX + '/second.html');
+    });
   });
 
   describe('Page.goBack', function() {
@@ -630,6 +691,21 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
 
       response = await page.goForward();
       expect(response).toBe(null);
+    });
+    it('should work with HistoryAPI', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        history.pushState({}, '', '/first.html');
+        history.pushState({}, '', '/second.html');
+      });
+      expect(page.url()).toBe(server.PREFIX + '/second.html');
+
+      await page.goBack();
+      expect(page.url()).toBe(server.PREFIX + '/first.html');
+      await page.goBack();
+      expect(page.url()).toBe(server.EMPTY_PAGE);
+      await page.goForward();
+      expect(page.url()).toBe(server.PREFIX + '/first.html');
     });
   });
 

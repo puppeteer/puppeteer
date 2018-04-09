@@ -422,6 +422,14 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(detachedFrames.length).toBe(1);
       expect(detachedFrames[0].isDetached()).toBe(true);
     });
+    it('should send "framenavigated" when navigating on anchor URLs', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await Promise.all([
+        page.goto(server.EMPTY_PAGE + '#foo'),
+        utils.waitEvent(page, 'framenavigated')
+      ]);
+      expect(page.url()).toBe(server.EMPTY_PAGE + '#foo');
+    });
     it('should persist mainFrame on cross-process navigation', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const mainFrame = page.mainFrame();
