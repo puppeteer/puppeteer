@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+const utils = require('./utils.js');
+
 module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
@@ -61,12 +63,21 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       remoteBrowser1.on('disconnected', () => ++disconnectedRemote1);
       remoteBrowser2.on('disconnected', () => ++disconnectedRemote2);
 
-      await remoteBrowser2.disconnect();
+      await Promise.all([
+        utils.waitForEvents(remoteBrowser2, 'disconnected'),
+        remoteBrowser2.disconnect(),
+      ]);
+
       expect(disconnectedOriginal).toBe(0);
       expect(disconnectedRemote1).toBe(0);
       expect(disconnectedRemote2).toBe(1);
 
-      await originalBrowser.close();
+      await Promise.all([
+        utils.waitForEvents(remoteBrowser1, 'disconnected'),
+        utils.waitForEvents(originalBrowser, 'disconnected'),
+        originalBrowser.close(),
+      ]);
+
       expect(disconnectedOriginal).toBe(1);
       expect(disconnectedRemote1).toBe(1);
       expect(disconnectedRemote2).toBe(1);
