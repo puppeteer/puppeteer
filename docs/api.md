@@ -1117,6 +1117,10 @@ The `format` options are:
 - `A5`: 5.83in x 8.27in
 - `A6`: 4.13in x 5.83in
 
+> **NOTE** `headerTemplate` and `footerTemplate` markup have the following limitations:
+> 1. Script tags inside templates are not evaluated.
+> 2. Page styles are not visible inside templates.
+
 #### page.queryObjects(prototypeHandle)
 - `prototypeHandle` <[JSHandle]> A handle to the object prototype.
 - returns: <[Promise]<[JSHandle]>> Promise which resolves to a handle to an array of objects with this prototype.
