@@ -730,6 +730,11 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       });
       expect(result).toBe(36);
     });
+    it('should fail when exposing non-function', async({page, server}) => {
+      let error = null;
+      await page.exposeFunction('compute', undefined).catch(e => error = e);
+      expect(error).toBeTruthy();
+    });
     it('should await returned promise', async({page, server}) => {
       await page.exposeFunction('compute', function(a, b) {
         return Promise.resolve(a * b);
