@@ -21,6 +21,7 @@
     "unit-node6": "node node6/test/test.js",
     "tsc": "node utils/protocol-types-generator && tsc -p .",
     "prepublishOnly": "npm run build",
+    "prepare": "npm run build",
     "apply-next-version": "node utils/apply_next_version.js"
   },
   "author": "The Chromium Authors",
