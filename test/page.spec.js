@@ -124,9 +124,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
     it('should properly serialize null fields', async({page}) => {
       expect(await page.evaluate(() => ({a: undefined}))).toEqual({});
     });
-    it('should fail for window object', async({page, server}) => {
-      const result = await page.evaluate(() => window);
-      expect(result).toBe(undefined);
+    it('should return undefined for non-serializable objects', async({page, server}) => {
+      expect(await page.evaluate(() => window)).toBe(undefined);
+      expect(await page.evaluate(() => [Symbol('foo4')])).toBe(undefined);
     });
     it('should fail for circular object', async({page, server}) => {
       const result = await page.evaluate(() => {
