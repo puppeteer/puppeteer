@@ -52,7 +52,8 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         revisionInfo = await browserFetcher.download('123456');
         expect(revisionInfo.local).toBe(true);
         expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe('LINUX BINARY\n');
-        expect((await statAsync(revisionInfo.executablePath)).mode & 0777).toBe(0755);
+        const expectedPermissions = os.platform() === 'win32' ? 0666 : 0755;
+        expect((await statAsync(revisionInfo.executablePath)).mode & 0777).toBe(expectedPermissions);
         expect(await browserFetcher.localRevisions()).toEqual(['123456']);
         await browserFetcher.remove('123456');
         expect(await browserFetcher.localRevisions()).toEqual([]);
