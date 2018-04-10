@@ -20,6 +20,7 @@ const path = require('path');
 const {helper} = require('../lib/helper');
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
 const readFileAsync = helper.promisify(fs.readFile);
+const statAsync = helper.promisify(fs.stat);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const utils = require('./utils');
 
@@ -51,6 +52,7 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         revisionInfo = await browserFetcher.download('123456');
         expect(revisionInfo.local).toBe(true);
         expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe('LINUX BINARY\n');
+        expect((await statAsync(revisionInfo.executablePath)).mode&0777).toBe(0755);
         expect(await browserFetcher.localRevisions()).toEqual(['123456']);
         await browserFetcher.remove('123456');
         expect(await browserFetcher.localRevisions()).toEqual([]);
