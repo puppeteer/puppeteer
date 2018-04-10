@@ -674,6 +674,19 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       ]);
       expect(page.url()).toBe(server.PREFIX + '/second.html');
     });
+    it('should work when subframe issues window.stop()', async({page, server}) => {
+      server.setRoute('/frames/style.css', (req, res) => {});
+      const navigationPromise = page.goto(server.PREFIX + '/frames/one-frame.html');
+      const frame = await utils.waitEvent(page, 'frameattached');
+      await new Promise(fulfill => {
+        page.on('framenavigated', f => {
+          if (f === frame)
+            fulfill();
+        });
+      });
+      frame.evaluate(() => window.stop());
+      await navigationPromise;
+    });
   });
 
   describe('Page.goBack', function() {
