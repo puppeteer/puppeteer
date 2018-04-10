@@ -20,17 +20,17 @@ if (process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD) {
   console.log('**INFO** Skipping Chromium download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" environment variable was found.');
   return;
 }
-if (process.env.NPM_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.env.npm_config_puppeteer_skip_chromium_download) {
+if (process.env.NPM_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.env.npm_config_puppeteer_skip_chromium_download || process.env.npm_package_config_puppeteer_skip_chromium_download) {
   console.log('**INFO** Skipping Chromium download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" was set in npm config.');
   return;
 }
 
-const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host;
+const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host || process.env.npm_package_config_puppeteer_download_host;
 
 const puppeteer = require('./index');
 const browserFetcher = puppeteer.createBrowserFetcher({ host: downloadHost });
 
-const revision = process.env.PUPPETEER_CHROMIUM_REVISION || process.env.npm_config_puppeteer_chromium_revision
+const revision = process.env.PUPPETEER_CHROMIUM_REVISION || process.env.npm_config_puppeteer_chromium_revision || process.env.npm_package_config_puppeteer_chromium_revision
   || require('./package.json').puppeteer.chromium_revision;
 
 const revisionInfo = browserFetcher.revisionInfo(revision);
@@ -40,9 +40,9 @@ if (revisionInfo.local)
   return;
 
 // Override current environment proxy settings with npm configuration, if any.
-const NPM_HTTPS_PROXY = process.env.npm_config_https_proxy || process.env.npm_config_proxy;
-const NPM_HTTP_PROXY = process.env.npm_config_http_proxy || process.env.npm_config_proxy;
-const NPM_NO_PROXY = process.env.npm_config_no_proxy;
+const NPM_HTTPS_PROXY = process.env.npm_config_https_proxy || process.env.npm_config_proxy || process.env.npm_package_config_proxy;
+const NPM_HTTP_PROXY = process.env.npm_config_http_proxy || process.env.npm_config_proxy || process.env.npm_package_config_proxy;
+const NPM_NO_PROXY = process.env.npm_config_no_proxy || process.env.npm_package_config_no_proxy;
 
 if (NPM_HTTPS_PROXY)
   process.env.HTTPS_PROXY = NPM_HTTPS_PROXY;
