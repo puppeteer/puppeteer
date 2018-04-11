@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 const fs = require('fs');
+const rm = require('rimraf').sync;
 const path = require('path');
 const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
