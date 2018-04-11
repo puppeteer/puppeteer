@@ -103,7 +103,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(redirected.status()).toBe(302);
       let error = null;
       await redirected.text().catch(e => error = e);
-      expect(error).toBeTruthy();
+      expect(error.message).toContain('Response body is unavailable for redirect responses');
     });
     it('Page.Events.Response should not report body unless request is finished', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
