@@ -46,7 +46,7 @@ const defaultBrowserOptions = {
   executablePath,
   slowMo,
   headless,
-  args: ['--no-sandbox', '--disable-dev-shm-usage']
+  args: ['--no-sandbox']
 };
 
 let parallel = 1;
