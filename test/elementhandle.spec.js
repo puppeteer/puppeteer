@@ -334,7 +334,7 @@ module.exports.addTests = function({testRunner, expect}) {
   });
 
   describe('Accessibility', function() {
-    it('ElemetnHandle.accessibleName', async({page, server}) => {
+    it('ElemetnHandle.a11yInfo', async({page, server}) => {
       await page.setContent(`
         <div class="test" tabIndex=0>hello</div>
 
@@ -361,9 +361,9 @@ module.exports.addTests = function({testRunner, expect}) {
         <div class="antitest" tabIndex=0 style="visibility:hidden">hello</div>
         `);
       for (const div of await page.$$('.test'))
-        expect(await div.accessibleName()).toBe('hello');
+        expect((await div.a11yInfo()).name).toBe('hello');
       for (const div of await page.$$('.antitest'))
-        expect(await div.accessibleName()).toBe(null);
+        expect((await div.a11yInfo()).name).toBe(undefined);
 
     });
   });
