@@ -94,6 +94,17 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(await response.text()).toBe('{"foo": "bar"}\n');
       expect(await response.json()).toEqual({foo: 'bar'});
     });
+    it('Page.Events.Response should throw when requesting body of redirected response', async({page, server}) => {
+      server.setRedirect('/foo.html', '/empty.html');
+      const response = await page.goto(server.PREFIX + '/foo.html');
+      const redirectChain = response.request().redirectChain();
+      expect(redirectChain.length).toBe(1);
+      const redirected = redirectChain[0].response();
+      expect(redirected.status()).toBe(302);
+      let error = null;
+      await redirected.text().catch(e => error = e);
+      expect(error.message).toContain('Response body is unavailable for redirect responses');
+    });
     it('Page.Events.Response should not report body unless request is finished', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       // Setup server to trap request.
