@@ -1610,7 +1610,7 @@ await page.tracing.stop();
 Only one trace can be active at a time per browser.
 
 #### tracing.stop()
-- returns: <[Promise]>
+- returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with trace data.
 
 ### class: Dialog
 

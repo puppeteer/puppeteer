@@ -52,5 +52,12 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(error).toBeTruthy();
       await page.tracing.stop();
     });
+    it('should return a buffer', async({page, server, outputFile}) => {
+      await page.tracing.start({screenshots: true, path: outputFile});
+      await page.goto(server.PREFIX + '/grid.html');
+      const trace = await page.tracing.stop();
+      const buf = fs.readFileSync(outputFile);
+      expect(trace.toString()).toEqual(buf.toString());
+    });
   });
 };
