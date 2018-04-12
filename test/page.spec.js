@@ -1150,6 +1150,13 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       await page.setViewport({width: 400, height: 300});
       expect(await page.evaluate(() => window.innerWidth)).toBe(400);
     });
+    it('should be disabled when passed "null"', async({page, server}) => {
+      await page.goto(server.PREFIX + '/empty.html');
+      await page.setViewport({width: 123, height: 321});
+      expect(await page.evaluate(() => window.innerWidth)).toBe(123);
+      await page.setViewport(null);
+      expect(await page.evaluate(() => window.innerWidth)).not.toBe(123);
+    });
     it('should support touch emulation', async({page, server}) => {
       await page.goto(server.PREFIX + '/mobile.html');
       expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(false);

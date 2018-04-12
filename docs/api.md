@@ -1275,7 +1275,7 @@ puppeteer.launch().then(async browser => {
 - returns: <[Promise]> Promise which resolves when the user agent is set.
 
 #### page.setViewport(viewport)
-- `viewport` <[Object]>
+- `viewport` <?[Object]> Disables viewport emulation if `null` is passed.
   - `width` <[number]> page width in pixels.
   - `height` <[number]> page height in pixels.
   - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
@@ -1335,7 +1335,7 @@ Shortcut for [page.mainFrame().type(selector, text[, options])](#frametypeselect
 This is a shortcut for [page.mainFrame().url()](#frameurl)
 
 #### page.viewport()
-- returns: <[Object]>
+- returns: <?[Object]> `null` if viewport emulation is disabled.
   - `width` <[number]> page width in pixels.
   - `height` <[number]> page height in pixels.
   - `deviceScaleFactor` <[number]> Specify device scale factor (can be though of as dpr). Defaults to `1`.
