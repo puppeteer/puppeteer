@@ -72,7 +72,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(trace).toEqual(null);
       Buffer.concat = oldBufferConcat;
     });
-    it('should suppert a buffer without a path', async({page, server}) => {
+    it('should support a buffer without a path', async({page, server}) => {
       await page.tracing.start({screenshots: true});
       await page.goto(server.PREFIX + '/grid.html');
       const trace = await page.tracing.stop();
