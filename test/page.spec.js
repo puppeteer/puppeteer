@@ -386,9 +386,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
     it('should work with subframes return 204', async({page, server}) => {
       server.setRoute('/frames/frame.html', (req, res) => {
         res.statusCode = 204;
-        res.end()
+        res.end();
       });
-      const response = await page.goto(server.PREFIX + '/frames/one-frame.html');
+      await page.goto(server.PREFIX + '/frames/one-frame.html');
     });
     it('should navigate to empty page with domcontentloaded', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'domcontentloaded'});
