@@ -61,6 +61,17 @@ module.exports.addTests = function({testRunner, expect}) {
         expect(trace.toString()).toEqual(buf.toString());
       });
     });
+    it('should return null in case of Buffer error', async({page, server}) => {
+      await page.tracing.start({screenshots: true});
+      await page.goto(server.PREFIX + '/grid.html');
+      const oldBufferConcat = Buffer.concat;
+      Buffer.concat = bufs => {
+        throw 'error';
+      };
+      const trace = await page.tracing.stop();
+      expect(trace).toEqual(null);
+      Buffer.concat = oldBufferConcat;
+    });
     it('should suppert a buffer without a path', async({page, server}) => {
       await page.tracing.start({screenshots: true});
       await page.goto(server.PREFIX + '/grid.html');
