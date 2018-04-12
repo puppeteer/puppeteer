@@ -23,43 +23,43 @@ module.exports.addTests = function({testRunner, expect}) {
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Tracing', function() {
-    describe('with a path', () => {
-      beforeEach(function(state) {
-        state.outputFile = path.join(__dirname, 'assets', `trace-${state.parallelIndex}.json`);
-      });
-      afterEach(function(state) {
+    beforeEach(function(state) {
+      state.outputFile = path.join(__dirname, 'assets', `trace-${state.parallelIndex}.json`);
+    });
+    afterEach(function(state) {
+      if (fs.existsSync(state.outputFile)) {
         fs.unlinkSync(state.outputFile);
         state.outputFile = null;
-      });
-      it('should output a trace', async({page, server, outputFile}) => {
-        await page.tracing.start({screenshots: true, path: outputFile});
-        await page.goto(server.PREFIX + '/grid.html');
-        await page.tracing.stop();
-        expect(fs.existsSync(outputFile)).toBe(true);
-      });
-      it('should run with custom categories if provided', async({page, outputFile}) => {
-        await page.tracing.start({path: outputFile, categories: ['disabled-by-default-v8.cpu_profiler.hires']});
-        await page.tracing.stop();
+      }
+    });
+    it('should output a trace', async({page, server, outputFile}) => {
+      await page.tracing.start({screenshots: true, path: outputFile});
+      await page.goto(server.PREFIX + '/grid.html');
+      await page.tracing.stop();
+      expect(fs.existsSync(outputFile)).toBe(true);
+    });
+    it('should run with custom categories if provided', async({page, outputFile}) => {
+      await page.tracing.start({path: outputFile, categories: ['disabled-by-default-v8.cpu_profiler.hires']});
+      await page.tracing.stop();
 
-        const traceJson = JSON.parse(fs.readFileSync(outputFile));
-        expect(traceJson.metadata['trace-config']).toContain('disabled-by-default-v8.cpu_profiler.hires');
-      });
-      it('should throw if tracing on two pages', async({page, server, browser, outputFile}) => {
-        await page.tracing.start({path: outputFile});
-        const newPage = await browser.newPage();
-        let error = null;
-        await newPage.tracing.start({path: outputFile}).catch(e => error = e);
-        await newPage.close();
-        expect(error).toBeTruthy();
-        await page.tracing.stop();
-      });
-      it('should return a buffer', async({page, server, outputFile}) => {
-        await page.tracing.start({screenshots: true, path: outputFile});
-        await page.goto(server.PREFIX + '/grid.html');
-        const trace = await page.tracing.stop();
-        const buf = fs.readFileSync(outputFile);
-        expect(trace.toString()).toEqual(buf.toString());
-      });
+      const traceJson = JSON.parse(fs.readFileSync(outputFile));
+      expect(traceJson.metadata['trace-config']).toContain('disabled-by-default-v8.cpu_profiler.hires');
+    });
+    it('should throw if tracing on two pages', async({page, server, browser, outputFile}) => {
+      await page.tracing.start({path: outputFile});
+      const newPage = await browser.newPage();
+      let error = null;
+      await newPage.tracing.start({path: outputFile}).catch(e => error = e);
+      await newPage.close();
+      expect(error).toBeTruthy();
+      await page.tracing.stop();
+    });
+    it('should return a buffer', async({page, server, outputFile}) => {
+      await page.tracing.start({screenshots: true, path: outputFile});
+      await page.goto(server.PREFIX + '/grid.html');
+      const trace = await page.tracing.stop();
+      const buf = fs.readFileSync(outputFile);
+      expect(trace.toString()).toEqual(buf.toString());
     });
     it('should return null in case of Buffer error', async({page, server}) => {
       await page.tracing.start({screenshots: true});
