@@ -1602,7 +1602,7 @@ await page.tracing.stop();
 
 #### tracing.start(options)
 - `options` <[Object]>
-  - `path` <[string]> A path to write the trace file to. **required**
+  - `path` <[string]> A path to write the trace file to.
   - `screenshots` <[boolean]> captures screenshots in the trace.
   - `categories` <[Array]<[string]>> specify custom categories to use instead of default.
 - returns: <[Promise]>
@@ -1610,7 +1610,7 @@ await page.tracing.stop();
 Only one trace can be active at a time per browser.
 
 #### tracing.stop()
-- returns: <[Promise]>
+- returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with trace data.
 
 ### class: Dialog
 
