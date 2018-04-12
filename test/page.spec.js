@@ -1151,7 +1151,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       expect(await page.evaluate(() => window.innerWidth)).toBe(400);
     });
     it('should be disabled when passed "null"', async({page, server}) => {
-      await page.goto(server.PREFIX + '/empty.html');
+      await page.goto(server.PREFIX + '/mobile.html');
       await page.setViewport({width: 123, height: 321});
       expect(await page.evaluate(() => window.innerWidth)).toBe(123);
       await page.setViewport(null);
