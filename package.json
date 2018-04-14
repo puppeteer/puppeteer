@@ -62,7 +62,6 @@
   },
   "browser": {
     "./index.js": "./lib/Puppeteer.js",
-    "./lib/Launcher.js": "./lib/InBrowserLauncher.js",
     "./lib/BrowserFetcher.js": false,
     "ws": "./lib/BrowserWebSocket"
   }
