@@ -8,7 +8,7 @@ NODE_PATH=../ node examples/search.js
 
 ## Larger examples
 
-More complex and use case driven examples can be found at https://github.com/GoogleChromeLabs/puppeteer-examples.
+More complex and use case driven examples can be found at [github.com/GoogleChromeLabs/puppeteer-examples](https://github.com/GoogleChromeLabs/puppeteer-examples).
 
 # Tips & Tricks
 
