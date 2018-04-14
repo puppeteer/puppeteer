@@ -18,7 +18,7 @@
     "coverage": "cross-env COVERAGE=true npm run unit",
     "test-node6-transformer": "node utils/node6-transform/test/test.js",
     "build": "node utils/node6-transform/index.js",
-    "build-web": "browserify -r ./lib/Puppeteer.js:puppeteer -o ./browser.js",
+    "build-web": "browserify -r ./index.js:puppeteer -o ./browser.js",
     "unit-node6": "node node6/test/test.js",
     "tsc": "node utils/protocol-types-generator && tsc -p .",
     "prepublishOnly": "npm run build",
@@ -61,7 +61,7 @@
     "typescript": "~2.8.1"
   },
   "browser": {
-    "./index.js": "./browser.js",
+    "./index.js": "./lib/Puppeteer.js",
     "./lib/Launcher.js": "./lib/InBrowserLauncher.js",
     "./lib/BrowserFetcher.js": false,
     "ws": "./lib/BrowserWebSocket"
