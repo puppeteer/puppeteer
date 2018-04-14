@@ -20,6 +20,7 @@ const Documentation = require('./Documentation');
 const Message = require('../Message');
 
 const EXCLUDE_CLASSES = new Set([
+  'BrowserWebSocket',
   'CSSCoverage',
   'Connection',
   'EmulationManager',

@@ -63,6 +63,9 @@
   "browser": {
     "./index.js": "./lib/Puppeteer.js",
     "./lib/BrowserFetcher.js": false,
-    "ws": "./lib/BrowserWebSocket"
+    "ws": "./lib/BrowserWebSocket",
+    "child_process": false,
+    "rimraf": false,
+    "readline": false
   }
 }
