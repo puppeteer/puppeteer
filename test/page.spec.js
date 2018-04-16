@@ -1555,4 +1555,10 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       await closedPromise;
     });
   });
+
+  describe('Page.browser', function() {
+    it('should return the correct browser instance', async function({ page, browser }) {
+      expect(page.browser()).toBe(browser);
+    });
+  });
 };
