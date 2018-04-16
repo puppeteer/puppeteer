@@ -2565,7 +2565,7 @@ Contains the URL of the response.
 
 - returns: <[Browser]>
 
-Get the browser instance for the associated with the target.
+Get the browser instance associated with the target.
 
 #### target.createCDPSession()
 - returns: <[Promise]<[CDPSession]>>
