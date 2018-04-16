@@ -185,6 +185,7 @@
   * [elementHandle.$(selector)](#elementhandleselector)
   * [elementHandle.$$(selector)](#elementhandleselector)
   * [elementHandle.$x(expression)](#elementhandlexexpression)
+  * [elementHandle.a11yInfo()](#elementhandlea11yinfo)
   * [elementHandle.asElement()](#elementhandleaselement)
   * [elementHandle.boundingBox()](#elementhandleboundingbox)
   * [elementHandle.boxModel()](#elementhandleboxmodel)
@@ -2204,8 +2205,11 @@ The method runs `element.querySelectorAll` within the page. If no elements match
 
 The method evaluates the XPath expression relative to the elementHandle. If there's no such element, the method will resolve to `null`.
 
+#### elementHandle.a11yInfo()
+- returns: <[Promise]<[Object]>>
+
 #### elementHandle.asElement()
-- returns: <[elementhandle]>
+- returns: <[ElementHandle]>
 
 #### elementHandle.boundingBox()
 - returns: <[Promise]<?[Object]>>
