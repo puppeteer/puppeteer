@@ -273,4 +273,14 @@ npm i --save puppeteer@next
 
 Please note that prerelease may be unstable and contain bugs.
 
+#### Q: I have more questions! Where do I ask?
+
+There are many ways to get help on Puppeteer:
+- [stackoverflow](https://stackoverflow.com/questions/tagged/puppeteer)
+- [bugtracker](https://github.com/GoogleChrome/puppeteer/issues)
+- [slack channel](https://join.slack.com/t/puppeteer/shared_invite/enQtMzAyOTU1MzQyOTQ1LTUzOTAxNjE5YWI0YzNmYmRkN2I4MDg2MzI4OGE3YWNhZDBlYWMyNTlmOTJlN2RhYzlmODI4ZDQxZGEyMGIwNDY)
+
+Make sure to search these channels before posting your question.
+
+
 <!-- [END faq] -->
