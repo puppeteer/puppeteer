@@ -719,7 +719,7 @@ Brings page to front (activates tab).
 
 - returns: <[Browser]>
 
-Get the browser instance for the page.
+Get the browser the page belongs to.
 
 #### page.click(selector[, options])
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
@@ -2565,7 +2565,7 @@ Contains the URL of the response.
 
 - returns: <[Browser]>
 
-Get the browser instance associated with the target.
+Get the browser the target belongs to.
 
 #### target.createCDPSession()
 - returns: <[Promise]<[CDPSession]>>
