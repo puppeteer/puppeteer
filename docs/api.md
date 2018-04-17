@@ -63,6 +63,7 @@
   * [page.addStyleTag(options)](#pageaddstyletagoptions)
   * [page.authenticate(credentials)](#pageauthenticatecredentials)
   * [page.bringToFront()](#pagebringtofront)
+  * [page.browser()](#pagebrowser)
   * [page.click(selector[, options])](#pageclickselector-options)
   * [page.close()](#pageclose)
   * [page.content()](#pagecontent)
@@ -235,6 +236,7 @@
   * [securityDetails.validFrom()](#securitydetailsvalidfrom)
   * [securityDetails.validTo()](#securitydetailsvalidto)
 - [class: Target](#class-target)
+  * [target.browser()](#targetbrowser)
   * [target.createCDPSession()](#targetcreatecdpsession)
   * [target.page()](#targetpage)
   * [target.type()](#targettype)
@@ -712,6 +714,12 @@ To disable authentication, pass `null`.
 - returns: <[Promise]>
 
 Brings page to front (activates tab).
+
+#### page.browser()
+
+- returns: <[Browser]>
+
+Get the browser the page belongs to.
 
 #### page.click(selector[, options])
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
@@ -2552,6 +2560,12 @@ Contains the URL of the response.
 - returns: <[number]> [UnixTime] stating the end of validity of the certificate.
 
 ### class: Target
+
+#### target.browser()
+
+- returns: <[Browser]>
+
+Get the browser the target belongs to.
 
 #### target.createCDPSession()
 - returns: <[Promise]<[CDPSession]>>
