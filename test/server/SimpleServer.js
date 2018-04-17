@@ -234,7 +234,7 @@ class SimpleServer {
         response.end(`File not found: ${filePath}`);
         return;
       }
-      response.setHeader('Content-Type', mime.lookup(filePath));
+      response.setHeader('Content-Type', mime.getType(filePath));
       response.end(data);
     });
   }
