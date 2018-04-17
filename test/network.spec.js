@@ -47,15 +47,17 @@ module.exports.addTests = function({testRunner, expect}) {
     });
     it('Page.Events.Response', async({page, server}) => {
       const responses = [];
+      const url = `http://[::1]:${server.PORT}/empty.html`;
       page.on('response', response => responses.push(response));
-      await page.goto(server.EMPTY_PAGE);
+      await page.goto(url);
       expect(responses.length).toBe(1);
-      expect(responses[0].url()).toBe(server.EMPTY_PAGE);
+      expect(responses[0].url()).toBe(url);
       expect(responses[0].status()).toBe(200);
       expect(responses[0].ok()).toBe(true);
       expect(responses[0].fromCache()).toBe(false);
       expect(responses[0].fromServiceWorker()).toBe(false);
       expect(responses[0].request()).toBeTruthy();
+      expect(responses[0].remoteAddress()).toEqual({ ip: '[::1]', port: server.PORT });
     });
 
     it('Response.fromCache()', async({page, server}) => {
