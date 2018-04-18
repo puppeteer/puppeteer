@@ -343,12 +343,12 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
   describe('Page.Events.Log.entryAdded', function() {
     it('should trigger correct Log', async({page, server}) => {
       await page.goto('about:blank');
-      let ev;
-      page.on('Log.entryAdded', event => ev = event);
-      await page.enableLogEntries();
+      let message;
+      page.on('console', event => message = event);
       page.evaluate(async() => fetch('https://example.org/').catch(e => {}));
-      await waitEvent(page, 'Log.entryAdded');
-      expect(ev.entry.text).toContain('No \'Access-Control-Allow-Origin\'');
+      await waitEvent(page, 'console');
+      expect(message.text()).toContain('No \'Access-Control-Allow-Origin\'');
+      expect(message.type()).toEqual('error');
     });
   });
 
