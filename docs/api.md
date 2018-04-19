@@ -185,6 +185,7 @@
 - [class: ElementHandle](#class-elementhandle)
   * [elementHandle.$(selector)](#elementhandleselector)
   * [elementHandle.$$(selector)](#elementhandleselector)
+  * [elementHandle.$eval(selector, pageFunction, ...args)](#elementhandleevalselector-pagefunction-args)
   * [elementHandle.$x(expression)](#elementhandlexexpression)
   * [elementHandle.asElement()](#elementhandleaselement)
   * [elementHandle.boundingBox()](#elementhandleboundingbox)
@@ -2205,6 +2206,23 @@ The method runs `element.querySelector` within the page. If no element matches t
 - returns: <[Promise]<[Array]<[ElementHandle]>>>
 
 The method runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `[]`.
+
+#### elementHandle.$eval(selector, pageFunction, ...args)
+- `selector` <[string]> A [selector] to query page for
+- `pageFunction` <[function]> Function to be evaluated in browser context
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
+
+This method runs `document.querySelector` within the element and passes it as the first argument to `pageFunction`. If there's no element matching `selector`, the method throws an error.
+
+If `pageFunction` returns a [Promise], then `frame.$eval` would wait for the promise to resolve and return its value.
+
+Examples:
+```js
+const tweetHandle = await page.$('.tweet');
+expect(await tweetHandle.$eval('.like', node => node.innerText)).toBe('100');
+expect(await tweetHandle.$eval('.retweets', node => node.innerText)).toBe('10');
+```
 
 #### elementHandle.$x(expression)
 - `expression` <[string]> Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate).
