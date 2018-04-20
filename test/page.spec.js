@@ -16,6 +16,7 @@
 const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
+const {helper} = require('../lib/helper');
 const {waitEvent, getPDFPages, cssPixelsToInches} = require('./utils');
 
 module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescriptors, headless}) {
@@ -124,9 +125,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
     it('should properly serialize null fields', async({page}) => {
       expect(await page.evaluate(() => ({a: undefined}))).toEqual({});
     });
-    it('should return undefined for non-serializable objects', async({page, server}) => {
-      expect(await page.evaluate(() => window)).toBe(undefined);
-      expect(await page.evaluate(() => [Symbol('foo4')])).toBe(undefined);
+    fit('should return \'Non serializable object returned from evaluate\' for non-serializable objects', async({page, server}) => {
+      expect(await page.evaluate(() => window)).toBe(helper.getNonSerializableMessage());
+      expect(await page.evaluate(() => [Symbol('foo4')])).toBe(helper.getNonSerializableMessage());
     });
     it('should fail for circular object', async({page, server}) => {
       const result = await page.evaluate(() => {

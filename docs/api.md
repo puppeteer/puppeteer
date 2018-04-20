@@ -825,7 +825,7 @@ List of all available devices is available in the source code: [DeviceDescriptor
 
 If the function passed to the `page.evaluate` returns a [Promise], then `page.evaluate` would wait for the promise to resolve and return its value.
 
-If the function passed to the `page.evaluate` returns a non-[Serializable] value, then `page.evaluate` resolves to `undefined`.
+If the function passed to the `page.evaluate` returns a non-[Serializable] value, then `page.evaluate` resolves to `Non serializable object returned from evaluate` message.
 
 Passing arguments to `pageFunction`:
 ```js
@@ -1802,7 +1802,7 @@ Gets the full HTML contents of the frame, including the doctype.
 
 If the function passed to the `frame.evaluate` returns a [Promise], then `frame.evaluate` would wait for the promise to resolve and return its value.
 
-If the function passed to the `frame.evaluate` returns a non-[Serializable] value, then `frame.evaluate` resolves to `undefined`.
+If the function passed to the `frame.evaluate` returns a non-[Serializable] value, then `frame.evaluate` resolves to `Non serializable object returned from evaluate` message.
 
 ```js
 const result = await frame.evaluate(() => {
