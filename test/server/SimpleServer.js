@@ -136,8 +136,8 @@ class SimpleServer {
   }
 
   /**
-   * @param {string} fromPath
-   * @param {string} toPath
+   * @param {string} from
+   * @param {string} to
    */
   setRedirect(from, to) {
     this.setRoute(from, (req, res) => {
