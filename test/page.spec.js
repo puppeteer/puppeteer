@@ -125,7 +125,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
     it('should properly serialize null fields', async({page}) => {
       expect(await page.evaluate(() => ({a: undefined}))).toEqual({});
     });
-    fit('should return \'Non serializable object returned from evaluate\' for non-serializable objects', async({page, server}) => {
+    it('should return \'Non serializable object returned from evaluate\' for non-serializable objects', async({page, server}) => {
       expect(await page.evaluate(() => window)).toBe(helper.getNonSerializableMessage());
       expect(await page.evaluate(() => [Symbol('foo4')])).toBe(helper.getNonSerializableMessage());
     });
@@ -136,7 +136,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
         a.b = b;
         return a;
       });
-      expect(result).toBe(undefined);
+      expect(result).toBe(helper.getNonSerializableMessage());
     });
     it('should accept a string', async({page, server}) => {
       const result = await page.evaluate('1 + 2');
