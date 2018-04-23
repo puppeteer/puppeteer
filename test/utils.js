@@ -72,4 +72,46 @@ const utils = module.exports = {
       result += '\n' + utils.dumpFrames(child, '    ' + indentation);
     return result;
   },
+
+  /**
+   * @param {!EventEmitter} emitter
+   * @param {string} eventName
+   * @return {!Promise<!Object>}
+   */
+  waitEvent: function(emitter, eventName) {
+    return new Promise(fulfill => emitter.once(eventName, fulfill));
+  },
+
+  /**
+  * @param {!Buffer} pdfBuffer
+  * @return {!Promise<!Array<!Object>>}
+  */
+  getPDFPages: async function(pdfBuffer) {
+    const PDFJS = require('pdfjs-dist');
+    PDFJS.disableWorker = true;
+    const data = new Uint8Array(pdfBuffer);
+    const doc = await PDFJS.getDocument(data);
+    const pages = [];
+    for (let i = 0; i < doc.numPages; ++i) {
+      const page = await doc.getPage(i + 1);
+      const viewport = page.getViewport(1);
+      // Viewport width and height is in PDF points, which is
+      // 1/72 of an inch.
+      pages.push({
+        width: viewport.width / 72,
+        height: viewport.height / 72,
+      });
+      page.cleanup();
+    }
+    doc.cleanup();
+    return pages;
+  },
+
+  /**
+   * @param {number} px
+   * @return {number}
+   */
+  cssPixelsToInches: function(px) {
+    return px / 96;
+  },
 };

@@ -1,7 +1,7 @@
 # Puppeteer
 
 <!-- [START badges] -->
-[![Linux Build Status](https://img.shields.io/travis/GoogleChrome/puppeteer/master.svg)](https://travis-ci.org/GoogleChrome/puppeteer) [![Windows Build Status](https://img.shields.io/appveyor/ci/aslushnikov/puppeteer/master.svg?logo=appveyor)](https://ci.appveyor.com/project/aslushnikov/puppeteer/branch/master) [![NPM puppeteer package](https://img.shields.io/npm/v/puppeteer.svg)](https://npmjs.org/package/puppeteer)
+[![Linux Build Status](https://img.shields.io/travis/GoogleChrome/puppeteer/master.svg)](https://travis-ci.org/GoogleChrome/puppeteer) [![Windows Build Status](https://img.shields.io/appveyor/ci/aslushnikov/puppeteer/master.svg?logo=appveyor)](https://ci.appveyor.com/project/aslushnikov/puppeteer/branch/master) [![Build Status](https://api.cirrus-ci.com/github/GoogleChrome/puppeteer.svg)](https://cirrus-ci.com/github/GoogleChrome/puppeteer) [![NPM puppeteer package](https://img.shields.io/npm/v/puppeteer.svg)](https://npmjs.org/package/puppeteer)
 <!-- [END badges] -->
 
 <img src="https://user-images.githubusercontent.com/10379601/29446482-04f7036a-841f-11e7-9872-91d1fc2ea683.png" height="200" align="right">
@@ -17,7 +17,6 @@ Most things that you can do manually in the browser can be done using Puppeteer!
 
 * Generate screenshots and PDFs of pages.
 * Crawl a SPA and generate pre-rendered content (i.e. "SSR").
-* Scrape content from websites.
 * Automate form submission, UI testing, keyboard input, etc.
 * Create an up-to-date, automated testing environment. Run your tests directly in the latest version of Chrome using the latest JavaScript and browser features.
 * Capture a [timeline trace](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/reference) of your site to help diagnose performance issues.
@@ -33,7 +32,7 @@ Give it a spin: https://try-puppeteer.appspot.com/
 To use Puppeteer in your project, run:
 
 ```bash
-npm i --save puppeteer
+npm i puppeteer
 # or "yarn add puppeteer"
 ```
 
@@ -48,6 +47,8 @@ of `Browser`, open pages, and then manipulate them with [Puppeteer's API](https:
 
 **Example** - navigating to https://example.com and saving a screenshot as *example.png*:
 
+Save file as **example.js**
+
 ```js
 const puppeteer = require('puppeteer');
 
@@ -61,9 +62,17 @@ const puppeteer = require('puppeteer');
 })();
 ```
 
+Execute script on the command line
+
+```bash
+node example.js
+```
+
 Puppeteer sets an initial page size to 800px x 600px, which defines the screenshot size. The page size can be customized  with [`Page.setViewport()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pagesetviewportviewport).
 
 **Example** - create a PDF.
+
+Save file as **hn.js**
 
 ```js
 const puppeteer = require('puppeteer');
@@ -78,9 +87,17 @@ const puppeteer = require('puppeteer');
 })();
 ```
 
+Execute script on the command line
+
+```bash
+node hn.js
+```
+
 See [`Page.pdf()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pagepdfoptions) for more information about creating pdfs.
 
 **Example** - evaluate script in the context of the page
+
+Save file as **get-dimensions.js**
 
 ```js
 const puppeteer = require('puppeteer');
@@ -103,6 +120,12 @@ const puppeteer = require('puppeteer');
 
   await browser.close();
 })();
+```
+
+Execute script on the command line
+
+```bash
+node get-dimensions.js
 ```
 
 See [`Page.evaluate()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pageevaluatepagefunction-args) for more information on `evaluate` and related methods like `evaluateOnNewDocument` and `exposeFunction`.
@@ -239,5 +262,15 @@ You may find that Puppeteer does not behave as expected when controlling pages t
 
 #### Q: I am having trouble installing / running Puppeteer in my test environment?
 We have a [troubleshooting](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md) guide for various operating systems that lists the required dependencies.
+
+#### Q: How do I try/test a prerelease version of Puppeteer?
+
+You can check out this repo or install the latest prerelease from npm:
+
+```bash
+npm i --save puppeteer@next
+```
+
+Please note that prerelease may be unstable and contain bugs.
 
 <!-- [END faq] -->

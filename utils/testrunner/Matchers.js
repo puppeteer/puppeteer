@@ -96,8 +96,10 @@ const DefaultMatchers = {
   },
 
   toEqual: function(value, other, message) {
-    message = message || `${JSON.stringify(value)} ≈ ${JSON.stringify(other)}`;
-    return { pass: JSON.stringify(value) === JSON.stringify(other), message };
+    const valueJson = stringify(value);
+    const otherJson = stringify(other);
+    message = message || `${valueJson} ≈ ${otherJson}`;
+    return { pass: valueJson === otherJson, message };
   },
 
   toBeCloseTo: function(value, other, precision, message) {
@@ -107,3 +109,16 @@ const DefaultMatchers = {
     };
   }
 };
+
+function stringify(value) {
+  function stabilize(key, object) {
+    if (typeof object !== 'object' || object === undefined || object === null)
+      return object;
+    const result = {};
+    for (const key of Object.keys(object).sort())
+      result[key] = object[key];
+    return result;
+  }
+
+  return JSON.stringify(stabilize(null, value), stabilize);
+}

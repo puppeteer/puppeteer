@@ -2,6 +2,10 @@
 test
 utils/node6-transform
 
+# exclude internal type definition files
+/lib/*.d.ts
+/node6/lib/*.d.ts
+
 # repeats from .gitignore
 node_modules
 .local-chromium
