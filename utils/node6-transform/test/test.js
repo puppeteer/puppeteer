@@ -86,6 +86,12 @@ describe('TransformAsyncFunctions', function() {
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
+  it('should work async arrow with await', function(done) {
+    const input = `(async() => await 123)()`;
+    const output = eval(transformAsyncFunctions(input));
+    expect(output instanceof Promise).toBe(true);
+    output.then(result => expect(result).toBe(123)).then(done);
+  });
 });
 
 runner.run();

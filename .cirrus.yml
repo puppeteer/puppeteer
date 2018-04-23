@@ -1,0 +1,28 @@
+env:
+  DISPLAY: :99.0
+
+task:
+  matrix:
+    - name: node6 (windows)
+      windows_container:
+        dockerfile: .ci/node6/Dockerfile.windows
+    - name: node6 (linux)
+      container:
+        dockerfile: .ci/node6/Dockerfile.linux
+      xvfb_start_background_script: Xvfb :99 -ac -screen 0 1024x768x24
+  install_script: npm install --unsafe-perm
+  test_script: npm run unit-node6
+
+task:
+  matrix:
+    - name: node7 (windows)
+      windows_container:
+        dockerfile: .ci/node7/Dockerfile.windows
+    - name: node7 (linux)
+      container:
+        dockerfile: .ci/node7/Dockerfile.linux
+      xvfb_start_background_script: Xvfb :99 -ac -screen 0 1024x768x24
+  install_script: npm install --unsafe-perm
+  lint_script: npm run lint
+  coverage_script: npm run coverage
+  test_doclint_script: npm run test-doclint

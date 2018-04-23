@@ -1,10 +1,7 @@
-##### Released API: [v1.1.0](https://github.com/GoogleChrome/puppeteer/blob/v1.1.0/docs/api.md) | [v1.0.0](https://github.com/GoogleChrome/puppeteer/blob/v1.0.0/docs/api.md) | [v0.13.0](https://github.com/GoogleChrome/puppeteer/blob/v0.13.0/docs/api.md) | [v0.12.0](https://github.com/GoogleChrome/puppeteer/blob/v0.12.0/docs/api.md) | [v0.11.0](https://github.com/GoogleChrome/puppeteer/blob/v0.11.0/docs/api.md) | [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
+##### Released APIs: [v1.2.0](https://github.com/GoogleChrome/puppeteer/blob/v1.2.0/docs/api.md) | [v1.1.1](https://github.com/GoogleChrome/puppeteer/blob/v1.1.1/docs/api.md) | [v1.1.0](https://github.com/GoogleChrome/puppeteer/blob/v1.1.0/docs/api.md) | [v1.0.0](https://github.com/GoogleChrome/puppeteer/blob/v1.0.0/docs/api.md) | [v0.13.0](https://github.com/GoogleChrome/puppeteer/blob/v0.13.0/docs/api.md) | [v0.12.0](https://github.com/GoogleChrome/puppeteer/blob/v0.12.0/docs/api.md) | [v0.11.0](https://github.com/GoogleChrome/puppeteer/blob/v0.11.0/docs/api.md) | [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
 
-# Puppeteer API v<!-- GEN:version -->1.1.0-post<!-- GEN:stop--> \*\*NOT RELEASED\*\*
+# Puppeteer API v<!-- GEN:version -->1.3.0<!-- GEN:stop-->
 
-> **NOTE** This API is **not released** yet.
->
-> Release Date: March 15, 2018.
 
 ##### Table of Contents
 
@@ -40,6 +37,7 @@
   * [browser.version()](#browserversion)
   * [browser.wsEndpoint()](#browserwsendpoint)
 - [class: Page](#class-page)
+  * [event: 'close'](#event-close)
   * [event: 'console'](#event-console)
   * [event: 'dialog'](#event-dialog)
   * [event: 'domcontentloaded'](#event-domcontentloaded)
@@ -90,6 +88,7 @@
   * [page.reload(options)](#pagereloadoptions)
   * [page.screenshot([options])](#pagescreenshotoptions)
   * [page.select(selector, ...values)](#pageselectselector-values)
+  * [page.setBypassCSP(enabled)](#pagesetbypasscspenabled)
   * [page.setCacheEnabled(enabled)](#pagesetcacheenabledenabled)
   * [page.setContent(html)](#pagesetcontenthtml)
   * [page.setCookie(...cookies)](#pagesetcookiecookies)
@@ -186,7 +185,9 @@
   * [elementHandle.$x(expression)](#elementhandlexexpression)
   * [elementHandle.asElement()](#elementhandleaselement)
   * [elementHandle.boundingBox()](#elementhandleboundingbox)
+  * [elementHandle.boxModel()](#elementhandleboxmodel)
   * [elementHandle.click([options])](#elementhandleclickoptions)
+  * [elementHandle.contentFrame()](#elementhandlecontentframe)
   * [elementHandle.dispose()](#elementhandledispose)
   * [elementHandle.executionContext()](#elementhandleexecutioncontext)
   * [elementHandle.focus()](#elementhandlefocus)
@@ -208,6 +209,7 @@
   * [request.headers()](#requestheaders)
   * [request.method()](#requestmethod)
   * [request.postData()](#requestpostdata)
+  * [request.redirectChain()](#requestredirectchain)
   * [request.resourceType()](#requestresourcetype)
   * [request.respond(response)](#requestrespondresponse)
   * [request.response()](#requestresponse)
@@ -263,11 +265,13 @@ The Puppeteer API is hierarchical and mirrors the browser structure. On the foll
 
 ### Environment Variables
 
-Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) to aid its operations. These variables can either be set in the environment or in the [npm config](https://docs.npmjs.com/cli/config).
+Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) to aid its operations.
+If puppeteer doesn't find them in environment, lowercased variant of these variables will be used from the [npm config](https://docs.npmjs.com/cli/config).
 
 - `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
 - `PUPPETEER_DOWNLOAD_HOST` - overwrite host part of URL that is used to download Chromium
+- `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of chrome you'd like puppeteer to use during the installation step.
 
 ### class: Puppeteer
 
@@ -322,6 +326,7 @@ This methods attaches Puppeteer to an existing Chromium instance.
   - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
   - `env` <[Object]> Specify environment variables that will be visible to the browser. Defaults to `process.env`.
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
+  - `pipe` <[boolean]> Connects to the browser over a pipe instead of a WebSocket. Defaults to `false`.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
 
 The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process is closed.
@@ -501,12 +506,27 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
-The Page class emits various events (described below) which can be handled using any of Node's native [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter) methods, such as `on` or `once`.
+The Page class emits various events (described below) which can be handled using any of Node's native [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter) methods, such as `on`, `once` or `removeListener`.
 
 This example logs a message for a single page `load` event:
 ```js
 page.once('load', () => console.log('Page loaded!'));
 ```
+
+To unsubscribe from events use the `removeListener` method:
+
+```js
+function logRequest(interceptedRequest) {
+  console.log('A request was made:', interceptedRequest.url());
+}
+page.on('request', logRequest);
+// Sometime later...
+page.removeListener('request', logRequest);
+```
+
+#### event: 'close'
+
+Emitted when the page closes.
 
 #### event: 'console'
 - <[ConsoleMessage]>
@@ -650,13 +670,14 @@ Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector
 
 The method evaluates the XPath expression.
 
-Shortcut for [page.mainFrame().$x(expression)](#frameexpression)
+Shortcut for [page.mainFrame().$x(expression)](#framexexpression)
 
 #### page.addScriptTag(options)
 - `options` <[Object]>
   - `url` <[string]> URL of a script to be added.
   - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `content` <[string]> Raw JavaScript content to be injected into frame.
+  - `type` <[string]> Script type. Use 'module' in order to load a Javascript ES6 module. See [script](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script) for more details.
 - returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
 
 Adds a `<script>` tag into the page with the desired url or content.
@@ -701,7 +722,7 @@ Brings page to front (activates tab).
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
 If there's no element matching `selector`, the method throws an error.
 
-Bare in mind that if `click()` triggers a navigation event and there's a separate `page.waitForNavigation()` promise to be resolved, you may end up with a race condition that yields unexpected results. The correct pattern for click and wait for navigation is the following:
+Bear in mind that if `click()` triggers a navigation event and there's a separate `page.waitForNavigation()` promise to be resolved, you may end up with a race condition that yields unexpected results. The correct pattern for click and wait for navigation is the following:
 
 ```javascript
 const [response] = await Promise.all([
@@ -864,7 +885,7 @@ An example of overriding the navigator.languages property before the page loads:
 Object.defineProperty(navigator, "languages", {
   get: function() {
     return ["en-US", "en", "bn"];
-  };
+  }
 });
 
 // In your puppeteer script, assuming the preload.js file is in same folder of our script
@@ -1094,6 +1115,10 @@ The `format` options are:
 - `A5`: 5.83in x 8.27in
 - `A6`: 4.13in x 5.83in
 
+> **NOTE** `headerTemplate` and `footerTemplate` markup have the following limitations:
+> 1. Script tags inside templates are not evaluated.
+> 2. Page styles are not visible inside templates.
+
 #### page.queryObjects(prototypeHandle)
 - `prototypeHandle` <[JSHandle]> A handle to the object prototype.
 - returns: <[Promise]<[JSHandle]>> Promise which resolves to a handle to an array of objects with this prototype.
@@ -1139,6 +1164,8 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
   - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
 - returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot
 
+> **NOTE** Screenshots take at least 1/6 second on OS X. See https://crbug.com/741689 for discussion.
+
 #### page.select(selector, ...values)
 - `selector` <[string]> A [selector] to query page for
 - `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
@@ -1153,6 +1180,15 @@ page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 ```
 
 Shortcut for [page.mainFrame().select()](#frameselectselector-values)
+
+#### page.setBypassCSP(enabled)
+- `enabled` <[boolean]> sets bypassing of page's Content-Security-Policy.
+- returns: <[Promise]>
+
+Toggles bypassing page's Content-Security-Policy.
+
+> **NOTE** CSP bypassing happens at the moment of CSP initialization rather then evaluation. Usually this means
+that `page.setBypassCSP` should be called before navigating to the domain.
 
 #### page.setCacheEnabled(enabled)
 - `enabled` <[boolean]> sets the `enabled` state of the cache.
@@ -1326,7 +1362,7 @@ Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, .
   - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values:
     - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
     - `mutation` - to execute `pageFunction` on every DOM mutation.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[JSHandle]>> Promise which resolves when the `pageFunction` returns a truthy value. It resolves to a JSHandle of the truthy value.
 
@@ -1337,7 +1373,7 @@ const puppeteer = require('puppeteer');
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
   const watchDog = page.waitForFunction('window.innerWidth < 100');
-  page.setViewport({width: 50, height: 50});
+  await page.setViewport({width: 50, height: 50});
   await watchDog;
   await browser.close();
 });
@@ -1359,7 +1395,7 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
 - returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by selector string is added to DOM.
 
 Wait for the `selector` to appear in page. If at the moment of calling
@@ -1388,7 +1424,7 @@ Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitf
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
 - returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by xpath string is added to DOM.
 
 Wait for the `xpath` to appear in page. If at the moment of calling
@@ -1564,7 +1600,7 @@ await page.tracing.stop();
 
 #### tracing.start(options)
 - `options` <[Object]>
-  - `path` <[string]> A path to write the trace file to. **required**
+  - `path` <[string]> A path to write the trace file to.
   - `screenshots` <[boolean]> captures screenshots in the trace.
   - `categories` <[Array]<[string]>> specify custom categories to use instead of default.
 - returns: <[Promise]>
@@ -1572,7 +1608,7 @@ await page.tracing.stop();
 Only one trace can be active at a time per browser.
 
 #### tracing.stop()
-- returns: <[Promise]>
+- returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with trace data.
 
 ### class: Dialog
 
@@ -1707,6 +1743,7 @@ The method evaluates the XPath expression.
   - `url` <[string]> URL of a script to be added.
   - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `content` <[string]> Raw JavaScript content to be injected into frame.
+  - `type` <[string]> Script type. Use 'module' in order to load a Javascript ES6 module. See [script](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script) for more details.
 - returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
 
 Adds a `<script>` tag into the page with the desired url or content.
@@ -1734,7 +1771,7 @@ Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<s
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
 If there's no element matching `selector`, the method throws an error.
 
-Bare in mind that if `click()` triggers a navigation event and there's a separate `page.waitForNavigation()` promise to be resolved, you may end up with a race condition that yields unexpected results. The correct pattern for click and wait for navigation is the following:
+Bear in mind that if `click()` triggers a navigation event and there's a separate `page.waitForNavigation()` promise to be resolved, you may end up with a race condition that yields unexpected results. The correct pattern for click and wait for navigation is the following:
 
 ```javascript
 const [response] = await Promise.all([
@@ -1896,7 +1933,7 @@ Returns frame's url.
 
 This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] or [xpath], depending on whether or not it starts with '//', and the method is a shortcut for
-  [frame.waitForSelector](#framewaitforselectorselector-options) or [frame.waitForXPath](#framewaitforsxpathxpath-options)
+  [frame.waitForSelector](#framewaitforselectorselector-options) or [frame.waitForXPath](#framewaitforxpathxpath-options)
 - if `selectorOrFunctionOrTimeout` is a `function`, then the first argument is treated as a predicate to wait for and the method is a shortcut for [frame.waitForFunction()](#framewaitforfunctionpagefunction-options-args).
 - if `selectorOrFunctionOrTimeout` is a `number`, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
@@ -1907,7 +1944,7 @@ This method behaves differently with respect to the type of the first parameter:
   - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values:
     - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
     - `mutation` - to execute `pageFunction` on every DOM mutation.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[JSHandle]>> Promise which resolves when the `pageFunction` returns a truthy value. It resolves to a JSHandle of the truthy value.
 
@@ -1929,7 +1966,7 @@ puppeteer.launch().then(async browser => {
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
 - returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by selector string is added to DOM.
 
 Wait for the `selector` to appear in page. If at the moment of calling
@@ -1957,7 +1994,7 @@ puppeteer.launch().then(async browser => {
 - `options` <[Object]> Optional waiting parameters
   - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
   - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds).
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
 - returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by xpath string is added to DOM.
 
 Wait for the `xpath` to appear in page. If at the moment of calling
@@ -2022,7 +2059,7 @@ console.log(result); // prints '3'.
 
 The only difference between `executionContext.evaluate` and `executionContext.evaluateHandle` is that `executionContext.evaluateHandle` returns in-page object (JSHandle).
 
-If the function passed to the `executionContext.evaluateHandle` returns a [Promise], then `executionContext.evaluteHandle` would wait for the promise to resolve and return its value.
+If the function passed to the `executionContext.evaluateHandle` returns a [Promise], then `executionContext.evaluateHandle` would wait for the promise to resolve and return its value.
 
 ```js
 const context = await page.mainFrame().executionContext();
@@ -2177,6 +2214,17 @@ The method evaluates the XPath expression relative to the elementHandle. If ther
 
 This method returns the bounding box of the element (relative to the main frame), or `null` if the element is not visible.
 
+#### elementHandle.boxModel()
+- returns: <[Promise]<?[Object]>>
+  - content <[Array]<[Object]>> Content box, represented as an array of {x, y} points.
+  - padding <[Array]<[Object]>> Padding box, represented as an array of {x, y} points.
+  - border <[Array]<[Object]>> Border box, represented as an array of {x, y} points.
+  - margin <[Array]<[Object]>> Margin box, represented as an array of {x, y} points.
+  - width <[number]> Element's width.
+  - height <[number]> Element's height.
+
+This method returns boxes of the element, or `null` if the element is not visible. Boxes are represented as an array of points; each Point is an object `{x, y}`. Box points are sorted clock-wise.
+
 #### elementHandle.click([options])
 - `options` <[Object]>
   - `button` <[string]> `left`, `right`, or `middle`, defaults to `left`.
@@ -2186,6 +2234,9 @@ This method returns the bounding box of the element (relative to the main frame)
 
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
 If the element is detached from DOM, the method throws an error.
+
+#### elementHandle.contentFrame()
+- returns: <[Promise]<?[Frame]>> Resolves to the content frame for element handles referencing iframe nodes, or null otherwise
 
 #### elementHandle.dispose()
 - returns: <[Promise]> Promise which resolves when the element handle is successfully disposed.
@@ -2362,6 +2413,33 @@ page.on('requestfailed', request => {
 
 #### request.postData()
 - returns: <[string]> Request's post body, if any.
+
+#### request.redirectChain()
+- returns: <[Array]<[Request]>>
+
+A `redirectChain` is a chain of requests initiated to fetch a resource.
+- If there are no redirects and the request was successful, the chain will be empty.
+- If a server responds with at least a single redirect, then the chain will
+contain all the requests that were redirected.
+
+`redirectChain` is shared between all the requests of the same chain.
+
+For example, if the website `http://example.com` has a single redirect to
+`https://example.com`, then the chain will contain one request:
+
+```js
+const response = await page.goto('http://example.com');
+const chain = response.request().redirectChain();
+console.log(chain.length); // 1
+console.log(chain[0].url()); // 'http://example.com'
+```
+
+If the website `https://google.com` has no redirects, then the chain will be empty:
+```js
+const response = await page.goto('https://google.com');
+const chain = response.request().redirectChain();
+console.log(chain.length); // 0
+```
 
 #### request.resourceType()
 - returns: <[string]>
@@ -2553,6 +2631,9 @@ for (const entry of coverage) {
 }
 console.log(`Bytes used: ${usedBytes / totalBytes * 100}%`);
 ```
+
+_To output coverage in a form consumable by [Istanbul](https://github.com/istanbuljs),
+  see [puppeteer-to-istanbul](https://github.com/istanbuljs/puppeteer-to-istanbul)._
 
 #### coverage.startCSSCoverage(options)
 - `options` <[Object]>  Set of configurable options for coverage

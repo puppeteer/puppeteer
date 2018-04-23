@@ -6,6 +6,10 @@ Assuming you have a checkout of the Puppeteer repo and have run npm i (or yarn) 
 NODE_PATH=../ node examples/search.js
 ```
 
+## Larger examples
+
+More complex and use case driven examples can be found at https://github.com/GoogleChromeLabs/puppeteer-examples.
+
 # Tips & Tricks
 
 ## Load a Chrome extension
@@ -35,8 +39,13 @@ const browser = await puppeteer.launch({
 - [headless-chrome-crawler](https://github.com/yujiosaka/headless-chrome-crawler) - Crawler that provides simple APIs to manipulate Headless Chrome and allows you to crawl dynamic websites.
 - [puppeteer-examples](https://github.com/checkly/puppeteer-examples) - Puppeteer Headless Chrome examples for real life use cases such as getting useful info from the web pages or common login scenarios.
 - [browserless](https://github.com/joelgriffith/browserless) - Headless Chrome as a service letting you execute Puppeteer scripts remotely. Provides a docker image with configuration for concurrency, launch arguments and more.
+- [Puppeteer Sandbox](https://puppeteersandbox.com) - Puppeteer sandbox environment as a service. Runs Puppeteer scripts and allows saving and embedding them in external sites and markdown files.
 
 ## Testing
 
 - [angular-puppeteer-demo](https://github.com/Quramy/angular-puppeteer-demo) - Demo repository explaining how to use Puppeteer in Karma.
 - [mocha-headless-chrome](https://github.com/direct-adv-interfaces/mocha-headless-chrome) - Tool which runs client-side **mocha** tests in the command line through headless Chrome.
+- [puppeteer-to-istanbul-example](https://github.com/bcoe/puppeteer-to-istanbul-example) - Demo repository demonstrating how to output Puppeteer coverage in Istanbul format.
+
+## Services
+- [Checkly](https://checklyhq.com) - Monitoring SaaS that uses Puppeteer to check availability and correctness of web pages and apps.

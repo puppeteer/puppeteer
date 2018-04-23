@@ -31,7 +31,7 @@ beforeAll(state => {
 
 describe('math', () => {
   it('to be sane', async (state, test) => {
-    state.parallel; // Very first test will always be ran by the 0's thread
+    state.parallelIndex; // Very first test will always be ran by the 0's thread
     state.foo; // this will be 'bar'
     expect(2 + 2).toBe(4);
   });
