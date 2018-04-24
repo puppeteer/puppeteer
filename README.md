@@ -174,40 +174,45 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
 1. Turn off headless mode - sometimes it's useful to see what the browser is
    displaying. Instead of launching in headless mode, launch a full version of
    the browser using  `headless: false`:
-
-        const browser = await puppeteer.launch({headless: false});
+   
+    ```javascript
+    const browser = await puppeteer.launch({headless: false});
+    ```   
 
 2. Slow it down - the `slowMo` option slows down Puppeteer operations by the
    specified amount of milliseconds. It's another way to help see what's going on.
 
-        const browser = await puppeteer.launch({
+    ```javascript
+     const browser = await puppeteer.launch({
           headless: false,
           slowMo: 250 // slow down by 250ms
-        });
-
+      });
+    ```
+       
 3. Capture console output - You can listen for the `console` event.
    This is also handy when debugging code in `page.evaluate()`:
 
-        page.on('console', msg => console.log('PAGE LOG:', msg.text()));
-
-        await page.evaluate(() => console.log(`url is ${location.href}`));
-
-        await page.evaluate(() => console.log(`url is ${location.href}`));
+    ```javascript
+    page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+    await page.evaluate(() => console.log(`url is ${location.href}`));
+    ```
 
 4. Enable verbose logging - All public API calls and internal protocol traffic
    will be logged via the [`debug`](https://github.com/visionmedia/debug) module under the `puppeteer` namespace.
+   
+    ```bash
+    # Basic verbose logging
+    env DEBUG="puppeteer:*" node script.js
 
-        # Basic verbose logging
-        env DEBUG="puppeteer:*" node script.js
+    # Debug output can be enabled/disabled by namespace
+    env DEBUG="puppeteer:*,-puppeteer:protocol" node script.js # everything BUT protocol messages
+    env DEBUG="puppeteer:session" node script.js # protocol session messages (protocol messages to targets)
+    env DEBUG="puppeteer:mouse,puppeteer:keyboard" node script.js # only Mouse and Keyboard API calls
 
-        # Debug output can be enabled/disabled by namespace
-        env DEBUG="puppeteer:*,-puppeteer:protocol" node script.js # everything BUT protocol messages
-        env DEBUG="puppeteer:session" node script.js # protocol session messages (protocol messages to targets)
-        env DEBUG="puppeteer:mouse,puppeteer:keyboard" node script.js # only Mouse and Keyboard API calls
-
-        # Protocol traffic can be rather noisy. This example filters out all Network domain messages
-        env DEBUG="puppeteer:*" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
-
+    # Protocol traffic can be rather noisy. This example filters out all Network domain messages
+    env DEBUG="puppeteer:*" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
+    ```
+    
 <!-- [END debugging] -->
 
 ## Contributing to Puppeteer
