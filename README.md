@@ -192,8 +192,6 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
 
         await page.evaluate(() => console.log(`url is ${location.href}`));
 
-        await page.evaluate(() => console.log(`url is ${location.href}`));
-
 4. Enable verbose logging - All public API calls and internal protocol traffic
    will be logged via the [`debug`](https://github.com/visionmedia/debug) module under the `puppeteer` namespace.
 
