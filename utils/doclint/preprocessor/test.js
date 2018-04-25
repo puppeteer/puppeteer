@@ -15,9 +15,7 @@
  */
 
 const preprocessor = require('.');
-const SourceFactory = require('../SourceFactory');
-const factory = new SourceFactory();
-
+const Source = require('../Source');
 const {TestRunner, Reporter, Matchers}  = require('../../testrunner/');
 const runner = new TestRunner();
 new Reporter(runner);
@@ -29,7 +27,7 @@ const {expect} = new Matchers();
 
 describe('preprocessor', function() {
   it('should throw for unknown command', function() {
-    const source = factory.createForTest('doc.md', `
+    const source = new Source('doc.md', `
       <!-- gen:unknown-command -->something<!-- gen:stop -->
     `);
     const messages = preprocessor([source], '1.1.1');
@@ -40,7 +38,7 @@ describe('preprocessor', function() {
   });
   describe('gen:version', function() {
     it('should work', function() {
-      const source = factory.createForTest('doc.md', `
+      const source = new Source('doc.md', `
         Puppeteer <!-- gen:version -->XXX<!-- gen:stop -->
       `);
       const messages = preprocessor([source], '1.2.0');
@@ -52,7 +50,7 @@ describe('preprocessor', function() {
       `);
     });
     it('should work for *-post versions', function() {
-      const source = factory.createForTest('doc.md', `
+      const source = new Source('doc.md', `
         Puppeteer <!-- gen:version -->XXX<!-- gen:stop -->
       `);
       const messages = preprocessor([source], '1.2.0-post');
@@ -64,13 +62,13 @@ describe('preprocessor', function() {
       `);
     });
     it('should tolerate different writing', function() {
-      const source = factory.createForTest('doc.md', `Puppeteer v<!--   gEn:version -->WHAT
+      const source = new Source('doc.md', `Puppeteer v<!--   gEn:version -->WHAT
 <!--     GEN:stop   -->`);
       preprocessor([source], '1.1.1');
       expect(source.text()).toBe(`Puppeteer v<!--   gEn:version -->v1.1.1<!--     GEN:stop   -->`);
     });
     it('should not tolerate missing gen:stop', function() {
-      const source = factory.createForTest('doc.md', `<!--GEN:version-->`);
+      const source = new Source('doc.md', `<!--GEN:version-->`);
       const messages = preprocessor([source], '1.2.0');
       expect(source.hasUpdatedText()).toBe(false);
       expect(messages.length).toBe(1);
@@ -80,7 +78,7 @@ describe('preprocessor', function() {
   });
   describe('gen:empty-if-release', function() {
     it('should clear text when release version', function() {
-      const source = factory.createForTest('doc.md', `
+      const source = new Source('doc.md', `
         <!-- gen:empty-if-release -->XXX<!-- gen:stop -->
       `);
       const messages = preprocessor([source], '1.1.1');
@@ -92,7 +90,7 @@ describe('preprocessor', function() {
       `);
     });
     it('should keep text when non-release version', function() {
-      const source = factory.createForTest('doc.md', `
+      const source = new Source('doc.md', `
         <!-- gen:empty-if-release -->XXX<!-- gen:stop -->
       `);
       const messages = preprocessor([source], '1.1.1-post');
@@ -103,7 +101,7 @@ describe('preprocessor', function() {
     });
   });
   it('should work with multiple commands', function() {
-    const source = factory.createForTest('doc.md', `
+    const source = new Source('doc.md', `
       <!-- gen:version -->XXX<!-- gen:stop -->
       <!-- gen:empty-if-release -->YYY<!-- gen:stop -->
       <!-- gen:version -->ZZZ<!-- gen:stop -->
