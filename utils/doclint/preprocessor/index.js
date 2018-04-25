@@ -16,43 +16,45 @@
 
 const Message = require('../Message');
 
-const PUPPETEER_VERSION = require('../../../package.json').version;
-
-module.exports = function(sources) {
+module.exports = function(sources, version) {
+  // Release version is everything that doesn't include "-".
+  const isReleaseVersion = !version.includes('-');
   const messages = [];
-  let commands = [];
+  const commands = [];
   for (const source of sources) {
     const text = source.text();
-    const commandStartRegex = /<!--\s*gen:([a-z]+)(?:\s*\(\s*([^)]*)\s*\))?\s*-->/ig;
+    const commandStartRegex = /<!--\s*gen:([a-z-]+)\s*-->/ig;
     const commandEndRegex = /<!--\s*gen:stop\s*-->/ig;
     let start;
 
     while (start = commandStartRegex.exec(text)) { // eslint-disable-line no-cond-assign
-      commandEndRegex.lastIndex = commandStartRegex.lastIndex;
+      commandEndRegex.lastIndex = commandStartRegex.lastIndex + 1;
       const end = commandEndRegex.exec(text);
       if (!end) {
         messages.push(Message.error(`Failed to find 'gen:stop' for command ${start[0]}`));
-        break;
+        return messages;
       }
       const name = start[1];
-      const arg = start[2];
       const from = commandStartRegex.lastIndex;
       const to = end.index;
-      commandStartRegex.lastIndex = commandEndRegex.lastIndex;
-      commands.push({name, arg, from, to, source});
+      const originalText = text.substring(from, to);
+      commands.push({name, from, to, originalText, source});
+      commandStartRegex.lastIndex = commandEndRegex.lastIndex + 1;
     }
   }
-
-  commands = validateCommands(commands, messages);
 
   const changedSources = new Set();
   // Iterate commands in reverse order so that edits don't conflict.
   commands.sort((a, b) => b.from - a.from);
   for (const command of commands) {
-    let newText = command.source.text();
+    let newText = null;
     if (command.name === 'version')
-      newText = replaceInText(newText, command.from, command.to, PUPPETEER_VERSION);
-    if (command.source.setText(newText))
+      newText = isReleaseVersion ? 'v' + version : 'Tip-Of-Tree';
+    else if (command.name === 'empty-if-release')
+      newText = isReleaseVersion ? '' : command.originalText;
+    if (newText === null)
+      messages.push(Message.error(`Unknown command 'gen:${command.name}'`));
+    else if (applyCommand(command, newText))
       changedSources.add(command.source);
   }
   for (const source of changedSources)
@@ -61,35 +63,13 @@ module.exports = function(sources) {
 };
 
 /**
- * @param {!Array<!Object>} commands
- * @param {!Array<!Message>} outMessages
- * @return {!Array<!Object>}
+ * @param {{name: string, from: number, to: number, source: !Source}} command
+ * @param {string} editText
+ * @return {boolean}
  */
-function validateCommands(commands, outMessages) {
-  // Filter sane commands
-  const goodCommands = commands.filter(command => {
-    if (command.name === 'version')
-      return check(command, !command.arg, `"gen:version" should not have argument`);
-    check(command, false, `Unknown command: "gen:${command.name}"`);
-  });
-
-  return goodCommands;
-
-  function check(command, condition, message) {
-    if (condition)
-      return true;
-    outMessages.push(Message.error(`${command.source.projectPath()}: ${message}`));
-    return false;
-  }
+function applyCommand(command, editText) {
+  const text = command.source.text();
+  const newText = text.substring(0, command.from) + editText + text.substring(command.to);
+  return command.source.setText(newText);
 }
 
-/**
- * @param {string} text
- * @param {number} from
- * @param {number} to
- * @param {string} newText
- * @return {string}
- */
-function replaceInText(text, from, to, newText) {
-  return text.substring(0, from) + newText + text.substring(to);
-}
