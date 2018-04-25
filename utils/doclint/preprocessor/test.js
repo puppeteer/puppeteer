@@ -110,7 +110,6 @@ describe('preprocessor', function() {
     `);
     const messages = preprocessor([source], '1.1.1');
     expect(messages.length).toBe(1);
-    console.log(messages[0]);
     expect(messages[0].type).toBe('warning');
     expect(messages[0].text).toContain('doc.md');
     expect(source.text()).toBe(`

@@ -28,7 +28,7 @@ module.exports = function(sources, version) {
     let start;
 
     while (start = commandStartRegex.exec(text)) { // eslint-disable-line no-cond-assign
-      commandEndRegex.lastIndex = commandStartRegex.lastIndex + 1;
+      commandEndRegex.lastIndex = commandStartRegex.lastIndex;
       const end = commandEndRegex.exec(text);
       if (!end) {
         messages.push(Message.error(`Failed to find 'gen:stop' for command ${start[0]}`));
@@ -39,7 +39,7 @@ module.exports = function(sources, version) {
       const to = end.index;
       const originalText = text.substring(from, to);
       commands.push({name, from, to, originalText, source});
-      commandStartRegex.lastIndex = commandEndRegex.lastIndex + 1;
+      commandStartRegex.lastIndex = commandEndRegex.lastIndex;
     }
   }
 
