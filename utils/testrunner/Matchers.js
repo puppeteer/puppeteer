@@ -37,13 +37,13 @@ class Expect {
     this.not.not = this;
     for (const matcherName of Object.keys(matchers)) {
       const matcher = matchers[matcherName];
-      this[matcherName] = applyMatcher.bind(null, matcherName, matcher, false, value);
-      this.not[matcherName] = applyMatcher.bind(null, matcherName, matcher, true, value);
+      this[matcherName] = applyMatcher.bind(null, matcherName, matcher, false /* inverse */, value);
+      this.not[matcherName] = applyMatcher.bind(null, matcherName, matcher, true /* inverse */, value);
     }
 
     function applyMatcher(matcherName, matcher, inverse, value, ...args) {
       const result = matcher.call(null, value, ...args);
-      const message = `expect.${matcherName} failed` + (result.message ? `: ${result.message}` : '');
+      const message = `expect.${inverse ? 'not.' : ''}${matcherName} failed` + (result.message ? `: ${result.message}` : '');
       console.assert(result.pass !== inverse, message);
     }
   }

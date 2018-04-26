@@ -43,6 +43,9 @@ describe('testsuite', () => {
   it('toContain', async (state) => {
     expect('asdf').toContain('e');
   });
+  it('not.toContain', async (state) => {
+    expect('asdf').not.toContain('a');
+  });
   it('toEqual', async (state) => {
     expect([1,2,3]).toEqual([1,2,3,4]);
   });
