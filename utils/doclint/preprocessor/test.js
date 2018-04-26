@@ -100,6 +100,32 @@ describe('preprocessor', function() {
       `);
     });
   });
+  describe('gen:empty-if-release', function() {
+    it('should work with non-release version', function() {
+      const source = new Source('doc.md', `
+        <!-- gen:last-released-api -->XXX<!-- gen:stop -->
+      `);
+      const messages = preprocessor([source], '1.3.0-post');
+      expect(messages.length).toBe(1);
+      expect(messages[0].type).toBe('warning');
+      expect(messages[0].text).toContain('doc.md');
+      expect(source.text()).toBe(`
+        <!-- gen:last-released-api -->[API](https://github.com/GoogleChrome/puppeteer/blob/v1.3.0/docs/api.md)<!-- gen:stop -->
+      `);
+    });
+    it('should work with release version', function() {
+      const source = new Source('doc.md', `
+        <!-- gen:last-released-api -->XXX<!-- gen:stop -->
+      `);
+      const messages = preprocessor([source], '1.3.0');
+      expect(messages.length).toBe(1);
+      expect(messages[0].type).toBe('warning');
+      expect(messages[0].text).toContain('doc.md');
+      expect(source.text()).toBe(`
+        <!-- gen:last-released-api -->[API](https://github.com/GoogleChrome/puppeteer/blob/v1.3.0/docs/api.md)<!-- gen:stop -->
+      `);
+    });
+  });
   it('should work with multiple commands', function() {
     const source = new Source('doc.md', `
       <!-- gen:version -->XXX<!-- gen:stop -->

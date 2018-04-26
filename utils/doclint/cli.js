@@ -37,8 +37,10 @@ async function run() {
 
   // Documentation checks.
   {
-    const apiSource = await Source.readFile(path.join(PROJECT_DIR, 'docs', 'api.md'));
-    const mdSources = [apiSource];
+    const mdSources = await Promise.all([
+      Source.readFile(path.join(PROJECT_DIR, 'docs', 'api.md')),
+      Source.readFile(path.join(PROJECT_DIR, 'README.md'))
+    ]);
 
     const toc = require('./toc');
     messages.push(...await toc(mdSources));

@@ -19,6 +19,8 @@ const Message = require('../Message');
 module.exports = function(sources, version) {
   // Release version is everything that doesn't include "-".
   const isReleaseVersion = !version.includes('-');
+  const lastReleasedAPILink = `[API](https://github.com/GoogleChrome/puppeteer/blob/v${version.split('-')[0]}/docs/api.md)`;
+
   const messages = [];
   const commands = [];
   for (const source of sources) {
@@ -52,6 +54,8 @@ module.exports = function(sources, version) {
       newText = isReleaseVersion ? 'v' + version : 'Tip-Of-Tree';
     else if (command.name === 'empty-if-release')
       newText = isReleaseVersion ? '' : command.originalText;
+    else if (command.name === 'last-released-api')
+      newText = lastReleasedAPILink;
     if (newText === null)
       messages.push(Message.error(`Unknown command 'gen:${command.name}'`));
     else if (applyCommand(command, newText))
