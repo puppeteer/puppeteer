@@ -390,6 +390,16 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       });
       await page.goto(server.PREFIX + '/frames/one-frame.html');
     });
+    it('should fail when server returns 204', async({page, server}) => {
+      server.setRoute('/empty.html', (req, res) => {
+        res.statusCode = 204;
+        res.end();
+      });
+      let error = null;
+      await page.goto(server.EMPTY_PAGE).catch(e => error = e);
+      expect(error).not.toBe(null);
+      expect(error.message).toContain('net::ERR_ABORTED');
+    });
     it('should navigate to empty page with domcontentloaded', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'domcontentloaded'});
       expect(response.status()).toBe(200);
