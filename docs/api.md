@@ -1404,6 +1404,17 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
     - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
 - returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
+This resolves when the page navigates to a new URL or reloads. It is useful for when you run code
+which will indirectly cause the page to navigate. Consider this example:
+
+```js
+const navigationPromise = page.waitForNavigation();
+await page.click('a.my-link'); // Clicking the link will indirectly cause a navigation
+await navigationPromise; // The navigationPromise resolves after navigation has finished
+```
+
+**NOTE** Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
+
 #### page.waitForSelector(selector[, options])
 - `selector` <[string]> A [selector] of an element to wait for
 - `options` <[Object]> Optional waiting parameters
