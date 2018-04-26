@@ -126,6 +126,7 @@
   * [mouse.down([options])](#mousedownoptions)
   * [mouse.move(x, y, [options])](#mousemovex-y-options)
   * [mouse.up([options])](#mouseupoptions)
+  * [mouse.wheel(deltaX, deltaY)](#mousewheeldeltax-deltay)
 - [class: Touchscreen](#class-touchscreen)
   * [touchscreen.tap(x, y)](#touchscreentapx-y)
 - [class: Tracing](#class-tracing)
@@ -1588,6 +1589,13 @@ Dispatches a `mousemove` event.
 - returns: <[Promise]>
 
 Dispatches a `mouseup` event.
+
+#### mouse.wheel(deltaX, deltaY)
+- `deltaX` <[number]>
+- `deltaY` <[number]>
+- returns: <[Promise]>
+
+Dispatches a `mousewheel` event. Please note that it will take a very short time to scroll the page, so maybe you need use Page.waitFor(). The method Page.screenshot will scroll the page to 0, 0.
 
 ### class: Touchscreen
 

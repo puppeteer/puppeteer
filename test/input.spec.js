@@ -282,6 +282,20 @@ module.exports.addTests = function({testRunner, expect, DeviceDescriptors}) {
       await page.mouse.up();
       expect(await page.evaluate(() => window.getSelection().toString())).toBe(text);
     });
+    it('should scroll to specify position', async({page, server}) => {
+      await page.goto(server.PREFIX + '/input/scrollable.html');
+      // wait 500ms for page loading
+      const deltaX = 300;
+      const deltaY = 300;
+      await page.waitFor(500);
+      await page.mouse.wheel(deltaX,deltaY);
+      // wait 500ms for scrolling
+      await page.waitFor(500);
+      expect(await page.evaluate(() => [window.scrollX,window.scrollY])).toEqual([
+        deltaX,
+        deltaY
+      ]);
+    });
     it('should select the text by triple clicking', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       await page.focus('textarea');
