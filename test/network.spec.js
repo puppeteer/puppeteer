@@ -459,6 +459,18 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.goto(server.EMPTY_PAGE);
       expect(error.message).toContain('Request Interception is not enabled');
     });
+    it('should work with file URLs', async({page, server}) => {
+      await page.setRequestInterception(true);
+      const urls = new Set();
+      page.on('request', request => {
+        urls.add(request.url().split('/').pop());
+        request.continue();
+      });
+      await page.goto(pathToFileURL(path.join(__dirname, 'assets', 'one-style.html')));
+      expect(urls.size).toBe(2);
+      expect(urls.has('one-style.html')).toBe(true);
+      expect(urls.has('one-style.css')).toBe(true);
+    });
   });
 
   describe('Request.respond', function() {
@@ -573,5 +585,16 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(response.status()).toBe(401);
     });
   });
-
 };
+
+/**
+ * @param {string} path
+ * @return {string}
+ */
+function pathToFileURL(path) {
+  let pathName = path.replace(/\\/g, '/');
+  // Windows drive letter must be prefixed with a slash.
+  if (!pathName.startsWith('/'))
+    pathName = '/' + pathName;
+  return 'file://' + pathName;
+}
