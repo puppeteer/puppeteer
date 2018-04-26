@@ -459,6 +459,18 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.goto(server.EMPTY_PAGE);
       expect(error.message).toContain('Request Interception is not enabled');
     });
+    it('should work with file URLs', async({page, server}) => {
+      await page.setRequestInterception(true);
+      const urls = new Set();
+      page.on('request', request => {
+        urls.add(request.url().split('/').pop());
+        request.continue();
+      });
+      await page.goto('file://' + path.join(__dirname, 'assets', 'one-style.html'));
+      expect(urls.size).toBe(2);
+      expect(urls.has('one-style.html')).toBe(true);
+      expect(urls.has('one-style.css')).toBe(true);
+    });
   });
 
   describe('Request.respond', function() {
