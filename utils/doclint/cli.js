@@ -17,7 +17,7 @@
 
 const puppeteer = require('../..');
 const path = require('path');
-const SourceFactory = require('./SourceFactory');
+const Source = require('./Source');
 
 const PROJECT_DIR = path.join(__dirname, '..', '..');
 const VERSION = require(path.join(PROJECT_DIR, 'package.json')).version;
@@ -31,13 +31,13 @@ run();
 async function run() {
   const startTime = Date.now();
 
-  const sourceFactory = new SourceFactory();
   /** @type {!Array<!Message>} */
   const messages = [];
+  let changedFiles = false;
 
   // Documentation checks.
   {
-    const apiSource = await sourceFactory.readFile(path.join(PROJECT_DIR, 'docs', 'api.md'));
+    const apiSource = await Source.readFile(path.join(PROJECT_DIR, 'docs', 'api.md'));
     const mdSources = [apiSource];
 
     const toc = require('./toc');
@@ -49,9 +49,16 @@ async function run() {
     const browser = await puppeteer.launch({args: ['--no-sandbox']});
     const page = await browser.newPage();
     const checkPublicAPI = require('./check_public_api');
-    const jsSources = await sourceFactory.readdir(path.join(PROJECT_DIR, 'lib'), '.js');
+    const jsSources = await Source.readdir(path.join(PROJECT_DIR, 'lib'), '.js');
     messages.push(...await checkPublicAPI(page, mdSources, jsSources));
     await browser.close();
+
+    for (const source of mdSources) {
+      if (!source.hasUpdatedText())
+        continue;
+      await source.save();
+      changedFiles = true;
+    }
   }
 
   // Report results.
@@ -74,7 +81,7 @@ async function run() {
     }
   }
   let clearExit = messages.length === 0;
-  if (await sourceFactory.saveChangedSources()) {
+  if (changedFiles) {
     if (clearExit)
       console.log(`${YELLOW_COLOR}Some files were updated.${RESET_COLOR}`);
     clearExit = false;
