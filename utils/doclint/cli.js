@@ -20,6 +20,7 @@ const path = require('path');
 const SourceFactory = require('./SourceFactory');
 
 const PROJECT_DIR = path.join(__dirname, '..', '..');
+const VERSION = require(path.join(PROJECT_DIR, 'package.json')).version;
 
 const RED_COLOR = '\x1b[31m';
 const YELLOW_COLOR = '\x1b[33m';
@@ -43,7 +44,7 @@ async function run() {
     messages.push(...await toc(mdSources));
 
     const preprocessor = require('./preprocessor');
-    messages.push(...await preprocessor(mdSources));
+    messages.push(...await preprocessor(mdSources, VERSION));
 
     const browser = await puppeteer.launch({args: ['--no-sandbox']});
     const page = await browser.newPage();
