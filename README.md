@@ -207,7 +207,7 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
       
       jasmine: `jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;`
       
-      mocha: `this.timeout(100000);` (don't forget to change test to use function and not '=>')
+      mocha: `this.timeout(100000);` (don't forget to change test to use [function and not '=>'](https://stackoverflow.com/a/23492442))
     
   - Add an evaluate statement with `debugger` inside / add  `debugger` to an existing evaluate statement:
 
@@ -215,7 +215,7 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
     await page.evaluate(() => {debugger;});
   ```
 
-  Now, your test will stop excecuting in the above debugger statement, and chromium will stop with
+   The test will stop executing in the above evaluate statement, and chromium will stop in debugging mode.
 
 5. Enable verbose logging - All public API calls and internal protocol traffic
    will be logged via the [`debug`](https://github.com/visionmedia/debug) module under the `puppeteer` namespace.
