@@ -650,6 +650,54 @@ module.exports = [
       'hasTouch': true,
       'isLandscape': true
     }
+  },
+  {
+    'name': 'Pixel 2',
+    'userAgent': 'Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Mobile Safari/537.36',
+    'viewport': {
+      'width': 411,
+      'height': 731,
+      'deviceScaleFactor': 2.625,
+      'isMobile': true,
+      'hasTouch': true,
+      'isLandscape': false
+    }
+  },
+  {
+    'name': 'Pixel 2 landscape',
+    'userAgent': 'Mozilla/5.0 (Linux; Android 8.0; Pixel 2 Build/OPD3.170816.012) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Mobile Safari/537.36',
+    'viewport': {
+      'width': 731,
+      'height': 411,
+      'deviceScaleFactor': 2.625,
+      'isMobile': true,
+      'hasTouch': true,
+      'isLandscape': true
+    }
+  },
+  {
+    'name': 'Pixel 2 XL',
+    'userAgent': 'Mozilla/5.0 (Linux; Android 8.0.0; Pixel 2 XL Build/OPD1.170816.004) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Mobile Safari/537.36',
+    'viewport': {
+      'width': 411,
+      'height': 823,
+      'deviceScaleFactor': 3.5,
+      'isMobile': true,
+      'hasTouch': true,
+      'isLandscape': false
+    }
+  },
+  {
+    'name': 'Pixel 2 XL landscape',
+    'userAgent': 'Mozilla/5.0 (Linux; Android 8.0.0; Pixel 2 XL Build/OPD1.170816.004) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Mobile Safari/537.36',
+    'viewport': {
+      'width': 823,
+      'height': 411,
+      'deviceScaleFactor': 3.5,
+      'isMobile': true,
+      'hasTouch': true,
+      'isLandscape': true
+    }
   }
 ];
 for (const device of module.exports)
