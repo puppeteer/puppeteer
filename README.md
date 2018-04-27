@@ -194,7 +194,26 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
 
         await page.evaluate(() => console.log(`url is ${location.href}`));
 
-4. Enable verbose logging - All public API calls and internal protocol traffic
+4. Stop test execution and debug browser
+
+    4.1. Use `{devtools: true}` when launching Puppeteer:
+      ```js
+        const browser = await puppeteer.launch({devtools: true});
+      ```
+
+    4.2 Change default test timeout
+      jest: `jest.setTimeout(100000);`
+      jasmine: `jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;`
+      mocha: `this.timeout(100000);` (don't forget to change test to use function and not '=>')
+    4.3 Add an evaluate statement with `debugger` inside / add  `debugger` to an existing evaluate statement:
+
+  ```js
+    await page.evaluate(() => {debugger;});
+  ```
+
+  Now, your test will stop excecuting in the above debugger statement, and chromium will stop with
+
+5. Enable verbose logging - All public API calls and internal protocol traffic
    will be logged via the [`debug`](https://github.com/visionmedia/debug) module under the `puppeteer` namespace.
 
         # Basic verbose logging
