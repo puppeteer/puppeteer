@@ -331,16 +331,6 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       ]);
       expect(message.text()).toBe('JSHandle@object');
     });
-  });
-
-  describe('Page.Events.DOMContentLoaded', function() {
-    it('should fire when expected', async({page, server}) => {
-      page.goto('about:blank');
-      await waitEvent(page, 'domcontentloaded');
-    });
-  });
-
-  describe('Page.Events.Log.entryAdded', function() {
     it('should trigger correct Log', async({page, server}) => {
       await page.goto('about:blank');
       let message;
@@ -349,6 +339,13 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       await waitEvent(page, 'console');
       expect(message.text()).toContain('No \'Access-Control-Allow-Origin\'');
       expect(message.type()).toEqual('error');
+    });
+  });
+
+  describe('Page.Events.DOMContentLoaded', function() {
+    it('should fire when expected', async({page, server}) => {
+      page.goto('about:blank');
+      await waitEvent(page, 'domcontentloaded');
     });
   });
 
