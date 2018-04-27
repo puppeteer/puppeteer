@@ -201,7 +201,7 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
         const browser = await puppeteer.launch({devtools: true});
       ```
 
-  - Change default test timeout
+  - Change default test timeout:
       
       jest: `jest.setTimeout(100000);`
       
@@ -215,7 +215,7 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
       await page.evaluate(() => {debugger;});
     ```
 
-     The test will stop executing in the above evaluate statement, and chromium will stop in debugging mode.
+   The test will stop executing in the above evaluate statement, and chromium will stop in debugging mode.
 
 5. Enable verbose logging - All public API calls and internal protocol traffic
    will be logged via the [`debug`](https://github.com/visionmedia/debug) module under the `puppeteer` namespace.
