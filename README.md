@@ -196,16 +196,20 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
 
 4. Stop test execution and debug browser
 
-    4.1. Use `{devtools: true}` when launching Puppeteer:
+  - Use `{devtools: true}` when launching Puppeteer:
       ```js
         const browser = await puppeteer.launch({devtools: true});
       ```
 
-    4.2 Change default test timeout
+  - Change default test timeout
+      
       jest: `jest.setTimeout(100000);`
+      
       jasmine: `jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;`
+      
       mocha: `this.timeout(100000);` (don't forget to change test to use function and not '=>')
-    4.3 Add an evaluate statement with `debugger` inside / add  `debugger` to an existing evaluate statement:
+    
+  - Add an evaluate statement with `debugger` inside / add  `debugger` to an existing evaluate statement:
 
   ```js
     await page.evaluate(() => {debugger;});
