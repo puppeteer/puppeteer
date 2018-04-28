@@ -197,9 +197,8 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
 4. Stop test execution and use a debugger in browser
 
   - Use `{devtools: true}` when launching Puppeteer:
-      ```js
-        const browser = await puppeteer.launch({devtools: true});
-      ```
+
+      `const browser = await puppeteer.launch({devtools: true});`
 
   - Change default test timeout:
       
@@ -211,9 +210,7 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
     
   - Add an evaluate statement with `debugger` inside / add  `debugger` to an existing evaluate statement:
 
-    ```js
-      await page.evaluate(() => {debugger;});
-    ```
+    `await page.evaluate(() => {debugger;});`
 
      The test will now stop executing in the above evaluate statement, and chromium will stop in debug mode.
 
