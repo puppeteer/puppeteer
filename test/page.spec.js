@@ -40,6 +40,20 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       await newPage.close();
       expect(await browser.pages()).not.toContain(newPage);
     });
+    it('should run beforeunload if asked for', async({browser, server}) => {
+      const newPage = await browser.newPage();
+      await newPage.goto(server.PREFIX + '/beforeunload.html');
+      // We have to interact with a page so that 'beforeunload' handlers
+      // fire.
+      await newPage.click('body');
+      newPage.close({ runBeforeUnload: true });
+      const dialog = await waitEvent(newPage, 'dialog');
+      expect(dialog.type()).toBe('beforeunload');
+      expect(dialog.defaultValue()).toBe('');
+      expect(dialog.message()).toBe('');
+      dialog.accept();
+      await waitEvent(newPage, 'close');
+    });
   });
 
   describe('Page.Events.error', function() {
