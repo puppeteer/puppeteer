@@ -383,6 +383,10 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       const response = await page.goto('about:blank');
       expect(response).toBe(null);
     });
+    it('should return response when page changes its URL after load', async({page, server}) => {
+      const response = await page.goto(server.PREFIX + '/historyapi.html');
+      expect(response.status()).toBe(200);
+    });
     it('should work with subframes return 204', async({page, server}) => {
       server.setRoute('/frames/frame.html', (req, res) => {
         res.statusCode = 204;
