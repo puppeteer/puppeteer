@@ -301,6 +301,7 @@ puppeteer.launch().then(async browser => {
   - `browserWSEndpoint` <[string]> a [browser websocket endpoint](#browserwsendpoint) to connect to.
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
+  - `commandTimeout` <[number]> Maximum time in milliseconds to wait for command response. Defaults to `0`. Pass `0` to disable timeout.
 - returns: <[Promise]<[Browser]>>
 
 This methods attaches Puppeteer to an existing Chromium instance.
@@ -330,6 +331,7 @@ This methods attaches Puppeteer to an existing Chromium instance.
   - `handleSIGTERM` <[boolean]> Close the browser process on SIGTERM. Defaults to `true`.
   - `handleSIGHUP` <[boolean]> Close the browser process on SIGHUP. Defaults to `true`.
   - `timeout` <[number]> Maximum time in milliseconds to wait for the browser instance to start. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
+  - `commandTimeout` <[number]> Maximum time in milliseconds to wait for command response. Defaults to `0`. Pass `0` to disable timeout.
   - `dumpio` <[boolean]> Whether to pipe the browser process stdout and stderr into `process.stdout` and `process.stderr`. Defaults to `false`.
   - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
   - `env` <[Object]> Specify environment variables that will be visible to the browser. Defaults to `process.env`.

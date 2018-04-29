@@ -70,6 +70,15 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         await browser.close();
       });
     });
+    describe('CommandTimeout', function() {
+      it('should work', async() => {
+        const options = Object.assign({commandTimeout: 500}, defaultBrowserOptions);
+        options.slowMo = 4000;
+        let error = null;
+        await puppeteer.launch(options).catch(e => error = e);
+        expect(error).toBe('Timeout error (Target.setDiscoverTargets): no response recieved within 500');
+      });
+    });
     describe('Puppeteer.launch', function() {
       it('should support ignoreHTTPSErrors option', async({httpsServer}) => {
         const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
