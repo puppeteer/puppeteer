@@ -76,7 +76,7 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         options.slowMo = 4000;
         let error = null;
         await puppeteer.launch(options).catch(e => error = e);
-        expect(error).toBe('Timeout error (Target.setDiscoverTargets): no response recieved within 500');
+        expect(error).toBe('Timeout error (Target.setDiscoverTargets): no response received within 500');
       });
     });
     describe('Puppeteer.launch', function() {
