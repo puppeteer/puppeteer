@@ -35,6 +35,7 @@ const RESET_COLOR = '\x1b[0m';
 
 const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
 const executablePath = process.env.CHROME;
+const extensionPath = path.resolve(__dirname, '../test/assets/simple-extension');
 
 if (executablePath)
   console.warn(`${YELLOW_COLOR}WARN: running tests with ${executablePath}${RESET_COLOR}`);
@@ -47,6 +48,15 @@ const defaultBrowserOptions = {
   slowMo,
   headless,
   args: ['--no-sandbox']
+};
+const browserWithExtensionOptions = {
+  headless: false,
+  executablePath,
+  args: [
+    '--no-sandbox',
+    `--disable-extensions-except=${extensionPath}`,
+    `--load-extension=${extensionPath}`,
+  ],
 };
 
 let parallel = 1;
@@ -69,7 +79,7 @@ if (fs.existsSync(OUTPUT_DIR))
 
 console.log('Testing on Node', process.version);
 
-beforeAll(async state  => {
+beforeAll(async state => {
   const assetsPath = path.join(__dirname, 'assets');
   const cachedPath = path.join(__dirname, 'assets', 'cached');
 
@@ -130,7 +140,7 @@ describe('Page', function() {
   require('./jshandle.spec.js').addTests({testRunner, expect});
   require('./network.spec.js').addTests({testRunner, expect});
   require('./page.spec.js').addTests({testRunner, expect, puppeteer, DeviceDescriptors, headless});
-  require('./target.spec.js').addTests({testRunner, expect});
+  require('./target.spec.js').addTests({testRunner, expect, puppeteer, browserWithExtensionOptions});
   require('./tracing.spec.js').addTests({testRunner, expect});
 });
 
@@ -138,7 +148,7 @@ describe('Page', function() {
 require('./puppeteer.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
 
 if (process.env.COVERAGE) {
-  describe('COVERAGE', function(){
+  describe('COVERAGE', function() {
     const coverage = helper.publicAPICoverage();
     const disabled = new Set(['page.bringToFront']);
     if (!headless)

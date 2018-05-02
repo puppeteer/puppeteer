@@ -2595,7 +2595,7 @@ If the target is not of type `"page"`, returns `null`.
 #### target.type()
 - returns: <[string]>
 
-Identifies what kind of target this is. Can be `"page"`, `"service_worker"`, `"browser"` or `"other"`.
+Identifies what kind of target this is. Can be `"page"`, [`"background_page"`](https://developer.chrome.com/extensions/background_pages), `"service_worker"`, `"browser"` or `"other"`.
 
 #### target.url()
 - returns: <[string]>
