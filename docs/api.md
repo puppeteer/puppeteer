@@ -69,7 +69,7 @@
   * [page.bringToFront()](#pagebringtofront)
   * [page.browser()](#pagebrowser)
   * [page.click(selector[, options])](#pageclickselector-options)
-  * [page.close()](#pageclose)
+  * [page.close(options)](#pagecloseoptions)
   * [page.content()](#pagecontent)
   * [page.cookies(...urls)](#pagecookiesurls)
   * [page.coverage](#pagecoverage)
@@ -747,8 +747,17 @@ const [response] = await Promise.all([
 
 Shortcut for [page.mainFrame().click(selector[, options])](#frameclickselector-options).
 
-#### page.close()
+#### page.close(options)
+- `options` <[Object]>
+  - `runBeforeUnload` <[boolean]> Defaults to `false`. Whether to run the
+    [before unload](https://developer.mozilla.org/en-US/docs/Web/Events/beforeunload)
+    page handlers.
 - returns: <[Promise]>
+
+By default, `page.close()` **does not** run beforeunload handlers.
+
+> **NOTE** if `runBeforeUnload` is passed as true, a `beforeunload` dialog might be summoned
+> and should be handled manually via page's ['dialog'](#event-dialog) event.
 
 #### page.content()
 - returns: <[Promise]<[String]>>
