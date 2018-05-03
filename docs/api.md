@@ -31,7 +31,9 @@
   * [event: 'targetchanged'](#event-targetchanged)
   * [event: 'targetcreated'](#event-targetcreated)
   * [event: 'targetdestroyed'](#event-targetdestroyed)
+  * [browser.browserContexts()](#browserbrowsercontexts)
   * [browser.close()](#browserclose)
+  * [browser.createIncognitoBrowserContext()](#browsercreateincognitobrowsercontext)
   * [browser.disconnect()](#browserdisconnect)
   * [browser.newPage()](#browsernewpage)
   * [browser.pages()](#browserpages)
@@ -40,6 +42,12 @@
   * [browser.userAgent()](#browseruseragent)
   * [browser.version()](#browserversion)
   * [browser.wsEndpoint()](#browserwsendpoint)
+- [class: BrowserContext](#class-browsercontext)
+  * [browserContext.browser()](#browsercontextbrowser)
+  * [browserContext.dispose()](#browsercontextdispose)
+  * [browserContext.isIncognito()](#browsercontextisincognito)
+  * [browserContext.newPage()](#browsercontextnewpage)
+  * [browserContext.targets()](#browsercontexttargets)
 - [class: Page](#class-page)
   * [event: 'close'](#event-close)
   * [event: 'console'](#event-console)
@@ -240,6 +248,7 @@
   * [securityDetails.validTo()](#securitydetailsvalidto)
 - [class: Target](#class-target)
   * [target.browser()](#targetbrowser)
+  * [target.browserContext()](#targetbrowsercontext)
   * [target.createCDPSession()](#targetcreatecdpsession)
   * [target.page()](#targetpage)
   * [target.type()](#targettype)
@@ -456,17 +465,41 @@ Emitted when a target is created, for example when a new page is opened by [`win
 
 Emitted when a target is destroyed, for example when a page is closed.
 
+#### browser.browserContexts()
+- returns: <[Array]<[BrowserContext]>>
+
+Returns all the browser contexts created in the browser. In a newly created browser, this will return
+a single instance of [BrowserContext].
+
 #### browser.close()
 - returns: <[Promise]>
 
 Closes Chromium and all of its pages (if any were opened). The [Browser] object itself is considered to be disposed and cannot be used anymore.
+
+#### browser.createIncognitoBrowserContext()
+- returns: <[Promise]<[BrowserContext]>>
+
+Creates a new incognito browser context. A typical use would be opening pages in a pristine
+browsing session:
+
+```js
+const browser = await puppeteer.launch();
+// Create a new incognito browser context.
+const context = await browser.createIncognitoBrowserContext();
+// Create a new page in a pristine context.
+const page = await context.newPage();
+// Do stuff
+await page.goto('https://example.com');
+```
 
 #### browser.disconnect()
 
 Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling `disconnect`, the [Browser] object is considered disposed and cannot be used anymore.
 
 #### browser.newPage()
-- returns: <[Promise]<[Page]>> Promise which resolves to a new [Page] object.
+- returns: <[Promise]<[Page]>>
+
+Promise which resolves to a new [Page] object. The [Page] is created in a default browser context.
 
 #### browser.pages()
 - returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages.
@@ -475,7 +508,10 @@ Disconnects Puppeteer from the browser, but leaves the Chromium process running.
 - returns: <?[ChildProcess]> Spawned browser process. Returns `null` if the browser instance was created with [`puppeteer.connect`](#puppeteerconnectoptions) method.
 
 #### browser.targets()
-- returns: <[Array]<[Target]>> An array of all active targets.
+- returns: <[Array]<[Target]>>
+
+An array of all active targets inside the Browser. In case of multiple browser contexts,
+the method will return an array with all the targets in all browser contexts.
 
 #### browser.userAgent()
 - returns: <[Promise]<[string]>> Promise which resolves to the browser's original user agent.
@@ -494,6 +530,61 @@ Browser websocket endpoint which can be used as an argument to
 [puppeteer.connect](#puppeteerconnectoptions). The format is `ws://${host}:${port}/devtools/browser/<id>`
 
 You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/version`. Learn more about the [devtools protocol](https://chromedevtools.github.io/devtools-protocol) and the [browser endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
+
+### class: BrowserContext
+
+BrowserContexts provide a way to operate multiple independent browser sessions. When browser is launched, it has
+a single BrowserContext used by default. Method `browser.newPage()` creates a page in the default browser context.
+
+If a page opens another page, e.g. with the `window.open` call, the popup will belong to the parent page browser
+context.
+
+Puppeteer allows creation of "incognito" browser contexts with `browser.createIncognitoBrowserContext()` method.
+"Incognito" browser contexts don't persist any browsing data to disk.
+
+Typical usage of a context:
+
+```js
+// Create a new incognito browser context
+const context = await browser.createIncognitoBrowserContext();
+// Create a new page inside context.
+const page = await context.newPage();
+// ... do stuff with page ...
+await page.goto('https://example.com');
+// Dispose context once its no longer needed.
+await context.dispose();
+```
+
+#### browserContext.browser()
+- returns: <[Browser]>
+
+The browser the browser context belongs to.
+
+#### browserContext.dispose()
+- returns: <[Promise]>
+
+Dispose the browser context. All the targets that belong to the browser context
+will be closed.
+
+> **NOTE** only non-incognito browser contexts can be disposed.
+
+#### browserContext.isIncognito()
+- returns: <[boolean]>
+
+Returns whether BrowserContext is incognito. The only non-incognito context is a default browser context.
+
+> **NOTE** non-incognito browser contexts cannot be disposed.
+
+#### browserContext.newPage()
+- returns: <[Promise]<[Page]>>
+
+Promise which resolves to a new [Page] object in this browser context.
+
+
+#### browserContext.targets()
+- returns: <[Array]<[Target]>>
+
+An array of all active targets inside the browser context.
 
 ### class: Page
 
@@ -2607,6 +2698,12 @@ Contains the URL of the response.
 
 Get the browser the target belongs to.
 
+#### target.browserContext()
+
+- returns: <[BrowserContext]>
+
+Get the browser context the target belongs to.
+
 #### target.createCDPSession()
 - returns: <[Promise]<[CDPSession]>>
 
@@ -2734,6 +2831,7 @@ reported.
 [stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable "stream.Readable"
 [CDPSession]: #class-cdpsession  "CDPSession"
 [BrowserFetcher]: #class-browserfetcher  "BrowserFetcher"
+[BrowserContext]: #class-browsercontext  "BrowserContext"
 [Error]: https://nodejs.org/api/errors.html#errors_class_error "Error"
 [Frame]: #class-frame "Frame"
 [ConsoleMessage]: #class-consolemessage "ConsoleMessage"
