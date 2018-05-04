@@ -196,6 +196,13 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       const isFive = await page.evaluate(e => Object.is(e, 5), aHandle);
       expect(isFive).toBeTruthy();
     });
+    it('should simulate a user gesture', async({page, server}) => {
+      await page.evaluate(() => {
+        const audio = document.createElement('audio');
+        audio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+        return audio.play();
+      });
+    });
   });
 
   describe('Page.setOfflineMode', function() {
