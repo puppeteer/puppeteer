@@ -93,11 +93,11 @@ function compare(goldenPath, outputPath, actual, goldenName) {
     };
   }
   const expected = fs.readFileSync(expectedPath);
-  const comparator = GoldenComparators[mime.lookup(goldenName)];
+  const comparator = GoldenComparators[mime.getType(goldenName)];
   if (!comparator) {
     return {
       pass: false,
-      message: 'Failed to find comparator with type ' + mime.lookup(goldenName) + ': '  + goldenName
+      message: 'Failed to find comparator with type ' + mime.getType(goldenName) + ': '  + goldenName
     };
   }
   const result = comparator(actual, expected);

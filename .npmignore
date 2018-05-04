@@ -2,6 +2,10 @@
 test
 utils/node6-transform
 
+# exclude internal type definition files
+/lib/*.d.ts
+/node6/lib/*.d.ts
+
 # repeats from .gitignore
 node_modules
 .local-chromium
@@ -17,3 +21,16 @@ package-lock.json
 /utils
 /docs
 yarn.lock
+
+# other
+/.ci
+/examples
+.appveyour.yml
+.cirrus.yml
+.editorconfig
+.eslintignore
+.eslintrc.js
+.travis.yml
+README.md
+tsconfig.json
+

@@ -6,6 +6,10 @@ Assuming you have a checkout of the Puppeteer repo and have run npm i (or yarn) 
 NODE_PATH=../ node examples/search.js
 ```
 
+## Larger examples
+
+More complex and use case driven examples can be found at [github.com/GoogleChromeLabs/puppeteer-examples](https://github.com/GoogleChromeLabs/puppeteer-examples).
+
 # Tips & Tricks
 
 ## Load a Chrome extension
@@ -42,6 +46,7 @@ const browser = await puppeteer.launch({
 - [angular-puppeteer-demo](https://github.com/Quramy/angular-puppeteer-demo) - Demo repository explaining how to use Puppeteer in Karma.
 - [mocha-headless-chrome](https://github.com/direct-adv-interfaces/mocha-headless-chrome) - Tool which runs client-side **mocha** tests in the command line through headless Chrome.
 - [puppeteer-to-istanbul-example](https://github.com/bcoe/puppeteer-to-istanbul-example) - Demo repository demonstrating how to output Puppeteer coverage in Istanbul format.
+- [jest-puppeteer](https://github.com/smooth-code/jest-puppeteer) - (almost) Zero configuration tool for setting up and running Jest and Puppeteer easily. Also includes an assertion library for Puppeteer.
 
 ## Services
 - [Checkly](https://checklyhq.com) - Monitoring SaaS that uses Puppeteer to check availability and correctness of web pages and apps.

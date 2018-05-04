@@ -6,7 +6,7 @@
 
 <img src="https://user-images.githubusercontent.com/10379601/29446482-04f7036a-841f-11e7-9872-91d1fc2ea683.png" height="200" align="right">
 
-###### [API](docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md)
+###### <!-- gen:last-released-api -->[API](https://github.com/GoogleChrome/puppeteer/blob/v1.3.0/docs/api.md)<!-- gen:stop --> | [FAQ](#faq) | [Contributing](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md)
 
 > Puppeteer is a Node library which provides a high-level API to control [headless](https://developers.google.com/web/updates/2017/04/headless-chrome) Chrome or Chromium over the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/). It can also be configured to use full (non-headless) Chrome or Chromium.
 
@@ -32,7 +32,7 @@ Give it a spin: https://try-puppeteer.appspot.com/
 To use Puppeteer in your project, run:
 
 ```bash
-npm i --save puppeteer
+npm i puppeteer
 # or "yarn add puppeteer"
 ```
 
@@ -194,7 +194,27 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
 
         await page.evaluate(() => console.log(`url is ${location.href}`));
 
-4. Enable verbose logging - All public API calls and internal protocol traffic
+4. Stop test execution and use a debugger in browser
+
+  - Use `{devtools: true}` when launching Puppeteer:
+
+      `const browser = await puppeteer.launch({devtools: true});`
+
+  - Change default test timeout:
+      
+      jest: `jest.setTimeout(100000);`
+      
+      jasmine: `jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;`
+      
+      mocha: `this.timeout(100000);` (don't forget to change test to use [function and not '=>'](https://stackoverflow.com/a/23492442))
+    
+  - Add an evaluate statement with `debugger` inside / add  `debugger` to an existing evaluate statement:
+
+    `await page.evaluate(() => {debugger;});`
+
+     The test will now stop executing in the above evaluate statement, and chromium will stop in debug mode.
+
+5. Enable verbose logging - All public API calls and internal protocol traffic
    will be logged via the [`debug`](https://github.com/visionmedia/debug) module under the `puppeteer` namespace.
 
         # Basic verbose logging
@@ -272,5 +292,15 @@ npm i --save puppeteer@next
 ```
 
 Please note that prerelease may be unstable and contain bugs.
+
+#### Q: I have more questions! Where do I ask?
+
+There are many ways to get help on Puppeteer:
+- [bugtracker](https://github.com/GoogleChrome/puppeteer/issues)
+- [stackoverflow](https://stackoverflow.com/questions/tagged/puppeteer)
+- [slack channel](https://join.slack.com/t/puppeteer/shared_invite/enQtMzAyOTU1MzQyOTQ1LTUzOTAxNjE5YWI0YzNmYmRkN2I4MDg2MzI4OGE3YWNhZDBlYWMyNTlmOTJlN2RhYzlmODI4ZDQxZGEyMGIwNDY)
+
+Make sure to search these channels before posting your question.
+
 
 <!-- [END faq] -->

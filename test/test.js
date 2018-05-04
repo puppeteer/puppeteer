@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 const fs = require('fs');
+const rm = require('rimraf').sync;
 const path = require('path');
 const SimpleServer = require('./server/SimpleServer');
 const GoldenUtils = require('./golden-utils');
@@ -21,13 +22,13 @@ const GOLDEN_DIR = path.join(__dirname, 'golden');
 const OUTPUT_DIR = path.join(__dirname, 'output');
 const {TestRunner, Reporter, Matchers} = require('../utils/testrunner/');
 
-
 const {helper} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
 
 const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ? path.join(__dirname, '..') : path.join(__dirname, '..', '..');
 const puppeteer = require(PROJECT_ROOT);
+const DeviceDescriptors = require(path.join(PROJECT_ROOT, 'DeviceDescriptors'));
 
 const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
@@ -45,7 +46,7 @@ const defaultBrowserOptions = {
   executablePath,
   slowMo,
   headless,
-  args: ['--no-sandbox', '--disable-dev-shm-usage']
+  args: ['--no-sandbox']
 };
 
 let parallel = 1;
@@ -57,12 +58,11 @@ if (parallelArgIndex !== -1)
 require('events').defaultMaxListeners *= parallel;
 
 const timeout = slowMo ? 0 : 10 * 1000;
-const runner = new TestRunner({timeout, parallel});
-new Reporter(runner);
-const {beforeAll, beforeEach, afterAll, describe, xit, it} = runner;
+const testRunner = new TestRunner({timeout, parallel});
 const {expect} = new Matchers({
   toBeGolden: GoldenUtils.compare.bind(null, GOLDEN_DIR, OUTPUT_DIR)
 });
+const {describe, it, xit, beforeAll, afterAll, beforeEach, afterEach} = testRunner;
 
 if (fs.existsSync(OUTPUT_DIR))
   rm(OUTPUT_DIR);
@@ -88,11 +88,6 @@ beforeAll(async state  => {
   state.httpsServer.EMPTY_PAGE = `https://localhost:${httpsPort}/empty.html`;
 });
 
-beforeEach(async({server, httpsServer}) => {
-  server.reset();
-  httpsServer.reset();
-});
-
 afterAll(async({server, httpsServer}) => {
   await Promise.all([
     server.stop(),
@@ -100,28 +95,53 @@ afterAll(async({server, httpsServer}) => {
   ]);
 });
 
-const testFiles = [
-  'page.spec.js',
-  'puppeteer.spec.js'
-];
+beforeEach(async({server, httpsServer}) => {
+  server.reset();
+  httpsServer.reset();
+});
 
-testFiles
-    .map(file => path.join(__dirname, file))
-    .forEach(file =>
-      require(file).addTests({
-        testRunner: runner,
-        expect,
-        defaultBrowserOptions,
-        puppeteer,
-        PROJECT_ROOT
-      })
-    );
+describe('Page', function() {
+  beforeAll(async state => {
+    state.browser = await puppeteer.launch(defaultBrowserOptions);
+  });
+
+  afterAll(async state => {
+    await state.browser.close();
+    state.browser = null;
+  });
+
+  beforeEach(async state => {
+    state.page = await state.browser.newPage();
+  });
+
+  afterEach(async state => {
+    await state.page.close();
+    state.page = null;
+  });
+
+  // Page-level tests that are given a browser and a page.
+  require('./CDPSession.spec.js').addTests({testRunner, expect});
+  require('./browser.spec.js').addTests({testRunner, expect, puppeteer, headless});
+  require('./cookies.spec.js').addTests({testRunner, expect});
+  require('./coverage.spec.js').addTests({testRunner, expect});
+  require('./elementhandle.spec.js').addTests({testRunner, expect});
+  require('./frame.spec.js').addTests({testRunner, expect});
+  require('./input.spec.js').addTests({testRunner, expect, DeviceDescriptors});
+  require('./jshandle.spec.js').addTests({testRunner, expect});
+  require('./network.spec.js').addTests({testRunner, expect});
+  require('./page.spec.js').addTests({testRunner, expect, puppeteer, DeviceDescriptors, headless});
+  require('./target.spec.js').addTests({testRunner, expect});
+  require('./tracing.spec.js').addTests({testRunner, expect});
+});
+
+// Top-level tests that launch Browser themselves.
+require('./puppeteer.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
 
 if (process.env.COVERAGE) {
   describe('COVERAGE', function(){
     const coverage = helper.publicAPICoverage();
     const disabled = new Set(['page.bringToFront']);
-    if (!defaultBrowserOptions.headless)
+    if (!headless)
       disabled.add('page.pdf');
 
     for (const method of coverage.keys()) {
@@ -132,8 +152,10 @@ if (process.env.COVERAGE) {
   });
 }
 
-if (process.env.CI && runner.hasFocusedTestsOrSuites()) {
+if (process.env.CI && testRunner.hasFocusedTestsOrSuites()) {
   console.error('ERROR: "focused" tests/suites are prohibitted on bots. Remove any "fit"/"fdescribe" declarations.');
   process.exit(1);
 }
-runner.run();
+
+new Reporter(testRunner);
+testRunner.run();

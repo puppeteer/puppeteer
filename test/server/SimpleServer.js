@@ -78,6 +78,8 @@ class SimpleServer {
     this._routes = new Map();
     /** @type {!Map<string, !{username:string, password:string}>} */
     this._auths = new Map();
+    /** @type {!Map<string, string>} */
+    this._csp = new Map();
     /** @type {!Map<string, !Promise>} */
     this._requestSubscribers = new Map();
   }
@@ -109,6 +111,14 @@ class SimpleServer {
     this._auths.set(path, {username, password});
   }
 
+  /**
+   * @param {string} path
+   * @param {string} csp
+   */
+  setCSP(path, csp) {
+    this._csp.set(path, csp);
+  }
+
   async stop() {
     this.reset();
     for (const socket of this._sockets)
@@ -126,8 +136,8 @@ class SimpleServer {
   }
 
   /**
-   * @param {string} fromPath
-   * @param {string} toPath
+   * @param {string} from
+   * @param {string} to
    */
   setRedirect(from, to) {
     this.setRoute(from, (req, res) => {
@@ -158,6 +168,7 @@ class SimpleServer {
   reset() {
     this._routes.clear();
     this._auths.clear();
+    this._csp.clear();
     const error = new Error('Static Server has been reset');
     for (const subscriber of this._requestSubscribers.values())
       subscriber[rejectSymbol].call(null, error);
@@ -174,7 +185,7 @@ class SimpleServer {
     const pathName = url.parse(request.url).path;
     if (this._auths.has(pathName)) {
       const auth = this._auths.get(pathName);
-      const credentials = new Buffer((request.headers.authorization || '').split(' ')[1] || '', 'base64').toString();
+      const credentials = Buffer.from((request.headers.authorization || '').split(' ')[1] || '', 'base64').toString();
       if (credentials !== `${auth.username}:${auth.password}`) {
         response.writeHead(401, { 'WWW-Authenticate': 'Basic realm="Secure Area"' });
         response.end('HTTP Error 401 Unauthorized: Access is denied');
@@ -214,6 +225,8 @@ class SimpleServer {
     } else {
       response.setHeader('Cache-Control', 'no-cache, no-store');
     }
+    if (this._csp.has(pathName))
+      response.setHeader('Content-Security-Policy', this._csp.get(pathName));
 
     fs.readFile(filePath, function(err, data) {
       if (err) {
@@ -221,7 +234,7 @@ class SimpleServer {
         response.end(`File not found: ${filePath}`);
         return;
       }
-      response.setHeader('Content-Type', mime.lookup(filePath));
+      response.setHeader('Content-Type', mime.getType(filePath));
       response.end(data);
     });
   }

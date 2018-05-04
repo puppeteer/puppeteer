@@ -110,6 +110,13 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.evaluate(() => window.__FOO = 'hit');
       await watchdog;
     });
+    it('should work with strict CSP policy', async({page, server}) => {
+      server.setCSP('/empty.html', 'script-src ' + server.PREFIX);
+      await page.goto(server.EMPTY_PAGE);
+      const watchdog = page.waitForFunction(() => window.__FOO === 'hit', {polling: 'raf'});
+      await page.evaluate(() => window.__FOO = 'hit');
+      await watchdog;
+    });
     it('should throw on bad polling value', async({page, server}) => {
       let error = null;
       try {
@@ -414,6 +421,14 @@ module.exports.addTests = function({testRunner, expect}) {
       await utils.detachFrame(page, 'frame1');
       expect(detachedFrames.length).toBe(1);
       expect(detachedFrames[0].isDetached()).toBe(true);
+    });
+    it('should send "framenavigated" when navigating on anchor URLs', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await Promise.all([
+        page.goto(server.EMPTY_PAGE + '#foo'),
+        utils.waitEvent(page, 'framenavigated')
+      ]);
+      expect(page.url()).toBe(server.EMPTY_PAGE + '#foo');
     });
     it('should persist mainFrame on cross-process navigation', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);

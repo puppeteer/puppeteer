@@ -27,8 +27,10 @@ module.exports.addTests = function({testRunner, expect}) {
       state.outputFile = path.join(__dirname, 'assets', `trace-${state.parallelIndex}.json`);
     });
     afterEach(function(state) {
-      fs.unlinkSync(state.outputFile);
-      state.outputFile = null;
+      if (fs.existsSync(state.outputFile)) {
+        fs.unlinkSync(state.outputFile);
+        state.outputFile = null;
+      }
     });
     it('should output a trace', async({page, server, outputFile}) => {
       await page.tracing.start({screenshots: true, path: outputFile});
@@ -51,6 +53,30 @@ module.exports.addTests = function({testRunner, expect}) {
       await newPage.close();
       expect(error).toBeTruthy();
       await page.tracing.stop();
+    });
+    it('should return a buffer', async({page, server, outputFile}) => {
+      await page.tracing.start({screenshots: true, path: outputFile});
+      await page.goto(server.PREFIX + '/grid.html');
+      const trace = await page.tracing.stop();
+      const buf = fs.readFileSync(outputFile);
+      expect(trace.toString()).toEqual(buf.toString());
+    });
+    it('should return null in case of Buffer error', async({page, server}) => {
+      await page.tracing.start({screenshots: true});
+      await page.goto(server.PREFIX + '/grid.html');
+      const oldBufferConcat = Buffer.concat;
+      Buffer.concat = bufs => {
+        throw 'error';
+      };
+      const trace = await page.tracing.stop();
+      expect(trace).toEqual(null);
+      Buffer.concat = oldBufferConcat;
+    });
+    it('should support a buffer without a path', async({page, server}) => {
+      await page.tracing.start({screenshots: true});
+      await page.goto(server.PREFIX + '/grid.html');
+      const trace = await page.tracing.stop();
+      expect(trace.toString()).toContain('screenshot');
     });
   });
 };

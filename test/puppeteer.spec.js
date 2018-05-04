@@ -20,13 +20,15 @@ const path = require('path');
 const {helper} = require('../lib/helper');
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
 const readFileAsync = helper.promisify(fs.readFile);
+const statAsync = helper.promisify(fs.stat);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const utils = require('./utils');
 
-module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer, PROJECT_ROOT}) {
+module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+  const puppeteer = require(PROJECT_ROOT);
 
   describe('Puppeteer', function() {
     describe('BrowserFetcher', function() {
@@ -50,6 +52,8 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         revisionInfo = await browserFetcher.download('123456');
         expect(revisionInfo.local).toBe(true);
         expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe('LINUX BINARY\n');
+        const expectedPermissions = os.platform() === 'win32' ? 0666 : 0755;
+        expect((await statAsync(revisionInfo.executablePath)).mode & 0777).toBe(expectedPermissions);
         expect(await browserFetcher.localRevisions()).toEqual(['123456']);
         await browserFetcher.remove('123456');
         expect(await browserFetcher.localRevisions()).toEqual([]);
@@ -92,6 +96,17 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(responses[0].status()).toBe(302);
         const securityDetails = responses[0].securityDetails();
         expect(securityDetails.protocol()).toBe('TLS 1.2');
+        await page.close();
+        await browser.close();
+      });
+      it('should work with mixed content', async({server, httpsServer}) => {
+        httpsServer.setRoute('/mixedcontent.html', (req, res) => {
+          res.end(`<iframe src=${server.EMPTY_PAGE}></iframe>`);
+        });
+        const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
+        const page = await browser.newPage();
+        await page.goto(httpsServer.PREFIX + '/mixedcontent.html', {waitUntil: 'load'});
         await page.close();
         await browser.close();
       });
@@ -145,8 +160,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await browser2.close();
         rm(userDataDir);
       });
-      // @see https://github.com/GoogleChrome/puppeteer/issues/1537
-      xit('userDataDir option should restore cookies', async({server}) => {
+      it('userDataDir option should restore cookies', async({server}) => {
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
@@ -219,6 +233,35 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
           process.kill(res.pid);
         await Promise.all(promises);
       });
+      it('should support the pipe option', async() => {
+        const options = Object.assign({pipe: true}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
+        expect(browser.wsEndpoint()).toBe('');
+        const page = await browser.newPage();
+        expect(await page.evaluate('11 * 11')).toBe(121);
+        await page.close();
+        await browser.close();
+      });
+      it('should support the pipe argument', async() => {
+        const options = Object.assign({}, defaultBrowserOptions);
+        options.ignoreDefaultArgs = true;
+        options.args = ['--remote-debugging-pipe'].concat(options.args);
+        const browser = await puppeteer.launch(options);
+        expect(browser.wsEndpoint()).toBe('');
+        const page = await browser.newPage();
+        expect(await page.evaluate('11 * 11')).toBe(121);
+        await page.close();
+        await browser.close();
+      });
+      it('should work with no default arguments', async() => {
+        const options = Object.assign({}, defaultBrowserOptions);
+        options.ignoreDefaultArgs = true;
+        const browser = await puppeteer.launch(options);
+        const page = await browser.newPage();
+        expect(await page.evaluate('11 * 11')).toBe(121);
+        await page.close();
+        await browser.close();
+      });
     });
     describe('Puppeteer.connect', function() {
       it('should be able to connect multiple times to the same browser', async({server}) => {
@@ -256,4 +299,40 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       });
     });
   });
+
+  describe('Browser.Events.disconnected', function() {
+    it('should be emitted when: browser gets closed, disconnected or underlying websocket gets closed', async() => {
+      const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+      const browserWSEndpoint = originalBrowser.wsEndpoint();
+      const remoteBrowser1 = await puppeteer.connect({browserWSEndpoint});
+      const remoteBrowser2 = await puppeteer.connect({browserWSEndpoint});
+
+      let disconnectedOriginal = 0;
+      let disconnectedRemote1 = 0;
+      let disconnectedRemote2 = 0;
+      originalBrowser.on('disconnected', () => ++disconnectedOriginal);
+      remoteBrowser1.on('disconnected', () => ++disconnectedRemote1);
+      remoteBrowser2.on('disconnected', () => ++disconnectedRemote2);
+
+      await Promise.all([
+        utils.waitEvent(remoteBrowser2, 'disconnected'),
+        remoteBrowser2.disconnect(),
+      ]);
+
+      expect(disconnectedOriginal).toBe(0);
+      expect(disconnectedRemote1).toBe(0);
+      expect(disconnectedRemote2).toBe(1);
+
+      await Promise.all([
+        utils.waitEvent(remoteBrowser1, 'disconnected'),
+        utils.waitEvent(originalBrowser, 'disconnected'),
+        originalBrowser.close(),
+      ]);
+
+      expect(disconnectedOriginal).toBe(1);
+      expect(disconnectedRemote1).toBe(1);
+      expect(disconnectedRemote2).toBe(1);
+    });
+  });
+
 };
