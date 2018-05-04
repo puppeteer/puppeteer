@@ -197,11 +197,16 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       expect(isFive).toBeTruthy();
     });
     it('should simulate a user gesture', async({page, server}) => {
-      await page.evaluate(() => {
+      await page.evaluate(playAudio);
+      // also test evaluating strings
+      await page.evaluate(`(${playAudio})()`);
+
+      function playAudio() {
         const audio = document.createElement('audio');
         audio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+        // This returns a promise which throws if it was not triggered by a user gesture.
         return audio.play();
-      });
+      }
     });
   });
 
