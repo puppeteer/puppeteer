@@ -44,7 +44,7 @@
   * [browser.wsEndpoint()](#browserwsendpoint)
 - [class: BrowserContext](#class-browsercontext)
   * [browserContext.browser()](#browsercontextbrowser)
-  * [browserContext.dispose()](#browsercontextdispose)
+  * [browserContext.close()](#browsercontextclose)
   * [browserContext.isIncognito()](#browsercontextisincognito)
   * [browserContext.newPage()](#browsercontextnewpage)
   * [browserContext.targets()](#browsercontexttargets)
