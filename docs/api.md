@@ -468,7 +468,7 @@ Emitted when a target is destroyed, for example when a page is closed.
 #### browser.browserContexts()
 - returns: <[Array]<[BrowserContext]>>
 
-Returns all the browser contexts created in the browser. In a newly created browser, this will return
+Returns an array of all open browser contexts. In a newly created browser, this will return
 a single instance of [BrowserContext].
 
 #### browser.close()
@@ -479,8 +479,7 @@ Closes Chromium and all of its pages (if any were opened). The [Browser] object 
 #### browser.createIncognitoBrowserContext()
 - returns: <[Promise]<[BrowserContext]>>
 
-Creates a new incognito browser context. A typical use would be opening pages in a pristine
-browsing session:
+Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
 
 ```js
 const browser = await puppeteer.launch();
@@ -533,16 +532,14 @@ You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/versio
 
 ### class: BrowserContext
 
-BrowserContexts provide a way to operate multiple independent browser sessions. When browser is launched, it has
-a single BrowserContext used by default. Method `browser.newPage()` creates a page in the default browser context.
+BrowserContexts provide a way to operate multiple independent browser sessions. When *a* browser is launched, it has
+a single BrowserContext used by default. The method `browser.newPage()` creates a page in the default browser context.
 
-If a page opens another page, e.g. with the `window.open` call, the popup will belong to the parent page browser
+If a page opens another page, e.g. with a `window.open` call, the popup will belong to the parent page's browser
 context.
 
 Puppeteer allows creation of "incognito" browser contexts with `browser.createIncognitoBrowserContext()` method.
-"Incognito" browser contexts don't persist any browsing data to disk.
-
-Typical usage of a context:
+"Incognito" browser contexts don't write any browsing data to disk.
 
 ```js
 // Create a new incognito browser context
@@ -552,34 +549,33 @@ const page = await context.newPage();
 // ... do stuff with page ...
 await page.goto('https://example.com');
 // Dispose context once its no longer needed.
-await context.dispose();
+await context.close();
 ```
 
 #### browserContext.browser()
 - returns: <[Browser]>
 
-The browser the browser context belongs to.
+The browser this browser context belongs to.
 
-#### browserContext.dispose()
+#### browserContext.close()
 - returns: <[Promise]>
 
-Dispose the browser context. All the targets that belong to the browser context
+Closes the browser context. All the targets that belong to the browser context
 will be closed.
 
-> **NOTE** only non-incognito browser contexts can be disposed.
+> **NOTE** only incognito browser contexts can be disposed.
 
 #### browserContext.isIncognito()
 - returns: <[boolean]>
 
 Returns whether BrowserContext is incognito. The only non-incognito context is a default browser context.
 
-> **NOTE** non-incognito browser contexts cannot be disposed.
+> **NOTE** the default browser context cannot be closed.
 
 #### browserContext.newPage()
 - returns: <[Promise]<[Page]>>
 
-Promise which resolves to a new [Page] object in this browser context.
-
+Creates a new page in this browser context.
 
 #### browserContext.targets()
 - returns: <[Array]<[Target]>>
@@ -2702,7 +2698,7 @@ Get the browser the target belongs to.
 
 - returns: <[BrowserContext]>
 
-Get the browser context the target belongs to.
+The browser context this target belongs to.
 
 #### target.createCDPSession()
 - returns: <[Promise]<[CDPSession]>>

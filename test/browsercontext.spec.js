@@ -27,8 +27,8 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       const defaultContext = browser.browserContexts()[0];
       expect(defaultContext.isIncognito()).toBe(false);
       let error = null;
-      await defaultContext.dispose().catch(e => error = e);
-      expect(error.message).toContain('cannot be disposed');
+      await defaultContext.close().catch(e => error = e);
+      expect(error.message).toContain('cannot be closed');
     });
     it('should create new incognito context', async function({browser, server}) {
       expect(browser.browserContexts().length).toBe(1);
@@ -36,7 +36,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(context.isIncognito()).toBe(true);
       expect(browser.browserContexts().length).toBe(2);
       expect(browser.browserContexts().indexOf(context) !== -1).toBe(true);
-      await context.dispose();
+      await context.close();
       expect(browser.browserContexts().length).toBe(1);
     });
     it('should close all belonging targets once closing context', async function({browser, server}) {
@@ -46,7 +46,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       await context.newPage();
       expect((await browser.pages()).length).toBe(3);
 
-      await context.dispose();
+      await context.close();
       expect((await browser.pages()).length).toBe(2);
     });
     it('window.open should use parent tab context', async function({browser, server}) {
@@ -56,7 +56,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       page.evaluate(url => window.open(url), server.EMPTY_PAGE);
       const popupTarget = await utils.waitEvent(browser, 'targetcreated');
       expect(popupTarget.browserContext()).toBe(context);
-      await context.dispose();
+      await context.close();
     });
     it('should isolate localStorage and cookies', async function({browser, server}) {
       // Create two incognito contexts.
@@ -97,8 +97,8 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
 
       // Cleanup contexts.
       await Promise.all([
-        context1.dispose(),
-        context2.dispose()
+        context1.close(),
+        context2.close()
       ]);
       expect(browser.browserContexts().length).toBe(1);
     });
@@ -112,7 +112,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       const contexts = remoteBrowser.browserContexts();
       expect(contexts.length).toBe(2);
       await remoteBrowser.disconnect();
-      await context.dispose();
+      await context.close();
     });
   });
 };
