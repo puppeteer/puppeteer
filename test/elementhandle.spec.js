@@ -294,6 +294,22 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(second).toBe(null);
     });
   });
+  describe('ElementHandle.$eval', function() {
+    it('should work', async({page, server}) => {
+      await page.setContent('<html><body><div class="tweet"><div class="like">100</div><div class="retweets">10</div></div></body></html>');
+      const tweet = await page.$('.tweet');
+      const content = await tweet.$eval('.like', node => node.innerText);
+      expect(content).toBe('100');
+    });
+
+    it('should retrieve content from subtree', async({page, server}) => {
+      const htmlContent = '<div class="a">not-a-child-div</div><div id="myId"><div class="a">a-child-div</div></div>';
+      await page.setContent(htmlContent);
+      const elementHandle = await page.$('#myId');
+      const content = await elementHandle.$eval('.a', node => node.innerText);
+      expect(content).toBe('a-child-div');
+    });
+  });
 
   describe('ElementHandle.$$', function() {
     it('should query existing elements', async({page, server}) => {
