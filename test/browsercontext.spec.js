@@ -58,6 +58,22 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(popupTarget.browserContext()).toBe(context);
       await context.close();
     });
+    it('should fire target events', async function({browser, server}) {
+      const context = await browser.createIncognitoBrowserContext();
+      const events = [];
+      context.on('targetcreated', target => events.push('CREATED: ' + target.url()));
+      context.on('targetchanged', target => events.push('CHANGED: ' + target.url()));
+      context.on('targetdestroyed', target => events.push('DESTRYOED: ' + target.url()));
+      const page = await context.newPage();
+      await page.goto(server.EMPTY_PAGE);
+      await page.close();
+      expect(events).toEqual([
+        'CREATED: about:blank',
+        'CHANGED: http://localhost:8907/empty.html',
+        'DESTRYOED: http://localhost:8907/empty.html'
+      ]);
+      await context.close();
+    });
     it('should isolate localStorage and cookies', async function({browser, server}) {
       // Create two incognito contexts.
       const context1 = await browser.createIncognitoBrowserContext();

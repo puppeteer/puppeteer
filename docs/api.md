@@ -454,16 +454,19 @@ Emitted when Puppeteer gets disconnected from the Chromium instance. This might 
 - <[Target]>
 
 Emitted when the url of a target changes.
+In case of multiple browser contexts, this event will fire for targets in any of them.
 
 #### event: 'targetcreated'
 - <[Target]>
 
 Emitted when a target is created, for example when a new page is opened by [`window.open`](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) or [`browser.newPage`](#browsernewpage).
+In case of multiple browser contexts, this event will fire for targets in any of them.
 
 #### event: 'targetdestroyed'
 - <[Target]>
 
 Emitted when a target is destroyed, for example when a page is closed.
+In case of multiple browser contexts, this event will fire for targets in any of them.
 
 #### browser.browserContexts()
 - returns: <[Array]<[BrowserContext]>>
@@ -532,6 +535,8 @@ You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/versio
 
 ### class: BrowserContext
 
+* extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)
+
 BrowserContexts provide a way to operate multiple independent browser sessions. When *a* browser is launched, it has
 a single BrowserContext used by default. The method `browser.newPage()` creates a page in the default browser context.
 
@@ -551,6 +556,21 @@ await page.goto('https://example.com');
 // Dispose context once its no longer needed.
 await context.close();
 ```
+
+#### event: 'targetchanged'
+- <[Target]>
+
+Emitted when the url of a target inside this browser context changes.
+
+#### event: 'targetcreated'
+- <[Target]>
+
+Emitted when a new target is created inside this browser context, for example when a new page is opened by [`window.open`](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) or [`browserContext.newPage`](#browsercontextnewpage).
+
+#### event: 'targetdestroyed'
+- <[Target]>
+
+Emitted when a target inside this browser context is destroyed, for example when a page is closed.
 
 #### browserContext.browser()
 - returns: <[Browser]>
