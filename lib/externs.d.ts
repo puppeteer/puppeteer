@@ -1,5 +1,5 @@
 import { Connection as RealConnection, CDPSession as RealCDPSession } from './Connection.js';
-import * as RealBrowser from './Browser.js';
+import { Browser as RealBrowser, BrowserContext as RealBrowserContext} from './Browser.js';
 import * as RealTarget from './Target.js';
 import * as RealPage from './Page.js';
 import * as RealTaskQueue from './TaskQueue.js';
@@ -21,6 +21,7 @@ declare global {
     export class Touchscreen extends RealTouchscreen {}
     export class TaskQueue extends RealTaskQueue {}
     export class Browser extends RealBrowser {}
+    export class BrowserContext extends RealBrowserContext {}
     export class Target extends RealTarget {}
     export class Frame extends RealFrame {}
     export class FrameManager extends RealFrameManager {}
@@ -35,14 +36,6 @@ declare global {
     export interface ConnectionTransport extends NodeJS.EventEmitter {
       send(string);
       close();
-    }
-
-    export interface TargetInfo {
-      type: string;
-      targetId: string;
-      title: string;
-      url: string;
-      attached: boolean;
     }
 
     export interface ChildProcess extends child_process.ChildProcess {}

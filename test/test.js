@@ -122,6 +122,7 @@ describe('Page', function() {
   // Page-level tests that are given a browser and a page.
   require('./CDPSession.spec.js').addTests({testRunner, expect});
   require('./browser.spec.js').addTests({testRunner, expect, puppeteer, headless});
+  require('./browsercontext.spec.js').addTests({testRunner, expect, puppeteer});
   require('./cookies.spec.js').addTests({testRunner, expect});
   require('./coverage.spec.js').addTests({testRunner, expect});
   require('./elementhandle.spec.js').addTests({testRunner, expect});
