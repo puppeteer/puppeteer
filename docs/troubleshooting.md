@@ -85,9 +85,9 @@ xorg-x11-fonts-misc
 
 ## Chrome Headless fails due to sandbox issues
 
-- make sure kernel version is up-to-date
-- read about linux sandbox here: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_suid_sandbox_development.md
-- try running without the sandbox (**Note: running without the sandbox is not recommended due to security reasons!**)
+- Make sure kernel version is up-to-date.
+- Read about linux sandbox here: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_suid_sandbox_development.md
+- Try running without the sandbox (**Note: running without the sandbox is not recommended due to security reasons!**)
 
 ```js
 const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
