@@ -63,14 +63,14 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       const events = [];
       context.on('targetcreated', target => events.push('CREATED: ' + target.url()));
       context.on('targetchanged', target => events.push('CHANGED: ' + target.url()));
-      context.on('targetdestroyed', target => events.push('DESTRYOED: ' + target.url()));
+      context.on('targetdestroyed', target => events.push('DESTROYED: ' + target.url()));
       const page = await context.newPage();
       await page.goto(server.EMPTY_PAGE);
       await page.close();
       expect(events).toEqual([
         'CREATED: about:blank',
-        'CHANGED: http://localhost:8907/empty.html',
-        'DESTRYOED: http://localhost:8907/empty.html'
+        `CHANGED: ${server.EMPTY_PAGE}`,
+        `DESTROYED: ${server.EMPTY_PAGE}`
       ]);
       await context.close();
     });
