@@ -192,8 +192,6 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
 
         await page.evaluate(() => console.log(`url is ${location.href}`));
 
-        await page.evaluate(() => console.log(`url is ${location.href}`));
-
 4. Stop test execution and use a debugger in browser
 
   - Use `{devtools: true}` when launching Puppeteer:
