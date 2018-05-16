@@ -1,0 +1,12 @@
+{
+  "name": "Simple extension",
+  "version": "0.1",
+  "app": {
+    "background": {
+      "scripts": ["index.js"]
+    }
+  },
+  "permissions": ["background"],
+  
+  "manifest_version": 2
+}
