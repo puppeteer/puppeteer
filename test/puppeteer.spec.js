@@ -130,7 +130,7 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
         // Open a page to make sure its functional.
-        const page = await browser.newPage();
+        await browser.newPage();
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
         await browser.close();
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
