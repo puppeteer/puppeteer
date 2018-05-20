@@ -1620,6 +1620,18 @@ This method returns all of the dedicated [WebWorkers](https://developer.mozilla.
 
 ### class: Worker
 
+The Worker class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
+The events `workercreated` and `workerdestroyed` are emitted on the page object to signal the worker lifecycle.
+
+```js
+page.on('workercreated', worker => console.log('Worker created: ' + worker.url()));
+page.on('workerdestroyed', worker => console.log('Worker destroyed: ' + worker.url()));
+
+console.log('Current workers:');
+for (const worker of page.workers())
+  console.log('  ' + worker.url());
+```
+
 #### worker.executionContext()
 - returns: <[Promise]<[ExecutionContext]>>
 
