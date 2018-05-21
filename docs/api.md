@@ -1142,7 +1142,7 @@ Navigate to the previous page in history.
     - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
     - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
 - returns: <[Promise]<?[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
-can not go back, resolves to `null`.
+can not go forward, resolves to `null`.
 
 Navigate to the next page in history.
 
