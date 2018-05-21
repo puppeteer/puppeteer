@@ -745,12 +745,12 @@ Emitted when a [response] is received.
 #### event: 'workercreated'
 - <[Worker]>
 
-Emitted when a dedicated WebWorker is spawned by the page.
+Emitted when a dedicated [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) is spawned by the page.
 
 #### event: 'workerdestroyed'
 - <[Worker]>
 
-Emitted when a dedicated WebWorker is terminated.
+Emitted when a dedicated [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) is terminated.
 
 #### page.$(selector)
 - `selector` <[string]> A [selector] to query page for
