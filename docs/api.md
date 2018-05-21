@@ -67,6 +67,8 @@
   * [event: 'requestfailed'](#event-requestfailed)
   * [event: 'requestfinished'](#event-requestfinished)
   * [event: 'response'](#event-response)
+  * [event: 'workercreated'](#event-workercreated)
+  * [event: 'workerdestroyed'](#event-workerdestroyed)
   * [page.$(selector)](#pageselector)
   * [page.$$(selector)](#pageselector)
   * [page.$$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
@@ -128,6 +130,10 @@
   * [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [page.waitForXPath(xpath[, options])](#pagewaitforxpathxpath-options)
+  * [page.workers()](#pageworkers)
+- [class: Worker](#class-worker)
+  * [worker.executionContext()](#workerexecutioncontext)
+  * [worker.url()](#workerurl)
 - [class: Keyboard](#class-keyboard)
   * [keyboard.down(key[, options])](#keyboarddownkey-options)
   * [keyboard.press(key[, options])](#keyboardpresskey-options)
@@ -595,7 +601,7 @@ will be closed.
 #### browserContext.isIncognito()
 - returns: <[boolean]>
 
-Returns whether BrowserContext is incognito. 
+Returns whether BrowserContext is incognito.
 The default browser context is the only non-incognito browser context.
 
 > **NOTE** the default browser context cannot be closed.
@@ -735,6 +741,16 @@ Emitted when a request finishes successfully.
 - <[Response]>
 
 Emitted when a [response] is received.
+
+#### event: 'workercreated'
+- <[Worker]>
+
+Emitted when a dedicated [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) is spawned by the page.
+
+#### event: 'workerdestroyed'
+- <[Worker]>
+
+Emitted when a dedicated [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) is terminated.
 
 #### page.$(selector)
 - `selector` <[string]> A [selector] to query page for
@@ -1595,6 +1611,32 @@ puppeteer.launch().then(async browser => {
 });
 ```
 Shortcut for [page.mainFrame().waitForXPath(xpath[, options])](#framewaitforxpathxpath-options).
+
+#### page.workers()
+- returns: <[Array]<[Worker]>>
+This method returns all of the dedicated [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) associated with the page.
+
+> **NOTE** This does not contain ServiceWorkers
+
+### class: Worker
+
+The Worker class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
+The events `workercreated` and `workerdestroyed` are emitted on the page object to signal the worker lifecycle.
+
+```js
+page.on('workercreated', worker => console.log('Worker created: ' + worker.url()));
+page.on('workerdestroyed', worker => console.log('Worker destroyed: ' + worker.url()));
+
+console.log('Current workers:');
+for (const worker of page.workers())
+  console.log('  ' + worker.url());
+```
+
+#### worker.executionContext()
+- returns: <[Promise]<[ExecutionContext]>>
+
+#### worker.url()
+- returns: <[string]>
 
 ### class: Keyboard
 
@@ -2884,3 +2926,4 @@ reported.
 [xpath]: https://developer.mozilla.org/en-US/docs/Web/XPath "xpath"
 [UnixTime]: https://en.wikipedia.org/wiki/Unix_time "Unix Time"
 [SecurityDetails]: #class-securitydetails "SecurityDetails"
+[Worker]: #class-worker "Worker"
