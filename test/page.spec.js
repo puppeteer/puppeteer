@@ -1618,8 +1618,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
     });
   });
 
-  // for (var i = 0; i < 1000; i++)
-  fdescribe('Execution Context / Navigation race', function() {
+  describe('Execution Context / Navigation race', function() {
     it('should wait for a-click navigation', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent('<a href="grid.html">click here</a>');
