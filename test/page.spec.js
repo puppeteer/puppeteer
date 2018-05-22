@@ -54,7 +54,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       dialog.accept();
       await waitEvent(newPage, 'close');
     });
-    it('should set the Page.closed state', await() => {
+    it('should set the Page.closed state', await({browser}) => {
       const newPage = await browser.newPage();
       expect(newPage.closed).toBe(false);
       await newPage.close();
