@@ -318,6 +318,30 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(errorMessage).toBe(`Error: failed to find element matching selector ".a"`);
     });
   });
+  describe('ElementHandle.$$eval', function() {
+    it('should work', async({page, server}) => {
+      await page.setContent('<html><body><div class="tweet"><div class="like">100</div><div class="like">10</div></div></body></html>');
+      const tweet = await page.$('.tweet');
+      const content = await tweet.$$eval('.like', nodes => nodes.map(n => n.innerText));
+      expect(content).toEqual(['100', '10']);
+    });
+
+    it('should retrieve content from subtree', async({page, server}) => {
+      const htmlContent = '<div class="a">not-a-child-div</div><div id="myId"><div class="a">a1-child-div</div><div class="a">a2-child-div</div></div>';
+      await page.setContent(htmlContent);
+      const elementHandle = await page.$('#myId');
+      const content = await elementHandle.$$eval('.a', nodes => nodes.map(n => n.innerText));
+      expect(content).toEqual(['a1-child-div', 'a2-child-div']);
+    });
+
+    it('should throw in case of missing selector', async({page, server}) => {
+      const htmlContent = '<div class="a">not-a-child-div</div><div id="myId"></div>';
+      await page.setContent(htmlContent);
+      const elementHandle = await page.$('#myId');
+      const errorMessage = await elementHandle.$$eval('.a', nodes => nodes.map(n => n.innerText)).catch(error => error.message);
+      expect(errorMessage).toBe(`Error: failed to find elements matching selector ".a"`);
+    });
+  });
 
   describe('ElementHandle.$$', function() {
     it('should query existing elements', async({page, server}) => {
