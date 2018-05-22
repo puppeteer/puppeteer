@@ -1618,27 +1618,33 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
     });
   });
 
-  describe('Execution Context / Navigation race', function() {
-    it('should wait for a-click navigation', async({page, server}) => {
+  fdescribe('Execution Context / Navigation race', function() {
+    xit('should wait for a-click navigation', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent('<a href="grid.html">click here</a>');
       await page.click('a');
       expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/grid.html');
     });
-    it('should wait for cross-process a-click navigation', async({page, server}) => {
+    xit('should wait for click-into-javascript navigation', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(`<a onclick="document.location.href='${server.PREFIX + '/grid.html'}'">click here</a>`);
+      await page.click('a');
+      expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/grid.html');
+    });
+    xit('should wait for cross-process a-click navigation', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(`<a href="${server.CROSS_PROCESS_PREFIX}/grid.html">click here</a>`);
       await page.click('a');
       expect(await page.evaluate(() => document.location.href)).toBe(server.CROSS_PROCESS_PREFIX + '/grid.html');
     });
-    it('should wait for a-keyboard navigation', async({page, server}) => {
+    xit('should wait for a-keyboard navigation', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent('<a href="grid.html">click here</a>');
       const a = await page.$('a');
       await a.press('Enter');
       expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/grid.html');
     });
-    it('should not wait for a-click to a 204', async({page, server}) => {
+    xit('should not wait for a-click to a 204', async({page, server}) => {
       server.setRoute('/nextpage', async(req, res) => {
         res.statusCode = 204;
         res.end();
@@ -1648,14 +1654,14 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       await page.click('a');
       expect(await page.evaluate(() => document.location.href)).toBe(server.EMPTY_PAGE);
     });
-    it('should not wait for a-click with preventDefault', async({page, server}) => {
+    xit('should not wait for a-click with preventDefault', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent('<a href="grid.html">click here</a>');
       await page.evaluate(() => document.querySelector('a').addEventListener('click', e => e.preventDefault()));
       await page.click('a');
       expect(await page.evaluate(() => document.location.href)).toBe(server.EMPTY_PAGE);
     });
-    it('should not wait for a-click that was canceled by the renderer', async({page, server}) => {
+    xit('should not wait for a-click that was canceled by the renderer', async({page, server}) => {
       server.setRoute('/nextpage', async(req, res) => {
         // stall
       });
