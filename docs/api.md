@@ -2400,20 +2400,13 @@ If `pageFunction` returns a [Promise], then `frame.$$eval` would wait for the pr
 Examples:
 ```html
 <div class="feed">
-  <div class="tweet">
-    <div class="likes">100</div>
-    <div class="retweets">10</div>
-  </div>
-  <div class="tweet">
-    <div class="likes">10</div>
-    <div class="retweets">1</div>
-  </div>
+  <div class="tweet">Hello!</div>
+  <div class="tweet">Hi!</div>
 </div>
 ```
 ```js
 const feedHandle = await page.$('.feed');
-expect(await feedHandle.$$eval('.tweet .likes', nodes => nodes.map(n => n.innerText)).toEqual(['100', '10']);
-expect(await feedHandle.$$eval('.tweet .retweets', nodes => nodes.map(n => n.innerText)).toEqual(['10', '1']);
+expect(await feedHandle.$$eval('.tweet', nodes => nodes.map(n => n.innerText)).toEqual(['Hello!', 'Hi!']);
 ```
 
 #### elementHandle.$eval(selector, pageFunction, ...args)
