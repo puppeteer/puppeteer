@@ -1618,7 +1618,8 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
     });
   });
 
-  fdescribe('Execution Context / Navigation race', function() {
+  // @see https://github.com/GoogleChrome/puppeteer/issues/1325
+  describe('Execution Context / Navigation race', function() {
     xit('should wait for a-click navigation', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent('<a href="grid.html">click here</a>');
@@ -1762,6 +1763,37 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(`<meta http-equiv="refresh" content="30">`);
       expect(await page.evaluate(() => document.location.href)).toBe(server.EMPTY_PAGE);
+    });
+    xit('should work with fake a-click', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        const anchor = document.createElement('a');
+        anchor.href = 'grid.html';
+        document.body.appendChild(anchor);
+        anchor.click();
+      });
+      expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/grid.html');
+    });
+    it('should work with form submit', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        const form = document.createElement('form');
+        document.body.appendChild(form);
+        form.method = 'POST';
+        form.action = 'grid.html';
+        const button = document.createElement('input');
+        button.type = 'submit';
+        form.appendChild(button);
+        button.click();
+      });
+      expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/grid.html');
+    });
+    it('should work with hash navigation', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        document.location = 'empty.html#hey';
+      });
+      expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/empty.html#hey');
     });
   });
 };
