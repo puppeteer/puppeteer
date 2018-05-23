@@ -264,6 +264,18 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         await page.close();
         await browser.close();
       });
+      it('should have default url when launching browser', async function() {
+        const browser = await puppeteer.launch();
+        const pages = (await browser.pages()).map(page => page.url());
+        expect(pages).toEqual(['about:blank']);
+        await browser.close();
+      });
+      it('should have default url when launching browser with headless:false', async function() {
+        const browser = await puppeteer.launch({ headless: false });
+        const pages = (await browser.pages()).map(page => page.url());
+        expect(pages).toEqual(['about:blank']);
+        await browser.close();
+      });
     });
     describe('Puppeteer.connect', function() {
       it('should be able to connect multiple times to the same browser', async({server}) => {
