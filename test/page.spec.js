@@ -1613,8 +1613,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
   });
   describe('Workers', function() {
     it('Page.workers', async function({page, server}) {
-      await page.goto(server.PREFIX + '/worker/worker.html');
-      await page.waitForFunction(() => !!worker);
+      await Promise.all([
+        new Promise(x => page.once('workercreated', x)),
+        page.goto(server.PREFIX + '/worker/worker.html')]);
       const worker = page.workers()[0];
       expect(worker.url()).toContain('worker.js');
       const executionContext = await worker.executionContext();
