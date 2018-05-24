@@ -1795,5 +1795,20 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       });
       expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/empty.html#hey');
     });
+    fit('should work with form submit', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        const form = document.createElement('form');
+        document.body.appendChild(form);
+        form.method = 'POST';
+        form.action = 'grid.html';
+        form.target = '_blank';
+        const button = document.createElement('input');
+        button.type = 'submit';
+        form.appendChild(button);
+        button.click();
+      });
+      expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/empty.html');
+    });
   });
 };
