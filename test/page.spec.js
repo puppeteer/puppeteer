@@ -1644,4 +1644,198 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       expect(page.browser()).toBe(browser);
     });
   });
+
+  // @see https://github.com/GoogleChrome/puppeteer/issues/1325
+  describe('Execution Context / Navigation race', function() {
+    xit('should wait for a-click navigation', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent('<a href="grid.html">click here</a>');
+      await page.click('a');
+      expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/grid.html');
+    });
+    xit('should wait for click-into-javascript navigation', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(`<a onclick="document.location.href='${server.PREFIX + '/grid.html'}'">click here</a>`);
+      await page.click('a');
+      expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/grid.html');
+    });
+    xit('should wait for cross-process a-click navigation', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(`<a href="${server.CROSS_PROCESS_PREFIX}/grid.html">click here</a>`);
+      await page.click('a');
+      expect(await page.evaluate(() => document.location.href)).toBe(server.CROSS_PROCESS_PREFIX + '/grid.html');
+    });
+    xit('should wait for a-keyboard navigation', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent('<a href="grid.html">click here</a>');
+      const a = await page.$('a');
+      await a.press('Enter');
+      expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/grid.html');
+    });
+    xit('should not wait for a-click to a 204', async({page, server}) => {
+      server.setRoute('/nextpage', async(req, res) => {
+        res.statusCode = 204;
+        res.end();
+      });
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent('<a href="/nextpage">click here</a>');
+      await page.click('a');
+      expect(await page.evaluate(() => document.location.href)).toBe(server.EMPTY_PAGE);
+    });
+    xit('should not wait for a-click with preventDefault', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent('<a href="grid.html">click here</a>');
+      await page.evaluate(() => document.querySelector('a').addEventListener('click', e => e.preventDefault()));
+      await page.click('a');
+      expect(await page.evaluate(() => document.location.href)).toBe(server.EMPTY_PAGE);
+    });
+    xit('should not wait for a-click that was canceled by the renderer', async({page, server}) => {
+      server.setRoute('/nextpage', async(req, res) => {
+        // stall
+      });
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent('<a href="/nextpage">click here</a>');
+      await page.evaluate(() => document.querySelector('a').addEventListener('click', e => setTimeout(() => document.open())));
+      await page.click('a');
+      expect(await page.evaluate(() => document.location.href)).toBe(server.EMPTY_PAGE);
+    });
+    it('should wait for a navigation side effect', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        document.location.href = 'grid.html';
+      });
+      expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/grid.html');
+    });
+    it('reload', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        window.__dontFindThis = true;
+        document.location.reload();
+      });
+      expect(await page.evaluate(() => window.__dontFindThis)).not.toBe(true);
+    });
+    it('navigation after a renderer-canceled navigation to a different page', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        document.location.href = 'grid.html';
+        document.location.href = 'tamperable.html';
+      });
+      expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/tamperable.html');
+    });
+    it('navigation after a renderer-canceled navigation to the same page', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        document.location.href = 'grid.html';
+        document.location.href = 'empty.html';
+      });
+      expect(await page.evaluate(() => document.location.href)).toBe(server.EMPTY_PAGE);
+    });
+    it('fail to naviagte', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      server.setRoute('/nextpage', async(req, res) => {
+        res.statusCode = 204;
+        res.end();
+      });
+      await page.evaluate(() => {
+        document.location.href = '/nextpage';
+      });
+      expect(await page.evaluate(() => document.location.href)).toBe(server.EMPTY_PAGE);
+    });
+    it('cancel a navigation after it commits and has an execution context', async({page, server}) => {
+      let cleanup;
+      const promise = new Promise(x => cleanup = x);
+      await page.goto(server.EMPTY_PAGE);
+      server.setRoute('/nextpage', async(req, res) => {
+        await evalPromise;
+        res.write('<body><div id="token">token</div>');
+        await page.waitForSelector('#token');
+        await page._client.send('Page.stopLoading');
+        cleanup();
+      });
+      const evalPromise = page.evaluate(() => {
+        document.location.href = '/nextpage';
+      });
+      await evalPromise;
+      expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/nextpage');
+      await promise;
+      expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/nextpage');
+    });
+    it('cancel a navigation before it commits', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      server.setRoute('/nextpage', async(req, res) => {
+        await page._client.send('Page.stopLoading');
+      });
+      await page.evaluate(() => {
+        document.location.href = '/nextpage';
+      });
+      expect(await page.evaluate(() => document.location.href)).toBe(server.EMPTY_PAGE);
+    });
+    it('cancel a navigation by the renderer after it hits the browser', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      server.setRoute('/nextpage', async(req, res) => {
+        await evalPromise;
+        await page.keyboard.down('1');
+      });
+      const evalPromise = page.evaluate(() => {
+        document.location.href = '/nextpage';
+        document.onkeydown = () => {
+          window.__shouldFindThis = true;
+          document.open();
+        };
+      });
+      await evalPromise;
+      expect(await page.evaluate(() => window.__shouldFindThis)).toBe(true);
+    });
+    it('should ignore the meta tag refresh', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(`<meta http-equiv="refresh" content="30">`);
+      expect(await page.evaluate(() => document.location.href)).toBe(server.EMPTY_PAGE);
+    });
+    xit('should work with fake a-click', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        const anchor = document.createElement('a');
+        anchor.href = 'grid.html';
+        document.body.appendChild(anchor);
+        anchor.click();
+      });
+      expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/grid.html');
+    });
+    it('should work with form submit', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        const form = document.createElement('form');
+        document.body.appendChild(form);
+        form.method = 'POST';
+        form.action = 'grid.html';
+        const button = document.createElement('input');
+        button.type = 'submit';
+        form.appendChild(button);
+        button.click();
+      });
+      expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/grid.html');
+    });
+    it('should work with hash navigation', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        document.location = 'empty.html#hey';
+      });
+      expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/empty.html#hey');
+    });
+    fit('should work with form submit', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        const form = document.createElement('form');
+        document.body.appendChild(form);
+        form.method = 'POST';
+        form.action = 'grid.html';
+        form.target = '_blank';
+        const button = document.createElement('input');
+        button.type = 'submit';
+        form.appendChild(button);
+        button.click();
+      });
+      expect(await page.evaluate(() => document.location.href)).toBe(server.PREFIX + '/empty.html');
+    });
+  });
 };
