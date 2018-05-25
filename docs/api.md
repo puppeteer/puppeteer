@@ -97,6 +97,7 @@
   * [page.goForward(options)](#pagegoforwardoptions)
   * [page.goto(url, options)](#pagegotourl-options)
   * [page.hover(selector)](#pagehoverselector)
+  * [page.isClosed()](#pageisclosed)
   * [page.keyboard](#pagekeyboard)
   * [page.mainFrame()](#pagemainframe)
   * [page.metrics()](#pagemetrics)
@@ -1179,6 +1180,12 @@ This method fetches an element with `selector`, scrolls it into view if needed, 
 If there's no element matching `selector`, the method throws an error.
 
 Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
+
+#### page.isClosed()
+
+- returns: boolean
+
+Indicates that the page has been closed.
 
 #### page.keyboard
 
