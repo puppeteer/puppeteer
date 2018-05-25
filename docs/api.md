@@ -205,6 +205,7 @@
 - [class: ElementHandle](#class-elementhandle)
   * [elementHandle.$(selector)](#elementhandleselector)
   * [elementHandle.$$(selector)](#elementhandleselector)
+  * [elementHandle.$$eval(selector, pageFunction, ...args)](#elementhandleevalselector-pagefunction-args)
   * [elementHandle.$eval(selector, pageFunction, ...args)](#elementhandleevalselector-pagefunction-args)
   * [elementHandle.$x(expression)](#elementhandlexexpression)
   * [elementHandle.asElement()](#elementhandleaselement)
@@ -2396,6 +2397,28 @@ The method runs `element.querySelector` within the page. If no element matches t
 - returns: <[Promise]<[Array]<[ElementHandle]>>>
 
 The method runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `[]`.
+
+#### elementHandle.$$eval(selector, pageFunction, ...args)
+- `selector` <[string]> A [selector] to query page for
+- `pageFunction` <[function]> Function to be evaluated in browser context
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
+
+This method runs `document.querySelectorAll` within the element and passes it as the first argument to `pageFunction`. If there's no element matching `selector`, the method throws an error.
+
+If `pageFunction` returns a [Promise], then `frame.$$eval` would wait for the promise to resolve and return its value.
+
+Examples:
+```html
+<div class="feed">
+  <div class="tweet">Hello!</div>
+  <div class="tweet">Hi!</div>
+</div>
+```
+```js
+const feedHandle = await page.$('.feed');
+expect(await feedHandle.$$eval('.tweet', nodes => nodes.map(n => n.innerText)).toEqual(['Hello!', 'Hi!']);
+```
 
 #### elementHandle.$eval(selector, pageFunction, ...args)
 - `selector` <[string]> A [selector] to query page for
