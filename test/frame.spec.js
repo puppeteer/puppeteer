@@ -159,10 +159,13 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(error.message).toContain('waiting for function failed: timeout');
     });
     it('should disable timeout when its set to 0', async({page}) => {
-      let error = null;
-      const res = await page.waitForFunction(() => new Promise(res => setTimeout(() => res(42), 100)), {timeout: 0}).catch(e => error = e);
-      expect(error).toBe(null);
-      expect(await res.jsonValue()).toBe(42);
+      const watchdog = page.waitForFunction(() => {
+        window.__counter = (window.__counter || 0) + 1;
+        return window.__injected;
+      }, {timeout: 0, polling: 10});
+      await page.waitForFunction(() => window.__counter > 10);
+      await page.evaluate(() => window.__injected = true);
+      await watchdog;
     });
   });
 
