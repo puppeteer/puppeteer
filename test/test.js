@@ -47,6 +47,7 @@ const defaultBrowserOptions = {
   executablePath,
   slowMo,
   headless,
+  dumpio: (process.env.DUMPIO || 'false').trim().toLowerCase() === 'true',
   args: ['--no-sandbox']
 };
 const browserWithExtensionOptions = {
@@ -120,11 +121,22 @@ describe('Page', function() {
     state.browser = null;
   });
 
-  beforeEach(async state => {
+  beforeEach(async(state, test) => {
     state.page = await state.browser.newPage();
+    const rl = require('readline').createInterface({input: state.browser.process().stderr});
+    test.output = '';
+    rl.on('line', onLine);
+    state.tearDown = () => {
+      rl.removeListener('line', onLine);
+      rl.close();
+    };
+    function onLine(line) {
+      test.output += line + '\n';
+    }
   });
 
   afterEach(async state => {
+    state.tearDown();
     await state.page.close();
     state.page = null;
   });
