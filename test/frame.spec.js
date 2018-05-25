@@ -163,8 +163,7 @@ module.exports.addTests = function({testRunner, expect}) {
         window.__counter = (window.__counter || 0) + 1;
         return window.__injected;
       }, {timeout: 0, polling: 10});
-      await page.waitFor(100);
-      expect(await page.evaluate(() => window.__counter)).not.toBe(0);
+      await page.waitForFunction(() => window.__counter > 10);
       await page.evaluate(() => window.__injected = true);
       await watchdog;
     });
