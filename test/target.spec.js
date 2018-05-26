@@ -50,8 +50,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       const targets = await browserWithExtension.targets();
       const backgroundPageTarget = targets.find(target => target.type() === 'background_page');
       const page = await backgroundPageTarget.page();
-      expect(page).not.toBeNull();
-      await page.close();
+      expect(await page.evaluate(() => 2 * 3)).toBe(6);
       await browserWithExtension.close();
     });
     it('should contain browser target', async({browser}) => {
