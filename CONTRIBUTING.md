@@ -150,8 +150,8 @@ npm run unit -- -j 4
 ```js
   ...
   // Using "fit" to run specific test
-  fit('should work', async function() {
-    const response = await page.goto(EMPTY_PAGE);
+  fit('should work', async function({server, page}) {
+    const response = await page.goto(server.EMPTY_PAGE);
     expect(response.ok).toBe(true);
   })
 ```
@@ -161,8 +161,8 @@ npm run unit -- -j 4
 ```js
   ...
   // Using "xit" to skip specific test
-  xit('should work', async function() {
-    const response = await page.goto(EMPTY_PAGE);
+  xit('should work', async function({server, page}) {
+    const response = await page.goto(server.EMPTY_PAGE);
     expect(response.ok).toBe(true);
   })
 ```
