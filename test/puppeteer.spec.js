@@ -206,7 +206,7 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         const dumpioTextToLog = 'MAGIC_DUMPIO_TEST';
         let dumpioData = '';
         const {spawn} = require('child_process');
-        const options = Object.assign({dumpio: true}, defaultBrowserOptions);
+        const options = Object.assign({}, defaultBrowserOptions, {dumpio: true});
         const res = spawn('node',
             [path.join(__dirname, 'fixtures', 'dumpio.js'), PROJECT_ROOT, JSON.stringify(options), server.EMPTY_PAGE, dumpioTextToLog]);
         res.stderr.on('data', data => dumpioData += data.toString('utf8'));
