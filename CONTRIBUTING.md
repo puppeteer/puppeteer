@@ -150,10 +150,10 @@ npm run unit -- -j 4
 ```js
   ...
   // Using "fit" to run specific test
-  fit('should work', SX(async function() {
+  fit('should work', async function() {
     const response = await page.goto(EMPTY_PAGE);
     expect(response.ok).toBe(true);
-  }))
+  })
 ```
 
 - To disable a specific test, substitute the `it` with `xit` (mnemonic rule: '*cross it*'):
@@ -161,10 +161,10 @@ npm run unit -- -j 4
 ```js
   ...
   // Using "xit" to skip specific test
-  xit('should work', SX(async function() {
+  xit('should work', async function() {
     const response = await page.goto(EMPTY_PAGE);
     expect(response.ok).toBe(true);
-  }))
+  })
 ```
 
 - To run tests in non-headless mode:
