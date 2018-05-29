@@ -1411,7 +1411,7 @@ The extra HTTP headers will be sent with every request the page initiates.
 - returns: <[Promise]>
 
 Activating request interception enables `request.abort`, `request.continue` and
-`request.respond` methods.
+`request.respond` methods.  This provides the capability to modify network requests that are made by a page.
 
 An example of a naïve request interceptor that aborts all image requests:
 ```js
@@ -2587,7 +2587,7 @@ This method expects `elementHandle` to point to an [input element](https://devel
 
 ### class: Request
 
-Whenever the page sends a request, the following events are emitted by puppeteer's page:
+Whenever the page sends a request, such as for a network resource, the following events are emitted by puppeteer's page:
 - ['request'](#event-request) emitted when the request is issued by the page.
 - ['response'](#event-response) emitted when/if the response is received for the request.
 - ['requestfinished'](#event-requestfinished) emitted when the response body is downloaded and the request is complete.
