@@ -109,21 +109,26 @@ function buildNode6IfNecessary() {
   // folder.
   if (!fs.existsSync(path.join('utils', 'node6-transform')))
     return;
-  let asyncawait = true;
-  try {
-    new Function('async function test(){await 1}');
-  } catch (error) {
-    asyncawait = false;
-  }
   // if async/await is supported, then node6 is not needed.
-  if (asyncawait)
+  if (supportsAsyncAwait())
     return;
   // Re-build node6/ folder.
   console.log('Building Puppeteer for Node 6');
   require(path.join(__dirname, 'utils', 'node6-transform'));
 }
 
+function supportsAsyncAwait() {
+  try {
+    new Function('async function test(){await 1}');
+  } catch (error) {
+    return false;
+  }
+  return true;
+}
+
 function generateProtocolTypesIfNecessary(updated) {
+  if (!supportsAsyncAwait())
+    return;
   const fs = require('fs');
   const path = require('path');
   if (!fs.existsSync(path.join(__dirname, 'utils', 'protocol-types-generator')))
