@@ -295,7 +295,11 @@ class TestRunner extends EventEmitter {
   }
 
   _addTest(mode, name, callback) {
-    const test = new Test(this._currentSuite, name, callback, mode, this._timeout);
+    let suite = this._currentSuite;
+    let isSkipped = suite.declaredMode === TestMode.Skip;
+    while ((suite = suite.parentSuite))
+      isSkipped |= suite.declaredMode === TestMode.Skip;
+    const test = new Test(this._currentSuite, name, callback, isSkipped ? TestMode.Skip : mode, this._timeout);
     this._currentSuite.children.push(test);
     this._tests.push(test);
     this._hasFocusedTestsOrSuites = this._hasFocusedTestsOrSuites || mode === TestMode.Focus;

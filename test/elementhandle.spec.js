@@ -222,6 +222,9 @@ module.exports.addTests = function({testRunner, expect}) {
           height: 600px;
           margin-left: 50px;
         }
+        ::-webkit-scrollbar{
+          display: none;
+        }
         </style>
         <div class="to-screenshot"></div>
       `);
