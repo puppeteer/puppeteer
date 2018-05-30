@@ -1327,7 +1327,8 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
     - `width` <[number]> width of clipping area
     - `height` <[number]> height of clipping area
   - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
-- returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot
+  - `encoding` <[string]> The encoding of the image, can be either `base64` or `binary`. Defaults to `binary`.
+- returns: <[Promise]<[Buffer|String]>> Promise which resolves to buffer or a base64 string (depending on the value of `encoding`) with captured screenshot.
 
 > **NOTE** Screenshots take at least 1/6 second on OS X. See https://crbug.com/741689 for discussion.
 
