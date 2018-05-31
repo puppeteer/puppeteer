@@ -2812,7 +2812,7 @@ The browser context the target belongs to.
 Creates a Chrome Devtools Protocol session attached to the target.
 
 #### target.opener()
-- returns: <[?Target]>
+- returns: <?[Target]>
 
 Get the target that opened this target.
 
