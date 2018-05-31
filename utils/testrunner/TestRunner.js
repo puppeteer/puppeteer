@@ -316,7 +316,7 @@ class TestRunner extends EventEmitter {
   }
 
   _addHook(hookName, callback) {
-    console.assert(this._currentSuite[hookName] === null, `Only one ${hookName} hook available per suite`);
+    assert(this._currentSuite[hookName] === null, `Only one ${hookName} hook available per suite`);
     const hook = new UserCallback(callback, this._timeout);
     this._currentSuite[hookName] = hook;
   }
@@ -387,6 +387,11 @@ class TestRunner extends EventEmitter {
   _didFinishTest(test) {
     this.emit('testfinished', test);
   }
+}
+
+function assert(value, message) {
+  if (!value)
+    throw new Error(message);
 }
 
 TestRunner.Events = {

@@ -44,7 +44,8 @@ class Expect {
     function applyMatcher(matcherName, matcher, inverse, value, ...args) {
       const result = matcher.call(null, value, ...args);
       const message = `expect.${inverse ? 'not.' : ''}${matcherName} failed` + (result.message ? `: ${result.message}` : '');
-      console.assert(result.pass !== inverse, message);
+      if (result.pass === inverse)
+        throw new Error(message);
     }
   }
 }
