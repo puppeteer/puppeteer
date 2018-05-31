@@ -282,8 +282,11 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         const options = Object.assign({}, defaultBrowserOptions);
         options.args = [customUrl].concat(options.args);
         const browser = await puppeteer.launch(options);
-        const pages = (await browser.pages()).map(page => page.url());
-        expect(pages).toEqual([customUrl]);
+        const pages = await browser.pages();
+        expect(pages.length).toBe(1);
+        if (pages[0].url() !== customUrl)
+          await pages[0].waitForNavigation();
+        expect(pages[0].url()).toBe(customUrl);
         await browser.close();
       });
     });
