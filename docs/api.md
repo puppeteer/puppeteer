@@ -261,6 +261,7 @@
   * [target.browser()](#targetbrowser)
   * [target.browserContext()](#targetbrowsercontext)
   * [target.createCDPSession()](#targetcreatecdpsession)
+  * [target.opener()](#targetopener)
   * [target.page()](#targetpage)
   * [target.type()](#targettype)
   * [target.url()](#targeturl)
@@ -2809,6 +2810,11 @@ The browser context the target belongs to.
 - returns: <[Promise]<[CDPSession]>>
 
 Creates a Chrome Devtools Protocol session attached to the target.
+
+#### target.opener()
+- returns: <[?Target]>
+
+Get the target that opened this target.
 
 #### target.page()
 - returns: <[Promise]<?[Page]>>
