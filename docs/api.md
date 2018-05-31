@@ -2814,7 +2814,7 @@ Creates a Chrome Devtools Protocol session attached to the target.
 #### target.opener()
 - returns: <?[Target]>
 
-Get the target that opened this target.
+Get the target that opened this target. Top-level targets return `null`.
 
 #### target.page()
 - returns: <[Promise]<?[Page]>>
