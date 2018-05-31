@@ -199,6 +199,41 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
+  describe('Request.isNavigationRequest', () => {
+    it('should work', async({page, server}) => {
+      const requests = [];
+      page.on('request', request => requests.push(request));
+      server.setRedirect('/rrredirect', '/frames/one-frame.html');
+      await page.goto(server.PREFIX + '/rrredirect');
+      expect(requests[0].isNavigationRequest()).toBe(true);
+      expect(requests[1].isNavigationRequest()).toBe(true);
+      expect(requests[2].isNavigationRequest()).toBe(true);
+      expect(requests[3].isNavigationRequest()).toBe(false);
+      expect(requests[4].isNavigationRequest()).toBe(false);
+    });
+    it('should work with request interception', async({page, server}) => {
+      const requests = [];
+      page.on('request', request => {
+        requests.push(request);
+        request.continue();
+      });
+      await page.setRequestInterception(true);
+      server.setRedirect('/rrredirect', '/frames/one-frame.html');
+      await page.goto(server.PREFIX + '/rrredirect');
+      expect(requests[0].isNavigationRequest()).toBe(true);
+      expect(requests[1].isNavigationRequest()).toBe(true);
+      expect(requests[2].isNavigationRequest()).toBe(true);
+      expect(requests[3].isNavigationRequest()).toBe(false);
+      expect(requests[4].isNavigationRequest()).toBe(false);
+    });
+    it('should work when navigating to image', async({page, server}) => {
+      const requests = [];
+      page.on('request', request => requests.push(request));
+      await page.goto(server.PREFIX + '/pptr.png');
+      expect(requests[0].isNavigationRequest()).toBe(true);
+    });
+  });
+
   describe('Page.setRequestInterception', function() {
     it('should intercept', async({page, server}) => {
       await page.setRequestInterception(true);
@@ -207,6 +242,7 @@ module.exports.addTests = function({testRunner, expect}) {
         expect(request.headers()['user-agent']).toBeTruthy();
         expect(request.method()).toBe('GET');
         expect(request.postData()).toBe(undefined);
+        expect(request.isNavigationRequest()).toBe(true);
         expect(request.resourceType()).toBe('document');
         expect(request.frame() === page.mainFrame()).toBe(true);
         expect(request.frame().url()).toBe('about:blank');
@@ -327,6 +363,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(redirectChain[2].url()).toContain('/non-existing-page-3.html');
       for (let i = 0; i < redirectChain.length; ++i) {
         const request = redirectChain[i];
+        expect(request.isNavigationRequest()).toBe(true);
         expect(request.redirectChain().indexOf(request)).toBe(i);
       }
     });
