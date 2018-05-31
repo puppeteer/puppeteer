@@ -1805,6 +1805,7 @@ await page.tracing.stop();
 - `options` <[Object]>
   - `path` <[string]> A path to write the trace file to.
   - `screenshots` <[boolean]> captures screenshots in the trace.
+  - `jssampling` <[boolean]> enable js sampling. Defaults to `false`.
   - `categories` <[Array]<[string]>> specify custom categories to use instead of default.
 - returns: <[Promise]>
 
