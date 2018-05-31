@@ -133,6 +133,9 @@ describe('preprocessor', function() {
         #### page.$
         #### page.$$`);
       const messages = preprocessor([source], '1.3.0');
+      expect(messages.length).toBe(1);
+      expect(messages[0].type).toBe('warning');
+      expect(messages[0].text).toContain('doc.md');
       expect(source.text()).toBe(`<!-- gen:toc -->
 - [class: page](#class-page)
   * [page.$](#page)
