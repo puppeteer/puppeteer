@@ -389,6 +389,10 @@ class TestRunner extends EventEmitter {
   }
 }
 
+/**
+ * @param {*} value
+ * @param {string=} message
+ */
 function assert(value, message) {
   if (!value)
     throw new Error(message);
