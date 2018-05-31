@@ -22,7 +22,7 @@ const GOLDEN_DIR = path.join(__dirname, 'golden');
 const OUTPUT_DIR = path.join(__dirname, 'output');
 const {TestRunner, Reporter, Matchers} = require('../utils/testrunner/');
 
-const {helper} = require('../lib/helper');
+const {helper, assert} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
 
@@ -40,7 +40,7 @@ const extensionPath = path.resolve(__dirname, '../test/assets/simple-extension')
 if (executablePath)
   console.warn(`${YELLOW_COLOR}WARN: running tests with ${executablePath}${RESET_COLOR}`);
 // Make sure the `npm install` was run after the chromium roll.
-console.assert(fs.existsSync(puppeteer.executablePath()), `Chromium is not Downloaded. Run 'npm install' and try to re-run tests`);
+assert(fs.existsSync(puppeteer.executablePath()), `Chromium is not Downloaded. Run 'npm install' and try to re-run tests`);
 
 const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
 const defaultBrowserOptions = {

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+const assert = require('assert');
 const esprima = require('esprima');
 const ESTreeWalker = require('../../ESTreeWalker');
 const Documentation = require('./Documentation');
@@ -59,8 +60,8 @@ class JSOutline {
   }
 
   _onMethodDefinition(node) {
-    console.assert(this._currentClassName !== null);
-    console.assert(node.value.type === 'FunctionExpression');
+    assert(this._currentClassName !== null);
+    assert(node.value.type === 'FunctionExpression');
     const methodName = this._extractText(node.key);
     if (node.kind === 'get') {
       const property = Documentation.Member.createProperty(methodName);

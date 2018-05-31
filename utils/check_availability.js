@@ -15,6 +15,7 @@
  * limitations under the License.
  */
 
+const assert = require('assert');
 const puppeteer = require('..');
 const https = require('https');
 const SUPPORTER_PLATFORMS = ['linux', 'mac', 'win32', 'win64'];
@@ -40,7 +41,7 @@ class Table {
      * @param {!Array<string>} values
      */
   drawRow(values) {
-    console.assert(values.length === this.widths.length);
+    assert(values.length === this.widths.length);
     let row = '';
     for (let i = 0; i < values.length; ++i)
       row += padCenter(values[i], this.widths[i]);
