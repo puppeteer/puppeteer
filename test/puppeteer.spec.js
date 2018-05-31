@@ -301,6 +301,21 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         expect(await secondPage.evaluate(() => 7 * 6)).toBe(42, 'original browser should still work');
         await originalBrowser.close();
       });
+      it('should support ignoreHTTPSErrors option', async({httpsServer}) => {
+        const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+        const browserWSEndpoint = originalBrowser.wsEndpoint();
+
+        const browser = await puppeteer.connect({browserWSEndpoint, ignoreHTTPSErrors: true});
+        const page = await browser.newPage();
+        let error = null;
+        const response = await page.goto(httpsServer.EMPTY_PAGE).catch(e => error = e);
+        expect(error).toBe(null);
+        expect(response.ok()).toBe(true);
+        expect(response.securityDetails()).toBeTruthy();
+        expect(response.securityDetails().protocol()).toBe('TLS 1.2');
+        await page.close();
+        await browser.close();
+      });
       it('should be able to reconnect to a disconnected browser', async({server}) => {
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const browserWSEndpoint = originalBrowser.wsEndpoint();
