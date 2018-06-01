@@ -178,26 +178,6 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         await browser2.close();
         rm(userDataDir);
       });
-      xit('headless should be able to read cookies written by headful', async({server}) => {
-        const userDataDir = await mkdtempAsync(TMP_FOLDER);
-        const options = Object.assign({userDataDir}, defaultBrowserOptions);
-        // Write a cookie in headful chrome
-        options.headless = false;
-        const headfulBrowser = await puppeteer.launch(options);
-        const headfulPage = await headfulBrowser.newPage();
-        await headfulPage.goto(server.EMPTY_PAGE);
-        await headfulPage.evaluate(() => document.cookie = 'foo=true; expires=Fri, 31 Dec 9999 23:59:59 GMT');
-        await headfulBrowser.close();
-        // Read the cookie from headless chrome
-        options.headless = true;
-        const headlessBrowser = await puppeteer.launch(options);
-        const headlessPage = await headlessBrowser.newPage();
-        await headlessPage.goto(server.EMPTY_PAGE);
-        const cookie = await headlessPage.evaluate(() => document.cookie);
-        await headlessBrowser.close();
-        rm(userDataDir);
-        expect(cookie).toBe('foo=true');
-      });
       it('should return the default chrome arguments', async() => {
         const args = puppeteer.defaultArgs();
         expect(args).toContain('--no-first-run');
@@ -266,13 +246,6 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
       });
       it('should have default url when launching browser', async function() {
         const browser = await puppeteer.launch(defaultBrowserOptions);
-        const pages = (await browser.pages()).map(page => page.url());
-        expect(pages).toEqual(['about:blank']);
-        await browser.close();
-      });
-      it('should have default url when launching browser with headless:false', async function() {
-        const options = Object.assign({}, defaultBrowserOptions, {headless: false});
-        const browser = await puppeteer.launch(options);
         const pages = (await browser.pages()).map(page => page.url());
         expect(pages).toEqual(['about:blank']);
         await browser.close();
