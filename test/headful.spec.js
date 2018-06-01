@@ -83,7 +83,6 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
       page.on('request', r => r.respond({body: 'YO, GOOGLE.COM'}));
       await page.evaluate(() => {
         const frame = document.createElement('iframe')
-        frame.setAttribute('name', 'bob')
         frame.setAttribute('src', 'https://google.com/')
         document.body.appendChild(frame)
       });
