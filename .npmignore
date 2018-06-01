@@ -21,3 +21,16 @@ package-lock.json
 /utils
 /docs
 yarn.lock
+
+# other
+/.ci
+/examples
+.appveyour.yml
+.cirrus.yml
+.editorconfig
+.eslintignore
+.eslintrc.js
+.travis.yml
+README.md
+tsconfig.json
+

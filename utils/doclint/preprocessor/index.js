@@ -16,14 +16,16 @@
 
 const Message = require('../Message');
 
-const PUPPETEER_VERSION = require('../../../package.json').version;
+module.exports = function(sources, version) {
+  // Release version is everything that doesn't include "-".
+  const isReleaseVersion = !version.includes('-');
+  const lastReleasedAPILink = `[API](https://github.com/GoogleChrome/puppeteer/blob/v${version.split('-')[0]}/docs/api.md)`;
 
-module.exports = function(sources) {
   const messages = [];
-  let commands = [];
+  const commands = [];
   for (const source of sources) {
     const text = source.text();
-    const commandStartRegex = /<!--\s*gen:([a-z]+)(?:\s*\(\s*([^)]*)\s*\))?\s*-->/ig;
+    const commandStartRegex = /<!--\s*gen:([a-z-]+)\s*-->/ig;
     const commandEndRegex = /<!--\s*gen:stop\s*-->/ig;
     let start;
 
@@ -32,27 +34,33 @@ module.exports = function(sources) {
       const end = commandEndRegex.exec(text);
       if (!end) {
         messages.push(Message.error(`Failed to find 'gen:stop' for command ${start[0]}`));
-        break;
+        return messages;
       }
       const name = start[1];
-      const arg = start[2];
       const from = commandStartRegex.lastIndex;
       const to = end.index;
+      const originalText = text.substring(from, to);
+      commands.push({name, from, to, originalText, source});
       commandStartRegex.lastIndex = commandEndRegex.lastIndex;
-      commands.push({name, arg, from, to, source});
     }
   }
-
-  commands = validateCommands(commands, messages);
 
   const changedSources = new Set();
   // Iterate commands in reverse order so that edits don't conflict.
   commands.sort((a, b) => b.from - a.from);
   for (const command of commands) {
-    let newText = command.source.text();
+    let newText = null;
     if (command.name === 'version')
-      newText = replaceInText(newText, command.from, command.to, PUPPETEER_VERSION);
-    if (command.source.setText(newText))
+      newText = isReleaseVersion ? 'v' + version : 'Tip-Of-Tree';
+    else if (command.name === 'empty-if-release')
+      newText = isReleaseVersion ? '' : command.originalText;
+    else if (command.name === 'last-released-api')
+      newText = lastReleasedAPILink;
+    else if (command.name === 'toc')
+      newText = generateTableOfContents(command.source.text().substring(command.to));
+    if (newText === null)
+      messages.push(Message.error(`Unknown command 'gen:${command.name}'`));
+    else if (applyCommand(command, newText))
       changedSources.add(command.source);
   }
   for (const source of changedSources)
@@ -61,35 +69,40 @@ module.exports = function(sources) {
 };
 
 /**
- * @param {!Array<!Object>} commands
- * @param {!Array<!Message>} outMessages
- * @return {!Array<!Object>}
+ * @param {{name: string, from: number, to: number, source: !Source}} command
+ * @param {string} editText
+ * @return {boolean}
  */
-function validateCommands(commands, outMessages) {
-  // Filter sane commands
-  const goodCommands = commands.filter(command => {
-    if (command.name === 'version')
-      return check(command, !command.arg, `"gen:version" should not have argument`);
-    check(command, false, `Unknown command: "gen:${command.name}"`);
-  });
-
-  return goodCommands;
-
-  function check(command, condition, message) {
-    if (condition)
-      return true;
-    outMessages.push(Message.error(`${command.source.projectPath()}: ${message}`));
-    return false;
-  }
+function applyCommand(command, editText) {
+  const text = command.source.text();
+  const newText = text.substring(0, command.from) + editText + text.substring(command.to);
+  return command.source.setText(newText);
 }
 
-/**
- * @param {string} text
- * @param {number} from
- * @param {number} to
- * @param {string} newText
- * @return {string}
- */
-function replaceInText(text, from, to, newText) {
-  return text.substring(0, from) + newText + text.substring(to);
+function generateTableOfContents(mdText) {
+  const ids = new Set();
+  const titles = mdText.split('\n').map(line => line.trim()).filter(line => line.startsWith('#'));
+  const tocEntries = [];
+  for (const title of titles) {
+    const [, nesting, name] = title.match(/^(#+)\s+(.*)$/);
+    const id = name.trim().toLowerCase().replace(/\s/g, '-').replace(/[^-0-9a-zа-яё]/ig, '');
+    let dedupId = id;
+    let counter = 0;
+    while (ids.has(dedupId))
+      dedupId = id + '-' + (++counter);
+    ids.add(dedupId);
+    tocEntries.push({
+      level: nesting.length,
+      name,
+      id: dedupId
+    });
+  }
+
+  const minLevel = Math.min(...tocEntries.map(entry => entry.level));
+  tocEntries.forEach(entry => entry.level -= minLevel);
+  return '\n' + tocEntries.map(entry => {
+    const prefix = entry.level % 2 === 0 ? '-' : '*';
+    const padding = '  '.repeat(entry.level);
+    return `${padding}${prefix} [${entry.name}](#${entry.id})`;
+  }).join('\n') + '\n';
 }

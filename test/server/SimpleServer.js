@@ -136,8 +136,8 @@ class SimpleServer {
   }
 
   /**
-   * @param {string} fromPath
-   * @param {string} toPath
+   * @param {string} from
+   * @param {string} to
    */
   setRedirect(from, to) {
     this.setRoute(from, (req, res) => {
@@ -185,7 +185,7 @@ class SimpleServer {
     const pathName = url.parse(request.url).path;
     if (this._auths.has(pathName)) {
       const auth = this._auths.get(pathName);
-      const credentials = new Buffer((request.headers.authorization || '').split(' ')[1] || '', 'base64').toString();
+      const credentials = Buffer.from((request.headers.authorization || '').split(' ')[1] || '', 'base64').toString();
       if (credentials !== `${auth.username}:${auth.password}`) {
         response.writeHead(401, { 'WWW-Authenticate': 'Basic realm="Secure Area"' });
         response.end('HTTP Error 401 Unauthorized: Access is denied');
@@ -234,7 +234,7 @@ class SimpleServer {
         response.end(`File not found: ${filePath}`);
         return;
       }
-      response.setHeader('Content-Type', mime.lookup(filePath));
+      response.setHeader('Content-Type', mime.getType(filePath));
       response.end(data);
     });
   }

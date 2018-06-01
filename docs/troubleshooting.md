@@ -85,9 +85,9 @@ xorg-x11-fonts-misc
 
 ## Chrome Headless fails due to sandbox issues
 
-- make sure kernel version is up-to-date
-- read about linux sandbox here: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_suid_sandbox_development.md
-- try running without the sandbox (**Note: running without the sandbox is not recommended due to security reasons!**)
+- Make sure kernel version is up-to-date.
+- Read about linux sandbox here: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_suid_sandbox_development.md
+- Try running without the sandbox (**Note: running without the sandbox is not recommended due to security reasons!**)
 
 ```js
 const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
@@ -172,14 +172,14 @@ how to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
 ### Running on Alpine
 
-The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 63, which was corresponding to [Puppeteer v0.11.0](https://github.com/GoogleChrome/puppeteer/releases/tag/v0.11.0).
+The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 64, which was corresponding to [Puppeteer v0.13.0](https://github.com/GoogleChrome/puppeteer/releases/tag/v0.13.0).
 
 Example Dockerfile:
 
 ```Dockerfile
 FROM node:9-alpine
 
-# Installs latest Chromium (63) package.
+# Installs latest Chromium (64) package.
 RUN apk update && apk upgrade && \
     echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
     echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
@@ -192,8 +192,8 @@ RUN apk update && apk upgrade && \
 # Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
-# Puppeteer v0.11.0 works with Chromium 63.
-RUN yarn add puppeteer@0.11.0
+# Puppeteer v0.13.0 works with Chromium 64.
+RUN yarn add puppeteer@0.13.0
 
 # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \

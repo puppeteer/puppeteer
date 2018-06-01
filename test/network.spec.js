@@ -199,6 +199,41 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
+  describe('Request.isNavigationRequest', () => {
+    it('should work', async({page, server}) => {
+      const requests = new Map();
+      page.on('request', request => requests.set(request.url().split('/').pop(), request));
+      server.setRedirect('/rrredirect', '/frames/one-frame.html');
+      await page.goto(server.PREFIX + '/rrredirect');
+      expect(requests.get('rrredirect').isNavigationRequest()).toBe(true);
+      expect(requests.get('one-frame.html').isNavigationRequest()).toBe(true);
+      expect(requests.get('frame.html').isNavigationRequest()).toBe(true);
+      expect(requests.get('script.js').isNavigationRequest()).toBe(false);
+      expect(requests.get('style.css').isNavigationRequest()).toBe(false);
+    });
+    it('should work with request interception', async({page, server}) => {
+      const requests = new Map();
+      page.on('request', request => {
+        requests.set(request.url().split('/').pop(), request);
+        request.continue();
+      });
+      await page.setRequestInterception(true);
+      server.setRedirect('/rrredirect', '/frames/one-frame.html');
+      await page.goto(server.PREFIX + '/rrredirect');
+      expect(requests.get('rrredirect').isNavigationRequest()).toBe(true);
+      expect(requests.get('one-frame.html').isNavigationRequest()).toBe(true);
+      expect(requests.get('frame.html').isNavigationRequest()).toBe(true);
+      expect(requests.get('script.js').isNavigationRequest()).toBe(false);
+      expect(requests.get('style.css').isNavigationRequest()).toBe(false);
+    });
+    it('should work when navigating to image', async({page, server}) => {
+      const requests = [];
+      page.on('request', request => requests.push(request));
+      await page.goto(server.PREFIX + '/pptr.png');
+      expect(requests[0].isNavigationRequest()).toBe(true);
+    });
+  });
+
   describe('Page.setRequestInterception', function() {
     it('should intercept', async({page, server}) => {
       await page.setRequestInterception(true);
@@ -207,6 +242,7 @@ module.exports.addTests = function({testRunner, expect}) {
         expect(request.headers()['user-agent']).toBeTruthy();
         expect(request.method()).toBe('GET');
         expect(request.postData()).toBe(undefined);
+        expect(request.isNavigationRequest()).toBe(true);
         expect(request.resourceType()).toBe('document');
         expect(request.frame() === page.mainFrame()).toBe(true);
         expect(request.frame().url()).toBe('about:blank');
@@ -327,6 +363,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(redirectChain[2].url()).toContain('/non-existing-page-3.html');
       for (let i = 0; i < redirectChain.length; ++i) {
         const request = redirectChain[i];
+        expect(request.isNavigationRequest()).toBe(true);
         expect(request.redirectChain().indexOf(request)).toBe(i);
       }
     });
@@ -459,6 +496,18 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.goto(server.EMPTY_PAGE);
       expect(error.message).toContain('Request Interception is not enabled');
     });
+    it('should work with file URLs', async({page, server}) => {
+      await page.setRequestInterception(true);
+      const urls = new Set();
+      page.on('request', request => {
+        urls.add(request.url().split('/').pop());
+        request.continue();
+      });
+      await page.goto(pathToFileURL(path.join(__dirname, 'assets', 'one-style.html')));
+      expect(urls.size).toBe(2);
+      expect(urls.has('one-style.html')).toBe(true);
+      expect(urls.has('one-style.css')).toBe(true);
+    });
   });
 
   describe('Request.respond', function() {
@@ -573,5 +622,16 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(response.status()).toBe(401);
     });
   });
-
 };
+
+/**
+ * @param {string} path
+ * @return {string}
+ */
+function pathToFileURL(path) {
+  let pathName = path.replace(/\\/g, '/');
+  // Windows drive letter must be prefixed with a slash.
+  if (!pathName.startsWith('/'))
+    pathName = '/' + pathName;
+  return 'file://' + pathName;
+}

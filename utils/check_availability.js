@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
+const assert = require('assert');
 const puppeteer = require('..');
 const https = require('https');
-const OMAHA_PROXY = 'https://omahaproxy.appspot.com/all.json';
 const SUPPORTER_PLATFORMS = ['linux', 'mac', 'win32', 'win64'];
 
 const fetchers = SUPPORTER_PLATFORMS.map(platform => puppeteer.createBrowserFetcher({platform}));
@@ -41,7 +41,7 @@ class Table {
      * @param {!Array<string>} values
      */
   drawRow(values) {
-    console.assert(values.length === this.widths.length);
+    assert(values.length === this.widths.length);
     let row = '';
     for (let i = 0; i < values.length; ++i)
       row += padCenter(values[i], this.widths[i]);
@@ -67,27 +67,14 @@ const toRevision = parseInt(process.argv[3], 10);
 checkRangeAvailability(fromRevision, toRevision);
 
 async function checkOmahaProxyAvailability() {
-  console.log('Fetching revisions from ' + OMAHA_PROXY);
-  const platforms = await loadJSON(OMAHA_PROXY);
-  if (!platforms) {
-    console.error('ERROR: failed to fetch chromium revisions from omahaproxy.');
-    return;
-  }
-  const table = new Table([27, 7, 7, 7, 7]);
-  table.drawRow([''].concat(SUPPORTER_PLATFORMS));
-  for (const platform of platforms) {
-    // Trust only to the main platforms.
-    if (platform.os !== 'mac' && platform.os !== 'win' && platform.os !== 'win64' && platform.os !== 'linux')
-      continue;
-    const osName = platform.os === 'win' ? 'win32' : platform.os;
-    for (const version of platform.versions) {
-      if (version.channel !== 'dev' && version.channel !== 'beta' && version.channel !== 'canary' && version.channel !== 'stable')
-        continue;
-      const revisionName = padLeft('[' + osName + ' ' + version.channel + ']', 15);
-      const revision = parseInt(version.branch_base_position, 10);
-      await checkAndDrawRevisionAvailability(table, revisionName, revision);
-    }
-  }
+  const lastchanged = (await Promise.all([
+    fetch('https://storage.googleapis.com/chromium-browser-snapshots/Mac/LAST_CHANGE'),
+    fetch('https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/LAST_CHANGE'),
+    fetch('https://storage.googleapis.com/chromium-browser-snapshots/Win/LAST_CHANGE'),
+    fetch('https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/LAST_CHANGE'),
+  ])).map(s => parseInt(s, 10));
+  const from = Math.max(...lastchanged);
+  checkRangeAvailability(from, 0);
 }
 
 /**
@@ -122,9 +109,9 @@ async function checkAndDrawRevisionAvailability(table, name, revision) {
 
 /**
  * @param {string} url
- * @return {!Promise<?Object>}
+ * @return {!Promise<?string>}
  */
-function loadJSON(url) {
+function fetch(url) {
   let resolve;
   const promise = new Promise(x => resolve = x);
   https.get(url, response => {
@@ -137,8 +124,7 @@ function loadJSON(url) {
       body += chunk;
     });
     response.on('end', function(){
-      const json = JSON.parse(body);
-      resolve(json);
+      resolve(body);
     });
   }).on('error', function(e){
     console.error('Error fetching json: ' + e);
@@ -165,16 +151,6 @@ function filterOutColors(text) {
     text = text.replace(color, '');
   }
   return text;
-}
-
-/**
- * @param {string} text
- * @param {number} length
- * @return {string}
- */
-function padLeft(text, length) {
-  const printableCharacters = filterOutColors(text);
-  return printableCharacters.length >= length ? text : spaceString(length - text.length) + text;
 }
 
 /**

@@ -129,6 +129,8 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
+        // Open a page to make sure its functional.
+        await browser.newPage();
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
         await browser.close();
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
@@ -204,7 +206,7 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         const dumpioTextToLog = 'MAGIC_DUMPIO_TEST';
         let dumpioData = '';
         const {spawn} = require('child_process');
-        const options = Object.assign({dumpio: true}, defaultBrowserOptions);
+        const options = Object.assign({}, defaultBrowserOptions, {dumpio: true});
         const res = spawn('node',
             [path.join(__dirname, 'fixtures', 'dumpio.js'), PROJECT_ROOT, JSON.stringify(options), server.EMPTY_PAGE, dumpioTextToLog]);
         res.stderr.on('data', data => dumpioData += data.toString('utf8'));
@@ -262,6 +264,31 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         await page.close();
         await browser.close();
       });
+      it('should have default url when launching browser', async function() {
+        const browser = await puppeteer.launch(defaultBrowserOptions);
+        const pages = (await browser.pages()).map(page => page.url());
+        expect(pages).toEqual(['about:blank']);
+        await browser.close();
+      });
+      it('should have default url when launching browser with headless:false', async function() {
+        const options = Object.assign({}, defaultBrowserOptions, {headless: false});
+        const browser = await puppeteer.launch(options);
+        const pages = (await browser.pages()).map(page => page.url());
+        expect(pages).toEqual(['about:blank']);
+        await browser.close();
+      });
+      it('should have custom url when launching browser', async function({server}) {
+        const customUrl = server.PREFIX + '/empty.html';
+        const options = Object.assign({}, defaultBrowserOptions);
+        options.args = [customUrl].concat(options.args);
+        const browser = await puppeteer.launch(options);
+        const pages = await browser.pages();
+        expect(pages.length).toBe(1);
+        if (pages[0].url() !== customUrl)
+          await pages[0].waitForNavigation();
+        expect(pages[0].url()).toBe(customUrl);
+        await browser.close();
+      });
     });
     describe('Puppeteer.connect', function() {
       it('should be able to connect multiple times to the same browser', async({server}) => {
@@ -276,6 +303,21 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         const secondPage = await originalBrowser.newPage();
         expect(await secondPage.evaluate(() => 7 * 6)).toBe(42, 'original browser should still work');
         await originalBrowser.close();
+      });
+      it('should support ignoreHTTPSErrors option', async({httpsServer}) => {
+        const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+        const browserWSEndpoint = originalBrowser.wsEndpoint();
+
+        const browser = await puppeteer.connect({browserWSEndpoint, ignoreHTTPSErrors: true});
+        const page = await browser.newPage();
+        let error = null;
+        const response = await page.goto(httpsServer.EMPTY_PAGE).catch(e => error = e);
+        expect(error).toBe(null);
+        expect(response.ok()).toBe(true);
+        expect(response.securityDetails()).toBeTruthy();
+        expect(response.securityDetails().protocol()).toBe('TLS 1.2');
+        await page.close();
+        await browser.close();
       });
       it('should be able to reconnect to a disconnected browser', async({server}) => {
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);

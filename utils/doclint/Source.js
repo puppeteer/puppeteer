@@ -82,44 +82,19 @@ class Source {
   hasUpdatedText() {
     return this._hasUpdatedText;
   }
-}
 
-class SourceFactory {
-  constructor() {
-    this._sources = new Map();
-  }
-
-  /**
-   * @return {!Array<!Source>}
-   */
-  sources() {
-    return Array.from(this._sources.values());
-  }
-
-  /**
-   * @return {!Promise<boolean>}
-   */
-  async saveChangedSources() {
-    const changedSources = Array.from(this._sources.values()).filter(source => source.hasUpdatedText());
-    if (!changedSources.length)
-      return false;
-    await Promise.all(changedSources.map(source => writeFileAsync(source.filePath(), source.text())));
-    return true;
+  async save() {
+    await writeFileAsync(this.filePath(), this.text());
   }
 
   /**
    * @param {string} filePath
    * @return {!Promise<Source>}
    */
-  async readFile(filePath) {
+  static async readFile(filePath) {
     filePath = path.resolve(filePath);
-    let source = this._sources.get(filePath);
-    if (!source) {
-      const text = await readFileAsync(filePath, {encoding: 'utf8'});
-      source = new Source(filePath, text);
-      this._sources.set(filePath, source);
-    }
-    return source;
+    const text = await readFileAsync(filePath, {encoding: 'utf8'});
+    return new Source(filePath, text);
   }
 
   /**
@@ -127,21 +102,13 @@ class SourceFactory {
    * @param {string=} extension
    * @return {!Promise<!Array<!Source>>}
    */
-  async readdir(dirPath, extension = '') {
+  static async readdir(dirPath, extension = '') {
     const fileNames = await readdirAsync(dirPath);
     const filePaths = fileNames.filter(fileName => fileName.endsWith(extension)).map(fileName => path.join(dirPath, fileName));
-    return Promise.all(filePaths.map(filePath => this.readFile(filePath)));
-  }
-
-  /**
-   * @param {string} filePath
-   * @param {string} text
-   * @return {!Source}
-   */
-  createForTest(filePath, text) {
-    return new Source(filePath, text);
+    return Promise.all(filePaths.map(filePath => Source.readFile(filePath)));
   }
 }
+module.exports = Source;
 
 /**
  * @param {function(?)} nodeFunction
@@ -166,4 +133,3 @@ function promisify(nodeFunction) {
   };
 }
 
-module.exports = SourceFactory;
