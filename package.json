@@ -7,6 +7,9 @@
   "engines": {
     "node": ">=6.4.0"
   },
+  "puppeteer": {
+    "chromium_revision": "563942"
+  },
   "scripts": {
     "unit": "node test/test.js",
     "debug-unit": "node --inspect-brk test/test.js",
@@ -34,9 +37,6 @@
     "proxy-from-env": "^1.0.0",
     "rimraf": "^2.6.1",
     "ws": "^5.1.1"
-  },
-  "puppeteer": {
-    "chromium_revision": "557152"
   },
   "devDependencies": {
     "@types/debug": "0.0.30",
