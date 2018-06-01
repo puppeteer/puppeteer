@@ -82,9 +82,9 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
       await page.setRequestInterception(true);
       page.on('request', r => r.respond({body: 'YO, GOOGLE.COM'}));
       await page.evaluate(() => {
-        const frame = document.createElement('iframe')
-        frame.setAttribute('src', 'https://google.com/')
-        document.body.appendChild(frame)
+        const frame = document.createElement('iframe');
+        frame.setAttribute('src', 'https://google.com/');
+        document.body.appendChild(frame);
       });
       await page.waitForSelector('iframe[src]');
       const urls = page.frames().map(frame => frame.url()).sort();
