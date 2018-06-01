@@ -238,6 +238,7 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
       it('should support the pipe option', async() => {
         const options = Object.assign({pipe: true}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
+        expect((await browser.pages()).length).toBe(1);
         expect(browser.wsEndpoint()).toBe('');
         const page = await browser.newPage();
         expect(await page.evaluate('11 * 11')).toBe(121);
