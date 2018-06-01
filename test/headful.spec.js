@@ -74,6 +74,27 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
       rm(userDataDir);
       expect(cookie).toBe('foo=true');
     });
+    it('OOPIF: should report google.com frame', async({server}) => {
+      // https://google.com is isolated by default in Chromium embedder.
+      const browser = await puppeteer.launch(headfulOptions);
+      const page = await browser.newPage();
+      await page.goto(server.EMPTY_PAGE);
+      await page.setRequestInterception(true);
+      page.on('request', r => r.respond({body: 'YO, GOOGLE.COM'}));
+      await page.evaluate(() => {
+        const frame = document.createElement('iframe')
+        frame.setAttribute('name', 'bob')
+        frame.setAttribute('src', 'https://google.com/')
+        document.body.appendChild(frame)
+      });
+      await page.waitForSelector('iframe[src]');
+      const urls = page.frames().map(frame => frame.url()).sort();
+      expect(urls).toEqual([
+        server.EMPTY_PAGE,
+        'https://google.com/'
+      ]);
+      await browser.close();
+    });
   });
 };
 
