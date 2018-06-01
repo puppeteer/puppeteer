@@ -85,8 +85,9 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         const frame = document.createElement('iframe');
         frame.setAttribute('src', 'https://google.com/');
         document.body.appendChild(frame);
+        return new Promise(x => frame.onload = x);
       });
-      await page.waitForSelector('iframe[src]');
+      await page.waitForSelector('iframe[src="https://google.com/"]');
       const urls = page.frames().map(frame => frame.url()).sort();
       expect(urls).toEqual([
         server.EMPTY_PAGE,
