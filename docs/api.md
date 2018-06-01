@@ -2846,7 +2846,7 @@ Documentation on DevTools Protocol can be found here: [DevTools Protocol Viewer]
 ```js
 const client = await page.target().createCDPSession();
 await client.send('Animation.enable');
-await client.on('Animation.animationCreated', () => console.log('Animation created!'));
+client.on('Animation.animationCreated', () => console.log('Animation created!'));
 const response = await client.send('Animation.getPlaybackRate');
 console.log('playback rate is ' + response.playbackRate);
 await client.send('Animation.setPlaybackRate', {
