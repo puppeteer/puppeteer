@@ -201,30 +201,30 @@ module.exports.addTests = function({testRunner, expect}) {
 
   describe('Request.isNavigationRequest', () => {
     it('should work', async({page, server}) => {
-      const requests = [];
-      page.on('request', request => requests.push(request));
+      const requests = new Map();
+      page.on('request', request => requests.set(request.url().split('/').pop(), request));
       server.setRedirect('/rrredirect', '/frames/one-frame.html');
       await page.goto(server.PREFIX + '/rrredirect');
-      expect(requests[0].isNavigationRequest()).toBe(true);
-      expect(requests[1].isNavigationRequest()).toBe(true);
-      expect(requests[2].isNavigationRequest()).toBe(true);
-      expect(requests[3].isNavigationRequest()).toBe(false);
-      expect(requests[4].isNavigationRequest()).toBe(false);
+      expect(requests.get('rrredirect').isNavigationRequest()).toBe(true);
+      expect(requests.get('one-frame.html').isNavigationRequest()).toBe(true);
+      expect(requests.get('frame.html').isNavigationRequest()).toBe(true);
+      expect(requests.get('script.js').isNavigationRequest()).toBe(false);
+      expect(requests.get('style.css').isNavigationRequest()).toBe(false);
     });
     it('should work with request interception', async({page, server}) => {
-      const requests = [];
+      const requests = new Map();
       page.on('request', request => {
-        requests.push(request);
+        requests.set(request.url().split('/').pop(), request);
         request.continue();
       });
       await page.setRequestInterception(true);
       server.setRedirect('/rrredirect', '/frames/one-frame.html');
       await page.goto(server.PREFIX + '/rrredirect');
-      expect(requests[0].isNavigationRequest()).toBe(true);
-      expect(requests[1].isNavigationRequest()).toBe(true);
-      expect(requests[2].isNavigationRequest()).toBe(true);
-      expect(requests[3].isNavigationRequest()).toBe(false);
-      expect(requests[4].isNavigationRequest()).toBe(false);
+      expect(requests.get('rrredirect').isNavigationRequest()).toBe(true);
+      expect(requests.get('one-frame.html').isNavigationRequest()).toBe(true);
+      expect(requests.get('frame.html').isNavigationRequest()).toBe(true);
+      expect(requests.get('script.js').isNavigationRequest()).toBe(false);
+      expect(requests.get('style.css').isNavigationRequest()).toBe(false);
     });
     it('should work when navigating to image', async({page, server}) => {
       const requests = [];
