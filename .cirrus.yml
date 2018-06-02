@@ -4,6 +4,7 @@ env:
 task:
   matrix:
     - name: node6 (windows)
+      allow_failures: true
       windows_container:
         dockerfile: .ci/node6/Dockerfile.windows
         os_version: 2016
@@ -17,6 +18,7 @@ task:
 task:
   matrix:
     - name: node7 (windows)
+      allow_failures: true
       windows_container:
         dockerfile: .ci/node7/Dockerfile.windows
         os_version: 2016
