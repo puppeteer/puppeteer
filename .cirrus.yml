@@ -3,10 +3,10 @@ env:
 
 task:
   matrix:
-#    - name: node6 (windows)
-#      windows_container:
-#        dockerfile: .ci/node6/Dockerfile.windows
-#        os_version: 2016
+    #- name: node6 (windows)
+    #  windows_container:
+    #    dockerfile: .ci/node6/Dockerfile.windows
+    #    os_version: 2016
     - name: node6 (linux)
       container:
         dockerfile: .ci/node6/Dockerfile.linux
@@ -16,10 +16,10 @@ task:
 
 task:
   matrix:
-#    - name: node7 (windows)
-#      windows_container:
-#        dockerfile: .ci/node7/Dockerfile.windows
-#        os_version: 2016
+    #- name: node7 (windows)
+    #  windows_container:
+    #    dockerfile: .ci/node7/Dockerfile.windows
+    #    os_version: 2016
     - name: node7 (linux)
       container:
         dockerfile: .ci/node7/Dockerfile.linux
