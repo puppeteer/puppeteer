@@ -219,6 +219,7 @@
   * [elementHandle.getProperties()](#elementhandlegetproperties)
   * [elementHandle.getProperty(propertyName)](#elementhandlegetpropertypropertyname)
   * [elementHandle.hover()](#elementhandlehover)
+  * [elementHandle.isVisible()](#elementhandleisvisible)
   * [elementHandle.jsonValue()](#elementhandlejsonvalue)
   * [elementHandle.press(key[, options])](#elementhandlepresskey-options)
   * [elementHandle.screenshot([options])](#elementhandlescreenshotoptions)
@@ -2521,6 +2522,17 @@ Fetches a single property from the objectHandle.
 
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
 If the element is detached from DOM, the method throws an error.
+
+#### elementHandle.isVisible()
+- returns: <[Promise]<[boolean]>> Promise boolean flag is element visible in viewport
+
+This method used [Intersection Observer](https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API) to define is element visible on viewport or not.
+
+Example:
+```js
+const el = await page.$('#some-invisible-element');
+await el.isVisible(); // false
+``` 
 
 #### elementHandle.jsonValue()
 - returns: <[Promise]<[Object]>>
