@@ -36,23 +36,6 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(allPages).toContain(page);
       expect(allPages[0]).not.toBe(allPages[1]);
     });
-    it('should allow background_page target type to pass through', async({browser}) => {
-      const browserWithExtension = await puppeteer.launch(browserWithExtensionOptions);
-      const page = await browserWithExtension.newPage();
-      const targets = await browserWithExtension.targets();
-      const backgroundPageTarget = targets.find(target => target.type() === 'background_page');
-      await page.close();
-      await browserWithExtension.close();
-      expect(backgroundPageTarget).toBeTruthy();
-    });
-    it('target.page() should return a background_page', async({browser}) => {
-      const browserWithExtension = await puppeteer.launch(browserWithExtensionOptions);
-      const targets = await browserWithExtension.targets();
-      const backgroundPageTarget = targets.find(target => target.type() === 'background_page');
-      const page = await backgroundPageTarget.page();
-      expect(await page.evaluate(() => 2 * 3)).toBe(6);
-      await browserWithExtension.close();
-    });
     it('should contain browser target', async({browser}) => {
       const targets = browser.targets();
       const browserTarget = targets.find(target => target.type() === 'browser');
