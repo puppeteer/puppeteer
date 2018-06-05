@@ -132,6 +132,8 @@
   * [page.waitForXPath(xpath[, options])](#pagewaitforxpathxpath-options)
   * [page.workers()](#pageworkers)
 - [class: Worker](#class-worker)
+  * [worker.evaluate(pageFunction, ...args)](#workerevaluatepagefunction-args)
+  * [worker.evaluateHandle(pageFunction, ...args)](#workerevaluatehandlepagefunction-args)
   * [worker.executionContext()](#workerexecutioncontext)
   * [worker.url()](#workerurl)
 - [class: Keyboard](#class-keyboard)
@@ -1644,6 +1646,28 @@ console.log('Current workers:');
 for (const worker of page.workers())
   console.log('  ' + worker.url());
 ```
+
+#### worker.evaluate(pageFunction, ...args)
+- `pageFunction` <[function]|[string]> Function to be evaluated in the worker context
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
+
+If the function passed to the `worker.evaluate` returns a [Promise], then `worker.evaluate` would wait for the promise to resolve and return its value.
+
+If the function passed to the `worker.evaluate` returns a non-[Serializable] value, then `worker.evaluate` resolves to `undefined`.
+
+Shortcut for [(await worker.executionContext()).evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args).
+
+#### worker.evaluateHandle(pageFunction, ...args)
+- `pageFunction` <[function]|[string]> Function to be evaluated in the page context
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[JSHandle]>> Promise which resolves to the return value of `pageFunction` as in-page object (JSHandle)
+
+The only difference between `page.evaluate` and `page.evaluateHandle` is that `page.evaluateHandle` returns in-page object (JSHandle).
+
+If the function passed to the `page.evaluateHandle` returns a [Promise], then `page.evaluateHandle` would wait for the promise to resolve and return its value.
+
+Shortcut for [(await worker.executionContext()).evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args).
 
 #### worker.executionContext()
 - returns: <[Promise]<[ExecutionContext]>>
