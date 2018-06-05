@@ -16,7 +16,7 @@
 
 const {waitEvent} = require('./utils');
 
-module.exports.addTests = function({testRunner, expect, puppeteer, browserWithExtensionOptions}) {
+module.exports.addTests = function({testRunner, expect, puppeteer}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
