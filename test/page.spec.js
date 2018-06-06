@@ -1659,4 +1659,12 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       expect(page.browser()).toBe(browser);
     });
   });
+
+  describe('Page', function() {
+    it('should render text consistently', async function({ page, server }) {
+      await page.goto(server.PREFIX + '/text-alignment.html');
+      const screenshot = await page.screenshot();
+      expect(screenshot).toBeGolden('text-alignment.png');
+    });
+  });
 };
