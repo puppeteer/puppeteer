@@ -3,7 +3,7 @@
 # Puppeteer API <!-- GEN:version -->Tip-Of-Tree<!-- GEN:stop-->
 
 <!-- GEN:empty-if-release -->
-> Next Release July 12, 2018
+> Next Release: **July 12, 2018**
 <!-- GEN:stop -->
 
 
