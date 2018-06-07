@@ -145,6 +145,7 @@ describe('Page', function() {
   require('./page.spec.js').addTests({testRunner, expect, puppeteer, DeviceDescriptors, headless});
   require('./target.spec.js').addTests({testRunner, expect, puppeteer});
   require('./tracing.spec.js').addTests({testRunner, expect});
+  require('./worker.spec.js').addTests({testRunner, expect});
 });
 
 // Top-level tests that launch Browser themselves.
