@@ -34,6 +34,14 @@ module.exports.addTests = function({testRunner, expect}) {
       const log = await logPromise;
       expect(log.text()).toBe('1');
     });
+    it('should have JSHandles for console logs', async function({page}) {
+      const logPromise = new Promise(x => page.on('console', x));
+      await page.evaluate(() => new Worker(`data:text/javascript,console.log(1,2,3,this)`));
+      const log = await logPromise;
+      expect(log.text()).toBe('1 2 3 JSHandle@object');
+      expect(log.args().length).toBe(4);
+      expect(await (await log.args()[3].getProperty('origin')).jsonValue()).toBe('null');
+    });
     it('should have an execution context', async function({page}) {
       const workerCreatedPromise = new Promise(x => page.once('workercreated', x));
       await page.evaluate(() => new Worker(`data:text/javascript,console.log(1)`));
