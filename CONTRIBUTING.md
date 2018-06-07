@@ -209,7 +209,7 @@ See [Debugging Tips](README.md#debugging-tips) in the readme.
 
 Releasing to NPM consists of 3 phases:
 1. Source Code: mark a release.
-    1. Bump `package.json` version following the SEMVER rules and send a PR titled `'chore: mark version vXXX.YYY.ZZZ'` ([example](808bf8e5582482a1d849ff22a51e52024810905c)).
+    1. Bump `package.json` version following the SEMVER rules and send a PR titled `'chore: mark version vXXX.YYY.ZZZ'` ([example](https://github.com/GoogleChrome/puppeteer/commit/808bf8e5582482a1d849ff22a51e52024810905c)).
     2. Make sure the PR passes **all checks**.
         - **WHY**: there are linters in place that help to avoid unnecessary errors, e.g. [like this](https://github.com/GoogleChrome/puppeteer/pull/2446)
     3. Merge the PR.
@@ -222,6 +222,7 @@ Releasing to NPM consists of 3 phases:
     3. Run [`pkgfiles`](https://www.npmjs.com/package/pkgfiles) to make sure you don't publish anything unnecessary.
     4. Run `npm publish`.
 3. Source Code: mark post-release.
-    1. Bump `package.json` version to `-post` version and send a PR titled `'chore: bump version to vXXX.YYY.ZZZ-post'` ([exmaple](d02440d1eac98028e29f4e1cf55413062a259156))
+    1. Bump `package.json` version to `-post` version and send a PR titled `'chore: bump version to vXXX.YYY.ZZZ-post'` ([exmaple](https://github.com/GoogleChrome/puppeteer/commit/d02440d1eac98028e29f4e1cf55413062a259156))
+        - **NOTE**: make sure to update the "released APIs" section in the top of `docs/api.md`.
         - **NOTE**: no other commits should be landed in-between release commit and bump commit.
 
