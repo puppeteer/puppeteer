@@ -110,6 +110,24 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         await page.close();
         await browser.close();
       });
+      it('should evaluate exposed function with mixed content', async({server, httpsServer}) => {
+        httpsServer.setRoute('/mixedcontent.html', (req, res) => {
+          res.end(`<iframe src=${server.EMPTY_PAGE}></iframe>`);
+        });
+        const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
+        const page = await browser.newPage();
+        await page.goto(httpsServer.PREFIX + '/mixedcontent.html', {waitUntil: 'load'});
+        await page.exposeFunction('compute', function(a, b) {
+          return Promise.resolve(a * b);
+        });
+        const result = await page.evaluate(async function() {
+          return await compute(3, 5);
+        });
+        expect(result).toBe(15);
+        await page.close();
+        await browser.close();
+      });
       it('should reject all promises when browser is closed', async() => {
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const page = await browser.newPage();
