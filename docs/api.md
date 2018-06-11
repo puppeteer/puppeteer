@@ -139,6 +139,7 @@
   * [worker.evaluate(pageFunction, ...args)](#workerevaluatepagefunction-args)
   * [worker.evaluateHandle(pageFunction, ...args)](#workerevaluatehandlepagefunction-args)
   * [worker.executionContext()](#workerexecutioncontext)
+  * [worker.setRequestInterception(value)](#workersetrequestinterceptionvalue)
   * [worker.url()](#workerurl)
 - [class: Keyboard](#class-keyboard)
   * [keyboard.down(key[, options])](#keyboarddownkey-options)
@@ -1698,6 +1699,35 @@ Shortcut for [(await worker.executionContext()).evaluateHandle(pageFunction, ...
 
 #### worker.executionContext()
 - returns: <[Promise]<[ExecutionContext]>>
+
+#### worker.setRequestInterception(value)
+- `value` <[boolean]> Whether to enable request interception.
+- returns: <[Promise]>
+
+Activating request interception enables `request.abort`, `request.continue` and
+`request.respond` methods.  This provides the capability to modify network requests that are made by a worker.
+
+An example of a naïve request interceptor that aborts all image requests:
+```js
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
+  const page = await browser.newPage();
+  page.on('workercreated', worker => {
+    await worker.setRequestInterception(true);
+    worker.on('request', interceptedRequest => {
+      if (interceptedRequest.url().endsWith('.png') || interceptedRequest.url().endsWith('.jpg'))
+        interceptedRequest.abort();
+      else
+        interceptedRequest.continue();
+    });
+  });
+  await page.goto('https://example.com');
+  await browser.close();
+});
+```
+
+> **NOTE** Enabling request interception disables page caching.
 
 #### worker.url()
 - returns: <[string]>
