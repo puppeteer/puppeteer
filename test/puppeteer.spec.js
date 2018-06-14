@@ -70,46 +70,8 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         await browser.close();
       });
     });
+
     describe('Puppeteer.launch', function() {
-      it('should support ignoreHTTPSErrors option', async({httpsServer}) => {
-        const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
-        const browser = await puppeteer.launch(options);
-        const page = await browser.newPage();
-        let error = null;
-        const response = await page.goto(httpsServer.EMPTY_PAGE).catch(e => error = e);
-        expect(error).toBe(null);
-        expect(response.ok()).toBe(true);
-        expect(response.securityDetails()).toBeTruthy();
-        expect(response.securityDetails().protocol()).toBe('TLS 1.2');
-        await page.close();
-        await browser.close();
-      });
-      it('Network redirects should report SecurityDetails', async({httpsServer}) => {
-        const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
-        const browser = await puppeteer.launch(options);
-        const page = await browser.newPage();
-        httpsServer.setRedirect('/plzredirect', '/empty.html');
-        const responses =  [];
-        page.on('response', response => responses.push(response));
-        await page.goto(httpsServer.PREFIX + '/plzredirect');
-        expect(responses.length).toBe(2);
-        expect(responses[0].status()).toBe(302);
-        const securityDetails = responses[0].securityDetails();
-        expect(securityDetails.protocol()).toBe('TLS 1.2');
-        await page.close();
-        await browser.close();
-      });
-      it('should work with mixed content', async({server, httpsServer}) => {
-        httpsServer.setRoute('/mixedcontent.html', (req, res) => {
-          res.end(`<iframe src=${server.EMPTY_PAGE}></iframe>`);
-        });
-        const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
-        const browser = await puppeteer.launch(options);
-        const page = await browser.newPage();
-        await page.goto(httpsServer.PREFIX + '/mixedcontent.html', {waitUntil: 'load'});
-        await page.close();
-        await browser.close();
-      });
       it('should reject all promises when browser is closed', async() => {
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const page = await browser.newPage();

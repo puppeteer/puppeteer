@@ -149,6 +149,7 @@ describe('Page', function() {
 });
 
 // Top-level tests that launch Browser themselves.
+require('./ignorehttpserrors.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
 require('./puppeteer.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
 require('./headful.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
 
