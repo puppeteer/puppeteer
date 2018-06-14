@@ -336,6 +336,15 @@ module.exports.addTests = function({testRunner, expect}) {
       const content = await elementHandle.$$eval('.a', nodes => nodes.map(n => n.innerText));
       expect(content).toEqual(['a1-child-div', 'a2-child-div']);
     });
+
+    it('should not throw in case of missing selector', async({page, server}) => {
+      const htmlContent = '<div class="a">not-a-child-div</div><div id="myId"></div>';
+      await page.setContent(htmlContent);
+      const elementHandle = await page.$('#myId');
+      const nodesLength = await elementHandle.$$eval('.a', nodes => nodes.length);
+      expect(nodesLength).toBe(0);
+    });
+
   });
 
   describe('ElementHandle.$$', function() {
