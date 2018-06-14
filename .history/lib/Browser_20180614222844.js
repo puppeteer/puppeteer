@@ -188,6 +188,7 @@ class Browser extends EventEmitter {
             .filter(target => target.type() === 'page')
             .map(target => target.page())
     );
+
     return pages.filter(page => !!page);
   }
 

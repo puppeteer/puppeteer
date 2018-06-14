@@ -183,9 +183,10 @@ class Browser extends EventEmitter {
    * @return {!Promise<!Array<!Puppeteer.Page>>}
    */
   async pages() {
+    const nonVisiblePageTypes = ['service_worker', 'background_page'];
     const pages = await Promise.all(
         this.targets()
-            .filter(target => target.type() === 'page')
+            .filter(target => !nonVisiblePageTypes.includes(target.type()))
             .map(target => target.page())
     );
     return pages.filter(page => !!page);
