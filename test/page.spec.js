@@ -226,6 +226,16 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
         return audio.play();
       }
     });
+    it('should throw a nice error after a navigation', async({page, server}) => {
+      const executionContext = await page.mainFrame().executionContext();
+
+      await Promise.all([
+        page.waitForNavigation(),
+        executionContext.evaluate(() => window.location.reload())
+      ]);
+      const error = await executionContext.evaluate(() => null).catch(e => e);
+      expect(error.message).toContain('navigation');
+    });
   });
 
   describe('Page.setOfflineMode', function() {

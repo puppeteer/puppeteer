@@ -124,7 +124,7 @@ module.exports.addTests = function({testRunner, expect}) {
         error = e;
       }
       expect(error).toBeTruthy();
-      expect(error.message).toEqual('Protocol error (Network.deleteCookies): At least one of the url and domain needs to be specified undefined');
+      expect(error.message).toEqual('Protocol error (Network.deleteCookies): At least one of the url and domain needs to be specified');
     });
 
     it('should not set a cookie with blank page URL', async function({page, server}) {
@@ -154,7 +154,7 @@ module.exports.addTests = function({testRunner, expect}) {
       }
       expect(error).toBeTruthy();
       expect(error.message).toEqual(
-          'Protocol error (Network.deleteCookies): At least one of the url and domain needs to be specified undefined'
+          'Protocol error (Network.deleteCookies): At least one of the url and domain needs to be specified'
       );
     });
 
