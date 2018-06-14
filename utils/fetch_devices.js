@@ -18,6 +18,7 @@
 const util = require('util');
 const fs = require('fs');
 const path = require('path');
+const puppeteer = require('..');
 const DEVICES_URL = 'https://raw.githubusercontent.com/ChromeDevTools/devtools-frontend/master/front_end/emulated_devices/module.json';
 
 const template = `/**
@@ -37,7 +38,7 @@ const template = `/**
  */
 
 module.exports = %s;
-for (let device of module.exports)
+for (const device of module.exports)
   module.exports[device.name] = device;
 `;
 
@@ -71,6 +72,9 @@ if (!outputPath) {
 main(url);
 
 async function main(url) {
+  const browser = await puppeteer.launch();
+  const chromeVersion = (await browser.version()).split('/').pop();
+  await browser.close();
   console.log('GET ' + url);
   const text = await httpGET(url);
   let json = null;
@@ -83,11 +87,22 @@ async function main(url) {
   const devicePayloads = json.extensions.filter(extension => extension.type === 'emulated-device').map(extension => extension.device);
   let devices = [];
   for (const payload of devicePayloads) {
-    const device = createDevice(payload, false);
-    const landscape = createDevice(payload, true);
-    devices.push(device);
-    if (landscape.viewport.width !== device.viewport.width || landscape.viewport.height !== device.viewport.height)
-      devices.push(landscape);
+    let names = [];
+    if (payload.title === 'iPhone 6/7/8')
+      names = ['iPhone 6', 'iPhone 7', 'iPhone 8'];
+    else if (payload.title === 'iPhone 6/7/8 Plus')
+      names = ['iPhone 6 Plus', 'iPhone 7 Plus', 'iPhone 8 Plus'];
+    else if (payload.title === 'iPhone 5/SE')
+      names = ['iPhone 5', 'iPhone SE'];
+    else
+      names = [payload.title];
+    for (const name of names) {
+      const device = createDevice(chromeVersion, name, payload, false);
+      const landscape = createDevice(chromeVersion, name, payload, true);
+      devices.push(device);
+      if (landscape.viewport.width !== device.viewport.width || landscape.viewport.height !== device.viewport.height)
+        devices.push(landscape);
+    }
   }
   devices = devices.filter(device => device.viewport.isMobile);
   devices.sort((a, b) => a.name.localeCompare(b.name));
@@ -100,16 +115,18 @@ async function main(url) {
 }
 
 /**
+ * @param {string} chromeVersion
+ * @param {string} deviceName
  * @param {*} descriptor
  * @param {boolean} landscape
  * @return {!Object}
  */
-function createDevice(descriptor, landscape) {
+function createDevice(chromeVersion, deviceName, descriptor, landscape) {
   const devicePayload = loadFromJSONV1(descriptor);
   const viewportPayload = landscape ? devicePayload.horizontal : devicePayload.vertical;
   return {
-    name: descriptor.title + (landscape ? ' landscape' : ''),
-    userAgent: devicePayload.userAgent,
+    name: deviceName + (landscape ? ' landscape' : ''),
+    userAgent: devicePayload.userAgent.includes('%s') ? util.format(devicePayload.userAgent, chromeVersion) : devicePayload.userAgent,
     viewport: {
       width: viewportPayload.width,
       height: viewportPayload.height,
