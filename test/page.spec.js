@@ -115,6 +115,18 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       expect(error).toBeTruthy();
       expect(error.message).toContain('not is not defined');
     });
+    it('should support thrown strings as error messages', async({page, server}) => {
+      let error = null;
+      await page.evaluate(() => { throw 'qwerty'; }).catch(e => error = e);
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('qwerty');
+    });
+    it('should support thrown numbers as error messages', async({page, server}) => {
+      let error = null;
+      await page.evaluate(() => { throw 100500; }).catch(e => error = e);
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('100500');
+    });
     it('should return complex objects', async({page, server}) => {
       const object = {foo: 'bar!'};
       const result = await page.evaluate(a => a, object);
