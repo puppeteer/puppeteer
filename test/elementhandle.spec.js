@@ -336,14 +336,6 @@ module.exports.addTests = function({testRunner, expect}) {
       const content = await elementHandle.$$eval('.a', nodes => nodes.map(n => n.innerText));
       expect(content).toEqual(['a1-child-div', 'a2-child-div']);
     });
-
-    it('should throw in case of missing selector', async({page, server}) => {
-      const htmlContent = '<div class="a">not-a-child-div</div><div id="myId"></div>';
-      await page.setContent(htmlContent);
-      const elementHandle = await page.$('#myId');
-      const errorMessage = await elementHandle.$$eval('.a', nodes => nodes.map(n => n.innerText)).catch(error => error.message);
-      expect(errorMessage).toBe(`Error: failed to find elements matching selector ".a"`);
-    });
   });
 
   describe('ElementHandle.$$', function() {
