@@ -525,7 +525,7 @@ Disconnects Puppeteer from the browser, but leaves the Chromium process running.
 Promise which resolves to a new [Page] object. The [Page] is created in a default browser context.
 
 #### browser.pages()
-- returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages.
+- returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages. Non visible pages, such as `"background_page"`, will not be listed here. You can find them using [target.page()](#targetpage).
 
 #### browser.process()
 - returns: <?[ChildProcess]> Spawned browser process. Returns `null` if the browser instance was created with [`puppeteer.connect`](#puppeteerconnectoptions) method.
@@ -2847,7 +2847,7 @@ Get the target that opened this target. Top-level targets return `null`.
 #### target.page()
 - returns: <[Promise]<?[Page]>>
 
-If the target is not of type `"page"`, returns `null`.
+If the target is not of type `"page"` or `"background_page"`, returns `null`.
 
 #### target.type()
 - returns: <[string]>

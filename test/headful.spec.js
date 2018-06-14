@@ -51,6 +51,14 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
       await browserWithExtension.close();
       expect(backgroundPageTarget).toBeTruthy();
     });
+    it('target.page() should return a background_page', async({browser}) => {
+      const browserWithExtension = await puppeteer.launch(extensionOptions);
+      const targets = await browserWithExtension.targets();
+      const backgroundPageTarget = targets.find(target => target.type() === 'background_page');
+      const page = await backgroundPageTarget.page();
+      expect(await page.evaluate(() => 2 * 3)).toBe(6);
+      await browserWithExtension.close();
+    });
     it('should have default url when launching browser', async function() {
       const browser = await puppeteer.launch(extensionOptions);
       const pages = (await browser.pages()).map(page => page.url());
