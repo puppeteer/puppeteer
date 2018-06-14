@@ -16,7 +16,7 @@
 const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
-const {waitEvent, getPDFPages, cssPixelsToInches} = require('./utils');
+const {waitEvent} = require('./utils');
 
 module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescriptors, headless}) {
   const {describe, xdescribe, fdescribe} = testRunner;
@@ -1366,72 +1366,6 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       await page.pdf({path: outputFile});
       expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
       fs.unlinkSync(outputFile);
-    });
-    it('should default to printing in Letter format', async({page, server}) => {
-      const pages = await getPDFPages(await page.pdf());
-      expect(pages.length).toBe(1);
-      expect(pages[0].width).toBeCloseTo(8.5, 2);
-      expect(pages[0].height).toBeCloseTo(11, 2);
-    });
-    it('should support setting custom format', async({page, server}) => {
-      const pages = await getPDFPages(await page.pdf({
-        format: 'a4'
-      }));
-      expect(pages.length).toBe(1);
-      expect(pages[0].width).toBeCloseTo(8.27, 1);
-      expect(pages[0].height).toBeCloseTo(11.7, 1);
-    });
-    it('should support setting paper width and height', async({page, server}) => {
-      const pages = await getPDFPages(await page.pdf({
-        width: '10in',
-        height: '10in',
-      }));
-      expect(pages.length).toBe(1);
-      expect(pages[0].width).toBeCloseTo(10, 2);
-      expect(pages[0].height).toBeCloseTo(10, 2);
-    });
-    it('should print multiple pages', async({page, server}) => {
-      await page.goto(server.PREFIX + '/grid.html');
-      // Define width and height in CSS pixels.
-      const width = 50 * 5 + 1;
-      const height = 50 * 5 + 1;
-      const pages = await getPDFPages(await page.pdf({width, height}));
-      expect(pages.length).toBe(8);
-      expect(pages[0].width).toBeCloseTo(cssPixelsToInches(width), 2);
-      expect(pages[0].height).toBeCloseTo(cssPixelsToInches(height), 2);
-    });
-    it('should support page ranges', async({page, server}) => {
-      await page.goto(server.PREFIX + '/grid.html');
-      // Define width and height in CSS pixels.
-      const width = 50 * 5 + 1;
-      const height = 50 * 5 + 1;
-      const pages = await getPDFPages(await page.pdf({width, height, pageRanges: '1,4-7'}));
-      expect(pages.length).toBe(5);
-    });
-    it('should throw if format is unknown', async({page, server}) => {
-      let error = null;
-      try {
-        await getPDFPages(await page.pdf({
-          format: 'something'
-        }));
-      } catch (e) {
-        error = e;
-      }
-      expect(error).toBeTruthy();
-      expect(error.message).toContain('Unknown paper format');
-    });
-    it('should throw if units are unknown', async({page, server}) => {
-      let error = null;
-      try {
-        await getPDFPages(await page.pdf({
-          width: '10em',
-          height: '10em',
-        }));
-      } catch (e) {
-        error = e;
-      }
-      expect(error).toBeTruthy();
-      expect(error.message).toContain('Failed to parse parameter value');
     });
   });
 
