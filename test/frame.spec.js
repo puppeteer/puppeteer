@@ -84,6 +84,14 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.evaluate(() => window.__FOO = 1);
       await watchdog;
     });
+    it('should work when resolved right before execution context disposal', async({page, server}) => {
+      await page.evaluateOnNewDocument(() => window.__RELOADED = true);
+      await page.waitForFunction(() => {
+        if (!window.__RELOADED)
+          window.location.reload();
+        return true;
+      });
+    });
     it('should poll on interval', async({page, server}) => {
       let success = false;
       const startTime = Date.now();
