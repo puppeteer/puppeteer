@@ -28,42 +28,30 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
     headless: true,
     args: ['--no-sandbox']
   });
-  const gpuDisabledRegexp = /Command Line(.*)--disable-gpu /;
+  const disableGPUArg = '--disable-gpu';
 
-  describe('disableGPU', function() {
+  fdescribe('disableGPU', function() {
     it('headless should disable GPU by default', async() => {
       const browser = await puppeteer.launch(headlessOptions);
-      const page = await browser.newPage();
-      await page.goto('chrome://gpu/');
-      const gpuStatus = await page.$eval('body', body => body.innerText);
-      expect(gpuStatus.match(gpuDisabledRegexp)).not.toBe(null);
+      expect(browser._process.spawnargs).toContain(disableGPUArg);
       await browser.close();
     });
 
     it('headless should respect disableGPU option', async() => {
       const browser = await puppeteer.launch(Object.assign({disableGPU: false}, headlessOptions));
-      const page = await browser.newPage();
-      await page.goto('chrome://gpu/');
-      const gpuStatus = await page.$eval('body', body => body.innerText);
-      expect(gpuStatus.match(gpuDisabledRegexp)).toBe(null);
+      expect(browser._process.spawnargs).not.toContain(disableGPUArg);
       await browser.close();
     });
 
     it('headful should not disable GPU by default', async() => {
       const browser = await puppeteer.launch(headfulOptions);
-      const page = await browser.newPage();
-      await page.goto('chrome://gpu/');
-      const gpuStatus = await page.$eval('body', body => body.innerText);
-      expect(gpuStatus.match(gpuDisabledRegexp)).toBe(null);
+      expect(browser._process.spawnargs).not.toContain(disableGPUArg);
       await browser.close();
     });
 
     it('headless should respect disableGPU option', async() => {
       const browser = await puppeteer.launch(Object.assign({disableGPU: true}, headfulOptions));
-      const page = await browser.newPage();
-      await page.goto('chrome://gpu/');
-      const gpuStatus = await page.$eval('body', body => body.innerText);
-      expect(gpuStatus.match(gpuDisabledRegexp)).not.toBe(null);
+      expect(browser._process.spawnargs).toContain(disableGPUArg);
       await browser.close();
     });
   });
