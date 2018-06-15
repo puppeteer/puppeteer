@@ -21,14 +21,16 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
   const puppeteer = require(PROJECT_ROOT);
 
   const headfulOptions = Object.assign({}, defaultBrowserOptions, {
-    headless: false
+    headless: false,
+    args: ['--no-sandbox']
   });
   const headlessOptions = Object.assign({}, defaultBrowserOptions, {
-    headless: true
+    headless: true,
+    args: ['--no-sandbox']
   });
   const gpuDisabledRegexp = /Command Line(.*)--disable-gpu /;
 
-  fdescribe('disableGPU', function() {
+  describe('disableGPU', function() {
     it('headless should disable GPU by default', async() => {
       const browser = await puppeteer.launch(headlessOptions);
       const page = await browser.newPage();
