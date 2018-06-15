@@ -39,6 +39,7 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
       expect(gpuStatus.match(gpuDisabledRegexp)).not.toBe(null);
       await browser.close();
     });
+
     it('headless should respect disableGPU option', async() => {
       const browser = await puppeteer.launch(Object.assign({disableGPU: false}, headlessOptions));
       const page = await browser.newPage();
@@ -47,6 +48,7 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
       expect(gpuStatus.match(gpuDisabledRegexp)).toBe(null);
       await browser.close();
     });
+
     it('headful should not disable GPU by default', async() => {
       const browser = await puppeteer.launch(headfulOptions);
       const page = await browser.newPage();
@@ -55,6 +57,7 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
       expect(gpuStatus.match(gpuDisabledRegexp)).toBe(null);
       await browser.close();
     });
+
     it('headless should respect disableGPU option', async() => {
       const browser = await puppeteer.launch(Object.assign({disableGPU: true}, headfulOptions));
       const page = await browser.newPage();
