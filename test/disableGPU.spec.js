@@ -30,7 +30,7 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
   });
   const disableGPUArg = '--disable-gpu';
 
-  fdescribe('disableGPU', function() {
+  describe('disableGPU', function() {
     it('headless should disable GPU by default', async() => {
       const browser = await puppeteer.launch(headlessOptions);
       expect(browser._process.spawnargs).toContain(disableGPUArg);
