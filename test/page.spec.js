@@ -387,10 +387,10 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
     });
     it('should trigger correct Log', async({page, server}) => {
       await page.goto('about:blank');
-      let message;
-      page.on('console', event => message = event);
-      page.evaluate(async url => fetch(url).catch(e => {}), server.EMPTY_PAGE);
-      await waitEvent(page, 'console');
+      const [message] = await Promise.all([
+        waitEvent(page, 'console'),
+        page.evaluate(async url => fetch(url).catch(e => {}), server.EMPTY_PAGE)
+      ]);
       expect(message.text()).toContain('No \'Access-Control-Allow-Origin\'');
       expect(message.type()).toEqual('error');
     });

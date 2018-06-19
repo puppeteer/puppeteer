@@ -53,8 +53,10 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       const context = await browser.createIncognitoBrowserContext();
       const page = await context.newPage();
       await page.goto(server.EMPTY_PAGE);
-      page.evaluate(url => window.open(url), server.EMPTY_PAGE);
-      const popupTarget = await utils.waitEvent(browser, 'targetcreated');
+      const [popupTarget] = await Promise.all([
+        utils.waitEvent(browser, 'targetcreated'),
+        page.evaluate(url => window.open(url), server.EMPTY_PAGE)
+      ]);
       expect(popupTarget.browserContext()).toBe(context);
       await context.close();
     });
