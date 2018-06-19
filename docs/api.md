@@ -2628,6 +2628,8 @@ If request gets a 'redirect' response, the request is successfully finished with
   - `accessdenied` - Permission to access a resource, other than the network, was denied
   - `addressunreachable` - The IP address is unreachable. This usually means
     that there is no route to the specified host or network.
+  - `blockedbyclient` - The client chose to block the request.
+  - `blockedbyresponse` - The request failed because the response was delivered along with requirements which are not met ('X-Frame-Options' and 'Content-Security-Policy' ancestor checks, for instance).
   - `connectionaborted` - A connection timed out as a result of not receiving an ACK for data sent.
   - `connectionclosed` - A connection was closed (corresponding to a TCP FIN).
   - `connectionfailed` - A connection attempt failed.
