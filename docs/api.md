@@ -128,6 +128,8 @@
   * [page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#pagewaitforselectororfunctionortimeout-options-args)
   * [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
   * [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
+  * [page.waitForRequest(url, options)](#pagewaitforrequesturl-options)
+  * [page.waitForResponse(url, options)](#pagewaitforresponseurl-options)
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [page.waitForXPath(xpath[, options])](#pagewaitforxpathxpath-options)
   * [page.workers()](#pageworkers)
@@ -1568,6 +1570,29 @@ await navigationPromise; // The navigationPromise resolves after navigation has 
 ```
 
 **NOTE** Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
+
+#### page.waitForRequest(url, options)
+- `url` <[function]|[string]> String or RegExp of a URL of the request to wait for.
+- `options` <[Object]> Optional waiting parameters
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
+  - `method` <[string]> A HTTP method to match on a request. 
+- returns: <[Promise]<[Request]>> Promise which resolves to the matched request.
+
+```js
+const request = await page.waitForRequest(new RegExp('http://localhost/(method|post)'));
+return request.url();
+```
+
+#### page.waitForResponse(url, options)
+- `url` <[function]|[string]> String or RegExp of a URL of the response to wait for.
+- `options` <[Object]> Optional waiting parameters
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
+- returns: <[Promise]<[Response]>> Promise which resolves to the matched request.
+
+```js
+const request = await page.waitForResponse('http://localhost/getData');
+return request.ok();
+```
 
 #### page.waitForSelector(selector[, options])
 - `selector` <[string]> A [selector] of an element to wait for
