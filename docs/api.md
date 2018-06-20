@@ -1572,10 +1572,10 @@ await navigationPromise; // The navigationPromise resolves after navigation has 
 **NOTE** Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
 
 #### page.waitForRequest(url, options)
-- `url` <[function]|[string]> String or RegExp of a URL of the request to wait for.
+- `url` <[string]|[RegExp]> A URL to wait for.
 - `options` <[Object]> Optional waiting parameters
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-  - `method` <[string]> A HTTP method to match on a request. 
+  - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout.
+  - `method` <[string]> An HTTP method to match on a request. 
 - returns: <[Promise]<[Request]>> Promise which resolves to the matched request.
 
 ```js
@@ -1584,14 +1584,14 @@ return request.url();
 ```
 
 #### page.waitForResponse(url, options)
-- `url` <[function]|[string]> String or RegExp of a URL of the response to wait for.
+- `url` <[string]|[RegExp]> A URL to wait for.
 - `options` <[Object]> Optional waiting parameters
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
-- returns: <[Promise]<[Response]>> Promise which resolves to the matched request.
+  - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout.
+- returns: <[Promise]<[Response]>> Promise which resolves to the matched response.
 
 ```js
-const request = await page.waitForResponse('http://localhost/getData');
-return request.ok();
+const response = await page.waitForResponse('http://localhost/getData');
+return response.ok();
 ```
 
 #### page.waitForSelector(selector[, options])
@@ -3015,6 +3015,7 @@ reported.
 [Tracing]: #class-tracing "Tracing"
 [ElementHandle]: #class-elementhandle "ElementHandle"
 [UIEvent.detail]: https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail "UIEvent.detail"
+[RegExp]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp "RegExp"
 [Serializable]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Description "Serializable"
 [Touchscreen]: #class-touchscreen "Touchscreen"
 [Target]: #class-target "Target"
