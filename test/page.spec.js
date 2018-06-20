@@ -790,7 +790,11 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
         res.end();
       });
 
-      page.evaluate(() => fetch(`/getRequest`, { method: 'GET'}).then(() => true));
+      page.evaluate(() => {
+        fetch(`/getRequest`, { method: 'GET'});
+        Promise.resolve();
+      });
+
       const request = await page.waitForRequest(`${server.PREFIX}/getRequest`);
 
       expect(request._method).toBe('GET');
@@ -805,7 +809,11 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
         res.end();
       });
 
-      page.evaluate(() => fetch(`/getRequest`, { method: 'GET'}).then(() => true));
+      page.evaluate(() => {
+        fetch(`/getRequest`, { method: 'GET'});
+        Promise.resolve();
+      });
+
       const request = await page.waitForRequest(new RegExp(`${server.PREFIX}/(get|test)Request`));
 
       expect(request._method).toBe('GET');
@@ -820,7 +828,11 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
         res.end();
       });
 
-      page.evaluate(() => fetch(`/getRequest`, { method: 'POST'}).then(() => true));
+      page.evaluate(() => {
+        fetch(`/getRequest`, { method: 'POST'});
+        Promise.resolve();
+      });
+
       const request = await page.waitForRequest(`${server.PREFIX}/getRequest`, { method: 'POST'});
 
       expect(request._method).toBe('POST');
