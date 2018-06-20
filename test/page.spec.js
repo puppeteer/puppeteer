@@ -781,6 +781,83 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
     });
   });
 
+  describe('Page.waitForRequest', function() {
+    it('should work', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+
+      server.setRoute('/getRequest', (req, res) => {
+        res.statusCode = 200;
+        res.end();
+      });
+
+      page.evaluate(() => fetch(`/getRequest`, { method: 'GET'}).then(() => true));
+      const request = await page.waitForRequest(`${server.PREFIX}/getRequest`);
+
+      expect(request._method).toBe('GET');
+      expect(request.url()).toBe(`${server.PREFIX}/getRequest`);
+    });
+
+    it('should work with regex pattern', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+
+      server.setRoute('/getRequest', (req, res) => {
+        res.statusCode = 200;
+        res.end();
+      });
+
+      page.evaluate(() => fetch(`/getRequest`, { method: 'GET'}).then(() => true));
+      const request = await page.waitForRequest(new RegExp(`${server.PREFIX}/(get|test)Request`));
+
+      expect(request._method).toBe('GET');
+      expect(request.url()).toBe(`${server.PREFIX}/getRequest`);
+    });
+
+    it('should work with post method', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+
+      server.setRoute('/getRequest', (req, res) => {
+        res.statusCode = 200;
+        res.end();
+      });
+
+      page.evaluate(() => fetch(`/getRequest`, { method: 'POST'}).then(() => true));
+      const request = await page.waitForRequest(`${server.PREFIX}/getRequest`, { method: 'POST'});
+
+      expect(request._method).toBe('POST');
+      expect(request.url()).toBe(`${server.PREFIX}/getRequest`);
+    });
+  });
+
+  describe('Page.waitForResponse', function() {
+    it('should work', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+
+      server.setRoute('/testResponse', (req, res) => serverResponse = () => res.end('Hello'));
+
+      page.evaluate(() => fetch(`/testResponse`, { method: 'GET'}).then(() => true));
+      setTimeout(() => serverResponse(), 100);
+
+      const response = await page.waitForResponse(`${server.PREFIX}/testResponse`);
+
+      expect(response.ok()).toBe(true);
+      expect(response.url()).toBe(`${server.PREFIX}/testResponse`);
+    });
+
+    it('should work with regex', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+
+      server.setRoute('/testResponse', (req, res) => serverResponse = () => res.end('Hello'));
+
+      page.evaluate(() => fetch(`/testResponse`, { method: 'GET'}).then(() => true));
+      setTimeout(() => serverResponse(), 100);
+
+      const response = await page.waitForResponse(new RegExp(`${server.PREFIX}/(get|test)Response`));
+
+      expect(response.ok()).toBe(true);
+      expect(response.url()).toBe(`${server.PREFIX}/testResponse`);
+    });
+  });
+
   describe('Page.goBack', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
