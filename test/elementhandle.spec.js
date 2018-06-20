@@ -228,8 +228,8 @@ module.exports.addTests = function({testRunner, expect}) {
       const box = await page.$('.red');
       const blue = await page.$('.blue');
 
-      expect(await box.isVisible()).toBe(true);
-      expect(await blue.isVisible()).toBe(false);
+      expect(await box.isVisibleInViewport()).toBe(true);
+      expect(await blue.isVisibleInViewport()).toBe(false);
     });
   });
 
