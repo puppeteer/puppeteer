@@ -472,6 +472,14 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       expect(response.status()).toBe(200);
       expect(response.securityDetails()).toBe(null);
     });
+    xit('should work when page calls history API in beforeunload', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        window.addEventListener('beforeunload', () => history.replaceState(null, 'initial', window.location.href), false);
+      });
+      const response = await page.goto(server.PREFIX + '/grid.html');
+      expect(response.status()).toBe(200);
+    });
     it('should navigate to empty page with networkidle0', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle0'});
       expect(response.status()).toBe(200);
