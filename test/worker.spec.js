@@ -14,8 +14,53 @@ module.exports.addTests = function({testRunner, expect}) {
 
       expect(await worker.evaluate(() => self.workerFunction())).toBe('worker function result');
 
+      const fetchTxtPath = '/fetch.txt';
+      server.setRoute(fetchTxtPath, (req, res) => {
+        res.statusCode = 200;
+        res.end('fetched text');
+      });
+
+      const requestPromise = new Promise(x => worker.once('request', x));
+      const responsePromise = new Promise(x => worker.once('response', x));
+      const requestFinishedPromise = new Promise(x => worker.once('requestfinished', x));
+      expect(await worker.evaluate(x => self.remoteFetch(x), server.PREFIX + fetchTxtPath)).toBe('fetched text');
+      expect(await requestPromise);
+      expect(await responsePromise);
+      expect(await requestFinishedPromise);
+
       await page.goto(server.EMPTY_PAGE);
       expect(page.workers()).toEqual([]);
+    });
+    it('should have workers emit request, requestfinished, and response events', async function({page, server}) {
+      await Promise.all([
+        new Promise(x => page.once('workercreated', x)),
+        page.goto(server.PREFIX + '/worker/worker.html')]);
+      const worker = page.workers()[0];
+
+      const fetchTxtPath = '/fetch.txt';
+      server.setRoute(fetchTxtPath, (req, res) => {
+        res.statusCode = 200;
+        res.end('fetched text');
+      });
+
+      const requestPromise = new Promise(x => worker.once('request', x));
+      const responsePromise = new Promise(x => worker.once('response', x));
+      const requestFinishedPromise = new Promise(x => worker.once('requestfinished', x));
+      expect(await worker.evaluate(x => self.remoteFetch(x), server.PREFIX + fetchTxtPath)).toBe('fetched text');
+      expect(await requestPromise).toBeTruthy();
+      expect(await responsePromise).toBeTruthy();
+      expect(await requestFinishedPromise).toBeTruthy();
+    });
+    it('should have workers emit requestfailed events', async function({page, server, httpsServer}) {
+      await Promise.all([
+        new Promise(x => page.once('workercreated', x)),
+        page.goto(server.PREFIX + '/worker/worker.html')]);
+      const worker = page.workers()[0];
+
+      worker.on('requestfailed', request => expect(request).toBeTruthy());
+      let error = null;
+      await worker.evaluate(x => self.remoteFetch(x), httpsServer.EMPTY_PAGE).catch(e => error = e);
+      expect(error.message).toContain('DOMException: Failed to execute \'send\'');
     });
     it('should emit created and destroyed events', async function({page}) {
       const workerCreatedPromise = new Promise(x => page.once('workercreated', x));

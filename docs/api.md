@@ -132,6 +132,10 @@
   * [page.waitForXPath(xpath[, options])](#pagewaitforxpathxpath-options)
   * [page.workers()](#pageworkers)
 - [class: Worker](#class-worker)
+  * [event: 'request'](#event-request-1)
+  * [event: 'requestfailed'](#event-requestfailed-1)
+  * [event: 'requestfinished'](#event-requestfinished-1)
+  * [event: 'response'](#event-response-1)
   * [worker.evaluate(pageFunction, ...args)](#workerevaluatepagefunction-args)
   * [worker.evaluateHandle(pageFunction, ...args)](#workerevaluatehandlepagefunction-args)
   * [worker.executionContext()](#workerexecutioncontext)
@@ -1635,6 +1639,8 @@ This method returns all of the dedicated [WebWorkers](https://developer.mozilla.
 
 ### class: Worker
 
+* extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)
+
 The Worker class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
 The events `workercreated` and `workerdestroyed` are emitted on the page object to signal the worker lifecycle.
 
@@ -1646,6 +1652,26 @@ console.log('Current workers:');
 for (const worker of page.workers())
   console.log('  ' + worker.url());
 ```
+
+#### event: 'request'
+- <[Request]>
+
+Emitted when a worker issues a request. The [request] object is read-only.
+
+#### event: 'requestfailed'
+- <[Request]>
+
+Emitted when a request fails, for example by timing out.
+
+#### event: 'requestfinished'
+- <[Request]>
+
+Emitted when a request finishes successfully.
+
+#### event: 'response'
+- <[Response]>
+
+Emitted when a [response] is received.
 
 #### worker.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in the worker context
