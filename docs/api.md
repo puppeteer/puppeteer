@@ -1171,7 +1171,7 @@ The `page.goto` will throw an error if:
 - the `timeout` is exceeded during navigation.
 - the main resource failed to load.
 
-> **NOTE** `page.goto` either throw or return a main resource response. The only exceptions is navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
+> **NOTE** `page.goto` either throw or return a main resource response. The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
 
 > **NOTE** Headless mode doesn't support navigating to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
 
