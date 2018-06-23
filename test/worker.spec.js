@@ -48,5 +48,11 @@ module.exports.addTests = function({testRunner, expect}) {
       const worker = await workerCreatedPromise;
       expect(await (await worker.executionContext()).evaluate('1+1')).toBe(2);
     });
+    it('should report errors', async function({page}) {
+      const errorPromise = new Promise(x => page.on('pageerror', x));
+      await page.evaluate(() => new Worker(`data:text/javascript, throw new Error('this is my error');`));
+      const errorLog = await errorPromise;
+      expect(errorLog.message).toContain('this is my error');
+    });
   });
 };
