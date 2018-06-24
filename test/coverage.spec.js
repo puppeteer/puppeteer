@@ -38,12 +38,19 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(coverage.length).toBe(1);
       expect(coverage[0].url).toBe('nicename.js');
     });
-    it('should ignore anonymous scripts', async function({page, server}) {
+    it('should ignore anonymous scripts by default', async function({page, server}) {
       await page.coverage.startJSCoverage();
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => console.log(1));
       const coverage = await page.coverage.stopJSCoverage();
       expect(coverage.length).toBe(0);
+    });
+    it('shouldn\'t ignore anonymous scripts if ignoreAnonymousScripts is false', async function({page, server}) {
+      await page.coverage.startJSCoverage({ignoreAnonymousScripts: false});
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => console.log(1));
+      const coverage = await page.coverage.stopJSCoverage();
+      expect(coverage.length).toBe(1);
     });
     it('should report multiple scripts', async function({page, server}) {
       await page.coverage.startJSCoverage();

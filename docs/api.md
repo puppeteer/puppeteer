@@ -2933,6 +2933,7 @@ _To output coverage in a form consumable by [Istanbul](https://github.com/istanb
 #### coverage.startJSCoverage(options)
 - `options` <[Object]>  Set of configurable options for coverage
   - `resetOnNavigation` <[boolean]> Whether to reset coverage on every navigation. Defaults to `true`.
+  - `ignoreAnonymousScripts` <[boolean]> Whether anonymous scripts should be ignored. Defaults to `true`.
 - returns: <[Promise]> Promise that resolves when coverage is started
 
 #### coverage.stopCSSCoverage()
@@ -2946,14 +2947,14 @@ _To output coverage in a form consumable by [Istanbul](https://github.com/istanb
 > **NOTE** CSS Coverage doesn't include dynamically injected style tags without sourceURLs.
 
 #### coverage.stopJSCoverage()
-- returns: <[Promise]<[Array]<[Object]>>> Promise that resolves to the array of coverage reports for all non-anonymous scripts
+- returns: <[Promise]<[Array]<[Object]>>> Promise that resolves to the array of coverage reports for all scripts
   - `url` <[string]> Script URL
   - `text` <[string]> Script content
   - `ranges` <[Array]<[Object]>> Script ranges that were executed. Ranges are sorted and non-overlapping.
     - `start` <[number]> A start offset in text, inclusive
     - `end` <[number]> An end offset in text, exclusive
 
-> **NOTE** JavaScript Coverage doesn't include anonymous scripts. However, scripts with sourceURLs are
+> **NOTE** JavaScript Coverage doesn't include anonymous scripts by default. However, scripts with sourceURLs are
 reported.
 
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
