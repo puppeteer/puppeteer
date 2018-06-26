@@ -708,10 +708,11 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
     it('should work with clicking on anchor links', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(`<a href='#foobar'>foobar</a>`);
-      await Promise.all([
+      const [response] = await Promise.all([
+        page.waitForNavigation(),
         page.click('a'),
-        page.waitForNavigation()
       ]);
+      expect(response).toBe(null);
       expect(page.url()).toBe(server.EMPTY_PAGE + '#foobar');
     });
     it('should work with history.pushState()', async({page, server}) => {
@@ -722,10 +723,11 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
           function pushState() { history.pushState({}, '', 'wow.html') }
         </script>
       `);
-      await Promise.all([
+      const [response] = await Promise.all([
+        page.waitForNavigation(),
         page.click('a'),
-        page.waitForNavigation()
       ]);
+      expect(response).toBe(null);
       expect(page.url()).toBe(server.PREFIX + '/wow.html');
     });
     it('should work with history.replaceState()', async({page, server}) => {
@@ -736,10 +738,11 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
           function replaceState() { history.replaceState({}, '', '/replaced.html') }
         </script>
       `);
-      await Promise.all([
+      const [response] = await Promise.all([
+        page.waitForNavigation(),
         page.click('a'),
-        page.waitForNavigation()
       ]);
+      expect(response).toBe(null);
       expect(page.url()).toBe(server.PREFIX + '/replaced.html');
     });
     it('should work with DOM history.back()/history.forward()', async({page, server}) => {
@@ -755,15 +758,17 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
         </script>
       `);
       expect(page.url()).toBe(server.PREFIX + '/second.html');
-      await Promise.all([
+      const [backResponse] = await Promise.all([
+        page.waitForNavigation(),
         page.click('a#back'),
-        page.waitForNavigation()
       ]);
+      expect(backResponse).toBe(null);
       expect(page.url()).toBe(server.PREFIX + '/first.html');
-      await Promise.all([
+      const [forwardResponse] = await Promise.all([
+        page.waitForNavigation(),
         page.click('a#forward'),
-        page.waitForNavigation()
       ]);
+      expect(forwardResponse).toBe(null);
       expect(page.url()).toBe(server.PREFIX + '/second.html');
     });
     it('should work when subframe issues window.stop()', async({page, server}) => {
