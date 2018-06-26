@@ -29,6 +29,29 @@ module.exports.addTests = function({testRunner, expect, DeviceDescriptors}) {
       expect(await page.evaluate(() => result)).toBe('Clicked');
     });
 
+    it('should click offscreen buttons', async({page, server}) => {
+      await page.goto(server.PREFIX + '/offscreenbuttons.html');
+      const messages = [];
+      page.on('console', msg => messages.push(msg.text()));
+      for (let i = 0; i < 10; ++i) {
+        // We might've scrolled to click a button - reset to (0, 0).
+        await page.evaluate(() => window.scrollTo(0, 0));
+        await page.click(`#btn${i}`);
+      }
+      expect(messages).toEqual([
+        'button #0 clicked',
+        'button #1 clicked',
+        'button #2 clicked',
+        'button #3 clicked',
+        'button #4 clicked',
+        'button #5 clicked',
+        'button #6 clicked',
+        'button #7 clicked',
+        'button #8 clicked',
+        'button #9 clicked'
+      ]);
+    });
+
     it('should click on checkbox input and toggle', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/checkbox.html');
       expect(await page.evaluate(() => result.check)).toBe(null);
