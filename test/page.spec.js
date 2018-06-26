@@ -820,7 +820,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       expect(request.url()).toBe(`${server.PREFIX}/getRequest`);
     });
 
-    it('should work with post method', async({page, server}) => {
+    it('should work with method option', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
 
       server.setRoute('/getRequest', (req, res) => {
@@ -829,13 +829,13 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       });
 
       page.evaluate(() => {
-        fetch(`/getRequest`, { method: 'POST'});
+        fetch(`/getRequest`, { method: 'PATCH'});
         Promise.resolve();
       });
 
-      const request = await page.waitForRequest(`${server.PREFIX}/getRequest`, { method: 'POST'});
+      const request = await page.waitForRequest(`${server.PREFIX}/getRequest`, { method: ['POST', 'PATCH']});
 
-      expect(request._method).toBe('POST');
+      expect(request._method).toBe('PATCH');
       expect(request.url()).toBe(`${server.PREFIX}/getRequest`);
     });
   });
@@ -864,6 +864,37 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       setTimeout(() => serverResponse(), 100);
 
       const response = await page.waitForResponse(new RegExp(`${server.PREFIX}/(get|test)Response`));
+
+      expect(response.ok()).toBe(true);
+      expect(response.url()).toBe(`${server.PREFIX}/testResponse`);
+    });
+
+    it('should work with method option', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+
+      server.setRoute('/testResponse', (req, res) => serverResponse = () => res.end('Hello'));
+
+      page.evaluate(() => fetch(`/testResponse`, { method: 'PATCH'}).then(() => true));
+      setTimeout(() => serverResponse(), 100);
+
+      const response = await page.waitForResponse(`${server.PREFIX}/testResponse`, { method: ['POST', 'PATCH']});
+
+      expect(response.ok()).toBe(true);
+      expect(response.url()).toBe(`${server.PREFIX}/testResponse`);
+    });
+
+    it('should work with statusCode option', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+
+      server.setRoute('/testResponse', (req, res) => serverResponse = () => {
+        res.statusCode = 204;
+        res.end('Hello');
+      });
+
+      page.evaluate(() => fetch(`/testResponse`, { method: 'PATCH'}).then(() => true));
+      setTimeout(() => serverResponse(), 100);
+
+      const response = await page.waitForResponse(`${server.PREFIX}/testResponse`, { statusCode: [200, 204]});
 
       expect(response.ok()).toBe(true);
       expect(response.url()).toBe(`${server.PREFIX}/testResponse`);
