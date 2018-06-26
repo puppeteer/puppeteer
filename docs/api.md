@@ -1575,7 +1575,7 @@ await navigationPromise; // The navigationPromise resolves after navigation has 
 - `url` <[string]|[RegExp]> A URL to wait for.
 - `options` <[Object]> Optional waiting parameters
   - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout.
-  - `method` <[string]> An HTTP method to match on a request. 
+  - `method` <[string]|[Array]> An HTTP method to match on a request.
 - returns: <[Promise]<[Request]>> Promise which resolves to the matched request.
 
 ```js
@@ -1587,10 +1587,12 @@ return request.url();
 - `url` <[string]|[RegExp]> A URL to wait for.
 - `options` <[Object]> Optional waiting parameters
   - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout.
+  - `method` <[string]|[Array]> An HTTP method to match on the originating request.
+  - `statusCode` <[number]|[Array]> An HTTP status code to match on a response.  
 - returns: <[Promise]<[Response]>> Promise which resolves to the matched response.
 
 ```js
-const response = await page.waitForResponse('http://localhost/getData');
+const response = await page.waitForResponse('http://localhost/getData', { statusCode: [200, 204]});
 return response.ok();
 ```
 
