@@ -50,7 +50,7 @@ module.exports.addTests = function({testRunner, expect}) {
       const box = await elementHandle.boundingBox();
       expect(box).toEqual({ x: 8, y: 8, width: 100, height: 200 });
     });
-    xit('should work with SVG nodes', async({page, server}) => {
+    it('should work with SVG nodes', async({page, server}) => {
       await page.setContent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="500" height="500">
           <rect id="theRect" x="30" y="50" width="200" height="300"></rect>
