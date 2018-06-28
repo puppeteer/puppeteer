@@ -1,12 +1,14 @@
 {
   "name": "Simple extension",
   "version": "0.1",
-  "app": {
-    "background": {
-      "scripts": ["index.js"]
-    }
+  "background": {
+    "scripts": ["index.js"]
   },
-  "permissions": ["background"],
-  
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "css": [],
+    "js": ["content-script.js"]
+  }],
+  "permissions": ["background", "activeTab"],
   "manifest_version": 2
 }
