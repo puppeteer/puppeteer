@@ -38,19 +38,27 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(coverage.length).toBe(1);
       expect(coverage[0].url).toBe('nicename.js');
     });
-    it('should ignore anonymous scripts by default', async function({page, server}) {
-      await page.coverage.startJSCoverage();
-      await page.goto(server.EMPTY_PAGE);
-      await page.evaluate(() => console.log(1));
-      const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage.length).toBe(0);
-    });
-    it('shouldn\'t ignore anonymous scripts if ignoreAnonymousScripts is false', async function({page, server}) {
-      await page.coverage.startJSCoverage({ignoreAnonymousScripts: false});
-      await page.goto(server.EMPTY_PAGE);
-      await page.evaluate(() => console.log(1));
-      const coverage = await page.coverage.stopJSCoverage();
-      expect(coverage.length).toBe(1);
+    describe('anonymous scripts coverage', function() {
+      it('should ignore eval() scripts by default', async function({page, server}) {
+        await page.coverage.startJSCoverage();
+        await page.goto(server.PREFIX + '/jscoverage/eval.html');
+        const coverage = await page.coverage.stopJSCoverage();
+        expect(coverage.length).toBe(1);
+      });
+      it('shouldn\'t ignore eval() scripts if ignoreAnonymousScripts is false', async function({page, server}) {
+        await page.coverage.startJSCoverage({ignoreAnonymousScripts: false});
+        await page.goto(server.PREFIX + '/jscoverage/eval.html');
+        const coverage = await page.coverage.stopJSCoverage();
+        expect(coverage.length).toBe(2);
+      });
+      it('should ignore injected scripts regardless of ignoreAnonymousScripts', async function({page, server}) {
+        await page.coverage.startJSCoverage({ignoreAnonymousScripts: false});
+        await page.goto(server.EMPTY_PAGE);
+        await page.evaluate('console.log("foo")');
+        await page.evaluate(() => console.log('bar'));
+        const coverage = await page.coverage.stopJSCoverage();
+        expect(coverage.length).toBe(0);
+      });
     });
     it('should report multiple scripts', async function({page, server}) {
       await page.coverage.startJSCoverage();
