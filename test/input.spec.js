@@ -52,6 +52,15 @@ module.exports.addTests = function({testRunner, expect, DeviceDescriptors}) {
       ]);
     });
 
+    it('should click wrapped links', async({page, server}) => {
+      await page.goto(server.PREFIX + '/wrappedlink.html');
+      await Promise.all([
+        page.click('a'),
+        page.waitForNavigation()
+      ]);
+      expect(page.url()).toBe(server.PREFIX + '/wrappedlink.html#clicked');
+    });
+
     it('should click on checkbox input and toggle', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/checkbox.html');
       expect(await page.evaluate(() => result.check)).toBe(null);
