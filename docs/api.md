@@ -1256,6 +1256,8 @@ await page.emulateMedia('screen');
 await page.pdf({path: 'page.pdf'});
 ```
 
+> **NOTE** By default, `page.pdf()` generates a pdf with modified colors for printing. Use the [`-webkit-print-color-adjust`](https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-print-color-adjust) property to force rendering of exact colors.
+
 The `width`, `height`, and `margin` options accept values labeled with units. Unlabeled values are treated as pixels.
 
 A few examples:
