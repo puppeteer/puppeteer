@@ -1,3 +1,4 @@
+test/assets/modernizr.js
 third_party/*
 utils/doclint/check_public_api/test/
 utils/testrunner/examples/
