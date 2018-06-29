@@ -50,10 +50,10 @@ module.exports.addTests = function({testRunner, expect}) {
       // generate a script in page and wait for the event.
       const [event] = await Promise.all([
         waitEvent(client, 'Debugger.scriptParsed'),
-        page.evaluate(() => console.log('foo'))
+        page.evaluate('//# sourceURL=foo.js')
       ]);
       // expect events to be dispatched.
-      expect(event.length).toBeGreaterThan(0);
+      expect(event.url).toBe('foo.js');
     });
     it('should be able to detach session', async function({page, server}) {
       const client = await page.target().createCDPSession();

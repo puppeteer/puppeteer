@@ -45,14 +45,14 @@ module.exports.addTests = function({testRunner, expect}) {
         const coverage = await page.coverage.stopJSCoverage();
         expect(coverage.length).toBe(1);
       });
-      it('shouldn\'t ignore eval() scripts if ignoreAnonymousScripts is false', async function({page, server}) {
-        await page.coverage.startJSCoverage({ignoreAnonymousScripts: false});
+      it('shouldn\'t ignore eval() scripts if reportAnonymousScripts is true', async function({page, server}) {
+        await page.coverage.startJSCoverage({reportAnonymousScripts: true});
         await page.goto(server.PREFIX + '/jscoverage/eval.html');
         const coverage = await page.coverage.stopJSCoverage();
         expect(coverage.length).toBe(2);
       });
-      it('should ignore injected scripts regardless of ignoreAnonymousScripts', async function({page, server}) {
-        await page.coverage.startJSCoverage({ignoreAnonymousScripts: false});
+      it('should ignore injected scripts regardless of reportAnonymousScripts', async function({page, server}) {
+        await page.coverage.startJSCoverage({reportAnonymousScripts: true});
         await page.goto(server.EMPTY_PAGE);
         await page.evaluate('console.log("foo")');
         await page.evaluate(() => console.log('bar'));
