@@ -236,28 +236,14 @@ Check out [contributing guide](https://github.com/GoogleChrome/puppeteer/blob/ma
 
 # FAQ
 
-#### Q: Which Chromium version does Puppeteer use?
-
-Look for `chromium_revision` in [package.json](https://github.com/GoogleChrome/puppeteer/blob/master/package.json).
-
-Puppeteer bundles Chromium to ensure that the latest features it uses are guaranteed to be available. As the DevTools protocol and browser improve over time, Puppeteer will be updated to depend on newer versions of Chromium.
-
-#### Q: What is the difference between Puppeteer, Selenium / WebDriver, and PhantomJS?
-
-Selenium / WebDriver is a well-established cross-browser API that is useful for testing cross-browser support.
-
-Puppeteer works only with Chromium or Chrome. However, many teams only run unit tests with a single browser (e.g. PhantomJS). In non-testing use cases, Puppeteer provides a powerful but simple API because it's only targeting one browser that enables you to rapidly develop automation scripts.
-
-Puppeteer bundles the latest versions of Chromium.
-
 #### Q: Who maintains Puppeteer?
 
 The Chrome DevTools team maintains the library, but we'd love your help and expertise on the project!
 See [Contributing](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md).
 
-#### Q: Why is the Chrome team building Puppeteer?
+#### Q: What are Puppeteer’s goals and principles?
 
-The goals of the project are simple:
+The goals of the project are:
 
 - Provide a slim, canonical library that highlights the capabilities of the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/).
 - Provide a reference implementation for similar testing libraries. Eventually, these other frameworks could adopt Puppeteer as their foundational layer.
@@ -265,11 +251,61 @@ The goals of the project are simple:
 - Help dogfood new DevTools Protocol features...and catch bugs!
 - Learn more about the pain points of automated browser testing and help fill those gaps.
 
-#### Q: How does Puppeteer compare with other headless Chrome projects?
+We adapt [Chromium principles](https://www.chromium.org/developers/core-principles) to help us drive product decisions:
+- **Speed**: Puppeteer has almost zero performance overhead over an automated page.
+- **Security**: Puppeteer operates off-process with respect to Chromium, making it safe to automate potentially malicious pages.
+- **Stability**: Puppeteer should not be flaky and should not leak memory.
+- **Simplicity**: Puppeteer provides a high-level API that’s easy to use, understand, and debug.
 
-The past few months have brought [several new libraries for automating headless Chrome](https://medium.com/@kensoh/chromeless-chrominator-chromy-navalia-lambdium-ghostjs-autogcd-ef34bcd26907). As the team authoring the underlying DevTools Protocol, we're excited to witness and support this flourishing ecosystem.
+#### Q: Is Puppeteer replacing Selenium/WebDriver?
 
-We've reached out to a number of these projects to see if there are opportunities for collaboration, and we're happy to do what we can to help.
+**No**. Both projects are valuable for very different reasons:
+- Selenium/WebDriver focuses on cross-browser automation; its value proposition is a single standard API that works across all major browsers.
+- Puppeteer focuses on Chromium; its value proposition is richer functionality and higher reliability.
+
+That said, you **can** use Puppeteer to run tests against Chromium, e.g. using the community-driven [jest-puppeteer](https://github.com/smooth-code/jest-puppeteer). While this probably shouldn’t be your only testing solution, it does have a few good points compared to WebDriver:
+
+- Puppeteer requires zero setup and comes bundled with the Chromium version it works best with, making it [very easy to start with](https://github.com/GoogleChrome/puppeteer/#getting-started). At the end of the day, it’s better to have a few tests running chromium-only, then no tests at all.
+- Puppeteer has event-driven architecture, which removes a lot of potential flakiness. There’s no need for evil “sleep(1000)” calls in puppeteer scripts.
+- Puppeteer runs headless by default, which makes it fast to run. Puppeteer v1.5.0 also exposes browser contexts, making it possible to efficiently parallelize test execution.
+- Puppeteer shines when it comes to debugging: flip the “headless” bit to false, add “slowMo”, and you’ll see what the browser is doing. You can even open Chrome DevTools to inspect the test environment.
+
+#### Q: Why doesn’t Puppeteer v.XXX work with Chromium v.YYY?
+
+We see Puppeteer as an **indivisible entity** with Chromium. Each version of Puppeteer bundles a specific version of Chromium – **the only** version it is guaranteed to work with.
+
+This is not an artificial constraint: A lot of work on Puppeteer is actually taking place in the Chromium repository. Here’s a typical story:
+- A Puppeteer bug is reported: https://github.com/GoogleChrome/puppeteer/issues/2709
+- It turned out this is an issue with the DevTools protocol, so we’re fixing it in Chromium: https://chromium-review.googlesource.com/c/chromium/src/+/1102154 
+- Once the upstream fix is landed, we roll updated Chromium into Puppeteer: https://github.com/GoogleChrome/puppeteer/pull/2769
+
+However, oftentimes it is desirable to use Puppeteer with the official Google Chrome rather than Chromium. For this to work, you should pick the version of Puppeteer that uses the Chromium version close enough to Chrome. You can check for Puppeteer's Chromium revision in Release notes or in version selector on [pptr.dev](https://pptr.dev).
+
+#### Q: What’s “Navigation”?
+
+From Puppeteer’s standpoint, **“navigation” is anything that changes a page’s URL**.
+Aside from regular navigation where the browser hits the network to fetch a new document from the web server, this includes [anchor navigations](https://www.w3.org/TR/html5/single-page.html#scroll-to-fragid) and [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) usage.
+
+With this definition of “navigation,” **Puppeteer works seamlessly with single-page applications.**
+
+#### Q: What’s a “trusted input”?
+
+In browsers, input events could be divided into two big groups: trusted vs. untrusted.
+
+- **Trusted events**: events generated by users interacting with the page, e.g. using a mouse or keyboard.
+- **Untrusted event**: events generated by Web APIs, e.g. `document.createEvent` or `element.click()` methods.
+
+Websites can distinguish between these two groups:
+- using an [`Event.isTrusted`](https://developer.mozilla.org/en-US/docs/Web/API/Event/isTrusted) event flag
+- sniffing for accompanying events. For example, every trusted `'click'` event is preceded by `'mousedown'` and `'mouseup'` events.
+
+For automation purposes it’s important to generate trusted events. **All input events generated with Puppeteer are trusted and fire proper accompanying events.** If, for some reason, one needs an untrusted event, it’s always possible to hop into a page context with `page.evaluate` and generate a fake event:
+
+```js
+await page.evaluate(() => {
+  document.querySelector('button[type=submit]').click();
+});
+```
 
 #### Q: What features does Puppeteer not support?
 
