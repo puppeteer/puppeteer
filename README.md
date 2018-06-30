@@ -279,16 +279,20 @@ This is not an artificial constraint: A lot of work on Puppeteer is actually tak
 - It turned out this is an issue with the DevTools protocol, so we’re fixing it in Chromium: https://chromium-review.googlesource.com/c/chromium/src/+/1102154 
 - Once the upstream fix is landed, we roll updated Chromium into Puppeteer: https://github.com/GoogleChrome/puppeteer/pull/2769
 
-However, oftentimes it is desirable to use Puppeteer with the official Google Chrome rather than Chromium. For this to work, you should pick the version of Puppeteer that uses the Chromium version close enough to Chrome. You can check for Puppeteer's Chromium revision in Release notes or in version selector on [pptr.dev](https://pptr.dev).
+However, oftentimes it is desirable to use Puppeteer with the official Google Chrome rather than Chromium. For this to work, you should pick the version of Puppeteer that uses the Chromium version close enough to Chrome.
 
-#### Q: What’s “Navigation”?
+#### Q: Which Chromium version does Puppeteer use?
+
+Look for `chromium_revision` in [package.json](https://github.com/GoogleChrome/puppeteer/blob/master/package.json).
+
+#### Q: What’s considered a “Navigation”?
 
 From Puppeteer’s standpoint, **“navigation” is anything that changes a page’s URL**.
 Aside from regular navigation where the browser hits the network to fetch a new document from the web server, this includes [anchor navigations](https://www.w3.org/TR/html5/single-page.html#scroll-to-fragid) and [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) usage.
 
 With this definition of “navigation,” **Puppeteer works seamlessly with single-page applications.**
 
-#### Q: What’s a “trusted input”?
+#### Q: What’s the difference between a “trusted" and "untrusted" input event?
 
 In browsers, input events could be divided into two big groups: trusted vs. untrusted.
 
