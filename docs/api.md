@@ -83,6 +83,7 @@
   * [page.content()](#pagecontent)
   * [page.cookies(...urls)](#pagecookiesurls)
   * [page.coverage](#pagecoverage)
+  * [page.createNewIsolatedContext(contextIdentifier)](#pagecreatenewisolatedcontextcontextidentifier)
   * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
   * [page.emulate(options)](#pageemulateoptions)
   * [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
@@ -921,6 +922,22 @@ If URLs are specified, only cookies for those URLs are returned.
 #### page.coverage
 
 - returns: <[Coverage]>
+
+
+#### page.createNewIsolatedContext(contextIdentifier)
+- `contextIdentifier`<[string]> Identifier to assign to the new isolated context
+- returns: <[Promise]<[ExecutionContext]>> Promise which resolves to the new isolatedContext
+
+Creates a new isolated context for the page. Context are able to access DOM but have an independent [JavaScript environment](https://developer.chrome.com/extensions/content_scripts).
+This allows executing code without conflicts with the current website.
+
+```js
+
+const context = await page.createNewIsolatedContext('myIsolatedWorld')
+await context.evaluate(function () {
+    // DOM is shared with page but JS Environment is not
+})
+```
 
 #### page.deleteCookie(...cookies)
 - `...cookies` <...[Object]>
