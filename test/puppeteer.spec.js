@@ -101,14 +101,12 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
       });
       for (let i = 0; i < 100; i++) {
         const name = i + 'x';
-        fit('userDataDir argument', async ({server}) => {
+        fit('userDataDir argument', async({server}) => {
           let got = -1;
-          const timeout = setTimeout(async () => {
+          const timeout = setTimeout(async() => {
             console.log('FAILED! ' + got + ' ' + name);
-            if (browser) {
+            if (browser)
               console.log(browser.process().killed, browser.process().connected);
-              console.log(await browser.version());
-            }
           }, 2000);
           got = 0;
           const userDataDir = await mkdtempAsync(TMP_FOLDER);

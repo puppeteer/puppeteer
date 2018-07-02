@@ -168,10 +168,10 @@ if (process.env.COVERAGE) {
   });
 }
 
-if (process.env.CI && testRunner.hasFocusedTestsOrSuites()) {
+if (process.env.CI && testRunner.hasFocusedTestsOrSuites())
   console.error('ERROR: "focused" tests/suites are prohibitted on bots. Remove any "fit"/"fdescribe" declarations.');
   // process.exit(1);
-}
+
 
 new Reporter(testRunner);
 testRunner.run();
