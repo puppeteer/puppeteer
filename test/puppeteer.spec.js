@@ -111,7 +111,7 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
           got = 0;
           const userDataDir = await mkdtempAsync(TMP_FOLDER);
           got = 1;
-          const options = Object.assign({}, defaultBrowserOptions);
+          const options = Object.assign({}, defaultBrowserOptions, {dumpio: true});
           options.args = [`--user-data-dir=${userDataDir}`].concat(options.args);
           const browser = await puppeteer.launch(options);
           got = 2;
