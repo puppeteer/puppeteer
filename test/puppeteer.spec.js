@@ -99,17 +99,34 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(e => {});
       });
-      it('userDataDir argument', async({server}) => {
-        const userDataDir = await mkdtempAsync(TMP_FOLDER);
-        const options = Object.assign({}, defaultBrowserOptions);
-        options.args = [`--user-data-dir=${userDataDir}`].concat(options.args);
-        const browser = await puppeteer.launch(options);
-        expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
-        await browser.close();
-        expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
-        // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
-        await rmAsync(userDataDir).catch(e => {});
-      });
+      for (let i = 0; i < 100; i++) {
+        const name = i + 'x';
+        fit('userDataDir argument', async ({server}) => {
+          let got = -1;
+          const timeout = setTimeout(async () => {
+            console.log('FAILED! ' + got + ' ' + name);
+            if (browser) {
+              console.log(browser.process().killed, browser.process().connected);
+              console.log(await browser.version());
+            }
+          }, 2000);
+          got = 0;
+          const userDataDir = await mkdtempAsync(TMP_FOLDER);
+          got = 1;
+          const options = Object.assign({}, defaultBrowserOptions);
+          options.args = [`--user-data-dir=${userDataDir}`].concat(options.args);
+          const browser = await puppeteer.launch(options);
+          got = 2;
+          expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+          await browser.close();
+          expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+          got = 3;
+          // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
+          await rmAsync(userDataDir).catch(e => {});
+          got = 4;
+          clearTimeout(timeout);
+        });
+      }
       it('userDataDir option should restore state', async({server}) => {
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
