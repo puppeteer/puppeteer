@@ -1465,11 +1465,14 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
         return page;
       }));
       const promises = [];
+      console.log('about to get screenshots from test');
       for (let i = 0; i < N; ++i)
         promises.push(pages[i].screenshot({ clip: { x: 50 * i, y: 0, width: 50, height: 50 } }));
       const screenshots = await Promise.all(promises);
+      console.log('done getting screenshots from test');
       for (let i = 0; i < N; ++i)
         expect(screenshots[i]).toBeGolden(`grid-cell-${i}.png`);
+      console.log('about to close');
       await Promise.all(pages.map(page => page.close()));
     });
     it('should allow transparency', async({page, server}) => {
