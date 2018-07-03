@@ -543,6 +543,11 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       expect(error).toBe(null);
       expect(loaded).toBe(true);
     });
+    it('should exit before timeout expires if browser closed', async({page, browser}) => {
+      page.on('console', () => browser.close());
+      await page.goto(`data:text/html,<script>console.log(1)</script>`, {timeout: 5000});
+      // How to assert that the page closes in time? Some sort of race.
+    });
     it('should work when navigating to valid url', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.ok()).toBe(true);
@@ -1452,7 +1457,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       });
       expect(screenshot).toBeGolden('screenshot-grid-fullpage.png');
     });
-    it('should run in parallel in multiple pages', async({page, server, browser}) => {
+    fit('should run in parallel in multiple pages', async({page, server, browser}) => {
       const N = 2;
       const pages = await Promise.all(Array(N).fill(0).map(async() => {
         const page = await browser.newPage();
