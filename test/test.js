@@ -59,7 +59,7 @@ if (parallelArgIndex !== -1)
 require('events').defaultMaxListeners *= parallel;
 
 const timeout = slowMo ? 0 : 10 * 1000;
-const testRunner = new TestRunner({timeout, parallel});
+const testRunner = new TestRunner({timeout: 0, parallel});
 const {expect} = new Matchers({
   toBeGolden: GoldenUtils.compare.bind(null, GOLDEN_DIR, OUTPUT_DIR)
 });

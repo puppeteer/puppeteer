@@ -99,23 +99,30 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(e => {});
       });
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 300; i++) {
         const name = i + 'x';
+        let died = false;
         fit('userDataDir argument', async({server}) => {
+          if (died) return;
           let got = -1;
           const timeout = setTimeout(async() => {
             console.log('FAILED! ' + got + ' ' + name);
-            if (browser)
-              console.log(browser.process().killed, browser.process().connected);
-          }, 2000);
+            if (browser) {
+              console.log(browser.process().killed, browser.process().connected, browser.process().pid);
+              console.log(browser.process()['logdata']);
+              died = true;
+            }
+          }, 3000);
           got = 0;
           const userDataDir = await mkdtempAsync(TMP_FOLDER);
           got = 1;
-          const options = Object.assign({}, defaultBrowserOptions, {dumpio: true});
+          const options = Object.assign({}, defaultBrowserOptions);
           options.args = [`--user-data-dir=${userDataDir}`].concat(options.args);
           const browser = await puppeteer.launch(options);
           got = 2;
+          // await new Promise(x => setTimeout(x, 10));
           expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
+          const start = Date.now();
           await browser.close();
           expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
           got = 3;
@@ -123,6 +130,10 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
           await rmAsync(userDataDir).catch(e => {});
           got = 4;
           clearTimeout(timeout);
+          if (died) {
+            console.warn('Died, but then recovered after', Date.now() - start, 'ms');
+            await new Promise(Object)
+          }
         });
       }
       it('userDataDir option should restore state', async({server}) => {
