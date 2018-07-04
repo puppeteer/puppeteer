@@ -332,6 +332,11 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.setContent(`<div class='zombo'>anything</div>`);
       expect(await page.evaluate(x => x.textContent, await waitForSelector)).toBe('anything');
     });
+    it('should have correct stack trace for timeout', async({page, server}) => {
+      let error;
+      await page.waitForSelector('.zombo', {timeout: 10}).catch(e => error = e);
+      expect(error.stack).toContain('frame.spec.js');
+    });
   });
 
   describe('Frame.waitForXPath', function() {
