@@ -784,120 +784,100 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
   describe('Page.waitForRequest', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
-
-      server.setRoute('/getRequest', (req, res) => {
-        res.statusCode = 200;
-        res.end();
-      });
-
-      page.evaluate(() => {
-        fetch(`/getRequest`, { method: 'GET'});
-        Promise.resolve();
-      });
-
-      const request = await page.waitForRequest(`${server.PREFIX}/getRequest`);
-
-      expect(request._method).toBe('GET');
-      expect(request.url()).toBe(`${server.PREFIX}/getRequest`);
+      const [request] = await Promise.all([
+        page.waitForRequest(server.PREFIX + '/404'),
+        page.evaluate(() => fetch('/404', {method: 'GET'}))
+      ]);
+      expect(request.method()).toBe('GET');
+      expect(request.url()).toBe(server.PREFIX + '/404');
     });
 
     it('should work with regex pattern', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
-
-      server.setRoute('/getRequest', (req, res) => {
-        res.statusCode = 200;
-        res.end();
-      });
-
-      page.evaluate(() => {
-        fetch(`/getRequest`, { method: 'GET'});
-        Promise.resolve();
-      });
-
-      const request = await page.waitForRequest(new RegExp(`${server.PREFIX}/(get|test)Request`));
-
-      expect(request._method).toBe('GET');
-      expect(request.url()).toBe(`${server.PREFIX}/getRequest`);
+      const [request] = await Promise.all([
+        page.waitForRequest(new RegExp(`${server.PREFIX}/(200|404)`)),
+        page.evaluate(() => fetch('/404', {method: 'GET'}))
+      ]);
+      expect(request.method()).toBe('GET');
+      expect(request.url()).toBe(server.PREFIX + '/404');
     });
 
     it('should work with method option', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
+      const [request] = await Promise.all([
+        page.waitForRequest(server.PREFIX + '/404', { method: ['GET', 'PATCH']}),
+        page.evaluate(() => fetch('/404', {method: 'PATCH'}))
+      ]);
+      expect(request.method()).toBe('PATCH');
+      expect(request.url()).toBe(server.PREFIX + '/404');
+    });
 
-      server.setRoute('/getRequest', (req, res) => {
-        res.statusCode = 200;
-        res.end();
-      });
-
-      page.evaluate(() => {
-        fetch(`/getRequest`, { method: 'PATCH'});
-        Promise.resolve();
-      });
-
-      const request = await page.waitForRequest(`${server.PREFIX}/getRequest`, { method: ['POST', 'PATCH']});
-
-      expect(request._method).toBe('PATCH');
-      expect(request.url()).toBe(`${server.PREFIX}/getRequest`);
+    it('should work with no timeout', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const [request] = await Promise.all([
+        page.waitForRequest(server.PREFIX + '/404', { timeout: 0}),
+        page.waitFor(50),
+        page.evaluate(() => fetch('/404', {method: 'GET'}))
+      ]);
+      expect(request.method()).toBe('GET');
+      expect(request.url()).toBe(server.PREFIX + '/404');
     });
   });
 
   describe('Page.waitForResponse', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
-
-      server.setRoute('/testResponse', (req, res) => serverResponse = () => res.end('Hello'));
-
-      page.evaluate(() => fetch(`/testResponse`, { method: 'GET'}).then(() => true));
-      setTimeout(() => serverResponse(), 100);
-
-      const response = await page.waitForResponse(`${server.PREFIX}/testResponse`);
-
+      const [response] = await Promise.all([
+        page.waitForResponse(server.PREFIX + '/grid.html'),
+        page.waitFor(100),
+        page.evaluate(() => fetch('/grid.html', {method: 'GET'}))
+      ]);
       expect(response.ok()).toBe(true);
-      expect(response.url()).toBe(`${server.PREFIX}/testResponse`);
+      expect(response.url()).toBe(server.PREFIX + '/grid.html');
     });
 
     it('should work with regex', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
-
-      server.setRoute('/testResponse', (req, res) => serverResponse = () => res.end('Hello'));
-
-      page.evaluate(() => fetch(`/testResponse`, { method: 'GET'}).then(() => true));
-      setTimeout(() => serverResponse(), 100);
-
-      const response = await page.waitForResponse(new RegExp(`${server.PREFIX}/(get|test)Response`));
-
+      const [response] = await Promise.all([
+        page.waitForResponse(new RegExp(`${server.PREFIX}/(get|grid.html)`)),
+        page.waitFor(100),
+        page.evaluate(() => fetch('/grid.html', {method: 'GET'}))
+      ]);
       expect(response.ok()).toBe(true);
-      expect(response.url()).toBe(`${server.PREFIX}/testResponse`);
+      expect(response.url()).toBe(server.PREFIX + '/grid.html');
     });
 
     it('should work with method option', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
-
-      server.setRoute('/testResponse', (req, res) => serverResponse = () => res.end('Hello'));
-
-      page.evaluate(() => fetch(`/testResponse`, { method: 'PATCH'}).then(() => true));
-      setTimeout(() => serverResponse(), 100);
-
-      const response = await page.waitForResponse(`${server.PREFIX}/testResponse`, { method: ['POST', 'PATCH']});
-
+      const [response] = await Promise.all([
+        page.waitForResponse(server.PREFIX + '/grid.html', { method: ['POST', 'PATCH']}),
+        page.waitFor(100),
+        page.evaluate(() => fetch('/grid.html', {method: 'PATCH'}))
+      ]);
       expect(response.ok()).toBe(true);
-      expect(response.url()).toBe(`${server.PREFIX}/testResponse`);
+      expect(response.url()).toBe(server.PREFIX + '/grid.html');
     });
 
-    it('should work with statusCode option', async({page, server}) => {
+    it('should work with method option', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
-
-      server.setRoute('/testResponse', (req, res) => serverResponse = () => {
-        res.statusCode = 204;
-        res.end('Hello');
-      });
-
-      page.evaluate(() => fetch(`/testResponse`, { method: 'PATCH'}).then(() => true));
-      setTimeout(() => serverResponse(), 100);
-
-      const response = await page.waitForResponse(`${server.PREFIX}/testResponse`, { statusCode: [200, 204]});
-
+      const [response] = await Promise.all([
+        page.waitForResponse(server.PREFIX + '/grid.html', { statusCode: [200, 204]}),
+        page.waitFor(100),
+        page.evaluate(() => fetch('/grid.html', {method: 'GET'}))
+      ]);
       expect(response.ok()).toBe(true);
-      expect(response.url()).toBe(`${server.PREFIX}/testResponse`);
+      expect(response.url()).toBe(server.PREFIX + '/grid.html');
+    });
+
+    it('should work with no timeout', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const [response] = await Promise.all([
+        page.waitForResponse(server.PREFIX + '/grid.html', { timeout: 0}),
+        page.waitFor(50),
+        page.evaluate(() => fetch('/grid.html', {method: 'GET'}))
+      ]);
+      expect(response.ok()).toBe(true);
+      expect(response.url()).toBe(server.PREFIX + '/grid.html');
     });
   });
 
