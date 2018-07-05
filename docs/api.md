@@ -777,7 +777,7 @@ The method runs `document.querySelectorAll` within the page. If no elements matc
 Shortcut for [page.mainFrame().$$(selector)](#frameselector-1).
 
 #### page.$$eval(selector, pageFunction[, ...args])
-- `selector` <[string]> A [selector] to query frame for
+- `selector` <[string]> A [selector] to query page for
 - `pageFunction` <[function]> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
@@ -1918,13 +1918,13 @@ puppeteer.launch().then(async browser => {
 ```
 
 #### frame.$(selector)
-- `selector` <[string]> Selector to query page for
+- `selector` <[string]> A [selector] to query frame for
 - returns: <[Promise]<?[ElementHandle]>> Promise which resolves to ElementHandle pointing to the frame element.
 
 The method queries frame for the selector. If there's no such element within the frame, the method will resolve to `null`.
 
 #### frame.$$(selector)
-- `selector` <[string]> Selector to query page for
+- `selector` <[string]> A [selector] to query frame for
 - returns: <[Promise]<[Array]<[ElementHandle]>>> Promise which resolves to ElementHandles pointing to the frame elements.
 
 The method runs `document.querySelectorAll` within the frame. If no elements match the selector, the return value resolve to `[]`.
