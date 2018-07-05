@@ -75,6 +75,7 @@
   * [page.$x(expression)](#pagexexpression)
   * [page.addScriptTag(options)](#pageaddscripttagoptions)
   * [page.addStyleTag(options)](#pageaddstyletagoptions)
+  * [page.allCookies()](#pageallcookies)
   * [page.authenticate(credentials)](#pageauthenticatecredentials)
   * [page.bringToFront()](#pagebringtofront)
   * [page.browser()](#pagebrowser)
@@ -840,6 +841,12 @@ Shortcut for [page.mainFrame().addScriptTag(options)](#frameaddscripttagoptions)
 Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
 
 Shortcut for [page.mainFrame().addStyleTag(options)](#frameaddstyletagoptions).
+
+#### page.allCookies()
+
+- returns: <[Promise]>
+
+Returns all the cookies in the cookie jar.
 
 #### page.authenticate(credentials)
 - `credentials` <?[Object]>
