@@ -21,7 +21,7 @@ module.exports.addTests = function({testRunner, expect}) {
 
   describe('Cookies', function() {
     afterEach(async({page, server}) => {
-      const cookies = await page.cookies(server.PREFIX + '/grid.html', server.CROSS_PROCESS_PREFIX);
+      const cookies = await page.allCookies();
       for (const cookie of cookies)
         await page.deleteCookie(cookie);
     });
@@ -228,6 +228,37 @@ module.exports.addTests = function({testRunner, expect}) {
         session: true
       }]);
 
+    });
+
+    it('should set and get all cookies', async({page, server}) => {
+      await page.goto(server.PREFIX + '/grid.html');
+      expect(await page.allCookies()).toEqual([]);
+      await page.evaluate(() => {
+        document.cookie = 'username=John Doe';
+      });
+      await page.setCookie({name: 'example-cookie', value: 'best',  url: 'https://www.example.com'});
+      const cookies = await page.allCookies();
+      expect(cookies.sort((a, b) => a.name.localeCompare(b.name))).toEqual([{
+        name: 'example-cookie',
+        value: 'best',
+        domain: 'www.example.com',
+        path: '/',
+        expires: -1,
+        size: 18,
+        httpOnly: false,
+        secure: true,
+        session: true
+      }, {
+        name: 'username',
+        value: 'John Doe',
+        domain: 'localhost',
+        path: '/',
+        expires: -1,
+        size: 16,
+        httpOnly: false,
+        secure: false,
+        session: true
+      }]);
     });
   });
 };
