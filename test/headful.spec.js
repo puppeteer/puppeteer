@@ -42,7 +42,7 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
   });
 
   describe('HEADFUL', function() {
-    it('background_page target type should be available', async({browser}) => {
+    it('background_page target type should be available', async() => {
       const browserWithExtension = await puppeteer.launch(extensionOptions);
       const page = await browserWithExtension.newPage();
       const targets = await browserWithExtension.targets();
@@ -51,7 +51,7 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
       await browserWithExtension.close();
       expect(backgroundPageTarget).toBeTruthy();
     });
-    it('target.page() should return a background_page', async({browser}) => {
+    it('target.page() should return a background_page', async() => {
       const browserWithExtension = await puppeteer.launch(extensionOptions);
       const targets = await browserWithExtension.targets();
       const backgroundPageTarget = targets.find(target => target.type() === 'background_page');
@@ -102,6 +102,22 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         'https://google.com/'
       ]);
       await browser.close();
+    });
+    it('should report content script execution contexts', async({server}) => {
+      const browserWithExtension = await puppeteer.launch(extensionOptions);
+      const page = await browserWithExtension.newPage();
+      const extensionContextPromise = new Promise(x => page.once('extensioncontextcreated', x));
+      await page.goto(server.EMPTY_PAGE);
+      const extensionContext = await extensionContextPromise;
+      expect(extensionContext).toBe(page.extensionContexts()[0]);
+      expect(extensionContext.frame()).toBe(page.mainFrame());
+      expect(extensionContext.name()).toBe('Simple extension');
+      expect(await extensionContext.evaluate('thisIsTheContentScript')).toBe(true);
+      const [destroyedContext] = await Promise.all([
+        new Promise(x => page.once('extensioncontextdestroyed', x)),
+        page.reload()
+      ]);
+      expect(destroyedContext).toBe(extensionContext);
     });
   });
 };

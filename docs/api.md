@@ -56,6 +56,8 @@
   * [event: 'dialog'](#event-dialog)
   * [event: 'domcontentloaded'](#event-domcontentloaded)
   * [event: 'error'](#event-error)
+  * [event: 'extensioncontextcreated'](#event-extensioncontextcreated)
+  * [event: 'extensioncontextdestroyed'](#event-extensioncontextdestroyed)
   * [event: 'frameattached'](#event-frameattached)
   * [event: 'framedetached'](#event-framedetached)
   * [event: 'framenavigated'](#event-framenavigated)
@@ -90,6 +92,7 @@
   * [page.evaluateHandle(pageFunction, ...args)](#pageevaluatehandlepagefunction-args)
   * [page.evaluateOnNewDocument(pageFunction, ...args)](#pageevaluateonnewdocumentpagefunction-args)
   * [page.exposeFunction(name, puppeteerFunction)](#pageexposefunctionname-puppeteerfunction)
+  * [page.extensionContexts()](#pageextensioncontexts)
   * [page.focus(selector)](#pagefocusselector)
   * [page.frames()](#pageframes)
   * [page.goBack(options)](#pagegobackoptions)
@@ -176,6 +179,7 @@
   * [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
   * [frame.evaluateHandle(pageFunction, ...args)](#frameevaluatehandlepagefunction-args)
   * [frame.executionContext()](#frameexecutioncontext)
+  * [frame.extensionContexts()](#frameextensioncontexts)
   * [frame.focus(selector)](#framefocusselector)
   * [frame.hover(selector)](#framehoverselector)
   * [frame.isDetached()](#frameisdetached)
@@ -195,6 +199,7 @@
   * [executionContext.evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args)
   * [executionContext.evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args)
   * [executionContext.frame()](#executioncontextframe)
+  * [executionContext.name()](#executioncontextname)
   * [executionContext.queryObjects(prototypeHandle)](#executioncontextqueryobjectsprototypehandle)
 - [class: JSHandle](#class-jshandle)
   * [jsHandle.asElement()](#jshandleaselement)
@@ -696,6 +701,16 @@ Emitted when the page crashes.
 
 > **NOTE** `error` event has a special meaning in Node, see [error events](https://nodejs.org/api/events.html#events_error_events) for details.
 
+#### event: 'extensioncontextcreated'
+- <[ExecutionContext]>
+
+Emitted when an execution context is created for an extension on the page.
+
+#### event: 'extensioncontextdestroyed'
+- <[ExecutionContext]>
+
+Emitted when an execution context is destroyed for an extension on the page.
+
 #### event: 'frameattached'
 - <[Frame]>
 
@@ -1115,6 +1130,9 @@ puppeteer.launch().then(async browser => {
 });
 
 ```
+
+#### page.extensionContexts()
+- returns: <[Array]<[ExecutionContext]>> An array of all execution contexts belonging to extensions on the page.
 
 #### page.focus(selector)
 - `selector` <[string]> A [selector] of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
@@ -2075,6 +2093,9 @@ await resultHandle.dispose();
 #### frame.executionContext()
 - returns: <[Promise]<[ExecutionContext]>> Execution context associated with this frame.
 
+#### frame.extensionContexts()
+- returns: <[Array]<[ExecutionContext]>> An array of all execution contexts belonging to extensions in the frame.
+
 #### frame.focus(selector)
 - `selector` <[string]> A [selector] of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. The promise will be rejected if there is no element matching `selector`.
@@ -2315,6 +2336,11 @@ await resultHandle.dispose();
 - returns: <?[Frame]> Frame associated with this execution context.
 
 > **NOTE** Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.
+
+#### executionContext.name()
+- returns: <[string]> A human readable name for the execution context.
+
+Most execution contexts have an empty string for a name. Execution contexts created by extensions will have the title of the extension as thier name.
 
 #### executionContext.queryObjects(prototypeHandle)
 - `prototypeHandle` <[JSHandle]> A handle to the object prototype.
