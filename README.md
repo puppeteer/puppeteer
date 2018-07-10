@@ -40,7 +40,7 @@ Note: When you install Puppeteer, it downloads a recent version of Chromium (~17
 
 ### Usage
 
-Caution: Puppeteer requires at least Node v6.4.0, but the examples below use async/await which is only supported in Node v7.6.0 or greater.
+Note: Puppeteer requires at least Node v6.4.0, but the examples below use async/await which is only supported in Node v7.6.0 or greater.
 
 Puppeteer will be familiar to people using other browser testing frameworks. You create an instance
 of `Browser`, open pages, and then manipulate them with [Puppeteer's API](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#).
