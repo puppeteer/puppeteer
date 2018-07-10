@@ -102,16 +102,8 @@ beforeEach(async({server, httpsServer}) => {
 });
 
 describe('Page', function() {
-  beforeAll(async state => {
-    state.browser = await puppeteer.launch(defaultBrowserOptions);
-  });
-
-  afterAll(async state => {
-    await state.browser.close();
-    state.browser = null;
-  });
-
   beforeEach(async(state, test) => {
+    state.browser = await puppeteer.launch(defaultBrowserOptions);
     state.page = await state.browser.newPage();
     const rl = require('readline').createInterface({input: state.browser.process().stderr});
     test.output = '';
@@ -132,6 +124,9 @@ describe('Page', function() {
     } catch (error) {
     }
     state.page = null;
+
+    await state.browser.close();
+    state.browser = null;
   });
 
   // Page-level tests that are given a browser and a page.

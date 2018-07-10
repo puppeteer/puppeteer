@@ -545,7 +545,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
     });
     it('should exit before timeout expires if browser closed', async({page, browser}) => {
       const timeout = 5000;
-      page.on('console', () => page.close());
+      page.on('console', () => browser.close());
       const timeoutPromise = new Promise(resolve => {
         setTimeout(resolve.bind(null, 'timeout reached'), timeout);
       });
