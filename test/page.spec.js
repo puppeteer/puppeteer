@@ -543,8 +543,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       expect(error).toBe(null);
       expect(loaded).toBe(true);
     });
-    // This is Conor Fellin's test
-    fit('should exit before timeout expires if browser closed', async({page, browser}) => {
+    it('should exit before timeout expires if browser closed', async({page, browser}) => {
       const timeout = 5000;
       page.on('console', () => page.close());
       const timeoutPromise = new Promise(resolve => {
@@ -1475,14 +1474,11 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
         return page;
       }));
       const promises = [];
-      console.log('about to get screenshots from test');
       for (let i = 0; i < N; ++i)
         promises.push(pages[i].screenshot({ clip: { x: 50 * i, y: 0, width: 50, height: 50 } }));
       const screenshots = await Promise.all(promises);
-      console.log('done getting screenshots from test');
       for (let i = 0; i < N; ++i)
         expect(screenshots[i]).toBeGolden(`grid-cell-${i}.png`);
-      console.log('about to close');
       await Promise.all(pages.map(page => page.close()));
     });
     it('should allow transparency', async({page, server}) => {
@@ -1624,5 +1620,3 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
     });
   });
 };
-
-console.log('done getting screenshots from test');
