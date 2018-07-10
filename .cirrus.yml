@@ -25,6 +25,8 @@ task:
   osx_instance:
     image: high-sierra-base
   name: node8 (macOS)
+  env:
+    HOMEBREW_NO_AUTO_UPDATE: 1
   node_install_script:
     - brew install node@8
     - brew link --force node@8
