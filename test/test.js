@@ -137,6 +137,7 @@ describe('Page', function() {
   require('./browsercontext.spec.js').addTests({testRunner, expect, puppeteer});
   require('./cookies.spec.js').addTests({testRunner, expect});
   require('./coverage.spec.js').addTests({testRunner, expect});
+  require('./disableGPU.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
   require('./elementhandle.spec.js').addTests({testRunner, expect});
   require('./frame.spec.js').addTests({testRunner, expect});
   require('./input.spec.js').addTests({testRunner, expect, DeviceDescriptors});
