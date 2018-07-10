@@ -23,7 +23,7 @@ task:
 
 task:
   osx_instance:
-    image: high-sierra-base
+    image: high-sierra-xcode-9.4.1
   name: node8 (macOS)
   env:
     HOMEBREW_NO_AUTO_UPDATE: 1
