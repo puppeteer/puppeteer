@@ -543,10 +543,20 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       expect(error).toBe(null);
       expect(loaded).toBe(true);
     });
-    it('should exit before timeout expires if browser closed', async({page, browser}) => {
-      page.on('console', () => browser.close());
-      await page.goto(`data:text/html,<script>console.log(1)</script>`, {timeout: 5000});
-      // How to assert that the page closes in time? Some sort of race.
+    // This is Conor Fellin's test
+    fit('should exit before timeout expires if browser closed', async({page, browser}) => {
+      const timeout = 5000;
+      page.on('console', () => page.close());
+      const timeoutPromise = new Promise(resolve => {
+        setTimeout(resolve.bind(null, 'timeout reached'), timeout);
+      });
+      const navigationPromise = page.goto(`data:text/html,<script>console.log(1)</script>`, {timeout});
+      const raceWinner = await Promise.race([
+        navigationPromise,
+        timeoutPromise
+      ]);
+      expect(raceWinner).toBeTruthy();
+      expect(raceWinner instanceof Object).toBe(true);
     });
     it('should work when navigating to valid url', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE);
@@ -1457,7 +1467,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       });
       expect(screenshot).toBeGolden('screenshot-grid-fullpage.png');
     });
-    fit('should run in parallel in multiple pages', async({page, server, browser}) => {
+    it('should run in parallel in multiple pages', async({page, server, browser}) => {
       const N = 2;
       const pages = await Promise.all(Array(N).fill(0).map(async() => {
         const page = await browser.newPage();
@@ -1614,3 +1624,5 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
     });
   });
 };
+
+console.log('done getting screenshots from test');

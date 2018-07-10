@@ -127,7 +127,10 @@ describe('Page', function() {
 
   afterEach(async state => {
     state.tearDown();
-    await state.page.close();
+    try {
+      await state.page.close();
+    } catch (error) {
+    }
     state.page = null;
   });
 
