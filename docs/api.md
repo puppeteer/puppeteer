@@ -219,7 +219,7 @@
   * [elementHandle.getProperties()](#elementhandlegetproperties)
   * [elementHandle.getProperty(propertyName)](#elementhandlegetpropertypropertyname)
   * [elementHandle.hover()](#elementhandlehover)
-  * [elementHandle.isVisibleInViewport()](#elementhandleisvisibleinviewport)
+  * [elementHandle.isIntersectingViewport()](#elementhandleisintersectingviewport)
   * [elementHandle.jsonValue()](#elementhandlejsonvalue)
   * [elementHandle.press(key[, options])](#elementhandlepresskey-options)
   * [elementHandle.screenshot([options])](#elementhandlescreenshotoptions)
