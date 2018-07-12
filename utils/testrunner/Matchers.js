@@ -71,6 +71,11 @@ const DefaultMatchers = {
     return { pass: value > other, message };
   },
 
+  toBeInstanceOf: function(value, other, message) {
+    message = message || `${value.constructor.name} instanceof ${other.name}`;
+    return { pass: value instanceof other, message };
+  },
+
   toBeGreaterThanOrEqual: function(value, other, message) {
     message = message || `${value} >= ${other}`;
     return { pass: value >= other, message };

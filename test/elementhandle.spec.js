@@ -16,7 +16,7 @@
 
 const utils = require('./utils');
 
-module.exports.addTests = function({testRunner, expect}) {
+module.exports.addTests = function({testRunner, expect, puppeteer}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -158,6 +158,7 @@ module.exports.addTests = function({testRunner, expect}) {
       let error = null;
       await buttonTextNode.click().catch(err => error = err);
       expect(error.message).toBe('Node is not of type HTMLElement');
+      expect(error).toBeInstanceOf(puppeteer.errors.InvalidNodeError);
     });
     it('should throw for detached nodes', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
@@ -166,6 +167,7 @@ module.exports.addTests = function({testRunner, expect}) {
       let error = null;
       await button.click().catch(err => error = err);
       expect(error.message).toBe('Node is detached from document');
+      expect(error).toBeInstanceOf(puppeteer.errors.InvalidNodeError);
     });
     it('should throw for hidden nodes', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
@@ -173,6 +175,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.evaluate(button => button.style.display = 'none', button);
       const error = await button.click().catch(err => err);
       expect(error.message).toBe('Node is either not visible or not an HTMLElement');
+      expect(error).toBeInstanceOf(puppeteer.errors.InvalidNodeError);
     });
     it('should throw for recursively hidden nodes', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
@@ -180,12 +183,14 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.evaluate(button => button.parentElement.style.display = 'none', button);
       const error = await button.click().catch(err => err);
       expect(error.message).toBe('Node is either not visible or not an HTMLElement');
+      expect(error).toBeInstanceOf(puppeteer.errors.InvalidNodeError);
     });
     it('should throw for <br> elements', async({page, server}) => {
       await page.setContent('hello<br>goodbye');
       const br = await page.$('br');
       const error = await br.click().catch(err => err);
       expect(error.message).toBe('Node is either not visible or not an HTMLElement');
+      expect(error).toBeInstanceOf(puppeteer.errors.InvalidNodeError);
     });
   });
 
@@ -302,6 +307,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.evaluate(element => element.remove(), elementHandle);
       const screenshotError = await elementHandle.screenshot().catch(error => error);
       expect(screenshotError.message).toBe('Node is either not visible or not an HTMLElement');
+      expect(screenshotError).toBeInstanceOf(puppeteer.errors.InvalidNodeError);
     });
   });
 
@@ -343,8 +349,10 @@ module.exports.addTests = function({testRunner, expect}) {
       const htmlContent = '<div class="a">not-a-child-div</div><div id="myId"></div>';
       await page.setContent(htmlContent);
       const elementHandle = await page.$('#myId');
-      const errorMessage = await elementHandle.$eval('.a', node => node.innerText).catch(error => error.message);
-      expect(errorMessage).toBe(`Error: failed to find element matching selector ".a"`);
+      let error = null;
+      await elementHandle.$eval('.a', node => node.innerText).catch(e => error = e);
+      expect(error.message).toBe(`Error: failed to find element matching selector ".a"`);
+      expect(error).toBeInstanceOf(puppeteer.errors.InvalidNodeError);
     });
   });
   describe('ElementHandle.$$eval', function() {
