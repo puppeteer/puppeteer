@@ -44,7 +44,7 @@ module.exports.addTests = function({testRunner, expect}) {
       const coverage = await page.coverage.stopJSCoverage();
       expect(coverage.length).toBe(1);
     });
-    fit('shouldn\'t ignore eval() scripts if reportAnonymousScripts is true', async function({page, server}) {
+    it('shouldn\'t ignore eval() scripts if reportAnonymousScripts is true', async function({page, server}) {
       await page.coverage.startJSCoverage({reportAnonymousScripts: true});
       await page.goto(server.PREFIX + '/jscoverage/eval.html');
       const coverage = await page.coverage.stopJSCoverage();
