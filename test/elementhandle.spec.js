@@ -198,52 +198,15 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
-  describe('ElementHandle.isVisible', function() {
-    it('should return false if element is not visible in viewport', async({page, server}) => {
-      await page.setViewport({ width: 1000, height: 400 });
-      await page.setContent(`
-        <html>
-          <head>
-            <style>
-              .scroll-container {
-                position: relative;
-                width: 600px;
-                background: green;
-                height: 150px;
-                overflow: hidden;
-              }
-              .red {
-                position: absolute;
-                top: 0;
-                left: 0;
-                height: 150px;
-                width: 150px;
-                background: red;
-              }
-              .blue {
-                position: absolute;
-                top: 0;
-                right: -160px;
-                height: 150px;
-                width: 150px;
-                background: blue;
-              }
-            </style>
-          </head>
-          <body>
-            <div class="scroll-container">
-                <div class="red"></div>
-                <div class="blue"></div>
-              </div>
-          </body>
-        </html>
-      `);
-
-      const box = await page.$('.red');
-      const blue = await page.$('.blue');
-
-      expect(await box.isIntersectingViewport()).toBe(true);
-      expect(await blue.isIntersectingViewport()).toBe(false);
+  describe('ElementHandle.isIntersectingViewport', function() {
+    it('should work', async({page, server}) => {
+      await page.goto(server.PREFIX + '/offscreenbuttons.html');
+      for (let i = 0; i < 11; ++i) {
+        const button = await page.$('#btn' + i);
+        // All but last button are visible.
+        const visible = i < 10;
+        expect(await button.isIntersectingViewport()).toBe(visible);
+      }
     });
   });
 
