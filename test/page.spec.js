@@ -791,27 +791,24 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       expect(request.method()).toBe('GET');
       expect(request.url()).toBe(server.PREFIX + '/404');
     });
-
     it('should work with regex pattern', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [request] = await Promise.all([
-        page.waitForRequest(new RegExp(`${server.PREFIX}/(200|404)`)),
+        page.waitForRequest(request => new RegExp(`${server.PREFIX}/(200|404)`).test(request.url())),
         page.evaluate(() => fetch('/404', {method: 'GET'}))
       ]);
       expect(request.method()).toBe('GET');
       expect(request.url()).toBe(server.PREFIX + '/404');
     });
-
-    it('should work with method option', async({page, server}) => {
+    it('should work with predicate', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [request] = await Promise.all([
-        page.waitForRequest(server.PREFIX + '/404', { method: ['GET', 'PATCH']}),
+        page.waitForRequest(request => request.url() === server.PREFIX + '/404' && request.method() === 'PATCH'),
         page.evaluate(() => fetch('/404', {method: 'PATCH'}))
       ]);
       expect(request.method()).toBe('PATCH');
       expect(request.url()).toBe(server.PREFIX + '/404');
     });
-
     it('should work with no timeout', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [request] = await Promise.all([
@@ -835,40 +832,26 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       expect(response.ok()).toBe(true);
       expect(response.url()).toBe(server.PREFIX + '/grid.html');
     });
-
     it('should work with regex', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
-        page.waitForResponse(new RegExp(`${server.PREFIX}/(get|grid.html)`)),
+        page.waitForResponse(response => new RegExp(`${server.PREFIX}/(get|grid.html)`).test(response.url())),
         page.waitFor(100),
         page.evaluate(() => fetch('/grid.html', {method: 'GET'}))
       ]);
       expect(response.ok()).toBe(true);
       expect(response.url()).toBe(server.PREFIX + '/grid.html');
     });
-
-    it('should work with method option', async({page, server}) => {
+    it('should work with predicate', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
-        page.waitForResponse(server.PREFIX + '/grid.html', { method: ['POST', 'PATCH']}),
+        page.waitForResponse(response => response.url() === server.PREFIX + '/grid.html' && response.status() === 200),
         page.waitFor(100),
         page.evaluate(() => fetch('/grid.html', {method: 'PATCH'}))
       ]);
       expect(response.ok()).toBe(true);
       expect(response.url()).toBe(server.PREFIX + '/grid.html');
     });
-
-    it('should work with method option', async({page, server}) => {
-      await page.goto(server.EMPTY_PAGE);
-      const [response] = await Promise.all([
-        page.waitForResponse(server.PREFIX + '/grid.html', { statusCode: [200, 204]}),
-        page.waitFor(100),
-        page.evaluate(() => fetch('/grid.html', {method: 'GET'}))
-      ]);
-      expect(response.ok()).toBe(true);
-      expect(response.url()).toBe(server.PREFIX + '/grid.html');
-    });
-
     it('should work with no timeout', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([

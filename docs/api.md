@@ -128,8 +128,8 @@
   * [page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#pagewaitforselectororfunctionortimeout-options-args)
   * [page.waitForFunction(pageFunction[, options[, ...args]])](#pagewaitforfunctionpagefunction-options-args)
   * [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
-  * [page.waitForRequest(url, options)](#pagewaitforrequesturl-options)
-  * [page.waitForResponse(url, options)](#pagewaitforresponseurl-options)
+  * [page.waitForRequest(urlOrPredicate, options)](#pagewaitforrequesturlorpredicate-options)
+  * [page.waitForResponse(urlOrPredicate, options)](#pagewaitforresponseurlorpredicate-options)
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [page.waitForXPath(xpath[, options])](#pagewaitforxpathxpath-options)
   * [page.workers()](#pageworkers)
@@ -1571,29 +1571,28 @@ await navigationPromise; // The navigationPromise resolves after navigation has 
 
 **NOTE** Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
 
-#### page.waitForRequest(url, options)
-- `url` <[string]|[RegExp]> A URL to wait for.
+#### page.waitForRequest(urlOrPredicate, options)
+- `urlOrPredicate` <[string]|[Function]> A URL or predicate to wait for.
 - `options` <[Object]> Optional waiting parameters
   - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout.
-  - `method` <[string]|[Array]> An HTTP method to match on a request.
 - returns: <[Promise]<[Request]>> Promise which resolves to the matched request.
 
 ```js
-const request = await page.waitForRequest(new RegExp('http://localhost/(method|post)'));
-return request.url();
+const firstRequest = await page.waitForRequest('http://example.com/resource');
+const finalRequest = await page.waitForRequest(request => request.url() === 'http://example.com' && request.method() === 'GET');
+return firstRequest.url();
 ```
 
-#### page.waitForResponse(url, options)
-- `url` <[string]|[RegExp]> A URL to wait for.
+#### page.waitForResponse(urlOrPredicate, options)
+- `urlOrPredicate` <[string]|[Function]> A URL or predicate to wait for.
 - `options` <[Object]> Optional waiting parameters
   - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout.
-  - `method` <[string]|[Array]> An HTTP method to match on the originating request.
-  - `statusCode` <[number]|[Array]> An HTTP status code to match on a response.  
 - returns: <[Promise]<[Response]>> Promise which resolves to the matched response.
 
 ```js
-const response = await page.waitForResponse('http://localhost/getData', { statusCode: [200, 204]});
-return response.ok();
+const firstResponse = await page.waitForResponse('https://example.com/resource');
+const finalResponse = await page.waitForResponse(response => response.url() === 'https://example.com' && response.status() === 200);
+return finalResponse.ok();
 ```
 
 #### page.waitForSelector(selector[, options])
@@ -3017,7 +3016,6 @@ reported.
 [Tracing]: #class-tracing "Tracing"
 [ElementHandle]: #class-elementhandle "ElementHandle"
 [UIEvent.detail]: https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail "UIEvent.detail"
-[RegExp]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp "RegExp"
 [Serializable]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Description "Serializable"
 [Touchscreen]: #class-touchscreen "Touchscreen"
 [Target]: #class-target "Target"
