@@ -2498,7 +2498,7 @@ expect(await tweetHandle.$eval('.retweets', node => node.innerText)).toBe('10');
 The method evaluates the XPath expression relative to the elementHandle. If there are no such elements, the method will resolve to an empty array.
 
 #### elementHandle.asElement()
-- returns: <[elementhandle]>
+- returns: <[ElementHandle]>
 
 #### elementHandle.boundingBox()
 - returns: <[Promise]<?[Object]>>
