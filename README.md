@@ -20,6 +20,7 @@ Most things that you can do manually in the browser can be done using Puppeteer!
 * Automate form submission, UI testing, keyboard input, etc.
 * Create an up-to-date, automated testing environment. Run your tests directly in the latest version of Chrome using the latest JavaScript and browser features.
 * Capture a [timeline trace](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/reference) of your site to help diagnose performance issues.
+* Test Chrome Extensions.
 <!-- [END usecases] -->
 
 Give it a spin: https://try-puppeteer.appspot.com/
@@ -199,13 +200,13 @@ Explore the [API documentation](docs/api.md) and [examples](https://github.com/G
       `const browser = await puppeteer.launch({devtools: true});`
 
   - Change default test timeout:
-      
+
       jest: `jest.setTimeout(100000);`
-      
+
       jasmine: `jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;`
-      
+
       mocha: `this.timeout(100000);` (don't forget to change test to use [function and not '=>'](https://stackoverflow.com/a/23492442))
-    
+
   - Add an evaluate statement with `debugger` inside / add  `debugger` to an existing evaluate statement:
 
     `await page.evaluate(() => {debugger;});`
@@ -276,7 +277,7 @@ We see Puppeteer as an **indivisible entity** with Chromium. Each version of Pup
 
 This is not an artificial constraint: A lot of work on Puppeteer is actually taking place in the Chromium repository. Here’s a typical story:
 - A Puppeteer bug is reported: https://github.com/GoogleChrome/puppeteer/issues/2709
-- It turned out this is an issue with the DevTools protocol, so we’re fixing it in Chromium: https://chromium-review.googlesource.com/c/chromium/src/+/1102154 
+- It turned out this is an issue with the DevTools protocol, so we’re fixing it in Chromium: https://chromium-review.googlesource.com/c/chromium/src/+/1102154
 - Once the upstream fix is landed, we roll updated Chromium into Puppeteer: https://github.com/GoogleChrome/puppeteer/pull/2769
 
 However, oftentimes it is desirable to use Puppeteer with the official Google Chrome rather than Chromium. For this to work, you should pick the version of Puppeteer that uses the Chromium version close enough to Chrome.

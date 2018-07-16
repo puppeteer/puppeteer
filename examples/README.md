@@ -10,23 +10,6 @@ NODE_PATH=../ node examples/search.js
 
 More complex and use case driven examples can be found at [github.com/GoogleChromeLabs/puppeteer-examples](https://github.com/GoogleChromeLabs/puppeteer-examples).
 
-# Tips & Tricks
-
-## Load a Chrome extension
-
-By default, Puppeteer disables extensions when launching Chrome. You can load a specific
-extension using:
-
-```js
-const browser = await puppeteer.launch({
-  headless: false,
-  args: [
-    '--disable-extensions-except=/path/to/extension/',
-    '--load-extension=/path/to/extension/',
-  ]
-});
-```
-
 # Other resources
 
 > Other useful tools, articles, and projects that use Puppeteer.
