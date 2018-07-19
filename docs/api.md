@@ -12,6 +12,7 @@ Next Release: **Aug 9, 2018**
 <!-- GEN:toc -->
 - [Overview](#overview)
 - [Environment Variables](#environment-variables)
+- [Working with Chrome Extensions](#working-with-chrome-extensions)
 - [class: Puppeteer](#class-puppeteer)
   * [puppeteer.connect(options)](#puppeteerconnectoptions)
   * [puppeteer.createBrowserFetcher([options])](#puppeteercreatebrowserfetcheroptions)
@@ -308,6 +309,35 @@ If puppeteer doesn't find them in environment, lowercased variant of these varia
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
 - `PUPPETEER_DOWNLOAD_HOST` - overwrite host part of URL that is used to download Chromium
 - `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of chrome you'd like puppeteer to use during the installation step.
+
+### Working with Chrome Extensions
+
+Puppeteer can be used for testing Chrome Extensions.
+
+> **NOTE** Extensions in Chrome / Chromium currently only work in non-headless mode.
+
+The following is the code for getting a handle to a [background page](https://developer.chrome.com/extensions/background_pages) of an extension whose source is located in `./my-extension`:
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const pathToExtension = require('path').join(__dirname, 'my-extension');
+  const browser = puppeteer.launch({
+    headless: false,
+    args: [
+      `--disable-extensions-except=${pathToExtension}`,
+      `--load-extension=${pathToExtension}`
+    ]
+  });
+  const targets = await browser.targets();
+  const backgroundPageTarget = targets.find(target => target.type() === 'background_page');
+  const backgroundPage = await backgroundPageTarget.page();
+  // Test the background page as you would any other page.
+  await browser.close();
+})();
+```
+
+> **NOTE** It is not yet possible to test extension popups or content scripts.
 
 ### class: Puppeteer
 
@@ -631,7 +661,7 @@ An array of all active targets inside the browser context.
 
 * extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)
 
-Page provides methods to interact with a single tab in Chromium. One [Browser] instance might have multiple [Page] instances.
+Page provides methods to interact with a single tab or [extension background page](https://developer.chrome.com/extensions/background_pages) in Chromium. One [Browser] instance might have multiple [Page] instances.
 
 This example creates a page, navigates it to a URL, and then saves a screenshot:
 ```js
