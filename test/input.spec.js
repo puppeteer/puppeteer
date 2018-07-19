@@ -28,6 +28,15 @@ module.exports.addTests = function({testRunner, expect, DeviceDescriptors}) {
       await page.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     });
+    it('should click with disabled javascript', async({page, server}) => {
+      await page.setJavaScriptEnabled(false);
+      await page.goto(server.PREFIX + '/wrappedlink.html');
+      await Promise.all([
+        page.click('a'),
+        page.waitForNavigation()
+      ]);
+      expect(page.url()).toBe(server.PREFIX + '/wrappedlink.html#clicked');
+    });
 
     it('should click offscreen buttons', async({page, server}) => {
       await page.goto(server.PREFIX + '/offscreenbuttons.html');
