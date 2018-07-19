@@ -318,6 +318,13 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(error).toBeTruthy();
       expect(error.message).toContain('waiting for selector "div" failed: timeout');
     });
+    it('should have an error message specifically for awaiting an element to be hidden', async({page, server}) => {
+      await page.setContent(`<div></div>`);
+      let error = null;
+      await page.waitForSelector('div', {hidden: true, timeout: 10}).catch(e => error = e);
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('waiting for selector "div" to be hidden failed: timeout');
+    });
 
     it('should respond to node attribute mutation', async({page, server}) => {
       let divFound = false;
