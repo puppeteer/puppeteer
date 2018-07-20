@@ -1277,6 +1277,7 @@ Page is guaranteed to have a main frame which persists during navigations.
     - `right` <[string]> Right margin, accepts values labeled with units.
     - `bottom` <[string]> Bottom margin, accepts values labeled with units.
     - `left` <[string]> Left margin, accepts values labeled with units.
+  - `preferCSSPageSize` <[boolean]> Prefer page size as defined by css. Defaults to `false`.
 - returns: <[Promise]<[Buffer]>> Promise which resolves with PDF buffer.
 
 > **NOTE** Generating a pdf is currently only supported in Chrome headless.
