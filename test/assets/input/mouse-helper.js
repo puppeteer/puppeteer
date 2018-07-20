@@ -1,6 +1,6 @@
 // This injects a box into the page that moves with the mouse;
 // Useful for debugging
-(function(){
+(() => {
   const box = document.createElement('div');
   box.classList.add('mouse-helper');
   const styleElement = document.createElement('style');

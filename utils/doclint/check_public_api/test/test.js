@@ -33,16 +33,16 @@ const {beforeAll, beforeEach, afterAll, afterEach} = runner;
 let browser;
 let page;
 
-beforeAll(async function() {
+beforeAll(async () => {
   browser = await puppeteer.launch({args: ['--no-sandbox']});
   page = await browser.newPage();
 });
 
-afterAll(async function() {
+afterAll(async () => {
   await browser.close();
 });
 
-describe('checkPublicAPI', function() {
+describe('checkPublicAPI', () => {
   it('diff-classes', testLint);
   it('diff-methods', testLint);
   it('diff-properties', testLint);

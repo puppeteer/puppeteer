@@ -16,7 +16,7 @@
 
 const Message = require('../Message');
 
-module.exports = function(sources, version) {
+module.exports = (sources, version) => {
   // Release version is everything that doesn't include "-".
   const isReleaseVersion = !version.includes('-');
   const lastReleasedAPILink = `[API](https://github.com/GoogleChrome/puppeteer/blob/v${version.split('-')[0]}/docs/api.md)`;

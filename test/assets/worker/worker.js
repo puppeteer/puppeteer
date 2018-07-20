@@ -8,7 +8,7 @@ self.addEventListener('message', event => {
   console.log('got this data: ' + event.data);
 });
 
-(async function() {
+(async() => {
   while (true) {
     self.postMessage(workerFunction.toString());
     await new Promise(x => setTimeout(x, 100));

@@ -4,9 +4,7 @@ class Foo {
   }
 
   returnNothing() {
-    let e = () => {
-      return 10;
-    }
+    let e = () => 10
     e();
   }
 

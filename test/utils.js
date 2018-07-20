@@ -20,7 +20,7 @@ const utils = module.exports = {
    * @param {string} frameId
    * @param {string} url
    */
-  attachFrame: async function(page, frameId, url) {
+  attachFrame: async(page, frameId, url) => {
     await page.evaluate(attachFrame, frameId, url);
 
     function attachFrame(frameId, url) {
@@ -36,7 +36,7 @@ const utils = module.exports = {
    * @param {!Page} page
    * @param {string} frameId
    */
-  detachFrame: async function(page, frameId) {
+  detachFrame: async(page, frameId) => {
     await page.evaluate(detachFrame, frameId);
 
     function detachFrame(frameId) {
@@ -50,7 +50,7 @@ const utils = module.exports = {
    * @param {string} frameId
    * @param {string} url
    */
-  navigateFrame: async function(page, frameId, url) {
+  navigateFrame: async(page, frameId, url) => {
     await page.evaluate(navigateFrame, frameId, url);
 
     function navigateFrame(frameId, url) {
@@ -65,7 +65,7 @@ const utils = module.exports = {
    * @param {string=} indentation
    * @return {string}
    */
-  dumpFrames: function(frame, indentation) {
+  dumpFrames: (frame, indentation) => {
     indentation = indentation || '';
     let result = indentation + frame.url().replace(/:\d{4}\//, ':<PORT>/');
     for (const child of frame.childFrames())
@@ -78,7 +78,5 @@ const utils = module.exports = {
    * @param {string} eventName
    * @return {!Promise<!Object>}
    */
-  waitEvent: function(emitter, eventName) {
-    return new Promise(fulfill => emitter.once(eventName, fulfill));
-  },
+  waitEvent: (emitter, eventName) => new Promise(fulfill => emitter.once(eventName, fulfill)),
 };
