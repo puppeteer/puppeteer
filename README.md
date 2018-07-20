@@ -69,7 +69,7 @@ Execute script on the command line
 node example.js
 ```
 
-Puppeteer sets an initial page size to 800px x 600px, which defines the screenshot size. The page size can be customized  with [`Page.setViewport()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pagesetviewportviewport).
+Puppeteer sets an initial page size to 800px x 600px, which defines the screenshot size. The page size can be customized  with [`page.setViewport()`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#pagesetviewportviewport).
 
 **Example** - create a PDF.
 
