@@ -25,68 +25,68 @@ const {beforeAll, beforeEach, afterAll, afterEach} = runner;
 
 const {expect} = new Matchers();
 
-describe('TransformAsyncFunctions', function() {
-  it('should convert a function expression', function(done) {
+describe('TransformAsyncFunctions', () => {
+  it('should convert a function expression', done => {
     const input = `(async function(){ return 123 })()`;
     const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
-  it('should convert an arrow function', function(done) {
+  it('should convert an arrow function', done => {
     const input = `(async () => 123)()`;
     const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
-  it('should convert an arrow function with curly braces', function(done) {
+  it('should convert an arrow function with curly braces', done => {
     const input = `(async () => { return 123 })()`;
     const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
-  it('should convert a function declaration', function(done) {
+  it('should convert a function declaration', done => {
     const input = `async function f(){ return 123; } f();`;
     const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
-  it('should convert await', function(done) {
+  it('should convert await', done => {
     const input = `async function f(){ return 23 + await Promise.resolve(100); } f();`;
     const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
-  it('should convert method', function(done) {
+  it('should convert method', done => {
     const input = `class X{async f() { return 123 }} (new X()).f();`;
     const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
-  it('should pass arguments', function(done) {
+  it('should pass arguments', done => {
     const input = `(async function(a, b){ return await a + await b })(Promise.resolve(100), 23)`;
     const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
-  it('should still work across eval', function(done) {
+  it('should still work across eval', done => {
     const input = `var str = (async function(){ return 123; }).toString(); eval('(' + str + ')')();`;
     const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
-  it('should work with double await', function(done) {
+  it('should work with double await', done => {
     const input = `async function f(){ return 23 + await Promise.resolve(50 + await Promise.resolve(50)); } f();`;
     const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
-  it('should work paren around arrow function', function(done) {
+  it('should work paren around arrow function', done => {
     const input = `(async x => ( 123))()`;
     const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);
     output.then(result => expect(result).toBe(123)).then(done);
   });
-  it('should work async arrow with await', function(done) {
+  it('should work async arrow with await', done => {
     const input = `(async() => await 123)()`;
     const output = eval(transformAsyncFunctions(input));
     expect(output instanceof Promise).toBe(true);

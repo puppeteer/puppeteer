@@ -25,8 +25,8 @@ const {it, fit, xit} = runner;
 const {beforeAll, beforeEach, afterAll, afterEach} = runner;
 const {expect} = new Matchers();
 
-describe('preprocessor', function() {
-  it('should throw for unknown command', function() {
+describe('preprocessor', () => {
+  it('should throw for unknown command', () => {
     const source = new Source('doc.md', `
       <!-- gen:unknown-command -->something<!-- gen:stop -->
     `);
@@ -36,8 +36,8 @@ describe('preprocessor', function() {
     expect(messages[0].type).toBe('error');
     expect(messages[0].text).toContain('Unknown command');
   });
-  describe('gen:version', function() {
-    it('should work', function() {
+  describe('gen:version', () => {
+    it('should work', () => {
       const source = new Source('doc.md', `
         Puppeteer <!-- gen:version -->XXX<!-- gen:stop -->
       `);
@@ -49,7 +49,7 @@ describe('preprocessor', function() {
         Puppeteer <!-- gen:version -->v1.2.0<!-- gen:stop -->
       `);
     });
-    it('should work for *-post versions', function() {
+    it('should work for *-post versions', () => {
       const source = new Source('doc.md', `
         Puppeteer <!-- gen:version -->XXX<!-- gen:stop -->
       `);
@@ -61,13 +61,13 @@ describe('preprocessor', function() {
         Puppeteer <!-- gen:version -->Tip-Of-Tree<!-- gen:stop -->
       `);
     });
-    it('should tolerate different writing', function() {
+    it('should tolerate different writing', () => {
       const source = new Source('doc.md', `Puppeteer v<!--   gEn:version -->WHAT
 <!--     GEN:stop   -->`);
       preprocessor([source], '1.1.1');
       expect(source.text()).toBe(`Puppeteer v<!--   gEn:version -->v1.1.1<!--     GEN:stop   -->`);
     });
-    it('should not tolerate missing gen:stop', function() {
+    it('should not tolerate missing gen:stop', () => {
       const source = new Source('doc.md', `<!--GEN:version-->`);
       const messages = preprocessor([source], '1.2.0');
       expect(source.hasUpdatedText()).toBe(false);
@@ -76,8 +76,8 @@ describe('preprocessor', function() {
       expect(messages[0].text).toContain(`Failed to find 'gen:stop'`);
     });
   });
-  describe('gen:empty-if-release', function() {
-    it('should clear text when release version', function() {
+  describe('gen:empty-if-release', () => {
+    it('should clear text when release version', () => {
       const source = new Source('doc.md', `
         <!-- gen:empty-if-release -->XXX<!-- gen:stop -->
       `);
@@ -89,7 +89,7 @@ describe('preprocessor', function() {
         <!-- gen:empty-if-release --><!-- gen:stop -->
       `);
     });
-    it('should keep text when non-release version', function() {
+    it('should keep text when non-release version', () => {
       const source = new Source('doc.md', `
         <!-- gen:empty-if-release -->XXX<!-- gen:stop -->
       `);
@@ -100,8 +100,8 @@ describe('preprocessor', function() {
       `);
     });
   });
-  describe('gen:empty-if-release', function() {
-    it('should work with non-release version', function() {
+  describe('gen:empty-if-release', () => {
+    it('should work with non-release version', () => {
       const source = new Source('doc.md', `
         <!-- gen:last-released-api -->XXX<!-- gen:stop -->
       `);
@@ -113,7 +113,7 @@ describe('preprocessor', function() {
         <!-- gen:last-released-api -->[API](https://github.com/GoogleChrome/puppeteer/blob/v1.3.0/docs/api.md)<!-- gen:stop -->
       `);
     });
-    it('should work with release version', function() {
+    it('should work with release version', () => {
       const source = new Source('doc.md', `
         <!-- gen:last-released-api -->XXX<!-- gen:stop -->
       `);
@@ -126,7 +126,7 @@ describe('preprocessor', function() {
       `);
     });
   });
-  describe('gen:toc', function() {
+  describe('gen:toc', () => {
     it('should work', () => {
       const source = new Source('doc.md', `<!-- gen:toc -->XXX<!-- gen:stop -->
         ### class: page
@@ -146,7 +146,7 @@ describe('preprocessor', function() {
         #### page.$$`);
     });
   });
-  it('should work with multiple commands', function() {
+  it('should work with multiple commands', () => {
     const source = new Source('doc.md', `
       <!-- gen:version -->XXX<!-- gen:stop -->
       <!-- gen:empty-if-release -->YYY<!-- gen:stop -->
