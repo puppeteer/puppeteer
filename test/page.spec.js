@@ -550,12 +550,12 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
         setTimeout(resolve.bind(null, 'timeout reached'), timeout);
       });
       const navigationPromise = page.goto(`data:text/html,<script>console.log(1)</script>`, {timeout});
-      const raceWinner = await Promise.race([
+      const raceResult = await Promise.race([
         navigationPromise,
         timeoutPromise
       ]);
-      expect(raceWinner).toBeTruthy();
-      expect(raceWinner instanceof Object).toBe(true);
+      expect(raceResult).toBeTruthy();
+      expect(raceResult instanceof Object).toBe(true);
     });
     it('should work when navigating to valid url', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE);
