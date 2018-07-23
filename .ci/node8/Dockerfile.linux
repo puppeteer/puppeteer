@@ -1,4 +1,4 @@
-FROM node:7.10.1
+FROM node:8.11.3
 
 RUN apt-get update && \
     apt-get -y install xvfb gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 \
