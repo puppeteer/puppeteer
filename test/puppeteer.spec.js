@@ -211,6 +211,15 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         await page.close();
         await browser.close();
       });
+      it('should not include --mute-audio in headless mode if ignoreDefaultArgs is true', async() => {
+        const options = Object.assign({}, defaultBrowserOptions);
+        options.headless = true;
+        options.ignoreDefaultArgs = true;
+        const browser = await puppeteer.launch(options);
+        const { spawnargs } = browser.process();
+        expect(spawnargs.includes('--mute-audio')).toBe(false);
+        await browser.close();
+      });
       it('should have default url when launching browser', async function() {
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const pages = (await browser.pages()).map(page => page.url());
