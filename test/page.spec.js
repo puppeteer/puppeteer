@@ -685,13 +685,6 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       expect(response.ok()).toBe(true);
       expect(response.url()).toContain('grid.html');
     });
-    it('should work when navigation is happening in a subframe', async({page, server}) => {
-      await page.goto(server.PREFIX + '/frames/one-frame.html');
-      const frame = await page.frames()[1];
-      const navigationPromise = page.waitForNavigation({frame});
-      await frame.evaluate(() => window.location = '/grid.html');
-      await navigationPromise;
-    });
     it('should work with both domcontentloaded and load', async({page, server}) => {
       let response = null;
       server.setRoute('/one-style.css', (req, res) => response = res);

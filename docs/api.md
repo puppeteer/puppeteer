@@ -1585,7 +1585,6 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
 
 #### page.waitForNavigation(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
-  - `frame` <[Frame]> A frame where navigation is occurring. Defaults to the main (top) frame of the page.
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) method.
   - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider navigation to be finished when the `load` event is fired.
@@ -2247,6 +2246,27 @@ puppeteer.launch().then(async browser => {
   await browser.close();
 });
 ```
+
+#### frame.waitForNavigation(options)
+- `options` <[Object]> Navigation parameters which might have the following properties:
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout.
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
+    - `load` - consider navigation to be finished when the `load` event is fired.
+    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
+    - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
+- returns: <[Promise]<[?Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
+
+This resolves when the frame navigates to a new URL. It is useful for when you run code
+which will indirectly cause the frame to navigate. Consider this example:
+
+```js
+const navigationPromise = frame.waitForNavigation();
+await frame.click('a.my-link'); // Clicking the link will indirectly cause a navigation
+await navigationPromise; // The navigationPromise resolves after navigation has finished
+```
+
+**NOTE** Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
 
 #### frame.waitForSelector(selector[, options])
 - `selector` <[string]> A [selector] of an element to wait for
