@@ -21,7 +21,7 @@ script:
   - 'if [ "$NODE6" = "true" ]; then npm run unit-node6; fi'
 jobs:
   include:
-    - node_js: "10.7.0"
+    - node_js: "10.6.0"
       env: NODE10=true
     - node_js: "6.12.3"
       env: NODE6=true

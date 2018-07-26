@@ -28,8 +28,8 @@ task:
   env:
     HOMEBREW_NO_AUTO_UPDATE: 1
   node_install_script:
-    - brew install node@8
-    - brew link --force node@8
+    - brew install node@10.6.0
+    - brew link --force node@10.6.0
   install_script: npm install --unsafe-perm
   lint_script: npm run lint
   coverage_script: npm run coverage
