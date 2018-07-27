@@ -299,7 +299,7 @@ The Puppeteer API is hierarchical and mirrors the browser structure.
 - [`BrowserContext`](#class-browsercontext) instance defines a browsing session and can own multiple pages.
 - [`Page`](#class-page) has at least one frame: main frame. There might be other frames created by [iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) or [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frame) tags.
 - [`Frame`](#class-frame) has at least one execution context - the default execution context - where the frame's JavaScript is executed. A Frame might have additional execution contexts that are associated with [extensions](https://developer.chrome.com/extensions).
-- [`Worker`](#class-worker) has a single execution context and and facilitates interacting with [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
+- [`Worker`](#class-worker) has a single execution context and facilitates interacting with [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
 
 (Diagram source: [link](https://docs.google.com/drawings/d/1Q_AM6KYs9kbyLZF-Lpp5mtpAWth73Cq8IKCsWYgi8MM/edit?usp=sharing))
 
@@ -1286,6 +1286,7 @@ Page is guaranteed to have a main frame which persists during navigations.
     - `right` <[string]> Right margin, accepts values labeled with units.
     - `bottom` <[string]> Bottom margin, accepts values labeled with units.
     - `left` <[string]> Left margin, accepts values labeled with units.
+  - `preferCSSPageSize` <[boolean]> Give any CSS `@page` size declared in the page priority over what is declared in `width` and `height` or `format` options. Defaults to `false`, which will scale the content to fit the paper size.
 - returns: <[Promise]<[Buffer]>> Promise which resolves with PDF buffer.
 
 > **NOTE** Generating a pdf is currently only supported in Chrome headless.
@@ -1566,6 +1567,22 @@ This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `number`, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
+```js
+// wait for selector
+await page.waitFor('.foo');
+// wait for 1 second
+await page.waitFor(1000);
+// wait for predicate
+await page.waitFor(() => !!document.querySelector('.foo'));
+```
+
+To pass arguments from node.js to the predicate of `page.waitFor` function:
+
+```js
+const selector = '.foo';
+await page.waitFor(selector => !!document.querySelector(selector), {}, selector);
+```
+
 Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args).
 
 #### page.waitForFunction(pageFunction[, options[, ...args]])
@@ -1590,6 +1607,14 @@ puppeteer.launch().then(async browser => {
   await browser.close();
 });
 ```
+
+To pass arguments from node.js to the predicate of `page.waitForFunction` function:
+
+```js
+const selector = '.foo';
+await page.waitForFunction(selector => !!document.querySelector(selector), {}, selector);
+```
+
 Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args).
 
 #### page.waitForNavigation(options)
@@ -2233,6 +2258,22 @@ This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `number`, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
 - otherwise, an exception is thrown
 
+```js
+// wait for selector
+await page.waitFor('.foo');
+// wait for 1 second
+await page.waitFor(1000);
+// wait for predicate
+await page.waitFor(() => !!document.querySelector('.foo'));
+```
+
+To pass arguments from node.js to the predicate of `page.waitFor` function:
+
+```js
+const selector = '.foo';
+await page.waitFor(selector => !!document.querySelector(selector), {}, selector);
+```
+
 #### frame.waitForFunction(pageFunction[, options[, ...args]])
 - `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
@@ -2254,6 +2295,13 @@ puppeteer.launch().then(async browser => {
   await watchDog;
   await browser.close();
 });
+```
+
+To pass arguments from node.js to the predicate of `page.waitForFunction` function:
+
+```js
+const selector = '.foo';
+await page.waitForFunction(selector => !!document.querySelector(selector), {}, selector);
 ```
 
 #### frame.waitForNavigation(options)
