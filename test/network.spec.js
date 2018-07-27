@@ -199,6 +199,41 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
+  describe('Request.isNavigationRequest', () => {
+    it('should work', async({page, server}) => {
+      const requests = new Map();
+      page.on('request', request => requests.set(request.url().split('/').pop(), request));
+      server.setRedirect('/rrredirect', '/frames/one-frame.html');
+      await page.goto(server.PREFIX + '/rrredirect');
+      expect(requests.get('rrredirect').isNavigationRequest()).toBe(true);
+      expect(requests.get('one-frame.html').isNavigationRequest()).toBe(true);
+      expect(requests.get('frame.html').isNavigationRequest()).toBe(true);
+      expect(requests.get('script.js').isNavigationRequest()).toBe(false);
+      expect(requests.get('style.css').isNavigationRequest()).toBe(false);
+    });
+    it('should work with request interception', async({page, server}) => {
+      const requests = new Map();
+      page.on('request', request => {
+        requests.set(request.url().split('/').pop(), request);
+        request.continue();
+      });
+      await page.setRequestInterception(true);
+      server.setRedirect('/rrredirect', '/frames/one-frame.html');
+      await page.goto(server.PREFIX + '/rrredirect');
+      expect(requests.get('rrredirect').isNavigationRequest()).toBe(true);
+      expect(requests.get('one-frame.html').isNavigationRequest()).toBe(true);
+      expect(requests.get('frame.html').isNavigationRequest()).toBe(true);
+      expect(requests.get('script.js').isNavigationRequest()).toBe(false);
+      expect(requests.get('style.css').isNavigationRequest()).toBe(false);
+    });
+    it('should work when navigating to image', async({page, server}) => {
+      const requests = [];
+      page.on('request', request => requests.push(request));
+      await page.goto(server.PREFIX + '/pptr.png');
+      expect(requests[0].isNavigationRequest()).toBe(true);
+    });
+  });
+
   describe('Page.setRequestInterception', function() {
     it('should intercept', async({page, server}) => {
       await page.setRequestInterception(true);
@@ -207,6 +242,7 @@ module.exports.addTests = function({testRunner, expect}) {
         expect(request.headers()['user-agent']).toBeTruthy();
         expect(request.method()).toBe('GET');
         expect(request.postData()).toBe(undefined);
+        expect(request.isNavigationRequest()).toBe(true);
         expect(request.resourceType()).toBe('document');
         expect(request.frame() === page.mainFrame()).toBe(true);
         expect(request.frame().url()).toBe('about:blank');
@@ -327,6 +363,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(redirectChain[2].url()).toContain('/non-existing-page-3.html');
       for (let i = 0; i < redirectChain.length; ++i) {
         const request = redirectChain[i];
+        expect(request.isNavigationRequest()).toBe(true);
         expect(request.redirectChain().indexOf(request)).toBe(i);
       }
     });

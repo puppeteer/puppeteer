@@ -126,6 +126,26 @@ describe('preprocessor', function() {
       `);
     });
   });
+  describe('gen:toc', function() {
+    it('should work', () => {
+      const source = new Source('doc.md', `<!-- gen:toc -->XXX<!-- gen:stop -->
+        ### class: page
+        #### page.$
+        #### page.$$`);
+      const messages = preprocessor([source], '1.3.0');
+      expect(messages.length).toBe(1);
+      expect(messages[0].type).toBe('warning');
+      expect(messages[0].text).toContain('doc.md');
+      expect(source.text()).toBe(`<!-- gen:toc -->
+- [class: page](#class-page)
+  * [page.$](#page)
+  * [page.$$](#page-1)
+<!-- gen:stop -->
+        ### class: page
+        #### page.$
+        #### page.$$`);
+    });
+  });
   it('should work with multiple commands', function() {
     const source = new Source('doc.md', `
       <!-- gen:version -->XXX<!-- gen:stop -->

@@ -36,8 +36,10 @@ const revision = process.env.PUPPETEER_CHROMIUM_REVISION || process.env.npm_conf
 const revisionInfo = browserFetcher.revisionInfo(revision);
 
 // Do nothing if the revision is already downloaded.
-if (revisionInfo.local)
+if (revisionInfo.local) {
+  generateProtocolTypesIfNecessary(false /* updated */);
   return;
+}
 
 // Override current environment proxy settings with npm configuration, if any.
 const NPM_HTTPS_PROXY = process.env.npm_config_https_proxy || process.env.npm_config_proxy;
@@ -65,7 +67,7 @@ function onSuccess(localRevisions) {
   localRevisions = localRevisions.filter(revision => revision !== revisionInfo.revision);
   // Remove previous chromium revisions.
   const cleanupOldVersions = localRevisions.map(revision => browserFetcher.remove(revision));
-  return Promise.all(cleanupOldVersions);
+  return Promise.all([...cleanupOldVersions, generateProtocolTypesIfNecessary(true /* updated */)]);
 }
 
 /**
@@ -107,16 +109,31 @@ function buildNode6IfNecessary() {
   // folder.
   if (!fs.existsSync(path.join('utils', 'node6-transform')))
     return;
-  let asyncawait = true;
-  try {
-    new Function('async function test(){await 1}');
-  } catch (error) {
-    asyncawait = false;
-  }
   // if async/await is supported, then node6 is not needed.
-  if (asyncawait)
+  if (supportsAsyncAwait())
     return;
   // Re-build node6/ folder.
   console.log('Building Puppeteer for Node 6');
   require(path.join(__dirname, 'utils', 'node6-transform'));
+}
+
+function supportsAsyncAwait() {
+  try {
+    new Function('async function test(){await 1}');
+  } catch (error) {
+    return false;
+  }
+  return true;
+}
+
+function generateProtocolTypesIfNecessary(updated) {
+  if (!supportsAsyncAwait())
+    return;
+  const fs = require('fs');
+  const path = require('path');
+  if (!fs.existsSync(path.join(__dirname, 'utils', 'protocol-types-generator')))
+    return;
+  if (!updated && fs.existsSync(path.join(__dirname, 'lib', 'protocol.d.ts')))
+    return;
+  return require('./utils/protocol-types-generator');
 }

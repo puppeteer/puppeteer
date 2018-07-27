@@ -16,7 +16,7 @@
 
 const {waitEvent} = require('./utils');
 
-module.exports.addTests = function({testRunner, expect}) {
+module.exports.addTests = function({testRunner, expect, puppeteer}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -129,6 +129,16 @@ module.exports.addTests = function({testRunner, expect}) {
       await waitEvent(newPage, 'load');
       // Cleanup.
       await newPage.close();
+    });
+    it('should have an opener', async({page, server, browser}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const [createdTarget] = await Promise.all([
+        new Promise(fulfill => browser.once('targetcreated', target => fulfill(target))),
+        page.goto(server.PREFIX + '/popup/window-open.html')
+      ]);
+      expect((await createdTarget.page()).url()).toBe(server.PREFIX + '/popup/popup.html');
+      expect(createdTarget.opener()).toBe(page.target());
+      expect(page.target().opener()).toBe(null);
     });
   });
 };

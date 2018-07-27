@@ -39,9 +39,9 @@ information on using pull requests.
 
 ## Code Style
 
-- coding style is fully defined in [.eslintrc](https://github.com/GoogleChrome/puppeteer/blob/master/.eslintrc.js)
-- code should be annotated with [closure annotations](https://github.com/google/closure-compiler/wiki/Annotating-JavaScript-for-the-Closure-Compiler)
-- comments should be generally avoided. If the code would not be understood without comments, consider re-writing the code to make it self-explanatory
+- Coding style is fully defined in [.eslintrc](https://github.com/GoogleChrome/puppeteer/blob/master/.eslintrc.js)
+- Code should be annotated with [closure annotations](https://github.com/google/closure-compiler/wiki/Annotating-JavaScript-for-the-Closure-Compiler).
+- Comments should be generally avoided. If the code would not be understood without comments, consider re-writing the code to make it self-explanatory.
 
 To run code linter, use:
 
@@ -52,11 +52,11 @@ npm run lint
 ## API guidelines
 
 When authoring new API methods, consider the following:
-- expose as little information as needed. When in doubt, don’t expose new information
-- methods are used in favor of getters/setters
-  - the only exception is namespaces, e.g. `page.keyboard` and `page.coverage`
-- all string literals must be small case. This includes event names and option values
-- avoid adding "sugar" API (API that is trivially implementable in user-space) unless they're **very** demanded
+- Expose as little information as needed. When in doubt, don’t expose new information.
+- Methods are used in favor of getters/setters.
+  - The only exception is namespaces, e.g. `page.keyboard` and `page.coverage`
+- All string literals must be small case. This includes event names and option values.
+- Avoid adding "sugar" API (API that is trivially implementable in user-space) unless they're **very** demanded.
 
 ## Commit Messages
 
@@ -71,16 +71,16 @@ footer
 ```
 
 1. *label* is one of the following:
-    - `fix` - puppeteer bug fixes
-    - `feat` - puppeteer features
-    - `docs` - changes to docs, e.g. `docs(api.md): ..` to change documentation
-    - `test` - changes to puppeteer tests infrastructure
-    - `style` - puppeteer code style: spaces/alignment/wrapping etc
-    - `chore` - build-related work, e.g. doclint changes / travis / appveyor
-2. *namespace* is put in parenthesis after label and is optional
-3. *title* is a brief summary of changes
-4. *description* is **optional**, new-line separated from title and is in present tense
-5. *footer* is **optional**, new-line separated from *description* and contains "fixes" / "references" attribution to github issues
+    - `fix` - puppeteer bug fixes.
+    - `feat` - puppeteer features.
+    - `docs` - changes to docs, e.g. `docs(api.md): ..` to change documentation.
+    - `test` - changes to puppeteer tests infrastructure.
+    - `style` - puppeteer code style: spaces/alignment/wrapping etc.
+    - `chore` - build-related work, e.g. doclint changes / travis / appveyor.
+2. *namespace* is put in parenthesis after label and is optional.
+3. *title* is a brief summary of changes.
+4. *description* is **optional**, new-line separated from title and is in present tense.
+5. *footer* is **optional**, new-line separated from *description* and contains "fixes" / "references" attribution to github issues.
 6. *footer* should also include "BREAKING CHANGE" if current API clients will break due to this change. It should explain what changed and how to get the old behavior.
 
 Example:
@@ -101,7 +101,7 @@ To deliver to a different location, use "deliver" option:
 
 All public API should have a descriptive entry in the [docs/api.md](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md). There's a [documentation linter](https://github.com/GoogleChrome/puppeteer/tree/master/utils/doclint) which makes sure documentation is aligned with the codebase.
 
-To run documentation linter, use
+To run documentation linter, use:
 
 ```bash
 npm run doc
@@ -110,18 +110,18 @@ npm run doc
 ## Adding New Dependencies
 
 For all dependencies (both installation and development):
-- **Do not add** a dependency if the desired functionality is easily implementable
-- if adding a dependency, it should be well-maintained and trustworthy
+- **Do not add** a dependency if the desired functionality is easily implementable.
+- If adding a dependency, it should be well-maintained and trustworthy.
 
 A barrier for introducing new installation dependencies is especially high:
-- **Do not add** installation dependency unless it's critical to project success
+- **Do not add** installation dependency unless it's critical to project success.
 
 ## Writing Tests
 
-- every feature should be accompanied by a test
-- every public api event/method should be accompanied by a test
-- tests should be *hermetic*. Tests should not depend on external services.
-- tests should work on all three platforms: Mac, Linux and Win. This is especially important for screenshot tests.
+- Every feature should be accompanied by a test.
+- Every public api event/method should be accompanied by a test.
+- Tests should be *hermetic*. Tests should not depend on external services.
+- Tests should work on all three platforms: Mac, Linux and Win. This is especially important for screenshot tests.
 
 Puppeteer tests are located in [test/test.js](https://github.com/GoogleChrome/puppeteer/blob/master/test/test.js)
 and are written with a [TestRunner](https://github.com/GoogleChrome/puppeteer/tree/master/utils/testrunner) framework.
@@ -150,10 +150,10 @@ npm run unit -- -j 4
 ```js
   ...
   // Using "fit" to run specific test
-  fit('should work', SX(async function() {
-    const response = await page.goto(EMPTY_PAGE);
+  fit('should work', async function({server, page}) {
+    const response = await page.goto(server.EMPTY_PAGE);
     expect(response.ok).toBe(true);
-  }))
+  })
 ```
 
 - To disable a specific test, substitute the `it` with `xit` (mnemonic rule: '*cross it*'):
@@ -161,10 +161,10 @@ npm run unit -- -j 4
 ```js
   ...
   // Using "xit" to skip specific test
-  xit('should work', SX(async function() {
-    const response = await page.goto(EMPTY_PAGE);
+  xit('should work', async function({server, page}) {
+    const response = await page.goto(server.EMPTY_PAGE);
     expect(response.ok).toBe(true);
-  }))
+  })
 ```
 
 - To run tests in non-headless mode:
@@ -203,4 +203,26 @@ npm run coverage
 
 ## Debugging Puppeteer
 
-See [Debugging Tips](README.md#debugging-tips) in the readme
+See [Debugging Tips](README.md#debugging-tips) in the readme.
+
+## [For Project Maintainers] Releasing to NPM
+
+Releasing to NPM consists of 3 phases:
+1. Source Code: mark a release.
+    1. Bump `package.json` version following the SEMVER rules and send a PR titled `'chore: mark version vXXX.YYY.ZZZ'` ([example](https://github.com/GoogleChrome/puppeteer/commit/808bf8e5582482a1d849ff22a51e52024810905c)).
+    2. Make sure the PR passes **all checks**.
+        - **WHY**: there are linters in place that help to avoid unnecessary errors, e.g. [like this](https://github.com/GoogleChrome/puppeteer/pull/2446)
+    3. Merge the PR.
+    4. Once merged, publish release notes using the "create new tag" option.
+        - **NOTE**: tag names are prefixed with `'v'`, e.g. for version `1.4.0` tag is `v1.4.0`.
+2. Publish to NPM.
+    1. On your local machine, pull from [upstream](https://github.com/GoogleChrome/puppeteer) and make sure the last commit is the one just merged.
+    2. Run `git status` and make sure there are no untracked files.
+        - **WHY**: this is to avoid bundling unnecessary files to NPM package
+    3. Run [`pkgfiles`](https://www.npmjs.com/package/pkgfiles) to make sure you don't publish anything unnecessary.
+    4. Run `npm publish`.
+3. Source Code: mark post-release.
+    1. Bump `package.json` version to `-post` version and send a PR titled `'chore: bump version to vXXX.YYY.ZZZ-post'` ([example](https://github.com/GoogleChrome/puppeteer/commit/d02440d1eac98028e29f4e1cf55413062a259156))
+        - **NOTE**: make sure to update the "released APIs" section in the top of `docs/api.md`.
+        - **NOTE**: no other commits should be landed in-between release commit and bump commit.
+

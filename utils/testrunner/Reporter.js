@@ -83,6 +83,10 @@ class Reporter {
             console.log(stack.join('\n'));
           }
         }
+        if (test.output) {
+          console.log('  Output:');
+          console.log(test.output.split('\n').map(line => '    ' + line).join('\n'));
+        }
         console.log('');
       }
     }

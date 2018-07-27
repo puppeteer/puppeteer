@@ -16,7 +16,7 @@
 const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
-const {waitEvent, getPDFPages, cssPixelsToInches} = require('./utils');
+const {waitEvent} = require('./utils');
 
 module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescriptors, headless}) {
   const {describe, xdescribe, fdescribe} = testRunner;
@@ -53,6 +53,12 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       expect(dialog.message()).toBe('');
       dialog.accept();
       await waitEvent(newPage, 'close');
+    });
+    it('should set the page close state', async({ browser }) => {
+      const newPage = await browser.newPage();
+      expect(newPage.isClosed()).toBe(false);
+      await newPage.close();
+      expect(newPage.isClosed()).toBe(true);
     });
   });
 
@@ -108,6 +114,18 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       await page.evaluate(() => not.existing.object.property).catch(e => error = e);
       expect(error).toBeTruthy();
       expect(error.message).toContain('not is not defined');
+    });
+    it('should support thrown strings as error messages', async({page, server}) => {
+      let error = null;
+      await page.evaluate(() => { throw 'qwerty'; }).catch(e => error = e);
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('qwerty');
+    });
+    it('should support thrown numbers as error messages', async({page, server}) => {
+      let error = null;
+      await page.evaluate(() => { throw 100500; }).catch(e => error = e);
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('100500');
     });
     it('should return complex objects', async({page, server}) => {
       const object = {foo: 'bar!'};
@@ -195,6 +213,28 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       const aHandle = await page.evaluateHandle(() => 5);
       const isFive = await page.evaluate(e => Object.is(e, 5), aHandle);
       expect(isFive).toBeTruthy();
+    });
+    it('should simulate a user gesture', async({page, server}) => {
+      await page.evaluate(playAudio);
+      // also test evaluating strings
+      await page.evaluate(`(${playAudio})()`);
+
+      function playAudio() {
+        const audio = document.createElement('audio');
+        audio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+        // This returns a promise which throws if it was not triggered by a user gesture.
+        return audio.play();
+      }
+    });
+    it('should throw a nice error after a navigation', async({page, server}) => {
+      const executionContext = await page.mainFrame().executionContext();
+
+      await Promise.all([
+        page.waitForNavigation(),
+        executionContext.evaluate(() => window.location.reload())
+      ]);
+      const error = await executionContext.evaluate(() => null).catch(e => e);
+      expect(error.message).toContain('navigation');
     });
   });
 
@@ -347,10 +387,10 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
     });
     it('should trigger correct Log', async({page, server}) => {
       await page.goto('about:blank');
-      let message;
-      page.on('console', event => message = event);
-      page.evaluate(async url => fetch(url).catch(e => {}), server.EMPTY_PAGE);
-      await waitEvent(page, 'console');
+      const [message] = await Promise.all([
+        waitEvent(page, 'console'),
+        page.evaluate(async url => fetch(url).catch(e => {}), server.EMPTY_PAGE)
+      ]);
       expect(message.text()).toContain('No \'Access-Control-Allow-Origin\'');
       expect(message.type()).toEqual('error');
     });
@@ -431,6 +471,14 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'domcontentloaded'});
       expect(response.status()).toBe(200);
       expect(response.securityDetails()).toBe(null);
+    });
+    xit('should work when page calls history API in beforeunload', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        window.addEventListener('beforeunload', () => history.replaceState(null, 'initial', window.location.href), false);
+      });
+      const response = await page.goto(server.PREFIX + '/grid.html');
+      expect(response.status()).toBe(200);
     });
     it('should navigate to empty page with networkidle0', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle0'});
@@ -660,10 +708,11 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
     it('should work with clicking on anchor links', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(`<a href='#foobar'>foobar</a>`);
-      await Promise.all([
+      const [response] = await Promise.all([
+        page.waitForNavigation(),
         page.click('a'),
-        page.waitForNavigation()
       ]);
+      expect(response).toBe(null);
       expect(page.url()).toBe(server.EMPTY_PAGE + '#foobar');
     });
     it('should work with history.pushState()', async({page, server}) => {
@@ -674,10 +723,11 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
           function pushState() { history.pushState({}, '', 'wow.html') }
         </script>
       `);
-      await Promise.all([
+      const [response] = await Promise.all([
+        page.waitForNavigation(),
         page.click('a'),
-        page.waitForNavigation()
       ]);
+      expect(response).toBe(null);
       expect(page.url()).toBe(server.PREFIX + '/wow.html');
     });
     it('should work with history.replaceState()', async({page, server}) => {
@@ -688,10 +738,11 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
           function replaceState() { history.replaceState({}, '', '/replaced.html') }
         </script>
       `);
-      await Promise.all([
+      const [response] = await Promise.all([
+        page.waitForNavigation(),
         page.click('a'),
-        page.waitForNavigation()
       ]);
+      expect(response).toBe(null);
       expect(page.url()).toBe(server.PREFIX + '/replaced.html');
     });
     it('should work with DOM history.back()/history.forward()', async({page, server}) => {
@@ -707,15 +758,17 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
         </script>
       `);
       expect(page.url()).toBe(server.PREFIX + '/second.html');
-      await Promise.all([
+      const [backResponse] = await Promise.all([
+        page.waitForNavigation(),
         page.click('a#back'),
-        page.waitForNavigation()
       ]);
+      expect(backResponse).toBe(null);
       expect(page.url()).toBe(server.PREFIX + '/first.html');
-      await Promise.all([
+      const [forwardResponse] = await Promise.all([
+        page.waitForNavigation(),
         page.click('a#forward'),
-        page.waitForNavigation()
       ]);
+      expect(forwardResponse).toBe(null);
       expect(page.url()).toBe(server.PREFIX + '/second.html');
     });
     it('should work when subframe issues window.stop()', async({page, server}) => {
@@ -730,6 +783,84 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       });
       frame.evaluate(() => window.stop());
       await navigationPromise;
+    });
+  });
+
+  describe('Page.waitForRequest', function() {
+    it('should work', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const [request] = await Promise.all([
+        page.waitForRequest(server.PREFIX + '/digits/2.png'),
+        page.evaluate(() => {
+          fetch('/digits/1.png');
+          fetch('/digits/2.png');
+          fetch('/digits/3.png');
+        })
+      ]);
+      expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
+    });
+    it('should work with predicate', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const [request] = await Promise.all([
+        page.waitForRequest(request => request.url() === server.PREFIX + '/digits/2.png'),
+        page.evaluate(() => {
+          fetch('/digits/1.png');
+          fetch('/digits/2.png');
+          fetch('/digits/3.png');
+        })
+      ]);
+      expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
+    });
+    it('should work with no timeout', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const [request] = await Promise.all([
+        page.waitForRequest(server.PREFIX + '/digits/2.png', {timeout: 0}),
+        page.evaluate(() => setTimeout(() => {
+          fetch('/digits/1.png');
+          fetch('/digits/2.png');
+          fetch('/digits/3.png');
+        }, 50))
+      ]);
+      expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
+    });
+  });
+
+  describe('Page.waitForResponse', function() {
+    it('should work', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const [response] = await Promise.all([
+        page.waitForResponse(server.PREFIX + '/digits/2.png'),
+        page.evaluate(() => {
+          fetch('/digits/1.png');
+          fetch('/digits/2.png');
+          fetch('/digits/3.png');
+        })
+      ]);
+      expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
+    });
+    it('should work with predicate', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const [response] = await Promise.all([
+        page.waitForResponse(response => response.url() === server.PREFIX + '/digits/2.png'),
+        page.evaluate(() => {
+          fetch('/digits/1.png');
+          fetch('/digits/2.png');
+          fetch('/digits/3.png');
+        })
+      ]);
+      expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
+    });
+    it('should work with no timeout', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const [response] = await Promise.all([
+        page.waitForResponse(server.PREFIX + '/digits/2.png', {timeout: 0}),
+        page.evaluate(() => setTimeout(() => {
+          fetch('/digits/1.png');
+          fetch('/digits/2.png');
+          fetch('/digits/3.png');
+        }, 50))
+      ]);
+      expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
     });
   });
 
@@ -1223,6 +1354,11 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       await page.goto(server.PREFIX + '/detect-touch.html');
       expect(await page.evaluate(() => document.body.textContent.trim())).toBe('YES');
     });
+    it('should detect touch when applying viewport with touches', async({page, server}) => {
+      await page.setViewport({ width: 800, height: 600, hasTouch: true });
+      await page.addScriptTag({url: server.PREFIX + '/modernizr.js'});
+      expect(await page.evaluate(() => Modernizr.touchevents)).toBe(true);
+    });
     it('should support landscape emulation', async({page, server}) => {
       await page.goto(server.PREFIX + '/mobile.html');
       expect(await page.evaluate(() => screen.orientation.type)).toBe('portrait-primary');
@@ -1327,72 +1463,6 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
       fs.unlinkSync(outputFile);
     });
-    it('should default to printing in Letter format', async({page, server}) => {
-      const pages = await getPDFPages(await page.pdf());
-      expect(pages.length).toBe(1);
-      expect(pages[0].width).toBeCloseTo(8.5, 2);
-      expect(pages[0].height).toBeCloseTo(11, 2);
-    });
-    it('should support setting custom format', async({page, server}) => {
-      const pages = await getPDFPages(await page.pdf({
-        format: 'a4'
-      }));
-      expect(pages.length).toBe(1);
-      expect(pages[0].width).toBeCloseTo(8.27, 1);
-      expect(pages[0].height).toBeCloseTo(11.7, 1);
-    });
-    it('should support setting paper width and height', async({page, server}) => {
-      const pages = await getPDFPages(await page.pdf({
-        width: '10in',
-        height: '10in',
-      }));
-      expect(pages.length).toBe(1);
-      expect(pages[0].width).toBeCloseTo(10, 2);
-      expect(pages[0].height).toBeCloseTo(10, 2);
-    });
-    it('should print multiple pages', async({page, server}) => {
-      await page.goto(server.PREFIX + '/grid.html');
-      // Define width and height in CSS pixels.
-      const width = 50 * 5 + 1;
-      const height = 50 * 5 + 1;
-      const pages = await getPDFPages(await page.pdf({width, height}));
-      expect(pages.length).toBe(8);
-      expect(pages[0].width).toBeCloseTo(cssPixelsToInches(width), 2);
-      expect(pages[0].height).toBeCloseTo(cssPixelsToInches(height), 2);
-    });
-    it('should support page ranges', async({page, server}) => {
-      await page.goto(server.PREFIX + '/grid.html');
-      // Define width and height in CSS pixels.
-      const width = 50 * 5 + 1;
-      const height = 50 * 5 + 1;
-      const pages = await getPDFPages(await page.pdf({width, height, pageRanges: '1,4-7'}));
-      expect(pages.length).toBe(5);
-    });
-    it('should throw if format is unknown', async({page, server}) => {
-      let error = null;
-      try {
-        await getPDFPages(await page.pdf({
-          format: 'something'
-        }));
-      } catch (e) {
-        error = e;
-      }
-      expect(error).toBeTruthy();
-      expect(error.message).toContain('Unknown paper format');
-    });
-    it('should throw if units are unknown', async({page, server}) => {
-      let error = null;
-      try {
-        await getPDFPages(await page.pdf({
-          width: '10em',
-          height: '10em',
-        }));
-      } catch (e) {
-        error = e;
-      }
-      expect(error).toBeTruthy();
-      expect(error.message).toContain('Failed to parse parameter value');
-    });
   });
 
   describe('Page.title', function() {
@@ -1491,6 +1561,14 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
         }
       });
       expect(screenshot).toBeGolden('screenshot-clip-odd-size.png');
+    });
+    it('should return base64', async({page, server}) => {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(server.PREFIX + '/grid.html');
+      const screenshot = await page.screenshot({
+        encoding: 'base64'
+      });
+      expect(Buffer.from(screenshot, 'base64')).toBeGolden('screenshot-sanity.png');
     });
   });
 

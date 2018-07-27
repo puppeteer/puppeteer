@@ -42,9 +42,6 @@ async function run() {
       Source.readFile(path.join(PROJECT_DIR, 'README.md'))
     ]);
 
-    const toc = require('./toc');
-    messages.push(...await toc(mdSources));
-
     const preprocessor = require('./preprocessor');
     messages.push(...await preprocessor(mdSources, VERSION));
 

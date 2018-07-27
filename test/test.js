@@ -22,7 +22,7 @@ const GOLDEN_DIR = path.join(__dirname, 'golden');
 const OUTPUT_DIR = path.join(__dirname, 'output');
 const {TestRunner, Reporter, Matchers} = require('../utils/testrunner/');
 
-const {helper} = require('../lib/helper');
+const {helper, assert} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
 
@@ -39,13 +39,14 @@ const executablePath = process.env.CHROME;
 if (executablePath)
   console.warn(`${YELLOW_COLOR}WARN: running tests with ${executablePath}${RESET_COLOR}`);
 // Make sure the `npm install` was run after the chromium roll.
-console.assert(fs.existsSync(puppeteer.executablePath()), `Chromium is not Downloaded. Run 'npm install' and try to re-run tests`);
+assert(fs.existsSync(puppeteer.executablePath()), `Chromium is not Downloaded. Run 'npm install' and try to re-run tests`);
 
 const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
 const defaultBrowserOptions = {
   executablePath,
   slowMo,
   headless,
+  dumpio: (process.env.DUMPIO || 'false').trim().toLowerCase() === 'true',
   args: ['--no-sandbox']
 };
 
@@ -69,7 +70,7 @@ if (fs.existsSync(OUTPUT_DIR))
 
 console.log('Testing on Node', process.version);
 
-beforeAll(async state  => {
+beforeAll(async state => {
   const assetsPath = path.join(__dirname, 'assets');
   const cachedPath = path.join(__dirname, 'assets', 'cached');
 
@@ -110,11 +111,22 @@ describe('Page', function() {
     state.browser = null;
   });
 
-  beforeEach(async state => {
+  beforeEach(async(state, test) => {
     state.page = await state.browser.newPage();
+    const rl = require('readline').createInterface({input: state.browser.process().stderr});
+    test.output = '';
+    rl.on('line', onLine);
+    state.tearDown = () => {
+      rl.removeListener('line', onLine);
+      rl.close();
+    };
+    function onLine(line) {
+      test.output += line + '\n';
+    }
   });
 
   afterEach(async state => {
+    state.tearDown();
     await state.page.close();
     state.page = null;
   });
@@ -122,6 +134,7 @@ describe('Page', function() {
   // Page-level tests that are given a browser and a page.
   require('./CDPSession.spec.js').addTests({testRunner, expect});
   require('./browser.spec.js').addTests({testRunner, expect, puppeteer, headless});
+  require('./browsercontext.spec.js').addTests({testRunner, expect, puppeteer});
   require('./cookies.spec.js').addTests({testRunner, expect});
   require('./coverage.spec.js').addTests({testRunner, expect});
   require('./elementhandle.spec.js').addTests({testRunner, expect});
@@ -130,15 +143,18 @@ describe('Page', function() {
   require('./jshandle.spec.js').addTests({testRunner, expect});
   require('./network.spec.js').addTests({testRunner, expect});
   require('./page.spec.js').addTests({testRunner, expect, puppeteer, DeviceDescriptors, headless});
-  require('./target.spec.js').addTests({testRunner, expect});
+  require('./target.spec.js').addTests({testRunner, expect, puppeteer});
   require('./tracing.spec.js').addTests({testRunner, expect});
+  require('./worker.spec.js').addTests({testRunner, expect});
 });
 
 // Top-level tests that launch Browser themselves.
+require('./ignorehttpserrors.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
 require('./puppeteer.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
+require('./headful.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
 
 if (process.env.COVERAGE) {
-  describe('COVERAGE', function(){
+  describe('COVERAGE', function() {
     const coverage = helper.publicAPICoverage();
     const disabled = new Set(['page.bringToFront']);
     if (!headless)

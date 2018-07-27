@@ -84,6 +84,14 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.evaluate(() => window.__FOO = 1);
       await watchdog;
     });
+    it('should work when resolved right before execution context disposal', async({page, server}) => {
+      await page.evaluateOnNewDocument(() => window.__RELOADED = true);
+      await page.waitForFunction(() => {
+        if (!window.__RELOADED)
+          window.location.reload();
+        return true;
+      });
+    });
     it('should poll on interval', async({page, server}) => {
       let success = false;
       const startTime = Date.now();
@@ -159,10 +167,13 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(error.message).toContain('waiting for function failed: timeout');
     });
     it('should disable timeout when its set to 0', async({page}) => {
-      let error = null;
-      const res = await page.waitForFunction(() => new Promise(res => setTimeout(() => res(42), 100)), {timeout: 0}).catch(e => error = e);
-      expect(error).toBe(null);
-      expect(await res.jsonValue()).toBe(42);
+      const watchdog = page.waitForFunction(() => {
+        window.__counter = (window.__counter || 0) + 1;
+        return window.__injected;
+      }, {timeout: 0, polling: 10});
+      await page.waitForFunction(() => window.__counter > 10);
+      await page.evaluate(() => window.__injected = true);
+      await watchdog;
     });
   });
 
@@ -307,6 +318,13 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(error).toBeTruthy();
       expect(error.message).toContain('waiting for selector "div" failed: timeout');
     });
+    it('should have an error message specifically for awaiting an element to be hidden', async({page, server}) => {
+      await page.setContent(`<div></div>`);
+      let error = null;
+      await page.waitForSelector('div', {hidden: true, timeout: 10}).catch(e => error = e);
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('waiting for selector "div" to be hidden failed: timeout');
+    });
 
     it('should respond to node attribute mutation', async({page, server}) => {
       let divFound = false;
@@ -320,6 +338,11 @@ module.exports.addTests = function({testRunner, expect}) {
       const waitForSelector = page.waitForSelector('.zombo');
       await page.setContent(`<div class='zombo'>anything</div>`);
       expect(await page.evaluate(x => x.textContent, await waitForSelector)).toBe('anything');
+    });
+    it('should have correct stack trace for timeout', async({page, server}) => {
+      let error;
+      await page.waitForSelector('.zombo', {timeout: 10}).catch(e => error = e);
+      expect(error.stack).toContain('frame.spec.js');
     });
   });
 

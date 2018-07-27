@@ -1,6 +1,7 @@
 // @ts-check
+const path = require('path');
 const puppeteer = require('../..');
-puppeteer.launch({
+module.exports = puppeteer.launch({
   pipe: false,
   executablePath: process.env.CHROME,
   args: ['--no-sandbox', '--disable-dev-shm-usage']
@@ -9,6 +10,7 @@ puppeteer.launch({
   const page = await browser.newPage();
   await page.goto(`http://${origin}/json/protocol`);
   const json = JSON.parse(await page.evaluate(() => document.documentElement.innerText));
+  const version = await browser.version();
   await browser.close();
   const output = `// This is generated from /utils/protocol-types-generator/index.js
 declare global {
@@ -70,7 +72,9 @@ declare global {
 // empty export to keep file a module
 export {}
 `;
-  require('fs').writeFileSync(require('path').join(__dirname, '..', '..', 'lib', 'protocol.d.ts'), output);
+  const outputPath = path.join(__dirname, '..', '..', 'lib', 'protocol.d.ts');
+  require('fs').writeFileSync(outputPath, output);
+  console.log(`Wrote protocol.d.ts for ${version} to ${path.relative(process.cwd(), outputPath)}`);
 });
 
 
