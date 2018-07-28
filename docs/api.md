@@ -92,7 +92,6 @@ Next Release: **Aug 9, 2018**
   * [page.evaluateOnNewDocument(pageFunction, ...args)](#pageevaluateonnewdocumentpagefunction-args)
   * [page.exposeFunction(name, puppeteerFunction)](#pageexposefunctionname-puppeteerfunction)
   * [page.focus(selector)](#pagefocusselector)
-  * [page.frameManager()](#pageframemanager)
   * [page.frames()](#pageframes)
   * [page.goBack(options)](#pagegobackoptions)
   * [page.goForward(options)](#pagegoforwardoptions)
@@ -103,7 +102,6 @@ Next Release: **Aug 9, 2018**
   * [page.mainFrame()](#pagemainframe)
   * [page.metrics()](#pagemetrics)
   * [page.mouse](#pagemouse)
-  * [page.networkManager()](#pagenetworkmanager)
   * [page.pdf(options)](#pagepdfoptions)
   * [page.queryObjects(prototypeHandle)](#pagequeryobjectsprototypehandle)
   * [page.reload(options)](#pagereloadoptions)
@@ -1161,9 +1159,6 @@ If there's no element matching `selector`, the method throws an error.
 
 Shortcut for [page.mainFrame().focus(selector)](#framefocusselector).
 
-#### page.frameManager()
-- returns: <[FrameManager]> Page's FrameManager instance.
-
 #### page.frames()
 - returns: <[Array]<[Frame]>> An array of all frames attached to the page.
 
@@ -1259,9 +1254,6 @@ Page is guaranteed to have a main frame which persists during navigations.
 #### page.mouse
 
 - returns: <[Mouse]>
-
-#### page.networkManager()
-- returns: <[NetworkManager]> Page's NetworkManager instance.
 
 #### page.pdf(options)
 - `options` <[Object]> Options object which might have the following properties:
