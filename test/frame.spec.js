@@ -177,6 +177,125 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
+  describe('Frame.waitForNavigation', function() {
+    it('should work for the main frame', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const [result] = await Promise.all([
+        page.mainFrame().waitForNavigation(),
+        page.evaluate(url => window.location.href = url, server.PREFIX + '/grid.html')
+      ]);
+      const response = await result;
+      expect(response.ok()).toBe(true);
+      expect(response.url()).toContain('grid.html');
+    });
+    it('should work for a subframe', async({page, server}) => {
+      await page.goto(server.PREFIX + '/frames/one-frame.html');
+      const frame = await page.frames()[1];
+      const navigationPromise = frame.waitForNavigation();
+      await frame.evaluate(() => window.location = '/grid.html');
+      await navigationPromise;
+    });
+    it('should work with both domcontentloaded and load', async({page, server}) => {
+      let response = null;
+      server.setRoute('/one-style.css', (req, res) => response = res);
+      const navigationPromise = page.goto(server.PREFIX + '/one-style.html');
+      const domContentLoadedPromise = page.mainFrame().waitForNavigation({
+        waitUntil: 'domcontentloaded'
+      });
+
+      let bothFired = false;
+      const bothFiredPromise = page.mainFrame().waitForNavigation({
+        waitUntil: ['load', 'domcontentloaded']
+      }).then(() => bothFired = true);
+
+      await server.waitForRequest('/one-style.css');
+      await domContentLoadedPromise;
+      expect(bothFired).toBe(false);
+      response.end();
+      await bothFiredPromise;
+      await navigationPromise;
+    });
+    it('should work with clicking on anchor links', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(`<a href='#foobar'>foobar</a>`);
+      const [response] = await Promise.all([
+        page.mainFrame().waitForNavigation(),
+        page.click('a'),
+      ]);
+      expect(response).toBe(null);
+      expect(page.url()).toBe(server.EMPTY_PAGE + '#foobar');
+    });
+    it('should work with history.pushState()', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(`
+        <a onclick='javascript:pushState()'>SPA</a>
+        <script>
+          function pushState() { history.pushState({}, '', 'wow.html') }
+        </script>
+      `);
+      const [response] = await Promise.all([
+        page.mainFrame().waitForNavigation(),
+        page.click('a'),
+      ]);
+      expect(response).toBe(null);
+      expect(page.url()).toBe(server.PREFIX + '/wow.html');
+    });
+    it('should work with history.replaceState()', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(`
+        <a onclick='javascript:replaceState()'>SPA</a>
+        <script>
+          function replaceState() { history.replaceState({}, '', '/replaced.html') }
+        </script>
+      `);
+      const [response] = await Promise.all([
+        page.mainFrame().waitForNavigation(),
+        page.click('a'),
+      ]);
+      expect(response).toBe(null);
+      expect(page.url()).toBe(server.PREFIX + '/replaced.html');
+    });
+    it('should work with DOM history.back()/history.forward()', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent(`
+        <a id=back onclick='javascript:goBack()'>back</a>
+        <a id=forward onclick='javascript:goForward()'>forward</a>
+        <script>
+          function goBack() { history.back(); }
+          function goForward() { history.forward(); }
+          history.pushState({}, '', '/first.html');
+          history.pushState({}, '', '/second.html');
+        </script>
+      `);
+      expect(page.url()).toBe(server.PREFIX + '/second.html');
+      const [backResponse] = await Promise.all([
+        page.mainFrame().waitForNavigation(),
+        page.click('a#back'),
+      ]);
+      expect(backResponse).toBe(null);
+      expect(page.url()).toBe(server.PREFIX + '/first.html');
+      const [forwardResponse] = await Promise.all([
+        page.mainFrame().waitForNavigation(),
+        page.click('a#forward'),
+      ]);
+      expect(forwardResponse).toBe(null);
+      expect(page.url()).toBe(server.PREFIX + '/second.html');
+    });
+    it('should work when subframe issues window.stop()', async({page, server}) => {
+      server.setRoute('/frames/style.css', (req, res) => {});
+      const navigationPromise = page.goto(server.PREFIX + '/frames/one-frame.html');
+      const frame = await utils.waitEvent(page, 'frameattached');
+      await new Promise(fulfill => {
+        page.on('framenavigated', f => {
+          if (f === frame)
+            fulfill();
+        });
+      });
+      frame.evaluate(() => window.stop());
+      await navigationPromise;
+    });
+  });
+
   describe('Frame.waitForSelector', function() {
     const addElement = tag => document.body.appendChild(document.createElement(tag));
 
