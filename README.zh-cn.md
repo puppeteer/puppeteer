@@ -378,7 +378,7 @@ Websites can distinguish between these two groups:
 
 For automation purposes it’s important to generate trusted events. **All input events generated with Puppeteer are trusted and fire proper accompanying events.** If, for some reason, one needs an untrusted event, it’s always possible to hop into a page context with `page.evaluate` and generate a fake event:
 
-```js
+```js 
 await page.evaluate(() => {
   document.querySelector('button[type=submit]').click();
 });
