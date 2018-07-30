@@ -251,6 +251,17 @@ module.exports.addTests = function({testRunner, expect}) {
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.ok()).toBe(true);
     });
+    it('should contain referer header', async({page, server}) => {
+      await page.setRequestInterception(true);
+      const requests = [];
+      page.on('request', request => {
+        requests.push(request);
+        request.continue();
+      });
+      await page.goto(server.PREFIX + '/one-style.html');
+      expect(requests[1].url()).toContain('/one-style.css');
+      expect(requests[1].headers().referer).toContain('/one-style.html');
+    });
     it('should stop intercepting', async({page, server}) => {
       await page.setRequestInterception(true);
       page.once('request', request => request.continue());
