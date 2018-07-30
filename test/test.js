@@ -22,7 +22,7 @@ const GOLDEN_DIR = path.join(__dirname, 'golden');
 const OUTPUT_DIR = path.join(__dirname, 'output');
 const {TestRunner, Reporter, Matchers} = require('../utils/testrunner/');
 
-const {helper, assert} = require('../lib/helper');
+const {helper, assert, debugError} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
 
@@ -116,9 +116,16 @@ describe('Page', function() {
     const rl = require('readline').createInterface({input: state.browser.process().stderr});
     test.output = '';
     rl.on('line', onLine);
+    const enableDebugError = !debugError.enabled;
+    if (enableDebugError) {
+      require('debug').enable(debugError.namespace);
+      debugError.log = onLine;
+    }
     state.tearDown = () => {
       rl.removeListener('line', onLine);
       rl.close();
+      if (enableDebugError)
+        debugError.log = () => undefined;
     };
     function onLine(line) {
       test.output += line + '\n';
