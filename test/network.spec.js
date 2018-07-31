@@ -389,6 +389,30 @@ module.exports.addTests = function({testRunner, expect}) {
         expect(request.redirectChain().indexOf(request)).toBe(i);
       }
     });
+    it('should work with redirects for subresources', async({page, server}) => {
+      await page.setRequestInterception(true);
+      const requests = [];
+      page.on('request', request => {
+        request.continue();
+        requests.push(request);
+      });
+      server.setRedirect('/one-style.css', '/two-style.css');
+      server.setRedirect('/two-style.css', '/three-style.css');
+      server.setRedirect('/three-style.css', '/four-style.css');
+      server.setRoute('/four-style.css', (req, res) => res.end('body {box-sizing: border-box; }'));
+
+      const response = await page.goto(server.PREFIX + '/one-style.html');
+      expect(response.status()).toBe(200);
+      expect(response.url()).toContain('one-style.html');
+      expect(requests.length).toBe(5);
+      expect(requests[0].resourceType()).toBe('document');
+      expect(requests[1].resourceType()).toBe('stylesheet');
+      // Check redirect chain
+      const redirectChain = requests[1].redirectChain();
+      expect(redirectChain.length).toBe(3);
+      expect(redirectChain[0].url()).toContain('/one-style.css');
+      expect(redirectChain[2].url()).toContain('/three-style.css');
+    });
     it('should be able to abort redirects', async({page, server}) => {
       await page.setRequestInterception(true);
       server.setRedirect('/non-existing.json', '/non-existing-2.json');
