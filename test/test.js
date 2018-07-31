@@ -43,6 +43,7 @@ assert(fs.existsSync(puppeteer.executablePath()), `Chromium is not Downloaded. R
 
 const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
 const defaultBrowserOptions = {
+  handleSIGINT: false,
   executablePath,
   slowMo,
   headless,
