@@ -53,7 +53,7 @@ class Reporter {
       if (isRunning)
         description = `${YELLOW_COLOR}RUNNING${RESET_COLOR}`;
       else if (test.result === 'ok')
-        description = `${GREEN_COLOR }OK${RESET_COLOR}`;
+        description = `${GREEN_COLOR}OK${RESET_COLOR}`;
       else if (test.result === 'skipped')
         description = `${YELLOW_COLOR}SKIPPED${RESET_COLOR}`;
       else if (test.result === 'failed')
