@@ -38,7 +38,15 @@ declare global {
       close();
     }
 
-    export interface ChildProcess extends child_process.ChildProcess {}
+    export interface ChildProcess extends child_process.ChildProcess { }
 
+    export type Viewport = {
+      width: number;
+      height: number;
+      deviceScaleFactor?: number;
+      isMobile?: boolean;
+      isLandscape?: boolean;
+      hasTouch?: boolean;
+    }
   }
 }
