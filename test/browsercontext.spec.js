@@ -45,6 +45,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       const context = await browser.createIncognitoBrowserContext();
       await context.newPage();
       expect((await browser.pages()).length).toBe(3);
+      expect((await context.pages()).length).toBe(1);
 
       await context.close();
       expect((await browser.pages()).length).toBe(2);
