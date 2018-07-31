@@ -304,7 +304,7 @@ Puppeteer API
 - [`BrowserContext`](#class-browsercontext) instance defines a browsing session and can own multiple pages. （[`BrowserContext`](#class-browsercontext) 实例定义一个能够掌控多个页面的浏览器会话 ）
 - [`Page`](#class-page) has at least one frame: main frame. There might be other frames created by [iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) or [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frame) tags. （[`Page`](#class-page) 至少有一个 frame，即主 frame，同时可能还存在其他通过 [iframe](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) 或者 [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/frame) 标签创建的 frame ）
 - [`Frame`](#class-frame) has at least one execution context - the default execution context - where the frame's JavaScript is executed. A Frame might have additional execution contexts that are associated with [extensions](https://developer.chrome.com/extensions). （[`Frame`](#class-frame) 至少拥有一个执行上下文 - 即默认执行上下文 - 该 frame 的 JavaScript 就在这里执行。一个 frame 同时可能还有与 [extensions](https://developer.chrome.com/extensions) 相关联的执行上下文 ）
-- [`Worker`](#class-worker) has a single execution context and facilitates interacting with [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API). [`Worker`](#class-worker) 具有单独的执行上下文并且可以和很好的 [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) 进行交互。
+- [`Worker`](#class-worker) has a single execution context and facilitates interacting with [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API). [`Worker`](#class-worker) 具有单独的执行上下文并且可以和很好的与 [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) 进行交互。
 
 (Diagram source: [link](https://docs.google.com/drawings/d/1Q_AM6KYs9kbyLZF-Lpp5mtpAWth73Cq8IKCsWYgi8MM/edit?usp=sharing))
 
@@ -316,7 +316,7 @@ If puppeteer doesn't find them in environment, lowercased variant of these varia
 Puppeteer会查找一些对其可能会有帮助的[环境变量](https://en.wikipedia.org/wiki/Environment_variable)，如果没有找到就会使用 [npm config](https://docs.npmjs.com/cli/config) 中对应的小写变量。
 
 - `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium. （指定用于下载和运行 Chromium 的 HTTP 代理）
-- `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step. （指定在安装阶段不下载绑定的 Chromium）
+- `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step. （指定在安装阶段**不下载**绑定的 Chromium）
 - `PUPPETEER_DOWNLOAD_HOST` - overwrite host part of URL that is used to download Chromium （指定下载 Chromium 的URL中 host 部分）
 - `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of chrome you'd like puppeteer to use during the installation step. （在安装阶段指定你将希望 Puppeteer 使用什么版本的 chrome）
 
@@ -328,7 +328,7 @@ Puppeteer 可以用于测试 Chrome 插件。
 
 > **NOTE** Extensions in Chrome / Chromium currently only work in non-headless mode.
 
-> **提示：** 当前 Chrome / Chromium 中支持持插件在 non-headless 模式中使用.
+> **提示：** 当前 Chrome / Chromium 中仅支持插件在 non-headless 模式中使用.
 
 The following is the code for getting a handle to a [background page](https://developer.chrome.com/extensions/background_pages) of an extension whose source is located in `./my-extension`:
 
