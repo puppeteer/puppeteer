@@ -208,10 +208,10 @@ class TestPass {
   async _runTest(workerId, test, state) {
     if (this._termination)
       return;
-    this._runner._willStartTest(test);
+    this._runner._willStartTest(test, workerId);
     if (test.declaredMode === TestMode.Skip) {
       test.result = TestResult.Skipped;
-      this._runner._didFinishTest(test);
+      this._runner._didFinishTest(test, workerId);
       return;
     }
     this._runningUserCallbacks.set(workerId, test._userCallback);
@@ -226,7 +226,7 @@ class TestPass {
       test.result = TestResult.TimedOut;
     else
       test.result = TestResult.Failed;
-    this._runner._didFinishTest(test);
+    this._runner._didFinishTest(test, workerId);
   }
 
   async _runHook(workerId, suite, hookName, ...args) {
@@ -380,12 +380,12 @@ class TestRunner extends EventEmitter {
     return this._parallel;
   }
 
-  _willStartTest(test) {
-    this.emit('teststarted', test);
+  _willStartTest(test, workerId) {
+    this.emit(TestRunner.Events.TestStarted, test, workerId);
   }
 
-  _didFinishTest(test) {
-    this.emit('testfinished', test);
+  _didFinishTest(test, workerId) {
+    this.emit(TestRunner.Events.TestFinished, test, workerId);
   }
 }
 
