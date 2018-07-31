@@ -783,7 +783,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       });
       await Promise.all([
         frame.evaluate(() => window.stop()),
-        navigationPromise;
+        navigationPromise
       ]);
     });
   });
