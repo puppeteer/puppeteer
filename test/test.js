@@ -102,7 +102,7 @@ beforeEach(async({server, httpsServer}) => {
   httpsServer.reset();
 });
 
-describe('Page', function() {
+describe('Browser', function() {
   beforeAll(async state => {
     state.browser = await puppeteer.launch(defaultBrowserOptions);
   });
@@ -112,41 +112,49 @@ describe('Page', function() {
     state.browser = null;
   });
 
-  beforeEach(async(state, test) => {
-    state.page = await state.browser.newPage();
-    const rl = require('readline').createInterface({input: state.browser.process().stderr});
-    test.output = '';
-    rl.on('line', onLine);
-    state.tearDown = () => {
-      rl.removeListener('line', onLine);
-      rl.close();
-    };
-    function onLine(line) {
-      test.output += line + '\n';
-    }
+  describe('Page', function() {
+    beforeEach(async(state, test) => {
+      state.context = await state.browser.createIncognitoBrowserContext();
+      state.page = await state.context.newPage();
+      const rl = require('readline').createInterface({input: state.browser.process().stderr});
+      test.output = '';
+      rl.on('line', onLine);
+      state.tearDown = () => {
+        rl.removeListener('line', onLine);
+        rl.close();
+      };
+      function onLine(line) {
+        test.output += line + '\n';
+      }
+    });
+
+    afterEach(async state => {
+      state.tearDown();
+      // This closes all pages.
+      await state.context.close();
+      state.context = null;
+      state.page = null;
+    });
+
+    // Page-level tests that are given a browser, a context and a page.
+    // Each test is launched in a new browser context.
+    require('./CDPSession.spec.js').addTests({testRunner, expect});
+    require('./browser.spec.js').addTests({testRunner, expect, puppeteer, headless});
+    require('./cookies.spec.js').addTests({testRunner, expect});
+    require('./coverage.spec.js').addTests({testRunner, expect});
+    require('./elementhandle.spec.js').addTests({testRunner, expect});
+    require('./frame.spec.js').addTests({testRunner, expect});
+    require('./input.spec.js').addTests({testRunner, expect, DeviceDescriptors});
+    require('./jshandle.spec.js').addTests({testRunner, expect});
+    require('./network.spec.js').addTests({testRunner, expect});
+    require('./page.spec.js').addTests({testRunner, expect, puppeteer, DeviceDescriptors, headless});
+    require('./target.spec.js').addTests({testRunner, expect, puppeteer});
+    require('./tracing.spec.js').addTests({testRunner, expect});
+    require('./worker.spec.js').addTests({testRunner, expect});
   });
 
-  afterEach(async state => {
-    state.tearDown();
-    await state.page.close();
-    state.page = null;
-  });
-
-  // Page-level tests that are given a browser and a page.
-  require('./CDPSession.spec.js').addTests({testRunner, expect});
-  require('./browser.spec.js').addTests({testRunner, expect, puppeteer, headless});
+  // Browser-level tests that are given a browser.
   require('./browsercontext.spec.js').addTests({testRunner, expect, puppeteer});
-  require('./cookies.spec.js').addTests({testRunner, expect});
-  require('./coverage.spec.js').addTests({testRunner, expect});
-  require('./elementhandle.spec.js').addTests({testRunner, expect});
-  require('./frame.spec.js').addTests({testRunner, expect});
-  require('./input.spec.js').addTests({testRunner, expect, DeviceDescriptors});
-  require('./jshandle.spec.js').addTests({testRunner, expect});
-  require('./network.spec.js').addTests({testRunner, expect});
-  require('./page.spec.js').addTests({testRunner, expect, puppeteer, DeviceDescriptors, headless});
-  require('./target.spec.js').addTests({testRunner, expect, puppeteer});
-  require('./tracing.spec.js').addTests({testRunner, expect});
-  require('./worker.spec.js').addTests({testRunner, expect});
 });
 
 // Top-level tests that launch Browser themselves.
