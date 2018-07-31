@@ -262,6 +262,17 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(requests[1].url()).toContain('/one-style.css');
       expect(requests[1].headers().referer).toContain('/one-style.html');
     });
+    it('should properly return navigation response when URL has cookies', async({page, server}) => {
+      // Setup cookie.
+      await page.goto(server.EMPTY_PAGE);
+      await page.setCookie({ name: 'foo', value: 'bar'});
+
+      // Setup request interception.
+      await page.setRequestInterception(true);
+      page.on('request', request => request.continue());
+      const response = await page.reload();
+      expect(response.status()).toBe(200);
+    });
     it('should stop intercepting', async({page, server}) => {
       await page.setRequestInterception(true);
       page.once('request', request => request.continue());
