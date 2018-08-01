@@ -406,41 +406,55 @@ This methods attaches Puppeteer to an existing Chromium instance.
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields （用于设置到浏览器上的配置参数集合，能够使用以下字段）:
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`. （是否在页面导航之间忽略 HTTPS 错误， 默认为 `false`）
   - `headless` <[boolean]> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`. （是否以 [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome) 启动浏览器。除非 `devtools` 为 `true`， 否则默认为 `true`）
-  - `executablePath` <[string]> Path to a Chromium or Chrome executable to run instead of the bundled Chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). （指定 Chromium 或者 Chrome 执行文件的路径，可以替代绑定的 Chromium，如果 `executablePath` 是相对路径，则会返回与 [current working directory](https://nodejs.org/api/process.html#process_process_cwd) 相对的路径）
+  - `executablePath` <[string]> Path to a Chromium or Chrome executable to run instead of the bundled Chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). （指定 Chromium 或者 Chrome 执行文件的路径，可以用于替代绑定的 Chromium，如果 `executablePath` 是相对路径，则会返回与 [当前工作目录 cwd](https://nodejs.org/api/process.html#process_process_cwd) 相对的路径）
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on. （以毫秒数指定 Puppeteer 操作需要被放慢的时间。 当你需要看清楚中途发生了什么的时候非常有用）
   - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/). （给浏览器实例传递的额外参数，可以在[这里](http://peter.sh/experiments/chromium-command-line-switches/)找到 Chromium 的参数）
   - `ignoreDefaultArgs` <[boolean]> Do not use [`puppeteer.defaultArgs()`](#puppeteerdefaultargs). Dangerous option; use with care. Defaults to `false`. （不要使用 [`puppeteer.defaultArgs()`](#puppeteerdefaultargs)。使用该参数有一定风险，请小心使用，默认为 `false`）
   - `handleSIGINT` <[boolean]> Close the browser process on Ctrl-C. Defaults to `true`. （使用 `Ctrl-C` 来关闭浏览器进程， 默认为 `true`）
   - `handleSIGTERM` <[boolean]> Close the browser process on SIGTERM. Defaults to `true`. （使用 SIGTERM 信号关闭浏览器进程，默认为 `true`）
-  - `handleSIGHUP` <[boolean]> Close the browser process on SIGHUP. Defaults to `true`. （十三姨 SIGHUP 信号来关闭浏览器进程，默认为 `true`）
+  - `handleSIGHUP` <[boolean]> Close the browser process on SIGHUP. Defaults to `true`. （使用 SIGHUP 信号来关闭浏览器进程，默认为 `true`）
   - `timeout` <[number]> Maximum time in milliseconds to wait for the browser instance to start. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. （等待浏览器启动的最大毫秒数，默认为 `30000` 毫秒，即 30 秒。传 `0` 表示禁用该参数）
   - `dumpio` <[boolean]> Whether to pipe the browser process stdout and stderr into `process.stdout` and `process.stderr`. Defaults to `false`. （是否将浏览器进程的 stdout 和 stderr 输出到 `process.stdout` 和 `process.stderr`。默认为 `false`）
   - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md). （指定 [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md) 的路径）
   - `env` <[Object]> Specify environment variables that will be visible to the browser. Defaults to `process.env`. （指定对浏览器可见的环境变量，默认为 `process.env`）
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`. （是否需要为每个 tab 自动开启一个 DevTools 面板。如果该选项为 `true`，则 `headless` 选项将会被设置为 `false`）
-  - `pipe` <[boolean]> Connects to the browser over a pipe instead of a WebSocket. Defaults to `false`.  （使用管道链接浏览器而非 WebSocket，默认为 `false`）
+  - `pipe` <[boolean]> Connects to the browser over a pipe instead of a WebSocket. Defaults to `false`.  （使用管道连接浏览器而非 WebSocket，默认为 `false`）
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance. （成功后会被解析为浏览器实例的 Promise）
 
 The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process is closed.
 
 该方法使用给定的参数启动一个浏览器实例。如果它所依附的 node.js 父进程被关闭，它也会随之关闭。
 
-> **NOTE** Puppeteer can also be used to control the Chrome browser, but it works best with the version of Chromium it is bundled with. There is no guarantee it will work with any other version. Use `executablePath` option with extreme caution. （Puppeteer也能够用来控制 Chrome 浏览器， 但是它和与之绑定的 Chromium 会更加搭配。我们并不能保证它能够和其它版本的 Chromium 一起正常工作。非特殊情况不要使用 `executablePath`）
+> **NOTE** Puppeteer can also be used to control the Chrome browser, but it works best with the version of Chromium it is bundled with. There is no guarantee it will work with any other version. Use `executablePath` option with extreme caution.
 >
-> If Google Chrome (rather than Chromium) is preferred, a [Chrome Canary](https://www.google.com/chrome/browser/canary.html) or [Dev Channel](https://www.chromium.org/getting-involved/dev-channel) build is suggested. （如果更喜欢使用 Google Chrome（而非 Chromium），则推荐使用 [Chrome Canary](https://www.google.com/chrome/browser/canary.html) 或者 [Dev Channel](https://www.chromium.org/getting-involved/dev-channel)的构建版本 ）
+> Puppeteer也能够用来控制 Chrome 浏览器， 但是它和与之绑定的 Chromium 会更加搭配。我们并不能保证它能够和其它版本的 Chromium 一起正常工作。非特殊情况下不要使用 `executablePath`
 >
-> In [puppeteer.launch([options])](#puppeteerlaunchoptions) above, any mention of Chromium also applies to Chrome. （在前面的 [puppeteer.launch([options])](#puppeteerlaunchoptions) 中提及的任何东西同时也适用于 Chrome）
+> If Google Chrome (rather than Chromium) is preferred, a [Chrome Canary](https://www.google.com/chrome/browser/canary.html) or [Dev Channel](https://www.chromium.org/getting-involved/dev-channel) build is suggested.
 >
-> See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description of the differences between Chromium and Chrome. [`This article`](https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users. （参考 [`这篇文章`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) 了解 Chromium 与 Chrome 的不同之处。 同时还有[`另外一篇文章`](https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md) 为 Linux 用户说明了一些不同之处。）
+>如果更喜欢使用 Google Chrome（而非 Chromium），则推荐使用 [Chrome Canary](https://www.google.com/chrome/browser/canary.html) 或者 [Dev Channel](https://www.chromium.org/getting-involved/dev-channel)的构建版本
+>
+> In [puppeteer.launch([options])](#puppeteerlaunchoptions) above, any mention of Chromium also applies to Chrome.
+>
+> 在前面的 [puppeteer.launch([options])](#puppeteerlaunchoptions) 中提及的任何东西同样也适用于 Chrome
+>
+> See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description of the differences between Chromium and Chrome. [`This article`](https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users.
+>
+> 参考 [`这篇文章`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) 了解 Chromium 与 Chrome 的不同之处。 同时还有[`另外一篇文章`](https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md) 为 Linux 用户说明了一些不同之处。
 
-### class: BrowserFetcher
+### class: BrowserFetcher （BrowserFetcher 类）
 
 BrowserFetcher can download and manage different versions of Chromium.
 
+BrowserFetcher 可以下载和管理不同版本的 Chromium。
+
 BrowserFetcher operates on revision strings that specify a precise version of Chromium, e.g. `"533271"`. Revision strings can be obtained from [omahaproxy.appspot.com](http://omahaproxy.appspot.com/).
+
+BrowserFetcher 使用修订版本字符串来精确的指定一个 Chromium 版本。如 `"533271"`，修订版本字符串可以在 [omahaproxy.appspot.com](http://omahaproxy.appspot.com/) 找到。
 
 Example on how to use BrowserFetcher to download a specific version of Chromium and run
 Puppeteer against it:
+
+下面的例子展示了如何使用 BrowserFetcher 来下载指定版本的 Chromium 并且使用 Puppeteer 来操纵它：
 
 ```js
 const browserFetcher = puppeteer.createBrowserFetcher();
@@ -450,53 +464,64 @@ const browser = await puppeteer.launch({executablePath: revisionInfo.executableP
 
 > **NOTE** BrowserFetcher is not designed to work concurrently with other
 > instances of BrowserFetcher that share the same downloads directory.
+>
+> **提示：** BrowserFetcher 被设计为不能和共享相同下载目录的其他 BrowserFetcher 实例同时进行工作。
 
 #### browserFetcher.canDownload(revision)
-- `revision` <[string]> a revision to check availability.
-- returns: <[Promise]<[boolean]>>  returns `true` if the revision could be downloaded from the host.
+- `revision` <[string]> a revision to check availability. （用于检测可用性的修订版本号）
+- returns: <[Promise]<[boolean]>>  returns `true` if the revision could be downloaded from the host. （如果指定的修订版本号可以从服务器上下载，则返回`true`）
 
 The method initiates a HEAD request to check if the revision is available.
 
+该方法发起一个 `HEAD` 请求来检测修订版本是否可用。
+
 #### browserFetcher.download(revision[, progressCallback])
-- `revision` <[string]> a revision to download.
-- `progressCallback` <[function]([number], [number])> A function that will be called with two arguments:
-  - `downloadedBytes` <[number]> how many bytes have been downloaded
-  - `totalBytes` <[number]> how large is the total download.
-- returns: <[Promise]<[Object]>> Resolves with revision information when the revision is downloaded and extracted
-  - `revision` <[string]> the revision the info was created from
-  - `folderPath` <[string]> path to the extracted revision folder
-  - `executablePath` <[string]> path to the revision executable
-  - `url` <[string]> URL this revision can be downloaded from
-  - `local` <[boolean]> whether the revision is locally available on disk
+- `revision` <[string]> a revision to download. （指定下载的修订版本号）
+- `progressCallback` <[function]([number], [number])> A function that will be called with two arguments （该方法将会用下面两个参数进行调用）:
+  - `downloadedBytes` <[number]> how many bytes have been downloaded （已经下载完成的字节数）
+  - `totalBytes` <[number]> how large is the total download. （总下载字节数）
+- returns: <[Promise]<[Object]>> Resolves with revision information when the revision is downloaded and extracted （返回在文件被下载和提取之后，会被解析为修订版本信息的 Promise）
+  - `revision` <[string]> the revision the info was created from （信息来源的修订版本号）
+  - `folderPath` <[string]> path to the extracted revision folder （修订版的文件提取目录）
+  - `executablePath` <[string]> path to the revision executable （修订版的可执行文件目录）
+  - `url` <[string]> URL this revision can be downloaded from （该修订版的下载链接 URL）
+  - `local` <[boolean]> whether the revision is locally available on disk （该修订版是否在磁盘上可用）（译者注：这里暂时还需要捋一捋）
 
 The method initiates a GET request to download the revision from the host.
 
+该方法发起一个 GET 请求从服务器上下载修订版的 Chromium。
+
 #### browserFetcher.localRevisions()
-- returns: <[Promise]<[Array]<[string]>>> A list of all revisions available locally on disk.
+- returns: <[Promise]<[Array]<[string]>>> A list of all revisions available locally on disk. （返回一个本地磁盘上可用修订版本的列表）
 
 #### browserFetcher.platform()
-- returns: <[string]> Returns one of `mac`, `linux`, `win32` or `win64`.
+- returns: <[string]> Returns one of `mac`, `linux`, `win32` or `win64`. （返回`mac`, `linux`, `win32` 或者 `win64` 之一）
 
 #### browserFetcher.remove(revision)
-- `revision` <[string]> a revision to remove. The method will throw if the revision has not been downloaded.
-- returns: <[Promise]> Resolves when the revision has been removed.
+- `revision` <[string]> a revision to remove. The method will throw if the revision has not been downloaded. （指定需要移除的修订版， 如果该版本还没有被下载下来，则该方法会抛出错误）
+- returns: <[Promise]> Resolves when the revision has been removed. （返回一个当该版本被移除时会变为完成态的 Promise）
 
 #### browserFetcher.revisionInfo(revision)
-- `revision` <[string]> a revision to get info for.
+- `revision` <[string]> a revision to get info for. （指定需要获取信息的版本号）
 - returns: <[Object]>
-  - `revision` <[string]> the revision the info was created from
-  - `folderPath` <[string]> path to the extracted revision folder
-  - `executablePath` <[string]> path to the revision executable
-  - `url` <[string]> URL this revision can be downloaded from
-  - `local` <[boolean]> whether the revision is locally available on disk
+  - `revision` <[string]> the revision the info was created from （信息来源的版本号）
+  - `folderPath` <[string]> path to the extracted revision folder （文件提取目录的路径）
+  - `executablePath` <[string]> path to the revision executable （可执行文件的路径）
+  - `url` <[string]> URL this revision can be downloaded from （能够下载该版本文件的 URL 地址）
+  - `local` <[boolean]> whether the revision is locally available on disk （该版本文件在本地磁盘上是否可用）
 
 ### class: Browser
 
-* extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)
+* extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter) （继承自 [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)）
 
 A Browser is created when Puppeteer connects to a Chromium instance, either through [`puppeteer.launch`](#puppeteerlaunchoptions) or [`puppeteer.connect`](#puppeteerconnectoptions).
 
+在 Puppeteer 连接到 Chromium 实例的时候会创建浏览器（Browser）实例，而不管是通过 [`puppeteer.launch`](#puppeteerlaunchoptions) 或 [`puppeteer.connect`](#puppeteerconnectoptions)
+
 An example of using a [Browser] to create a [Page]:
+
+下面是使用 [Browser] 创建 [Page] 的示例：
+
 ```js
 const puppeteer = require('puppeteer');
 
@@ -508,6 +533,9 @@ puppeteer.launch().then(async browser => {
 ```
 
 An example of disconnecting from and reconnecting to a [Browser]:
+
+下面展示从 [浏览器](#Browser) 断开并重新连接的示例：
+
 ```js
 const puppeteer = require('puppeteer');
 
