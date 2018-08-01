@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>test puppeteer</title>
+  <script src="./browser.js"></script>
+  <script>
+    const puppeteer = require('puppeteer');
+
+    puppeteer.connect({ browserWSEndpoint: 'ws://localhost:3000' })
+      .then(async browser => {
+        const page = await browser.newPage();
+        await page.goto('https://example.com');
+        console.log(await page.content());
+      });
+  </script>
+</head>
+<body>
+
+</body>
+</html>

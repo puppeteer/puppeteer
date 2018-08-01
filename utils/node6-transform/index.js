@@ -31,6 +31,14 @@ copyFolder(path.join(root, 'lib'), path.join(dest, 'lib'));
 copyFolder(path.join(root, 'test'), path.join(dest, 'test'));
 copyFolder(path.join(root, 'utils'), path.join(dest, 'utils'));
 
+fs.writeFileSync(
+    path.join(dest, 'lib/project.js'),
+    `module.exports = ${JSON.stringify({
+      root,
+      package: require(path.join(root, 'package'))
+    })};`
+);
+
 function copyFolder(source, target) {
   if (fs.existsSync(target))
     removeRecursive(target);

@@ -21,6 +21,7 @@
     "coverage": "cross-env COVERAGE=true npm run unit",
     "test-node6-transformer": "node utils/node6-transform/test/test.js",
     "build": "node utils/node6-transform/index.js",
+    "build-web": "browserify -r ./index.js:puppeteer -o ./browser.js",
     "unit-node6": "node node6/test/test.js",
     "tsc": "tsc -p .",
     "prepublishOnly": "npm run build",
@@ -45,6 +46,7 @@
     "@types/node": "^8.0.26",
     "@types/rimraf": "^2.0.2",
     "@types/ws": "^3.0.2",
+    "browserify": "^16.2.0",
     "commonmark": "^0.27.0",
     "cross-env": "^5.0.5",
     "eslint": "^4.19.1",
@@ -55,5 +57,13 @@
     "pngjs": "^3.3.3",
     "text-diff": "^1.0.1",
     "typescript": "~2.8.1"
+  },
+  "browser": {
+    "./index.js": "./lib/Puppeteer.js",
+    "./lib/BrowserFetcher.js": false,
+    "ws": "./lib/BrowserWebSocket",
+    "child_process": false,
+    "rimraf": false,
+    "readline": false
   }
 }
