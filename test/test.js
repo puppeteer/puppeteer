@@ -112,24 +112,30 @@ describe('Browser', function() {
     state.browser = null;
   });
 
+  beforeEach(async (state, test) => {
+    const rl = require('readline').createInterface({input: state.browser.process().stderr});
+    test.output = '';
+    rl.on('line', onLine);
+    state.tearDown = () => {
+      rl.removeListener('line', onLine);
+      rl.close();
+    };
+    function onLine(line) {
+      test.output += line + '\n';
+    }
+  });
+
+  afterEach(async state => {
+    state.tearDown();
+  });
+
   describe('Page', function() {
-    beforeEach(async(state, test) => {
+    beforeEach(async(state) => {
       state.context = await state.browser.createIncognitoBrowserContext();
       state.page = await state.context.newPage();
-      const rl = require('readline').createInterface({input: state.browser.process().stderr});
-      test.output = '';
-      rl.on('line', onLine);
-      state.tearDown = () => {
-        rl.removeListener('line', onLine);
-        rl.close();
-      };
-      function onLine(line) {
-        test.output += line + '\n';
-      }
     });
 
     afterEach(async state => {
-      state.tearDown();
       // This closes all pages.
       await state.context.close();
       state.context = null;
