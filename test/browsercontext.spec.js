@@ -40,14 +40,15 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(browser.browserContexts().length).toBe(1);
     });
     it('should close all belonging targets once closing context', async function({browser, server}) {
-      expect((await browser.pages()).length).toBe(2);
+      expect((await browser.pages()).length).toBe(1);
 
       const context = await browser.createIncognitoBrowserContext();
       await context.newPage();
-      expect((await browser.pages()).length).toBe(3);
+      expect((await browser.pages()).length).toBe(2);
+      expect((await context.pages()).length).toBe(1);
 
       await context.close();
-      expect((await browser.pages()).length).toBe(2);
+      expect((await browser.pages()).length).toBe(1);
     });
     it('window.open should use parent tab context', async function({browser, server}) {
       const context = await browser.createIncognitoBrowserContext();

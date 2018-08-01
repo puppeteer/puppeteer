@@ -50,6 +50,7 @@ Next Release: **Aug 9, 2018**
   * [browserContext.close()](#browsercontextclose)
   * [browserContext.isIncognito()](#browsercontextisincognito)
   * [browserContext.newPage()](#browsercontextnewpage)
+  * [browserContext.pages()](#browsercontextpages)
   * [browserContext.targets()](#browsercontexttargets)
 - [class: Page](#class-page)
   * [event: 'close'](#event-close)
@@ -561,6 +562,9 @@ Promise which resolves to a new [Page] object. The [Page] is created in a defaul
 #### browser.pages()
 - returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages. Non visible pages, such as `"background_page"`, will not be listed here. You can find them using [target.page()](#targetpage).
 
+An array of all pages inside the Browser. In case of multiple browser contexts,
+the method will return an array with all the pages in all browser contexts.
+
 #### browser.process()
 - returns: <?[ChildProcess]> Spawned browser process. Returns `null` if the browser instance was created with [`puppeteer.connect`](#puppeteerconnectoptions) method.
 
@@ -652,6 +656,11 @@ The default browser context is the only non-incognito browser context.
 - returns: <[Promise]<[Page]>>
 
 Creates a new page in the browser context.
+
+#### browserContext.pages()
+- returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages. Non visible pages, such as `"background_page"`, will not be listed here. You can find them using [target.page()](#targetpage).
+
+An array of all pages inside the browser context.
 
 #### browserContext.targets()
 - returns: <[Array]<[Target]>>

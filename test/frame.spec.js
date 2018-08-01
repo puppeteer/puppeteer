@@ -291,8 +291,10 @@ module.exports.addTests = function({testRunner, expect}) {
             fulfill();
         });
       });
-      frame.evaluate(() => window.stop());
-      await navigationPromise;
+      await Promise.all([
+        frame.evaluate(() => window.stop()),
+        navigationPromise
+      ]);
     });
   });
 

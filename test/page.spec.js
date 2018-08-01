@@ -26,8 +26,8 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
   const iPhoneLandscape = DeviceDescriptors['iPhone 6 landscape'];
 
   describe('Page.close', function() {
-    it('should reject all promises when page is closed', async({browser}) => {
-      const newPage = await browser.newPage();
+    it('should reject all promises when page is closed', async({context}) => {
+      const newPage = await context.newPage();
       const neverResolves = newPage.evaluate(() => new Promise(r => {}));
       newPage.close();
       let error = null;
@@ -40,8 +40,8 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       await newPage.close();
       expect(await browser.pages()).not.toContain(newPage);
     });
-    it('should run beforeunload if asked for', async({browser, server}) => {
-      const newPage = await browser.newPage();
+    it('should run beforeunload if asked for', async({context, server}) => {
+      const newPage = await context.newPage();
       await newPage.goto(server.PREFIX + '/beforeunload.html');
       // We have to interact with a page so that 'beforeunload' handlers
       // fire.
@@ -54,8 +54,8 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       dialog.accept();
       await waitEvent(newPage, 'close');
     });
-    it('should set the page close state', async({ browser }) => {
-      const newPage = await browser.newPage();
+    it('should set the page close state', async({context}) => {
+      const newPage = await context.newPage();
       expect(newPage.isClosed()).toBe(false);
       await newPage.close();
       expect(newPage.isClosed()).toBe(true);
@@ -1431,10 +1431,10 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       });
       expect(screenshot).toBeGolden('screenshot-grid-fullpage.png');
     });
-    it('should run in parallel in multiple pages', async({page, server, browser}) => {
+    it('should run in parallel in multiple pages', async({page, server, context}) => {
       const N = 2;
       const pages = await Promise.all(Array(N).fill(0).map(async() => {
-        const page = await browser.newPage();
+        const page = await context.newPage();
         await page.goto(server.PREFIX + '/grid.html');
         return page;
       }));
@@ -1563,16 +1563,16 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
   });
 
   describe('Page.Events.Close', function() {
-    it('should work with window.close', async function({ page, browser, server }) {
-      const newPagePromise = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target.page())));
+    it('should work with window.close', async function({ page, context, server }) {
+      const newPagePromise = new Promise(fulfill => context.once('targetcreated', target => fulfill(target.page())));
       await page.evaluate(() => window['newPage'] = window.open('about:blank'));
       const newPage = await newPagePromise;
       const closedPromise = new Promise(x => newPage.on('close', x));
       await page.evaluate(() => window['newPage'].close());
       await closedPromise;
     });
-    it('should work with page.close', async function({ page, browser, server }) {
-      const newPage = await browser.newPage();
+    it('should work with page.close', async function({ page, context, server }) {
+      const newPage = await context.newPage();
       const closedPromise = new Promise(x => newPage.on('close', x));
       await newPage.close();
       await closedPromise;

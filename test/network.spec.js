@@ -251,6 +251,28 @@ module.exports.addTests = function({testRunner, expect}) {
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.ok()).toBe(true);
     });
+    it('should contain referer header', async({page, server}) => {
+      await page.setRequestInterception(true);
+      const requests = [];
+      page.on('request', request => {
+        requests.push(request);
+        request.continue();
+      });
+      await page.goto(server.PREFIX + '/one-style.html');
+      expect(requests[1].url()).toContain('/one-style.css');
+      expect(requests[1].headers().referer).toContain('/one-style.html');
+    });
+    it('should properly return navigation response when URL has cookies', async({page, server}) => {
+      // Setup cookie.
+      await page.goto(server.EMPTY_PAGE);
+      await page.setCookie({ name: 'foo', value: 'bar'});
+
+      // Setup request interception.
+      await page.setRequestInterception(true);
+      page.on('request', request => request.continue());
+      const response = await page.reload();
+      expect(response.status()).toBe(200);
+    });
     it('should stop intercepting', async({page, server}) => {
       await page.setRequestInterception(true);
       page.once('request', request => request.continue());
@@ -366,6 +388,30 @@ module.exports.addTests = function({testRunner, expect}) {
         expect(request.isNavigationRequest()).toBe(true);
         expect(request.redirectChain().indexOf(request)).toBe(i);
       }
+    });
+    it('should work with redirects for subresources', async({page, server}) => {
+      await page.setRequestInterception(true);
+      const requests = [];
+      page.on('request', request => {
+        request.continue();
+        requests.push(request);
+      });
+      server.setRedirect('/one-style.css', '/two-style.css');
+      server.setRedirect('/two-style.css', '/three-style.css');
+      server.setRedirect('/three-style.css', '/four-style.css');
+      server.setRoute('/four-style.css', (req, res) => res.end('body {box-sizing: border-box; }'));
+
+      const response = await page.goto(server.PREFIX + '/one-style.html');
+      expect(response.status()).toBe(200);
+      expect(response.url()).toContain('one-style.html');
+      expect(requests.length).toBe(5);
+      expect(requests[0].resourceType()).toBe('document');
+      expect(requests[1].resourceType()).toBe('stylesheet');
+      // Check redirect chain
+      const redirectChain = requests[1].redirectChain();
+      expect(redirectChain.length).toBe(3);
+      expect(redirectChain[0].url()).toContain('/one-style.css');
+      expect(redirectChain[2].url()).toContain('/three-style.css');
     });
     it('should be able to abort redirects', async({page, server}) => {
       await page.setRequestInterception(true);
