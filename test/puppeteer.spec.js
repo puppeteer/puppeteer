@@ -282,6 +282,21 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
     });
   });
 
+  describe('Browser target events', function() {
+    it('should work', async({server}) => {
+      const browser = await puppeteer.launch(defaultBrowserOptions);
+      const events = [];
+      browser.on('targetcreated', () => events.push('CREATED'));
+      browser.on('targetchanged', () => events.push('CHANGED'));
+      browser.on('targetdestroyed', () => events.push('DESTROYED'));
+      const page = await browser.newPage();
+      await page.goto(server.EMPTY_PAGE);
+      await page.close();
+      expect(events).toEqual(['CREATED', 'CHANGED', 'DESTROYED']);
+      await browser.close();
+    });
+  });
+
   describe('Browser.Events.disconnected', function() {
     it('should be emitted when: browser gets closed, disconnected or underlying websocket gets closed', async() => {
       const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
