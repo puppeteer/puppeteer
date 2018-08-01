@@ -638,11 +638,10 @@ Promise which resolves to a new [Page] object. The [Page] is created in a defaul
 返回一个完成态会返回 [页面](#class-page) 对象的 Promise。该 [页面](#class-page) 在一个默认浏览器上下文中被创建。
 
 #### browser.pages()
-- returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages. Non visible pages, such as `"background_page"`, will not be listed here. You can find them using [target.page()](#targetpage).
-
+- returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages. Non visible pages, such as `"background_page"`, will not be listed here. You can find them using [target.page()](#targetpage). （返回一个完成态会返回所有打开页面列表的 Promise。不可见的页面，如 `"background_page"`，则不会被罗列在里面。你可以使用 [target.page()](#targetpage) 来获取它们）
 
 #### browser.process()
-- returns: <?[ChildProcess]> Spawned browser process. Returns `null` if the browser instance was created with [`puppeteer.connect`](#puppeteerconnectoptions) method.
+- returns: <?[ChildProcess]> Spawned browser process. Returns `null` if the browser instance was created with [`puppeteer.connect`](#puppeteerconnectoptions) method. （创建一个浏览器进程。如果该浏览器实例是通过 [`puppeteer.connect`](#puppeteerconnectoptions) 方法创建的则返回 `null`）
 
 #### browser.targets()
 - returns: <[Array]<[Target]>>
@@ -650,23 +649,33 @@ Promise which resolves to a new [Page] object. The [Page] is created in a defaul
 An array of all active targets inside the Browser. In case of multiple browser contexts,
 the method will return an array with all the targets in all browser contexts.
 
+返回一个包含浏览器中所有激活的 target 的数组。在多个浏览器上下文的情况下，该方法将返回一个包含所有浏览器上下文中所有 target 的数组。
+
 #### browser.userAgent()
-- returns: <[Promise]<[string]>> Promise which resolves to the browser's original user agent.
+- returns: <[Promise]<[string]>> Promise which resolves to the browser's original user agent.  （返回浏览器原始 user-agent 的 Promise）
 
 > **NOTE** Pages can override browser user agent with [page.setUserAgent](#pagesetuseragentuseragent)
 
+> **提示：** 页面可以使用 [page.setUserAgent](#pagesetuseragentuseragent) 覆盖浏览器的 user-agent
+
 #### browser.version()
-- returns: <[Promise]<[string]>> For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is similar to `Chrome/61.0.3153.0`.
+- returns: <[Promise]<[string]>> For headless Chromium, this is similar to `HeadlessChrome/61.0.3153.0`. For non-headless, this is similar to `Chrome/61.0.3153.0`. （在 headless Chromium 模式中，它类似于 `HeadlessChrome/61.0.3153.0`。在 non-headless 模式中，它类似于`Chrome/61.0.3153.0`）
 
 > **NOTE** the format of browser.version() might change with future releases of Chromium.
 
+> **提示：** 在以后的 Chromium 发布版中 `browser.version()` 返回的格式可能会发生变化。
+
 #### browser.wsEndpoint()
-- returns: <[string]> Browser websocket url.
+- returns: <[string]> Browser websocket url. （浏览器的 websocket url）
 
 Browser websocket endpoint which can be used as an argument to
 [puppeteer.connect](#puppeteerconnectoptions). The format is `ws://${host}:${port}/devtools/browser/<id>`
 
+浏览器的 websocket 终端可以用作 [puppeteer.connect](#puppeteerconnectoptions) 的参数。格式为 `ws://${host}:${port}/devtools/browser/<id>`
+
 You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/version`. Learn more about the [devtools protocol](https://chromedevtools.github.io/devtools-protocol) and the [browser endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
+
+你能够在 `http://${host}:${port}/json/version` 中找到 `webSocketDebuggerUrl`。学习更多的 [devtools protocol](https://chromedevtools.github.io/devtools-protocol) 和 [browser endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
 
 ### class: BrowserContext
 
