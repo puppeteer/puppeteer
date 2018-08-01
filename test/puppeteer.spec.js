@@ -60,16 +60,6 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         await rmAsync(downloadsFolder);
       });
     });
-    describe('AppMode', function() {
-      it('should work', async() => {
-        const options = Object.assign({appMode: true}, defaultBrowserOptions);
-        const browser = await puppeteer.launch(options);
-        const page = await browser.newPage();
-        expect(await page.evaluate('11 * 11')).toBe(121);
-        await page.close();
-        await browser.close();
-      });
-    });
 
     describe('Puppeteer.launch', function() {
       it('should reject all promises when browser is closed', async() => {
@@ -227,6 +217,28 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         if (pages[0].url() !== customUrl)
           await pages[0].waitForNavigation();
         expect(pages[0].url()).toBe(customUrl);
+        await browser.close();
+      });
+      it('should set the default viewport', async() => {
+        const options = Object.assign({}, defaultBrowserOptions, {
+          defaultViewport: {
+            width: 456,
+            height: 789
+          }
+        });
+        const browser = await puppeteer.launch(options);
+        const page = await browser.newPage();
+        expect(await page.evaluate('window.innerWidth')).toBe(456);
+        expect(await page.evaluate('window.innerHeight')).toBe(789);
+        await browser.close();
+      });
+      it('should disable the default viewport', async() => {
+        const options = Object.assign({}, defaultBrowserOptions, {
+          defaultViewport: null
+        });
+        const browser = await puppeteer.launch(options);
+        const page = await browser.newPage();
+        expect(page.viewport()).toBe(null);
         await browser.close();
       });
     });
