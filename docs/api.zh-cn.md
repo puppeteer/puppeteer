@@ -520,7 +520,7 @@ A Browser is created when Puppeteer connects to a Chromium instance, either thro
 
 An example of using a [Browser] to create a [Page]:
 
-下面是使用 [Browser] 创建 [Page] 的示例：
+下面是使用 [浏览器(Browser)](#class-browser) 创建 [页面(Page)](#class-page) 的示例：
 
 ```js
 const puppeteer = require('puppeteer');
@@ -534,7 +534,7 @@ puppeteer.launch().then(async browser => {
 
 An example of disconnecting from and reconnecting to a [Browser]:
 
-下面展示从 [浏览器](#Browser) 断开并重新连接的示例：
+下面展示从 [浏览器(Browser)](#class-browser) 断开并重新连接的示例：
 
 ```js
 const puppeteer = require('puppeteer');
@@ -553,30 +553,44 @@ puppeteer.launch().then(async browser => {
 ```
 #### event: 'disconnected'
 Emitted when Puppeteer gets disconnected from the Chromium instance. This might happen because of one of the following:
-- Chromium is closed or crashed
-- The [`browser.disconnect`](#browserdisconnect) method was called
+
+当 Puppeteer 从 Chromium 实例断开连接的时候触发。这种情况可能由以下条件触发：
+
+- Chromium is closed or crashed （Chromium被关闭或者崩溃）
+- The [`browser.disconnect`](#browserdisconnect) method was called （调用了[`browser.disconnect`](#browserdisconnect)方法）
 
 #### event: 'targetchanged'
 - <[Target]>
 
 Emitted when the url of a target changes.
 
+当 target 的 url 发生改变时触发。
+
 > **NOTE** This includes target changes in incognito browser contexts.
 
+> **提示：** 这里也包含了在隐身模式下浏览器上下文中 target 的改变。
 
 #### event: 'targetcreated'
 - <[Target]>
 
 Emitted when a target is created, for example when a new page is opened by [`window.open`](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) or [`browser.newPage`](#browsernewpage).
 
+当一个新的 target 被创建时触发，例如当一个新页面通过 [`window.open`](https://developer.mozilla.org/en-US/docs/Web/API/Window/open) 或者 [`browser.newPage`](#browsernewpage) 打开时。
+
 > **NOTE** This includes target creations in incognito browser contexts.
+
+> **提示：** 这里也包含了在隐身模式下浏览器上下文中 target 的创建。
 
 #### event: 'targetdestroyed'
 - <[Target]>
 
 Emitted when a target is destroyed, for example when a page is closed.
 
+当 target 被销毁的时候触发，如当页面关闭的时候。
+
 > **NOTE** This includes target destructions in incognito browser contexts.
+
+> **提示：** 这里也包含了在隐身模式下浏览器上下文中 target 的销毁。
 
 #### browser.browserContexts()
 - returns: <[Array]<[BrowserContext]>>
@@ -584,15 +598,21 @@ Emitted when a target is destroyed, for example when a page is closed.
 Returns an array of all open browser contexts. In a newly created browser, this will return
 a single instance of [BrowserContext].
 
+返回一个包含了所有打开浏览器上下文的列表。在一个新创建的浏览器中返回的是单个 [浏览器上下文(BrowserContext)](#class-browsercontext) 实例。
+
 #### browser.close()
 - returns: <[Promise]>
 
 Closes Chromium and all of its pages (if any were opened). The [Browser] object itself is considered to be disposed and cannot be used anymore.
 
+关闭 Chromium 和它所有的页面。该 [浏览器(browser)](#class-browser) 对象将被丢弃并不能再使用。
+
 #### browser.createIncognitoBrowserContext()
 - returns: <[Promise]<[BrowserContext]>>
 
 Creates a new incognito browser context. This won't share cookies/cache with other browser contexts.
+
+创建一个新的隐身浏览器上下文。它不会和其它浏览器上下文共享 cookie/cache。
 
 ```js
 const browser = await puppeteer.launch();
@@ -608,13 +628,18 @@ await page.goto('https://example.com');
 
 Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling `disconnect`, the [Browser] object is considered disposed and cannot be used anymore.
 
+将浏览器和 Puppeteer 断开，但是保持 Chromium 进程继续运行。 在调用 `disconnect` 后，该 [浏览器(browser)](#class-browser) 对象将被丢弃并不能再使用。
+
 #### browser.newPage()
 - returns: <[Promise]<[Page]>>
 
 Promise which resolves to a new [Page] object. The [Page] is created in a default browser context.
 
+返回一个完成态会返回 [页面](#class-page) 对象的 Promise。该 [页面](#class-page) 在一个默认浏览器上下文中被创建。
+
 #### browser.pages()
 - returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages. Non visible pages, such as `"background_page"`, will not be listed here. You can find them using [target.page()](#targetpage).
+
 
 #### browser.process()
 - returns: <?[ChildProcess]> Spawned browser process. Returns `null` if the browser instance was created with [`puppeteer.connect`](#puppeteerconnectoptions) method.
