@@ -114,7 +114,7 @@ module.exports.addTests = function({testRunner, expect}) {
   describe('CSSCoverage', function() {
     it('should work', async function({page, server}) {
       await page.coverage.startCSSCoverage();
-      await page.goto(server.PREFIX + '/csscoverage/simple.html');
+      await page.goto(server.PREFIX + '/csscoverage/simple.html', {waitUntil: 'networkidle0'});
       const coverage = await page.coverage.stopCSSCoverage();
       expect(coverage.length).toBe(1);
       expect(coverage[0].url).toContain('/csscoverage/simple.html');
@@ -126,14 +126,14 @@ module.exports.addTests = function({testRunner, expect}) {
     });
     it('should report sourceURLs', async function({page, server}) {
       await page.coverage.startCSSCoverage();
-      await page.goto(server.PREFIX + '/csscoverage/sourceurl.html');
+      await page.goto(server.PREFIX + '/csscoverage/sourceurl.html', {waitUntil: 'networkidle0'});
       const coverage = await page.coverage.stopCSSCoverage();
       expect(coverage.length).toBe(1);
       expect(coverage[0].url).toBe('nicename.css');
     });
     it('should report multiple stylesheets', async function({page, server}) {
       await page.coverage.startCSSCoverage();
-      await page.goto(server.PREFIX + '/csscoverage/multiple.html');
+      await page.goto(server.PREFIX + '/csscoverage/multiple.html', {waitUntil: 'networkidle0'});
       const coverage = await page.coverage.stopCSSCoverage();
       expect(coverage.length).toBe(2);
       coverage.sort((a, b) => a.url.localeCompare(b.url));
@@ -142,7 +142,7 @@ module.exports.addTests = function({testRunner, expect}) {
     });
     it('should report stylesheets that have no coverage', async function({page, server}) {
       await page.coverage.startCSSCoverage();
-      await page.goto(server.PREFIX + '/csscoverage/unused.html');
+      await page.goto(server.PREFIX + '/csscoverage/unused.html', {waitUntil: 'networkidle0'});
       const coverage = await page.coverage.stopCSSCoverage();
       expect(coverage.length).toBe(1);
       expect(coverage[0].url).toBe('unused.css');
@@ -150,7 +150,7 @@ module.exports.addTests = function({testRunner, expect}) {
     });
     it('should work with media queries', async function({page, server}) {
       await page.coverage.startCSSCoverage();
-      await page.goto(server.PREFIX + '/csscoverage/media.html');
+      await page.goto(server.PREFIX + '/csscoverage/media.html', {waitUntil: 'networkidle0'});
       const coverage = await page.coverage.stopCSSCoverage();
       expect(coverage.length).toBe(1);
       expect(coverage[0].url).toContain('/csscoverage/media.html');
@@ -160,7 +160,7 @@ module.exports.addTests = function({testRunner, expect}) {
     });
     it('should work with complicated usecases', async function({page, server}) {
       await page.coverage.startCSSCoverage();
-      await page.goto(server.PREFIX + '/csscoverage/involved.html');
+      await page.goto(server.PREFIX + '/csscoverage/involved.html', {waitUntil: 'networkidle0'});
       const coverage = await page.coverage.stopCSSCoverage();
       expect(JSON.stringify(coverage, null, 2).replace(/:\d{4}\//g, ':<PORT>/')).toBeGolden('csscoverage-involved.txt');
     });
@@ -176,15 +176,15 @@ module.exports.addTests = function({testRunner, expect}) {
     describe('resetOnNavigation', function() {
       it('should report stylesheets across navigations', async function({page, server}) {
         await page.coverage.startCSSCoverage({resetOnNavigation: false});
-        await page.goto(server.PREFIX + '/csscoverage/multiple.html');
-        await page.goto(server.EMPTY_PAGE);
+        await page.goto(server.PREFIX + '/csscoverage/multiple.html', {waitUntil: 'networkidle0'});
+        await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle0'});
         const coverage = await page.coverage.stopCSSCoverage();
         expect(coverage.length).toBe(2);
       });
       it('should NOT report scripts across navigations', async function({page, server}) {
         await page.coverage.startCSSCoverage(); // Enabled by default.
-        await page.goto(server.PREFIX + '/csscoverage/multiple.html');
-        await page.goto(server.EMPTY_PAGE);
+        await page.goto(server.PREFIX + '/csscoverage/multiple.html', {waitUntil: 'networkidle0'});
+        await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle0'});
         const coverage = await page.coverage.stopCSSCoverage();
         expect(coverage.length).toBe(0);
       });
