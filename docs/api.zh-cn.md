@@ -378,9 +378,9 @@ puppeteer.launch().then(async browser => {
 
 #### puppeteer.connect(options)
 - `options` <[Object]>
-  - `browserWSEndpoint` <[string]> a [browser websocket endpoint](#browserwsendpoint) to connect to. （用于连接 Chrome 的[browser websocket endpoint](#browserwsendpoint)（译者注：Dev Tools通过该 websocket 与所控制的浏览器实例相连））
-  - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`. （是否在页面导航之间忽略 HTTPS 错误， 默认为 `false`）
-  - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on. （以毫秒数指定 Puppeteer 操作需要被放慢的时间。 当你需要看清楚中途发生了什么的时候非常有用）
+  - `browserWSEndpoint` <[string]> a [browser websocket endpoint](#browserwsendpoint) to connect to. （用于连接 Chrome 的[browser websocket endpoint](#browserwsendpoint)（译者注：Dev Tools通过该 websocket 与所控制的浏览器实例相连））
+  - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`. （是否在页面导航之间忽略 HTTPS 错误， 默认为 `false`）
+  - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on. （以毫秒数指定 Puppeteer 操作需要被放慢的时间。 当你需要看清楚中途发生了什么的时候非常有用）
 - returns: <[Promise]<[Browser]>>
 
 This methods attaches Puppeteer to an existing Chromium instance.
@@ -407,7 +407,7 @@ This methods attaches Puppeteer to an existing Chromium instance.
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`. （是否在页面导航之间忽略 HTTPS 错误， 默认为 `false`）
   - `headless` <[boolean]> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`. （是否以 [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome) 启动浏览器。除非 `devtools` 为 `true`， 否则默认为 `true`）
   - `executablePath` <[string]> Path to a Chromium or Chrome executable to run instead of the bundled Chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). （指定 Chromium 或者 Chrome 执行文件的路径，可以替代绑定的 Chromium，如果 `executablePath` 是相对路径，则会返回与 [current working directory](https://nodejs.org/api/process.html#process_process_cwd) 相对的路径）
-  - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on. （以毫秒数指定 Puppeteer 操作需要被放慢的时间。 当你需要看清楚中途发生了什么的时候非常有用）
+  - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on. （以毫秒数指定 Puppeteer 操作需要被放慢的时间。 当你需要看清楚中途发生了什么的时候非常有用）
   - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/). （给浏览器实例传递的额外参数，可以在[这里](http://peter.sh/experiments/chromium-command-line-switches/)找到 Chromium 的参数）
   - `ignoreDefaultArgs` <[boolean]> Do not use [`puppeteer.defaultArgs()`](#puppeteerdefaultargs). Dangerous option; use with care. Defaults to `false`. （不要使用 [`puppeteer.defaultArgs()`](#puppeteerdefaultargs)。使用该参数有一定风险，请小心使用，默认为 `false`）
   - `handleSIGINT` <[boolean]> Close the browser process on Ctrl-C. Defaults to `true`. （使用 `Ctrl-C` 来关闭浏览器进程， 默认为 `true`）
@@ -427,7 +427,7 @@ The method launches a browser instance with given arguments. The browser will be
 
 > **NOTE** Puppeteer can also be used to control the Chrome browser, but it works best with the version of Chromium it is bundled with. There is no guarantee it will work with any other version. Use `executablePath` option with extreme caution. （Puppeteer也能够用来控制 Chrome 浏览器， 但是它和与之绑定的 Chromium 会更加搭配。我们并不能保证它能够和其它版本的 Chromium 一起正常工作。非特殊情况不要使用 `executablePath`）
 >
-> If Google Chrome (rather than Chromium) is preferred, a [Chrome Canary](https://www.google.com/chrome/browser/canary.html) or [Dev Channel](https://www.chromium.org/getting-involved/dev-channel) build is suggested. （如果更喜欢使用 Google Chrome（而非 Chromium），则推荐使用 [Chrome Canary](https://www.google.com/chrome/browser/canary.html) 或者 [Dev Channel](https://www.chromium.org/getting-involved/dev-channel)的构建版本 ）
+> If Google Chrome (rather than Chromium) is preferred, a [Chrome Canary](https://www.google.com/chrome/browser/canary.html) or [Dev Channel](https://www.chromium.org/getting-involved/dev-channel) build is suggested. （如果更喜欢使用 Google Chrome（而非 Chromium），则推荐使用 [Chrome Canary](https://www.google.com/chrome/browser/canary.html) 或者 [Dev Channel](https://www.chromium.org/getting-involved/dev-channel)的构建版本 ）
 >
 > In [puppeteer.launch([options])](#puppeteerlaunchoptions) above, any mention of Chromium also applies to Chrome. （在前面的 [puppeteer.launch([options])](#puppeteerlaunchoptions) 中提及的任何东西同时也适用于 Chrome）
 >
