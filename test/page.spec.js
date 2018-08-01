@@ -543,6 +543,20 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       expect(error).toBe(null);
       expect(loaded).toBe(true);
     });
+    it('should exit before timeout expires if browser closed', async({page, browser}) => {
+      const timeout = 5000;
+      page.on('console', () => browser.close());
+      const timeoutPromise = new Promise(resolve => {
+        setTimeout(resolve.bind(null, 'timeout reached'), timeout);
+      });
+      const navigationPromise = page.goto(`data:text/html,<script>console.log(1)</script>`, {timeout});
+      const raceResult = await Promise.race([
+        navigationPromise,
+        timeoutPromise
+      ]);
+      expect(raceResult).toBeTruthy();
+      expect(raceResult instanceof Object).toBe(true);
+    });
     it('should work when navigating to valid url', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.ok()).toBe(true);
