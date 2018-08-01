@@ -292,8 +292,8 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
       const page = await browser.newPage();
       await page.goto(server.EMPTY_PAGE);
       await page.close();
-      await browser.close();
       expect(events).toEqual(['CREATED', 'CHANGED', 'DESTROYED']);
+      await browser.close();
     });
   });
 
