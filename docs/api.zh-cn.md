@@ -441,7 +441,7 @@ The method launches a browser instance with given arguments. The browser will be
 >
 > 参考 [`这篇文章`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) 了解 Chromium 与 Chrome 的不同之处。 同时还有[`另外一篇文章`](https://chromium.googlesource.com/chromium/src/+/lkcr/docs/chromium_browser_vs_google_chrome.md) 为 Linux 用户说明了一些不同之处。
 
-### class: BrowserFetcher （BrowserFetcher 类）
+### class: BrowserFetcher （BrowserFetcher 类）
 
 BrowserFetcher can download and manage different versions of Chromium.
 
@@ -498,7 +498,7 @@ The method initiates a GET request to download the revision from the host.
 - returns: <[string]> Returns one of `mac`, `linux`, `win32` or `win64`. （返回`mac`, `linux`, `win32` 或者 `win64` 之一）
 
 #### browserFetcher.remove(revision)
-- `revision` <[string]> a revision to remove. The method will throw if the revision has not been downloaded. （指定需要移除的修订版， 如果该版本还没有被下载下来，则该方法会抛出错误）
+- `revision` <[string]> a revision to remove. The method will throw if the revision has not been downloaded. （指定需要移除的修订版， 如果该版本还没有被下载下来，则该方法会抛出错误）
 - returns: <[Promise]> Resolves when the revision has been removed. （返回一个当该版本被移除时会变为完成态的 Promise）
 
 #### browserFetcher.revisionInfo(revision)
@@ -605,7 +605,7 @@ a single instance of [BrowserContext].
 
 Closes Chromium and all of its pages (if any were opened). The [Browser] object itself is considered to be disposed and cannot be used anymore.
 
-关闭 Chromium 和它所有的页面。该 [浏览器(browser)](#class-browser) 对象将被丢弃并不能再使用。
+关闭 Chromium 和它所有的页面。该 [浏览器(browser)](#class-browser) 对象将被丢弃并不能再使用。
 
 #### browser.createIncognitoBrowserContext()
 - returns: <[Promise]<[BrowserContext]>>
@@ -628,7 +628,7 @@ await page.goto('https://example.com');
 
 Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling `disconnect`, the [Browser] object is considered disposed and cannot be used anymore.
 
-将浏览器和 Puppeteer 断开，但是保持 Chromium 进程继续运行。 在调用 `disconnect` 后，该 [浏览器(browser)](#class-browser) 对象将被丢弃并不能再使用。
+将浏览器和 Puppeteer 断开，但是保持 Chromium 进程继续运行。 在调用 `disconnect` 后，该 [浏览器(browser)](#class-browser) 对象将被丢弃并不能再使用。
 
 #### browser.newPage()
 - returns: <[Promise]<[Page]>>
@@ -641,7 +641,7 @@ Promise which resolves to a new [Page] object. The [Page] is created in a defaul
 - returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages. Non visible pages, such as `"background_page"`, will not be listed here. You can find them using [target.page()](#targetpage). （返回一个完成态会返回所有打开页面列表的 Promise。不可见的页面，如 `"background_page"`，则不会被罗列在里面。你可以使用 [target.page()](#targetpage) 来获取它们）
 
 #### browser.process()
-- returns: <?[ChildProcess]> Spawned browser process. Returns `null` if the browser instance was created with [`puppeteer.connect`](#puppeteerconnectoptions) method. （创建一个浏览器进程。如果该浏览器实例是通过 [`puppeteer.connect`](#puppeteerconnectoptions) 方法创建的则返回 `null`）
+- returns: <?[ChildProcess]> Spawned browser process. Returns `null` if the browser instance was created with [`puppeteer.connect`](#puppeteerconnectoptions) method. （创建一个浏览器进程。如果该浏览器实例是通过 [`puppeteer.connect`](#puppeteerconnectoptions) 方法创建的则返回 `null`）
 
 #### browser.targets()
 - returns: <[Array]<[Target]>>
