@@ -526,6 +526,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       let error = null;
       await page.goto(server.PREFIX + '/empty.html', {timeout: 1}).catch(e => error = e);
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should fail when exceeding default maximum navigation timeout', async({page, server}) => {
       // Hang for request to the empty.html
@@ -534,6 +535,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       page.setDefaultNavigationTimeout(1);
       await page.goto(server.PREFIX + '/empty.html').catch(e => error = e);
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should disable timeout when its set to 0', async({page, server}) => {
       let error = null;

@@ -19,6 +19,10 @@ const mdBuilder = require('./MDBuilder');
 const Documentation = require('./Documentation');
 const Message = require('../Message');
 
+const EXCLUDE_JS_FILES = new Set([
+  'errors.js',
+]);
+
 const EXCLUDE_CLASSES = new Set([
   'CSSCoverage',
   'Connection',
@@ -50,7 +54,7 @@ const EXCLUDE_METHODS = new Set([
  */
 module.exports = async function lint(page, mdSources, jsSources) {
   const mdResult = await mdBuilder(page, mdSources);
-  const jsResult = await jsBuilder(jsSources);
+  const jsResult = await jsBuilder(jsSources.filter(source => !EXCLUDE_JS_FILES.has(source.name())));
   const jsDocumentation = filterJSDocumentation(jsResult.documentation);
   const mdDocumentation = mdResult.documentation;
 

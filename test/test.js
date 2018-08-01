@@ -138,8 +138,8 @@ describe('Page', function() {
   require('./browsercontext.spec.js').addTests({testRunner, expect, puppeteer});
   require('./cookies.spec.js').addTests({testRunner, expect});
   require('./coverage.spec.js').addTests({testRunner, expect});
-  require('./elementhandle.spec.js').addTests({testRunner, expect});
-  require('./frame.spec.js').addTests({testRunner, expect});
+  require('./elementhandle.spec.js').addTests({testRunner, expect, puppeteer});
+  require('./frame.spec.js').addTests({testRunner, expect, puppeteer});
   require('./input.spec.js').addTests({testRunner, expect, DeviceDescriptors});
   require('./jshandle.spec.js').addTests({testRunner, expect});
   require('./network.spec.js').addTests({testRunner, expect});

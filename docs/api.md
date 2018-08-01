@@ -17,6 +17,7 @@ Next Release: **Aug 9, 2018**
   * [puppeteer.connect(options)](#puppeteerconnectoptions)
   * [puppeteer.createBrowserFetcher([options])](#puppeteercreatebrowserfetcheroptions)
   * [puppeteer.defaultArgs()](#puppeteerdefaultargs)
+  * [puppeteer.errors](#puppeteererrors)
   * [puppeteer.executablePath()](#puppeteerexecutablepath)
   * [puppeteer.launch([options])](#puppeteerlaunchoptions)
 - [class: BrowserFetcher](#class-browserfetcher)
@@ -373,6 +374,25 @@ This methods attaches Puppeteer to an existing Chromium instance.
 
 #### puppeteer.defaultArgs()
 - returns: <[Array]<[string]>> The default flags that Chromium will be launched with.
+
+#### puppeteer.errors
+- returns: <[Object]> - a collection of puppeteer error classes
+  - `InvalidNodeError` - thrown whenever Puppeteer didn't like the node it was asked to operate upon
+  - `ProtocolError` - thrown whenever DevTools protocol returns an error
+  - `TimeoutError` - thrown whenever an operation was aborted due to timeout
+
+Error classes could be used to conditionally check for error type.
+For example, to check if the operation failed due to timeout:
+
+```js
+try {
+  await page.waitForSelector('.foo');
+} catch (e) {
+  if (e instanceof puppeteer.errors.TimeoutError) {
+    // Do something if this is a timeout.
+  }
+}
+```
 
 #### puppeteer.executablePath()
 - returns: <[string]> A path where Puppeteer expects to find bundled Chromium. Chromium might not exist there if the download was skipped with [`PUPPETEER_SKIP_CHROMIUM_DOWNLOAD`](#environment-variables).
@@ -3088,35 +3108,35 @@ reported.
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
 [stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable "stream.Readable"
-[CDPSession]: #class-cdpsession  "CDPSession"
-[BrowserFetcher]: #class-browserfetcher  "BrowserFetcher"
-[BrowserContext]: #class-browsercontext  "BrowserContext"
-[Error]: https://nodejs.org/api/errors.html#errors_class_error "Error"
-[Frame]: #class-frame "Frame"
-[ConsoleMessage]: #class-consolemessage "ConsoleMessage"
-[ChildProcess]: https://nodejs.org/api/child_process.html "ChildProcess"
-[Coverage]: #class-coverage "Coverage"
-[iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols "Iterator"
-[Response]: #class-response  "Response"
-[Request]: #class-request  "Request"
-[Browser]: #class-browser  "Browser"
 [Body]: #class-body  "Body"
-[Element]: https://developer.mozilla.org/en-US/docs/Web/API/element "Element"
-[Keyboard]: #class-keyboard "Keyboard"
+[BrowserContext]: #class-browsercontext  "BrowserContext"
+[BrowserFetcher]: #class-browserfetcher  "BrowserFetcher"
+[Browser]: #class-browser  "Browser"
+[CDPSession]: #class-cdpsession  "CDPSession"
+[ChildProcess]: https://nodejs.org/api/child_process.html "ChildProcess"
+[ConsoleMessage]: #class-consolemessage "ConsoleMessage"
+[Coverage]: #class-coverage "Coverage"
 [Dialog]: #class-dialog  "Dialog"
-[JSHandle]: #class-jshandle "JSHandle"
-[ExecutionContext]: #class-executioncontext "ExecutionContext"
-[Mouse]: #class-mouse "Mouse"
-[Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map "Map"
-[selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors "selector"
-[Tracing]: #class-tracing "Tracing"
 [ElementHandle]: #class-elementhandle "ElementHandle"
-[UIEvent.detail]: https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail "UIEvent.detail"
-[Serializable]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Description "Serializable"
-[Touchscreen]: #class-touchscreen "Touchscreen"
-[Target]: #class-target "Target"
-[USKeyboardLayout]: ../lib/USKeyboardLayout.js "USKeyboardLayout"
-[xpath]: https://developer.mozilla.org/en-US/docs/Web/XPath "xpath"
-[UnixTime]: https://en.wikipedia.org/wiki/Unix_time "Unix Time"
+[Element]: https://developer.mozilla.org/en-US/docs/Web/API/element "Element"
+[Error]: https://nodejs.org/api/errors.html#errors_class_error "Error"
+[ExecutionContext]: #class-executioncontext "ExecutionContext"
+[Frame]: #class-frame "Frame"
+[JSHandle]: #class-jshandle "JSHandle"
+[Keyboard]: #class-keyboard "Keyboard"
+[Map]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Map "Map"
+[Mouse]: #class-mouse "Mouse"
+[Request]: #class-request  "Request"
+[Response]: #class-response  "Response"
 [SecurityDetails]: #class-securitydetails "SecurityDetails"
+[Serializable]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify#Description "Serializable"
+[Target]: #class-target "Target"
+[Touchscreen]: #class-touchscreen "Touchscreen"
+[Tracing]: #class-tracing "Tracing"
+[UIEvent.detail]: https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail "UIEvent.detail"
+[USKeyboardLayout]: ../lib/USKeyboardLayout.js "USKeyboardLayout"
+[UnixTime]: https://en.wikipedia.org/wiki/Unix_time "Unix Time"
 [Worker]: #class-worker "Worker"
+[iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols "Iterator"
+[selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors "selector"
+[xpath]: https://developer.mozilla.org/en-US/docs/Web/XPath "xpath"
