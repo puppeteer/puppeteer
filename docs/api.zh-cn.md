@@ -1203,7 +1203,7 @@ Emulate（仿真） 指定了设备的指标（metrics）和用户代理（user 
 To aid emulation, puppeteer provides a list of device descriptors which can be obtained via the `require('puppeteer/DeviceDescriptors')` command.
 Below is an example of emulating an iPhone 6 in puppeteer:
 
-Puppeteer 为使用仿真提供了一个设备描述的列表，它们可以通过  `require('puppeteer/DeviceDescriptors')` 获取。下面就是在 Puppeteer 中对 iPhone 6 进行仿真：
+Puppeteer 为使用仿真提供了一个设备描述的列表，它们可以通过  `require('puppeteer/DeviceDescriptors')` 获取。下面就是在 Puppeteer 中对 iPhone 6 进行仿真：
 
 ```js
 const puppeteer = require('puppeteer');
@@ -1224,7 +1224,7 @@ List of all available devices is available in the source code: [DeviceDescriptor
 所有列出的设备参数在源码 [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js) 文件中可以找到。
 
 #### page.emulateMedia(mediaType)
-- `mediaType` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation. （改变页面的CSS媒体类型，只允许 `'screen'`, `'print'` and `null`  之一， 传 `null` 表示禁用媒体仿真）
+- `mediaType` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation. （改变页面的CSS媒体类型，只允许 `'screen'`, `'print'` and `null`  之一， 传 `null` 表示禁用媒体仿真）
 - returns: <[Promise]>
 
 #### page.evaluate(pageFunction, ...args)
@@ -1325,7 +1325,7 @@ Adds a function which would be invoked in one of the following scenarios:
 
 The function is invoked after the document was created but before any of its scripts were run. This is useful to amend the JavaScript environment, e.g. to seed `Math.random`.
 
-函数会在文档（document）被创建后并且在执行它的任何脚本之前进行调用。这有助于修改 JavaScript 环境，如给 `Math.random` 设置随机数种子。
+函数会在文档（document）被创建后并且在执行它的任何脚本之前进行调用。这有助于修改 JavaScript 环境，如给 `Math.random` 设置随机数种子。
 
 An example of overriding the navigator.languages property before the page loads:
 
