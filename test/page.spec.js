@@ -264,6 +264,46 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
     });
   });
 
+  describe('Page.createNewIsolatedContext', function() {
+    it('should work', async({page, server}) => {
+      await page.evaluate(function() {
+        window.constantVariable = new Proxy({}, {
+          get: function() {
+            throw new Error('Should not get variable');
+          },
+          set: function() {
+            throw new Error('Should not set variable');
+          }
+        });
+        const p = document.createElement('p');
+        p.id = 'test-paragraph';
+        p.appendChild(document.createTextNode('Test node'));
+        document.body.appendChild(p);
+      });
+      await page.evaluate(function() {
+        return window.constantVariable;
+      }).then(function() {
+        throw new Error('Test should fail');
+      }, function(err) {
+        expect(err.message).toContain('Should not get variable');
+      });
+
+      const isolatedContext = await page.createNewIsolatedContext('test-isolated');
+
+      // Check that isolated context is indeed in a different context
+      const value = await isolatedContext.evaluate(function() {
+        return window.constantVariable;
+      });
+      expect(value).toBe(undefined);
+      // Nevertheless, it shares the DOM
+      const testText = await isolatedContext.evaluate(function() {
+        const testP = document.getElementById('test-paragraph');
+        return testP.textContent;
+      });
+      expect(testText).toBe('Test node');
+    });
+  });
+
   describe('ExecutionContext.queryObjects', function() {
     it('should work', async({page, server}) => {
       // Instantiate an object
