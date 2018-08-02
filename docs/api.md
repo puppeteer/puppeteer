@@ -1637,6 +1637,8 @@ await page.click('a.my-link'); // Clicking the link will indirectly cause a navi
 await navigationPromise; // The navigationPromise resolves after navigation has finished
 ```
 
+This is a shortcut for [page.mainFrame().waitForNavigation(options)](#framewaitfornavigationoptions)
+
 **NOTE** Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
 
 #### page.waitForRequest(urlOrPredicate, options)
