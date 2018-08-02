@@ -1420,16 +1420,18 @@ puppeteer.launch().then(async browser => {
 ```
 
 #### page.focus(selector)
-- `selector` <[string]> A [selector] of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
-- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. The promise will be rejected if there is no element matching `selector`.
+- `selector` <[string]> A [selector] of an element to focus. If there are multiple elements satisfying the selector, the first will be focused. （需要聚焦的元素的选择器（[selector]）。如果多个元素匹配该选择器，则焦点会被设置到第一个元素上）
+- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. The promise will be rejected if there is no element matching `selector`. （返回一个 Promise，当 `selector` 选中的元素被成功聚焦后该 Promise 会变为完成态。如果没有元素匹配 `selector` 则该 Promise 会返回拒绝态）
 
 This method fetches an element with `selector` and focuses it.
-If there's no element matching `selector`, the method throws an error.
+If there's no element matching `selector`, the method throws an error. （该方法使用 `selector` 获取元素并给它设置焦点。如果没有元素匹配 `selector`，该方法会抛出错误）
 
 Shortcut for [page.mainFrame().focus(selector)](#framefocusselector).
 
+该方法是 [page.mainFrame().focus(selector)](#framefocusselector) 的简写。
+
 #### page.frames()
-- returns: <[Array]<[Frame]>> An array of all frames attached to the page.
+- returns: <[Array]<[Frame]>> An array of all frames attached to the page. （返回一个包含所有与当前页面关联的 frame 数组）
 
 #### page.goBack(options)
 - `options` <[Object]> Navigation parameters which might have the following properties:
