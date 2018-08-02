@@ -641,7 +641,7 @@ Promise which resolves to a new [Page] object. The [Page] is created in a defaul
 - returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages. Non visible pages, such as `"background_page"`, will not be listed here. You can find them using [target.page()](#targetpage). （返回一个完成态会返回所有打开页面列表的 Promise。不可见的页面，如 `"background_page"`，则不会被罗列在里面。你可以使用 [target.page()](#targetpage) 来获取它们）
 
 #### browser.process()
-- returns: <?[ChildProcess]> Spawned browser process. Returns `null` if the browser instance was created with [`puppeteer.connect`](#puppeteerconnectoptions) method. （创建一个浏览器进程。如果该浏览器实例是通过 [`puppeteer.connect`](#puppeteerconnectoptions) 方法创建的则返回 `null`）
+- returns: <?[ChildProcess]> Spawned browser process. Returns `null` if the browser instance was created with [`puppeteer.connect`](#puppeteerconnectoptions) method. （返回该浏览器进程。如果该浏览器实例是通过 [`puppeteer.connect`](#puppeteerconnectoptions) 方法创建的则返回 `null`）
 
 #### browser.targets()
 - returns: <[Array]<[Target]>>
@@ -679,16 +679,22 @@ You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/versio
 
 ### class: BrowserContext
 
-* extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)
+* extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter) （继承自 [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)）
 
-BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
+BrowserContexts（浏览器上下文） provide a way to operate multiple independent browser sessions. When a browser is launched, it has
 a single BrowserContext used by default. The method `browser.newPage()` creates a page in the default browser context.
+
+BrowserContext 类提供了一种可以操作多个独立的浏览器会话的功能。当启动一个浏览器的时候，它就有一个默认的 BrowserContext。方法 `browser.newPage()` 在默认浏览器上下文中创建一个页面。
 
 If a page opens another page, e.g. with a `window.open` call, the popup will belong to the parent page's browser
 context.
 
+如果一个页面打开了另一个页面， 如使用了 `window.open`，则弹窗将会属于父页面的浏览器上下文。
+
 Puppeteer allows creation of "incognito" browser contexts with `browser.createIncognitoBrowserContext()` method.
 "Incognito" browser contexts don't write any browsing data to disk.
+
+Puppeteer 允许使用 `browser.createIncognitoBrowserContext()` 方法创建匿名的浏览器上下文。“匿名” 浏览器上下文不会往磁盘上写任何数据。
 
 ```js
 // Create a new incognito browser context
@@ -706,6 +712,8 @@ await context.close();
 
 Emitted when the url of a target inside the browser context changes.
 
+当浏览器上下文中的 target 的 url 发生改变时触发。
+
 #### event: 'targetcreated'
 - <[Target]>
 
@@ -716,10 +724,14 @@ Emitted when a new target is created inside the browser context, for example whe
 
 Emitted when a target inside the browser context is destroyed, for example when a page is closed.
 
+当浏览器上下文中的 target 被销毁时触发，例如页面关闭。
+
 #### browserContext.browser()
 - returns: <[Browser]>
 
 The browser this browser context belongs to.
+
+返回浏览器上下文所属的浏览器对象。
 
 #### browserContext.close()
 - returns: <[Promise]>
@@ -727,7 +739,11 @@ The browser this browser context belongs to.
 Closes the browser context. All the targets that belong to the browser context
 will be closed.
 
+关闭浏览器上下文。其中所有的 target 都将会一起关闭。
+
 > **NOTE** only incognito browser contexts can be closed.
+>
+> **提示：** 只有匿名浏览器上下文可以被关闭.
 
 #### browserContext.isIncognito()
 - returns: <[boolean]>
@@ -735,17 +751,25 @@ will be closed.
 Returns whether BrowserContext is incognito.
 The default browser context is the only non-incognito browser context.
 
+判断浏览器上下文是否为匿名。默认浏览器上下文是唯一非匿名浏览器上下文
+
 > **NOTE** the default browser context cannot be closed.
+>
+> **提示：** 默认浏览器上下问不能被关闭。
 
 #### browserContext.newPage()
 - returns: <[Promise]<[Page]>>
 
 Creates a new page in the browser context.
 
+在该浏览器上下文中创建一个新页面。
+
 #### browserContext.targets()
 - returns: <[Array]<[Target]>>
 
 An array of all active targets inside the browser context.
+
+返回浏览器上下文中所有激活了的 target 的数组。
 
 ### class: Page
 
