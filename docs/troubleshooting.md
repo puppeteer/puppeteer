@@ -240,7 +240,21 @@ experiencing a lot of zombies Chrome processes sticking around. There's special
 treatment for processes with PID=1, which makes it hard to terminate Chrome
 properly in some cases (e.g. in Docker).
 
-## Running Puppeteer on Heroku
+## Running Puppeteer in the cloud
+
+### Running Puppeteer on Google App Engine
+
+The Node.js runtime of the [App Engine standard environment](https://cloud.google.com/appengine/docs/standard/nodejs/) comes with all system packages needed to run Headless Chrome.
+
+To use `puppeteer`, simply list the module as a dependency in your `package.json` and deploy to Google App Engine. Read more abut using `puppeteer` on App Engine by following he [official tutorial](https://cloud.google.com/appengine/docs/standard/nodejs/using-headless-chrome-with-puppeteer).  
+
+### Running Puppeteer on Google Cloud Functions
+
+The Node.js 8 runtime of [Google Cloud Functions](https://cloud.google.com/functions/docs/) comes with all system packages needed to run Headless Chrome.
+
+To use `puppeteer`, simply list the module as a dependency in your `package.json` and deploy your function to Google Cloud Functions usin the `nodejs8` runtime.
+
+### Running Puppeteer on Heroku
 
 Running Puppeteer on Heroku requires some additional dependencies that aren't included on the Linux box that Heroku spins up for you. To add the dependencies on deploy, add the Puppeteer Heroku buildpack to the list of buildpacks for your app under Settings > Buildpacks.
 
@@ -252,7 +266,7 @@ If you need to render Chinese, Japanese, or Korean characters you may need to us
 
 There's also another [simple guide](https://timleland.com/headless-chrome-on-heroku/) from @timleland that includes a sample project: https://timleland.com/headless-chrome-on-heroku/.
 
-## Running Puppeteer on AWS Lambda
+### Running Puppeteer on AWS Lambda
 
 AWS Lambda [limits](https://docs.aws.amazon.com/lambda/latest/dg/limits.html) deployment package sizes to ~50MB. This presents challenges for running headless Chrome (and therefore Puppeteer) on Lambda. The community has put together a few resources that work around the issues:
 
