@@ -246,13 +246,13 @@ properly in some cases (e.g. in Docker).
 
 The Node.js runtime of the [App Engine standard environment](https://cloud.google.com/appengine/docs/standard/nodejs/) comes with all system packages needed to run Headless Chrome.
 
-To use `puppeteer`, simply list the module as a dependency in your `package.json` and deploy to Google App Engine. Read more abut using `puppeteer` on App Engine by following he [official tutorial](https://cloud.google.com/appengine/docs/standard/nodejs/using-headless-chrome-with-puppeteer).  
+To use `puppeteer`, simply list the module as a dependency in your `package.json` and deploy to Google App Engine. Read more about using `puppeteer` on App Engine by following [the official tutorial](https://cloud.google.com/appengine/docs/standard/nodejs/using-headless-chrome-with-puppeteer).  
 
 ### Running Puppeteer on Google Cloud Functions
 
 The Node.js 8 runtime of [Google Cloud Functions](https://cloud.google.com/functions/docs/) comes with all system packages needed to run Headless Chrome.
 
-To use `puppeteer`, simply list the module as a dependency in your `package.json` and deploy your function to Google Cloud Functions usin the `nodejs8` runtime.
+To use `puppeteer`, simply list the module as a dependency in your `package.json` and deploy your function to Google Cloud Functions using the `nodejs8` runtime.
 
 ### Running Puppeteer on Heroku
 
