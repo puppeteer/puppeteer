@@ -60,7 +60,6 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         await rmAsync(downloadsFolder);
       });
     });
-
     describe('Puppeteer.launch', function() {
       it('should reject all promises when browser is closed', async() => {
         const browser = await puppeteer.launch(defaultBrowserOptions);
@@ -135,8 +134,10 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         await rmAsync(userDataDir).catch(e => {});
       });
       it('should return the default chrome arguments', async() => {
-        const args = puppeteer.defaultArgs();
-        expect(args).toContain('--no-first-run');
+        expect(puppeteer.defaultArgs()).toContain('--no-first-run');
+        expect(puppeteer.defaultArgs()).toContain('--headless');
+        expect(puppeteer.defaultArgs({headless: false})).not.toContain('--headless');
+        expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain('--user-data-dir=foo');
       });
       it('should dump browser process stderr', async({server}) => {
         const dumpioTextToLog = 'MAGIC_DUMPIO_TEST';
@@ -183,7 +184,6 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
       });
       it('should support the pipe argument', async() => {
         const options = Object.assign({}, defaultBrowserOptions);
-        options.ignoreDefaultArgs = true;
         options.args = ['--remote-debugging-pipe'].concat(options.args);
         const browser = await puppeteer.launch(options);
         expect(browser.wsEndpoint()).toBe('');
