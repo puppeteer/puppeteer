@@ -95,6 +95,7 @@ afterAll(async({server, httpsServer}) => {
     server.stop(),
     httpsServer.stop(),
   ]);
+  fs.unlinkSync('test/temp.txt');
 });
 
 beforeEach(async({server, httpsServer}) => {

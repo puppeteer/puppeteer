@@ -404,6 +404,9 @@ This methods attaches Puppeteer to an existing Chromium instance.
   - `handleSIGHUP` <[boolean]> Close the browser process on SIGHUP. Defaults to `true`.
   - `timeout` <[number]> Maximum time in milliseconds to wait for the browser instance to start. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
   - `dumpio` <[boolean]> Whether to pipe the browser process stdout and stderr into `process.stdout` and `process.stderr`. Defaults to `false`.
+  - `dumpOptions` <[Object]> Set of configurable options for dumpio.
+    - `file` <[string]> Redirects `process.stdout` and `process.stderr` to the specified file location.
+    - `ignore` <[Array]<[string]>> Suppresses `process.stdout` and `process.stderr` based on the specified criteria.
   - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
   - `env` <[Object]> Specify environment variables that will be visible to the browser. Defaults to `process.env`.
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.

@@ -150,6 +150,30 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
 
         expect(dumpioData).toContain(dumpioTextToLog);
       });
+      it('should filter process stderr', async({server}) => {
+        const dumpioTextToLog = 'MAGIC_DUMPIO_TEST';
+        let dumpioData = '';
+        const {spawn} = require('child_process');
+        const options = Object.assign({}, defaultBrowserOptions, {dumpio: true, dumpOptions: { ignore: ['MAGIC'] }});
+        const res = spawn('node',
+            [path.join(__dirname, 'fixtures', 'dumpio.js'), PROJECT_ROOT, JSON.stringify(options), server.EMPTY_PAGE, dumpioTextToLog]);
+        res.stderr.on('data', data => dumpioData += data.toString('utf8'));
+        await new Promise(resolve => res.on('close', resolve));
+
+        expect(dumpioData).not.toContain(dumpioTextToLog);
+      });
+      it('should redirect process stderr to a file', async({server}) => {
+        const dumpioTextToLog = 'MAGIC_DUMPIO_TEST';
+        let dumpioData = '';
+        const {spawn} = require('child_process');
+        const options = Object.assign({}, defaultBrowserOptions, {dumpio: true, dumpOptions: { file: 'test/temp.txt' }});
+        const res = spawn('node',
+            [path.join(__dirname, 'fixtures', 'dumpio.js'), PROJECT_ROOT, JSON.stringify(options), server.EMPTY_PAGE, dumpioTextToLog]);
+        res.stderr.on('data', data => dumpioData += data.toString('utf8'));
+        await new Promise(resolve => res.on('close', resolve));
+
+        expect(fs.readFileSync('test/temp.txt')).toContain(dumpioTextToLog);
+      });
       it('should close the browser when the node process closes', async({ server }) => {
         const {spawn, execSync} = require('child_process');
         const res = spawn('node', [path.join(__dirname, 'fixtures', 'closeme.js'), PROJECT_ROOT, JSON.stringify(defaultBrowserOptions)]);
