@@ -1431,63 +1431,78 @@ Shortcut for [page.mainFrame().focus(selector)](#framefocusselector).
 该方法是 [page.mainFrame().focus(selector)](#framefocusselector) 的简写。
 
 #### page.frames()
-- returns: <[Array]<[Frame]>> An array of all frames attached to the page. （返回一个包含所有与当前页面关联的 frame 数组）g
+- returns: <[Array]<[Frame]>> An array of all frames attached to the page. （返回一个包含所有与当前页面关联的 frame 数组）
 
 #### page.goBack(options)
-- `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) method.
-  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
-    - `load` - consider navigation to be finished when the `load` event is fired.
-    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
-    - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
-    - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
+- `options` <[Object]> Navigation parameters which might have the following properties: （页面导航参数，可以使用如下属性）
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) method. （导航超时时间，以毫秒计算，默认为 30 秒， 传 `0` 表示禁用超时选项。默认值可以通过  [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) 方法修改）
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either: （决定导航成功完成的条件，默认为 `load`。传递一个事件数组，当所有事件都触发之后就当做导航成功。事件可以是以下之一）
+    - `load` - consider navigation to be finished when the `load` event is fired. （当 `load` 事件触发的时候即表示导航完成）
+    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired. （当 `DOMContentLoaded` 事件触发的时候表示导航完成）
+    - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms. （当至少 `500` 毫秒以内有不高于 0 个网络连接表示导航结束）
+    - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms. （当至少 `500` 以内有不超过 2 个网络连接时表示导航结束）
 - returns: <[Promise]<?[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
-can not go back, resolves to `null`.
+can not go back, resolves to `null`. （返回 Promise，该 Promise 将返回收到的主资源的响应 **（译者注：即一个 Response 实例对象，下同）**。在多次重定向的情况下，导航会返回最后一个重定向的响应内容。如果导航不能返回，则 Promise 会返回 `null`）
 
 Navigate to the previous page in history.
 
+该函数返回 history 中的上一个页面。
+
 #### page.goForward(options)
-- `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) method.
-  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
-    - `load` - consider navigation to be finished when the `load` event is fired.
-    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
-    - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
-    - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
+- `options` <[Object]> Navigation parameters which might have the following properties: （页面导航参数，可以使用如下属性）
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) method. （导航超时时间，以毫秒计算，默认为 30 秒， 传 `0` 表示禁用超时选项。默认值可以通过  [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) 方法修改）
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either: （决定导航成功完成的条件，默认为 `load`。传递一个事件数组，当所有事件都触发之后就当做导航成功。事件可以是以下之一）
+    - `load` - consider navigation to be finished when the `load` event is fired. （当 `load` 事件触发的时候即表示导航完成）
+    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired. （当 `DOMContentLoaded` 事件触发的时候表示导航完成）
+    - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms. （当至少 `500` 毫秒以内有不高于 0 个网络连接表示导航结束）
+    - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms. （当至少 `500` 以内有不超过 2 个网络连接时表示导航结束）
 - returns: <[Promise]<?[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. If
-can not go forward, resolves to `null`.
+can not go forward, resolves to `null`. （返回 Promise，该 Promise 将返回主要资源的响应内容。在多次重定向的情况下，导航会返回最后一个重定向的响应内容。如果导航不能前进一个页面，则 Promise 会返回 `null`）
 
 Navigate to the next page in history.
 
-#### page.goto(url, options)
-- `url` <[string]> URL to navigate page to. The url should include scheme, e.g. `https://`.
-- `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) method.
-  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
-    - `load` - consider navigation to be finished when the `load` event is fired.
-    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
-    - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
-    - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
-- returns: <[Promise]<?[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
+该函数导航到 history 中的下一个页面。
 
-The `page.goto` will throw an error if:
-- there's an SSL error (e.g. in case of self-signed certificates).
-- target URL is invalid.
-- the `timeout` is exceeded during navigation.
-- the main resource failed to load.
+#### page.goto(url, options)
+- `url` <[string]> URL to navigate page to. The url should include scheme, e.g. `https://`. （页面将导航到的 URL，url 需要包含 scheme 部分，如 `https://`）
+- `options` <[Object]> Navigation parameters which might have the following properties:  （页面导航参数，可以使用如下属性）
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) method. （导航超时时间，以毫秒计算，默认为 30 秒， 传 `0` 表示禁用超时选项。默认值可以通过  [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) 方法修改）
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either: （决定导航成功完成的条件，默认为 `load`。传递一个事件数组，当所有事件都触发之后就当做导航成功。事件可以是以下之一）
+    - `load` - consider navigation to be finished when the `load` event is fired. （当 `load` 事件触发的时候即表示导航完成）
+    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired. （当 `DOMContentLoaded` 事件触发的时候表示导航完成）
+    - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms. （当至少 `500` 毫秒以内有不高于 0 个网络连接表示导航结束）
+    - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms. （当至少 `500` 以内有不超过 2 个网络连接时表示导航结束）
+- returns: <[Promise]<?[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. （返回 Promise，该 Promise 将返回主资源的响应内容，在多次重定向的情况下，导航会返回最后一个重定向的响应内容。）
+
+The `page.goto` will throw an error if: 
+
+在以下情况下， `page.goto` 将会抛出错误：
+
+- there's an SSL error (e.g. in case of self-signed certificates). （发生 SSL 错误，如 自签名证书 错误）
+- target URL is invalid. （目标 URL 不合法）
+- the `timeout` is exceeded during navigation. （导航过程中超时）
+- the main resource failed to load. （主资源加载失败）
 
 > **NOTE** `page.goto` either throw or return a main resource response. The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
+>
+> **提示：** `page.goto` 要么抛出错误，要么返回主资源响应内容。唯一例外的是导航到 `about:blank` 或者导航到具有不同 hash 的相同 URL，这种情况下会成功导航并返回 `null`。
 
 > **NOTE** Headless mode doesn't support navigating to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+>
+> **提示：** Headless 模式下不支持导航到一个 PDF 文档。参考 [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
 
 #### page.hover(selector)
-- `selector` <[string]> A [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
-- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
+- `selector` <[string]> A [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered. （需要 hover 的元素选择器。如果有多个元素匹配该选择器，hover将会作用与第一个元素上）
+- returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`. （返回一个 Promise 实例，当 hover 成功作用于与 `selector` 匹配的元素上时，Promise 将会变成完成态，如果没有元素匹配该选择器，则 Promise 变为拒绝态）
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
 If there's no element matching `selector`, the method throws an error.
 
+该方法使用 `selector` 选取元素，如果有必要会将它移动到视图中，然后使用 [page.mouse](#pagemouse) 移动到元素中心。如果没有元素匹配 `selector` 则抛出错误。
+
 Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
+
+该方法是 [page.mainFrame().hover(selector)](#framehoverselector) 的简写。
 
 #### page.isClosed()
 
@@ -1495,14 +1510,18 @@ Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
 
 Indicates that the page has been closed.
 
+表明 page 是否已经关闭。
+
 #### page.keyboard
 
 - returns: <[Keyboard]>
 
 #### page.mainFrame()
-- returns: <[Frame]> returns page's main frame.
+- returns: <[Frame]> returns page's main frame. （返回 page 的主 frame）
 
 Page is guaranteed to have a main frame which persists during navigations.
+
+Page 能够确保在导航期间也具有一个主 frame 存在。
 
 #### page.metrics()
 - returns: <[Promise]<[Object]>> Object containing metrics as key/value pairs.
