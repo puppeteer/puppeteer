@@ -16,7 +16,7 @@ Next Release: **Aug 9, 2018**
 - [class: Puppeteer](#class-puppeteer)
   * [puppeteer.connect(options)](#puppeteerconnectoptions)
   * [puppeteer.createBrowserFetcher([options])](#puppeteercreatebrowserfetcheroptions)
-  * [puppeteer.defaultArgs()](#puppeteerdefaultargs)
+  * [puppeteer.defaultArgs([options])](#puppeteerdefaultargsoptions)
   * [puppeteer.executablePath()](#puppeteerexecutablepath)
   * [puppeteer.launch([options])](#puppeteerlaunchoptions)
 - [class: BrowserFetcher](#class-browserfetcher)
@@ -378,8 +378,19 @@ This methods attaches Puppeteer to an existing Chromium instance.
   - `platform` <[string]> Possible values are: `mac`, `win32`, `win64`, `linux`. Defaults to the current platform.
 - returns: <[BrowserFetcher]>
 
-#### puppeteer.defaultArgs()
+#### puppeteer.defaultArgs([options])
+- `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
+  - `headless` <[boolean]> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`.
+  - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
+  - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
+  - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
 - returns: <[Array]<[string]>> The default flags that Chromium will be launched with.
+
+`puppeteer.defaultArgs` can be used to turn off some flags that Puppeteer usually launches Chromium with:
+```js
+const customArgs = puppeteer.defaultArgs().filter(arg => arg !== '--mute-audio');
+const browser = await puppeteer.launch({ignoreDefaultArgs: true, args: customArgs});
+```
 
 #### puppeteer.executablePath()
 - returns: <[string]> A path where Puppeteer expects to find bundled Chromium. Chromium might not exist there if the download was skipped with [`PUPPETEER_SKIP_CHROMIUM_DOWNLOAD`](#environment-variables).
@@ -398,7 +409,7 @@ This methods attaches Puppeteer to an existing Chromium instance.
     - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
     - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
   - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
-  - `ignoreDefaultArgs` <[boolean]> Do not use [`puppeteer.defaultArgs()`](#puppeteerdefaultargs). Dangerous option; use with care. Defaults to `false`.
+  - `ignoreDefaultArgs` <[boolean]> Do not use [`puppeteer.defaultArgs()`](#puppeteerdefaultargs-options). Dangerous option; use with care. Defaults to `false`.
   - `handleSIGINT` <[boolean]> Close the browser process on Ctrl-C. Defaults to `true`.
   - `handleSIGTERM` <[boolean]> Close the browser process on SIGTERM. Defaults to `true`.
   - `handleSIGHUP` <[boolean]> Close the browser process on SIGHUP. Defaults to `true`.
