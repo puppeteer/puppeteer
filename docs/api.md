@@ -1486,7 +1486,9 @@ The extra HTTP headers will be sent with every request the page initiates.
 Activating request interception enables `request.abort`, `request.continue` and
 `request.respond` methods.  This provides the capability to modify network requests that are made by a page.
 
+Once request interception is enabled, every request will stall unless it's continued, responded or aborted.
 An example of a naïve request interceptor that aborts all image requests:
+
 ```js
 const puppeteer = require('puppeteer');
 
