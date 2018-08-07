@@ -1890,6 +1890,8 @@ Dispatches a `keyup` event.
 
 ### class: Mouse
 
+The Mouse class operates in main-frame CSS pixels relative to the top-left corner of the viewport.
+
 #### mouse.click(x, y, [options])
 - `x` <[number]>
 - `y` <[number]>
