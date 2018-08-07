@@ -9,6 +9,8 @@ Next Release: **Aug 9, 2018**
 
 ##### Table of Contents
 
+有暂时未翻译内容
+
 <!-- GEN:toc -->
 - [Overview](#overview)
 - [Environment Variables](#environment-variables)
@@ -1524,7 +1526,7 @@ Page is guaranteed to have a main frame which persists during navigations.
 Page 能够确保在导航期间也具有一个主 frame 存在。
 
 #### page.metrics()
-- returns: <[Promise]<[Object]>> Object containing metrics as key/value pairs.
+- returns: <[Promise]<[Object]>> Object containing metrics as key/value pairs. 
   - `Timestamp` <[number]> The timestamp when the metrics sample was taken.
   - `Documents` <[number]> Number of documents in the page.
   - `Frames` <[number]> Number of frames in the page.
@@ -1540,6 +1542,8 @@ Page 能够确保在导航期间也具有一个主 frame 存在。
   - `JSHeapTotalSize` <[number]> Total JavaScript heap size.
 
 > **NOTE** All timestamps are in monotonic time: monotonically increasing time in seconds since an arbitrary point in the past.
+
+（暂时未翻译）
 
 #### page.mouse
 
@@ -1613,11 +1617,15 @@ The `format` options are:
 > 1. Script tags inside templates are not evaluated.
 > 2. Page styles are not visible inside templates.
 
+暂时未翻译
+
 #### page.queryObjects(prototypeHandle)
-- `prototypeHandle` <[JSHandle]> A handle to the object prototype.
-- returns: <[Promise]<[JSHandle]>> Promise which resolves to a handle to an array of objects with this prototype.
+- `prototypeHandle` <[JSHandle]> A handle to the object prototype. （对象原型的操作句柄）
+- returns: <[Promise]<[JSHandle]>> Promise which resolves to a handle to an array of objects with this prototype. （返回 Promise，该 Promise 返回使用此原型的对象的数组）
 
 The method iterates the JavaScript heap and finds all the objects with the given prototype.
+
+该方法会迭代 JavaScript 堆内存并且找到所有使用该原型的对象。
 
 ```js
 // Create a Map object
@@ -1634,40 +1642,47 @@ await mapPrototype.dispose();
 
 Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)](#executioncontextqueryobjectsprototypehandle).
 
+该方法是  [page.mainFrame().executionContext().queryObjects(prototypeHandle)](#executioncontextqueryobjectsprototypehandle) 的简写。
+
 #### page.reload(options)
-- `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) method.
-  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
-    - `load` - consider navigation to be finished when the `load` event is fired.
-    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
-    - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
-    - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
-- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
+- `options` <[Object]> Navigation parameters which might have the following properties: （页面导航参数，可以使用如下属性）
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) method. （导航超时时间，以毫秒计算，默认为 30 秒， 传 `0` 表示禁用超时选项。默认值可以通过  [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) 方法修改）
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either: （决定导航成功完成的条件，默认为 `load`。传递一个事件数组，当所有事件都触发之后就当做导航成功。事件可以是以下之一）
+    - `load` - consider navigation to be finished when the `load` event is fired.  （当 `load` 事件触发的时候即表示导航完成）
+    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired. （当 `DOMContentLoaded` 事件触发的时候表示导航完成）
+    - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.  （当至少 `500` 毫秒以内有不高于 0 个网络连接表示导航结束）
+    - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.  （当至少 `500` 以内有不超过 2 个网络连接时表示导航结束）
+- returns: <[Promise]<[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. （返回 Promise，该 Promise 将返回主资源的响应内容，在多次重定向的情况下，导航会返回最后一个重定向的响应内容。）
 
 #### page.screenshot([options])
-- `options` <[Object]> Options object which might have the following properties:
-  - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the image won't be saved to the disk.
-  - `type` <[string]> Specify screenshot type, can be either `jpeg` or `png`. Defaults to 'png'.
-  - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
-  - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page. Defaults to `false`.
-  - `clip` <[Object]> An object which specifies clipping region of the page. Should have the following fields:
-    - `x` <[number]> x-coordinate of top-left corner of clip area
-    - `y` <[number]> y-coordinate of top-left corner of clip area
-    - `width` <[number]> width of clipping area
-    - `height` <[number]> height of clipping area
-  - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
-  - `encoding` <[string]> The encoding of the image, can be either `base64` or `binary`. Defaults to `binary`.
-- returns: <[Promise]<[Buffer|String]>> Promise which resolves to buffer or a base64 string (depending on the value of `encoding`) with captured screenshot.
+- `options` <[Object]> Options object which might have the following properties: （选项参数，可以使用以下属性）
+  - `path` <[string]> The file path to save the image to. The screenshot type will be inferred from file extension. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). If no path is provided, the image won't be saved to the disk. （保存截图的文件路径。截图的类型将会根据扩展名进行推断。如果 `path` 是相对路径，则会根据 [当前工作目录(cwd)](https://nodejs.org/api/process.html#process_process_cwd) 进行计算。如果没有提供路径，则图片不会被保存到磁盘上。）
+  - `type` <[string]> Specify screenshot type, can be either `jpeg` or `png`. Defaults to 'png'. （指定截图类型，可以为 `jpeg` 或 `png`，默认为 'png'）
+  - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images. （截图的图片质量，在 0-100 之间。不适用于 `png` 图像）
+  - `fullPage` <[boolean]> When true, takes a screenshot of the full scrollable page. Defaults to `false`. （如果该选项为 true ，则截取完整可滚动页面的屏幕截图。默认为 `false`）
+  - `clip` <[Object]> An object which specifies clipping region of the page. Should have the following fields: （一个指定截取范围的对象，它应该具有如下字段）
+    - `x` <[number]> x-coordinate of top-left corner of clip area （所要截取区域左上角的 x 坐标）
+    - `y` <[number]> y-coordinate of top-left corner of clip area （所要截取区域左上角的 y 坐标）
+    - `width` <[number]> width of clipping area  （截取区域的宽度）
+    - `height` <[number]> height of clipping area  （截取区域的高度）
+  - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.  （隐藏默认的白色背景，并允许捕获具有透明度的屏幕截图）
+  - `encoding` <[string]> The encoding of the image, can be either `base64` or `binary`. Defaults to `binary`.  （截取图标保存的编码，可以为 `base64` 或者 `binary`。默认为 `binary`）
+- returns: <[Promise]<[Buffer|String]>> Promise which resolves to buffer or a base64 string (depending on the value of `encoding`) with captured screenshot.  （返回 Promise，该 Promise 成功后会返回所截取图片的 buffer 或者 base64编码 的字符串，返回值类型依赖 `encoding` 参数）
 
 > **NOTE** Screenshots take at least 1/6 second on OS X. See https://crbug.com/741689 for discussion.
+>
+> **提示：** 截图在 OS X 上至少需要 1/6 秒。参考 https://crbug.com/741689 的讨论。
 
 #### page.select(selector, ...values)
-- `selector` <[string]> A [selector] to query page for
-- `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
-- returns: <[Promise]<[Array]<[string]>>> Returns an array of option values that have been successfully selected.
+- `selector` <[string]> A [selector] to query page for （元素选择器）
+- `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account. （该值为字符串数组类型，表示需要选中的 select option 的值。如果  `<select>` 具有 `multiple` 属性，则所有的值都会被选中，否则只有第一个值会被选中）
+- returns: <[Promise]<[Array]<[string]>>> Returns an array of option values that have been successfully selected. （返回 Promise，该 Promise 会返回被成功选中的选项的值）
 
 Triggers a `change` and `input` event once all the provided options have been selected.
 If there's no `<select>` element matching `selector`, the method throws an error.
+
+当提供的所有选项都被选中过后会触发 `change` 和 `input` 事件。
+如果没有匹配的 `<select>` 元素则抛出错误。
 
 ```js
 page.select('select#colors', 'blue'); // single selection
@@ -1676,23 +1691,29 @@ page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 
 Shortcut for [page.mainFrame().select()](#frameselectselector-values)
 
+该方法为  [page.mainFrame().select()](#frameselectselector-values) 的简写。
+
 #### page.setBypassCSP(enabled)
-- `enabled` <[boolean]> sets bypassing of page's Content-Security-Policy.
+- `enabled` <[boolean]> sets bypassing of page's Content-Security-Policy. （设置绕过页面的 Content-Security-Policy）
 - returns: <[Promise]>
 
-Toggles bypassing page's Content-Security-Policy.
+Toggles bypassing page's Content-Security-Policy. （该方法能够切换是否绕过页面的 Content-Security-Policy）
 
 > **NOTE** CSP bypassing happens at the moment of CSP initialization rather then evaluation. Usually this means
 that `page.setBypassCSP` should be called before navigating to the domain.
+>
+> **提示：** 绕过 CSP 通常发生在 CSP 初始化时而非进行评测时。通常这将意味着 `page.setBypassCSP` 应该在导航到目标域名之前被调用。
 
 #### page.setCacheEnabled(enabled)
-- `enabled` <[boolean]> sets the `enabled` state of the cache.
+- `enabled` <[boolean]> sets the `enabled` state of the cache. （设置缓存的 `enabled` 状态）
 - returns: <[Promise]>
 
 Toggles ignoring cache for each request based on the enabled state. By default, caching is enabled.
 
+切换会基于 enabled 状态忽略每个请求的缓存。默认情况下，缓存处于开启状态。
+
 #### page.setContent(html)
-- `html` <[string]> HTML markup to assign to the page.
+- `html` <[string]> HTML markup to assign to the page. （分配给页面的 HTML 标记）
 - returns: <[Promise]>
 
 #### page.setCookie(...cookies)
@@ -1702,7 +1723,7 @@ Toggles ignoring cache for each request based on the enabled state. By default, 
   - `url` <[string]>
   - `domain` <[string]>
   - `path` <[string]>
-  - `expires` <[number]> Unix time in seconds.
+  - `expires` <[number]> Unix time in seconds.  （以秒为单位的 Unix 时间）
   - `httpOnly` <[boolean]>
   - `secure` <[boolean]>
   - `sameSite` <[string]> `"Strict"` or `"Lax"`.
