@@ -1710,7 +1710,7 @@ that `page.setBypassCSP` should be called before navigating to the domain.
 
 Toggles ignoring cache for each request based on the enabled state. By default, caching is enabled.
 
-切换会基于 enabled 状态忽略每个请求的缓存。默认情况下，缓存处于开启状态。
+切换缓存启用状态来为每个请求设置该请求是否要忽略缓存（这里照着翻译有点别扭，大意为：设置请求是否使用缓存）。默认情况下，缓存处于启用状态。
 
 #### page.setContent(html)
 - `html` <[string]> HTML markup to assign to the page. （分配给页面的 HTML 标记）
