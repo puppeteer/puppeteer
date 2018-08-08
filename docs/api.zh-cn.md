@@ -1730,9 +1730,9 @@ Toggles ignoring cache for each request based on the enabled state. By default, 
 - returns: <[Promise]>
 
 #### page.setDefaultNavigationTimeout(timeout)
-- `timeout` <[number]> Maximum navigation time in milliseconds
+- `timeout` <[number]> Maximum navigation time in milliseconds （导航的超时时间）
 
-This setting will change the default maximum navigation time of 30 seconds for the following methods:
+This setting will change the default maximum navigation time of 30 seconds for the following methods: （通过该方法可以修改以下方法的默认导航超时时间）
 - [page.goto(url, options)](#pagegotourl-options)
 - [page.goBack(options)](#pagegobackoptions)
 - [page.goForward(options)](#pagegoforwardoptions)
@@ -1740,31 +1740,43 @@ This setting will change the default maximum navigation time of 30 seconds for t
 - [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
 
 #### page.setExtraHTTPHeaders(headers)
-- `headers` <[Object]> An object containing additional http headers to be sent with every request. All header values must be strings.
+- `headers` <[Object]> An object containing additional http headers to be sent with every request. All header values must be strings.  （设置每个请求都会额外携带的 http 头，每个头字段的值都必须为字符串类型）
 - returns: <[Promise]>
 
 The extra HTTP headers will be sent with every request the page initiates.
 
+通过该页面发起的每个请求都会携带该方法设置的额外的 HTTP 头信息。
+
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
+>
+> **提示：** 该方法不会保证发出的请求中 HTTP 头字段的顺序。
 
 #### page.setJavaScriptEnabled(enabled)
-- `enabled` <[boolean]> Whether or not to enable JavaScript on the page.
+- `enabled` <[boolean]> Whether or not to enable JavaScript on the page. （是否启用页面执行 JavaScript 的能力）
 - returns: <[Promise]>
 
 > **NOTE** changing this value won't affect scripts that have already been run. It will take full effect on the next [navigation](#pagegotourl-options).
+>
+> **提示** 通过该方法修改的值不会影响当前已经执行了的脚本。但是会完全影响下一次导航。
 
 #### page.setOfflineMode(enabled)
-- `enabled` <[boolean]> When `true`, enables offline mode for the page.
+- `enabled` <[boolean]> When `true`, enables offline mode for the page.  （当设置为 `true` 时表示开启当前页面的离线模式）
 - returns: <[Promise]>
 
 #### page.setRequestInterception(value)
-- `value` <[boolean]> Whether to enable request interception.
+- `value` <[boolean]> Whether to enable request interception. （是否激活进行拦截功能）
 - returns: <[Promise]>
 
 Activating request interception enables `request.abort`, `request.continue` and
 `request.respond` methods.  This provides the capability to modify network requests that are made by a page.
 
+激活请求拦截功能将会启用 `request.abort`, `request.continue` 和
+`request.respond` 方法。它们将带来修改页面请求的能力。
+
 An example of a naïve request interceptor that aborts all image requests:
+
+下面是一个通过请求拦截功能阻断所有对图片发出的请求的示例：
+
 ```js
 const puppeteer = require('puppeteer');
 
@@ -1783,41 +1795,52 @@ puppeteer.launch().then(async browser => {
 ```
 
 > **NOTE** Enabling request interception disables page caching.
+> **提示：** 启用请求拦截功能将会禁用页面缓存。
 
 #### page.setUserAgent(userAgent)
-- `userAgent` <[string]> Specific user agent to use in this page
-- returns: <[Promise]> Promise which resolves when the user agent is set.
+- `userAgent` <[string]> Specific user agent to use in this page  （指定当前页所要使用的用户代理（userAgent）的字符串）
+- returns: <[Promise]> Promise which resolves when the user agent is set. （返回Promise，当用户代理被设置成功过后该 Promise 也会转换为完成态）
 
 #### page.setViewport(viewport)
 - `viewport` <[Object]>
-  - `width` <[number]> page width in pixels.
-  - `height` <[number]> page height in pixels.
-  - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
-  - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
-  - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
-  - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
+  - `width` <[number]> page width in pixels. （需要设置的页面像素宽度）
+  - `height` <[number]> page height in pixels.  （页面像素高度）
+  - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`. （指定页面的缩放因子（可以理解为 dpr），默认为 `1`）
+  - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`. （是否考虑 `meta viewport` 标签，默认为 `false`）
+  - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false` （指定视口是否支持 touch 事件，默认为 `false`）
+  - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`. （指定视口是否已 landscape 模式显示，默认为 `false`）
 - returns: <[Promise]>
 
 > **NOTE** in certain cases, setting viewport will reload the page in order to set the `isMobile` or `hasTouch` properties.
+>
+> **提示：** 在某些情况下，视口可能会为了设置 `isMobile` 或者 `hasTouch` 属性而重新加载页面。
 
 In the case of multiple pages in a single browser, each page can have its own viewport size.
 
+如果单个浏览器中有多个页面，每个页面都可以有自己独立的视口大小。
+
 #### page.tap(selector)
-- `selector` <[string]> A [selector] to search for element to tap. If there are multiple elements satisfying the selector, the first will be tapped.
+- `selector` <[string]> A [selector] to search for element to tap. If there are multiple elements satisfying the selector, the first will be tapped. （需要执行轻点（tap）行为的元素选择器。如果有多个元素匹配该选择器，则第一个元素会被点击）
 - returns: <[Promise]>
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.touchscreen](#pagetouchscreen) to tap in the center of the element.
 If there's no element matching `selector`, the method throws an error.
 
+该方法使用 `selector` 获取元素，如果不在视口中则会将其滚动到可见显示区域，然后使用  [page.touchscreen](#pagetouchscreen) 方法来轻点元素中心。如果没有元素匹配  `selector`则会该方法会抛出异常。
+
 Shortcut for [page.mainFrame().tap(selector)](#frametapselector).
 
+该方法为  [page.mainFrame().tap(selector)](#frametapselector) 的简写。
+
 #### page.target()
-- returns: <[Target]> a target this page was created from.
+- returns: <[Target]> a target this page was created from. （该页面被创建的 target）
 
 #### page.title()
-- returns: <[Promise]<[string]>> Returns page's title.
+- returns: <[Promise]<[string]>> Returns page's title. （返回页面的标题）
 
 Shortcut for [page.mainFrame().title()](#frametitle).
+
+该方法是  [page.mainFrame().title()](#frametitle) 的简写。
 
 #### page.touchscreen
 - returns: <[Touchscreen]>
@@ -1826,15 +1849,19 @@ Shortcut for [page.mainFrame().title()](#frametitle).
 - returns: <[Tracing]>
 
 #### page.type(selector, text[, options])
-- `selector` <[string]> A [selector] of an element to type into. If there are multiple elements satisfying the selector, the first will be used.
-- `text` <[string]> A text to type into a focused element.
+- `selector` <[string]> A [selector] of an element to type into. If there are multiple elements satisfying the selector, the first will be used. （需要输入内容的元素的选择器。如果多个元素匹配该选择器，则会使用第一个元素）
+- `text` <[string]> A text to type into a focused element. （将要输入到焦点元素中的文本内容）
 - `options` <[Object]>
-  - `delay` <[number]> Time to wait between key presses in milliseconds. Defaults to 0.
+  - `delay` <[number]> Time to wait between key presses in milliseconds. Defaults to 0. （以毫秒为单位的敲键间隔时长。默认为 0）
 - returns: <[Promise]>
 
 Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in the text.
 
+输入每个字符的时候都会发送 `keydown`, `keypress`/`input` 和 `keyup` 事件。
+
 To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#keyboardpresskey-options).
+
+如果需要按下指定的键，比如 `Control` 或者 `ArrowDown`，则需要使用  [`keyboard.press`](#keyboardpresskey-options) 方法。
 
 ```js
 page.type('#mytextarea', 'Hello'); // Types instantly
@@ -1843,10 +1870,14 @@ page.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
 
 Shortcut for [page.mainFrame().type(selector, text[, options])](#frametypeselector-text-options).
 
+该方法是 [page.mainFrame().type(selector, text[, options])](#frametypeselector-text-options) 的简写。
+
 #### page.url()
 - returns: <[string]>
 
 This is a shortcut for [page.mainFrame().url()](#frameurl)
+
+该方法是 [page.mainFrame().url()](#frameurl) 的简写。
 
 #### page.viewport()
 - returns: <[Object]>
