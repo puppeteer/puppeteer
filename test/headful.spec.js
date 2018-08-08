@@ -16,6 +16,7 @@
 
 const path = require('path');
 const os = require('os');
+const {waitEvent} = require('./utils.js');
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 
@@ -114,6 +115,27 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         'https://google.com/'
       ]);
       await browser.close();
+    });
+    it('should report content script execution contexts', async({server}) => {
+      const browserWithExtension = await puppeteer.launch(extensionOptions);
+      const page = await browserWithExtension.newPage();
+      const [extensionContext, msg] = await Promise.all([
+        waitEvent(page, 'executioncontextcreated', context => !context.isDefault()),
+        waitEvent(page, 'console'),
+        page.goto(server.EMPTY_PAGE)
+      ]);
+      expect(msg.text()).toBe('hey from the content-script');
+      expect(page.mainFrame().executionContexts().length).toBe(2);
+      expect(extensionContext.frame()).toBe(page.mainFrame());
+      expect(extensionContext.name()).toBe('Simple extension');
+      expect(await extensionContext.evaluate('thisIsTheContentScript')).toBe(true);
+
+      const [destroyedContext] = await Promise.all([
+        waitEvent(page, 'executioncontextdestroyed', context => !context.isDefault()),
+        page.reload()
+      ]);
+      expect(destroyedContext).toBe(extensionContext);
+      await browserWithExtension.close();
     });
   });
 };

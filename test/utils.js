@@ -78,7 +78,14 @@ const utils = module.exports = {
    * @param {string} eventName
    * @return {!Promise<!Object>}
    */
-  waitEvent: function(emitter, eventName) {
-    return new Promise(fulfill => emitter.once(eventName, fulfill));
+  waitEvent: function(emitter, eventName, predicate = () => true) {
+    return new Promise(fulfill => {
+      emitter.on(eventName, function listener(event) {
+        if (!predicate(event))
+          return;
+        emitter.removeListener(eventName, listener);
+        fulfill(event);
+      });
+    });
   },
 };
