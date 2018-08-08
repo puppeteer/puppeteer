@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+// puppeteer-core should not install anything.
+if (require('./package.json').name === 'puppeteer-core')
+  return;
+
 buildNode6IfNecessary();
 
 if (process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD) {
