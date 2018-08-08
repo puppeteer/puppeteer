@@ -384,13 +384,9 @@ This methods attaches Puppeteer to an existing Chromium instance.
   - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
   - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
-- returns: <[Array]<[string]>> The default flags that Chromium will be launched with.
+- returns: <[Array]<[string]>>
 
-`puppeteer.defaultArgs` can be used to turn off some flags that Puppeteer usually launches Chromium with:
-```js
-const customArgs = puppeteer.defaultArgs().filter(arg => arg !== '--mute-audio');
-const browser = await puppeteer.launch({ignoreDefaultArgs: true, args: customArgs});
-```
+The default flags that Chromium will be launched with.
 
 #### puppeteer.executablePath()
 - returns: <[string]> A path where Puppeteer expects to find bundled Chromium. Chromium might not exist there if the download was skipped with [`PUPPETEER_SKIP_CHROMIUM_DOWNLOAD`](#environment-variables).
@@ -409,7 +405,7 @@ const browser = await puppeteer.launch({ignoreDefaultArgs: true, args: customArg
     - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
     - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
   - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
-  - `ignoreDefaultArgs` <[boolean]> Do not use [`puppeteer.defaultArgs()`](#puppeteerdefaultargs-options). Dangerous option; use with care. Defaults to `false`.
+  - `ignoreDefaultArgs` <([boolean]|<[Array]<[string]>>)> If `true`, then do not use [`puppeteer.defaultArgs()`](#puppeteerdefaultargs-options). If an array is given, than filter out given default arguments. Dangerous option; use with care. Defaults to `false`.
   - `handleSIGINT` <[boolean]> Close the browser process on Ctrl-C. Defaults to `true`.
   - `handleSIGTERM` <[boolean]> Close the browser process on SIGTERM. Defaults to `true`.
   - `handleSIGHUP` <[boolean]> Close the browser process on SIGHUP. Defaults to `true`.
@@ -421,7 +417,18 @@ const browser = await puppeteer.launch({ignoreDefaultArgs: true, args: customArg
   - `pipe` <[boolean]> Connects to the browser over a pipe instead of a WebSocket. Defaults to `false`.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
 
-The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process is closed.
+The method combines 3 steps:
+1. Infer a set of flags to launch chromium with using `puppeteer.defaultArgs()`.
+2. Launch browser and start managing its process according to the `executablePath`, `handleSIGINT`, `dumpio` and other options.
+3. Create an instance of [Browser] class and initialize it wrt to `defaultViewport`, `slowMo` and `ignoreHTTPSErrors`.
+
+`ignoreDefaultArgs` option can be used to customize behavior on the (1) step. For example, to filter out
+`--mute-audio` from default arguments:
+```js
+const browser = await puppeteer.launch({
+  ignoreDefaultArgs: ['--mute-audio']
+});
+```
 
 > **NOTE** Puppeteer can also be used to control the Chrome browser, but it works best with the version of Chromium it is bundled with. There is no guarantee it will work with any other version. Use `executablePath` option with extreme caution.
 >

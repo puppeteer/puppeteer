@@ -201,6 +201,19 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         await page.close();
         await browser.close();
       });
+      it('should filter out ignored default arguments', async() => {
+        // Make sure we launch with `--enable-automation` by default.
+        const defaultArgs = puppeteer.defaultArgs();
+        const browser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
+          // Ignore first and third default argument.
+          ignoreDefaultArgs: [ defaultArgs[0], defaultArgs[2] ],
+        }));
+        const spawnargs = browser.process().spawnargs;
+        expect(spawnargs.indexOf(defaultArgs[0])).toBe(-1);
+        expect(spawnargs.indexOf(defaultArgs[1])).not.toBe(-1);
+        expect(spawnargs.indexOf(defaultArgs[2])).toBe(-1);
+        await browser.close();
+      });
       it('should have default url when launching browser', async function() {
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const pages = (await browser.pages()).map(page => page.url());
