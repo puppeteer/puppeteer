@@ -1806,7 +1806,7 @@ puppeteer.launch().then(async browser => {
   - `width` <[number]> page width in pixels. （需要设置的页面像素宽度）
   - `height` <[number]> page height in pixels.  （页面像素高度）
   - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`. （指定页面的缩放因子（可以理解为 dpr），默认为 `1`）
-  - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`. （是否考虑 `meta viewport` 标签，默认为 `false`）
+  - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`. （是否采用 `meta viewport` 标签的内容，默认为 `false`）
   - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false` （指定视口是否支持 touch 事件，默认为 `false`）
   - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`. （指定视口是否已 landscape 模式显示，默认为 `false`）
 - returns: <[Promise]>
@@ -1881,12 +1881,14 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 
 #### page.viewport()
 - returns: <[Object]>
-  - `width` <[number]> page width in pixels.
-  - `height` <[number]> page height in pixels.
-  - `deviceScaleFactor` <[number]> Specify device scale factor (can be though of as dpr). Defaults to `1`.
-  - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
-  - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
-  - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
+  - `width` <[number]> page width in pixels. （以像素为单位的页面宽度）
+  - `height` <[number]> page height in pixels. （以像素为单位的页面高度）
+  - `deviceScaleFactor` <[number]> Specify device scale factor (can be though of as dpr). Defaults to `1`.  （设备的缩放因子（可以理解为 dpr）。默认为 `1`）
+  - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.  （是否采用了 `meta viewport` 标签的内容。默认为 `false`）
+  - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`  （视口是否支持 touch 事件。默认为 `false`）
+  - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`. （视口是否以 landscape 模式显示。默认为 `false`）
+
+该方法返回页面视口的参数。
 
 #### page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])
 - `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
