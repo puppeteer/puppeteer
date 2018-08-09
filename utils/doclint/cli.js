@@ -37,13 +37,13 @@ async function run() {
 
   // Documentation checks.
   {
-    const mdSources = await Promise.all([
-      Source.readFile(path.join(PROJECT_DIR, 'docs', 'api.md')),
-      Source.readFile(path.join(PROJECT_DIR, 'README.md'))
-    ]);
+    const readme = await Source.readFile(path.join(PROJECT_DIR, 'README.md'));
+    const api = await Source.readFile(path.join(PROJECT_DIR, 'docs', 'api.md'));
+    const mdSources = [readme, api];
 
     const preprocessor = require('./preprocessor');
-    messages.push(...await preprocessor(mdSources, VERSION));
+    messages.push(...await preprocessor.runCommands(mdSources, VERSION));
+    messages.push(...await preprocessor.ensureReleasedAPILinks([readme], VERSION));
 
     const browser = await puppeteer.launch({args: ['--no-sandbox']});
     const page = await browser.newPage();

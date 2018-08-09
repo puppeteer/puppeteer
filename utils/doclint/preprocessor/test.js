@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const preprocessor = require('.');
+const {runCommands, ensureReleasedAPILinks} = require('.');
 const Source = require('../Source');
 const {TestRunner, Reporter, Matchers}  = require('../../testrunner/');
 const runner = new TestRunner();
@@ -25,12 +25,39 @@ const {it, fit, xit} = runner;
 const {beforeAll, beforeEach, afterAll, afterEach} = runner;
 const {expect} = new Matchers();
 
-describe('preprocessor', function() {
+describe('ensureReleasedAPILinks', function() {
+  it('should work with non-release version', function() {
+    const source = new Source('doc.md', `
+      [API](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-page)
+    `);
+    const messages = ensureReleasedAPILinks([source], '1.3.0-post');
+    expect(messages.length).toBe(1);
+    expect(messages[0].type).toBe('warning');
+    expect(messages[0].text).toContain('doc.md');
+    expect(source.text()).toBe(`
+      [API](https://github.com/GoogleChrome/puppeteer/blob/v1.3.0/docs/api.md#class-page)
+    `);
+  });
+  it('should work with release version', function() {
+    const source = new Source('doc.md', `
+      [API](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#class-page)
+    `);
+    const messages = ensureReleasedAPILinks([source], '1.3.0');
+    expect(messages.length).toBe(1);
+    expect(messages[0].type).toBe('warning');
+    expect(messages[0].text).toContain('doc.md');
+    expect(source.text()).toBe(`
+      [API](https://github.com/GoogleChrome/puppeteer/blob/v1.3.0/docs/api.md#class-page)
+    `);
+  });
+});
+
+describe('runCommands', function() {
   it('should throw for unknown command', function() {
     const source = new Source('doc.md', `
       <!-- gen:unknown-command -->something<!-- gen:stop -->
     `);
-    const messages = preprocessor([source], '1.1.1');
+    const messages = runCommands([source], '1.1.1');
     expect(source.hasUpdatedText()).toBe(false);
     expect(messages.length).toBe(1);
     expect(messages[0].type).toBe('error');
@@ -41,7 +68,7 @@ describe('preprocessor', function() {
       const source = new Source('doc.md', `
         Puppeteer <!-- gen:version -->XXX<!-- gen:stop -->
       `);
-      const messages = preprocessor([source], '1.2.0');
+      const messages = runCommands([source], '1.2.0');
       expect(messages.length).toBe(1);
       expect(messages[0].type).toBe('warning');
       expect(messages[0].text).toContain('doc.md');
@@ -53,7 +80,7 @@ describe('preprocessor', function() {
       const source = new Source('doc.md', `
         Puppeteer <!-- gen:version -->XXX<!-- gen:stop -->
       `);
-      const messages = preprocessor([source], '1.2.0-post');
+      const messages = runCommands([source], '1.2.0-post');
       expect(messages.length).toBe(1);
       expect(messages[0].type).toBe('warning');
       expect(messages[0].text).toContain('doc.md');
@@ -64,12 +91,12 @@ describe('preprocessor', function() {
     it('should tolerate different writing', function() {
       const source = new Source('doc.md', `Puppeteer v<!--   gEn:version -->WHAT
 <!--     GEN:stop   -->`);
-      preprocessor([source], '1.1.1');
+      runCommands([source], '1.1.1');
       expect(source.text()).toBe(`Puppeteer v<!--   gEn:version -->v1.1.1<!--     GEN:stop   -->`);
     });
     it('should not tolerate missing gen:stop', function() {
       const source = new Source('doc.md', `<!--GEN:version-->`);
-      const messages = preprocessor([source], '1.2.0');
+      const messages = runCommands([source], '1.2.0');
       expect(source.hasUpdatedText()).toBe(false);
       expect(messages.length).toBe(1);
       expect(messages[0].type).toBe('error');
@@ -81,7 +108,7 @@ describe('preprocessor', function() {
       const source = new Source('doc.md', `
         <!-- gen:empty-if-release -->XXX<!-- gen:stop -->
       `);
-      const messages = preprocessor([source], '1.1.1');
+      const messages = runCommands([source], '1.1.1');
       expect(messages.length).toBe(1);
       expect(messages[0].type).toBe('warning');
       expect(messages[0].text).toContain('doc.md');
@@ -93,36 +120,10 @@ describe('preprocessor', function() {
       const source = new Source('doc.md', `
         <!-- gen:empty-if-release -->XXX<!-- gen:stop -->
       `);
-      const messages = preprocessor([source], '1.1.1-post');
+      const messages = runCommands([source], '1.1.1-post');
       expect(messages.length).toBe(0);
       expect(source.text()).toBe(`
         <!-- gen:empty-if-release -->XXX<!-- gen:stop -->
-      `);
-    });
-  });
-  describe('gen:empty-if-release', function() {
-    it('should work with non-release version', function() {
-      const source = new Source('doc.md', `
-        <!-- gen:last-released-api -->XXX<!-- gen:stop -->
-      `);
-      const messages = preprocessor([source], '1.3.0-post');
-      expect(messages.length).toBe(1);
-      expect(messages[0].type).toBe('warning');
-      expect(messages[0].text).toContain('doc.md');
-      expect(source.text()).toBe(`
-        <!-- gen:last-released-api -->[API](https://github.com/GoogleChrome/puppeteer/blob/v1.3.0/docs/api.md)<!-- gen:stop -->
-      `);
-    });
-    it('should work with release version', function() {
-      const source = new Source('doc.md', `
-        <!-- gen:last-released-api -->XXX<!-- gen:stop -->
-      `);
-      const messages = preprocessor([source], '1.3.0');
-      expect(messages.length).toBe(1);
-      expect(messages[0].type).toBe('warning');
-      expect(messages[0].text).toContain('doc.md');
-      expect(source.text()).toBe(`
-        <!-- gen:last-released-api -->[API](https://github.com/GoogleChrome/puppeteer/blob/v1.3.0/docs/api.md)<!-- gen:stop -->
       `);
     });
   });
@@ -132,7 +133,7 @@ describe('preprocessor', function() {
         ### class: page
         #### page.$
         #### page.$$`);
-      const messages = preprocessor([source], '1.3.0');
+      const messages = runCommands([source], '1.3.0');
       expect(messages.length).toBe(1);
       expect(messages[0].type).toBe('warning');
       expect(messages[0].text).toContain('doc.md');
@@ -152,7 +153,7 @@ describe('preprocessor', function() {
       <!-- gen:empty-if-release -->YYY<!-- gen:stop -->
       <!-- gen:version -->ZZZ<!-- gen:stop -->
     `);
-    const messages = preprocessor([source], '1.1.1');
+    const messages = runCommands([source], '1.1.1');
     expect(messages.length).toBe(1);
     expect(messages[0].type).toBe('warning');
     expect(messages[0].text).toContain('doc.md');
