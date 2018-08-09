@@ -2,6 +2,9 @@
 
 # Puppeteer API <!-- GEN:version -->Tip-Of-Tree<!-- GEN:stop-->
 
+术语表：
+- 导航也可以当做页面跳转。
+
 <!-- GEN:empty-if-release -->
 Next Release: **Aug 9, 2018**
 <!-- GEN:stop -->
@@ -1891,17 +1894,20 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 该方法返回页面视口的参数。
 
 #### page.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])
-- `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
-- `options` <[Object]> Optional waiting parameters
-- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction`
-- returns: <[Promise]<[JSHandle]>> Promise which resolves to a JSHandle of the success value
+- `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for （需要等待的元素的选择器，一个函数或者需要等待的超时时间）
+- `options` <[Object]> Optional waiting parameters （可选参数）
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction` （传递给 `pageFunction` 的参数）
+- returns: <[Promise]<[JSHandle]>> Promise which resolves to a JSHandle of the success value  （返回Promise，它返回成功值的 JSHandle）
 
 This method behaves differently with respect to the type of the first parameter:
+
+该方法的具体表现会基于第一个参数的类型而有所不同：
+
 - if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] or [xpath], depending on whether or not it starts with '//', and the method is a shortcut for
-  [page.waitForSelector](#pagewaitforselectorselector-options) or [page.waitForXPath](#pagewaitforxpathxpath-options)
-- if `selectorOrFunctionOrTimeout` is a `function`, then the first argument is treated as a predicate to wait for and the method is a shortcut for [page.waitForFunction()](#pagewaitforfunctionpagefunction-options-args).
-- if `selectorOrFunctionOrTimeout` is a `number`, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout
-- otherwise, an exception is thrown
+  [page.waitForSelector](#pagewaitforselectorselector-options) or [page.waitForXPath](#pagewaitforxpathxpath-options) （如果 `selectorOrFunctionOrTimeout` 是一个 `string` 类型，则第一个参数会被当做一个 元素选择器（[selector]）或者 [xpath]，这取决于它是否已 `//` 作为开头，该方法是 [page.waitForSelector](#pagewaitforselectorselector-options) 或 [page.waitForXPath](#pagewaitforxpathxpath-options) 的简写）
+- if `selectorOrFunctionOrTimeout` is a `function`, then the first argument is treated as a predicate to wait for and the method is a shortcut for [page.waitForFunction()](#pagewaitforfunctionpagefunction-options-args). （如果 `selectorOrFunctionOrTimeout` 是一个 `function` 类型，则第一个参数会被当做等待的条件判断依据来执行，此时该方法则为 [page.waitForFunction()](#pagewaitforfunctionpagefunction-options-args)的简写）
+- if `selectorOrFunctionOrTimeout` is a `number`, then the first argument is treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout （如果 `selectorOrFunctionOrTimeout` 是一个 `number` 类型，则第一个参数会被当做以毫秒为单位的超时时间，并且该方法返回一个 Promise，当达到超时时间后 Promise 会转为成功态）
+- otherwise, an exception is thrown （其它情况则抛出异常）
 
 ```js
 // wait for selector
@@ -1914,6 +1920,8 @@ await page.waitFor(() => !!document.querySelector('.foo'));
 
 To pass arguments from node.js to the predicate of `page.waitFor` function:
 
+从 nodejs 中向 `page.waitFor` 的函数传递参数：
+
 ```js
 const selector = '.foo';
 await page.waitFor(selector => !!document.querySelector(selector), {}, selector);
@@ -1921,17 +1929,22 @@ await page.waitFor(selector => !!document.querySelector(selector), {}, selector)
 
 Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args).
 
+该方法是 [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args) 的简写。
+
 #### page.waitForFunction(pageFunction[, options[, ...args]])
-- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
-- `options` <[Object]> Optional waiting parameters
-  - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values:
-    - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
-    - `mutation` - to execute `pageFunction` on every DOM mutation.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
-- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction`
-- returns: <[Promise]<[JSHandle]>> Promise which resolves when the `pageFunction` returns a truthy value. It resolves to a JSHandle of the truthy value.
+- `pageFunction` <[function]|[string]> Function to be evaluated in browser context  （需要在浏览器上下文中执行的函数）
+- `options` <[Object]> Optional waiting parameters （有如下可选项）
+  - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values: （指定 `pageFunction` 每次执行的间隔时间，默认为 `raf`。如果 `polling` 是一个数字，则会当做以毫秒为单位的函数执行间隔时长，如果 `polling` 是一个字符串，则有以下两种情况）
+    - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes. （在 requestAnimationFrame 回调中不断执行`pageFunction`。这是间隔最紧密的轮询模式，适合观察样式变化）
+    - `mutation` - to execute `pageFunction` on every DOM mutation. （在每次 DOM 发生变化时执行 `pageFunction`）
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout. （以毫秒为单位的等待超时时长。默认为 `30000`（30秒）。传 `0` 表示禁用超时选项）
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction` （传递给 `pageFunction` 的参数）
+- returns: <[Promise]<[JSHandle]>> Promise which resolves when the `pageFunction` returns a truthy value. It resolves to a JSHandle of the truthy value. （返回 Promise，当 `pageFunction` 返回一个逻辑真值时，该 Promise 转变为完成态并返回真值的 JSHandle）
 
 The `waitForFunction` can be used to observe viewport size change:
+
+`waitForFunction` 方法能够用来监视视口大小的变化：
+
 ```js
 const puppeteer = require('puppeteer');
 
@@ -1946,6 +1959,8 @@ puppeteer.launch().then(async browser => {
 
 To pass arguments from node.js to the predicate of `page.waitForFunction` function:
 
+从 nodejs 中向 `page.waitForFunction` 的函数传递参数：
+
 ```js
 const selector = '.foo';
 await page.waitForFunction(selector => !!document.querySelector(selector), {}, selector);
@@ -1953,18 +1968,22 @@ await page.waitForFunction(selector => !!document.querySelector(selector), {}, s
 
 Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args).
 
+该方法为 [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args) 的简写。
+
 #### page.waitForNavigation(options)
-- `options` <[Object]> Navigation parameters which might have the following properties:
-  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) method.
-  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
-    - `load` - consider navigation to be finished when the `load` event is fired.
-    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
-    - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
-    - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
-- returns: <[Promise]<[?Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
+- `options` <[Object]> Navigation parameters which might have the following properties:  （导航参数，可以使用如下选项）
+  - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) method. （以毫秒为单位的最大超时时长，默认为 30 秒，传 `0` 表示禁用超时选项。默认值可以通过 [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) 进行修改）
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either: （决定导航成功完成的条件，默认为 `load`。如果传递一个事件数组，则当所有事件都触发之后就当做导航成功。事件可以是以下之一）
+    - `load` - consider navigation to be finished when the `load` event is fired. （当 `load` 事件触发的时候即表示导航结束）
+    - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired. （当 `DOMContentLoaded` 事件触发的时候表示导航结束）
+    - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.  （当至少 500 毫秒以内有不高于 0 个网络连接时表示导航结束）
+    - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms. （当至少 500 以内有不超过 2 个网络连接时表示导航结束）
+- returns: <[Promise]<[?Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`. （返回 Promise，该 Promise 将返回收到的主资源的响应 （译者注：即一个 Response 实例对象）。在多次重定向的情况下，导航会返回最后一个重定向的响应内容。当导航到不同的锚点或者是由 history API 引起的导航，则 Promise 会返回 null）
 
 This resolves when the page navigates to a new URL or reloads. It is useful for when you run code
 which will indirectly cause the page to navigate. Consider this example:
+
+当页面导航到一个新的 URL 或者重新加载的时候该 Promise 会转为成功态。这在当你运行的代码会间接的导致页面跳转时会很有用，考虑下面的示例：
 
 ```js
 const navigationPromise = page.waitForNavigation();
@@ -1974,11 +1993,13 @@ await navigationPromise; // The navigationPromise resolves after navigation has 
 
 **NOTE** Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
 
+**提示：** 使用 [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) 来改变 URL 的操作会被当做是一次导航。
+
 #### page.waitForRequest(urlOrPredicate, options)
-- `urlOrPredicate` <[string]|[Function]> A URL or predicate to wait for.
-- `options` <[Object]> Optional waiting parameters
-  - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout.
-- returns: <[Promise]<[Request]>> Promise which resolves to the matched request.
+- `urlOrPredicate` <[string]|[Function]> A URL or predicate to wait for.  （一个需要等待的请求 URL 或者条件判断函数）
+- `options` <[Object]> Optional waiting parameters  （可选项如下）
+  - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout. （以毫秒为单位的最大超时时间，默认为 30 秒，传 `0` 表示禁用超时选项）
+- returns: <[Promise]<[Request]>> Promise which resolves to the matched request.  （返回 Promise，该 Promise 会返回匹配的请求）
 
 ```js
 const firstRequest = await page.waitForRequest('http://example.com/resource');
@@ -1987,10 +2008,10 @@ return firstRequest.url();
 ```
 
 #### page.waitForResponse(urlOrPredicate, options)
-- `urlOrPredicate` <[string]|[Function]> A URL or predicate to wait for.
-- `options` <[Object]> Optional waiting parameters
-  - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout.
-- returns: <[Promise]<[Response]>> Promise which resolves to the matched response.
+- `urlOrPredicate` <[string]|[Function]> A URL or predicate to wait for.  （一个需要等待响应的 URL 或者条件判断函数）
+- `options` <[Object]> Optional waiting parameters  （可选项如下）
+  - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout.  （以毫秒为单位的最大超时时间，默认为 30 秒，传 `0` 表示禁用超时选项）
+- returns: <[Promise]<[Response]>> Promise which resolves to the matched response.  （返回 Promise，该 Promise 会返回匹配的请求响应）
 
 ```js
 const firstResponse = await page.waitForResponse('https://example.com/resource');
@@ -1999,18 +2020,23 @@ return finalResponse.ok();
 ```
 
 #### page.waitForSelector(selector[, options])
-- `selector` <[string]> A [selector] of an element to wait for
-- `options` <[Object]> Optional waiting parameters
-  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
-- returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by selector string is added to DOM.
+- `selector` <[string]> A [selector] of an element to wait for  （需要等待的元素选择器）
+- `options` <[Object]> Optional waiting parameters  （可选项如下）
+  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.  （等待元素出现在 DOM 中并可见，如没有 `display: none` 或者 `visibility: hidden` CSS 属性的元素。默认为 `false`）（译者注，即使元素没有表示隐藏的 CSS 属性，也可能被其它元素挡住而不可见，另外需要测试的是挡住它的上层元素具有透明度的情况）（待测试）
+  - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`. （等待元素隐藏或者不在 DOM 中出现，如具有 `display: none` 或者 `visibility: hidden` 的 CSS 属性的元素。默认为 `false`）
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.  （以毫秒为单位的最大超时时间。默认为 `30000`（30秒）。传 `0` 表示禁用超时选项）
+- returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by selector string is added to DOM. （返回 Promise，当通过选择器指定的元素被添加到 DOM 时 Promise 转为完成态）
 
 Wait for the `selector` to appear in page. If at the moment of calling
 the method the `selector` already exists, the method will return
 immediately. If the selector doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
 
+该方法会等待  `selector`  指定的元素出现在页面中，如果调用该函数的时候  `selector`  指定的元素已经存在，该方法会立即返回。如果在 `timeout` 毫秒之后还没有出现，则抛出异常。
+
 This method works across navigations:
+
+该方法适用于导航：
+
 ```js
 const puppeteer = require('puppeteer');
 
@@ -2027,19 +2053,26 @@ puppeteer.launch().then(async browser => {
 ```
 Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options).
 
+该方法是  [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options) 的简写。
+
 #### page.waitForXPath(xpath[, options])
-- `xpath` <[string]> A [xpath] of an element to wait for
-- `options` <[Object]> Optional waiting parameters
-  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`.
-  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.
-- returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by xpath string is added to DOM.
+- `xpath` <[string]> A [xpath] of an element to wait for  （需要等待的元素选的 [xpath] 选择器）
+- `options` <[Object]> Optional waiting parameters （可选项如下）
+  - `visible` <[boolean]> wait for element to be present in DOM and to be visible, i.e. to not have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`. （等待元素出现在 DOM 中并可见，如没有 `display: none` 或者 `visibility: hidden` CSS 属性的元素。默认为 `false`）
+  - `hidden` <[boolean]> wait for element to not be found in the DOM or to be hidden, i.e. have `display: none` or `visibility: hidden` CSS properties. Defaults to `false`. （等待元素隐藏或者不在 DOM 中出现，如具有 `display: none` 或者 `visibility: hidden` 的 CSS 属性的元素。默认为 `false`）
+  - `timeout` <[number]> maximum time to wait for in milliseconds. Defaults to `30000` (30 seconds). Pass `0` to disable timeout.  （以毫秒为单位的最大超时时间。默认为 `30000`（30秒）。传 `0` 表示禁用超时选项）
+- returns: <[Promise]<[ElementHandle]>> Promise which resolves when element specified by xpath string is added to DOM. （返回 Promise，当通过 xpath 选择器指定的元素被添加到 DOM 时 Promise 转为完成态）
 
 Wait for the `xpath` to appear in page. If at the moment of calling
 the method the `xpath` already exists, the method will return
 immediately. If the xpath doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
+ 
+该方法会等待  `xpath`  指定的元素出现在页面中，如果调用该函数的时候  `xpath` 指定的元素已经存在，该方法会立即返回。如果在 `timeout` 毫秒之后还没有出现，则抛出异常。
 
 This method works across navigations:
+
+该方法适用于导航：
+
 ```js
 const puppeteer = require('puppeteer');
 
@@ -2056,11 +2089,15 @@ puppeteer.launch().then(async browser => {
 ```
 Shortcut for [page.mainFrame().waitForXPath(xpath[, options])](#framewaitforxpathxpath-options).
 
+该方法是 Shortcut for [page.mainFrame().waitForXPath(xpath[, options])](#framewaitforxpathxpath-options) 的简写。
+
 #### page.workers()
 - returns: <[Array]<[Worker]>>
-This method returns all of the dedicated [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) associated with the page.
+This method returns all of the dedicated [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) associated with the page. 该方法返回与当前页面相关的所有 [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)
 
 > **NOTE** This does not contain ServiceWorkers
+>
+> **提示：** 不包含 ServiceWorkers
 
 ### class: Worker
 
