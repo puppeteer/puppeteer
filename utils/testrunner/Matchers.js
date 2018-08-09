@@ -108,7 +108,12 @@ const DefaultMatchers = {
       pass: Math.abs(value - other) < Math.pow(10, -precision),
       message
     };
-  }
+  },
+
+  toBeInstanceOf: function(value, other, message) {
+    message = message || `${value.constructor.name} instanceof ${other.name}`;
+    return { pass: value instanceof other, message };
+  },
 };
 
 function stringify(value) {

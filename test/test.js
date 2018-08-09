@@ -21,14 +21,13 @@ const GoldenUtils = require('./golden-utils');
 const GOLDEN_DIR = path.join(__dirname, 'golden');
 const OUTPUT_DIR = path.join(__dirname, 'output');
 const {TestRunner, Reporter, Matchers} = require('../utils/testrunner/');
+const utils = require('./utils');
 
 const {helper, assert} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
 
-const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ? path.join(__dirname, '..') : path.join(__dirname, '..', '..');
-const puppeteer = require(PROJECT_ROOT);
-const DeviceDescriptors = require(path.join(PROJECT_ROOT, 'DeviceDescriptors'));
+const puppeteer = utils.requireRoot('index');
 
 const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
@@ -145,28 +144,28 @@ describe('Browser', function() {
     // Page-level tests that are given a browser, a context and a page.
     // Each test is launched in a new browser context.
     require('./CDPSession.spec.js').addTests({testRunner, expect});
-    require('./browser.spec.js').addTests({testRunner, expect, puppeteer, headless});
+    require('./browser.spec.js').addTests({testRunner, expect, headless});
     require('./cookies.spec.js').addTests({testRunner, expect});
     require('./coverage.spec.js').addTests({testRunner, expect});
     require('./elementhandle.spec.js').addTests({testRunner, expect});
     require('./frame.spec.js').addTests({testRunner, expect});
-    require('./input.spec.js').addTests({testRunner, expect, DeviceDescriptors});
+    require('./input.spec.js').addTests({testRunner, expect});
     require('./jshandle.spec.js').addTests({testRunner, expect});
     require('./network.spec.js').addTests({testRunner, expect});
-    require('./page.spec.js').addTests({testRunner, expect, puppeteer, DeviceDescriptors, headless});
-    require('./target.spec.js').addTests({testRunner, expect, puppeteer});
+    require('./page.spec.js').addTests({testRunner, expect, headless});
+    require('./target.spec.js').addTests({testRunner, expect});
     require('./tracing.spec.js').addTests({testRunner, expect});
     require('./worker.spec.js').addTests({testRunner, expect});
   });
 
   // Browser-level tests that are given a browser.
-  require('./browsercontext.spec.js').addTests({testRunner, expect, puppeteer});
+  require('./browsercontext.spec.js').addTests({testRunner, expect});
 });
 
 // Top-level tests that launch Browser themselves.
-require('./ignorehttpserrors.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
-require('./puppeteer.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
-require('./headful.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
+require('./ignorehttpserrors.spec.js').addTests({testRunner, expect, defaultBrowserOptions});
+require('./puppeteer.spec.js').addTests({testRunner, expect, defaultBrowserOptions});
+require('./headful.spec.js').addTests({testRunner, expect, defaultBrowserOptions});
 
 if (process.env.COVERAGE) {
   describe('COVERAGE', function() {

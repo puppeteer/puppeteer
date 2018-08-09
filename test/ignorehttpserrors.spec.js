@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions}) {
+const utils = require('./utils');
+const puppeteer = utils.requireRoot('index.js');
+
+module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  const puppeteer = require(PROJECT_ROOT);
   describe('ignoreHTTPSErrors', function() {
     beforeAll(async state => {
       const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);

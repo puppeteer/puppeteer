@@ -12,6 +12,7 @@ Next Release: **Aug 9, 2018**
 <!-- GEN:toc -->
 - [Overview](#overview)
 - [Environment Variables](#environment-variables)
+- [Error handling](#error-handling)
 - [Working with Chrome Extensions](#working-with-chrome-extensions)
 - [class: Puppeteer](#class-puppeteer)
   * [puppeteer.connect(options)](#puppeteerconnectoptions)
@@ -285,6 +286,7 @@ Next Release: **Aug 9, 2018**
   * [coverage.startJSCoverage(options)](#coveragestartjscoverageoptions)
   * [coverage.stopCSSCoverage()](#coveragestopcsscoverage)
   * [coverage.stopJSCoverage()](#coveragestopjscoverage)
+- [class: TimeoutError](#class-timeouterror)
 <!-- GEN:stop -->
 
 ### Overview
@@ -315,6 +317,34 @@ If puppeteer doesn't find them in environment, lowercased variant of these varia
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
 - `PUPPETEER_DOWNLOAD_HOST` - overwrite host part of URL that is used to download Chromium
 - `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of chrome you'd like puppeteer to use during the installation step.
+
+### Error handling
+
+Often times, async methods might throw an error, signaling about their inability
+to fulfill request. For example, [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
+might fail if selector doesn't appear during the given timeframe.
+
+For certain types of errors Puppeteer uses specific error classes.
+These classes are available through the `require('puppeteer/Errors')`.
+
+List of supported classes:
+- [`TimeoutError`](#class-timeouterror)
+
+An example of handling timeout error:
+```js
+const {TimeoutError} = require('puppeteer/Errors');
+
+// ...
+
+try {
+  await page.waitForSelector('.foo');
+} catch (e) {
+  if (e instanceof TimeoutError) {
+    // Do something if this is a timeout.
+  }
+}
+```
+
 
 ### Working with Chrome Extensions
 
@@ -3156,6 +3186,14 @@ _To output coverage in a form consumable by [Istanbul](https://github.com/istanb
 
 > **NOTE** JavaScript Coverage doesn't include anonymous scripts by default. However, scripts with sourceURLs are
 reported.
+
+### class: TimeoutError
+
+* extends: [Error]
+
+TimeoutError is emitted whenever certain operations are terminated due to timeout, e.g. [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options) or [puppeteer.launch([options])](#puppeteerlaunchoptions).
+
+
 
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"

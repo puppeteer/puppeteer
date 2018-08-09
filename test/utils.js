@@ -14,7 +14,25 @@
  * limitations under the License.
  */
 
+const fs = require('fs');
+const path = require('path');
+const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ? path.join(__dirname, '..') : path.join(__dirname, '..', '..');
+
 const utils = module.exports = {
+  /**
+   * @return {string}
+   */
+  projectRoot: function() {
+    return PROJECT_ROOT;
+  },
+
+  /**
+   * @return {*}
+   */
+  requireRoot: function(name) {
+    return require(path.join(PROJECT_ROOT, name));
+  },
+
   /**
    * @param {!Page} page
    * @param {string} frameId
