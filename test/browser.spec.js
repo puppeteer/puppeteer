@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const utils = require('./utils');
+const puppeteer = utils.requireRoot('index');
 
-module.exports.addTests = function({testRunner, expect, puppeteer, headless}) {
+module.exports.addTests = function({testRunner, expect, headless}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;

@@ -15,6 +15,7 @@
  */
 
 const utils = require('./utils');
+const {TimeoutError} = utils.requireRoot('Errors');
 
 module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
@@ -165,6 +166,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.waitForFunction('false', {timeout: 10}).catch(e => error = e);
       expect(error).toBeTruthy();
       expect(error.message).toContain('waiting for function failed: timeout');
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should disable timeout when its set to 0', async({page}) => {
       const watchdog = page.waitForFunction(() => {
@@ -317,6 +319,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.waitForSelector('div', {timeout: 10}).catch(e => error = e);
       expect(error).toBeTruthy();
       expect(error.message).toContain('waiting for selector "div" failed: timeout');
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should have an error message specifically for awaiting an element to be hidden', async({page, server}) => {
       await page.setContent(`<div></div>`);
@@ -359,6 +362,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.waitForXPath('//div', {timeout: 10}).catch(e => error = e);
       expect(error).toBeTruthy();
       expect(error.message).toContain('waiting for XPath "//div" failed: timeout');
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should run in specified frame', async({page, server}) => {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);

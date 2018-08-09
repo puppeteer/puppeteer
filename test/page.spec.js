@@ -16,14 +16,17 @@
 const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
-const {waitEvent} = require('./utils');
+const {waitEvent} = utils;
+const {TimeoutError} = utils.requireRoot('Errors');
 
-module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescriptors, headless}) {
+const DeviceDescriptors = utils.requireRoot('DeviceDescriptors');
+const iPhone = DeviceDescriptors['iPhone 6'];
+const iPhoneLandscape = DeviceDescriptors['iPhone 6 landscape'];
+
+module.exports.addTests = function({testRunner, expect, headless}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  const iPhone = DeviceDescriptors['iPhone 6'];
-  const iPhoneLandscape = DeviceDescriptors['iPhone 6 landscape'];
 
   describe('Page.close', function() {
     it('should reject all promises when page is closed', async({context}) => {
@@ -531,6 +534,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       let error = null;
       await page.goto(server.PREFIX + '/empty.html', {timeout: 1}).catch(e => error = e);
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should fail when exceeding default maximum navigation timeout', async({page, server}) => {
       // Hang for request to the empty.html
@@ -539,6 +543,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       page.setDefaultNavigationTimeout(1);
       await page.goto(server.PREFIX + '/empty.html').catch(e => error = e);
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should disable timeout when its set to 0', async({page, server}) => {
       let error = null;

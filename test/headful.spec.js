@@ -16,7 +16,9 @@
 
 const path = require('path');
 const os = require('os');
-const {waitEvent} = require('./utils.js');
+const utils = require('./utils');
+const {waitEvent} = utils;
+const puppeteer = utils.requireRoot('index.js');
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 
@@ -34,11 +36,10 @@ function waitForBackgroundPageTarget(browser) {
   });
 }
 
-module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions}) {
+module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  const puppeteer = require(PROJECT_ROOT);
 
   const headfulOptions = Object.assign({}, defaultBrowserOptions, {
     headless: false

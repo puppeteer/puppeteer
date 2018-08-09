@@ -16,12 +16,13 @@
 
 const path = require('path');
 const utils = require('./utils');
+const DeviceDescriptors = utils.requireRoot('DeviceDescriptors');
+const iPhone = DeviceDescriptors['iPhone 6'];
 
-module.exports.addTests = function({testRunner, expect, DeviceDescriptors}) {
+module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  const iPhone = DeviceDescriptors['iPhone 6'];
   describe('input', function() {
     it('should click the button', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');

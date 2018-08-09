@@ -23,12 +23,12 @@ const readFileAsync = helper.promisify(fs.readFile);
 const statAsync = helper.promisify(fs.stat);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const utils = require('./utils');
+const puppeteer = utils.requireRoot('index');
 
-module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions}) {
+module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  const puppeteer = require(PROJECT_ROOT);
 
   describe('Puppeteer', function() {
     describe('BrowserFetcher', function() {
@@ -145,7 +145,7 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
         const {spawn} = require('child_process');
         const options = Object.assign({}, defaultBrowserOptions, {dumpio: true});
         const res = spawn('node',
-            [path.join(__dirname, 'fixtures', 'dumpio.js'), PROJECT_ROOT, JSON.stringify(options), server.EMPTY_PAGE, dumpioTextToLog]);
+            [path.join(__dirname, 'fixtures', 'dumpio.js'), utils.projectRoot(), JSON.stringify(options), server.EMPTY_PAGE, dumpioTextToLog]);
         res.stderr.on('data', data => dumpioData += data.toString('utf8'));
         await new Promise(resolve => res.on('close', resolve));
 
@@ -153,7 +153,7 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
       });
       it('should close the browser when the node process closes', async({ server }) => {
         const {spawn, execSync} = require('child_process');
-        const res = spawn('node', [path.join(__dirname, 'fixtures', 'closeme.js'), PROJECT_ROOT, JSON.stringify(defaultBrowserOptions)]);
+        const res = spawn('node', [path.join(__dirname, 'fixtures', 'closeme.js'), utils.projectRoot(), JSON.stringify(defaultBrowserOptions)]);
         let wsEndPointCallback;
         const wsEndPointPromise = new Promise(x => wsEndPointCallback = x);
         let output = '';
