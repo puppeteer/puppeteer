@@ -16,10 +16,24 @@
 
 const Message = require('../Message');
 
-module.exports = function(sources, version) {
+module.exports.ensureReleasedAPILinks = function(sources, version) {
+  // Release version is everything that doesn't include "-".
+  const apiLinkRegex = /https:\/\/github.com\/GoogleChrome\/puppeteer\/blob\/[^/]*\/docs\/api.md/ig;
+  const lastReleasedAPI = `https://github.com/GoogleChrome/puppeteer/blob/v${version.split('-')[0]}/docs/api.md`;
+
+  const messages = [];
+  for (const source of sources) {
+    const text = source.text();
+    const newText = text.replace(apiLinkRegex, lastReleasedAPI);
+    if (source.setText(newText))
+      messages.push(Message.warning(`GEN: updated ${source.projectPath()}`));
+  }
+  return messages;
+};
+
+module.exports.runCommands = function(sources, version) {
   // Release version is everything that doesn't include "-".
   const isReleaseVersion = !version.includes('-');
-  const lastReleasedAPILink = `[API](https://github.com/GoogleChrome/puppeteer/blob/v${version.split('-')[0]}/docs/api.md)`;
 
   const messages = [];
   const commands = [];
@@ -54,8 +68,6 @@ module.exports = function(sources, version) {
       newText = isReleaseVersion ? 'v' + version : 'Tip-Of-Tree';
     else if (command.name === 'empty-if-release')
       newText = isReleaseVersion ? '' : command.originalText;
-    else if (command.name === 'last-released-api')
-      newText = lastReleasedAPILink;
     else if (command.name === 'toc')
       newText = generateTableOfContents(command.source.text().substring(command.to));
     if (newText === null)
