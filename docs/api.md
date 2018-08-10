@@ -59,8 +59,6 @@ Next Release: **Aug 9, 2018**
   * [event: 'dialog'](#event-dialog)
   * [event: 'domcontentloaded'](#event-domcontentloaded)
   * [event: 'error'](#event-error)
-  * [event: 'executioncontextcreated'](#event-executioncontextcreated)
-  * [event: 'executioncontextdestroyed'](#event-executioncontextdestroyed)
   * [event: 'frameattached'](#event-frameattached)
   * [event: 'framedetached'](#event-framedetached)
   * [event: 'framenavigated'](#event-framenavigated)
@@ -183,7 +181,6 @@ Next Release: **Aug 9, 2018**
   * [frame.evaluate(pageFunction, ...args)](#frameevaluatepagefunction-args)
   * [frame.evaluateHandle(pageFunction, ...args)](#frameevaluatehandlepagefunction-args)
   * [frame.executionContext()](#frameexecutioncontext)
-  * [frame.executionContexts()](#frameexecutioncontexts)
   * [frame.focus(selector)](#framefocusselector)
   * [frame.hover(selector)](#framehoverselector)
   * [frame.isDetached()](#frameisdetached)
@@ -203,8 +200,6 @@ Next Release: **Aug 9, 2018**
   * [executionContext.evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args)
   * [executionContext.evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args)
   * [executionContext.frame()](#executioncontextframe)
-  * [executionContext.isDefault()](#executioncontextisdefault)
-  * [executionContext.name()](#executioncontextname)
   * [executionContext.queryObjects(prototypeHandle)](#executioncontextqueryobjectsprototypehandle)
 - [class: JSHandle](#class-jshandle)
   * [jsHandle.asElement()](#jshandleaselement)
@@ -803,16 +798,6 @@ Emitted when the JavaScript [`DOMContentLoaded`](https://developer.mozilla.org/e
 Emitted when the page crashes.
 
 > **NOTE** `error` event has a special meaning in Node, see [error events](https://nodejs.org/api/events.html#events_error_events) for details.
-
-#### event: 'executioncontextcreated'
-- <[ExecutionContext]>
-
-Emitted whenever an execution context is created in one of the page's frames.
-
-#### event: 'executioncontextdestroyed'
-- <[ExecutionContext]>
-
-Emitted whenever an execution context is removed from one of the page's frames.
 
 #### event: 'frameattached'
 - <[Frame]>
@@ -2248,11 +2233,6 @@ await resultHandle.dispose();
 
 Returns promise that resolves to the frame's default execution context.
 
-#### frame.executionContexts()
-- returns: <[Array]<[ExecutionContext]>>
-
-Returns all execution contexts associated with this frame.
-
 #### frame.focus(selector)
 - `selector` <[string]> A [selector] of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully focused. The promise will be rejected if there is no element matching `selector`.
@@ -2452,11 +2432,7 @@ puppeteer.launch().then(async browser => {
 The class represents a context for JavaScript execution. A [Page] might have many execution contexts:
 - each [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) has "default" execution context that is
   always created after frame is attached to DOM. This context is returned by the [`frame.executionContext()`](#frameexecutioncontext) method.
-- [Extensions](https://developer.chrome.com/extensions)'s content scripts create additional execution contexts. These execution
-  contexts can be obtained via the [`frame.executionContexts()`](#frameexecutioncontexts) method.
-
-The execution context lifecycle can be observed with [Page]'s ['executioncontextcreated'](#event-executioncontextcreated) and
-['executioncontextdestroyed'](#event-executioncontextdestroyed) events.
+- [Extensions](https://developer.chrome.com/extensions)'s content scripts create additional execution contexts.
 
 Besides pages, execution contexts can be found in [workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
 
@@ -2523,19 +2499,6 @@ await resultHandle.dispose();
 - returns: <?[Frame]> Frame associated with this execution context.
 
 > **NOTE** Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.
-
-
-#### executionContext.isDefault()
-- returns: <[boolean]>
-
-Returns `true` if the execution context is a frame's main execution context; returns `false` otherwise.
-
-
-#### executionContext.name()
-- returns: <[string]>
-
-Returns execution context name, if any. If this execution context is associated with Chrome Extension's content
-script, this will return extension's name.
 
 
 #### executionContext.queryObjects(prototypeHandle)

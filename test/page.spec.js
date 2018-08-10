@@ -80,11 +80,6 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       const result = await page.evaluate(() => 7 * 3);
       expect(result).toBe(21);
     });
-    it('should have nice default execution context', async({page, server}) => {
-      const executionContext = await page.mainFrame().executionContext();
-      expect(executionContext.name()).toBe('');
-      expect(executionContext.isDefault()).toBe(true);
-    });
     it('should throw when evaluation triggers reload', async({page, server}) => {
       let error = null;
       await page.evaluate(() => {
