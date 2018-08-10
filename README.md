@@ -39,6 +39,18 @@ npm i puppeteer
 
 Note: When you install Puppeteer, it downloads a recent version of Chromium (~170Mb Mac, ~282Mb Linux, ~280Mb Win) that is guaranteed to work with the API. To skip the download, see [Environment variables](https://github.com/GoogleChrome/puppeteer/blob/v1.7.0/docs/api.md#environment-variables).
 
+
+### puppeteer-core
+
+Since version 1.7.0 we publish the [`puppeteer-core`](https://www.npmjs.com/package/puppeteer-core) package,
+a version of Puppeteer that doesn't download Chromium by default.
+
+```bash
+npm i puppeteer-core
+```
+
+`puppeteer-core` is intended to be a lightweight version of puppeteer for launching an existing browser installation or for connecting to a remote one.
+
 ### Usage
 
 Note: Puppeteer requires at least Node v6.4.0, but the examples below use async/await which is only supported in Node v7.6.0 or greater.
