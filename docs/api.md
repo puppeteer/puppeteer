@@ -311,7 +311,7 @@ If puppeteer doesn't find them in the environment, a lowercased variant of these
 - `PUPPETEER_DOWNLOAD_HOST` - overwrite host part of URL that is used to download Chromium
 - `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of chrome you'd like puppeteer to use during the installation step.
 
-> **NOTE** PUPPETEER_* env variables are not accounted for in [`puppeteer-core`](https://www.npmjs.com/package/puppeteer-core) package.
+> **NOTE** PUPPETEER_* env variables are not accounted for in the [`puppeteer-core`](https://www.npmjs.com/package/puppeteer-core) package.
 
 ### Error handling
 

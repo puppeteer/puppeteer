@@ -42,13 +42,14 @@ Note: When you install Puppeteer, it downloads a recent version of Chromium (~17
 
 ### puppeteer-core
 
-Since version 1.7.0 we publish a [`puppeteer-core`](https://www.npmjs.com/package/puppeteer-core) package: puppeteer that doesn't download Chromium by default.
+Since version 1.7.0 we publish the [`puppeteer-core`](https://www.npmjs.com/package/puppeteer-core) package,
+a version of Puppeteer that doesn't download Chromium by default.
 
 ```bash
 npm i puppeteer-core
 ```
 
-The intended usecase for `puppeteer-core` is to launch existing browser instance or connect to a remote one.
+`puppeteer-core` is intended to be a lightweight version of puppeteer for launching an existing browser installation or for connecting to a remote one.
 
 ### Usage
 
