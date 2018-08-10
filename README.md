@@ -176,9 +176,11 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
 
 <!-- [END runtimesettings] -->
 
-## API Documentation
+## Resources
 
-Explore the [API documentation](docs/api.md) and [examples](https://github.com/GoogleChrome/puppeteer/tree/master/examples/) to learn more.
+- [API Documentation](https://github.com/GoogleChrome/puppeteer/blob/v1.7.0/docs/api.md)
+- [Examples](https://github.com/GoogleChrome/puppeteer/tree/master/examples/)
+- [Community list of Puppeteer resources](https://github.com/transitive-bullshit/awesome-puppeteer)
 
 <!-- [START debugging] -->
 
