@@ -311,7 +311,7 @@ The Puppeteer API is hierarchical and mirrors the browser structure.
 ### Environment Variables
 
 Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) to aid its operations.
-If puppeteer doesn't find them in environment, lowercased variant of these variables will be used from the [npm config](https://docs.npmjs.com/cli/config).
+If puppeteer doesn't find them in the environment, a lowercased variant of these variables will be used from the [npm config](https://docs.npmjs.com/cli/config).
 
 - `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
@@ -320,17 +320,16 @@ If puppeteer doesn't find them in environment, lowercased variant of these varia
 
 ### Error handling
 
-Often times, async methods might throw an error, signaling about their inability
-to fulfill request. For example, [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
-might fail if selector doesn't appear during the given timeframe.
+Puppeteer methods might throw errors if they are unable to fufill a request. For example, [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
+might fail if the selector doesn't match any nodes during the given timeframe.
 
 For certain types of errors Puppeteer uses specific error classes.
-These classes are available through the `require('puppeteer/Errors')`.
+These classes are available via `require('puppeteer/Errors')`.
 
 List of supported classes:
 - [`TimeoutError`](#class-timeouterror)
 
-An example of handling timeout error:
+An example of handling a timeout error:
 ```js
 const {TimeoutError} = require('puppeteer/Errors');
 
@@ -352,7 +351,7 @@ Puppeteer can be used for testing Chrome Extensions.
 
 > **NOTE** Extensions in Chrome / Chromium currently only work in non-headless mode.
 
-The following is the code for getting a handle to a [background page](https://developer.chrome.com/extensions/background_pages) of an extension whose source is located in `./my-extension`:
+The following is code for getting a handle to the [background page](https://developer.chrome.com/extensions/background_pages) of an extension whose source is located in `./my-extension`:
 ```js
 const puppeteer = require('puppeteer');
 
@@ -440,7 +439,7 @@ The default flags that Chromium will be launched with.
     - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
     - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
   - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
-  - `ignoreDefaultArgs` <([boolean]|<[Array]<[string]>>)> If `true`, then do not use [`puppeteer.defaultArgs()`](#puppeteerdefaultargs-options). If an array is given, then filter out given default arguments. Dangerous option; use with care. Defaults to `false`.
+  - `ignoreDefaultArgs` <([boolean]|<[Array]<[string]>>)> If `true`, then do not use [`puppeteer.defaultArgs()`](#puppeteerdefaultargs-options). If an array is given, then filter out the given default arguments. Dangerous option; use with care. Defaults to `false`.
   - `handleSIGINT` <[boolean]> Close the browser process on Ctrl-C. Defaults to `true`.
   - `handleSIGTERM` <[boolean]> Close the browser process on SIGTERM. Defaults to `true`.
   - `handleSIGHUP` <[boolean]> Close the browser process on SIGHUP. Defaults to `true`.
@@ -453,9 +452,9 @@ The default flags that Chromium will be launched with.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
 
 The method combines 3 steps:
-1. Infer a set of flags to launch chromium with using `puppeteer.defaultArgs()`.
-2. Launch browser and start managing its process according to the `executablePath`, `handleSIGINT`, `dumpio` and other options.
-3. Create an instance of [Browser] class and initialize it wrt to `defaultViewport`, `slowMo` and `ignoreHTTPSErrors`.
+1. Infer a set of flags to launch Chromium with using `puppeteer.defaultArgs()`.
+2. Launch a browser and start managing its process according to `executablePath`, `handleSIGINT`, `dumpio` and other options.
+3. Create an instance of [Browser] class and initialize it with regards to `defaultViewport`, `slowMo` and `ignoreHTTPSErrors`.
 
 `ignoreDefaultArgs` option can be used to customize behavior on the (1) step. For example, to filter out
 `--mute-audio` from default arguments:
@@ -479,7 +478,7 @@ BrowserFetcher can download and manage different versions of Chromium.
 
 BrowserFetcher operates on revision strings that specify a precise version of Chromium, e.g. `"533271"`. Revision strings can be obtained from [omahaproxy.appspot.com](http://omahaproxy.appspot.com/).
 
-Example on how to use BrowserFetcher to download a specific version of Chromium and run
+An example of using BrowserFetcher to download a specific version of Chromium and running
 Puppeteer against it:
 
 ```js
@@ -1292,14 +1291,14 @@ The `page.goto` will throw an error if:
 
 > **NOTE** `page.goto` either throw or return a main resource response. The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
 
-> **NOTE** Headless mode doesn't support navigating to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+> **NOTE** Headless mode doesn't match any nodest navigating to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
 
 #### page.hover(selector)
-- `selector` <[string]> A [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
+- `selector` <[string]> A [selector] to search for element to hover. If there are multiple elements satisfying the selector, tvailable via.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
-If there's no element matching `selector`, the method throws an error.
+If a there's no element matching `selector`, the method throws an error.
 
 Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
 
@@ -2450,16 +2449,16 @@ puppeteer.launch().then(async browser => {
 
 ### class: ExecutionContext
 
-The class represents a context for JavaScript execution. Page might have many execution contexts:
+The class represents a context for JavaScript execution. A [Page] might have many execution contexts:
 - each [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) has "default" execution context that is
-  always created after frame is attached to DOM. This context could be awaited with the [`frame.executionContext()`](#frameexecutioncontext) method.
-- [extensions](https://developer.chrome.com/extensions)'s content scripts create additional execution contexts. These execution
-  contexts can be pulled with [`frame.executionContexts()`](#frameexecutioncontexts) method.
+  always created after frame is attached to DOM. This context is returned by the [`frame.executionContext()`](#frameexecutioncontext) method.
+- [Extensions](https://developer.chrome.com/extensions)'s content scripts create additional execution contexts. These execution
+  contexts can be obtained via the [`frame.executionContexts()`](#frameexecutioncontexts) method.
 
-Execution context lifecycle could be observed using Page's ['executioncontextcreated'](#event-executioncontextcreated) and
+The execution context lifecycle can be observed with [Page]'s ['executioncontextcreated'](#event-executioncontextcreated) and
 ['executioncontextdestroyed'](#event-executioncontextdestroyed) events.
 
-Besides pages, execution contexts can be found in all kind of [workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
+Besides pages, execution contexts can be found in [workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
 
 #### executionContext.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in `executionContext`
