@@ -5,8 +5,7 @@ import {Page as RealPage} from './Page.js';
 import {TaskQueue as RealTaskQueue} from './TaskQueue.js';
 import {Mouse as RealMouse, Keyboard as RealKeyboard, Touchscreen as RealTouchscreen}  from './Input.js';
 import {Frame as RealFrame, FrameManager as RealFrameManager}  from './FrameManager.js';
-import {JSHandle as RealJSHandle, ExecutionContext as RealExecutionContext}  from './ExecutionContext.js';
-import {ElementHandle as RealElementHandle}  from './ElementHandle.js';
+import {JSHandle as RealJSHandle, ElementHandle as RealElementHandle, ExecutionContext as RealExecutionContext}  from './ExecutionContext.js';
 import { NetworkManager as RealNetworkManager, Request as RealRequest, Response as RealResponse } from './NetworkManager.js';
 import * as child_process from 'child_process';
 declare global {
