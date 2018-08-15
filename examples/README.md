@@ -23,6 +23,7 @@ More complex and use case driven examples can be found at [github.com/GoogleChro
 - [puppeteer-examples](https://github.com/checkly/puppeteer-examples) - Puppeteer Headless Chrome examples for real life use cases such as getting useful info from the web pages or common login scenarios.
 - [browserless](https://github.com/joelgriffith/browserless) - Headless Chrome as a service letting you execute Puppeteer scripts remotely. Provides a docker image with configuration for concurrency, launch arguments and more.
 - [Puppeteer Sandbox](https://puppeteersandbox.com) - Puppeteer sandbox environment as a service. Runs Puppeteer scripts and allows saving and embedding them in external sites and markdown files.
+- [Puppeteer Recorder](https://chrome.google.com/webstore/detail/puppeteer-recorder/djeegiggegleadkkbgopoonhjimgehda) - A Chrome extension that records your browser interactions and generates a Puppeteer script.
 
 ## Testing
 
