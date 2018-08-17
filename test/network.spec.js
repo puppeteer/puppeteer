@@ -251,6 +251,21 @@ module.exports.addTests = function({testRunner, expect}) {
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.ok()).toBe(true);
     });
+    xit('should work when POST is redirected with 302', async({page, server}) => {
+      server.setRedirect('/rredirect', '/empty.html');
+      await page.goto(server.EMPTY_PAGE);
+      await page.setRequestInterception(true);
+      page.on('request', request => request.continue());
+      await page.setContent(`
+        <form action='/rredirect' method='post'>
+          <input type="hidden" id="foo" name="foo" value="FOOBAR">
+        </form>
+      `);
+      await Promise.all([
+        page.$eval('form', form => form.submit()),
+        page.waitForNavigation()
+      ]);
+    });
     it('should contain referer header', async({page, server}) => {
       await page.setRequestInterception(true);
       const requests = [];
