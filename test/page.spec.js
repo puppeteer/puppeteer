@@ -914,6 +914,15 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       });
       expect(result).toBe(36);
     });
+    it('should be callable from-inside evaluateOnNewDocument', async({page, server}) => {
+      let called = false;
+      await page.exposeFunction('woof', function() {
+        called = true;
+      });
+      await page.evaluateOnNewDocument(() => woof());
+      await page.reload();
+      expect(called).toBe(true);
+    });
     it('should survive navigation', async({page, server}) => {
       await page.exposeFunction('compute', function(a, b) {
         return a * b;
