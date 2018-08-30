@@ -35,6 +35,7 @@ Next Release: **Sep 6, 2018**
   * [browser.browserContexts()](#browserbrowsercontexts)
   * [browser.close()](#browserclose)
   * [browser.createIncognitoBrowserContext()](#browsercreateincognitobrowsercontext)
+  * [browser.defaultBrowserContext()](#browserdefaultbrowsercontext)
   * [browser.disconnect()](#browserdisconnect)
   * [browser.newPage()](#browsernewpage)
   * [browser.pages()](#browserpages)
@@ -48,9 +49,11 @@ Next Release: **Sep 6, 2018**
   * [event: 'targetcreated'](#event-targetcreated-1)
   * [event: 'targetdestroyed'](#event-targetdestroyed-1)
   * [browserContext.browser()](#browsercontextbrowser)
+  * [browserContext.clearPermissionOverrides()](#browsercontextclearpermissionoverrides)
   * [browserContext.close()](#browsercontextclose)
   * [browserContext.isIncognito()](#browsercontextisincognito)
   * [browserContext.newPage()](#browsercontextnewpage)
+  * [browserContext.overridePermissions(origin, permissions)](#browsercontextoverridepermissionsorigin-permissions)
   * [browserContext.pages()](#browsercontextpages)
   * [browserContext.targets()](#browsercontexttargets)
 - [class: Page](#class-page)
@@ -612,6 +615,11 @@ const page = await context.newPage();
 await page.goto('https://example.com');
 ```
 
+#### browser.defaultBrowserContext()
+- returns: <[BrowserContext]>
+
+Returns the default browser context. The default browser context can not be closed.
+
 #### browser.disconnect()
 
 Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling `disconnect`, the [Browser] object is considered disposed and cannot be used anymore.
@@ -698,6 +706,18 @@ Emitted when a target inside the browser context is destroyed, for example when 
 
 The browser this browser context belongs to.
 
+#### browserContext.clearPermissionOverrides()
+- returns: <[Promise]>
+
+Clears all permission overrides for the browser context.
+
+```js
+const context = browser.defaultBrowserContext();
+context.overridePermissions('https://example.com', ['clipboard-read']);
+// do stuff ..
+context.clearPermissionOverrides();
+```
+
 #### browserContext.close()
 - returns: <[Promise]>
 
@@ -718,6 +738,35 @@ The default browser context is the only non-incognito browser context.
 - returns: <[Promise]<[Page]>>
 
 Creates a new page in the browser context.
+
+
+#### browserContext.overridePermissions(origin, permissions)
+- `origin` <[string]> The [origin] to grant permissions to, e.g. "https://example.com".
+- `permissions` <[Array]<[string]>> An array of permissions to grant. All permissions that are not listed here will be automatically denied. Permissions can be one of the following values:
+    - `'geolocation'`
+    - `'midi'`
+    - `'midi-sysex'` (system-exclusive midi)
+    - `'notifications'`
+    - `'push'`
+    - `'camera'`
+    - `'microphone'`
+    - `'background-sync'`
+    - `'ambient-light-sensor'`
+    - `'accelerometer'`
+    - `'gyroscope'`
+    - `'magnetometer'`
+    - `'accessibility-events'`
+    - `'clipboard-read'`
+    - `'clipboard-write'`
+    - `'payment-handler'`
+- returns: <[Promise]>
+
+
+```js
+const context = browser.defaultBrowserContext();
+await context.overridePermissions('https://html5demos.com', ['geolocation']);
+```
+
 
 #### browserContext.pages()
 - returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages. Non visible pages, such as `"background_page"`, will not be listed here. You can find them using [target.page()](#targetpage).
@@ -3165,6 +3214,7 @@ TimeoutError is emitted whenever certain operations are terminated due to timeou
 [function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function "Function"
 [number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type "Number"
 [Object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object "Object"
+[origin]: https://developer.mozilla.org/en-US/docs/Glossary/Origin "Origin"
 [Page]: #class-page "Page"
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
