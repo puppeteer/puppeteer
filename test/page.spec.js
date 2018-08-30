@@ -75,6 +75,53 @@ module.exports.addTests = function({testRunner, expect, headless}) {
     });
   });
 
+  describe('BrowserContext.overridePermissions', function() {
+    function getPermission(page, name) {
+      return page.evaluate(name => navigator.permissions.query({name}).then(result => result.state), name);
+    }
+
+    it('should be prompt by default', async({page, server, context}) => {
+      await page.goto(server.EMPTY_PAGE);
+      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+    });
+    it('should deny permission when not listed', async({page, server, context}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await context.overridePermissions(server.EMPTY_PAGE, []);
+      expect(await getPermission(page, 'geolocation')).toBe('denied');
+    });
+    it('should grant permission when listed', async({page, server, context}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
+      expect(await getPermission(page, 'geolocation')).toBe('granted');
+    });
+    it('should reset permissions', async({page, server, context}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
+      expect(await getPermission(page, 'geolocation')).toBe('granted');
+      await context.resetPermissionOverrides();
+      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+    });
+    it('should trigger permission onchange', async({page, server, context}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        window.events = [];
+        return navigator.permissions.query({name: 'clipboard-read'}).then(function(result) {
+          window.events.push(result.state);
+          result.onchange = function() {
+            window.events.push(result.state);
+          };
+        });
+      });
+      expect(await page.evaluate(() => window.events)).toEqual(['prompt']);
+      await context.overridePermissions(server.EMPTY_PAGE, []);
+      expect(await page.evaluate(() => window.events)).toEqual(['prompt', 'denied']);
+      await context.overridePermissions(server.EMPTY_PAGE, ['clipboard-read']);
+      expect(await page.evaluate(() => window.events)).toEqual(['prompt', 'denied', 'granted']);
+      await context.resetPermissionOverrides();
+      expect(await page.evaluate(() => window.events)).toEqual(['prompt', 'denied', 'granted', 'prompt']);
+    });
+  });
+
   describe('Page.evaluate', function() {
     it('should work', async({page, server}) => {
       const result = await page.evaluate(() => 7 * 3);
