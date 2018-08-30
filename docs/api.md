@@ -748,6 +748,7 @@ Creates a new page in the browser context.
     - `'clipboard-write'`
     - `'payment-handler'`
     - `'flash'` (chrome-specific permission)
+- returns: <[Promise]>
 
 
 ```js
