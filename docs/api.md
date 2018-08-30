@@ -118,6 +118,7 @@ Next Release: **Sep 6, 2018**
   * [page.setCookie(...cookies)](#pagesetcookiecookies)
   * [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout)
   * [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
+  * [page.setGeolocation(options)](#pagesetgeolocationoptions)
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
   * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
@@ -1555,6 +1556,21 @@ This setting will change the default maximum navigation time of 30 seconds for t
 The extra HTTP headers will be sent with every request the page initiates.
 
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
+
+#### page.setGeolocation(options)
+- `options`
+  - `latitude` <[number]> Latitude between -90 and 90.
+  - `longitude` <[number]> Longitude between -180 and 180.
+  - `accuracy` <[number]> Optional non-negative accuracy value.
+- returns: <[Promise]>
+
+Sets the page's geolocation.
+
+```js
+await page.setGeolocation({latitude: 59.95, longitude: 30.31667});
+```
+
+> **NOTE** Consider using [browserContext.overridePermissions](#browsercontextoverridepermissionsorigin-permissions) to grant permissions for the page to read its geolocation.
 
 #### page.setJavaScriptEnabled(enabled)
 - `enabled` <[boolean]> Whether or not to enable JavaScript on the page.

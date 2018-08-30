@@ -128,6 +128,30 @@ module.exports.addTests = function({testRunner, expect, headless}) {
     });
   });
 
+  describe('Page.setGeolocation', function() {
+    it('should work', async({page, server, context}) => {
+      await context.overridePermissions(server.PREFIX, ['geolocation']);
+      await page.goto(server.EMPTY_PAGE);
+      await page.setGeolocation({longitude: 10, latitude: 10});
+      const geolocation = await page.evaluate(() => new Promise(resolve => navigator.geolocation.getCurrentPosition(position => {
+        resolve({latitude: position.coords.latitude, longitude: position.coords.longitude});
+      })));
+      expect(geolocation).toEqual({
+        latitude: 10,
+        longitude: 10
+      });
+    });
+    it('should throw when invalid longitude', async({page, server, context}) => {
+      let error = null;
+      try {
+        await page.setGeolocation({longitude: 200, latitude: 10});
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toContain('Invalid longitude "200"');
+    });
+  });
+
   describe('Page.evaluate', function() {
     it('should work', async({page, server}) => {
       const result = await page.evaluate(() => 7 * 3);
