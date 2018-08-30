@@ -104,7 +104,7 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       await page.goto(server.EMPTY_PAGE);
       await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
       expect(await getPermission(page, 'geolocation')).toBe('granted');
-      await context.resetPermissionOverrides();
+      await context.clearPermissionOverrides();
       expect(await getPermission(page, 'geolocation')).toBe('prompt');
     });
     it('should trigger permission onchange', async({page, server, context}) => {
@@ -123,7 +123,7 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       expect(await page.evaluate(() => window.events)).toEqual(['prompt', 'denied']);
       await context.overridePermissions(server.EMPTY_PAGE, ['clipboard-read']);
       expect(await page.evaluate(() => window.events)).toEqual(['prompt', 'denied', 'granted']);
-      await context.resetPermissionOverrides();
+      await context.clearPermissionOverrides();
       expect(await page.evaluate(() => window.events)).toEqual(['prompt', 'denied', 'granted', 'prompt']);
     });
   });

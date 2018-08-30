@@ -49,12 +49,12 @@ Next Release: **Sep 6, 2018**
   * [event: 'targetcreated'](#event-targetcreated-1)
   * [event: 'targetdestroyed'](#event-targetdestroyed-1)
   * [browserContext.browser()](#browsercontextbrowser)
+  * [browserContext.clearPermissionOverrides()](#browsercontextclearpermissionoverrides)
   * [browserContext.close()](#browsercontextclose)
   * [browserContext.isIncognito()](#browsercontextisincognito)
   * [browserContext.newPage()](#browsercontextnewpage)
   * [browserContext.overridePermissions(origin, permissions)](#browsercontextoverridepermissionsorigin-permissions)
   * [browserContext.pages()](#browsercontextpages)
-  * [browserContext.resetPermissionOverrides()](#browsercontextresetpermissionoverrides)
   * [browserContext.targets()](#browsercontexttargets)
 - [class: Page](#class-page)
   * [event: 'close'](#event-close)
@@ -618,7 +618,7 @@ await page.goto('https://example.com');
 #### browser.defaultBrowserContext()
 - returns: <[BrowserContext]>
 
-Returns default browser context. Default browser context cannot be closed.
+Returns the default browser context. The default browser context can not be closed.
 
 #### browser.disconnect()
 
@@ -706,6 +706,18 @@ Emitted when a target inside the browser context is destroyed, for example when 
 
 The browser this browser context belongs to.
 
+#### browserContext.clearPermissionOverrides()
+- returns: <[Promise]>
+
+Clears all permission overrides for the browser context.
+
+```js
+const context = browser.defaultBrowserContext();
+context.overridePermissions('https://example.com', ['clipboard-read']);
+// do stuff ..
+context.clearPermissionOverrides();
+```
+
 #### browserContext.close()
 - returns: <[Promise]>
 
@@ -729,8 +741,8 @@ Creates a new page in the browser context.
 
 
 #### browserContext.overridePermissions(origin, permissions)
-- `origin` <[string]> An [origin] to grant permissions to.
-- `permissions` <[Array]<[string]>> An array of permissions to grant. All permissions that are not listed here will be automatically denied. Permission might be one of the following values:
+- `origin` <[string]> The [origin] to grant permissions to, e.g. "https://example.com".
+- `permissions` <[Array]<[string]>> An array of permissions to grant. All permissions that are not listed here will be automatically denied. Permissions can be one of the following values:
     - `'geolocation'`
     - `'midi'`
     - `'midi-sysex'` (system-exclusive midi)
@@ -747,7 +759,6 @@ Creates a new page in the browser context.
     - `'clipboard-read'`
     - `'clipboard-write'`
     - `'payment-handler'`
-    - `'flash'` (chrome-specific permission)
 - returns: <[Promise]>
 
 
@@ -756,26 +767,11 @@ const context = browser.defaultBrowserContext();
 await context.overridePermissions('https://html5demos.com', ['geolocation']);
 ```
 
-> **NOTE** Permission management is scoped to browser context and is done per origins rather then
-pages. This way permissions can be used for features outside of web pages, e.g. push notifications.
-
 
 #### browserContext.pages()
 - returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages. Non visible pages, such as `"background_page"`, will not be listed here. You can find them using [target.page()](#targetpage).
 
 An array of all pages inside the browser context.
-
-#### browserContext.resetPermissionOverrides()
-- returns: <[Promise]>
-
-Resets all permission overrides for the browser context.
-
-```js
-const context = browser.defaultBrowserContext();
-context.overridePermissions('https://example.com', ['clipboard-read']);
-// do stuff ..
-context.resetPermissionOverrides();
-```
 
 #### browserContext.targets()
 - returns: <[Array]<[Target]>>
