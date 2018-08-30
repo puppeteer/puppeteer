@@ -89,6 +89,12 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       await context.overridePermissions(server.EMPTY_PAGE, []);
       expect(await getPermission(page, 'geolocation')).toBe('denied');
     });
+    it('should fail when bad permission is given', async({page, server, context}) => {
+      await page.goto(server.EMPTY_PAGE);
+      let error = null;
+      await context.overridePermissions(server.EMPTY_PAGE, ['foo']).catch(e => error = e);
+      expect(error.message).toBe('Unknown permission: foo');
+    });
     it('should grant permission when listed', async({page, server, context}) => {
       await page.goto(server.EMPTY_PAGE);
       await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);

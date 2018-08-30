@@ -29,6 +29,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(defaultContext.isIncognito()).toBe(false);
       let error = null;
       await defaultContext.close().catch(e => error = e);
+      expect(browser.defaultBrowserContext()).toBe(defaultContext);
       expect(error.message).toContain('cannot be closed');
     });
     it('should create new incognito context', async function({browser, server}) {
