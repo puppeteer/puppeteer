@@ -1330,7 +1330,7 @@ The `page.goto` will throw an error if:
 > **NOTE** Headless mode doesn't match any nodest navigating to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
 
 #### page.hover(selector)
-- `selector` <[string]> A [selector] to search for element to hover. If there are multiple elements satisfying the selector, tvailable via.
+- `selector` <[string]> A [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
