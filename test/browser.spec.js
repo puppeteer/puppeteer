@@ -48,4 +48,11 @@ module.exports.addTests = function({testRunner, expect, headless}) {
     });
   });
 
+  describe('Browser.chromeRunning', function() {
+    it('should return Boolean value', async function({browser}) {
+      const bool = await browser.chromeRunning();
+      expect(bool).toBeGreaterThan(0);
+    });
+  });
+
 };
