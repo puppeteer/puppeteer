@@ -47,4 +47,5 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       await remoteBrowser.disconnect();
     });
   });
+
 };

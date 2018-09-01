@@ -33,6 +33,7 @@ Next Release: **Sep 6, 2018**
   * [event: 'targetcreated'](#event-targetcreated)
   * [event: 'targetdestroyed'](#event-targetdestroyed)
   * [browser.browserContexts()](#browserbrowsercontexts)
+  * [browser.chromeRunning()](#browserchromerunning)
   * [browser.close()](#browserclose)
   * [browser.createIncognitoBrowserContext()](#browsercreateincognitobrowsercontext)
   * [browser.defaultBrowserContext()](#browserdefaultbrowsercontext)
@@ -595,6 +596,9 @@ Emitted when a target is destroyed, for example when a page is closed.
 
 Returns an array of all open browser contexts. In a newly created browser, this will return
 a single instance of [BrowserContext].
+
+#### browser.chromeRunning()
+- returns: <?Boolean>. Returns `true` if the browser instance process is currently running.
 
 #### browser.close()
 - returns: <[Promise]>
