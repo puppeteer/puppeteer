@@ -56,10 +56,10 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
       expect(securityDetails.protocol()).toBe('TLS 1.2');
     });
     it('should work with request interception', async({page, server, httpsServer}) => {
-      let error = null;
       await page.setRequestInterception(true);
       page.on('request', request => request.continue());
-      await page.goto(httpsServer.EMPTY_PAGE);
+      const response = await page.goto(httpsServer.EMPTY_PAGE);
+      expect(response.status()).toBe(200);
     });
     it('should work with mixed content', async({page, server, httpsServer}) => {
       httpsServer.setRoute('/mixedcontent.html', (req, res) => {
