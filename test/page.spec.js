@@ -755,15 +755,16 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       expect(error.message).toContain(url);
     });
     it('should send referer', async({page, server}) => {
-      await page.setRequestInterception(true);
-      page.on('request', request => request.continue());
-      const [request] = await Promise.all([
+      const [request1, request2] = await Promise.all([
         server.waitForRequest('/grid.html'),
+        server.waitForRequest('/digits/1.png'),
         page.goto(server.PREFIX + '/grid.html', {
           referer: 'http://google.com/',
         }),
       ]);
-      expect(request.headers['referer']).toBe('http://google.com/');
+      expect(request1.headers['referer']).toBe('http://google.com/');
+      // Make sure subresources do not inherit referer.
+      expect(request2.headers['referer']).toBe(server.PREFIX + '/grid.html');
     });
   });
 
