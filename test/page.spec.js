@@ -754,6 +754,17 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       }
       expect(error.message).toContain(url);
     });
+    it('should send referer', async({page, server}) => {
+      await page.setRequestInterception(true);
+      page.on('request', request => request.continue());
+      const [request] = await Promise.all([
+        server.waitForRequest('/grid.html'),
+        page.goto(server.PREFIX + '/grid.html', {
+          referer: 'http://google.com/',
+        }),
+      ]);
+      expect(request.headers['referer']).toBe('http://google.com/');
+    });
   });
 
   describe('Page.waitForNavigation', function() {
