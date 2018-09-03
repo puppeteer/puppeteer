@@ -55,6 +55,12 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
       const securityDetails = responses[0].securityDetails();
       expect(securityDetails.protocol()).toBe('TLS 1.2');
     });
+    it('should work with request interception', async({page, server, httpsServer}) => {
+      let error = null;
+      await page.setRequestInterception(true);
+      page.on('request', request => request.continue());
+      await page.goto(httpsServer.EMPTY_PAGE);
+    });
     it('should work with mixed content', async({page, server, httpsServer}) => {
       httpsServer.setRoute('/mixedcontent.html', (req, res) => {
         res.end(`<iframe src=${server.EMPTY_PAGE}></iframe>`);
