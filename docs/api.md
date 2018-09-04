@@ -324,7 +324,7 @@ Every release since v1.7.0 we publish two packages:
 `puppeteer` is a *product* for browser automation. When installed, it downloads a version of
 Chromium, which it then drives using `puppeteer-core`. Being an end-user product, `puppeteer` supports a bunch of convenient `PUPPETEER_*` env variables to tweak its behavior.
 
-`puppetee-core` is a *library* to help drive anything that supports DevTools protocol. `puppeteer-core` doesn't download Chromium when installed. Being a library, `puppeteer-core` is fully driven
+`puppeteer-core` is a *library* to help drive anything that supports DevTools protocol. `puppeteer-core` doesn't download Chromium when installed. Being a library, `puppeteer-core` is fully driven
 through its programmatic interface and disregards all the `PUPPETEER_*` env variables.
 
 To sum up, the only differences between `puppeteer-core` and `puppeteer` are:
