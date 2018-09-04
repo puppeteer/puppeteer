@@ -47,4 +47,12 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       await remoteBrowser.disconnect();
     });
   });
+
+  describe('Browser.chromeRunning', function() {
+    it('should return Boolean value', async function({browser}) {
+      const bool = await browser.chromeRunning();
+      expect(bool).toBeGreaterThan(-1);
+    });
+  });
+
 };
