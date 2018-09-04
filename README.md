@@ -51,6 +51,8 @@ npm i puppeteer-core
 
 `puppeteer-core` is intended to be a lightweight version of puppeteer for launching an existing browser installation or for connecting to a remote one.
 
+See [puppeteer vs puppeteer-core](https://github.com/GoogleChrome/puppeteer/blob/v1.7.0/docs/api.md#puppeteer-vs-puppeteer-core).
+
 ### Usage
 
 Note: Puppeteer requires at least Node v6.4.0, but the examples below use async/await which is only supported in Node v7.6.0 or greater.

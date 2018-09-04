@@ -17,6 +17,7 @@
 
 <!-- GEN:toc -->
 - [Overview](#overview)
+- [puppeteer vs puppeteer-core](#puppeteer-vs-puppeteer-core)
 - [Environment Variables](#environment-variables)
 - [Error handling](#error-handling)
 - [Working with Chrome Extensions](#working-with-chrome-extensions)
@@ -312,6 +313,29 @@ The Puppeteer API is hierarchical and mirrors the browser structure.
 - [`Worker`](#class-worker) has a single execution context and facilitates interacting with [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
 
 (Diagram source: [link](https://docs.google.com/drawings/d/1Q_AM6KYs9kbyLZF-Lpp5mtpAWth73Cq8IKCsWYgi8MM/edit?usp=sharing))
+
+### puppeteer vs puppeteer-core
+
+Every release since v1.7.0 we publish two packages:
+- [puppeteer](https://www.npmjs.com/package/puppeteer)
+- [puppeteer-core](https://www.npmjs.com/package/puppeteer-core)
+
+`puppeteer` is a *product* for browser automation. When installed, it downloads a version of
+Chromium, which it then drives using `puppeteer-core`. Being an end-user product, `puppeteer` supports a bunch of convenient `PUPPETEER_*` env variables to tweak its behavior.
+
+`puppetee-core` is a *library* to help drive anything that supports DevTools protocol. `puppeteer-core` doesn't download Chromium when installed. Being a library, `puppeteer-core` is fully driven
+through its programmatic interface and disregards all the `PUPPETEER_*` env variables.
+
+To sum up, the only differences between `puppeteer-core` and `puppeteer` are:
+- `puppeteer-core` doesn't automatically download Chromium when installed.
+- `puppeteer-core` ignores all `PUPPETEER_*` env variables.
+
+In most cases, you'll be fine using the `puppeteer` package.
+
+However, you should use `puppeteer-core` if:
+- you're building another end-user product or library atop of DevTools protocol. For example, one might build PDF generator using `puppeteer-core` and write a custom `install.js` script that downloads [`headless_shell`](https://chromium.googlesource.com/chromium/src/+/lkgr/headless/README.md) instead of Chromium to save disk space.
+- you're bundling Puppeteer to use in Chrome Extension / browser with the DevTools protocol where downloading an additional Chromium binary is unnecessary.
+
 
 ### Environment Variables
 
