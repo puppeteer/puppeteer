@@ -84,6 +84,7 @@ Next Release: **Sep 6, 2018**
   * [page.authenticate(credentials)](#pageauthenticatecredentials)
   * [page.bringToFront()](#pagebringtofront)
   * [page.browser()](#pagebrowser)
+  * [page.clear(selector)](#pageclearselector)
   * [page.click(selector[, options])](#pageclickselector-options)
   * [page.close(options)](#pagecloseoptions)
   * [page.content()](#pagecontent)
@@ -1017,6 +1018,10 @@ Brings page to front (activates tab).
 - returns: <[Browser]>
 
 Get the browser the page belongs to.
+
+#### page.clear(selector)
+- `selector` <[string]> A [selector] of an element to clear. If there are multiple elements satisfying the selector, the first will be used.
+- returns: <[Promise]>
 
 #### page.click(selector[, options])
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.

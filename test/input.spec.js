@@ -478,6 +478,12 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.type('textarea', '👹 Tokyo street Japan 🇯🇵');
       expect(await page.$eval('textarea', textarea => textarea.value)).toBe('👹 Tokyo street Japan 🇯🇵');
     });
+    it('should clear input', async({page, server}) => {
+      await page.goto(server.PREFIX + '/input/textarea.html');
+      await page.type('textarea', 'some txt');
+      await page.clear('textarea');
+      expect(await page.$eval('textarea', textarea => textarea.value)).toBe('');
+    });
     it('should type emoji into an iframe', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(page, 'emoji-test', server.PREFIX + '/input/textarea.html');
