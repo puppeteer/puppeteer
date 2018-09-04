@@ -77,6 +77,7 @@ beforeAll(async state => {
   const port = 8907 + state.parallelIndex * 2;
   state.server = await SimpleServer.create(assetsPath, port);
   state.server.enableHTTPCache(cachedPath);
+  state.server.PORT = port;
   state.server.PREFIX = `http://localhost:${port}`;
   state.server.CROSS_PROCESS_PREFIX = `http://127.0.0.1:${port}`;
   state.server.EMPTY_PAGE = `http://localhost:${port}/empty.html`;
@@ -84,6 +85,7 @@ beforeAll(async state => {
   const httpsPort = port + 1;
   state.httpsServer = await SimpleServer.createHTTPS(assetsPath, httpsPort);
   state.httpsServer.enableHTTPCache(cachedPath);
+  state.httpsServer.PORT = httpsPort;
   state.httpsServer.PREFIX = `https://localhost:${httpsPort}`;
   state.httpsServer.CROSS_PROCESS_PREFIX = `https://127.0.0.1:${httpsPort}`;
   state.httpsServer.EMPTY_PAGE = `https://localhost:${httpsPort}/empty.html`;

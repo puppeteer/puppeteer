@@ -265,6 +265,7 @@
   * [response.headers()](#responseheaders)
   * [response.json()](#responsejson)
   * [response.ok()](#responseok)
+  * [response.remoteAddress()](#responseremoteaddress)
   * [response.request()](#responserequest)
   * [response.securityDetails()](#responsesecuritydetails)
   * [response.status()](#responsestatus)
@@ -3071,6 +3072,11 @@ This method will throw if the response body is not parsable via `JSON.parse`.
 - returns: <[boolean]>
 
 Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
+
+#### response.remoteAddress()
+- returns: <[Object]>
+  - `ip` <[string]> the IP address of the remote server
+  - `port` <[number]> the port used to connect to the remote server
 
 #### response.request()
 - returns: <[Request]> A matching [Request] object.
