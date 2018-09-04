@@ -1,10 +1,16 @@
-##### Released APIs: [v1.7.0](https://github.com/GoogleChrome/puppeteer/blob/v1.7.0/docs/api.md) | [v1.6.0](https://github.com/GoogleChrome/puppeteer/blob/v1.6.0/docs/api.md) | [v1.5.0](https://github.com/GoogleChrome/puppeteer/blob/v1.5.0/docs/api.md) | [v1.4.0](https://github.com/GoogleChrome/puppeteer/blob/v1.4.0/docs/api.md) | [v1.3.0](https://github.com/GoogleChrome/puppeteer/blob/v1.3.0/docs/api.md) | [v1.2.0](https://github.com/GoogleChrome/puppeteer/blob/v1.2.0/docs/api.md) | [v1.1.1](https://github.com/GoogleChrome/puppeteer/blob/v1.1.1/docs/api.md) | [v1.1.0](https://github.com/GoogleChrome/puppeteer/blob/v1.1.0/docs/api.md) | [v1.0.0](https://github.com/GoogleChrome/puppeteer/blob/v1.0.0/docs/api.md) | [v0.13.0](https://github.com/GoogleChrome/puppeteer/blob/v0.13.0/docs/api.md) | [v0.12.0](https://github.com/GoogleChrome/puppeteer/blob/v0.12.0/docs/api.md) | [v0.11.0](https://github.com/GoogleChrome/puppeteer/blob/v0.11.0/docs/api.md) | [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
-
 # Puppeteer API <!-- GEN:version -->Tip-Of-Tree<!-- GEN:stop-->
 
 <!-- GEN:empty-if-release -->
-Next Release: **Sep 6, 2018**
+> Next Release: **Sep 6, 2018**
 <!-- GEN:stop -->
+- API Translations: [中文|Chinease](https://zhaoqize.github.io/puppeteer-api-zh_CN/#/)
+- Releases per Chromium Version:
+  * Chromium 70.0.3508.0 - [Puppeteer v1.7.0](https://github.com/GoogleChrome/puppeteer/blob/v1.7.0/docs/api.md)
+  * Chromium 69.0.3494.0 - [Puppeteer v1.6.2](https://github.com/GoogleChrome/puppeteer/blob/v1.6.2/docs/api.md)
+  * Chromium 68.0.3419.0 - [Puppeteer v1.4.0](https://github.com/GoogleChrome/puppeteer/blob/v1.4.0/docs/api.md)
+  * Chromium 67.0.3392.0 - [Puppeteer v1.3.0](https://github.com/GoogleChrome/puppeteer/blob/v1.3.0/docs/api.md)
+  * Chromium 66.0.3347.0 - [Puppeteer v1.1.1](https://github.com/GoogleChrome/puppeteer/blob/v1.1.1/docs/api.md)
+  * [All releases](https://github.com/GoogleChrome/puppeteer/releases)
 
 
 ##### Table of Contents
