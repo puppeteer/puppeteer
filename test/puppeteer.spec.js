@@ -70,7 +70,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
         await neverResolves;
         expect(error.message).toContain('Protocol error');
       });
-      it('should reject if executable path is invalid', async({server}) => {
+      it('should reject if executable path is invalid', async() => {
         let waitError = null;
         const options = Object.assign({}, defaultBrowserOptions, {executablePath: 'random-invalid-path'});
         await puppeteer.launch(options).catch(e => waitError = e);
@@ -253,6 +253,23 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
         const page = await browser.newPage();
         expect(page.viewport()).toBe(null);
         await browser.close();
+      });
+
+      describe('environment variables', function() {
+        const env = process.env;
+        beforeEach(() => {
+          process.env = Object.assign({}, env);
+        });
+        afterEach(() => {
+          process.env = env;
+        });
+        it('should allow PUPPETEER_EXECUTABLE_PATH to set executablePath', async() => {
+          process.env.PUPPETEER_EXECUTABLE_PATH = 'another-random-invalid-path';
+          let waitError = null;
+          await puppeteer.launch(defaultBrowserOptions).catch(e => waitError = e);
+          console.log(waitError.message)
+          expect(waitError.message.startsWith('Failed to launch chrome! spawn another-random-invalid-path ENOENT')).toBe(true);
+        });
       });
     });
     describe('Puppeteer.connect', function() {
