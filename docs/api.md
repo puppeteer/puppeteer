@@ -3093,7 +3093,7 @@ Contains the status code of the response (e.g., 200 for a success).
 #### response.statusText()
 - returns: <[string]>
 
-Contains the status text of the response (e.g. usually a "OK" for a success).
+Contains the status text of the response (e.g. usually an "OK" for a success).
 
 #### response.text()
 - returns: <[Promise]<[string]>> Promise which resolves to a text representation of response body.
