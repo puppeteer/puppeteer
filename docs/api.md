@@ -3,7 +3,7 @@
 <!-- GEN:empty-if-release -->
 > Next Release: **Sep 6, 2018**
 <!-- GEN:stop -->
-- API Translations: [中文|Chinease](https://zhaoqize.github.io/puppeteer-api-zh_CN/#/)
+- API Translations: [中文|Chinese](https://zhaoqize.github.io/puppeteer-api-zh_CN/#/)
 - Releases per Chromium Version:
   * Chromium 70.0.3508.0 - [Puppeteer v1.7.0](https://github.com/GoogleChrome/puppeteer/blob/v1.7.0/docs/api.md)
   * Chromium 69.0.3494.0 - [Puppeteer v1.6.2](https://github.com/GoogleChrome/puppeteer/blob/v1.6.2/docs/api.md)
