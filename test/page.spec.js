@@ -552,7 +552,7 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       expect(response.status()).toBe(200);
       expect(response.securityDetails()).toBe(null);
     });
-    xit('should work when page calls history API in beforeunload', async({page, server}) => {
+    it('should work when page calls history API in beforeunload', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
         window.addEventListener('beforeunload', () => history.replaceState(null, 'initial', window.location.href), false);
