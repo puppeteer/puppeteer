@@ -51,7 +51,7 @@ npm i puppeteer-core
 
 `puppeteer-core` is intended to be a lightweight version of puppeteer for launching an existing browser installation or for connecting to a remote one.
 
-See [puppeteer vs puppeteer-core](https://github.com/GoogleChrome/puppeteer/blob/v1.7.0/docs/api.md#puppeteer-vs-puppeteer-core).
+See [puppeteer vs puppeteer-core](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteer-vs-puppeteer-core).
 
 ### Usage
 
