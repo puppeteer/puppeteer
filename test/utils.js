@@ -14,7 +14,25 @@
  * limitations under the License.
  */
 
+const fs = require('fs');
+const path = require('path');
+const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ? path.join(__dirname, '..') : path.join(__dirname, '..', '..');
+
 const utils = module.exports = {
+  /**
+   * @return {string}
+   */
+  projectRoot: function() {
+    return PROJECT_ROOT;
+  },
+
+  /**
+   * @return {*}
+   */
+  requireRoot: function(name) {
+    return require(path.join(PROJECT_ROOT, name));
+  },
+
   /**
    * @param {!Page} page
    * @param {string} frameId
@@ -78,7 +96,14 @@ const utils = module.exports = {
    * @param {string} eventName
    * @return {!Promise<!Object>}
    */
-  waitEvent: function(emitter, eventName) {
-    return new Promise(fulfill => emitter.once(eventName, fulfill));
+  waitEvent: function(emitter, eventName, predicate = () => true) {
+    return new Promise(fulfill => {
+      emitter.on(eventName, function listener(event) {
+        if (!predicate(event))
+          return;
+        emitter.removeListener(eventName, listener);
+        fulfill(event);
+      });
+    });
   },
 };

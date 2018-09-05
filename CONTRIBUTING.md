@@ -215,13 +215,17 @@ Releasing to NPM consists of 3 phases:
     3. Merge the PR.
     4. Once merged, publish release notes using the "create new tag" option.
         - **NOTE**: tag names are prefixed with `'v'`, e.g. for version `1.4.0` tag is `v1.4.0`.
-2. Publish to NPM.
+2. Publish `puppeteer` to NPM.
     1. On your local machine, pull from [upstream](https://github.com/GoogleChrome/puppeteer) and make sure the last commit is the one just merged.
     2. Run `git status` and make sure there are no untracked files.
         - **WHY**: this is to avoid bundling unnecessary files to NPM package
     3. Run [`pkgfiles`](https://www.npmjs.com/package/pkgfiles) to make sure you don't publish anything unnecessary.
-    4. Run `npm publish`.
-3. Source Code: mark post-release.
+    4. Run `npm publish`. This will publish `puppeteer` package.
+3. Publish `puppeteer-core` to NPM.
+    1. Run `./utils/prepare_puppeteer_core.js`. The script will change the name inside `package.json` to `puppeteer-core`.
+    2. Run `npm publish`. This will publish `puppeteer-core` package.
+    3. Run `git reset --hard` to reset the changes to `package.json`.
+4. Source Code: mark post-release.
     1. Bump `package.json` version to `-post` version and send a PR titled `'chore: bump version to vXXX.YYY.ZZZ-post'` ([example](https://github.com/GoogleChrome/puppeteer/commit/d02440d1eac98028e29f4e1cf55413062a259156))
         - **NOTE**: make sure to update the "released APIs" section in the top of `docs/api.md`.
         - **NOTE**: no other commits should be landed in-between release commit and bump commit.

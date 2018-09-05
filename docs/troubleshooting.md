@@ -12,6 +12,7 @@ machine to check which dependencies are missing. The common ones are provided be
 gconf-service
 libasound2
 libatk1.0-0
+libatk-bridge2.0-0
 libc6
 libcairo2
 libcups2
@@ -172,14 +173,14 @@ how to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
 ### Running on Alpine
 
-The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 64, which was corresponding to [Puppeteer v0.13.0](https://github.com/GoogleChrome/puppeteer/releases/tag/v0.13.0).
+The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 68, which was corresponding to [Puppeteer v1.4.0](https://github.com/GoogleChrome/puppeteer/releases/tag/v1.4.0).
 
 Example Dockerfile:
 
 ```Dockerfile
 FROM node:9-alpine
 
-# Installs latest Chromium (64) package.
+# Installs latest Chromium (68) package.
 RUN apk update && apk upgrade && \
     echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
     echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
@@ -192,8 +193,8 @@ RUN apk update && apk upgrade && \
 # Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
-# Puppeteer v0.13.0 works with Chromium 64.
-RUN yarn add puppeteer@0.13.0
+# Puppeteer v1.4.0 works with Chromium 68.
+RUN yarn add puppeteer@1.4.0
 
 # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
@@ -240,7 +241,21 @@ experiencing a lot of zombies Chrome processes sticking around. There's special
 treatment for processes with PID=1, which makes it hard to terminate Chrome
 properly in some cases (e.g. in Docker).
 
-## Running Puppeteer on Heroku
+## Running Puppeteer in the cloud
+
+### Running Puppeteer on Google App Engine
+
+The Node.js runtime of the [App Engine standard environment](https://cloud.google.com/appengine/docs/standard/nodejs/) comes with all system packages needed to run Headless Chrome.
+
+To use `puppeteer`, simply list the module as a dependency in your `package.json` and deploy to Google App Engine. Read more about using `puppeteer` on App Engine by following [the official tutorial](https://cloud.google.com/appengine/docs/standard/nodejs/using-headless-chrome-with-puppeteer).  
+
+### Running Puppeteer on Google Cloud Functions
+
+The Node.js 8 runtime of [Google Cloud Functions](https://cloud.google.com/functions/docs/) comes with all system packages needed to run Headless Chrome.
+
+To use `puppeteer`, simply list the module as a dependency in your `package.json` and deploy your function to Google Cloud Functions using the `nodejs8` runtime.
+
+### Running Puppeteer on Heroku
 
 Running Puppeteer on Heroku requires some additional dependencies that aren't included on the Linux box that Heroku spins up for you. To add the dependencies on deploy, add the Puppeteer Heroku buildpack to the list of buildpacks for your app under Settings > Buildpacks.
 
@@ -252,7 +267,7 @@ If you need to render Chinese, Japanese, or Korean characters you may need to us
 
 There's also another [simple guide](https://timleland.com/headless-chrome-on-heroku/) from @timleland that includes a sample project: https://timleland.com/headless-chrome-on-heroku/.
 
-## Running Puppeteer on AWS Lambda
+### Running Puppeteer on AWS Lambda
 
 AWS Lambda [limits](https://docs.aws.amazon.com/lambda/latest/dg/limits.html) deployment package sizes to ~50MB. This presents challenges for running headless Chrome (and therefore Puppeteer) on Lambda. The community has put together a few resources that work around the issues:
 

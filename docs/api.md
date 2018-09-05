@@ -1,22 +1,30 @@
-##### Released APIs: [v1.6.0](https://github.com/GoogleChrome/puppeteer/blob/v1.6.0/docs/api.md) | [v1.5.0](https://github.com/GoogleChrome/puppeteer/blob/v1.5.0/docs/api.md) | [v1.4.0](https://github.com/GoogleChrome/puppeteer/blob/v1.4.0/docs/api.md) | [v1.3.0](https://github.com/GoogleChrome/puppeteer/blob/v1.3.0/docs/api.md) | [v1.2.0](https://github.com/GoogleChrome/puppeteer/blob/v1.2.0/docs/api.md) | [v1.1.1](https://github.com/GoogleChrome/puppeteer/blob/v1.1.1/docs/api.md) | [v1.1.0](https://github.com/GoogleChrome/puppeteer/blob/v1.1.0/docs/api.md) | [v1.0.0](https://github.com/GoogleChrome/puppeteer/blob/v1.0.0/docs/api.md) | [v0.13.0](https://github.com/GoogleChrome/puppeteer/blob/v0.13.0/docs/api.md) | [v0.12.0](https://github.com/GoogleChrome/puppeteer/blob/v0.12.0/docs/api.md) | [v0.11.0](https://github.com/GoogleChrome/puppeteer/blob/v0.11.0/docs/api.md) | [v0.10.2](https://github.com/GoogleChrome/puppeteer/blob/v0.10.2/docs/api.md) | [v0.10.1](https://github.com/GoogleChrome/puppeteer/blob/v0.10.1/docs/api.md) | [v0.10.0](https://github.com/GoogleChrome/puppeteer/blob/v0.10.0/docs/api.md) | [v0.9.0](https://github.com/GoogleChrome/puppeteer/blob/v0.9.0/docs/api.md)
-
 # Puppeteer API <!-- GEN:version -->Tip-Of-Tree<!-- GEN:stop-->
 
 <!-- GEN:empty-if-release -->
-Next Release: **Aug 9, 2018**
+> Next Release: **Sep 6, 2018**
 <!-- GEN:stop -->
+- API Translations: [中文|Chinese](https://zhaoqize.github.io/puppeteer-api-zh_CN/#/)
+- Releases per Chromium Version:
+  * Chromium 70.0.3508.0 - [Puppeteer v1.7.0](https://github.com/GoogleChrome/puppeteer/blob/v1.7.0/docs/api.md)
+  * Chromium 69.0.3494.0 - [Puppeteer v1.6.2](https://github.com/GoogleChrome/puppeteer/blob/v1.6.2/docs/api.md)
+  * Chromium 68.0.3419.0 - [Puppeteer v1.4.0](https://github.com/GoogleChrome/puppeteer/blob/v1.4.0/docs/api.md)
+  * Chromium 67.0.3392.0 - [Puppeteer v1.3.0](https://github.com/GoogleChrome/puppeteer/blob/v1.3.0/docs/api.md)
+  * Chromium 66.0.3347.0 - [Puppeteer v1.1.1](https://github.com/GoogleChrome/puppeteer/blob/v1.1.1/docs/api.md)
+  * [All releases](https://github.com/GoogleChrome/puppeteer/releases)
 
 
 ##### Table of Contents
 
 <!-- GEN:toc -->
 - [Overview](#overview)
+- [puppeteer vs puppeteer-core](#puppeteer-vs-puppeteer-core)
 - [Environment Variables](#environment-variables)
+- [Error handling](#error-handling)
 - [Working with Chrome Extensions](#working-with-chrome-extensions)
 - [class: Puppeteer](#class-puppeteer)
   * [puppeteer.connect(options)](#puppeteerconnectoptions)
   * [puppeteer.createBrowserFetcher([options])](#puppeteercreatebrowserfetcheroptions)
-  * [puppeteer.defaultArgs()](#puppeteerdefaultargs)
+  * [puppeteer.defaultArgs([options])](#puppeteerdefaultargsoptions)
   * [puppeteer.executablePath()](#puppeteerexecutablepath)
   * [puppeteer.launch([options])](#puppeteerlaunchoptions)
 - [class: BrowserFetcher](#class-browserfetcher)
@@ -34,6 +42,7 @@ Next Release: **Aug 9, 2018**
   * [browser.browserContexts()](#browserbrowsercontexts)
   * [browser.close()](#browserclose)
   * [browser.createIncognitoBrowserContext()](#browsercreateincognitobrowsercontext)
+  * [browser.defaultBrowserContext()](#browserdefaultbrowsercontext)
   * [browser.disconnect()](#browserdisconnect)
   * [browser.newPage()](#browsernewpage)
   * [browser.pages()](#browserpages)
@@ -47,9 +56,12 @@ Next Release: **Aug 9, 2018**
   * [event: 'targetcreated'](#event-targetcreated-1)
   * [event: 'targetdestroyed'](#event-targetdestroyed-1)
   * [browserContext.browser()](#browsercontextbrowser)
+  * [browserContext.clearPermissionOverrides()](#browsercontextclearpermissionoverrides)
   * [browserContext.close()](#browsercontextclose)
   * [browserContext.isIncognito()](#browsercontextisincognito)
   * [browserContext.newPage()](#browsercontextnewpage)
+  * [browserContext.overridePermissions(origin, permissions)](#browsercontextoverridepermissionsorigin-permissions)
+  * [browserContext.pages()](#browsercontextpages)
   * [browserContext.targets()](#browsercontexttargets)
 - [class: Page](#class-page)
   * [event: 'close'](#event-close)
@@ -113,6 +125,7 @@ Next Release: **Aug 9, 2018**
   * [page.setCookie(...cookies)](#pagesetcookiecookies)
   * [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout)
   * [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
+  * [page.setGeolocation(options)](#pagesetgeolocationoptions)
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
   * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
@@ -252,6 +265,7 @@ Next Release: **Aug 9, 2018**
   * [response.headers()](#responseheaders)
   * [response.json()](#responsejson)
   * [response.ok()](#responseok)
+  * [response.remoteAddress()](#responseremoteaddress)
   * [response.request()](#responserequest)
   * [response.securityDetails()](#responsesecuritydetails)
   * [response.status()](#responsestatus)
@@ -279,6 +293,7 @@ Next Release: **Aug 9, 2018**
   * [coverage.startJSCoverage(options)](#coveragestartjscoverageoptions)
   * [coverage.stopCSSCoverage()](#coveragestopcsscoverage)
   * [coverage.stopJSCoverage()](#coveragestopjscoverage)
+- [class: TimeoutError](#class-timeouterror)
 <!-- GEN:stop -->
 
 ### Overview
@@ -300,15 +315,67 @@ The Puppeteer API is hierarchical and mirrors the browser structure.
 
 (Diagram source: [link](https://docs.google.com/drawings/d/1Q_AM6KYs9kbyLZF-Lpp5mtpAWth73Cq8IKCsWYgi8MM/edit?usp=sharing))
 
+### puppeteer vs puppeteer-core
+
+Every release since v1.7.0 we publish two packages:
+- [puppeteer](https://www.npmjs.com/package/puppeteer)
+- [puppeteer-core](https://www.npmjs.com/package/puppeteer-core)
+
+`puppeteer` is a *product* for browser automation. When installed, it downloads a version of
+Chromium, which it then drives using `puppeteer-core`. Being an end-user product, `puppeteer` supports a bunch of convenient `PUPPETEER_*` env variables to tweak its behavior.
+
+`puppeteer-core` is a *library* to help drive anything that supports DevTools protocol. `puppeteer-core` doesn't download Chromium when installed. Being a library, `puppeteer-core` is fully driven
+through its programmatic interface and disregards all the `PUPPETEER_*` env variables.
+
+To sum up, the only differences between `puppeteer-core` and `puppeteer` are:
+- `puppeteer-core` doesn't automatically download Chromium when installed.
+- `puppeteer-core` ignores all `PUPPETEER_*` env variables.
+
+In most cases, you'll be fine using the `puppeteer` package.
+
+However, you should use `puppeteer-core` if:
+- you're building another end-user product or library atop of DevTools protocol. For example, one might build PDF generator using `puppeteer-core` and write a custom `install.js` script that downloads [`headless_shell`](https://chromium.googlesource.com/chromium/src/+/lkgr/headless/README.md) instead of Chromium to save disk space.
+- you're bundling Puppeteer to use in Chrome Extension / browser with the DevTools protocol where downloading an additional Chromium binary is unnecessary.
+
+
 ### Environment Variables
 
 Puppeteer looks for certain [environment variables](https://en.wikipedia.org/wiki/Environment_variable) to aid its operations.
-If puppeteer doesn't find them in environment, lowercased variant of these variables will be used from the [npm config](https://docs.npmjs.com/cli/config).
+If puppeteer doesn't find them in the environment, a lowercased variant of these variables will be used from the [npm config](https://docs.npmjs.com/cli/config).
 
 - `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
 - `PUPPETEER_DOWNLOAD_HOST` - overwrite host part of URL that is used to download Chromium
 - `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of chrome you'd like puppeteer to use during the installation step.
+
+> **NOTE** PUPPETEER_* env variables are not accounted for in the [`puppeteer-core`](https://www.npmjs.com/package/puppeteer-core) package.
+
+### Error handling
+
+Puppeteer methods might throw errors if they are unable to fufill a request. For example, [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
+might fail if the selector doesn't match any nodes during the given timeframe.
+
+For certain types of errors Puppeteer uses specific error classes.
+These classes are available via `require('puppeteer/Errors')`.
+
+List of supported classes:
+- [`TimeoutError`](#class-timeouterror)
+
+An example of handling a timeout error:
+```js
+const {TimeoutError} = require('puppeteer/Errors');
+
+// ...
+
+try {
+  await page.waitForSelector('.foo');
+} catch (e) {
+  if (e instanceof TimeoutError) {
+    // Do something if this is a timeout.
+  }
+}
+```
+
 
 ### Working with Chrome Extensions
 
@@ -316,7 +383,7 @@ Puppeteer can be used for testing Chrome Extensions.
 
 > **NOTE** Extensions in Chrome / Chromium currently only work in non-headless mode.
 
-The following is the code for getting a handle to a [background page](https://developer.chrome.com/extensions/background_pages) of an extension whose source is located in `./my-extension`:
+The following is code for getting a handle to the [background page](https://developer.chrome.com/extensions/background_pages) of an extension whose source is located in `./my-extension`:
 ```js
 const puppeteer = require('puppeteer');
 
@@ -358,6 +425,13 @@ puppeteer.launch().then(async browser => {
 - `options` <[Object]>
   - `browserWSEndpoint` <[string]> a [browser websocket endpoint](#browserwsendpoint) to connect to.
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
+  - `defaultViewport` <?[Object]> Sets a consistent viewport for each page. Defaults to an 800x600 viewport. `null` disables the default viewport.
+    - `width` <[number]> page width in pixels.
+    - `height` <[number]> page height in pixels.
+    - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
+    - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
+    - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
+    - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
 - returns: <[Promise]<[Browser]>>
 
@@ -370,8 +444,15 @@ This methods attaches Puppeteer to an existing Chromium instance.
   - `platform` <[string]> Possible values are: `mac`, `win32`, `win64`, `linux`. Defaults to the current platform.
 - returns: <[BrowserFetcher]>
 
-#### puppeteer.defaultArgs()
-- returns: <[Array]<[string]>> The default flags that Chromium will be launched with.
+#### puppeteer.defaultArgs([options])
+- `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
+  - `headless` <[boolean]> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`.
+  - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
+  - `userDataDir` <[string]> Path to a [User Data Directory](https://chromium.googlesource.com/chromium/src/+/master/docs/user_data_dir.md).
+  - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
+- returns: <[Array]<[string]>>
+
+The default flags that Chromium will be launched with.
 
 #### puppeteer.executablePath()
 - returns: <[string]> A path where Puppeteer expects to find bundled Chromium. Chromium might not exist there if the download was skipped with [`PUPPETEER_SKIP_CHROMIUM_DOWNLOAD`](#environment-variables).
@@ -382,8 +463,15 @@ This methods attaches Puppeteer to an existing Chromium instance.
   - `headless` <[boolean]> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`.
   - `executablePath` <[string]> Path to a Chromium or Chrome executable to run instead of the bundled Chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
+  - `defaultViewport` <?[Object]> Sets a consistent viewport for each page. Defaults to an 800x600 viewport. `null` disables the default viewport.
+    - `width` <[number]> page width in pixels.
+    - `height` <[number]> page height in pixels.
+    - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
+    - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
+    - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
+    - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
   - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
-  - `ignoreDefaultArgs` <[boolean]> Do not use [`puppeteer.defaultArgs()`](#puppeteerdefaultargs). Dangerous option; use with care. Defaults to `false`.
+  - `ignoreDefaultArgs` <([boolean]|<[Array]<[string]>>)> If `true`, then do not use [`puppeteer.defaultArgs()`](#puppeteerdefaultargs-options). If an array is given, then filter out the given default arguments. Dangerous option; use with care. Defaults to `false`.
   - `handleSIGINT` <[boolean]> Close the browser process on Ctrl-C. Defaults to `true`.
   - `handleSIGTERM` <[boolean]> Close the browser process on SIGTERM. Defaults to `true`.
   - `handleSIGHUP` <[boolean]> Close the browser process on SIGHUP. Defaults to `true`.
@@ -395,7 +483,18 @@ This methods attaches Puppeteer to an existing Chromium instance.
   - `pipe` <[boolean]> Connects to the browser over a pipe instead of a WebSocket. Defaults to `false`.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
 
-The method launches a browser instance with given arguments. The browser will be closed when the parent node.js process is closed.
+The method combines 3 steps:
+1. Infer a set of flags to launch Chromium with using `puppeteer.defaultArgs()`.
+2. Launch a browser and start managing its process according to `executablePath`, `handleSIGINT`, `dumpio` and other options.
+3. Create an instance of [Browser] class and initialize it with regards to `defaultViewport`, `slowMo` and `ignoreHTTPSErrors`.
+
+`ignoreDefaultArgs` option can be used to customize behavior on the (1) step. For example, to filter out
+`--mute-audio` from default arguments:
+```js
+const browser = await puppeteer.launch({
+  ignoreDefaultArgs: ['--mute-audio']
+});
+```
 
 > **NOTE** Puppeteer can also be used to control the Chrome browser, but it works best with the version of Chromium it is bundled with. There is no guarantee it will work with any other version. Use `executablePath` option with extreme caution.
 >
@@ -411,7 +510,7 @@ BrowserFetcher can download and manage different versions of Chromium.
 
 BrowserFetcher operates on revision strings that specify a precise version of Chromium, e.g. `"533271"`. Revision strings can be obtained from [omahaproxy.appspot.com](http://omahaproxy.appspot.com/).
 
-Example on how to use BrowserFetcher to download a specific version of Chromium and run
+An example of using BrowserFetcher to download a specific version of Chromium and running
 Puppeteer against it:
 
 ```js
@@ -548,6 +647,11 @@ const page = await context.newPage();
 await page.goto('https://example.com');
 ```
 
+#### browser.defaultBrowserContext()
+- returns: <[BrowserContext]>
+
+Returns the default browser context. The default browser context can not be closed.
+
 #### browser.disconnect()
 
 Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling `disconnect`, the [Browser] object is considered disposed and cannot be used anymore.
@@ -559,6 +663,9 @@ Promise which resolves to a new [Page] object. The [Page] is created in a defaul
 
 #### browser.pages()
 - returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages. Non visible pages, such as `"background_page"`, will not be listed here. You can find them using [target.page()](#targetpage).
+
+An array of all pages inside the Browser. In case of multiple browser contexts,
+the method will return an array with all the pages in all browser contexts.
 
 #### browser.process()
 - returns: <?[ChildProcess]> Spawned browser process. Returns `null` if the browser instance was created with [`puppeteer.connect`](#puppeteerconnectoptions) method.
@@ -631,6 +738,18 @@ Emitted when a target inside the browser context is destroyed, for example when 
 
 The browser this browser context belongs to.
 
+#### browserContext.clearPermissionOverrides()
+- returns: <[Promise]>
+
+Clears all permission overrides for the browser context.
+
+```js
+const context = browser.defaultBrowserContext();
+context.overridePermissions('https://example.com', ['clipboard-read']);
+// do stuff ..
+context.clearPermissionOverrides();
+```
+
 #### browserContext.close()
 - returns: <[Promise]>
 
@@ -651,6 +770,40 @@ The default browser context is the only non-incognito browser context.
 - returns: <[Promise]<[Page]>>
 
 Creates a new page in the browser context.
+
+
+#### browserContext.overridePermissions(origin, permissions)
+- `origin` <[string]> The [origin] to grant permissions to, e.g. "https://example.com".
+- `permissions` <[Array]<[string]>> An array of permissions to grant. All permissions that are not listed here will be automatically denied. Permissions can be one of the following values:
+    - `'geolocation'`
+    - `'midi'`
+    - `'midi-sysex'` (system-exclusive midi)
+    - `'notifications'`
+    - `'push'`
+    - `'camera'`
+    - `'microphone'`
+    - `'background-sync'`
+    - `'ambient-light-sensor'`
+    - `'accelerometer'`
+    - `'gyroscope'`
+    - `'magnetometer'`
+    - `'accessibility-events'`
+    - `'clipboard-read'`
+    - `'clipboard-write'`
+    - `'payment-handler'`
+- returns: <[Promise]>
+
+
+```js
+const context = browser.defaultBrowserContext();
+await context.overridePermissions('https://html5demos.com', ['geolocation']);
+```
+
+
+#### browserContext.pages()
+- returns: <[Promise]<[Array]<[Page]>>> Promise which resolves to an array of all open pages. Non visible pages, such as `"background_page"`, will not be listed here. You can find them using [target.page()](#targetpage).
+
+An array of all pages inside the browser context.
 
 #### browserContext.targets()
 - returns: <[Array]<[Target]>>
@@ -1196,6 +1349,7 @@ Navigate to the next page in history.
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
     - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
+  - `referer` <[string]> Referer header value. If provided it will take preference over the referer header value set by [page.setExtraHTTPHeaders()](#pagesetextrahttpheadersheaders).
 - returns: <[Promise]<?[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
 The `page.goto` will throw an error if:
@@ -1206,14 +1360,14 @@ The `page.goto` will throw an error if:
 
 > **NOTE** `page.goto` either throw or return a main resource response. The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
 
-> **NOTE** Headless mode doesn't support navigating to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+> **NOTE** Headless mode doesn't match any nodest navigating to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
 
 #### page.hover(selector)
 - `selector` <[string]> A [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
-If there's no element matching `selector`, the method throws an error.
+If a there's no element matching `selector`, the method throws an error.
 
 Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
 
@@ -1435,6 +1589,21 @@ The extra HTTP headers will be sent with every request the page initiates.
 
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
+#### page.setGeolocation(options)
+- `options`
+  - `latitude` <[number]> Latitude between -90 and 90.
+  - `longitude` <[number]> Longitude between -180 and 180.
+  - `accuracy` <[number]> Optional non-negative accuracy value.
+- returns: <[Promise]>
+
+Sets the page's geolocation.
+
+```js
+await page.setGeolocation({latitude: 59.95, longitude: 30.31667});
+```
+
+> **NOTE** Consider using [browserContext.overridePermissions](#browsercontextoverridepermissionsorigin-permissions) to grant permissions for the page to read its geolocation.
+
 #### page.setJavaScriptEnabled(enabled)
 - `enabled` <[boolean]> Whether or not to enable JavaScript on the page.
 - returns: <[Promise]>
@@ -1452,7 +1621,9 @@ The extra HTTP headers will be sent with every request the page initiates.
 Activating request interception enables `request.abort`, `request.continue` and
 `request.respond` methods.  This provides the capability to modify network requests that are made by a page.
 
+Once request interception is enabled, every request will stall unless it's continued, responded or aborted.
 An example of a naïve request interceptor that aborts all image requests:
+
 ```js
 const puppeteer = require('puppeteer');
 
@@ -1537,7 +1708,7 @@ Shortcut for [page.mainFrame().type(selector, text[, options])](#frametypeselect
 This is a shortcut for [page.mainFrame().url()](#frameurl)
 
 #### page.viewport()
-- returns: <[Object]>
+- returns: <?[Object]>
   - `width` <[number]> page width in pixels.
   - `height` <[number]> page height in pixels.
   - `deviceScaleFactor` <[number]> Specify device scale factor (can be though of as dpr). Defaults to `1`.
@@ -1854,6 +2025,8 @@ Dispatches a `keyup` event.
 
 ### class: Mouse
 
+The Mouse class operates in main-frame CSS pixels relative to the top-left corner of the viewport.
+
 #### mouse.click(x, y, [options])
 - `x` <[number]>
 - `y` <[number]>
@@ -2155,7 +2328,9 @@ await resultHandle.dispose();
 
 
 #### frame.executionContext()
-- returns: <[Promise]<[ExecutionContext]>> Execution context associated with this frame.
+- returns: <[Promise]<[ExecutionContext]>>
+
+Returns promise that resolves to the frame's default execution context.
 
 #### frame.focus(selector)
 - `selector` <[string]> A [selector] of an element to focus. If there are multiple elements satisfying the selector, the first will be focused.
@@ -2353,9 +2528,12 @@ puppeteer.launch().then(async browser => {
 
 ### class: ExecutionContext
 
-The class represents a context for JavaScript execution. Examples of JavaScript contexts are:
-- each [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) has a separate execution context
-- all kind of [workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) have their own contexts
+The class represents a context for JavaScript execution. A [Page] might have many execution contexts:
+- each [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) has "default" execution context that is
+  always created after frame is attached to DOM. This context is returned by the [`frame.executionContext()`](#frameexecutioncontext) method.
+- [Extensions](https://developer.chrome.com/extensions)'s content scripts create additional execution contexts.
+
+Besides pages, execution contexts can be found in [workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
 
 #### executionContext.evaluate(pageFunction, ...args)
 - `pageFunction` <[function]|[string]> Function to be evaluated in `executionContext`
@@ -2420,6 +2598,7 @@ await resultHandle.dispose();
 - returns: <?[Frame]> Frame associated with this execution context.
 
 > **NOTE** Not every execution context is associated with a frame. For example, workers and extensions have execution contexts that are not associated with frames.
+
 
 #### executionContext.queryObjects(prototypeHandle)
 - `prototypeHandle` <[JSHandle]> A handle to the object prototype.
@@ -2894,6 +3073,11 @@ This method will throw if the response body is not parsable via `JSON.parse`.
 
 Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
 
+#### response.remoteAddress()
+- returns: <[Object]>
+  - `ip` <[string]> the IP address of the remote server
+  - `port` <[number]> the port used to connect to the remote server
+
 #### response.request()
 - returns: <[Request]> A matching [Request] object.
 
@@ -3069,12 +3253,21 @@ _To output coverage in a form consumable by [Istanbul](https://github.com/istanb
 > **NOTE** JavaScript Coverage doesn't include anonymous scripts by default. However, scripts with sourceURLs are
 reported.
 
+### class: TimeoutError
+
+* extends: [Error]
+
+TimeoutError is emitted whenever certain operations are terminated due to timeout, e.g. [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options) or [puppeteer.launch([options])](#puppeteerlaunchoptions).
+
+
+
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
 [Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer "Buffer"
 [function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function "Function"
 [number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type "Number"
 [Object]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object "Object"
+[origin]: https://developer.mozilla.org/en-US/docs/Glossary/Origin "Origin"
 [Page]: #class-page "Page"
 [Promise]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise "Promise"
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"

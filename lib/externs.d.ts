@@ -1,12 +1,11 @@
 import { Connection as RealConnection, CDPSession as RealCDPSession } from './Connection.js';
 import { Browser as RealBrowser, BrowserContext as RealBrowserContext} from './Browser.js';
-import * as RealTarget from './Target.js';
-import * as RealPage from './Page.js';
-import * as RealTaskQueue from './TaskQueue.js';
+import {Target as RealTarget} from './Target.js';
+import {Page as RealPage} from './Page.js';
+import {TaskQueue as RealTaskQueue} from './TaskQueue.js';
 import {Mouse as RealMouse, Keyboard as RealKeyboard, Touchscreen as RealTouchscreen}  from './Input.js';
 import {Frame as RealFrame, FrameManager as RealFrameManager}  from './FrameManager.js';
-import {JSHandle as RealJSHandle, ExecutionContext as RealExecutionContext}  from './ExecutionContext.js';
-import * as RealElementHandle  from './ElementHandle.js';
+import {JSHandle as RealJSHandle, ElementHandle as RealElementHandle, ExecutionContext as RealExecutionContext}  from './ExecutionContext.js';
 import { NetworkManager as RealNetworkManager, Request as RealRequest, Response as RealResponse } from './NetworkManager.js';
 import * as child_process from 'child_process';
 declare global {
@@ -38,7 +37,15 @@ declare global {
       close();
     }
 
-    export interface ChildProcess extends child_process.ChildProcess {}
+    export interface ChildProcess extends child_process.ChildProcess { }
 
+    export type Viewport = {
+      width: number;
+      height: number;
+      deviceScaleFactor?: number;
+      isMobile?: boolean;
+      isLandscape?: boolean;
+      hasTouch?: boolean;
+    }
   }
 }

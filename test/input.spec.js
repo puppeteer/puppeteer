@@ -16,12 +16,13 @@
 
 const path = require('path');
 const utils = require('./utils');
+const DeviceDescriptors = utils.requireRoot('DeviceDescriptors');
+const iPhone = DeviceDescriptors['iPhone 6'];
 
-module.exports.addTests = function({testRunner, expect, DeviceDescriptors}) {
+module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  const iPhone = DeviceDescriptors['iPhone 6'];
   describe('input', function() {
     it('should click the button', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
@@ -471,6 +472,19 @@ module.exports.addTests = function({testRunner, expect, DeviceDescriptors}) {
 
       error = await page.keyboard.press('😊').catch(e => e);
       expect(error && error.message).toBe('Unknown key: "😊"');
+    });
+    it('should type emoji', async({page, server}) => {
+      await page.goto(server.PREFIX + '/input/textarea.html');
+      await page.type('textarea', '👹 Tokyo street Japan 🇯🇵');
+      expect(await page.$eval('textarea', textarea => textarea.value)).toBe('👹 Tokyo street Japan 🇯🇵');
+    });
+    it('should type emoji into an iframe', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'emoji-test', server.PREFIX + '/input/textarea.html');
+      const frame = page.frames()[1];
+      const textarea = await frame.$('textarea');
+      await textarea.type('👹 Tokyo street Japan 🇯🇵');
+      expect(await frame.$eval('textarea', textarea => textarea.value)).toBe('👹 Tokyo street Japan 🇯🇵');
     });
     function dimensions() {
       const rect = document.querySelector('textarea').getBoundingClientRect();

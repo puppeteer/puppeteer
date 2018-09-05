@@ -16,18 +16,21 @@
 const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
-const {waitEvent} = require('./utils');
+const {waitEvent} = utils;
+const {TimeoutError} = utils.requireRoot('Errors');
 
-module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescriptors, headless}) {
+const DeviceDescriptors = utils.requireRoot('DeviceDescriptors');
+const iPhone = DeviceDescriptors['iPhone 6'];
+const iPhoneLandscape = DeviceDescriptors['iPhone 6 landscape'];
+
+module.exports.addTests = function({testRunner, expect, headless}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  const iPhone = DeviceDescriptors['iPhone 6'];
-  const iPhoneLandscape = DeviceDescriptors['iPhone 6 landscape'];
 
   describe('Page.close', function() {
-    it('should reject all promises when page is closed', async({browser}) => {
-      const newPage = await browser.newPage();
+    it('should reject all promises when page is closed', async({context}) => {
+      const newPage = await context.newPage();
       const neverResolves = newPage.evaluate(() => new Promise(r => {}));
       newPage.close();
       let error = null;
@@ -40,8 +43,8 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       await newPage.close();
       expect(await browser.pages()).not.toContain(newPage);
     });
-    it('should run beforeunload if asked for', async({browser, server}) => {
-      const newPage = await browser.newPage();
+    it('should run beforeunload if asked for', async({context, server}) => {
+      const newPage = await context.newPage();
       await newPage.goto(server.PREFIX + '/beforeunload.html');
       // We have to interact with a page so that 'beforeunload' handlers
       // fire.
@@ -54,8 +57,8 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       dialog.accept();
       await waitEvent(newPage, 'close');
     });
-    it('should set the page close state', async({ browser }) => {
-      const newPage = await browser.newPage();
+    it('should set the page close state', async({context}) => {
+      const newPage = await context.newPage();
       expect(newPage.isClosed()).toBe(false);
       await newPage.close();
       expect(newPage.isClosed()).toBe(true);
@@ -69,6 +72,83 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       page.goto('chrome://crash').catch(e => {});
       await waitEvent(page, 'error');
       expect(error.message).toBe('Page crashed!');
+    });
+  });
+
+  describe('BrowserContext.overridePermissions', function() {
+    function getPermission(page, name) {
+      return page.evaluate(name => navigator.permissions.query({name}).then(result => result.state), name);
+    }
+
+    it('should be prompt by default', async({page, server, context}) => {
+      await page.goto(server.EMPTY_PAGE);
+      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+    });
+    it('should deny permission when not listed', async({page, server, context}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await context.overridePermissions(server.EMPTY_PAGE, []);
+      expect(await getPermission(page, 'geolocation')).toBe('denied');
+    });
+    it('should fail when bad permission is given', async({page, server, context}) => {
+      await page.goto(server.EMPTY_PAGE);
+      let error = null;
+      await context.overridePermissions(server.EMPTY_PAGE, ['foo']).catch(e => error = e);
+      expect(error.message).toBe('Unknown permission: foo');
+    });
+    it('should grant permission when listed', async({page, server, context}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
+      expect(await getPermission(page, 'geolocation')).toBe('granted');
+    });
+    it('should reset permissions', async({page, server, context}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
+      expect(await getPermission(page, 'geolocation')).toBe('granted');
+      await context.clearPermissionOverrides();
+      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+    });
+    it('should trigger permission onchange', async({page, server, context}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        window.events = [];
+        return navigator.permissions.query({name: 'clipboard-read'}).then(function(result) {
+          window.events.push(result.state);
+          result.onchange = function() {
+            window.events.push(result.state);
+          };
+        });
+      });
+      expect(await page.evaluate(() => window.events)).toEqual(['prompt']);
+      await context.overridePermissions(server.EMPTY_PAGE, []);
+      expect(await page.evaluate(() => window.events)).toEqual(['prompt', 'denied']);
+      await context.overridePermissions(server.EMPTY_PAGE, ['clipboard-read']);
+      expect(await page.evaluate(() => window.events)).toEqual(['prompt', 'denied', 'granted']);
+      await context.clearPermissionOverrides();
+      expect(await page.evaluate(() => window.events)).toEqual(['prompt', 'denied', 'granted', 'prompt']);
+    });
+  });
+
+  describe('Page.setGeolocation', function() {
+    it('should work', async({page, server, context}) => {
+      await context.overridePermissions(server.PREFIX, ['geolocation']);
+      await page.goto(server.EMPTY_PAGE);
+      await page.setGeolocation({longitude: 10, latitude: 10});
+      const geolocation = await page.evaluate(() => new Promise(resolve => navigator.geolocation.getCurrentPosition(position => {
+        resolve({latitude: position.coords.latitude, longitude: position.coords.longitude});
+      })));
+      expect(geolocation).toEqual({
+        latitude: 10,
+        longitude: 10
+      });
+    });
+    it('should throw when invalid longitude', async({page, server, context}) => {
+      let error = null;
+      try {
+        await page.setGeolocation({longitude: 200, latitude: 10});
+      } catch (e) {
+        error = e;
+      }
+      expect(error.message).toContain('Invalid longitude "200"');
     });
   });
 
@@ -526,6 +606,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       let error = null;
       await page.goto(server.PREFIX + '/empty.html', {timeout: 1}).catch(e => error = e);
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should fail when exceeding default maximum navigation timeout', async({page, server}) => {
       // Hang for request to the empty.html
@@ -534,6 +615,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       page.setDefaultNavigationTimeout(1);
       await page.goto(server.PREFIX + '/empty.html').catch(e => error = e);
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should disable timeout when its set to 0', async({page, server}) => {
       let error = null;
@@ -672,6 +754,18 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       }
       expect(error.message).toContain(url);
     });
+    it('should send referer', async({page, server}) => {
+      const [request1, request2] = await Promise.all([
+        server.waitForRequest('/grid.html'),
+        server.waitForRequest('/digits/1.png'),
+        page.goto(server.PREFIX + '/grid.html', {
+          referer: 'http://google.com/',
+        }),
+      ]);
+      expect(request1.headers['referer']).toBe('http://google.com/');
+      // Make sure subresources do not inherit referer.
+      expect(request2.headers['referer']).toBe(server.PREFIX + '/grid.html');
+    });
   });
 
   describe('Page.waitForNavigation', function() {
@@ -781,8 +875,10 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
             fulfill();
         });
       });
-      frame.evaluate(() => window.stop());
-      await navigationPromise;
+      await Promise.all([
+        frame.evaluate(() => window.stop()),
+        navigationPromise
+      ]);
     });
   });
 
@@ -906,6 +1002,15 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
         return await compute(9, 4);
       });
       expect(result).toBe(36);
+    });
+    it('should be callable from-inside evaluateOnNewDocument', async({page, server}) => {
+      let called = false;
+      await page.exposeFunction('woof', function() {
+        called = true;
+      });
+      await page.evaluateOnNewDocument(() => woof());
+      await page.reload();
+      expect(called).toBe(true);
     });
     it('should survive navigation', async({page, server}) => {
       await page.exposeFunction('compute', function(a, b) {
@@ -1530,10 +1635,10 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
       });
       expect(screenshot).toBeGolden('screenshot-grid-fullpage.png');
     });
-    it('should run in parallel in multiple pages', async({page, server, browser}) => {
+    it('should run in parallel in multiple pages', async({page, server, context}) => {
       const N = 2;
       const pages = await Promise.all(Array(N).fill(0).map(async() => {
-        const page = await browser.newPage();
+        const page = await context.newPage();
         await page.goto(server.PREFIX + '/grid.html');
         return page;
       }));
@@ -1662,16 +1767,16 @@ module.exports.addTests = function({testRunner, expect, puppeteer, DeviceDescrip
   });
 
   describe('Page.Events.Close', function() {
-    it('should work with window.close', async function({ page, browser, server }) {
-      const newPagePromise = new Promise(fulfill => browser.once('targetcreated', target => fulfill(target.page())));
+    it('should work with window.close', async function({ page, context, server }) {
+      const newPagePromise = new Promise(fulfill => context.once('targetcreated', target => fulfill(target.page())));
       await page.evaluate(() => window['newPage'] = window.open('about:blank'));
       const newPage = await newPagePromise;
       const closedPromise = new Promise(x => newPage.on('close', x));
       await page.evaluate(() => window['newPage'].close());
       await closedPromise;
     });
-    it('should work with page.close', async function({ page, browser, server }) {
-      const newPage = await browser.newPage();
+    it('should work with page.close', async function({ page, context, server }) {
+      const newPage = await context.newPage();
       const closedPromise = new Promise(x => newPage.on('close', x));
       await newPage.close();
       await closedPromise;

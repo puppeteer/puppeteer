@@ -21,14 +21,13 @@ const GoldenUtils = require('./golden-utils');
 const GOLDEN_DIR = path.join(__dirname, 'golden');
 const OUTPUT_DIR = path.join(__dirname, 'output');
 const {TestRunner, Reporter, Matchers} = require('../utils/testrunner/');
+const utils = require('./utils');
 
 const {helper, assert} = require('../lib/helper');
 if (process.env.COVERAGE)
   helper.recordPublicAPICoverage();
 
-const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ? path.join(__dirname, '..') : path.join(__dirname, '..', '..');
-const puppeteer = require(PROJECT_ROOT);
-const DeviceDescriptors = require(path.join(PROJECT_ROOT, 'DeviceDescriptors'));
+const puppeteer = utils.requireRoot('index');
 
 const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
@@ -43,6 +42,7 @@ assert(fs.existsSync(puppeteer.executablePath()), `Chromium is not Downloaded. R
 
 const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
 const defaultBrowserOptions = {
+  handleSIGINT: false,
   executablePath,
   slowMo,
   headless,
@@ -77,6 +77,7 @@ beforeAll(async state => {
   const port = 8907 + state.parallelIndex * 2;
   state.server = await SimpleServer.create(assetsPath, port);
   state.server.enableHTTPCache(cachedPath);
+  state.server.PORT = port;
   state.server.PREFIX = `http://localhost:${port}`;
   state.server.CROSS_PROCESS_PREFIX = `http://127.0.0.1:${port}`;
   state.server.EMPTY_PAGE = `http://localhost:${port}/empty.html`;
@@ -84,6 +85,7 @@ beforeAll(async state => {
   const httpsPort = port + 1;
   state.httpsServer = await SimpleServer.createHTTPS(assetsPath, httpsPort);
   state.httpsServer.enableHTTPCache(cachedPath);
+  state.httpsServer.PORT = httpsPort;
   state.httpsServer.PREFIX = `https://localhost:${httpsPort}`;
   state.httpsServer.CROSS_PROCESS_PREFIX = `https://127.0.0.1:${httpsPort}`;
   state.httpsServer.EMPTY_PAGE = `https://localhost:${httpsPort}/empty.html`;
@@ -101,7 +103,7 @@ beforeEach(async({server, httpsServer}) => {
   httpsServer.reset();
 });
 
-describe('Page', function() {
+describe('Browser', function() {
   beforeAll(async state => {
     state.browser = await puppeteer.launch(defaultBrowserOptions);
   });
@@ -112,7 +114,6 @@ describe('Page', function() {
   });
 
   beforeEach(async(state, test) => {
-    state.page = await state.browser.newPage();
     const rl = require('readline').createInterface({input: state.browser.process().stderr});
     test.output = '';
     rl.on('line', onLine);
@@ -127,31 +128,46 @@ describe('Page', function() {
 
   afterEach(async state => {
     state.tearDown();
-    await state.page.close();
-    state.page = null;
   });
 
-  // Page-level tests that are given a browser and a page.
-  require('./CDPSession.spec.js').addTests({testRunner, expect});
-  require('./browser.spec.js').addTests({testRunner, expect, puppeteer, headless});
-  require('./browsercontext.spec.js').addTests({testRunner, expect, puppeteer});
-  require('./cookies.spec.js').addTests({testRunner, expect});
-  require('./coverage.spec.js').addTests({testRunner, expect});
-  require('./elementhandle.spec.js').addTests({testRunner, expect});
-  require('./frame.spec.js').addTests({testRunner, expect});
-  require('./input.spec.js').addTests({testRunner, expect, DeviceDescriptors});
-  require('./jshandle.spec.js').addTests({testRunner, expect});
-  require('./network.spec.js').addTests({testRunner, expect});
-  require('./page.spec.js').addTests({testRunner, expect, puppeteer, DeviceDescriptors, headless});
-  require('./target.spec.js').addTests({testRunner, expect, puppeteer});
-  require('./tracing.spec.js').addTests({testRunner, expect});
-  require('./worker.spec.js').addTests({testRunner, expect});
+  describe('Page', function() {
+    beforeEach(async state => {
+      state.context = await state.browser.createIncognitoBrowserContext();
+      state.page = await state.context.newPage();
+    });
+
+    afterEach(async state => {
+      // This closes all pages.
+      await state.context.close();
+      state.context = null;
+      state.page = null;
+    });
+
+    // Page-level tests that are given a browser, a context and a page.
+    // Each test is launched in a new browser context.
+    require('./CDPSession.spec.js').addTests({testRunner, expect});
+    require('./browser.spec.js').addTests({testRunner, expect, headless});
+    require('./cookies.spec.js').addTests({testRunner, expect});
+    require('./coverage.spec.js').addTests({testRunner, expect});
+    require('./elementhandle.spec.js').addTests({testRunner, expect});
+    require('./frame.spec.js').addTests({testRunner, expect});
+    require('./input.spec.js').addTests({testRunner, expect});
+    require('./jshandle.spec.js').addTests({testRunner, expect});
+    require('./network.spec.js').addTests({testRunner, expect});
+    require('./page.spec.js').addTests({testRunner, expect, headless});
+    require('./target.spec.js').addTests({testRunner, expect});
+    require('./tracing.spec.js').addTests({testRunner, expect});
+    require('./worker.spec.js').addTests({testRunner, expect});
+  });
+
+  // Browser-level tests that are given a browser.
+  require('./browsercontext.spec.js').addTests({testRunner, expect});
 });
 
 // Top-level tests that launch Browser themselves.
-require('./ignorehttpserrors.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
-require('./puppeteer.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
-require('./headful.spec.js').addTests({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions});
+require('./ignorehttpserrors.spec.js').addTests({testRunner, expect, defaultBrowserOptions});
+require('./puppeteer.spec.js').addTests({testRunner, expect, defaultBrowserOptions});
+require('./headful.spec.js').addTests({testRunner, expect, defaultBrowserOptions});
 
 if (process.env.COVERAGE) {
   describe('COVERAGE', function() {

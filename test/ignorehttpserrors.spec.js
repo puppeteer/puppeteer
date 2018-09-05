@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBrowserOptions}) {
+const utils = require('./utils');
+const puppeteer = utils.requireRoot('index.js');
+
+module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  const puppeteer = require(PROJECT_ROOT);
   describe('ignoreHTTPSErrors', function() {
     beforeAll(async state => {
       const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
@@ -52,6 +54,12 @@ module.exports.addTests = function({testRunner, expect, PROJECT_ROOT, defaultBro
       expect(responses[0].status()).toBe(302);
       const securityDetails = responses[0].securityDetails();
       expect(securityDetails.protocol()).toBe('TLS 1.2');
+    });
+    it('should work with request interception', async({page, server, httpsServer}) => {
+      await page.setRequestInterception(true);
+      page.on('request', request => request.continue());
+      const response = await page.goto(httpsServer.EMPTY_PAGE);
+      expect(response.status()).toBe(200);
     });
     it('should work with mixed content', async({page, server, httpsServer}) => {
       httpsServer.setRoute('/mixedcontent.html', (req, res) => {
