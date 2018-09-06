@@ -1,15 +1,13 @@
 const path = require('path');
 const fs = require('fs');
-const child_process = require('child_process');
+const execSync = require('child_process').execSync;
 
 // Compare current HEAD to upstream master SHA.
 // If they are not equal - refuse to publish since
 // we're not tip-of-tree.
-const upstream_sha = `git ls-remote https://github.com/GoogleChrome/puppeteer --tags master | cut -f1`;
-const current_sha = `git rev-parse HEAD`;
-const command = `if [[ $(${upstream_sha}) == $(${current_sha}) ]]; then echo "yes"; else echo "no"; fi`;
-const output = child_process.execSync(command).toString('utf8');
-if (output.trim() !== 'yes') {
+const upstream_sha = execSync(`git ls-remote https://github.com/GoogleChrome/puppeteer --tags master | cut -f1`).toString('utf8');
+const current_sha = execSync(`git rev-parse HEAD`).toString('utf8');
+if (upstream_sha.trim() !== current_sha.trim()) {
   console.log('REFUSING TO PUBLISH: this is not tip-of-tree!');
   process.exit(1);
   return;
