@@ -6,7 +6,7 @@ const child_process = require('child_process');
 // If they are not equal - refuse to publish since
 // we're not tip-of-tree.
 const upstream_sha = `git ls-remote https://github.com/GoogleChrome/puppeteer --tags master | cut -f1`;
-const current_sha = `git rev-parse HEAD`
+const current_sha = `git rev-parse HEAD`;
 const command = `if [[ $(${upstream_sha}) == $(${current_sha}) ]]; then echo "yes"; else echo "no"; fi`;
 const output = child_process.execSync(command).toString('utf8');
 if (output.trim() !== 'yes') {
