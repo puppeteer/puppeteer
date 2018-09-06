@@ -211,21 +211,21 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
 
 4. Stop test execution and use a debugger in browser
 
-    - Use `{devtools: true}` when launching Puppeteer:
+  - Use `{devtools: true}` when launching Puppeteer:
 
-        `const browser = await puppeteer.launch({devtools: true});`
+      `const browser = await puppeteer.launch({devtools: true});`
 
-    - Change default test timeout:
+  - Change default test timeout:
 
-        jest: `jest.setTimeout(100000);`
+      jest: `jest.setTimeout(100000);`
 
-        jasmine: `jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;`
+      jasmine: `jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;`
 
-        mocha: `this.timeout(100000);` (don't forget to change test to use [function and not '=>'](https://stackoverflow.com/a/23492442))
+      mocha: `this.timeout(100000);` (don't forget to change test to use [function and not '=>'](https://stackoverflow.com/a/23492442))
 
-    - Add an evaluate statement with `debugger` inside / add  `debugger` to an existing evaluate statement:
+  - Add an evaluate statement with `debugger` inside / add  `debugger` to an existing evaluate statement:
 
-      `await page.evaluate(() => {debugger;});`
+    `await page.evaluate(() => {debugger;});`
 
      The test will now stop executing in the above evaluate statement, and chromium will stop in debug mode.
 
@@ -245,15 +245,15 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
 
 6. Debug your Puppeteer (node) code easily, using [ndb](https://github.com/GoogleChromeLabs/ndb)
   
-    - `npm install -g ndb` (or even better, use [npx](https://github.com/zkat/npx)!)
+  - `npm install -g ndb` (or even better, use [npx](https://github.com/zkat/npx)!)
 
-    - add a `debugger` to your Puppeteer (node) code
+  - add a `debugger` to your Puppeteer (node) code
 
-    - add `ndb` (or `npx ndb`) before your test command. For example:
+  - add `ndb` (or `npx ndb`) before your test command. For example:
 
-      `ndb jest` or `ndb mocha` (or `npx ndb jest` / `npx ndb mocha`)
+    `ndb jest` or `ndb mocha` (or `npx ndb jest` / `npx ndb mocha`)
 
-    - debug your test inside chromium like a boss!
+  - debug your test inside chromium like a boss!
 
 
 <!-- [END debugging] -->
