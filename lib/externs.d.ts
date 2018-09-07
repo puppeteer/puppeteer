@@ -32,9 +32,11 @@ declare global {
     export class Response extends RealResponse { }
     export class Request extends RealRequest { }
 
-    export interface ConnectionTransport extends NodeJS.EventEmitter {
+    export interface ConnectionTransport {
       send(string);
       close();
+      onmessage?: (message: string) => void,
+      onclose?: () => void,
     }
 
     export interface ChildProcess extends child_process.ChildProcess { }
