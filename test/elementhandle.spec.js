@@ -306,7 +306,7 @@ module.exports.addTests = function({testRunner, expect}) {
     it('should not hang with zero width/height element', async({page, server}) => {
       await page.setContent('<div style="width: 0; height: 0"></div>');
       const div = await page.$('div');
-      const screenshot = await div.screenshot();
+      await div.screenshot();
     });
   });
 
