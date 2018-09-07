@@ -1569,6 +1569,10 @@ Toggles ignoring cache for each request based on the enabled state. By default, 
   - `sameSite` <[string]> `"Strict"` or `"Lax"`.
 - returns: <[Promise]>
 
+```js
+await page.setCookie(cookieObject1, cookieObject2);
+```
+
 #### page.setDefaultNavigationTimeout(timeout)
 - `timeout` <[number]> Maximum navigation time in milliseconds
 
