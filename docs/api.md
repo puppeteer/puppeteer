@@ -339,7 +339,7 @@ However, you should use `puppeteer-core` if:
 - you're building another end-user product or library atop of DevTools protocol. For example, one might build PDF generator using `puppeteer-core` and write a custom `install.js` script that downloads [`headless_shell`](https://chromium.googlesource.com/chromium/src/+/lkgr/headless/README.md) instead of Chromium to save disk space.
 - you're bundling Puppeteer to use in Chrome Extension / browser with the DevTools protocol where downloading an additional Chromium binary is unnecessary.
 
-When using `puppeteer-core`, remember to change the include line:
+When using `puppeteer-core`, remember to change the *include* line:
 
 ```js
 const puppeteer = require('puppeteer-core');
