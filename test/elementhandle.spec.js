@@ -303,7 +303,7 @@ module.exports.addTests = function({testRunner, expect}) {
       const screenshotError = await elementHandle.screenshot().catch(error => error);
       expect(screenshotError.message).toBe('Node is either not visible or not an HTMLElement');
     });
-    it('should not hang with zero width/height element', async({page, server}) => {
+    xit('should not hang with zero width/height element', async({page, server}) => {
       await page.setContent('<div style="width: 0; height: 0"></div>');
       const div = await page.$('div');
       await div.screenshot();
