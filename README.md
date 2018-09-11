@@ -47,6 +47,7 @@ a version of Puppeteer that doesn't download Chromium by default.
 
 ```bash
 npm i puppeteer-core
+# or "yarn add puppeteer-core"
 ```
 
 `puppeteer-core` is intended to be a lightweight version of puppeteer for launching an existing browser installation or for connecting to a remote one.
