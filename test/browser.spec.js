@@ -37,6 +37,13 @@ module.exports.addTests = function({testRunner, expect, headless}) {
     });
   });
 
+  describe('Browser.target', function() {
+    it('should return browser target', async({browser}) => {
+      const target = browser.target();
+      expect(target.type()).toBe('browser');
+    });
+  });
+
   describe('Browser.process', function() {
     it('should return child_process instance', async function({browser}) {
       const process = await browser.process();

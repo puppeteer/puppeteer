@@ -48,6 +48,7 @@
   * [browser.newPage()](#browsernewpage)
   * [browser.pages()](#browserpages)
   * [browser.process()](#browserprocess)
+  * [browser.target()](#browsertarget)
   * [browser.targets()](#browsertargets)
   * [browser.userAgent()](#browseruseragent)
   * [browser.version()](#browserversion)
@@ -673,6 +674,11 @@ the method will return an array with all the pages in all browser contexts.
 
 #### browser.process()
 - returns: <?[ChildProcess]> Spawned browser process. Returns `null` if the browser instance was created with [`puppeteer.connect`](#puppeteerconnectoptions) method.
+
+#### browser.target()
+- returns: <[Target]>
+
+A target associated with the browser.
 
 #### browser.targets()
 - returns: <[Array]<[Target]>>
