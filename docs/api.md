@@ -2180,6 +2180,14 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
+An example of getting text from an iframe element:
+
+```js
+  const frame = page.frames().find(frame => frame.name() === 'myframe');
+  const text = await frame.$eval('.selector', element => element.textContent);
+  console.log(text);
+```
+
 #### frame.$(selector)
 - `selector` <[string]> A [selector] to query frame for
 - returns: <[Promise]<?[ElementHandle]>> Promise which resolves to ElementHandle pointing to the frame element.
