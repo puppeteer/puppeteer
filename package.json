@@ -24,7 +24,9 @@
     "unit-node6": "node node6/test/test.js",
     "tsc": "tsc -p .",
     "prepublishOnly": "npm run build",
-    "apply-next-version": "node utils/apply_next_version.js"
+    "apply-next-version": "node utils/apply_next_version.js",
+    "bundle": "npx browserify -r ./index.js:puppeteer -o utils/browser/puppeteer-web.js",
+    "unit-bundle": "node utils/browser/test.js"
   },
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
@@ -55,5 +57,14 @@
     "pngjs": "^3.3.3",
     "text-diff": "^1.0.1",
     "typescript": "^3.0.1"
+  },
+  "browser": {
+    "./lib/BrowserFetcher.js": false,
+    "./node6/lib/Puppeteer": false,
+    "ws": "./utils/browser/WebSocket",
+    "fs": false,
+    "child_process": false,
+    "rimraf": false,
+    "readline": false
   }
 }
