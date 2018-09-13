@@ -60,6 +60,27 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
         await rmAsync(downloadsFolder);
       });
     });
+    describe('Browser.close', function() {
+      it('should reject navigation when browser closes', async({server}) => {
+        server.setRoute('/empty.html', () => {});
+        const browser = await puppeteer.launch(defaultBrowserOptions);
+        const page = await browser.newPage();
+        const navigationPromise = page.goto(server.EMPTY_PAGE, {timeout: 60000}).catch(e => e);
+        await server.waitForRequest('/empty.html');
+        await browser.close();
+        const error = await navigationPromise;
+        expect(error.message).toBe('Navigation failed because browser has disconnected!');
+      });
+      it('should reject waitForSelector when browser closes', async({server}) => {
+        server.setRoute('/empty.html', () => {});
+        const browser = await puppeteer.launch(defaultBrowserOptions);
+        const page = await browser.newPage();
+        const watchdog = page.waitForSelector('div', {timeout: 60000}).catch(e => e);
+        await browser.close();
+        const error = await watchdog;
+        expect(error.message).toBe('Protocol error (Runtime.callFunctionOn): Target closed.');
+      });
+    });
     describe('Puppeteer.launch', function() {
       it('should reject all promises when browser is closed', async() => {
         const browser = await puppeteer.launch(defaultBrowserOptions);
