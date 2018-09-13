@@ -1656,6 +1656,12 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       const screenshot = await page.screenshot({omitBackground: true});
       expect(screenshot).toBeGolden('transparent.png');
     });
+    it('should render white background on jpeg file', async({page, server}) => {
+      await page.setViewport({ width: 100, height: 100 });
+      await page.goto(server.EMPTY_PAGE);
+      const screenshot = await page.screenshot({omitBackground: true, type: 'jpeg'});
+      expect(screenshot).toBeGolden('white.jpg');
+    });
     it('should work with odd clip size on Retina displays', async({page, server}) => {
       const screenshot = await page.screenshot({
         clip: {
