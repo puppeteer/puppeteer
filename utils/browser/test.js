@@ -15,6 +15,10 @@ const {it, xit, fit} = testRunner;
 const {afterAll, beforeAll, afterEach, beforeEach} = testRunner;
 const {expect} = new Matchers();
 
+const defaultBrowserOptions = {
+  args: ['--no-sandbox']
+};
+
 beforeAll(async state => {
   const assetsPath = path.join(__dirname, '..', '..', 'test', 'assets');
   const port = 8998;
@@ -23,7 +27,7 @@ beforeAll(async state => {
     PREFIX: `http://localhost:${port}`,
     EMPTY_PAGE: `http://localhost:${port}/empty.html`,
   };
-  state.browser = await puppeteer.launch();
+  state.browser = await puppeteer.launch(defaultBrowserOptions);
 });
 
 afterAll(async state => {
@@ -50,7 +54,7 @@ afterEach(async state => {
 
 describe('Puppeteer-Web', () => {
   it('should work over web socket', async({page, serverConfig}) => {
-    const browser2 = await puppeteer.launch();
+    const browser2 = await puppeteer.launch(defaultBrowserOptions);
     // Use in-page puppeteer to create a new page and navigate it to the EMPTY_PAGE
     await page.evaluate(async(browserWSEndpoint, serverConfig) => {
       const puppeteer = require('puppeteer');
