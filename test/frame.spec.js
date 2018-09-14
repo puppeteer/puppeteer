@@ -22,7 +22,7 @@ module.exports.addTests = function({testRunner, expect}) {
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
-  describe('Frame.context', function() {
+  describe('Frame.executionContext', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -46,6 +46,84 @@ module.exports.addTests = function({testRunner, expect}) {
       ]);
       expect(a1).toBe(1);
       expect(a2).toBe(2);
+    });
+  });
+
+  describe('Frame.goto', function() {
+    it('should navigate subframes', async({page, server}) => {
+      await page.goto(server.PREFIX + '/frames/one-frame.html');
+      expect(page.frames()[0].url()).toContain('/frames/one-frame.html');
+      expect(page.frames()[1].url()).toContain('/frames/frame.html');
+
+      const response = await page.frames()[1].goto(server.EMPTY_PAGE);
+      expect(response.ok()).toBe(true);
+      expect(response.frame()).toBe(page.frames()[1]);
+    });
+    it('should reject when frame detaches', async({page, server}) => {
+      await page.goto(server.PREFIX + '/frames/one-frame.html');
+
+      server.setRoute('/empty.html', () => {});
+      const navigationPromise = page.frames()[1].goto(server.EMPTY_PAGE).catch(e => e);
+      await server.waitForRequest('/empty.html');
+
+      await page.$eval('iframe', frame => frame.remove());
+      const error = await navigationPromise;
+      expect(error.message).toBe('Navigating frame is detached');
+    });
+    it('should return matching responses', async({page, server}) => {
+      // Disable cache: otherwise, chromium will cache similar requests.
+      await page.setCacheEnabled(false);
+      await page.goto(server.EMPTY_PAGE);
+      // Attach three frames.
+      const frames = await Promise.all([
+        utils.attachFrame(page, 'frame1', server.EMPTY_PAGE),
+        utils.attachFrame(page, 'frame2', server.EMPTY_PAGE),
+        utils.attachFrame(page, 'frame3', server.EMPTY_PAGE),
+      ]);
+      // Navigate all frames to the same URL.
+      const serverResponses = [];
+      server.setRoute('/one-style.html', (req, res) => serverResponses.push(res));
+      const navigations = [];
+      for (let i = 0; i < 3; ++i) {
+        navigations.push(frames[i].goto(server.PREFIX + '/one-style.html'));
+        await server.waitForRequest('/one-style.html');
+      }
+      // Respond from server out-of-order.
+      const serverResponseTexts = ['AAA', 'BBB', 'CCC'];
+      for (const i of [1, 2, 0]) {
+        serverResponses[i].end(serverResponseTexts[i]);
+        const response = await navigations[i];
+        expect(response.frame()).toBe(frames[i]);
+        expect(await response.text()).toBe(serverResponseTexts[i]);
+      }
+    });
+  });
+
+  describe('Frame.waitForNavigation', function() {
+    it('should work', async({page, server}) => {
+      await page.goto(server.PREFIX + '/frames/one-frame.html');
+      const frame = page.frames()[1];
+      const [response] = await Promise.all([
+        frame.waitForNavigation(),
+        frame.evaluate(url => window.location.href = url, server.PREFIX + '/grid.html')
+      ]);
+      expect(response.ok()).toBe(true);
+      expect(response.url()).toContain('grid.html');
+      expect(response.frame()).toBe(frame);
+      expect(page.url()).toContain('/frames/one-frame.html');
+    });
+    it('should reject when frame detaches', async({page, server}) => {
+      await page.goto(server.PREFIX + '/frames/one-frame.html');
+      const frame = page.frames()[1];
+
+      server.setRoute('/empty.html', () => {});
+      const navigationPromise = frame.waitForNavigation();
+      await Promise.all([
+        server.waitForRequest('/empty.html'),
+        frame.evaluate(() => window.location = '/empty.html')
+      ]);
+      await page.$eval('iframe', frame => frame.remove());
+      await navigationPromise;
     });
   });
 

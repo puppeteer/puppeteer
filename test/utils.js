@@ -37,16 +37,19 @@ const utils = module.exports = {
    * @param {!Page} page
    * @param {string} frameId
    * @param {string} url
+   * @return {!Puppeteer.Frame}
    */
   attachFrame: async function(page, frameId, url) {
-    await page.evaluate(attachFrame, frameId, url);
+    const handle = await page.evaluateHandle(attachFrame, frameId, url);
+    return await handle.asElement().contentFrame();
 
-    function attachFrame(frameId, url) {
+    async function attachFrame(frameId, url) {
       const frame = document.createElement('iframe');
       frame.src = url;
       frame.id = frameId;
       document.body.appendChild(frame);
-      return new Promise(x => frame.onload = x);
+      await new Promise(x => frame.onload = x);
+      return frame;
     }
   },
 

@@ -193,8 +193,10 @@ class SimpleServer {
       }
     }
     // Notify request subscriber.
-    if (this._requestSubscribers.has(pathName))
+    if (this._requestSubscribers.has(pathName)) {
       this._requestSubscribers.get(pathName)[fulfillSymbol].call(null, request);
+      this._requestSubscribers.delete(pathName);
+    }
     const handler = this._routes.get(pathName);
     if (handler) {
       handler.call(null, request, response);
