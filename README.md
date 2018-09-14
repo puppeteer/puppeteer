@@ -230,19 +230,18 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
 
      The test will now stop executing in the above evaluate statement, and chromium will stop in debug mode.
 
-5. Enable verbose logging - All public API calls and internal protocol traffic
+5. Enable verbose logging - internal DevTools protocol traffic
    will be logged via the [`debug`](https://github.com/visionmedia/debug) module under the `puppeteer` namespace.
 
         # Basic verbose logging
         env DEBUG="puppeteer:*" node script.js
 
         # Debug output can be enabled/disabled by namespace
-        env DEBUG="puppeteer:*,-puppeteer:protocol" node script.js # everything BUT protocol messages
+        env DEBUG="puppeteer:protocol" node script.js # protocol connection messages
         env DEBUG="puppeteer:session" node script.js # protocol session messages (protocol messages to targets)
-        env DEBUG="puppeteer:mouse,puppeteer:keyboard" node script.js # only Mouse and Keyboard API calls
 
         # Protocol traffic can be rather noisy. This example filters out all Network domain messages
-        env DEBUG="puppeteer:*" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
+        env DEBUG="puppeteer:session" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
 
 6. Debug your Puppeteer (node) code easily, using [ndb](https://github.com/GoogleChromeLabs/ndb)
   
