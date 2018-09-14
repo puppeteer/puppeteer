@@ -2038,7 +2038,7 @@ The Mouse class operates in main-frame CSS pixels relative to the top-left corne
 Every `page` object has it's own Mouse, accessible with [`page.mouse`](#pagemouse).
 
 ```js
-// Using "mouse" to draw a square on canvas.
+// Using ‘page.mouse’ to trace a 100x100 square.
 await page.mouse.move(0, 0);
 await page.mouse.down();
 await page.mouse.move(0, 100);
