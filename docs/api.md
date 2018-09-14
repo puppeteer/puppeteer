@@ -2035,6 +2035,19 @@ Dispatches a `keyup` event.
 
 The Mouse class operates in main-frame CSS pixels relative to the top-left corner of the viewport.
 
+Every `page` object has it's own Mouse, accessible with [`page.mouse`](#pagemouse).
+
+```js
+// Using "mouse" to draw a square on canvas.
+await page.mouse.move(0, 0);
+await page.mouse.down();
+await page.mouse.move(0, 100);
+await page.mouse.move(100, 100);
+await page.mouse.move(100, 0);
+await page.mouse.move(0, 0);
+await page.mouse.up();
+```
+
 #### mouse.click(x, y, [options])
 - `x` <[number]>
 - `y` <[number]>
