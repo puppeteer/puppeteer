@@ -62,12 +62,12 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
     });
     describe('Browser.disconnect', function() {
       it('should reject navigation when browser closes', async({server}) => {
-        server.setRoute('/empty.html', () => {});
+        server.setRoute('/one-style.css', () => {});
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const remote = await puppeteer.connect({browserWSEndpoint: browser.wsEndpoint()});
         const page = await remote.newPage();
-        const navigationPromise = page.goto(server.EMPTY_PAGE, {timeout: 60000}).catch(e => e);
-        await server.waitForRequest('/empty.html');
+        const navigationPromise = page.goto(server.PREFIX + '/one-style.html', {timeout: 60000}).catch(e => e);
+        await server.waitForRequest('/one-style.css');
         await remote.disconnect();
         const error = await navigationPromise;
         expect(error.message).toBe('Navigation failed because browser has disconnected!');
