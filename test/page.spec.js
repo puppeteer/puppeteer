@@ -546,6 +546,7 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       await page.goto(server.EMPTY_PAGE).catch(e => error = e);
       expect(error).not.toBe(null);
       expect(error.message).toContain('net::ERR_ABORTED');
+      expect(error.stack).toContain(__filename);
     });
     it('should navigate to empty page with domcontentloaded', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'domcontentloaded'});
