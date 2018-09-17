@@ -189,5 +189,5 @@ if (process.env.CI && testRunner.hasFocusedTestsOrSuites()) {
   process.exit(1);
 }
 
-new Reporter(testRunner);
+new Reporter(testRunner, utils.projectRoot());
 testRunner.run();

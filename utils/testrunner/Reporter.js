@@ -20,8 +20,9 @@ const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
 
 class Reporter {
-  constructor(runner) {
+  constructor(runner, testFolder = null) {
     this._runner = runner;
+    this._testFolder = testFolder;
     runner.on('started', this._onStarted.bind(this));
     runner.on('terminated', this._onTerminated.bind(this));
     runner.on('finished', this._onFinished.bind(this));
@@ -90,19 +91,8 @@ class Reporter {
           console.log('  Message:');
           console.log(`    ${RED_COLOR}${test.error.message || test.error}${RESET_COLOR}`);
           console.log('  Stack:');
-          if (test.error.stack) {
-            const stack = test.error.stack.split('\n').map(line => '    ' + line);
-            let i = 0;
-            while (i < stack.length && !stack[i].includes(__dirname))
-              ++i;
-            while (i < stack.length && stack[i].includes(__dirname))
-              ++i;
-            if (i < stack.length) {
-              const indent = stack[i].match(/^\s*/)[0];
-              stack[i] = stack[i].substring(0, indent.length - 3) + YELLOW_COLOR + '⇨ ' + RESET_COLOR +  stack[i].substring(indent.length - 1);
-            }
-            console.log(stack.join('\n'));
-          }
+          if (test.error.stack)
+            console.log(this._beautifyStack(test.error.stack));
         }
         if (test.output) {
           console.log('  Output:');
@@ -128,6 +118,25 @@ class Reporter {
     const milliseconds = Date.now() - this._timestamp;
     const seconds = milliseconds / 1000;
     console.log(`Finished in ${YELLOW_COLOR}${seconds}${RESET_COLOR} seconds`);
+  }
+
+  _beautifyStack(stack) {
+    if (!this._testFolder)
+      return stack;
+    const lines = stack.split('\n').map(line => '    ' + line);
+    // Find last stack line that include testrunner code.
+    let index = 0;
+    while (index < lines.length && !lines[index].includes(__dirname))
+      ++index;
+    while (index < lines.length && lines[index].includes(__dirname))
+      ++index;
+    if (index >= lines.length)
+      return stack;
+    const line = lines[index];
+    const fromIndex = line.lastIndexOf(this._testFolder) + this._testFolder.length;
+    const toIndex = line.lastIndexOf(')');
+    lines[index] = line.substring(0, fromIndex) + YELLOW_COLOR + line.substring(fromIndex, toIndex) + RESET_COLOR + line.substring(toIndex);
+    return lines.join('\n');
   }
 
   _onTestStarted(test, workerId) {
