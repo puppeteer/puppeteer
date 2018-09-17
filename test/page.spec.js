@@ -65,6 +65,25 @@ module.exports.addTests = function({testRunner, expect, headless}) {
     });
   });
 
+  let asyncawait = true;
+  try {
+    new Function('async function foo() {await 1}');
+  } catch (e) {
+    asyncawait = false;
+  }
+  (asyncawait ? describe : xdescribe)('Async stacks', () => {
+    it('should work', async({page, server}) => {
+      server.setRoute('/empty.html', (req, res) => {
+        res.statusCode = 204;
+        res.end();
+      });
+      let error = null;
+      await page.goto(server.EMPTY_PAGE).catch(e => error = e);
+      expect(error).not.toBe(null);
+      expect(error.message).toContain('net::ERR_ABORTED');
+    });
+  });
+
   describe('Page.Events.error', function() {
     it('should throw when page crashes', async({page}) => {
       let error = null;
@@ -546,7 +565,6 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       await page.goto(server.EMPTY_PAGE).catch(e => error = e);
       expect(error).not.toBe(null);
       expect(error.message).toContain('net::ERR_ABORTED');
-      expect(error.stack).toContain(__filename);
     });
     it('should navigate to empty page with domcontentloaded', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'domcontentloaded'});
