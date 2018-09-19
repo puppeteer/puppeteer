@@ -1371,7 +1371,7 @@ The `page.goto` will throw an error if:
 - returns: <[Promise]> Promise which resolves when the element matching `selector` is successfully hovered. Promise gets rejected if there's no element matching `selector`.
 
 This method fetches an element with `selector`, scrolls it into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
-If a there's no element matching `selector`, the method throws an error.
+If there's no element matching `selector`, the method throws an error.
 
 Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
 
