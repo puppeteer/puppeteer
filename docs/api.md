@@ -1367,7 +1367,9 @@ The `page.goto` will throw an error if:
 
 > **NOTE** `page.goto` either throw or return a main resource response. The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
 
-> **NOTE** Headless mode doesn't match any nodest navigating to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+> **NOTE** Headless mode doesn't support navigation to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+
+Shortcut for [page.mainFrame().goto(url, options)](#framegotourl-options)
 
 #### page.hover(selector)
 - `selector` <[string]> A [selector] to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
@@ -1811,6 +1813,8 @@ const [response] = await Promise.all([
 ```
 
 **NOTE** Usage of the [History API](https://developer.mozilla.org/en-US/docs/Web/API/History_API) to change the URL is considered a navigation.
+
+Shortcut for [page.mainFrame().waitForNavigation(options)](#framewaitfornavigationoptions).
 
 #### page.waitForRequest(urlOrPredicate, options)
 - `urlOrPredicate` <[string]|[Function]> A URL or predicate to wait for.
@@ -2392,7 +2396,7 @@ The `frame.goto` will throw an error if:
 
 > **NOTE** `frame.goto` either throw or return a main resource response. The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
 
-> **NOTE** Headless mode doesn't match any nodest navigating to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
+> **NOTE** Headless mode doesn't support navigation to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
 
 
 #### frame.hover(selector)
