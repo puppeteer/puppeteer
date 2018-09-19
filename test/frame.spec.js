@@ -68,7 +68,7 @@ module.exports.addTests = function({testRunner, expect}) {
 
       await page.$eval('iframe', frame => frame.remove());
       const error = await navigationPromise;
-      expect(error.message).toBe('Navigating frame is detached');
+      expect(error.message).toBe('Navigating frame was detached');
     });
     it('should return matching responses', async({page, server}) => {
       // Disable cache: otherwise, chromium will cache similar requests.
