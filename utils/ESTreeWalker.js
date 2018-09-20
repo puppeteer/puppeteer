@@ -80,6 +80,7 @@ ESTreeWalker._walkOrder = {
   'ArrayExpression': ['elements'],
   'ArrowFunctionExpression': ['params', 'body'],
   'AssignmentExpression': ['left', 'right'],
+  'AssignmentPattern': ['left', 'right'],
   'BinaryExpression': ['left', 'right'],
   'BlockStatement': ['body'],
   'BreakStatement': ['label'],

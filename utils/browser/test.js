@@ -69,6 +69,28 @@ describe('Puppeteer-Web', () => {
     ]);
     await browser2.close();
   });
+  it('should work over exposed DevTools protocol', async({browser, page, serverConfig}) => {
+    // Expose devtools protocol binding into page.
+    const session = await browser.target().createCDPSession();
+    const pageInfo = (await session.send('Target.getTargets')).targetInfos.find(info => info.attached);
+    await session.send('Target.exposeDevToolsProtocol', {targetId: pageInfo.targetId});
+    await session.detach();
+
+    // Use in-page puppeteer to create a new page and navigate it to the EMPTY_PAGE
+    await page.evaluate(async serverConfig  => {
+      const puppeteer = require('puppeteer');
+      window.cdp.close = () => {};
+      const browser = await puppeteer.connect({transport: window.cdp});
+      const page = await browser.newPage();
+      await page.goto(serverConfig.EMPTY_PAGE);
+    }, serverConfig);
+    const pageURLs = (await browser.pages()).map(page => page.url()).sort();
+    expect(pageURLs).toEqual([
+      'about:blank',
+      'about:blank',
+      serverConfig.EMPTY_PAGE
+    ]);
+  });
 });
 
 if (process.env.CI && testRunner.hasFocusedTestsOrSuites()) {
