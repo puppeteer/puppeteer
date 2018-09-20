@@ -790,11 +790,10 @@ module.exports.addTests = function({testRunner, expect, headless}) {
   describe('Page.waitForNavigation', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
-      const [result] = await Promise.all([
+      const [response] = await Promise.all([
         page.waitForNavigation(),
         page.evaluate(url => window.location.href = url, server.PREFIX + '/grid.html')
       ]);
-      const response = await result;
       expect(response.ok()).toBe(true);
       expect(response.url()).toContain('grid.html');
     });
