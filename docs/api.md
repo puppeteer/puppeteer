@@ -3133,7 +3133,7 @@ Contains the URL of the response.
 
 ### class: SecurityDetails
 
-[SecurityDetails] class represents responses which are received by page.
+[SecurityDetails] class represents the security details when response was received over the secure connection.
 
 #### securityDetails.issuer()
 - returns: <[string]> A string with the name of issuer of the certificate.
