@@ -1,6 +1,6 @@
 {
   "name": "@pptr/testrunner",
-  "version": "0.5.0",
+  "version": "0.5.0-post",
   "description": "Puppeteer testrunner",
   "main": "index.js",
   "directories": {
