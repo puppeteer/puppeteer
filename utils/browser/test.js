@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const puppeteer = require('../..');
-const SimpleServer = require('../../test/server/SimpleServer');
+const {TestServer} = require('../testserver/');
 const {TestRunner, Reporter, Matchers} = require('../testrunner/');
 
 const puppeteerWebPath = path.join(__dirname, 'puppeteer-web.js');
@@ -22,7 +22,7 @@ const defaultBrowserOptions = {
 beforeAll(async state => {
   const assetsPath = path.join(__dirname, '..', '..', 'test', 'assets');
   const port = 8998;
-  state.server = await SimpleServer.create(assetsPath, port);
+  state.server = await TestServer.create(assetsPath, port);
   state.serverConfig = {
     PREFIX: `http://localhost:${port}`,
     EMPTY_PAGE: `http://localhost:${port}/empty.html`,
