@@ -1,6 +1,6 @@
 # TestServer
 
-A testing server used to test Puppeteer itself.
+This test server is used internally by Puppeteer to test Puppeteer itself.
 
 ### Example
 
