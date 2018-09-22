@@ -1,4 +1,6 @@
-# Puppeteer TestRunner
+# TestRunner
+
+A test runner that is used to test Puppeteer itself.
 
 - testrunner is a *library*: tests are `node.js` scripts
 - parallel wrt IO operations
