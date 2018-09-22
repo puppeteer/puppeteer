@@ -16,7 +16,7 @@
 const fs = require('fs');
 const rm = require('rimraf').sync;
 const path = require('path');
-const SimpleServer = require('./server/SimpleServer');
+const {TestServer} = require('../utils/testserver/');
 const GoldenUtils = require('./golden-utils');
 const GOLDEN_DIR = path.join(__dirname, 'golden');
 const OUTPUT_DIR = path.join(__dirname, 'output');
@@ -75,7 +75,7 @@ beforeAll(async state => {
   const cachedPath = path.join(__dirname, 'assets', 'cached');
 
   const port = 8907 + state.parallelIndex * 2;
-  state.server = await SimpleServer.create(assetsPath, port);
+  state.server = await TestServer.create(assetsPath, port);
   state.server.enableHTTPCache(cachedPath);
   state.server.PORT = port;
   state.server.PREFIX = `http://localhost:${port}`;
@@ -83,7 +83,7 @@ beforeAll(async state => {
   state.server.EMPTY_PAGE = `http://localhost:${port}/empty.html`;
 
   const httpsPort = port + 1;
-  state.httpsServer = await SimpleServer.createHTTPS(assetsPath, httpsPort);
+  state.httpsServer = await TestServer.createHTTPS(assetsPath, httpsPort);
   state.httpsServer.enableHTTPCache(cachedPath);
   state.httpsServer.PORT = httpsPort;
   state.httpsServer.PREFIX = `https://localhost:${httpsPort}`;
