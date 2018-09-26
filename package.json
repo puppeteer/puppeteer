@@ -8,7 +8,7 @@
     "node": ">=6.4.0"
   },
   "puppeteer": {
-    "chromium_revision": "591618"
+    "chromium_revision": "594312"
   },
   "scripts": {
     "unit": "node test/test.js",
