@@ -279,6 +279,19 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
         expect(page.viewport()).toBe(null);
         await browser.close();
       });
+      it('should take fullPage screenshots when defaultViewport is null', async({server}) => {
+        const options = Object.assign({}, defaultBrowserOptions, {
+          defaultViewport: null
+        });
+        const browser = await puppeteer.launch(options);
+        const page = await browser.newPage();
+        await page.goto(server.PREFIX + '/grid.html');
+        const screenshot = await page.screenshot({
+          fullPage: true
+        });
+        expect(screenshot).toBeInstanceOf(Buffer);
+        await browser.close();
+      });
     });
     describe('Puppeteer.connect', function() {
       it('should be able to connect multiple times to the same browser', async({server}) => {
