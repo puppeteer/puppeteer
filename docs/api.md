@@ -963,7 +963,7 @@ Emitted when a dedicated [WebWorker](https://developer.mozilla.org/en-US/docs/We
 - `selector` <[string]> A [selector] to query page for
 - returns: <[Promise]<?[ElementHandle]>>
 
-The method runs `document.querySelector` within the page. If no element matches the selector, the return value resolve to `null`.
+The method runs `document.querySelector` within the page. If no element matches the selector, the return value resolves to `null`.
 
 Shortcut for [page.mainFrame().$(selector)](#frameselector).
 
@@ -971,7 +971,7 @@ Shortcut for [page.mainFrame().$(selector)](#frameselector).
 - `selector` <[string]> A [selector] to query page for
 - returns: <[Promise]<[Array]<[ElementHandle]>>>
 
-The method runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `[]`.
+The method runs `document.querySelectorAll` within the page. If no elements match the selector, the return value resolves to `[]`.
 
 Shortcut for [page.mainFrame().$$(selector)](#frameselector-1).
 
@@ -1046,7 +1046,7 @@ Shortcut for [page.mainFrame().addStyleTag(options)](#frameaddstyletagoptions).
   - `password` <[string]>
 - returns: <[Promise]>
 
-Provide credentials for [http authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication).
+Provide credentials for [HTTP authentication](https://developer.mozilla.org/en-US/docs/Web/HTTP/Authentication).
 
 To disable authentication, pass `null`.
 
@@ -1601,7 +1601,7 @@ This setting will change the default maximum navigation time of 30 seconds for t
 - [page.waitForNavigation(options)](#pagewaitfornavigationoptions)
 
 #### page.setExtraHTTPHeaders(headers)
-- `headers` <[Object]> An object containing additional http headers to be sent with every request. All header values must be strings.
+- `headers` <[Object]> An object containing additional HTTP headers to be sent with every request. All header values must be strings.
 - returns: <[Promise]>
 
 The extra HTTP headers will be sent with every request the page initiates.
@@ -2225,7 +2225,7 @@ The method queries frame for the selector. If there's no such element within the
 - `selector` <[string]> A [selector] to query frame for
 - returns: <[Promise]<[Array]<[ElementHandle]>>> Promise which resolves to ElementHandles pointing to the frame elements.
 
-The method runs `document.querySelectorAll` within the frame. If no elements match the selector, the return value resolve to `[]`.
+The method runs `document.querySelectorAll` within the frame. If no elements match the selector, the return value resolves to `[]`.
 
 #### frame.$$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> A [selector] to query frame for
@@ -2790,13 +2790,13 @@ ElementHandle instances can be used as arguments in [`page.$eval()`](#pageevalse
 - `selector` <[string]> A [selector] to query element for
 - returns: <[Promise]<?[ElementHandle]>>
 
-The method runs `element.querySelector` within the page. If no element matches the selector, the return value resolve to `null`.
+The method runs `element.querySelector` within the page. If no element matches the selector, the return value resolves to `null`.
 
 #### elementHandle.$$(selector)
 - `selector` <[string]> A [selector] to query element for
 - returns: <[Promise]<[Array]<[ElementHandle]>>>
 
-The method runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolve to `[]`.
+The method runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolves to `[]`.
 
 #### elementHandle.$$eval(selector, pageFunction, ...args)
 - `selector` <[string]> A [selector] to query page for
