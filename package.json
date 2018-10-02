@@ -44,7 +44,7 @@
     "@types/debug": "0.0.30",
     "@types/extract-zip": "^1.6.2",
     "@types/mime": "^2.0.0",
-    "@types/node": "^8.0.26",
+    "@types/node": "^8.10.32",
     "@types/rimraf": "^2.0.2",
     "@types/ws": "^3.0.2",
     "commonmark": "^0.27.0",
@@ -57,7 +57,7 @@
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.3.3",
     "text-diff": "^1.0.1",
-    "typescript": "^3.0.1"
+    "typescript": "^3.1.1"
   },
   "browser": {
     "./lib/BrowserFetcher.js": false,
