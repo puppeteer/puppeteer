@@ -3,13 +3,12 @@
 We don't release pre-bundled version of Puppeteer yet, but we made sure it's
 easy to bundle Puppeteer.
 
-To bundle Puppeteer using browserify:
+To bundle Puppeteer using [Browserify](http://browserify.org/):
 
 1. Clone Puppeteer repository: `git clone https://github.com/GoogleChrome/puppeteer && cd puppeteer`
 2. Run `npm run bundle`
 
-This will create `./utils/browser/puppeteer-web.js` file that contains Puppeteer bundle created with
-[Browserify](http://browserify.org/).
+This will create `./utils/browser/puppeteer-web.js` file that contains Puppeteer bundle.
 
 You can use it later on in your web page to drive
 another browser instance through its WS Endpoint:
