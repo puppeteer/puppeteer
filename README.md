@@ -6,7 +6,7 @@
 
 <img src="https://user-images.githubusercontent.com/10379601/29446482-04f7036a-841f-11e7-9872-91d1fc2ea683.png" height="200" align="right">
 
-###### [API](https://github.com/GoogleChrome/puppeteer/blob/v1.8.0/docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md)
+###### [API](https://github.com/GoogleChrome/puppeteer/blob/v1.8.0/docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/GoogleChrome/puppeteer/blob/master/CONTRIBUTING.md) | [Troubleshooting](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md)
 
 > Puppeteer is a Node library which provides a high-level API to control Chrome or Chromium over the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/). Puppeteer runs [headless](https://developers.google.com/web/updates/2017/04/headless-chrome) by default, but can be configured to run full (non-headless) Chrome or Chromium.
 
@@ -185,6 +185,7 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
 - [Examples](https://github.com/GoogleChrome/puppeteer/tree/master/examples/)
 - [Community list of Puppeteer resources](https://github.com/transitive-bullshit/awesome-puppeteer)
 
+
 <!-- [START debugging] -->
 
 ## Debugging tips
@@ -244,7 +245,7 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
         env DEBUG="puppeteer:session" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
 
 6. Debug your Puppeteer (node) code easily, using [ndb](https://github.com/GoogleChromeLabs/ndb)
-  
+
   - `npm install -g ndb` (or even better, use [npx](https://github.com/zkat/npx)!)
 
   - add a `debugger` to your Puppeteer (node) code
