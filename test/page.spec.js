@@ -1777,6 +1777,14 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       }
       expect(error.message).toContain('Values must be strings');
     });
+    // @see https://github.com/GoogleChrome/puppeteer/issues/3327
+    xit('should work when re-defining top-level Event class', async({page, server}) => {
+      await page.goto(server.PREFIX + '/input/select.html');
+      await page.evaluate(() => window.Event = null);
+      await page.select('select', 'blue');
+      expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
+      expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
+    });
   });
 
   describe('Connection', function() {
