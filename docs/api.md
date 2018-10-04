@@ -2049,7 +2049,7 @@ Dispatches a `keyup` event.
 
 The Mouse class operates in main-frame CSS pixels relative to the top-left corner of the viewport.
 
-Every `page` object has it's own Mouse, accessible with [`page.mouse`](#pagemouse).
+Every `page` object has its own Mouse, accessible with [`page.mouse`](#pagemouse).
 
 ```js
 // Using ‘page.mouse’ to trace a 100x100 square.
