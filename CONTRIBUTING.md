@@ -133,12 +133,6 @@ Despite being named 'unit', these are integration tests, making sure public API 
 npm run unit
 ```
 
-- To filter tests by name:
-
-```bash
-npm run unit --filter=waitFor
-```
-
 - To run tests in parallel, use `-j` flag:
 
 ```bash
