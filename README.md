@@ -185,9 +185,6 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
 - [Examples](https://github.com/GoogleChrome/puppeteer/tree/master/examples/)
 - [Community list of Puppeteer resources](https://github.com/transitive-bullshit/awesome-puppeteer)
 
-## Bundling
-
-Puppeteer is bundling-friendly; see [bundling for web](https://github.com/GoogleChrome/puppeteer/blob/master/utils/browser/README.md)
 
 <!-- [START debugging] -->
 

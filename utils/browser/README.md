@@ -1,8 +1,5 @@
 # Bundling For Web Browsers
 
-We don't release pre-bundled version of Puppeteer yet, but we made sure it's
-easy to bundle Puppeteer.
-
 To bundle Puppeteer using [Browserify](http://browserify.org/):
 
 1. Clone Puppeteer repository: `git clone https://github.com/GoogleChrome/puppeteer && cd puppeteer`
@@ -26,3 +23,4 @@ another browser instance through its WS Endpoint:
 
 See our [puppeteer-web tests](https://github.com/GoogleChrome/puppeteer/blob/master/utils/browser/test.js)
 for details.
+
