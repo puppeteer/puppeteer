@@ -90,7 +90,6 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.goto(server.EMPTY_PAGE);
       const target = await targetPromise;
       expect(await target.page()).toBe(page);
-      await page.close();
       await context.close();
     });
     it('should timeout waiting for a non-existent target', async function({browser, server}) {
