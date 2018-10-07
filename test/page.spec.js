@@ -65,6 +65,25 @@ module.exports.addTests = function({testRunner, expect, headless}) {
     });
   });
 
+  let asyncawait = true;
+  try {
+    new Function('async function foo() {await 1}');
+  } catch (e) {
+    asyncawait = false;
+  }
+  (asyncawait ? describe : xdescribe)('Async stacks', () => {
+    it('should work', async({page, server}) => {
+      server.setRoute('/empty.html', (req, res) => {
+        res.statusCode = 204;
+        res.end();
+      });
+      let error = null;
+      await page.goto(server.EMPTY_PAGE).catch(e => error = e);
+      expect(error).not.toBe(null);
+      expect(error.message).toContain('net::ERR_ABORTED');
+    });
+  });
+
   describe('Page.Events.error', function() {
     it('should throw when page crashes', async({page}) => {
       let error = null;
@@ -552,7 +571,7 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       expect(response.status()).toBe(200);
       expect(response.securityDetails()).toBe(null);
     });
-    xit('should work when page calls history API in beforeunload', async({page, server}) => {
+    it('should work when page calls history API in beforeunload', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
         window.addEventListener('beforeunload', () => history.replaceState(null, 'initial', window.location.href), false);
@@ -771,11 +790,10 @@ module.exports.addTests = function({testRunner, expect, headless}) {
   describe('Page.waitForNavigation', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
-      const [result] = await Promise.all([
+      const [response] = await Promise.all([
         page.waitForNavigation(),
         page.evaluate(url => window.location.href = url, server.PREFIX + '/grid.html')
       ]);
-      const response = await result;
       expect(response.ok()).toBe(true);
       expect(response.url()).toContain('grid.html');
     });
@@ -1656,6 +1674,12 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       const screenshot = await page.screenshot({omitBackground: true});
       expect(screenshot).toBeGolden('transparent.png');
     });
+    it('should render white background on jpeg file', async({page, server}) => {
+      await page.setViewport({ width: 100, height: 100 });
+      await page.goto(server.EMPTY_PAGE);
+      const screenshot = await page.screenshot({omitBackground: true, type: 'jpeg'});
+      expect(screenshot).toBeGolden('white.jpg');
+    });
     it('should work with odd clip size on Retina displays', async({page, server}) => {
       const screenshot = await page.screenshot({
         clip: {
@@ -1752,6 +1776,14 @@ module.exports.addTests = function({testRunner, expect, headless}) {
         error = e;
       }
       expect(error.message).toContain('Values must be strings');
+    });
+    // @see https://github.com/GoogleChrome/puppeteer/issues/3327
+    xit('should work when re-defining top-level Event class', async({page, server}) => {
+      await page.goto(server.PREFIX + '/input/select.html');
+      await page.evaluate(() => window.Event = null);
+      await page.select('select', 'blue');
+      expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
+      expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
     });
   });
 

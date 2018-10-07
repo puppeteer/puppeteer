@@ -25,14 +25,14 @@ const WebSocketServer = require('ws').Server;
 const fulfillSymbol = Symbol('fullfil callback');
 const rejectSymbol = Symbol('reject callback');
 
-class SimpleServer {
+class TestServer {
   /**
    * @param {string} dirPath
    * @param {number} port
-   * @return {!SimpleServer}
+   * @return {!TestServer}
    */
   static async create(dirPath, port) {
-    const server = new SimpleServer(dirPath, port);
+    const server = new TestServer(dirPath, port);
     await new Promise(x => server._server.once('listening', x));
     return server;
   }
@@ -40,10 +40,10 @@ class SimpleServer {
   /**
    * @param {string} dirPath
    * @param {number} port
-   * @return {!SimpleServer}
+   * @return {!TestServer}
    */
   static async createHTTPS(dirPath, port) {
-    const server = new SimpleServer(dirPath, port, {
+    const server = new TestServer(dirPath, port, {
       key: fs.readFileSync(path.join(__dirname, 'key.pem')),
       cert: fs.readFileSync(path.join(__dirname, 'cert.pem')),
       passphrase: 'aaaa',
@@ -193,8 +193,10 @@ class SimpleServer {
       }
     }
     // Notify request subscriber.
-    if (this._requestSubscribers.has(pathName))
+    if (this._requestSubscribers.has(pathName)) {
       this._requestSubscribers.get(pathName)[fulfillSymbol].call(null, request);
+      this._requestSubscribers.delete(pathName);
+    }
     const handler = this._routes.get(pathName);
     if (handler) {
       handler.call(null, request, response);
@@ -244,4 +246,4 @@ class SimpleServer {
   }
 }
 
-module.exports = SimpleServer;
+module.exports = {TestServer};

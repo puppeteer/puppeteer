@@ -1,15 +1,29 @@
 # TestRunner
 
-- testrunner is a library: no additional binary required; tests are `node.js` scripts
+This test runner is used internally by Puppeteer to test Puppeteer itself.
+
+- testrunner is a *library*: tests are `node.js` scripts
 - parallel wrt IO operations
 - supports async/await
 - modular
 - well-isolated state per execution thread
 
-Example
+### Installation
+
+```sh
+npm install --save-dev @pptr/testrunner
+```
+
+### Example
+
+Save the following as `test.js` and run using `node`:
+
+```sh
+node test.js
+```
 
 ```js
-const {TestRunner, Reporter, Matchers} = require('../utils/testrunner');
+const {TestRunner, Reporter, Matchers} = require('@pptr/testrunner');
 
 // Runner holds and runs all the tests
 const runner = new TestRunner({
@@ -24,7 +38,8 @@ const {describe, xdescribe, fdescribe} = runner;
 const {it, fit, xit} = runner;
 const {beforeAll, beforeEach, afterAll, afterEach} = runner;
 
-beforeAll(state => {
+// Test hooks can be async.
+beforeAll(async state => {
   state.parallelIndex; // either 0 or 1 in this example, depending on the executing thread
   state.foo = 'bar'; // set state for every test
 });
@@ -43,3 +58,4 @@ const reporter = new Reporter(runner);
 // Run all tests.
 runner.run();
 ```
+

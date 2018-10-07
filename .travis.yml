@@ -18,6 +18,8 @@ script:
   - 'if [ "$NODE8" = "true" ]; then npm run lint; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run coverage; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run test-doclint; fi'
+  - 'if [ "$NODE8" = "true" ]; then npm run bundle; fi'
+  - 'if [ "$NODE8" = "true" ]; then npm run unit-bundle; fi'
   - 'if [ "$NODE6" = "true" ]; then npm run unit-node6; fi'
 jobs:
   include:

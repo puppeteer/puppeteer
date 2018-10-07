@@ -31,9 +31,10 @@ const EXCLUDE_CLASSES = new Set([
   'Multimap',
   'NavigatorWatcher',
   'NetworkManager',
-  'Pipe',
+  'PipeTransport',
   'TaskQueue',
   'WaitTask',
+  'WebSocketTransport',
 ]);
 
 const EXCLUDE_PROPERTIES = new Set([

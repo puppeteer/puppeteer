@@ -60,6 +60,31 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
         await rmAsync(downloadsFolder);
       });
     });
+    describe('Browser.disconnect', function() {
+      it('should reject navigation when browser closes', async({server}) => {
+        server.setRoute('/one-style.css', () => {});
+        const browser = await puppeteer.launch(defaultBrowserOptions);
+        const remote = await puppeteer.connect({browserWSEndpoint: browser.wsEndpoint()});
+        const page = await remote.newPage();
+        const navigationPromise = page.goto(server.PREFIX + '/one-style.html', {timeout: 60000}).catch(e => e);
+        await server.waitForRequest('/one-style.css');
+        await remote.disconnect();
+        const error = await navigationPromise;
+        expect(error.message).toBe('Navigation failed because browser has disconnected!');
+        await browser.close();
+      });
+      it('should reject waitForSelector when browser closes', async({server}) => {
+        server.setRoute('/empty.html', () => {});
+        const browser = await puppeteer.launch(defaultBrowserOptions);
+        const remote = await puppeteer.connect({browserWSEndpoint: browser.wsEndpoint()});
+        const page = await remote.newPage();
+        const watchdog = page.waitForSelector('div', {timeout: 60000}).catch(e => e);
+        await remote.disconnect();
+        const error = await watchdog;
+        expect(error.message).toBe('Protocol error (Runtime.callFunctionOn): Session closed. Most likely the page has been closed.');
+        await browser.close();
+      });
+    });
     describe('Puppeteer.launch', function() {
       it('should reject all promises when browser is closed', async() => {
         const browser = await puppeteer.launch(defaultBrowserOptions);
@@ -252,6 +277,19 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
         const browser = await puppeteer.launch(options);
         const page = await browser.newPage();
         expect(page.viewport()).toBe(null);
+        await browser.close();
+      });
+      it('should take fullPage screenshots when defaultViewport is null', async({server}) => {
+        const options = Object.assign({}, defaultBrowserOptions, {
+          defaultViewport: null
+        });
+        const browser = await puppeteer.launch(options);
+        const page = await browser.newPage();
+        await page.goto(server.PREFIX + '/grid.html');
+        const screenshot = await page.screenshot({
+          fullPage: true
+        });
+        expect(screenshot).toBeInstanceOf(Buffer);
         await browser.close();
       });
     });

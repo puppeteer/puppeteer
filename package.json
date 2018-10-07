@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "1.7.0-post",
+  "version": "1.9.0-post",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "main": "index.js",
   "repository": "github:GoogleChrome/puppeteer",
@@ -8,7 +8,7 @@
     "node": ">=6.4.0"
   },
   "puppeteer": {
-    "chromium_revision": "588429"
+    "chromium_revision": "594312"
   },
   "scripts": {
     "unit": "node test/test.js",
@@ -24,7 +24,9 @@
     "unit-node6": "node node6/test/test.js",
     "tsc": "tsc -p .",
     "prepublishOnly": "npm run build",
-    "apply-next-version": "node utils/apply_next_version.js"
+    "apply-next-version": "node utils/apply_next_version.js",
+    "bundle": "npx browserify -r ./index.js:puppeteer -o utils/browser/puppeteer-web.js",
+    "unit-bundle": "node utils/browser/test.js"
   },
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
@@ -42,18 +44,28 @@
     "@types/debug": "0.0.30",
     "@types/extract-zip": "^1.6.2",
     "@types/mime": "^2.0.0",
-    "@types/node": "^8.0.26",
+    "@types/node": "^8.10.34",
     "@types/rimraf": "^2.0.2",
     "@types/ws": "^3.0.2",
     "commonmark": "^0.27.0",
     "cross-env": "^5.0.5",
     "eslint": "^4.19.1",
     "esprima": "^4.0.0",
+    "jpeg-js": "^0.3.4",
     "minimist": "^1.2.0",
     "ncp": "^2.0.0",
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.3.3",
     "text-diff": "^1.0.1",
-    "typescript": "^3.0.1"
+    "typescript": "^3.1.1"
+  },
+  "browser": {
+    "./lib/BrowserFetcher.js": false,
+    "./node6/lib/Puppeteer": false,
+    "ws": "./utils/browser/WebSocket",
+    "fs": false,
+    "child_process": false,
+    "rimraf": false,
+    "readline": false
   }
 }

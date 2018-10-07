@@ -62,6 +62,15 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(remoteAddress.port).toBe(server.PORT);
     });
 
+    it('Response.statusText', async({page, server}) => {
+      server.setRoute('/cool', (req, res) => {
+        res.writeHead(200, 'cool!');
+        res.end();
+      });
+      const response = await page.goto(server.PREFIX + '/cool');
+      expect(response.statusText()).toBe('cool!');
+    });
+
     it('Response.fromCache()', async({page, server}) => {
       const responses = new Map();
       page.on('response', r => responses.set(r.url().split('/').pop(), r));
