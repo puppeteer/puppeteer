@@ -704,14 +704,14 @@ the method will return an array with all the targets in all browser contexts.
 #### browser.waitForTarget(predicate[, options])
 - `predicate` <[function]\([Target]\):[boolean]> A function to be run for every target
 - `options` <[Object]>
-  - `timeout` <[number]> <[number]> Maximum wait time in milliseconds. Pass `0` to disable the timeout. Defaults to 30 seconds.
+  - `timeout` <[number]> Maximum wait time in milliseconds. Pass `0` to disable the timeout. Defaults to 30 seconds.
 - returns: <[Promise]<[Target]>> Promise which resolves to the first target found that matches the `predicate` function.
 
 This searches for a target in all browser contexts.
 
 An example of finding a target for a page opened via `window.open`:
 ```js
-await page.evaluate(() => window.open('https://www.example.com/'))
+await page.evaluate(() => window.open('https://www.example.com/'));
 const newWindowTarget = await browser.waitForTarget(target => target.url() === 'https://www.example.com/');
 ```
 
@@ -842,14 +842,14 @@ An array of all active targets inside the browser context.
 #### browserContext.waitForTarget(predicate[, options])
 - `predicate` <[function]\([Target]\):[boolean]> A function to be run for every target
 - `options` <[Object]>
-  - `timeout` <[number]> <[number]> Maximum wait time in milliseconds. Pass `0` to disable the timeout. Defaults to 30 seconds.
+  - `timeout` <[number]> Maximum wait time in milliseconds. Pass `0` to disable the timeout. Defaults to 30 seconds.
 - returns: <[Promise]<[Target]>> Promise which resolves to the first target found that matches the `predicate` function.
 
 This searches for a target in this specific browser context.
 
 An example of finding a target for a page opened via `window.open`:
 ```js
-await page.evaluate(() => window.open('https://www.example.com/'))
+await page.evaluate(() => window.open('https://www.example.com/'));
 const newWindowTarget = await browserContext.waitForTarget(target => target.url() === 'https://www.example.com/');
 ```
 
