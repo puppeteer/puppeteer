@@ -16,6 +16,7 @@
 
 const utils = require('./utils');
 const puppeteer = utils.requireRoot('index');
+const {TimeoutError} = utils.requireRoot('Errors');
 
 module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
@@ -77,6 +78,24 @@ module.exports.addTests = function({testRunner, expect}) {
         `CHANGED: ${server.EMPTY_PAGE}`,
         `DESTROYED: ${server.EMPTY_PAGE}`
       ]);
+      await context.close();
+    });
+    it('should wait for a target', async function({browser, server}) {
+      const context = await browser.createIncognitoBrowserContext();
+      let resolved = false;
+      const targetPromise = context.waitForTarget(target => target.url() === server.EMPTY_PAGE);
+      targetPromise.then(() => resolved = true);
+      const page = await context.newPage();
+      expect(resolved).toBe(false);
+      await page.goto(server.EMPTY_PAGE);
+      const target = await targetPromise;
+      expect(await target.page()).toBe(page);
+      await context.close();
+    });
+    it('should timeout waiting for a non-existent target', async function({browser, server}) {
+      const context = await browser.createIncognitoBrowserContext();
+      const error = await context.waitForTarget(target => target.url() === server.EMPTY_PAGE, {timeout: 1}).catch(e => e);
+      expect(error).toBeInstanceOf(TimeoutError);
       await context.close();
     });
     it('should isolate localStorage and cookies', async function({browser, server}) {

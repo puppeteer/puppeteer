@@ -121,7 +121,7 @@ module.exports.addTests = function({testRunner, expect}) {
         server.waitForRequest('/one-style.css')
       ]);
       // Connect to the opened page.
-      const target = context.targets().find(target => target.url().includes('one-style.html'));
+      const target = await context.waitForTarget(target => target.url().includes('one-style.html'));
       const newPage = await target.page();
       // Issue a redirect.
       serverResponse.writeHead(302, { location: '/injectedstyle.css' });

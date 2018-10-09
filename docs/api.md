@@ -52,6 +52,7 @@
   * [browser.targets()](#browsertargets)
   * [browser.userAgent()](#browseruseragent)
   * [browser.version()](#browserversion)
+  * [browser.waitForTarget(predicate[, options])](#browserwaitfortargetpredicate-options)
   * [browser.wsEndpoint()](#browserwsendpoint)
 - [class: BrowserContext](#class-browsercontext)
   * [event: 'targetchanged'](#event-targetchanged-1)
@@ -65,6 +66,7 @@
   * [browserContext.overridePermissions(origin, permissions)](#browsercontextoverridepermissionsorigin-permissions)
   * [browserContext.pages()](#browsercontextpages)
   * [browserContext.targets()](#browsercontexttargets)
+  * [browserContext.waitForTarget(predicate[, options])](#browsercontextwaitfortargetpredicate-options)
 - [class: Page](#class-page)
   * [event: 'close'](#event-close)
   * [event: 'console'](#event-console)
@@ -699,6 +701,20 @@ the method will return an array with all the targets in all browser contexts.
 
 > **NOTE** the format of browser.version() might change with future releases of Chromium.
 
+#### browser.waitForTarget(predicate[, options])
+- `predicate` <[function]\([Target]\):[boolean]> A function to be run for every target
+- `options` <[Object]>
+  - `timeout` <[number]> Maximum wait time in milliseconds. Pass `0` to disable the timeout. Defaults to 30 seconds.
+- returns: <[Promise]<[Target]>> Promise which resolves to the first target found that matches the `predicate` function.
+
+This searches for a target in all browser contexts.
+
+An example of finding a target for a page opened via `window.open`:
+```js
+await page.evaluate(() => window.open('https://www.example.com/'));
+const newWindowTarget = await browser.waitForTarget(target => target.url() === 'https://www.example.com/');
+```
+
 #### browser.wsEndpoint()
 - returns: <[string]> Browser websocket url.
 
@@ -822,6 +838,20 @@ An array of all pages inside the browser context.
 - returns: <[Array]<[Target]>>
 
 An array of all active targets inside the browser context.
+
+#### browserContext.waitForTarget(predicate[, options])
+- `predicate` <[function]\([Target]\):[boolean]> A function to be run for every target
+- `options` <[Object]>
+  - `timeout` <[number]> Maximum wait time in milliseconds. Pass `0` to disable the timeout. Defaults to 30 seconds.
+- returns: <[Promise]<[Target]>> Promise which resolves to the first target found that matches the `predicate` function.
+
+This searches for a target in this specific browser context.
+
+An example of finding a target for a page opened via `window.open`:
+```js
+await page.evaluate(() => window.open('https://www.example.com/'));
+const newWindowTarget = await browserContext.waitForTarget(target => target.url() === 'https://www.example.com/');
+```
 
 ### class: Page
 
