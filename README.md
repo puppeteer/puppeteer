@@ -16,7 +16,7 @@
 Most things that you can do manually in the browser can be done using Puppeteer! Here are a few examples to get you started:
 
 * Generate screenshots and PDFs of pages.
-* Crawl a SPA and generate pre-rendered content (i.e. "SSR").
+* Crawl a SPA (Single-Page Application) and generate pre-rendered content (i.e. "SSR" (Server-Side Rendering)).
 * Automate form submission, UI testing, keyboard input, etc.
 * Create an up-to-date, automated testing environment. Run your tests directly in the latest version of Chrome using the latest JavaScript and browser features.
 * Capture a [timeline trace](https://developers.google.com/web/tools/chrome-devtools/evaluate-performance/reference) of your site to help diagnose performance issues.
@@ -50,7 +50,7 @@ npm i puppeteer-core
 # or "yarn add puppeteer-core"
 ```
 
-`puppeteer-core` is intended to be a lightweight version of puppeteer for launching an existing browser installation or for connecting to a remote one.
+`puppeteer-core` is intended to be a lightweight version of Puppeteer for launching an existing browser installation or for connecting to a remote one.
 
 See [puppeteer vs puppeteer-core](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteer-vs-puppeteer-core).
 
