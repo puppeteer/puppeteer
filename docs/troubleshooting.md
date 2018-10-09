@@ -101,7 +101,7 @@ To run headless Chrome on Travis, you *must* call `launch()` with flags to disab
 const browser = await puppeteer.launch({args: ['--no-sandbox']});
 ```
 
-Some Puppeteer functionality (like work with Chrome extensions) may operate only in non-headless mode. To be able to run Puppeteer in non-headless mode on CI you need to run browser virtually. For that, you can use [Xvfb](https://en.wikipedia.org/wiki/Xvfb) server:
+Some Puppeteer functionality (like Chrome extensions) requires non-headless mode. Running Puppeteer in non-headless mode on Travis CI can be done using an [Xvfb](https://en.wikipedia.org/wiki/Xvfb) server:
 
 ```yml
 before_install:
