@@ -33,7 +33,7 @@ Give it a spin: https://try-puppeteer.appspot.com/
 To use Puppeteer in your project, run:
 
 ```bash
-npm i puppeteer
+npm i puppeteer --save-dev
 # or "yarn add puppeteer"
 ```
 
