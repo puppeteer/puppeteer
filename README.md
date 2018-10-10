@@ -33,8 +33,8 @@ Give it a spin: https://try-puppeteer.appspot.com/
 To use Puppeteer in your project, run:
 
 ```bash
-npm i puppeteer
-# or "yarn add puppeteer"
+npm i puppeteer --save-dev
+# or "yarn add puppeteer" --dev
 ```
 
 Note: When you install Puppeteer, it downloads a recent version of Chromium (~170MB Mac, ~282MB Linux, ~280MB Win) that is guaranteed to work with the API. To skip the download, see [Environment variables](https://github.com/GoogleChrome/puppeteer/blob/v1.9.0/docs/api.md#environment-variables).
