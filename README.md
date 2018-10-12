@@ -37,7 +37,7 @@ npm i puppeteer
 # or "yarn add puppeteer"
 ```
 
-Note: When you install Puppeteer, it downloads a recent version of Chromium (~170MB Mac, ~282MB Linux, ~280MB Win) that is guaranteed to work with the API. To skip the download, see [Environment variables](https://github.com/GoogleChrome/puppeteer/blob/v1.9.0/docs/api.md#environment-variables).
+Note: When you install Puppeteer, it downloads a recent version of Chromium (~170MB Mac, ~282MB Linux, ~280MB Win) that is guaranteed to work with the API. To skip the download, see [Environment variables](https://github.com/GoogleChrome/puppeteer/blob/v1.9.0/docs/api.md#environment-variables). If you are in the mainland of China, because of the GFW, you may need to set `PUPPETEER_DOWNLOAD_HOST` properly. You can execute `npm config set puppeteer_download_host=https://storage.googleapis.com.cnpmjs.org` before install Puppeteer or add a `.npmrc` file in your project root for modify the [npm config](https://docs.npmjs.com/cli/config) which will be used to download Chromium.
 
 
 ### puppeteer-core
