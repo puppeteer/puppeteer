@@ -90,6 +90,7 @@
   * [page.$$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
   * [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args-1)
   * [page.$x(expression)](#pagexexpression)
+  * [page.accessibility](#pageaccessibility)
   * [page.addScriptTag(options)](#pageaddscripttagoptions)
   * [page.addStyleTag(options)](#pageaddstyletagoptions)
   * [page.authenticate(credentials)](#pageauthenticatecredentials)
@@ -156,6 +157,8 @@
   * [worker.evaluateHandle(pageFunction, ...args)](#workerevaluatehandlepagefunction-args)
   * [worker.executionContext()](#workerexecutioncontext)
   * [worker.url()](#workerurl)
+- [class: Accessibility](#class-accessibility)
+  * [accessibility.snapshot()](#accessibilitysnapshot)
 - [class: Keyboard](#class-keyboard)
   * [keyboard.down(key[, options])](#keyboarddownkey-options)
   * [keyboard.press(key[, options])](#keyboardpresskey-options)
@@ -1046,6 +1049,9 @@ Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector
 The method evaluates the XPath expression.
 
 Shortcut for [page.mainFrame().$x(expression)](#framexexpression)
+
+#### page.accessibility
+- returns: <[Accessibility]>
 
 #### page.addScriptTag(options)
 - `options` <[Object]>
@@ -1981,6 +1987,21 @@ Shortcut for [(await worker.executionContext()).evaluateHandle(pageFunction, ...
 
 #### worker.url()
 - returns: <[string]>
+
+### class: Accessibility
+
+The Accessibility class provides methods for inspecting Chromium's accessibility tree. The accessibility tree is used by assistive technology such as a [screen readers](https://en.wikipedia.org/wiki/Screen_reader).
+
+
+#### accessibility.snapshot()
+- returns: <[Promise]<[string]>>
+
+Captures the current state of the accessibility tree and processes it into a string.
+
+```js
+const snapshot = await page.accessibility.snapshot();
+console.log(snapshot);
+```
 
 ### class: Keyboard
 
@@ -3431,3 +3452,4 @@ TimeoutError is emitted whenever certain operations are terminated due to timeou
 [UnixTime]: https://en.wikipedia.org/wiki/Unix_time "Unix Time"
 [SecurityDetails]: #class-securitydetails "SecurityDetails"
 [Worker]: #class-worker "Worker"
+[Mouse]: #class-accessibility "Accessibility"
