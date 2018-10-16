@@ -189,7 +189,7 @@ module.exports.addTests = function({testRunner, expect}) {
         expect(coverage.length).toBe(0);
       });
     });
-    xit('should work with a recently loaded stylesheet', async function({page, server}) {
+    it('should work with a recently loaded stylesheet', async function({page, server}) {
       await page.coverage.startCSSCoverage();
       await page.evaluate(async url => {
         document.body.textContent = 'hello, world';
