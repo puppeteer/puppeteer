@@ -498,7 +498,6 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       page.on('console', msg => {
         message = msg;
       });
-      // console.log(server.PREFIX + '/warn.html?wham')
       await Promise.all([
         page.goto(server.PREFIX + '/console-message-1.html'),
         waitEvent(page, 'console'),
