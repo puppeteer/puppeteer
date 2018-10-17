@@ -1990,7 +1990,7 @@ Shortcut for [(await worker.executionContext()).evaluateHandle(pageFunction, ...
 
 ### class: Accessibility
 
-The Accessibility class provides methods for inspecting Chromium's accessibility tree. The accessibility tree is used by assistive technology such as a [screen readers](https://en.wikipedia.org/wiki/Screen_reader).
+The Accessibility class provides methods for inspecting Chromium's accessibility tree. The accessibility tree is used by assistive technology such as [screen readers](https://en.wikipedia.org/wiki/Screen_reader).
 
 
 #### accessibility.snapshot()
