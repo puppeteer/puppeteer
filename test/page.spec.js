@@ -1051,6 +1051,18 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       });
       expect(result).toBe(15);
     });
+    it('multiple bindings should work', async({page, server}) => {
+      await page.exposeFunction('multiply', function(a, b) {
+        return a * b;
+      });
+      await page.exposeFunction('divide', function(a, b) {
+        return a / b;
+      });
+      const result = await page.evaluate(async function() {
+        return await divide(await multiply(5, 3), 5);
+      });
+      expect(result).toBe(3);
+    });
     it('should work on frames', async({page, server}) => {
       await page.exposeFunction('compute', function(a, b) {
         return Promise.resolve(a * b);
