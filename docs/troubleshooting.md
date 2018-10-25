@@ -283,7 +283,7 @@ AWS Lambda [limits](https://docs.aws.amazon.com/lambda/latest/dg/limits.html) de
 - https://github.com/universalbasket/aws-lambda-chrome
 - https://github.com/Kikobeats/aws-lambda-chrome
 
-## evaluate() async functions
+## Code Transpilation Issues
 
 If you are using a JavaScript transpiler like babel or TypeScript, calling `evaluate()` with an async function might not work. This is because while `puppeteer` uses `Function.prototype.toString()` to serialize functions while transpilers could be changing the output code in such a way it's incompatible with `puppeteer`. 
 
