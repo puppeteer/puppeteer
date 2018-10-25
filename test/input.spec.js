@@ -312,6 +312,11 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.click('button');
       expect(await page.evaluate(() => window.result)).toBe('Clicked');
     });
+    it('should click a rotated button', async({page, server}) => {
+      await page.goto(server.PREFIX + '/input/rotatedButton.html');
+      await page.click('button');
+      expect(await page.evaluate(() => result)).toBe('Clicked');
+    });
     it('should select the text with mouse', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       await page.focus('textarea');
