@@ -404,7 +404,7 @@ const puppeteer = require('puppeteer');
 
 (async () => {
   const pathToExtension = require('path').join(__dirname, 'my-extension');
-  const browser = puppeteer.launch({
+  const browser = await puppeteer.launch({
     headless: false,
     args: [
       `--disable-extensions-except=${pathToExtension}`,
