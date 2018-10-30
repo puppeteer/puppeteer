@@ -104,6 +104,26 @@ module.exports.addTests = function({testRunner, expect}) {
         }]
       });
     });
+    it('should not report text nodes inside controls', async function({page}) {
+      await page.setContent(`
+      <div role="tablist">
+        <div role="tab" aria-selected="true"><b>Tab1</b></div>
+        <div role="tab">Tab2</div>
+      </div>`);
+      console.log(JSON.stringify(await page.accessibility.snapshot(), undefined, 2));
+      expect(await page.accessibility.snapshot()).toEqual({
+        role: 'WebArea',
+        name: '',
+        children: [{
+          role: 'tab',
+          name: 'Tab1',
+          selected: true
+        }, {
+          role: 'tab',
+          name: 'Tab2'
+        }]
+      });
+    });
 
     function findFocusedNode(node) {
       if (node.focused)

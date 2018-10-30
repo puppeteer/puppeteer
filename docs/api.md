@@ -2006,7 +2006,7 @@ The Accessibility class provides methods for inspecting Chromium's accessibility
   - `valuetext` <[string]> A description of the current value.
   - `disabled` <[boolean]> Whether the node is disabled.
   - `expanded` <[boolean]> Whether the node is expanded or collapsed.
-  - `expanded` <[boolean]> Whether the node is focused.
+  - `focused` <[boolean]> Whether the node is focused.
   - `modal` <[boolean]> Whether the node is [modal](https://en.wikipedia.org/wiki/Modal_window).
   - `multiline` <[boolean]> Whether the node text input supports multiline.
   - `multiselectable` <[boolean]> Whether more than one child can be selected.
@@ -3481,4 +3481,4 @@ TimeoutError is emitted whenever certain operations are terminated due to timeou
 [UnixTime]: https://en.wikipedia.org/wiki/Unix_time "Unix Time"
 [SecurityDetails]: #class-securitydetails "SecurityDetails"
 [Worker]: #class-worker "Worker"
-[Mouse]: #class-accessibility "Accessibility"
+[Accessibility]: #class-accessibility "Accessibility"
