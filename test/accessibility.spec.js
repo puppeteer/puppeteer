@@ -72,8 +72,7 @@ module.exports.addTests = function({testRunner, expect}) {
         focused: true
       });
 
-      await page.click('select');
-
+      await page.type('select', ' ');
       expect(findFocusedNode(await page.accessibility.snapshot())).toEqual({
         role: 'combobox',
         name: '',
@@ -85,6 +84,7 @@ module.exports.addTests = function({testRunner, expect}) {
           { role: 'menuitem', name: 'Second Option' }
         ]
       });
+      await page.type('select', '\n');
     });
     it('should report uninteresting nodes', async function({page}) {
       await page.setContent(`<textarea autofocus>hi</textarea>`);
@@ -110,7 +110,6 @@ module.exports.addTests = function({testRunner, expect}) {
         <div role="tab" aria-selected="true"><b>Tab1</b></div>
         <div role="tab">Tab2</div>
       </div>`);
-      console.log(JSON.stringify(await page.accessibility.snapshot(), undefined, 2));
       expect(await page.accessibility.snapshot()).toEqual({
         role: 'WebArea',
         name: '',
