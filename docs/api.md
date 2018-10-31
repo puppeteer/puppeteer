@@ -1996,7 +1996,7 @@ The Accessibility class provides methods for inspecting Chromium's accessibility
 #### accessibility.snapshot([options])
 - `options` <[Object]>
   - `interestingOnly` <[boolean]> Prune uninteresting nodes from the tree. Defaults to `true`.
-- returns: <[Promise]<[Object]>>
+- returns: <[Promise]<[AXNode]>> Returns an AXNode object with the following properties:
   - `role` <[string]> The [role](https://www.w3.org/TR/wai-aria/#usage_intro).
   - `name` <[string]> A human readable name for the node.
   - `value` <[string]|[number]> The current value of the node.
@@ -2022,10 +2022,13 @@ The Accessibility class provides methods for inspecting Chromium's accessibility
   - `hasPopup` <[string]> What kind of popup is currently being shown for a node.
   - `invalid` <[string]> Whether and in what way is this node's value invalid.
   - `orientation` <[string]> Whether the node is oriented horizontally or vertically.
-  - `children` <[Array]<[Object]>> Child nodes of this node, if any.
+  - `children` <[Array]<[AXNode]>> Child nodes of this node, if any.
 
-Captures the current state of the accessibility tree. The returned object represents the root
-accessible node of the page.
+Captures the current state of the accessibility tree. The returned object represents the root accessible node of the page.
+
+The Chromium accessibility tree contains nodes that go unused on most platforms and by
+most screen readers. Puppeteer will discard them as well for an easier to process tree,
+unless `interestingOnly` is set to false.
 
 ```js
 const snapshot = await page.accessibility.snapshot();
@@ -3482,3 +3485,4 @@ TimeoutError is emitted whenever certain operations are terminated due to timeou
 [SecurityDetails]: #class-securitydetails "SecurityDetails"
 [Worker]: #class-worker "Worker"
 [Accessibility]: #class-accessibility "Accessibility"
+[AXNode]: #accessibilitysnapshotoptions "Accessibility"
