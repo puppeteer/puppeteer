@@ -217,6 +217,14 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
         await page.close();
         await browser.close();
       });
+      it('should fire "disconnected" when closing with pipe', async() => {
+        const options = Object.assign({pipe: true}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
+        const disconnectedEventPromise = new Promise(resolve => browser.once('disconnected', resolve));
+        // Emulate user exiting browser.
+        browser.process().kill();
+        await disconnectedEventPromise;
+      });
       it('should work with no default arguments', async() => {
         const options = Object.assign({}, defaultBrowserOptions);
         options.ignoreDefaultArgs = true;
