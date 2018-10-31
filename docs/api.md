@@ -2026,13 +2026,31 @@ The Accessibility class provides methods for inspecting Chromium's accessibility
 
 Captures the current state of the accessibility tree. The returned object represents the root accessible node of the page.
 
-The Chromium accessibility tree contains nodes that go unused on most platforms and by
+> **NOTE** The Chromium accessibility tree contains nodes that go unused on most platforms and by
 most screen readers. Puppeteer will discard them as well for an easier to process tree,
 unless `interestingOnly` is set to false.
 
+An example of dumping the entire accessibility tree:
 ```js
 const snapshot = await page.accessibility.snapshot();
 console.log(snapshot);
+```
+
+An example of logging the focused node's name:
+```js
+const snapshot = await page.accessibility.snapshot();
+const node = findNode(snapshot, node => node.focused);
+console.log(node.name);
+
+function findNode(node, fn) {
+  if (fn(node))
+    return node;
+  for (const child of node.children || []) {
+    const foundNode = findNode(child, fn);
+    return foundNode;
+  }
+  return null;
+}
 ```
 
 ### class: Keyboard

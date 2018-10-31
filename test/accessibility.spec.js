@@ -19,7 +19,7 @@ module.exports.addTests = function({testRunner, expect}) {
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
-  describe('Accessibility', function() {
+  fdescribe('Accessibility', function() {
     it('should work', async function({page}) {
       await page.setContent(`
       <head>
