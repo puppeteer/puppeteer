@@ -26,8 +26,8 @@ for details.
 
 ### Running inside Chrome Extension
 
-You might want to enable `unsafe-eval` inside extension by adding the following
-to your`manifest.json` file:
+You might want to enable `unsafe-eval` inside the extension by adding the following
+to your `manifest.json` file:
 
 ```
 "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
