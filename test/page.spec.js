@@ -184,7 +184,7 @@ module.exports.addTests = function({testRunner, expect, headless}) {
         sum(a, b) { return a + b; },
 
         async mult(a, b) { return a * b; }
-      }}`);
+      })`);
       expect(await page.evaluate(a.sum, 1, 2)).toBe(3);
       expect(await page.evaluate(a.mult, 2, 4)).toBe(8);
     });
