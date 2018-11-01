@@ -1990,7 +1990,15 @@ Shortcut for [(await worker.executionContext()).evaluateHandle(pageFunction, ...
 
 ### class: Accessibility
 
-The Accessibility class provides methods for inspecting Chromium's accessibility tree. The accessibility tree is used by assistive technology such as a [screen readers](https://en.wikipedia.org/wiki/Screen_reader).
+The Accessibility class provides methods for inspecting Chromium's accessibility tree. The accessibility tree is used by assistive technology such as [screen readers](https://en.wikipedia.org/wiki/Screen_reader).
+
+Accessibility is a very platform-specific thing. On different platforms, there are different screen readers that might have wildly different output.
+
+Blink - Chrome's rendering engine - has a concept of "accessibility tree", which is than translated into different platform-specific APIs. Accessibility namespace gives users
+access to the Blink Accessibility Tree.
+
+Most of the accessibility tree gets filtered out when converting from Blink AX Tree to Platform-specific AX-Tree or by screen readers themselves. By default, Puppeteer tries to approximate this filtering, exposing only the "interesting" nodes of the tree.
+
 
 
 #### accessibility.snapshot([options])
@@ -2012,15 +2020,15 @@ The Accessibility class provides methods for inspecting Chromium's accessibility
   - `multiselectable` <[boolean]> Whether more than one child can be selected.
   - `readonly` <[boolean]> Whether the node is read only.
   - `required` <[boolean]> Whether the node is required.
-  - `selected` <[boolean]> Whether the node is selected in it's parent node.
+  - `selected` <[boolean]> Whether the node is selected in its parent node.
   - `checked` <[boolean]|[string]> Whether the checkbox is checked, or "mixed".
-  - `pressed` <[boolean]|[string]> Whether the checkbox is checked, or "mixed".
+  - `pressed` <[boolean]|[string]> Whether the toggle button is checked, or "mixed".
   - `level` <[number]> The level of a heading.
   - `valuemin` <[number]> The minimum value in a node.
-  - `valuemax` <[number]> the maximum value in a node.
+  - `valuemax` <[number]> The maximum value in a node.
   - `autocomplete` <[string]> What kind of autocomplete is supported by a control.
-  - `hasPopup` <[string]> What kind of popup is currently being shown for a node.
-  - `invalid` <[string]> Whether and in what way is this node's value invalid.
+  - `haspopup` <[string]> What kind of popup is currently being shown for a node.
+  - `invalid` <[string]> Whether and in what way this node's value is invalid.
   - `orientation` <[string]> Whether the node is oriented horizontally or vertically.
   - `children` <[Array]<[AXNode]>> Child nodes of this node, if any.
 
@@ -2028,7 +2036,7 @@ Captures the current state of the accessibility tree. The returned object repres
 
 > **NOTE** The Chromium accessibility tree contains nodes that go unused on most platforms and by
 most screen readers. Puppeteer will discard them as well for an easier to process tree,
-unless `interestingOnly` is set to false.
+unless `interestingOnly` is set to `false`.
 
 An example of dumping the entire accessibility tree:
 ```js
@@ -2039,14 +2047,14 @@ console.log(snapshot);
 An example of logging the focused node's name:
 ```js
 const snapshot = await page.accessibility.snapshot();
-const node = findNode(snapshot, node => node.focused);
-console.log(node.name);
+const node = findFocusedNode(snapshot);
+console.log(node && node.name);
 
-function findNode(node, fn) {
-  if (fn(node))
+function findFocusedNode(node) {
+  if (node.focused)
     return node;
   for (const child of node.children || []) {
-    const foundNode = findNode(child, fn);
+    const foundNode = findFocusedNode(child);
     return foundNode;
   }
   return null;
@@ -3503,4 +3511,4 @@ TimeoutError is emitted whenever certain operations are terminated due to timeou
 [SecurityDetails]: #class-securitydetails "SecurityDetails"
 [Worker]: #class-worker "Worker"
 [Accessibility]: #class-accessibility "Accessibility"
-[AXNode]: #accessibilitysnapshotoptions "Accessibility"
+[AXNode]: #accessibilitysnapshotoptions "AXNode"
