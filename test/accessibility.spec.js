@@ -19,7 +19,7 @@ module.exports.addTests = function({testRunner, expect}) {
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
-  fdescribe('Accessibility', function() {
+  describe('Accessibility', function() {
     it('should work', async function({page}) {
       await page.setContent(`
       <head>
@@ -124,6 +124,111 @@ module.exports.addTests = function({testRunner, expect}) {
       });
     });
 
+    it('rich text editable fields', async function({page}) {
+      await page.setContent(`
+      <div contenteditable="true">
+        Edit this image: <img src="fakeimage.png" alt="my fake image">
+      </div>`);
+      const snapshot = await page.accessibility.snapshot();
+      expect(snapshot.children[0]).toEqual({
+        role: 'GenericContainer',
+        name: '',
+        value: 'Edit this image: ',
+        children: [{
+          role: 'text',
+          name: 'Edit this image:'
+        }, {
+          role: 'img',
+          name: 'my fake image'
+        }]
+      });
+    });
+    it('rich text editable fields with role', async function({page}) {
+      await page.setContent(`
+      <div contenteditable="true" role='textbox'>
+        Edit this image: <img src="fakeimage.png" alt="my fake image">
+      </div>`);
+      const snapshot = await page.accessibility.snapshot();
+      expect(snapshot.children[0]).toEqual({
+        role: 'textbox',
+        name: '',
+        value: 'Edit this image: ',
+        children: [{
+          role: 'text',
+          name: 'Edit this image:'
+        }, {
+          role: 'img',
+          name: 'my fake image'
+        }]
+      });
+    });
+    it('plain text field with role', async function({page}) {
+      await page.setContent(`
+      <div contenteditable="plaintext-only" role='textbox'>Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
+      const snapshot = await page.accessibility.snapshot();
+      expect(snapshot.children[0]).toEqual({
+        role: 'textbox',
+        name: '',
+        value: 'Edit this image:'
+      });
+    });
+    it('plain text field without role', async function({page}) {
+      await page.setContent(`
+      <div contenteditable="plaintext-only">Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
+      const snapshot = await page.accessibility.snapshot();
+      expect(snapshot.children[0]).toEqual({
+        role: 'GenericContainer',
+        name: ''
+      });
+    });
+    it('plain text field without role', async function({page}) {
+      await page.setContent(`
+      <div contenteditable="plaintext-only">Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
+      const snapshot = await page.accessibility.snapshot();
+      expect(snapshot.children[0]).toEqual({
+        role: 'GenericContainer',
+        name: ''
+      });
+    });
+    it('non editable textbox with role and tabIndex and label', async function({page}) {
+      await page.setContent(`
+      <div role="textbox" tabIndex=0 aria-checked="true" aria-label="my favorite textbox">
+        this is the inner content
+        <img alt="yo" src="fakeimg.png">
+      </div>`);
+      const snapshot = await page.accessibility.snapshot();
+      expect(snapshot.children[0]).toEqual({
+        role: 'textbox',
+        name: 'my favorite textbox',
+        value: 'this is the inner content '
+      });
+    });
+    it('checkbox with and tabIndex and label', async function({page}) {
+      await page.setContent(`
+      <div role="checkbox" tabIndex=0 aria-checked="true" aria-label="my favorite checkbox">
+        this is the inner content
+        <img alt="yo" src="fakeimg.png">
+      </div>`);
+      const snapshot = await page.accessibility.snapshot();
+      expect(snapshot.children[0]).toEqual({
+        role: 'checkbox',
+        name: 'my favorite checkbox',
+        checked: true
+      });
+    });
+    it('checkbox without label', async function({page}) {
+      await page.setContent(`
+      <div role="checkbox" aria-checked="true">
+        this is the inner content
+        <img alt="yo" src="fakeimg.png">
+      </div>`);
+      const snapshot = await page.accessibility.snapshot();
+      expect(snapshot.children[0]).toEqual({
+        role: 'checkbox',
+        name: 'this is the inner content yo',
+        checked: true
+      });
+    });
     function findFocusedNode(node) {
       if (node.focused)
         return node;
