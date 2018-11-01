@@ -55,36 +55,10 @@ module.exports.addTests = function({testRunner, expect}) {
           {role: 'textbox', name: '', value: 'value only'},
           {role: 'textbox', name: 'placeholder', value: 'and a value'},
           {role: 'textbox', name: 'placeholder', value: 'and a value', description: 'This is a description!'},
-          {role: 'combobox', name: '', value: 'First Option'}]
+          {role: 'combobox', name: '', value: 'First Option', children: [
+            {role: 'menuitem', name: 'First Option', selected: true},
+            {role: 'menuitem', name: 'Second Option'}]}]
       });
-    });
-    it('should only report children of an expanded select', async function({page}) {
-      await page.setContent(`
-      <select autofocus>
-        <option>First Option</option>
-        <option>Second Option</option>
-      </select>`);
-
-      expect(findFocusedNode(await page.accessibility.snapshot())).toEqual({
-        role: 'combobox',
-        name: '',
-        value: 'First Option',
-        focused: true
-      });
-
-      await page.type('select', ' ');
-      expect(findFocusedNode(await page.accessibility.snapshot())).toEqual({
-        role: 'combobox',
-        name: '',
-        value: 'First Option',
-        expanded: true,
-        focused: true,
-        children: [
-          {role: 'menuitem', name: 'First Option', selected: true},
-          {role: 'menuitem', name: 'Second Option'}
-        ]
-      });
-      await page.type('select', '\n');
     });
     it('should report uninteresting nodes', async function({page}) {
       await page.setContent(`<textarea autofocus>hi</textarea>`);
