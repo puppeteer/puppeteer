@@ -179,7 +179,7 @@ module.exports.addTests = function({testRunner, expect, headless}) {
     });
     (asyncawait ? it : xit)('should work with function shorthands', async({page, server}) => {
       // trick node6 transpiler to not touch our object.
-      //TODO(lushnikov): remove eval once Node6 is dropped.
+      // TODO(lushnikov): remove eval once Node6 is dropped.
       const a = eval(`({
         sum(a, b) { return a + b; },
 
