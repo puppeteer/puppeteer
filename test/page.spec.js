@@ -178,11 +178,13 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       expect(result).toBe(21);
     });
     (asyncawait ? it : xit)('should work with function shorthands', async({page, server}) => {
-      const a = {
+      // trick node6 transpiler to not touch our object.
+      //TODO(lushnikov): remove eval once Node6 is dropped.
+      const a = eval(`({
         sum(a, b) { return a + b; },
 
         async mult(a, b) { return a * b; }
-      };
+      }}`);
       expect(await page.evaluate(a.sum, 1, 2)).toBe(3);
       expect(await page.evaluate(a.mult, 2, 4)).toBe(8);
     });
