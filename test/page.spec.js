@@ -23,6 +23,13 @@ const DeviceDescriptors = utils.requireRoot('DeviceDescriptors');
 const iPhone = DeviceDescriptors['iPhone 6'];
 const iPhoneLandscape = DeviceDescriptors['iPhone 6 landscape'];
 
+let asyncawait = true;
+try {
+  new Function('async function foo() {await 1}');
+} catch (e) {
+  asyncawait = false;
+}
+
 module.exports.addTests = function({testRunner, expect, headless}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
@@ -65,12 +72,6 @@ module.exports.addTests = function({testRunner, expect, headless}) {
     });
   });
 
-  let asyncawait = true;
-  try {
-    new Function('async function foo() {await 1}');
-  } catch (e) {
-    asyncawait = false;
-  }
   (asyncawait ? describe : xdescribe)('Async stacks', () => {
     it('should work', async({page, server}) => {
       server.setRoute('/empty.html', (req, res) => {
@@ -176,7 +177,7 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       const result = await page.evaluate(() => 7 * 3);
       expect(result).toBe(21);
     });
-    it('should work with function shorthands', async({page, server}) => {
+    (asyncawait ? it : xit)('should work with function shorthands', async({page, server}) => {
       const a = {
         sum(a, b) { return a + b; },
 
