@@ -23,6 +23,13 @@ const DeviceDescriptors = utils.requireRoot('DeviceDescriptors');
 const iPhone = DeviceDescriptors['iPhone 6'];
 const iPhoneLandscape = DeviceDescriptors['iPhone 6 landscape'];
 
+let asyncawait = true;
+try {
+  new Function('async function foo() {await 1}');
+} catch (e) {
+  asyncawait = false;
+}
+
 module.exports.addTests = function({testRunner, expect, headless}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
@@ -65,12 +72,6 @@ module.exports.addTests = function({testRunner, expect, headless}) {
     });
   });
 
-  let asyncawait = true;
-  try {
-    new Function('async function foo() {await 1}');
-  } catch (e) {
-    asyncawait = false;
-  }
   (asyncawait ? describe : xdescribe)('Async stacks', () => {
     it('should work', async({page, server}) => {
       server.setRoute('/empty.html', (req, res) => {
@@ -175,6 +176,17 @@ module.exports.addTests = function({testRunner, expect, headless}) {
     it('should work', async({page, server}) => {
       const result = await page.evaluate(() => 7 * 3);
       expect(result).toBe(21);
+    });
+    (asyncawait ? it : xit)('should work with function shorthands', async({page, server}) => {
+      // trick node6 transpiler to not touch our object.
+      // TODO(lushnikov): remove eval once Node6 is dropped.
+      const a = eval(`({
+        sum(a, b) { return a + b; },
+
+        async mult(a, b) { return a * b; }
+      })`);
+      expect(await page.evaluate(a.sum, 1, 2)).toBe(3);
+      expect(await page.evaluate(a.mult, 2, 4)).toBe(8);
     });
     it('should throw when evaluation triggers reload', async({page, server}) => {
       let error = null;
