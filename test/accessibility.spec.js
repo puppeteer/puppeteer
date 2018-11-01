@@ -43,19 +43,21 @@ module.exports.addTests = function({testRunner, expect}) {
       </body>`);
 
       expect(await page.accessibility.snapshot()).toEqual(
-          { role: 'WebArea',
-            name: 'Accessibility Test',
-            children:
-            [ { role: 'text', name: 'Hello World' },
-              { role: 'heading', name: 'Inputs', level: 1 },
-              { role: 'textbox', name: 'Empty input', focused: true },
-              { role: 'textbox', name: 'readonly input', readonly: true },
-              { role: 'textbox', name: 'disabled input', disabled: true },
-              { role: 'textbox', name: 'Input with whitespace', value: '  ' },
-              { role: 'textbox', name: '', value: 'value only' },
-              { role: 'textbox', name: 'placeholder', value: 'and a value' },
-              { role: 'textbox', name: 'placeholder', value: 'and a value', description: 'This is a description!' },
-              { role: 'combobox', name: '', value: 'First Option' } ] }
+        {
+          role: 'WebArea',
+          name: 'Accessibility Test',
+          children:
+            [{role: 'text', name: 'Hello World'},
+            {role: 'heading', name: 'Inputs', level: 1},
+            {role: 'textbox', name: 'Empty input', focused: true},
+            {role: 'textbox', name: 'readonly input', readonly: true},
+            {role: 'textbox', name: 'disabled input', disabled: true},
+            {role: 'textbox', name: 'Input with whitespace', value: '  '},
+            {role: 'textbox', name: '', value: 'value only'},
+            {role: 'textbox', name: 'placeholder', value: 'and a value'},
+            {role: 'textbox', name: 'placeholder', value: 'and a value', description: 'This is a description!'},
+            {role: 'combobox', name: '', value: 'First Option'}]
+        }
       );
     });
     it('should only report children of an expanded select', async function({page}) {
@@ -80,8 +82,8 @@ module.exports.addTests = function({testRunner, expect}) {
         expanded: true,
         focused: true,
         children: [
-          { role: 'menuitem', name: 'First Option', selected: true },
-          { role: 'menuitem', name: 'Second Option' }
+          {role: 'menuitem', name: 'First Option', selected: true},
+          {role: 'menuitem', name: 'Second Option'}
         ]
       });
       await page.type('select', '\n');
@@ -104,129 +106,131 @@ module.exports.addTests = function({testRunner, expect}) {
         }]
       });
     });
-    it('should not report text nodes inside controls', async function({page}) {
-      await page.setContent(`
-      <div role="tablist">
-        <div role="tab" aria-selected="true"><b>Tab1</b></div>
-        <div role="tab">Tab2</div>
-      </div>`);
-      expect(await page.accessibility.snapshot()).toEqual({
-        role: 'WebArea',
-        name: '',
-        children: [{
-          role: 'tab',
-          name: 'Tab1',
-          selected: true
-        }, {
-          role: 'tab',
-          name: 'Tab2'
-        }]
+    describe('filtering children of leaf nodes', function() {
+      it('should not report text nodes inside controls', async function({page}) {
+        await page.setContent(`
+        <div role="tablist">
+          <div role="tab" aria-selected="true"><b>Tab1</b></div>
+          <div role="tab">Tab2</div>
+        </div>`);
+        expect(await page.accessibility.snapshot()).toEqual({
+          role: 'WebArea',
+          name: '',
+          children: [{
+            role: 'tab',
+            name: 'Tab1',
+            selected: true
+          }, {
+            role: 'tab',
+            name: 'Tab2'
+          }]
+        });
       });
-    });
 
-    it('rich text editable fields', async function({page}) {
-      await page.setContent(`
-      <div contenteditable="true">
-        Edit this image: <img src="fakeimage.png" alt="my fake image">
-      </div>`);
-      const snapshot = await page.accessibility.snapshot();
-      expect(snapshot.children[0]).toEqual({
-        role: 'GenericContainer',
-        name: '',
-        value: 'Edit this image: ',
-        children: [{
-          role: 'text',
-          name: 'Edit this image:'
-        }, {
-          role: 'img',
-          name: 'my fake image'
-        }]
+      it('rich text editable fields should have children', async function({page}) {
+        await page.setContent(`
+        <div contenteditable="true">
+          Edit this image: <img src="fakeimage.png" alt="my fake image">
+        </div>`);
+        const snapshot = await page.accessibility.snapshot();
+        expect(snapshot.children[0]).toEqual({
+          role: 'GenericContainer',
+          name: '',
+          value: 'Edit this image: ',
+          children: [{
+            role: 'text',
+            name: 'Edit this image:'
+          }, {
+            role: 'img',
+            name: 'my fake image'
+          }]
+        });
       });
-    });
-    it('rich text editable fields with role', async function({page}) {
-      await page.setContent(`
-      <div contenteditable="true" role='textbox'>
-        Edit this image: <img src="fakeimage.png" alt="my fake image">
-      </div>`);
-      const snapshot = await page.accessibility.snapshot();
-      expect(snapshot.children[0]).toEqual({
-        role: 'textbox',
-        name: '',
-        value: 'Edit this image: ',
-        children: [{
-          role: 'text',
-          name: 'Edit this image:'
-        }, {
-          role: 'img',
-          name: 'my fake image'
-        }]
+      it('rich text editable fields with role should have children', async function({page}) {
+        await page.setContent(`
+        <div contenteditable="true" role='textbox'>
+          Edit this image: <img src="fakeimage.png" alt="my fake image">
+        </div>`);
+        const snapshot = await page.accessibility.snapshot();
+        expect(snapshot.children[0]).toEqual({
+          role: 'textbox',
+          name: '',
+          value: 'Edit this image: ',
+          children: [{
+            role: 'text',
+            name: 'Edit this image:'
+          }, {
+            role: 'img',
+            name: 'my fake image'
+          }]
+        });
       });
-    });
-    it('plain text field with role', async function({page}) {
-      await page.setContent(`
-      <div contenteditable="plaintext-only" role='textbox'>Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
-      const snapshot = await page.accessibility.snapshot();
-      expect(snapshot.children[0]).toEqual({
-        role: 'textbox',
-        name: '',
-        value: 'Edit this image:'
+      it('plain text field with role should not have children', async function({page}) {
+        await page.setContent(`
+        <div contenteditable="plaintext-only" role='textbox'>Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
+        const snapshot = await page.accessibility.snapshot();
+        expect(snapshot.children[0]).toEqual({
+          role: 'textbox',
+          name: '',
+          value: 'Edit this image:'
+        });
       });
-    });
-    it('plain text field without role', async function({page}) {
-      await page.setContent(`
-      <div contenteditable="plaintext-only">Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
-      const snapshot = await page.accessibility.snapshot();
-      expect(snapshot.children[0]).toEqual({
-        role: 'GenericContainer',
-        name: ''
+      it('plain text field without role should not have content', async function({page}) {
+        await page.setContent(`
+        <div contenteditable="plaintext-only">Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
+        const snapshot = await page.accessibility.snapshot();
+        expect(snapshot.children[0]).toEqual({
+          role: 'GenericContainer',
+          name: ''
+        });
       });
-    });
-    it('plain text field without role', async function({page}) {
-      await page.setContent(`
-      <div contenteditable="plaintext-only">Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
-      const snapshot = await page.accessibility.snapshot();
-      expect(snapshot.children[0]).toEqual({
-        role: 'GenericContainer',
-        name: ''
+      it('plain text field with tabindex and without role should not have content', async function({page}) {
+        await page.setContent(`
+        <div contenteditable="plaintext-only">Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
+        const snapshot = await page.accessibility.snapshot();
+        expect(snapshot.children[0]).toEqual({
+          role: 'GenericContainer',
+          name: ''
+        });
       });
-    });
-    it('non editable textbox with role and tabIndex and label', async function({page}) {
-      await page.setContent(`
-      <div role="textbox" tabIndex=0 aria-checked="true" aria-label="my favorite textbox">
-        this is the inner content
-        <img alt="yo" src="fakeimg.png">
-      </div>`);
-      const snapshot = await page.accessibility.snapshot();
-      expect(snapshot.children[0]).toEqual({
-        role: 'textbox',
-        name: 'my favorite textbox',
-        value: 'this is the inner content '
+      it('non editable textbox with role and tabIndex and label should not have children', async function({page}) {
+        await page.setContent(`
+        <div role="textbox" tabIndex=0 aria-checked="true" aria-label="my favorite textbox">
+          this is the inner content
+          <img alt="yo" src="fakeimg.png">
+        </div>`);
+        const snapshot = await page.accessibility.snapshot();
+        expect(snapshot.children[0]).toEqual({
+          role: 'textbox',
+          name: 'my favorite textbox',
+          value: 'this is the inner content '
+        });
       });
-    });
-    it('checkbox with and tabIndex and label', async function({page}) {
-      await page.setContent(`
-      <div role="checkbox" tabIndex=0 aria-checked="true" aria-label="my favorite checkbox">
-        this is the inner content
-        <img alt="yo" src="fakeimg.png">
-      </div>`);
-      const snapshot = await page.accessibility.snapshot();
-      expect(snapshot.children[0]).toEqual({
-        role: 'checkbox',
-        name: 'my favorite checkbox',
-        checked: true
+      it('checkbox with and tabIndex and label should not have children', async function({page}) {
+        await page.setContent(`
+        <div role="checkbox" tabIndex=0 aria-checked="true" aria-label="my favorite checkbox">
+          this is the inner content
+          <img alt="yo" src="fakeimg.png">
+        </div>`);
+        const snapshot = await page.accessibility.snapshot();
+        expect(snapshot.children[0]).toEqual({
+          role: 'checkbox',
+          name: 'my favorite checkbox',
+          checked: true
+        });
       });
-    });
-    it('checkbox without label', async function({page}) {
-      await page.setContent(`
-      <div role="checkbox" aria-checked="true">
-        this is the inner content
-        <img alt="yo" src="fakeimg.png">
-      </div>`);
-      const snapshot = await page.accessibility.snapshot();
-      expect(snapshot.children[0]).toEqual({
-        role: 'checkbox',
-        name: 'this is the inner content yo',
-        checked: true
+      it('checkbox without label should not have children', async function({page}) {
+        await page.setContent(`
+        <div role="checkbox" aria-checked="true">
+          this is the inner content
+          <img alt="yo" src="fakeimg.png">
+        </div>`);
+        const snapshot = await page.accessibility.snapshot();
+        expect(snapshot.children[0]).toEqual({
+          role: 'checkbox',
+          name: 'this is the inner content yo',
+          checked: true
+        });
       });
     });
     function findFocusedNode(node) {
