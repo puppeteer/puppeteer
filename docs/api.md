@@ -3063,6 +3063,18 @@ Exception is immediately thrown if the request interception is not enabled.
 Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterception`.
 Exception is immediately thrown if the request interception is not enabled.
 
+```js
+await page.setRequestInterception(true);
+page.on('request', request => {
+  // Override headers
+  const newHeaders = Object.assign({}, request.headers(), {
+    foo: 'bar', // set "foo" header
+    origin: undefined, // remove "origin" header
+  });
+  request.continue({headers});
+});
+```
+
 #### request.failure()
 - returns: <?[Object]> Object describing request failure, if any
   - `errorText` <[string]> Human-readable error message, e.g. `'net::ERR_FAILED'`.
