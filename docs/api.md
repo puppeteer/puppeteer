@@ -3067,7 +3067,7 @@ Exception is immediately thrown if the request interception is not enabled.
 await page.setRequestInterception(true);
 page.on('request', request => {
   // Override headers
-  const newHeaders = Object.assign({}, request.headers(), {
+  const headers = Object.assign({}, request.headers(), {
     foo: 'bar', // set "foo" header
     origin: undefined, // remove "origin" header
   });
