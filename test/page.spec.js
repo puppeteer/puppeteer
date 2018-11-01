@@ -176,6 +176,13 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       const result = await page.evaluate(() => 7 * 3);
       expect(result).toBe(21);
     });
+    it('should work with function shorthands', async({page, server}) => {
+      const a = {
+        sum(a, b) { return a + b; }
+      };
+      const result = await page.evaluate(a.sum, 1, 2);
+      expect(result).toBe(3);
+    });
     it('should throw when evaluation triggers reload', async({page, server}) => {
       let error = null;
       await page.evaluate(() => {
