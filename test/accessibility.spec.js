@@ -42,23 +42,21 @@ module.exports.addTests = function({testRunner, expect}) {
         </select>
       </body>`);
 
-      expect(await page.accessibility.snapshot()).toEqual(
-        {
-          role: 'WebArea',
-          name: 'Accessibility Test',
-          children:
-            [{role: 'text', name: 'Hello World'},
-            {role: 'heading', name: 'Inputs', level: 1},
-            {role: 'textbox', name: 'Empty input', focused: true},
-            {role: 'textbox', name: 'readonly input', readonly: true},
-            {role: 'textbox', name: 'disabled input', disabled: true},
-            {role: 'textbox', name: 'Input with whitespace', value: '  '},
-            {role: 'textbox', name: '', value: 'value only'},
-            {role: 'textbox', name: 'placeholder', value: 'and a value'},
-            {role: 'textbox', name: 'placeholder', value: 'and a value', description: 'This is a description!'},
-            {role: 'combobox', name: '', value: 'First Option'}]
-        }
-      );
+      expect(await page.accessibility.snapshot()).toEqual({
+        role: 'WebArea',
+        name: 'Accessibility Test',
+        children: [
+          {role: 'text', name: 'Hello World'},
+          {role: 'heading', name: 'Inputs', level: 1},
+          {role: 'textbox', name: 'Empty input', focused: true},
+          {role: 'textbox', name: 'readonly input', readonly: true},
+          {role: 'textbox', name: 'disabled input', disabled: true},
+          {role: 'textbox', name: 'Input with whitespace', value: '  '},
+          {role: 'textbox', name: '', value: 'value only'},
+          {role: 'textbox', name: 'placeholder', value: 'and a value'},
+          {role: 'textbox', name: 'placeholder', value: 'and a value', description: 'This is a description!'},
+          {role: 'combobox', name: '', value: 'First Option'}]
+      });
     });
     it('should only report children of an expanded select', async function({page}) {
       await page.setContent(`
