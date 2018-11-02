@@ -16,9 +16,13 @@
 
 const path = require('path');
 const os = require('os');
+const fs = require('fs');
+const rm = require('rimraf').sync;
+const {helper} = require('../lib/helper');
 const utils = require('./utils');
 const {waitEvent} = utils;
 const puppeteer = utils.requireRoot('index.js');
+const mkdtempAsync = helper.promisify(fs.mkdtemp);
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 
@@ -79,7 +83,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
       expect(pages).toEqual(['about:blank']);
       await browser.close();
     });
-    xit('headless should be able to read cookies written by headful', async({server}) => {
+    it('headless should be able to read cookies written by headful', async({server}) => {
       const userDataDir = await mkdtempAsync(TMP_FOLDER);
       // Write a cookie in headful chrome
       const headfulBrowser = await puppeteer.launch(Object.assign({userDataDir}, headfulOptions));
