@@ -1,6 +1,8 @@
-# Puppeteer API <!-- GEN:version -->v1.10.0<!-- GEN:stop-->
+# Puppeteer API <!-- GEN:version -->Tip-Of-Tree<!-- GEN:stop-->
 
-<!-- GEN:empty-if-release --><!-- GEN:stop -->
+<!-- GEN:empty-if-release -->
+> Next Release: **Nov 29, 2018**
+<!-- GEN:stop -->
 - API Translations: [中文|Chinese](https://zhaoqize.github.io/puppeteer-api-zh_CN/#/)
 - Releases per Chromium Version:
   * Chromium 72.0.3582.0 - [Puppeteer v1.10.0](https://github.com/GoogleChrome/puppeteer/blob/v1.10.0/docs/api.md)
