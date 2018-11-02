@@ -146,6 +146,7 @@ describe('Browser', function() {
     // Page-level tests that are given a browser, a context and a page.
     // Each test is launched in a new browser context.
     require('./CDPSession.spec.js').addTests({testRunner, expect});
+    require('./accessibility.spec.js').addTests({testRunner, expect});
     require('./browser.spec.js').addTests({testRunner, expect, headless});
     require('./cookies.spec.js').addTests({testRunner, expect});
     require('./coverage.spec.js').addTests({testRunner, expect});
