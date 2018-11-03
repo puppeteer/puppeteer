@@ -13,6 +13,7 @@ module.exports = puppeteer.launch({
   const version = await browser.version();
   await browser.close();
   const output = `// This is generated from /utils/protocol-types-generator/index.js
+  type binary = string;
 declare global {
   module Protocol {${json.domains.map(domain => `${domain.description ? `
     /**
