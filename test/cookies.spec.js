@@ -158,18 +158,6 @@ module.exports.addTests = function({testRunner, expect}) {
       );
     });
 
-    it('should not set a cookie with blank page URL', async function({page, server}) {
-      let error = null;
-      await page.goto(server.PREFIX + '/grid.html');
-      try {
-        await page.setCookie({name: 'example-cookie', value: 'best'}, {url: 'about:blank', name: 'example-cookie-blank', value: 'best'});
-      } catch (e) {
-        error = e;
-      }
-      expect(error).toBeTruthy();
-      expect(error.message).toEqual(`Blank page can not have cookie "example-cookie-blank"`);
-    });
-
     it('should set a cookie on a different domain', async({page, server}) => {
       await page.goto(server.PREFIX + '/grid.html');
       await page.setCookie({name: 'example-cookie', value: 'best',  url: 'https://www.example.com'});
