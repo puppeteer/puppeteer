@@ -33,7 +33,7 @@ const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_conf
 
 const puppeteer = require('./index');
 
-const platform = process.env.PUPPETEER_PLATFORM || require('../../package.json').puppeteer.platform || '';
+const platform = process.env.PUPPETEER_PLATFORM || '';
 
 const browserFetcher = puppeteer.createBrowserFetcher({ host: downloadHost, platform });
 
