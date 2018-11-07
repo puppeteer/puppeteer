@@ -32,7 +32,10 @@ if (process.env.NPM_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.env.npm_c
 const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host;
 
 const puppeteer = require('./index');
-const browserFetcher = puppeteer.createBrowserFetcher({ host: downloadHost });
+
+const platform = process.env.PUPPETEER_PLATFORM || require('../../package.json').puppeteer.platform || '';
+
+const browserFetcher = puppeteer.createBrowserFetcher({ host: downloadHost, platform });
 
 const revision = process.env.PUPPETEER_CHROMIUM_REVISION || process.env.npm_config_puppeteer_chromium_revision
   || require('./package.json').puppeteer.chromium_revision;
