@@ -1133,7 +1133,7 @@ By default, `page.close()` **does not** run beforeunload handlers.
 > and should be handled manually via page's ['dialog'](#event-dialog) event.
 
 #### page.content()
-- returns: <[Promise]<[String]>>
+- returns: <[Promise]<[string]>>
 
 Gets the full HTML contents of the page, including the doctype.
 
@@ -1571,7 +1571,7 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
     - `height` <[number]> height of clipping area
   - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
   - `encoding` <[string]> The encoding of the image, can be either `base64` or `binary`. Defaults to `binary`.
-- returns: <[Promise]<[Buffer|String]>> Promise which resolves to buffer or a base64 string (depending on the value of `encoding`) with captured screenshot.
+- returns: <[Promise]<[string]|[Buffer]>> Promise which resolves to buffer or a base64 string (depending on the value of `encoding`) with captured screenshot.
 
 > **NOTE** Screenshots take at least 1/6 second on OS X. See https://crbug.com/741689 for discussion.
 
@@ -1645,7 +1645,7 @@ The extra HTTP headers will be sent with every request the page initiates.
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
 #### page.setGeolocation(options)
-- `options`
+- `options` <[Object]>
   - `latitude` <[number]> Latitude between -90 and 90.
   - `longitude` <[number]> Longitude between -180 and 180.
   - `accuracy` <[number]> Optional non-negative accuracy value.
@@ -1842,7 +1842,7 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
     - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
-- returns: <[Promise]<[?Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
+- returns: <[Promise]<?[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
 
 This resolves when the page navigates to a new URL or reloads. It is useful for when you run code
 which will indirectly cause the page to navigate. Consider this example:
@@ -2417,7 +2417,7 @@ const [response] = await Promise.all([
 ```
 
 #### frame.content()
-- returns: <[Promise]<[String]>>
+- returns: <[Promise]<[string]>>
 
 Gets the full HTML contents of the frame, including the doctype.
 
@@ -2653,7 +2653,7 @@ await page.waitForFunction(selector => !!document.querySelector(selector), {}, s
     - `domcontentloaded` - consider navigation to be finished when the `DOMContentLoaded` event is fired.
     - `networkidle0` - consider navigation to be finished when there are no more than 0 network connections for at least `500` ms.
     - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
-- returns: <[Promise]<[?Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
+- returns: <[Promise]<?[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
 
 This resolves when the frame navigates to a new URL. It is useful for when you run code
 which will indirectly cause the frame to navigate. Consider this example:
@@ -2800,7 +2800,7 @@ await resultHandle.dispose();
 
 #### executionContext.queryObjects(prototypeHandle)
 - `prototypeHandle` <[JSHandle]> A handle to the object prototype.
-- returns: <[JSHandle]> A handle to an array of objects with this prototype
+- returns: <[Promise]<[JSHandle]>> A handle to an array of objects with this prototype
 
 The method iterates the JavaScript heap and finds all the objects with the given prototype.
 
@@ -3055,7 +3055,7 @@ If `key` is a single character and no modifier keys besides `Shift` are being he
 
 #### elementHandle.screenshot([options])
 - `options` <[Object]> Same options as in [page.screenshot](#pagescreenshotoptions).
-- returns: <[Promise]<[Buffer]>> Promise which resolves to buffer with captured screenshot.
+- returns: <[Promise]<[string]|[Buffer]>> Promise which resolves to buffer with captured screenshot.
 
 This method scrolls element into view if needed, and then uses [page.screenshot](#pagescreenshotoptions) to take a screenshot of the element.
 If the element is detached from DOM, the method throws an error.
@@ -3364,7 +3364,7 @@ Get the target that opened this target. Top-level targets return `null`.
 If the target is not of type `"page"` or `"background_page"`, returns `null`.
 
 #### target.type()
-- returns: <[string]>
+- returns: <"page"|"background_page"|"service_worker"|"other"|"browser">
 
 Identifies what kind of target this is. Can be `"page"`, [`"background_page"`](https://developer.chrome.com/extensions/background_pages), `"service_worker"`, `"browser"` or `"other"`.
 
