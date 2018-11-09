@@ -3055,7 +3055,7 @@ If `key` is a single character and no modifier keys besides `Shift` are being he
 
 #### elementHandle.screenshot([options])
 - `options` <[Object]> Same options as in [page.screenshot](#pagescreenshotoptions).
-- returns: <[Promise]<[string]|[Buffer]>> Promise which resolves to buffer with captured screenshot.
+- returns: <[Promise]<[string]|[Buffer]>> Promise which resolves to buffer or a base64 string (depending on the value of `options.encoding`) with captured screenshot.
 
 This method scrolls element into view if needed, and then uses [page.screenshot](#pagescreenshotoptions) to take a screenshot of the element.
 If the element is detached from DOM, the method throws an error.
