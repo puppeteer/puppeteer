@@ -451,6 +451,7 @@ puppeteer.launch().then(async browser => {
     - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
     - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
+  - `transport` <[ConnectionTransport]> **Experimental** Specify a custom transport object for Puppeteer to use.
 - returns: <[Promise]<[Browser]>>
 
 This methods attaches Puppeteer to an existing Chromium instance.
@@ -489,7 +490,7 @@ The default flags that Chromium will be launched with.
     - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
     - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
   - `args` <[Array]<[string]>> Additional arguments to pass to the browser instance. The list of Chromium flags can be found [here](http://peter.sh/experiments/chromium-command-line-switches/).
-  - `ignoreDefaultArgs` <([boolean]|<[Array]<[string]>>)> If `true`, then do not use [`puppeteer.defaultArgs()`](#puppeteerdefaultargs-options). If an array is given, then filter out the given default arguments. Dangerous option; use with care. Defaults to `false`.
+  - `ignoreDefaultArgs` <[boolean]|[Array]<[string]>> If `true`, then do not use [`puppeteer.defaultArgs()`](#puppeteerdefaultargs-options). If an array is given, then filter out the given default arguments. Dangerous option; use with care. Defaults to `false`.
   - `handleSIGINT` <[boolean]> Close the browser process on Ctrl-C. Defaults to `true`.
   - `handleSIGTERM` <[boolean]> Close the browser process on SIGTERM. Defaults to `true`.
   - `handleSIGHUP` <[boolean]> Close the browser process on SIGHUP. Defaults to `true`.
@@ -1145,10 +1146,11 @@ Gets the full HTML contents of the page, including the doctype.
   - `domain` <[string]>
   - `path` <[string]>
   - `expires` <[number]> Unix time in seconds.
+  - `size` <[number]>
   - `httpOnly` <[boolean]>
   - `secure` <[boolean]>
   - `session` <[boolean]>
-  - `sameSite` <[string]> `"Strict"` or `"Lax"`.
+  - `sameSite` <"Strict"|"Lax">
 
 If no URLs are specified, this method returns cookies for the current page URL.
 If URLs are specified, only cookies for those URLs are returned.
@@ -1163,7 +1165,6 @@ If URLs are specified, only cookies for those URLs are returned.
   - `url` <[string]>
   - `domain` <[string]>
   - `path` <[string]>
-  - `secure` <[boolean]>
 - returns: <[Promise]>
 
 #### page.emulate(options)
@@ -1424,7 +1425,7 @@ Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
 
 #### page.isClosed()
 
-- returns: boolean
+- returns: <[boolean]>
 
 Indicates that the page has been closed.
 
@@ -1475,13 +1476,13 @@ Page is guaranteed to have a main frame which persists during navigations.
   - `landscape` <[boolean]> Paper orientation. Defaults to `false`.
   - `pageRanges` <[string]> Paper ranges to print, e.g., '1-5, 8, 11-13'. Defaults to the empty string, which means print all pages.
   - `format` <[string]> Paper format. If set, takes priority over `width` or `height` options. Defaults to 'Letter'.
-  - `width` <[string]> Paper width, accepts values labeled with units.
-  - `height` <[string]> Paper height, accepts values labeled with units.
+  - `width` <[string]|[number]> Paper width, accepts values labeled with units.
+  - `height` <[string]|[number]> Paper height, accepts values labeled with units.
   - `margin` <[Object]> Paper margins, defaults to none.
-    - `top` <[string]> Top margin, accepts values labeled with units.
-    - `right` <[string]> Right margin, accepts values labeled with units.
-    - `bottom` <[string]> Bottom margin, accepts values labeled with units.
-    - `left` <[string]> Left margin, accepts values labeled with units.
+    - `top` <[string]|[number]> Top margin, accepts values labeled with units.
+    - `right` <[string]|[number]> Right margin, accepts values labeled with units.
+    - `bottom` <[string]|[number]> Bottom margin, accepts values labeled with units.
+    - `left` <[string]|[number]> Left margin, accepts values labeled with units.
   - `preferCSSPageSize` <[boolean]> Give any CSS `@page` size declared in the page priority over what is declared in `width` and `height` or `format` options. Defaults to `false`, which will scale the content to fit the paper size.
 - returns: <[Promise]<[Buffer]>> Promise which resolves with PDF buffer.
 
@@ -1619,7 +1620,7 @@ Toggles ignoring cache for each request based on the enabled state. By default, 
   - `expires` <[number]> Unix time in seconds.
   - `httpOnly` <[boolean]>
   - `secure` <[boolean]>
-  - `sameSite` <[string]> `"Strict"` or `"Lax"`.
+  - `sameSite` <"Strict"|"Lax">
 - returns: <[Promise]>
 
 ```js
@@ -2004,7 +2005,7 @@ Most of the accessibility tree gets filtered out when converting from Blink AX T
 #### accessibility.snapshot([options])
 - `options` <[Object]>
   - `interestingOnly` <[boolean]> Prune uninteresting nodes from the tree. Defaults to `true`.
-- returns: <[Promise]<[AXNode]>> Returns an AXNode object with the following properties:
+- returns: <[Promise]<[Object]>> Returns an [AXNode] object with the following properties:
   - `role` <[string]> The [role](https://www.w3.org/TR/wai-aria/#usage_intro).
   - `name` <[string]> A human readable name for the node.
   - `value` <[string]|[number]> The current value of the node.
@@ -2021,8 +2022,8 @@ Most of the accessibility tree gets filtered out when converting from Blink AX T
   - `readonly` <[boolean]> Whether the node is read only.
   - `required` <[boolean]> Whether the node is required.
   - `selected` <[boolean]> Whether the node is selected in its parent node.
-  - `checked` <[boolean]|[string]> Whether the checkbox is checked, or "mixed".
-  - `pressed` <[boolean]|[string]> Whether the toggle button is checked, or "mixed".
+  - `checked` <[boolean]|"mixed"> Whether the checkbox is checked, or "mixed".
+  - `pressed` <[boolean]|"mixed"> Whether the toggle button is checked, or "mixed".
   - `level` <[number]> The level of a heading.
   - `valuemin` <[number]> The minimum value in a node.
   - `valuemax` <[number]> The maximum value in a node.
@@ -2030,7 +2031,7 @@ Most of the accessibility tree gets filtered out when converting from Blink AX T
   - `haspopup` <[string]> What kind of popup is currently being shown for a node.
   - `invalid` <[string]> Whether and in what way this node's value is invalid.
   - `orientation` <[string]> Whether the node is oriented horizontally or vertically.
-  - `children` <[Array]<[AXNode]>> Child nodes of this node, if any.
+  - `children` <[Array]<[Object]>> Child [AXNode]s of this node, if any.
 
 Captures the current state of the accessibility tree. The returned object represents the root accessible node of the page.
 
@@ -2841,7 +2842,7 @@ Returns either `null` or the object handle itself, if the object handle is an in
 The `jsHandle.dispose` method stops referencing the element handle.
 
 #### jsHandle.executionContext()
-- returns: [ExecutionContext]
+- returns: <[ExecutionContext]>
 
 Returns execution context the handle belongs to.
 
@@ -2966,10 +2967,18 @@ This method returns the bounding box of the element (relative to the main frame)
 
 #### elementHandle.boxModel()
 - returns: <[Promise]<?[Object]>>
-  - content <[Array]<[Object]>> Content box, represented as an array of {x, y} points.
-  - padding <[Array]<[Object]>> Padding box, represented as an array of {x, y} points.
-  - border <[Array]<[Object]>> Border box, represented as an array of {x, y} points.
-  - margin <[Array]<[Object]>> Margin box, represented as an array of {x, y} points.
+  - content <[Array]<[Object]>> Content box
+    - x <[number]>
+    - y <[number]>
+  - padding <[Array]<[Object]>> Padding box
+    - x <[number]>
+    - y <[number]>
+  - border <[Array]<[Object]>> Border box
+    - x <[number]>
+    - y <[number]>
+  - margin <[Array]<[Object]>> Margin box
+    - x <[number]>
+    - y <[number]>
   - width <[number]> Element's width.
   - height <[number]> Element's height.
 
@@ -2994,7 +3003,7 @@ If the element is detached from DOM, the method throws an error.
 The `elementHandle.dispose` method stops referencing the element handle.
 
 #### elementHandle.executionContext()
-- returns: [ExecutionContext]
+- returns: <[ExecutionContext]>
 
 #### elementHandle.focus()
 - returns: <[Promise]>
@@ -3224,7 +3233,7 @@ ResourceType will be one of the following: `document`, `stylesheet`, `image`, `m
   - `status` <[number]> Response status code, defaults to `200`.
   - `headers` <[Object]> Optional response headers
   - `contentType` <[string]> If set, equals to setting `Content-Type` response header
-  - `body` <[Buffer]|[string]> Optional response body
+  - `body` <[string]|[Buffer]> Optional response body
 - returns: <[Promise]>
 
 Fulfills request with given response. To use this, request interception should
@@ -3524,3 +3533,4 @@ TimeoutError is emitted whenever certain operations are terminated due to timeou
 [Worker]: #class-worker "Worker"
 [Accessibility]: #class-accessibility "Accessibility"
 [AXNode]: #accessibilitysnapshotoptions "AXNode"
+[ConnectionTransport]: ../lib/WebSocketTransport.js "ConnectionTransport"
