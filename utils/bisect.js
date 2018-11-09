@@ -91,14 +91,23 @@ if (!fs.existsSync(scriptPath)) {
       outcome = COLOR_GREEN + 'GOOD' + COLOR_RESET;
     }
     const span = Math.abs(good - bad);
-    console.log(`- ${COLOR_YELLOW}r${revision}${COLOR_RESET} was ${outcome}. Bisecting [${good}, ${bad}] - ${COLOR_YELLOW}${span}${COLOR_RESET} revisions and ${COLOR_YELLOW}~${span.toString(2).length}${COLOR_RESET} iterations`);
+    let fromText = '';
+    let toText = '';
+    if (good < bad) {
+      fromText = COLOR_GREEN + good + COLOR_RESET;
+      toText = COLOR_RED + bad + COLOR_RESET;
+    } else {
+      fromText = COLOR_RED + bad + COLOR_RESET;
+      toText = COLOR_GREEN + good + COLOR_RESET;
+    }
+    console.log(`- ${COLOR_YELLOW}r${revision}${COLOR_RESET} was ${outcome}. Bisecting [${fromText}, ${toText}] - ${COLOR_YELLOW}${span}${COLOR_RESET} revisions and ${COLOR_YELLOW}~${span.toString(2).length}${COLOR_RESET} iterations`);
   }
 
-  const [goodSha, badSha] = await Promise.all([
-    revisionToSha(good),
-    revisionToSha(bad),
+  const [fromSha, toSha] = await Promise.all([
+    revisionToSha(Math.min(good, bad)),
+    revisionToSha(Math.max(good, bad)),
   ]);
-  console.log(`RANGE: https://chromium.googlesource.com/chromium/src/+log/${goodSha}..${badSha}`);
+  console.log(`RANGE: https://chromium.googlesource.com/chromium/src/+log/${fromSha}..${toSha}`);
 })(scriptPath, argv.good, argv.bad);
 
 function runScript(scriptPath, revisionInfo) {
