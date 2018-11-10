@@ -15,7 +15,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(await worker.evaluate(() => self.workerFunction())).toBe('worker function result');
 
       await page.goto(server.EMPTY_PAGE);
-      expect(page.workers()).toEqual([]);
+      expect(page.workers().length).toBe(0);
     });
     it('should emit created and destroyed events', async function({page}) {
       const workerCreatedPromise = new Promise(x => page.once('workercreated', x));
