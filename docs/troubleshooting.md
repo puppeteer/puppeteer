@@ -49,6 +49,10 @@ lsb-release
 xdg-utils
 wget
 ```
+Also enable `kernel.unprivileged_userns_clone` for server `sysctl`. See [comment](https://github.com/GoogleChrome/puppeteer/issues/290#issuecomment-403876758)
+```bash
+sudo sysctl -w kernel.unprivileged_userns_clone=1
+```
 </details>
 
 <details>
