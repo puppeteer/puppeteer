@@ -49,10 +49,6 @@ lsb-release
 xdg-utils
 wget
 ```
-Also enable `kernel.unprivileged_userns_clone` for server `sysctl`. See [comment](https://github.com/GoogleChrome/puppeteer/issues/290#issuecomment-403876758)
-```bash
-sudo sysctl -w kernel.unprivileged_userns_clone=1
-```
 </details>
 
 <details>
@@ -88,32 +84,94 @@ xorg-x11-fonts-misc
   - [#391](https://github.com/GoogleChrome/puppeteer/issues/391) - CentOS troubleshooting
   - [#379](https://github.com/GoogleChrome/puppeteer/issues/379) - Alpine troubleshooting
 
-## Chrome Headless fails due to sandbox issues
+## Setting Up Chrome Linux Sandbox
 
-- Make sure kernel version is up-to-date.
-- Read about linux sandbox here: https://chromium.googlesource.com/chromium/src/+/master/docs/linux_suid_sandbox_development.md
-- Try running without the sandbox (**Note: running without the sandbox is not recommended due to security reasons!**)
+In order to protect host environment from untrusted web content, Chrome uses [multiple layers of sandboxing](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_sandboxing.md). For this to work properly,
+host should be configured first; if there's no good Sandbox for Chrome to use, it will crash
+with `No usable sandbox!` error.
+
+If you **absolutely trust** the content you open in Chrome, you can launch Chrome
+with `--no-sandbox` argument and go on:
 
 ```js
 const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
 ```
+
+> **NOTE**: Running without sandbox is **strongly discouraged**. Consider configuring sandbox instead.
+
+There are 2 ways to configure Chromium Sandbox:
+
+### [recommended] Enable [user namespace cloning](http://man7.org/linux/man-pages/man7/user_namespaces.7.html)
+
+User namespace cloning is supported only by modern kernels. Unprivileged user namespaces are generally fine to enable,
+but in some cases they open up more kernel attack surface for (unsandboxed) non-root processes to elevate to
+kernel privileges.
+
+```bash
+sudo sysctl -w kernel.unprivileged_userns_clone=1
+```
+
+### [alternative] Setup [setuid sandbox](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_suid_sandbox_development.md)
+
+Setuid sandbox comes as a standalone executable and is located next to downloaded Chromium; it is
+fine to re-use the same sandbox executable for different Chromium versions, so the following could be
+done only once:
+
+```bash
+# cd to the downloaded instance
+cd <project-dir-path>/node_modules/puppeteer/.local-chromium/linux-<revision>/chrome-linux/
+sudo chown root:root chrome_sandbox
+sudo chmod 4755 chrome_sandbox
+# copy sandbox executable to a shared location
+sudo cp chrome_sandbox /usr/local/sbin/chrome-devel-sandbox
+# export CHROME_DEVEL_SANDBOX env variable
+export CHROME_DEVEL_SANDBOX=/usr/local/sbin/chrome-devel-sandbox
+```
+
+You might want to export the `CHROME_DEVEL_SANDBOX` env variable by default; in this case, add the following to the `~/.bashrc`
+or `.zshenv`:
+```bash
+export CHROME_DEVEL_SANDBOX=/usr/local/sbin/chrome-devel-sandbox
+```
+
+
 ## Running Puppeteer on Travis CI
 
-To run headless Chrome on Travis, you *must* call `launch()` with flags to disable Chrome's sandbox, like so:
+> 👋 We run Puppeteer tests on Travis CI - see our [`.travis.yml`](https://github.com/GoogleChrome/puppeteer/blob/master/.travis.yml) for reference.
 
-```js
-const browser = await puppeteer.launch({args: ['--no-sandbox']});
-```
+Tips-n-tricks:
+- The `libnss3` package must be installed in order to run Chromium on old Trusty
+- [user namespace cloning](http://man7.org/linux/man-pages/man7/user_namespaces.7.html) should be enabled to support
+  proper sandboxing
+- [xvfb](https://en.wikipedia.org/wiki/Xvfb) should be launched in order to run Chromium in non-headless mode (e.g. to test Chrome Extensions)
 
-Some Puppeteer functionality (like Chrome extensions) requires non-headless mode. Running Puppeteer in non-headless mode on Travis CI can be done using an [Xvfb](https://en.wikipedia.org/wiki/Xvfb) server:
-
+To sum up, `.travis.yml` might look like this:
 ```yml
+language: node_js
+dist: trusty
+addons:
+  apt:
+    packages:
+      # This is required to run new chrome on old trusty
+      - libnss3
+notifications:
+  email: false
+cache:
+  directories:
+    - node_modules
+# allow headful tests
 before_install:
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
+  # Enable user namespace cloning
+  - "sysctl kernel.unprivileged_userns_clone=1"
+  # Launch XVFB
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
 ```
+
 
 ## Running Puppeteer in Docker
+
+> 👋 We use [Cirrus Ci](https://cirrus-ci.org/) to run Puppeteer tests in Docker container - see our [`Dockerfile.linux`](https://github.com/GoogleChrome/puppeteer/blob/master/.ci/node8/Dockerfile.linux) for reference.
 
 Getting headless Chrome up and running in Docker can be tricky.
 The bundled Chromium that Puppeteer installs is missing the necessary
