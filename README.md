@@ -46,11 +46,12 @@ Since version 1.7.0 we publish the [`puppeteer-core`](https://www.npmjs.com/pack
 a version of Puppeteer that doesn't download Chromium by default.
 
 ```bash
-npm i puppeteer-core
-# or "yarn add puppeteer-core"
+npm i puppeteer-core@chrome-71
+# or "yarn add puppeteer-core@chrome-71"
 ```
 
-`puppeteer-core` is intended to be a lightweight version of Puppeteer for launching an existing browser installation or for connecting to a remote one.
+`puppeteer-core` is intended to be a lightweight version of Puppeteer for launching an existing browser installation or for connecting to a remote one. Be sure that the version of puppeteer-core you install is compatible with the
+browser you intend to connect to.
 
 See [puppeteer vs puppeteer-core](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md#puppeteer-vs-puppeteer-core).
 
@@ -311,6 +312,11 @@ This is not an artificial constraint: A lot of work on Puppeteer is actually tak
 - Once the upstream fix is landed, we roll updated Chromium into Puppeteer: https://github.com/GoogleChrome/puppeteer/pull/2769
 
 However, oftentimes it is desirable to use Puppeteer with the official Google Chrome rather than Chromium. For this to work, you should pick the version of Puppeteer that uses the Chromium version close enough to Chrome.
+
+Since Chrome 70, the latest supported version Puppeteer is tagged on npm. To install Puppeteer for use with Chrome 71:
+```bash
+npm install puppeteer@chrome-71
+```
 
 #### Q: Which Chromium version does Puppeteer use?
 
