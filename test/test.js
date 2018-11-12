@@ -47,7 +47,7 @@ const defaultBrowserOptions = {
   slowMo,
   headless,
   dumpio: (process.env.DUMPIO || 'false').trim().toLowerCase() === 'true',
-  args: ['--no-sandbox']
+  args: []
 };
 
 let parallel = 1;
