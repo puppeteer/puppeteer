@@ -158,7 +158,7 @@ module.exports.addTests = function({testRunner, expect}) {
       });
       it('plain text field with tabindex and without role should not have content', async function({page}) {
         await page.setContent(`
-        <div contenteditable="plaintext-only">Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
+        <div contenteditable="plaintext-only" tabIndex=0>Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
         const snapshot = await page.accessibility.snapshot();
         expect(snapshot.children[0]).toEqual({
           role: 'GenericContainer',
