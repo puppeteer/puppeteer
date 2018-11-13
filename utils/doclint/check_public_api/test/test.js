@@ -34,7 +34,7 @@ let browser;
 let page;
 
 beforeAll(async function() {
-  browser = await puppeteer.launch({args: ['--no-sandbox']});
+  browser = await puppeteer.launch();
   page = await browser.newPage();
 });
 

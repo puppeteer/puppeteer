@@ -116,7 +116,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
       it('userDataDir argument', async({server}) => {
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({}, defaultBrowserOptions);
-        options.args = [`--user-data-dir=${userDataDir}`].concat(options.args);
+        options.args = [`--user-data-dir=${userDataDir}`].concat(options.args || []);
         const browser = await puppeteer.launch(options);
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
         await browser.close();
@@ -209,7 +209,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
       });
       it('should support the pipe argument', async() => {
         const options = Object.assign({}, defaultBrowserOptions);
-        options.args = ['--remote-debugging-pipe'].concat(options.args);
+        options.args = ['--remote-debugging-pipe'].concat(options.args || []);
         const browser = await puppeteer.launch(options);
         expect(browser.wsEndpoint()).toBe('');
         const page = await browser.newPage();
@@ -256,7 +256,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
       it('should have custom url when launching browser', async function({server}) {
         const customUrl = server.PREFIX + '/empty.html';
         const options = Object.assign({}, defaultBrowserOptions);
-        options.args = [customUrl].concat(options.args);
+        options.args = [customUrl].concat(options.args || []);
         const browser = await puppeteer.launch(options);
         const pages = await browser.pages();
         expect(pages.length).toBe(1);

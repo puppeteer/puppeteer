@@ -45,7 +45,7 @@ async function run() {
     messages.push(...await preprocessor.runCommands(mdSources, VERSION));
     messages.push(...await preprocessor.ensureReleasedAPILinks([readme], VERSION));
 
-    const browser = await puppeteer.launch({args: ['--no-sandbox']});
+    const browser = await puppeteer.launch();
     const page = await browser.newPage();
     const checkPublicAPI = require('./check_public_api');
     const jsSources = await Source.readdir(path.join(PROJECT_DIR, 'lib'), '.js');
