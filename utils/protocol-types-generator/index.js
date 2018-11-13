@@ -4,7 +4,6 @@ const puppeteer = require('../..');
 module.exports = puppeteer.launch({
   pipe: false,
   executablePath: process.env.CHROME,
-  args: ['--no-sandbox', '--disable-dev-shm-usage']
 }).then(async browser => {
   const origin = browser.wsEndpoint().match(/ws:\/\/([0-9A-Za-z:\.]*)\//)[1];
   const page = await browser.newPage();

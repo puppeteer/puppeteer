@@ -55,7 +55,6 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
   const extensionOptions = Object.assign({}, defaultBrowserOptions, {
     headless: false,
     args: [
-      '--no-sandbox',
       `--disable-extensions-except=${extensionPath}`,
       `--load-extension=${extensionPath}`,
     ],
