@@ -1037,7 +1037,7 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       await page.exposeFunction('woof', function() {
         throw new Error('WOOF WOOF');
       });
-      const {message, stack} = await page.evaluate(async () => {
+      const {message, stack} = await page.evaluate(async() => {
         try {
           await woof();
         } catch (e) {
@@ -1051,7 +1051,7 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       await page.exposeFunction('woof', function() {
         throw null;
       });
-      const thrown = await page.evaluate(async () => {
+      const thrown = await page.evaluate(async() => {
         try {
           await woof();
         } catch (e) {
