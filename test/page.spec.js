@@ -1047,6 +1047,19 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       expect(message).toBe('WOOF WOOF');
       expect(stack).toContain(__filename);
     });
+    it('should support throwing "null"', async({page, server}) => {
+      await page.exposeFunction('woof', function() {
+        throw null;
+      });
+      const thrown = await page.evaluate(async () => {
+        try {
+          await woof();
+        } catch (e) {
+          return e;
+        }
+      });
+      expect(thrown).toBe(null);
+    });
     it('should be callable from-inside evaluateOnNewDocument', async({page, server}) => {
       let called = false;
       await page.exposeFunction('woof', function() {
