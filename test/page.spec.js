@@ -1033,6 +1033,33 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       });
       expect(result).toBe(36);
     });
+    it('should throw exception in page context', async({page, server}) => {
+      await page.exposeFunction('woof', function() {
+        throw new Error('WOOF WOOF');
+      });
+      const {message, stack} = await page.evaluate(async() => {
+        try {
+          await woof();
+        } catch (e) {
+          return {message: e.message, stack: e.stack};
+        }
+      });
+      expect(message).toBe('WOOF WOOF');
+      expect(stack).toContain(__filename);
+    });
+    it('should support throwing "null"', async({page, server}) => {
+      await page.exposeFunction('woof', function() {
+        throw null;
+      });
+      const thrown = await page.evaluate(async() => {
+        try {
+          await woof();
+        } catch (e) {
+          return e;
+        }
+      });
+      expect(thrown).toBe(null);
+    });
     it('should be callable from-inside evaluateOnNewDocument', async({page, server}) => {
       let called = false;
       await page.exposeFunction('woof', function() {
