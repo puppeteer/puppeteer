@@ -344,6 +344,24 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
         expect(await restoredPage.evaluate(() => 7 * 8)).toBe(56);
         await browser.close();
       });
+      it('should be able to connect using browserUrl, with and without trailing slash', async({server}) => {
+        const originalBrowser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
+          args: ['--remote-debugging-port=21222']
+        }));
+        const browserUrl = 'http://127.0.0.1:21222';
+
+        const browser1 = await puppeteer.connect({browserUrl});
+        const page1 = await browser1.newPage();
+        expect(await page1.evaluate(() => 7 * 8)).toBe(56);
+        browser1.disconnect();
+
+        const browser2 = await puppeteer.connect({browserUrl: browserUrl + '/'});
+        const page2 = await browser2.newPage();
+        expect(await page2.evaluate(() => 8 * 7)).toBe(56);
+        browser2.disconnect();
+
+        originalBrowser.close();
+      });
     });
     describe('Puppeteer.executablePath', function() {
       it('should work', async({server}) => {
