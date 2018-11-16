@@ -30,7 +30,7 @@ const EXCLUDE_CLASSES = new Set([
   'Helper',
   'Launcher',
   'Multimap',
-  'NavigatorWatcher',
+  'LifecycleWatcher',
   'NetworkManager',
   'PipeTransport',
   'TaskQueue',
