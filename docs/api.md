@@ -1705,8 +1705,8 @@ puppeteer.launch().then(async browser => {
 
 #### page.setViewport(viewport)
 - `viewport` <[Object]>
-  - `width` <[number]> page width in pixels.
-  - `height` <[number]> page height in pixels.
+  - `width` <[number]> page width in pixels. **required**
+  - `height` <[number]> page height in pixels. **required**
   - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
   - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
   - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
