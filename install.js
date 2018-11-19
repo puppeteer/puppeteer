@@ -20,15 +20,15 @@ if (require('./package.json').name === 'puppeteer-core')
 
 buildNode6IfNecessary();
 
-if (process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD === "true") {
+if (process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD === 'true') {
   console.log('**INFO** Skipping Chromium download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" environment variable was found.');
   return;
 }
-if (process.env.NPM_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD === "true" || process.env.npm_config_puppeteer_skip_chromium_download === "true") {
+if (process.env.NPM_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD === 'true' || process.env.npm_config_puppeteer_skip_chromium_download === 'true') {
   console.log('**INFO** Skipping Chromium download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" was set in npm config.');
   return;
 }
-if (process.env.NPM_PACKAGE_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD === "true" || process.env.npm_package_config_puppeteer_skip_chromium_download === "true") {
+if (process.env.NPM_PACKAGE_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD === 'true' || process.env.npm_package_config_puppeteer_skip_chromium_download === 'true') {
   console.log('**INFO** Skipping Chromium download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" was set in project config.');
   return;
 }
