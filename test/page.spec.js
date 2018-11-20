@@ -752,6 +752,18 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       process.removeListener('warning', warningHandler);
       expect(warning).toBe(null);
     });
+    it('should not leak listeners during navigation of 11 pages', async({page, context, server}) => {
+      let warning = null;
+      const warningHandler = w => warning = w;
+      process.on('warning', warningHandler);
+      await Promise.all([...Array(20)].map(async() => {
+        const page = await context.newPage();
+        await page.goto(server.EMPTY_PAGE);
+        await page.close();
+      }));
+      process.removeListener('warning', warningHandler);
+      expect(warning).toBe(null);
+    });
     it('should navigate to dataURL and fire dataURL requests', async({page, server}) => {
       const requests = [];
       page.on('request', request => requests.push(request));
