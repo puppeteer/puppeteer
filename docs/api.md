@@ -126,7 +126,7 @@
   * [page.select(selector, ...values)](#pageselectselector-values)
   * [page.setBypassCSP(enabled)](#pagesetbypasscspenabled)
   * [page.setCacheEnabled([enabled])](#pagesetcacheenabledenabled)
-  * [page.setContent(html)](#pagesetcontenthtml)
+  * [page.setContent(html[, options])](#pagesetcontenthtml-options)
   * [page.setCookie(...cookies)](#pagesetcookiecookies)
   * [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout)
   * [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
@@ -206,7 +206,7 @@
   * [frame.name()](#framename)
   * [frame.parentFrame()](#frameparentframe)
   * [frame.select(selector, ...values)](#frameselectselector-values)
-  * [frame.setContent(html)](#framesetcontenthtml)
+  * [frame.setContent(html[, options])](#framesetcontenthtml-options)
   * [frame.tap(selector)](#frametapselector)
   * [frame.title()](#frametitle)
   * [frame.type(selector, text[, options])](#frametypeselector-text-options)
@@ -1606,8 +1606,15 @@ that `page.setBypassCSP` should be called before navigating to the domain.
 
 Toggles ignoring cache for each request based on the enabled state. By default, caching is enabled.
 
-#### page.setContent(html)
+#### page.setContent(html[, options])
 - `html` <[string]> HTML markup to assign to the page.
+- `options` <[Object]> Parameters which might have the following properties:
+  - `timeout` <[number]> Maximum time in milliseconds for resources to load, defaults to 30 seconds, pass `0` to disable timeout.
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider setting markup succeeded, defaults to `load`. Given an array of event strings, setting content is considered to be successful after all events have been fired. Events can be either:
+    - `load` - consider setting content to be finished when the `load` event is fired.
+    - `domcontentloaded` - consider setting content to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider setting content to be finished when there are no more than 0 network connections for at least `500` ms.
+    - `networkidle2` - consider setting content to be finished when there are no more than 2 network connections for at least `500` ms.
 - returns: <[Promise]>
 
 #### page.setCookie(...cookies)
@@ -2552,8 +2559,15 @@ frame.select('select#colors', 'blue'); // single selection
 frame.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 ```
 
-#### frame.setContent(html)
+#### frame.setContent(html[, options])
 - `html` <[string]> HTML markup to assign to the page.
+- `options` <[Object]> Parameters which might have the following properties:
+  - `timeout` <[number]> Maximum time in milliseconds for resources to load, defaults to 30 seconds, pass `0` to disable timeout.
+  - `waitUntil` <[string]|[Array]<[string]>> When to consider setting markup succeeded, defaults to `load`. Given an array of event strings, setting content is considered to be successful after all events have been fired. Events can be either:
+    - `load` - consider setting content to be finished when the `load` event is fired.
+    - `domcontentloaded` - consider setting content to be finished when the `DOMContentLoaded` event is fired.
+    - `networkidle0` - consider setting content to be finished when there are no more than 0 network connections for at least `500` ms.
+    - `networkidle2` - consider setting content to be finished when there are no more than 2 network connections for at least `500` ms.
 - returns: <[Promise]>
 
 #### frame.tap(selector)

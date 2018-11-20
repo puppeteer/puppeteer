@@ -1284,6 +1284,17 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       const result = await page.content();
       expect(result).toBe(`${doctype}${expectedOutput}`);
     });
+    it('should await resources to load', async({page, server}) => {
+      const imgPath = '/img.png';
+      let imgResponse = null;
+      server.setRoute(imgPath, (req, res) => imgResponse = res);
+      let loaded = false;
+      const contentPromise = page.setContent(`<img src="${server.PREFIX + imgPath}"></img>`).then(() => loaded = true);
+      await server.waitForRequest(imgPath);
+      expect(loaded).toBe(false);
+      imgResponse.end();
+      await contentPromise;
+    });
   });
 
   describe('Page.setBypassCSP', function() {
