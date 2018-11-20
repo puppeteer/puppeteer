@@ -345,13 +345,14 @@ AWS Lambda [limits](https://docs.aws.amazon.com/lambda/latest/dg/limits.html) de
 
 - https://github.com/adieuadieu/serverless-chrome/blob/master/docs/chrome.md (tracks the latest Chromium snapshots)
 - https://github.com/universalbasket/aws-lambda-chrome
+- https://github.com/alixaxel/chrome-aws-lambda (kept updated with the latest stable release of puppeteer)
 - https://github.com/Kikobeats/aws-lambda-chrome
 
 ## Code Transpilation Issues
 
-If you are using a JavaScript transpiler like babel or TypeScript, calling `evaluate()` with an async function might not work. This is because while `puppeteer` uses `Function.prototype.toString()` to serialize functions while transpilers could be changing the output code in such a way it's incompatible with `puppeteer`. 
+If you are using a JavaScript transpiler like babel or TypeScript, calling `evaluate()` with an async function might not work. This is because while `puppeteer` uses `Function.prototype.toString()` to serialize functions while transpilers could be changing the output code in such a way it's incompatible with `puppeteer`.
 
-Some workarounds to this problem would be to instruct the transpiler not to mess up with the code, for example, configure TypeScript to use latest ecma version (`"target": "es2018"`). Another workaround could be using string templates instead of functions: 
+Some workarounds to this problem would be to instruct the transpiler not to mess up with the code, for example, configure TypeScript to use latest ecma version (`"target": "es2018"`). Another workaround could be using string templates instead of functions:
 
 ```js
 await page.evaluate(`(async() => {
