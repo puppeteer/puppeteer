@@ -171,16 +171,6 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(error).toBeTruthy();
       expect(error.message).toContain('JSHandles can be evaluated only in the context they were created');
     });
-    it('should accept object handle as an argument', async({page, server}) => {
-      const navigatorHandle = await page.evaluateHandle(() => navigator);
-      const text = await page.evaluate(e => e.userAgent, navigatorHandle);
-      expect(text).toContain('Mozilla');
-    });
-    it('should accept object handle to primitive types', async({page, server}) => {
-      const aHandle = await page.evaluateHandle(() => 5);
-      const isFive = await page.evaluate(e => Object.is(e, 5), aHandle);
-      expect(isFive).toBeTruthy();
-    });
     it('should simulate a user gesture', async({page, server}) => {
       await page.evaluate(playAudio);
       // also test evaluating strings
