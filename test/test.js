@@ -154,6 +154,7 @@ describe('Browser', function() {
     require('./waittask.spec.js').addTests({testRunner, expect});
     require('./frame.spec.js').addTests({testRunner, expect});
     require('./input.spec.js').addTests({testRunner, expect});
+    require('./click.spec.js').addTests({testRunner, expect});
     require('./jshandle.spec.js').addTests({testRunner, expect});
     require('./network.spec.js').addTests({testRunner, expect});
     require('./page.spec.js').addTests({testRunner, expect, headless});
