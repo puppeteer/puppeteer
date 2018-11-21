@@ -401,52 +401,6 @@ module.exports.addTests = function({testRunner, expect, headless}) {
     });
   });
 
-  describe('Page.waitFor', function() {
-    it('should wait for selector', async({page, server}) => {
-      let found = false;
-      const waitFor = page.waitFor('div').then(() => found = true);
-      await page.goto(server.EMPTY_PAGE);
-      expect(found).toBe(false);
-      await page.goto(server.PREFIX + '/grid.html');
-      await waitFor;
-      expect(found).toBe(true);
-    });
-    it('should wait for an xpath', async({page, server}) => {
-      let found = false;
-      const waitFor = page.waitFor('//div').then(() => found = true);
-      await page.goto(server.EMPTY_PAGE);
-      expect(found).toBe(false);
-      await page.goto(server.PREFIX + '/grid.html');
-      await waitFor;
-      expect(found).toBe(true);
-    });
-    it('should not allow you to select an element with single slash xpath', async({page, server}) => {
-      await page.setContent(`<div>some text</div>`);
-      let error = null;
-      await page.waitFor('/html/body/div').catch(e => error = e);
-      expect(error).toBeTruthy();
-    });
-    it('should timeout', async({page, server}) => {
-      const startTime = Date.now();
-      const timeout = 42;
-      await page.waitFor(timeout);
-      expect(Date.now() - startTime).not.toBeLessThan(timeout / 2);
-    });
-    it('should wait for predicate', async({page, server}) => {
-      const watchdog = page.waitFor(() => window.innerWidth < 100);
-      page.setViewport({width: 10, height: 10});
-      await watchdog;
-    });
-    it('should throw when unknown type', async({page, server}) => {
-      let error = null;
-      await page.waitFor({foo: 'bar'}).catch(e => error = e);
-      expect(error.message).toContain('Unsupported target type');
-    });
-    it('should wait for predicate with arguments', async({page, server}) => {
-      await page.waitFor((arg1, arg2) => arg1 !== arg2, {}, 1, 2);
-    });
-  });
-
   describe('Page.Events.Console', function() {
     it('should work', async({page, server}) => {
       let message = null;
