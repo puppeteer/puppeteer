@@ -1,10 +1,19 @@
 class Foo {
+  /**
+   * @param {string} arg1
+   */
   foo(arg1, arg3 = {}) {
   }
 
+  /**
+   * @param  {...string} filePaths
+   */
   test(...filePaths) {
   }
 
-  bar({visibility}) {
+  /**
+   * @param {{visibility?: boolean}} options
+   */
+  bar(options) {
   }
 }

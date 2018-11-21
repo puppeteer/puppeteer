@@ -5,26 +5,27 @@
       "members": [
         {
           "name": "frame",
-          "type": "event",
-          "hasReturn": false,
-          "async": false,
-          "args": []
+          "kind": "event"
         },
         {
           "name": "$",
-          "type": "method",
-          "hasReturn": true,
-          "async": false,
+          "type": {
+            "name": "Promise<ElementHandle>"
+          },
+          "kind": "method",
           "args": [
-            "selector"
+            {
+              "name": "selector",
+              "type": {
+                "name": "string"
+              },
+              "kind": "property"
+            }
           ]
         },
         {
           "name": "url",
-          "type": "property",
-          "hasReturn": false,
-          "async": false,
-          "args": []
+          "kind": "property"
         }
       ]
     }
