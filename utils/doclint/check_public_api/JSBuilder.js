@@ -164,8 +164,10 @@ function checkSources(sources) {
     const events = type.getProperty('Events');
     if (events) {
       const eventType = checker.getTypeAtLocation(events.valueDeclaration);
-      for (const property of eventType.getProperties())
-        members.push(Documentation.Member.createEvent(property.valueDeclaration.initializer.text));
+      for (const property of eventType.getProperties()) {
+        if (property.valueDeclaration.initializer.text)
+          members.push(Documentation.Member.createEvent(property.valueDeclaration.initializer.text));
+      }
     }
 
     for (const [name, member] of symbol.members || []) {

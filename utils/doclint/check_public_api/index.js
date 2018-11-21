@@ -135,11 +135,6 @@ function filterJSDocumentation(jsDocumentation) {
     if (EXCLUDE_CLASSES.has(cls.name))
       continue;
     const members = cls.membersArray.filter(member => {
-      if (member.name.startsWith('_'))
-        return false;
-      // Exclude all constructors by default.
-      if (member.name === 'constructor' && member.kind === 'method')
-        return false;
       return !EXCLUDE_PROPERTIES.has(`${cls.name}.${member.name}`);
     });
     classes.push(new Documentation.Class(cls.name, members));
