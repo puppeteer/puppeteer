@@ -161,6 +161,7 @@ describe('Browser', function() {
     require('./jshandle.spec.js').addTests({testRunner, expect});
     require('./network.spec.js').addTests({testRunner, expect});
     require('./page.spec.js').addTests({testRunner, expect, headless});
+    require('./dialog.spec.js').addTests({testRunner, expect, headless});
     require('./navigation.spec.js').addTests({testRunner, expect, headless});
     require('./evaluation.spec.js').addTests({testRunner, expect, headless});
     require('./emulation.spec.js').addTests({testRunner, expect, headless});

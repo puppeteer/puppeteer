@@ -19,6 +19,23 @@ module.exports.addTests = function({testRunner, expect}) {
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
+  describe('Page.evaluateHandle', function() {
+    it('should work', async({page, server}) => {
+      const windowHandle = await page.evaluateHandle(() => window);
+      expect(windowHandle).toBeTruthy();
+    });
+    it('should accept object handle as an argument', async({page, server}) => {
+      const navigatorHandle = await page.evaluateHandle(() => navigator);
+      const text = await page.evaluate(e => e.userAgent, navigatorHandle);
+      expect(text).toContain('Mozilla');
+    });
+    it('should accept object handle to primitive types', async({page, server}) => {
+      const aHandle = await page.evaluateHandle(() => 5);
+      const isFive = await page.evaluate(e => Object.is(e, 5), aHandle);
+      expect(isFive).toBeTruthy();
+    });
+  });
+
   describe('JSHandle.getProperty', function() {
     it('should work', async({page, server}) => {
       const aHandle = await page.evaluateHandle(() => ({

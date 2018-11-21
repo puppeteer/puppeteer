@@ -189,13 +189,6 @@ module.exports.addTests = function({testRunner, expect, headless}) {
     });
   });
 
-  describe('Page.evaluateHandle', function() {
-    it('should work', async({page, server}) => {
-      const windowHandle = await page.evaluateHandle(() => window);
-      expect(windowHandle).toBeTruthy();
-    });
-  });
-
   describe('ExecutionContext.queryObjects', function() {
     it('should work', async({page, server}) => {
       // Instantiate an object
@@ -495,35 +488,6 @@ module.exports.addTests = function({testRunner, expect, headless}) {
         return await compute(3, 5);
       });
       expect(result).toBe(15);
-    });
-  });
-
-  describe('Page.Events.Dialog', function() {
-    it('should fire', async({page, server}) => {
-      page.on('dialog', dialog => {
-        expect(dialog.type()).toBe('alert');
-        expect(dialog.defaultValue()).toBe('');
-        expect(dialog.message()).toBe('yo');
-        dialog.accept();
-      });
-      await page.evaluate(() => alert('yo'));
-    });
-    it('should allow accepting prompts', async({page, server}) => {
-      page.on('dialog', dialog => {
-        expect(dialog.type()).toBe('prompt');
-        expect(dialog.defaultValue()).toBe('yes.');
-        expect(dialog.message()).toBe('question?');
-        dialog.accept('answer!');
-      });
-      const result = await page.evaluate(() => prompt('question?', 'yes.'));
-      expect(result).toBe('answer!');
-    });
-    it('should dismiss the prompt', async({page, server}) => {
-      page.on('dialog', dialog => {
-        dialog.dismiss();
-      });
-      const result = await page.evaluate(() => prompt('question?'));
-      expect(result).toBe(null);
     });
   });
 
