@@ -15,7 +15,6 @@
  */
 
 const utils = require('./utils');
-const {TimeoutError} = utils.requireRoot('Errors');
 
 module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
