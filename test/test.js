@@ -155,6 +155,7 @@ describe('Browser', function() {
     require('./jshandle.spec.js').addTests({testRunner, expect});
     require('./network.spec.js').addTests({testRunner, expect});
     require('./page.spec.js').addTests({testRunner, expect, headless});
+    require('./screenshot.spec.js').addTests({testRunner, expect});
     require('./target.spec.js').addTests({testRunner, expect});
     require('./tracing.spec.js').addTests({testRunner, expect});
     require('./worker.spec.js').addTests({testRunner, expect});
