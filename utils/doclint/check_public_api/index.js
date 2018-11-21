@@ -136,7 +136,7 @@ function filterJSDocumentation(jsDocumentation) {
     if (EXCLUDE_CLASSES.has(cls.name))
       continue;
     const members = cls.membersArray.filter(member => {
-      if (member.name.startsWith('_'))
+      if (member.name.startsWith('_') || methodName.startsWith('$_'))
         return false;
       // Exclude all constructors by default.
       if (member.name === 'constructor' && member.type === 'method')
