@@ -134,9 +134,7 @@ function filterJSDocumentation(jsDocumentation) {
   for (const cls of jsDocumentation.classesArray) {
     if (EXCLUDE_CLASSES.has(cls.name))
       continue;
-    const members = cls.membersArray.filter(member => {
-      return !EXCLUDE_PROPERTIES.has(`${cls.name}.${member.name}`);
-    });
+    const members = cls.membersArray.filter(member => !EXCLUDE_PROPERTIES.has(`${cls.name}.${member.name}`));
     classes.push(new Documentation.Class(cls.name, members));
   }
   return new Documentation(classes);
