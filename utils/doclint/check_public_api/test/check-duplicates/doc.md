@@ -12,3 +12,4 @@
 
 ### class: Bar
 
+[number]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Number_type "Number"

@@ -4,51 +4,45 @@
       "name": "A",
       "members": [
         {
+          "name": "anevent",
+          "kind": "event"
+        },
+        {
           "name": "property1",
-          "type": "property",
-          "hasReturn": false,
-          "async": false,
-          "args": []
-        },
-        {
-          "name": "_property2",
-          "type": "property",
-          "hasReturn": false,
-          "async": false,
-          "args": []
-        },
-        {
-          "name": "constructor",
-          "type": "method",
-          "hasReturn": false,
-          "async": false,
-          "args": [
-            "delegate"
-          ]
+          "type": {
+            "name": "number"
+          },
+          "kind": "property"
         },
         {
           "name": "getter",
-          "type": "property",
-          "hasReturn": false,
-          "async": false,
-          "args": []
+          "type": {
+            "name": "Object"
+          },
+          "kind": "property"
         },
         {
           "name": "method",
-          "type": "method",
-          "hasReturn": true,
-          "async": true,
+          "type": {
+            "name": "Promise"
+          },
+          "kind": "method",
           "args": [
-            "foo",
-            "bar"
+            {
+              "name": "foo",
+              "type": {
+                "name": "Object"
+              },
+              "kind": "property"
+            },
+            {
+              "name": "bar",
+              "type": {
+                "name": "Object"
+              },
+              "kind": "property"
+            }
           ]
-        },
-        {
-          "name": "anevent",
-          "type": "event",
-          "hasReturn": false,
-          "async": false,
-          "args": []
         }
       ]
     }

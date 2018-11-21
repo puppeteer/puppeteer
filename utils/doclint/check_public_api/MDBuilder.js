@@ -48,13 +48,13 @@ class MDOutline {
           member = {
             name: element.textContent,
             args: [],
-            hasReturn: false
+            returnType: null
           };
           currentClass.members.push(member);
         } else if (element.matches('li') && element.firstChild.matches && element.firstChild.matches('code')) {
-          member.args.push(element.firstChild.textContent);
+          member.args.push(parseProperty(element));
         } else if (element.matches('li') && element.firstChild.nodeType === Element.TEXT_NODE && element.firstChild.textContent.toLowerCase().startsWith('return')) {
-          member.hasReturn = true;
+          member.returnType = parseProperty(element);
           const expectedText = 'returns: ';
           let actualText = element.firstChild.textContent;
           let angleIndex = actualText.indexOf('<');
@@ -67,6 +67,39 @@ class MDOutline {
         }
       }
       return {classes, errors};
+
+      function parseProperty(element) {
+        const str = element.textContent;
+        const name = str.substring(0, str.indexOf('<')).trim();
+        const type = findType(str);
+        const properties = [];
+        // Strings have enum values instead of properties
+        if (!type.includes('string')) {
+          for (const childElement of element.querySelectorAll(':scope > ul > li'))
+            properties.push(parseProperty(childElement));
+        }
+        return {
+          name,
+          type,
+          properties
+        };
+      }
+
+      /**
+       * @param {string} str
+       * @return {string}
+       */
+      function findType(str) {
+        const start = str.indexOf('<') + 1;
+        let count = 1;
+        for (let i = start; i < str.length; i++) {
+          if (str[i] === '<') count++;
+          if (str[i] === '>') count--;
+          if (!count)
+            return str.substring(start, i);
+        }
+        return 'unknown';
+      }
     });
     return new MDOutline(classes, errors);
   }
@@ -110,11 +143,19 @@ class MDOutline {
         return;
       }
       parameters = parameters.trim().replace(/[\[\]]/g, '');
-      if (parameters !== member.args.join(', '))
-        this.errors.push(`Heading arguments for "${member.name}" do not match described ones, i.e. "${parameters}" != "${member.args.join(', ')}"`);
-      const args = member.args.map(arg => new Documentation.Argument(arg));
-      const method = Documentation.Member.createMethod(methodName, args, member.hasReturn, false);
+      if (parameters !== member.args.map(arg => arg.name).join(', '))
+        this.errors.push(`Heading arguments for "${member.name}" do not match described ones, i.e. "${parameters}" != "${member.args.map(a => a.name).join(', ')}"`);
+      const args = member.args.map(createPropertyFromJSON);
+      let returnType = null;
+      if (member.returnType)
+        returnType = createPropertyFromJSON(member.returnType).type;
+      const method = Documentation.Member.createMethod(methodName, args, returnType);
       currentClassMembers.push(method);
+    }
+
+    function createPropertyFromJSON(payload) {
+      const type = new Documentation.Type(payload.type, payload.properties.map(createPropertyFromJSON));
+      return Documentation.Member.createProperty(payload.name, type);
     }
 
     function handleProperty(member, className, propertyName) {

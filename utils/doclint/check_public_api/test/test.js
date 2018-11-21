@@ -91,24 +91,37 @@ async function testJSBuilder(state, test) {
   expect(serialize(documentation)).toBeGolden('result.txt');
 }
 
+/**
+ * @param {import('../Documentation')} doc
+ */
 function serialize(doc) {
-  const result = {classes: []};
-  for (let cls of doc.classesArray) {
-    const classJSON = {
+  const result = {
+    classes: doc.classesArray.map(cls => ({
       name: cls.name,
-      members: []
-    };
-    result.classes.push(classJSON);
-    for (let member of cls.membersArray) {
-      classJSON.members.push({
-        name: member.name,
-        type: member.type,
-        hasReturn: member.hasReturn,
-        async: member.async,
-        args: member.argsArray.map(arg => arg.name)
-      });
-    }
-  }
+      members: cls.membersArray.map(serializeMember)
+    }))
+  };
   return JSON.stringify(result, null, 2);
 }
-
+/**
+ * @param {import('../Documentation').Member} member
+ */
+function serializeMember(member) {
+  return {
+    name: member.name,
+    type: serializeType(member.type),
+    kind: member.kind,
+    args: member.argsArray.length ? member.argsArray.map(serializeMember) : undefined
+  }
+}
+/**
+ * @param {import('../Documentation').Type} type
+ */
+function serializeType(type) {
+  if (!type)
+    return undefined;
+  return {
+    name: type.name,
+    properties: type.properties.length ? type.properties.map(serializeMember) : undefined
+  }
+}

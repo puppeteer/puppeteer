@@ -49,7 +49,6 @@ const EXCLUDE_PROPERTIES = new Set([
 /**
  * @param {!Page} page
  * @param {!Array<!Source>} mdSources
- * @param {!Array<!Source>} jsSources
  * @return {!Promise<!Array<!Message>>}
  */
 module.exports = async function lint(page, mdSources, jsSources) {
@@ -83,21 +82,21 @@ function checkSorting(doc) {
 
     // Events should go first.
     let eventIndex = 0;
-    for (; eventIndex < members.length && members[eventIndex].type === 'event'; ++eventIndex);
-    for (; eventIndex < members.length && members[eventIndex].type !== 'event'; ++eventIndex);
+    for (; eventIndex < members.length && members[eventIndex].kind === 'event'; ++eventIndex);
+    for (; eventIndex < members.length && members[eventIndex].kind !== 'event'; ++eventIndex);
     if (eventIndex < members.length)
       errors.push(`Events should go first. Event '${members[eventIndex].name}' in class ${cls.name} breaks order`);
 
     // Constructor should be right after events and before all other members.
-    const constructorIndex = members.findIndex(member => member.type === 'method' && member.name === 'constructor');
-    if (constructorIndex > 0 && members[constructorIndex - 1].type !== 'event')
+    const constructorIndex = members.findIndex(member => member.kind === 'method' && member.name === 'constructor');
+    if (constructorIndex > 0 && members[constructorIndex - 1].kind !== 'event')
       errors.push(`Constructor of ${cls.name} should go before other methods`);
 
     // Events should be sorted alphabetically.
     for (let i = 0; i < members.length - 1; ++i) {
       const member1 = cls.membersArray[i];
       const member2 = cls.membersArray[i + 1];
-      if (member1.type !== 'event' || member2.type !== 'event')
+      if (member1.kind !== 'event' || member2.kind !== 'event')
         continue;
       if (member1.name > member2.name)
         errors.push(`Event '${member1.name}' in class ${cls.name} breaks alphabetic ordering of events`);
@@ -107,16 +106,16 @@ function checkSorting(doc) {
     for (let i = 0; i < members.length - 1; ++i) {
       const member1 = cls.membersArray[i];
       const member2 = cls.membersArray[i + 1];
-      if (member1.type === 'event' || member2.type === 'event')
+      if (member1.kind === 'event' || member2.kind === 'event')
         continue;
-      if (member1.type === 'method' && member1.name === 'constructor')
+      if (member1.kind === 'method' && member1.name === 'constructor')
         continue;
       if (member1.name > member2.name) {
         let memberName1 = `${cls.name}.${member1.name}`;
-        if (member1.type === 'method')
+        if (member1.kind === 'method')
           memberName1 += '()';
         let memberName2 = `${cls.name}.${member2.name}`;
-        if (member2.type === 'method')
+        if (member2.kind === 'method')
           memberName2 += '()';
         errors.push(`Bad alphabetic ordering of ${cls.name} members: ${memberName1} should go after ${memberName2}`);
       }
@@ -135,14 +134,7 @@ function filterJSDocumentation(jsDocumentation) {
   for (const cls of jsDocumentation.classesArray) {
     if (EXCLUDE_CLASSES.has(cls.name))
       continue;
-    const members = cls.membersArray.filter(member => {
-      if (member.name.startsWith('_'))
-        return false;
-      // Exclude all constructors by default.
-      if (member.name === 'constructor' && member.type === 'method')
-        return false;
-      return !EXCLUDE_PROPERTIES.has(`${cls.name}.${member.name}`);
-    });
+    const members = cls.membersArray.filter(member => !EXCLUDE_PROPERTIES.has(`${cls.name}.${member.name}`));
     classes.push(new Documentation.Class(cls.name, members));
   }
   return new Documentation(classes);
@@ -162,9 +154,9 @@ function checkDuplicates(doc) {
     classes.add(cls.name);
     const members = new Set();
     for (const member of cls.membersArray) {
-      if (members.has(member.type + ' ' + member.name))
-        errors.push(`Duplicate declaration of ${member.type} ${cls.name}.${member.name}()`);
-      members.add(member.type + ' ' + member.name);
+      if (members.has(member.kind + ' ' + member.name))
+        errors.push(`Duplicate declaration of ${member.kind} ${cls.name}.${member.name}()`);
+      members.add(member.kind + ' ' + member.name);
       const args = new Set();
       for (const arg of member.argsArray) {
         if (args.has(arg.name))
@@ -206,25 +198,28 @@ function compareDocumentations(actual, expected) {
     for (const methodName of methodDiff.equal) {
       const actualMethod = actualClass.methods.get(methodName);
       const expectedMethod = expectedClass.methods.get(methodName);
-      if (actualMethod.hasReturn !== expectedMethod.hasReturn) {
-        if (actualMethod.hasReturn)
+      if (!actualMethod.type !== !expectedMethod.type) {
+        if (actualMethod.type)
           errors.push(`Method ${className}.${methodName} has unneeded description of return type`);
-        else if (!expectedMethod.async)
-          errors.push(`Method ${className}.${methodName} is missing return type description`);
         else
-          errors.push(`Async method ${className}.${methodName} should describe return type Promise`);
+          errors.push(`Method ${className}.${methodName} is missing return type description`);
+      } else if (actualMethod.hasReturn) {
+        checkType(`Method ${className}.${methodName} has the wrong return type: `, actualMethod.type, expectedMethod.type);
       }
       const actualArgs = Array.from(actualMethod.args.keys());
       const expectedArgs = Array.from(expectedMethod.args.keys());
-      const argDiff = diff(actualArgs, expectedArgs);
-      if (argDiff.extra.length || argDiff.missing.length) {
+      const argsDiff = diff(actualArgs, expectedArgs);
+      if (argsDiff.extra.length || argsDiff.missing.length) {
         const text = [`Method ${className}.${methodName}() fails to describe its parameters:`];
-        for (const arg of argDiff.missing)
+        for (const arg of argsDiff.missing)
           text.push(`- Argument not found: ${arg}`);
-        for (const arg of argDiff.extra)
+        for (const arg of argsDiff.extra)
           text.push(`- Non-existing argument found: ${arg}`);
         errors.push(text.join('\n'));
       }
+
+      for (const arg of argsDiff.equal)
+        checkProperty(`Method ${className}.${methodName}()`, actualMethod.args.get(arg), expectedMethod.args.get(arg));
     }
     const actualProperties = Array.from(actualClass.properties.keys()).sort();
     const expectedProperties = Array.from(expectedClass.properties.keys()).sort();
@@ -242,6 +237,43 @@ function compareDocumentations(actual, expected) {
     for (const eventName of eventsDiff.missing)
       errors.push(`Event not found in class ${className}: '${eventName}'`);
   }
+
+
+  /**
+   * @param {string} source
+   * @param {!Documentation.Member} actual
+   * @param {!Documentation.Member} expected
+   */
+  function checkProperty(source, actual, expected) {
+    checkType(source + ' ' + actual.name, actual.type, expected.type);
+  }
+
+  /**
+   * @param {string} source
+   * @param {!Documentation.Type} actual
+   * @param {!Documentation.Type} expected
+   */
+  function checkType(source, actual, expected) {
+    // TODO(@JoelEinbinder): check functions and Serializable
+    if (actual.name.includes('unction') || actual.name.includes('Serializable'))
+      return;
+    // We don't have nullchecks on for TypeScript
+    const actualName = actual.name.replace(/[\? ]/g, '');
+    // TypeScript likes to add some spaces
+    const expectedName = expected.name.replace(/\ /g, '');
+    if (expectedName !== actualName)
+      errors.push(`${source} ${actualName} != ${expectedName}`);
+    const actualPropertiesMap = new Map(actual.properties.map(property => [property.name, property.type]));
+    const expectedPropertiesMap = new Map(expected.properties.map(property => [property.name, property.type]));
+    const propertiesDiff = diff(Array.from(actualPropertiesMap.keys()).sort(), Array.from(expectedPropertiesMap.keys()).sort());
+    for (const propertyName of propertiesDiff.extra)
+      errors.push(`${source} has unexpected property ${propertyName}`);
+    for (const propertyName of propertiesDiff.missing)
+      errors.push(`${source} is missing property ${propertyName}`);
+    for (const propertyName of propertiesDiff.equal)
+      checkType(source + '.' + propertyName, actualPropertiesMap.get(propertyName), expectedPropertiesMap.get(propertyName));
+  }
+
   return errors;
 }
 
