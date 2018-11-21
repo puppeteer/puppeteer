@@ -226,4 +226,23 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(await page.evaluate(() => window.e)).toBe(undefined);
     });
   });
+
+  describe('Frame.evaluate', function() {
+    it('should have different execution contexts', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      expect(page.frames().length).toBe(2);
+      await page.frames()[0].evaluate(() => window.FOO = 'foo');
+      await page.frames()[1].evaluate(() => window.FOO = 'bar');
+      expect(await page.frames()[0].evaluate(() => window.FOO)).toBe('foo');
+      expect(await page.frames()[1].evaluate(() => window.FOO)).toBe('bar');
+    });
+    it('should execute after cross-site navigation', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const mainFrame = page.mainFrame();
+      expect(await mainFrame.evaluate(() => window.location.href)).toContain('localhost');
+      await page.goto(server.CROSS_PROCESS_PREFIX + '/empty.html');
+      expect(await mainFrame.evaluate(() => window.location.href)).toContain('127');
+    });
+  });
 };
