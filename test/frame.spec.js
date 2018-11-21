@@ -135,27 +135,6 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
-  describe('Frame.evaluate', function() {
-    it('should have different execution contexts', async({page, server}) => {
-      await page.goto(server.EMPTY_PAGE);
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      expect(page.frames().length).toBe(2);
-      const frame1 = page.frames()[0];
-      const frame2 = page.frames()[1];
-      await frame1.evaluate(() => window.FOO = 'foo');
-      await frame2.evaluate(() => window.FOO = 'bar');
-      expect(await frame1.evaluate(() => window.FOO)).toBe('foo');
-      expect(await frame2.evaluate(() => window.FOO)).toBe('bar');
-    });
-    it('should execute after cross-site navigation', async({page, server}) => {
-      await page.goto(server.EMPTY_PAGE);
-      const mainFrame = page.mainFrame();
-      expect(await mainFrame.evaluate(() => window.location.href)).toContain('localhost');
-      await page.goto(server.CROSS_PROCESS_PREFIX + '/empty.html');
-      expect(await mainFrame.evaluate(() => window.location.href)).toContain('127');
-    });
-  });
-
   describe('Frame Management', function() {
     it('should handle nested frames', async({page, server}) => {
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
