@@ -150,6 +150,7 @@ describe('Browser', function() {
     require('./cookies.spec.js').addTests({testRunner, expect});
     require('./coverage.spec.js').addTests({testRunner, expect});
     require('./elementhandle.spec.js').addTests({testRunner, expect});
+    require('./queryselector.spec.js').addTests({testRunner, expect});
     require('./frame.spec.js').addTests({testRunner, expect});
     require('./input.spec.js').addTests({testRunner, expect});
     require('./jshandle.spec.js').addTests({testRunner, expect});
