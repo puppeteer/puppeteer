@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const utils = require('./utils');
 
 module.exports.addTests = function({testRunner, expect, product}) {
   const {describe, xdescribe, fdescribe} = testRunner;
