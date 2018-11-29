@@ -87,6 +87,9 @@
   * [event: 'response'](#event-response)
   * [event: 'serviceworkercreated'](#event-serviceworkercreated)
   * [event: 'serviceworkerdestroyed'](#event-serviceworkerdestroyed)
+  * [event: 'serviceworkerregistrationcreated'](#event-serviceworkerregistrationcreated)
+  * [event: 'serviceworkerregistrationdeleted'](#event-serviceworkerregistrationdeleted)
+  * [event: 'serviceworkerstatuschanged'](#event-serviceworkerstatuschanged)
   * [event: 'workercreated'](#event-workercreated)
   * [event: 'workerdestroyed'](#event-workerdestroyed)
   * [page.$(selector)](#pageselector)
@@ -173,6 +176,16 @@
   * [serviceWorker.pages()](#serviceworkerpages)
   * [serviceWorker.target()](#serviceworkertarget)
   * [serviceWorker.url()](#serviceworkerurl)
+- [class: ServiceWorkerRegistration](#class-serviceworkerregistration)
+  * [serviceWorkerRegistration.page()](#serviceworkerregistrationpage)
+  * [serviceWorkerRegistration.push([data])](#serviceworkerregistrationpushdata)
+  * [serviceWorkerRegistration.runningStatus()](#serviceworkerregistrationrunningstatus)
+  * [serviceWorkerRegistration.scope()](#serviceworkerregistrationscope)
+  * [serviceWorkerRegistration.serviceWorker()](#serviceworkerregistrationserviceworker)
+  * [serviceWorkerRegistration.skipWaiting()](#serviceworkerregistrationskipwaiting)
+  * [serviceWorkerRegistration.status()](#serviceworkerregistrationstatus)
+  * [serviceWorkerRegistration.sync([tag], [lastChance])](#serviceworkerregistrationsynctag-lastchance)
+  * [serviceWorkerRegistration.target()](#serviceworkerregistrationtarget)
 - [class: Accessibility](#class-accessibility)
   * [accessibility.snapshot([options])](#accessibilitysnapshotoptions)
 - [class: Keyboard](#class-keyboard)
@@ -1020,6 +1033,21 @@ Emitted when a dedicated [ServiceWorker](https://developer.mozilla.org/en-US/doc
 - <[ServiceWorker]>
 
 Emitted when a dedicated [ServiceWorker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) is terminated.
+
+#### event: 'serviceworkerregistrationcreated'
+- <[ServiceWorkerRegistration]>
+
+Emitted when a [ServiceWorkerRegistration](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration) is created
+
+#### event: 'serviceworkerregistrationdeleted'
+- <[ServiceWorkerRegistration]>
+
+Emitted when a [ServiceWorkerRegistration](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration) is deleted.
+
+#### event: 'serviceworkerstatuschanged'
+- <[ServiceWorkerRegistration]>
+
+Emitted when the status of a [ServiceWorker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) has changed.    
 
 #### event: 'workercreated'
 - <[Worker]>
@@ -2116,6 +2144,73 @@ Get the target this ServiceWorker was created from.
 
 Returns this Service Worker's script URL.
 This is a shortcut for [page.target().url()](#targeturl).
+
+### class: ServiceWorkerRegistration
+
+The [ServiceWorkerRegistration](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration) class represents a Service Worker's registration on a page.
+
+You can get ServiceWorkerRegistrations by listening on the `serviceworkerregistrationcreated` event:
+```js
+const puppeteer = require('puppeteer');
+
+puppeteer.launch().then(async browser => {
+  const page = await browser.newPage();
+  page.on('serviceworkerregistrationcreated', registration => {
+    console.log('Registration with scope: ' + registration.scope());
+  });
+  
+  await page.goto('https://service-worker-example.org/');
+  await browser.close();
+});
+```
+
+#### serviceWorkerRegistration.page()
+- returns: <[Page]>
+
+Get the page associated with this ServiceWorker registration.
+
+#### serviceWorkerRegistration.push([data])
+- `data` <[string]> The data to push by the ServiceWorker.
+- returns: <[Promise]>
+
+Deliver a push message by the ServiceWorker.
+
+#### serviceWorkerRegistration.runningStatus()
+- returns: <[string]>
+
+Get the running status of this ServiceWorker registration.
+
+#### serviceWorkerRegistration.scope()
+- returns: <[string]>
+
+Get the [scope](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/scope) this ServiceWorker registration can affect. 
+
+#### serviceWorkerRegistration.serviceWorker()
+- returns: <[Promise]<[ServiceWorker]>>
+
+Get the ServiceWorker associated with this registration.
+
+#### serviceWorkerRegistration.skipWaiting()
+- returns: <[Promise]>
+
+Force the waiting ServiceWorker to become the active ServiceWorker.
+
+#### serviceWorkerRegistration.status()
+- returns: <[string]>
+
+Get the status of this ServiceWorker registration.
+
+#### serviceWorkerRegistration.sync([tag], [lastChance])
+- `tag` <[string]> The tag to dispatch the sync event with.
+- `lastChance` <[boolean]> `true` if the user agent will not make further synchronization attempts after the current attempt.
+- returns: <[Promise]>
+
+Dispatch a [SyncEvent](https://developer.mozilla.org/en-US/docs/Web/API/SyncEvent) by the ServiceWorker.
+
+#### serviceWorkerRegistration.target()
+- returns: <[Promise]<[Target]>>
+
+Get the ServiceWorker's target associated with this registration.
 
 ### class: Accessibility
 
