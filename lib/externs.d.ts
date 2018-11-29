@@ -2,6 +2,7 @@ import { Connection as RealConnection, CDPSession as RealCDPSession } from './Co
 import { Browser as RealBrowser, BrowserContext as RealBrowserContext} from './Browser.js';
 import {Target as RealTarget} from './Target.js';
 import {Page as RealPage} from './Page.js';
+import {ServiceWorker as RealServiceWorker} from './ServiceWorker.js';
 import {TaskQueue as RealTaskQueue} from './TaskQueue.js';
 import {Mouse as RealMouse, Keyboard as RealKeyboard, Touchscreen as RealTouchscreen}  from './Input.js';
 import {Frame as RealFrame, FrameManager as RealFrameManager}  from './FrameManager.js';
@@ -29,6 +30,7 @@ declare global {
     export class JSHandle extends RealJSHandle {}
     export class ExecutionContext extends RealExecutionContext {}
     export class Page extends RealPage { }
+    export class ServiceWorker extends RealServiceWorker { }
     export class Response extends RealResponse { }
     export class Request extends RealRequest { }
 

@@ -48,6 +48,7 @@
   * [browser.newPage()](#browsernewpage)
   * [browser.pages()](#browserpages)
   * [browser.process()](#browserprocess)
+  * [browser.serviceWorkers()](#browserserviceworkers)
   * [browser.target()](#browsertarget)
   * [browser.targets()](#browsertargets)
   * [browser.userAgent()](#browseruseragent)
@@ -65,6 +66,7 @@
   * [browserContext.newPage()](#browsercontextnewpage)
   * [browserContext.overridePermissions(origin, permissions)](#browsercontextoverridepermissionsorigin-permissions)
   * [browserContext.pages()](#browsercontextpages)
+  * [browserContext.serviceWorkers()](#browsercontextserviceworkers)
   * [browserContext.targets()](#browsercontexttargets)
   * [browserContext.waitForTarget(predicate[, options])](#browsercontextwaitfortargetpredicate-options)
 - [class: Page](#class-page)
@@ -83,6 +85,8 @@
   * [event: 'requestfailed'](#event-requestfailed)
   * [event: 'requestfinished'](#event-requestfinished)
   * [event: 'response'](#event-response)
+  * [event: 'serviceworkercreated'](#event-serviceworkercreated)
+  * [event: 'serviceworkerdestroyed'](#event-serviceworkerdestroyed)
   * [event: 'workercreated'](#event-workercreated)
   * [event: 'workerdestroyed'](#event-workerdestroyed)
   * [page.$(selector)](#pageselector)
@@ -124,6 +128,7 @@
   * [page.reload([options])](#pagereloadoptions)
   * [page.screenshot([options])](#pagescreenshotoptions)
   * [page.select(selector, ...values)](#pageselectselector-values)
+  * [page.serviceWorkers()](#pageserviceworkers)
   * [page.setBypassCSP(enabled)](#pagesetbypasscspenabled)
   * [page.setCacheEnabled([enabled])](#pagesetcacheenabledenabled)
   * [page.setContent(html[, options])](#pagesetcontenthtml-options)
@@ -157,6 +162,17 @@
   * [worker.evaluateHandle(pageFunction[, ...args])](#workerevaluatehandlepagefunction-args)
   * [worker.executionContext()](#workerexecutioncontext)
   * [worker.url()](#workerurl)
+- [class: ServiceWorker](#class-serviceworker)
+  * [event: 'pagecreated'](#event-pagecreated)
+  * [event: 'pagedestroyed'](#event-pagedestroyed)
+  * [event: 'request'](#event-request-1)
+  * [event: 'requestfailed'](#event-requestfailed-1)
+  * [event: 'requestfinished'](#event-requestfinished-1)
+  * [event: 'response'](#event-response-1)
+  * [serviceWorker.browser()](#serviceworkerbrowser)
+  * [serviceWorker.pages()](#serviceworkerpages)
+  * [serviceWorker.target()](#serviceworkertarget)
+  * [serviceWorker.url()](#serviceworkerurl)
 - [class: Accessibility](#class-accessibility)
   * [accessibility.snapshot([options])](#accessibilitysnapshotoptions)
 - [class: Keyboard](#class-keyboard)
@@ -294,6 +310,7 @@
   * [target.createCDPSession()](#targetcreatecdpsession)
   * [target.opener()](#targetopener)
   * [target.page()](#targetpage)
+  * [target.serviceWorker()](#targetserviceworker)
   * [target.type()](#targettype)
   * [target.url()](#targeturl)
 - [class: CDPSession](#class-cdpsession)
@@ -684,6 +701,12 @@ the method will return an array with all the pages in all browser contexts.
 #### browser.process()
 - returns: <?[ChildProcess]> Spawned browser process. Returns `null` if the browser instance was created with [`puppeteer.connect`](#puppeteerconnectoptions) method.
 
+#### browser.serviceWorkers()
+- returns: <[Promise]<[Array]<[ServiceWorker]>>> Promise which resolves to an array of all ServiceWorkers.
+
+An array of all ServiceWorkers inside the Browser. In case of multiple browser contexts,
+the method will return an array with all the ServiceWorkers in all browser contexts.
+
 #### browser.target()
 - returns: <[Target]>
 
@@ -838,6 +861,11 @@ await context.overridePermissions('https://html5demos.com', ['geolocation']);
 
 An array of all pages inside the browser context.
 
+#### browserContext.serviceWorkers()
+- returns: <[Promise]<[Array]<[ServiceWorker]>>> Promise which resolves to an array of all ServiceWorkers.
+
+An array of all ServiceWorkers inside the browser context.
+
 #### browserContext.targets()
 - returns: <[Array]<[Target]>>
 
@@ -982,6 +1010,16 @@ Emitted when a request finishes successfully.
 - <[Response]>
 
 Emitted when a [response] is received.
+
+#### event: 'serviceworkercreated'
+- <[ServiceWorker]>
+
+Emitted when a dedicated [ServiceWorker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) is spawned by the page.
+
+#### event: 'serviceworkerdestroyed'
+- <[ServiceWorker]>
+
+Emitted when a dedicated [ServiceWorker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) is terminated.
 
 #### event: 'workercreated'
 - <[Worker]>
@@ -1591,6 +1629,12 @@ page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
 
 Shortcut for [page.mainFrame().select()](#frameselectselector-values)
 
+#### page.serviceWorkers()
+- returns: <[Array]<[ServiceWorker]>>
+This method returns all of the dedicated [ServiceWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) associated with the page.
+
+> **NOTE** This does not contain WebWorkers
+
 #### page.setBypassCSP(enabled)
 - `enabled` <[boolean]> sets bypassing of page's Content-Security-Policy.
 - returns: <[Promise]>
@@ -1995,6 +2039,83 @@ Shortcut for [(await worker.executionContext()).evaluateHandle(pageFunction, ...
 
 #### worker.url()
 - returns: <[string]>
+
+### class: ServiceWorker
+
+* extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)
+
+The ServiceWorker class represents a [ServiceWorker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API).
+The events `serviceworkercreated` and `serviceworkerdestroyed` are emitted on the page object to signal the ServiceWorker registration lifecycle.
+
+You can listen to a ServiceWorkers' requests:
+```js
+const puppeteer = require('puppeteer');
+
+function logRequest(interceptedRequest) {
+  console.log('A request was made by the ServiceWorker:', interceptedRequest.url());
+}
+
+puppeteer.launch().then(async browser => {
+  const page = await browser.newPage();
+  page.on('serviceworkercreated', serviceWorker => {
+    serviceWorker.on('request', logRequest);
+  });
+  
+  await page.goto('https://service-worker-example.org/');
+  await browser.close();
+});
+```
+
+#### event: 'pagecreated'
+- <[Page]>
+
+Emitted when a new page is associated with this ServiceWorker.
+
+#### event: 'pagedestroyed'
+- <[Page]>
+
+Emitted when an associated page is destroyed.
+
+#### event: 'request'
+- <[Request]>
+
+Emitted when a service worker issues a request. The [request] object is read-only.
+
+#### event: 'requestfailed'
+- <[Request]>
+
+Emitted when a request fails, for example by timing out.
+
+#### event: 'requestfinished'
+- <[Request]>
+
+Emitted when a request finishes successfully.
+
+#### event: 'response'
+- <[Response]>
+
+Emitted when a [response] is received.
+
+#### serviceWorker.browser()
+- returns: <[Browser]>
+
+Get the browser the ServiceWorker belongs to.
+
+#### serviceWorker.pages()
+- returns: <[Array]<[Page]>>
+
+Returns all pages associated with this SerivceWorker.
+
+#### serviceWorker.target()
+- returns: <[Target]> 
+
+Get the target this ServiceWorker was created from.
+
+#### serviceWorker.url()
+- returns: <[string]>
+
+Returns this Service Worker's script URL.
+This is a shortcut for [page.target().url()](#targeturl).
 
 ### class: Accessibility
 
@@ -3385,6 +3506,11 @@ Get the target that opened this target. Top-level targets return `null`.
 - returns: <[Promise]<?[Page]>>
 
 If the target is not of type `"page"` or `"background_page"`, returns `null`.
+
+#### target.serviceWorker()
+- returns: <[Promise]<?[ServiceWorker]>>
+
+If the target is not of type `"service_worker"`, returns `null`.
 
 #### target.type()
 - returns: <"page"|"background_page"|"service_worker"|"other"|"browser">
