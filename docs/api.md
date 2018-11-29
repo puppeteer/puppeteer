@@ -1604,7 +1604,7 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
     - `everyNthFrame` <[number]> Defines which frames to send.
 - returns: <[Promise]>
 
- #### page.stopScreencast()
+#### page.stopScreencast()
 - returns: <[Promise]>
 
 #### page.screencastFrameAck(sessionId)
