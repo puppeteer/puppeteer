@@ -79,10 +79,12 @@ xorg-x11-fonts-misc
 ```
 </details>
 
-- Check out discussions:
-  - [#290](https://github.com/GoogleChrome/puppeteer/issues/290) - Debian troubleshooting
-  - [#391](https://github.com/GoogleChrome/puppeteer/issues/391) - CentOS troubleshooting
-  - [#379](https://github.com/GoogleChrome/puppeteer/issues/379) - Alpine troubleshooting
+<details>
+  <summary>Check out discussions</summary>
+- [#290](https://github.com/GoogleChrome/puppeteer/issues/290) - Debian troubleshooting <br/>
+- [#391](https://github.com/GoogleChrome/puppeteer/issues/391) - CentOS troubleshooting <br/>
+- [#379](https://github.com/GoogleChrome/puppeteer/issues/379) - Alpine troubleshooting <br/>
+</details>
 
 ## Setting Up Chrome Linux Sandbox
 
