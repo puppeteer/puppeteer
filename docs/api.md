@@ -85,6 +85,7 @@
   * [event: 'response'](#event-response)
   * [event: 'workercreated'](#event-workercreated)
   * [event: 'workerdestroyed'](#event-workerdestroyed)
+  * [event: 'screencastframe'](#event-screencastframe)
   * [page.$(selector)](#pageselector)
   * [page.$$(selector)](#pageselector-1)
   * [page.$$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args)
@@ -123,6 +124,9 @@
   * [page.queryObjects(prototypeHandle)](#pagequeryobjectsprototypehandle)
   * [page.reload([options])](#pagereloadoptions)
   * [page.screenshot([options])](#pagescreenshotoptions)
+  * [page.startScreencast([options])](#pagestartscreencastoptions)
+  * [page.stopScreencast()](#pagestopscreencast)
+  * [page.screencastFrameAck(sessionId)](#pagescreencastframeacksessionid)
   * [page.select(selector, ...values)](#pageselectselector-values)
   * [page.setBypassCSP(enabled)](#pagesetbypasscspenabled)
   * [page.setCacheEnabled([enabled])](#pagesetcacheenabledenabled)
@@ -993,6 +997,21 @@ Emitted when a dedicated [WebWorker](https://developer.mozilla.org/en-US/docs/We
 
 Emitted when a dedicated [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) is terminated.
 
+#### event: 'screencastframe'
+- <[object]>
+    - `data` <[string]> Base64 encoded frame data.
+    - `metadata` <[object]>
+        - `offsetTop` <[number]>
+        - `pageScaleFactor` <[number]>
+        - `deviceWidth` <[number]>
+        - `deviceHeight` <[number]>
+        - `scrollOffsetX` <[number]>
+        - `scrollOffsetY` <[number]>
+        - `timestamp` <[number]>
+    - `sessionId` <[number]> The ID of the session this frame is from.
+
+Emitted when a screencast frame is received.
+
 #### page.$(selector)
 - `selector` <[string]> A [selector] to query page for
 - returns: <[Promise]<?[ElementHandle]>>
@@ -1575,6 +1594,22 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
 - returns: <[Promise]<[string]|[Buffer]>> Promise which resolves to buffer or a base64 string (depending on the value of `encoding`) with captured screenshot.
 
 > **NOTE** Screenshots take at least 1/6 second on OS X. See https://crbug.com/741689 for discussion.
+
+#### page.startScreencast([options])
+- `options` <[Object]> Options object which might have the following properties:
+    - `format` <[string]> Specify screencast frame format, could be either `jpeg` or `png`. Defaults to 'png'.
+    - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
+    - `maxWidth` <[number]> The maximum width of the screencast frame.
+    - `maxHeight` <[number]> The maximum height of the screencast frame.
+    - `everyNthFrame` <[number]> Defines which frames to send.
+- returns: <[Promise]>
+
+ #### page.stopScreencast()
+- returns: <[Promise]>
+
+#### page.screencastFrameAck(sessionId)
+- `sessionId` <[number]> The ID of the frame that is being acknowledged. Provided in the `screencastframe` event.
+- returns: <[Promise]>
 
 #### page.select(selector, ...values)
 - `selector` <[string]> A [selector] to query page for
