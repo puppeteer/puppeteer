@@ -51,7 +51,19 @@ module.exports.addTests = function({testRunner, expect}) {
 
       await page.evaluate(() => window.registrationPromise.then(registration => registration.unregister()));
     });
+    it('can be stopped', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const activeServiceWorker = new Promise(fulfill => page.on('serviceworkeractive', fulfill));
 
+      await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+
+      const serviceWorker = await activeServiceWorker;
+      expect(serviceWorker.isRunning()).toBe(true);
+      await serviceWorker.stop();
+      expect(serviceWorker.isRunning()).toBe(false);
+
+      await page.evaluate(() => window.registrationPromise.then(registration => registration.unregister()));
+    });
     it('should report when a service worker is installing', async({page, server, context}) => {
       await page.goto(server.EMPTY_PAGE);
       const installing = new Promise(fulfill => page.on('serviceworkerinstalling', fulfill));

@@ -185,7 +185,9 @@
   * [serviceWorker.clients()](#serviceworkerclients)
   * [serviceWorker.detach()](#serviceworkerdetach)
   * [serviceWorker.isRunning()](#serviceworkerisrunning)
+  * [serviceWorker.registration()](#serviceworkerregistration)
   * [serviceWorker.status()](#serviceworkerstatus)
+  * [serviceWorker.stop()](#serviceworkerstop)
   * [serviceWorker.target()](#serviceworkertarget)
   * [serviceWorker.url()](#serviceworkerurl)
 - [class: ServiceWorkerRegistration](#class-serviceworkerregistration)
@@ -2211,10 +2213,20 @@ Detach the service worker.
 
 Determine whether the service worker is running. 
 
+#### serviceWorker.registration()
+- returns: <[Promise]<[ServiceWorkerRegistration]>>
+
+Get the service worker registration associated with the service worker.
+
 #### serviceWorker.status()
 - returns: <"new"|"installing"|"waiting"|"active"|"redundant">
 
 Determine the service worker's status within the [service worker lifecycle](https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle).
+
+#### serviceWorker.stop()
+- returns: <[Promise]>
+
+Stop the service worker. Afterwards, [serviceWorker.isRunning()](#serviceworkerisrunning) returns false.
 
 #### serviceWorker.target()
 - returns: <[Target]> 
