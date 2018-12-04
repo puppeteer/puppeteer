@@ -79,7 +79,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect((await createdTarget).type()).toBe('service_worker');
       expect((await createdTarget).url()).toBe(server.PREFIX + '/serviceworkers/empty/sw.js');
 
-      const destroyedTarget = new Promise(fulfill => context.once('targetdestroyed', target => fulfill(target)));
+      const destroyedTarget = new Promise(fulfill => context.on('targetdestroyed', target => target.type() === 'service_worker' && fulfill(target)));
       await page.evaluate(() => window.registrationPromise.then(registration => registration.unregister()));
       expect(await destroyedTarget).toBe(await createdTarget);
     });
