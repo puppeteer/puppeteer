@@ -37,6 +37,8 @@
   * [browserFetcher.revisionInfo(revision)](#browserfetcherrevisioninforevision)
 - [class: Browser](#class-browser)
   * [event: 'disconnected'](#event-disconnected)
+  * [event: 'serviceworkercreated'](#event-serviceworkercreated)
+  * [event: 'serviceworkerdestroyed'](#event-serviceworkerdestroyed)
   * [event: 'targetchanged'](#event-targetchanged)
   * [event: 'targetcreated'](#event-targetcreated)
   * [event: 'targetdestroyed'](#event-targetdestroyed)
@@ -56,6 +58,8 @@
   * [browser.waitForTarget(predicate[, options])](#browserwaitfortargetpredicate-options)
   * [browser.wsEndpoint()](#browserwsendpoint)
 - [class: BrowserContext](#class-browsercontext)
+  * [event: 'serviceworkercreated'](#event-serviceworkercreated-1)
+  * [event: 'serviceworkerdestroyed'](#event-serviceworkerdestroyed-1)
   * [event: 'targetchanged'](#event-targetchanged-1)
   * [event: 'targetcreated'](#event-targetcreated-1)
   * [event: 'targetdestroyed'](#event-targetdestroyed-1)
@@ -85,11 +89,11 @@
   * [event: 'requestfailed'](#event-requestfailed)
   * [event: 'requestfinished'](#event-requestfinished)
   * [event: 'response'](#event-response)
-  * [event: 'serviceworkercreated'](#event-serviceworkercreated)
-  * [event: 'serviceworkerdestroyed'](#event-serviceworkerdestroyed)
-  * [event: 'serviceworkerregistrationcreated'](#event-serviceworkerregistrationcreated)
-  * [event: 'serviceworkerregistrationdeleted'](#event-serviceworkerregistrationdeleted)
-  * [event: 'serviceworkerstatuschanged'](#event-serviceworkerstatuschanged)
+  * [event: 'serviceworkeractive'](#event-serviceworkeractive)
+  * [event: 'serviceworkerinstalling'](#event-serviceworkerinstalling)
+  * [event: 'serviceworkerregistered'](#event-serviceworkerregistered)
+  * [event: 'serviceworkerunregistered'](#event-serviceworkerunregistered)
+  * [event: 'serviceworkerwaiting'](#event-serviceworkerwaiting)
   * [event: 'workercreated'](#event-workercreated)
   * [event: 'workerdestroyed'](#event-workerdestroyed)
   * [page.$(selector)](#pageselector)
@@ -166,26 +170,26 @@
   * [worker.executionContext()](#workerexecutioncontext)
   * [worker.url()](#workerurl)
 - [class: ServiceWorker](#class-serviceworker)
-  * [event: 'pagecreated'](#event-pagecreated)
-  * [event: 'pagedestroyed'](#event-pagedestroyed)
+  * [event: 'detached'](#event-detached)
   * [event: 'request'](#event-request-1)
   * [event: 'requestfailed'](#event-requestfailed-1)
   * [event: 'requestfinished'](#event-requestfinished-1)
   * [event: 'response'](#event-response-1)
   * [serviceWorker.browser()](#serviceworkerbrowser)
+  * [serviceWorker.detach()](#serviceworkerdetach)
   * [serviceWorker.pages()](#serviceworkerpages)
   * [serviceWorker.target()](#serviceworkertarget)
   * [serviceWorker.url()](#serviceworkerurl)
 - [class: ServiceWorkerRegistration](#class-serviceworkerregistration)
+  * [serviceWorkerRegistration.active()](#serviceworkerregistrationactive)
+  * [serviceWorkerRegistration.installing()](#serviceworkerregistrationinstalling)
   * [serviceWorkerRegistration.page()](#serviceworkerregistrationpage)
   * [serviceWorkerRegistration.push([data])](#serviceworkerregistrationpushdata)
-  * [serviceWorkerRegistration.runningStatus()](#serviceworkerregistrationrunningstatus)
   * [serviceWorkerRegistration.scope()](#serviceworkerregistrationscope)
-  * [serviceWorkerRegistration.serviceWorker()](#serviceworkerregistrationserviceworker)
   * [serviceWorkerRegistration.skipWaiting()](#serviceworkerregistrationskipwaiting)
-  * [serviceWorkerRegistration.status()](#serviceworkerregistrationstatus)
   * [serviceWorkerRegistration.sync([tag], [lastChance])](#serviceworkerregistrationsynctag-lastchance)
-  * [serviceWorkerRegistration.target()](#serviceworkerregistrationtarget)
+  * [serviceWorkerRegistration.unregister()](#serviceworkerregistrationunregister)
+  * [serviceWorkerRegistration.waiting()](#serviceworkerregistrationwaiting)
 - [class: Accessibility](#class-accessibility)
   * [accessibility.snapshot([options])](#accessibilitysnapshotoptions)
 - [class: Keyboard](#class-keyboard)
@@ -643,6 +647,16 @@ Emitted when Puppeteer gets disconnected from the Chromium instance. This might 
 - Chromium is closed or crashed
 - The [`browser.disconnect`](#browserdisconnect) method was called
 
+#### event: 'serviceworkercreated'
+- <[ServiceWorker]>
+
+Emitted when a [service worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) is created in this browser.
+
+#### event: 'serviceworkerdestroyed'
+- <[ServiceWorker]>
+
+Emitted when a [service worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) is destroyed in this browser.
+
 #### event: 'targetchanged'
 - <[Target]>
 
@@ -786,6 +800,16 @@ await page.goto('https://example.com');
 // Dispose context once it's no longer needed.
 await context.close();
 ```
+
+#### event: 'serviceworkercreated'
+- <[ServiceWorker]>
+
+Emitted when a [service worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) is created in this browser context.
+
+#### event: 'serviceworkerdestroyed'
+- <[ServiceWorker]>
+
+Emitted when a [service worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) is destroyed in this browser context.
 
 #### event: 'targetchanged'
 - <[Target]>
@@ -1024,30 +1048,30 @@ Emitted when a request finishes successfully.
 
 Emitted when a [response] is received.
 
-#### event: 'serviceworkercreated'
+#### event: 'serviceworkeractive'
 - <[ServiceWorker]>
 
-Emitted when a dedicated [ServiceWorker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) is spawned by the page.
+Emitted when a dedicated [service worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) is active.
 
-#### event: 'serviceworkerdestroyed'
+#### event: 'serviceworkerinstalling'
 - <[ServiceWorker]>
 
-Emitted when a dedicated [ServiceWorker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) is terminated.
+Emitted when a dedicated [service worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) is installing.
 
-#### event: 'serviceworkerregistrationcreated'
+#### event: 'serviceworkerregistered'
 - <[ServiceWorkerRegistration]>
 
-Emitted when a [ServiceWorkerRegistration](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration) is created
+Emitted when a dedicated [service worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) is registered on the page.
 
-#### event: 'serviceworkerregistrationdeleted'
+#### event: 'serviceworkerunregistered'
 - <[ServiceWorkerRegistration]>
 
-Emitted when a [ServiceWorkerRegistration](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration) is deleted.
+Emitted when a dedicated [service worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) is unregistered from the page.
 
-#### event: 'serviceworkerstatuschanged'
-- <[ServiceWorkerRegistration]>
+#### event: 'serviceworkerwaiting'
+- <[ServiceWorker]>
 
-Emitted when the status of a [ServiceWorker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) has changed.    
+Emitted when a dedicated [service worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) is waiting.
 
 #### event: 'workercreated'
 - <[Worker]>
@@ -2072,37 +2096,38 @@ Shortcut for [(await worker.executionContext()).evaluateHandle(pageFunction, ...
 
 * extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)
 
-The ServiceWorker class represents a [ServiceWorker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API).
-The events `serviceworkercreated` and `serviceworkerdestroyed` are emitted on the page object to signal the ServiceWorker registration lifecycle.
+The ServiceWorker class represents a [service worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API).
+The events `serviceworkercreated` and `serviceworkerdestroyed` are emitted on the page object to signal the service worker registration lifecycle.
 
-You can listen to a ServiceWorkers' requests:
+You can listen to a service workers' requests:
 ```js
 const puppeteer = require('puppeteer');
 
 function logRequest(interceptedRequest) {
-  console.log('A request was made by the ServiceWorker:', interceptedRequest.url());
+  console.log('A request was made by the service worker:', interceptedRequest.url());
 }
 
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
-  page.on('serviceworkercreated', serviceWorker => {
-    serviceWorker.on('request', logRequest);
+  page.on('serviceworkerregistered', serviceWorkerRegistration => {
+    serviceWorkerRegistration.installing(); // ServiceWorker
+    serviceWorkerRegistration.waiting(); // null
+    serviceWorkerRegistration.active(); // null
+    
+    // serviceWorker.on('request', logRequest);
   });
+  
+  page.on('serviceworkerunregistered', serviceWorkerRegistration => {
   
   await page.goto('https://service-worker-example.org/');
   await browser.close();
 });
 ```
 
-#### event: 'pagecreated'
-- <[Page]>
+#### event: 'detached'
+- <[ServiceWorker]>
 
-Emitted when a new page is associated with this ServiceWorker.
-
-#### event: 'pagedestroyed'
-- <[Page]>
-
-Emitted when an associated page is destroyed.
+Emitted when a service worker has been detached.
 
 #### event: 'request'
 - <[Request]>
@@ -2127,7 +2152,12 @@ Emitted when a [response] is received.
 #### serviceWorker.browser()
 - returns: <[Browser]>
 
-Get the browser the ServiceWorker belongs to.
+Get the browser the service worker belongs to.
+
+#### serviceWorker.detach()
+- returns: <[Promise]>
+
+Detach the service worker. 
 
 #### serviceWorker.pages()
 - returns: <[Array]<[Page]>>
@@ -2137,7 +2167,7 @@ Returns all pages associated with this SerivceWorker.
 #### serviceWorker.target()
 - returns: <[Target]> 
 
-Get the target this ServiceWorker was created from.
+Get the target this service worker was created from.
 
 #### serviceWorker.url()
 - returns: <[string]>
@@ -2164,6 +2194,16 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
+#### serviceWorkerRegistration.active()
+- returns: <[Promise]<[ServiceWorker]>>
+
+Get the [active service worker](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/active) of this registration.
+
+#### serviceWorkerRegistration.installing()
+- returns: <[Promise]<[ServiceWorker]>>
+
+Get the [installing service worker](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/installing) of this registration.
+
 #### serviceWorkerRegistration.page()
 - returns: <[Page]>
 
@@ -2175,30 +2215,15 @@ Get the page associated with this ServiceWorker registration.
 
 Deliver a push message by the ServiceWorker.
 
-#### serviceWorkerRegistration.runningStatus()
-- returns: <[string]>
-
-Get the running status of this ServiceWorker registration.
-
 #### serviceWorkerRegistration.scope()
 - returns: <[string]>
 
 Get the [scope](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/scope) this ServiceWorker registration can affect. 
 
-#### serviceWorkerRegistration.serviceWorker()
-- returns: <[Promise]<[ServiceWorker]>>
-
-Get the ServiceWorker associated with this registration.
-
 #### serviceWorkerRegistration.skipWaiting()
 - returns: <[Promise]>
 
 Force the waiting ServiceWorker to become the active ServiceWorker.
-
-#### serviceWorkerRegistration.status()
-- returns: <[string]>
-
-Get the status of this ServiceWorker registration.
 
 #### serviceWorkerRegistration.sync([tag], [lastChance])
 - `tag` <[string]> The tag to dispatch the sync event with.
@@ -2207,10 +2232,15 @@ Get the status of this ServiceWorker registration.
 
 Dispatch a [SyncEvent](https://developer.mozilla.org/en-US/docs/Web/API/SyncEvent) by the ServiceWorker.
 
-#### serviceWorkerRegistration.target()
-- returns: <[Promise]<[Target]>>
+#### serviceWorkerRegistration.unregister()
+- returns: <[Promise]>
 
-Get the ServiceWorker's target associated with this registration.
+Unregisters this ServiceWorker registration from the Browser.
+
+#### serviceWorkerRegistration.waiting()
+- returns: <[Promise]<[ServiceWorker]>>
+
+Get the [waiting service worker](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/waiting) of this registration.
 
 ### class: Accessibility
 

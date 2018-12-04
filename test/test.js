@@ -169,6 +169,7 @@ describe('Browser', function() {
     require('./target.spec.js').addTests({testRunner, expect});
     require('./tracing.spec.js').addTests({testRunner, expect});
     require('./worker.spec.js').addTests({testRunner, expect});
+    require('./serviceworker.spec').addTests({testRunner, expect});
   });
 
   // Browser-level tests that are given a browser.
