@@ -170,24 +170,36 @@
   * [worker.executionContext()](#workerexecutioncontext)
   * [worker.url()](#workerurl)
 - [class: ServiceWorker](#class-serviceworker)
+  * [event: 'active'](#event-active)
+  * [event: 'clientattached'](#event-clientattached)
+  * [event: 'clientdetached'](#event-clientdetached)
   * [event: 'detached'](#event-detached)
+  * [event: 'installing'](#event-installing)
+  * [event: 'redundant'](#event-redundant)
   * [event: 'request'](#event-request-1)
   * [event: 'requestfailed'](#event-requestfailed-1)
   * [event: 'requestfinished'](#event-requestfinished-1)
   * [event: 'response'](#event-response-1)
+  * [event: 'waiting'](#event-waiting)
   * [serviceWorker.browser()](#serviceworkerbrowser)
+  * [serviceWorker.clients()](#serviceworkerclients)
   * [serviceWorker.detach()](#serviceworkerdetach)
-  * [serviceWorker.pages()](#serviceworkerpages)
+  * [serviceWorker.isRunning()](#serviceworkerisrunning)
+  * [serviceWorker.status()](#serviceworkerstatus)
   * [serviceWorker.target()](#serviceworkertarget)
   * [serviceWorker.url()](#serviceworkerurl)
 - [class: ServiceWorkerRegistration](#class-serviceworkerregistration)
+  * [event: 'active'](#event-active-1)
+  * [event: 'installing'](#event-installing-1)
+  * [event: 'redundant'](#event-redundant-1)
+  * [event: 'waiting'](#event-waiting-1)
   * [serviceWorkerRegistration.active()](#serviceworkerregistrationactive)
+  * [serviceWorkerRegistration.browserContext()](#serviceworkerregistrationbrowsercontext)
   * [serviceWorkerRegistration.installing()](#serviceworkerregistrationinstalling)
-  * [serviceWorkerRegistration.page()](#serviceworkerregistrationpage)
-  * [serviceWorkerRegistration.push([data])](#serviceworkerregistrationpushdata)
+  * [serviceWorkerRegistration.push([data], [origin])](#serviceworkerregistrationpushdata-origin)
   * [serviceWorkerRegistration.scope()](#serviceworkerregistrationscope)
   * [serviceWorkerRegistration.skipWaiting()](#serviceworkerregistrationskipwaiting)
-  * [serviceWorkerRegistration.sync([tag], [lastChance])](#serviceworkerregistrationsynctag-lastchance)
+  * [serviceWorkerRegistration.sync([tag], [origin], [lastChance])](#serviceworkerregistrationsynctag-origin-lastchance)
   * [serviceWorkerRegistration.unregister()](#serviceworkerregistrationunregister)
   * [serviceWorkerRegistration.waiting()](#serviceworkerregistrationwaiting)
 - [class: Accessibility](#class-accessibility)
@@ -2124,10 +2136,35 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
+#### event: 'active'
+- <[ServiceWorker]>
+
+Emitted when the service worker becomes active.
+
+#### event: 'clientattached'
+- <[Target]>
+
+Emitted when a target attached to the service worker.
+
+#### event: 'clientdetached'
+- <[Target]>
+
+Emitted when a target detached from the service worker.
+
 #### event: 'detached'
 - <[ServiceWorker]>
 
 Emitted when a service worker has been detached.
+
+#### event: 'installing'
+- <[ServiceWorker]>
+
+Emitted when the service worker becomes installing.
+
+#### event: 'redundant'
+- <[ServiceWorker]>
+
+Emitted when the service worker becomes redundant.
 
 #### event: 'request'
 - <[Request]>
@@ -2149,20 +2186,35 @@ Emitted when a request finishes successfully.
 
 Emitted when a [response] is received.
 
+#### event: 'waiting'
+- <[ServiceWorker]>
+
+Emitted when the service worker becomes waiting.
+
 #### serviceWorker.browser()
 - returns: <[Browser]>
 
 Get the browser the service worker belongs to.
+
+#### serviceWorker.clients()
+- returns: <[Array]<[Target]>>
+
+Returns all targets attached to the service worker.
 
 #### serviceWorker.detach()
 - returns: <[Promise]>
 
 Detach the service worker. 
 
-#### serviceWorker.pages()
-- returns: <[Array]<[Page]>>
+#### serviceWorker.isRunning()
+- returns: <[boolean]>
 
-Returns all pages associated with this SerivceWorker.
+Determine whether the service worker is running. 
+
+#### serviceWorker.status()
+- returns: <"new"|"installing"|"waiting"|"active"|"redundant">
+
+Determine the service worker's status within the [service worker lifecycle](https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle).
 
 #### serviceWorker.target()
 - returns: <[Target]> 
@@ -2194,23 +2246,44 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
+#### event: 'active'
+- <[ServiceWorker]>
+
+Emitted when a service worker of the registration becomes active.
+
+#### event: 'installing'
+- <[ServiceWorker]>
+
+Emitted when a service worker of the registration becomes installing.
+
+#### event: 'redundant'
+- <[ServiceWorker]>
+
+Emitted when a service worker of the registration becomes redundant.
+
+#### event: 'waiting'
+- <[ServiceWorker]>
+
+Emitted when a service worker of the registration becomes waiting.
+
 #### serviceWorkerRegistration.active()
-- returns: <[Promise]<[ServiceWorker]>>
+- returns: <?[ServiceWorker]>
 
 Get the [active service worker](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/active) of this registration.
 
+#### serviceWorkerRegistration.browserContext()
+- returns: <[BrowserContext]>
+
+Get the browser context associated with this service worker registration.
+
 #### serviceWorkerRegistration.installing()
-- returns: <[Promise]<[ServiceWorker]>>
+- returns: <?[ServiceWorker]>
 
 Get the [installing service worker](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/installing) of this registration.
 
-#### serviceWorkerRegistration.page()
-- returns: <[Page]>
-
-Get the page associated with this ServiceWorker registration.
-
-#### serviceWorkerRegistration.push([data])
-- `data` <[string]> The data to push by the ServiceWorker.
+#### serviceWorkerRegistration.push([data], [origin])
+- `data` <[string]> The data to push by the service worker.
+- `origin` <[string]> The origin to push the data for.
 - returns: <[Promise]>
 
 Deliver a push message by the ServiceWorker.
@@ -2225,8 +2298,9 @@ Get the [scope](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRe
 
 Force the waiting ServiceWorker to become the active ServiceWorker.
 
-#### serviceWorkerRegistration.sync([tag], [lastChance])
+#### serviceWorkerRegistration.sync([tag], [origin], [lastChance])
 - `tag` <[string]> The tag to dispatch the sync event with.
+- `origin` <[string]> The origin to sync for.
 - `lastChance` <[boolean]> `true` if the user agent will not make further synchronization attempts after the current attempt.
 - returns: <[Promise]>
 
@@ -2238,7 +2312,7 @@ Dispatch a [SyncEvent](https://developer.mozilla.org/en-US/docs/Web/API/SyncEven
 Unregisters this ServiceWorker registration from the Browser.
 
 #### serviceWorkerRegistration.waiting()
-- returns: <[Promise]<[ServiceWorker]>>
+- returns: <?[ServiceWorker]>
 
 Get the [waiting service worker](https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration/waiting) of this registration.
 

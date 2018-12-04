@@ -51,35 +51,7 @@ module.exports.addTests = function({testRunner, expect}) {
 
       await page.evaluate(() => window.registrationPromise.then(registration => registration.unregister()));
     });
-  });
 
-  describe('ServiceWorkerRegistration', function() {
-    it('should report when a service worker registration is registered and unregistered', async({page, server, context}) => {
-      await page.goto(server.EMPTY_PAGE);
-      const registered = new Promise(fulfill => page.on('serviceworkerregistered', fulfill));
-
-      await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
-
-      expect((await registered).scope()).toBe(server.PREFIX + '/serviceworkers/empty/');
-      expect((await registered).page()).toBe(page);
-
-      const unregistered = new Promise(fulfill => page.on('serviceworkerunregistered', fulfill));
-      await page.evaluate(() => window.registrationPromise.then(registration => registration.unregister()));
-      expect(await unregistered).toBe(await registered);
-    });
-    it('can enforce to unregister', async({page, server, context}) => {
-      await page.goto(server.EMPTY_PAGE);
-      const registered = new Promise(fulfill => page.on('serviceworkerregistered', fulfill));
-
-      await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
-
-      expect((await registered).scope()).toBe(server.PREFIX + '/serviceworkers/empty/');
-      expect((await registered).page()).toBe(page);
-
-      const unregistered = new Promise(fulfill => page.on('serviceworkerunregistered', fulfill));
-      await (await registered).unregister();
-      expect(await unregistered).toBe(await registered);
-    });
     it('should report when a service worker is installing', async({page, server, context}) => {
       await page.goto(server.EMPTY_PAGE);
       const installing = new Promise(fulfill => page.on('serviceworkerinstalling', fulfill));
@@ -107,6 +79,68 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
 
       expect((await active).url()).toBe(server.PREFIX + '/serviceworkers/empty/sw.js');
+
+      await page.evaluate(() => window.registrationPromise.then(registration => registration.unregister()));
+    });
+  });
+
+  describe('ServiceWorkerRegistration', function() {
+    it('should report when a service worker registration is registered and unregistered', async({page, server, context}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const registered = new Promise(fulfill => page.on('serviceworkerregistered', fulfill));
+
+      await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+
+      expect((await registered).scope()).toBe(server.PREFIX + '/serviceworkers/empty/');
+      expect((await registered).browserContext()).toBe(context);
+
+      const unregistered = new Promise(fulfill => page.on('serviceworkerunregistered', fulfill));
+      await page.evaluate(() => window.registrationPromise.then(registration => registration.unregister()));
+      expect(await unregistered).toBe(await registered);
+    });
+    it('can enforce to unregister', async({page, server, context}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const registered = new Promise(fulfill => page.on('serviceworkerregistered', fulfill));
+
+      await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+
+      expect((await registered).scope()).toBe(server.PREFIX + '/serviceworkers/empty/');
+      expect((await registered).browserContext()).toBe(context);
+
+      const unregistered = new Promise(fulfill => page.on('serviceworkerunregistered', fulfill));
+      await (await registered).unregister();
+      expect(await unregistered).toBe(await registered);
+    });
+    it('should report when a service worker is installing', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const registered = new Promise(fulfill => page.on('serviceworkerregistered', fulfill));
+      const installingServiceWorker = registered.then(registration => new Promise(fulfill => registration.once('installing', fulfill)));
+
+      await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+
+      expect((await installingServiceWorker).url()).toBe(server.PREFIX + '/serviceworkers/empty/sw.js');
+
+      await page.evaluate(() => window.registrationPromise.then(registration => registration.unregister()));
+    });
+    it('should report when a service worker is waiting', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const registered = new Promise(fulfill => page.on('serviceworkerregistered', fulfill));
+      const waitingServiceWorker = registered.then(registration => new Promise(fulfill => registration.once('waiting', fulfill)));
+
+      await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+
+      expect((await waitingServiceWorker).url()).toBe(server.PREFIX + '/serviceworkers/empty/sw.js');
+
+      await page.evaluate(() => window.registrationPromise.then(registration => registration.unregister()));
+    });
+    it('should report when a service worker is active', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const registered = new Promise(fulfill => page.on('serviceworkerregistered', fulfill));
+      const activeServiceWorker = registered.then(registration => new Promise(fulfill => registration.once('active', fulfill)));
+
+      await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+
+      expect((await activeServiceWorker).url()).toBe(server.PREFIX + '/serviceworkers/empty/sw.js');
 
       await page.evaluate(() => window.registrationPromise.then(registration => registration.unregister()));
     });
