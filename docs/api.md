@@ -990,7 +990,7 @@ Emitted when a [response] is received.
 #### event: 'screencastframe'
 - <[Object]>
     - `data` <[string]> Base64 encoded frame data.
-    - `metadata` <[object]>
+    - `metadata` <[Object]>
         - `offsetTop` <[number]>
         - `pageScaleFactor` <[number]>
         - `deviceWidth` <[number]>
