@@ -1749,7 +1749,7 @@ In the case of multiple pages in a single browser, each page can have its own vi
 
 #### page.startScreencast(options)
 - `options` <[Object]>
-  - `format` <"png" | "jpeg"> Specify screencast frame format, could be either `jpeg` or `png`. Defaults to 'png'.
+  - `format` <"png" | "jpeg"> Specify screencast frame format, could be either `jpeg` or `png`. Defaults to `png`.
   - `quality` <[number]> The quality of the image, between 0-100. Not applicable to `png` images.
   - `maxWidth` <[number]> The maximum width of the screencast frame.
   - `maxHeight` <[number]> The maximum height of the screencast frame.
