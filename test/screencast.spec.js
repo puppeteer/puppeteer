@@ -20,42 +20,42 @@ module.exports.addTests = function({testRunner, expect, product}) {
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Screencast', function() {
-    it('should return jpeg frame data when the format is jpeg', async({page, browser, server, done}) => {
-      await page.setViewport({width: 64, height: 64});
-      await page.goto(server.PREFIX + '/grid.html');
+    it('should return jpeg frame data when the format is jpeg', async({page, browser, server}) =>
+      new Promise(async resolve => {
+        await page.setViewport({width: 64, height: 64});
+        await page.goto(server.PREFIX + '/grid.html');
+        page.on('screencastframe', async frame => {
+          await page.screencastFrameAck(frame.sessionId);
+          /*
+            According to https://en.wikipedia.org/wiki/JPEG_File_Interchange_Format#frb-inline,
+            the first 2 bytes of every JPEG are FF (255) and D8 (216); see 'Start of Image'.
+            */
+          const first8Bytes = [...Buffer.from(frame.data, 'base64')].slice(0, 2).join('-');
+          expect(first8Bytes).toBe('255-216');
+          await page.stopScreencast();
+          resolve();
+        });
+        await page.startScreencast({format: 'jpeg', everyNthFrame: 1});
+      })
+    );
 
-      page.on('screencastframe', async frame => {
-        await page.screencastFrameAck(frame.sessionId);
-        /*
-         According to https://en.wikipedia.org/wiki/JPEG_File_Interchange_Format#frb-inline,
-         the first 2 bytes of every JPEG are FF (255) and D8 (216); see 'Start of Image'.
-         */
-        const first8Bytes = [...Buffer.from(frame.data, 'base64')].slice(0, 2).join('-');
-        expect(first8Bytes).toBe('255-216');
-        await page.stopScreencast();
-      });
-      await page.startScreencast({format: 'jpeg', everyNthFrame: 1});
-      return new Promise(resolve => setTimeout(resolve, 1000));
-
-    });
-
-    it('should return png frame data when the format is png', async({page, browser, server, done}) => {
-      await page.setViewport({width: 64, height: 64});
-      await page.goto(server.PREFIX + '/grid.html');
-
-      page.on('screencastframe', async frame => {
-        await page.screencastFrameAck(frame.sessionId);
-        /*
-         According to the PNG Specification ( http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html ),
-         the first 8 bytes of every PNG are 137 80 78 71 13 10 26 10.
-         */
-        const first8Bytes = [...Buffer.from(frame.data, 'base64')].slice(0, 8).join('-');
-        expect(first8Bytes).toBe('137-80-78-71-13-10-26-10');
-        await page.stopScreencast();
-      });
-      await page.startScreencast({format: 'png', everyNthFrame: 1});
-      return new Promise(resolve => setTimeout(resolve, 1000));
-
-    });
+    it('should return png frame data when the format is png', async({page, browser, server}) =>
+      new Promise(async resolve => {
+        await page.setViewport({width: 64, height: 64});
+        await page.goto(server.PREFIX + '/grid.html');
+        page.on('screencastframe', async frame => {
+          await page.screencastFrameAck(frame.sessionId);
+          /*
+           According to the PNG Specification ( http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html ),
+           the first 8 bytes of every PNG are 137 80 78 71 13 10 26 10.
+           */
+          const first8Bytes = [...Buffer.from(frame.data, 'base64')].slice(0, 8).join('-');
+          expect(first8Bytes).toBe('137-80-78-71-13-10-26-10');
+          await page.stopScreencast();
+          resolve();
+        });
+        await page.startScreencast({format: 'png', everyNthFrame: 1});
+      })
+    );
   });
 };
