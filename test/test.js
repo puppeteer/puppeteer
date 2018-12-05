@@ -166,6 +166,7 @@ describe('Browser', function() {
     require('./evaluation.spec.js').addTests({testRunner, expect, headless});
     require('./emulation.spec.js').addTests({testRunner, expect, headless});
     require('./screenshot.spec.js').addTests({testRunner, expect});
+    require('./screencast.spec.js').addTests({testRunner, expect});
     require('./target.spec.js').addTests({testRunner, expect});
     require('./tracing.spec.js').addTests({testRunner, expect});
     require('./worker.spec.js').addTests({testRunner, expect});
