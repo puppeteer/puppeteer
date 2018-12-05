@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Textarea test</title>
+  </head>
+  <body>
+    <textarea></textarea>
+    <script src='mouse-helper.js'></script>
+    <script>
+      window.result = '';
+      let textarea = document.querySelector('textarea');
+      textarea.addEventListener('input', () => result = textarea.value, false);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "allowJs": true,
+    "target": "es2017",
+    "noEmit": true
+  },
+  "include": [
+    "lib"
+  ]
+}

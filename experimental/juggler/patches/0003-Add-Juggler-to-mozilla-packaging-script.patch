@@ -1,0 +1,43 @@
+From 1449495af094fbc5e1bb351f8387c3a341977763 Mon Sep 17 00:00:00 2001
+From: Andrey Lushnikov <lushnikov@chromium.org>
+Date: Thu, 29 Nov 2018 11:40:32 -0800
+Subject: [PATCH 3/3] Add Juggler to mozilla packaging script
+
+---
+ browser/installer/allowed-dupes.mn    | 6 ++++++
+ browser/installer/package-manifest.in | 5 +++++
+ 2 files changed, 11 insertions(+)
+
+diff --git a/browser/installer/allowed-dupes.mn b/browser/installer/allowed-dupes.mn
+index 5685a30d9..32ba241b8 100644
+--- a/browser/installer/allowed-dupes.mn
++++ b/browser/installer/allowed-dupes.mn
+@@ -154,3 +154,9 @@ browser/defaults/settings/main/example.json
+ # Bug 1463748 - Fork and pref-off the new error pages
+ browser/chrome/browser/content/browser/aboutNetError-new.xhtml
+ browser/chrome/browser/content/browser/aboutNetError.xhtml
++
++# Juggler/marionette files
++chrome/juggler/content/content/floating-scrollbars.css
++browser/chrome/devtools/skin/floating-scrollbars-responsive-design.css
++chrome/juggler/content/server/stream-utils.js
++chrome/marionette/content/stream-utils.js
+diff --git a/browser/installer/package-manifest.in b/browser/installer/package-manifest.in
+index 5b828784a..a5d9f9741 100644
+--- a/browser/installer/package-manifest.in
++++ b/browser/installer/package-manifest.in
+@@ -338,6 +338,11 @@
+ @RESPATH@/defaults/pref/marionette.js
+ #endif
+ 
++@RESPATH@/chrome/juggler@JAREXT@
++@RESPATH@/chrome/juggler.manifest
++@RESPATH@/components/juggler.manifest
++@RESPATH@/components/juggler.js
++
+ @RESPATH@/components/nsAsyncShutdown.manifest
+ @RESPATH@/components/nsAsyncShutdown.js
+ 
+-- 
+2.19.0.605.g01d371f741-goog
+

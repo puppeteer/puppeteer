@@ -1,0 +1,13 @@
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+/* Restrict all styles to `*|*:not(html|select) > scrollbar` so that scrollbars
+   inside a <select> are excluded (including them hides the select arrow on
+   Windows).  We want to include both the root scrollbars for the document as
+   well as any overflow: scroll elements within the page, while excluding
+   <select>. */
+*|*:not(html|select) > scrollbar {
+  -moz-appearance: none !important;
+  display: none;
+}
+
