@@ -123,7 +123,7 @@ cd <project-dir-path>/node_modules/puppeteer/.local-chromium/linux-<revision>/ch
 sudo chown root:root chrome_sandbox
 sudo chmod 4755 chrome_sandbox
 # copy sandbox executable to a shared location
-sudo cp chrome_sandbox /usr/local/sbin/chrome-devel-sandbox
+sudo cp -p chrome_sandbox /usr/local/sbin/chrome-devel-sandbox
 # export CHROME_DEVEL_SANDBOX env variable
 export CHROME_DEVEL_SANDBOX=/usr/local/sbin/chrome-devel-sandbox
 ```
