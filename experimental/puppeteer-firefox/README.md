@@ -1,3 +1,5 @@
+<img src="https://user-images.githubusercontent.com/39191/49555713-a07b3c00-f8b5-11e8-8aba-f2d03cd83da5.png" height="200" align="right">
+
 # Puppeteer for Firefox
 
 > Use Puppeteer's API with Firefox
@@ -15,7 +17,7 @@ npm i puppeteer-firefox
 # or "yarn add puppeteer-firefox"
 ```
 
-Note: When you install puppeteer-firefox, it downloads a [custom-built Firefox](https://github.com/GoogleChrome/puppeteer/tree/master/experimental/juggler) that is guaranteed to work with the API.
+Note: When you install puppeteer-firefox, it downloads a [custom-built Firefox](https://github.com/GoogleChrome/puppeteer/tree/master/experimental/juggler) (Firefox/63.0.4) that is guaranteed to work with the API.
 
 ### Usage
 
@@ -43,6 +45,12 @@ node example.js
 
 
 ### API Status
+
+Big lacking parts:
+- `page.emulate`
+- `page.pdf`
+- all network-related APIs: `page.on('request')`, `page.on('response')`, and request interception
+
 
 - class: Puppeteer
   * puppeteer.executablePath()
@@ -184,4 +192,4 @@ node example.js
 - class: TimeoutError
 
 
-Special thanks to [Amine Zaza](https://bitbucket.org/aminerop/) who volunteered the [`puppeteer-firefox`](https://www.npmjs.com/package/puppeteer-firefox) NPM package.
+Special thanks to [Amine Bouhlali](https://bitbucket.org/aminerop/) who volunteered the [`puppeteer-firefox`](https://www.npmjs.com/package/puppeteer-firefox) NPM package.
