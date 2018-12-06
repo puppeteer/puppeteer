@@ -17,7 +17,7 @@ npm i puppeteer-firefox
 # or "yarn add puppeteer-firefox"
 ```
 
-Note: When you install puppeteer-firefox, it downloads a [custom-built Firefox](https://github.com/GoogleChrome/puppeteer/tree/master/experimental/juggler) that is guaranteed to work with the API.
+Note: When you install puppeteer-firefox, it downloads a [custom-built Firefox](https://github.com/GoogleChrome/puppeteer/tree/master/experimental/juggler) (Firefox/63.0.4) that is guaranteed to work with the API.
 
 ### Usage
 
@@ -45,6 +45,12 @@ node example.js
 
 
 ### API Status
+
+Big lacking parts:
+- `page.emulate`
+- `page.pdf`
+- all network-related APIs: `page.on('request')`, `page.on('response')`, and request interception
+
 
 - class: Puppeteer
   * puppeteer.executablePath()
