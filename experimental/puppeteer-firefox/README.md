@@ -1,3 +1,5 @@
+<img src="https://user-images.githubusercontent.com/39191/49555713-a07b3c00-f8b5-11e8-8aba-f2d03cd83da5.png" height="200" align="right">
+
 # Puppeteer for Firefox
 
 > Use Puppeteer's API with Firefox
@@ -184,4 +186,4 @@ node example.js
 - class: TimeoutError
 
 
-Special thanks to [Amine Zaza](https://bitbucket.org/aminerop/) who volunteered the [`puppeteer-firefox`](https://www.npmjs.com/package/puppeteer-firefox) NPM package.
+Special thanks to [Amine Bouhlali](https://bitbucket.org/aminerop/) who volunteered the [`puppeteer-firefox`](https://www.npmjs.com/package/puppeteer-firefox) NPM package.
