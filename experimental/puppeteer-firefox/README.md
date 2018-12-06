@@ -1,21 +1,21 @@
-# Puppeteer-Firefox
+# Puppeteer for Firefox
 
-> Puppeteer-Firefox - Puppeteer API for Firefox
+> Use Puppeteer's API with Firefox
 
-> **BEWARE**: This project is experimental. Alligators live here.
+> **BEWARE**: This project is experimental. 🐊 live here.
 
 ## Getting Started
 
 ### Installation
 
-To use Puppeteer-Firefox in your project, run:
+To use Puppeteer with Firefox in your project, run:
 
 ```bash
 npm i puppeteer-firefox
 # or "yarn add puppeteer-firefox"
 ```
 
-Note: When you install Puppeteer-Firefox, it downloads a [custom-built Firefox](https://github.com/GoogleChrome/puppeteer/tree/master/experimental/juggler) that is guaranteed to work with the API.
+Note: When you install puppeteer-firefox, it downloads a [custom-built Firefox](https://github.com/GoogleChrome/puppeteer/tree/master/experimental/juggler) that is guaranteed to work with the API.
 
 ### Usage
 
