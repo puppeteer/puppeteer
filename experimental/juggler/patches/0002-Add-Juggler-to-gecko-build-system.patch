@@ -1,0 +1,24 @@
+From c6f975dbc28b902cc271f79dedc42073ab1bde7d Mon Sep 17 00:00:00 2001
+From: Andrey Lushnikov <lushnikov@chromium.org>
+Date: Tue, 27 Nov 2018 13:39:00 -0800
+Subject: [PATCH 2/3] Add Juggler to gecko build system
+
+---
+ toolkit/toolkit.mozbuild | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/toolkit/toolkit.mozbuild b/toolkit/toolkit.mozbuild
+index 4a0e5f172..b8abc1e72 100644
+--- a/toolkit/toolkit.mozbuild
++++ b/toolkit/toolkit.mozbuild
+@@ -163,6 +163,7 @@ if CONFIG['ENABLE_MARIONETTE']:
+     DIRS += [
+         '/testing/firefox-ui',
+         '/testing/marionette',
++        '/testing/juggler',
+     ]
+ 
+ if CONFIG['ENABLE_GECKODRIVER'] and not CONFIG['MOZ_TSAN']:
+-- 
+2.19.0.605.g01d371f741-goog
+

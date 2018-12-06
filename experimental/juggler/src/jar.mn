@@ -1,0 +1,25 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+juggler.jar:
+% content juggler %content/
+  content/ChromeSession.js (ChromeSession.js)
+  content/InsecureSweepingOverride.js (InsecureSweepingOverride.js)
+  content/Protocol.js (Protocol.js)
+  content/Helper.js (Helper.js)
+  content/PageHandler.jsm (PageHandler.jsm)
+  content/BrowserHandler.jsm (BrowserHandler.jsm)
+  content/content/main.js (content/main.js)
+  content/content/ContentSession.js (content/ContentSession.js)
+  content/content/FrameTree.js (content/FrameTree.js)
+  content/content/PageAgent.js (content/PageAgent.js)
+  content/content/RuntimeAgent.js (content/RuntimeAgent.js)
+  content/content/ScrollbarManager.js (content/ScrollbarManager.js)
+  content/content/floating-scrollbars.css (content/floating-scrollbars.css)
+  content/content/hidden-scrollbars.css (content/hidden-scrollbars.css)
+  content/server/server.js (server/server.js)
+  content/server/transport.js (server/transport.js)
+  content/server/stream-utils.js (server/stream-utils.js)
+  content/server/packets.js (server/packets.js)
+
