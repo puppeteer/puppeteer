@@ -47,10 +47,12 @@ node example.js
 ### API Status
 
 Big lacking parts:
+
 - `page.emulate`
 - `page.pdf`
 - all network-related APIs: `page.on('request')`, `page.on('response')`, and request interception
 
+Supported API:
 
 - class: Puppeteer
   * puppeteer.executablePath()
