@@ -1,6 +1,6 @@
 # Puppeteer for Firefox
 
-> Puppeteer API for Firefox
+> Use Puppeteer's API with Firefox
 
 > **BEWARE**: This project is experimental. 🐊 live here.
 
