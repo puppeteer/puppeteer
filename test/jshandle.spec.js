@@ -39,7 +39,7 @@ module.exports.addTests = function({testRunner, expect}) {
       let error = null;
       await page.evaluateHandle(
           opts => opts.elem.querySelector('p'),
-          { elem: aHandle },
+          { elem: aHandle }
       ).catch(e => error = e);
       expect(error.message).toContain('Are you passing a nested JSHandle?');
     });
