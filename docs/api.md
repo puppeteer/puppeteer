@@ -52,6 +52,7 @@
   * [browser.targets()](#browsertargets)
   * [browser.userAgent()](#browseruseragent)
   * [browser.version()](#browserversion)
+  * [browser.waitForNewTarget(predicate[, options])](#browserwaitfornewtargetpredicate-options)
   * [browser.waitForTarget(predicate[, options])](#browserwaitfortargetpredicate-options)
   * [browser.wsEndpoint()](#browserwsendpoint)
 - [class: BrowserContext](#class-browsercontext)
@@ -66,6 +67,7 @@
   * [browserContext.overridePermissions(origin, permissions)](#browsercontextoverridepermissionsorigin-permissions)
   * [browserContext.pages()](#browsercontextpages)
   * [browserContext.targets()](#browsercontexttargets)
+  * [browserContext.waitForNewTarget(predicate[, options])](#browsercontextwaitfornewtargetpredicate-options)
   * [browserContext.waitForTarget(predicate[, options])](#browsercontextwaitfortargetpredicate-options)
 - [class: Page](#class-page)
   * [event: 'close'](#event-close)
@@ -705,6 +707,22 @@ the method will return an array with all the targets in all browser contexts.
 
 > **NOTE** the format of browser.version() might change with future releases of Chromium.
 
+#### browser.waitForNewTarget(predicate[, options])
+- `predicate` <[function]\([Target]\):[boolean]> A function to be run for every newly created target
+- `options` <[Object]>
+  - `timeout` <[number]> Maximum wait time in milliseconds. Pass `0` to disable the timeout. Defaults to 30 seconds.
+- returns: <[Promise]<[Target]>> Promise which resolves to the first newly created target that matches the `predicate` function.
+
+This works across browser contexts, returning first new target from any browser context that satisfies the `predicate`.
+
+An example of getting a target that opens after clicking a link:
+```js
+const [target] = await Promise.all([
+  browser.waitForNewTarget(target => target.type() === 'page'),
+  page.click('a[target=_blank]'),
+]);
+```
+
 #### browser.waitForTarget(predicate[, options])
 - `predicate` <[function]\([Target]\):[boolean]> A function to be run for every target
 - `options` <[Object]>
@@ -842,6 +860,22 @@ An array of all pages inside the browser context.
 - returns: <[Array]<[Target]>>
 
 An array of all active targets inside the browser context.
+
+#### browserContext.waitForNewTarget(predicate[, options])
+- `predicate` <[function]\([Target]\):[boolean]> A function to be run for every newly created target
+- `options` <[Object]>
+  - `timeout` <[number]> Maximum wait time in milliseconds. Pass `0` to disable the timeout. Defaults to 30 seconds.
+- returns: <[Promise]<[Target]>> Promise which resolves to the first newly created target that matches the `predicate` function.
+
+This returns first new target in this specific browser context that satisfies `predicate`.
+
+An example of getting a target that opens after clicking a link:
+```js
+const [target] = await Promise.all([
+  browserContext.waitForNewTarget(target => target.type() === 'page'),
+  page.click('a[target=_blank]'),
+]);
+```
 
 #### browserContext.waitForTarget(predicate[, options])
 - `predicate` <[function]\([Target]\):[boolean]> A function to be run for every target
