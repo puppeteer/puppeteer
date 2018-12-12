@@ -2,6 +2,8 @@
 
 # Puppeteer for Firefox
 
+###### [API](#api-status) | [Troubleshooting](https://github.com/GoogleChrome/puppeteer/blob/master/experimental/puppeteer-firefox/docs/troubleshooting.md)
+
 > Use Puppeteer's API with Firefox
 
 > **BEWARE**: This project is experimental. 🐊 live here.
