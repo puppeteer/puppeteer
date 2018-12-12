@@ -96,6 +96,7 @@
   * [page.authenticate(credentials)](#pageauthenticatecredentials)
   * [page.bringToFront()](#pagebringtofront)
   * [page.browser()](#pagebrowser)
+  * [page.browserContext()](#pagebrowsercontext)
   * [page.click(selector[, options])](#pageclickselector-options)
   * [page.close([options])](#pagecloseoptions)
   * [page.content()](#pagecontent)
@@ -1098,6 +1099,12 @@ Brings page to front (activates tab).
 - returns: <[Browser]>
 
 Get the browser the page belongs to.
+
+#### page.browserContext()
+
+- returns: <[BrowserContext]>
+
+Get the browser context that the page belongs to.
 
 #### page.click(selector[, options])
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.

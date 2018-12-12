@@ -918,4 +918,10 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       expect(page.browser()).toBe(browser);
     });
   });
+
+  describe('Page.browserContext', function() {
+    it('should return the correct browser instance', async function({page, context, browser}) {
+      expect(page.browserContext()).toBe(context);
+    });
+  });
 };
