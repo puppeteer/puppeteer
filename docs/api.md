@@ -1104,7 +1104,7 @@ Get the browser the page belongs to.
 
 - returns: <[BrowserContext]>
 
-Get the browser context the page belongs to.
+Get the browser context that the page belongs to.
 
 #### page.click(selector[, options])
 - `selector` <[string]> A [selector] to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
