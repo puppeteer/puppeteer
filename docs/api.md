@@ -79,6 +79,7 @@
   * [event: 'load'](#event-load)
   * [event: 'metrics'](#event-metrics)
   * [event: 'pageerror'](#event-pageerror)
+  * [event: 'popup'](#event-popup)
   * [event: 'request'](#event-request)
   * [event: 'requestfailed'](#event-requestfailed)
   * [event: 'requestfinished'](#event-requestfinished)
@@ -962,6 +963,25 @@ of metrics see `page.metrics`.
 - <[Error]> The exception message
 
 Emitted when an uncaught exception happens within the page.
+
+#### event: 'popup'
+- <[Page]> Page corresponding to "popup" window
+
+Emitted when the page opens a new tab or window.
+
+```js
+const [popup] = await Promise.all([
+  new Promise(resolve => page.once('popup', resolve)),
+  page.click('a[target=_blank]'),
+]);
+```
+
+```js
+const [popup] = await Promise.all([
+  new Promise(resolve => page.once('popup', resolve)),
+  page.evaluate(() => window.open('https://example.com')),
+]);
+```
 
 #### event: 'request'
 - <[Request]>

@@ -93,6 +93,55 @@ module.exports.addTests = function({testRunner, expect, headless}) {
     });
   });
 
+  describe('Page.Events.Popup', function() {
+    it('should work', async({page}) => {
+      const [popup] = await Promise.all([
+        new Promise(x => page.once('popup', x)),
+        page.evaluate(() => window.open('about:blank')),
+      ]);
+      expect(await page.evaluate(() => !!window.opener)).toBe(false);
+      expect(await popup.evaluate(() => !!window.opener)).toBe(true);
+    });
+    it('should work with noopener', async({page}) => {
+      const [popup] = await Promise.all([
+        new Promise(x => page.once('popup', x)),
+        page.evaluate(() => window.open('about:blank', null, 'noopener')),
+      ]);
+      expect(await page.evaluate(() => !!window.opener)).toBe(false);
+      expect(await popup.evaluate(() => !!window.opener)).toBe(false);
+    });
+    it('should work with clicking target=_blank', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent('<a target=_blank href="/one-style.html">yo</a>');
+      const [popup] = await Promise.all([
+        new Promise(x => page.once('popup', x)),
+        page.click('a'),
+      ]);
+      expect(await page.evaluate(() => !!window.opener)).toBe(false);
+      expect(await popup.evaluate(() => !!window.opener)).toBe(true);
+    });
+    it('should work with fake-clicking target=_blank and rel=noopener', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent('<a target=_blank rel=noopener href="/one-style.html">yo</a>');
+      const [popup] = await Promise.all([
+        new Promise(x => page.once('popup', x)),
+        page.$eval('a', a => a.click()),
+      ]);
+      expect(await page.evaluate(() => !!window.opener)).toBe(false);
+      expect(await popup.evaluate(() => !!window.opener)).toBe(false);
+    });
+    it('should work with clicking target=_blank and rel=noopener', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setContent('<a target=_blank rel=noopener href="/one-style.html">yo</a>');
+      const [popup] = await Promise.all([
+        new Promise(x => page.once('popup', x)),
+        page.click('a'),
+      ]);
+      expect(await page.evaluate(() => !!window.opener)).toBe(false);
+      expect(await popup.evaluate(() => !!window.opener)).toBe(false);
+    });
+  });
+
   describe('BrowserContext.overridePermissions', function() {
     function getPermission(page, name) {
       return page.evaluate(name => navigator.permissions.query({name}).then(result => result.state), name);
