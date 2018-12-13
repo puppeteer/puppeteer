@@ -601,6 +601,10 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       imgResponse.end();
       await contentPromise;
     });
+    it('should work fast enough', async({page, server}) => {
+      for (let i = 0; i < 20; ++i)
+        await page.setContent('<div>yo</div>');
+    });
   });
 
   describe('Page.setBypassCSP', function() {
