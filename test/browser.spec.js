@@ -15,8 +15,9 @@
  */
 const utils = require('./utils');
 const puppeteer = utils.requireRoot('index');
+const {waitEvent} = utils;
 
-module.exports.addTests = function({testRunner, expect, headless}) {
+module.exports.addTests = function({testRunner, expect, headless, defaultBrowserOptions}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -52,6 +53,18 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       const remoteBrowser = await puppeteer.connect({browserWSEndpoint});
       expect(remoteBrowser.process()).toBe(null);
       await remoteBrowser.disconnect();
+    });
+  });
+
+  describe('Browser.close', function() {
+    it('should close target before closing browser', async function({browser, context, server}) {
+      const newBrowser = await puppeteer.launch(defaultBrowserOptions);
+      const newPage = await newBrowser.newPage();
+      await newPage.goto(server.PREFIX + '/beforeunload.html');
+      await newPage.click('body');
+      newBrowser.close();
+      await waitEvent(newBrowser, 'targetdestroyed');
+      await waitEvent(newBrowser, 'disconnected');
     });
   });
 };

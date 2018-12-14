@@ -146,7 +146,7 @@ describe('Browser', function() {
     // Each test is launched in a new browser context.
     require('./CDPSession.spec.js').addTests({testRunner, expect});
     require('./accessibility.spec.js').addTests({testRunner, expect});
-    require('./browser.spec.js').addTests({testRunner, expect, headless});
+    require('./browser.spec.js').addTests({testRunner, expect, headless, defaultBrowserOptions});
     require('./cookies.spec.js').addTests({testRunner, expect});
     require('./coverage.spec.js').addTests({testRunner, expect});
     require('./elementhandle.spec.js').addTests({testRunner, expect});
