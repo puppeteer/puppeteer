@@ -121,6 +121,18 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
       ]);
       await browser.close();
     });
+    it('should close browser with beforeunload pages', async({server}) => {
+      const userDataDir = await mkdtempAsync(TMP_FOLDER);
+      const browser = await puppeteer.launch(Object.assign({userDataDir}, headfulOptions));
+      const page = await browser.newPage();
+      await page.goto(server.PREFIX + '/beforeunload.html');
+      // We have to interact with a page so that 'beforeunload' handlers
+      // fire.
+      await page.click('body');
+      await browser.close();
+      // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
+      await rmAsync(userDataDir).catch(e => {});
+    });
   });
 };
 

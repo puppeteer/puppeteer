@@ -368,6 +368,21 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
     });
   });
 
+  describe('Browser.close', function() {
+    it('should close browser with beforeunload pages', async({server}) => {
+      const userDataDir = await mkdtempAsync(TMP_FOLDER);
+      const browser = await puppeteer.launch(Object.assign({userDataDir}, defaultBrowserOptions));
+      const page = await browser.newPage();
+      await page.goto(server.PREFIX + '/beforeunload.html');
+      // We have to interact with a page so that 'beforeunload' handlers
+      // fire.
+      await page.click('body');
+      await browser.close();
+      // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
+      await rmAsync(userDataDir).catch(e => {});
+    });
+  });
+
   describe('Browser.Events.disconnected', function() {
     it('should be emitted when: browser gets closed, disconnected or underlying websocket gets closed', async() => {
       const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
