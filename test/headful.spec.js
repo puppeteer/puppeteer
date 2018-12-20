@@ -76,6 +76,14 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
       expect(await page.evaluate(() => 2 * 3)).toBe(6);
       await browserWithExtension.close();
     });
+    it('target.title() should return extension title', async({}) => {
+      const browserWithExtension = await puppeteer.launch(extensionOptions);
+      const backgroundPageTarget = await waitForBackgroundPageTarget(browserWithExtension);
+      const backgroundPageTitle = backgroundPageTarget.title();
+      expect(backgroundPageTitle === 'Simple extension' ||
+        backgroundPageTitle === 'CryptoTokenExtension').toBeTruthy();
+      await browserWithExtension.close();
+    });
     it('should have default url when launching browser', async function() {
       const browser = await puppeteer.launch(extensionOptions);
       const pages = (await browser.pages()).map(page => page.url());

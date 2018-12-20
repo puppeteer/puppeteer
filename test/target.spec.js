@@ -141,5 +141,15 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(createdTarget.opener()).toBe(page.target());
       expect(page.target().opener()).toBe(null);
     });
+
+    describe('Target.title', function() {
+      it('should return target titles', async({browser}) => {
+        const aboutBlankTargets = browser.targets().filter(target => target.url() === 'about:blank');
+        const aboutBlankTitles = aboutBlankTargets.map(target => target.title());
+        expect(aboutBlankTitles.length).toBeGreaterThan(0);
+        for (const title of aboutBlankTitles)
+          expect(title).toBe('about:blank');
+      });
+    });
   });
 };

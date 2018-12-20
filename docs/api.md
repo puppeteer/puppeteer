@@ -296,6 +296,7 @@
   * [target.createCDPSession()](#targetcreatecdpsession)
   * [target.opener()](#targetopener)
   * [target.page()](#targetpage)
+  * [target.title()](#targettitle)
   * [target.type()](#targettype)
   * [target.url()](#targeturl)
 - [class: CDPSession](#class-cdpsession)
@@ -3412,6 +3413,9 @@ Get the target that opened this target. Top-level targets return `null`.
 - returns: <[Promise]<?[Page]>>
 
 If the target is not of type `"page"` or `"background_page"`, returns `null`.
+
+#### target.title()
+- returns: <[string]> Returns target's title.
 
 #### target.type()
 - returns: <"page"|"background_page"|"service_worker"|"other"|"browser">
