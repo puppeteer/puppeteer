@@ -495,15 +495,6 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(requests.length).toBe(1);
       expect(requests[0].url()).toBe(dataURL);
     });
-    it('should abort data server', async({page, server}) => {
-      await page.setRequestInterception(true);
-      page.on('request', request => {
-        request.abort();
-      });
-      let error = null;
-      await page.goto('data:text/html,No way!').catch(err => error = err);
-      expect(error.message).toContain('net::ERR_FAILED');
-    });
     it('should navigate to URL with hash and and fire requests without hash', async({page, server}) => {
       await page.setRequestInterception(true);
       const requests = [];
