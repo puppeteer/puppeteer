@@ -31,8 +31,10 @@ Documentation.Class = class {
   /**
    * @param {string} name
    * @param {!Array<!Documentation.Member>} membersArray
+   * @param {?string=} extendsName
+   * @param {string=} comment
    */
-  constructor(name, membersArray) {
+  constructor(name, membersArray, extendsName = null, comment = '') {
     this.name = name;
     this.membersArray = membersArray;
     /** @type {!Map<string, !Documentation.Member>} */
@@ -43,6 +45,8 @@ Documentation.Class = class {
     this.methods = new Map();
     /** @type {!Map<string, !Documentation.Member>} */
     this.events = new Map();
+    this.comment = comment;
+    this.extends = extendsName;
     for (const member of membersArray) {
       this.members.set(member.name, member);
       if (member.kind === 'method')
@@ -62,10 +66,12 @@ Documentation.Member = class {
    * @param {!Documentation.Type} type
    * @param {!Array<!Documentation.Member>} argsArray
    */
-  constructor(kind, name, type, argsArray) {
+  constructor(kind, name, type, argsArray, comment = '', returnComment = '') {
     this.kind = kind;
     this.name = name;
     this.type = type;
+    this.comment = comment;
+    this.returnComment = returnComment;
     this.argsArray = argsArray;
     /** @type {!Map<string, !Documentation.Member>} */
     this.args = new Map();
@@ -79,8 +85,8 @@ Documentation.Member = class {
    * @param {?Documentation.Type} returnType
    * @return {!Documentation.Member}
    */
-  static createMethod(name, argsArray, returnType) {
-    return new Documentation.Member('method', name, returnType, argsArray,);
+  static createMethod(name, argsArray, returnType, returnComment, comment) {
+    return new Documentation.Member('method', name, returnType, argsArray, comment, returnComment);
   }
 
   /**
@@ -88,16 +94,16 @@ Documentation.Member = class {
    * @param {!Documentation.Type}
    * @return {!Documentation.Member}
    */
-  static createProperty(name, type) {
-    return new Documentation.Member('property', name, type, []);
+  static createProperty(name, type, comment) {
+    return new Documentation.Member('property', name, type, [], comment);
   }
 
   /**
    * @param {string} name
    * @return {!Documentation.Member}
    */
-  static createEvent(name) {
-    return new Documentation.Member('event', name, null, []);
+  static createEvent(name, comment) {
+    return new Documentation.Member('event', name, null, [], comment);
   }
 };
 

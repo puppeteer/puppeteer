@@ -17,12 +17,15 @@ import { EventEmitter } from 'events';
 export interface Serializable {}
 
 ${root.membersArray.map(member => `
-export function ${member.name}(${argsFromMember(member)}) : ${typeToString(member.type)};
+${memberJSDOC(member, '')}export function ${member.name}${argsFromMember(member)} : ${typeToString(member.type)};
 `).join('')}
 
 ${classes.map(classDesc => `
-export interface ${classDesc.name} {${classDesc.membersArray.map(member => `
-  ${member.name}(${argsFromMember(member)}): ${typeToString(member.type)};`).join('')}
+/**
+ * ${classDesc.comment.split('\n').join('\n * ')}
+ */
+export interface ${classDesc.name} ${classDesc.extends ? `extends ${classDesc.extends} ` : ''}{${classDesc.membersArray.map(member => `
+  ${memberJSDOC(member, '  ')}${member.name}${argsFromMember(member)}: ${typeToString(member.type)};`).join('\n')}
 }
 `).join('')}
 `;
@@ -36,7 +39,10 @@ export interface ${classDesc.name} {${classDesc.membersArray.map(member => `
 function typeToString(type) {
   if (!type)
     return 'void';
-  return stringifyType(parseType(type.name));
+  let typeString = stringifyType(parseType(type.name));
+  for (let i = 0; i < type.properties.length; i++)
+    typeString = typeString.replace('arg' + i, type.properties[i].name);
+  return typeString;
 }
 
 /**
@@ -144,5 +150,24 @@ function matchingBracket(str, open, close) {
  * @param {import('./check_public_api/Documentation').Member} member
  */
 function argsFromMember(member) {
-  return member.argsArray.map(arg => `${arg.name}: ${typeToString(arg.type)}`).join(', ');
+  if (member.kind === 'property')
+    return '';
+  return '(' + member.argsArray.map(arg => `${arg.name}: ${typeToString(arg.type)}`).join(', ') + ')';
+}
+/**
+ * @param {import('./check_public_api/Documentation').Member} member
+ */
+function memberJSDOC(member, indent) {
+  const lines = [];
+  if (member.comment)
+    lines.push(...member.comment.split('\n'));
+  lines.push(...member.argsArray.map(arg => `@param ${arg.name.replace(/\./g, '')} ${arg.comment.replace('\n', ' ')}`));
+  if (member.returnComment)
+    lines.push(`@returns ${member.returnComment}`);
+  if (!lines.length)
+    return '';
+  return `/**
+${indent} * ${lines.join('\n' + indent + ' * ')}
+${indent} */
+${indent}`;
 }

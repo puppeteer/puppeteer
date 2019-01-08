@@ -565,7 +565,7 @@ The method initiates a GET request to download the revision from the host.
 - returns: <[Promise]<[Array]<[string]>>> A list of all revisions available locally on disk.
 
 #### browserFetcher.platform()
-- returns: <[string]> Returns one of `mac`, `linux`, `win32` or `win64`.
+- returns: <[string]> One of `mac`, `linux`, `win32` or `win64`.
 
 #### browserFetcher.remove(revision)
 - `revision` <[string]> a revision to remove. The method will throw if the revision has not been downloaded.
@@ -582,7 +582,7 @@ The method initiates a GET request to download the revision from the host.
 
 ### class: Browser
 
-* extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)
+* extends: [EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter)
 
 A Browser is created when Puppeteer connects to a Chromium instance, either through [`puppeteer.launch`](#puppeteerlaunchoptions) or [`puppeteer.connect`](#puppeteerconnectoptions).
 
@@ -734,7 +734,7 @@ You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/versio
 
 ### class: BrowserContext
 
-* extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)
+* extends: [EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter)
 
 BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
 a single BrowserContext used by default. The method `browser.newPage()` creates a page in the default browser context.
@@ -864,7 +864,7 @@ const newWindowTarget = await browserContext.waitForTarget(target => target.url(
 
 ### class: Page
 
-* extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)
+* extends: [EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter)
 
 Page provides methods to interact with a single tab or [extension background page](https://developer.chrome.com/extensions/background_pages) in Chromium. One [Browser] instance might have multiple [Page] instances.
 
@@ -1464,7 +1464,7 @@ Indicates that the page has been closed.
 - returns: <[Keyboard]>
 
 #### page.mainFrame()
-- returns: <[Frame]> returns page's main frame.
+- returns: <[Frame]> The page's main frame.
 
 Page is guaranteed to have a main frame which persists during navigations.
 
@@ -1609,7 +1609,7 @@ Shortcut for [page.mainFrame().executionContext().queryObjects(prototypeHandle)]
 #### page.select(selector, ...values)
 - `selector` <[string]> A [selector] to query page for
 - `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
-- returns: <[Promise]<[Array]<[string]>>> Returns an array of option values that have been successfully selected.
+- returns: <[Promise]<[Array]<[string]>>> An array of option values that have been successfully selected.
 
 Triggers a `change` and `input` event once all the provided options have been selected.
 If there's no `<select>` element matching `selector`, the method throws an error.
@@ -1767,7 +1767,7 @@ Shortcut for [page.mainFrame().tap(selector)](#frametapselector).
 - returns: <[Target]> a target this page was created from.
 
 #### page.title()
-- returns: <[Promise]<[string]>> Returns page's title.
+- returns: <[Promise]<[string]>> The page's title.
 
 Shortcut for [page.mainFrame().title()](#frametitle).
 
@@ -2042,7 +2042,7 @@ Most of the accessibility tree gets filtered out when converting from Blink AX T
 #### accessibility.snapshot([options])
 - `options` <[Object]>
   - `interestingOnly` <[boolean]> Prune uninteresting nodes from the tree. Defaults to `true`.
-- returns: <[Promise]<[Object]>> Returns an [AXNode] object with the following properties:
+- returns: <[Promise]<[Object]>> An [AXNode] object with the following properties:
   - `role` <[string]> The [role](https://www.w3.org/TR/wai-aria/#usage_intro).
   - `name` <[string]> A human readable name for the node.
   - `value` <[string]|[number]> The current value of the node.
@@ -2580,12 +2580,12 @@ If the name is empty, returns the id attribute instead.
 > **NOTE** This value is calculated once when the frame is created, and will not update if the attribute is changed later.
 
 #### frame.parentFrame()
-- returns: <?[Frame]> Returns parent frame, if any. Detached frames and main frames return `null`.
+- returns: <?[Frame]> Parent frame, if any. Detached frames and main frames return `null`.
 
 #### frame.select(selector, ...values)
 - `selector` <[string]> A [selector] to query frame for
 - `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
-- returns: <[Promise]<[Array]<[string]>>> Returns an array of option values that have been successfully selected.
+- returns: <[Promise]<[Array]<[string]>>> An array of option values that have been successfully selected.
 
 Triggers a `change` and `input` event once all the provided options have been selected.
 If there's no `<select>` element matching `selector`, the method throws an error.
@@ -2614,7 +2614,7 @@ This method fetches an element with `selector`, scrolls it into view if needed, 
 If there's no element matching `selector`, the method throws an error.
 
 #### frame.title()
-- returns: <[Promise]<[string]>> Returns page's title.
+- returns: <[Promise]<[string]>> The page's title.
 
 #### frame.type(selector, text[, options])
 - `selector` <[string]> A [selector] of an element to type into. If there are multiple elements satisfying the selector, the first will be used.
@@ -2925,8 +2925,7 @@ function, it **will not be called**.
 > **NOTE** The method will return an empty JSON object if the referenced object is not stringifiable. It will throw an error if the object has circular references.
 
 ### class: ElementHandle
-
-> **NOTE** Class [ElementHandle] extends [JSHandle].
+* extends: [JSHandle]
 
 ElementHandle represents an in-page DOM element. ElementHandles can be created with the [page.$](#pageselector) method.
 
@@ -3432,7 +3431,7 @@ Identifies what kind of target this is. Can be `"page"`, [`"background_page"`](h
 
 ### class: CDPSession
 
-* extends: [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter)
+* extends: [EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter)
 
 The `CDPSession` instances are used to talk raw Chrome Devtools Protocol:
 - protocol methods can be called with `session.send` method.
