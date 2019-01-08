@@ -91,7 +91,7 @@ module.exports.addTests = function({testRunner, expect}) {
       }]);
       expect(await page.evaluate('document.cookie')).toBe('gridcookie=GRID');
       await page.goto(server.PREFIX + '/empty.html');
-      expect(await page.cookies()).toEqual([]);
+      expect(await page.cookies(server.PREFIX)).toEqual([]);
       expect(await page.evaluate('document.cookie')).toBe('');
       await page.goto(server.PREFIX + '/grid.html');
       expect(await page.evaluate('document.cookie')).toBe('gridcookie=GRID');
@@ -162,7 +162,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.goto(server.PREFIX + '/grid.html');
       await page.setCookie({name: 'example-cookie', value: 'best',  url: 'https://www.example.com'});
       expect(await page.evaluate('document.cookie')).toBe('');
-      expect(await page.cookies()).toEqual([]);
+      expect(await page.cookies(server.PREFIX)).toEqual([]);
       expect(await page.cookies('https://www.example.com')).toEqual([{
         name: 'example-cookie',
         value: 'best',
@@ -192,7 +192,36 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(await page.evaluate('document.cookie')).toBe('localhost-cookie=best');
       expect(await page.frames()[1].evaluate('document.cookie')).toBe('127-cookie=worst');
 
-      expect(await page.cookies()).toEqual([{
+      expect((await page.cookies()).sort((a,b) => {
+        if (a.name < b.name)
+          return -1;
+        if (a.name > b.name)
+          return 1;
+        return 0;
+      })).toEqual([{
+        name: '127-cookie',
+        value: 'worst',
+        domain: '127.0.0.1',
+        path: '/',
+        expires: -1,
+        size: 15,
+        httpOnly: false,
+        secure: false,
+        session: true
+      },
+      {
+        name: 'localhost-cookie',
+        value: 'best',
+        domain: 'localhost',
+        path: '/',
+        expires: -1,
+        size: 20,
+        httpOnly: false,
+        secure: false,
+        session: true
+      }]);
+
+      expect(await page.cookies(server.PREFIX)).toEqual([{
         name: 'localhost-cookie',
         value: 'best',
         domain: 'localhost',
