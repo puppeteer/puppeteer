@@ -3,6 +3,7 @@ const Source = require('./Source');
 const puppeteer = require('../..');
 const PROJECT_DIR = path.join(__dirname, '..', '..');
 const fs = require('fs');
+const objectDefinitions = [];
 (async function() {
   const browser = await puppeteer.launch();
   const page = (await browser.pages())[0];
@@ -17,15 +18,29 @@ import { EventEmitter } from 'events';
 /**
  * Can be converted to JSON
  */
-export interface Serializable {}
+interface Serializable {}
+interface ConnectionTransport {}
 
 ${root.membersArray.map(member => `
-${memberJSDOC(member, '')}export function ${member.name}${argsFromMember(member)} : ${typeToString(member.type)};
+${memberJSDOC(member, '')}export function ${member.name}${argsFromMember(member)} : ${typeToString(member.type, member.name)};
 `).join('')}
 ${classes.map(classDesc => classToString(classDesc)).join('\n')}
+${objectDefinitionsToString()}
 `;
   fs.writeFileSync(path.join(__dirname, '..', '..', 'index.d.ts'), output, 'utf8');
 })();
+
+function objectDefinitionsToString() {
+  let definition;
+  const parts = [];
+  while ((definition = objectDefinitions.pop())) {
+    const {name, properties} = definition;
+    parts.push(`interface ${name} {`);
+    parts.push(properties.map(member => `  ${memberJSDOC(member, '  ')}${member.name}${argsFromMember(member, name)}: ${typeToString(member.type, name, member.name)};`).join('\n\n'));
+    parts.push('}\n');
+  }
+  return parts.join('\n');
+}
 
 /**
  * @param {import('./check_public_api/Documentation').Class} classDesc
@@ -45,10 +60,10 @@ function classToString(classDesc) {
         parts.push(...value.comment.split('\n').map(line => '   * ' + line));
         parts.push('   */');
       }
-      parts.push(`  ${method}(event: '${eventName}', listener: (arg0 : ${typeToString(value && value.type)}) => void): this;\n`);
+      parts.push(`  ${method}(event: '${eventName}', listener: (arg0 : ${typeToString(value && value.type, classDesc.name, eventName, 'payload')}) => void): this;\n`);
     }
   }
-  parts.push(classDesc.membersArray.map(member => `  ${memberJSDOC(member, '  ')}${member.name}${argsFromMember(member)}: ${typeToString(member.type)};`).join('\n\n'));
+  parts.push(classDesc.membersArray.map(member => `  ${memberJSDOC(member, '  ')}${member.name}${argsFromMember(member, classDesc.name)}: ${typeToString(member.type, classDesc.name, member.name)};`).join('\n\n'));
   parts.push('}\n');
   return parts.join('\n');
 }
@@ -56,12 +71,17 @@ function classToString(classDesc) {
 /**
  * @param {import('./check_public_api/Documentation').Type} type
  */
-function typeToString(type) {
+function typeToString(type, ...namespace) {
   if (!type)
     return 'void';
   let typeString = stringifyType(parseType(type.name));
   for (let i = 0; i < type.properties.length; i++)
     typeString = typeString.replace('arg' + i, type.properties[i].name);
+  if (type.properties.length && typeString.indexOf('Object') !== -1) {
+    const name = namespace.map(n => n[0].toUpperCase() + n.substring(1)).join('');
+    typeString = typeString.replace('Object', name);
+    objectDefinitions.push({name, properties: type.properties});
+  }
   return typeString;
 }
 
@@ -169,10 +189,10 @@ function matchingBracket(str, open, close) {
 /**
  * @param {import('./check_public_api/Documentation').Member} member
  */
-function argsFromMember(member) {
+function argsFromMember(member, ...namespace) {
   if (member.kind === 'property')
     return '';
-  return '(' + member.argsArray.map(arg => `${arg.name}: ${typeToString(arg.type)}`).join(', ') + ')';
+  return '(' + member.argsArray.map(arg => `${arg.name}: ${typeToString(arg.type, ...namespace, member.name, 'options')}`).join(', ') + ')';
 }
 /**
  * @param {import('./check_public_api/Documentation').Member} member
