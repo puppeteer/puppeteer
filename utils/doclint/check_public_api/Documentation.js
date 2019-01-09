@@ -63,7 +63,7 @@ Documentation.Member = class {
   /**
    * @param {string} kind
    * @param {string} name
-   * @param {!Documentation.Type} type
+   * @param {?Documentation.Type} type
    * @param {!Array<!Documentation.Member>} argsArray
    */
   constructor(kind, name, type, argsArray, comment = '', returnComment = '') {
@@ -91,7 +91,8 @@ Documentation.Member = class {
 
   /**
    * @param {string} name
-   * @param {!Documentation.Type}
+   * @param {!Documentation.Type} type
+   * @param {string=} comment
    * @return {!Documentation.Member}
    */
   static createProperty(name, type, comment) {
@@ -100,10 +101,12 @@ Documentation.Member = class {
 
   /**
    * @param {string} name
+   * @param {?Documentation.Type=} type
+   * @param {string=} comment
    * @return {!Documentation.Member}
    */
-  static createEvent(name, comment) {
-    return new Documentation.Member('event', name, null, [], comment);
+  static createEvent(name, type = null, comment) {
+    return new Documentation.Member('event', name, type, [], comment);
   }
 };
 

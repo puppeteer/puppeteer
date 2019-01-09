@@ -132,7 +132,9 @@ class MDOutline {
         let returnType = null;
         const ul = content.querySelector('ul');
         for (const element of content.querySelectorAll('h4 + ul > li')) {
-          if (element.matches('li') && element.firstChild.matches && element.firstChild.matches('code')) {
+          if (element.matches('li') && element.textContent.trim().startsWith('<')) {
+            returnType = parseProperty(element);
+          } else if (element.matches('li') && element.firstChild.matches && element.firstChild.matches('code')) {
             args.push(parseProperty(element));
           } else if (element.matches('li') && element.firstChild.nodeType === Element.TEXT_NODE && element.firstChild.textContent.toLowerCase().startsWith('return')) {
             returnType = parseProperty(element);
@@ -250,7 +252,7 @@ class MDOutline {
         this.errors.push(`Failed to process header as event: ${member.name}`);
         return;
       }
-      currentClassMembers.push(Documentation.Member.createEvent(eventName, member.comment));
+      currentClassMembers.push(Documentation.Member.createEvent(eventName, member.returnType && createPropertyFromJSON(member.returnType).type, member.comment));
     }
 
     function flushClassIfNeeded() {
