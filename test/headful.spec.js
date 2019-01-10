@@ -121,6 +121,15 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
       ]);
       await browser.close();
     });
+    it('should close browser with beforeunload page', async({server}) => {
+      const browser = await puppeteer.launch(headfulOptions);
+      const page = await browser.newPage();
+      await page.goto(server.PREFIX + '/beforeunload.html');
+      // We have to interact with a page so that 'beforeunload' handlers
+      // fire.
+      await page.click('body');
+      await browser.close();
+    });
   });
 };
 
