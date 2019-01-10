@@ -1048,7 +1048,7 @@ Examples:
 const divsCounts = await page.$$eval('div', divs => divs.length);
 ```
 
-#### page.$eval(selector, asdf[, ...args])
+#### page.$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> A [selector] to query page for
 - `pageFunction` <[function]\([Element]\)> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
