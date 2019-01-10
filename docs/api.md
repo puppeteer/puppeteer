@@ -1035,7 +1035,7 @@ Shortcut for [page.mainFrame().$$(selector)](#frameselector-1).
 
 #### page.$$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> A [selector] to query page for
-- `pageFunction` <[function]> Function to be evaluated in browser context
+- `pageFunction` <[function]\([Array]<[Element]>\)> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 
@@ -1048,9 +1048,9 @@ Examples:
 const divsCounts = await page.$$eval('div', divs => divs.length);
 ```
 
-#### page.$eval(selector, pageFunction[, ...args])
+#### page.$eval(selector, asdf[, ...args])
 - `selector` <[string]> A [selector] to query page for
-- `pageFunction` <[function]> Function to be evaluated in browser context
+- `pageFunction` <[function]\([Element]\)> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 
@@ -2382,7 +2382,7 @@ The method runs `document.querySelectorAll` within the frame. If no elements mat
 
 #### frame.$$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> A [selector] to query frame for
-- `pageFunction` <[function]> Function to be evaluated in browser context
+- `pageFunction` <[function]\([Array]<[Element]>\)> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 
@@ -2397,7 +2397,7 @@ const divsCounts = await frame.$$eval('div', divs => divs.length);
 
 #### frame.$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> A [selector] to query frame for
-- `pageFunction` <[function]> Function to be evaluated in browser context
+- `pageFunction` <[function]\([Element]\)> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 
@@ -2959,7 +2959,7 @@ The method runs `element.querySelectorAll` within the page. If no elements match
 
 #### elementHandle.$$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> A [selector] to query page for
-- `pageFunction` <[function]> Function to be evaluated in browser context
+- `pageFunction` <[function]\([Array]<[Element]>\)> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 
@@ -2981,7 +2981,7 @@ expect(await feedHandle.$$eval('.tweet', nodes => nodes.map(n => n.innerText))).
 
 #### elementHandle.$eval(selector, pageFunction[, ...args])
 - `selector` <[string]> A [selector] to query page for
-- `pageFunction` <[function]> Function to be evaluated in browser context
+- `pageFunction` <[function]\([Element]\)> Function to be evaluated in browser context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
 

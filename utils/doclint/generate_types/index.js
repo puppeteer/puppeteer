@@ -1,14 +1,14 @@
 const path = require('path');
-const Source = require('./Source');
-const puppeteer = require('../..');
-const PROJECT_DIR = path.join(__dirname, '..', '..');
+const Source = require('../Source');
+const puppeteer = require('../../..');
+const PROJECT_DIR = path.join(__dirname, '..', '..', '..');
 const fs = require('fs');
 const objectDefinitions = [];
 (async function() {
   const browser = await puppeteer.launch();
   const page = (await browser.pages())[0];
   const api = await Source.readFile(path.join(PROJECT_DIR, 'docs', 'api.md'));
-  const {documentation} = await require('./check_public_api/MDBuilder')(page, [api]);
+  const {documentation} = await require('../check_public_api/MDBuilder')(page, [api]);
   await browser.close();
   const classes = documentation.classesArray.slice(1);
   const root = documentation.classesArray[0];
@@ -27,7 +27,7 @@ ${memberJSDOC(member, '')}export function ${member.name}${argsFromMember(member)
 ${classes.map(classDesc => classToString(classDesc)).join('\n')}
 ${objectDefinitionsToString()}
 `;
-  fs.writeFileSync(path.join(__dirname, '..', '..', 'index.d.ts'), output, 'utf8');
+  fs.writeFileSync(path.join(PROJECT_DIR, 'index.d.ts'), output, 'utf8');
 })();
 
 function objectDefinitionsToString() {
@@ -36,10 +36,14 @@ function objectDefinitionsToString() {
   while ((definition = objectDefinitions.pop())) {
     const {name, properties} = definition;
     parts.push(`interface ${name} {`);
-    parts.push(properties.map(member => `  ${memberJSDOC(member, '  ')}${member.name}${argsFromMember(member, name)}: ${typeToString(member.type, name, member.name)};`).join('\n\n'));
+    parts.push(properties.map(member => `  ${memberJSDOC(member, '  ')}${nameForProperty(member)}${argsFromMember(member, name)}: ${typeToString(member.type, name, member.name)};`).join('\n\n'));
     parts.push('}\n');
   }
   return parts.join('\n');
+}
+
+function nameForProperty(member) {
+  return (member.required || member.name.startsWith('...')) ? member.name : member.name + '?';
 }
 
 /**
@@ -159,9 +163,9 @@ function stringifyType(parsedType) {
       arg.next = null;
       stringArgs.push(stringifyType(arg));
     }
-    out = `(${stringArgs.map((type, index) => `arg${index} : ${type}`).join(', ')}) => ${stringifyType(parsedType.retType)}`;
+    out = `(${stringArgs.map((type, index) => `arg${index} : ${type}`).join(', ')}, ...args: any[]) => ${stringifyType(parsedType.retType)}`;
   } else if (parsedType.name === 'function') {
-    return 'Function';
+    out = 'Function';
   }
   if (parsedType.nullable)
     out = 'null|' + out;
@@ -192,7 +196,7 @@ function matchingBracket(str, open, close) {
 function argsFromMember(member, ...namespace) {
   if (member.kind === 'property')
     return '';
-  return '(' + member.argsArray.map(arg => `${arg.name}: ${typeToString(arg.type, ...namespace, member.name, 'options')}`).join(', ') + ')';
+  return '(' + member.argsArray.map(arg => `${nameForProperty(arg)}: ${typeToString(arg.type, ...namespace, member.name, 'options')}`).join(', ') + ')';
 }
 /**
  * @param {import('./check_public_api/Documentation').Member} member

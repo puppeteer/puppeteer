@@ -20,7 +20,7 @@
     "doc": "node utils/doclint/cli.js",
     "coverage": "cross-env COVERAGE=true npm run unit",
     "test-node6-transformer": "node utils/node6-transform/test/test.js",
-    "build": "node utils/node6-transform/index.js",
+    "build": "node utils/node6-transform/index.js && node utils/doclint/generate_types",
     "unit-node6": "node node6/test/test.js",
     "tsc": "tsc -p .",
     "prepublishOnly": "npm run build",

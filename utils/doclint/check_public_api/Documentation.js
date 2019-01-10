@@ -66,13 +66,14 @@ Documentation.Member = class {
    * @param {?Documentation.Type} type
    * @param {!Array<!Documentation.Member>} argsArray
    */
-  constructor(kind, name, type, argsArray, comment = '', returnComment = '') {
+  constructor(kind, name, type, argsArray, comment = '', returnComment = '', required = true) {
     this.kind = kind;
     this.name = name;
     this.type = type;
     this.comment = comment;
     this.returnComment = returnComment;
     this.argsArray = argsArray;
+    this.required = required;
     /** @type {!Map<string, !Documentation.Member>} */
     this.args = new Map();
     for (const arg of argsArray)
@@ -93,10 +94,11 @@ Documentation.Member = class {
    * @param {string} name
    * @param {!Documentation.Type} type
    * @param {string=} comment
+   * @param {boolean=} required
    * @return {!Documentation.Member}
    */
-  static createProperty(name, type, comment) {
-    return new Documentation.Member('property', name, type, [], comment);
+  static createProperty(name, type, comment, required) {
+    return new Documentation.Member('property', name, type, [], comment, undefined, required);
   }
 
   /**

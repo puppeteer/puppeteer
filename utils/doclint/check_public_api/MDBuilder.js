@@ -30,6 +30,9 @@ class MDOutline {
     const writer = new commonmark.HtmlRenderer();
     const html = writer.render(parsed);
 
+    page.on('console', msg => {
+      console.log(msg.text());
+    });
     // Extract headings.
     await page.setContent(html);
     const {classes, errors} = await page.evaluate(() => {
@@ -56,8 +59,11 @@ class MDOutline {
         const comment = str.substring(str.indexOf('<') + type.length + 2).trim();
         // Strings have enum values instead of properties
         if (!type.includes('string')) {
-          for (const childElement of element.querySelectorAll(':scope > ul > li'))
-            properties.push(parseProperty(childElement));
+          for (const childElement of element.querySelectorAll(':scope > ul > li')) {
+            const property = parseProperty(childElement);
+            property.required = property.comment.includes('***required***');
+            properties.push(property);
+          }
         }
         return {
           name,
@@ -100,7 +106,7 @@ class MDOutline {
         const comment = parseComment(extractSiblingsIntoFragment(commentStart, headers[0]));
         for (let i = 0; i < headers.length; i++) {
           const fragment = extractSiblingsIntoFragment(headers[i], headers[i + 1]);
-          members.push(parseMember(headers[i].textContent, fragment));
+          members.push(parseMember(fragment));
         }
         return {
           name,
@@ -127,15 +133,25 @@ class MDOutline {
        * @param {string} name
        * @param {DocumentFragment} content
        */
-      function parseMember(name, content) {
+      function parseMember(content) {
+        const name = content.firstChild.textContent;
         const args = [];
         let returnType = null;
+
+        const paramRegex = /^\w+\.[\w$]+\((.*)\)$/;
+        const matches = paramRegex.exec(name) || ['', ''];
+        const parameters = matches[1];
+        const optionalStartIndex = parameters.indexOf('[');
+        const optinalParamsStr = optionalStartIndex !== -1 ? parameters.substring(optionalStartIndex).replace(/[\[\]]/g, '') : '';
+        const optionalparams = new Set(optinalParamsStr.split(',').filter(x => x).map(x => x.trim()));
         const ul = content.querySelector('ul');
         for (const element of content.querySelectorAll('h4 + ul > li')) {
           if (element.matches('li') && element.textContent.trim().startsWith('<')) {
             returnType = parseProperty(element);
           } else if (element.matches('li') && element.firstChild.matches && element.firstChild.matches('code')) {
-            args.push(parseProperty(element));
+            const property = parseProperty(element);
+            property.required = !optionalparams.has(property.name);
+            args.push(property);
           } else if (element.matches('li') && element.firstChild.nodeType === Element.TEXT_NODE && element.firstChild.textContent.toLowerCase().startsWith('return')) {
             returnType = parseProperty(element);
             const expectedText = 'returns: ';
@@ -236,7 +252,8 @@ class MDOutline {
 
     function createPropertyFromJSON(payload) {
       const type = new Documentation.Type(payload.type, payload.properties.map(createPropertyFromJSON));
-      return Documentation.Member.createProperty(payload.name, type, payload.comment);
+      const required = payload.required;
+      return Documentation.Member.createProperty(payload.name, type, payload.comment, required);
     }
 
     function handleProperty(member, className, propertyName) {
