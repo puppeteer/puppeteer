@@ -57,7 +57,7 @@
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.3.3",
     "text-diff": "^1.0.1",
-    "typescript": "3.1.6"
+    "typescript": "3.2.2"
   },
   "browser": {
     "./lib/BrowserFetcher.js": false,
