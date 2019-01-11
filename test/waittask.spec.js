@@ -53,6 +53,12 @@ module.exports.addTests = function({testRunner, expect, product}) {
       await page.waitFor(timeout);
       expect(Date.now() - startTime).not.toBeLessThan(timeout / 2);
     });
+    it('should work with multiline body', async({page, server}) => {
+      const result = await page.waitForFunction(`
+        (() => true)()
+      `);
+      expect(await result.jsonValue()).toBe(true);
+    });
     it('should wait for predicate', async({page, server}) => {
       const watchdog = page.waitFor(() => window.innerWidth < 100);
       page.setViewport({width: 10, height: 10});
