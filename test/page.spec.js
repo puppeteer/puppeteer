@@ -322,16 +322,12 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       expect(message.text()).toContain('No \'Access-Control-Allow-Origin\'');
       expect(message.type()).toEqual('error');
     });
-    it('should show correct additional info when console event emitted for logEntry', async({page, server}) => {
-      let message = null;
-      page.on('console', msg => {
-        message = msg;
-      });
-      await Promise.all([
-        page.goto(server.PREFIX + '/console-message-1.html'),
+    it('should have location when fetch fails', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const [message] = await Promise.all([
         waitEvent(page, 'console'),
+        page.setContent(`<script>fetch('http://wat');</script>`),
       ]);
-      await new Promise(resolve => setTimeout(resolve, 5000));
       expect(message.text()).toContain(`ERR_NAME_NOT_RESOLVED`);
       expect(message.type()).toEqual('error');
       expect(message.location()).toEqual({
@@ -339,22 +335,18 @@ module.exports.addTests = function({testRunner, expect, headless}) {
         lineNumber: undefined
       });
     });
-    it('should show correct additional info when console event emitted for consoleAPI', async({page, server}) => {
-      let message = null;
-      page.on('console', msg => {
-        message = msg;
-      });
-      await Promise.all([
-        page.goto(server.PREFIX + '/console-message-2.html'),
+    it('should have location for console API calls', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const [message] = await Promise.all([
         waitEvent(page, 'console'),
+        page.goto(server.PREFIX + '/consolelog.html'),
       ]);
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      expect(message.text()).toContain(`wat`);
-      expect(message.type()).toEqual('warning');
+      expect(message.text()).toBe('yellow');
+      expect(message.type()).toBe('log');
       expect(message.location()).toEqual({
-        url: `http://localhost:${server.PORT}/console-message-2.html`,
+        url: server.PREFIX + '/consolelog.html',
         lineNumber: 7,
-        columnNumber: 16
+        columnNumber: 14,
       });
     });
   });

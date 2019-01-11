@@ -1,3 +1,5 @@
+const utils = require('./utils');
+const {waitEvent} = utils;
 
 module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
@@ -29,10 +31,16 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(error.message).toContain('Most likely the worker has been closed.');
     });
     it('should report console logs', async function({page}) {
-      const logPromise = new Promise(x => page.on('console', x));
-      await page.evaluate(() => new Worker(`data:text/javascript,console.log(1)`));
-      const log = await logPromise;
-      expect(log.text()).toBe('1');
+      const [message] = await Promise.all([
+        waitEvent(page, 'console'),
+        page.evaluate(() => new Worker(`data:text/javascript,console.log(1)`)),
+      ]);
+      expect(message.text()).toBe('1');
+      expect(message.location()).toEqual({
+        url: 'data:text/javascript,console.log(1)',
+        lineNumber: 0,
+        columnNumber: 8,
+      });
     });
     it('should have JSHandles for console logs', async function({page}) {
       const logPromise = new Promise(x => page.on('console', x));
