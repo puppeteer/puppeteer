@@ -185,6 +185,7 @@
   * [dialog.type()](#dialogtype)
 - [class: ConsoleMessage](#class-consolemessage)
   * [consoleMessage.args()](#consolemessageargs)
+  * [consoleMessage.location()](#consolemessagelocation)
   * [consoleMessage.text()](#consolemessagetext)
   * [consoleMessage.type()](#consolemessagetype)
 - [class: Frame](#class-frame)
@@ -2314,6 +2315,12 @@ puppeteer.launch().then(async browser => {
 
 #### consoleMessage.args()
 - returns: <[Array]<[JSHandle]>>
+
+#### consoleMessage.location()
+- returns: <[Object]>
+  - `url` <[string]> URL of the resource if known
+  - `lineNumber` <[number]> line number in the resource 
+  - `columnNumber` <[number]> line number in the resource 
 
 #### consoleMessage.text()
 - returns: <[string]>

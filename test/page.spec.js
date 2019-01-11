@@ -322,6 +322,41 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       expect(message.text()).toContain('No \'Access-Control-Allow-Origin\'');
       expect(message.type()).toEqual('error');
     });
+    it('should show correct additional info when console event emitted for logEntry', async({page, server}) => {
+      let message = null;
+      page.on('console', msg => {
+        message = msg;
+      });
+      await Promise.all([
+        page.goto(server.PREFIX + '/console-message-1.html'),
+        waitEvent(page, 'console'),
+      ]);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      expect(message.text()).toContain(`ERR_NAME_NOT_RESOLVED`);
+      expect(message.type()).toEqual('error');
+      expect(message.location()).toEqual({
+        url: 'http://wat/',
+        lineNumber: undefined
+      });
+    });
+    it('should show correct additional info when console event emitted for consoleAPI', async({page, server}) => {
+      let message = null;
+      page.on('console', msg => {
+        message = msg;
+      });
+      await Promise.all([
+        page.goto(server.PREFIX + '/console-message-2.html'),
+        waitEvent(page, 'console'),
+      ]);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      expect(message.text()).toContain(`wat`);
+      expect(message.type()).toEqual('warning');
+      expect(message.location()).toEqual({
+        url: `http://localhost:${server.PORT}/console-message-2.html`,
+        lineNumber: 7,
+        columnNumber: 16
+      });
+    });
   });
 
   describe('Page.Events.DOMContentLoaded', function() {
