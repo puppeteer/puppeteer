@@ -311,11 +311,11 @@ This is not an artificial constraint: A lot of work on Puppeteer is actually tak
 - It turned out this is an issue with the DevTools protocol, so we’re fixing it in Chromium: https://chromium-review.googlesource.com/c/chromium/src/+/1102154
 - Once the upstream fix is landed, we roll updated Chromium into Puppeteer: https://github.com/GoogleChrome/puppeteer/pull/2769
 
-However, oftentimes it is desirable to use Puppeteer with the official Google Chrome rather than Chromium. For this to work, you should pick the version of Puppeteer that uses the Chromium version close enough to Chrome.
+However, oftentimes it is desirable to use Puppeteer with the official Google Chrome rather than Chromium. For this to work, you should install a `puppeteer-core` version that corresponds to the Chrome version.
 
-Since Chrome 70, the latest supported version of Puppeteer is tagged on npm. To install Puppeteer for use with Chrome 71:
+For example, in order to drive Chrome 71 with puppeteer-core, use `chrome-71` npm tag:
 ```bash
-npm install puppeteer@chrome-71
+npm install puppeteer-core@chrome-71
 ```
 
 #### Q: Which Chromium version does Puppeteer use?
