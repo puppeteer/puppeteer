@@ -218,10 +218,11 @@ module.exports.addTests = function({testRunner, expect, product}) {
       const screenshotError = await elementHandle.screenshot().catch(error => error);
       expect(screenshotError.message).toBe('Node is either not visible or not an HTMLElement');
     });
-    xit('should not hang with zero width/height element', async({page, server}) => {
-      await page.setContent('<div style="width: 0; height: 0"></div>');
+    it('should not hang with zero width/height element', async({page, server}) => {
+      await page.setContent('<div style="width: 50px; height: 0"></div>');
       const div = await page.$('div');
-      await div.screenshot();
+      const error = await div.screenshot().catch(e => e);
+      expect(error.message).toBe('Node has 0 height.');
     });
   });
 
