@@ -34,6 +34,15 @@ module.exports.addTests = function({testRunner, expect}) {
       const isFive = await page.evaluate(e => Object.is(e, 5), aHandle);
       expect(isFive).toBeTruthy();
     });
+    it('should warn on nested object handles', async({page, server}) => {
+      const aHandle = await page.evaluateHandle(() => document.body);
+      let error = null;
+      await page.evaluateHandle(
+          opts => opts.elem.querySelector('p'),
+          { elem: aHandle }
+      ).catch(e => error = e);
+      expect(error.message).toContain('Are you passing a nested JSHandle?');
+    });
   });
 
   describe('JSHandle.getProperty', function() {
