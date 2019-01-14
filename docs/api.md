@@ -445,7 +445,7 @@ puppeteer.launch().then(async browser => {
 #### puppeteer.connect(options)
 - `options` <[Object]>
   - `browserWSEndpoint` <?[string]> a [browser websocket endpoint](#browserwsendpoint) to connect to.
-  - `browserUrl` <?[string]> a browser url to connect to, in format `http://${host}:${port}`. Use interchangeably with `browserWSEndpoint` to let Puppeteer fetch it from [metadata endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
+  - `browserURL` <?[string]> a browser url to connect to, in format `http://${host}:${port}`. Use interchangeably with `browserWSEndpoint` to let Puppeteer fetch it from [metadata endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
   - `defaultViewport` <?[Object]> Sets a consistent viewport for each page. Defaults to an 800x600 viewport. `null` disables the default viewport.
     - `width` <[number]> page width in pixels.

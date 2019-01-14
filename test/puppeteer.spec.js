@@ -348,17 +348,40 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) 
         const originalBrowser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
           args: ['--remote-debugging-port=21222']
         }));
-        const browserUrl = 'http://127.0.0.1:21222';
+        const browserURL = 'http://127.0.0.1:21222';
 
-        const browser1 = await puppeteer.connect({browserUrl});
+        const browser1 = await puppeteer.connect({browserURL});
         const page1 = await browser1.newPage();
         expect(await page1.evaluate(() => 7 * 8)).toBe(56);
         browser1.disconnect();
 
-        const browser2 = await puppeteer.connect({browserUrl: browserUrl + '/'});
+        const browser2 = await puppeteer.connect({browserURL: browserURL + '/'});
         const page2 = await browser2.newPage();
         expect(await page2.evaluate(() => 8 * 7)).toBe(56);
         browser2.disconnect();
+        originalBrowser.close();
+      });
+      it('should throw when using both browserWSEndpoint and browserURL', async({server}) => {
+        const originalBrowser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
+          args: ['--remote-debugging-port=21222']
+        }));
+        const browserURL = 'http://127.0.0.1:21222';
+
+        let error = null;
+        await puppeteer.connect({browserURL, browserWSEndpoint: originalBrowser.wsEndpoint()}).catch(e => error = e);
+        expect(error.message).toContain('Exactly one of browserWSEndpoint, browserURL or transport');
+
+        originalBrowser.close();
+      });
+      it('should throw when trying to connect to non-existing browser', async({server}) => {
+        const originalBrowser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
+          args: ['--remote-debugging-port=21222']
+        }));
+        const browserURL = 'http://127.0.0.1:32333';
+
+        let error = null;
+        await puppeteer.connect({browserURL}).catch(e => error = e);
+        expect(error.message).toContain('Failed to fetch browser webSocket url from');
 
         originalBrowser.close();
       });
