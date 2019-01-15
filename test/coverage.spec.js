@@ -109,6 +109,14 @@ module.exports.addTests = function({testRunner, expect}) {
         expect(coverage.length).toBe(0);
       });
     });
+    xit('should not hang when there is a debugger statement', async function({page, server}) {
+      await page.coverage.startJSCoverage();
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        debugger; // eslint-disable-line no-debugger
+      });
+      await page.coverage.stopJSCoverage();
+    });
   });
 
   describe('CSSCoverage', function() {
