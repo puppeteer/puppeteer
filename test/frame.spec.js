@@ -55,6 +55,13 @@ module.exports.addTests = function({testRunner, expect}) {
       const windowHandle = await mainFrame.evaluateHandle(() => window);
       expect(windowHandle).toBeTruthy();
     });
+    it('should throw for detached frames', async({page, server}) => {
+      const frame1 = await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await utils.detachFrame(page, 'frame1');
+      let error = null;
+      await frame1.evaluate(() => 7 * 8).catch(e => error = e);
+      console.log(error);
+    });
   });
 
   describe('Frame Management', function() {
@@ -145,6 +152,20 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(page.frames()[0].parentFrame()).toBe(null);
       expect(page.frames()[1].parentFrame()).toBe(page.mainFrame());
       expect(page.frames()[2].parentFrame()).toBe(page.mainFrame());
+    });
+    it('should report different frame instance when frame re-attaches', async({page, server}) => {
+      const frame1 = await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        window.frame = document.querySelector('#frame1');
+        window.frame.remove();
+      });
+      expect(frame1.isDetached()).toBe(true);
+      const [frame2] = await Promise.all([
+        utils.waitEvent(page, 'frameattached'),
+        page.evaluate(() => document.body.appendChild(window.frame)),
+      ]);
+      expect(frame2.isDetached()).toBe(false);
+      expect(frame1).not.toBe(frame2);
     });
   });
 };
