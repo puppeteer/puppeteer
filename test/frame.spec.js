@@ -60,7 +60,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await utils.detachFrame(page, 'frame1');
       let error = null;
       await frame1.evaluate(() => 7 * 8).catch(e => error = e);
-      console.log(error);
+      expect(error.message).toContain('Cannot evaluate in detached frame');
     });
   });
 
