@@ -10,8 +10,3 @@ class Foo {
   ccc() {}
 }
 
-Foo.Events = {
-  a: 'a',
-  b: 'b',
-  c: 'c'
-}

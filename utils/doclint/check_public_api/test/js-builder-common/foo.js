@@ -11,7 +11,3 @@ class A {
   async method(foo, bar) {
   }
 }
-
-A.Events = {
-  AnEvent: 'anevent'
-};

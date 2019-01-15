@@ -7,6 +7,15 @@ module.exports = checkSources;
  * @param {!Array<!import('../Source')>} sources
  */
 function checkSources(sources) {
+  // special treatment for Events.js
+  const classEvents = new Map();
+  const eventsSource = sources.find(source => source.name() === 'Events.js');
+  if (eventsSource) {
+    const {Events} = require(eventsSource.filePath());
+    for (const [className, events] of Object.entries(Events))
+      classEvents.set(className, Array.from(Object.values(events)).filter(e => typeof e === 'string').map(e => Documentation.Member.createEvent(e)));
+  }
+
   const excludeClasses = new Set([]);
   const program = ts.createProgram({
     options: {
@@ -24,6 +33,7 @@ function checkSources(sources) {
   sourceFiles.filter(x => !x.fileName.includes('node_modules')).map(x => visit(x));
   const errors = [];
   const documentation = new Documentation(recreateClassesWithInheritance(classes, inheritance));
+
   return {errors, documentation};
 
   /**
@@ -158,17 +168,7 @@ function checkSources(sources) {
    */
   function serializeClass(className, symbol, node) {
     /** @type {!Array<!Documentation.Member>} */
-    const members = [];
-
-    const type = checker.getTypeOfSymbolAtLocation(symbol, node);
-    const events = type.getProperty('Events');
-    if (events) {
-      const eventType = checker.getTypeAtLocation(events.valueDeclaration);
-      for (const property of eventType.getProperties()) {
-        if (property.valueDeclaration.initializer.text)
-          members.push(Documentation.Member.createEvent(property.valueDeclaration.initializer.text));
-      }
-    }
+    const members = classEvents.get(className) || [];
 
     for (const [name, member] of symbol.members || []) {
       if (name.startsWith('_'))
