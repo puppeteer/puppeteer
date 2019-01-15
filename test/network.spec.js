@@ -266,7 +266,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(response.ok()).toBe(true);
       expect(response.remoteAddress().port).toBe(server.PORT);
     });
-    xit('should work when POST is redirected with 302', async({page, server}) => {
+    it('should work when POST is redirected with 302', async({page, server}) => {
       server.setRedirect('/rredirect', '/empty.html');
       await page.goto(server.EMPTY_PAGE);
       await page.setRequestInterception(true);
