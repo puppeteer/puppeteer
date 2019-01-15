@@ -26,6 +26,7 @@ const EXCLUDE_CLASSES = new Set([
   'CustomError',
   'EmulationManager',
   'FrameManager',
+  'IsolatedWorld',
   'JSCoverage',
   'Helper',
   'Launcher',
