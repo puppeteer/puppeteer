@@ -55,12 +55,15 @@ module.exports.addTests = function({testRunner, expect}) {
       const windowHandle = await mainFrame.evaluateHandle(() => window);
       expect(windowHandle).toBeTruthy();
     });
+  });
+
+  describe('Frame.evaluate', function() {
     it('should throw for detached frames', async({page, server}) => {
       const frame1 = await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       await utils.detachFrame(page, 'frame1');
       let error = null;
       await frame1.evaluate(() => 7 * 8).catch(e => error = e);
-      expect(error.message).toContain('Cannot evaluate in detached frame');
+      expect(error.message).toContain('Execution Context is not available in detached frame');
     });
   });
 
