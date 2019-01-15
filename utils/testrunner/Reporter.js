@@ -47,7 +47,7 @@ class Reporter {
     }
     console.log('WORKERS STATE');
     const workerIds = Array.from(this._workersState.keys());
-    workerIds.sort((a, b) => parseInt(a) - parseInt(b));
+    workerIds.sort((a, b) => a - b);
     for (const workerId of workerIds) {
       const {isRunning, test} = this._workersState.get(workerId);
       let description = '';
