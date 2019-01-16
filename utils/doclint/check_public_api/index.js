@@ -24,6 +24,7 @@ const EXCLUDE_CLASSES = new Set([
   'CSSCoverage',
   'Connection',
   'CustomError',
+  'DOMWorld',
   'EmulationManager',
   'FrameManager',
   'JSCoverage',
