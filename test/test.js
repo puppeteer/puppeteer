@@ -167,7 +167,6 @@ describe('Browser', function() {
     require('./emulation.spec.js').addTests({testRunner, expect, headless});
     require('./screenshot.spec.js').addTests({testRunner, expect});
     require('./target.spec.js').addTests({testRunner, expect});
-    require('./tracing.spec.js').addTests({testRunner, expect});
     require('./worker.spec.js').addTests({testRunner, expect});
   });
 
@@ -179,6 +178,7 @@ describe('Browser', function() {
 require('./ignorehttpserrors.spec.js').addTests({testRunner, expect, defaultBrowserOptions});
 require('./puppeteer.spec.js').addTests({testRunner, expect, defaultBrowserOptions});
 require('./headful.spec.js').addTests({testRunner, expect, defaultBrowserOptions});
+require('./tracing.spec.js').addTests({testRunner, expect, defaultBrowserOptions});
 
 if (process.env.COVERAGE) {
   describe('COVERAGE', function() {

@@ -16,17 +16,24 @@
 
 const fs = require('fs');
 const path = require('path');
+const utils = require('./utils');
+const puppeteer = utils.requireRoot('index');
 
-module.exports.addTests = function({testRunner, expect}) {
+module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Tracing', function() {
-    beforeEach(function(state) {
+    beforeEach(async function(state) {
       state.outputFile = path.join(__dirname, 'assets', `trace-${state.parallelIndex}.json`);
+      state.browser = await puppeteer.launch(defaultBrowserOptions);
+      state.page = await state.browser.newPage();
     });
-    afterEach(function(state) {
+    afterEach(async function(state) {
+      await state.browser.close();
+      state.browser = null;
+      state.page = null;
       if (fs.existsSync(state.outputFile)) {
         fs.unlinkSync(state.outputFile);
         state.outputFile = null;
