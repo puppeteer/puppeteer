@@ -261,7 +261,9 @@ class MDOutline {
         this.errors.push(`Failed to process header as property: ${member.name}`);
         return;
       }
-      currentClassMembers.push(createPropertyFromJSON({type: member.returnType.type, name: propertyName, properties: member.returnType.properties, comment: member.comment}));
+      const type = member.returnType ? member.returnType.type : null;
+      const properties = member.returnType ? member.returnType.properties : [];
+      currentClassMembers.push(createPropertyFromJSON({type, name: propertyName, properties, comment: member.comment}));
     }
 
     function handleEvent(member, eventName) {

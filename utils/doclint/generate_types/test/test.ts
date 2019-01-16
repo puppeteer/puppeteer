@@ -275,7 +275,7 @@ puppeteer.launch().then(async browser => {
 
   let elementText = await page.$$eval('.someClassName', (elements) => {
     console.log(elements.length);
-    console.log(elements.map(x => x)[0].outerHTML);
+    console.log(elements.map(x => x)[0].textContent);
     return elements[3].innerHTML;
   });
 
