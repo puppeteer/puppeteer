@@ -37,6 +37,18 @@ ln -s $PWD/../src $PWD/testing/juggler
 ./mach build
 ```
 
+### Troubleshooting when building FF
+On MacOS 10.14 (Mojave) you might run into issues when building FF.
+
+The error is related to [a change in the xcode-select installation](https://bugzilla.mozilla.org/show_bug.cgi?id=1487552)
+
+To workaround this issue you can simply run:
+
+```bash
+# Write missing headers to /usr/include
+sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
+```
+
 ## Running Firefox with Juggler
 
 Juggle adds a `-juggler` CLI flag that accepts a port to expose a remote protocol on.
