@@ -37,7 +37,29 @@ ln -s $PWD/../src $PWD/testing/juggler
 ./mach build
 ```
 
-### Troubleshooting when building FF
+### Troubleshooting when building FF on Mac
+#### Black screen after FF Build
+As of Jan. 2019 there is a known [bug](https://bugzilla.mozilla.org/show_bug.cgi?id=1493330) that will cause an entirely black screen when running the nightly build of firefox built with the **MacOSX SDK version 10.14.**
+
+The easiest fix right now is downgrading your MacOSX SDK.
+
+To do so:
+
+1) Go to [this repo](https://github.com/phracker/MacOSX-SDKs) and install any **SDK version < 10.14** (e.g. 10.13 works fine)
+
+2) In the `juggler/firefox` folder:
+
+```bash
+echo "ac_add_options --with-macos-sdk=path/to/sdk" >> .mozconfig
+# your SDK might be located at
+# /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/
+```
+
+3) run `./mach build` again
+
+
+#### Missing headers in /usr/include
+
 On MacOS 10.14 (Mojave) you might run into issues when building FF.
 
 The error is related to [a change in the xcode-select installation](https://bugzilla.mozilla.org/show_bug.cgi?id=1487552)
