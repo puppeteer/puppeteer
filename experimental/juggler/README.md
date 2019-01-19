@@ -59,6 +59,7 @@ echo "ac_add_options --with-macos-sdk=path/to/sdk" >> .mozconfig
 
 
 #### Missing headers in /usr/include
+
 On MacOS 10.14 (Mojave) you might run into issues when building FF.
 
 The error is related to [a change in the xcode-select installation](https://bugzilla.mozilla.org/show_bug.cgi?id=1487552)

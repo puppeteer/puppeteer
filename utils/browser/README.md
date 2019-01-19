@@ -3,7 +3,8 @@
 To bundle Puppeteer using [Browserify](http://browserify.org/):
 
 1. Clone Puppeteer repository: `git clone https://github.com/GoogleChrome/puppeteer && cd puppeteer`
-2. Run `npm run bundle`
+2. `npm install`
+3. Run `npm run bundle`
 
 This will create `./utils/browser/puppeteer-web.js` file that contains Puppeteer bundle.
 
