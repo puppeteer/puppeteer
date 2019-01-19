@@ -28,6 +28,12 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     });
+    it('should click the button if window.Node is removed', async({page, server}) => {
+      await page.evaluateOnNewDocument(() => delete window.Node);
+      await page.goto(server.PREFIX + '/input/button.html');
+      await page.click('button');
+      expect(await page.evaluate(() => result)).toBe('Clicked');
+    });
     it('should click the button after navigation ', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
       await page.click('button');
