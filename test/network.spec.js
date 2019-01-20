@@ -266,6 +266,24 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(response.ok()).toBe(true);
       expect(response.remoteAddress().port).toBe(server.PORT);
     });
+    it('should work with intervention headers', async({page, server}) => {
+      server.setRoute('/intervention', (req, res) => res.end(`
+        <script>
+          document.write('<script src="${server.CROSS_PROCESS_PREFIX}/intervention.js">' + '</scr' + 'ipt>');
+        </script>
+      `));
+      server.setRedirect('/intervention.js', '/redirect.js');
+      let serverRequest = null;
+      server.setRoute('/redirect.js', (req, res) => {
+        serverRequest = req;
+        res.end('console.log(1);');
+      });
+
+      await page.setRequestInterception(true);
+      page.on('request', request => request.continue());
+      await page.goto(server.PREFIX + '/intervention');
+      expect(serverRequest.headers.intervention).toContain('www.chromestatus.com');
+    });
     it('should work when POST is redirected with 302', async({page, server}) => {
       server.setRedirect('/rredirect', '/empty.html');
       await page.goto(server.EMPTY_PAGE);
