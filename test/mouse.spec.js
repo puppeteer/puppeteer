@@ -65,8 +65,8 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-91');
     });
     it('should trigger hover state with removed window.Node', async({page, server}) => {
-      await page.evaluateOnNewDocument(() => delete window.Node);
       await page.goto(server.PREFIX + '/input/scrollable.html');
+      await page.evaluate(() => delete window.Node);
       await page.hover('#button-6');
       expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-6');
     });

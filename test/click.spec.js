@@ -29,8 +29,8 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(await page.evaluate(() => result)).toBe('Clicked');
     });
     it('should click the button if window.Node is removed', async({page, server}) => {
-      await page.evaluateOnNewDocument(() => delete window.Node);
       await page.goto(server.PREFIX + '/input/button.html');
+      await page.evaluate(() => delete window.Node);
       await page.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     });
