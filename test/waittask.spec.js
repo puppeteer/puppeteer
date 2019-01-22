@@ -172,6 +172,19 @@ module.exports.addTests = function({testRunner, expect, product}) {
       await page.evaluate(() => window.__injected = true);
       await watchdog;
     });
+    it('should survive cross-process navigation', async({page, server}) => {
+      let fooFound = false;
+      const waitForFunction = page.waitForFunction('window.__FOO === 1').then(() => fooFound = true);
+      await page.goto(server.EMPTY_PAGE);
+      expect(fooFound).toBe(false);
+      await page.reload();
+      expect(fooFound).toBe(false);
+      await page.goto(server.CROSS_PROCESS_PREFIX + '/grid.html');
+      expect(fooFound).toBe(false);
+      await page.evaluate(() => window.__FOO = 1);
+      await waitForFunction;
+      expect(fooFound).toBe(true);
+    });
   });
 
   describe('Frame.waitForSelector', function() {
