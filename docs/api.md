@@ -357,6 +357,7 @@ When using `puppeteer-core`, remember to change the *include* line:
 const puppeteer = require('puppeteer-core');
 ```
 
+You will then need to call [`puppeteer.connect([options])`](#puppeteerconnectoptions) or [`puppeteer.launch([options])`](#puppeteerlaunchoptions) with an explicit `executablePath` option.
 
 ### Environment Variables
 
