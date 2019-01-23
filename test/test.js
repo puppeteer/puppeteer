@@ -13,37 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const fs = require('fs');
-const rm = require('rimraf').sync;
 const path = require('path');
 const {TestServer} = require('../utils/testserver/');
-const GoldenUtils = require('./golden-utils');
-const GOLDEN_DIR = path.join(__dirname, 'golden');
-const OUTPUT_DIR = path.join(__dirname, 'output');
-const {TestRunner, Reporter, Matchers} = require('../utils/testrunner/');
+const {TestRunner, Reporter} = require('../utils/testrunner/');
 const utils = require('./utils');
 
-const {helper, assert} = require('../lib/helper');
-if (process.env.COVERAGE)
-  helper.recordPublicAPICoverage();
-
-const puppeteer = utils.requireRoot('index');
-
-const YELLOW_COLOR = '\x1b[33m';
-const RESET_COLOR = '\x1b[0m';
-
 const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
-const executablePath = process.env.CHROME;
-
-if (executablePath)
-  console.warn(`${YELLOW_COLOR}WARN: running tests with ${executablePath}${RESET_COLOR}`);
-// Make sure the `npm install` was run after the chromium roll.
-assert(fs.existsSync(puppeteer.executablePath()), `Chromium is not Downloaded. Run 'npm install' and try to re-run tests`);
-
 const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
 const defaultBrowserOptions = {
   handleSIGINT: false,
-  executablePath,
+  executablePath: process.env.CHROME,
   slowMo,
   headless,
   dumpio: (process.env.DUMPIO || 'false').trim().toLowerCase() === 'true',
@@ -59,13 +38,7 @@ require('events').defaultMaxListeners *= parallel;
 
 const timeout = slowMo ? 0 : 10 * 1000;
 const testRunner = new TestRunner({timeout, parallel});
-const {expect} = new Matchers({
-  toBeGolden: GoldenUtils.compare.bind(null, GOLDEN_DIR, OUTPUT_DIR)
-});
 const {describe, it, xit, beforeAll, afterAll, beforeEach, afterEach} = testRunner;
-
-if (fs.existsSync(OUTPUT_DIR))
-  rm(OUTPUT_DIR);
 
 console.log('Testing on Node', process.version);
 
@@ -102,98 +75,33 @@ beforeEach(async({server, httpsServer}) => {
   httpsServer.reset();
 });
 
-describe('Browser', function() {
-  beforeAll(async state => {
-    state.browser = await puppeteer.launch(defaultBrowserOptions);
-  });
+describe('Chromium', () => {
+  const {helper} = require('../lib/helper');
+  if (process.env.COVERAGE)
+    helper.recordPublicAPICoverage();
 
-  afterAll(async state => {
-    await state.browser.close();
-    state.browser = null;
+  require('./puppeteer.spec.js').addTests({
+    product: 'Chromium',
+    puppeteer: utils.requireRoot('index'),
+    defaultBrowserOptions,
+    testRunner,
   });
+  if (process.env.COVERAGE) {
+    describe('COVERAGE', function() {
+      const coverage = helper.publicAPICoverage();
+      const disabled = new Set(['page.bringToFront']);
+      if (!headless)
+        disabled.add('page.pdf');
 
-  beforeEach(async(state, test) => {
-    const rl = require('readline').createInterface({input: state.browser.process().stderr});
-    test.output = '';
-    rl.on('line', onLine);
-    state.tearDown = () => {
-      rl.removeListener('line', onLine);
-      rl.close();
-    };
-    function onLine(line) {
-      test.output += line + '\n';
-    }
-  });
-
-  afterEach(async state => {
-    state.tearDown();
-  });
-
-  describe('Page', function() {
-    beforeEach(async state => {
-      state.context = await state.browser.createIncognitoBrowserContext();
-      state.page = await state.context.newPage();
+      for (const method of coverage.keys()) {
+        (disabled.has(method) ? xit : it)(`public api '${method}' should be called`, async({page, server}) => {
+          if (!coverage.get(method))
+            throw new Error('NOT CALLED!');
+        });
+      }
     });
-
-    afterEach(async state => {
-      // This closes all pages.
-      await state.context.close();
-      state.context = null;
-      state.page = null;
-    });
-
-    // Page-level tests that are given a browser, a context and a page.
-    // Each test is launched in a new browser context.
-    require('./CDPSession.spec.js').addTests({testRunner, expect});
-    require('./accessibility.spec.js').addTests({testRunner, expect});
-    require('./browser.spec.js').addTests({testRunner, expect, headless});
-    require('./cookies.spec.js').addTests({testRunner, expect});
-    require('./coverage.spec.js').addTests({testRunner, expect});
-    require('./elementhandle.spec.js').addTests({testRunner, expect});
-    require('./queryselector.spec.js').addTests({testRunner, expect});
-    require('./waittask.spec.js').addTests({testRunner, expect});
-    require('./frame.spec.js').addTests({testRunner, expect});
-    require('./input.spec.js').addTests({testRunner, expect});
-    require('./mouse.spec.js').addTests({testRunner, expect});
-    require('./keyboard.spec.js').addTests({testRunner, expect});
-    require('./touchscreen.spec.js').addTests({testRunner, expect});
-    require('./click.spec.js').addTests({testRunner, expect});
-    require('./jshandle.spec.js').addTests({testRunner, expect});
-    require('./network.spec.js').addTests({testRunner, expect});
-    require('./page.spec.js').addTests({testRunner, expect, headless});
-    require('./dialog.spec.js').addTests({testRunner, expect, headless});
-    require('./navigation.spec.js').addTests({testRunner, expect, headless});
-    require('./evaluation.spec.js').addTests({testRunner, expect, headless});
-    require('./emulation.spec.js').addTests({testRunner, expect, headless});
-    require('./screenshot.spec.js').addTests({testRunner, expect});
-    require('./target.spec.js').addTests({testRunner, expect});
-    require('./worker.spec.js').addTests({testRunner, expect});
-  });
-
-  // Browser-level tests that are given a browser.
-  require('./browsercontext.spec.js').addTests({testRunner, expect});
+  }
 });
-
-// Top-level tests that launch Browser themselves.
-require('./ignorehttpserrors.spec.js').addTests({testRunner, expect, defaultBrowserOptions});
-require('./puppeteer.spec.js').addTests({testRunner, expect, defaultBrowserOptions});
-require('./headful.spec.js').addTests({testRunner, expect, defaultBrowserOptions});
-require('./tracing.spec.js').addTests({testRunner, expect, defaultBrowserOptions});
-
-if (process.env.COVERAGE) {
-  describe('COVERAGE', function() {
-    const coverage = helper.publicAPICoverage();
-    const disabled = new Set(['page.bringToFront']);
-    if (!headless)
-      disabled.add('page.pdf');
-
-    for (const method of coverage.keys()) {
-      (disabled.has(method) ? xit : it)(`public api '${method}' should be called`, async({page, server}) => {
-        expect(coverage.get(method)).toBe(true);
-      });
-    }
-  });
-}
 
 if (process.env.CI && testRunner.hasFocusedTestsOrSuites()) {
   console.error('ERROR: "focused" tests/suites are prohibitted on bots. Remove any "fit"/"fdescribe" declarations.');

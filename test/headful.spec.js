@@ -21,7 +21,6 @@ const {helper} = require('../lib/helper');
 const rmAsync = helper.promisify(require('rimraf'));
 const utils = require('./utils');
 const {waitEvent} = utils;
-const puppeteer = utils.requireRoot('index.js');
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
@@ -40,7 +39,7 @@ function waitForBackgroundPageTarget(browser) {
   });
 }
 
-module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) {
+module.exports.addTests = function({testRunner, expect, puppeteer, defaultBrowserOptions}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
