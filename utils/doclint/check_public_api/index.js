@@ -19,26 +19,6 @@ const mdBuilder = require('./MDBuilder');
 const Documentation = require('./Documentation');
 const Message = require('../Message');
 
-const EXCLUDE_CLASSES = new Set([
-  'AXNode',
-  'CSSCoverage',
-  'Connection',
-  'CustomError',
-  'DOMWorld',
-  'EmulationManager',
-  'FrameManager',
-  'JSCoverage',
-  'Helper',
-  'Launcher',
-  'Multimap',
-  'LifecycleWatcher',
-  'NetworkManager',
-  'PipeTransport',
-  'TaskQueue',
-  'WaitTask',
-  'WebSocketTransport',
-]);
-
 const EXCLUDE_PROPERTIES = new Set([
   'Browser.create',
   'Headers.fromPayload',
@@ -55,7 +35,7 @@ const EXCLUDE_PROPERTIES = new Set([
 module.exports = async function lint(page, mdSources, jsSources) {
   const mdResult = await mdBuilder(page, mdSources);
   const jsResult = await jsBuilder(jsSources);
-  const jsDocumentation = filterJSDocumentation(jsResult.documentation);
+  const jsDocumentation = filterJSDocumentation(jsSources, jsResult.documentation);
   const mdDocumentation = mdResult.documentation;
 
   const jsErrors = jsResult.errors;
@@ -126,14 +106,19 @@ function checkSorting(doc) {
 }
 
 /**
+ * @param {!Array<!Source>} jsSources
  * @param {!Documentation} jsDocumentation
  * @return {!Documentation}
  */
-function filterJSDocumentation(jsDocumentation) {
-  // Filter classes and methods.
+function filterJSDocumentation(jsSources, jsDocumentation) {
+  const apijs = jsSources.find(source => source.name() === 'api.js');
+  if (!apijs)
+    throw new Error('Failed to find "api.js" file that declares public API classes');
+  const includedClasses = new Set(Object.keys(require(apijs.filePath())));
+  // Filter private classes and methods.
   const classes = [];
   for (const cls of jsDocumentation.classesArray) {
-    if (EXCLUDE_CLASSES.has(cls.name))
+    if (!includedClasses.has(cls.name))
       continue;
     const members = cls.membersArray.filter(member => !EXCLUDE_PROPERTIES.has(`${cls.name}.${member.name}`));
     classes.push(new Documentation.Class(cls.name, members));

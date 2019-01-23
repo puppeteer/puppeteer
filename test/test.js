@@ -75,32 +75,24 @@ beforeEach(async({server, httpsServer}) => {
   httpsServer.reset();
 });
 
-describe('Chromium', () => {
-  const {helper} = require('../lib/helper');
-  if (process.env.COVERAGE)
-    helper.recordPublicAPICoverage();
+const CHROMIUM_NO_COVERAGE = new Set([
+  'page.bringToFront',
+  'securityDetails.subjectName',
+  'securityDetails.issuer',
+  'securityDetails.validFrom',
+  'securityDetails.validTo',
+  ...(headless ? [] : ['page.pdf']),
+]);
 
+describe('Chromium', () => {
   require('./puppeteer.spec.js').addTests({
     product: 'Chromium',
     puppeteer: utils.requireRoot('index'),
     defaultBrowserOptions,
     testRunner,
   });
-  if (process.env.COVERAGE) {
-    describe('COVERAGE', function() {
-      const coverage = helper.publicAPICoverage();
-      const disabled = new Set(['page.bringToFront']);
-      if (!headless)
-        disabled.add('page.pdf');
-
-      for (const method of coverage.keys()) {
-        (disabled.has(method) ? xit : it)(`public api '${method}' should be called`, async({page, server}) => {
-          if (!coverage.get(method))
-            throw new Error('NOT CALLED!');
-        });
-      }
-    });
-  }
+  if (process.env.COVERAGE)
+    utils.recordAPICoverage(testRunner, require('../lib/api'), CHROMIUM_NO_COVERAGE);
 });
 
 if (process.env.CI && testRunner.hasFocusedTestsOrSuites()) {
