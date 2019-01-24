@@ -25,10 +25,18 @@ SOURCE=$PWD bash scripts/fetch_firefox.sh
 ```bash
 cd firefox
 git am ../patches/*
-ln -s $PWD/../src $PWD/testing/juggler
 ```
 
-4. Bootstrap host environment for Firefox build and compile firefox locally
+4. Add Juggler to Firefox. NOTE: On Linux, symlinks work. On OSX, files have to be copied.
+
+```bash
+# LINUX:
+ln -s $PWD/../src $PWD/testing/juggler
+# OSX:
+cp -r $PWD/../src $PWD/testing/juggler
+```
+
+5. Bootstrap host environment for Firefox build and compile firefox locally
 
 ```bash
 # OPTIONAL - bootstrap host environment.

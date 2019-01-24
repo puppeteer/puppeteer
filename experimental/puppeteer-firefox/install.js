@@ -15,10 +15,6 @@
  */
 
 
-const os = require('os');
-const fs = require('fs');
-const path = require('path');
-
 // puppeteer-core should not install anything.
 if (require('./package.json').name === 'puppeteer-core')
   return;
@@ -62,7 +58,10 @@ function onSuccess(localRevisions) {
   localRevisions = localRevisions.filter(revision => revision !== revisionInfo.revision);
   // Remove previous firefox revisions.
   const cleanupOldVersions = localRevisions.map(revision => browserFetcher.remove(revision));
-  return Promise.all([...cleanupOldVersions, installFirefoxPreferences()]);
+  const installFirefoxPreferences = require('./misc/install-preferences');
+  return Promise.all([...cleanupOldVersions, installFirefoxPreferences(revisionInfo.executablePath)]).then(() => {
+    console.log('Firefox preferences installed!');
+  });
 }
 
 /**
@@ -95,59 +94,3 @@ function toMegabytes(bytes) {
   const mb = bytes / 1024 / 1024;
   return `${Math.round(mb * 10) / 10} Mb`;
 }
-
-// Install browser preferences after downloading and unpacking
-// firefox instances.
-// Based on:   https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Enterprise_deployment_before_60#Configuration
-async function installFirefoxPreferences() {
-  const revisionInfo = browserFetcher.revisionInfo(revision);
-  const firefoxFolder = path.dirname(revisionInfo.executablePath);
-  const {helper} = require('./lib/firefox/helper');
-  const mkdirAsync = helper.promisify(fs.mkdir.bind(fs));
-
-  let prefPath = '';
-  let configPath = '';
-  if (os.platform() === 'darwin') {
-    prefPath = path.join(firefoxFolder, '..', 'Resources', 'defaults', 'pref');
-    configPath = path.join(firefoxFolder, '..', 'Resources');
-  } else if (os.platform() === 'linux') {
-    await mkdirAsync(path.join(firefoxFolder, 'browser', 'defaults'));
-    await mkdirAsync(path.join(firefoxFolder, 'browser', 'defaults', 'preferences'));
-    prefPath = path.join(firefoxFolder, 'browser', 'defaults', 'preferences');
-    configPath = firefoxFolder;
-  } else if (os.platform() === 'win32') {
-    prefPath = path.join(firefoxFolder, 'defaults', 'pref');
-    configPath = firefoxFolder;
-  } else {
-    throw new Error('Unsupported platform: ' + os.platform());
-  }
-
-  await Promise.all([
-    copyFile({
-      from: path.join(__dirname, 'misc', '00-puppeteer-prefs.js'),
-      to: path.join(prefPath, '00-puppeteer-prefs.js'),
-    }),
-    copyFile({
-      from: path.join(__dirname, 'misc', 'puppeteer.cfg'),
-      to: path.join(configPath, 'puppeteer.cfg'),
-    }),
-  ]).then(() => {
-    console.log('Firefox preferences installed!');
-  });
-}
-
-function copyFile({from, to}) {
-  var rd = fs.createReadStream(from);
-  var wr = fs.createWriteStream(to);
-  return new Promise(function(resolve, reject) {
-    rd.on('error', reject);
-    wr.on('error', reject);
-    wr.on('finish', resolve);
-    rd.pipe(wr);
-  }).catch(function(error) {
-    rd.destroy();
-    wr.end();
-    throw error;
-  });
-}
-

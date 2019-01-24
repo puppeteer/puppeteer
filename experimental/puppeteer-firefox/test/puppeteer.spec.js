@@ -28,12 +28,17 @@ module.exports.addTests = ({testRunner, product, puppeteer}) => testRunner.descr
     toBeGolden: GoldenUtils.compare.bind(null, GOLDEN_DIR, OUTPUT_DIR)
   });
 
-  beforeAll(state => {
+
+  beforeAll(async state => {
     state.defaultBrowserOptions = {
       handleSIGINT: false,
-      dumpio: (process.env.DUMPIO || 'false').trim().toLowerCase() === 'true',
+      executablePath: product === 'chromium' ? process.env.CHROME : process.env.FFOX,
+      dumpio: !!process.env.DUMPIO,
       args: product === 'chromium' ? ['--no-sandbox'] : [],
     };
+    if (product === 'firefox' && state.defaultBrowserOptions.executablePath) {
+      await require('../misc/install-preferences')(state.defaultBrowserOptions.executablePath);
+    }
   });
   afterAll(state => {
     state.defaultBrowserOptions = undefined;
