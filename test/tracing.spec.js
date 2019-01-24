@@ -16,10 +16,8 @@
 
 const fs = require('fs');
 const path = require('path');
-const utils = require('./utils');
-const puppeteer = utils.requireRoot('index');
 
-module.exports.addTests = function({testRunner, expect, defaultBrowserOptions}) {
+module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
