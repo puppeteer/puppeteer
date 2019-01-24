@@ -112,13 +112,13 @@ function checkSorting(doc) {
  */
 function filterJSDocumentation(jsSources, jsDocumentation) {
   const apijs = jsSources.find(source => source.name() === 'api.js');
-  if (!apijs)
-    throw new Error('Failed to find "api.js" file that declares public API classes');
-  const includedClasses = new Set(Object.keys(require(apijs.filePath())));
+  let includedClasses = null;
+  if (apijs)
+    includedClasses = new Set(Object.keys(require(apijs.filePath())));
   // Filter private classes and methods.
   const classes = [];
   for (const cls of jsDocumentation.classesArray) {
-    if (!includedClasses.has(cls.name))
+    if (includedClasses && !includedClasses.has(cls.name))
       continue;
     const members = cls.membersArray.filter(member => !EXCLUDE_PROPERTIES.has(`${cls.name}.${member.name}`));
     classes.push(new Documentation.Class(cls.name, members));
