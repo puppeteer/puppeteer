@@ -1,26 +1,25 @@
-From fb96032ad20cb0dc5fbabe52a80d13d6e6808bb8 Mon Sep 17 00:00:00 2001
+From 5082f80b83290be204cd80124d292d1c563d2d13 Mon Sep 17 00:00:00 2001
 From: Andrey Lushnikov <lushnikov@chromium.org>
-Date: Tue, 27 Nov 2018 13:37:12 -0800
-Subject: [PATCH 1/3] Introduce nsIWebProgressListener2::onFrameLocationChange
- event
+Date: Thu, 24 Jan 2019 11:13:22 -0500
+Subject: [PATCH] Introduce nsIWebProgressListener2::onFrameLocationChange
 
 The event is fired when subframes commit navigation.
 Juggler uses this event to track same-document iframe navigations.
 ---
  docshell/base/nsDocShell.cpp                  |  1 +
- .../statusfilter/nsBrowserStatusFilter.cpp    | 10 ++++++++
- uriloader/base/nsDocLoader.cpp                | 20 ++++++++++++++++
+ .../statusfilter/nsBrowserStatusFilter.cpp    |  8 +++++++
+ uriloader/base/nsDocLoader.cpp                | 18 +++++++++++++++
  uriloader/base/nsDocLoader.h                  |  5 ++++
  uriloader/base/nsIWebProgress.idl             |  7 +++++-
  uriloader/base/nsIWebProgressListener2.idl    | 23 +++++++++++++++++++
- 6 files changed, 65 insertions(+), 1 deletion(-)
+ 6 files changed, 61 insertions(+), 1 deletion(-)
 
 diff --git a/docshell/base/nsDocShell.cpp b/docshell/base/nsDocShell.cpp
-index ea0926732..3f738d39c 100644
+index ef2e46b33a..31471e3465 100644
 --- a/docshell/base/nsDocShell.cpp
 +++ b/docshell/base/nsDocShell.cpp
-@@ -1349,6 +1349,7 @@ nsDocShell::SetCurrentURI(nsIURI* aURI, nsIRequest* aRequest,
-     mLSHE->GetIsSubFrame(&isSubFrame);
+@@ -1198,6 +1198,7 @@ bool nsDocShell::SetCurrentURI(nsIURI* aURI, nsIRequest* aRequest,
+     isSubFrame = mLSHE->GetIsSubFrame();
    }
  
 +  FireOnFrameLocationChange(this, aRequest, aURI, aLocationFlags);
@@ -28,20 +27,18 @@ index ea0926732..3f738d39c 100644
      /*
       * We don't want to send OnLocationChange notifications when
 diff --git a/toolkit/components/statusfilter/nsBrowserStatusFilter.cpp b/toolkit/components/statusfilter/nsBrowserStatusFilter.cpp
-index c4d04dcc4..bb9e40cca 100644
+index 61fcfef258..264f9c1e61 100644
 --- a/toolkit/components/statusfilter/nsBrowserStatusFilter.cpp
 +++ b/toolkit/components/statusfilter/nsBrowserStatusFilter.cpp
-@@ -188,6 +188,16 @@ nsBrowserStatusFilter::OnStateChange(nsIWebProgress *aWebProgress,
-     return NS_OK;
+@@ -170,6 +170,14 @@ nsBrowserStatusFilter::OnStateChange(nsIWebProgress *aWebProgress,
+   return NS_OK;
  }
  
-+
 +NS_IMETHODIMP
 +nsBrowserStatusFilter::OnFrameLocationChange(nsIWebProgress *aWebProgress,
 +                                             nsIRequest *aRequest,
 +                                             nsIURI *aLocation,
-+                                             uint32_t aFlags)
-+{
++                                             uint32_t aFlags) {
 +  return NS_OK;
 +}
 +
@@ -49,19 +46,17 @@ index c4d04dcc4..bb9e40cca 100644
  nsBrowserStatusFilter::OnProgressChange(nsIWebProgress *aWebProgress,
                                          nsIRequest *aRequest,
 diff --git a/uriloader/base/nsDocLoader.cpp b/uriloader/base/nsDocLoader.cpp
-index 524681ad8..68d3f976c 100644
+index a3bc24e603..67b3d3eaeb 100644
 --- a/uriloader/base/nsDocLoader.cpp
 +++ b/uriloader/base/nsDocLoader.cpp
-@@ -1330,6 +1330,26 @@ nsDocLoader::FireOnLocationChange(nsIWebProgress* aWebProgress,
+@@ -1252,6 +1252,24 @@ void nsDocLoader::FireOnLocationChange(nsIWebProgress* aWebProgress,
    }
  }
  
-+void
-+nsDocLoader::FireOnFrameLocationChange(nsIWebProgress* aWebProgress,
++void nsDocLoader::FireOnFrameLocationChange(nsIWebProgress* aWebProgress,
 +                                       nsIRequest* aRequest,
 +                                       nsIURI *aUri,
-+                                       uint32_t aFlags)
-+{
++                                       uint32_t aFlags) {
 +  NOTIFY_LISTENERS(nsIWebProgress::NOTIFY_FRAME_LOCATION,
 +    nsCOMPtr<nsIWebProgressListener2> listener2 =
 +      do_QueryReferent(info.mWeakListener);
@@ -76,27 +71,27 @@ index 524681ad8..68d3f976c 100644
 +  }
 +}
 +
- void
- nsDocLoader::FireOnStatusChange(nsIWebProgress* aWebProgress,
-                                 nsIRequest* aRequest,
+ void nsDocLoader::FireOnStatusChange(nsIWebProgress* aWebProgress,
+                                      nsIRequest* aRequest, nsresult aStatus,
+                                      const char16_t* aMessage) {
 diff --git a/uriloader/base/nsDocLoader.h b/uriloader/base/nsDocLoader.h
-index 2dc1d0cae..05f8b2877 100644
+index 45f0d3d88e..7848878b70 100644
 --- a/uriloader/base/nsDocLoader.h
 +++ b/uriloader/base/nsDocLoader.h
-@@ -167,6 +167,11 @@ protected:
-                               nsIURI *aUri,
-                               uint32_t aFlags);
+@@ -153,6 +153,11 @@ class nsDocLoader : public nsIDocumentLoader,
+   void FireOnLocationChange(nsIWebProgress* aWebProgress, nsIRequest* aRequest,
+                             nsIURI* aUri, uint32_t aFlags);
  
-+    void FireOnFrameLocationChange(nsIWebProgress* aWebProgress,
-+                              nsIRequest* aRequest,
-+                              nsIURI *aUri,
-+                              uint32_t aFlags);
++  void FireOnFrameLocationChange(nsIWebProgress* aWebProgress,
++                               nsIRequest* aRequest,
++                               nsIURI *aUri,
++                               uint32_t aFlags);
 +
-     MOZ_MUST_USE bool RefreshAttempted(nsIWebProgress* aWebProgress,
-                             nsIURI *aURI,
-                             int32_t aDelay,
+   MOZ_MUST_USE bool RefreshAttempted(nsIWebProgress* aWebProgress, nsIURI* aURI,
+                                      int32_t aDelay, bool aSameURI);
+ 
 diff --git a/uriloader/base/nsIWebProgress.idl b/uriloader/base/nsIWebProgress.idl
-index 0549f32e1..3078e35d7 100644
+index 0549f32e1e..3078e35d7a 100644
 --- a/uriloader/base/nsIWebProgress.idl
 +++ b/uriloader/base/nsIWebProgress.idl
 @@ -84,17 +84,22 @@ interface nsIWebProgress : nsISupports
@@ -124,7 +119,7 @@ index 0549f32e1..3078e35d7 100644
    /**
     * Registers a listener to receive web progress events.
 diff --git a/uriloader/base/nsIWebProgressListener2.idl b/uriloader/base/nsIWebProgressListener2.idl
-index 87701f8d2..8a69e6b29 100644
+index 87701f8d2c..ae1aa85c01 100644
 --- a/uriloader/base/nsIWebProgressListener2.idl
 +++ b/uriloader/base/nsIWebProgressListener2.idl
 @@ -66,4 +66,27 @@ interface nsIWebProgressListener2 : nsIWebProgressListener {
@@ -151,9 +146,9 @@ index 87701f8d2..8a69e6b29 100644
 +   *        the location has changed.
 +   */
 +  void onFrameLocationChange(in nsIWebProgress aWebProgress,
-+                        in nsIRequest aRequest,
-+                        in nsIURI aLocation,
-+                        [optional] in unsigned long aFlags);
++                             in nsIRequest aRequest,
++                             in nsIURI aLocation,
++                             [optional] in unsigned long aFlags);
  };
 -- 
 2.19.0.605.g01d371f741-goog

@@ -34,11 +34,12 @@ class ScrollbarManager {
   _setCustomScrollbars(customScrollbars) {
     if (this._customScrollbars === customScrollbars)
       return;
+    const windowUtils = this._docShell.domWindow.windowUtils;
     if (this._customScrollbars)
-      this._docShell.domWindow.windowUtils.removeSheet(this._customScrollbars, this._docShell.domWindow.AGENT_SHEET);
+      windowUtils.removeSheet(this._customScrollbars, windowUtils.AGENT_SHEET);
     this._customScrollbars = customScrollbars;
     if (this._customScrollbars)
-      this._docShell.domWindow.windowUtils.loadSheet(this._customScrollbars, this._docShell.domWindow.AGENT_SHEET);
+      windowUtils.loadSheet(this._customScrollbars, windowUtils.AGENT_SHEET);
   }
 
   dispose() {
@@ -48,8 +49,12 @@ class ScrollbarManager {
 
   _onDOMWindowCreated(event) {
     const docShell = event.target.ownerGlobal.docShell;
-    if (this._customScrollbars)
-      docShell.domWindow.windowUtils.loadSheet(this._customScrollbars, docShell.domWindow.AGENT_SHEET);
+    if (docShell === this._docShell)
+      return;
+    const windowUtils = docShell.domWindow.windowUtils;
+    if (this._customScrollbars) {
+      windowUtils.loadSheet(this._customScrollbars, windowUtils.AGENT_SHEET);
+    }
   }
 }
 
