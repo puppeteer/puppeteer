@@ -322,6 +322,10 @@ module.exports.addTests = function({testRunner, expect, product}) {
       expect(await waitForSelector).toBe(true);
       expect(divRemoved).toBe(true);
     });
+    it('should return null if waiting to hide non-existing element', async({page, server}) => {
+      const handle = await page.waitForSelector('non-existing', { hidden: true });
+      expect(handle).toBe(null);
+    });
     it('should respect timeout', async({page, server}) => {
       let error = null;
       await page.waitForSelector('div', {timeout: 10}).catch(e => error = e);
