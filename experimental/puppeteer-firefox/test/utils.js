@@ -19,10 +19,10 @@ const path = require('path');
 
 const utils = module.exports = {
   /**
-   * @param {!Page} page
+   * @param {Page} page
    * @param {string} frameId
    * @param {string} url
-   * @return {!Puppeteer.Frame}
+   * @return {Puppeteer.Frame}
    */
   attachFrame: async function(page, frameId, url) {
     await page.evaluate(attachFrame, frameId, url);
@@ -37,7 +37,7 @@ const utils = module.exports = {
   },
 
   /**
-   * @param {!Page} page
+   * @param {Page} page
    * @param {string} frameId
    */
   detachFrame: async function(page, frameId) {
@@ -50,7 +50,7 @@ const utils = module.exports = {
   },
 
   /**
-   * @param {!Page} page
+   * @param {Page} page
    * @param {string} frameId
    * @param {string} url
    */
@@ -65,9 +65,9 @@ const utils = module.exports = {
   },
 
   /**
-   * @param {!Frame} frame
+   * @param {Frame} frame
    * @param {string=} indentation
-   * @return {!Array<string>}
+   * @return {Array<string>}
    */
   dumpFrames: function(frame, indentation) {
     indentation = indentation || '';
@@ -81,9 +81,9 @@ const utils = module.exports = {
   },
 
   /**
-   * @param {!EventEmitter} emitter
+   * @param {EventEmitter} emitter
    * @param {string} eventName
-   * @return {!Promise<!Object>}
+   * @return {Promise<Object>}
    */
   waitEvent: function(emitter, eventName, predicate = () => true) {
     return new Promise(fulfill => {

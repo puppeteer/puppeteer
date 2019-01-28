@@ -81,7 +81,7 @@ module.exports.runCommands = function(sources, version) {
 };
 
 /**
- * @param {{name: string, from: number, to: number, source: !Source}} command
+ * @param {{name: string, from: number, to: number, source: Source}} command
  * @param {string} editText
  * @return {boolean}
  */

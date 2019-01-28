@@ -19,9 +19,9 @@ const commonmark = require('commonmark');
 
 class MDOutline {
   /**
-   * @param {!Page} page
+   * @param {Page} page
    * @param {string} text
-   * @return {!MDOutline}
+   * @return {MDOutline}
    */
   static async create(page, text) {
     // Render markdown as HTML.
@@ -185,9 +185,9 @@ class MDOutline {
 }
 
 /**
- * @param {!Page} page
- * @param {!Array<!Source>} sources
- * @return {!Promise<{documentation: !Documentation, errors: !Array<string>}>}
+ * @param {Page} page
+ * @param {Array<Source>} sources
+ * @return {Promise<{documentation: Documentation, errors: Array<string>}>}
  */
 module.exports = async function(page, sources) {
   const classes = [];

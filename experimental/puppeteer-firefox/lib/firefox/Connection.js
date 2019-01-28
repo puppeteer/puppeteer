@@ -21,13 +21,13 @@ const EventEmitter = require('events');
  */
 class Connection extends EventEmitter {
   /**
-   * @param {!Puppeteer.ConnectionTransport} transport
+   * @param {Puppeteer.ConnectionTransport} transport
    * @param {number=} delay
    */
   constructor(transport, delay = 0) {
     super();
     this._lastId = 0;
-    /** @type {!Map<number, {resolve: function, reject: function, error: !Error, method: string}>}*/
+    /** @type {Map<number, {resolve: function, reject: function, error: Error, method: string}>}*/
     this._callbacks = new Map();
     this._delay = delay;
 
@@ -39,8 +39,8 @@ class Connection extends EventEmitter {
 
   /**
    * @param {string} method
-   * @param {!Object=} params
-   * @return {!Promise<?Object>}
+   * @param {Object=} params
+   * @return {Promise<?Object>}
    */
   send(method, params = {}) {
     const id = ++this._lastId;
@@ -98,10 +98,10 @@ Connection.Events = {
 };
 
 /**
- * @param {!Error} error
+ * @param {Error} error
  * @param {string} method
  * @param {{error: {message: string, data: any}}} object
- * @return {!Error}
+ * @return {Error}
  */
 function createProtocolError(error, method, object) {
   let message = `Protocol error (${method}): ${object.error.message}`;
@@ -111,9 +111,9 @@ function createProtocolError(error, method, object) {
 }
 
 /**
- * @param {!Error} error
+ * @param {Error} error
  * @param {string} message
- * @return {!Error}
+ * @return {Error}
  */
 function rewriteError(error, message) {
   error.message = message;

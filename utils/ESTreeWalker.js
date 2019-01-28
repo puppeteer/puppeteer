@@ -7,8 +7,8 @@
  */
 class ESTreeWalker {
   /**
-   * @param {function(!ESTree.Node):(!Object|undefined)} beforeVisit
-   * @param {function(!ESTree.Node)=} afterVisit
+   * @param {function(ESTree.Node):(Object|undefined)} beforeVisit
+   * @param {function(ESTree.Node)=} afterVisit
    */
   constructor(beforeVisit, afterVisit) {
     this._beforeVisit = beforeVisit;
@@ -16,14 +16,14 @@ class ESTreeWalker {
   }
 
   /**
-   * @param {!ESTree.Node} ast
+   * @param {ESTree.Node} ast
    */
   walk(ast) {
     this._innerWalk(ast, null);
   }
 
   /**
-   * @param {!ESTree.Node} node
+   * @param {ESTree.Node} node
    * @param {?ESTree.Node} parent
    */
   _innerWalk(node, parent) {
@@ -41,7 +41,7 @@ class ESTreeWalker {
       return;
 
     if (node.type === 'TemplateLiteral') {
-      const templateLiteral = /** @type {!ESTree.TemplateLiteralNode} */ (node);
+      const templateLiteral = /** @type {ESTree.TemplateLiteralNode} */ (node);
       const expressionsLength = templateLiteral.expressions.length;
       for (let i = 0; i < expressionsLength; ++i) {
         this._innerWalk(templateLiteral.quasis[i], templateLiteral);
@@ -62,7 +62,7 @@ class ESTreeWalker {
   }
 
   /**
-   * @param {!Array.<!ESTree.Node>} nodeArray
+   * @param {Array.<ESTree.Node>} nodeArray
    * @param {?ESTree.Node} parentNode
    */
   _walkArray(nodeArray, parentNode) {
@@ -71,10 +71,10 @@ class ESTreeWalker {
   }
 }
 
-/** @typedef {!Object} ESTreeWalker.SkipSubtree */
+/** @typedef {Object} ESTreeWalker.SkipSubtree */
 ESTreeWalker.SkipSubtree = {};
 
-/** @enum {!Array.<string>} */
+/** @enum {Array.<string>} */
 ESTreeWalker._walkOrder = {
   'AwaitExpression': ['argument'],
   'ArrayExpression': ['elements'],

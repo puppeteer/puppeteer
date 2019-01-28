@@ -21,7 +21,7 @@ const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ?
 /**
  * @param {Map<string, boolean>} apiCoverage
  * @param {string} className
- * @param {!Object} classType
+ * @param {Object} classType
  */
 function traceAPICoverage(apiCoverage, className, classType) {
   className = className.substring(0, 1).toLowerCase() + className.substring(1);
@@ -78,10 +78,10 @@ const utils = module.exports = {
   },
 
   /**
-   * @param {!Page} page
+   * @param {Page} page
    * @param {string} frameId
    * @param {string} url
-   * @return {!Puppeteer.Frame}
+   * @return {Puppeteer.Frame}
    */
   attachFrame: async function(page, frameId, url) {
     const handle = await page.evaluateHandle(attachFrame, frameId, url);
@@ -98,7 +98,7 @@ const utils = module.exports = {
   },
 
   /**
-   * @param {!Page} page
+   * @param {Page} page
    * @param {string} frameId
    */
   detachFrame: async function(page, frameId) {
@@ -111,7 +111,7 @@ const utils = module.exports = {
   },
 
   /**
-   * @param {!Page} page
+   * @param {Page} page
    * @param {string} frameId
    * @param {string} url
    */
@@ -126,7 +126,7 @@ const utils = module.exports = {
   },
 
   /**
-   * @param {!Frame} frame
+   * @param {Frame} frame
    * @param {string=} indentation
    * @return {string}
    */
@@ -139,9 +139,9 @@ const utils = module.exports = {
   },
 
   /**
-   * @param {!EventEmitter} emitter
+   * @param {EventEmitter} emitter
    * @param {string} eventName
-   * @return {!Promise<!Object>}
+   * @return {Promise<Object>}
    */
   waitEvent: function(emitter, eventName, predicate = () => true) {
     return new Promise(fulfill => {

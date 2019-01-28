@@ -97,7 +97,7 @@ function existsAsync(filePath) {
 class BrowserFetcher {
   /**
    * @param {string} projectRoot
-   * @param {!BrowserFetcher.Options=} options
+   * @param {BrowserFetcher.Options=} options
    */
   constructor(projectRoot, options = {}) {
     this._product = (options.product || 'chromium').toLowerCase();
@@ -127,7 +127,7 @@ class BrowserFetcher {
 
   /**
    * @param {string} revision
-   * @return {!Promise<boolean>}
+   * @return {Promise<boolean>}
    */
   canDownload(revision) {
     const url = downloadURL(this._product, this._platform, this._downloadHost, revision);
@@ -146,7 +146,7 @@ class BrowserFetcher {
   /**
    * @param {string} revision
    * @param {?function(number, number)} progressCallback
-   * @return {!Promise<!BrowserFetcher.RevisionInfo>}
+   * @return {Promise<BrowserFetcher.RevisionInfo>}
    */
   async download(revision, progressCallback) {
     const url = downloadURL(this._product, this._platform, this._downloadHost, revision);
@@ -170,7 +170,7 @@ class BrowserFetcher {
   }
 
   /**
-   * @return {!Promise<!Array<string>>}
+   * @return {Promise<Array<string>>}
    */
   async localRevisions() {
     if (!await existsAsync(this._downloadsFolder))
@@ -190,7 +190,7 @@ class BrowserFetcher {
 
   /**
    * @param {string} revision
-   * @return {!BrowserFetcher.RevisionInfo}
+   * @return {BrowserFetcher.RevisionInfo}
    */
   revisionInfo(revision) {
     const folderPath = this._getFolderPath(revision);
@@ -249,7 +249,7 @@ function parseFolderPath(folderPath) {
  * @param {string} url
  * @param {string} destinationPath
  * @param {?function(number, number)} progressCallback
- * @return {!Promise}
+ * @return {Promise}
  */
 function downloadFile(url, destinationPath, progressCallback) {
   let fulfill, reject;
@@ -286,7 +286,7 @@ function downloadFile(url, destinationPath, progressCallback) {
 /**
  * @param {string} zipPath
  * @param {string} folderPath
- * @return {!Promise<?Error>}
+ * @return {Promise<?Error>}
  */
 function extractZip(zipPath, folderPath) {
   return new Promise((fulfill, reject) => extract(zipPath, {dir: folderPath}, err => {

@@ -107,7 +107,7 @@ class BrowserHandler {
 }
 
 /**
- * @return {!Promise<Ci.nsIDOMChromeWindow>}
+ * @return {Promise<Ci.nsIDOMChromeWindow>}
  */
 async function waitForBrowserWindow() {
   const windowsIt = Services.wm.getEnumerator('navigator:browser');
@@ -130,8 +130,8 @@ async function waitForBrowserWindow() {
   return promise;
 
   /**
-   * @param {!Ci.nsIDOMChromeWindow} window
-   * @return {!Promise<Ci.nsIDOMChromeWindow>}
+   * @param {Ci.nsIDOMChromeWindow} window
+   * @return {Promise<Ci.nsIDOMChromeWindow>}
    */
   function waitForWindowLoaded(window) {
     if (window.document.readyState === 'complete')

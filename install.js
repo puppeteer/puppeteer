@@ -67,8 +67,8 @@ browserFetcher.download(revisionInfo.revision, onProgress)
     .catch(onError);
 
 /**
- * @param {!Array<string>}
- * @return {!Promise}
+ * @param {Array<string>}
+ * @return {Promise}
  */
 function onSuccess(localRevisions) {
   console.log('Chromium downloaded to ' + revisionInfo.folderPath);
@@ -79,7 +79,7 @@ function onSuccess(localRevisions) {
 }
 
 /**
- * @param {!Error} error
+ * @param {Error} error
  */
 function onError(error) {
   console.error(`ERROR: Failed to download Chromium r${revision}! Set "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" env variable to skip download.`);

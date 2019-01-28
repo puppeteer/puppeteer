@@ -31,14 +31,14 @@ const colors = {
 
 class Table {
   /**
-     * @param {!Array<number>} columnWidths
+     * @param {Array<number>} columnWidths
      */
   constructor(columnWidths) {
     this.widths = columnWidths;
   }
 
   /**
-     * @param {!Array<string>} values
+     * @param {Array<string>} values
      */
   drawRow(values) {
     assert(values.length === this.widths.length);
@@ -90,7 +90,7 @@ async function checkRangeAvailability(fromRevision, toRevision) {
 }
 
 /**
- * @param {!Table} table
+ * @param {Table} table
  * @param {string} name
  * @param {number} revision
  */
@@ -109,7 +109,7 @@ async function checkAndDrawRevisionAvailability(table, name, revision) {
 
 /**
  * @param {string} url
- * @return {!Promise<?string>}
+ * @return {Promise<?string>}
  */
 function fetch(url) {
   let resolve;

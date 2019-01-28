@@ -89,7 +89,7 @@ class Source {
 
   /**
    * @param {string} filePath
-   * @return {!Promise<Source>}
+   * @return {Promise<Source>}
    */
   static async readFile(filePath) {
     filePath = path.resolve(filePath);
@@ -100,7 +100,7 @@ class Source {
   /**
    * @param {string} dirPath
    * @param {string=} extension
-   * @return {!Promise<!Array<!Source>>}
+   * @return {Promise<Array<Source>>}
    */
   static async readdir(dirPath, extension = '') {
     const fileNames = await readdirAsync(dirPath);
@@ -112,12 +112,12 @@ module.exports = Source;
 
 /**
  * @param {function(?)} nodeFunction
- * @return {function(?):!Promise<?>}
+ * @return {function(?):Promise<?>}
  */
 function promisify(nodeFunction) {
   /**
-   * @param {!Array<?>} options
-   * @return {!Promise<?>}
+   * @param {Array<?>} options
+   * @return {Promise<?>}
    */
   return function(...options) {
     return new Promise(function(fulfill, reject) {

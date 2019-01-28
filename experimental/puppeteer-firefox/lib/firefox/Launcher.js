@@ -37,7 +37,7 @@ const FIREFOX_PROFILE_PATH = path.join(os.tmpdir(), 'puppeteer_firefox_profile-'
 class Launcher {
   /**
    * @param {Object} options
-   * @return {!Promise<!Browser>}
+   * @return {Promise<Browser>}
    */
   async launch(options = {}) {
     const {
@@ -150,9 +150,9 @@ class Launcher {
 }
 
 /**
- * @param {!Puppeteer.ChildProcess} firefoxProcess
+ * @param {Puppeteer.ChildProcess} firefoxProcess
  * @param {number} timeout
- * @return {!Promise<string>}
+ * @return {Promise<string>}
  */
 function waitForWSEndpoint(firefoxProcess, timeout) {
   return new Promise((resolve, reject) => {
@@ -167,7 +167,7 @@ function waitForWSEndpoint(firefoxProcess, timeout) {
     const timeoutId = timeout ? setTimeout(onTimeout, timeout) : 0;
 
     /**
-     * @param {!Error=} error
+     * @param {Error=} error
      */
     function onClose(error) {
       cleanup();

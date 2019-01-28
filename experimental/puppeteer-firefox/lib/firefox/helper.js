@@ -21,7 +21,7 @@ const {TimeoutError} = require('../Errors');
 class Helper {
   /**
    * @param {Function|string} fun
-   * @param {!Array<*>} args
+   * @param {Array<*>} args
    * @return {string}
    */
   static evaluationString(fun, ...args) {
@@ -60,7 +60,7 @@ class Helper {
   }
 
   /**
-   * @param {!Object} obj
+   * @param {Object} obj
    * @return {boolean}
    */
   static isNumber(obj) {
@@ -68,7 +68,7 @@ class Helper {
   }
 
   /**
-   * @param {!Object} obj
+   * @param {Object} obj
    * @return {boolean}
    */
   static isString(obj) {
@@ -76,10 +76,10 @@ class Helper {
   }
 
   /**
-   * @param {!NodeJS.EventEmitter} emitter
+   * @param {NodeJS.EventEmitter} emitter
    * @param {(string|symbol)} eventName
    * @param {function(?)} handler
-   * @return {{emitter: !NodeJS.EventEmitter, eventName: (string|symbol), handler: function(?)}}
+   * @return {{emitter: NodeJS.EventEmitter, eventName: (string|symbol), handler: function(?)}}
    */
   static addEventListener(emitter, eventName, handler) {
     emitter.on(eventName, handler);
@@ -87,7 +87,7 @@ class Helper {
   }
 
   /**
-   * @param {!Array<{emitter: !NodeJS.EventEmitter, eventName: (string|symbol), handler: function(?)}>} listeners
+   * @param {Array<{emitter: NodeJS.EventEmitter, eventName: (string|symbol), handler: function(?)}>} listeners
    */
   static removeEventListeners(listeners) {
     for (const listener of listeners)
@@ -97,10 +97,10 @@ class Helper {
 
   /**
    * @template T
-   * @param {!Promise<T>} promise
+   * @param {Promise<T>} promise
    * @param {string} taskName
    * @param {number} timeout
-   * @return {!Promise<T>}
+   * @return {Promise<T>}
    */
   static async waitWithTimeout(promise, taskName, timeout) {
     let reject;

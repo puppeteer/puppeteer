@@ -53,7 +53,7 @@ const asyncToGenerator = fn => {
  */
 function transformAsyncFunctions(text) {
   /**
-   * @type {!Array<{from: number, to: number, replacement: string}>}
+   * @type {Array<{from: number, to: number, replacement: string}>}
    */
   const edits = [];
 

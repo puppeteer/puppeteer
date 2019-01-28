@@ -117,7 +117,7 @@ class Suite {
     this.name = name;
     this.fullName = (parentSuite ? parentSuite.fullName + ' ' + name : name).trim();
     this.declaredMode = declaredMode;
-    /** @type {!Array<(!Test|!Suite)>} */
+    /** @type {Array<(Test|Suite)>} */
     this.children = [];
 
     this.beforeAll = null;

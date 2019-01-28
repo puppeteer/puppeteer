@@ -4,7 +4,7 @@ const Documentation = require('./Documentation');
 module.exports = checkSources;
 
 /**
- * @param {!Array<!import('../Source')>} sources
+ * @param {Array<import('../Source')>} sources
  */
 function checkSources(sources) {
   // special treatment for Events.js
@@ -26,9 +26,9 @@ function checkSources(sources) {
   });
   const checker = program.getTypeChecker();
   const sourceFiles = program.getSourceFiles();
-  /** @type {!Array<!Documentation.Class>} */
+  /** @type {Array<Documentation.Class>} */
   const classes = [];
-  /** @type {!Map<string, string>} */
+  /** @type {Map<string, string>} */
   const inheritance = new Map();
   sourceFiles.filter(x => !x.fileName.includes('node_modules')).map(x => visit(x));
   const errors = [];
@@ -37,9 +37,9 @@ function checkSources(sources) {
   return {errors, documentation};
 
   /**
-   * @param {!Array<!Documentation.Class>} classes
-   * @param {!Map<string, string>} inheritance
-   * @return {!Array<!Documentation.Class>}
+   * @param {Array<Documentation.Class>} classes
+   * @param {Map<string, string>} inheritance
+   * @return {Array<Documentation.Class>}
    */
   function recreateClassesWithInheritance(classes, inheritance) {
     const classesByName = new Map(classes.map(cls => [cls.name, cls]));
@@ -60,7 +60,7 @@ function checkSources(sources) {
 
 
   /**
-   * @param {!ts.Node} node
+   * @param {ts.Node} node
    */
   function visit(node) {
     if (ts.isClassDeclaration(node) || ts.isClassExpression(node)) {
@@ -107,7 +107,7 @@ function checkSources(sources) {
   }
 
   /**
-   * @param {!ts.ObjectType} type
+   * @param {ts.ObjectType} type
    */
   function isRegularObject(type) {
     if (type.isIntersection())
@@ -124,8 +124,8 @@ function checkSources(sources) {
   }
 
   /**
-   * @param {!ts.Type} type
-   * @return {!Documentation.Type}
+   * @param {ts.Type} type
+   * @return {Documentation.Type}
    */
   function serializeType(type, circular = []) {
     let typeName = checker.typeToString(type);
@@ -163,11 +163,11 @@ function checkSources(sources) {
 
   /**
    * @param {string} className
-   * @param {!ts.Symbol} symbol
+   * @param {ts.Symbol} symbol
    * @return {}
    */
   function serializeClass(className, symbol, node) {
-    /** @type {!Array<!Documentation.Member>} */
+    /** @type {Array<Documentation.Member>} */
     const members = classEvents.get(className) || [];
 
     for (const [name, member] of symbol.members || []) {
@@ -186,7 +186,7 @@ function checkSources(sources) {
 
   /**
    * @param {string} name
-   * @param {!ts.Signature} signature
+   * @param {ts.Signature} signature
    */
   function serializeSignature(name, signature) {
     const parameters = signature.parameters.map(s => serializeSymbol(s));
@@ -196,7 +196,7 @@ function checkSources(sources) {
 
   /**
    * @param {string} name
-   * @param {!ts.Type} type
+   * @param {ts.Type} type
    */
   function serializeProperty(name, type) {
     return Documentation.Member.createProperty(name, serializeType(type));

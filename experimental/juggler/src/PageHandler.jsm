@@ -168,7 +168,7 @@ class PageHandler {
 
   /**
    * @param {{functionText: String, frameId: String}} options
-   * @return {!Promise<*>}
+   * @return {Promise<*>}
    */
   async evaluate(options) {
     return await this._contentSession.send('evaluate', options);
@@ -247,7 +247,7 @@ class ContentSession {
   /**
    * @param {string} methodName
    * @param {*} params
-   * @return {!Promise<*>}
+   * @return {Promise<*>}
    */
   send(methodName, params) {
     const id = ++this._messageId;

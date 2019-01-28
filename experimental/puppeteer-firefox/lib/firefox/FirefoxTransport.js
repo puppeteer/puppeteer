@@ -16,13 +16,13 @@
 const {Socket} = require('net');
 
 /**
- * @implements {!Puppeteer.ConnectionTransport}
+ * @implements {Puppeteer.ConnectionTransport}
  * @internal
  */
 class FirefoxTransport {
   /**
    * @param {number} port
-   * @return {!Promise<!FirefoxTransport>}
+   * @return {Promise<FirefoxTransport>}
    */
   static async create(port) {
     const socket = new Socket();
@@ -43,7 +43,7 @@ class FirefoxTransport {
   }
 
   /**
-   * @param {!Socket} socket
+   * @param {Socket} socket
    */
   constructor(socket) {
     this._socket = socket;

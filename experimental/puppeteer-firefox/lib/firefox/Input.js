@@ -153,7 +153,7 @@ class Keyboard {
 
   /**
    * @param {string} text
-   * @param {!{delay?: number}=} options
+   * @param {{delay?: number}=} options
    */
   async type(text, options = {}) {
     const {delay = null} = options;
@@ -169,7 +169,7 @@ class Keyboard {
 
   /**
    * @param {string} key
-   * @param {!{delay?: number}=} options
+   * @param {{delay?: number}=} options
    */
   async press(key, options = {}) {
     const {delay = null} = options;
@@ -182,7 +182,7 @@ class Keyboard {
 
 class Mouse {
   /**
-   * @param {!Keyboard} keyboard
+   * @param {Keyboard} keyboard
    */
   constructor(client, keyboard) {
     this._client = client;
@@ -217,7 +217,7 @@ class Mouse {
   /**
    * @param {number} x
    * @param {number} y
-   * @param {!{delay?: number, button?: string, clickCount?: number}=} options
+   * @param {{delay?: number, button?: string, clickCount?: number}=} options
    */
   async click(x, y, options = {}) {
     const {delay = null} = options;
@@ -229,7 +229,7 @@ class Mouse {
   }
 
   /**
-   * @param {!{button?: string, clickCount?: number}=} options
+   * @param {{button?: string, clickCount?: number}=} options
    */
   async down(options = {}) {
     const {
@@ -267,7 +267,7 @@ class Mouse {
   }
 
   /**
-   * @param {!{button?: string, clickCount?: number}=} options
+   * @param {{button?: string, clickCount?: number}=} options
    */
   async up(options = {}) {
     const {

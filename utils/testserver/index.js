@@ -29,7 +29,7 @@ class TestServer {
   /**
    * @param {string} dirPath
    * @param {number} port
-   * @return {!TestServer}
+   * @return {TestServer}
    */
   static async create(dirPath, port) {
     const server = new TestServer(dirPath, port);
@@ -40,7 +40,7 @@ class TestServer {
   /**
    * @param {string} dirPath
    * @param {number} port
-   * @return {!TestServer}
+   * @return {TestServer}
    */
   static async createHTTPS(dirPath, port) {
     const server = new TestServer(dirPath, port, {
@@ -55,7 +55,7 @@ class TestServer {
   /**
    * @param {string} dirPath
    * @param {number} port
-   * @param {!Object=} sslOptions
+   * @param {Object=} sslOptions
    */
   constructor(dirPath, port, sslOptions) {
     if (sslOptions)
@@ -71,16 +71,16 @@ class TestServer {
     this._startTime = new Date();
     this._cachedPathPrefix = null;
 
-    /** @type {!Set<!net.Socket>} */
+    /** @type {Set<net.Socket>} */
     this._sockets = new Set();
 
-    /** @type {!Map<string, function(!IncomingMessage, !ServerResponse)>} */
+    /** @type {Map<string, function(IncomingMessage, ServerResponse)>} */
     this._routes = new Map();
-    /** @type {!Map<string, !{username:string, password:string}>} */
+    /** @type {Map<string, {username:string, password:string}>} */
     this._auths = new Map();
-    /** @type {!Map<string, string>} */
+    /** @type {Map<string, string>} */
     this._csp = new Map();
-    /** @type {!Map<string, !Promise>} */
+    /** @type {Map<string, Promise>} */
     this._requestSubscribers = new Map();
   }
 
@@ -129,7 +129,7 @@ class TestServer {
 
   /**
    * @param {string} path
-   * @param {function(!IncomingMessage, !ServerResponse)} handler
+   * @param {function(IncomingMessage, ServerResponse)} handler
    */
   setRoute(path, handler) {
     this._routes.set(path, handler);
@@ -148,7 +148,7 @@ class TestServer {
 
   /**
    * @param {string} path
-   * @return {!Promise<!IncomingMessage>}
+   * @return {Promise<IncomingMessage>}
    */
   waitForRequest(path) {
     let promise = this._requestSubscribers.get(path);
@@ -207,8 +207,8 @@ class TestServer {
   }
 
   /**
-   * @param {!IncomingMessage} request
-   * @param {!ServerResponse} response
+   * @param {IncomingMessage} request
+   * @param {ServerResponse} response
    * @param {string} pathName
    */
   serveFile(request, response, pathName) {

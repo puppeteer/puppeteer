@@ -50,8 +50,8 @@ browserFetcher.download(revisionInfo.revision, onProgress)
     .catch(onError);
 
 /**
- * @param {!Array<string>}
- * @return {!Promise}
+ * @param {Array<string>}
+ * @return {Promise}
  */
 function onSuccess(localRevisions) {
   console.log('Firefox downloaded to ' + revisionInfo.folderPath);
@@ -65,7 +65,7 @@ function onSuccess(localRevisions) {
 }
 
 /**
- * @param {!Error} error
+ * @param {Error} error
  */
 function onError(error) {
   console.error(`ERROR: Failed to download Firefox r${revision}!`);

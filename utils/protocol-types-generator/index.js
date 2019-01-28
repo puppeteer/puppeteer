@@ -81,14 +81,14 @@ export {}
 /**
  * @typedef {Object} Property
  * @property {string=} $ref
- * @property {!Array=} enum
+ * @property {Array=} enum
  * @property {string=} type
- * @property {!Property=} items
+ * @property {Property=} items
  * @property {string=} description
  */
 
 /**
- * @param {!Property} property
+ * @param {Property} property
  * @param {string=} domain
  */
 function typeOfProperty(property, domain) {

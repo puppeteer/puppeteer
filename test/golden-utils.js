@@ -32,9 +32,9 @@ const GoldenComparators = {
 
 /**
  * @param {?Object} actualBuffer
- * @param {!Buffer} expectedBuffer
- * @param {!string} mimeType
- * @return {?{diff: (!Object:undefined), errorMessage: (string|undefined)}}
+ * @param {Buffer} expectedBuffer
+ * @param {string} mimeType
+ * @return {?{diff: (Object:undefined), errorMessage: (string|undefined)}}
  */
 function compareImages(actualBuffer, expectedBuffer, mimeType) {
   if (!actualBuffer || !(actualBuffer instanceof Buffer))
@@ -54,8 +54,8 @@ function compareImages(actualBuffer, expectedBuffer, mimeType) {
 
 /**
  * @param {?Object} actual
- * @param {!Buffer} expectedBuffer
- * @return {?{diff: (!Object:undefined), errorMessage: (string|undefined)}}
+ * @param {Buffer} expectedBuffer
+ * @return {?{diff: (Object:undefined), errorMessage: (string|undefined)}}
  */
 function compareText(actual, expectedBuffer) {
   if (typeof actual !== 'string')
@@ -78,7 +78,7 @@ function compareText(actual, expectedBuffer) {
 /**
  * @param {?Object} actual
  * @param {string} goldenName
- * @return {!{pass: boolean, message: (undefined|string)}}
+ * @return {{pass: boolean, message: (undefined|string)}}
  */
 function compare(goldenPath, outputPath, actual, goldenName) {
   goldenPath = path.normalize(goldenPath);

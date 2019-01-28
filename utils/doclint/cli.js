@@ -31,7 +31,7 @@ run();
 async function run() {
   const startTime = Date.now();
 
-  /** @type {!Array<!Message>} */
+  /** @type {Array<Message>} */
   const messages = [];
   let changedFiles = false;
 

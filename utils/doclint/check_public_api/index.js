@@ -28,9 +28,9 @@ const EXCLUDE_PROPERTIES = new Set([
 ]);
 
 /**
- * @param {!Page} page
- * @param {!Array<!Source>} mdSources
- * @return {!Promise<!Array<!Message>>}
+ * @param {Page} page
+ * @param {Array<Source>} mdSources
+ * @return {Promise<Array<Message>>}
  */
 module.exports = async function lint(page, mdSources, jsSources) {
   const mdResult = await mdBuilder(page, mdSources);
@@ -53,8 +53,8 @@ module.exports = async function lint(page, mdSources, jsSources) {
 };
 
 /**
- * @param {!Documentation} doc
- * @return {!Array<string>}
+ * @param {Documentation} doc
+ * @return {Array<string>}
  */
 function checkSorting(doc) {
   const errors = [];
@@ -106,9 +106,9 @@ function checkSorting(doc) {
 }
 
 /**
- * @param {!Array<!Source>} jsSources
- * @param {!Documentation} jsDocumentation
- * @return {!Documentation}
+ * @param {Array<Source>} jsSources
+ * @param {Documentation} jsDocumentation
+ * @return {Documentation}
  */
 function filterJSDocumentation(jsSources, jsDocumentation) {
   const apijs = jsSources.find(source => source.name() === 'api.js');
@@ -127,8 +127,8 @@ function filterJSDocumentation(jsSources, jsDocumentation) {
 }
 
 /**
- * @param {!Documentation} doc
- * @return {!Array<string>}
+ * @param {Documentation} doc
+ * @return {Array<string>}
  */
 function checkDuplicates(doc) {
   const errors = [];
@@ -155,9 +155,9 @@ function checkDuplicates(doc) {
 }
 
 /**
- * @param {!Documentation} actual
- * @param {!Documentation} expected
- * @return {!Array<string>}
+ * @param {Documentation} actual
+ * @param {Documentation} expected
+ * @return {Array<string>}
  */
 function compareDocumentations(actual, expected) {
   const errors = [];
@@ -227,8 +227,8 @@ function compareDocumentations(actual, expected) {
 
   /**
    * @param {string} source
-   * @param {!Documentation.Member} actual
-   * @param {!Documentation.Member} expected
+   * @param {Documentation.Member} actual
+   * @param {Documentation.Member} expected
    */
   function checkProperty(source, actual, expected) {
     checkType(source + ' ' + actual.name, actual.type, expected.type);
@@ -236,8 +236,8 @@ function compareDocumentations(actual, expected) {
 
   /**
    * @param {string} source
-   * @param {!Documentation.Type} actual
-   * @param {!Documentation.Type} expected
+   * @param {Documentation.Type} actual
+   * @param {Documentation.Type} expected
    */
   function checkType(source, actual, expected) {
     // TODO(@JoelEinbinder): check functions and Serializable
@@ -264,9 +264,9 @@ function compareDocumentations(actual, expected) {
 }
 
 /**
- * @param {!Array<string>} actual
- * @param {!Array<string>} expected
- * @return {{extra: !Array<string>, missing: !Array<string>, equal: !Array<string>}}
+ * @param {Array<string>} actual
+ * @param {Array<string>} expected
+ * @return {{extra: Array<string>, missing: Array<string>, equal: Array<string>}}
  */
 function diff(actual, expected) {
   const N = actual.length;

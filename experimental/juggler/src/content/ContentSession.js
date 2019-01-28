@@ -7,8 +7,8 @@ const helper = new Helper();
 class ContentSession {
   /**
    * @param {string} sessionId
-   * @param {!ContentFrameMessageManager} messageManager
-   * @param {!FrameTree} frameTree
+   * @param {ContentFrameMessageManager} messageManager
+   * @param {FrameTree} frameTree
    */
   constructor(sessionId, messageManager, frameTree, scrollbarManager) {
     this._sessionId = sessionId;

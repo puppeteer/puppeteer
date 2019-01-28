@@ -4,7 +4,7 @@ const EventEmitter = require('events');
 
 class Browser extends EventEmitter {
   /**
-   * @param {!Puppeteer.Connection} connection
+   * @param {Puppeteer.Connection} connection
    * @param {?Puppeteer.Viewport} defaultViewport
    * @param {?Puppeteer.ChildProcess} process
    * @param {function():void} closeCallback
@@ -16,7 +16,7 @@ class Browser extends EventEmitter {
     this._process = process;
     this._closeCallback = closeCallback;
 
-    /** @type {!Map<string, ?Target>} */
+    /** @type {Map<string, ?Target>} */
     this._pageTargets = new Map();
 
     this._eventListeners = [
@@ -27,7 +27,7 @@ class Browser extends EventEmitter {
   }
 
   /**
-   * @return {!Promise<string>}
+   * @return {Promise<string>}
    */
   async userAgent() {
     const info = await this._connection.send('Browser.getInfo');
@@ -35,7 +35,7 @@ class Browser extends EventEmitter {
   }
 
   /**
-   * @return {!Promise<string>}
+   * @return {Promise<string>}
    */
   async version() {
     const info = await this._connection.send('Browser.getInfo');
@@ -50,9 +50,9 @@ class Browser extends EventEmitter {
   }
 
   /**
-   * @param {function(!Target):boolean} predicate
+   * @param {function(Target):boolean} predicate
    * @param {{timeout?: number}=} options
-   * @return {!Promise<!Target>}
+   * @return {Promise<Target>}
    */
   async waitForTarget(predicate, options = {}) {
     const {
@@ -75,7 +75,7 @@ class Browser extends EventEmitter {
     }
 
     /**
-     * @param {!Target} target
+     * @param {Target} target
      */
     function check(target) {
       if (predicate(target))
@@ -133,7 +133,7 @@ class Target {
   /**
    *
    * @param {*} connection
-   * @param {!Browser} browser
+   * @param {Browser} browser
    * @param {string} pageId
    * @param {string} url
    */
@@ -141,7 +141,7 @@ class Target {
     this._browser = browser;
     this._connection = connection;
     this._pageId = pageId;
-    /** @type {?Promise<!Page>} */
+    /** @type {?Promise<Page>} */
     this._pagePromise = null;
     this._url = url;
   }

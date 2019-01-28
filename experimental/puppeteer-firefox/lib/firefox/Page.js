@@ -30,7 +30,7 @@ class PageSession extends EventEmitter {
       this._connection.removeListener(eventName, listener[wrapperSymbol]);
     });
     this.on('newListener', (eventName, listener) => {
-      if (!listener[wrapperSymbol])
+      if (listener[wrapperSymbol])
         listener[wrapperSymbol] = wrapperListener.bind(null, listener);
       this._connection.on(eventName, listener[wrapperSymbol]);
     });
@@ -45,8 +45,8 @@ class PageSession extends EventEmitter {
 class Page extends EventEmitter {
   /**
    *
-   * @param {!Puppeteer.Connection} connection
-   * @param {!Puppeteer.Target} target
+   * @param {Puppeteer.Connection} connection
+   * @param {Puppeteer.Target} target
    * @param {string} pageId
    * @param {?Puppeteer.Viewport} defaultViewport
    */
@@ -60,8 +60,8 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {!PageSession} session
-   * @param {!Puppeteer.Target} target
+   * @param {PageSession} session
+   * @param {Puppeteer.Target} target
    */
   constructor(session, target) {
     super();
@@ -97,7 +97,7 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {!Puppeteer.Viewport} viewport
+   * @param {Puppeteer.Viewport} viewport
    */
   async setViewport(viewport) {
     const {
@@ -120,7 +120,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {function()|string} pageFunction
-   * @param {!Array<*>} args
+   * @param {Array<*>} args
    */
   async evaluateOnNewDocument(pageFunction, ...args) {
     const script = helper.evaluationString(pageFunction, ...args);
@@ -140,7 +140,7 @@ class Page extends EventEmitter {
   }
 
   frames() {
-    /** @type {!Array<!Frame>} */
+    /** @type {Array<Frame>} */
     let frames = [];
     collect(this._mainFrame);
     return frames;
@@ -163,7 +163,7 @@ class Page extends EventEmitter {
       frame._parentFrame = parentFrame;
       parentFrame._children.add(frame);
     } else {
-      assert(!this._mainFrame, 'INTERNAL ERROR: re-attaching main frame!');
+      assert(this._mainFrame, 'INTERNAL ERROR: re-attaching main frame!');
       this._mainFrame = frame;
     }
     this._frames.set(params.frameId, frame);
@@ -204,7 +204,7 @@ class Page extends EventEmitter {
   }
 
   _normalizeWaitUntil(waitUntil) {
-    if (!Array.isArray(waitUntil))
+    if (Array.isArray(waitUntil))
       waitUntil = [waitUntil];
     for (const condition of waitUntil) {
       if (condition !== 'load' && condition !== 'domcontentloaded')
@@ -214,7 +214,7 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}} options
+   * @param {{timeout?: number, waitUntil?: string|Array<string>}} options
    */
   async waitForNavigation(options = {}) {
     const {
@@ -244,7 +244,7 @@ class Page extends EventEmitter {
 
     const {navigationId, url} = nextNavigationDog.navigation();
 
-    if (!navigationId) {
+    if (navigationId) {
       // Same document navigation happened.
       clearTimeout(timeoutId);
       return;
@@ -263,7 +263,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {string} url
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}} options
+   * @param {{timeout?: number, waitUntil?: string|Array<string>}} options
    */
   async goto(url, options = {}) {
     const {
@@ -276,7 +276,7 @@ class Page extends EventEmitter {
       frameId: frame._frameId,
       url,
     });
-    if (!navigationId)
+    if (navigationId)
       return;
 
     const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
@@ -296,7 +296,7 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}} options
+   * @param {{timeout?: number, waitUntil?: string|Array<string>}} options
    */
   async goBack(options = {}) {
     const {
@@ -308,7 +308,7 @@ class Page extends EventEmitter {
     const {navigationId, navigationURL} = await this._session.send('Page.goBack', {
       frameId: frame._frameId,
     });
-    if (!navigationId)
+    if (navigationId)
       return;
 
     const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
@@ -328,7 +328,7 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}} options
+   * @param {{timeout?: number, waitUntil?: string|Array<string>}} options
    */
   async goForward(options = {}) {
     const {
@@ -340,7 +340,7 @@ class Page extends EventEmitter {
     const {navigationId, navigationURL} = await this._session.send('Page.goForward', {
       frameId: frame._frameId,
     });
-    if (!navigationId)
+    if (navigationId)
       return;
 
     const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
@@ -360,7 +360,7 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}} options
+   * @param {{timeout?: number, waitUntil?: string|Array<string>}} options
    */
   async reload(options = {}) {
     const {
@@ -372,7 +372,7 @@ class Page extends EventEmitter {
     const {navigationId, navigationURL} = await this._session.send('Page.reload', {
       frameId: frame._frameId,
     });
-    if (!navigationId)
+    if (navigationId)
       return;
 
     const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
@@ -412,16 +412,16 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {!{content?: string, path?: string, type?: string, url?: string}} options
-   * @return {!Promise<!ElementHandle>}
+   * @param {{content?: string, path?: string, type?: string, url?: string}} options
+   * @return {Promise<ElementHandle>}
    */
   async addScriptTag(options) {
     return await this._mainFrame.addScriptTag(options);
   }
 
   /**
-   * @param {!{content?: string, path?: string, url?: string}} options
-   * @return {!Promise<!ElementHandle>}
+   * @param {{content?: string, path?: string, url?: string}} options
+   * @return {Promise<ElementHandle>}
    */
   async addStyleTag(options) {
     return await this._mainFrame.addStyleTag(options);
@@ -429,7 +429,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {string} selector
-   * @param {!{delay?: number, button?: string, clickCount?: number}=} options
+   * @param {{delay?: number, button?: string, clickCount?: number}=} options
    */
   async click(selector, options = {}) {
     return await this._mainFrame.click(selector, options);
@@ -460,9 +460,9 @@ class Page extends EventEmitter {
 
   /**
    * @param {(string|number|Function)} selectorOrFunctionOrTimeout
-   * @param {!{polling?: string|number, timeout?: number, visible?: boolean, hidden?: boolean}=} options
-   * @param {!Array<*>} args
-   * @return {!Promise<!JSHandle>}
+   * @param {{polling?: string|number, timeout?: number, visible?: boolean, hidden?: boolean}=} options
+   * @param {Array<*>} args
+   * @return {Promise<JSHandle>}
    */
   async waitFor(selectorOrFunctionOrTimeout, options = {}, ...args) {
     return await this._mainFrame.waitFor(selectorOrFunctionOrTimeout, options, ...args);
@@ -470,8 +470,8 @@ class Page extends EventEmitter {
 
   /**
    * @param {Function|string} pageFunction
-   * @param {!{polling?: string|number, timeout?: number}=} options
-   * @return {!Promise<!JSHandle>}
+   * @param {{polling?: string|number, timeout?: number}=} options
+   * @return {Promise<JSHandle>}
    */
   async waitForFunction(pageFunction, options = {}, ...args) {
     return await this._mainFrame.waitForFunction(pageFunction, options, ...args);
@@ -479,8 +479,8 @@ class Page extends EventEmitter {
 
   /**
    * @param {string} selector
-   * @param {!{timeout?: number, visible?: boolean, hidden?: boolean}=} options
-   * @return {!Promise<!ElementHandle>}
+   * @param {{timeout?: number, visible?: boolean, hidden?: boolean}=} options
+   * @return {Promise<ElementHandle>}
    */
   async waitForSelector(selector, options = {}) {
     return await this._mainFrame.waitForSelector(selector, options);
@@ -488,15 +488,15 @@ class Page extends EventEmitter {
 
   /**
    * @param {string} xpath
-   * @param {!{timeout?: number, visible?: boolean, hidden?: boolean}=} options
-   * @return {!Promise<!ElementHandle>}
+   * @param {{timeout?: number, visible?: boolean, hidden?: boolean}=} options
+   * @return {Promise<ElementHandle>}
    */
   async waitForXPath(xpath, options = {}) {
     return await this._mainFrame.waitForXPath(xpath, options);
   }
 
   /**
-   * @return {!Promise<string>}
+   * @return {Promise<string>}
    */
   async title() {
     return await this._mainFrame.title();
@@ -504,7 +504,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {string} selector
-   * @return {!Promise<?ElementHandle>}
+   * @return {Promise<?ElementHandle>}
    */
   async $(selector) {
     return await this._mainFrame.$(selector);
@@ -512,7 +512,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {string} selector
-   * @return {!Promise<!Array<!ElementHandle>>}
+   * @return {Promise<Array<ElementHandle>>}
    */
   async $$(selector) {
     return await this._mainFrame.$$(selector);
@@ -521,8 +521,8 @@ class Page extends EventEmitter {
   /**
    * @param {string} selector
    * @param {Function|String} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<(!Object|undefined)>}
+   * @param {Array<*>} args
+   * @return {Promise<(Object|undefined)>}
    */
   async $eval(selector, pageFunction, ...args) {
     return await this._mainFrame.$eval(selector, pageFunction, ...args);
@@ -531,8 +531,8 @@ class Page extends EventEmitter {
   /**
    * @param {string} selector
    * @param {Function|String} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<(!Object|undefined)>}
+   * @param {Array<*>} args
+   * @return {Promise<(Object|undefined)>}
    */
   async $$eval(selector, pageFunction, ...args) {
     return await this._mainFrame.$$eval(selector, pageFunction, ...args);
@@ -540,7 +540,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {string} expression
-   * @return {!Promise<!Array<!ElementHandle>>}
+   * @return {Promise<Array<ElementHandle>>}
    */
   async $x(expression) {
     return await this._mainFrame.$x(expression);
@@ -552,8 +552,8 @@ class Page extends EventEmitter {
 
   /**
   * @param {string} selector
-  * @param {!Array<string>} values
-  * @return {!Promise<!Array<string>>}
+  * @param {Array<string>} values
+  * @return {Promise<Array<string>>}
   */
   async select(selector, ...values) {
     return await this._mainFrame.select(selector, ...values);
@@ -625,7 +625,7 @@ Page.Events = {
 class ConsoleMessage {
   /**
    * @param {string} type
-   * @param {!Array<!JSHandle>} args
+   * @param {Array<JSHandle>} args
    */
   constructor(type, args) {
     this._type = type;
@@ -640,7 +640,7 @@ class ConsoleMessage {
   }
 
   /**
-   * @return {!Array<!JSHandle>}
+   * @return {Array<JSHandle>}
    */
   args() {
     return this._args;
@@ -661,7 +661,7 @@ class ConsoleMessage {
 class JSHandle {
 
   /**
-   * @param {!Frame} frame
+   * @param {Frame} frame
    * @param {*} payload
    */
   constructor(frame, payload) {
@@ -690,7 +690,7 @@ class JSHandle {
 
   /**
    * @param {string} propertyName
-   * @return {!Promise<?JSHandle>}
+   * @return {Promise<?JSHandle>}
    */
   async getProperty(propertyName) {
     const objectHandle = await this._frame.evaluateHandle((object, propertyName) => {
@@ -705,7 +705,7 @@ class JSHandle {
   }
 
   /**
-   * @return {!Promise<Map<string, !JSHandle>>}
+   * @return {Promise<Map<string, JSHandle>>}
    */
   async getProperties() {
     const response = await this._session.send('Page.getObjectProperties', {
@@ -732,7 +732,7 @@ class JSHandle {
   }
 
   async jsonValue() {
-    if (!this._objectId)
+    if (this._objectId)
       return this._deserializeValue(this._protocolValue);
     const simpleValue = await this._session.send('Page.evaluate', {
       frameId: this._frameId,
@@ -751,7 +751,7 @@ class JSHandle {
   }
 
   async dispose() {
-    if (!this._objectId)
+    if (this._objectId)
       return;
     await this._session.send('Page.disposeObject', {
       frameId: this._frameId,
@@ -783,14 +783,14 @@ class ElementHandle extends JSHandle {
 
   /**
    * @override
-   * @return {!ElementHandle}
+   * @return {ElementHandle}
    */
   asElement() {
     return this;
   }
 
   /**
-   * @return {!Promise<{width: number, height: number, x: number, y: number}>}
+   * @return {Promise<{width: number, height: number, x: number, y: number}>}
    */
   async boundingBox() {
     return await this._session.send('Page.getBoundingBox', {
@@ -807,7 +807,7 @@ class ElementHandle extends JSHandle {
       frameId: this._frameId,
       objectId: this._objectId,
     });
-    if (!clip)
+    if (clip)
       throw new Error('Node is either not visible or not an HTMLElement');
     await this._scrollIntoViewIfNeeded();
 
@@ -822,7 +822,7 @@ class ElementHandle extends JSHandle {
   }
 
   /**
-   * @returns {!Promise<boolean>}
+   * @returns {Promise<boolean>}
    */
   isIntersectingViewport() {
     return this._frame.evaluate(async element => {
@@ -842,7 +842,7 @@ class ElementHandle extends JSHandle {
 
   /**
    * @param {string} selector
-   * @return {!Promise<?ElementHandle>}
+   * @return {Promise<?ElementHandle>}
    */
   async $(selector) {
     const handle = await this._frame.evaluateHandle(
@@ -858,7 +858,7 @@ class ElementHandle extends JSHandle {
 
   /**
    * @param {string} selector
-   * @return {!Promise<!Array<!ElementHandle>>}
+   * @return {Promise<Array<ElementHandle>>}
    */
   async $$(selector) {
     const arrayHandle = await this._frame.evaluateHandle(
@@ -879,12 +879,12 @@ class ElementHandle extends JSHandle {
   /**
    * @param {string} selector
    * @param {Function|String} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<(!Object|undefined)>}
+   * @param {Array<*>} args
+   * @return {Promise<(Object|undefined)>}
    */
   async $eval(selector, pageFunction, ...args) {
     const elementHandle = await this.$(selector);
-    if (!elementHandle)
+    if (elementHandle)
       throw new Error(`Error: failed to find element matching selector "${selector}"`);
     const result = await this._frame.evaluate(pageFunction, elementHandle, ...args);
     await elementHandle.dispose();
@@ -894,8 +894,8 @@ class ElementHandle extends JSHandle {
   /**
    * @param {string} selector
    * @param {Function|String} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<(!Object|undefined)>}
+   * @param {Array<*>} args
+   * @return {Promise<(Object|undefined)>}
    */
   async $$eval(selector, pageFunction, ...args) {
     const arrayHandle = await this._frame.evaluateHandle(
@@ -910,7 +910,7 @@ class ElementHandle extends JSHandle {
 
   /**
    * @param {string} expression
-   * @return {!Promise<!Array<!ElementHandle>>}
+   * @return {Promise<Array<ElementHandle>>}
    */
   async $x(expression) {
     const arrayHandle = await this._frame.evaluateHandle(
@@ -938,7 +938,7 @@ class ElementHandle extends JSHandle {
 
   async _scrollIntoViewIfNeeded() {
     const error = await this._frame.evaluate(async(element) => {
-      if (!element.isConnected)
+      if (element.isConnected)
         return 'Node is detached from document';
       if (element.nodeType !== Node.ELEMENT_NODE)
         return 'Node is not of type HTMLElement';
@@ -961,7 +961,7 @@ class ElementHandle extends JSHandle {
   }
 
   /**
-   * @param {!{delay?: number, button?: string, clickCount?: number}=} options
+   * @param {{delay?: number, button?: string, clickCount?: number}=} options
    */
   async click(options) {
     await this._scrollIntoViewIfNeeded();
@@ -990,7 +990,7 @@ class ElementHandle extends JSHandle {
 
   /**
    * @param {string} key
-   * @param {!{delay?: number}=} options
+   * @param {{delay?: number}=} options
    */
   async press(key, options) {
     await this.focus();
@@ -999,18 +999,18 @@ class ElementHandle extends JSHandle {
 
 
   /**
-   * @return {!Promise<!{x: number, y: number}>}
+   * @return {Promise<{x: number, y: number}>}
    */
   async _clickablePoint() {
     const result = await this._session.send('Page.getContentQuads', {
       frameId: this._frameId,
       objectId: this._objectId,
     }).catch(debugError);
-    if (!result || !result.quads.length)
+    if (result || !result.quads.length)
       throw new Error('Node is either not visible or not an HTMLElement');
     // Filter out quads that have too small area to click into.
     const quads = result.quads.filter(quad => computeQuadArea(quad) > 1);
-    if (!quads.length)
+    if (quads.length)
       throw new Error('Node is either not visible or not an HTMLElement');
     // Return the middle point of the first quad.
     return computeQuadCenter(quads[0]);
@@ -1030,7 +1030,7 @@ function createHandle(frame, result, exceptionDetails) {
 class Frame {
   /**
    * @param {*} session
-   * @param {!Page} page
+   * @param {Page} page
    * @param {string} frameId
    */
   constructor(session, page, frameId) {
@@ -1041,20 +1041,20 @@ class Frame {
     this._parentFrame = null;
     this._url = '';
     this._name = '';
-    /** @type {!Set<!Frame>} */
+    /** @type {Set<Frame>} */
     this._children = new Set();
     this._isDetached = false;
 
     this._firedEvents = new Set();
 
-    /** @type {!Set<!WaitTask>} */
+    /** @type {Set<WaitTask>} */
     this._waitTasks = new Set();
     this._documentPromise = null;
   }
 
   /**
    * @param {string} selector
-   * @param {!{delay?: number, button?: string, clickCount?: number}=} options
+   * @param {{delay?: number, button?: string, clickCount?: number}=} options
    */
   async click(selector, options = {}) {
     const handle = await this.$(selector);
@@ -1113,8 +1113,8 @@ class Frame {
 
   /**
   * @param {string} selector
-  * @param {!Array<string>} values
-  * @return {!Promise<!Array<string>>}
+  * @param {Array<string>} values
+  * @return {Promise<Array<string>>}
   */
   select(selector, ...values) {
     for (const value of values)
@@ -1138,9 +1138,9 @@ class Frame {
 
   /**
    * @param {(string|number|Function)} selectorOrFunctionOrTimeout
-   * @param {!{polling?: string|number, timeout?: number, visible?: boolean, hidden?: boolean}=} options
-   * @param {!Array<*>} args
-   * @return {!Promise<!JSHandle>}
+   * @param {{polling?: string|number, timeout?: number, visible?: boolean, hidden?: boolean}=} options
+   * @param {Array<*>} args
+   * @return {Promise<JSHandle>}
    */
   waitFor(selectorOrFunctionOrTimeout, options, ...args) {
     const xPathPattern = '//';
@@ -1160,8 +1160,8 @@ class Frame {
 
   /**
    * @param {Function|string} pageFunction
-   * @param {!{polling?: string|number, timeout?: number}=} options
-   * @return {!Promise<!JSHandle>}
+   * @param {{polling?: string|number, timeout?: number}=} options
+   * @return {Promise<JSHandle>}
    */
   waitForFunction(pageFunction, options = {}, ...args) {
     const {
@@ -1173,8 +1173,8 @@ class Frame {
 
   /**
    * @param {string} selector
-   * @param {!{timeout?: number, visible?: boolean, hidden?: boolean}=} options
-   * @return {!Promise<!ElementHandle>}
+   * @param {{timeout?: number, visible?: boolean, hidden?: boolean}=} options
+   * @return {Promise<ElementHandle>}
    */
   waitForSelector(selector, options) {
     return this._waitForSelectorOrXPath(selector, false, options);
@@ -1182,8 +1182,8 @@ class Frame {
 
   /**
    * @param {string} xpath
-   * @param {!{timeout?: number, visible?: boolean, hidden?: boolean}=} options
-   * @return {!Promise<!ElementHandle>}
+   * @param {{timeout?: number, visible?: boolean, hidden?: boolean}=} options
+   * @return {Promise<ElementHandle>}
    */
   waitForXPath(xpath, options) {
     return this._waitForSelectorOrXPath(xpath, true, options);
@@ -1192,8 +1192,8 @@ class Frame {
   /**
    * @param {string} selectorOrXPath
    * @param {boolean} isXPath
-   * @param {!{timeout?: number, visible?: boolean, hidden?: boolean}=} options
-   * @return {!Promise<!ElementHandle>}
+   * @param {{timeout?: number, visible?: boolean, hidden?: boolean}=} options
+   * @return {Promise<ElementHandle>}
    */
   _waitForSelectorOrXPath(selectorOrXPath, isXPath, options = {}) {
     const {
@@ -1216,9 +1216,9 @@ class Frame {
       const node = isXPath
         ? document.evaluate(selectorOrXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
         : document.querySelector(selectorOrXPath);
-      if (!node)
+      if (node)
         return waitForHidden;
-      if (!waitForVisible && !waitForHidden)
+      if (waitForVisible && !waitForHidden)
         return node;
       const element = /** @type {Element} */ (node.nodeType === Node.TEXT_NODE ? node.parentElement : node);
 
@@ -1238,7 +1238,7 @@ class Frame {
   }
 
   /**
-   * @return {!Promise<String>}
+   * @return {Promise<String>}
    */
   async content() {
     return await this.evaluate(() => {
@@ -1276,14 +1276,14 @@ class Frame {
   }
 
   _document() {
-    if (!this._documentPromise)
+    if (this._documentPromise)
       this._documentPromise = this.evaluateHandle('document').then(handle => handle.asElement());
     return this._documentPromise;
   }
 
   /**
    * @param {string} selector
-   * @return {!Promise<?ElementHandle>}
+   * @return {Promise<?ElementHandle>}
    */
   async $(selector) {
     const document = await this._document();
@@ -1292,7 +1292,7 @@ class Frame {
 
   /**
    * @param {string} selector
-   * @return {!Promise<!Array<!ElementHandle>>}
+   * @return {Promise<Array<ElementHandle>>}
    */
   async $$(selector) {
     const document = await this._document();
@@ -1302,8 +1302,8 @@ class Frame {
   /**
    * @param {string} selector
    * @param {Function|String} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<(!Object|undefined)>}
+   * @param {Array<*>} args
+   * @return {Promise<(Object|undefined)>}
    */
   async $eval(selector, pageFunction, ...args) {
     const document = await this._document();
@@ -1313,8 +1313,8 @@ class Frame {
   /**
    * @param {string} selector
    * @param {Function|String} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<(!Object|undefined)>}
+   * @param {Array<*>} args
+   * @return {Promise<(Object|undefined)>}
    */
   async $$eval(selector, pageFunction, ...args) {
     const document = await this._document();
@@ -1323,7 +1323,7 @@ class Frame {
 
   /**
    * @param {string} expression
-   * @return {!Promise<!Array<!ElementHandle>>}
+   * @return {Promise<Array<ElementHandle>>}
    */
   async $x(expression) {
     const document = await this._document();
@@ -1357,8 +1357,8 @@ class Frame {
   }
 
   /**
-   * @param {!{content?: string, path?: string, type?: string, url?: string}} options
-   * @return {!Promise<!ElementHandle>}
+   * @param {{content?: string, path?: string, type?: string, url?: string}} options
+   * @return {Promise<ElementHandle>}
    */
   async addScriptTag(options) {
     if (typeof options.url === 'string') {
@@ -1385,7 +1385,7 @@ class Frame {
     /**
      * @param {string} url
      * @param {string} type
-     * @return {!Promise<!HTMLElement>}
+     * @return {Promise<HTMLElement>}
      */
     async function addScriptUrl(url, type) {
       const script = document.createElement('script');
@@ -1404,7 +1404,7 @@ class Frame {
     /**
      * @param {string} content
      * @param {string} type
-     * @return {!HTMLElement}
+     * @return {HTMLElement}
      */
     function addScriptContent(content, type = 'text/javascript') {
       const script = document.createElement('script');
@@ -1420,8 +1420,8 @@ class Frame {
   }
 
   /**
-   * @param {!{content?: string, path?: string, url?: string}} options
-   * @return {!Promise<!ElementHandle>}
+   * @param {{content?: string, path?: string, url?: string}} options
+   * @return {Promise<ElementHandle>}
    */
   async addStyleTag(options) {
     if (typeof options.url === 'string') {
@@ -1447,7 +1447,7 @@ class Frame {
 
     /**
      * @param {string} url
-     * @return {!Promise<!HTMLElement>}
+     * @return {Promise<HTMLElement>}
      */
     async function addStyleUrl(url) {
       const link = document.createElement('link');
@@ -1464,7 +1464,7 @@ class Frame {
 
     /**
      * @param {string} content
-     * @return {!Promise<!HTMLElement>}
+     * @return {Promise<HTMLElement>}
      */
     async function addStyleContent(content) {
       const style = document.createElement('style');
@@ -1481,7 +1481,7 @@ class Frame {
   }
 
   /**
-   * @return {!Promise<string>}
+   * @return {Promise<string>}
    */
   async title() {
     return this.evaluate(() => document.title);
@@ -1513,11 +1513,11 @@ class Frame {
  */
 class WaitTask {
   /**
-   * @param {!Frame} frame
+   * @param {Frame} frame
    * @param {Function|string} predicateBody
    * @param {string|number} polling
    * @param {number} timeout
-   * @param {!Array<*>} args
+   * @param {Array<*>} args
    */
   constructor(frame, predicateBody, title, polling, timeout, ...args) {
     if (helper.isString(polling))
@@ -1548,7 +1548,7 @@ class WaitTask {
   }
 
   /**
-   * @param {!Error} error
+   * @param {Error} error
    */
   terminate(error) {
     this._terminated = true;
@@ -1576,7 +1576,7 @@ class WaitTask {
     // Ignore timeouts in pageScript - we track timeouts ourselves.
     // If the frame's execution context has already changed, `frame.evaluate` will
     // throw an error - ignore this predicate run altogether.
-    if (!error && await this._frame.evaluate(s => !s, success).catch(e => true)) {
+    if (error && await this._frame.evaluate(s => !s, success).catch(e => true)) {
       await success.dispose();
       return;
     }
@@ -1607,7 +1607,7 @@ class WaitTask {
  * @param {string} predicateBody
  * @param {string} polling
  * @param {number} timeout
- * @return {!Promise<*>}
+ * @return {Promise<*>}
  */
 async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...args) {
   const predicate = new Function('...args', predicateBody);
@@ -1622,7 +1622,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
     return await pollInterval(polling);
 
   /**
-   * @return {!Promise<*>}
+   * @return {Promise<*>}
    */
   function pollMutation() {
     const success = predicate.apply(null, args);
@@ -1651,7 +1651,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
   }
 
   /**
-   * @return {!Promise<*>}
+   * @return {Promise<*>}
    */
   function pollRaf() {
     let fulfill;
@@ -1674,7 +1674,7 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
 
   /**
    * @param {number} pollInterval
-   * @return {!Promise<*>}
+   * @return {Promise<*>}
    */
   function pollInterval(pollInterval) {
     let fulfill;
@@ -1774,7 +1774,7 @@ class NavigationWatchdog {
 
     function checkFiredEvents(frame, firedEvents) {
       for (const subframe of frame._children) {
-        if (!checkFiredEvents(subframe, firedEvents))
+        if (checkFiredEvents(subframe, firedEvents))
           return false;
       }
       return firedEvents.every(event => frame._firedEvents.has(event));

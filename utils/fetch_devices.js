@@ -119,7 +119,7 @@ async function main(url) {
  * @param {string} deviceName
  * @param {*} descriptor
  * @param {boolean} landscape
- * @return {!Object}
+ * @return {Object}
  */
 function createDevice(chromeVersion, deviceName, descriptor, landscape) {
   const devicePayload = loadFromJSONV1(descriptor);
@@ -176,7 +176,7 @@ function loadFromJSONV1(json) {
 
   /**
    * @param {*} json
-   * @return {!{width: number, height: number}}
+   * @return {{width: number, height: number}}
    */
   function parseOrientation(json) {
     const result = {};
@@ -192,7 +192,7 @@ function loadFromJSONV1(json) {
         result.height < minDeviceSize)
       throw new Error('Emulated device has wrong height: ' + result.height);
 
-    return /** @type {!{width: number, height: number}} */ (result);
+    return /** @type {{width: number, height: number}} */ (result);
   }
 
   const result = {};
@@ -220,7 +220,7 @@ function loadFromJSONV1(json) {
 
 /**
  * @param {url}
- * @return {!Promise}
+ * @return {Promise}
  */
 function httpGET(url) {
   let fulfill, reject;
