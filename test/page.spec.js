@@ -17,6 +17,7 @@ const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
 const {waitEvent} = utils;
+const {TimeoutError} = utils.requireRoot('Errors');
 
 const DeviceDescriptors = utils.requireRoot('DeviceDescriptors');
 const iPhone = DeviceDescriptors['iPhone 6'];
@@ -421,6 +422,17 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       ]);
       expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
     });
+    it('should respect timeout', async({page, server}) => {
+      let error = null;
+      await page.waitForRequest(() => false, {timeout: 1}).catch(e => error = e);
+      expect(error).toBeInstanceOf(TimeoutError);
+    });
+    it('should respect default timeout', async({page, server}) => {
+      let error = null;
+      page.setDefaultTimeout(1);
+      await page.waitForRequest(() => false).catch(e => error = e);
+      expect(error).toBeInstanceOf(TimeoutError);
+    });
     it('should work with no timeout', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [request] = await Promise.all([
@@ -447,6 +459,17 @@ module.exports.addTests = function({testRunner, expect, headless}) {
         })
       ]);
       expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
+    });
+    it('should respect timeout', async({page, server}) => {
+      let error = null;
+      await page.waitForResponse(() => false, {timeout: 1}).catch(e => error = e);
+      expect(error).toBeInstanceOf(TimeoutError);
+    });
+    it('should respect default timeout', async({page, server}) => {
+      let error = null;
+      page.setDefaultTimeout(1);
+      await page.waitForResponse(() => false).catch(e => error = e);
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should work with predicate', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
@@ -616,6 +639,23 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       await page.setContent(`${doctype}<div>hello</div>`);
       const result = await page.content();
       expect(result).toBe(`${doctype}${expectedOutput}`);
+    });
+    it('should respect timeout', async({page, server}) => {
+      const imgPath = '/img.png';
+      // stall for image
+      server.setRoute(imgPath, (req, res) => {});
+      let error = null;
+      await page.setContent(`<img src="${server.PREFIX + imgPath}"></img>`, {timeout: 1}).catch(e => error = e);
+      expect(error).toBeInstanceOf(TimeoutError);
+    });
+    it('should respect default navigation timeout', async({page, server}) => {
+      page.setDefaultNavigationTimeout(1);
+      const imgPath = '/img.png';
+      // stall for image
+      server.setRoute(imgPath, (req, res) => {});
+      let error = null;
+      await page.setContent(`<img src="${server.PREFIX + imgPath}"></img>`).catch(e => error = e);
+      expect(error).toBeInstanceOf(TimeoutError);
     });
     it('should await resources to load', async({page, server}) => {
       const imgPath = '/img.png';
