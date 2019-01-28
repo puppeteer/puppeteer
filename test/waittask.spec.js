@@ -17,6 +17,13 @@
 const utils = require('./utils');
 const {TimeoutError} = utils.requireRoot('Errors');
 
+let asyncawait = true;
+try {
+  new Function('async function foo() {await 1}');
+} catch (e) {
+  asyncawait = false;
+}
+
 module.exports.addTests = function({testRunner, expect, product}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
@@ -322,6 +329,10 @@ module.exports.addTests = function({testRunner, expect, product}) {
       expect(await waitForSelector).toBe(true);
       expect(divRemoved).toBe(true);
     });
+    it('should return null if waiting to hide non-existing element', async({page, server}) => {
+      const handle = await page.waitForSelector('non-existing', { hidden: true });
+      expect(handle).toBe(null);
+    });
     it('should respect timeout', async({page, server}) => {
       let error = null;
       await page.waitForSelector('div', {timeout: 10}).catch(e => error = e);
@@ -350,7 +361,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
       await page.setContent(`<div class='zombo'>anything</div>`);
       expect(await page.evaluate(x => x.textContent, await waitForSelector)).toBe('anything');
     });
-    it('should have correct stack trace for timeout', async({page, server}) => {
+    (asyncawait ? it : xit)('should have correct stack trace for timeout', async({page, server}) => {
       let error;
       await page.waitForSelector('.zombo', {timeout: 10}).catch(e => error = e);
       expect(error.stack).toContain('waittask.spec.js');
