@@ -49,7 +49,6 @@ class MDOutline {
        * @param {HTMLLIElement} element
        */
       function parseProperty(element) {
-        // const firstLine = extractSiblingsIntoFragment(element.firstChild, element.querySelector(':scope > ul'));
         const clone = element.cloneNode(true);
         const ul = clone.querySelector(':scope > ul');
         const str = parseComment(extractSiblingsIntoFragment(clone.firstChild, ul));
