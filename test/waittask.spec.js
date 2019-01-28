@@ -205,6 +205,13 @@ module.exports.addTests = function({testRunner, expect, product}) {
       await frame.waitForSelector('div');
     });
 
+    it('should work with removed MutationObserver', async({page, server}) => {
+      await page.evaluate(() => delete window.MutationObserver);
+      const waitForSelector = page.waitForSelector('.zombo');
+      await page.setContent(`<div class='zombo'>anything</div>`);
+      expect(await page.evaluate(x => x.textContent, await waitForSelector)).toBe('anything');
+    });
+
     it('should resolve promise when node is added', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const frame = page.mainFrame();
@@ -247,15 +254,6 @@ module.exports.addTests = function({testRunner, expect, product}) {
       expect(eHandle.executionContext().frame()).toBe(frame2);
     });
 
-    it('should throw if evaluation failed', async({page, server}) => {
-      await page.evaluateOnNewDocument(function() {
-        document.querySelector = null;
-      });
-      await page.goto(server.EMPTY_PAGE);
-      let error = null;
-      await page.waitForSelector('*').catch(e => error = e);
-      expect(error.message).toContain('document.querySelector is not a function');
-    });
     it('should throw when frame is detached', async({page, server}) => {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const frame = page.frames()[1];
@@ -393,15 +391,6 @@ module.exports.addTests = function({testRunner, expect, product}) {
       await frame2.evaluate(addElement, 'div');
       const eHandle = await waitForXPathPromise;
       expect(eHandle.executionContext().frame()).toBe(frame2);
-    });
-    it('should throw if evaluation failed', async({page, server}) => {
-      await page.evaluateOnNewDocument(function() {
-        document.evaluate = null;
-      });
-      await page.goto(server.EMPTY_PAGE);
-      let error = null;
-      await page.waitForXPath('*').catch(e => error = e);
-      expect(error.message).toContain('document.evaluate is not a function');
     });
     it('should throw when frame is detached', async({page, server}) => {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
