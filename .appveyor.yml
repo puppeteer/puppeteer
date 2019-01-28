@@ -11,7 +11,8 @@ install:
   - if "%nodejs_version%" == "8.11.3" (
       npm run lint &&
       npm run coverage  &&
-      npm run test-doclint
+      npm run test-doclint &&
+      npm run test-types
     ) else (
       npm run unit-node6
     )

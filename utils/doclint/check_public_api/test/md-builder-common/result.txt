@@ -5,6 +5,9 @@
       "members": [
         {
           "name": "frame",
+          "type": {
+            "name": "[Frame]"
+          },
           "kind": "event"
         },
         {
@@ -25,6 +28,9 @@
         },
         {
           "name": "url",
+          "type": {
+            "name": "string"
+          },
           "kind": "property"
         }
       ]

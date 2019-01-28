@@ -20,6 +20,7 @@ task:
   lint_script: npm run lint
   coverage_script: npm run coverage
   test_doclint_script: npm run test-doclint
+  test_types_script: npm run test-types
 
 task:
   osx_instance:
@@ -34,3 +35,4 @@ task:
   lint_script: npm run lint
   coverage_script: npm run coverage
   test_doclint_script: npm run test-doclint
+  test_types_script: npm run test-types
