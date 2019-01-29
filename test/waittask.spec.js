@@ -170,6 +170,14 @@ module.exports.addTests = function({testRunner, expect, product}) {
       expect(error.message).toContain('waiting for function failed: timeout');
       expect(error).toBeInstanceOf(TimeoutError);
     });
+    it('should respect default timeout', async({page}) => {
+      page.setDefaultTimeout(1);
+      let error = null;
+      await page.waitForFunction('false').catch(e => error = e);
+      expect(error).toBeTruthy();
+      expect(error.message).toContain('waiting for function failed: timeout');
+      expect(error).toBeInstanceOf(TimeoutError);
+    });
     it('should disable timeout when its set to 0', async({page}) => {
       const watchdog = page.waitForFunction(() => {
         window.__counter = (window.__counter || 0) + 1;
