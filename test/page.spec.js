@@ -352,12 +352,12 @@ module.exports.addTests = function({testRunner, expect, headless}) {
     // @see https://github.com/GoogleChrome/puppeteer/issues/3865
     it('should not throw when there are console messages in detached iframes', async({browser, page, server}) => {
       await page.goto(server.EMPTY_PAGE);
-      await page.evaluate(async () => {
+      await page.evaluate(async() => {
         // 1. Create a popup that Puppeteer is not connected to.
-        var win = window.open(window.location.href, "Title", "toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=200,top=0,left=0");
+        const win = window.open(window.location.href, 'Title', 'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=780,height=200,top=0,left=0');
         await new Promise(x => win.onload = x);
         // 2. In this popup, create an iframe that console.logs a message.
-        win.document.body.innerHTML = `<iframe src="/consolelog.html"></iframe>`;
+        win.document.body.innerHTML = `<iframe src='/consolelog.html'></iframe>`;
         const frame = win.document.querySelector('iframe');
         await new Promise(x => frame.onload = x);
         // 3. After that, remove the iframe.
@@ -365,7 +365,7 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       });
       const popupTarget = page.browserContext().targets().find(target => target !== page.target());
       // 4. Connect to the popup and make sure it doesn't throw.
-      const popup = await popupTarget.page();
+      await popupTarget.page();
     });
   });
 
