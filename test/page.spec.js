@@ -350,7 +350,7 @@ module.exports.addTests = function({testRunner, expect, headless}) {
       });
     });
     // @see https://github.com/GoogleChrome/puppeteer/issues/3865
-    fit('should not throw when there are console messages in detached iframes', async({browser, page, server}) => {
+    it('should not throw when there are console messages in detached iframes', async({browser, page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(async () => {
         // 1. Create a popup that Puppeteer is not connected to.
