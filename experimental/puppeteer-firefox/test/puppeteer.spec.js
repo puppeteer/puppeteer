@@ -38,6 +38,7 @@ module.exports.addTests = ({testRunner, product, puppeteer}) => testRunner.descr
     };
     if (product === 'firefox' && state.defaultBrowserOptions.executablePath) {
       await require('../misc/install-preferences')(state.defaultBrowserOptions.executablePath);
+      console.log('RUNNING CUSTOM FIREFOX: ' + state.defaultBrowserOptions.executablePath);
     }
   });
   afterAll(state => {
@@ -58,6 +59,7 @@ module.exports.addTests = ({testRunner, product, puppeteer}) => testRunner.descr
     });
 
     require('./browser.spec.js').addTests({testRunner, expect, product, puppeteer});
+    require('./browsercontext.spec.js').addTests({testRunner, expect, product, puppeteer});
 
     describe('Page', () => {
       beforeEach(async state => {
