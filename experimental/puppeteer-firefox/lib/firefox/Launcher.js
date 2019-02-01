@@ -116,7 +116,7 @@ class Launcher {
       const port = await waitForWSEndpoint(firefoxProcess, 30000);
       const transport = await FirefoxTransport.create(parseInt(port, 10));
       connection = new Connection(transport, slowMo);
-      const browser = new Browser(connection, defaultViewport, firefoxProcess, killFirefox);
+      const browser = await Browser.create(connection, defaultViewport, firefoxProcess, killFirefox);
       if (ignoreHTTPSErrors)
         await connection.send('Browser.setIgnoreHTTPSErrors', {enabled: true});
       if (!browser.targets().length)
