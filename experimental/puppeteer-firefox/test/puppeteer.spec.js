@@ -63,11 +63,13 @@ module.exports.addTests = ({testRunner, product, puppeteer}) => testRunner.descr
 
     describe('Page', () => {
       beforeEach(async state => {
-        state.page = await state.browser.newPage();
+        state.context = await state.browser.createIncognitoBrowserContext();
+        state.page = await state.context.newPage();
       });
 
       afterEach(async state => {
-        await state.page.close();
+        await state.context.close();
+        state.context = null;
         state.page = null;
       });
 
