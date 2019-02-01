@@ -67,7 +67,8 @@ function classToString(classDesc) {
       parts.push(`  ${method}(event: '${eventName}', listener: (arg0 : ${typeToString(value && value.type, classDesc.name, eventName, 'payload')}) => void): this;\n`);
     }
   }
-  parts.push(classDesc.membersArray.map(member => `  ${memberJSDOC(member, '  ')}${member.name}${argsFromMember(member, classDesc.name)}: ${typeToString(member.type, classDesc.name, member.name)};`).join('\n\n'));
+  const members = classDesc.membersArray.filter(member => member.kind !== 'event');
+  parts.push(members.map(member => `  ${memberJSDOC(member, '  ')}${member.name}${argsFromMember(member, classDesc.name)}: ${typeToString(member.type, classDesc.name, member.name)};`).join('\n\n'));
   parts.push('}\n');
   return parts.join('\n');
 }
