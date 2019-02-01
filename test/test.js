@@ -38,7 +38,7 @@ require('events').defaultMaxListeners *= parallel;
 
 const timeout = slowMo ? 0 : 10 * 1000;
 const testRunner = new TestRunner({timeout, parallel});
-const {describe, it, xit, beforeAll, afterAll, beforeEach, afterEach} = testRunner;
+const {describe, fdescribe, beforeAll, afterAll, beforeEach, afterEach} = testRunner;
 
 console.log('Testing on Node', process.version);
 
@@ -84,16 +84,27 @@ const CHROMIUM_NO_COVERAGE = new Set([
   ...(headless ? [] : ['page.pdf']),
 ]);
 
-describe('Chromium', () => {
-  require('./puppeteer.spec.js').addTests({
-    product: 'Chromium',
-    puppeteer: utils.requireRoot('index'),
-    defaultBrowserOptions,
-    testRunner,
+if (process.env.BROWSER !== 'firefox') {
+  describe('Chromium', () => {
+    require('./puppeteer.spec.js').addTests({
+      product: 'Chromium',
+      puppeteer: utils.requireRoot('index'),
+      defaultBrowserOptions,
+      testRunner,
+    });
+    if (process.env.COVERAGE)
+      utils.recordAPICoverage(testRunner, require('../lib/api'), CHROMIUM_NO_COVERAGE);
   });
-  if (process.env.COVERAGE)
-    utils.recordAPICoverage(testRunner, require('../lib/api'), CHROMIUM_NO_COVERAGE);
-});
+} else {
+  describe('Firefox', () => {
+    require('./puppeteer.spec.js').addTests({
+      product: 'Firefox',
+      puppeteer: require('../experimental/puppeteer-firefox'),
+      defaultBrowserOptions,
+      testRunner,
+    });
+  });
+}
 
 if (process.env.CI && testRunner.hasFocusedTestsOrSuites()) {
   console.error('ERROR: "focused" tests/suites are prohibitted on bots. Remove any "fit"/"fdescribe" declarations.');
