@@ -16,8 +16,10 @@ async function installFirefoxPreferences(executablePath) {
     prefPath = path.join(firefoxFolder, '..', 'Resources', 'defaults', 'pref');
     configPath = path.join(firefoxFolder, '..', 'Resources');
   } else if (os.platform() === 'linux') {
-    await mkdirAsync(path.join(firefoxFolder, 'browser', 'defaults'));
-    await mkdirAsync(path.join(firefoxFolder, 'browser', 'defaults', 'preferences'));
+    if (!fs.existsSync(path.join(firefoxFolder, 'browser', 'defaults')))
+      await mkdirAsync(path.join(firefoxFolder, 'browser', 'defaults'));
+    if (!fs.existsSync(path.join(firefoxFolder, 'browser', 'defaults', 'preferences')))
+      await mkdirAsync(path.join(firefoxFolder, 'browser', 'defaults', 'preferences'));
     prefPath = path.join(firefoxFolder, 'browser', 'defaults', 'preferences');
     configPath = firefoxFolder;
   } else if (os.platform() === 'win32') {
