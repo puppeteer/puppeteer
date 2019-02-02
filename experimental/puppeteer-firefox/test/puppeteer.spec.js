@@ -28,29 +28,28 @@ module.exports.addTests = ({testRunner, product, puppeteer}) => testRunner.descr
     toBeGolden: GoldenUtils.compare.bind(null, GOLDEN_DIR, OUTPUT_DIR)
   });
 
+  const defaultBrowserOptions = {
+    handleSIGINT: false,
+    executablePath: product === 'chromium' ? process.env.CHROME : process.env.FFOX,
+    dumpio: !!process.env.DUMPIO,
+    args: product === 'chromium' ? ['--no-sandbox'] : [],
+  };
 
-  beforeAll(async state => {
-    state.defaultBrowserOptions = {
-      handleSIGINT: false,
-      executablePath: product === 'chromium' ? process.env.CHROME : process.env.FFOX,
-      dumpio: !!process.env.DUMPIO,
-      args: product === 'chromium' ? ['--no-sandbox'] : [],
-    };
-    if (product === 'firefox' && state.defaultBrowserOptions.executablePath) {
-      await require('../misc/install-preferences')(state.defaultBrowserOptions.executablePath);
-      console.log('RUNNING CUSTOM FIREFOX: ' + state.defaultBrowserOptions.executablePath);
-    }
-  });
-  afterAll(state => {
-    state.defaultBrowserOptions = undefined;
-  });
+  const testOptions = {testRunner, expect, product, puppeteer, defaultBrowserOptions};
 
-  require('./launcher.spec.js').addTests({testRunner, expect, product, puppeteer});
-  require('./ignorehttpserrors.spec.js').addTests({testRunner, expect, product, puppeteer});
+  if (product === 'firefox' && defaultBrowserOptions.executablePath) {
+    beforeAll(async () => {
+      await require('../misc/install-preferences')(defaultBrowserOptions.executablePath);
+      console.log('RUNNING CUSTOM FIREFOX: ' + defaultBrowserOptions.executablePath);
+    });
+  }
+
+  require('./launcher.spec.js').addTests(testOptions);
+  require('./ignorehttpserrors.spec.js').addTests(testOptions);
 
   describe('Browser', () => {
     beforeAll(async state => {
-      state.browser = await puppeteer.launch(state.defaultBrowserOptions);
+      state.browser = await puppeteer.launch(defaultBrowserOptions);
     });
 
     afterAll(async state => {
@@ -58,8 +57,8 @@ module.exports.addTests = ({testRunner, product, puppeteer}) => testRunner.descr
       state.browser = null;
     });
 
-    require('./browser.spec.js').addTests({testRunner, expect, product, puppeteer});
-    require('./browsercontext.spec.js').addTests({testRunner, expect, product, puppeteer});
+    require('./browser.spec.js').addTests(testOptions);
+    require('./browsercontext.spec.js').addTests(testOptions);
 
     describe('Page', () => {
       beforeEach(async state => {
@@ -73,31 +72,31 @@ module.exports.addTests = ({testRunner, product, puppeteer}) => testRunner.descr
         state.page = null;
       });
 
-      require('./page.spec.js').addTests({testRunner, expect, product, puppeteer});
-      require('./evaluation.spec.js').addTests({testRunner, expect, product, puppeteer});
-      require('./navigation.spec.js').addTests({testRunner, expect, product, puppeteer});
-      require('./dialog.spec.js').addTests({testRunner, expect, product, puppeteer});
-      require('./frame.spec.js').addTests({testRunner, expect, product, puppeteer});
-      require('./jshandle.spec.js').addTests({testRunner, expect, product, puppeteer});
-      require('./elementhandle.spec.js').addTests({testRunner, expect, product, puppeteer});
-      require('./target.spec.js').addTests({testRunner, expect, product, puppeteer});
-      require('./waittask.spec.js').addTests({testRunner, expect, product, puppeteer});
-      require('./queryselector.spec.js').addTests({testRunner, expect, product, puppeteer});
-      require('./emulation.spec.js').addTests({testRunner, expect, product, puppeteer});
-      require('./screenshot.spec.js').addTests({testRunner, expect, product, puppeteer});
+      require('./page.spec.js').addTests(testOptions);
+      require('./evaluation.spec.js').addTests(testOptions);
+      require('./navigation.spec.js').addTests(testOptions);
+      require('./dialog.spec.js').addTests(testOptions);
+      require('./frame.spec.js').addTests(testOptions);
+      require('./jshandle.spec.js').addTests(testOptions);
+      require('./elementhandle.spec.js').addTests(testOptions);
+      require('./target.spec.js').addTests(testOptions);
+      require('./waittask.spec.js').addTests(testOptions);
+      require('./queryselector.spec.js').addTests(testOptions);
+      require('./emulation.spec.js').addTests(testOptions);
+      require('./screenshot.spec.js').addTests(testOptions);
 
       // Input tests
-      require('./keyboard.spec.js').addTests({testRunner, expect, product, puppeteer});
-      require('./mouse.spec.js').addTests({testRunner, expect, product, puppeteer});
-      require('./click.spec.js').addTests({testRunner, expect, product, puppeteer});
-      require('./type.spec.js').addTests({testRunner, expect, product, puppeteer});
-      require('./hover.spec.js').addTests({testRunner, expect, product, puppeteer});
+      require('./keyboard.spec.js').addTests(testOptions);
+      require('./mouse.spec.js').addTests(testOptions);
+      require('./click.spec.js').addTests(testOptions);
+      require('./type.spec.js').addTests(testOptions);
+      require('./hover.spec.js').addTests(testOptions);
 
       // Browser-specific page tests
       if (product === 'firefox')
-        require('./firefoxonly.spec.js').addTests({testRunner, expect, product, puppeteer});
+        require('./firefoxonly.spec.js').addTests(testOptions);
       else
-        require('./chromiumonly.spec.js').addTests({testRunner, expect, product, puppeteer});
+        require('./chromiumonly.spec.js').addTests(testOptions);
     });
   });
 });

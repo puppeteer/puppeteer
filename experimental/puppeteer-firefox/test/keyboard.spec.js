@@ -66,7 +66,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
       await page.keyboard.sendCharacter('a');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('嗨a');
     });
-    it('should press the metaKey', async ({page}) => {
+    it('should press the metaKey', async({page}) => {
       await page.evaluate(() => {
         window.keyPromise = new Promise(resolve => document.addEventListener('keydown', event => resolve(event.key)));
       });

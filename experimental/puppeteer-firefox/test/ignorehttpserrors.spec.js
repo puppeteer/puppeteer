@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
+module.exports.addTests = function({testRunner, expect, product, puppeteer, defaultBrowserOptions}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -23,7 +23,7 @@ module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
 
   describe('ignoreHTTPSErrors', function() {
     beforeAll(async state => {
-      const options = Object.assign({ignoreHTTPSErrors: true}, state.defaultBrowserOptions);
+      const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
       state.browser = await puppeteer.launch(options);
     });
     afterAll(async state => {

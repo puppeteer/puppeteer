@@ -15,7 +15,6 @@
  */
 
 const utils = require('./utils');
-const {TimeoutError} = utils.requireRoot('Errors');
 
 let asyncawait = true;
 try {
@@ -24,10 +23,11 @@ try {
   asyncawait = false;
 }
 
-module.exports.addTests = function({testRunner, expect, product}) {
+module.exports.addTests = function({testRunner, expect, product, Errors}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+  const {TimeoutError} = Errors;
 
   describe('Page.waitFor', function() {
     it('should wait for selector', async({page, server}) => {
@@ -200,6 +200,13 @@ module.exports.addTests = function({testRunner, expect, product}) {
       await waitForFunction;
       expect(fooFound).toBe(true);
     });
+    it('should survive navigations', async({page, server}) => {
+      const watchdog = page.waitForFunction(() => window.__done);
+      await page.goto(server.EMPTY_PAGE);
+      await page.goto(server.PREFIX + '/consolelog.html');
+      await page.evaluate(() => window.__done = true);
+      await watchdog;
+    });
   });
 
   describe('Frame.waitForSelector', function() {
@@ -241,7 +248,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
 
     it('Page.waitForSelector is shortcut for main frame', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE2);
       const otherFrame = page.frames()[1];
       const watchdog = page.waitForSelector('div');
       await otherFrame.evaluate(addElement, 'div');
@@ -251,8 +258,8 @@ module.exports.addTests = function({testRunner, expect, product}) {
     });
 
     it('should run in specified frame', async({page, server}) => {
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE2);
+      await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE2);
       const frame1 = page.frames()[1];
       const frame2 = page.frames()[2];
       const waitForSelectorPromise = frame2.waitForSelector('div');
