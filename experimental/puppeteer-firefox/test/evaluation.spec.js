@@ -132,7 +132,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
       await page.goto(server.PREFIX + '/global-var.html');
       expect(await page.evaluate('globalVar')).toBe(123);
     });
-    it('should use the same sandbox', async({page}) => {
+    it('should modify global environment', async({page}) => {
       await page.evaluate(() => window.globalVar = 123);
       expect(await page.evaluate('globalVar')).toBe(123);
     });

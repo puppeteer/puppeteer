@@ -23,7 +23,7 @@ try {
   asyncawait = false;
 }
 
-module.exports.addTests = function({testRunner, expect}) {
+module.exports.addTests = function({testRunner, expect, FFOX}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -32,6 +32,37 @@ module.exports.addTests = function({testRunner, expect}) {
     it('should work', async({page, server}) => {
       const result = await page.evaluate(() => 7 * 3);
       expect(result).toBe(21);
+    });
+    it('should transfer NaN', async({page, server}) => {
+      const result = await page.evaluate(a => a, NaN);
+      expect(Object.is(result, NaN)).toBe(true);
+    });
+    it('should transfer -0', async({page, server}) => {
+      const result = await page.evaluate(a => a, -0);
+      expect(Object.is(result, -0)).toBe(true);
+    });
+    it('should transfer Infinity', async({page, server}) => {
+      const result = await page.evaluate(a => a, Infinity);
+      expect(Object.is(result, Infinity)).toBe(true);
+    });
+    it('should transfer -Infinity', async({page, server}) => {
+      const result = await page.evaluate(a => a, -Infinity);
+      expect(Object.is(result, -Infinity)).toBe(true);
+    });
+    it('should transfer arrays', async({page, server}) => {
+      const result = await page.evaluate(a => a, [1, 2, 3]);
+      expect(result).toEqual([1,2,3]);
+    });
+    it('should transfer arrays as arrays, not objects', async({page, server}) => {
+      const result = await page.evaluate(a => Array.isArray(a), [1, 2, 3]);
+      expect(result).toBe(true);
+    });
+    it('should modify global environment', async({page}) => {
+      await page.evaluate(() => window.globalVar = 123);
+      expect(await page.evaluate('globalVar')).toBe(123);
+    });
+    (FFOX ? xit : it)('should return undefined for objects with symbols', async({page, server}) => {
+      expect(await page.evaluate(() => [Symbol('foo4')])).toBe(undefined);
     });
     (asyncawait ? it : xit)('should work with function shorthands', async({page, server}) => {
       // trick node6 transpiler to not touch our object.
