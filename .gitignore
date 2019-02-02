@@ -1,5 +1,6 @@
 /node_modules/
-/test/output
+/test/output-chromium
+/test/output-firefox
 /test/test-user-data-dir*
 /.local-chromium/
 /.dev_profile*

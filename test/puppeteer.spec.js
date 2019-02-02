@@ -28,6 +28,7 @@ module.exports.addTests = ({testRunner, product, puppeteer, defaultBrowserOption
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   const CHROME = product === 'Chromium';
+  const FFOX = product === 'Firefox';
 
   if (defaultBrowserOptions.executablePath) {
     console.warn(`${YELLOW_COLOR}WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}${RESET_COLOR}`);
@@ -48,6 +49,8 @@ module.exports.addTests = ({testRunner, product, puppeteer, defaultBrowserOption
   const testOptions = {
     testRunner,
     product,
+    FFOX,
+    CHROME,
     puppeteer,
     expect,
     defaultBrowserOptions,
@@ -121,6 +124,9 @@ module.exports.addTests = ({testRunner, product, puppeteer, defaultBrowserOption
         require('./coverage.spec.js').addTests(testOptions);
         require('./network.spec.js').addTests(testOptions);
         require('./worker.spec.js').addTests(testOptions);
+        require('./chromiumonly.spec.js').addTests(testOptions);
+      } else {
+        require('./firefoxonly.spec.js').addTests(testOptions);
       }
     });
 
