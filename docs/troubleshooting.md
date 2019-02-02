@@ -212,6 +212,7 @@ RUN chmod +x /usr/local/bin/dumb-init
 # you'll need to launch puppeteer with:
 #     browser.launch({executablePath: 'google-chrome-unstable'})
 # ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+# ENV PUPPETEER_EXECUTABLE_PATH /usr/bin/chromium-browser
 
 # Install puppeteer so it's available in the container.
 RUN npm i puppeteer
@@ -268,6 +269,7 @@ RUN apk update && apk upgrade && \
 
 # Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+ENV PUPPETEER_EXECUTABLE_PATH /usr/bin/chromium-browser
 
 # Puppeteer v1.9.0 works with Chromium 71.
 RUN yarn add puppeteer@1.9.0
