@@ -71,6 +71,15 @@ module.exports.addTests = function({testRunner, expect, headless}) {
     });
   });
 
+  describe('Page.Events.Load', function() {
+    it('should fire when expected', async({page, server}) => {
+      await Promise.all([
+        page.goto('about:blank'),
+        utils.waitEvent(page, 'load'),
+      ]);
+    });
+  });
+
   (asyncawait ? describe : xdescribe)('Async stacks', () => {
     it('should work', async({page, server}) => {
       server.setRoute('/empty.html', (req, res) => {

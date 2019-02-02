@@ -136,6 +136,26 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(detachedFrames.length).toBe(4);
       expect(navigatedFrames.length).toBe(1);
     });
+    it('should support framesets', async({page, server}) => {
+      let attachedFrames = [];
+      let detachedFrames = [];
+      let navigatedFrames = [];
+      page.on('frameattached', frame => attachedFrames.push(frame));
+      page.on('framedetached', frame => detachedFrames.push(frame));
+      page.on('framenavigated', frame => navigatedFrames.push(frame));
+      await page.goto(server.PREFIX + '/frames/frameset.html');
+      expect(attachedFrames.length).toBe(4);
+      expect(detachedFrames.length).toBe(0);
+      expect(navigatedFrames.length).toBe(5);
+
+      attachedFrames = [];
+      detachedFrames = [];
+      navigatedFrames = [];
+      await page.goto(server.EMPTY_PAGE);
+      expect(attachedFrames.length).toBe(0);
+      expect(detachedFrames.length).toBe(4);
+      expect(navigatedFrames.length).toBe(1);
+    });
     it('should report frame.name()', async({page, server}) => {
       await utils.attachFrame(page, 'theFrameId', server.EMPTY_PAGE);
       await page.evaluate(url => {
