@@ -61,6 +61,10 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await page.evaluate(() => window.globalVar = 123);
       expect(await page.evaluate('globalVar')).toBe(123);
     });
+    it('should evaluate in the page context', async({page, server}) => {
+      await page.goto(server.PREFIX + '/global-var.html');
+      expect(await page.evaluate('globalVar')).toBe(123);
+    });
     (FFOX ? xit : it)('should return undefined for objects with symbols', async({page, server}) => {
       expect(await page.evaluate(() => [Symbol('foo4')])).toBe(undefined);
     });
@@ -257,6 +261,12 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await page.frames()[1].evaluate(() => window.FOO = 'bar');
       expect(await page.frames()[0].evaluate(() => window.FOO)).toBe('foo');
       expect(await page.frames()[1].evaluate(() => window.FOO)).toBe('bar');
+    });
+    it('should have correct execution contexts', async({page, server}) => {
+      await page.goto(server.PREFIX + '/frames/one-frame.html');
+      expect(page.frames().length).toBe(2);
+      expect(await page.frames()[0].evaluate(() => document.body.textContent.trim())).toBe('');
+      expect(await page.frames()[1].evaluate(() => document.body.textContent.trim())).toBe(`Hi, I'm frame`);
     });
     it('should execute after cross-site navigation', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
