@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-module.exports.addTests = function({testRunner, expect, product}) {
+module.exports.addTests = function({testRunner, expect, product, headless}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Chromium-specific tests', function() {
     describe('Browser.version', function() {
-      xit('should return whether we are in headless', async({browser}) => {
+      it('should return whether we are in headless', async({browser}) => {
         const version = await browser.version();
         expect(version.length).toBeGreaterThan(0);
         expect(version.startsWith('Headless')).toBe(headless);
