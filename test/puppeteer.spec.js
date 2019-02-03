@@ -22,13 +22,21 @@ const {Matchers} = require('../utils/testrunner/');
 const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
 
-module.exports.addTests = ({testRunner, product, puppeteer, Errors, DeviceDescriptors, defaultBrowserOptions}) => {
+module.exports.addTests = ({testRunner, product, puppeteer, Errors, DeviceDescriptors, slowMo, headless}) => {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   const CHROME = product === 'Chromium';
   const FFOX = product === 'Firefox';
+
+  const defaultBrowserOptions = {
+    handleSIGINT: false,
+    executablePath: CHROME ? process.env.CHROME : process.env.FFOX,
+    slowMo,
+    headless,
+    dumpio: (process.env.DUMPIO || 'false').trim().toLowerCase() === 'true',
+  };
 
   if (defaultBrowserOptions.executablePath) {
     console.warn(`${YELLOW_COLOR}WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}${RESET_COLOR}`);
@@ -58,6 +66,11 @@ module.exports.addTests = ({testRunner, product, puppeteer, Errors, DeviceDescri
     defaultBrowserOptions,
     headless: !!defaultBrowserOptions.headless,
   };
+
+  beforeAll(async () => {
+    if (FFOX && defaultBrowserOptions.executablePath)
+      await require('../experimental/puppeteer-firefox/misc/install-preferences')(defaultBrowserOptions.executablePath);
+  });
 
   describe('Browser', function() {
     beforeAll(async state => {
