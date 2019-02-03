@@ -15,12 +15,12 @@
  */
 
 const utils = require('./utils');
-const {TimeoutError} = utils.requireRoot('Errors');
 
-module.exports.addTests = function({testRunner, expect, puppeteer}) {
+module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+  const {TimeoutError} = Errors;
 
   describe('BrowserContext', function() {
     it('should have default context', async function({browser, server}) {

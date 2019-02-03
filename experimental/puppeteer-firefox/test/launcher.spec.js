@@ -15,7 +15,7 @@
  */
 const fs = require('fs');
 
-module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
+module.exports.addTests = function({testRunner, expect, product, puppeteer, defaultBrowserOptions}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -23,14 +23,14 @@ module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
   const FFOX = product === 'firefox';
   const CHROME = product === 'chromium';
   describe('Launcher.executablePath', function() {
-    it('should work', async() => {
-      const executablePath = puppeteer.executablePath({product});
+    it('should work', async({server}) => {
+      const executablePath = puppeteer.executablePath();
       expect(fs.existsSync(executablePath)).toBe(true);
     });
   });
 
   describe('Launcher.launch', () => {
-    it('should set the default viewport', async({defaultBrowserOptions}) => {
+    it('should set the default viewport', async() => {
       const options = Object.assign({}, defaultBrowserOptions, {
         defaultViewport: {
           width: 456,
@@ -43,7 +43,7 @@ module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
       expect(await page.evaluate('window.innerHeight')).toBe(789);
       await browser.close();
     });
-    it('should disable the default viewport', async({defaultBrowserOptions}) => {
+    it('should disable the default viewport', async() => {
       const options = Object.assign({}, defaultBrowserOptions, {
         defaultViewport: null
       });

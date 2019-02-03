@@ -17,10 +17,11 @@
 const utils = require('./utils');
 const {waitEvent} = utils;
 
-module.exports.addTests = function({testRunner, expect}) {
+module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+  const {TimeoutError} = Errors;
 
   describe('Target', function() {
     it('Browser.targets should return all of the targets', async({page, server, browser}) => {
@@ -140,6 +141,27 @@ module.exports.addTests = function({testRunner, expect}) {
       expect((await createdTarget.page()).url()).toBe(server.PREFIX + '/popup/popup.html');
       expect(createdTarget.opener()).toBe(page.target());
       expect(page.target().opener()).toBe(null);
+    });
+  });
+
+  describe('Browser.waitForTarget', () => {
+    it('should wait for a target', async function({browser, server}) {
+      let resolved = false;
+      const targetPromise = browser.waitForTarget(target => target.url() === server.EMPTY_PAGE);
+      targetPromise.then(() => resolved = true);
+      const page = await browser.newPage();
+      expect(resolved).toBe(false);
+      await page.goto(server.EMPTY_PAGE);
+      const target = await targetPromise;
+      expect(await target.page()).toBe(page);
+      await page.close();
+    });
+    it('should timeout waiting for a non-existent target', async function({browser, server}) {
+      let error = null;
+      await browser.waitForTarget(target => target.url() === server.EMPTY_PAGE, {
+        timeout: 1
+      }).catch(e => error = e);
+      expect(error).toBeInstanceOf(TimeoutError);
     });
   });
 };

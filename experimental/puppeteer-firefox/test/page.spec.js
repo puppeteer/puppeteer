@@ -75,12 +75,11 @@ module.exports.addTests = function({testRunner, expect, product}) {
       await newPage.close();
       expect(newPage.isClosed()).toBe(true);
     });
-    it('should emit the close event', async({browser}) => {
-      const newPage = await browser.newPage();
-      let gotClosedEvent = false;
-      newPage.on('close', () => gotClosedEvent = true);
+    it('should work with page.close', async function({ page, context, server }) {
+      const newPage = await context.newPage();
+      const closedPromise = new Promise(x => newPage.on('close', x));
       await newPage.close();
-      expect(gotClosedEvent).toBe(true);
+      await closedPromise;
     });
   });
 

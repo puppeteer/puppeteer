@@ -15,14 +15,24 @@
  */
 
 const utils = require('./utils');
-const {TimeoutError} = utils.requireRoot('Errors');
 
-module.exports.addTests = function({testRunner, expect}) {
+module.exports.addTests = function({testRunner, expect, Errors}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+  const {TimeoutError} = Errors;
 
   describe('Page.goto', function() {
+    it('should work', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      expect(page.url()).toBe(server.EMPTY_PAGE);
+    });
+    it('should work with redirects', async({page, server}) => {
+      server.setRedirect('/redirect/1.html', '/redirect/2.html');
+      server.setRedirect('/redirect/2.html', '/empty.html');
+      await page.goto(server.PREFIX + '/redirect/1.html');
+      expect(page.url()).toBe(server.EMPTY_PAGE);
+    });
     it('should navigate to about:blank', async({page, server}) => {
       const response = await page.goto('about:blank');
       expect(response).toBe(null);
@@ -521,6 +531,15 @@ module.exports.addTests = function({testRunner, expect}) {
       ]);
       await page.$eval('iframe', frame => frame.remove());
       await navigationPromise;
+    });
+  });
+
+  describe('Page.reload', function() {
+    it('should work', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => window._foo = 10);
+      await page.reload();
+      expect(await page.evaluate(() => window._foo)).toBe(undefined);
     });
   });
 };

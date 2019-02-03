@@ -17,10 +17,6 @@ const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
 const {waitEvent} = utils;
-const {TimeoutError} = utils.requireRoot('Errors');
-
-const DeviceDescriptors = utils.requireRoot('DeviceDescriptors');
-const iPhone = DeviceDescriptors['iPhone 6'];
 
 let asyncawait = true;
 try {
@@ -29,10 +25,13 @@ try {
   asyncawait = false;
 }
 
-module.exports.addTests = function({testRunner, expect, headless}) {
+module.exports.addTests = function({testRunner, expect, headless, Errors, DeviceDescriptors}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+
+  const {TimeoutError} = Errors;
+  const iPhone = DeviceDescriptors['iPhone 6'];
 
   describe('Page.close', function() {
     it('should reject all promises when page is closed', async({context}) => {

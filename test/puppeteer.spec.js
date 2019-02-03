@@ -22,7 +22,7 @@ const {Matchers} = require('../utils/testrunner/');
 const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
 
-module.exports.addTests = ({testRunner, product, puppeteer, defaultBrowserOptions}) => {
+module.exports.addTests = ({testRunner, product, puppeteer, Errors, DeviceDescriptors, defaultBrowserOptions}) => {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -52,6 +52,8 @@ module.exports.addTests = ({testRunner, product, puppeteer, defaultBrowserOption
     FFOX,
     CHROME,
     puppeteer,
+    Errors,
+    DeviceDescriptors,
     expect,
     defaultBrowserOptions,
     headless: !!defaultBrowserOptions.headless,

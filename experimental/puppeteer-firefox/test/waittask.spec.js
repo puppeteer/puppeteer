@@ -123,11 +123,9 @@ module.exports.addTests = function({testRunner, expect, product}) {
       await watchdog;
     });
     it('should survive navigations', async({page, server}) => {
-      const watchdog = page.waitForFunction(() => {
-        return window.__done;
-      });
+      const watchdog = page.waitForFunction(() => window.__done);
       await page.goto(server.EMPTY_PAGE);
-      await page.goto(server.EMPTY_PAGE2);
+      await page.goto(server.PREFIX + '/consolelog.html');
       await page.evaluate(() => window.__done = true);
       await watchdog;
     });

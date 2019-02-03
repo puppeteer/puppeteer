@@ -80,18 +80,18 @@ module.exports.addTests = function({testRunner, expect, product}) {
   describe('Browser.waitForTarget', () => {
     it('should wait for a target', async function({browser, server}) {
       let resolved = false;
-      const targetPromise = browser.waitForTarget(target => target.url() === server.EMPTY_PAGE2);
+      const targetPromise = browser.waitForTarget(target => target.url() === server.EMPTY_PAGE);
       targetPromise.then(() => resolved = true);
       const page = await browser.newPage();
       expect(resolved).toBe(false);
-      await page.goto(server.EMPTY_PAGE2);
+      await page.goto(server.EMPTY_PAGE);
       const target = await targetPromise;
       expect(await target.page()).toBe(page);
       await page.close();
     });
     it('should timeout waiting for a non-existent target', async function({browser, server}) {
       let error = null;
-      await browser.waitForTarget(target => target.url() === server.EMPTY_PAGE2, {
+      await browser.waitForTarget(target => target.url() === server.EMPTY_PAGE, {
         timeout: 1
       }).catch(e => error = e);
       expect(error).toBeInstanceOf(TimeoutError);

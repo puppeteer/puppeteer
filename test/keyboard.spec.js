@@ -15,19 +15,30 @@
  */
 
 const utils = require('./utils');
+const os = require('os');
 
-module.exports.addTests = function({testRunner, expect}) {
+module.exports.addTests = function({testRunner, expect, FFOX}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Keyboard', function() {
-    it('should type into the textarea', async({page, server}) => {
-      await page.goto(server.PREFIX + '/input/textarea.html');
-
-      const textarea = await page.$('textarea');
-      await textarea.type('Type in this text!');
-      expect(await page.evaluate(() => result)).toBe('Type in this text!');
+    it('should type into a textarea', async({page, server}) => {
+      await page.evaluate(() => {
+        const textarea = document.createElement('textarea');
+        document.body.appendChild(textarea);
+        textarea.focus();
+      });
+      const text = 'Hello world. I am the text that was typed!';
+      await page.keyboard.type(text);
+      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe(text);
+    });
+    it('should press the metaKey', async({page}) => {
+      await page.evaluate(() => {
+        window.keyPromise = new Promise(resolve => document.addEventListener('keydown', event => resolve(event.key)));
+      });
+      await page.keyboard.press('Meta');
+      expect(await page.evaluate('keyPromise')).toBe(FFOX && os.platform() !== 'darwin' ? 'OS' : 'Meta');
     });
     it('should move with the arrow keys', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');

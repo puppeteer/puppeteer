@@ -24,12 +24,36 @@ function dimensions() {
   };
 }
 
-module.exports.addTests = function({testRunner, expect}) {
+module.exports.addTests = function({testRunner, expect, FFOX}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Mouse', function() {
+    it('should click the document', async({page, server}) => {
+      await page.evaluate(() => {
+        window.clickPromise = new Promise(resolve => {
+          document.addEventListener('click', event => {
+            resolve({
+              type: event.type,
+              detail: event.detail,
+              clientX: event.clientX,
+              clientY: event.clientY,
+              isTrusted: event.isTrusted,
+              button: event.button
+            });
+          });
+        });
+      });
+      await page.mouse.click(50, 60);
+      const event = await page.evaluate(() => window.clickPromise);
+      expect(event.type).toBe('click');
+      expect(event.detail).toBe(1);
+      expect(event.clientX).toBe(50);
+      expect(event.clientY).toBe(60);
+      expect(event.isTrusted).toBe(true);
+      expect(event.button).toBe(0);
+    });
     it('should resize the textarea', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       const {x, y, width, height} = await page.evaluate(dimensions);
@@ -74,17 +98,20 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.goto(server.PREFIX + '/input/scrollable.html');
       await page.evaluate(() => document.querySelector('#button-3').addEventListener('mousedown', e => window.lastEvent = e, true));
       const modifiers = {'Shift': 'shiftKey', 'Control': 'ctrlKey', 'Alt': 'altKey', 'Meta': 'metaKey'};
+      // In Firefox, the Meta modifier only exists on Mac
+      if (FFOX && os.platform() !== 'darwin')
+        delete modifiers['Meta'];
       for (const modifier in modifiers) {
         await page.keyboard.down(modifier);
         await page.click('#button-3');
         if (!(await page.evaluate(mod => window.lastEvent[mod], modifiers[modifier])))
-          fail(modifiers[modifier] + ' should be true');
+          throw new Error(modifiers[modifier] + ' should be true');
         await page.keyboard.up(modifier);
       }
       await page.click('#button-3');
       for (const modifier in modifiers) {
         if ((await page.evaluate(mod => window.lastEvent[mod], modifiers[modifier])))
-          fail(modifiers[modifier] + ' should be false');
+          throw new Error(modifiers[modifier] + ' should be false');
       }
     });
     it('should tween mouse movement', async({page, server}) => {
