@@ -780,6 +780,19 @@ function getScreenshotMimeType(options) {
 }
 
 class ElementHandle extends JSHandle {
+  /**
+   * @return {?Frame}
+   */
+  async contentFrame() {
+    const {frameId} = await this._session.send('Page.contentFrame', {
+      frameId: this._frameId,
+      objectId: this._objectId,
+    });
+    if (!frameId)
+      return null;
+    const frame = this._frame._page._frames.get(frameId);
+    return frame;
+  }
 
   /**
    * @override
