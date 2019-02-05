@@ -20,13 +20,6 @@ const utils = require('./utils');
 
 const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
 const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
-const defaultBrowserOptions = {
-  handleSIGINT: false,
-  executablePath: process.env.CHROME,
-  slowMo,
-  headless,
-  dumpio: (process.env.DUMPIO || 'false').trim().toLowerCase() === 'true',
-};
 
 let parallel = 1;
 if (process.env.PPTR_PARALLEL_TESTS)
@@ -93,8 +86,9 @@ if (process.env.BROWSER !== 'firefox') {
       puppeteer: utils.requireRoot('index'),
       Errors: utils.requireRoot('Errors'),
       DeviceDescriptors: utils.requireRoot('DeviceDescriptors'),
-      defaultBrowserOptions,
       testRunner,
+      slowMo,
+      headless,
     });
     if (process.env.COVERAGE)
       utils.recordAPICoverage(testRunner, require('../lib/api'), CHROMIUM_NO_COVERAGE);
@@ -106,8 +100,9 @@ if (process.env.BROWSER !== 'firefox') {
       puppeteer: require('../experimental/puppeteer-firefox'),
       Errors: require('../experimental/puppeteer-firefox/Errors'),
       DeviceDescriptors: utils.requireRoot('DeviceDescriptors'),
-      defaultBrowserOptions,
       testRunner,
+      slowMo,
+      headless,
     });
   });
 }
