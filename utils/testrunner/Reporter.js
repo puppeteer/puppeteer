@@ -20,9 +20,14 @@ const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
 
 class Reporter {
-  constructor(runner, testFolder = null) {
+  constructor(runner, options = {}) {
+    const {
+      projectFolder = null,
+      showSlowTests = 3,
+    } = options;
     this._runner = runner;
-    this._testFolder = testFolder;
+    this._projectFolder = projectFolder;
+    this._showSlowTests = showSlowTests;
     runner.on('started', this._onStarted.bind(this));
     runner.on('terminated', this._onTerminated.bind(this));
     runner.on('finished', this._onFinished.bind(this));
@@ -31,9 +36,13 @@ class Reporter {
     this._workersState = new Map();
   }
 
-  _onStarted() {
+  _onStarted(runnableTests) {
     this._timestamp = Date.now();
-    console.log(`Running ${YELLOW_COLOR}${this._runner.parallel()}${RESET_COLOR} worker(s):\n`);
+    const allTests = this._runner.tests();
+    if (allTests.length === runnableTests.length)
+      console.log(`Running all ${YELLOW_COLOR}${runnableTests.length}${RESET_COLOR} tests on ${YELLOW_COLOR}${this._runner.parallel()}${RESET_COLOR} worker(s):\n`);
+    else
+      console.log(`Running ${YELLOW_COLOR}${runnableTests.length}${RESET_COLOR} focused tests out of total ${YELLOW_COLOR}${allTests.length}${RESET_COLOR} on ${YELLOW_COLOR}${this._runner.parallel()}${RESET_COLOR} worker(s):\n`);
   }
 
   _onTerminated(message, error) {
@@ -102,17 +111,31 @@ class Reporter {
       }
     }
 
-    const tests = this._runner.tests();
-    const skippedTests = tests.filter(test => test.result === 'skipped');
+    const skippedTests = this._runner.skippedTests();
     if (skippedTests.length > 0) {
       console.log('\nSkipped:');
       for (let i = 0; i < skippedTests.length; ++i) {
         const test = skippedTests[i];
-        console.log(`${i + 1}) ${test.fullName}`);
-        console.log(`  ${YELLOW_COLOR}Temporary disabled with xit${RESET_COLOR} ${formatTestLocation(test)}\n`);
+        console.log(`${i + 1}) ${test.fullName} (${YELLOW_COLOR}${formatTestLocation(test)}${RESET_COLOR})`);
+        console.log(`  ${YELLOW_COLOR}Temporary disabled with xit${RESET_COLOR}`);
       }
     }
 
+    if (this._showSlowTests) {
+      const slowTests = this._runner.passedTests().sort((a, b) => {
+        const aDuration = a.endTimestamp - a.startTimestamp;
+        const bDuration = b.endTimestamp - b.startTimestamp;
+        return bDuration - aDuration;
+      }).slice(0, this._showSlowTests);
+      console.log(`\nSlowest tests:`);
+      for (let i = 0; i < slowTests.length; ++i) {
+        const test = slowTests[i];
+        const duration = test.endTimestamp - test.startTimestamp;
+        console.log(`  (${i + 1}) ${YELLOW_COLOR}${duration / 1000}s${RESET_COLOR} - ${test.fullName} (${YELLOW_COLOR}${formatTestLocation(test)}${RESET_COLOR})`);
+      }
+    }
+
+    const tests = this._runner.tests();
     const executedTests = tests.filter(test => test.result);
     console.log(`\nRan ${executedTests.length} of ${tests.length} test(s)`);
     const milliseconds = Date.now() - this._timestamp;
@@ -121,7 +144,7 @@ class Reporter {
   }
 
   _beautifyStack(stack) {
-    if (!this._testFolder)
+    if (!this._projectFolder)
       return stack;
     const lines = stack.split('\n').map(line => '    ' + line);
     // Find last stack line that include testrunner code.
@@ -133,7 +156,7 @@ class Reporter {
     if (index >= lines.length)
       return stack;
     const line = lines[index];
-    const fromIndex = line.lastIndexOf(this._testFolder) + this._testFolder.length;
+    const fromIndex = line.lastIndexOf(this._projectFolder) + this._projectFolder.length;
     const toIndex = line.lastIndexOf(')');
     lines[index] = line.substring(0, fromIndex) + YELLOW_COLOR + line.substring(fromIndex, toIndex) + RESET_COLOR + line.substring(toIndex);
     return lines.join('\n');
