@@ -67,7 +67,7 @@ module.exports.addTests = ({testRunner, product, puppeteer, Errors, DeviceDescri
     headless: !!defaultBrowserOptions.headless,
   };
 
-  beforeAll(async () => {
+  beforeAll(async() => {
     if (FFOX && defaultBrowserOptions.executablePath)
       await require('../experimental/puppeteer-firefox/misc/install-preferences')(defaultBrowserOptions.executablePath);
   });
