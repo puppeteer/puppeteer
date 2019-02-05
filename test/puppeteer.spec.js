@@ -22,13 +22,16 @@ const {Matchers} = require('../utils/testrunner/');
 const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
 
-module.exports.addTests = ({testRunner, product, puppeteer, Errors, DeviceDescriptors, slowMo, headless}) => {
+module.exports.addTests = ({testRunner, product, puppeteer, Errors, DeviceDescriptors}) => {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   const CHROME = product === 'Chromium';
   const FFOX = product === 'Firefox';
+
+  const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
+  const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
 
   const defaultBrowserOptions = {
     handleSIGINT: false,

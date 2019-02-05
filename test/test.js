@@ -18,9 +18,6 @@ const {TestServer} = require('../utils/testserver/');
 const {TestRunner, Reporter} = require('../utils/testrunner/');
 const utils = require('./utils');
 
-const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
-const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
-
 let parallel = 1;
 if (process.env.PPTR_PARALLEL_TESTS)
   parallel = parseInt(process.env.PPTR_PARALLEL_TESTS.trim(), 10);
@@ -29,7 +26,10 @@ if (parallelArgIndex !== -1)
   parallel = parseInt(process.argv[parallelArgIndex + 1], 10);
 require('events').defaultMaxListeners *= parallel;
 
-const timeout = slowMo ? 0 : 10 * 1000;
+// Timeout to 20 seconds on Appveyor instances.
+let timeout = process.env.APPVEYOR ? 20 * 1000 : 10 * 1000;
+if (!isNaN(process.env.TIMEOUT))
+  timeout = parseInt(process.env.TIMEOUT, 10);
 const testRunner = new TestRunner({timeout, parallel});
 const {describe, fdescribe, beforeAll, afterAll, beforeEach, afterEach} = testRunner;
 
@@ -76,7 +76,6 @@ const CHROMIUM_NO_COVERAGE = new Set([
   'securityDetails.issuer',
   'securityDetails.validFrom',
   'securityDetails.validTo',
-  ...(headless ? [] : ['page.pdf']),
 ]);
 
 if (process.env.BROWSER !== 'firefox') {
@@ -87,8 +86,6 @@ if (process.env.BROWSER !== 'firefox') {
       Errors: utils.requireRoot('Errors'),
       DeviceDescriptors: utils.requireRoot('DeviceDescriptors'),
       testRunner,
-      slowMo,
-      headless,
     });
     if (process.env.COVERAGE)
       utils.recordAPICoverage(testRunner, require('../lib/api'), CHROMIUM_NO_COVERAGE);
@@ -101,8 +98,6 @@ if (process.env.BROWSER !== 'firefox') {
       Errors: require('../experimental/puppeteer-firefox/Errors'),
       DeviceDescriptors: utils.requireRoot('DeviceDescriptors'),
       testRunner,
-      slowMo,
-      headless,
     });
   });
 }
