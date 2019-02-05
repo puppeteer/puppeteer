@@ -107,5 +107,8 @@ if (process.env.CI && testRunner.hasFocusedTestsOrSuites()) {
   process.exit(1);
 }
 
-new Reporter(testRunner, utils.projectRoot());
+new Reporter(testRunner, {
+  projectFolder: utils.projectRoot(),
+  showSlowTests: process.env.CI ? 5 : 0,
+});
 testRunner.run();

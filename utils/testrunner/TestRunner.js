@@ -108,6 +108,8 @@ class Test {
     // Test results
     this.result = null;
     this.error = null;
+    this.startTimestamp = 0;
+    this.endTimestamp = 0;
   }
 }
 
@@ -267,7 +269,6 @@ class TestRunner extends EventEmitter {
     // Default timeout is 10 seconds.
     this._timeout = options.timeout === 0 ? 2147483647 : options.timeout || 10 * 1000;
     this._parallel = options.parallel || 1;
-    this._retryFailures = !!options.retryFailures;
 
     this._hasFocusedTestsOrSuites = false;
 
@@ -322,8 +323,9 @@ class TestRunner extends EventEmitter {
   }
 
   async run() {
-    this.emit(TestRunner.Events.Started);
-    const pass = new TestPass(this, this._rootSuite, this._runnableTests(), this._parallel);
+    const runnableTests = this._runnableTests();
+    this.emit(TestRunner.Events.Started, runnableTests);
+    const pass = new TestPass(this, this._rootSuite, runnableTests, this._parallel);
     const termination = await pass.run();
     if (termination)
       this.emit(TestRunner.Events.Terminated, termination.message, termination.error);
@@ -376,15 +378,25 @@ class TestRunner extends EventEmitter {
     return this._tests.filter(test => test.result === 'failed' || test.result === 'timedout');
   }
 
+  passedTests() {
+    return this._tests.filter(test => test.result === 'ok');
+  }
+
+  skippedTests() {
+    return this._tests.filter(test => test.result === 'skipped');
+  }
+
   parallel() {
     return this._parallel;
   }
 
   _willStartTest(test, workerId) {
+    test.startTimestamp = Date.now();
     this.emit(TestRunner.Events.TestStarted, test, workerId);
   }
 
   _didFinishTest(test, workerId) {
+    test.endTimestamp = Date.now();
     this.emit(TestRunner.Events.TestFinished, test, workerId);
   }
 }
