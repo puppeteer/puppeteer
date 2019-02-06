@@ -75,7 +75,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await page.keyboard.sendCharacter('a');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('嗨a');
     });
-    it_fails_firefox('should report shiftKey', async({page, server}) => {
+    it_fails_ffox('should report shiftKey', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/keyboard.html');
       const keyboard = page.keyboard;
       const codeForKey = {'Shift': 16, 'Alt': 18, 'Meta': 91, 'Control': 17};
