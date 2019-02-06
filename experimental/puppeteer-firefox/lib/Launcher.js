@@ -72,11 +72,6 @@ class Launcher {
 
     const stdio = ['pipe', 'pipe', 'pipe'];
     const firefoxProcess = childProcess.spawn(
-        // On linux Juggler ships the libstdc++ it was linked against.
-        env: os.platform() === 'linux' ? {
-          ...process.env,
-          LD_LIBRARY_PATH: `${executablePath}:${process.env.LD_LIBRARY_PATH}`,
-        } : process.env,
         executablePath,
         firefoxArguments,
         {
@@ -84,7 +79,12 @@ class Launcher {
           // process group, making it possible to kill child process tree with `.kill(-pid)` command.
           // @see https://nodejs.org/api/child_process.html#child_process_options_detached
           detached: process.platform !== 'win32',
-          stdio
+          stdio,
+          // On linux Juggler ships the libstdc++ it was linked against.
+          env: os.platform() === 'linux' ? {
+            ...process.env,
+            LD_LIBRARY_PATH: `${executablePath}:${process.env.LD_LIBRARY_PATH}`,
+          } : process.env,
         }
     );
 
