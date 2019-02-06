@@ -72,6 +72,11 @@ class Launcher {
 
     const stdio = ['pipe', 'pipe', 'pipe'];
     const firefoxProcess = childProcess.spawn(
+        // On linux Juggler ships the libstdc++ it was linked against.
+        env: os.platform() === 'linux' ? {
+          ...process.env,
+          LD_LIBRARY_PATH: `${executablePath}:${process.env.LD_LIBRARY_PATH}`,
+        } : process.env,
         executablePath,
         firefoxArguments,
         {
