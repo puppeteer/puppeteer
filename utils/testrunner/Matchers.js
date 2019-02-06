@@ -126,5 +126,5 @@ function stringify(value) {
     return result;
   }
 
-  return JSON.stringify(stabilize(null, value), stabilize);
+  return JSON.stringify(stabilize(null, value), stabilize, 2);
 }

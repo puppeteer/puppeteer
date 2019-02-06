@@ -13,7 +13,7 @@
         log('Keydown:', event.key, event.code, event.which, modifiers(event));
       });
       textarea.addEventListener('keypress', event => {
-        log('Keypress:', event.key, event.code, event.which, event.keyCode, event.charCode, modifiers(event));
+        log('Keypress:', event.key, event.code, event.which, event.charCode, modifiers(event));
       });
       textarea.addEventListener('keyup', event => {
         log('Keyup:', event.key, event.code, event.which, modifiers(event));

@@ -128,13 +128,16 @@ const utils = module.exports = {
   /**
    * @param {!Frame} frame
    * @param {string=} indentation
-   * @return {string}
+   * @return {Array<string>}
    */
   dumpFrames: function(frame, indentation) {
     indentation = indentation || '';
-    let result = indentation + frame.url().replace(/:\d{4}\//, ':<PORT>/');
+    let description = frame.url().replace(/:\d{4}\//, ':<PORT>/');
+    if (frame.name())
+      description += ' (' + frame.name() + ')';
+    const result = [indentation + description];
     for (const child of frame.childFrames())
-      result += '\n' + utils.dumpFrames(child, '    ' + indentation);
+      result.push(...utils.dumpFrames(child, '    ' + indentation));
     return result;
   },
 
