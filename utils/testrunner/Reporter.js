@@ -116,7 +116,7 @@ class Reporter {
       console.log('\nSkipped:');
       for (let i = 0; i < skippedTests.length; ++i) {
         const test = skippedTests[i];
-        console.log(`${i + 1}) ${test.fullName} (${YELLOW_COLOR}${formatTestLocation(test)}${RESET_COLOR})`);
+        console.log(`${i + 1}) ${test.fullName} (${formatTestLocation(test)})`);
         console.log(`  ${YELLOW_COLOR}Temporary disabled with xit${RESET_COLOR}`);
       }
     }
@@ -131,7 +131,7 @@ class Reporter {
       for (let i = 0; i < slowTests.length; ++i) {
         const test = slowTests[i];
         const duration = test.endTimestamp - test.startTimestamp;
-        console.log(`  (${i + 1}) ${YELLOW_COLOR}${duration / 1000}s${RESET_COLOR} - ${test.fullName} (${YELLOW_COLOR}${formatTestLocation(test)}${RESET_COLOR})`);
+        console.log(`  (${i + 1}) ${YELLOW_COLOR}${duration / 1000}s${RESET_COLOR} - ${test.fullName} (${formatTestLocation(test)})`);
       }
     }
 
@@ -183,7 +183,7 @@ function formatTestLocation(test) {
   const location = test.location;
   if (!location)
     return '';
-  return `${location.fileName}:${location.lineNumber}:${location.columnNumber}`;
+  return `${YELLOW_COLOR}${location.fileName}:${location.lineNumber}:${location.columnNumber}${RESET_COLOR}`;
 }
 
 module.exports = Reporter;
