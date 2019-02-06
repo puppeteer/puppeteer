@@ -4,7 +4,7 @@
 
 > Use Puppeteer's API with Firefox
 
-> **BEWARE**: This project is experimental. 🐊 live here.
+> **BEWARE**: This project is experimental. 🐊 live here. [Is Puppeteer-Firefox Ready?](https://aslushnikov.github.io/ispuppeteerfirefoxready/)
 
 ## Getting Started
 
