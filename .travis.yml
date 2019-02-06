@@ -15,9 +15,11 @@ before_install:
   - "sysctl kernel.unprivileged_userns_clone=1"
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
+  - "cd experimental/puppeteer-firefox && npm i"
 script:
   - 'if [ "$NODE8" = "true" ]; then npm run lint; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run coverage; fi'
+  - 'if [ "$NODE8" = "true" ]; then npm run funit; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run test-doclint; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run test-types; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run bundle; fi'
