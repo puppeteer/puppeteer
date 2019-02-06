@@ -23,6 +23,15 @@ task:
   test_types_script: npm run test-types
 
 task:
+  matrix:
+    - name: node8 Firefox (linux)
+      container:
+        dockerfile: .ci/node8/Dockerfile.linux
+      xvfb_start_background_script: Xvfb :99 -ac -screen 0 1024x768x24
+  install_script: cd experimental/puppeteer-firefox && npm install --unsafe-perm
+  test_script: npm run funit
+
+task:
   osx_instance:
     image: high-sierra-base
   name: node8 (macOS)
