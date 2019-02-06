@@ -16,7 +16,7 @@
 
 const utils = require('./utils');
 
-module.exports.addTests = function({testRunner, expect, Errors}) {
+module.exports.addTests = function({testRunner, expect, Errors, FFOX}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -71,11 +71,11 @@ module.exports.addTests = function({testRunner, expect, Errors}) {
       const response = await page.goto(server.PREFIX + '/grid.html');
       expect(response.status()).toBe(200);
     });
-    it('should navigate to empty page with networkidle0', async({page, server}) => {
+    (FFOX ? xit : it)('should navigate to empty page with networkidle0', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle0'});
       expect(response.status()).toBe(200);
     });
-    it('should navigate to empty page with networkidle2', async({page, server}) => {
+    (FFOX ? xit : it)('should navigate to empty page with networkidle2', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle2'});
       expect(response.status()).toBe(200);
     });
@@ -176,7 +176,7 @@ module.exports.addTests = function({testRunner, expect, Errors}) {
       expect(response.ok()).toBe(true);
       expect(response.url()).toBe(server.EMPTY_PAGE);
     });
-    it('should wait for network idle to succeed navigation', async({page, server}) => {
+    (FFOX ? xit : it)('should wait for network idle to succeed navigation', async({page, server}) => {
       let responses = [];
       // Hold on to a bunch of requests without answering.
       server.setRoute('/fetch-request-a.js', (req, res) => responses.push(res));

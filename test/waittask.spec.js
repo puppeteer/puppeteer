@@ -124,9 +124,12 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
     it('should work with strict CSP policy', async({page, server}) => {
       server.setCSP('/empty.html', 'script-src ' + server.PREFIX);
       await page.goto(server.EMPTY_PAGE);
-      const watchdog = page.waitForFunction(() => window.__FOO === 'hit', {polling: 'raf'});
-      await page.evaluate(() => window.__FOO = 'hit');
-      await watchdog;
+      let error = null;
+      await Promise.all([
+        page.waitForFunction(() => window.__FOO === 'hit', {polling: 'raf'}).catch(e => error = e),
+        page.evaluate(() => window.__FOO = 'hit')
+      ]);
+      expect(error).toBe(null);
     });
     it('should throw on bad polling value', async({page, server}) => {
       let error = null;
@@ -222,9 +225,11 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
 
     it('should work with removed MutationObserver', async({page, server}) => {
       await page.evaluate(() => delete window.MutationObserver);
-      const waitForSelector = page.waitForSelector('.zombo');
-      await page.setContent(`<div class='zombo'>anything</div>`);
-      expect(await page.evaluate(x => x.textContent, await waitForSelector)).toBe('anything');
+      const [handle] = await Promise.all([
+        page.waitForSelector('.zombo'),
+        page.setContent(`<div class='zombo'>anything</div>`),
+      ]);
+      expect(await page.evaluate(x => x.textContent, handle)).toBe('anything');
     });
 
     it('should resolve promise when node is added', async({page, server}) => {
