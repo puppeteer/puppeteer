@@ -26,8 +26,8 @@ try {
 }
 
 module.exports.addTests = function({testRunner, expect, headless, Errors, DeviceDescriptors}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   const {TimeoutError} = Errors;
@@ -48,7 +48,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       await newPage.close();
       expect(await browser.pages()).not.toContain(newPage);
     });
-    it('should run beforeunload if asked for', async({context, server}) => {
+    it_fails_ffox('should run beforeunload if asked for', async({context, server}) => {
       const newPage = await context.newPage();
       await newPage.goto(server.PREFIX + '/beforeunload.html');
       // We have to interact with a page so that 'beforeunload' handlers
@@ -79,7 +79,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  (asyncawait ? describe : xdescribe)('Async stacks', () => {
+  (asyncawait ? describe_fails_ffox : xdescribe)('Async stacks', () => {
     it('should work', async({page, server}) => {
       server.setRoute('/empty.html', (req, res) => {
         res.statusCode = 204;
@@ -92,7 +92,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe('Page.Events.error', function() {
+  describe_fails_ffox('Page.Events.error', function() {
     it('should throw when page crashes', async({page}) => {
       let error = null;
       page.on('error', err => error = err);
@@ -102,7 +102,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe('Page.Events.Popup', function() {
+  describe_fails_ffox('Page.Events.Popup', function() {
     it('should work', async({page}) => {
       const [popup] = await Promise.all([
         new Promise(x => page.once('popup', x)),
@@ -151,7 +151,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe('BrowserContext.overridePermissions', function() {
+  describe_fails_ffox('BrowserContext.overridePermissions', function() {
     function getPermission(page, name) {
       return page.evaluate(name => navigator.permissions.query({name}).then(result => result.state), name);
     }
@@ -204,7 +204,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe('Page.setGeolocation', function() {
+  describe_fails_ffox('Page.setGeolocation', function() {
     it('should work', async({page, server, context}) => {
       await context.overridePermissions(server.PREFIX, ['geolocation']);
       await page.goto(server.EMPTY_PAGE);
@@ -228,7 +228,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe('Page.setOfflineMode', function() {
+  describe_fails_ffox('Page.setOfflineMode', function() {
     it('should work', async({page, server}) => {
       await page.setOfflineMode(true);
       let error = null;
@@ -247,7 +247,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe('ExecutionContext.queryObjects', function() {
+  describe_fails_ffox('ExecutionContext.queryObjects', function() {
     it('should work', async({page, server}) => {
       // Instantiate an object
       await page.evaluate(() => window.set = new Set(['hello', 'world']));
@@ -322,7 +322,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       ]);
       expect(message.text()).toBe('JSHandle@object');
     });
-    it('should trigger correct Log', async({page, server}) => {
+    it_fails_ffox('should trigger correct Log', async({page, server}) => {
       await page.goto('about:blank');
       const [message] = await Promise.all([
         waitEvent(page, 'console'),
@@ -331,7 +331,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       expect(message.text()).toContain('No \'Access-Control-Allow-Origin\'');
       expect(message.type()).toEqual('error');
     });
-    it('should have location when fetch fails', async({page, server}) => {
+    it_fails_ffox('should have location when fetch fails', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [message] = await Promise.all([
         waitEvent(page, 'console'),
@@ -344,7 +344,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
         lineNumber: undefined
       });
     });
-    it('should have location for console API calls', async({page, server}) => {
+    it_fails_ffox('should have location for console API calls', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [message] = await Promise.all([
         waitEvent(page, 'console'),
@@ -359,7 +359,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       });
     });
     // @see https://github.com/GoogleChrome/puppeteer/issues/3865
-    it('should not throw when there are console messages in detached iframes', async({browser, page, server}) => {
+    it_fails_ffox('should not throw when there are console messages in detached iframes', async({browser, page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(async() => {
         // 1. Create a popup that Puppeteer is not connected to.
@@ -385,7 +385,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe('Page.metrics', function() {
+  describe_fails_ffox('Page.metrics', function() {
     it('should get metrics from a page', async({page, server}) => {
       await page.goto('about:blank');
       const metrics = await page.metrics();
@@ -423,7 +423,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     }
   });
 
-  describe('Page.waitForRequest', function() {
+  describe_fails_ffox('Page.waitForRequest', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [request] = await Promise.all([
@@ -473,7 +473,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe('Page.waitForResponse', function() {
+  describe_fails_ffox('Page.waitForResponse', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
@@ -523,7 +523,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe('Page.exposeFunction', function() {
+  describe_fails_ffox('Page.exposeFunction', function() {
     it('should work', async({page, server}) => {
       await page.exposeFunction('compute', function(a, b) {
         return a * b;
@@ -628,7 +628,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe('Page.setUserAgent', function() {
+  describe_fails_ffox('Page.setUserAgent', function() {
     it('should work', async({page, server}) => {
       expect(await page.evaluate(() => navigator.userAgent)).toContain('Mozilla');
       page.setUserAgent('foobar');
@@ -666,7 +666,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       const result = await page.content();
       expect(result).toBe(`${doctype}${expectedOutput}`);
     });
-    it('should respect timeout', async({page, server}) => {
+    it_fails_ffox('should respect timeout', async({page, server}) => {
       const imgPath = '/img.png';
       // stall for image
       server.setRoute(imgPath, (req, res) => {});
@@ -674,7 +674,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       await page.setContent(`<img src="${server.PREFIX + imgPath}"></img>`, {timeout: 1}).catch(e => error = e);
       expect(error).toBeInstanceOf(TimeoutError);
     });
-    it('should respect default navigation timeout', async({page, server}) => {
+    it_fails_ffox('should respect default navigation timeout', async({page, server}) => {
       page.setDefaultNavigationTimeout(1);
       const imgPath = '/img.png';
       // stall for image
@@ -683,7 +683,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       await page.setContent(`<img src="${server.PREFIX + imgPath}"></img>`).catch(e => error = e);
       expect(error).toBeInstanceOf(TimeoutError);
     });
-    it('should await resources to load', async({page, server}) => {
+    it_fails_ffox('should await resources to load', async({page, server}) => {
       const imgPath = '/img.png';
       let imgResponse = null;
       server.setRoute(imgPath, (req, res) => imgResponse = res);
@@ -700,7 +700,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe('Page.setBypassCSP', function() {
+  describe_fails_ffox('Page.setBypassCSP', function() {
     it('should bypass CSP meta tag', async({page, server}) => {
       // Make sure CSP prohibits addScriptTag.
       await page.goto(server.PREFIX + '/csp.html');
@@ -810,7 +810,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       expect(await page.evaluate(() => __injected)).toBe(35);
     });
 
-    it('should throw when added with content to the CSP page', async({page, server}) => {
+    it_fails_ffox('should throw when added with content to the CSP page', async({page, server}) => {
       await page.goto(server.PREFIX + '/csp.html');
       let error = null;
       await page.addScriptTag({ content: 'window.__injected = 35;' }).catch(e => error = e);
@@ -876,7 +876,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(0, 128, 0)');
     });
 
-    it('should throw when added with content to the CSP page', async({page, server}) => {
+    it_fails_ffox('should throw when added with content to the CSP page', async({page, server}) => {
       await page.goto(server.PREFIX + '/csp.html');
       let error = null;
       await page.addStyleTag({ content: 'body { background-color: green; }' }).catch(e => error = e);
@@ -899,7 +899,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe('Page.setJavaScriptEnabled', function() {
+  describe_fails_ffox('Page.setJavaScriptEnabled', function() {
     it('should work', async({page, server}) => {
       await page.setJavaScriptEnabled(false);
       await page.goto('data:text/html, <script>var something = "forbidden"</script>');
@@ -913,7 +913,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe('Page.setCacheEnabled', function() {
+  describe_fails_ffox('Page.setCacheEnabled', function() {
     it('should enable or disable the cache based on the state passed', async({page, server}) => {
       const responses = new Map();
       page.on('response', r => responses.set(r.url().split('/').pop(), r));
@@ -929,7 +929,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
   });
 
   // Printing to pdf is currently only supported in headless
-  (headless ? describe : xdescribe)('Page.pdf', function() {
+  (headless ? describe_fails_ffox : xdescribe)('Page.pdf', function() {
     it('should be able to save file', async({page, server}) => {
       const outputFile = __dirname + '/assets/output.pdf';
       await page.pdf({path: outputFile});
@@ -1022,7 +1022,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       expect(error.message).toContain('Values must be strings');
     });
     // @see https://github.com/GoogleChrome/puppeteer/issues/3327
-    it('should work when re-defining top-level Event class', async({page, server}) => {
+    it_fails_ffox('should work when re-defining top-level Event class', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/select.html');
       await page.evaluate(() => window.Event = null);
       await page.select('select', 'blue');
@@ -1031,7 +1031,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe('Connection', function() {
+  describe_fails_ffox('Connection', function() {
     it('should throw nice errors', async function({page}) {
       const error = await theSourceOfTheProblems().catch(error => error);
       expect(error.stack).toContain('theSourceOfTheProblems');
@@ -1065,7 +1065,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe('Page.browserContext', function() {
+  describe_fails_ffox('Page.browserContext', function() {
     it('should return the correct browser instance', async function({page, context, browser}) {
       expect(page.browserContext()).toBe(context);
     });

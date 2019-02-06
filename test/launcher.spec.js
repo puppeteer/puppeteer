@@ -25,8 +25,8 @@ const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const utils = require('./utils');
 
 module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Puppeteer', function() {
@@ -59,7 +59,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await rmAsync(downloadsFolder);
       });
     });
-    describe('Browser.disconnect', function() {
+    describe_fails_ffox('Browser.disconnect', function() {
       it('should reject navigation when browser closes', async({server}) => {
         server.setRoute('/one-style.css', () => {});
         const browser = await puppeteer.launch(defaultBrowserOptions);
@@ -94,13 +94,13 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await neverResolves;
         expect(error.message).toContain('Protocol error');
       });
-      it('should reject if executable path is invalid', async({server}) => {
+      it_fails_ffox('should reject if executable path is invalid', async({server}) => {
         let waitError = null;
         const options = Object.assign({}, defaultBrowserOptions, {executablePath: 'random-invalid-path'});
         await puppeteer.launch(options).catch(e => waitError = e);
         expect(waitError.message.startsWith('Failed to launch chrome! spawn random-invalid-path ENOENT')).toBe(true);
       });
-      it('userDataDir option', async({server}) => {
+      it_fails_ffox('userDataDir option', async({server}) => {
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
@@ -112,7 +112,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(e => {});
       });
-      it('userDataDir argument', async({server}) => {
+      it_fails_ffox('userDataDir argument', async({server}) => {
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({}, defaultBrowserOptions);
         options.args = [`--user-data-dir=${userDataDir}`].concat(options.args || []);
@@ -123,7 +123,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(e => {});
       });
-      it('userDataDir option should restore state', async({server}) => {
+      it_fails_ffox('userDataDir option should restore state', async({server}) => {
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
@@ -140,7 +140,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(e => {});
       });
-      it('userDataDir option should restore cookies', async({server}) => {
+      it_fails_ffox('userDataDir option should restore cookies', async({server}) => {
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
@@ -157,7 +157,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(e => {});
       });
-      it('should return the default chrome arguments', async() => {
+      it_fails_ffox('should return the default chrome arguments', async() => {
         expect(puppeteer.defaultArgs()).toContain('--no-first-run');
         expect(puppeteer.defaultArgs()).toContain('--headless');
         expect(puppeteer.defaultArgs({headless: false})).not.toContain('--headless');
@@ -175,7 +175,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
 
         expect(dumpioData).toContain(dumpioTextToLog);
       });
-      it('should close the browser when the node process closes', async({ server }) => {
+      it_fails_ffox('should close the browser when the node process closes', async({ server }) => {
         const {spawn, execSync} = require('child_process');
         const res = spawn('node', [path.join(__dirname, 'fixtures', 'closeme.js'), utils.projectRoot(), JSON.stringify(defaultBrowserOptions)]);
         let wsEndPointCallback;
@@ -196,7 +196,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
           process.kill(res.pid);
         await Promise.all(promises);
       });
-      it('should support the pipe option', async() => {
+      it_fails_ffox('should support the pipe option', async() => {
         const options = Object.assign({pipe: true}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
         expect((await browser.pages()).length).toBe(1);
@@ -206,7 +206,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await page.close();
         await browser.close();
       });
-      it('should support the pipe argument', async() => {
+      it_fails_ffox('should support the pipe argument', async() => {
         const options = Object.assign({}, defaultBrowserOptions);
         options.args = ['--remote-debugging-pipe'].concat(options.args || []);
         const browser = await puppeteer.launch(options);
@@ -216,7 +216,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await page.close();
         await browser.close();
       });
-      it('should fire "disconnected" when closing with pipe', async() => {
+      it_fails_ffox('should fire "disconnected" when closing with pipe', async() => {
         const options = Object.assign({pipe: true}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
         const disconnectedEventPromise = new Promise(resolve => browser.once('disconnected', resolve));
@@ -233,7 +233,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await page.close();
         await browser.close();
       });
-      it('should filter out ignored default arguments', async() => {
+      it_fails_ffox('should filter out ignored default arguments', async() => {
         // Make sure we launch with `--enable-automation` by default.
         const defaultArgs = puppeteer.defaultArgs();
         const browser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
@@ -246,13 +246,13 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(spawnargs.indexOf(defaultArgs[2])).toBe(-1);
         await browser.close();
       });
-      it('should have default url when launching browser', async function() {
+      it_fails_ffox('should have default url when launching browser', async function() {
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const pages = (await browser.pages()).map(page => page.url());
         expect(pages).toEqual(['about:blank']);
         await browser.close();
       });
-      it('should have custom url when launching browser', async function({server}) {
+      it_fails_ffox('should have custom url when launching browser', async function({server}) {
         const customUrl = server.PREFIX + '/empty.html';
         const options = Object.assign({}, defaultBrowserOptions);
         options.args = [customUrl].concat(options.args || []);
@@ -300,7 +300,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await browser.close();
       });
     });
-    describe('Puppeteer.connect', function() {
+    describe_fails_ffox('Puppeteer.connect', function() {
       it('should be able to connect multiple times to the same browser', async({server}) => {
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const browser = await puppeteer.connect({
@@ -408,7 +408,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
     });
   });
 
-  describe('Browser.Events.disconnected', function() {
+  describe_fails_ffox('Browser.Events.disconnected', function() {
     it('should be emitted when: browser gets closed, disconnected or underlying websocket gets closed', async() => {
       const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
       const browserWSEndpoint = originalBrowser.wsEndpoint();

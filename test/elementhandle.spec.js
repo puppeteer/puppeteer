@@ -17,8 +17,8 @@
 const utils = require('./utils');
 
 module.exports.addTests = function({testRunner, expect}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('ElementHandle.boundingBox', function() {
@@ -29,7 +29,7 @@ module.exports.addTests = function({testRunner, expect}) {
       const box = await elementHandle.boundingBox();
       expect(box).toEqual({ x: 100, y: 50, width: 50, height: 50 });
     });
-    it('should handle nested frames', async({page, server}) => {
+    it_fails_ffox('should handle nested frames', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
       const nestedFrame = page.frames()[1].childFrames()[1];
@@ -66,7 +66,7 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
-  describe('ElementHandle.boxModel', function() {
+  describe_fails_ffox('ElementHandle.boxModel', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.PREFIX + '/resetcss.html');
 

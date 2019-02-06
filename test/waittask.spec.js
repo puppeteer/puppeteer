@@ -25,7 +25,7 @@ try {
 
 module.exports.addTests = function({testRunner, expect, product, Errors}) {
   const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
   const {TimeoutError} = Errors;
 
@@ -60,7 +60,7 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
       await page.waitFor(timeout);
       expect(Date.now() - startTime).not.toBeLessThan(timeout / 2);
     });
-    it('should work with multiline body', async({page, server}) => {
+    it_fails_ffox('should work with multiline body', async({page, server}) => {
       const result = await page.waitForFunction(`
         (() => true)()
       `);
@@ -121,7 +121,7 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
       await page.evaluate(() => window.__FOO = 'hit');
       await watchdog;
     });
-    it('should work with strict CSP policy', async({page, server}) => {
+    it_fails_ffox('should work with strict CSP policy', async({page, server}) => {
       server.setCSP('/empty.html', 'script-src ' + server.PREFIX);
       await page.goto(server.EMPTY_PAGE);
       let error = null;
@@ -173,7 +173,7 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
       expect(error.message).toContain('waiting for function failed: timeout');
       expect(error).toBeInstanceOf(TimeoutError);
     });
-    it('should respect default timeout', async({page}) => {
+    it_fails_ffox('should respect default timeout', async({page}) => {
       page.setDefaultTimeout(1);
       let error = null;
       await page.waitForFunction('false').catch(e => error = e);
@@ -223,7 +223,7 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
       await frame.waitForSelector('div');
     });
 
-    it('should work with removed MutationObserver', async({page, server}) => {
+    it_fails_ffox('should work with removed MutationObserver', async({page, server}) => {
       await page.evaluate(() => delete window.MutationObserver);
       const [handle] = await Promise.all([
         page.waitForSelector('.zombo'),
@@ -251,7 +251,7 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
       await watchdog;
     });
 
-    it('Page.waitForSelector is shortcut for main frame', async({page, server}) => {
+    it_fails_ffox('Page.waitForSelector is shortcut for main frame', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE2);
       const otherFrame = page.frames()[1];
@@ -262,7 +262,7 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
       expect(eHandle.executionContext().frame()).toBe(page.mainFrame());
     });
 
-    it('should run in specified frame', async({page, server}) => {
+    it_fails_ffox('should run in specified frame', async({page, server}) => {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE2);
       await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE2);
       const frame1 = page.frames()[1];
@@ -347,7 +347,7 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
       expect(await waitForSelector).toBe(true);
       expect(divRemoved).toBe(true);
     });
-    it('should return null if waiting to hide non-existing element', async({page, server}) => {
+    it_fails_ffox('should return null if waiting to hide non-existing element', async({page, server}) => {
       const handle = await page.waitForSelector('non-existing', { hidden: true });
       expect(handle).toBe(null);
     });
@@ -401,7 +401,7 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
       expect(error.message).toContain('waiting for XPath "//div" failed: timeout');
       expect(error).toBeInstanceOf(TimeoutError);
     });
-    it('should run in specified frame', async({page, server}) => {
+    it_fails_ffox('should run in specified frame', async({page, server}) => {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
       const frame1 = page.frames()[1];

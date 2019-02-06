@@ -23,9 +23,9 @@ try {
   asyncawait = false;
 }
 
-module.exports.addTests = function({testRunner, expect, FFOX}) {
+module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Page.evaluate', function() {
@@ -65,10 +65,10 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await page.goto(server.PREFIX + '/global-var.html');
       expect(await page.evaluate('globalVar')).toBe(123);
     });
-    (FFOX ? xit : it)('should return undefined for objects with symbols', async({page, server}) => {
+    it_fails_ffox('should return undefined for objects with symbols', async({page, server}) => {
       expect(await page.evaluate(() => [Symbol('foo4')])).toBe(undefined);
     });
-    (asyncawait ? it : xit)('should work with function shorthands', async({page, server}) => {
+    (asyncawait ? it_fails_ffox : xit)('should work with function shorthands', async({page, server}) => {
       // trick node6 transpiler to not touch our object.
       // TODO(lushnikov): remove eval once Node6 is dropped.
       const a = eval(`({
@@ -101,7 +101,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await page.goto(server.EMPTY_PAGE);
       expect(await frameEvaluation).toBe(42);
     });
-    it('should work from-inside an exposed function', async({page, server}) => {
+    it_fails_ffox('should work from-inside an exposed function', async({page, server}) => {
       // Setup inpage callback, which calls Page.evaluate
       await page.exposeFunction('callController', async function(a, b) {
         return await page.evaluate((a, b) => a * b, a, b);
@@ -158,7 +158,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
     it('should properly serialize null fields', async({page}) => {
       expect(await page.evaluate(() => ({a: undefined}))).toEqual({});
     });
-    it('should return undefined for non-serializable objects', async({page, server}) => {
+    it_fails_ffox('should return undefined for non-serializable objects', async({page, server}) => {
       expect(await page.evaluate(() => window)).toBe(undefined);
       expect(await page.evaluate(() => [Symbol('foo4')])).toBe(undefined);
     });
@@ -189,7 +189,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       const text = await page.evaluate(e => e.textContent, element);
       expect(text).toBe('42');
     });
-    it('should throw if underlying element was disposed', async({page, server}) => {
+    it_fails_ffox('should throw if underlying element was disposed', async({page, server}) => {
       await page.setContent('<section>39</section>');
       const element = await page.$('section');
       expect(element).toBeTruthy();
@@ -198,7 +198,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await page.evaluate(e => e.textContent, element).catch(e => error = e);
       expect(error.message).toContain('JSHandle is disposed');
     });
-    it('should throw if elementHandles are from other frames', async({page, server}) => {
+    it_fails_ffox('should throw if elementHandles are from other frames', async({page, server}) => {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const bodyHandle = await page.frames()[1].$('body');
       let error = null;
@@ -206,7 +206,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       expect(error).toBeTruthy();
       expect(error.message).toContain('JSHandles can be evaluated only in the context they were created');
     });
-    it('should simulate a user gesture', async({page, server}) => {
+    it_fails_ffox('should simulate a user gesture', async({page, server}) => {
       await page.evaluate(playAudio);
       // also test evaluating strings
       await page.evaluate(`(${playAudio})()`);
@@ -218,7 +218,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
         return audio.play();
       }
     });
-    it('should throw a nice error after a navigation', async({page, server}) => {
+    it_fails_ffox('should throw a nice error after a navigation', async({page, server}) => {
       const executionContext = await page.mainFrame().executionContext();
 
       await Promise.all([

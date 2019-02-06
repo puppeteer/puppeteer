@@ -16,10 +16,10 @@
 
 module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
   describe('Touchscreen', function() {
-    it('should tap the button', async({page, server}) => {
+    it_fails_ffox('should tap the button', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
       await page.tap('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');

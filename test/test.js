@@ -79,6 +79,8 @@ const CHROMIUM_NO_COVERAGE = new Set([
 ]);
 
 if (process.env.BROWSER !== 'firefox') {
+  testRunner.addTestDSL('it_fails_ffox', 'run');
+  testRunner.addSuiteDSL('describe_fails_ffox', 'run');
   describe('Chromium', () => {
     require('./puppeteer.spec.js').addTests({
       product: 'Chromium',
@@ -91,6 +93,9 @@ if (process.env.BROWSER !== 'firefox') {
       utils.recordAPICoverage(testRunner, require('../lib/api'), CHROMIUM_NO_COVERAGE);
   });
 } else {
+  const FFOX_SKIPPED_TESTS = Symbol('FFOX_SKIPPED_TESTS');
+  testRunner.addTestDSL('it_fails_ffox', 'skip', FFOX_SKIPPED_TESTS);
+  testRunner.addSuiteDSL('describe_fails_ffox', 'skip', FFOX_SKIPPED_TESTS);
   describe('Firefox', () => {
     require('./puppeteer.spec.js').addTests({
       product: 'Firefox',
@@ -100,6 +105,24 @@ if (process.env.BROWSER !== 'firefox') {
       testRunner,
     });
   });
+
+  if (process.argv.indexOf('--firefox-status') !== -1) {
+    const allTests = testRunner.tests();
+    const ffoxTests = allTests.filter(test => {
+      if (test.comment === FFOX_SKIPPED_TESTS)
+        return false;
+      for (let suite = test.suite; suite; suite = suite.parentSuite) {
+        if (suite.comment === FFOX_SKIPPED_TESTS)
+          return false;
+      }
+      return true;
+    });
+    console.log(JSON.stringify({
+      allTests: allTests.length,
+      firefoxTests: ffoxTests.length
+    }));
+    process.exit(0);
+  }
 }
 
 if (process.env.CI && testRunner.hasFocusedTestsOrSuites()) {

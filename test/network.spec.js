@@ -19,11 +19,11 @@ const path = require('path');
 const utils = require('./utils');
 
 module.exports.addTests = function({testRunner, expect}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
+  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
-  describe('Network Events', function() {
+  describe_fails_ffox('Network Events', function() {
     it('Page.Events.Request', async({page, server}) => {
       const requests = [];
       page.on('request', request => requests.push(request));
@@ -213,7 +213,7 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
-  describe('Request.isNavigationRequest', () => {
+  describe_fails_ffox('Request.isNavigationRequest', () => {
     it('should work', async({page, server}) => {
       const requests = new Map();
       page.on('request', request => requests.set(request.url().split('/').pop(), request));
@@ -248,7 +248,7 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
-  describe('Page.setRequestInterception', function() {
+  describe_fails_ffox('Page.setRequestInterception', function() {
     it('should intercept', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
@@ -595,7 +595,7 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
-  describe('Request.respond', function() {
+  describe_fails_ffox('Request.respond', function() {
     it('should work', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
@@ -632,7 +632,7 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
-  describe('Page.Events.Request', function() {
+  describe_fails_ffox('Page.Events.Request', function() {
     it('should fire', async({page, server}) => {
       const requests = [];
       page.on('request', request => requests.push(request));
@@ -648,7 +648,7 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
-  describe('Page.setExtraHTTPHeaders', function() {
+  describe_fails_ffox('Page.setExtraHTTPHeaders', function() {
     it('should work', async({page, server}) => {
       await page.setExtraHTTPHeaders({
         foo: 'bar'
@@ -670,7 +670,7 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
-  describe('Page.authenticate', function() {
+  describe_fails_ffox('Page.authenticate', function() {
     it('should work', async({page, server}) => {
       server.setAuth('/empty.html', 'user', 'pass');
       let response = await page.goto(server.EMPTY_PAGE);

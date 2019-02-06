@@ -16,7 +16,7 @@
 
 module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer}) {
   const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
   describe('ignoreHTTPSErrors', function() {
     beforeAll(async state => {
@@ -34,7 +34,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       await state.page.close();
       delete state.page;
     });
-    it('should work', async({page, httpsServer}) => {
+    it_fails_ffox('should work', async({page, httpsServer}) => {
       let error = null;
       const response = await page.goto(httpsServer.EMPTY_PAGE).catch(e => error = e);
       expect(error).toBe(null);
@@ -42,7 +42,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       expect(response.securityDetails()).toBeTruthy();
       expect(response.securityDetails().protocol()).toBe('TLS 1.2');
     });
-    it('Network redirects should report SecurityDetails', async({page, httpsServer}) => {
+    it_fails_ffox('Network redirects should report SecurityDetails', async({page, httpsServer}) => {
       httpsServer.setRedirect('/plzredirect', '/empty.html');
       const responses =  [];
       page.on('response', response => responses.push(response));
@@ -52,7 +52,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       const securityDetails = responses[0].securityDetails();
       expect(securityDetails.protocol()).toBe('TLS 1.2');
     });
-    it('should work with request interception', async({page, server, httpsServer}) => {
+    it_fails_ffox('should work with request interception', async({page, server, httpsServer}) => {
       await page.setRequestInterception(true);
       page.on('request', request => request.continue());
       const response = await page.goto(httpsServer.EMPTY_PAGE);

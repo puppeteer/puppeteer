@@ -16,11 +16,11 @@
 
 module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Page.evaluateHandle', function() {
-    it('should work', async({page, server}) => {
+    it_fails_ffox('should work', async({page, server}) => {
       const windowHandle = await page.evaluateHandle(() => window);
       expect(windowHandle).toBeTruthy();
     });
@@ -34,7 +34,7 @@ module.exports.addTests = function({testRunner, expect}) {
       const isFive = await page.evaluate(e => Object.is(e, 5), aHandle);
       expect(isFive).toBeTruthy();
     });
-    it('should warn on nested object handles', async({page, server}) => {
+    it_fails_ffox('should warn on nested object handles', async({page, server}) => {
       const aHandle = await page.evaluateHandle(() => document.body);
       let error = null;
       await page.evaluateHandle(
@@ -81,12 +81,12 @@ module.exports.addTests = function({testRunner, expect}) {
       const json = await aHandle.jsonValue();
       expect(json).toEqual({foo: 'bar'});
     });
-    it('should not work with dates', async({page, server}) => {
+    it_fails_ffox('should not work with dates', async({page, server}) => {
       const dateHandle = await page.evaluateHandle(() => new Date('2017-09-26T00:00:00.000Z'));
       const json = await dateHandle.jsonValue();
       expect(json).toEqual({});
     });
-    it('should throw for circular objects', async({page, server}) => {
+    it_fails_ffox('should throw for circular objects', async({page, server}) => {
       const windowHandle = await page.evaluateHandle('window');
       let error = null;
       await windowHandle.jsonValue().catch(e => error = e);
