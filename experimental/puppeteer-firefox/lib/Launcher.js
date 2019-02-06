@@ -23,7 +23,7 @@ const readline = require('readline');
 const fs = require('fs');
 const util = require('util');
 const {helper} = require('./helper');
-const {TimeoutError} = require('../Errors')
+const {TimeoutError} = require('./Errors')
 const FirefoxTransport = require('./FirefoxTransport');
 
 const mkdtempAsync = util.promisify(fs.mkdtemp);

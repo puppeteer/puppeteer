@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const {TimeoutError} = require('../Errors');
+const {TimeoutError} = require('./Errors');
 
 /**
  * @internal
