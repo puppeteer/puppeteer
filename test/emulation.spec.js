@@ -20,8 +20,8 @@ const iPhone = DeviceDescriptors['iPhone 6'];
 const iPhoneLandscape = DeviceDescriptors['iPhone 6 landscape'];
 
 module.exports.addTests = function({testRunner, expect, product}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Page.viewport', function() {
@@ -72,7 +72,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
       await page.addScriptTag({url: server.PREFIX + '/modernizr.js'});
       expect(await page.evaluate(() => Modernizr.touchevents)).toBe(true);
     });
-    it('should support landscape emulation', async({page, server}) => {
+    it_fails_ffox('should support landscape emulation', async({page, server}) => {
       await page.goto(server.PREFIX + '/mobile.html');
       expect(await page.evaluate(() => screen.orientation.type)).toBe('portrait-primary');
       await page.setViewport(iPhoneLandscape.viewport);
@@ -82,7 +82,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
     });
   });
 
-  describe('Page.emulate', function() {
+  describe_fails_ffox('Page.emulate', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.PREFIX + '/mobile.html');
       await page.emulate(iPhone);
@@ -99,7 +99,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
     });
   });
 
-  describe('Page.emulateMedia', function() {
+  describe_fails_ffox('Page.emulateMedia', function() {
     it('should work', async({page, server}) => {
       expect(await page.evaluate(() => window.matchMedia('screen').matches)).toBe(true);
       expect(await page.evaluate(() => window.matchMedia('print').matches)).toBe(false);

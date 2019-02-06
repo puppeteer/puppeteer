@@ -19,12 +19,12 @@ const {waitEvent} = utils;
 
 module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
   const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
   const {TimeoutError} = Errors;
 
   describe('Target', function() {
-    it('Browser.targets should return all of the targets', async({page, server, browser}) => {
+    it_fails_ffox('Browser.targets should return all of the targets', async({page, server, browser}) => {
       // The pages will be the testing page and the original newtab page
       const targets = browser.targets();
       expect(targets.some(target => target.type() === 'page' &&
@@ -38,7 +38,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
       expect(allPages).toContain(page);
       expect(allPages[0]).not.toBe(allPages[1]);
     });
-    it('should contain browser target', async({browser}) => {
+    it_fails_ffox('should contain browser target', async({browser}) => {
       const targets = browser.targets();
       const browserTarget = targets.find(target => target.type() === 'browser');
       expect(browserTarget).toBeTruthy();
@@ -50,7 +50,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
       expect(await originalPage.evaluate(() => ['Hello', 'world'].join(' '))).toBe('Hello world');
       expect(await originalPage.$('body')).toBeTruthy();
     });
-    it('should report when a new page is created and closed', async({page, server, context}) => {
+    it_fails_ffox('should report when a new page is created and closed', async({page, server, context}) => {
       const otherPagePromise = new Promise(fulfill => context.once('targetcreated', target => fulfill(target.page())));
       await page.evaluate(url => window.open(url), server.CROSS_PROCESS_PREFIX);
       const otherPage = await otherPagePromise;
@@ -71,7 +71,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
       expect(allPages).toContain(page);
       expect(allPages).not.toContain(otherPage);
     });
-    it('should report when a service worker is created and destroyed', async({page, server, context}) => {
+    it_fails_ffox('should report when a service worker is created and destroyed', async({page, server, context}) => {
       await page.goto(server.EMPTY_PAGE);
       const createdTarget = new Promise(fulfill => context.once('targetcreated', target => fulfill(target)));
 
@@ -94,7 +94,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
       await page.goto(server.EMPTY_PAGE);
       expect((await changedTarget).url()).toBe(server.EMPTY_PAGE);
     });
-    it('should not report uninitialized pages', async({page, server, context}) => {
+    it_fails_ffox('should not report uninitialized pages', async({page, server, context}) => {
       let targetChanged = false;
       const listener = () => targetChanged = true;
       context.on('targetchanged', listener);
@@ -132,7 +132,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
       // Cleanup.
       await newPage.close();
     });
-    it('should have an opener', async({page, server, context}) => {
+    it_fails_ffox('should have an opener', async({page, server, context}) => {
       await page.goto(server.EMPTY_PAGE);
       const [createdTarget] = await Promise.all([
         new Promise(fulfill => context.once('targetcreated', target => fulfill(target))),

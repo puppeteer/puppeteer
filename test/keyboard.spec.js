@@ -19,7 +19,7 @@ const os = require('os');
 
 module.exports.addTests = function({testRunner, expect, FFOX}) {
   const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Keyboard', function() {
@@ -55,7 +55,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await page.keyboard.press('Backspace');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
     });
-    it('should send a character with ElementHandle.press', async({page, server}) => {
+    it_fails_ffox('should send a character with ElementHandle.press', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       const textarea = await page.$('textarea');
       await textarea.press('a', {text: 'f'});
@@ -75,7 +75,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await page.keyboard.sendCharacter('a');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('嗨a');
     });
-    it('should report shiftKey', async({page, server}) => {
+    it_fails_ffox('should report shiftKey', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/keyboard.html');
       const keyboard = page.keyboard;
       const codeForKey = {'Shift': 16, 'Alt': 18, 'Meta': 91, 'Control': 17};
@@ -95,7 +95,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
         expect(await page.evaluate(() => getResult())).toBe('Keyup: ' + modifierKey + ' ' + modifierKey + 'Left ' + codeForKey[modifierKey] + ' []');
       }
     });
-    it('should report multiple modifiers', async({page, server}) => {
+    it_fails_ffox('should report multiple modifiers', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/keyboard.html');
       const keyboard = page.keyboard;
       await keyboard.down('Control');
@@ -111,7 +111,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await keyboard.up('Meta');
       expect(await page.evaluate(() => getResult())).toBe('Keyup: Meta MetaLeft 91 []');
     });
-    it('should send proper codes while typing', async({page, server}) => {
+    it_fails_ffox('should send proper codes while typing', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/keyboard.html');
       await page.keyboard.type('!');
       expect(await page.evaluate(() => getResult())).toBe(
@@ -124,7 +124,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
             'Keypress: ^ Digit6 94 94 94 []',
             'Keyup: ^ Digit6 54 []'].join('\n'));
     });
-    it('should send proper codes while typing with shift', async({page, server}) => {
+    it_fails_ffox('should send proper codes while typing with shift', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/keyboard.html');
       const keyboard = page.keyboard;
       await keyboard.down('Shift');
@@ -136,7 +136,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
             'Keyup: ~ Backquote 192 [Shift]'].join('\n'));
       await keyboard.up('Shift');
     });
-    it('should not type canceled events', async({page, server}) => {
+    it_fails_ffox('should not type canceled events', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       await page.evaluate(() => {

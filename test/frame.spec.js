@@ -18,11 +18,11 @@ const utils = require('./utils');
 
 module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Frame.executionContext', function() {
-    it('should work', async({page, server}) => {
+    it_fails_ffox('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       expect(page.frames().length).toBe(2);
@@ -58,7 +58,7 @@ module.exports.addTests = function({testRunner, expect}) {
   });
 
   describe('Frame.evaluate', function() {
-    it('should throw for detached frames', async({page, server}) => {
+    it_fails_ffox('should throw for detached frames', async({page, server}) => {
       const frame1 = await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       await utils.detachFrame(page, 'frame1');
       let error = null;
@@ -68,7 +68,7 @@ module.exports.addTests = function({testRunner, expect}) {
   });
 
   describe('Frame Management', function() {
-    it('should handle nested frames', async({page, server}) => {
+    it_fails_ffox('should handle nested frames', async({page, server}) => {
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
       expect(utils.dumpFrames(page.mainFrame())).toBeGolden('nested-frames.txt');
     });

@@ -18,7 +18,7 @@ const utils = require('./utils');
 
 module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
   const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
   const {TimeoutError} = Errors;
 
@@ -141,7 +141,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
       ]);
       expect(browser.browserContexts().length).toBe(1);
     });
-    it('should work across sessions', async function({browser, server}) {
+    it_fails_ffox('should work across sessions', async function({browser, server}) {
       expect(browser.browserContexts().length).toBe(1);
       const context = await browser.createIncognitoBrowserContext();
       expect(browser.browserContexts().length).toBe(2);

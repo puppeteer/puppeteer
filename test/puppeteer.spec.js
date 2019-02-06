@@ -23,8 +23,8 @@ const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
 
 module.exports.addTests = ({testRunner, product, puppeteer, Errors, DeviceDescriptors}) => {
-  const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   const CHROME = product === 'Chromium';
@@ -117,8 +117,10 @@ module.exports.addTests = ({testRunner, product, puppeteer, Errors, DeviceDescri
 
       // Page-level tests that are given a browser, a context and a page.
       // Each test is launched in a new browser context.
+      require('./accessibility.spec.js').addTests(testOptions);
       require('./browser.spec.js').addTests(testOptions);
       require('./click.spec.js').addTests(testOptions);
+      require('./cookies.spec.js').addTests(testOptions);
       require('./dialog.spec.js').addTests(testOptions);
       require('./elementhandle.spec.js').addTests(testOptions);
       require('./emulation.spec.js').addTests(testOptions);
@@ -129,19 +131,17 @@ module.exports.addTests = ({testRunner, product, puppeteer, Errors, DeviceDescri
       require('./keyboard.spec.js').addTests(testOptions);
       require('./mouse.spec.js').addTests(testOptions);
       require('./navigation.spec.js').addTests(testOptions);
+      require('./network.spec.js').addTests(testOptions);
       require('./page.spec.js').addTests(testOptions);
       require('./screenshot.spec.js').addTests(testOptions);
       require('./queryselector.spec.js').addTests(testOptions);
       require('./target.spec.js').addTests(testOptions);
       require('./touchscreen.spec.js').addTests(testOptions);
       require('./waittask.spec.js').addTests(testOptions);
+      require('./worker.spec.js').addTests(testOptions);
       if (CHROME) {
         require('./CDPSession.spec.js').addTests(testOptions);
-        require('./accessibility.spec.js').addTests(testOptions);
-        require('./cookies.spec.js').addTests(testOptions);
         require('./coverage.spec.js').addTests(testOptions);
-        require('./network.spec.js').addTests(testOptions);
-        require('./worker.spec.js').addTests(testOptions);
         require('./chromiumonly.spec.js').addTests(testOptions);
       } else {
         require('./firefoxonly.spec.js').addTests(testOptions);

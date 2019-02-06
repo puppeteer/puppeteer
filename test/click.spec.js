@@ -20,7 +20,7 @@ const iPhone = DeviceDescriptors['iPhone 6'];
 
 module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
   describe('Page.click', function() {
     it('should click the button', async({page, server}) => {
@@ -28,7 +28,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     });
-    it('should click the button if window.Node is removed', async({page, server}) => {
+    it_fails_ffox('should click the button if window.Node is removed', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
       await page.evaluate(() => delete window.Node);
       await page.click('button');
@@ -41,7 +41,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     });
-    it('should click with disabled javascript', async({page, server}) => {
+    it_fails_ffox('should click with disabled javascript', async({page, server}) => {
       await page.setJavaScriptEnabled(false);
       await page.goto(server.PREFIX + '/wrappedlink.html');
       await Promise.all([

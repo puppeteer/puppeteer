@@ -15,16 +15,11 @@
  */
 
 module.exports.addTests = function({testRunner, expect}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
+  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
-  describe('Cookies', function() {
-    afterEach(async({page, server}) => {
-      const cookies = await page.cookies(server.PREFIX + '/grid.html', server.CROSS_PROCESS_PREFIX);
-      for (const cookie of cookies)
-        await page.deleteCookie(cookie);
-    });
+  describe_fails_ffox('Cookies', function() {
     it('should set and get cookies', async({page, server}) => {
       await page.goto(server.PREFIX + '/grid.html');
       expect(await page.cookies()).toEqual([]);

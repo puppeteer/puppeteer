@@ -15,11 +15,11 @@
  */
 
 module.exports.addTests = function({testRunner, expect, product}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
+  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
-  describe('Page.screenshot', function() {
+  describe_fails_ffox('Page.screenshot', function() {
     it('should work', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/grid.html');
@@ -125,7 +125,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
     });
   });
 
-  describe('ElementHandle.screenshot', function() {
+  describe_fails_ffox('ElementHandle.screenshot', function() {
     it('should work', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/grid.html');
