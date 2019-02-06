@@ -28,7 +28,7 @@ task:
       container:
         dockerfile: .ci/node8/Dockerfile.linux
       xvfb_start_background_script: Xvfb :99 -ac -screen 0 1024x768x24
-  install_script: cd experimental/puppeteer-firefox && npm install --unsafe-perm
+  install_script: npm install --unsafe-perm && cd experimental/puppeteer-firefox && npm install --unsafe-perm
   test_script: npm run funit
 
 task:
