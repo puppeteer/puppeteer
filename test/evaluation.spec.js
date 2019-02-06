@@ -158,9 +158,8 @@ module.exports.addTests = function({testRunner, expect}) {
     it('should properly serialize null fields', async({page}) => {
       expect(await page.evaluate(() => ({a: undefined}))).toEqual({});
     });
-    it_fails_ffox('should return undefined for non-serializable objects', async({page, server}) => {
+    it('should return undefined for non-serializable objects', async({page, server}) => {
       expect(await page.evaluate(() => window)).toBe(undefined);
-      expect(await page.evaluate(() => [Symbol('foo4')])).toBe(undefined);
     });
     it('should fail for circular object', async({page, server}) => {
       const result = await page.evaluate(() => {
@@ -206,17 +205,9 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(error).toBeTruthy();
       expect(error.message).toContain('JSHandles can be evaluated only in the context they were created');
     });
-    it_fails_ffox('should simulate a user gesture', async({page, server}) => {
-      await page.evaluate(playAudio);
-      // also test evaluating strings
-      await page.evaluate(`(${playAudio})()`);
-
-      function playAudio() {
-        const audio = document.createElement('audio');
-        audio.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
-        // This returns a promise which throws if it was not triggered by a user gesture.
-        return audio.play();
-      }
+    it('should simulate a user gesture', async({page, server}) => {
+      const result = await page.evaluate(() => document.execCommand('copy'));
+      expect(result).toBe(true);
     });
     it_fails_ffox('should throw a nice error after a navigation', async({page, server}) => {
       const executionContext = await page.mainFrame().executionContext();

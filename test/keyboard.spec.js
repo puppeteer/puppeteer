@@ -85,7 +85,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
         await keyboard.down('!');
         // Shift+! will generate a keypress
         if (modifierKey === 'Shift')
-          expect(await page.evaluate(() => getResult())).toBe('Keydown: ! Digit1 49 [' + modifierKey + ']\nKeypress: ! Digit1 33 33 33 [' + modifierKey + ']');
+          expect(await page.evaluate(() => getResult())).toBe('Keydown: ! Digit1 49 [' + modifierKey + ']\nKeypress: ! Digit1 33 33 [' + modifierKey + ']');
         else
           expect(await page.evaluate(() => getResult())).toBe('Keydown: ! Digit1 49 [' + modifierKey + ']');
 
@@ -111,20 +111,20 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await keyboard.up('Meta');
       expect(await page.evaluate(() => getResult())).toBe('Keyup: Meta MetaLeft 91 []');
     });
-    it_fails_ffox('should send proper codes while typing', async({page, server}) => {
+    it('should send proper codes while typing', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/keyboard.html');
       await page.keyboard.type('!');
       expect(await page.evaluate(() => getResult())).toBe(
           [ 'Keydown: ! Digit1 49 []',
-            'Keypress: ! Digit1 33 33 33 []',
+            'Keypress: ! Digit1 33 33 []',
             'Keyup: ! Digit1 49 []'].join('\n'));
       await page.keyboard.type('^');
       expect(await page.evaluate(() => getResult())).toBe(
           [ 'Keydown: ^ Digit6 54 []',
-            'Keypress: ^ Digit6 94 94 94 []',
+            'Keypress: ^ Digit6 94 94 []',
             'Keyup: ^ Digit6 54 []'].join('\n'));
     });
-    it_fails_ffox('should send proper codes while typing with shift', async({page, server}) => {
+    it('should send proper codes while typing with shift', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/keyboard.html');
       const keyboard = page.keyboard;
       await keyboard.down('Shift');
@@ -132,7 +132,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       expect(await page.evaluate(() => getResult())).toBe(
           [ 'Keydown: Shift ShiftLeft 16 [Shift]',
             'Keydown: ~ Backquote 192 [Shift]', // 192 is ` keyCode
-            'Keypress: ~ Backquote 126 126 126 [Shift]', // 126 is ~ charCode
+            'Keypress: ~ Backquote 126 126 [Shift]', // 126 is ~ charCode
             'Keyup: ~ Backquote 192 [Shift]'].join('\n'));
       await keyboard.up('Shift');
     });

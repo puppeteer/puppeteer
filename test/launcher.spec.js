@@ -339,7 +339,13 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         const browser = await puppeteer.connect({browserWSEndpoint});
         const pages = await browser.pages();
         const restoredPage = pages.find(page => page.url() === server.PREFIX + '/frames/nested-frames.html');
-        expect(utils.dumpFrames(restoredPage.mainFrame())).toBeGolden('reconnect-nested-frames.txt');
+        expect(utils.dumpFrames(restoredPage.mainFrame())).toEqual([
+          'http://localhost:<PORT>/frames/nested-frames.html',
+          '    http://localhost:<PORT>/frames/two-frames.html (2frames)',
+          '        http://localhost:<PORT>/frames/frame.html (uno)',
+          '        http://localhost:<PORT>/frames/frame.html (dos)',
+          '    http://localhost:<PORT>/frames/frame.html (aframe)',
+        ]);
         expect(await restoredPage.evaluate(() => 7 * 8)).toBe(56);
         await browser.close();
       });

@@ -940,8 +940,8 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
 
   describe('Page.title', function() {
     it('should return the page title', async({page, server}) => {
-      await page.goto(server.PREFIX + '/input/button.html');
-      expect(await page.title()).toBe('Button test');
+      await page.goto(server.PREFIX + '/title.html');
+      expect(await page.title()).toBe('Woof-Woof');
     });
   });
 
