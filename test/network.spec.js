@@ -269,7 +269,7 @@ module.exports.addTests = function({testRunner, expect}) {
     it('should work with intervention headers', async({page, server}) => {
       server.setRoute('/intervention', (req, res) => res.end(`
         <script>
-          document.write('<script src="${server.CROSS_PROCESS_PREFIX}/intervention.js">' + '</scr' + 'ipt>');
+          document.write('<script src="${server.CROSS_PROCESS_PREFIX}/intervention.js"></script>');
         </script>
       `));
       server.setRedirect('/intervention.js', '/redirect.js');
