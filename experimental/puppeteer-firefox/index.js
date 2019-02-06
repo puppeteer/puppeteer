@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const FirefoxLauncher = require('./lib/firefox/Launcher.js').Launcher;
-const BrowserFetcher = require('./lib/firefox/BrowserFetcher.js');
+const FirefoxLauncher = require('./lib/Launcher.js').Launcher;
+const BrowserFetcher = require('./lib/BrowserFetcher.js');
 
 class Puppeteer {
   constructor() {

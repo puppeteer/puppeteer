@@ -1,8 +1,8 @@
 const {helper, assert, debugError} = require('./helper');
 const {Keyboard, Mouse} = require('./Input');
-const {constants} = require('../common');
+const {constants} = require('./common');
 const {Dialog} = require('./Dialog');
-const {TimeoutError} = require('../Errors');
+const {TimeoutError} = require('./Errors');
 const fs = require('fs');
 const mime = require('mime');
 const util = require('util');

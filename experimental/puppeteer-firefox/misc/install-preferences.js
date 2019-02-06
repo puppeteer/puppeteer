@@ -7,7 +7,7 @@ const path = require('path');
 // Based on:   https://developer.mozilla.org/en-US/docs/Mozilla/Firefox/Enterprise_deployment_before_60#Configuration
 async function installFirefoxPreferences(executablePath) {
   const firefoxFolder = path.dirname(executablePath);
-  const {helper} = require('../lib/firefox/helper');
+  const {helper} = require('../lib/helper');
   const mkdirAsync = helper.promisify(fs.mkdir.bind(fs));
 
   let prefPath = '';
