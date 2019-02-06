@@ -4,6 +4,7 @@
   "description": "Puppeteer API for Firefox",
   "main": "index.js",
   "repository": "github:GoogleChrome/puppeteer",
+  "homepage": "https://github.com/GoogleChrome/puppeteer/tree/master/experimental/puppeteer-firefox",
   "engines": {
     "node": ">=8.9.4"
   },
