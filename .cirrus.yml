@@ -3,7 +3,7 @@ env:
 
 task:
   matrix:
-    - name: node6 (linux)
+    - name: Chromium (node6 + linux)
       container:
         dockerfile: .ci/node6/Dockerfile.linux
       xvfb_start_background_script: Xvfb :99 -ac -screen 0 1024x768x24
@@ -12,7 +12,7 @@ task:
 
 task:
   matrix:
-    - name: node8 (linux)
+    - name: Chromium (node8 + linux)
       container:
         dockerfile: .ci/node8/Dockerfile.linux
       xvfb_start_background_script: Xvfb :99 -ac -screen 0 1024x768x24
@@ -23,9 +23,18 @@ task:
   test_types_script: npm run test-types
 
 task:
+  matrix:
+    - name: Firefox (node8 + linux)
+      container:
+        dockerfile: .ci/node8/Dockerfile.linux
+      xvfb_start_background_script: Xvfb :99 -ac -screen 0 1024x768x24
+  install_script: npm install --unsafe-perm && cd experimental/puppeteer-firefox && npm install --unsafe-perm
+  test_script: npm run funit
+
+task:
   osx_instance:
     image: high-sierra-base
-  name: node8 (macOS)
+  name: Chromium (node8 + macOS)
   env:
     HOMEBREW_NO_AUTO_UPDATE: 1
   node_install_script:
