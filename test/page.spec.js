@@ -918,8 +918,8 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       const responses = new Map();
       page.on('response', r => responses.set(r.url().split('/').pop(), r));
 
-      await page.goto(server.PREFIX + '/cached/one-style.html', {waitUntil: 'networkidle2'});
-      await page.reload({waitUntil: 'networkidle2'});
+      await page.goto(server.PREFIX + '/cached/one-style.html');
+      await page.reload();
       expect(responses.get('one-style.css').fromCache()).toBe(true);
 
       await page.setCacheEnabled(false);
