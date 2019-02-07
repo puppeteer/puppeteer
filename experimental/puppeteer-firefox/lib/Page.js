@@ -822,6 +822,8 @@ class ElementHandle extends JSHandle {
     });
     if (!clip)
       throw new Error('Node is either not visible or not an HTMLElement');
+    assert(clip.width, 'Node has 0 width.');
+    assert(clip.height, 'Node has 0 height.');
     await this._scrollIntoViewIfNeeded();
 
     return await this._frame._page.screenshot(Object.assign({}, options, {
