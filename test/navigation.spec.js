@@ -56,7 +56,6 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
       let error = null;
       await page.goto(server.EMPTY_PAGE).catch(e => error = e);
       expect(error).not.toBe(null);
-      console.log(error.message);
       if (CHROME)
         expect(error.message).toContain('net::ERR_ABORTED');
       else
