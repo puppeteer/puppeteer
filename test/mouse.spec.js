@@ -54,7 +54,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       expect(event.isTrusted).toBe(true);
       expect(event.button).toBe(0);
     });
-    it_fails_ffox('should resize the textarea', async({page, server}) => {
+    it('should resize the textarea', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       const {x, y, width, height} = await page.evaluate(dimensions);
       const mouse = page.mouse;
@@ -63,21 +63,26 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await mouse.move(x + width + 100, y + height + 100);
       await mouse.up();
       const newDimensions = await page.evaluate(dimensions);
-      expect(newDimensions.width).toBe(width + 104);
-      expect(newDimensions.height).toBe(height + 104);
+      expect(newDimensions.width).toBe(Math.round(width + 104));
+      expect(newDimensions.height).toBe(Math.round(height + 104));
     });
-    it_fails_ffox('should select the text with mouse', async({page, server}) => {
+    it('should select the text with mouse', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       const text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
       await page.keyboard.type(text);
+      // Firefox needs an extra frame here after typing or it will fail to set the scrollTop
+      await page.evaluate(() => new Promise(requestAnimationFrame));
       await page.evaluate(() => document.querySelector('textarea').scrollTop = 0);
       const {x, y} = await page.evaluate(dimensions);
       await page.mouse.move(x + 2,y + 2);
       await page.mouse.down();
       await page.mouse.move(100,100);
       await page.mouse.up();
-      expect(await page.evaluate(() => window.getSelection().toString())).toBe(text);
+      expect(await page.evaluate(() => {
+        const textarea = document.querySelector('textarea');
+        return textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
+      })).toBe(text);
     });
     it('should trigger hover state', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/scrollable.html');

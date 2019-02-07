@@ -16,7 +16,7 @@
 
 const utils = require('./utils');
 
-module.exports.addTests = function({testRunner, expect, Errors}) {
+module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -48,7 +48,7 @@ module.exports.addTests = function({testRunner, expect, Errors}) {
       });
       await page.goto(server.PREFIX + '/frames/one-frame.html');
     });
-    it_fails_ffox('should fail when server returns 204', async({page, server}) => {
+    it('should fail when server returns 204', async({page, server}) => {
       server.setRoute('/empty.html', (req, res) => {
         res.statusCode = 204;
         res.end();
@@ -56,7 +56,11 @@ module.exports.addTests = function({testRunner, expect, Errors}) {
       let error = null;
       await page.goto(server.EMPTY_PAGE).catch(e => error = e);
       expect(error).not.toBe(null);
-      expect(error.message).toContain('net::ERR_ABORTED');
+      console.log(error.message);
+      if (CHROME)
+        expect(error.message).toContain('net::ERR_ABORTED');
+      else
+        expect(error.message).toContain('NS_BINDING_ABORTED');
     });
     it_fails_ffox('should navigate to empty page with domcontentloaded', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'domcontentloaded'});
@@ -79,10 +83,13 @@ module.exports.addTests = function({testRunner, expect, Errors}) {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle2'});
       expect(response.status()).toBe(200);
     });
-    it_fails_ffox('should fail when navigating to bad url', async({page, server}) => {
+    it('should fail when navigating to bad url', async({page, server}) => {
       let error = null;
       await page.goto('asdfasdf').catch(e => error = e);
-      expect(error.message).toContain('Cannot navigate to invalid URL');
+      if (CHROME)
+        expect(error.message).toContain('Cannot navigate to invalid URL');
+      else
+        expect(error.message).toContain('Invalid url');
     });
     it_fails_ffox('should fail when navigating to bad SSL', async({page, httpsServer}) => {
       // Make sure that network events do not emit 'undefined'.
@@ -94,22 +101,28 @@ module.exports.addTests = function({testRunner, expect, Errors}) {
       await page.goto(httpsServer.EMPTY_PAGE).catch(e => error = e);
       expect(error.message).toContain('net::ERR_CERT_AUTHORITY_INVALID');
     });
-    it_fails_ffox('should fail when navigating to bad SSL after redirects', async({page, server, httpsServer}) => {
+    it('should fail when navigating to bad SSL after redirects', async({page, server, httpsServer}) => {
       server.setRedirect('/redirect/1.html', '/redirect/2.html');
       server.setRedirect('/redirect/2.html', '/empty.html');
       let error = null;
       await page.goto(httpsServer.PREFIX + '/redirect/1.html').catch(e => error = e);
-      expect(error.message).toContain('net::ERR_CERT_AUTHORITY_INVALID');
+      if (CHROME)
+        expect(error.message).toContain('net::ERR_CERT_AUTHORITY_INVALID');
+      else
+        expect(error.message).toContain('SSL_ERROR_UNKNOWN');
     });
     it_fails_ffox('should throw if networkidle is passed as an option', async({page, server}) => {
       let error = null;
       await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle'}).catch(err => error = err);
       expect(error.message).toContain('"networkidle" option is no longer supported');
     });
-    it_fails_ffox('should fail when main resources failed to load', async({page, server}) => {
+    it('should fail when main resources failed to load', async({page, server}) => {
       let error = null;
       await page.goto('http://localhost:44123/non-existing-url').catch(e => error = e);
-      expect(error.message).toContain('net::ERR_CONNECTION_REFUSED');
+      if (CHROME)
+        expect(error.message).toContain('net::ERR_CONNECTION_REFUSED');
+      else
+        expect(error.message).toContain('NS_ERROR_CONNECTION_REFUSED');
     });
     it('should fail when exceeding maximum navigation timeout', async({page, server}) => {
       // Hang for request to the empty.html
