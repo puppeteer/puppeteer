@@ -79,7 +79,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  (asyncawait ? describe_fails_ffox : xdescribe)('Async stacks', () => {
+  (asyncawait ? describe : xdescribe)('Async stacks', () => {
     it('should work', async({page, server}) => {
       server.setRoute('/empty.html', (req, res) => {
         res.statusCode = 204;
@@ -88,7 +88,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       let error = null;
       await page.goto(server.EMPTY_PAGE).catch(e => error = e);
       expect(error).not.toBe(null);
-      expect(error.message).toContain('net::ERR_ABORTED');
+      expect(error.stack).toContain(__filename);
     });
   });
 

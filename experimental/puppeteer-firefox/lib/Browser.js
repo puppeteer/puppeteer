@@ -312,4 +312,4 @@ BrowserContext.Events = {
   TargetDestroyed: 'targetdestroyed'
 }
 
-module.exports = {Browser, Target};
+module.exports = {Browser, BrowserContext, Target};

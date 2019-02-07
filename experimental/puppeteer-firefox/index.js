@@ -13,44 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const FirefoxLauncher = require('./lib/Launcher.js').Launcher;
-const BrowserFetcher = require('./lib/BrowserFetcher.js');
 
-class Puppeteer {
-  constructor() {
-    this._firefoxLauncher = new FirefoxLauncher();
-  }
+const {helper} = require('./lib/helper');
+const api = require('./lib/api');
+for (const className in api)
+  helper.installAsyncStackHooks(api[className]);
 
-  async launch(options = {}) {
-    const {
-      args = [],
-      dumpio = !!process.env.DUMPIO,
-      handleSIGHUP = true,
-      handleSIGINT = true,
-      handleSIGTERM = true,
-      headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true',
-      defaultViewport = {width: 800, height: 600},
-      ignoreHTTPSErrors = false,
-      slowMo = 0,
-      executablePath = this.executablePath(),
-    } = options;
-    options = {
-      args, slowMo, dumpio, executablePath, handleSIGHUP, handleSIGINT, handleSIGTERM, headless, defaultViewport,
-      ignoreHTTPSErrors
-    };
-    return await this._firefoxLauncher.launch(options);
-  }
-
-  createBrowserFetcher(options) {
-    return new BrowserFetcher(__dirname, options);
-  }
-
-  executablePath() {
-    const browserFetcher = new BrowserFetcher(__dirname, { product: 'firefox' });
-    const revision = require('./package.json').puppeteer.firefox_revision;
-    const revisionInfo = browserFetcher.revisionInfo(revision);
-    return revisionInfo.executablePath;
-  }
-}
-
-module.exports = new Puppeteer();
+const {Puppeteer} = require('./lib/Puppeteer');
+const packageJson = require('./package.json');
+const preferredRevision = packageJson.puppeteer.firefox_revision;
+module.exports = new Puppeteer(__dirname, preferredRevision);
