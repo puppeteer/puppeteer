@@ -50,12 +50,12 @@ module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
       expect(await originalPage.evaluate(() => ['Hello', 'world'].join(' '))).toBe('Hello world');
       expect(await originalPage.$('body')).toBeTruthy();
     });
-    it_fails_ffox('should report when a new page is created and closed', async({page, server, context}) => {
-      const otherPagePromise = new Promise(fulfill => context.once('targetcreated', target => fulfill(target.page())));
-      await page.evaluate(url => window.open(url), server.CROSS_PROCESS_PREFIX);
-      const otherPage = await otherPagePromise;
+    it('should report when a new page is created and closed', async({page, server, context}) => {
+      const [otherPage] = await Promise.all([
+        context.waitForTarget(target => target.url() === server.CROSS_PROCESS_PREFIX + '/empty.html').then(target => target.page()),
+        page.evaluate(url => window.open(url), server.CROSS_PROCESS_PREFIX + '/empty.html'),
+      ]);
       expect(otherPage.url()).toContain(server.CROSS_PROCESS_PREFIX);
-
       expect(await otherPage.evaluate(() => ['Hello', 'world'].join(' '))).toBe('Hello world');
       expect(await otherPage.$('body')).toBeTruthy();
 

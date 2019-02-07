@@ -136,7 +136,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
             'Keyup: ~ Backquote 192 [Shift]'].join('\n'));
       await keyboard.up('Shift');
     });
-    it_fails_ffox('should not type canceled events', async({page, server}) => {
+    it('should not type canceled events', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       await page.evaluate(() => {
@@ -146,7 +146,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
           if (event.key === 'l')
             event.preventDefault();
           if (event.key === 'o')
-            Promise.resolve().then(() => event.preventDefault());
+            event.preventDefault();
         }, false);
       });
       await page.keyboard.type('Hello World!');
