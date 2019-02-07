@@ -251,7 +251,7 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
       await watchdog;
     });
 
-    it_fails_ffox('Page.waitForSelector is shortcut for main frame', async({page, server}) => {
+    it('Page.waitForSelector is shortcut for main frame', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE2);
       const otherFrame = page.frames()[1];
@@ -262,7 +262,7 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
       expect(eHandle.executionContext().frame()).toBe(page.mainFrame());
     });
 
-    it_fails_ffox('should run in specified frame', async({page, server}) => {
+    it('should run in specified frame', async({page, server}) => {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE2);
       await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE2);
       const frame1 = page.frames()[1];
@@ -401,7 +401,7 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
       expect(error.message).toContain('waiting for XPath "//div" failed: timeout');
       expect(error).toBeInstanceOf(TimeoutError);
     });
-    it_fails_ffox('should run in specified frame', async({page, server}) => {
+    it('should run in specified frame', async({page, server}) => {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
       const frame1 = page.frames()[1];

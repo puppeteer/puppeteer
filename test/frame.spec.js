@@ -22,7 +22,7 @@ module.exports.addTests = function({testRunner, expect}) {
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Frame.executionContext', function() {
-    it_fails_ffox('should work', async({page, server}) => {
+    it('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       expect(page.frames().length).toBe(2);
