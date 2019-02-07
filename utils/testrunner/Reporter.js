@@ -32,7 +32,7 @@ class Reporter {
     this._showSlowTests = showSlowTests;
     this._verbose = verbose;
     this._summary = summary;
-    this._verboseCounter = 0;
+    this._testCounter = 0;
     runner.on('started', this._onStarted.bind(this));
     runner.on('terminated', this._onTerminated.bind(this));
     runner.on('finished', this._onFinished.bind(this));
@@ -180,18 +180,19 @@ class Reporter {
 
   _onTestStarted(test, workerId) {
     this._workersState.set(workerId, {test, isRunning: true});
+    this._testCounter = 0;
   }
 
   _onTestFinished(test, workerId) {
     this._workersState.set(workerId, {test, isRunning: false});
     if (this._verbose) {
-      ++this._verboseCounter;
+      ++this._testCounter;
       if (test.result === 'ok') {
-        console.log(`${this._verboseCounter}) ${GREEN_COLOR}[ OK ]${RESET_COLOR} ${test.fullName} (${formatTestLocation(test)})`);
+        console.log(`${this._testCounter}) ${GREEN_COLOR}[ OK ]${RESET_COLOR} ${test.fullName} (${formatTestLocation(test)})`);
       } else if (test.result === 'skipped') {
-        console.log(`${this._verboseCounter}) ${YELLOW_COLOR}[SKIP]${RESET_COLOR} ${test.fullName} (${formatTestLocation(test)})`);
+        console.log(`${this._testCounter}) ${YELLOW_COLOR}[SKIP]${RESET_COLOR} ${test.fullName} (${formatTestLocation(test)})`);
       } else if (test.result === 'failed') {
-        console.log(`${this._verboseCounter}) ${RED_COLOR}[FAIL]${RESET_COLOR} ${test.fullName} (${formatTestLocation(test)})`);
+        console.log(`${this._testCounter}) ${RED_COLOR}[FAIL]${RESET_COLOR} ${test.fullName} (${formatTestLocation(test)})`);
         console.log('  Message:');
         console.log(`    ${RED_COLOR}${test.error.message || test.error}${RESET_COLOR}`);
         console.log('  Stack:');
@@ -202,7 +203,7 @@ class Reporter {
           console.log(test.output.split('\n').map(line => '    ' + line).join('\n'));
         }
       } else if (test.result === 'timedout') {
-        console.log(`${this._verboseCounter}) ${RED_COLOR}[TIME]${RESET_COLOR} ${test.fullName} (${formatTestLocation(test)})`);
+        console.log(`${this._testCounter}) ${RED_COLOR}[TIME]${RESET_COLOR} ${test.fullName} (${formatTestLocation(test)})`);
         console.log('  Message:');
         console.log(`    ${RED_COLOR}Timeout Exceeded ${this._runner.timeout()}ms${RESET_COLOR}`);
       }
