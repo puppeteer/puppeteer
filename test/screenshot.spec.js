@@ -16,10 +16,10 @@
 
 module.exports.addTests = function({testRunner, expect, product}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
-  describe_fails_ffox('Page.screenshot', function() {
+  describe('Page.screenshot', function() {
     it('should work', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/grid.html');
@@ -92,13 +92,13 @@ module.exports.addTests = function({testRunner, expect, product}) {
         expect(screenshots[i]).toBeGolden(`grid-cell-${i}.png`);
       await Promise.all(pages.map(page => page.close()));
     });
-    it('should allow transparency', async({page, server}) => {
+    it_fails_ffox('should allow transparency', async({page, server}) => {
       await page.setViewport({ width: 100, height: 100 });
       await page.goto(server.EMPTY_PAGE);
       const screenshot = await page.screenshot({omitBackground: true});
       expect(screenshot).toBeGolden('transparent.png');
     });
-    it('should render white background on jpeg file', async({page, server}) => {
+    it_fails_ffox('should render white background on jpeg file', async({page, server}) => {
       await page.setViewport({ width: 100, height: 100 });
       await page.goto(server.EMPTY_PAGE);
       const screenshot = await page.screenshot({omitBackground: true, type: 'jpeg'});
@@ -125,7 +125,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
     });
   });
 
-  describe_fails_ffox('ElementHandle.screenshot', function() {
+  describe('ElementHandle.screenshot', function() {
     it('should work', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/grid.html');
@@ -230,7 +230,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-fractional.png');
     });
-    it('should work for an element with an offset', async({page}) => {
+    it_fails_ffox('should work for an element with an offset', async({page}) => {
       await page.setContent('<div style="position:absolute; top: 10.3px; left: 20.4px;width:50.3px;height:20.2px;border:1px solid black;"></div>');
       const elementHandle = await page.$('div');
       const screenshot = await elementHandle.screenshot();
