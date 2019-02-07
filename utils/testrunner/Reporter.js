@@ -24,10 +24,15 @@ class Reporter {
     const {
       projectFolder = null,
       showSlowTests = 3,
+      verbose = false,
+      summary = true,
     } = options;
     this._runner = runner;
     this._projectFolder = projectFolder;
     this._showSlowTests = showSlowTests;
+    this._verbose = verbose;
+    this._summary = summary;
+    this._testCounter = 0;
     runner.on('started', this._onStarted.bind(this));
     runner.on('terminated', this._onTerminated.bind(this));
     runner.on('finished', this._onFinished.bind(this));
@@ -88,14 +93,14 @@ class Reporter {
     console.log('\n');
 
     const failedTests = this._runner.failedTests();
-    if (failedTests.length > 0) {
+    if (this._summary && failedTests.length > 0) {
       console.log('\nFailures:');
       for (let i = 0; i < failedTests.length; ++i) {
         const test = failedTests[i];
         console.log(`${i + 1}) ${test.fullName} (${formatTestLocation(test)})`);
         if (test.result === 'timedout') {
           console.log('  Message:');
-          console.log(`    ${YELLOW_COLOR}Timeout Exceeded ${this._runner.timeout()}ms${RESET_COLOR}`);
+          console.log(`    ${RED_COLOR}Timeout Exceeded ${this._runner.timeout()}ms${RESET_COLOR}`);
         } else {
           console.log('  Message:');
           console.log(`    ${RED_COLOR}${test.error.message || test.error}${RESET_COLOR}`);
@@ -112,7 +117,7 @@ class Reporter {
     }
 
     const skippedTests = this._runner.skippedTests();
-    if (skippedTests.length > 0) {
+    if (this._summary && skippedTests.length > 0) {
       console.log('\nSkipped:');
       for (let i = 0; i < skippedTests.length; ++i) {
         const test = skippedTests[i];
@@ -137,7 +142,18 @@ class Reporter {
 
     const tests = this._runner.tests();
     const executedTests = tests.filter(test => test.result);
-    console.log(`\nRan ${executedTests.length} of ${tests.length} test(s)`);
+    const okTestsLength = executedTests.length - failedTests.length - skippedTests.length;
+    let summaryText = '';
+    if (failedTests.length || skippedTests.length) {
+      const summary = [`ok - ${GREEN_COLOR}${okTestsLength}${RESET_COLOR}`];
+      if (failedTests.length)
+        summary.push(`failed - ${RED_COLOR}${failedTests.length}${RESET_COLOR}`);
+      if (skippedTests.length)
+        summary.push(`skipped - ${YELLOW_COLOR}${skippedTests.length}${RESET_COLOR}`);
+      summaryText = `(${summary.join(', ')})`;
+    }
+
+    console.log(`\nRan ${executedTests.length} ${summaryText} of ${tests.length} test(s)`);
     const milliseconds = Date.now() - this._timestamp;
     const seconds = milliseconds / 1000;
     console.log(`Finished in ${YELLOW_COLOR}${seconds}${RESET_COLOR} seconds`);
@@ -164,18 +180,43 @@ class Reporter {
 
   _onTestStarted(test, workerId) {
     this._workersState.set(workerId, {test, isRunning: true});
+    this._testCounter = 0;
   }
 
   _onTestFinished(test, workerId) {
     this._workersState.set(workerId, {test, isRunning: false});
-    if (test.result === 'ok')
-      process.stdout.write(`${GREEN_COLOR}.${RESET_COLOR}`);
-    else if (test.result === 'skipped')
-      process.stdout.write(`${YELLOW_COLOR}*${RESET_COLOR}`);
-    else if (test.result === 'failed')
-      process.stdout.write(`${RED_COLOR}F${RESET_COLOR}`);
-    else if (test.result === 'timedout')
-      process.stdout.write(`${RED_COLOR}T${RESET_COLOR}`);
+    if (this._verbose) {
+      ++this._testCounter;
+      if (test.result === 'ok') {
+        console.log(`${this._testCounter}) ${GREEN_COLOR}[ OK ]${RESET_COLOR} ${test.fullName} (${formatTestLocation(test)})`);
+      } else if (test.result === 'skipped') {
+        console.log(`${this._testCounter}) ${YELLOW_COLOR}[SKIP]${RESET_COLOR} ${test.fullName} (${formatTestLocation(test)})`);
+      } else if (test.result === 'failed') {
+        console.log(`${this._testCounter}) ${RED_COLOR}[FAIL]${RESET_COLOR} ${test.fullName} (${formatTestLocation(test)})`);
+        console.log('  Message:');
+        console.log(`    ${RED_COLOR}${test.error.message || test.error}${RESET_COLOR}`);
+        console.log('  Stack:');
+        if (test.error.stack)
+          console.log(this._beautifyStack(test.error.stack));
+        if (test.output) {
+          console.log('  Output:');
+          console.log(test.output.split('\n').map(line => '    ' + line).join('\n'));
+        }
+      } else if (test.result === 'timedout') {
+        console.log(`${this._testCounter}) ${RED_COLOR}[TIME]${RESET_COLOR} ${test.fullName} (${formatTestLocation(test)})`);
+        console.log('  Message:');
+        console.log(`    ${RED_COLOR}Timeout Exceeded ${this._runner.timeout()}ms${RESET_COLOR}`);
+      }
+    } else {
+      if (test.result === 'ok')
+        process.stdout.write(`${GREEN_COLOR}.${RESET_COLOR}`);
+      else if (test.result === 'skipped')
+        process.stdout.write(`${YELLOW_COLOR}*${RESET_COLOR}`);
+      else if (test.result === 'failed')
+        process.stdout.write(`${RED_COLOR}F${RESET_COLOR}`);
+      else if (test.result === 'timedout')
+        process.stdout.write(`${RED_COLOR}T${RESET_COLOR}`);
+    }
   }
 }
 
