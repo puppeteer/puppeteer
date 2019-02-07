@@ -19,6 +19,7 @@ const removeFolder = require('rimraf');
 const childProcess = require('child_process');
 const {Connection} = require('./Connection');
 const {Browser} = require('./Browser');
+const {BrowserFetcher} = require('./BrowserFetcher');
 const readline = require('readline');
 const fs = require('fs');
 const util = require('util');
@@ -35,6 +36,11 @@ const FIREFOX_PROFILE_PATH = path.join(os.tmpdir(), 'puppeteer_firefox_profile-'
  * @internal
  */
 class Launcher {
+  constructor(projectRoot, preferredRevision) {
+    this._projectRoot = projectRoot;
+    this._preferredRevision = preferredRevision;
+  }
+
   /**
    * @param {Object} options
    * @return {!Promise<!Browser>}
@@ -43,7 +49,7 @@ class Launcher {
     const {
       args = [],
       dumpio = false,
-      executablePath = null,
+      executablePath = this.executablePath(),
       handleSIGHUP = true,
       handleSIGINT = true,
       handleSIGTERM = true,
@@ -52,9 +58,6 @@ class Launcher {
       defaultViewport = {width: 800, height: 600},
       slowMo = 0,
     } = options;
-
-    if (!executablePath)
-      throw new Error('Firefox launching is only supported with local version of firefox!');
 
     const firefoxArguments = args.slice();
     firefoxArguments.push('-no-remote');
@@ -151,6 +154,15 @@ class Launcher {
         removeFolder.sync(temporaryProfileDir);
       } catch (e) { }
     }
+  }
+
+  /**
+   * @return {string}
+   */
+  executablePath() {
+    const browserFetcher = new BrowserFetcher(this._projectRoot, { product: 'firefox' });
+    const revisionInfo = browserFetcher.revisionInfo(this._preferredRevision);
+    return revisionInfo.executablePath;
   }
 }
 

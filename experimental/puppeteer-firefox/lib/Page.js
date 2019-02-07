@@ -1446,4 +1446,4 @@ class NavigationWatchdog {
   }
 }
 
-module.exports = {Page};
+module.exports = {Page, Frame, ConsoleMessage};

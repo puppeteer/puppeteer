@@ -1,0 +1,16 @@
+module.exports = {
+  Browser: require('./Browser').Browser,
+  BrowserContext: require('./Browser').BrowserContext,
+  BrowserFetcher: require('./BrowserFetcher').BrowserFetcher,
+  ConsoleMessage: require('./Page').ConsoleMessage,
+  Dialog: require('./Dialog').Dialog,
+  ElementHandle: require('./JSHandle').ElementHandle,
+  Frame: require('./Page').Frame,
+  JSHandle: require('./JSHandle').JSHandle,
+  Keyboard: require('./Input').Keyboard,
+  Mouse: require('./Input').Mouse,
+  Page: require('./Page').Page,
+  Puppeteer: require('./Puppeteer').Puppeteer,
+  Target: require('./Browser').Target,
+  TimeoutError: require('./Errors').TimeoutError,
+};

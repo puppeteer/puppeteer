@@ -228,7 +228,7 @@ class BrowserFetcher {
   }
 }
 
-module.exports = BrowserFetcher;
+module.exports = {BrowserFetcher};
 
 /**
  * @param {string} folderPath
