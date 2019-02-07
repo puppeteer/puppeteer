@@ -131,6 +131,8 @@ if (process.env.CI && testRunner.hasFocusedTestsOrSuites()) {
 }
 
 new Reporter(testRunner, {
+  verbose: process.argv.includes('--verbose'),
+  summary: !process.argv.includes('--verbose'),
   projectFolder: utils.projectRoot(),
   showSlowTests: process.env.CI ? 5 : 0,
 });
