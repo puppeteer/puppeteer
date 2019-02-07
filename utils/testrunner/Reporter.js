@@ -42,6 +42,7 @@ class Reporter {
   }
 
   _onStarted(runnableTests) {
+    this._testCounter = 0;
     this._timestamp = Date.now();
     const allTests = this._runner.tests();
     if (allTests.length === runnableTests.length)
@@ -180,7 +181,6 @@ class Reporter {
 
   _onTestStarted(test, workerId) {
     this._workersState.set(workerId, {test, isRunning: true});
-    this._testCounter = 0;
   }
 
   _onTestFinished(test, workerId) {
