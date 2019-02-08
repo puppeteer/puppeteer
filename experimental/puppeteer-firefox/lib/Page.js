@@ -8,6 +8,7 @@ const mime = require('mime');
 const util = require('util');
 const EventEmitter = require('events');
 const {JSHandle, createHandle} = require('./JSHandle');
+const {Events} = require('./Events');
 
 const writeFileAsync = util.promisify(fs.writeFile);
 const readFileAsync = util.promisify(fs.readFile);
@@ -90,7 +91,7 @@ class Page extends EventEmitter {
   _onUncaughtError(params) {
     let error = new Error(params.message);
     error.stack = params.stack;
-    this.emit(Page.Events.PageError, error);
+    this.emit(Events.Page.PageError, error);
   }
 
   viewport() {
@@ -154,7 +155,7 @@ class Page extends EventEmitter {
   }
 
   _onDialogOpened(params) {
-    this.emit(Page.Events.Dialog, new Dialog(this._session, params));
+    this.emit(Events.Page.Dialog, new Dialog(this._session, params));
   }
 
   _onFrameAttached(params) {
@@ -168,7 +169,7 @@ class Page extends EventEmitter {
       this._mainFrame = frame;
     }
     this._frames.set(params.frameId, frame);
-    this.emit(Page.Events.FrameAttached, frame);
+    this.emit(Events.Page.FrameAttached, frame);
   }
 
   mainFrame() {
@@ -179,7 +180,7 @@ class Page extends EventEmitter {
     const frame = this._frames.get(params.frameId);
     this._frames.delete(params.frameId);
     frame._detach();
-    this.emit(Page.Events.FrameDetached, frame);
+    this.emit(Events.Page.FrameDetached, frame);
   }
 
   _onNavigationCommitted(params) {
@@ -187,13 +188,13 @@ class Page extends EventEmitter {
     frame._navigated(params.url, params.name, params.navigationId);
     frame._DOMContentLoadedFired = false;
     frame._loadFired = false;
-    this.emit(Page.Events.FrameNavigated, frame);
+    this.emit(Events.Page.FrameNavigated, frame);
   }
 
   _onSameDocumentNavigation(params) {
     const frame = this._frames.get(params.frameId);
     frame._url = params.url;
-    this.emit(Page.Events.FrameNavigated, frame);
+    this.emit(Events.Page.FrameNavigated, frame);
   }
 
   get keyboard(){
@@ -578,7 +579,7 @@ class Page extends EventEmitter {
   _onClosed() {
     this._isClosed = true;
     helper.removeEventListeners(this._eventListeners);
-    this.emit(Page.Events.Close);
+    this.emit(Events.Page.Close);
   }
 
   _onEventFired({frameId, name}) {
@@ -586,9 +587,9 @@ class Page extends EventEmitter {
     frame._firedEvents.add(name.toLowerCase());
     if (frame === this._mainFrame) {
       if (name === 'load')
-        this.emit(Page.Events.Load);
+        this.emit(Events.Page.Load);
       else if (name === 'DOMContentLoaded')
-        this.emit(Page.Events.DOMContentLoaded);
+        this.emit(Events.Page.DOMContentLoaded);
     }
   }
 
@@ -599,7 +600,7 @@ class Page extends EventEmitter {
 
   _onConsole({type, args, frameId}) {
     const frame = this._frames.get(frameId);
-    this.emit(Page.Events.Console, new ConsoleMessage(type, args.map(arg => createHandle(frame, arg))));
+    this.emit(Events.Page.Console, new ConsoleMessage(type, args.map(arg => createHandle(frame, arg))));
   }
 
   /**
@@ -608,19 +609,6 @@ class Page extends EventEmitter {
   isClosed() {
     return this._isClosed;
   }
-}
-
-/** @enum {string} */
-Page.Events = {
-  Close: 'close',
-  Console: 'console',
-  Dialog: 'dialog',
-  DOMContentLoaded: 'domcontentloaded',
-  FrameAttached: 'frameattached',
-  FrameDetached: 'framedetached',
-  FrameNavigated: 'framenavigated',
-  Load: 'load',
-  PageError: 'pageerror'
 }
 
 class ConsoleMessage {
