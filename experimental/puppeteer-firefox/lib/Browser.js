@@ -1,5 +1,6 @@
 const {helper, assert} = require('./helper');
 const {Page} = require('./Page');
+const {Events} = require('./Events');
 const EventEmitter = require('events');
 
 class Browser extends EventEmitter {
@@ -109,14 +110,14 @@ class Browser extends EventEmitter {
       return existingTarget;
     let resolve;
     const targetPromise = new Promise(x => resolve = x);
-    this.on(Browser.Events.TargetCreated, check);
+    this.on(Events.Browser.TargetCreated, check);
     this.on('targetchanged', check);
     try {
       if (!timeout)
         return await targetPromise;
       return await helper.waitWithTimeout(targetPromise, 'target', timeout);
     } finally {
-      this.removeListener(Browser.Events.TargetCreated, check);
+      this.removeListener(Events.Browser.TargetCreated, check);
       this.removeListener('targetchanged', check);
     }
 
@@ -161,35 +162,28 @@ class Browser extends EventEmitter {
     const context = browserContextId ? this._contexts.get(browserContextId) : this._defaultContext;
     const target = new Target(this._connection, this, context, pageId, url);
     this._pageTargets.set(pageId, target);
-    this.emit(Browser.Events.TargetCreated, target);
-    context.emit(BrowserContext.Events.TargetCreated, target);
+    this.emit(Events.Browser.TargetCreated, target);
+    context.emit(Events.BrowserContext.TargetCreated, target);
   }
 
   _onTabClosed({pageId}) {
     const target = this._pageTargets.get(pageId);
     this._pageTargets.delete(pageId);
-    this.emit(Browser.Events.TargetDestroyed, target);
-    target.browserContext().emit(BrowserContext.Events.TargetDestroyed, target);
+    this.emit(Events.Browser.TargetDestroyed, target);
+    target.browserContext().emit(Events.BrowserContext.TargetDestroyed, target);
   }
 
   _onTabNavigated({pageId, url}) {
     const target = this._pageTargets.get(pageId);
     target._url = url;
-    this.emit(Browser.Events.TargetChanged, target);
-    target.browserContext().emit(BrowserContext.Events.TargetChanged, target);
+    this.emit(Events.Browser.TargetChanged, target);
+    target.browserContext().emit(Events.BrowserContext.TargetChanged, target);
   }
 
   async close() {
     helper.removeEventListeners(this._eventListeners);
     await this._closeCallback();
   }
-}
-
-/** @enum {string} */
-Browser.Events = {
-  TargetCreated: 'targetcreated',
-  TargetChanged: 'targetchanged',
-  TargetDestroyed: 'targetdestroyed'
 }
 
 class Target {
@@ -303,13 +297,6 @@ class BrowserContext extends EventEmitter {
     assert(this._browserContextId, 'Non-incognito contexts cannot be closed!');
     await this._browser._disposeContext(this._browserContextId);
   }
-}
-
-/** @enum {string} */
-BrowserContext.Events = {
-  TargetCreated: 'targetcreated',
-  TargetChanged: 'targetchanged',
-  TargetDestroyed: 'targetdestroyed'
 }
 
 module.exports = {Browser, BrowserContext, Target};

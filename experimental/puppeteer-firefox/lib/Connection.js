@@ -15,6 +15,7 @@
  */
 const debugProtocol = require('debug')('hdfox:protocol');
 const EventEmitter = require('events');
+const {Events} = require('./Events');
 
 /**
  * @internal
@@ -84,7 +85,7 @@ class Connection extends EventEmitter {
     for (const callback of this._callbacks.values())
       callback.reject(rewriteError(callback.error, `Protocol error (${callback.method}): Target closed.`));
     this._callbacks.clear();
-    this.emit(Connection.Events.Disconnected);
+    this.emit(Events.Connection.Disconnected);
   }
 
   dispose() {
@@ -92,10 +93,6 @@ class Connection extends EventEmitter {
     this._transport.close();
   }
 }
-
-Connection.Events = {
-  Disconnected: Symbol('Connection.Events.Disconnected'),
-};
 
 /**
  * @param {!Error} error
