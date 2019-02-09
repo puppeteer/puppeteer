@@ -24,6 +24,13 @@ const Events = {
   Connection: {
     Disconnected: Symbol('Events.Connection.Disconnected'),
   },
+
+  FrameManager: {
+    Load: Symbol('Events.FrameManager.Load'),
+    DOMContentLoaded: Symbol('Events.FrameManager.DOMContentLoaded'),
+    FrameAttached: Symbol('Events.FrameManager.FrameAttached'),
+    FrameDetached: Symbol('Events.FrameManager.FrameDetached'),
+  }
 };
 
 module.exports = {Events};

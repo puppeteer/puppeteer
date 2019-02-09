@@ -131,7 +131,7 @@ class ElementHandle extends JSHandle {
     });
     if (!frameId)
       return null;
-    const frame = this._frame._page._frames.get(frameId);
+    const frame = this._frame._frameManager.frame(frameId);
     return frame;
   }
 
