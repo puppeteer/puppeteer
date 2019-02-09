@@ -253,7 +253,7 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
 
     it('Page.waitForSelector is shortcut for main frame', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE2);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const otherFrame = page.frames()[1];
       const watchdog = page.waitForSelector('div');
       await otherFrame.evaluate(addElement, 'div');
@@ -263,8 +263,8 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
     });
 
     it('should run in specified frame', async({page, server}) => {
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE2);
-      await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE2);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
       const frame1 = page.frames()[1];
       const frame2 = page.frames()[2];
       const waitForSelectorPromise = frame2.waitForSelector('div');
