@@ -908,7 +908,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe_fails_ffox('Page.setJavaScriptEnabled', function() {
+  describe('Page.setJavaScriptEnabled', function() {
     it('should work', async({page, server}) => {
       await page.setJavaScriptEnabled(false);
       await page.goto('data:text/html, <script>var something = "forbidden"</script>');
@@ -922,18 +922,22 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe_fails_ffox('Page.setCacheEnabled', function() {
+  describe('Page.setCacheEnabled', function() {
     it('should enable or disable the cache based on the state passed', async({page, server}) => {
-      const responses = new Map();
-      page.on('response', r => responses.set(r.url().split('/').pop(), r));
-
       await page.goto(server.PREFIX + '/cached/one-style.html');
-      await page.reload();
-      expect(responses.get('one-style.css').fromCache()).toBe(true);
+      const [cachedRequest] = await Promise.all([
+        server.waitForRequest('/cached/one-style.html'),
+        page.reload(),
+      ]);
+      // Rely on "if-modified-since" caching in our test server.
+      expect(cachedRequest.headers['if-modified-since']).not.toBe(undefined);
 
       await page.setCacheEnabled(false);
-      await page.reload({waitUntil: 'networkidle2'});
-      expect(responses.get('one-style.css').fromCache()).toBe(false);
+      const [nonCachedRequest] = await Promise.all([
+        server.waitForRequest('/cached/one-style.html'),
+        page.reload(),
+      ]);
+      expect(nonCachedRequest.headers['if-modified-since']).toBe(undefined);
     });
   });
 
