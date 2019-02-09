@@ -82,12 +82,12 @@ module.exports.addTests = function({testRunner, expect, product}) {
     });
   });
 
-  describe_fails_ffox('Page.emulate', function() {
+  describe('Page.emulate', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.PREFIX + '/mobile.html');
       await page.emulate(iPhone);
       expect(await page.evaluate(() => window.innerWidth)).toBe(375);
-      expect(await page.evaluate(() => navigator.userAgent)).toContain('Safari');
+      expect(await page.evaluate(() => navigator.userAgent)).toContain('iPhone');
     });
     it('should support clicking', async({page, server}) => {
       await page.emulate(iPhone);

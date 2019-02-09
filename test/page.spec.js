@@ -628,21 +628,30 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe_fails_ffox('Page.setUserAgent', function() {
+  describe('Page.setUserAgent', function() {
     it('should work', async({page, server}) => {
       expect(await page.evaluate(() => navigator.userAgent)).toContain('Mozilla');
-      page.setUserAgent('foobar');
+      await page.setUserAgent('foobar');
       const [request] = await Promise.all([
         server.waitForRequest('/empty.html'),
         page.goto(server.EMPTY_PAGE),
       ]);
       expect(request.headers['user-agent']).toBe('foobar');
     });
+    it('should work for subframes', async({page, server}) => {
+      expect(await page.evaluate(() => navigator.userAgent)).toContain('Mozilla');
+      await page.setUserAgent('foobar');
+      const [request] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        utils.attachFrame(page, 'frame1', server.EMPTY_PAGE),
+      ]);
+      expect(request.headers['user-agent']).toBe('foobar');
+    });
     it('should emulate device user-agent', async({page, server}) => {
       await page.goto(server.PREFIX + '/mobile.html');
-      expect(await page.evaluate(() => navigator.userAgent)).toContain('Chrome');
+      expect(await page.evaluate(() => navigator.userAgent)).not.toContain('iPhone');
       await page.setUserAgent(iPhone.userAgent);
-      expect(await page.evaluate(() => navigator.userAgent)).toContain('Safari');
+      expect(await page.evaluate(() => navigator.userAgent)).toContain('iPhone');
     });
   });
 
