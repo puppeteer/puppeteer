@@ -908,7 +908,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe_fails_ffox('Page.setJavaScriptEnabled', function() {
+  describe('Page.setJavaScriptEnabled', function() {
     it('should work', async({page, server}) => {
       await page.setJavaScriptEnabled(false);
       await page.goto('data:text/html, <script>var something = "forbidden"</script>');

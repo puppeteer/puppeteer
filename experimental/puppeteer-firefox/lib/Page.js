@@ -111,6 +111,20 @@ class Page extends EventEmitter {
   }
 
   /**
+   * @param {string} userAgent
+   */
+  async setJavaScriptEnabled(enabled) {
+    await this._session.send('Page.setJavascriptEnabled', {enabled});
+  }
+
+  /**
+   * @param {string} userAgent
+   */
+  async setCacheEnabled(enabled) {
+    await this._session.send('Page.setCacheDisabled', {cacheDisabled: !enabled});
+  }
+
+  /**
    * @param {{viewport: !Puppeteer.Viewport, userAgent: string}} options
    */
   async emulate(options) {
