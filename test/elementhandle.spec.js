@@ -132,7 +132,7 @@ module.exports.addTests = function({testRunner, expect}) {
   describe('ElementHandle.contentFrame', function() {
     it('should work', async({page,server}) => {
       await page.goto(server.EMPTY_PAGE);
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE2);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const elementHandle = await page.$('#frame1');
       const frame = await elementHandle.contentFrame();
       expect(frame).toBe(page.frames()[1]);

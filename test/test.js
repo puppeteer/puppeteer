@@ -46,7 +46,6 @@ beforeAll(async state => {
   state.server.PREFIX = `http://localhost:${port}`;
   state.server.CROSS_PROCESS_PREFIX = `http://127.0.0.1:${port}`;
   state.server.EMPTY_PAGE = `http://localhost:${port}/empty.html`;
-  state.server.EMPTY_PAGE2 = `http://localhost:${port}/empty2.html`;
 
   const httpsPort = port + 1;
   state.httpsServer = await TestServer.createHTTPS(assetsPath, httpsPort);
@@ -55,7 +54,6 @@ beforeAll(async state => {
   state.httpsServer.PREFIX = `https://localhost:${httpsPort}`;
   state.httpsServer.CROSS_PROCESS_PREFIX = `https://127.0.0.1:${httpsPort}`;
   state.httpsServer.EMPTY_PAGE = `https://localhost:${httpsPort}/empty.html`;
-  state.httpsServer.EMPTY_PAGE2 = `https://localhost:${httpsPort}/empty2.html`;
 });
 
 afterAll(async({server, httpsServer}) => {
