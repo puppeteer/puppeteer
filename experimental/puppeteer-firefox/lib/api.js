@@ -5,6 +5,7 @@ module.exports = {
   ConsoleMessage: require('./Page').ConsoleMessage,
   Dialog: require('./Dialog').Dialog,
   ElementHandle: require('./JSHandle').ElementHandle,
+  ExecutionContext: require('./ExecutionContext').ExecutionContext,
   Frame: require('./Page').Frame,
   JSHandle: require('./JSHandle').JSHandle,
   Keyboard: require('./Input').Keyboard,
