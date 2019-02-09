@@ -1065,7 +1065,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe_fails_ffox('Page.browserContext', function() {
+  describe('Page.browserContext', function() {
     it('should return the correct browser instance', async function({page, context, browser}) {
       expect(page.browserContext()).toBe(context);
     });

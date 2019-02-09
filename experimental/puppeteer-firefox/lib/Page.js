@@ -88,6 +88,13 @@ class Page extends EventEmitter {
     this._viewport = null;
   }
 
+  /**
+   * @return {BrowserContext}
+   */
+  browserContext() {
+    return this._target.browserContext();
+  }
+
   _onUncaughtError(params) {
     let error = new Error(params.message);
     error.stack = params.stack;
