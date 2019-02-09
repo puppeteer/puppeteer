@@ -1,6 +1,5 @@
 const {helper} = require('./helper');
 const {Keyboard, Mouse} = require('./Input');
-const {constants} = require('./common');
 const {Dialog} = require('./Dialog');
 const {TimeoutError} = require('./Errors');
 const fs = require('fs');
@@ -10,6 +9,7 @@ const EventEmitter = require('events');
 const {createHandle} = require('./JSHandle');
 const {Events} = require('./Events');
 const {FrameManager} = require('./FrameManager');
+const {TimeoutSettings} = require('./TimeoutSettings');
 
 const writeFileAsync = util.promisify(fs.writeFile);
 
@@ -67,12 +67,13 @@ class Page extends EventEmitter {
    */
   constructor(session, target) {
     super();
+    this._timeoutSettings = new TimeoutSettings();
     this._session = session;
     this._target = target;
     this._keyboard = new Keyboard(session);
     this._mouse = new Mouse(session, this._keyboard);
     this._isClosed = false;
-    this._frameManager = new FrameManager(session, this);
+    this._frameManager = new FrameManager(session, this, this._timeoutSettings);
     this._eventListeners = [
       helper.addEventListener(this._session, 'Page.uncaughtError', this._onUncaughtError.bind(this)),
       helper.addEventListener(this._session, 'Page.consoleAPICalled', this._onConsole.bind(this)),
@@ -86,6 +87,20 @@ class Page extends EventEmitter {
       helper.addEventListener(this._frameManager, Events.FrameManager.FrameDetached, frame => this.emit(Events.Page.FrameDetached, frame)),
     ];
     this._viewport = null;
+  }
+
+  /**
+   * @param {number} timeout
+   */
+  setDefaultNavigationTimeout(timeout) {
+    this._timeoutSettings.setDefaultNavigationTimeout(timeout);
+  }
+
+  /**
+   * @param {number} timeout
+   */
+  setDefaultTimeout(timeout) {
+    this._timeoutSettings.setDefaultTimeout(timeout);
   }
 
   /**
@@ -214,7 +229,7 @@ class Page extends EventEmitter {
    */
   async waitForNavigation(options = {}) {
     const {
-      timeout = constants.DEFAULT_NAVIGATION_TIMEOUT,
+      timeout = this._timeoutSettings.navigationTimeout(),
       waitUntil = ['load'],
     } = options;
     const frame = this._frameManager.mainFrame();
@@ -263,7 +278,7 @@ class Page extends EventEmitter {
    */
   async goto(url, options = {}) {
     const {
-      timeout = constants.DEFAULT_NAVIGATION_TIMEOUT,
+      timeout = this._timeoutSettings.navigationTimeout(),
       waitUntil = ['load'],
     } = options;
     const frame = this._frameManager.mainFrame();
@@ -296,7 +311,7 @@ class Page extends EventEmitter {
    */
   async goBack(options = {}) {
     const {
-      timeout = constants.DEFAULT_NAVIGATION_TIMEOUT,
+      timeout = this._timeoutSettings.navigationTimeout(),
       waitUntil = ['load'],
     } = options;
     const frame = this._frameManager.mainFrame();
@@ -328,7 +343,7 @@ class Page extends EventEmitter {
    */
   async goForward(options = {}) {
     const {
-      timeout = constants.DEFAULT_NAVIGATION_TIMEOUT,
+      timeout = this._timeoutSettings.navigationTimeout(),
       waitUntil = ['load'],
     } = options;
     const frame = this._frameManager.mainFrame();
@@ -360,7 +375,7 @@ class Page extends EventEmitter {
    */
   async reload(options = {}) {
     const {
-      timeout = constants.DEFAULT_NAVIGATION_TIMEOUT,
+      timeout = this._timeoutSettings.navigationTimeout(),
       waitUntil = ['load'],
     } = options;
     const frame = this._frameManager.mainFrame();

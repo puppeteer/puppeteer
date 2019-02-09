@@ -131,7 +131,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
       expect(error).toBeInstanceOf(TimeoutError);
     });
-    it_fails_ffox('should fail when exceeding default maximum navigation timeout', async({page, server}) => {
+    it('should fail when exceeding default maximum navigation timeout', async({page, server}) => {
       // Hang for request to the empty.html
       server.setRoute('/empty.html', (req, res) => { });
       let error = null;
@@ -140,7 +140,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
       expect(error).toBeInstanceOf(TimeoutError);
     });
-    it_fails_ffox('should fail when exceeding default maximum timeout', async({page, server}) => {
+    it('should fail when exceeding default maximum timeout', async({page, server}) => {
       // Hang for request to the empty.html
       server.setRoute('/empty.html', (req, res) => { });
       let error = null;
@@ -149,7 +149,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
       expect(error).toBeInstanceOf(TimeoutError);
     });
-    it_fails_ffox('should prioritize default navigation timeout over default timeout', async({page, server}) => {
+    it('should prioritize default navigation timeout over default timeout', async({page, server}) => {
       // Hang for request to the empty.html
       server.setRoute('/empty.html', (req, res) => { });
       let error = null;
