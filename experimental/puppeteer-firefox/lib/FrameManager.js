@@ -13,10 +13,11 @@ class FrameManager extends EventEmitter {
    * @param {PageSession} session
    * @param {Page} page
    */
-  constructor(session, page) {
+  constructor(session, page, timeoutSettings) {
     super();
     this._session = session;
     this._page = page;
+    this._timeoutSettings = timeoutSettings;
     this._mainFrame = null;
     this._frames = new Map();
     this._eventListeners = [
@@ -48,7 +49,7 @@ class FrameManager extends EventEmitter {
   }
 
   _onFrameAttached(params) {
-    const frame = new Frame(this._session, this, this._page, params.frameId);
+    const frame = new Frame(this._session, this, this._page, params.frameId, this._timeoutSettings);
     const parentFrame = this._frames.get(params.parentFrameId) || null;
     if (parentFrame) {
       frame._parentFrame = parentFrame;
@@ -90,9 +91,10 @@ class Frame {
    * @param {!Page} page
    * @param {string} frameId
    */
-  constructor(session, frameManager, page, frameId) {
+  constructor(session, frameManager, page, frameId, timeoutSettings) {
     this._session = session;
     this._frameManager = frameManager;
+    this._timeoutSettings = timeoutSettings;
     this._page = page;
     this._frameId = frameId;
     /** @type {?Frame} */
@@ -230,7 +232,7 @@ class Frame {
   waitForFunction(pageFunction, options = {}, ...args) {
     const {
       polling = 'raf',
-      timeout = 30000
+      timeout = this._timeoutSettings.timeout(),
     } = options;
     return new WaitTask(this, pageFunction, 'function', polling, timeout, ...args).promise;
   }
@@ -263,7 +265,7 @@ class Frame {
     const {
       visible: waitForVisible = false,
       hidden: waitForHidden = false,
-      timeout = 30000
+      timeout = this._timeoutSettings.timeout(),
     } = options;
     const polling = waitForVisible || waitForHidden ? 'raf' : 'mutation';
     const title = `${isXPath ? 'XPath' : 'selector'} "${selectorOrXPath}"${waitForHidden ? ' to be hidden' : ''}`;
