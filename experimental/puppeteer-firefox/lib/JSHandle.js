@@ -3,13 +3,13 @@ const {assert, debugError} = require('./helper');
 class JSHandle {
 
   /**
-   * @param {!Frame} frame
+   * @param {!ExecutionContext} context
    * @param {*} payload
    */
-  constructor(frame, payload) {
-    this._frame = frame;
-    this._session = this._frame._session;
-    this._frameId = this._frame._frameId;
+  constructor(context, payload) {
+    this._context = context;
+    this._session = this._context._session;
+    this._executionContextId = this._context._executionContextId;
     this._objectId = payload.objectId;
     this._type = payload.type;
     this._subtype = payload.subtype;
@@ -18,6 +18,13 @@ class JSHandle {
       value: payload.value,
       objectId: payload.objectId,
     };
+  }
+
+  /**
+   * @return {ExecutionContext}
+   */
+  executionContext() {
+    return this._context;
   }
 
   /**
@@ -35,7 +42,7 @@ class JSHandle {
    * @return {!Promise<?JSHandle>}
    */
   async getProperty(propertyName) {
-    const objectHandle = await this._frame.evaluateHandle((object, propertyName) => {
+    const objectHandle = await this._context.evaluateHandle((object, propertyName) => {
       const result = {__proto__: null};
       result[propertyName] = object[propertyName];
       return result;
@@ -51,12 +58,12 @@ class JSHandle {
    */
   async getProperties() {
     const response = await this._session.send('Page.getObjectProperties', {
-      frameId: this._frameId,
+      executionContextId: this._executionContextId,
       objectId: this._objectId,
     });
     const result = new Map();
     for (const property of response.properties) {
-      result.set(property.name, createHandle(this._frame, property.value, null));
+      result.set(property.name, createHandle(this._context, property.value, null));
     }
     return result;
   }
@@ -77,7 +84,7 @@ class JSHandle {
     if (!this._objectId)
       return this._deserializeValue(this._protocolValue);
     const simpleValue = await this._session.send('Page.evaluate', {
-      frameId: this._frameId,
+      executionContextId: this._executionContextId,
       returnByValue: true,
       functionText: (e => e).toString(),
       args: [this._protocolValue],
@@ -96,13 +103,24 @@ class JSHandle {
     if (!this._objectId)
       return;
     await this._session.send('Page.disposeObject', {
-      frameId: this._frameId,
+      executionContextId: this._executionContextId,
       objectId: this._objectId,
     });
   }
 }
 
 class ElementHandle extends JSHandle {
+  /**
+   * @param {Frame} frame
+   * @param {ExecutionContext} context
+   * @param {*} payload
+   */
+  constructor(frame, context, payload) {
+    super(context, payload);
+    this._frame = frame;
+    this._frameId = frame._frameId;
+  }
+
   /**
    * @return {?Frame}
    */
@@ -355,14 +373,15 @@ class ElementHandle extends JSHandle {
   }
 }
 
-function createHandle(frame, result, exceptionDetails) {
+function createHandle(context, result, exceptionDetails) {
+  const frame = context.frame();
   if (exceptionDetails) {
     if (exceptionDetails.value)
       throw new Error('Evaluation failed: ' + JSON.stringify(exceptionDetails.value));
     else
       throw new Error('Evaluation failed: ' + exceptionDetails.text + '\n' + exceptionDetails.stack);
   }
-  return result.subtype === 'node' ? new ElementHandle(frame, result) : new JSHandle(frame, result);
+  return result.subtype === 'node' ? new ElementHandle(frame, context, result) : new JSHandle(context, result);
 }
 
 function computeQuadArea(quad) {

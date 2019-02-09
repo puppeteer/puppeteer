@@ -9,6 +9,7 @@ const util = require('util');
 const EventEmitter = require('events');
 const {JSHandle, createHandle} = require('./JSHandle');
 const {Events} = require('./Events');
+const {ExecutionContext} = require('./ExecutionContext');
 
 const writeFileAsync = util.promisify(fs.writeFile);
 const readFileAsync = util.promisify(fs.readFile);
@@ -600,7 +601,7 @@ class Page extends EventEmitter {
 
   _onConsole({type, args, frameId}) {
     const frame = this._frames.get(frameId);
-    this.emit(Events.Page.Console, new ConsoleMessage(type, args.map(arg => createHandle(frame, arg))));
+    this.emit(Events.Page.Console, new ConsoleMessage(type, args.map(arg => createHandle(frame._executionContext, arg))));
   }
 
   /**
@@ -689,6 +690,12 @@ class Frame {
     /** @type {!Set<!WaitTask>} */
     this._waitTasks = new Set();
     this._documentPromise = null;
+
+    this._executionContext = new ExecutionContext(this._session, this, this._frameId);
+  }
+
+  async executionContext() {
+    return this._executionContext;
   }
 
   /**
@@ -902,16 +909,7 @@ class Frame {
   }
 
   async evaluate(pageFunction, ...args) {
-    try {
-      const handle = await this.evaluateHandle(pageFunction, ...args);
-      const result = await handle.jsonValue();
-      await handle.dispose();
-      return result;
-    } catch (e) {
-      if (e.message.includes('cyclic object value') || e.message.includes('Object is not serializable'))
-        return undefined;
-      throw e;
-    }
+    return this._executionContext.evaluate(pageFunction, ...args);
   }
 
   _document() {
@@ -970,29 +968,7 @@ class Frame {
   }
 
   async evaluateHandle(pageFunction, ...args) {
-    if (helper.isString(pageFunction)) {
-      const payload = await this._session.send('Page.evaluate', {script: pageFunction, frameId: this._frameId});
-      return createHandle(this, payload.result, payload.exceptionDetails);
-    }
-    args = args.map(arg => {
-      if (arg instanceof JSHandle)
-        return arg._protocolValue;
-      if (Object.is(arg, Infinity))
-        return {unserializableValue: 'Infinity'};
-      if (Object.is(arg, -Infinity))
-        return {unserializableValue: '-Infinity'};
-      if (Object.is(arg, -0))
-        return {unserializableValue: '-0'};
-      if (Object.is(arg, NaN))
-        return {unserializableValue: 'NaN'};
-      return {value: arg};
-    });
-    const payload = await this._session.send('Page.evaluate', {
-      functionText: pageFunction.toString(),
-      args,
-      frameId: this._frameId
-    });
-    return createHandle(this, payload.result, payload.exceptionDetails);
+    return this._executionContext.evaluateHandle(pageFunction, ...args);
   }
 
   /**
