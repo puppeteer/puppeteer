@@ -132,7 +132,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
       // Cleanup.
       await newPage.close();
     });
-    it_fails_ffox('should have an opener', async({page, server, context}) => {
+    it('should have an opener', async({page, server, context}) => {
       await page.goto(server.EMPTY_PAGE);
       const [createdTarget] = await Promise.all([
         new Promise(fulfill => context.once('targetcreated', target => fulfill(target))),

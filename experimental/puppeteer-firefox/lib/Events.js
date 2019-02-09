@@ -9,6 +9,7 @@ const Events = {
     FrameNavigated: 'framenavigated',
     Load: 'load',
     PageError: 'pageerror',
+    Popup: 'popup',
   },
   Browser: {
     TargetCreated: 'targetcreated',
