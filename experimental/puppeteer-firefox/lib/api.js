@@ -6,7 +6,7 @@ module.exports = {
   Dialog: require('./Dialog').Dialog,
   ElementHandle: require('./JSHandle').ElementHandle,
   ExecutionContext: require('./ExecutionContext').ExecutionContext,
-  Frame: require('./Page').Frame,
+  Frame: require('./FrameManager').Frame,
   JSHandle: require('./JSHandle').JSHandle,
   Keyboard: require('./Input').Keyboard,
   Mouse: require('./Input').Mouse,
