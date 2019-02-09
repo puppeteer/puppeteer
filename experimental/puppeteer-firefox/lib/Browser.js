@@ -158,10 +158,18 @@ class Browser extends EventEmitter {
     return Array.from(this._pageTargets.values());
   }
 
-  _onTabOpened({pageId, url, browserContextId}) {
+  async _onTabOpened({pageId, url, browserContextId, openerId}) {
     const context = browserContextId ? this._contexts.get(browserContextId) : this._defaultContext;
-    const target = new Target(this._connection, this, context, pageId, url);
+    const opener = openerId ? this._pageTargets.get(openerId) : null;
+    const target = new Target(this._connection, this, context, pageId, url, opener);
     this._pageTargets.set(pageId, target);
+    if (opener && opener._pagePromise) {
+      const openerPage = await opener._pagePromise;
+      if (openerPage.listenerCount(Events.Page.Popup)) {
+        const popupPage = await target.page();
+        openerPage.emit(Events.Page.Popup, popupPage);
+      }
+    }
     this.emit(Events.Browser.TargetCreated, target);
     context.emit(Events.BrowserContext.TargetCreated, target);
   }
@@ -194,8 +202,9 @@ class Target {
    * @param {!BrowserContext} context
    * @param {string} pageId
    * @param {string} url
+   * @param {?Target} opener
    */
-  constructor(connection, browser, context, pageId, url) {
+  constructor(connection, browser, context, pageId, url, opener) {
     this._browser = browser;
     this._context = context;
     this._connection = connection;
@@ -203,6 +212,14 @@ class Target {
     /** @type {?Promise<!Page>} */
     this._pagePromise = null;
     this._url = url;
+    this._opener = opener;
+  }
+
+  /**
+   * @return {?Target}
+   */
+  opener() {
+    return this._opener;
   }
 
   /**
