@@ -89,6 +89,23 @@ class Page extends EventEmitter {
   }
 
   /**
+   * @param {string} userAgent
+   */
+  async setUserAgent(userAgent) {
+    await this._session.send('Page.setUserAgent', {userAgent});
+  }
+
+  /**
+   * @param {{viewport: !Puppeteer.Viewport, userAgent: string}} options
+   */
+  async emulate(options) {
+    await Promise.all([
+      this.setViewport(options.viewport),
+      this.setUserAgent(options.userAgent),
+    ]);
+  }
+
+  /**
    * @return {BrowserContext}
    */
   browserContext() {
