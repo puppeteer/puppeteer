@@ -136,5 +136,20 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
         [200, 300]
       ]);
     });
+    // @see https://crbug.com/929806
+    xit('should work with mobile viewports and cross process navigations', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setViewport({width: 360, height: 640, isMobile: true});
+      await page.goto(server.CROSS_PROCESS_PREFIX + '/mobile.html');
+      await page.evaluate(() => {
+        document.addEventListener('click', event => {
+          window.result = {x: event.clientX, y: event.clientY};
+        });
+      });
+
+      await page.mouse.click(30, 40);
+
+      expect(await page.evaluate('result')).toEqual({x: 30, y: 40});
+    });
   });
 };
