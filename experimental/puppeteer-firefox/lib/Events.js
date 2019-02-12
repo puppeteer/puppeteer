@@ -10,6 +10,10 @@ const Events = {
     Load: 'load',
     PageError: 'pageerror',
     Popup: 'popup',
+    Request: 'request',
+    Response: 'response',
+    RequestFinished: 'requestfinished',
+    RequestFailed: 'requestfailed',
   },
   Browser: {
     TargetCreated: 'targetcreated',
@@ -30,8 +34,15 @@ const Events = {
     Load: Symbol('Events.FrameManager.Load'),
     DOMContentLoaded: Symbol('Events.FrameManager.DOMContentLoaded'),
     FrameAttached: Symbol('Events.FrameManager.FrameAttached'),
+    FrameNavigated: Symbol('Events.FrameManager.FrameNavigated'),
     FrameDetached: Symbol('Events.FrameManager.FrameDetached'),
-  }
+  },
+
+  NetworkManager: {
+    Request: Symbol('Events.NetworkManager.Request'),
+    Response: Symbol('Events.NetworkManager.Response'),
+    RequestFinished: Symbol('Events.NetworkManager.RequestFinished'),
+  },
 };
 
 module.exports = {Events};

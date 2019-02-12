@@ -20,10 +20,10 @@ const utils = require('./utils');
 
 module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
-  describe_fails_ffox('Network Events', function() {
+  describe('Network Events', function() {
     it('Page.Events.Request', async({page, server}) => {
       const requests = [];
       page.on('request', request => requests.push(request));
@@ -36,7 +36,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(requests[0].frame() === page.mainFrame()).toBe(true);
       expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
     });
-    it('Page.Events.Request should report post data', async({page, server}) => {
+    it_fails_ffox('Page.Events.Request should report post data', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       server.setRoute('/post', (req, res) => res.end());
       let request = null;
@@ -45,7 +45,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(request).toBeTruthy();
       expect(request.postData()).toBe('{"foo":"bar"}');
     });
-    it('Page.Events.Response', async({page, server}) => {
+    it_fails_ffox('Page.Events.Response', async({page, server}) => {
       const responses = [];
       page.on('response', response => responses.push(response));
       await page.goto(server.EMPTY_PAGE);
@@ -71,7 +71,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(response.statusText()).toBe('cool!');
     });
 
-    it('Response.fromCache()', async({page, server}) => {
+    it_fails_ffox('Response.fromCache()', async({page, server}) => {
       const responses = new Map();
       page.on('response', r => responses.set(r.url().split('/').pop(), r));
 
@@ -85,7 +85,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(responses.get('one-style.css').status()).toBe(200);
       expect(responses.get('one-style.css').fromCache()).toBe(true);
     });
-    it('Response.fromServiceWorker', async({page, server}) => {
+    it_fails_ffox('Response.fromServiceWorker', async({page, server}) => {
       const responses = new Map();
       page.on('response', r => responses.set(r.url().split('/').pop(), r));
 
@@ -101,7 +101,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(responses.get('style.css').fromServiceWorker()).toBe(true);
     });
 
-    it('Page.Events.Response should provide body', async({page, server}) => {
+    it_fails_ffox('Page.Events.Response should provide body', async({page, server}) => {
       let response = null;
       page.on('response', r => response = r);
       await page.goto(server.PREFIX + '/simple.json');
@@ -109,7 +109,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(await response.text()).toBe('{"foo": "bar"}\n');
       expect(await response.json()).toEqual({foo: 'bar'});
     });
-    it('Page.Events.Response should throw when requesting body of redirected response', async({page, server}) => {
+    it_fails_ffox('Page.Events.Response should throw when requesting body of redirected response', async({page, server}) => {
       server.setRedirect('/foo.html', '/empty.html');
       const response = await page.goto(server.PREFIX + '/foo.html');
       const redirectChain = response.request().redirectChain();
@@ -120,7 +120,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await redirected.text().catch(e => error = e);
       expect(error.message).toContain('Response body is unavailable for redirect responses');
     });
-    it('Page.Events.Response should not report body unless request is finished', async({page, server}) => {
+    it_fails_ffox('Page.Events.Response should not report body unless request is finished', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       // Setup server to trap request.
       let serverResponse = null;
@@ -151,7 +151,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await new Promise(x => serverResponse.end('ld!', x));
       expect(await responseText).toBe('hello world!');
     });
-    it('Page.Events.RequestFailed', async({page, server}) => {
+    it_fails_ffox('Page.Events.RequestFailed', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
         if (request.url().endsWith('css'))
@@ -213,7 +213,7 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
-  describe_fails_ffox('Request.isNavigationRequest', () => {
+  describe('Request.isNavigationRequest', () => {
     it('should work', async({page, server}) => {
       const requests = new Map();
       page.on('request', request => requests.set(request.url().split('/').pop(), request));
@@ -225,7 +225,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(requests.get('script.js').isNavigationRequest()).toBe(false);
       expect(requests.get('style.css').isNavigationRequest()).toBe(false);
     });
-    it('should work with request interception', async({page, server}) => {
+    it_fails_ffox('should work with request interception', async({page, server}) => {
       const requests = new Map();
       page.on('request', request => {
         requests.set(request.url().split('/').pop(), request);
@@ -632,7 +632,7 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
-  describe_fails_ffox('Page.Events.Request', function() {
+  describe('Page.Events.Request', function() {
     it('should fire', async({page, server}) => {
       const requests = [];
       page.on('request', request => requests.push(request));

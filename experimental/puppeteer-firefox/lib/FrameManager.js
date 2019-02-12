@@ -24,6 +24,8 @@ class FrameManager extends EventEmitter {
       helper.addEventListener(this._session, 'Page.eventFired', this._onEventFired.bind(this)),
       helper.addEventListener(this._session, 'Page.frameAttached', this._onFrameAttached.bind(this)),
       helper.addEventListener(this._session, 'Page.frameDetached', this._onFrameDetached.bind(this)),
+      helper.addEventListener(this._session, 'Page.navigationCommitted', this._onNavigationCommitted.bind(this)),
+      helper.addEventListener(this._session, 'Page.sameDocumentNavigation', this._onSameDocumentNavigation.bind(this)),
     ];
   }
 
@@ -46,6 +48,20 @@ class FrameManager extends EventEmitter {
       for (const subframe of frame._children)
         collect(subframe);
     }
+  }
+
+  _onNavigationCommitted(params) {
+    const frame = this._frames.get(params.frameId);
+    frame._navigated(params.url, params.name, params.navigationId);
+    frame._DOMContentLoadedFired = false;
+    frame._loadFired = false;
+    this.emit(Events.FrameManager.FrameNavigated, frame);
+  }
+
+  _onSameDocumentNavigation(params) {
+    const frame = this._frames.get(params.frameId);
+    frame._url = params.url;
+    this.emit(Events.FrameManager.FrameNavigated, frame);
   }
 
   _onFrameAttached(params) {
