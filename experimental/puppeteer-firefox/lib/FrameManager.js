@@ -5,6 +5,7 @@ const util = require('util');
 const EventEmitter = require('events');
 const {Events} = require('./Events');
 const {ExecutionContext} = require('./ExecutionContext');
+const {NavigationWatchdog, NextNavigationWatchdog} = require('./NavigationWatchdog');
 
 const readFileAsync = util.promisify(fs.readFile);
 
@@ -13,10 +14,11 @@ class FrameManager extends EventEmitter {
    * @param {PageSession} session
    * @param {Page} page
    */
-  constructor(session, page, timeoutSettings) {
+  constructor(session, page, networkManager, timeoutSettings) {
     super();
     this._session = session;
     this._page = page;
+    this._networkManager = networkManager;
     this._timeoutSettings = timeoutSettings;
     this._mainFrame = null;
     this._frames = new Map();
@@ -65,7 +67,7 @@ class FrameManager extends EventEmitter {
   }
 
   _onFrameAttached(params) {
-    const frame = new Frame(this._session, this, this._page, params.frameId, this._timeoutSettings);
+    const frame = new Frame(this._session, this, this._networkManager, this._page, params.frameId, this._timeoutSettings);
     const parentFrame = this._frames.get(params.parentFrameId) || null;
     if (parentFrame) {
       frame._parentFrame = parentFrame;
@@ -107,11 +109,12 @@ class Frame {
    * @param {!Page} page
    * @param {string} frameId
    */
-  constructor(session, frameManager, page, frameId, timeoutSettings) {
+  constructor(session, frameManager, networkManager, page, frameId, timeoutSettings) {
     this._session = session;
-    this._frameManager = frameManager;
-    this._timeoutSettings = timeoutSettings;
     this._page = page;
+    this._frameManager = frameManager;
+    this._networkManager = networkManager;
+    this._timeoutSettings = timeoutSettings;
     this._frameId = frameId;
     /** @type {?Frame} */
     this._parentFrame = null;
@@ -132,6 +135,88 @@ class Frame {
 
   async executionContext() {
     return this._executionContext;
+  }
+
+  /**
+   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}} options
+   */
+  async waitForNavigation(options = {}) {
+    const {
+      timeout = this._timeoutSettings.navigationTimeout(),
+      waitUntil = ['load'],
+    } = options;
+    const normalizedWaitUntil = normalizeWaitUntil(waitUntil);
+
+    const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
+    let timeoutCallback;
+    const timeoutPromise = new Promise(resolve => timeoutCallback = resolve.bind(null, timeoutError));
+    const timeoutId = timeout ? setTimeout(timeoutCallback, timeout) : null;
+
+    const nextNavigationDog = new NextNavigationWatchdog(this._session, this);
+    const error1 = await Promise.race([
+      nextNavigationDog.promise(),
+      timeoutPromise,
+    ]);
+    nextNavigationDog.dispose();
+
+    // If timeout happened first - throw.
+    if (error1) {
+      clearTimeout(timeoutId);
+      throw error1;
+    }
+
+    const {navigationId, url} = nextNavigationDog.navigation();
+
+    if (!navigationId) {
+      // Same document navigation happened.
+      clearTimeout(timeoutId);
+      return null;
+    }
+
+    const watchDog = new NavigationWatchdog(this._session, this, this._networkManager, navigationId, url, normalizedWaitUntil);
+    const error = await Promise.race([
+      timeoutPromise,
+      watchDog.promise(),
+    ]);
+    watchDog.dispose();
+    clearTimeout(timeoutId);
+    if (error)
+      throw error;
+    return watchDog.navigationResponse();
+  }
+
+  /**
+   * @param {string} url
+   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}} options
+   */
+  async goto(url, options = {}) {
+    const {
+      timeout = this._timeoutSettings.navigationTimeout(),
+      waitUntil = ['load'],
+    } = options;
+    const normalizedWaitUntil = normalizeWaitUntil(waitUntil);
+    const {navigationId} = await this._session.send('Page.navigate', {
+      frameId: this._frameId,
+      url,
+    });
+    if (!navigationId)
+      return;
+
+    const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
+    let timeoutCallback;
+    const timeoutPromise = new Promise(resolve => timeoutCallback = resolve.bind(null, timeoutError));
+    const timeoutId = timeout ? setTimeout(timeoutCallback, timeout) : null;
+
+    const watchDog = new NavigationWatchdog(this._session, this, this._networkManager, navigationId, url, normalizedWaitUntil);
+    const error = await Promise.race([
+      timeoutPromise,
+      watchDog.promise(),
+    ]);
+    watchDog.dispose();
+    clearTimeout(timeoutId);
+    if (error)
+      throw error;
+    return watchDog.navigationResponse();
   }
 
   /**
@@ -747,4 +832,14 @@ async function waitForPredicatePageFunction(predicateBody, polling, timeout, ...
   }
 }
 
-module.exports = {FrameManager, Frame};
+function normalizeWaitUntil(waitUntil) {
+  if (!Array.isArray(waitUntil))
+    waitUntil = [waitUntil];
+  for (const condition of waitUntil) {
+    if (condition !== 'load' && condition !== 'domcontentloaded')
+      throw new Error('Unknown waitUntil condition: ' + condition);
+  }
+  return waitUntil;
+}
+
+module.exports = {FrameManager, Frame, normalizeWaitUntil};

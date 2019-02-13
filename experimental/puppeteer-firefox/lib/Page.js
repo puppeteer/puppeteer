@@ -8,9 +8,10 @@ const util = require('util');
 const EventEmitter = require('events');
 const {createHandle} = require('./JSHandle');
 const {Events} = require('./Events');
-const {FrameManager} = require('./FrameManager');
+const {FrameManager, normalizeWaitUntil} = require('./FrameManager');
 const {NetworkManager} = require('./NetworkManager');
 const {TimeoutSettings} = require('./TimeoutSettings');
+const {NavigationWatchdog, NextNavigationWatchdog} = require('./NavigationWatchdog');
 
 const writeFileAsync = util.promisify(fs.writeFile);
 
@@ -74,8 +75,9 @@ class Page extends EventEmitter {
     this._keyboard = new Keyboard(session);
     this._mouse = new Mouse(session, this._keyboard);
     this._isClosed = false;
-    this._frameManager = new FrameManager(session, this, this._timeoutSettings);
-    this._networkManager = new NetworkManager(session, this._frameManager);
+    this._networkManager = new NetworkManager(session);
+    this._frameManager = new FrameManager(session, this, this._networkManager, this._timeoutSettings);
+    this._networkManager.setFrameManager(this._frameManager);
     this._eventListeners = [
       helper.addEventListener(this._session, 'Page.uncaughtError', this._onUncaughtError.bind(this)),
       helper.addEventListener(this._session, 'Page.consoleAPICalled', this._onConsole.bind(this)),
@@ -255,63 +257,11 @@ class Page extends EventEmitter {
     return this._mouse;
   }
 
-  _normalizeWaitUntil(waitUntil) {
-    if (!Array.isArray(waitUntil))
-      waitUntil = [waitUntil];
-    for (const condition of waitUntil) {
-      if (condition !== 'load' && condition !== 'domcontentloaded')
-        throw new Error('Unknown waitUntil condition: ' + condition);
-    }
-    return waitUntil;
-  }
-
   /**
    * @param {!{timeout?: number, waitUntil?: string|!Array<string>}} options
    */
   async waitForNavigation(options = {}) {
-    const {
-      timeout = this._timeoutSettings.navigationTimeout(),
-      waitUntil = ['load'],
-    } = options;
-    const frame = this._frameManager.mainFrame();
-    const normalizedWaitUntil = this._normalizeWaitUntil(waitUntil);
-
-    const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
-    let timeoutCallback;
-    const timeoutPromise = new Promise(resolve => timeoutCallback = resolve.bind(null, timeoutError));
-    const timeoutId = timeout ? setTimeout(timeoutCallback, timeout) : null;
-
-    const nextNavigationDog = new NextNavigationWatchdog(this._session, frame);
-    const error1 = await Promise.race([
-      nextNavigationDog.promise(),
-      timeoutPromise,
-    ]);
-    nextNavigationDog.dispose();
-
-    // If timeout happened first - throw.
-    if (error1) {
-      clearTimeout(timeoutId);
-      throw error1;
-    }
-
-    const {navigationId, url} = nextNavigationDog.navigation();
-
-    if (!navigationId) {
-      // Same document navigation happened.
-      clearTimeout(timeoutId);
-      return null;
-    }
-
-    const watchDog = new NavigationWatchdog(this._session, frame, this._networkManager, navigationId, url, normalizedWaitUntil);
-    const error = await Promise.race([
-      timeoutPromise,
-      watchDog.promise(),
-    ]);
-    watchDog.dispose();
-    clearTimeout(timeoutId);
-    if (error)
-      throw error;
-    return watchDog.navigationResponse();
+    return this._frameManager.mainFrame().waitForNavigation(options);
   }
 
   /**
@@ -319,34 +269,7 @@ class Page extends EventEmitter {
    * @param {!{timeout?: number, waitUntil?: string|!Array<string>}} options
    */
   async goto(url, options = {}) {
-    const {
-      timeout = this._timeoutSettings.navigationTimeout(),
-      waitUntil = ['load'],
-    } = options;
-    const frame = this._frameManager.mainFrame();
-    const normalizedWaitUntil = this._normalizeWaitUntil(waitUntil);
-    const {navigationId} = await this._session.send('Page.navigate', {
-      frameId: frame._frameId,
-      url,
-    });
-    if (!navigationId)
-      return;
-
-    const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
-    let timeoutCallback;
-    const timeoutPromise = new Promise(resolve => timeoutCallback = resolve.bind(null, timeoutError));
-    const timeoutId = timeout ? setTimeout(timeoutCallback, timeout) : null;
-
-    const watchDog = new NavigationWatchdog(this._session, frame, this._networkManager, navigationId, url, normalizedWaitUntil);
-    const error = await Promise.race([
-      timeoutPromise,
-      watchDog.promise(),
-    ]);
-    watchDog.dispose();
-    clearTimeout(timeoutId);
-    if (error)
-      throw error;
-    return watchDog.navigationResponse();
+    return this._frameManager.mainFrame().goto(url, options);
   }
 
   /**
@@ -358,7 +281,7 @@ class Page extends EventEmitter {
       waitUntil = ['load'],
     } = options;
     const frame = this._frameManager.mainFrame();
-    const normalizedWaitUntil = this._normalizeWaitUntil(waitUntil);
+    const normalizedWaitUntil = normalizeWaitUntil(waitUntil);
     const {navigationId, navigationURL} = await this._session.send('Page.goBack', {
       frameId: frame._frameId,
     });
@@ -391,7 +314,7 @@ class Page extends EventEmitter {
       waitUntil = ['load'],
     } = options;
     const frame = this._frameManager.mainFrame();
-    const normalizedWaitUntil = this._normalizeWaitUntil(waitUntil);
+    const normalizedWaitUntil = normalizeWaitUntil(waitUntil);
     const {navigationId, navigationURL} = await this._session.send('Page.goForward', {
       frameId: frame._frameId,
     });
@@ -424,7 +347,7 @@ class Page extends EventEmitter {
       waitUntil = ['load'],
     } = options;
     const frame = this._frameManager.mainFrame();
-    const normalizedWaitUntil = this._normalizeWaitUntil(waitUntil);
+    const normalizedWaitUntil = normalizeWaitUntil(waitUntil);
     const {navigationId, navigationURL} = await this._session.send('Page.reload', {
       frameId: frame._frameId,
     });
@@ -704,117 +627,6 @@ function getScreenshotMimeType(options) {
     throw new Error('Unsupported screnshot mime type: ' + fileType);
   }
   return 'image/png';
-}
-
-/**
- * @internal
- */
-class NextNavigationWatchdog {
-  constructor(session, navigatedFrame) {
-    this._navigatedFrame = navigatedFrame;
-    this._promise = new Promise(x => this._resolveCallback = x);
-    this._navigation = null;
-    this._eventListeners = [
-      helper.addEventListener(session, 'Page.navigationStarted', this._onNavigationStarted.bind(this)),
-      helper.addEventListener(session, 'Page.sameDocumentNavigation', this._onSameDocumentNavigation.bind(this)),
-    ];
-  }
-
-  promise() {
-    return this._promise;
-  }
-
-  navigation() {
-    return this._navigation;
-  }
-
-  _onNavigationStarted(params) {
-    if (params.frameId === this._navigatedFrame._frameId) {
-      this._navigation = {
-        navigationId: params.navigationId,
-        url: params.url,
-      };
-      this._resolveCallback();
-    }
-  }
-
-  _onSameDocumentNavigation(params) {
-    if (params.frameId === this._navigatedFrame._frameId) {
-      this._navigation = {
-        navigationId: null,
-      };
-      this._resolveCallback();
-    }
-  }
-
-  dispose() {
-    helper.removeEventListeners(this._eventListeners);
-  }
-}
-
-/**
- * @internal
- */
-class NavigationWatchdog {
-  constructor(session, navigatedFrame, networkManager, targetNavigationId, targetURL, firedEvents) {
-    this._navigatedFrame = navigatedFrame;
-    this._targetNavigationId = targetNavigationId;
-    this._firedEvents = firedEvents;
-    this._targetURL = targetURL;
-
-    this._promise = new Promise(x => this._resolveCallback = x);
-    this._navigationRequest = null;
-
-    const check = this._checkNavigationComplete.bind(this);
-    this._eventListeners = [
-      helper.addEventListener(session, 'Page.eventFired', check),
-      helper.addEventListener(session, 'Page.frameAttached', check),
-      helper.addEventListener(session, 'Page.frameDetached', check),
-      helper.addEventListener(session, 'Page.navigationStarted', check),
-      helper.addEventListener(session, 'Page.navigationCommitted', check),
-      helper.addEventListener(session, 'Page.navigationAborted', this._onNavigationAborted.bind(this)),
-      helper.addEventListener(networkManager, Events.NetworkManager.Request, this._onRequest.bind(this)),
-    ];
-    check();
-  }
-
-  _onRequest(request) {
-    if (request.frame() !== this._navigatedFrame || !request.isNavigationRequest())
-      return;
-    this._navigationRequest = request;
-  }
-
-  navigationResponse() {
-    return this._navigationRequest ? this._navigationRequest.response() : null;
-  }
-
-  _checkNavigationComplete() {
-    if (this._navigatedFrame._lastCommittedNavigationId === this._targetNavigationId
-        && checkFiredEvents(this._navigatedFrame, this._firedEvents)) {
-      this._resolveCallback(null);
-    }
-
-    function checkFiredEvents(frame, firedEvents) {
-      for (const subframe of frame._children) {
-        if (!checkFiredEvents(subframe, firedEvents))
-          return false;
-      }
-      return firedEvents.every(event => frame._firedEvents.has(event));
-    }
-  }
-
-  _onNavigationAborted(params) {
-    if (params.frameId === this._navigatedFrame._frameId && params.navigationId === this._targetNavigationId)
-      this._resolveCallback(new Error('Navigation to ' + this._targetURL + ' failed: ' + params.errorText));
-  }
-
-  promise() {
-    return this._promise;
-  }
-
-  dispose() {
-    helper.removeEventListeners(this._eventListeners);
-  }
 }
 
 module.exports = {Page, ConsoleMessage};

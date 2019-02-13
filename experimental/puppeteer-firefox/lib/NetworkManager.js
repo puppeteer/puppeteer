@@ -4,18 +4,22 @@ const EventEmitter = require('events');
 const {Events} = require('./Events');
 
 class NetworkManager extends EventEmitter {
-  constructor(session, frameManager) {
+  constructor(session) {
     super();
     this._session = session;
 
     this._requests = new Map();
-    this._frameManager = frameManager;
+    this._frameManager = null;
 
     this._eventListeners = [
       helper.addEventListener(session, 'Page.requestWillBeSent', this._onRequestWillBeSent.bind(this)),
       helper.addEventListener(session, 'Page.responseReceived', this._onResponseReceived.bind(this)),
       helper.addEventListener(session, 'Page.requestFinished', this._onRequestFinished.bind(this)),
     ];
+  }
+
+  setFrameManager(frameManager) {
+    this._frameManager = frameManager;
   }
 
   _onRequestWillBeSent(event) {
