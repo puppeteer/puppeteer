@@ -64,7 +64,6 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
     it_fails_ffox('should navigate to empty page with domcontentloaded', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'domcontentloaded'});
       expect(response.status()).toBe(200);
-      expect(response.securityDetails()).toBe(null);
     });
     it('should work when page calls history API in beforeunload', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);

@@ -70,10 +70,6 @@ beforeEach(async({server, httpsServer}) => {
 
 const CHROMIUM_NO_COVERAGE = new Set([
   'page.bringToFront',
-  'securityDetails.subjectName',
-  'securityDetails.issuer',
-  'securityDetails.validFrom',
-  'securityDetails.validTo',
 ]);
 
 if (process.env.BROWSER === 'firefox') {
