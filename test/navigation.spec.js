@@ -472,7 +472,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
   });
 
   describe('Frame.goto', function() {
-    it_fails_ffox('should navigate subframes', async({page, server}) => {
+    it('should navigate subframes', async({page, server}) => {
       await page.goto(server.PREFIX + '/frames/one-frame.html');
       expect(page.frames()[0].url()).toContain('/frames/one-frame.html');
       expect(page.frames()[1].url()).toContain('/frames/frame.html');
@@ -522,7 +522,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
   });
 
   describe('Frame.waitForNavigation', function() {
-    it_fails_ffox('should work', async({page, server}) => {
+    it('should work', async({page, server}) => {
       await page.goto(server.PREFIX + '/frames/one-frame.html');
       const frame = page.frames()[1];
       const [response] = await Promise.all([
