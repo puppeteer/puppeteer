@@ -280,7 +280,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
     });
     it_fails_ffox('should navigate to dataURL and fire dataURL requests', async({page, server}) => {
       const requests = [];
-      page.on('request', request => requests.push(request));
+      page.on('request', request => !utils.isFavicon(request) && requests.push(request));
       const dataURL = 'data:text/html,<div>yo</div>';
       const response = await page.goto(dataURL);
       expect(response.status()).toBe(200);
@@ -289,7 +289,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
     });
     it_fails_ffox('should navigate to URL with hash and fire requests without hash', async({page, server}) => {
       const requests = [];
-      page.on('request', request => requests.push(request));
+      page.on('request', request => !utils.isFavicon(request) && requests.push(request));
       const response = await page.goto(server.EMPTY_PAGE + '#hash');
       expect(response.status()).toBe(200);
       expect(response.url()).toBe(server.EMPTY_PAGE);

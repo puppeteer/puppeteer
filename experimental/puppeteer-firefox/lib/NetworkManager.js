@@ -19,11 +19,11 @@ class NetworkManager extends EventEmitter {
   }
 
   _onRequestWillBeSent(event) {
-    const frame = this._frameManager && event.frameId ? this._frameManager.frame(event.frameId) : null;
+    const redirected = event.redirectedFrom ? this._requests.get(event.redirectedFrom) : null;
+    const frame = redirected ? redirected.frame() : (this._frameManager && event.frameId ? this._frameManager.frame(event.frameId) : null);
     if (!frame)
       return;
     let redirectChain = [];
-    const redirected = event.redirectedFrom ? this._requests.get(event.redirectedFrom) : null;
     if (redirected) {
       redirectChain = redirected._redirectChain;
       redirectChain.push(redirected);

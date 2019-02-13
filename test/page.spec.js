@@ -423,7 +423,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     }
   });
 
-  describe_fails_ffox('Page.waitForRequest', function() {
+  describe('Page.waitForRequest', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [request] = await Promise.all([
@@ -473,7 +473,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe_fails_ffox('Page.waitForResponse', function() {
+  describe('Page.waitForResponse', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([

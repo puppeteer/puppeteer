@@ -97,6 +97,10 @@ const utils = module.exports = {
     }
   },
 
+  isFavicon: function(request) {
+    return request.url().includes('favicon.ico');
+  },
+
   /**
    * @param {!Page} page
    * @param {string} frameId

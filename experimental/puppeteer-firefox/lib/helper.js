@@ -117,6 +117,37 @@ class Helper {
   }
 
   /**
+   * @param {!NodeJS.EventEmitter} emitter
+   * @param {(string|symbol)} eventName
+   * @param {function} predicate
+   * @return {!Promise}
+   */
+  static waitForEvent(emitter, eventName, predicate, timeout) {
+    let eventTimeout, resolveCallback, rejectCallback;
+    const promise = new Promise((resolve, reject) => {
+      resolveCallback = resolve;
+      rejectCallback = reject;
+    });
+    const listener = Helper.addEventListener(emitter, eventName, event => {
+      if (!predicate(event))
+        return;
+      cleanup();
+      resolveCallback(event);
+    });
+    if (timeout) {
+      eventTimeout = setTimeout(() => {
+        cleanup();
+        rejectCallback(new TimeoutError('Timeout exceeded while waiting for event'));
+      }, timeout);
+    }
+    function cleanup() {
+      Helper.removeEventListeners([listener]);
+      clearTimeout(eventTimeout);
+    }
+    return promise;
+  }
+
+  /**
    * @template T
    * @param {!Promise<T>} promise
    * @param {string} taskName

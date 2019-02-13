@@ -23,6 +23,56 @@ module.exports.addTests = function({testRunner, expect}) {
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
+  describe('Page.Events.Request', function() {
+    it('should fire for navigation requests', async({page, server}) => {
+      const requests = [];
+      page.on('request', request => !utils.isFavicon(request) && requests.push(request));
+      await page.goto(server.EMPTY_PAGE);
+      expect(requests.length).toBe(1);
+    });
+    it('should fire for iframes', async({page, server}) => {
+      const requests = [];
+      page.on('request', request => !utils.isFavicon(request) && requests.push(request));
+      await page.goto(server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      expect(requests.length).toBe(2);
+    });
+    it('should fire for fetches', async({page, server}) => {
+      const requests = [];
+      page.on('request', request => !utils.isFavicon(request) && requests.push(request));
+      await page.goto(server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      expect(requests.length).toBe(2);
+    });
+  });
+
+  describe('Request.frame', function() {
+    it('should work for main frame navigation request', async({page, server}) => {
+      const requests = [];
+      page.on('request', request => !utils.isFavicon(request) && requests.push(request));
+      await page.goto(server.EMPTY_PAGE);
+      expect(requests.length).toBe(1);
+      expect(requests[0].frame()).toBe(page.mainFrame());
+    });
+    it('should work for subframe navigation request', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const requests = [];
+      page.on('request', request => !utils.isFavicon(request) && requests.push(request));
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      expect(requests.length).toBe(1);
+      expect(requests[0].frame()).toBe(page.frames()[1]);
+    });
+    it('should work for fetch requests', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      let requests = [];
+      page.on('request', request => !utils.isFavicon(request) && requests.push(request));
+      await page.evaluate(() => fetch('/digits/1.png'));
+      requests = requests.filter(request => !request.url().includes('favicon'));
+      expect(requests.length).toBe(1);
+      expect(requests[0].frame()).toBe(page.mainFrame());
+    });
+  });
+
   describe('Network Events', function() {
     it('Page.Events.Request', async({page, server}) => {
       const requests = [];
@@ -629,22 +679,6 @@ module.exports.addTests = function({testRunner, expect}) {
       }, server.PREFIX);
       const img = await page.$('img');
       expect(await img.screenshot()).toBeGolden('mock-binary-response.png');
-    });
-  });
-
-  describe('Page.Events.Request', function() {
-    it('should fire', async({page, server}) => {
-      const requests = [];
-      page.on('request', request => requests.push(request));
-      await page.goto(server.EMPTY_PAGE);
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      expect(requests.length).toBe(2);
-      expect(requests[0].url()).toBe(server.EMPTY_PAGE);
-      expect(requests[0].frame() === page.mainFrame()).toBe(true);
-      expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
-      expect(requests[1].url()).toBe(server.EMPTY_PAGE);
-      expect(requests[1].frame() === page.frames()[1]).toBe(true);
-      expect(requests[1].frame().url()).toBe(server.EMPTY_PAGE);
     });
   });
 

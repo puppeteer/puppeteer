@@ -95,6 +95,42 @@ class Page extends EventEmitter {
   }
 
   /**
+   * @param {(string|Function)} urlOrPredicate
+   * @param {!{timeout?: number}=} options
+   * @return {!Promise<!Puppeteer.Request>}
+   */
+  async waitForRequest(urlOrPredicate, options = {}) {
+    const {
+      timeout = this._timeoutSettings.timeout(),
+    } = options;
+    return helper.waitForEvent(this._networkManager, Events.NetworkManager.Request, request => {
+      if (helper.isString(urlOrPredicate))
+        return (urlOrPredicate === request.url());
+      if (typeof urlOrPredicate === 'function')
+        return !!(urlOrPredicate(request));
+      return false;
+    }, timeout);
+  }
+
+  /**
+   * @param {(string|Function)} urlOrPredicate
+   * @param {!{timeout?: number}=} options
+   * @return {!Promise<!Puppeteer.Response>}
+   */
+  async waitForResponse(urlOrPredicate, options = {}) {
+    const {
+      timeout = this._timeoutSettings.timeout(),
+    } = options;
+    return helper.waitForEvent(this._networkManager, Events.NetworkManager.Response, response => {
+      if (helper.isString(urlOrPredicate))
+        return (urlOrPredicate === response.url());
+      if (typeof urlOrPredicate === 'function')
+        return !!(urlOrPredicate(response));
+      return false;
+    }, timeout);
+  }
+
+  /**
    * @param {number} timeout
    */
   setDefaultNavigationTimeout(timeout) {
