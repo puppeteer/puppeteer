@@ -37,7 +37,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       delete state.page;
     });
 
-    describe_fails_ffox('Response.securityDetails', function() {
+    describe('Response.securityDetails', function() {
       it('should work', async({page, httpsServer}) => {
         const response = await page.goto(httpsServer.EMPTY_PAGE);
         const securityDetails = response.securityDetails();
@@ -63,7 +63,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       });
     });
 
-    it_fails_ffox('should work', async({page, httpsServer}) => {
+    it('should work', async({page, httpsServer}) => {
       let error = null;
       const response = await page.goto(httpsServer.EMPTY_PAGE).catch(e => error = e);
       expect(error).toBe(null);

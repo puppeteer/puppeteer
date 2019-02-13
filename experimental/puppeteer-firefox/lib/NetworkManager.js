@@ -149,8 +149,13 @@ class Response {
     this._status = payload.status;
     this._statusText = payload.statusText;
     this._headers = {};
+    this._securityDetails = payload.securityDetails ? new SecurityDetails(payload.securityDetails) : null;
     for (const {name, value} of payload.headers)
       this._headers[name.toLowerCase()] = value;
+  }
+
+  securityDetails() {
+    return this._securityDetails;
   }
 
   headers() {
@@ -189,4 +194,53 @@ class Response {
   }
 }
 
-module.exports = {NetworkManager, Request, Response};
+class SecurityDetails {
+  /**
+   * @param {!Protocol.Network.SecurityDetails} securityPayload
+   */
+  constructor(securityPayload) {
+    this._subjectName = securityPayload['subjectName'];
+    this._issuer = securityPayload['issuer'];
+    this._validFrom = securityPayload['validFrom'];
+    this._validTo = securityPayload['validTo'];
+    this._protocol = securityPayload['protocol'];
+  }
+
+  /**
+   * @return {string}
+   */
+  subjectName() {
+    return this._subjectName;
+  }
+
+  /**
+   * @return {string}
+   */
+  issuer() {
+    return this._issuer;
+  }
+
+  /**
+   * @return {number}
+   */
+  validFrom() {
+    return this._validFrom;
+  }
+
+  /**
+   * @return {number}
+   */
+  validTo() {
+    return this._validTo;
+  }
+
+  /**
+   * @return {string}
+   */
+  protocol() {
+    return this._protocol;
+  }
+}
+
+
+module.exports = {NetworkManager, Request, Response, SecurityDetails};
