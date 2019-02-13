@@ -14,6 +14,7 @@ module.exports = {
   Puppeteer: require('./Puppeteer').Puppeteer,
   Request: require('./NetworkManager').Request,
   Response: require('./NetworkManager').Response,
+  SecurityDetails: require('./NetworkManager').SecurityDetails,
   Target: require('./Browser').Target,
   TimeoutError: require('./Errors').TimeoutError,
 };
