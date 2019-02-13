@@ -140,6 +140,22 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
     });
   });
 
+  describe('Request.postData', function() {
+    it('should work', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      server.setRoute('/post', (req, res) => res.end());
+      let request = null;
+      page.on('request', r => request = r);
+      await page.evaluate(() => fetch('./post', { method: 'POST', body: JSON.stringify({foo: 'bar'})}));
+      expect(request).toBeTruthy();
+      expect(request.postData()).toBe('{"foo":"bar"}');
+    });
+    it('should be |undefined| when there is no post data', async({page, server}) => {
+      const response = await page.goto(server.EMPTY_PAGE);
+      expect(response.request().postData()).toBe(undefined);
+    });
+  });
+
   describe('Network Events', function() {
     it('Page.Events.Request', async({page, server}) => {
       const requests = [];
@@ -152,15 +168,6 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(requests[0].response()).toBeTruthy();
       expect(requests[0].frame() === page.mainFrame()).toBe(true);
       expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
-    });
-    it_fails_ffox('Page.Events.Request should report post data', async({page, server}) => {
-      await page.goto(server.EMPTY_PAGE);
-      server.setRoute('/post', (req, res) => res.end());
-      let request = null;
-      page.on('request', r => request = r);
-      await page.evaluate(() => fetch('./post', { method: 'POST', body: JSON.stringify({foo: 'bar'})}));
-      expect(request).toBeTruthy();
-      expect(request.postData()).toBe('{"foo":"bar"}');
     });
     it('Page.Events.Response', async({page, server}) => {
       const responses = [];
