@@ -103,6 +103,13 @@ class Request {
     this._isNavigationRequest = payload.isNavigationRequest;
     this._method = payload.method;
     this._resourceType = causeToResourceType[payload.cause] || 'other';
+    this._headers = {};
+    for (const {name, value} of payload.headers)
+      this._headers[name.toLowerCase()] = value;
+  }
+
+  headers() {
+    return {...this._headers};
   }
 
   redirectChain() {
@@ -141,6 +148,13 @@ class Response {
     this._remotePort = payload.remotePort;
     this._status = payload.status;
     this._statusText = payload.statusText;
+    this._headers = {};
+    for (const {name, value} of payload.headers)
+      this._headers[name.toLowerCase()] = value;
+  }
+
+  headers() {
+    return {...this._headers};
   }
 
   status() {

@@ -18,7 +18,7 @@ const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
 
-module.exports.addTests = function({testRunner, expect}) {
+module.exports.addTests = function({testRunner, expect, CHROME}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -70,6 +70,27 @@ module.exports.addTests = function({testRunner, expect}) {
       requests = requests.filter(request => !request.url().includes('favicon'));
       expect(requests.length).toBe(1);
       expect(requests[0].frame()).toBe(page.mainFrame());
+    });
+  });
+
+  describe('Request.headers', function() {
+    it('should work', async({page, server}) => {
+      const response = await page.goto(server.EMPTY_PAGE);
+      if (CHROME)
+        expect(response.request().headers()['user-agent']).toContain('Chrome');
+      else
+        expect(response.request().headers()['user-agent']).toContain('Firefox');
+    });
+  });
+
+  describe('Response.headers', function() {
+    it('should work', async({page, server}) => {
+      server.setRoute('/empty.html', (req, res) => {
+        res.setHeader('foo', 'bar');
+        res.end();
+      });
+      const response = await page.goto(server.EMPTY_PAGE);
+      expect(response.headers()['foo']).toBe('bar');
     });
   });
 
