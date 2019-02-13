@@ -310,7 +310,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
       }
       expect(error.message).toContain(url);
     });
-    it_fails_ffox('should send referer', async({page, server}) => {
+    it('should send referer', async({page, server}) => {
       const [request1, request2] = await Promise.all([
         server.waitForRequest('/grid.html'),
         server.waitForRequest('/digits/1.png'),

@@ -193,10 +193,12 @@ class Frame {
     const {
       timeout = this._timeoutSettings.navigationTimeout(),
       waitUntil = ['load'],
+      referer,
     } = options;
     const normalizedWaitUntil = normalizeWaitUntil(waitUntil);
     const {navigationId} = await this._session.send('Page.navigate', {
       frameId: this._frameId,
+      referer,
       url,
     });
     if (!navigationId)
