@@ -99,6 +99,7 @@ class Request {
     this._id = payload.requestId;
     this._redirectChain = redirectChain;
     this._url = payload.url;
+    this._postData = payload.postData;
     this._response = null;
     this._isNavigationRequest = payload.isNavigationRequest;
     this._method = payload.method;
@@ -106,6 +107,10 @@ class Request {
     this._headers = {};
     for (const {name, value} of payload.headers)
       this._headers[name.toLowerCase()] = value;
+  }
+
+  postData() {
+    return this._postData;
   }
 
   headers() {
