@@ -73,6 +73,52 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
+  describe_fails_ffox('Response.fromCache', function() {
+    it('should return |false| for non-cached content', async({page, server}) => {
+      const response = await page.goto(server.EMPTY_PAGE);
+      expect(response.fromCache()).toBe(false);
+    });
+
+    it('should work', async({page, server}) => {
+      const responses = new Map();
+      page.on('response', r => !utils.isFavicon(r.request()) && responses.set(r.url().split('/').pop(), r));
+
+      // Load and re-load to make sure it's cached.
+      await page.goto(server.PREFIX + '/cached/one-style.html');
+      await page.waitFor(1000);
+      await page.reload();
+
+      expect(responses.size).toBe(2);
+      expect(responses.get('one-style.css').status()).toBe(200);
+      expect(responses.get('one-style.css').fromCache()).toBe(true);
+      expect(responses.get('one-style.html').status()).toBe(304);
+      expect(responses.get('one-style.html').fromCache()).toBe(false);
+    });
+  });
+
+  describe_fails_ffox('Response.fromServiceWorker', function() {
+    it('should return |false| for non-service-worker content', async({page, server}) => {
+      const response = await page.goto(server.EMPTY_PAGE);
+      expect(response.fromServiceWorker()).toBe(false);
+    });
+
+    it('Response.fromServiceWorker', async({page, server}) => {
+      const responses = new Map();
+      page.on('response', r => responses.set(r.url().split('/').pop(), r));
+
+      // Load and re-load to make sure serviceworker is installed and running.
+      await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html', {waitUntil: 'networkidle2'});
+      await page.evaluate(async() => await window.activationPromise);
+      await page.reload();
+
+      expect(responses.size).toBe(2);
+      expect(responses.get('sw.html').status()).toBe(200);
+      expect(responses.get('sw.html').fromServiceWorker()).toBe(true);
+      expect(responses.get('style.css').status()).toBe(200);
+      expect(responses.get('style.css').fromServiceWorker()).toBe(true);
+    });
+  });
+
   describe('Network Events', function() {
     it('Page.Events.Request', async({page, server}) => {
       const requests = [];
@@ -95,7 +141,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(request).toBeTruthy();
       expect(request.postData()).toBe('{"foo":"bar"}');
     });
-    it_fails_ffox('Page.Events.Response', async({page, server}) => {
+    it('Page.Events.Response', async({page, server}) => {
       const responses = [];
       page.on('response', response => responses.push(response));
       await page.goto(server.EMPTY_PAGE);
@@ -103,12 +149,10 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(responses[0].url()).toBe(server.EMPTY_PAGE);
       expect(responses[0].status()).toBe(200);
       expect(responses[0].ok()).toBe(true);
-      expect(responses[0].fromCache()).toBe(false);
-      expect(responses[0].fromServiceWorker()).toBe(false);
       expect(responses[0].request()).toBeTruthy();
       const remoteAddress = responses[0].remoteAddress();
       // Either IPv6 or IPv4, depending on environment.
-      expect(remoteAddress.ip === '[::1]' || remoteAddress.ip === '127.0.0.1').toBe(true);
+      expect(remoteAddress.ip.includes('::1') || remoteAddress.ip === '127.0.0.1').toBe(true);
       expect(remoteAddress.port).toBe(server.PORT);
     });
 
@@ -119,36 +163,6 @@ module.exports.addTests = function({testRunner, expect}) {
       });
       const response = await page.goto(server.PREFIX + '/cool');
       expect(response.statusText()).toBe('cool!');
-    });
-
-    it_fails_ffox('Response.fromCache()', async({page, server}) => {
-      const responses = new Map();
-      page.on('response', r => responses.set(r.url().split('/').pop(), r));
-
-      // Load and re-load to make sure it's cached.
-      await page.goto(server.PREFIX + '/cached/one-style.html');
-      await page.reload();
-
-      expect(responses.size).toBe(2);
-      expect(responses.get('one-style.html').status()).toBe(304);
-      expect(responses.get('one-style.html').fromCache()).toBe(false);
-      expect(responses.get('one-style.css').status()).toBe(200);
-      expect(responses.get('one-style.css').fromCache()).toBe(true);
-    });
-    it_fails_ffox('Response.fromServiceWorker', async({page, server}) => {
-      const responses = new Map();
-      page.on('response', r => responses.set(r.url().split('/').pop(), r));
-
-      // Load and re-load to make sure serviceworker is installed and running.
-      await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html', {waitUntil: 'networkidle2'});
-      await page.evaluate(async() => await window.activationPromise);
-      await page.reload();
-
-      expect(responses.size).toBe(2);
-      expect(responses.get('sw.html').status()).toBe(200);
-      expect(responses.get('sw.html').fromServiceWorker()).toBe(true);
-      expect(responses.get('style.css').status()).toBe(200);
-      expect(responses.get('style.css').fromServiceWorker()).toBe(true);
     });
 
     it_fails_ffox('Page.Events.Response should provide body', async({page, server}) => {
