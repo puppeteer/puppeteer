@@ -12,6 +12,8 @@ module.exports = {
   Mouse: require('./Input').Mouse,
   Page: require('./Page').Page,
   Puppeteer: require('./Puppeteer').Puppeteer,
+  Request: require('./NetworkManager').Request,
+  Response: require('./NetworkManager').Response,
   Target: require('./Browser').Target,
   TimeoutError: require('./Errors').TimeoutError,
 };

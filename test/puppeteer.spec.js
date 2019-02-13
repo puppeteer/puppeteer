@@ -38,7 +38,7 @@ module.exports.addTests = ({testRunner, product, puppeteer, Errors, DeviceDescri
     executablePath: CHROME ? process.env.CHROME : process.env.FFOX,
     slowMo,
     headless,
-    dumpio: (process.env.DUMPIO || 'false').trim().toLowerCase() === 'true',
+    dumpio: !!process.env.DUMPIO,
   };
 
   if (defaultBrowserOptions.executablePath) {

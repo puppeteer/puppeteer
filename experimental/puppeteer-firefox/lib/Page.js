@@ -9,6 +9,7 @@ const EventEmitter = require('events');
 const {createHandle} = require('./JSHandle');
 const {Events} = require('./Events');
 const {FrameManager} = require('./FrameManager');
+const {NetworkManager} = require('./NetworkManager');
 const {TimeoutSettings} = require('./TimeoutSettings');
 
 const writeFileAsync = util.promisify(fs.writeFile);
@@ -74,17 +75,21 @@ class Page extends EventEmitter {
     this._mouse = new Mouse(session, this._keyboard);
     this._isClosed = false;
     this._frameManager = new FrameManager(session, this, this._timeoutSettings);
+    this._networkManager = new NetworkManager(session, this._frameManager);
     this._eventListeners = [
       helper.addEventListener(this._session, 'Page.uncaughtError', this._onUncaughtError.bind(this)),
       helper.addEventListener(this._session, 'Page.consoleAPICalled', this._onConsole.bind(this)),
       helper.addEventListener(this._session, 'Page.dialogOpened', this._onDialogOpened.bind(this)),
       helper.addEventListener(this._session, 'Browser.tabClosed', this._onClosed.bind(this)),
-      helper.addEventListener(this._session, 'Page.navigationCommitted', this._onNavigationCommitted.bind(this)),
-      helper.addEventListener(this._session, 'Page.sameDocumentNavigation', this._onSameDocumentNavigation.bind(this)),
       helper.addEventListener(this._frameManager, Events.FrameManager.Load, () => this.emit(Events.Page.Load)),
       helper.addEventListener(this._frameManager, Events.FrameManager.DOMContentLoaded, () => this.emit(Events.Page.DOMContentLoaded)),
       helper.addEventListener(this._frameManager, Events.FrameManager.FrameAttached, frame => this.emit(Events.Page.FrameAttached, frame)),
       helper.addEventListener(this._frameManager, Events.FrameManager.FrameDetached, frame => this.emit(Events.Page.FrameDetached, frame)),
+      helper.addEventListener(this._frameManager, Events.FrameManager.FrameNavigated, frame => this.emit(Events.Page.FrameNavigated, frame)),
+      helper.addEventListener(this._networkManager, Events.NetworkManager.Request, request => this.emit(Events.Page.Request, request)),
+      helper.addEventListener(this._networkManager, Events.NetworkManager.Response, response => this.emit(Events.Page.Response, response)),
+      helper.addEventListener(this._networkManager, Events.NetworkManager.RequestFinished, request => this.emit(Events.Page.RequestFinished, request)),
+      helper.addEventListener(this._networkManager, Events.NetworkManager.RequestFailed, request => this.emit(Events.Page.RequestFailed, request)),
     ];
     this._viewport = null;
   }
@@ -206,20 +211,6 @@ class Page extends EventEmitter {
     return this._frameManager.mainFrame();
   }
 
-  _onNavigationCommitted(params) {
-    const frame = this._frameManager.frame(params.frameId);
-    frame._navigated(params.url, params.name, params.navigationId);
-    frame._DOMContentLoadedFired = false;
-    frame._loadFired = false;
-    this.emit(Events.Page.FrameNavigated, frame);
-  }
-
-  _onSameDocumentNavigation(params) {
-    const frame = this._frameManager.frame(params.frameId);
-    frame._url = params.url;
-    this.emit(Events.Page.FrameNavigated, frame);
-  }
-
   get keyboard(){
     return this._keyboard;
   }
@@ -272,10 +263,10 @@ class Page extends EventEmitter {
     if (!navigationId) {
       // Same document navigation happened.
       clearTimeout(timeoutId);
-      return;
+      return null;
     }
 
-    const watchDog = new NavigationWatchdog(this._session, frame, navigationId, url, normalizedWaitUntil);
+    const watchDog = new NavigationWatchdog(this._session, frame, this._networkManager, navigationId, url, normalizedWaitUntil);
     const error = await Promise.race([
       timeoutPromise,
       watchDog.promise(),
@@ -284,6 +275,7 @@ class Page extends EventEmitter {
     clearTimeout(timeoutId);
     if (error)
       throw error;
+    return watchDog.navigationResponse();
   }
 
   /**
@@ -309,7 +301,7 @@ class Page extends EventEmitter {
     const timeoutPromise = new Promise(resolve => timeoutCallback = resolve.bind(null, timeoutError));
     const timeoutId = timeout ? setTimeout(timeoutCallback, timeout) : null;
 
-    const watchDog = new NavigationWatchdog(this._session, frame, navigationId, url, normalizedWaitUntil);
+    const watchDog = new NavigationWatchdog(this._session, frame, this._networkManager, navigationId, url, normalizedWaitUntil);
     const error = await Promise.race([
       timeoutPromise,
       watchDog.promise(),
@@ -318,6 +310,7 @@ class Page extends EventEmitter {
     clearTimeout(timeoutId);
     if (error)
       throw error;
+    return watchDog.navigationResponse();
   }
 
   /**
@@ -334,14 +327,14 @@ class Page extends EventEmitter {
       frameId: frame._frameId,
     });
     if (!navigationId)
-      return;
+      return null;
 
     const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
     let timeoutCallback;
     const timeoutPromise = new Promise(resolve => timeoutCallback = resolve.bind(null, timeoutError));
     const timeoutId = timeout ? setTimeout(timeoutCallback, timeout) : null;
 
-    const watchDog = new NavigationWatchdog(this._session, frame, navigationId, navigationURL, normalizedWaitUntil);
+    const watchDog = new NavigationWatchdog(this._session, frame, this._networkManager, navigationId, navigationURL, normalizedWaitUntil);
     const error = await Promise.race([
       timeoutPromise,
       watchDog.promise(),
@@ -350,6 +343,7 @@ class Page extends EventEmitter {
     clearTimeout(timeoutId);
     if (error)
       throw error;
+    return watchDog.navigationResponse();
   }
 
   /**
@@ -366,14 +360,14 @@ class Page extends EventEmitter {
       frameId: frame._frameId,
     });
     if (!navigationId)
-      return;
+      return null;
 
     const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
     let timeoutCallback;
     const timeoutPromise = new Promise(resolve => timeoutCallback = resolve.bind(null, timeoutError));
     const timeoutId = timeout ? setTimeout(timeoutCallback, timeout) : null;
 
-    const watchDog = new NavigationWatchdog(this._session, frame, navigationId, navigationURL, normalizedWaitUntil);
+    const watchDog = new NavigationWatchdog(this._session, frame, this._networkManager, navigationId, navigationURL, normalizedWaitUntil);
     const error = await Promise.race([
       timeoutPromise,
       watchDog.promise(),
@@ -382,6 +376,7 @@ class Page extends EventEmitter {
     clearTimeout(timeoutId);
     if (error)
       throw error;
+    return watchDog.navigationResponse();
   }
 
   /**
@@ -398,14 +393,14 @@ class Page extends EventEmitter {
       frameId: frame._frameId,
     });
     if (!navigationId)
-      return;
+      return null;
 
     const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
     let timeoutCallback;
     const timeoutPromise = new Promise(resolve => timeoutCallback = resolve.bind(null, timeoutError));
     const timeoutId = timeout ? setTimeout(timeoutCallback, timeout) : null;
 
-    const watchDog = new NavigationWatchdog(this._session, frame, navigationId, navigationURL, normalizedWaitUntil);
+    const watchDog = new NavigationWatchdog(this._session, frame, this._networkManager, navigationId, navigationURL, normalizedWaitUntil);
     const error = await Promise.race([
       timeoutPromise,
       watchDog.promise(),
@@ -414,6 +409,7 @@ class Page extends EventEmitter {
     clearTimeout(timeoutId);
     if (error)
       throw error;
+    return watchDog.navigationResponse();
   }
 
   /**
@@ -724,13 +720,14 @@ class NextNavigationWatchdog {
  * @internal
  */
 class NavigationWatchdog {
-  constructor(session, navigatedFrame, targetNavigationId, targetURL, firedEvents) {
+  constructor(session, navigatedFrame, networkManager, targetNavigationId, targetURL, firedEvents) {
     this._navigatedFrame = navigatedFrame;
     this._targetNavigationId = targetNavigationId;
     this._firedEvents = firedEvents;
     this._targetURL = targetURL;
 
     this._promise = new Promise(x => this._resolveCallback = x);
+    this._navigationRequest = null;
 
     const check = this._checkNavigationComplete.bind(this);
     this._eventListeners = [
@@ -740,8 +737,19 @@ class NavigationWatchdog {
       helper.addEventListener(session, 'Page.navigationStarted', check),
       helper.addEventListener(session, 'Page.navigationCommitted', check),
       helper.addEventListener(session, 'Page.navigationAborted', this._onNavigationAborted.bind(this)),
+      helper.addEventListener(networkManager, Events.NetworkManager.Request, this._onRequest.bind(this)),
     ];
     check();
+  }
+
+  _onRequest(request) {
+    if (request.frame() !== this._navigatedFrame || !request.isNavigationRequest())
+      return;
+    this._navigationRequest = request;
+  }
+
+  navigationResponse() {
+    return this._navigationRequest ? this._navigationRequest.response() : null;
   }
 
   _checkNavigationComplete() {
