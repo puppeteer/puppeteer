@@ -61,7 +61,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
       else
         expect(error.message).toContain('NS_BINDING_ABORTED');
     });
-    it_fails_ffox('should navigate to empty page with domcontentloaded', async({page, server}) => {
+    it('should navigate to empty page with domcontentloaded', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'domcontentloaded'});
       expect(response.status()).toBe(200);
     });

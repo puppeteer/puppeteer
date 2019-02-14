@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-module.exports.addTests = function({testRunner, expect}) {
+module.exports.addTests = function({testRunner, expect, CHROME}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Page.evaluateHandle', function() {
-    it_fails_ffox('should work', async({page, server}) => {
+    it('should work', async({page, server}) => {
       const windowHandle = await page.evaluateHandle(() => window);
       expect(windowHandle).toBeTruthy();
     });
@@ -34,7 +34,7 @@ module.exports.addTests = function({testRunner, expect}) {
       const isFive = await page.evaluate(e => Object.is(e, 5), aHandle);
       expect(isFive).toBeTruthy();
     });
-    it_fails_ffox('should warn on nested object handles', async({page, server}) => {
+    it('should warn on nested object handles', async({page, server}) => {
       const aHandle = await page.evaluateHandle(() => document.body);
       let error = null;
       await page.evaluateHandle(
@@ -86,11 +86,14 @@ module.exports.addTests = function({testRunner, expect}) {
       const json = await dateHandle.jsonValue();
       expect(json).toEqual({});
     });
-    it_fails_ffox('should throw for circular objects', async({page, server}) => {
+    it('should throw for circular objects', async({page, server}) => {
       const windowHandle = await page.evaluateHandle('window');
       let error = null;
       await windowHandle.jsonValue().catch(e => error = e);
-      expect(error.message).toContain('Object reference chain is too long');
+      if (CHROME)
+        expect(error.message).toContain('Object reference chain is too long');
+      else
+        expect(error.message).toContain('Object is not serializable');
     });
   });
 
