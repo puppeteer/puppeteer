@@ -480,7 +480,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
       expect(response.ok()).toBe(true);
       expect(response.frame()).toBe(page.frames()[1]);
     });
-    it_fails_ffox('should reject when frame detaches', async({page, server}) => {
+    it('should reject when frame detaches', async({page, server}) => {
       await page.goto(server.PREFIX + '/frames/one-frame.html');
 
       server.setRoute('/empty.html', () => {});
@@ -533,7 +533,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
       expect(response.frame()).toBe(frame);
       expect(page.url()).toContain('/frames/one-frame.html');
     });
-    it_fails_ffox('should reject when frame detaches', async({page, server}) => {
+    it_fails_ffox('should resolve when frame detaches', async({page, server}) => {
       await page.goto(server.PREFIX + '/frames/one-frame.html');
       const frame = page.frames()[1];
 
