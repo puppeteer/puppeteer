@@ -59,11 +59,18 @@ class ExecutionContext {
         return {unserializableValue: 'NaN'};
       return {value: arg};
     });
-    const payload = await this._session.send('Page.evaluate', {
-      functionText,
-      args,
-      executionContextId: this._executionContextId
-    });
+    let payload = null;
+    try {
+      payload = await this._session.send('Page.evaluate', {
+        functionText,
+        args,
+        executionContextId: this._executionContextId
+      });
+    } catch (err) {
+      if (err instanceof TypeError && err.message === 'Converting circular structure to JSON')
+        err.message += ' Are you passing a nested JSHandle?';
+      throw err;
+    }
     return createHandle(this, payload.result, payload.exceptionDetails);
   }
 
