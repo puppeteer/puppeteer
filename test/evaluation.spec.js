@@ -23,6 +23,8 @@ try {
   asyncawait = false;
 }
 
+const bigint = typeof BigInt !== 'undefined';
+
 module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
@@ -32,6 +34,10 @@ module.exports.addTests = function({testRunner, expect}) {
     it('should work', async({page, server}) => {
       const result = await page.evaluate(() => 7 * 3);
       expect(result).toBe(21);
+    });
+    (bigint ? it : xit)('should transfer BigInt', async({page, server}) => {
+      const result = await page.evaluate(a => a, BigInt(42));
+      expect(result).toBe(BigInt(42));
     });
     it('should transfer NaN', async({page, server}) => {
       const result = await page.evaluate(a => a, NaN);
@@ -134,6 +140,10 @@ module.exports.addTests = function({testRunner, expect}) {
       const result = await page.evaluate(a => a, object);
       expect(result).not.toBe(object);
       expect(result).toEqual(object);
+    });
+    (bigint ? it : xit)('should return BigInt', async({page, server}) => {
+      const result = await page.evaluate(() => BigInt(42));
+      expect(result).toBe(BigInt(42));
     });
     it('should return NaN', async({page, server}) => {
       const result = await page.evaluate(() => NaN);
