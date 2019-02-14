@@ -355,7 +355,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       expect(message.location()).toEqual({
         url: server.PREFIX + '/consolelog.html',
         lineNumber: 7,
-        columnNumber: CHROME ? 14 : 6,
+        columnNumber: CHROME ? 14 : 6, // console.|log vs |console.log
       });
     });
     // @see https://github.com/GoogleChrome/puppeteer/issues/3865
