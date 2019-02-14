@@ -379,12 +379,22 @@ class Page extends EventEmitter {
     const {data} = await this._session.send('Page.screenshot', {
       mimeType: getScreenshotMimeType(options),
       fullPage: options.fullPage,
-      clip: options.clip,
+      clip: processClip(options.clip),
     });
     const buffer = options.encoding === 'base64' ? data : Buffer.from(data, 'base64');
     if (options.path)
       await writeFileAsync(options.path, buffer);
     return buffer;
+
+    function processClip(clip) {
+      if (!clip)
+        return undefined;
+      const x = Math.round(clip.x);
+      const y = Math.round(clip.y);
+      const width = Math.round(clip.width + clip.x - x);
+      const height = Math.round(clip.height + clip.y - y);
+      return {x, y, width, height};
+    }
   }
 
   async evaluate(pageFunction, ...args) {

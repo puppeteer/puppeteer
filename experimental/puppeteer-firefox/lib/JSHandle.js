@@ -169,10 +169,10 @@ class ElementHandle extends JSHandle {
 
     return await this._frame._page.screenshot(Object.assign({}, options, {
       clip: {
-        x: Math.round(clip.x),
-        y: Math.round(clip.y),
-        width: Math.round(clip.width),
-        height: Math.round(clip.height),
+        x: clip.x,
+        y: clip.y,
+        width: clip.width,
+        height: clip.height,
       },
     }));
   }

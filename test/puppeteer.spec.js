@@ -23,8 +23,8 @@ const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
 
 module.exports.addTests = ({testRunner, product, puppeteer, Errors, DeviceDescriptors}) => {
-  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
-  const {it, fit, xit, it_fails_ffox} = testRunner;
+  const {describe, xdescribe, fdescribe} = testRunner;
+  const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   const CHROME = product === 'Chromium';

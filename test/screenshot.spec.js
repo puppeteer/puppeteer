@@ -15,7 +15,7 @@
  */
 
 module.exports.addTests = function({testRunner, expect, product}) {
-  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
+  const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
@@ -230,7 +230,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-fractional.png');
     });
-    it_fails_ffox('should work for an element with an offset', async({page}) => {
+    it('should work for an element with an offset', async({page}) => {
       await page.setContent('<div style="position:absolute; top: 10.3px; left: 20.4px;width:50.3px;height:20.2px;border:1px solid black;"></div>');
       const elementHandle = await page.$('div');
       const screenshot = await elementHandle.screenshot();
