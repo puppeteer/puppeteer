@@ -22,7 +22,7 @@ class ExecutionContext {
       return createHandle(this, payload.result, payload.exceptionDetails);
     }
     if (typeof pageFunction !== 'function')
-      throw new Error('The following is not a function: ' + pageFunction);
+      throw new Error(`Expected to get |string| or |function| as the first argument, but got "${pageFunction}" instead.`);
 
     let functionText = pageFunction.toString();
     try {
