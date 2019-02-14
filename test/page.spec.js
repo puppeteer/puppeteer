@@ -25,7 +25,7 @@ try {
   asyncawait = false;
 }
 
-module.exports.addTests = function({testRunner, expect, headless, Errors, DeviceDescriptors}) {
+module.exports.addTests = function({testRunner, expect, headless, Errors, DeviceDescriptors, CHROME}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -344,7 +344,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
         lineNumber: undefined
       });
     });
-    it_fails_ffox('should have location for console API calls', async({page, server}) => {
+    it('should have location for console API calls', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [message] = await Promise.all([
         waitEvent(page, 'console'),
@@ -355,7 +355,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       expect(message.location()).toEqual({
         url: server.PREFIX + '/consolelog.html',
         lineNumber: 7,
-        columnNumber: 14,
+        columnNumber: CHROME ? 14 : 6, // console.|log vs |console.log
       });
     });
     // @see https://github.com/GoogleChrome/puppeteer/issues/3865

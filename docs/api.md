@@ -2344,8 +2344,8 @@ puppeteer.launch().then(async browser => {
 #### consoleMessage.location()
 - returns: <[Object]>
   - `url` <[string]> URL of the resource if known or `undefined` otherwise.
-  - `lineNumber` <[number]> line number in the resource if known or `undefined` otherwise.
-  - `columnNumber` <[number]> column number in the resource if known or `undefined` otherwise.
+  - `lineNumber` <[number]> 0-based line number in the resource if known or `undefined` otherwise.
+  - `columnNumber` <[number]> 0-based column number in the resource if known or `undefined` otherwise.
 
 #### consoleMessage.text()
 - returns: <[string]>
