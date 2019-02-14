@@ -69,6 +69,7 @@ class NavigationWatchdog {
       helper.addEventListener(session, 'Page.navigationCommitted', check),
       helper.addEventListener(session, 'Page.navigationAborted', this._onNavigationAborted.bind(this)),
       helper.addEventListener(networkManager, Events.NetworkManager.Request, this._onRequest.bind(this)),
+      helper.addEventListener(navigatedFrame._frameManager, Events.FrameManager.FrameDetached, check),
     ];
     check();
   }
@@ -84,7 +85,9 @@ class NavigationWatchdog {
   }
 
   _checkNavigationComplete() {
-    if (this._navigatedFrame._lastCommittedNavigationId === this._targetNavigationId
+    if (this._navigatedFrame.isDetached()) {
+      this._resolveCallback(new Error('Navigating frame was detached'));
+    } else if (this._navigatedFrame._lastCommittedNavigationId === this._targetNavigationId
         && checkFiredEvents(this._navigatedFrame, this._firedEvents)) {
       this._resolveCallback(null);
     }
