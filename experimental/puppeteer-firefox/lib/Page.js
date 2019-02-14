@@ -1,4 +1,4 @@
-const {helper} = require('./helper');
+const {helper, debugError} = require('./helper');
 const {Keyboard, Mouse} = require('./Input');
 const {Dialog} = require('./Dialog');
 const {TimeoutError} = require('./Errors');
@@ -46,6 +46,8 @@ class Page extends EventEmitter {
     this._keyboard = new Keyboard(session);
     this._mouse = new Mouse(session, this._keyboard);
     this._closed = false;
+    /** @type {!Map<string, Function>} */
+    this._pageBindings = new Map();
     this._networkManager = new NetworkManager(session);
     this._frameManager = new FrameManager(session, this, this._networkManager, this._timeoutSettings);
     this._networkManager.setFrameManager(this._frameManager);
@@ -53,6 +55,7 @@ class Page extends EventEmitter {
       helper.addEventListener(this._session, 'Page.uncaughtError', this._onUncaughtError.bind(this)),
       helper.addEventListener(this._session, 'Page.console', this._onConsole.bind(this)),
       helper.addEventListener(this._session, 'Page.dialogOpened', this._onDialogOpened.bind(this)),
+      helper.addEventListener(this._session, 'Page.bindingCalled', this._onBindingCalled.bind(this)),
       helper.addEventListener(this._frameManager, Events.FrameManager.Load, () => this.emit(Events.Page.Load)),
       helper.addEventListener(this._frameManager, Events.FrameManager.DOMContentLoaded, () => this.emit(Events.Page.DOMContentLoaded)),
       helper.addEventListener(this._frameManager, Events.FrameManager.FrameAttached, frame => this.emit(Events.Page.FrameAttached, frame)),
@@ -79,6 +82,89 @@ class Page extends EventEmitter {
 
   async setExtraHTTPHeaders(headers) {
     await this._networkManager.setExtraHTTPHeaders(headers);
+  }
+
+  /**
+   * @param {string} name
+   * @param {Function} puppeteerFunction
+   */
+  async exposeFunction(name, puppeteerFunction) {
+    if (this._pageBindings.has(name))
+      throw new Error(`Failed to add page binding with name ${name}: window['${name}'] already exists!`);
+    this._pageBindings.set(name, puppeteerFunction);
+
+    const expression = helper.evaluationString(addPageBinding, name);
+    await this._session.send('Page.addBinding', {name: name});
+    await this._session.send('Page.addScriptToEvaluateOnNewDocument', {script: expression});
+    await Promise.all(this.frames().map(frame => frame.evaluate(expression).catch(debugError)));
+
+    function addPageBinding(bindingName) {
+      const binding = window[bindingName];
+      window[bindingName] = (...args) => {
+        const me = window[bindingName];
+        let callbacks = me['callbacks'];
+        if (!callbacks) {
+          callbacks = new Map();
+          me['callbacks'] = callbacks;
+        }
+        const seq = (me['lastSeq'] || 0) + 1;
+        me['lastSeq'] = seq;
+        const promise = new Promise((resolve, reject) => callbacks.set(seq, {resolve, reject}));
+        binding(JSON.stringify({name: bindingName, seq, args}));
+        return promise;
+      };
+    }
+  }
+
+  /**
+   * @param {!Protocol.Runtime.bindingCalledPayload} event
+   */
+  async _onBindingCalled(event) {
+    const {name, seq, args} = JSON.parse(event.payload);
+    let expression = null;
+    try {
+      const result = await this._pageBindings.get(name)(...args);
+      expression = helper.evaluationString(deliverResult, name, seq, result);
+    } catch (error) {
+      if (error instanceof Error)
+        expression = helper.evaluationString(deliverError, name, seq, error.message, error.stack);
+      else
+        expression = helper.evaluationString(deliverErrorValue, name, seq, error);
+    }
+    this._session.send('Page.evaluate', { script: expression, executionContextId: event.frameId }).catch(debugError);
+
+    /**
+     * @param {string} name
+     * @param {number} seq
+     * @param {*} result
+     */
+    function deliverResult(name, seq, result) {
+      window[name]['callbacks'].get(seq).resolve(result);
+      window[name]['callbacks'].delete(seq);
+    }
+
+    /**
+     * @param {string} name
+     * @param {number} seq
+     * @param {string} message
+     * @param {string} stack
+     */
+    function deliverError(name, seq, message, stack) {
+      const error = new Error(message);
+      error.stack = stack;
+      window[name]['callbacks'].get(seq).reject(error);
+      window[name]['callbacks'].delete(seq);
+    }
+
+    /**
+     * @param {string} name
+     * @param {number} seq
+     * @param {*} value
+     */
+    function deliverErrorValue(name, seq, value) {
+      window[name]['callbacks'].get(seq).reject(value);
+      window[name]['callbacks'].delete(seq);
+    }
   }
 
   /**
