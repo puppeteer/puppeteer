@@ -13,6 +13,7 @@ class JSHandle {
     this._objectId = payload.objectId;
     this._type = payload.type;
     this._subtype = payload.subtype;
+    this._disposed = false;
     this._protocolValue = {
       unserializableValue: payload.unserializableValue,
       value: payload.value,
@@ -102,6 +103,7 @@ class JSHandle {
   async dispose() {
     if (!this._objectId)
       return;
+    this._disposed = true;
     await this._session.send('Page.disposeObject', {
       executionContextId: this._executionContextId,
       objectId: this._objectId,

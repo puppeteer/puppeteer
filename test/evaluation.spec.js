@@ -68,7 +68,7 @@ module.exports.addTests = function({testRunner, expect}) {
     it_fails_ffox('should return undefined for objects with symbols', async({page, server}) => {
       expect(await page.evaluate(() => [Symbol('foo4')])).toBe(undefined);
     });
-    (asyncawait ? it_fails_ffox : xit)('should work with function shorthands', async({page, server}) => {
+    (asyncawait ? it : xit)('should work with function shorthands', async({page, server}) => {
       // trick node6 transpiler to not touch our object.
       // TODO(lushnikov): remove eval once Node6 is dropped.
       const a = eval(`({
@@ -188,7 +188,7 @@ module.exports.addTests = function({testRunner, expect}) {
       const text = await page.evaluate(e => e.textContent, element);
       expect(text).toBe('42');
     });
-    it_fails_ffox('should throw if underlying element was disposed', async({page, server}) => {
+    it('should throw if underlying element was disposed', async({page, server}) => {
       await page.setContent('<section>39</section>');
       const element = await page.$('section');
       expect(element).toBeTruthy();
@@ -197,7 +197,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.evaluate(e => e.textContent, element).catch(e => error = e);
       expect(error.message).toContain('JSHandle is disposed');
     });
-    it_fails_ffox('should throw if elementHandles are from other frames', async({page, server}) => {
+    it('should throw if elementHandles are from other frames', async({page, server}) => {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const bodyHandle = await page.frames()[1].$('body');
       let error = null;

@@ -21,9 +21,34 @@ class ExecutionContext {
       });
       return createHandle(this, payload.result, payload.exceptionDetails);
     }
+    if (typeof pageFunction !== 'function')
+      throw new Error(`Expected to get |string| or |function| as the first argument, but got "${pageFunction}" instead.`);
+
+    let functionText = pageFunction.toString();
+    try {
+      new Function('(' + functionText + ')');
+    } catch (e1) {
+      // This means we might have a function shorthand. Try another
+      // time prefixing 'function '.
+      if (functionText.startsWith('async '))
+        functionText = 'async function ' + functionText.substring('async '.length);
+      else
+        functionText = 'function ' + functionText;
+      try {
+        new Function('(' + functionText  + ')');
+      } catch (e2) {
+        // We tried hard to serialize, but there's a weird beast here.
+        throw new Error('Passed function is not well-serializable!');
+      }
+    }
     args = args.map(arg => {
-      if (arg instanceof JSHandle)
+      if (arg instanceof JSHandle) {
+        if (arg._context !== this)
+          throw new Error('JSHandles can be evaluated only in the context they were created!');
+        if (arg._disposed)
+          throw new Error('JSHandle is disposed!');
         return arg._protocolValue;
+      }
       if (Object.is(arg, Infinity))
         return {unserializableValue: 'Infinity'};
       if (Object.is(arg, -Infinity))
@@ -35,7 +60,7 @@ class ExecutionContext {
       return {value: arg};
     });
     const payload = await this._session.send('Page.evaluate', {
-      functionText: pageFunction.toString(),
+      functionText,
       args,
       executionContextId: this._executionContextId
     });
