@@ -549,8 +549,11 @@ class Page extends EventEmitter {
     return await this._frameManager.mainFrame().select(selector, ...values);
   }
 
-  async close() {
-    await this._session.send('Browser.closePage' );
+  async close(options = {}) {
+    const {
+      runBeforeUnload = false,
+    } = options;
+    await this._session.send('Browser.closePage', { runBeforeUnload });
   }
 
   async content() {
