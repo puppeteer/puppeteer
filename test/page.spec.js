@@ -57,10 +57,11 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       const pageClosingPromise = newPage.close({ runBeforeUnload: true });
       const dialog = await waitEvent(newPage, 'dialog');
       expect(dialog.type()).toBe('beforeunload');
-      if (CHROME) {
-        expect(dialog.defaultValue()).toBe('');
+      expect(dialog.defaultValue()).toBe('');
+      if (CHROME)
         expect(dialog.message()).toBe('');
-      }
+      else
+        expect(dialog.message()).toBe('This page is asking you to confirm that you want to leave - data you have entered may not be saved.');
       await dialog.accept();
       await pageClosingPromise;
     });
