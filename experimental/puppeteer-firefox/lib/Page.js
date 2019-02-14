@@ -561,9 +561,9 @@ class Page extends EventEmitter {
     this.emit(Events.Page.Close);
   }
 
-  _onConsole({type, args, frameId}) {
+  _onConsole({type, args, frameId, location}) {
     const frame = this._frameManager.frame(frameId);
-    this.emit(Events.Page.Console, new ConsoleMessage(type, args.map(arg => createHandle(frame._executionContext, arg))));
+    this.emit(Events.Page.Console, new ConsoleMessage(type, args.map(arg => createHandle(frame._executionContext, arg)), location));
   }
 
   /**
@@ -579,9 +579,14 @@ class ConsoleMessage {
    * @param {string} type
    * @param {!Array<!JSHandle>} args
    */
-  constructor(type, args) {
+  constructor(type, args, location) {
     this._type = type;
     this._args = args;
+    this._location = location;
+  }
+
+  location() {
+    return this._location;
   }
 
   /**
