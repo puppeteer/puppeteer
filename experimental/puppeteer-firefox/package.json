@@ -9,7 +9,7 @@
     "node": ">=8.9.4"
   },
   "puppeteer": {
-    "firefox_revision": "4ba5b441257d5938d032d09fc09e45ea9d8f2e3a"
+    "firefox_revision": "fd017c27c17d0b4fa8bdea3ad40b88ca2addaeda"
   },
   "scripts": {
     "install": "node install.js",

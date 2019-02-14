@@ -333,14 +333,17 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       ]);
       expect(message.text()).toBe('JSHandle@object');
     });
-    it_fails_ffox('should trigger correct Log', async({page, server}) => {
+    it('should trigger correct Log', async({page, server}) => {
       await page.goto('about:blank');
       const [message] = await Promise.all([
         waitEvent(page, 'console'),
         page.evaluate(async url => fetch(url).catch(e => {}), server.EMPTY_PAGE)
       ]);
-      expect(message.text()).toContain('No \'Access-Control-Allow-Origin\'');
-      expect(message.type()).toEqual('error');
+      expect(message.text()).toContain('Access-Control-Allow-Origin');
+      if (CHROME)
+        expect(message.type()).toEqual('error');
+      else
+        expect(message.type()).toEqual('warn');
     });
     it_fails_ffox('should have location when fetch fails', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
