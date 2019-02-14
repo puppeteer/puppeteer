@@ -48,19 +48,30 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       await newPage.close();
       expect(await browser.pages()).not.toContain(newPage);
     });
-    it_fails_ffox('should run beforeunload if asked for', async({context, server}) => {
+    it('should run beforeunload if asked for', async({context, server}) => {
       const newPage = await context.newPage();
       await newPage.goto(server.PREFIX + '/beforeunload.html');
       // We have to interact with a page so that 'beforeunload' handlers
       // fire.
       await newPage.click('body');
-      newPage.close({ runBeforeUnload: true });
+      const pageClosingPromise = newPage.close({ runBeforeUnload: true });
       const dialog = await waitEvent(newPage, 'dialog');
       expect(dialog.type()).toBe('beforeunload');
       expect(dialog.defaultValue()).toBe('');
-      expect(dialog.message()).toBe('');
-      dialog.accept();
-      await waitEvent(newPage, 'close');
+      if (CHROME)
+        expect(dialog.message()).toBe('');
+      else
+        expect(dialog.message()).toBe('This page is asking you to confirm that you want to leave - data you have entered may not be saved.');
+      await dialog.accept();
+      await pageClosingPromise;
+    });
+    it('should *not* run beforeunload by default', async({context, server}) => {
+      const newPage = await context.newPage();
+      await newPage.goto(server.PREFIX + '/beforeunload.html');
+      // We have to interact with a page so that 'beforeunload' handlers
+      // fire.
+      await newPage.click('body');
+      await newPage.close();
     });
     it('should set the page close state', async({context}) => {
       const newPage = await context.newPage();
