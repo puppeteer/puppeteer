@@ -300,7 +300,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await browser.close();
       });
     });
-    describe_fails_ffox('Puppeteer.connect', function() {
+    describe('Puppeteer.connect', function() {
       it('should be able to connect multiple times to the same browser', async({server}) => {
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const browser = await puppeteer.connect({
@@ -349,7 +349,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(await restoredPage.evaluate(() => 7 * 8)).toBe(56);
         await browser.close();
       });
-      it('should be able to connect using browserUrl, with and without trailing slash', async({server}) => {
+      it_fails_ffox('should be able to connect using browserUrl, with and without trailing slash', async({server}) => {
         const originalBrowser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
           args: ['--remote-debugging-port=21222']
         }));
@@ -366,7 +366,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         browser2.disconnect();
         originalBrowser.close();
       });
-      it('should throw when using both browserWSEndpoint and browserURL', async({server}) => {
+      it_fails_ffox('should throw when using both browserWSEndpoint and browserURL', async({server}) => {
         const originalBrowser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
           args: ['--remote-debugging-port=21222']
         }));
@@ -378,7 +378,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
 
         originalBrowser.close();
       });
-      it('should throw when trying to connect to non-existing browser', async({server}) => {
+      it_fails_ffox('should throw when trying to connect to non-existing browser', async({server}) => {
         const originalBrowser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
           args: ['--remote-debugging-port=21222']
         }));
@@ -414,7 +414,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
     });
   });
 
-  describe_fails_ffox('Browser.Events.disconnected', function() {
+  describe('Browser.Events.disconnected', function() {
     it('should be emitted when: browser gets closed, disconnected or underlying websocket gets closed', async() => {
       const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
       const browserWSEndpoint = originalBrowser.wsEndpoint();

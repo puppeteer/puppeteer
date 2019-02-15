@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 const {Socket} = require('net');
+const URL = require('url');
 
 /**
  * @implements {!Puppeteer.ConnectionTransport}
@@ -21,18 +22,21 @@ const {Socket} = require('net');
  */
 class FirefoxTransport {
   /**
-   * @param {number} port
+   * @param {url} host
    * @return {!Promise<!FirefoxTransport>}
    */
-  static async create(port) {
+  static async create(url) {
+    const parsedURL = URL.parse(url);
+    if (parsedURL.protocol !== 'tcp:')
+      throw new Error('cannot connect to non-tcp socket');
     const socket = new Socket();
     try {
       await new Promise((resolve, reject) => {
         socket.once('connect', resolve);
         socket.once('error', reject);
         socket.connect({
-          port,
-          host: 'localhost'
+          host: parsedURL.hostname,
+          port: parsedURL.port,
         });
       });
     } catch (e) {

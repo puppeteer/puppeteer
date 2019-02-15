@@ -16,6 +16,7 @@ const Events = {
     RequestFailed: 'requestfailed',
   },
   Browser: {
+    Disconnected: 'disconnected',
     TargetCreated: 'targetcreated',
     TargetChanged: 'targetchanged',
     TargetDestroyed: 'targetdestroyed',

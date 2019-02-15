@@ -23,7 +23,7 @@ const {BrowserFetcher} = require('./BrowserFetcher');
 const readline = require('readline');
 const fs = require('fs');
 const util = require('util');
-const {helper} = require('./helper');
+const {helper, debugError} = require('./helper');
 const {TimeoutError} = require('./Errors')
 const FirefoxTransport = require('./FirefoxTransport');
 
@@ -121,14 +121,13 @@ class Launcher {
     /** @type {?Connection} */
     let connection = null;
     try {
-      const port = await waitForWSEndpoint(firefoxProcess, 30000);
-      const transport = await FirefoxTransport.create(parseInt(port, 10));
-      connection = new Connection(transport, slowMo);
+      const url = await waitForWSEndpoint(firefoxProcess, 30000);
+      const transport = await FirefoxTransport.create(url);
+      connection = new Connection(url, transport, slowMo);
       const browser = await Browser.create(connection, defaultViewport, firefoxProcess, killFirefox);
       if (ignoreHTTPSErrors)
         await connection.send('Browser.setIgnoreHTTPSErrors', {enabled: true});
-      if (!browser.targets().length)
-        await new Promise(x => browser.once('targetcreated', x));
+      await browser.waitForTarget(t => t.type() === 'page');
       return browser;
     } catch (e) {
       killFirefox();
@@ -154,6 +153,26 @@ class Launcher {
         removeFolder.sync(temporaryProfileDir);
       } catch (e) { }
     }
+  }
+
+  /**
+   * @param {Object} options
+   * @return {!Promise<!Browser>}
+   */
+  async connect(options = {}) {
+    const {
+      browserWSEndpoint,
+      slowMo = 0,
+      defaultViewport = {width: 800, height: 600},
+      ignoreHTTPSErrors = false,
+    } = options;
+    let connection = null;
+    const transport = await FirefoxTransport.create(browserWSEndpoint);
+    connection = new Connection(browserWSEndpoint, transport, slowMo);
+    const browser = await Browser.create(connection, defaultViewport, null, () => connection.send('Browser.close').catch(debugError));
+    if (ignoreHTTPSErrors)
+      await connection.send('Browser.setIgnoreHTTPSErrors', {enabled: true});
+    return browser;
   }
 
   /**
@@ -205,7 +224,7 @@ function waitForWSEndpoint(firefoxProcess, timeout) {
      */
     function onLine(line) {
       stderr += line + '\n';
-      const match = line.match(/^Juggler listening on (\d+)$/);
+      const match = line.match(/^Juggler listening on (tcp:\/\/.*)$/);
       if (!match)
         return;
       cleanup();
