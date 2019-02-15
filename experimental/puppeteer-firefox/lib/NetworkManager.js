@@ -12,9 +12,9 @@ class NetworkManager extends EventEmitter {
     this._frameManager = null;
 
     this._eventListeners = [
-      helper.addEventListener(session, 'Page.requestWillBeSent', this._onRequestWillBeSent.bind(this)),
-      helper.addEventListener(session, 'Page.responseReceived', this._onResponseReceived.bind(this)),
-      helper.addEventListener(session, 'Page.requestFinished', this._onRequestFinished.bind(this)),
+      helper.addEventListener(session, 'Network.requestWillBeSent', this._onRequestWillBeSent.bind(this)),
+      helper.addEventListener(session, 'Network.responseReceived', this._onResponseReceived.bind(this)),
+      helper.addEventListener(session, 'Network.requestFinished', this._onRequestFinished.bind(this)),
     ];
   }
 

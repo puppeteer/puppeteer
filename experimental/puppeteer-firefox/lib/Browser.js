@@ -40,11 +40,21 @@ class Browser extends EventEmitter {
     for (const browserContextId of browserContextIds)
       this._contexts.set(browserContextId, new BrowserContext(this._connection, this, browserContextId));
 
+    this._connection.on(Events.Connection.Disconnected, () => this.emit(Events.Browser.Disconnected));
+
     this._eventListeners = [
       helper.addEventListener(this._connection, 'Browser.tabOpened', this._onTabOpened.bind(this)),
       helper.addEventListener(this._connection, 'Browser.tabClosed', this._onTabClosed.bind(this)),
       helper.addEventListener(this._connection, 'Browser.tabNavigated', this._onTabNavigated.bind(this)),
     ];
+  }
+
+  wsEndpoint() {
+    return this._connection.url();
+  }
+
+  disconnect() {
+    this._connection.dispose();
   }
 
   /**
