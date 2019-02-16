@@ -224,7 +224,7 @@ function waitForWSEndpoint(firefoxProcess, timeout) {
      */
     function onLine(line) {
       stderr += line + '\n';
-      const match = line.match(/^Juggler listening on (tcp:\/\/.*)$/);
+      const match = line.match(/^Juggler listening on (juggler:\/\/.*)$/);
       if (!match)
         return;
       cleanup();

@@ -27,8 +27,8 @@ class FirefoxTransport {
    */
   static async create(url) {
     const parsedURL = URL.parse(url);
-    if (parsedURL.protocol !== 'tcp:')
-      throw new Error('cannot connect to non-tcp socket');
+    if (parsedURL.protocol !== 'juggler:')
+      throw new Error('cannot connect to non-juggler socket');
     const socket = new Socket();
     try {
       await new Promise((resolve, reject) => {
