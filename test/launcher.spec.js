@@ -314,6 +314,16 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(await secondPage.evaluate(() => 7 * 6)).toBe(42, 'original browser should still work');
         await originalBrowser.close();
       });
+      it('should be able to close remote browser', async({server}) => {
+        const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+        const remoteBrowser = await puppeteer.connect({
+          browserWSEndpoint: originalBrowser.wsEndpoint()
+        });
+        await Promise.all([
+          utils.waitEvent(originalBrowser, 'disconnected'),
+          remoteBrowser.close(),
+        ]);
+      });
       it('should support ignoreHTTPSErrors option', async({httpsServer}) => {
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const browserWSEndpoint = originalBrowser.wsEndpoint();
