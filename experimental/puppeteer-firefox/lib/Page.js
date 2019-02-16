@@ -570,6 +570,7 @@ class Page extends EventEmitter {
   _onClosed() {
     this._isClosed = true;
     this._frameManager.dispose();
+    this._networkManager.dispose();
     helper.removeEventListeners(this._eventListeners);
     this.emit(Events.Page.Close);
   }

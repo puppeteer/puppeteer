@@ -18,6 +18,10 @@ class NetworkManager extends EventEmitter {
     ];
   }
 
+  dispose() {
+    helper.removeEventListeners(this._eventListeners);
+  }
+
   setFrameManager(frameManager) {
     this._frameManager = frameManager;
   }
@@ -56,10 +60,6 @@ class NetworkManager extends EventEmitter {
     if (!isRedirected)
       this._requests.delete(request._id);
     this.emit(Events.NetworkManager.RequestFinished, request);
-  }
-
-  dispose() {
-    helper.removeEventListeners(this._eventListeners);
   }
 }
 
