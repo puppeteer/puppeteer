@@ -31,7 +31,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer}) {
       const process = await browser.process();
       expect(process.pid).toBeGreaterThan(0);
     });
-    it_fails_ffox('should not return child_process for remote browser', async function({browser}) {
+    it('should not return child_process for remote browser', async function({browser}) {
       const browserWSEndpoint = browser.wsEndpoint();
       const remoteBrowser = await puppeteer.connect({browserWSEndpoint});
       expect(remoteBrowser.process()).toBe(null);

@@ -15,6 +15,10 @@ class Puppeteer {
     return this._launcher.launch(options);
   }
 
+  async connect(options) {
+    return this._launcher.connect(options);
+  }
+
   createBrowserFetcher(options) {
     return new BrowserFetcher(this._projectRoot, options);
   }

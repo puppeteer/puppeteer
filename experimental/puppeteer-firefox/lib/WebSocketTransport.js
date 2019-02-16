@@ -13,63 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const {Socket} = require('net');
+const WebSocket = require('ws');
 
 /**
  * @implements {!Puppeteer.ConnectionTransport}
- * @internal
  */
-class FirefoxTransport {
+class WebSocketTransport {
   /**
-   * @param {number} port
-   * @return {!Promise<!FirefoxTransport>}
+   * @param {string} url
+   * @return {!Promise<!WebSocketTransport>}
    */
-  static async create(port) {
-    const socket = new Socket();
-    try {
-      await new Promise((resolve, reject) => {
-        socket.once('connect', resolve);
-        socket.once('error', reject);
-        socket.connect({
-          port,
-          host: 'localhost'
-        });
-      });
-    } catch (e) {
-      socket.destroy();
-      throw e;
-    }
-    return new FirefoxTransport(socket);
+  static create(url) {
+    return new Promise((resolve, reject) => {
+      const ws = new WebSocket(url, [], { perMessageDeflate: false });
+      ws.addEventListener('open', () => resolve(new WebSocketTransport(ws)));
+      ws.addEventListener('error', reject);
+    });
   }
 
   /**
-   * @param {!Socket} socket
+   * @param {!WebSocket} ws
    */
-  constructor(socket) {
-    this._socket = socket;
-    this._socket.once('close', had_error => {
+  constructor(ws) {
+    this._ws = ws;
+    this._dispatchQueue = new DispatchQueue(this);
+    this._ws.addEventListener('message', event => {
+      this._dispatchQueue.enqueue(event.data);
+    });
+    this._ws.addEventListener('close', event => {
       if (this.onclose)
         this.onclose.call(null);
     });
-    this._dispatchQueue = new DispatchQueue(this);
-    let buffer = Buffer.from('');
-    socket.on('data', async data => {
-      buffer = Buffer.concat([buffer, data]);
-      while (true) {
-        const bufferString = buffer.toString();
-        const seperatorIndex = bufferString.indexOf(':');
-        if (seperatorIndex === -1)
-          return;
-        const length = parseInt(bufferString.substring(0, seperatorIndex), 10);
-        if (buffer.length < length + seperatorIndex)
-          return;
-        const message = buffer.slice(seperatorIndex + 1, seperatorIndex + 1 + length).toString();
-        buffer = buffer.slice(seperatorIndex + 1 + length);
-        this._dispatchQueue.enqueue(message);
-      }
-    });
     // Silently ignore all errors - we don't know what to do with them.
-    this._socket.on('error', () => {});
+    this._ws.addEventListener('error', () => {});
     this.onmessage = null;
     this.onclose = null;
   }
@@ -78,11 +54,11 @@ class FirefoxTransport {
    * @param {string} message
    */
   send(message) {
-    this._socket.write(Buffer.byteLength(message) + ':' + message);
+    this._ws.send(message);
   }
 
   close() {
-    this._socket.destroy();
+    this._ws.close();
   }
 }
 
@@ -123,4 +99,4 @@ class DispatchQueue {
   }
 }
 
-module.exports = FirefoxTransport;
+module.exports = WebSocketTransport;

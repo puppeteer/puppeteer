@@ -141,7 +141,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
       ]);
       expect(browser.browserContexts().length).toBe(1);
     });
-    it_fails_ffox('should work across sessions', async function({browser, server}) {
+    it('should work across sessions', async function({browser, server}) {
       expect(browser.browserContexts().length).toBe(1);
       const context = await browser.createIncognitoBrowserContext();
       expect(browser.browserContexts().length).toBe(2);

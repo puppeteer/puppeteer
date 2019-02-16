@@ -25,8 +25,9 @@ class Connection extends EventEmitter {
    * @param {!Puppeteer.ConnectionTransport} transport
    * @param {number=} delay
    */
-  constructor(transport, delay = 0) {
+  constructor(url, transport, delay = 0) {
     super();
+    this._url = url;
     this._lastId = 0;
     /** @type {!Map<number, {resolve: function, reject: function, error: !Error, method: string}>}*/
     this._callbacks = new Map();
@@ -36,6 +37,10 @@ class Connection extends EventEmitter {
     this._transport.onmessage = this._onMessage.bind(this);
     this._transport.onclose = this._onClose.bind(this);
     this._closed = false;
+  }
+
+  url() {
+    return this._url;
   }
 
   /**
