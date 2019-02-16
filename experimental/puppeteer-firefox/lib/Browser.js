@@ -31,8 +31,8 @@ class Browser extends EventEmitter {
     this._process = process;
     this._closeCallback = closeCallback;
 
-    /** @type {!Map<string, ?Target>} */
-    this._pageTargets = new Map();
+    /** @type {!Map<string, !Target>} */
+    this._targets = new Map();
 
     this._defaultContext = new BrowserContext(this._connection, this, null);
     /** @type {!Map<string, !BrowserContext>} */
@@ -43,9 +43,9 @@ class Browser extends EventEmitter {
     this._connection.on(Events.Connection.Disconnected, () => this.emit(Events.Browser.Disconnected));
 
     this._eventListeners = [
-      helper.addEventListener(this._connection, 'Browser.tabOpened', this._onTabOpened.bind(this)),
-      helper.addEventListener(this._connection, 'Browser.tabClosed', this._onTabClosed.bind(this)),
-      helper.addEventListener(this._connection, 'Browser.tabNavigated', this._onTabNavigated.bind(this)),
+      helper.addEventListener(this._connection, 'Browser.targetCreated', this._onTargetCreated.bind(this)),
+      helper.addEventListener(this._connection, 'Browser.targetDestroyed', this._onTargetDestroyed.bind(this)),
+      helper.addEventListener(this._connection, 'Browser.targetInfoChanged', this._onTargetInfoChanged.bind(this)),
     ];
   }
 
@@ -152,29 +152,32 @@ class Browser extends EventEmitter {
    * @return {Promise<Page>}
    */
   async _createPageInContext(browserContextId) {
-    const {pageId} = await this._connection.send('Browser.newPage', {
+    const {targetId} = await this._connection.send('Browser.newPage', {
       browserContextId: browserContextId || undefined
     });
-    const target = this._pageTargets.get(pageId);
+    const target = this._targets.get(targetId);
     return await target.page();
   }
 
   async pages() {
-    const pageTargets = Array.from(this._pageTargets.values());
+    const pageTargets = Array.from(this._targets.values());
     return await Promise.all(pageTargets.map(target => target.page()));
   }
 
   targets() {
-    return Array.from(this._pageTargets.values());
+    return Array.from(this._targets.values());
   }
 
-  async _onTabOpened({pageId, url, browserContextId, openerId}) {
+  target() {
+    return this.targets().find(target => target.type() === 'browser');
+  }
+
+  async _onTargetCreated({targetId, url, browserContextId, openerId, type}) {
     const context = browserContextId ? this._contexts.get(browserContextId) : this._defaultContext;
-    const opener = openerId ? this._pageTargets.get(openerId) : null;
-    const target = new Target(this._connection, this, context, pageId, url, opener);
-    this._pageTargets.set(pageId, target);
-    if (opener && opener._pagePromise) {
-      const openerPage = await opener._pagePromise;
+    const target = new Target(this._connection, this, context, targetId, type, url, openerId);
+    this._targets.set(targetId, target);
+    if (target.opener() && target.opener()._pagePromise) {
+      const openerPage = await target.opener()._pagePromise;
       if (openerPage.listenerCount(Events.Page.Popup)) {
         const popupPage = await target.page();
         openerPage.emit(Events.Page.Popup, popupPage);
@@ -184,15 +187,15 @@ class Browser extends EventEmitter {
     context.emit(Events.BrowserContext.TargetCreated, target);
   }
 
-  _onTabClosed({pageId}) {
-    const target = this._pageTargets.get(pageId);
-    this._pageTargets.delete(pageId);
+  _onTargetDestroyed({targetId}) {
+    const target = this._targets.get(targetId);
+    this._targets.delete(targetId);
     this.emit(Events.Browser.TargetDestroyed, target);
     target.browserContext().emit(Events.BrowserContext.TargetDestroyed, target);
   }
 
-  _onTabNavigated({pageId, url}) {
-    const target = this._pageTargets.get(pageId);
+  _onTargetInfoChanged({targetId, url}) {
+    const target = this._targets.get(targetId);
     target._url = url;
     this.emit(Events.Browser.TargetChanged, target);
     target.browserContext().emit(Events.BrowserContext.TargetChanged, target);
@@ -210,33 +213,35 @@ class Target {
    * @param {*} connection
    * @param {!Browser} browser
    * @param {!BrowserContext} context
-   * @param {string} pageId
+   * @param {string} targetId
+   * @param {string} type
    * @param {string} url
-   * @param {?Target} opener
+   * @param {string=} openerId
    */
-  constructor(connection, browser, context, pageId, url, opener) {
+  constructor(connection, browser, context, targetId, type, url, openerId) {
     this._browser = browser;
     this._context = context;
     this._connection = connection;
-    this._pageId = pageId;
+    this._targetId = targetId;
+    this._type = type;
     /** @type {?Promise<!Page>} */
     this._pagePromise = null;
     this._url = url;
-    this._opener = opener;
+    this._openerId = openerId;
   }
 
   /**
    * @return {?Target}
    */
   opener() {
-    return this._opener;
+    return this._openerId ? this._browser._targets.get(this._openerId) : null;
   }
 
   /**
-   * @return {"page"|"background_page"|"service_worker"|"other"|"browser"}
+   * @return {"page"|"browser"}
    */
   type() {
-    return 'page';
+    return this._type;
   }
 
   url() {
@@ -251,8 +256,8 @@ class Target {
   }
 
   async page() {
-    if (!this._pagePromise)
-      this._pagePromise = Page.create(this._connection, this, this._pageId, this._browser._defaultViewport);
+    if (this._type === 'page' && !this._pagePromise)
+      this._pagePromise = Page.create(this._connection, this, this._targetId, this._browser._defaultViewport);
     return this._pagePromise;
   }
 
