@@ -24,7 +24,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
   const {TimeoutError} = Errors;
 
   describe('Target', function() {
-    it_fails_ffox('Browser.targets should return all of the targets', async({page, server, browser}) => {
+    it('Browser.targets should return all of the targets', async({page, server, browser}) => {
       // The pages will be the testing page and the original newtab page
       const targets = browser.targets();
       expect(targets.some(target => target.type() === 'page' &&
@@ -38,7 +38,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
       expect(allPages).toContain(page);
       expect(allPages[0]).not.toBe(allPages[1]);
     });
-    it_fails_ffox('should contain browser target', async({browser}) => {
+    it('should contain browser target', async({browser}) => {
       const targets = browser.targets();
       const browserTarget = targets.find(target => target.type() === 'browser');
       expect(browserTarget).toBeTruthy();

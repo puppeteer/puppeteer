@@ -20,7 +20,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer}) {
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Browser.target', function() {
-    it_fails_ffox('should return browser target', async({browser}) => {
+    it('should return browser target', async({browser}) => {
       const target = browser.target();
       expect(target.type()).toBe('browser');
     });

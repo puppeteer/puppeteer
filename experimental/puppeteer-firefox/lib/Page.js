@@ -19,14 +19,14 @@ const writeFileAsync = util.promisify(fs.writeFile);
  * @internal
  */
 class PageSession extends EventEmitter {
-  constructor(connection, pageId) {
+  constructor(connection, targetId) {
     super();
     this._connection = connection;
-    this._pageId = pageId;
+    this._targetId = targetId;
     const wrapperSymbol = Symbol('listenerWrapper');
 
     function wrapperListener(listener, params) {
-      if (params.pageId === pageId)
+      if (params.targetId === targetId)
         listener.call(null, params);
     }
 
@@ -41,7 +41,7 @@ class PageSession extends EventEmitter {
   }
 
   async send(method, params = {}) {
-    params = Object.assign({}, params, {pageId: this._pageId});
+    params = Object.assign({}, params, {targetId: this._targetId});
     return await this._connection.send(method, params);
   }
 }
@@ -51,11 +51,11 @@ class Page extends EventEmitter {
    *
    * @param {!Puppeteer.Connection} connection
    * @param {!Puppeteer.Target} target
-   * @param {string} pageId
+   * @param {string} targetId
    * @param {?Puppeteer.Viewport} defaultViewport
    */
-  static async create(connection, target, pageId, defaultViewport) {
-    const session = new PageSession(connection, pageId);
+  static async create(connection, target, targetId, defaultViewport) {
+    const session = new PageSession(connection, targetId);
     const page = new Page(session, target);
     await session.send('Page.enable');
     if (defaultViewport)
@@ -82,7 +82,7 @@ class Page extends EventEmitter {
       helper.addEventListener(this._session, 'Page.uncaughtError', this._onUncaughtError.bind(this)),
       helper.addEventListener(this._session, 'Page.console', this._onConsole.bind(this)),
       helper.addEventListener(this._session, 'Page.dialogOpened', this._onDialogOpened.bind(this)),
-      helper.addEventListener(this._session, 'Browser.tabClosed', this._onClosed.bind(this)),
+      helper.addEventListener(this._session, 'Browser.targetDestroyed', this._onClosed.bind(this)),
       helper.addEventListener(this._frameManager, Events.FrameManager.Load, () => this.emit(Events.Page.Load)),
       helper.addEventListener(this._frameManager, Events.FrameManager.DOMContentLoaded, () => this.emit(Events.Page.DOMContentLoaded)),
       helper.addEventListener(this._frameManager, Events.FrameManager.FrameAttached, frame => this.emit(Events.Page.FrameAttached, frame)),
