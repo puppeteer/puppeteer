@@ -160,7 +160,7 @@ class Browser extends EventEmitter {
   }
 
   async pages() {
-    const pageTargets = Array.from(this._targets.values());
+    const pageTargets = Array.from(this._targets.values()).filter(target => target.type() === 'page');
     return await Promise.all(pageTargets.map(target => target.page()));
   }
 
