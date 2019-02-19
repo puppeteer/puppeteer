@@ -31,6 +31,10 @@ const Events = {
     Disconnected: Symbol('Events.Connection.Disconnected'),
   },
 
+  JugglerSession: {
+    Disconnected: Symbol('Events.JugglerSession.Disconnected'),
+  },
+
   FrameManager: {
     Load: Symbol('Events.FrameManager.Load'),
     DOMContentLoaded: Symbol('Events.FrameManager.DOMContentLoaded'),

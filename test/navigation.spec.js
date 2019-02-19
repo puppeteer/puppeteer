@@ -265,7 +265,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
       process.removeListener('warning', warningHandler);
       expect(warning).toBe(null);
     });
-    it_fails_ffox('should not leak listeners during navigation of 11 pages', async({page, context, server}) => {
+    it('should not leak listeners during navigation of 11 pages', async({page, context, server}) => {
       let warning = null;
       const warningHandler = w => warning = w;
       process.on('warning', warningHandler);

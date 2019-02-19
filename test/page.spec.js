@@ -36,10 +36,11 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
   describe('Page.close', function() {
     it('should reject all promises when page is closed', async({context}) => {
       const newPage = await context.newPage();
-      const neverResolves = newPage.evaluate(() => new Promise(r => {}));
-      newPage.close();
       let error = null;
-      await neverResolves.catch(e => error = e);
+      await Promise.all([
+        newPage.evaluate(() => new Promise(r => {})).catch(e => error = e),
+        newPage.close(),
+      ]);
       expect(error.message).toContain('Protocol error');
     });
     it('should not be visible in browser.pages', async({browser}) => {
