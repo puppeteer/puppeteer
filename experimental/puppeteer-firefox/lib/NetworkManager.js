@@ -1,4 +1,4 @@
-const {helper} = require('./helper');
+const {helper, assert, debugError} = require('./helper');
 const util = require('util');
 const EventEmitter = require('events');
 const {Events} = require('./Events');
@@ -15,6 +15,7 @@ class NetworkManager extends EventEmitter {
       helper.addEventListener(session, 'Network.requestWillBeSent', this._onRequestWillBeSent.bind(this)),
       helper.addEventListener(session, 'Network.responseReceived', this._onResponseReceived.bind(this)),
       helper.addEventListener(session, 'Network.requestFinished', this._onRequestFinished.bind(this)),
+      helper.addEventListener(session, 'Network.requestFailed', this._onRequestFailed.bind(this)),
     ];
   }
 
@@ -24,6 +25,10 @@ class NetworkManager extends EventEmitter {
 
   setFrameManager(frameManager) {
     this._frameManager = frameManager;
+  }
+
+  async setRequestInterception(enabled) {
+    await this._session.send('Network.setRequestInterception', {enabled});
   }
 
   _onRequestWillBeSent(event) {
@@ -37,7 +42,7 @@ class NetworkManager extends EventEmitter {
       redirectChain.push(redirected);
       this._requests.delete(redirected._id);
     }
-    const request = new Request(frame, redirectChain, event);
+    const request = new Request(this._session, frame, redirectChain, event);
     this._requests.set(request._id, request);
     this.emit(Events.NetworkManager.Request, request);
   }
@@ -60,6 +65,15 @@ class NetworkManager extends EventEmitter {
     if (!isRedirected)
       this._requests.delete(request._id);
     this.emit(Events.NetworkManager.RequestFinished, request);
+  }
+
+  _onRequestFailed(event) {
+    const request = this._requests.get(event.requestId);
+    if (!request)
+      return;
+    this._requests.delete(request._id);
+    request._errorText = event.errorCode;
+    this.emit(Events.NetworkManager.RequestFailed, request);
   }
 }
 
@@ -94,19 +108,49 @@ const causeToResourceType = {
 };
 
 class Request {
-  constructor(frame, redirectChain, payload) {
+  constructor(session, frame, redirectChain, payload) {
+    this._session = session;
     this._frame = frame;
     this._id = payload.requestId;
     this._redirectChain = redirectChain;
     this._url = payload.url;
     this._postData = payload.postData;
+    this._suspended = payload.suspended;
     this._response = null;
+    this._errorText = null;
     this._isNavigationRequest = payload.isNavigationRequest;
     this._method = payload.method;
     this._resourceType = causeToResourceType[payload.cause] || 'other';
     this._headers = {};
+    this._interceptionHandled = false;
     for (const {name, value} of payload.headers)
       this._headers[name.toLowerCase()] = value;
+  }
+
+  failure() {
+    return this._errorText ? {errorText: this._errorText} : null;
+  }
+
+  async continue() {
+    assert(this._suspended, 'Request Interception is not enabled!');
+    assert(!this._interceptionHandled, 'Request is already handled!');
+    this._interceptionHandled = true;
+    await this._session.send('Network.resumeSuspendedRequest', {
+      requestId: this._id,
+    }).catch(error => {
+      debugError(error);
+    });
+  }
+
+  async abort() {
+    assert(this._suspended, 'Request Interception is not enabled!');
+    assert(!this._interceptionHandled, 'Request is already handled!');
+    this._interceptionHandled = true;
+    await this._session.send('Network.abortSuspendedRequest', {
+      requestId: this._id,
+    }).catch(error => {
+      debugError(error);
+    });
   }
 
   postData() {

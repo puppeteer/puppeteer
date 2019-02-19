@@ -73,6 +73,10 @@ class Page extends EventEmitter {
     });
   }
 
+  async setRequestInterception(enabled) {
+    await this._networkManager.setRequestInterception(enabled);
+  }
+
   /**
    * @param {(string|Function)} urlOrPredicate
    * @param {!{timeout?: number}=} options
