@@ -77,6 +77,10 @@ class Page extends EventEmitter {
     await this._networkManager.setRequestInterception(enabled);
   }
 
+  async setExtraHTTPHeaders(headers) {
+    await this._networkManager.setExtraHTTPHeaders(headers);
+  }
+
   /**
    * @param {(string|Function)} urlOrPredicate
    * @param {!{timeout?: number}=} options

@@ -27,6 +27,15 @@ class NetworkManager extends EventEmitter {
     this._frameManager = frameManager;
   }
 
+  async setExtraHTTPHeaders(headers) {
+    const array = [];
+    for (const [name, value] of Object.entries(headers)) {
+      assert(helper.isString(value), `Expected value of header "${name}" to be String, but "${typeof value}" is found.`);
+      array.push({name, value});
+    }
+    await this._session.send('Network.setExtraHTTPHeaders', {headers: array});
+  }
+
   async setRequestInterception(enabled) {
     await this._session.send('Network.setRequestInterception', {enabled});
   }
