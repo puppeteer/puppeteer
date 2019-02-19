@@ -243,7 +243,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       await new Promise(x => serverResponse.end('ld!', x));
       expect(await responseText).toBe('hello world!');
     });
-    it_fails_ffox('Page.Events.RequestFailed', async({page, server}) => {
+    it('Page.Events.RequestFailed', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
         if (request.url().endsWith('css'))
@@ -258,7 +258,10 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(failedRequests[0].url()).toContain('one-style.css');
       expect(failedRequests[0].response()).toBe(null);
       expect(failedRequests[0].resourceType()).toBe('stylesheet');
-      expect(failedRequests[0].failure().errorText).toBe('net::ERR_FAILED');
+      if (CHROME)
+        expect(failedRequests[0].failure().errorText).toBe('net::ERR_FAILED');
+      else
+        expect(failedRequests[0].failure().errorText).toBe('NS_ERROR_FAILURE');
       expect(failedRequests[0].frame()).toBeTruthy();
     });
     it('Page.Events.RequestFinished', async({page, server}) => {
@@ -317,7 +320,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(requests.get('script.js').isNavigationRequest()).toBe(false);
       expect(requests.get('style.css').isNavigationRequest()).toBe(false);
     });
-    it_fails_ffox('should work with request interception', async({page, server}) => {
+    it('should work with request interception', async({page, server}) => {
       const requests = new Map();
       page.on('request', request => {
         requests.set(request.url().split('/').pop(), request);
@@ -340,10 +343,14 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
     });
   });
 
-  describe_fails_ffox('Page.setRequestInterception', function() {
+  describe('Page.setRequestInterception', function() {
     it('should intercept', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
+        if (utils.isFavicon(request)) {
+          request.continue();
+          return;
+        }
         expect(request.url()).toContain('empty.html');
         expect(request.headers()['user-agent']).toBeTruthy();
         expect(request.method()).toBe('GET');
@@ -358,7 +365,8 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(response.ok()).toBe(true);
       expect(response.remoteAddress().port).toBe(server.PORT);
     });
-    it('should work with intervention headers', async({page, server}) => {
+    // Intervention headers are chrome-specific.
+    (CHROME ? it : xit)('should work with intervention headers', async({page, server}) => {
       server.setRoute('/intervention', (req, res) => res.end(`
         <script>
           document.write('<script src="${server.CROSS_PROCESS_PREFIX}/intervention.js">' + '</scr' + 'ipt>');
@@ -395,14 +403,15 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       await page.setRequestInterception(true);
       const requests = [];
       page.on('request', request => {
-        requests.push(request);
+        if (!utils.isFavicon(request))
+          requests.push(request);
         request.continue();
       });
       await page.goto(server.PREFIX + '/one-style.html');
       expect(requests[1].url()).toContain('/one-style.css');
       expect(requests[1].headers().referer).toContain('/one-style.html');
     });
-    it('should properly return navigation response when URL has cookies', async({page, server}) => {
+    it_fails_ffox('should properly return navigation response when URL has cookies', async({page, server}) => {
       // Setup cookie.
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({ name: 'foo', value: 'bar'});
@@ -420,7 +429,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       await page.setRequestInterception(false);
       await page.goto(server.EMPTY_PAGE);
     });
-    it('should show custom HTTP headers', async({page, server}) => {
+    it_fails_ffox('should show custom HTTP headers', async({page, server}) => {
       await page.setExtraHTTPHeaders({
         foo: 'bar'
       });
@@ -432,7 +441,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.ok()).toBe(true);
     });
-    it('should works with customizing referer headers', async({page, server}) => {
+    it_fails_ffox('should works with customizing referer headers', async({page, server}) => {
       await page.setExtraHTTPHeaders({ 'referer': server.EMPTY_PAGE });
       await page.setRequestInterception(true);
       page.on('request', request => {
@@ -457,7 +466,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(response.request().failure()).toBe(null);
       expect(failedRequests).toBe(1);
     });
-    it('should be abortable with custom error codes', async({page, server}) => {
+    it_fails_ffox('should be abortable with custom error codes', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
         request.abort('internetdisconnected');
@@ -468,7 +477,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(failedRequest).toBeTruthy();
       expect(failedRequest.failure().errorText).toBe('net::ERR_INTERNET_DISCONNECTED');
     });
-    it('should send referer', async({page, server}) => {
+    it_fails_ffox('should send referer', async({page, server}) => {
       await page.setExtraHTTPHeaders({
         referer: 'http://google.com/'
       });
@@ -480,7 +489,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       ]);
       expect(request.headers['referer']).toBe('http://google.com/');
     });
-    it('should amend HTTP headers', async({page, server}) => {
+    it_fails_ffox('should amend HTTP headers', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
         const headers = Object.assign({}, request.headers());
@@ -500,7 +509,10 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       let error = null;
       await page.goto(server.EMPTY_PAGE).catch(e => error = e);
       expect(error).toBeTruthy();
-      expect(error.message).toContain('net::ERR_FAILED');
+      if (CHROME)
+        expect(error.message).toContain('net::ERR_FAILED');
+      else
+        expect(error.message).toContain('NS_ERROR_FAILURE');
     });
     it('should work with redirects', async({page, server}) => {
       await page.setRequestInterception(true);
@@ -534,7 +546,8 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       const requests = [];
       page.on('request', request => {
         request.continue();
-        requests.push(request);
+        if (!utils.isFavicon(request))
+          requests.push(request);
       });
       server.setRedirect('/one-style.css', '/two-style.css');
       server.setRedirect('/two-style.css', '/three-style.css');
@@ -571,7 +584,10 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
           return e.message;
         }
       });
-      expect(result).toContain('Failed to fetch');
+      if (CHROME)
+        expect(result).toContain('Failed to fetch');
+      else
+        expect(result).toContain('NetworkError');
     });
     it('should work with equal requests', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
@@ -582,6 +598,10 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       let spinner = false;
       // Cancel 2nd request.
       page.on('request', request => {
+        if (utils.isFavicon(request)) {
+          request.continue();
+          return;
+        }
         spinner ? request.abort() : request.continue();
         spinner = !spinner;
       });
@@ -592,7 +612,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       ]));
       expect(results).toEqual(['11', 'FAILED', '22']);
     });
-    it('should navigate to dataURL and fire dataURL requests', async({page, server}) => {
+    it_fails_ffox('should navigate to dataURL and fire dataURL requests', async({page, server}) => {
       await page.setRequestInterception(true);
       const requests = [];
       page.on('request', request => {
@@ -605,7 +625,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(requests.length).toBe(1);
       expect(requests[0].url()).toBe(dataURL);
     });
-    it('should navigate to URL with hash and and fire requests without hash', async({page, server}) => {
+    it_fails_ffox('should navigate to URL with hash and and fire requests without hash', async({page, server}) => {
       await page.setRequestInterception(true);
       const requests = [];
       page.on('request', request => {
@@ -633,7 +653,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       const response = await page.goto(server.PREFIX + '/malformed?rnd=%911');
       expect(response.status()).toBe(200);
     });
-    it('should work with encoded server - 2', async({page, server}) => {
+    it_fails_ffox('should work with encoded server - 2', async({page, server}) => {
       // The requestWillBeSent will report URL as-is, whereas interception will
       // report encoded URL for stylesheet. @see crbug.com/759388
       await page.setRequestInterception(true);
@@ -647,7 +667,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(requests.length).toBe(2);
       expect(requests[1].response().status()).toBe(404);
     });
-    it('should not throw "Invalid Interception Id" if the request was cancelled', async({page, server}) => {
+    it_fails_ffox('should not throw "Invalid Interception Id" if the request was cancelled', async({page, server}) => {
       await page.setContent('<iframe></iframe>');
       await page.setRequestInterception(true);
       let request = null;
@@ -673,7 +693,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       await page.goto(server.EMPTY_PAGE);
       expect(error.message).toContain('Request Interception is not enabled');
     });
-    it('should work with file URLs', async({page, server}) => {
+    it_fails_ffox('should work with file URLs', async({page, server}) => {
       await page.setRequestInterception(true);
       const urls = new Set();
       page.on('request', request => {
