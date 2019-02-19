@@ -15,49 +15,20 @@ const {NavigationWatchdog, NextNavigationWatchdog} = require('./NavigationWatchd
 
 const writeFileAsync = util.promisify(fs.writeFile);
 
-/**
- * @internal
- */
-class PageSession extends EventEmitter {
-  constructor(connection, targetId) {
-    super();
-    this._connection = connection;
-    this._targetId = targetId;
-    const wrapperSymbol = Symbol('listenerWrapper');
-
-    function wrapperListener(listener, params) {
-      if (params.targetId === targetId)
-        listener.call(null, params);
-    }
-
-    this.on('removeListener', (eventName, listener) => {
-      this._connection.removeListener(eventName, listener[wrapperSymbol]);
-    });
-    this.on('newListener', (eventName, listener) => {
-      if (!listener[wrapperSymbol])
-        listener[wrapperSymbol] = wrapperListener.bind(null, listener);
-      this._connection.on(eventName, listener[wrapperSymbol]);
-    });
-  }
-
-  async send(method, params = {}) {
-    params = Object.assign({}, params, {targetId: this._targetId});
-    return await this._connection.send(method, params);
-  }
-}
-
 class Page extends EventEmitter {
   /**
    *
-   * @param {!Puppeteer.Connection} connection
+   * @param {!Puppeteer.JugglerSession} connection
    * @param {!Puppeteer.Target} target
-   * @param {string} targetId
    * @param {?Puppeteer.Viewport} defaultViewport
    */
-  static async create(connection, target, targetId, defaultViewport) {
-    const session = new PageSession(connection, targetId);
+  static async create(session, target, defaultViewport) {
     const page = new Page(session, target);
-    await session.send('Page.enable');
+    await Promise.all([
+      session.send('Page.enable'),
+      session.send('Network.enable'),
+    ]);
+
     if (defaultViewport)
       await page.setViewport(defaultViewport);
     return page;
@@ -74,7 +45,7 @@ class Page extends EventEmitter {
     this._target = target;
     this._keyboard = new Keyboard(session);
     this._mouse = new Mouse(session, this._keyboard);
-    this._isClosed = false;
+    this._closed = false;
     this._networkManager = new NetworkManager(session);
     this._frameManager = new FrameManager(session, this, this._networkManager, this._timeoutSettings);
     this._networkManager.setFrameManager(this._frameManager);
@@ -82,7 +53,6 @@ class Page extends EventEmitter {
       helper.addEventListener(this._session, 'Page.uncaughtError', this._onUncaughtError.bind(this)),
       helper.addEventListener(this._session, 'Page.console', this._onConsole.bind(this)),
       helper.addEventListener(this._session, 'Page.dialogOpened', this._onDialogOpened.bind(this)),
-      helper.addEventListener(this._session, 'Browser.targetDestroyed', this._onClosed.bind(this)),
       helper.addEventListener(this._frameManager, Events.FrameManager.Load, () => this.emit(Events.Page.Load)),
       helper.addEventListener(this._frameManager, Events.FrameManager.DOMContentLoaded, () => this.emit(Events.Page.DOMContentLoaded)),
       helper.addEventListener(this._frameManager, Events.FrameManager.FrameAttached, frame => this.emit(Events.Page.FrameAttached, frame)),
@@ -94,6 +64,13 @@ class Page extends EventEmitter {
       helper.addEventListener(this._networkManager, Events.NetworkManager.RequestFailed, request => this.emit(Events.Page.RequestFailed, request)),
     ];
     this._viewport = null;
+    this._target._isClosedPromise.then(() => {
+      this._closed = true;
+      this._frameManager.dispose();
+      this._networkManager.dispose();
+      helper.removeEventListeners(this._eventListeners);
+      this.emit(Events.Page.Close);
+    });
   }
 
   /**
@@ -553,7 +530,9 @@ class Page extends EventEmitter {
     const {
       runBeforeUnload = false,
     } = options;
-    await this._session.send('Browser.closePage', { runBeforeUnload });
+    await this._session.send('Page.close', { runBeforeUnload });
+    if (!runBeforeUnload)
+      await this._target._isClosedPromise;
   }
 
   async content() {
@@ -568,11 +547,6 @@ class Page extends EventEmitter {
   }
 
   _onClosed() {
-    this._isClosed = true;
-    this._frameManager.dispose();
-    this._networkManager.dispose();
-    helper.removeEventListeners(this._eventListeners);
-    this.emit(Events.Page.Close);
   }
 
   _onConsole({type, args, frameId, location}) {
@@ -584,7 +558,7 @@ class Page extends EventEmitter {
    * @return {boolean}
    */
   isClosed() {
-    return this._isClosed;
+    return this._closed;
   }
 }
 

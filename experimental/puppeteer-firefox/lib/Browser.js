@@ -11,9 +11,9 @@ class Browser extends EventEmitter {
    * @param {function():void} closeCallback
    */
   static async create(connection, defaultViewport, process, closeCallback) {
-    const {browserContextIds} = await connection.send('Browser.getBrowserContexts');
+    const {browserContextIds} = await connection.send('Target.getBrowserContexts');
     const browser = new Browser(connection, browserContextIds, defaultViewport, process, closeCallback);
-    await connection.send('Browser.enable');
+    await connection.send('Target.enable');
     return browser;
   }
 
@@ -43,9 +43,9 @@ class Browser extends EventEmitter {
     this._connection.on(Events.Connection.Disconnected, () => this.emit(Events.Browser.Disconnected));
 
     this._eventListeners = [
-      helper.addEventListener(this._connection, 'Browser.targetCreated', this._onTargetCreated.bind(this)),
-      helper.addEventListener(this._connection, 'Browser.targetDestroyed', this._onTargetDestroyed.bind(this)),
-      helper.addEventListener(this._connection, 'Browser.targetInfoChanged', this._onTargetInfoChanged.bind(this)),
+      helper.addEventListener(this._connection, 'Target.targetCreated', this._onTargetCreated.bind(this)),
+      helper.addEventListener(this._connection, 'Target.targetDestroyed', this._onTargetDestroyed.bind(this)),
+      helper.addEventListener(this._connection, 'Target.targetInfoChanged', this._onTargetInfoChanged.bind(this)),
     ];
   }
 
@@ -61,7 +61,7 @@ class Browser extends EventEmitter {
    * @return {!BrowserContext}
    */
   async createIncognitoBrowserContext() {
-    const {browserContextId} = await this._connection.send('Browser.createBrowserContext');
+    const {browserContextId} = await this._connection.send('Target.createBrowserContext');
     const context = new BrowserContext(this._connection, this, browserContextId);
     this._contexts.set(browserContextId, context);
     return context;
@@ -79,7 +79,7 @@ class Browser extends EventEmitter {
   }
 
   async _disposeContext(browserContextId) {
-    await this._connection.send('Browser.removeBrowserContext', {browserContextId});
+    await this._connection.send('Target.removeBrowserContext', {browserContextId});
     this._contexts.delete(browserContextId);
   }
 
@@ -152,7 +152,7 @@ class Browser extends EventEmitter {
    * @return {Promise<Page>}
    */
   async _createPageInContext(browserContextId) {
-    const {targetId} = await this._connection.send('Browser.newPage', {
+    const {targetId} = await this._connection.send('Target.newPage', {
       browserContextId: browserContextId || undefined
     });
     const target = this._targets.get(targetId);
@@ -190,6 +190,7 @@ class Browser extends EventEmitter {
   _onTargetDestroyed({targetId}) {
     const target = this._targets.get(targetId);
     this._targets.delete(targetId);
+    target._closedCallback();
     this.emit(Events.Browser.TargetDestroyed, target);
     target.browserContext().emit(Events.BrowserContext.TargetDestroyed, target);
   }
@@ -228,6 +229,7 @@ class Target {
     this._pagePromise = null;
     this._url = url;
     this._openerId = openerId;
+    this._isClosedPromise = new Promise(fulfill => this._closedCallback = fulfill);
   }
 
   /**
@@ -256,8 +258,10 @@ class Target {
   }
 
   async page() {
-    if (this._type === 'page' && !this._pagePromise)
-      this._pagePromise = Page.create(this._connection, this, this._targetId, this._browser._defaultViewport);
+    if (this._type === 'page' && !this._pagePromise) {
+      const session = await this._connection.createSession(this._targetId);
+      this._pagePromise = Page.create(session, this, this._browser._defaultViewport);
+    }
     return this._pagePromise;
   }
 
