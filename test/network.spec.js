@@ -429,7 +429,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       await page.setRequestInterception(false);
       await page.goto(server.EMPTY_PAGE);
     });
-    it_fails_ffox('should show custom HTTP headers', async({page, server}) => {
+    it('should show custom HTTP headers', async({page, server}) => {
       await page.setExtraHTTPHeaders({
         foo: 'bar'
       });
@@ -441,7 +441,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.ok()).toBe(true);
     });
-    it_fails_ffox('should works with customizing referer headers', async({page, server}) => {
+    it('should works with customizing referer headers', async({page, server}) => {
       await page.setExtraHTTPHeaders({ 'referer': server.EMPTY_PAGE });
       await page.setRequestInterception(true);
       page.on('request', request => {
@@ -477,7 +477,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(failedRequest).toBeTruthy();
       expect(failedRequest.failure().errorText).toBe('net::ERR_INTERNET_DISCONNECTED');
     });
-    it_fails_ffox('should send referer', async({page, server}) => {
+    it('should send referer', async({page, server}) => {
       await page.setExtraHTTPHeaders({
         referer: 'http://google.com/'
       });
@@ -744,7 +744,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
     });
   });
 
-  describe_fails_ffox('Page.setExtraHTTPHeaders', function() {
+  describe('Page.setExtraHTTPHeaders', function() {
     it('should work', async({page, server}) => {
       await page.setExtraHTTPHeaders({
         foo: 'bar'
