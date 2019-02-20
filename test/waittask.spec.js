@@ -60,16 +60,17 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
       await page.waitFor(timeout);
       expect(Date.now() - startTime).not.toBeLessThan(timeout / 2);
     });
-    it_fails_ffox('should work with multiline body', async({page, server}) => {
+    it('should work with multiline body', async({page, server}) => {
       const result = await page.waitForFunction(`
         (() => true)()
       `);
       expect(await result.jsonValue()).toBe(true);
     });
     it('should wait for predicate', async({page, server}) => {
-      const watchdog = page.waitFor(() => window.innerWidth < 100);
-      page.setViewport({width: 10, height: 10});
-      await watchdog;
+      await Promise.all([
+        page.waitFor(() => window.innerWidth < 100),
+        page.setViewport({width: 10, height: 10}),
+      ]);
     });
     it('should throw when unknown type', async({page, server}) => {
       let error = null;
@@ -346,7 +347,7 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
       expect(await waitForSelector).toBe(true);
       expect(divRemoved).toBe(true);
     });
-    it_fails_ffox('should return null if waiting to hide non-existing element', async({page, server}) => {
+    it('should return null if waiting to hide non-existing element', async({page, server}) => {
       const handle = await page.waitForSelector('non-existing', { hidden: true });
       expect(handle).toBe(null);
     });

@@ -364,7 +364,7 @@ class Frame {
    * @param {!{timeout?: number, visible?: boolean, hidden?: boolean}=} options
    * @return {!Promise<!ElementHandle>}
    */
-  _waitForSelectorOrXPath(selectorOrXPath, isXPath, options = {}) {
+  async _waitForSelectorOrXPath(selectorOrXPath, isXPath, options = {}) {
     const {
       visible: waitForVisible = false,
       hidden: waitForHidden = false,
@@ -372,7 +372,13 @@ class Frame {
     } = options;
     const polling = waitForVisible || waitForHidden ? 'raf' : 'mutation';
     const title = `${isXPath ? 'XPath' : 'selector'} "${selectorOrXPath}"${waitForHidden ? ' to be hidden' : ''}`;
-    return new WaitTask(this, predicate, title, polling, timeout, selectorOrXPath, isXPath, waitForVisible, waitForHidden).promise;
+    const waitTask = new WaitTask(this, predicate, title, polling, timeout, selectorOrXPath, isXPath, waitForVisible, waitForHidden);
+    const handle = await waitTask.promise;
+    if (!handle.asElement()) {
+      await handle.dispose();
+      return null;
+    }
+    return handle.asElement();
 
     /**
      * @param {string} selectorOrXPath
@@ -668,7 +674,7 @@ class WaitTask {
     this._frame = frame;
     this._polling = polling;
     this._timeout = timeout;
-    this._predicateBody = helper.isString(predicateBody) ? 'return ' + predicateBody : 'return (' + predicateBody + ')(...args)';
+    this._predicateBody = helper.isString(predicateBody) ? 'return (' + predicateBody + ')' : 'return (' + predicateBody + ')(...args)';
     this._args = args;
     this._runCount = 0;
     frame._waitTasks.add(this);
