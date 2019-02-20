@@ -238,7 +238,6 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       });
       it_fails_ffox('should have default url when launching browser', async function() {
         const browser = await puppeteer.launch(defaultBrowserOptions);
-        await new Promise(x => setTimeout(x, 1000));
         const pages = (await browser.pages()).map(page => page.url());
         expect(pages).toEqual(['about:blank']);
         await browser.close();
