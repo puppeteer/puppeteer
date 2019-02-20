@@ -121,7 +121,7 @@ class Launcher {
           // On linux Juggler ships the libstdc++ it was linked against.
           env: os.platform() === 'linux' ? {
             ...env,
-            LD_LIBRARY_PATH: `${path.dirname(executablePath)}:${process.env.LD_LIBRARY_PATH}`,
+            LD_LIBRARY_PATH: `${path.dirname(firefoxExecutable)}:${process.env.LD_LIBRARY_PATH}`,
           } : env,
         }
     );
