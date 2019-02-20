@@ -32,6 +32,11 @@ const removeFolderAsync = util.promisify(removeFolder);
 
 const FIREFOX_PROFILE_PATH = path.join(os.tmpdir(), 'puppeteer_firefox_profile-');
 
+const DEFAULT_ARGS = [
+  '-no-remote',
+  '-foreground',
+];
+
 /**
  * @internal
  */
@@ -41,15 +46,34 @@ class Launcher {
     this._preferredRevision = preferredRevision;
   }
 
+  defaultArgs(options = {}) {
+    const {
+      headless = true,
+      args = [],
+      userDataDir = null,
+    } = options;
+    const firefoxArguments = [...DEFAULT_ARGS];
+    if (userDataDir)
+      firefoxArguments.push('-profile', userDataDir);
+    if (headless)
+      firefoxArguments.push('-headless');
+    firefoxArguments.push(...args);
+    if (args.every(arg => arg.startsWith('-')))
+      firefoxArguments.push('about:blank');
+    return firefoxArguments;
+  }
+
   /**
    * @param {Object} options
    * @return {!Promise<!Browser>}
    */
   async launch(options = {}) {
     const {
+      ignoreDefaultArgs = false,
       args = [],
       dumpio = false,
-      executablePath = this.executablePath(),
+      executablePath = null,
+      env = process.env,
       handleSIGHUP = true,
       handleSIGINT = true,
       handleSIGTERM = true,
@@ -57,25 +81,36 @@ class Launcher {
       headless = true,
       defaultViewport = {width: 800, height: 600},
       slowMo = 0,
+      timeout = 30000,
     } = options;
 
-    const firefoxArguments = args.slice();
-    firefoxArguments.push('-no-remote');
-    firefoxArguments.push('-juggler', '0');
-    firefoxArguments.push('-foreground');
-    if (headless)
-      firefoxArguments.push('-headless');
+    const firefoxArguments = [];
+    if (!ignoreDefaultArgs)
+      firefoxArguments.push(...this.defaultArgs(options));
+    else if (Array.isArray(ignoreDefaultArgs))
+      firefoxArguments.push(...this.defaultArgs(options).filter(arg => !ignoreDefaultArgs.includes(arg)));
+    else
+      firefoxArguments.push(...args);
+
+    if (!firefoxArguments.includes('-juggler'))
+      firefoxArguments.push('-juggler', '0');
+
     let temporaryProfileDir = null;
-    if (!firefoxArguments.some(arg => arg.startsWith('-profile') || arg.startsWith('--profile'))) {
+    if (!firefoxArguments.includes('-profile') && !firefoxArguments.includes('--profile')) {
       temporaryProfileDir = await mkdtempAsync(FIREFOX_PROFILE_PATH);
       firefoxArguments.push(`-profile`, temporaryProfileDir);
     }
-    if (firefoxArguments.every(arg => arg.startsWith('--') || arg.startsWith('-')))
-      firefoxArguments.push('about:blank');
 
+    let firefoxExecutable = executablePath;
+    if (!firefoxExecutable) {
+      const {missingText, executablePath} = this._resolveExecutablePath();
+      if (missingText)
+        throw new Error(missingText);
+      firefoxExecutable = executablePath;
+    }
     const stdio = ['pipe', 'pipe', 'pipe'];
     const firefoxProcess = childProcess.spawn(
-        executablePath,
+        firefoxExecutable,
         firefoxArguments,
         {
           // On non-windows platforms, `detached: false` makes child process a leader of a new
@@ -85,9 +120,9 @@ class Launcher {
           stdio,
           // On linux Juggler ships the libstdc++ it was linked against.
           env: os.platform() === 'linux' ? {
-            ...process.env,
-            LD_LIBRARY_PATH: `${path.dirname(executablePath)}:${process.env.LD_LIBRARY_PATH}`,
-          } : process.env,
+            ...env,
+            LD_LIBRARY_PATH: `${path.dirname(firefoxExecutable)}:${process.env.LD_LIBRARY_PATH}`,
+          } : env,
         }
     );
 
@@ -115,16 +150,16 @@ class Launcher {
     if (handleSIGINT)
       listeners.push(helper.addEventListener(process, 'SIGINT', () => { killFirefox(); process.exit(130); }));
     if (handleSIGTERM)
-      listeners.push(helper.addEventListener(process, 'SIGTERM', killFirefox));
+      listeners.push(helper.addEventListener(process, 'SIGTERM', gracefullyCloseFirefox));
     if (handleSIGHUP)
-      listeners.push(helper.addEventListener(process, 'SIGHUP', killFirefox));
+      listeners.push(helper.addEventListener(process, 'SIGHUP', gracefullyCloseFirefox));
     /** @type {?Connection} */
     let connection = null;
     try {
-      const url = await waitForWSEndpoint(firefoxProcess, 30000);
+      const url = await waitForWSEndpoint(firefoxProcess, timeout);
       const transport = await WebSocketTransport.create(url);
       connection = new Connection(url, transport, slowMo);
-      const browser = await Browser.create(connection, defaultViewport, firefoxProcess, killFirefox);
+      const browser = await Browser.create(connection, defaultViewport, firefoxProcess, gracefullyCloseFirefox);
       if (ignoreHTTPSErrors)
         await connection.send('Browser.setIgnoreHTTPSErrors', {enabled: true});
       await browser.waitForTarget(t => t.type() === 'page');
@@ -132,6 +167,19 @@ class Launcher {
     } catch (e) {
       killFirefox();
       throw e;
+    }
+
+    function gracefullyCloseFirefox() {
+      helper.removeEventListeners(listeners);
+      if (temporaryProfileDir) {
+        killFirefox();
+      } else if (connection) {
+        connection.send('Browser.close').catch(error => {
+          debugError(error);
+          killFirefox();
+        });
+      }
+      return waitForFirefoxToClose;
     }
 
     // This method has to be sync to be used as 'exit' event handler.
@@ -179,9 +227,14 @@ class Launcher {
    * @return {string}
    */
   executablePath() {
+    return this._resolveExecutablePath().executablePath;
+  }
+
+  _resolveExecutablePath() {
     const browserFetcher = new BrowserFetcher(this._projectRoot, { product: 'firefox' });
     const revisionInfo = browserFetcher.revisionInfo(this._preferredRevision);
-    return revisionInfo.executablePath;
+    const missingText = !revisionInfo.local ? `Firefox revision is not downloaded. Run "npm install" or "yarn install"` : null;
+    return {executablePath: revisionInfo.executablePath, missingText};
   }
 }
 

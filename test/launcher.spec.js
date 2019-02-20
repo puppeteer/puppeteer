@@ -24,7 +24,7 @@ const statAsync = helper.promisify(fs.stat);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const utils = require('./utils');
 
-module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer}) {
+module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer, CHROME}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -59,7 +59,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await rmAsync(downloadsFolder);
       });
     });
-    describe_fails_ffox('Browser.disconnect', function() {
+    describe('Browser.disconnect', function() {
       it('should reject navigation when browser closes', async({server}) => {
         server.setRoute('/one-style.css', () => {});
         const browser = await puppeteer.launch(defaultBrowserOptions);
@@ -80,7 +80,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         const watchdog = page.waitForSelector('div', {timeout: 60000}).catch(e => e);
         await remote.disconnect();
         const error = await watchdog;
-        expect(error.message).toBe('Protocol error (Runtime.callFunctionOn): Session closed. Most likely the page has been closed.');
+        expect(error.message).toContain('Protocol error');
         await browser.close();
       });
     });
@@ -94,13 +94,13 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await neverResolves;
         expect(error.message).toContain('Protocol error');
       });
-      it_fails_ffox('should reject if executable path is invalid', async({server}) => {
+      it('should reject if executable path is invalid', async({server}) => {
         let waitError = null;
         const options = Object.assign({}, defaultBrowserOptions, {executablePath: 'random-invalid-path'});
         await puppeteer.launch(options).catch(e => waitError = e);
-        expect(waitError.message.startsWith('Failed to launch chrome! spawn random-invalid-path ENOENT')).toBe(true);
+        expect(waitError.message).toContain('Failed to launch');
       });
-      it_fails_ffox('userDataDir option', async({server}) => {
+      it('userDataDir option', async({server}) => {
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
@@ -112,10 +112,21 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(e => {});
       });
-      it_fails_ffox('userDataDir argument', async({server}) => {
+      it('userDataDir argument', async({server}) => {
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({}, defaultBrowserOptions);
-        options.args = [`--user-data-dir=${userDataDir}`].concat(options.args || []);
+        if (CHROME) {
+          options.args = [
+            ...(defaultBrowserOptions.args || []),
+            `--user-data-dir=${userDataDir}`
+          ];
+        } else {
+          options.args = [
+            ...(defaultBrowserOptions.args || []),
+            `-profile`,
+            userDataDir,
+          ];
+        }
         const browser = await puppeteer.launch(options);
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
         await browser.close();
@@ -123,7 +134,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(e => {});
       });
-      it_fails_ffox('userDataDir option should restore state', async({server}) => {
+      it('userDataDir option should restore state', async({server}) => {
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
@@ -140,7 +151,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(e => {});
       });
-      it_fails_ffox('userDataDir option should restore cookies', async({server}) => {
+      it('userDataDir option should restore cookies', async({server}) => {
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
@@ -157,11 +168,18 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(e => {});
       });
-      it_fails_ffox('should return the default chrome arguments', async() => {
-        expect(puppeteer.defaultArgs()).toContain('--no-first-run');
-        expect(puppeteer.defaultArgs()).toContain('--headless');
-        expect(puppeteer.defaultArgs({headless: false})).not.toContain('--headless');
-        expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain('--user-data-dir=foo');
+      it('should return the default arguments', async() => {
+        if (CHROME) {
+          expect(puppeteer.defaultArgs()).toContain('--no-first-run');
+          expect(puppeteer.defaultArgs()).toContain('--headless');
+          expect(puppeteer.defaultArgs({headless: false})).not.toContain('--headless');
+          expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain('--user-data-dir=foo');
+        } else {
+          expect(puppeteer.defaultArgs()).toContain('-headless');
+          expect(puppeteer.defaultArgs({headless: false})).not.toContain('-headless');
+          expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain('-profile');
+          expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain('foo');
+        }
       });
       it('should dump browser process stderr', async({server}) => {
         const dumpioTextToLog = 'MAGIC_DUMPIO_TEST';
@@ -196,34 +214,6 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
           process.kill(res.pid);
         await Promise.all(promises);
       });
-      it_fails_ffox('should support the pipe option', async() => {
-        const options = Object.assign({pipe: true}, defaultBrowserOptions);
-        const browser = await puppeteer.launch(options);
-        expect((await browser.pages()).length).toBe(1);
-        expect(browser.wsEndpoint()).toBe('');
-        const page = await browser.newPage();
-        expect(await page.evaluate('11 * 11')).toBe(121);
-        await page.close();
-        await browser.close();
-      });
-      it_fails_ffox('should support the pipe argument', async() => {
-        const options = Object.assign({}, defaultBrowserOptions);
-        options.args = ['--remote-debugging-pipe'].concat(options.args || []);
-        const browser = await puppeteer.launch(options);
-        expect(browser.wsEndpoint()).toBe('');
-        const page = await browser.newPage();
-        expect(await page.evaluate('11 * 11')).toBe(121);
-        await page.close();
-        await browser.close();
-      });
-      it_fails_ffox('should fire "disconnected" when closing with pipe', async() => {
-        const options = Object.assign({pipe: true}, defaultBrowserOptions);
-        const browser = await puppeteer.launch(options);
-        const disconnectedEventPromise = new Promise(resolve => browser.once('disconnected', resolve));
-        // Emulate user exiting browser.
-        browser.process().kill();
-        await disconnectedEventPromise;
-      });
       it('should work with no default arguments', async() => {
         const options = Object.assign({}, defaultBrowserOptions);
         options.ignoreDefaultArgs = true;
@@ -233,7 +223,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await page.close();
         await browser.close();
       });
-      it_fails_ffox('should filter out ignored default arguments', async() => {
+      it('should filter out ignored default arguments', async() => {
         // Make sure we launch with `--enable-automation` by default.
         const defaultArgs = puppeteer.defaultArgs();
         const browser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
@@ -253,15 +243,14 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await browser.close();
       });
       it_fails_ffox('should have custom url when launching browser', async function({server}) {
-        const customUrl = server.PREFIX + '/empty.html';
         const options = Object.assign({}, defaultBrowserOptions);
-        options.args = [customUrl].concat(options.args || []);
+        options.args = [server.EMPTY_PAGE].concat(options.args || []);
         const browser = await puppeteer.launch(options);
         const pages = await browser.pages();
         expect(pages.length).toBe(1);
-        if (pages[0].url() !== customUrl)
+        if (pages[0].url() !== server.EMPTY_PAGE)
           await pages[0].waitForNavigation();
-        expect(pages[0].url()).toBe(customUrl);
+        expect(pages[0].url()).toBe(server.EMPTY_PAGE);
         await browser.close();
       });
       it('should set the default viewport', async() => {
@@ -298,6 +287,85 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         });
         expect(screenshot).toBeInstanceOf(Buffer);
         await browser.close();
+      });
+    });
+    // "browserURL" is a chrome-only option.
+    (CHROME ? describe : xdescribe)('|browserURL| option', function() {
+      it('should be able to connect using browserUrl, with and without trailing slash', async({server}) => {
+        const originalBrowser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
+          args: ['--remote-debugging-port=21222']
+        }));
+        const browserURL = 'http://127.0.0.1:21222';
+
+        const browser1 = await puppeteer.connect({browserURL});
+        const page1 = await browser1.newPage();
+        expect(await page1.evaluate(() => 7 * 8)).toBe(56);
+        browser1.disconnect();
+
+        const browser2 = await puppeteer.connect({browserURL: browserURL + '/'});
+        const page2 = await browser2.newPage();
+        expect(await page2.evaluate(() => 8 * 7)).toBe(56);
+        browser2.disconnect();
+        originalBrowser.close();
+      });
+      it('should throw when using both browserWSEndpoint and browserURL', async({server}) => {
+        const originalBrowser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
+          args: ['--remote-debugging-port=21222']
+        }));
+        const browserURL = 'http://127.0.0.1:21222';
+
+        let error = null;
+        await puppeteer.connect({browserURL, browserWSEndpoint: originalBrowser.wsEndpoint()}).catch(e => error = e);
+        expect(error.message).toContain('Exactly one of browserWSEndpoint, browserURL or transport');
+
+        originalBrowser.close();
+      });
+      it('should throw when trying to connect to non-existing browser', async({server}) => {
+        const originalBrowser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
+          args: ['--remote-debugging-port=21222']
+        }));
+        const browserURL = 'http://127.0.0.1:32333';
+
+        let error = null;
+        await puppeteer.connect({browserURL}).catch(e => error = e);
+        if (CHROME)
+          expect(error.message).toContain('Failed to fetch browser webSocket url from');
+        else
+          expect(error.message).toContain('Invalid URL');
+
+        originalBrowser.close();
+      });
+    });
+
+    // "pipe" is a chrome-only feature.
+    (CHROME ? describe : xdescribe)('|pipe| option', function() {
+      it('should support the pipe option', async() => {
+        const options = Object.assign({pipe: true}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
+        expect((await browser.pages()).length).toBe(1);
+        expect(browser.wsEndpoint()).toBe('');
+        const page = await browser.newPage();
+        expect(await page.evaluate('11 * 11')).toBe(121);
+        await page.close();
+        await browser.close();
+      });
+      it('should support the pipe argument', async() => {
+        const options = Object.assign({}, defaultBrowserOptions);
+        options.args = ['--remote-debugging-pipe'].concat(options.args || []);
+        const browser = await puppeteer.launch(options);
+        expect(browser.wsEndpoint()).toBe('');
+        const page = await browser.newPage();
+        expect(await page.evaluate('11 * 11')).toBe(121);
+        await page.close();
+        await browser.close();
+      });
+      it('should fire "disconnected" when closing with pipe', async() => {
+        const options = Object.assign({pipe: true}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
+        const disconnectedEventPromise = new Promise(resolve => browser.once('disconnected', resolve));
+        // Emulate user exiting browser.
+        browser.process().kill();
+        await disconnectedEventPromise;
       });
     });
     describe('Puppeteer.connect', function() {
@@ -358,47 +426,6 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         ]);
         expect(await restoredPage.evaluate(() => 7 * 8)).toBe(56);
         await browser.close();
-      });
-      it_fails_ffox('should be able to connect using browserUrl, with and without trailing slash', async({server}) => {
-        const originalBrowser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
-          args: ['--remote-debugging-port=21222']
-        }));
-        const browserURL = 'http://127.0.0.1:21222';
-
-        const browser1 = await puppeteer.connect({browserURL});
-        const page1 = await browser1.newPage();
-        expect(await page1.evaluate(() => 7 * 8)).toBe(56);
-        browser1.disconnect();
-
-        const browser2 = await puppeteer.connect({browserURL: browserURL + '/'});
-        const page2 = await browser2.newPage();
-        expect(await page2.evaluate(() => 8 * 7)).toBe(56);
-        browser2.disconnect();
-        originalBrowser.close();
-      });
-      it_fails_ffox('should throw when using both browserWSEndpoint and browserURL', async({server}) => {
-        const originalBrowser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
-          args: ['--remote-debugging-port=21222']
-        }));
-        const browserURL = 'http://127.0.0.1:21222';
-
-        let error = null;
-        await puppeteer.connect({browserURL, browserWSEndpoint: originalBrowser.wsEndpoint()}).catch(e => error = e);
-        expect(error.message).toContain('Exactly one of browserWSEndpoint, browserURL or transport');
-
-        originalBrowser.close();
-      });
-      it_fails_ffox('should throw when trying to connect to non-existing browser', async({server}) => {
-        const originalBrowser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
-          args: ['--remote-debugging-port=21222']
-        }));
-        const browserURL = 'http://127.0.0.1:32333';
-
-        let error = null;
-        await puppeteer.connect({browserURL}).catch(e => error = e);
-        expect(error.message).toContain('Failed to fetch browser webSocket url from');
-
-        originalBrowser.close();
       });
     });
     describe('Puppeteer.executablePath', function() {

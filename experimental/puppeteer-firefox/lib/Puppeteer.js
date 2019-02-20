@@ -26,6 +26,10 @@ class Puppeteer {
   executablePath() {
     return this._launcher.executablePath();
   }
+
+  defaultArgs(options) {
+    return this._launcher.defaultArgs(options);
+  }
 }
 
 module.exports = {Puppeteer};

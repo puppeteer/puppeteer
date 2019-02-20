@@ -62,6 +62,7 @@ class NavigationWatchdog {
 
     const check = this._checkNavigationComplete.bind(this);
     this._eventListeners = [
+      helper.addEventListener(session, Events.JugglerSession.Disconnected, () => this._resolveCallback(new Error('Navigation failed because browser has disconnected!'))),
       helper.addEventListener(session, 'Page.eventFired', check),
       helper.addEventListener(session, 'Page.frameAttached', check),
       helper.addEventListener(session, 'Page.frameDetached', check),
