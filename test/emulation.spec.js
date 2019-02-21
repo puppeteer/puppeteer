@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-const utils = require('./utils');
-
 module.exports.addTests = function({testRunner, expect, product, DeviceDescriptors}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
