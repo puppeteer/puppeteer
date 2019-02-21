@@ -59,7 +59,8 @@
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.3.3",
     "text-diff": "^1.0.1",
-    "typescript": "3.2.2"
+    "typescript": "3.2.2",
+    "puppeteer": "."
   },
   "browser": {
     "./lib/BrowserFetcher.js": false,

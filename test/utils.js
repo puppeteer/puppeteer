@@ -71,13 +71,6 @@ const utils = module.exports = {
   },
 
   /**
-   * @return {*}
-   */
-  requireRoot: function(name) {
-    return require(path.join(PROJECT_ROOT, name));
-  },
-
-  /**
    * @param {!Page} page
    * @param {string} frameId
    * @param {string} url

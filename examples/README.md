@@ -3,7 +3,7 @@
 Assuming you have a checkout of the Puppeteer repo and have run npm i (or yarn) to install the dependencies, the examples can be run from the root folder like so:
 
 ```sh
-NODE_PATH=../ node examples/search.js
+node examples/search.js
 ```
 
 ## Larger examples
