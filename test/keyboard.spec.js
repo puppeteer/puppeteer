@@ -55,16 +55,22 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await page.keyboard.press('Backspace');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('Hello World!');
     });
-    it_fails_ffox('should send a character with ElementHandle.press', async({page, server}) => {
+    it('should send a character with ElementHandle.press', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       const textarea = await page.$('textarea');
-      await textarea.press('a', {text: 'f'});
-      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('f');
+      await textarea.press('a');
+      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('a');
 
       await page.evaluate(() => window.addEventListener('keydown', e => e.preventDefault(), true));
 
-      await textarea.press('a', {text: 'y'});
-      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('f');
+      await textarea.press('b');
+      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('a');
+    });
+    it_fails_ffox('ElementHandle.press should support |text| option', async({page, server}) => {
+      await page.goto(server.PREFIX + '/input/textarea.html');
+      const textarea = await page.$('textarea');
+      await textarea.press('a', {text: 'ё'});
+      expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('ё');
     });
     it('should send a character with sendCharacter', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
