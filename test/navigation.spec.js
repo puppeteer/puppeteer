@@ -27,6 +27,14 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
       await page.goto(server.EMPTY_PAGE);
       expect(page.url()).toBe(server.EMPTY_PAGE);
     });
+    it('should work with anchor navigation', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      expect(page.url()).toBe(server.EMPTY_PAGE);
+      await page.goto(server.EMPTY_PAGE + '#foo');
+      expect(page.url()).toBe(server.EMPTY_PAGE + '#foo');
+      await page.goto(server.EMPTY_PAGE + '#bar');
+      expect(page.url()).toBe(server.EMPTY_PAGE + '#bar');
+    });
     it('should work with redirects', async({page, server}) => {
       server.setRedirect('/redirect/1.html', '/redirect/2.html');
       server.setRedirect('/redirect/2.html', '/empty.html');

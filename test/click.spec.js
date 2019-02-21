@@ -89,11 +89,8 @@ module.exports.addTests = function({testRunner, expect}) {
 
     it('should click wrapped links', async({page, server}) => {
       await page.goto(server.PREFIX + '/wrappedlink.html');
-      await Promise.all([
-        page.click('a'),
-        page.waitForNavigation()
-      ]);
-      expect(page.url()).toBe(server.PREFIX + '/wrappedlink.html#clicked');
+      await page.click('a');
+      expect(await page.evaluate(() => window.__clicked)).toBe(true);
     });
 
     it('should click on checkbox input and toggle', async({page, server}) => {
