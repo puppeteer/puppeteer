@@ -538,7 +538,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe_fails_ffox('Page.exposeFunction', function() {
+  describe('Page.exposeFunction', function() {
     it('should work', async({page, server}) => {
       await page.exposeFunction('compute', function(a, b) {
         return a * b;
