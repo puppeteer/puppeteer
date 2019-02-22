@@ -99,7 +99,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
     });
   });
 
-  describe_fails_ffox('Page.emulateMedia', function() {
+  describe('Page.emulateMedia', function() {
     it('should work', async({page, server}) => {
       expect(await page.evaluate(() => window.matchMedia('screen').matches)).toBe(true);
       expect(await page.evaluate(() => window.matchMedia('print').matches)).toBe(false);

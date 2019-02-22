@@ -16,7 +16,7 @@
 
 const utils = require('./utils');
 
-module.exports.addTests = function({testRunner, expect}) {
+module.exports.addTests = function({testRunner, expect, CHROME}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -29,13 +29,16 @@ module.exports.addTests = function({testRunner, expect}) {
       const box = await elementHandle.boundingBox();
       expect(box).toEqual({ x: 100, y: 50, width: 50, height: 50 });
     });
-    it_fails_ffox('should handle nested frames', async({page, server}) => {
+    it('should handle nested frames', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
       const nestedFrame = page.frames()[1].childFrames()[1];
       const elementHandle = await nestedFrame.$('div');
       const box = await elementHandle.boundingBox();
-      expect(box).toEqual({ x: 28, y: 260, width: 264, height: 18 });
+      if (CHROME)
+        expect(box).toEqual({ x: 28, y: 260, width: 264, height: 18 });
+      else
+        expect(box).toEqual({ x: 28, y: 182, width: 254, height: 18 });
     });
     it('should return null for invisible elements', async({page, server}) => {
       await page.setContent('<div style="display:none">hi</div>');

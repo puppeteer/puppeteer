@@ -1,4 +1,4 @@
-const {helper, debugError} = require('./helper');
+const {helper, debugError, assert} = require('./helper');
 const {Keyboard, Mouse} = require('./Input');
 const {Dialog} = require('./Dialog');
 const {TimeoutError} = require('./Errors');
@@ -82,6 +82,14 @@ class Page extends EventEmitter {
 
   async setExtraHTTPHeaders(headers) {
     await this._networkManager.setExtraHTTPHeaders(headers);
+  }
+
+  /**
+   * @param {?string} mediaType
+   */
+  async emulateMedia(mediaType) {
+    assert(mediaType === 'screen' || mediaType === 'print' || mediaType === null, 'Unsupported media type: ' + mediaType);
+    await this._session.send('Page.setEmulatedMedia', {media: mediaType || ''});
   }
 
   /**
