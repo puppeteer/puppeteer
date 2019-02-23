@@ -21,7 +21,7 @@ module.exports.addTests = function({testRunner, expect}) {
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
   describe('input', function() {
-    it_fails_ffox('should upload the file', async({page, server}) => {
+    it('should upload the file', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/fileupload.html');
       const filePath = path.relative(process.cwd(), __dirname + '/assets/file-to-upload.txt');
       const input = await page.$('input');

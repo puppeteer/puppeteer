@@ -1,4 +1,5 @@
 const {assert, debugError} = require('./helper');
+const path = require('path');
 
 class JSHandle {
 
@@ -325,6 +326,18 @@ class ElementHandle extends JSHandle {
     await this._scrollIntoViewIfNeeded();
     const {x, y} = await this._clickablePoint();
     await this._frame._page.mouse.click(x, y, options);
+  }
+
+  /**
+   * @param {!Array<string>} filePaths
+   */
+  async uploadFile(...filePaths) {
+    const files = filePaths.map(filePath => path.resolve(filePath));
+    await this._session.send('Page.setFileInputFiles', {
+      frameId: this._frameId,
+      objectId: this._objectId,
+      files,
+    });
   }
 
   async hover() {
