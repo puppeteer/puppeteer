@@ -163,7 +163,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe_fails_ffox('BrowserContext.overridePermissions', function() {
+  describe('BrowserContext.overridePermissions', function() {
     function getPermission(page, name) {
       return page.evaluate(name => navigator.permissions.query({name}).then(result => result.state), name);
     }
@@ -199,7 +199,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
         window.events = [];
-        return navigator.permissions.query({name: 'clipboard-read'}).then(function(result) {
+        return navigator.permissions.query({name: 'geolocation'}).then(function(result) {
           window.events.push(result.state);
           result.onchange = function() {
             window.events.push(result.state);
@@ -209,10 +209,29 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       expect(await page.evaluate(() => window.events)).toEqual(['prompt']);
       await context.overridePermissions(server.EMPTY_PAGE, []);
       expect(await page.evaluate(() => window.events)).toEqual(['prompt', 'denied']);
-      await context.overridePermissions(server.EMPTY_PAGE, ['clipboard-read']);
+      await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
       expect(await page.evaluate(() => window.events)).toEqual(['prompt', 'denied', 'granted']);
       await context.clearPermissionOverrides();
       expect(await page.evaluate(() => window.events)).toEqual(['prompt', 'denied', 'granted', 'prompt']);
+    });
+    it('should isolate permissions between browser contexs', async({page, server, context, browser}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const otherContext = await browser.createIncognitoBrowserContext();
+      const otherPage = await otherContext.newPage();
+      await otherPage.goto(server.EMPTY_PAGE);
+      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+      expect(await getPermission(otherPage, 'geolocation')).toBe('prompt');
+
+      await context.overridePermissions(server.EMPTY_PAGE, []);
+      await otherContext.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
+      expect(await getPermission(page, 'geolocation')).toBe('denied');
+      expect(await getPermission(otherPage, 'geolocation')).toBe('granted');
+
+      await context.clearPermissionOverrides();
+      expect(await getPermission(page, 'geolocation')).toBe('prompt');
+      expect(await getPermission(otherPage, 'geolocation')).toBe('granted');
+
+      await otherContext.close();
     });
   });
 
