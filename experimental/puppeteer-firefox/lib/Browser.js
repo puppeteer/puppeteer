@@ -284,6 +284,30 @@ class BrowserContext extends EventEmitter {
   }
 
   /**
+   * @param {string} origin
+   * @param {!Array<string>} permissions
+   */
+  async overridePermissions(origin, permissions) {
+    const webPermissionToProtocol = new Map([
+      ['geolocation', 'geo'],
+      ['microphone', 'microphone'],
+      ['camera', 'camera'],
+      ['notifications', 'desktop-notifications'],
+    ]);
+    permissions = permissions.map(permission => {
+      const protocolPermission = webPermissionToProtocol.get(permission);
+      if (!protocolPermission)
+        throw new Error('Unknown permission: ' + permission);
+      return protocolPermission;
+    });
+    await this._connection.send('Browser.grantPermissions', {origin, browserContextId: this._browserContextId || undefined, permissions});
+  }
+
+  async clearPermissionOverrides() {
+    await this._connection.send('Browser.resetPermissions', {browserContextId: this._browserContextId || undefined});
+  }
+
+  /**
    * @return {Array<Target>}
    */
   targets() {
