@@ -59,7 +59,7 @@ class JSHandle {
    * @return {!Promise<Map<string, !JSHandle>>}
    */
   async getProperties() {
-    const response = await this._session.send('Page.getObjectProperties', {
+    const response = await this._session.send('Runtime.getObjectProperties', {
       executionContextId: this._executionContextId,
       objectId: this._objectId,
     });
@@ -85,10 +85,10 @@ class JSHandle {
   async jsonValue() {
     if (!this._objectId)
       return this._deserializeValue(this._protocolValue);
-    const simpleValue = await this._session.send('Page.evaluate', {
+    const simpleValue = await this._session.send('Runtime.callFunction', {
       executionContextId: this._executionContextId,
       returnByValue: true,
-      functionText: (e => e).toString(),
+      functionDeclaration: (e => e).toString(),
       args: [this._protocolValue],
     });
     return this._deserializeValue(simpleValue.result);
@@ -105,9 +105,13 @@ class JSHandle {
     if (!this._objectId)
       return;
     this._disposed = true;
-    await this._session.send('Page.disposeObject', {
+    await this._session.send('Runtime.disposeObject', {
       executionContextId: this._executionContextId,
       objectId: this._objectId,
+    }).catch(error => {
+      // Exceptions might happen in case of a page been navigated or closed.
+      // Swallow these since they are harmless and we don't leak anything in this case.
+      debugError(error);
     });
   }
 }

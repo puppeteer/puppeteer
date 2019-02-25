@@ -22,13 +22,39 @@ class FrameManager extends EventEmitter {
     this._timeoutSettings = timeoutSettings;
     this._mainFrame = null;
     this._frames = new Map();
+    /** @type {!Map<string, !ExecutionContext>} */
+    this._contextIdToContext = new Map();
     this._eventListeners = [
       helper.addEventListener(this._session, 'Page.eventFired', this._onEventFired.bind(this)),
       helper.addEventListener(this._session, 'Page.frameAttached', this._onFrameAttached.bind(this)),
       helper.addEventListener(this._session, 'Page.frameDetached', this._onFrameDetached.bind(this)),
       helper.addEventListener(this._session, 'Page.navigationCommitted', this._onNavigationCommitted.bind(this)),
       helper.addEventListener(this._session, 'Page.sameDocumentNavigation', this._onSameDocumentNavigation.bind(this)),
+      helper.addEventListener(this._session, 'Runtime.executionContextCreated', this._onExecutionContextCreated.bind(this)),
+      helper.addEventListener(this._session, 'Runtime.executionContextDestroyed', this._onExecutionContextDestroyed.bind(this)),
     ];
+  }
+
+  executionContextById(executionContextId) {
+    return this._contextIdToContext.get(executionContextId) || null;
+  }
+
+  _onExecutionContextCreated({executionContextId, auxData}) {
+    const frameId = auxData ? auxData.frameId : null;
+    const frame = this._frames.get(frameId) || null;
+    const context = new ExecutionContext(this._session, frame, executionContextId);
+    if (frame)
+      frame._setContext(context);
+    this._contextIdToContext.set(executionContextId, context);
+  }
+
+  _onExecutionContextDestroyed({executionContextId}) {
+    const context = this._contextIdToContext.get(executionContextId);
+    if (!context)
+      return;
+    this._contextIdToContext.delete(executionContextId);
+    if (context._frame)
+      context._frame._setContext(null);
   }
 
   frame(frameId) {
@@ -122,19 +148,37 @@ class Frame {
     this._name = '';
     /** @type {!Set<!Frame>} */
     this._children = new Set();
-    this._isDetached = false;
+    this._detached = false;
+
 
     this._firedEvents = new Set();
 
     /** @type {!Set<!WaitTask>} */
     this._waitTasks = new Set();
     this._documentPromise = null;
+    this._contextPromise;
+    this._contextResolveCallback = null;
+    this._setContext(null);
+  }
 
-    this._executionContext = new ExecutionContext(this._session, this, this._frameId);
+  _setContext(context) {
+    if (context) {
+      this._contextResolveCallback.call(null, context);
+      this._contextResolveCallback = null;
+      for (const waitTask of this._waitTasks)
+        waitTask.rerun();
+    } else {
+      this._documentPromise = null;
+      this._contextPromise = new Promise(fulfill => {
+        this._contextResolveCallback = fulfill;
+      });
+    }
   }
 
   async executionContext() {
-    return this._executionContext;
+    if (this._detached)
+      throw new Error(`Execution Context is not available in detached frame "${this.url()}" (are you trying to evaluate?)`);
+    return this._contextPromise;
   }
 
   /**
@@ -267,7 +311,7 @@ class Frame {
   _detach() {
     this._parentFrame._children.delete(this);
     this._parentFrame = null;
-    this._isDetached = true;
+    this._detached = true;
     for (const waitTask of this._waitTasks)
       waitTask.terminate(new Error('waitForFunction failed: frame got detached.'));
   }
@@ -438,7 +482,8 @@ class Frame {
   }
 
   async evaluate(pageFunction, ...args) {
-    return this._executionContext.evaluate(pageFunction, ...args);
+    const context = await this.executionContext();
+    return context.evaluate(pageFunction, ...args);
   }
 
   _document() {
@@ -497,7 +542,8 @@ class Frame {
   }
 
   async evaluateHandle(pageFunction, ...args) {
-    return this._executionContext.evaluateHandle(pageFunction, ...args);
+    const context = await this.executionContext();
+    return context.evaluateHandle(pageFunction, ...args);
   }
 
   /**
@@ -636,7 +682,7 @@ class Frame {
   }
 
   isDetached() {
-    return this._isDetached;
+    return this._detached;
   }
 
   childFrames() {
