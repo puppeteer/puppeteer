@@ -16,5 +16,6 @@ module.exports = {
   Response: require('./NetworkManager').Response,
   SecurityDetails: require('./NetworkManager').SecurityDetails,
   Target: require('./Browser').Target,
+  Touchscreen: require('./Input').Touchscreen,
   TimeoutError: require('./Errors').TimeoutError,
 };
