@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-module.exports.addTests = function({testRunner, expect}) {
+module.exports.addTests = function({testRunner, expect, DeviceDescriptors}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
+  const iPhone = DeviceDescriptors['iPhone 6'];
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
   describe('Touchscreen', function() {
-    it_fails_ffox('should tap the button', async({page, server}) => {
+    it('should tap the button', async({page, server}) => {
+      await page.emulate(iPhone);
       await page.goto(server.PREFIX + '/input/button.html');
       await page.tap('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     });
-    xit('should report touches', async({page, server}) => {
+    it('should report touches', async({page, server}) => {
+      await page.emulate(iPhone);
       await page.goto(server.PREFIX + '/input/touches.html');
       const button = await page.$('button');
       await button.tap();

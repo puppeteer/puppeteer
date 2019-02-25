@@ -332,6 +332,12 @@ class ElementHandle extends JSHandle {
     await this._frame._page.mouse.click(x, y, options);
   }
 
+  async tap() {
+    await this._scrollIntoViewIfNeeded();
+    const {x, y} = await this._clickablePoint();
+    await this._frame._page.touchscreen.tap(x, y);
+  }
+
   /**
    * @param {!Array<string>} filePaths
    */

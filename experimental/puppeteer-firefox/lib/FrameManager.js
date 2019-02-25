@@ -255,6 +255,13 @@ class Frame {
 
   /**
    * @param {string} selector
+   */
+  async tap(selector) {
+    return this._mainWorld.tap(selector);
+  }
+
+  /**
+   * @param {string} selector
    * @param {string} text
    * @param {{delay: (number|undefined)}=} options
    */

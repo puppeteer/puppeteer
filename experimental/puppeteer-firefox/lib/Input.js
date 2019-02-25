@@ -292,4 +292,43 @@ class Mouse {
   }
 }
 
-module.exports = { Keyboard, Mouse };
+class Touchscreen {
+  /**
+   * @param {Puppeteer.JugglerSession} client
+   * @param {Keyboard} keyboard
+   * @param {Mouse} mouse
+   */
+  constructor(client, keyboard, mouse) {
+    this._client = client;
+    this._keyboard = keyboard;
+    this._mouse = mouse;
+  }
+
+  /**
+   * @param {number} x
+   * @param {number} y
+   */
+  async tap(x, y) {
+    const touchPoints = [{x: Math.round(x), y: Math.round(y)}];
+    let {defaultPrevented} = (await this._client.send('Page.dispatchTouchEvent', {
+      type: 'touchStart',
+      touchPoints,
+      modifiers: this._keyboard._modifiers
+    }));
+    defaultPrevented = (await this._client.send('Page.dispatchTouchEvent', {
+      type: 'touchEnd',
+      touchPoints,
+      modifiers: this._keyboard._modifiers
+    })).defaultPrevented || defaultPrevented;
+    // Do not dispatch related mouse events if either of touch events
+    // were prevented.
+    // See https://developer.mozilla.org/en-US/docs/Web/API/Touch_events/Supporting_both_TouchEvent_and_MouseEvent#Event_order
+    if (defaultPrevented)
+      return;
+    await this._mouse.move(x, y);
+    await this._mouse.down();
+    await this._mouse.up();
+  }
+}
+
+module.exports = { Keyboard, Mouse, Touchscreen };

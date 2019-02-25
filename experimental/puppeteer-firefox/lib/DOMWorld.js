@@ -321,6 +321,16 @@ class DOMWorld {
 
   /**
    * @param {string} selector
+   */
+  async tap(selector) {
+    const handle = await this.$(selector);
+    assert(handle, 'No node found for selector: ' + selector);
+    await handle.tap();
+    await handle.dispose();
+  }
+
+  /**
+   * @param {string} selector
    * @param {string} text
    * @param {{delay: (number|undefined)}=} options
    */

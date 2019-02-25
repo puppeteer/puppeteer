@@ -1,5 +1,5 @@
 const {helper, debugError, assert} = require('./helper');
-const {Keyboard, Mouse} = require('./Input');
+const {Keyboard, Mouse, Touchscreen} = require('./Input');
 const {Dialog} = require('./Dialog');
 const {TimeoutError} = require('./Errors');
 const fs = require('fs');
@@ -46,6 +46,7 @@ class Page extends EventEmitter {
     this._target = target;
     this._keyboard = new Keyboard(session);
     this._mouse = new Mouse(session, this._keyboard);
+    this._touchscreen = new Touchscreen(session, this._keyboard, this._mouse);
     this._closed = false;
     /** @type {!Map<string, Function>} */
     this._pageBindings = new Map();
@@ -337,6 +338,10 @@ class Page extends EventEmitter {
     return this._mouse;
   }
 
+  get touchscreen(){
+    return this._touchscreen;
+  }
+
   /**
    * @param {!{timeout?: number, waitUntil?: string|!Array<string>}} options
    */
@@ -503,6 +508,13 @@ class Page extends EventEmitter {
    */
   async click(selector, options = {}) {
     return await this._frameManager.mainFrame().click(selector, options);
+  }
+
+  /**
+   * @param {string} selector
+   */
+  tap(selector) {
+    return this.mainFrame().tap(selector);
   }
 
   /**
