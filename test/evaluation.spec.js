@@ -209,7 +209,7 @@ module.exports.addTests = function({testRunner, expect}) {
       const result = await page.evaluate(() => document.execCommand('copy'));
       expect(result).toBe(true);
     });
-    it_fails_ffox('should throw a nice error after a navigation', async({page, server}) => {
+    it('should throw a nice error after a navigation', async({page, server}) => {
       const executionContext = await page.mainFrame().executionContext();
 
       await Promise.all([

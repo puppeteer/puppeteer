@@ -15,10 +15,10 @@ class ExecutionContext {
 
   async evaluateHandle(pageFunction, ...args) {
     if (helper.isString(pageFunction)) {
-      const payload = await this._session.send('Page.evaluate', {
-        script: pageFunction,
+      const payload = await this._session.send('Runtime.evaluate', {
+        expression: pageFunction,
         executionContextId: this._executionContextId,
-      });
+      }).catch(rewriteError);
       return createHandle(this, payload.result, payload.exceptionDetails);
     }
     if (typeof pageFunction !== 'function')
@@ -59,10 +59,10 @@ class ExecutionContext {
         return {unserializableValue: 'NaN'};
       return {value: arg};
     });
-    let payload = null;
+    let callFunctionPromise;
     try {
-      payload = await this._session.send('Page.evaluate', {
-        functionText,
+      callFunctionPromise = this._session.send('Runtime.callFunction', {
+        functionDeclaration: functionText,
         args,
         executionContextId: this._executionContextId
       });
@@ -71,7 +71,14 @@ class ExecutionContext {
         err.message += ' Are you passing a nested JSHandle?';
       throw err;
     }
+    const payload = await callFunctionPromise.catch(rewriteError);
     return createHandle(this, payload.result, payload.exceptionDetails);
+
+    function rewriteError(error) {
+      if (error.message.includes('Failed to find execution context with id'))
+        throw new Error('Execution context was destroyed, most likely because of a navigation.');
+      throw error;
+    }
   }
 
   frame() {

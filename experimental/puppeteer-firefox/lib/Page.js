@@ -27,6 +27,7 @@ class Page extends EventEmitter {
     await Promise.all([
       session.send('Page.enable'),
       session.send('Network.enable'),
+      session.send('Runtime.enable'),
     ]);
 
     if (defaultViewport)
@@ -139,7 +140,7 @@ class Page extends EventEmitter {
       else
         expression = helper.evaluationString(deliverErrorValue, name, seq, error);
     }
-    this._session.send('Page.evaluate', { script: expression, executionContextId: event.frameId }).catch(debugError);
+    this._session.send('Runtime.evaluate', { expression, executionContextId: event.executionContextId }).catch(debugError);
 
     /**
      * @param {string} name
@@ -651,9 +652,9 @@ class Page extends EventEmitter {
   _onClosed() {
   }
 
-  _onConsole({type, args, frameId, location}) {
-    const frame = this._frameManager.frame(frameId);
-    this.emit(Events.Page.Console, new ConsoleMessage(type, args.map(arg => createHandle(frame._executionContext, arg)), location));
+  _onConsole({type, args, executionContextId, location}) {
+    const context = this._frameManager.executionContextById(executionContextId);
+    this.emit(Events.Page.Console, new ConsoleMessage(type, args.map(arg => createHandle(context, arg)), location));
   }
 
   /**
