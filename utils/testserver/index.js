@@ -80,6 +80,8 @@ class TestServer {
     this._auths = new Map();
     /** @type {!Map<string, string>} */
     this._csp = new Map();
+    /** @type {!Set<string>} */
+    this._gzipRoutes = new Set();
     /** @type {!Map<string, !Promise>} */
     this._requestSubscribers = new Map();
   }
@@ -109,6 +111,10 @@ class TestServer {
    */
   setAuth(path, username, password) {
     this._auths.set(path, {username, password});
+  }
+
+  enableGzip(path) {
+    this._gzipRoutes.add(path);
   }
 
   /**
@@ -169,6 +175,7 @@ class TestServer {
     this._routes.clear();
     this._auths.clear();
     this._csp.clear();
+    this._gzipRoutes.clear();
     const error = new Error('Static Server has been reset');
     for (const subscriber of this._requestSubscribers.values())
       subscriber[rejectSymbol].call(null, error);
@@ -230,14 +237,22 @@ class TestServer {
     if (this._csp.has(pathName))
       response.setHeader('Content-Security-Policy', this._csp.get(pathName));
 
-    fs.readFile(filePath, function(err, data) {
+    fs.readFile(filePath, (err, data) => {
       if (err) {
         response.statusCode = 404;
         response.end(`File not found: ${filePath}`);
         return;
       }
       response.setHeader('Content-Type', mime.getType(filePath));
-      response.end(data);
+      if (this._gzipRoutes.has(pathName)) {
+        response.setHeader('Content-Encoding', 'gzip');
+        const zlib = require('zlib');
+        zlib.gzip(data, (_, result) => {
+          response.end(result);
+        });
+      } else {
+        response.end(data);
+      }
     });
   }
 

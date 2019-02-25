@@ -156,6 +156,86 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
     });
   });
 
+  describe('Response.text', function() {
+    it('should work', async({page, server}) => {
+      const response = await page.goto(server.PREFIX + '/simple.json');
+      expect(await response.text()).toBe('{"foo": "bar"}\n');
+    });
+    it('should return uncompressed text', async({page, server}) => {
+      server.enableGzip('/simple.json');
+      const response = await page.goto(server.PREFIX + '/simple.json');
+      expect(response.headers()['content-encoding']).toBe('gzip');
+      expect(await response.text()).toBe('{"foo": "bar"}\n');
+    });
+    it('should throw when requesting body of redirected response', async({page, server}) => {
+      server.setRedirect('/foo.html', '/empty.html');
+      const response = await page.goto(server.PREFIX + '/foo.html');
+      const redirectChain = response.request().redirectChain();
+      expect(redirectChain.length).toBe(1);
+      const redirected = redirectChain[0].response();
+      expect(redirected.status()).toBe(302);
+      let error = null;
+      await redirected.text().catch(e => error = e);
+      expect(error.message).toContain('Response body is unavailable for redirect responses');
+    });
+    it('should wait until response completes', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      // Setup server to trap request.
+      let serverResponse = null;
+      server.setRoute('/get', (req, res) => {
+        serverResponse = res;
+        // In Firefox, |fetch| will be hanging until it receives |Content-Type| header
+        // from server.
+        res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+        res.write('hello ');
+      });
+      // Setup page to trap response.
+      let requestFinished = false;
+      page.on('requestfinished', r => requestFinished = requestFinished || r.url().includes('/get'));
+      // send request and wait for server response
+      const [pageResponse] = await Promise.all([
+        page.waitForResponse(r => !utils.isFavicon(r.request())),
+        page.evaluate(() => fetch('./get', { method: 'GET'})),
+        server.waitForRequest('/get'),
+      ]);
+
+      expect(serverResponse).toBeTruthy();
+      expect(pageResponse).toBeTruthy();
+      expect(pageResponse.status()).toBe(200);
+      expect(requestFinished).toBe(false);
+
+      const responseText = pageResponse.text();
+      // Write part of the response and wait for it to be flushed.
+      await new Promise(x => serverResponse.write('wor', x));
+      // Finish response.
+      await new Promise(x => serverResponse.end('ld!', x));
+      expect(await responseText).toBe('hello world!');
+    });
+  });
+
+  describe('Response.json', function() {
+    it('should work', async({page, server}) => {
+      const response = await page.goto(server.PREFIX + '/simple.json');
+      expect(await response.json()).toEqual({foo: 'bar'});
+    });
+  });
+
+  describe('Response.buffer', function() {
+    it('should work', async({page, server}) => {
+      const response = await page.goto(server.PREFIX + '/pptr.png');
+      const imageBuffer = fs.readFileSync(path.join(__dirname, 'assets', 'pptr.png'));
+      const responseBuffer = await response.buffer();
+      expect(responseBuffer.equals(imageBuffer)).toBe(true);
+    });
+    it('should work with compression', async({page, server}) => {
+      server.enableGzip('/pptr.png');
+      const response = await page.goto(server.PREFIX + '/pptr.png');
+      const imageBuffer = fs.readFileSync(path.join(__dirname, 'assets', 'pptr.png'));
+      const responseBuffer = await response.buffer();
+      expect(responseBuffer.equals(imageBuffer)).toBe(true);
+    });
+  });
+
   describe('Network Events', function() {
     it('Page.Events.Request', async({page, server}) => {
       const requests = [];
@@ -193,56 +273,6 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(response.statusText()).toBe('cool!');
     });
 
-    it_fails_ffox('Page.Events.Response should provide body', async({page, server}) => {
-      let response = null;
-      page.on('response', r => response = r);
-      await page.goto(server.PREFIX + '/simple.json');
-      expect(response).toBeTruthy();
-      expect(await response.text()).toBe('{"foo": "bar"}\n');
-      expect(await response.json()).toEqual({foo: 'bar'});
-    });
-    it_fails_ffox('Page.Events.Response should throw when requesting body of redirected response', async({page, server}) => {
-      server.setRedirect('/foo.html', '/empty.html');
-      const response = await page.goto(server.PREFIX + '/foo.html');
-      const redirectChain = response.request().redirectChain();
-      expect(redirectChain.length).toBe(1);
-      const redirected = redirectChain[0].response();
-      expect(redirected.status()).toBe(302);
-      let error = null;
-      await redirected.text().catch(e => error = e);
-      expect(error.message).toContain('Response body is unavailable for redirect responses');
-    });
-    it_fails_ffox('Page.Events.Response should not report body unless request is finished', async({page, server}) => {
-      await page.goto(server.EMPTY_PAGE);
-      // Setup server to trap request.
-      let serverResponse = null;
-      server.setRoute('/get', (req, res) => {
-        serverResponse = res;
-        res.write('hello ');
-      });
-      // Setup page to trap response.
-      let pageResponse = null;
-      let requestFinished = false;
-      page.on('response', r => pageResponse = r);
-      page.on('requestfinished', () => requestFinished = true);
-      // send request and wait for server response
-      await Promise.all([
-        page.evaluate(() => fetch('./get', { method: 'GET'})),
-        utils.waitEvent(page, 'response')
-      ]);
-
-      expect(serverResponse).toBeTruthy();
-      expect(pageResponse).toBeTruthy();
-      expect(pageResponse.status()).toBe(200);
-      expect(requestFinished).toBe(false);
-
-      const responseText = pageResponse.text();
-      // Write part of the response and wait for it to be flushed.
-      await new Promise(x => serverResponse.write('wor', x));
-      // Finish response.
-      await new Promise(x => serverResponse.end('ld!', x));
-      expect(await responseText).toBe('hello world!');
-    });
     it('Page.Events.RequestFailed', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {

@@ -60,7 +60,7 @@ class NetworkManager extends EventEmitter {
     const request = this._requests.get(event.requestId);
     if (!request)
       return;
-    const response = new Response(request, event);
+    const response = new Response(this._session, request, event);
     request._response = response;
     this.emit(Events.NetworkManager.Response, response);
   }
@@ -71,8 +71,12 @@ class NetworkManager extends EventEmitter {
       return;
     // Keep redirected requests in the map for future reference in redirectChain.
     const isRedirected = request.response().status() >= 300 && request.response().status() <= 399;
-    if (!isRedirected)
+    if (isRedirected) {
+      request.response()._bodyLoadedPromiseFulfill.call(null, new Error('Response body is unavailable for redirect responses'));
+    } else {
       this._requests.delete(request._id);
+      request.response()._bodyLoadedPromiseFulfill.call(null);
+    }
     this.emit(Events.NetworkManager.RequestFinished, request);
   }
 
@@ -81,6 +85,8 @@ class NetworkManager extends EventEmitter {
     if (!request)
       return;
     this._requests.delete(request._id);
+    if (request.response())
+      request.response()._bodyLoadedPromiseFulfill.call(null);
     request._errorText = event.errorCode;
     this.emit(Events.NetworkManager.RequestFailed, request);
   }
@@ -200,7 +206,8 @@ class Request {
 }
 
 class Response {
-  constructor(request, payload) {
+  constructor(session, request, payload) {
+    this._session = session;
     this._request = request;
     this._remoteIPAddress = payload.remoteIPAddress;
     this._remotePort = payload.remotePort;
@@ -210,6 +217,44 @@ class Response {
     this._securityDetails = payload.securityDetails ? new SecurityDetails(payload.securityDetails) : null;
     for (const {name, value} of payload.headers)
       this._headers[name.toLowerCase()] = value;
+    this._bodyLoadedPromise = new Promise(fulfill => {
+      this._bodyLoadedPromiseFulfill = fulfill;
+    });
+  }
+
+  /**
+   * @return {!Promise<!Buffer>}
+   */
+  buffer() {
+    if (!this._contentPromise) {
+      this._contentPromise = this._bodyLoadedPromise.then(async error => {
+        if (error)
+          throw error;
+        const response = await this._session.send('Network.getResponseBody', {
+          requestId: this._request._id
+        });
+        if (response.evicted)
+          throw new Error(`Response body for ${this._request.method()} ${this._request.url()} was evicted!`);
+        return Buffer.from(response.base64body, 'base64');
+      });
+    }
+    return this._contentPromise;
+  }
+
+  /**
+   * @return {!Promise<string>}
+   */
+  async text() {
+    const content = await this.buffer();
+    return content.toString('utf8');
+  }
+
+  /**
+   * @return {!Promise<!Object>}
+   */
+  async json() {
+    const content = await this.text();
+    return JSON.parse(content);
   }
 
   securityDetails() {
