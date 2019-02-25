@@ -499,7 +499,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
       const error = await navigationPromise;
       expect(error.message).toBe('Navigating frame was detached');
     });
-    it_fails_ffox('should return matching responses', async({page, server}) => {
+    it('should return matching responses', async({page, server}) => {
       // Disable cache: otherwise, chromium will cache similar requests.
       await page.setCacheEnabled(false);
       await page.goto(server.EMPTY_PAGE);
