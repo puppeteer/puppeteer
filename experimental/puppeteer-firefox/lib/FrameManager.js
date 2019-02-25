@@ -257,10 +257,7 @@ class Frame {
    * @param {string} selector
    */
   async tap(selector) {
-    const handle = await this.$(selector);
-    assert(handle, 'No node found for selector: ' + selector);
-    await handle.tap();
-    await handle.dispose();
+    return this._mainWorld.tap(selector);
   }
 
   /**
