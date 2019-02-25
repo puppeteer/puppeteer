@@ -22,13 +22,17 @@ const {Matchers} = require('../utils/testrunner/');
 const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
 
-module.exports.addTests = ({testRunner, product, puppeteer, Errors, DeviceDescriptors}) => {
+module.exports.addTests = ({testRunner, product, puppeteerPath}) => {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   const CHROME = product === 'Chromium';
   const FFOX = product === 'Firefox';
+
+  const puppeteer = require(puppeteerPath);
+  const Errors = require(path.join(puppeteerPath, 'Errors'));
+  const DeviceDescriptors = require(path.join(puppeteerPath, 'DeviceDescriptors'));
 
   const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
   const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
@@ -67,6 +71,7 @@ module.exports.addTests = ({testRunner, product, puppeteer, Errors, DeviceDescri
     DeviceDescriptors,
     expect,
     defaultBrowserOptions,
+    puppeteerPath,
     headless: !!defaultBrowserOptions.headless,
   };
 
@@ -155,6 +160,7 @@ module.exports.addTests = ({testRunner, product, puppeteer, Errors, DeviceDescri
   // Top-level tests that launch Browser themselves.
   require('./ignorehttpserrors.spec.js').addTests(testOptions);
   require('./launcher.spec.js').addTests(testOptions);
+  require('./fixtures.spec.js').addTests(testOptions);
   if (CHROME) {
     require('./headful.spec.js').addTests(testOptions);
     require('./tracing.spec.js').addTests(testOptions);
