@@ -120,6 +120,6 @@ module.exports.addPageTests = function({testRunner, expect}) {
       await page.goto(server.PREFIX + '/intervention');
       expect(serverRequest.headers.intervention).toContain('www.chromestatus.com');
     });
-  })
+  });
 };
 
