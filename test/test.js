@@ -78,9 +78,7 @@ if (process.env.BROWSER === 'firefox') {
   describe('Firefox', () => {
     require('./puppeteer.spec.js').addTests({
       product: 'Firefox',
-      puppeteer: require('../experimental/puppeteer-firefox'),
-      Errors: require('../experimental/puppeteer-firefox/Errors'),
-      DeviceDescriptors: utils.requireRoot('DeviceDescriptors'),
+      puppeteerPath: path.resolve(__dirname, '../experimental/puppeteer-firefox/'),
       testRunner,
     });
   });
@@ -90,9 +88,7 @@ if (process.env.BROWSER === 'firefox') {
   describe('Chromium', () => {
     require('./puppeteer.spec.js').addTests({
       product: 'Chromium',
-      puppeteer: utils.requireRoot('index'),
-      Errors: utils.requireRoot('Errors'),
-      DeviceDescriptors: utils.requireRoot('DeviceDescriptors'),
+      puppeteerPath: utils.projectRoot(),
       testRunner,
     });
     if (process.env.COVERAGE)

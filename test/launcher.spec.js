@@ -181,39 +181,6 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
           expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain('foo');
         }
       });
-      it('should dump browser process stderr', async({server}) => {
-        const dumpioTextToLog = 'MAGIC_DUMPIO_TEST';
-        let dumpioData = '';
-        const {spawn} = require('child_process');
-        const options = Object.assign({}, defaultBrowserOptions, {dumpio: true});
-        const res = spawn('node',
-            [path.join(__dirname, 'fixtures', 'dumpio.js'), utils.projectRoot(), JSON.stringify(options), server.EMPTY_PAGE, dumpioTextToLog]);
-        res.stderr.on('data', data => dumpioData += data.toString('utf8'));
-        await new Promise(resolve => res.on('close', resolve));
-
-        expect(dumpioData).toContain(dumpioTextToLog);
-      });
-      it_fails_ffox('should close the browser when the node process closes', async({ server }) => {
-        const {spawn, execSync} = require('child_process');
-        const res = spawn('node', [path.join(__dirname, 'fixtures', 'closeme.js'), utils.projectRoot(), JSON.stringify(defaultBrowserOptions)]);
-        let wsEndPointCallback;
-        const wsEndPointPromise = new Promise(x => wsEndPointCallback = x);
-        let output = '';
-        res.stdout.on('data', data => {
-          output += data;
-          if (output.indexOf('\n'))
-            wsEndPointCallback(output.substring(0, output.indexOf('\n')));
-        });
-        const browser = await puppeteer.connect({ browserWSEndpoint: await wsEndPointPromise });
-        const promises = [
-          new Promise(resolve => browser.once('disconnected', resolve)),
-          new Promise(resolve => res.on('close', resolve))];
-        if (process.platform === 'win32')
-          execSync(`taskkill /pid ${res.pid} /T /F`);
-        else
-          process.kill(res.pid);
-        await Promise.all(promises);
-      });
       it('should work with no default arguments', async() => {
         const options = Object.assign({}, defaultBrowserOptions);
         options.ignoreDefaultArgs = true;
