@@ -1,13 +1,20 @@
-const fs = require('fs');
-const os = require('os');
+/**
+ * Copyright 2019 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 const path = require('path');
-const {helper} = require('../lib/helper');
-const rmAsync = helper.promisify(require('rimraf'));
-const mkdtempAsync = helper.promisify(fs.mkdtemp);
-const readFileAsync = helper.promisify(fs.readFile);
-const statAsync = helper.promisify(fs.stat);
-const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
-const utils = require('./utils');
 
 module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer, puppeteerPath, CHROME}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
