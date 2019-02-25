@@ -13,27 +13,113 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-module.exports.addTests = function({testRunner, expect, product, headless}) {
+
+module.exports.addLauncherTests = function({testRunner, expect, defaultBrowserOptions, puppeteer}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
-  describe('Chromium-specific tests', function() {
-    describe('Browser.version', function() {
-      it('should return whether we are in headless', async({browser}) => {
-        const version = await browser.version();
-        expect(version.length).toBeGreaterThan(0);
-        expect(version.startsWith('Headless')).toBe(headless);
+  describe('Chromium-Specific Launcher tests', function() {
+    describe('Puppeteer.launch |browserURL| option', function() {
+      it('should be able to connect using browserUrl, with and without trailing slash', async({server}) => {
+        const originalBrowser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
+          args: ['--remote-debugging-port=21222']
+        }));
+        const browserURL = 'http://127.0.0.1:21222';
+
+        const browser1 = await puppeteer.connect({browserURL});
+        const page1 = await browser1.newPage();
+        expect(await page1.evaluate(() => 7 * 8)).toBe(56);
+        browser1.disconnect();
+
+        const browser2 = await puppeteer.connect({browserURL: browserURL + '/'});
+        const page2 = await browser2.newPage();
+        expect(await page2.evaluate(() => 8 * 7)).toBe(56);
+        browser2.disconnect();
+        originalBrowser.close();
+      });
+      it('should throw when using both browserWSEndpoint and browserURL', async({server}) => {
+        const originalBrowser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
+          args: ['--remote-debugging-port=21222']
+        }));
+        const browserURL = 'http://127.0.0.1:21222';
+
+        let error = null;
+        await puppeteer.connect({browserURL, browserWSEndpoint: originalBrowser.wsEndpoint()}).catch(e => error = e);
+        expect(error.message).toContain('Exactly one of browserWSEndpoint, browserURL or transport');
+
+        originalBrowser.close();
+      });
+      it('should throw when trying to connect to non-existing browser', async({server}) => {
+        const originalBrowser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
+          args: ['--remote-debugging-port=21222']
+        }));
+        const browserURL = 'http://127.0.0.1:32333';
+
+        let error = null;
+        await puppeteer.connect({browserURL}).catch(e => error = e);
+        expect(error.message).toContain('Failed to fetch browser webSocket url from');
+        originalBrowser.close();
       });
     });
 
-    describe('Browser.userAgent', function() {
-      it('should include WebKit', async({browser}) => {
-        const userAgent = await browser.userAgent();
-        expect(userAgent.length).toBeGreaterThan(0);
-        expect(userAgent).toContain('WebKit');
+    describe('Puppeteer.launch |pipe| option', function() {
+      it('should support the pipe option', async() => {
+        const options = Object.assign({pipe: true}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
+        expect((await browser.pages()).length).toBe(1);
+        expect(browser.wsEndpoint()).toBe('');
+        const page = await browser.newPage();
+        expect(await page.evaluate('11 * 11')).toBe(121);
+        await page.close();
+        await browser.close();
+      });
+      it('should support the pipe argument', async() => {
+        const options = Object.assign({}, defaultBrowserOptions);
+        options.args = ['--remote-debugging-pipe'].concat(options.args || []);
+        const browser = await puppeteer.launch(options);
+        expect(browser.wsEndpoint()).toBe('');
+        const page = await browser.newPage();
+        expect(await page.evaluate('11 * 11')).toBe(121);
+        await page.close();
+        await browser.close();
+      });
+      it('should fire "disconnected" when closing with pipe', async() => {
+        const options = Object.assign({pipe: true}, defaultBrowserOptions);
+        const browser = await puppeteer.launch(options);
+        const disconnectedEventPromise = new Promise(resolve => browser.once('disconnected', resolve));
+        // Emulate user exiting browser.
+        browser.process().kill();
+        await disconnectedEventPromise;
       });
     });
   });
+};
+
+module.exports.addPageTests = function({testRunner, expect}) {
+  const {describe, xdescribe, fdescribe} = testRunner;
+  const {it, fit, xit} = testRunner;
+  const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+
+  describe('Chromium-Specific Page Tests', function() {
+    it('Page.setRequestInterception should work with intervention headers', async({server, page}) => {
+      server.setRoute('/intervention', (req, res) => res.end(`
+        <script>
+          document.write('<script src="${server.CROSS_PROCESS_PREFIX}/intervention.js">' + '</scr' + 'ipt>');
+        </script>
+      `));
+      server.setRedirect('/intervention.js', '/redirect.js');
+      let serverRequest = null;
+      server.setRoute('/redirect.js', (req, res) => {
+        serverRequest = req;
+        res.end('console.log(1);');
+      });
+
+      await page.setRequestInterception(true);
+      page.on('request', request => request.continue());
+      await page.goto(server.PREFIX + '/intervention');
+      expect(serverRequest.headers.intervention).toContain('www.chromestatus.com');
+    });
+  })
 };
 

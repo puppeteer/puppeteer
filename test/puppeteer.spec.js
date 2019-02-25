@@ -147,9 +147,8 @@ module.exports.addTests = ({testRunner, product, puppeteerPath}) => {
         require('./accessibility.spec.js').addTests(testOptions);
         require('./CDPSession.spec.js').addTests(testOptions);
         require('./coverage.spec.js').addTests(testOptions);
-        require('./chromiumonly.spec.js').addTests(testOptions);
-      } else {
-        require('./firefoxonly.spec.js').addTests(testOptions);
+        // Add page-level Chromium-specific tests.
+        require('./chromiumonly.spec.js').addPageTests(testOptions);
       }
     });
 
@@ -164,5 +163,7 @@ module.exports.addTests = ({testRunner, product, puppeteerPath}) => {
   if (CHROME) {
     require('./headful.spec.js').addTests(testOptions);
     require('./tracing.spec.js').addTests(testOptions);
+    // Add top-level Chromium-specific tests.
+    require('./chromiumonly.spec.js').addLauncherTests(testOptions);
   }
 };

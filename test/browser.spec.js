@@ -14,10 +14,32 @@
  * limitations under the License.
  */
 
-module.exports.addTests = function({testRunner, expect, headless, puppeteer}) {
+module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHROME}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+
+  describe('Browser.version', function() {
+    it('should return whether we are in headless', async({browser}) => {
+      const version = await browser.version();
+      expect(version.length).toBeGreaterThan(0);
+      if (CHROME)
+        expect(version.startsWith('Headless')).toBe(headless);
+      else
+        expect(version.startsWith('Firefox/')).toBe(true);
+    });
+  });
+
+  describe('Browser.userAgent', function() {
+    it('should include WebKit', async({browser}) => {
+      const userAgent = await browser.userAgent();
+      expect(userAgent.length).toBeGreaterThan(0);
+      if (CHROME)
+        expect(userAgent).toContain('WebKit');
+      else
+        expect(userAgent).toContain('Gecko');
+    });
+  });
 
   describe('Browser.target', function() {
     it('should return browser target', async({browser}) => {
