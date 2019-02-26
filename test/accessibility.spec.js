@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-module.exports.addTests = function({testRunner, expect}) {
+module.exports.addTests = function({testRunner, expect, FFOX}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
-  describe_fails_ffox('Accessibility', function() {
+  describe('Accessibility', function() {
     it('should work', async function({page}) {
       await page.setContent(`
       <head>
@@ -42,7 +42,24 @@ module.exports.addTests = function({testRunner, expect}) {
         </select>
       </body>`);
 
-      expect(await page.accessibility.snapshot()).toEqual({
+      const golden = FFOX ? {
+        role: 'document',
+        name: 'Accessibility Test',
+        children: [
+          {role: 'text leaf', name: 'Hello World'},
+          {role: 'heading', name: 'Inputs', level: 1},
+          {role: 'entry', name: 'Empty input', focused: true},
+          {role: 'entry', name: 'readonly input', readonly: true},
+          {role: 'entry', name: 'disabled input', disabled: true},
+          {role: 'entry', name: 'Input with whitespace', value: '  '},
+          {role: 'entry', name: '', value: 'value only'},
+          {role: 'entry', name: '', value: 'and a value'}, // firefox doesn't use aria-placeholder for the name
+          {role: 'entry', name: '', value: 'and a value', description: 'This is a description!'}, // and here
+          {role: 'combobox', name: '', value: 'First Option', haspopup: true, children: [
+            {role: 'combobox option', name: 'First Option', selected: true},
+            {role: 'combobox option', name: 'Second Option'}]
+          }]
+      } : {
         role: 'WebArea',
         name: 'Accessibility Test',
         children: [
@@ -57,13 +74,24 @@ module.exports.addTests = function({testRunner, expect}) {
           {role: 'textbox', name: 'placeholder', value: 'and a value', description: 'This is a description!'},
           {role: 'combobox', name: '', value: 'First Option', children: [
             {role: 'menuitem', name: 'First Option', selected: true},
-            {role: 'menuitem', name: 'Second Option'}]}]
-      });
+            {role: 'menuitem', name: 'Second Option'}]
+          }]
+      };
+      expect(await page.accessibility.snapshot()).toEqual(golden);
     });
     it('should report uninteresting nodes', async function({page}) {
       await page.setContent(`<textarea autofocus>hi</textarea>`);
-
-      expect(findFocusedNode(await page.accessibility.snapshot({interestingOnly: false}))).toEqual({
+      const golden = FFOX ? {
+        role: 'entry',
+        name: '',
+        value: 'hi',
+        focused: true,
+        multiline: true,
+        children: [{
+          role: 'text leaf',
+          name: 'hi'
+        }]
+      } : {
         role: 'textbox',
         name: '',
         value: 'hi',
@@ -76,7 +104,33 @@ module.exports.addTests = function({testRunner, expect}) {
             role: 'text', name: 'hi'
           }]
         }]
-      });
+      };
+      expect(findFocusedNode(await page.accessibility.snapshot({interestingOnly: false}))).toEqual(golden);
+    });
+    it('roledescription', async({page}) => {
+      await page.setContent('<div tabIndex=-1 aria-roledescription="foo">Hi</div>');
+      const snapshot = await page.accessibility.snapshot();
+      expect(snapshot.children[0].roledescription).toEqual('foo');
+    });
+    it('orientation', async({page}) => {
+      await page.setContent('<a href="" role="slider" aria-orientation="vertical">11</a>');
+      const snapshot = await page.accessibility.snapshot();
+      expect(snapshot.children[0].orientation).toEqual('vertical');
+    });
+    it('autocomplete', async({page}) => {
+      await page.setContent('<input type="number" aria-autocomplete="list" />');
+      const snapshot = await page.accessibility.snapshot();
+      expect(snapshot.children[0].autocomplete).toEqual('list');
+    });
+    it('multiselectable', async({page}) => {
+      await page.setContent('<div role="grid" tabIndex=-1 aria-multiselectable=true>hey</div>');
+      const snapshot = await page.accessibility.snapshot();
+      expect(snapshot.children[0].multiselectable).toEqual(true);
+    });
+    it('keyshortcuts', async({page}) => {
+      await page.setContent('<div role="grid" tabIndex=-1 aria-keyshortcuts="foo">hey</div>');
+      const snapshot = await page.accessibility.snapshot();
+      expect(snapshot.children[0].keyshortcuts).toEqual('foo');
     });
     describe('filtering children of leaf nodes', function() {
       it('should not report text nodes inside controls', async function({page}) {
@@ -85,7 +139,18 @@ module.exports.addTests = function({testRunner, expect}) {
           <div role="tab" aria-selected="true"><b>Tab1</b></div>
           <div role="tab">Tab2</div>
         </div>`);
-        expect(await page.accessibility.snapshot()).toEqual({
+        const golden = FFOX ? {
+          role: 'document',
+          name: '',
+          children: [{
+            role: 'pagetab',
+            name: 'Tab1',
+            selected: true
+          }, {
+            role: 'pagetab',
+            name: 'Tab2'
+          }]
+        } : {
           role: 'WebArea',
           name: '',
           children: [{
@@ -96,16 +161,25 @@ module.exports.addTests = function({testRunner, expect}) {
             role: 'tab',
             name: 'Tab2'
           }]
-        });
+        };
+        expect(await page.accessibility.snapshot()).toEqual(golden);
       });
-
       it('rich text editable fields should have children', async function({page}) {
         await page.setContent(`
         <div contenteditable="true">
           Edit this image: <img src="fakeimage.png" alt="my fake image">
         </div>`);
-        const snapshot = await page.accessibility.snapshot();
-        expect(snapshot.children[0]).toEqual({
+        const golden = FFOX ? {
+          role: 'section',
+          name: '',
+          children: [{
+            role: 'text leaf',
+            name: 'Edit this image: '
+          }, {
+            role: 'text',
+            name: 'my fake image'
+          }]
+        } : {
           role: 'GenericContainer',
           name: '',
           value: 'Edit this image: ',
@@ -116,15 +190,24 @@ module.exports.addTests = function({testRunner, expect}) {
             role: 'img',
             name: 'my fake image'
           }]
-        });
+        };
+        const snapshot = await page.accessibility.snapshot();
+        expect(snapshot.children[0]).toEqual(golden);
       });
       it('rich text editable fields with role should have children', async function({page}) {
         await page.setContent(`
         <div contenteditable="true" role='textbox'>
           Edit this image: <img src="fakeimage.png" alt="my fake image">
         </div>`);
-        const snapshot = await page.accessibility.snapshot();
-        expect(snapshot.children[0]).toEqual({
+        const golden = FFOX ? {
+          role: 'entry',
+          name: '',
+          value: 'Edit this image: my fake image',
+          children: [{
+            role: 'text',
+            name: 'my fake image'
+          }]
+        } : {
           role: 'textbox',
           name: '',
           value: 'Edit this image: ',
@@ -135,34 +218,39 @@ module.exports.addTests = function({testRunner, expect}) {
             role: 'img',
             name: 'my fake image'
           }]
-        });
-      });
-      it('plain text field with role should not have children', async function({page}) {
-        await page.setContent(`
-        <div contenteditable="plaintext-only" role='textbox'>Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
+        };
         const snapshot = await page.accessibility.snapshot();
-        expect(snapshot.children[0]).toEqual({
-          role: 'textbox',
-          name: '',
-          value: 'Edit this image:'
-        });
+        expect(snapshot.children[0]).toEqual(golden);
       });
-      it('plain text field without role should not have content', async function({page}) {
-        await page.setContent(`
-        <div contenteditable="plaintext-only">Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
-        const snapshot = await page.accessibility.snapshot();
-        expect(snapshot.children[0]).toEqual({
-          role: 'GenericContainer',
-          name: ''
+      // Firefox does not support contenteditable="plaintext-only".
+      !FFOX && describe('plaintext contenteditable', function() {
+        it('plain text field with role should not have children', async function({page}) {
+          await page.setContent(`
+          <div contenteditable="plaintext-only" role='textbox'>Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
+          const snapshot = await page.accessibility.snapshot();
+          expect(snapshot.children[0]).toEqual({
+            role: 'textbox',
+            name: '',
+            value: 'Edit this image:'
+          });
         });
-      });
-      it('plain text field with tabindex and without role should not have content', async function({page}) {
-        await page.setContent(`
-        <div contenteditable="plaintext-only" tabIndex=0>Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
-        const snapshot = await page.accessibility.snapshot();
-        expect(snapshot.children[0]).toEqual({
-          role: 'GenericContainer',
-          name: ''
+        it('plain text field without role should not have content', async function({page}) {
+          await page.setContent(`
+          <div contenteditable="plaintext-only">Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
+          const snapshot = await page.accessibility.snapshot();
+          expect(snapshot.children[0]).toEqual({
+            role: 'GenericContainer',
+            name: ''
+          });
+        });
+        it('plain text field with tabindex and without role should not have content', async function({page}) {
+          await page.setContent(`
+          <div contenteditable="plaintext-only" tabIndex=0>Edit this image:<img src="fakeimage.png" alt="my fake image"></div>`);
+          const snapshot = await page.accessibility.snapshot();
+          expect(snapshot.children[0]).toEqual({
+            role: 'GenericContainer',
+            name: ''
+          });
         });
       });
       it('non editable textbox with role and tabIndex and label should not have children', async function({page}) {
@@ -171,12 +259,17 @@ module.exports.addTests = function({testRunner, expect}) {
           this is the inner content
           <img alt="yo" src="fakeimg.png">
         </div>`);
-        const snapshot = await page.accessibility.snapshot();
-        expect(snapshot.children[0]).toEqual({
+        const golden = FFOX ? {
+          role: 'entry',
+          name: 'my favorite textbox',
+          value: 'this is the inner content yo'
+        } : {
           role: 'textbox',
           name: 'my favorite textbox',
           value: 'this is the inner content '
-        });
+        };
+        const snapshot = await page.accessibility.snapshot();
+        expect(snapshot.children[0]).toEqual(golden);
       });
       it('checkbox with and tabIndex and label should not have children', async function({page}) {
         await page.setContent(`
@@ -184,12 +277,17 @@ module.exports.addTests = function({testRunner, expect}) {
           this is the inner content
           <img alt="yo" src="fakeimg.png">
         </div>`);
-        const snapshot = await page.accessibility.snapshot();
-        expect(snapshot.children[0]).toEqual({
+        const golden = FFOX ? {
+          role: 'checkbutton',
+          name: 'my favorite checkbox',
+          checked: true
+        } : {
           role: 'checkbox',
           name: 'my favorite checkbox',
           checked: true
-        });
+        };
+        const snapshot = await page.accessibility.snapshot();
+        expect(snapshot.children[0]).toEqual(golden);
       });
       it('checkbox without label should not have children', async function({page}) {
         await page.setContent(`
@@ -197,12 +295,17 @@ module.exports.addTests = function({testRunner, expect}) {
           this is the inner content
           <img alt="yo" src="fakeimg.png">
         </div>`);
-        const snapshot = await page.accessibility.snapshot();
-        expect(snapshot.children[0]).toEqual({
+        const golden = FFOX ? {
+          role: 'checkbutton',
+          name: 'this is the inner content yo',
+          checked: true
+        } : {
           role: 'checkbox',
           name: 'this is the inner content yo',
           checked: true
-        });
+        };
+        const snapshot = await page.accessibility.snapshot();
+        expect(snapshot.children[0]).toEqual(golden);
       });
     });
     function findFocusedNode(node) {

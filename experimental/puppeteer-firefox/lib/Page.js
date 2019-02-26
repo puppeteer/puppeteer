@@ -11,7 +11,8 @@ const {Events} = require('./Events');
 const {FrameManager, normalizeWaitUntil} = require('./FrameManager');
 const {NetworkManager} = require('./NetworkManager');
 const {TimeoutSettings} = require('./TimeoutSettings');
-const {NavigationWatchdog, NextNavigationWatchdog} = require('./NavigationWatchdog');
+const {NavigationWatchdog} = require('./NavigationWatchdog');
+const {Accessibility} = require('./Accessibility');
 
 const writeFileAsync = util.promisify(fs.writeFile);
 
@@ -47,6 +48,7 @@ class Page extends EventEmitter {
     this._keyboard = new Keyboard(session);
     this._mouse = new Mouse(session, this._keyboard);
     this._touchscreen = new Touchscreen(session, this._keyboard, this._mouse);
+    this._accessibility = new Accessibility(session);
     this._closed = false;
     /** @type {!Map<string, Function>} */
     this._pageBindings = new Map();
@@ -266,7 +268,7 @@ class Page extends EventEmitter {
   }
 
   _onUncaughtError(params) {
-    let error = new Error(params.message);
+    const error = new Error(params.message);
     error.stack = params.stack;
     this.emit(Events.Page.PageError, error);
   }
@@ -328,6 +330,10 @@ class Page extends EventEmitter {
 
   mainFrame() {
     return this._frameManager.mainFrame();
+  }
+
+  get accessibility() {
+    return this._accessibility;
   }
 
   get keyboard(){

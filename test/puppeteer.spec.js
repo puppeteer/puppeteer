@@ -122,6 +122,7 @@ module.exports.addTests = ({testRunner, product, puppeteerPath}) => {
 
       // Page-level tests that are given a browser, a context and a page.
       // Each test is launched in a new browser context.
+      require('./accessibility.spec.js').addTests(testOptions);
       require('./browser.spec.js').addTests(testOptions);
       require('./click.spec.js').addTests(testOptions);
       require('./cookies.spec.js').addTests(testOptions);
@@ -144,7 +145,6 @@ module.exports.addTests = ({testRunner, product, puppeteerPath}) => {
       require('./waittask.spec.js').addTests(testOptions);
       require('./worker.spec.js').addTests(testOptions);
       if (CHROME) {
-        require('./accessibility.spec.js').addTests(testOptions);
         require('./CDPSession.spec.js').addTests(testOptions);
         require('./coverage.spec.js').addTests(testOptions);
         // Add page-level Chromium-specific tests.

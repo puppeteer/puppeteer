@@ -1,4 +1,5 @@
 module.exports = {
+  Accessibility: require('./Accessibility').Accessibility,
   Browser: require('./Browser').Browser,
   BrowserContext: require('./Browser').BrowserContext,
   BrowserFetcher: require('./BrowserFetcher').BrowserFetcher,
