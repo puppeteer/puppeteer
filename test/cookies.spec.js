@@ -153,7 +153,8 @@ module.exports.addTests = function({testRunner, expect}) {
         value: 'bar'
       });
       expect(await page.evaluate(() => {
-        return document.cookie.split(';').map(cookie => cookie.trim()).sort();
+        const cookies = document.cookie.split(';');
+        return cookies.map(cookie => cookie.trim()).sort();
       })).toEqual([
         'foo=bar',
         'password=123456',
