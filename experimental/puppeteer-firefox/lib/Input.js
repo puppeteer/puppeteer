@@ -114,9 +114,6 @@ class Keyboard {
     if (this._modifiers & ~8)
       description.text = '';
 
-    // Firefox calls the 'Meta' key 'OS' on everything but mac
-    if (os.platform() !== 'darwin' && description.key === 'Meta')
-      description.key = 'OS';
     if (description.code === 'MetaLeft')
       description.code = 'OSLeft';
     if (description.code === 'MetaRight')

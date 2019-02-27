@@ -81,10 +81,10 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await page.keyboard.sendCharacter('a');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('嗨a');
     });
-    it_fails_ffox('should report shiftKey', async({page, server}) => {
+    it('should report shiftKey', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/keyboard.html');
       const keyboard = page.keyboard;
-      const codeForKey = {'Shift': 16, 'Alt': 18, 'Meta': 91, 'Control': 17};
+      const codeForKey = {'Shift': 16, 'Alt': 18, 'Control': 17};
       for (const modifierKey in codeForKey) {
         await keyboard.down(modifierKey);
         expect(await page.evaluate(() => getResult())).toBe('Keydown: ' + modifierKey + ' ' + modifierKey + 'Left ' + codeForKey[modifierKey] + ' [' + modifierKey + ']');
@@ -101,21 +101,21 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
         expect(await page.evaluate(() => getResult())).toBe('Keyup: ' + modifierKey + ' ' + modifierKey + 'Left ' + codeForKey[modifierKey] + ' []');
       }
     });
-    it_fails_ffox('should report multiple modifiers', async({page, server}) => {
+    it('should report multiple modifiers', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/keyboard.html');
       const keyboard = page.keyboard;
       await keyboard.down('Control');
       expect(await page.evaluate(() => getResult())).toBe('Keydown: Control ControlLeft 17 [Control]');
-      await keyboard.down('Meta');
-      expect(await page.evaluate(() => getResult())).toBe('Keydown: Meta MetaLeft 91 [Control Meta]');
+      await keyboard.down('Alt');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: Alt AltLeft 18 [Alt Control]');
       await keyboard.down(';');
-      expect(await page.evaluate(() => getResult())).toBe('Keydown: ; Semicolon 186 [Control Meta]');
+      expect(await page.evaluate(() => getResult())).toBe('Keydown: ; Semicolon 186 [Alt Control]');
       await keyboard.up(';');
-      expect(await page.evaluate(() => getResult())).toBe('Keyup: ; Semicolon 186 [Control Meta]');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: ; Semicolon 186 [Alt Control]');
       await keyboard.up('Control');
-      expect(await page.evaluate(() => getResult())).toBe('Keyup: Control ControlLeft 17 [Meta]');
-      await keyboard.up('Meta');
-      expect(await page.evaluate(() => getResult())).toBe('Keyup: Meta MetaLeft 91 []');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: Control ControlLeft 17 [Alt]');
+      await keyboard.up('Alt');
+      expect(await page.evaluate(() => getResult())).toBe('Keyup: Alt AltLeft 18 []');
     });
     it('should send proper codes while typing', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/keyboard.html');
@@ -224,6 +224,31 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       const textarea = await frame.$('textarea');
       await textarea.type('👹 Tokyo street Japan 🇯🇵');
       expect(await frame.$eval('textarea', textarea => textarea.value)).toBe('👹 Tokyo street Japan 🇯🇵');
+    });
+    it('should press the meta key', async({page}) => {
+      await page.evaluate(() => {
+        window.result = null;
+        document.addEventListener('keydown', event => {
+          window.result = [event.key, event.code, event.metaKey];
+        });
+      });
+      await page.keyboard.press('Meta');
+      const [key, code, metaKey] = await page.evaluate('result');
+      if (FFOX && os.platform() !== 'darwin')
+        expect(key).toBe('OS');
+      else
+        expect(key).toBe('Meta');
+
+      if (FFOX)
+        expect(code).toBe('OSLeft');
+      else
+        expect(code).toBe('MetaLeft');
+
+      if (FFOX && os.platform() !== 'darwin')
+        expect(metaKey).toBe(false);
+      else
+        expect(metaKey).toBe(true);
+
     });
   });
 };
