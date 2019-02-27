@@ -34,16 +34,5 @@ module.exports.addTests = function({testRunner, expect}) {
         return promise.then(() => reader.result);
       }, input)).toBe('contents of the file');
     });
-    it_fails_ffox('keyboard.modifiers()', async({page, server}) => {
-      const keyboard = page.keyboard;
-      expect(keyboard._modifiers).toBe(0);
-      await keyboard.down('Shift');
-      expect(keyboard._modifiers).toBe(8);
-      await keyboard.down('Alt');
-      expect(keyboard._modifiers).toBe(9);
-      await keyboard.up('Shift');
-      await keyboard.up('Alt');
-      expect(keyboard._modifiers).toBe(0);
-    });
   });
 };
