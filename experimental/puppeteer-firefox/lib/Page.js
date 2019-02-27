@@ -27,9 +27,9 @@ class Page extends EventEmitter {
   static async create(session, target, defaultViewport) {
     const page = new Page(session, target);
     await Promise.all([
-      session.send('Page.enable'),
-      session.send('Network.enable'),
       session.send('Runtime.enable'),
+      session.send('Network.enable'),
+      session.send('Page.enable'),
     ]);
 
     if (defaultViewport)
@@ -727,9 +727,6 @@ class Page extends EventEmitter {
    */
   async setContent(html) {
     return await this._frameManager.mainFrame().setContent(html);
-  }
-
-  _onClosed() {
   }
 
   _onConsole({type, args, executionContextId, location}) {
