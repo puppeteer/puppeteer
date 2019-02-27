@@ -69,5 +69,15 @@ module.exports.addTests = function({testRunner, expect}) {
       }
       expect(error.message).toContain('Session closed.');
     });
+    it('should throw nice errors', async function({page}) {
+      const client = await page.target().createCDPSession();
+      const error = await theSourceOfTheProblems().catch(error => error);
+      expect(error.stack).toContain('theSourceOfTheProblems');
+      expect(error.message).toContain('ThisCommand.DoesNotExist');
+
+      async function theSourceOfTheProblems() {
+        await client.send('ThisCommand.DoesNotExist');
+      }
+    });
   });
 };

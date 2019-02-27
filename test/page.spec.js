@@ -1078,17 +1078,6 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     });
   });
 
-  describe_fails_ffox('Connection', function() {
-    it('should throw nice errors', async function({page}) {
-      const error = await theSourceOfTheProblems().catch(error => error);
-      expect(error.stack).toContain('theSourceOfTheProblems');
-      expect(error.message).toContain('ThisCommand.DoesNotExist');
-      async function theSourceOfTheProblems() {
-        await page._client.send('ThisCommand.DoesNotExist');
-      }
-    });
-  });
-
   describe('Page.Events.Close', function() {
     it('should work with window.close', async function({ page, context, server }) {
       const newPagePromise = new Promise(fulfill => context.once('targetcreated', target => fulfill(target.page())));
