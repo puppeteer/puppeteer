@@ -236,6 +236,17 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
     });
   });
 
+  describe('Response.statusText', function() {
+    it('should work', async({page, server}) => {
+      server.setRoute('/cool', (req, res) => {
+        res.writeHead(200, 'cool!');
+        res.end();
+      });
+      const response = await page.goto(server.PREFIX + '/cool');
+      expect(response.statusText()).toBe('cool!');
+    });
+  });
+
   describe('Network Events', function() {
     it('Page.Events.Request', async({page, server}) => {
       const requests = [];
@@ -262,15 +273,6 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       // Either IPv6 or IPv4, depending on environment.
       expect(remoteAddress.ip.includes('::1') || remoteAddress.ip === '127.0.0.1').toBe(true);
       expect(remoteAddress.port).toBe(server.PORT);
-    });
-
-    it('Response.statusText', async({page, server}) => {
-      server.setRoute('/cool', (req, res) => {
-        res.writeHead(200, 'cool!');
-        res.end();
-      });
-      const response = await page.goto(server.PREFIX + '/cool');
-      expect(response.statusText()).toBe('cool!');
     });
 
     it('Page.Events.RequestFailed', async({page, server}) => {
@@ -422,7 +424,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(requests[1].url()).toContain('/one-style.css');
       expect(requests[1].headers().referer).toContain('/one-style.html');
     });
-    it_fails_ffox('should properly return navigation response when URL has cookies', async({page, server}) => {
+    it('should properly return navigation response when URL has cookies', async({page, server}) => {
       // Setup cookie.
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({ name: 'foo', value: 'bar'});

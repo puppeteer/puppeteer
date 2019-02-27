@@ -8,6 +8,7 @@ const util = require('util');
 const EventEmitter = require('events');
 const {createHandle} = require('./JSHandle');
 const {Events} = require('./Events');
+const {Connection} = require('./Connection');
 const {FrameManager, normalizeWaitUntil} = require('./FrameManager');
 const {NetworkManager} = require('./NetworkManager');
 const {TimeoutSettings} = require('./TimeoutSettings');
@@ -78,6 +79,67 @@ class Page extends EventEmitter {
       helper.removeEventListeners(this._eventListeners);
       this.emit(Events.Page.Close);
     });
+  }
+
+  /**
+   * @param {!Array<string>} urls
+   * @return {!Promise<!Array<Network.Cookie>>}
+   */
+  async cookies(...urls) {
+    const connection = Connection.fromSession(this._session);
+    return (await connection.send('Browser.getCookies', {
+      browserContextId: this._target._context._browserContextId,
+      urls: urls.length ? urls : [this.url()]
+    })).cookies;
+  }
+
+  /**
+   * @param {Array<Protocol.Network.deleteCookiesParameters>} cookies
+   */
+  async deleteCookie(...cookies) {
+    const pageURL = this.url();
+    const items = [];
+    for (const cookie of cookies) {
+      const item = {
+        url: cookie.url,
+        domain: cookie.domain,
+        path: cookie.path,
+        name: cookie.name,
+      };
+      if (!item.url && pageURL.startsWith('http'))
+        item.url = pageURL;
+      items.push(item);
+    }
+
+    const connection = Connection.fromSession(this._session);
+    await connection.send('Browser.deleteCookies', {
+      browserContextId: this._target._context._browserContextId,
+      cookies: items,
+    });
+  }
+
+  /**
+   * @param {Array<Network.CookieParam>} cookies
+   */
+  async setCookie(...cookies) {
+    const pageURL = this.url();
+    const startsWithHTTP = pageURL.startsWith('http');
+    const items = cookies.map(cookie => {
+      const item = Object.assign({}, cookie);
+      if (!item.url && startsWithHTTP)
+        item.url = pageURL;
+      assert(item.url !== 'about:blank', `Blank page can not have cookie "${item.name}"`);
+      assert(!String.prototype.startsWith.call(item.url || '', 'data:'), `Data URL page can not have cookie "${item.name}"`);
+      return item;
+    });
+    await this.deleteCookie(...items);
+    if (items.length) {
+      const connection = Connection.fromSession(this._session);
+      await connection.send('Browser.setCookies', {
+        browserContextId: this._target._context._browserContextId,
+        cookies: items
+      });
+    }
   }
 
   async setRequestInterception(enabled) {
