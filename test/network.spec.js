@@ -424,7 +424,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(requests[1].url()).toContain('/one-style.css');
       expect(requests[1].headers().referer).toContain('/one-style.html');
     });
-    it_fails_ffox('should properly return navigation response when URL has cookies', async({page, server}) => {
+    it('should properly return navigation response when URL has cookies', async({page, server}) => {
       // Setup cookie.
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({ name: 'foo', value: 'bar'});
