@@ -1758,6 +1758,7 @@ puppeteer.launch().then(async browser => {
 ```
 
 > **NOTE** Enabling request interception disables page caching.
+> **NOTE** Enabling request interception starts bypassing ServiceWorkers for network.
 
 #### page.setUserAgent(userAgent)
 - `userAgent` <[string]> Specific user agent to use in this page

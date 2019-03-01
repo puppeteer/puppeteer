@@ -123,13 +123,16 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(response.fromServiceWorker()).toBe(false);
     });
 
-    it('Response.fromServiceWorker', async({page, server}) => {
-      const responses = new Map();
-      page.on('response', r => responses.set(r.url().split('/').pop(), r));
+    it('should return |true| for service-worker served files', async({page, server}) => {
+      await page.setRequestInterception(true);
+      page.on('request', r => r.continue());
 
       // Load and re-load to make sure serviceworker is installed and running.
       await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html', {waitUntil: 'networkidle2'});
       await page.evaluate(async() => await window.activationPromise);
+
+      const responses = new Map();
+      page.on('response', r => responses.set(r.url().split('/').pop(), r));
       await page.reload();
 
       expect(responses.size).toBe(2);
@@ -137,6 +140,24 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(responses.get('sw.html').fromServiceWorker()).toBe(true);
       expect(responses.get('style.css').status()).toBe(200);
       expect(responses.get('style.css').fromServiceWorker()).toBe(true);
+    });
+    it('should bypass service worker when request interception is enabled', async({page, server}) => {
+      // Load and re-load to make sure serviceworker is installed and running.
+      await page.goto(server.PREFIX + '/serviceworkers/fetch/sw.html', {waitUntil: 'networkidle2'});
+      await page.evaluate(async() => await window.activationPromise);
+
+      expect((await page.reload()).fromServiceWorker()).toBe(true);
+
+      await page.setRequestInterception(true);
+      const continnueAll = r => r.continue();
+      page.on('request', r => r.continue());
+
+      expect((await page.reload()).fromServiceWorker()).toBe(false);
+
+      await page.setRequestInterception(false);
+      page.removeAllListeners('request');
+
+      expect((await page.reload()).fromServiceWorker()).toBe(true);
     });
   });
 
