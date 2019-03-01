@@ -3214,7 +3214,7 @@ Exception is immediately thrown if the request interception is not enabled.
 
 #### request.continue([overrides])
 - `overrides` <[Object]> Optional request overwrites, which can be one of the following:
-  - `url` <[string]> If set, the request url will be changed
+  - `url` <[string]> If set, the request url will be changed. This is not a redirect. The request will be silently forwarded to the new url. For example, the address bar will show the original url.
   - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`)
   - `postData` <[string]> If set changes the post data of request
   - `headers` <[Object]> If set changes the request HTTP headers
