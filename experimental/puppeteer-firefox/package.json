@@ -1,6 +1,6 @@
 {
   "name": "puppeteer-firefox",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "Puppeteer API for Firefox",
   "main": "index.js",
   "repository": "github:GoogleChrome/puppeteer",
