@@ -206,7 +206,7 @@ class BrowserFetcher {
         throw new Error('Unsupported platform: ' + this._platform);
     } else if (this._product === 'firefox') {
       if (this._platform === 'mac')
-        executablePath = path.join(folderPath, 'firefox', 'Nightly.app', 'Contents', 'MacOS', 'Firefox');
+        executablePath = path.join(folderPath, 'firefox', 'Nightly.app', 'Contents', 'MacOS', 'firefox');
       else if (this._platform === 'linux')
         executablePath = path.join(folderPath, 'firefox', 'firefox');
       else if (this._platform === 'win32' || this._platform === 'win64')
