@@ -152,7 +152,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await rmAsync(userDataDir).catch(e => {});
       });
       // This mysteriously fails on Windows on AppVeyor. See https://github.com/GoogleChrome/puppeteer/issues/4111
-      xit('userDataDir option should restore cookies', async ({server}) => {
+      xit('userDataDir option should restore cookies', async({server}) => {
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
