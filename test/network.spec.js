@@ -513,20 +513,6 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       ]);
       expect(request.headers['referer']).toBe('http://google.com/');
     });
-    it_fails_ffox('should amend HTTP headers', async({page, server}) => {
-      await page.setRequestInterception(true);
-      page.on('request', request => {
-        const headers = Object.assign({}, request.headers());
-        headers['FOO'] = 'bar';
-        request.continue({ headers });
-      });
-      await page.goto(server.EMPTY_PAGE);
-      const [request] = await Promise.all([
-        server.waitForRequest('/sleep.zzz'),
-        page.evaluate(() => fetch('/sleep.zzz'))
-      ]);
-      expect(request.headers['foo']).toBe('bar');
-    });
     it('should fail navigation when aborting main resource', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => request.abort());
@@ -728,6 +714,66 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(urls.size).toBe(2);
       expect(urls.has('one-style.html')).toBe(true);
       expect(urls.has('one-style.css')).toBe(true);
+    });
+  });
+
+  describe_fails_ffox('Request.continue', function() {
+    it('should work', async({page, server}) => {
+      await page.setRequestInterception(true);
+      page.on('request', request => request.continue());
+      await page.goto(server.EMPTY_PAGE);
+    });
+    it('should amend HTTP headers', async({page, server}) => {
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        const headers = Object.assign({}, request.headers());
+        headers['FOO'] = 'bar';
+        request.continue({ headers });
+      });
+      await page.goto(server.EMPTY_PAGE);
+      const [request] = await Promise.all([
+        server.waitForRequest('/sleep.zzz'),
+        page.evaluate(() => fetch('/sleep.zzz'))
+      ]);
+      expect(request.headers['foo']).toBe('bar');
+    });
+    it('should redirect in a way non-observable to page', async({page, server}) => {
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        const redirectURL = request.url().includes('/empty.html') ? server.PREFIX + '/consolelog.html' : undefined;
+        request.continue({ url: redirectURL });
+      });
+      let consoleMessage = null;
+      page.on('console', msg => consoleMessage = msg);
+      await page.goto(server.EMPTY_PAGE);
+      expect(page.url()).toBe(server.EMPTY_PAGE);
+      expect(consoleMessage.text()).toBe('yellow');
+    });
+    it('should amend method', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        request.continue({ method: 'POST' });
+      });
+      const [request] = await Promise.all([
+        server.waitForRequest('/sleep.zzz'),
+        page.evaluate(() => fetch('/sleep.zzz'))
+      ]);
+      expect(request.method).toBe('POST');
+    });
+    it('should amend post data', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        request.continue({ postData: 'doggo' });
+      });
+      const [serverRequest] = await Promise.all([
+        server.waitForRequest('/sleep.zzz'),
+        page.evaluate(() => fetch('/sleep.zzz', { method: 'POST', body: 'birdy' }))
+      ]);
+      expect(await serverRequest.postBody).toBe('doggo');
     });
   });
 

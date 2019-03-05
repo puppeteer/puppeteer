@@ -189,6 +189,11 @@ class TestServer {
       else
         throw error;
     });
+    request.postBody = new Promise(resolve => {
+      let body = '';
+      request.on('data', chunk => body += chunk);
+      request.on('end', () => resolve(body));
+    });
     const pathName = url.parse(request.url).path;
     if (this._auths.has(pathName)) {
       const auth = this._auths.get(pathName);
