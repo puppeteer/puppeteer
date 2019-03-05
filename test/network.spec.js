@@ -106,7 +106,6 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
 
       // Load and re-load to make sure it's cached.
       await page.goto(server.PREFIX + '/cached/one-style.html');
-      await page.waitFor(1000);
       await page.reload();
 
       expect(responses.size).toBe(2);
@@ -748,6 +747,25 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(response.status()).toBe(201);
       expect(response.headers().foo).toBe('bar');
       expect(await page.evaluate(() => document.body.textContent)).toBe('Yo, page!');
+    });
+    it('should redirect', async({page, server}) => {
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        if (!request.url().includes('rrredirect')) {
+          request.continue();
+          return;
+        }
+        request.respond({
+          status: 302,
+          headers: {
+            location: server.EMPTY_PAGE,
+          },
+        });
+      });
+      const response = await page.goto(server.PREFIX + '/rrredirect');
+      expect(response.request().redirectChain().length).toBe(1);
+      expect(response.request().redirectChain()[0].url()).toBe(server.PREFIX + '/rrredirect');
+      expect(response.url()).toBe(server.EMPTY_PAGE);
     });
     it('should allow mocking binary responses', async({page, server}) => {
       await page.setRequestInterception(true);
