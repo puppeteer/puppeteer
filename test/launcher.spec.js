@@ -321,6 +321,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       it('should work', async({server}) => {
         const executablePath = puppeteer.executablePath();
         expect(fs.existsSync(executablePath)).toBe(true);
+        expect(fs.realpathSync(executablePath)).toBe(executablePath);
       });
     });
   });
