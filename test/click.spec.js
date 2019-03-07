@@ -196,6 +196,17 @@ module.exports.addTests = function({testRunner, expect}) {
       await button.click();
       expect(await frame.evaluate(() => window.result)).toBe('Clicked');
     });
+    // @see https://github.com/GoogleChrome/puppeteer/issues/4110
+    xit('should click the button with fixed position inside an iframe', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setViewport({width: 500, height: 500});
+      await page.setContent('<div style="width:100px;height:2000px">spacer</div>');
+      await utils.attachFrame(page, 'button-test', server.CROSS_PROCESS_PREFIX + '/input/button.html');
+      const frame = page.frames()[1];
+      await frame.$eval('button', button => button.style.setProperty('position', 'fixed'));
+      await frame.click('button');
+      expect(await frame.evaluate(() => window.result)).toBe('Clicked');
+    });
     it('should click the button with deviceScaleFactor set', async({page, server}) => {
       await page.setViewport({width: 400, height: 400, deviceScaleFactor: 5});
       expect(await page.evaluate(() => window.devicePixelRatio)).toBe(5);
