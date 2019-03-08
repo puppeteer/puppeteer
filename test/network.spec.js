@@ -41,7 +41,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       const requests = [];
       page.on('request', request => !utils.isFavicon(request) && requests.push(request));
       await page.goto(server.EMPTY_PAGE);
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await page.evaluate(() => fetch('/empty.html'));
       expect(requests.length).toBe(2);
     });
   });
