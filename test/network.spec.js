@@ -717,7 +717,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
     });
   });
 
-  describe_fails_ffox('Request.continue', function() {
+  describe('Request.continue', function() {
     it('should work', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => request.continue());
@@ -737,7 +737,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       ]);
       expect(request.headers['foo']).toBe('bar');
     });
-    it('should redirect in a way non-observable to page', async({page, server}) => {
+    it_fails_ffox('should redirect in a way non-observable to page', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
         const redirectURL = request.url().includes('/empty.html') ? server.PREFIX + '/consolelog.html' : undefined;
@@ -749,7 +749,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(page.url()).toBe(server.EMPTY_PAGE);
       expect(consoleMessage.text()).toBe('yellow');
     });
-    it('should amend method', async({page, server}) => {
+    it_fails_ffox('should amend method', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
 
       await page.setRequestInterception(true);
@@ -762,7 +762,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       ]);
       expect(request.method).toBe('POST');
     });
-    it('should amend post data', async({page, server}) => {
+    it_fails_ffox('should amend post data', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
 
       await page.setRequestInterception(true);
