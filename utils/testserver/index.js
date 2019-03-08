@@ -248,7 +248,10 @@ class TestServer {
         response.end(`File not found: ${filePath}`);
         return;
       }
-      response.setHeader('Content-Type', mime.getType(filePath));
+      const mimeType = mime.getType(filePath);
+      const isTextEncoding = /^text\/|^application\/(javascript|json)/.test(mimeType);
+      let contentType = isTextEncoding ? `${mimeType}; charset=utf-8` : mimeType;
+      response.setHeader('Content-Type', contentType);
       if (this._gzipRoutes.has(pathName)) {
         response.setHeader('Content-Encoding', 'gzip');
         const zlib = require('zlib');

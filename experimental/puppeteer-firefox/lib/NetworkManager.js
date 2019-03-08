@@ -146,12 +146,19 @@ class Request {
     return this._errorText ? {errorText: this._errorText} : null;
   }
 
-  async continue() {
+  async continue(overrides = {}) {
+    assert(!overrides.url, 'Puppeteer-Firefox does not support overriding URL');
+    assert(!overrides.method, 'Puppeteer-Firefox does not support overriding method');
+    assert(!overrides.postData, 'Puppeteer-Firefox does not support overriding postData');
     assert(this._suspended, 'Request Interception is not enabled!');
     assert(!this._interceptionHandled, 'Request is already handled!');
     this._interceptionHandled = true;
+    const {
+      headers,
+    } = overrides;
     await this._session.send('Network.resumeSuspendedRequest', {
       requestId: this._id,
+      headers: headers ? Object.entries(headers).map(([name, value]) => ({name, value})) : undefined,
     }).catch(error => {
       debugError(error);
     });
