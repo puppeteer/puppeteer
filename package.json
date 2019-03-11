@@ -51,7 +51,7 @@
     "@types/ws": "^6.0.1",
     "commonmark": "^0.28.1",
     "cross-env": "^5.0.5",
-    "eslint": "^5.9.0",
+    "eslint": "^5.15.1",
     "esprima": "^4.0.0",
     "jpeg-js": "^0.3.4",
     "minimist": "^1.2.0",
