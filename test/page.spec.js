@@ -781,6 +781,25 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       await page.addScriptTag({content: 'window.__injected = 42;'});
       expect(await page.evaluate(() => window.__injected)).toBe(42);
     });
+    it('should bypass CSP in iframes as well', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      {
+        // Make sure CSP prohibits addScriptTag in an iframe.
+        const frame = await utils.attachFrame(page, 'frame1', server.PREFIX + '/csp.html');
+        await frame.addScriptTag({content: 'window.__injected = 42;'}).catch(e => void e);
+        expect(await frame.evaluate(() => window.__injected)).toBe(undefined);
+      }
+
+      // By-pass CSP and try one more time.
+      await page.setBypassCSP(true);
+      await page.reload();
+
+      {
+        const frame = await utils.attachFrame(page, 'frame1', server.PREFIX + '/csp.html');
+        await frame.addScriptTag({content: 'window.__injected = 42;'}).catch(e => void e);
+        expect(await frame.evaluate(() => window.__injected)).toBe(42);
+      }
+    });
   });
 
   describe('Page.addScriptTag', function() {
