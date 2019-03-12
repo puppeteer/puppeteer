@@ -58,7 +58,7 @@ class Page extends EventEmitter {
     this._networkManager.setFrameManager(this._frameManager);
     this._eventListeners = [
       helper.addEventListener(this._session, 'Page.uncaughtError', this._onUncaughtError.bind(this)),
-      helper.addEventListener(this._session, 'Page.console', this._onConsole.bind(this)),
+      helper.addEventListener(this._session, 'Runtime.console', this._onConsole.bind(this)),
       helper.addEventListener(this._session, 'Page.dialogOpened', this._onDialogOpened.bind(this)),
       helper.addEventListener(this._session, 'Page.bindingCalled', this._onBindingCalled.bind(this)),
       helper.addEventListener(this._frameManager, Events.FrameManager.Load, () => this.emit(Events.Page.Load)),
