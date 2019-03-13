@@ -41,11 +41,10 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
     });
     it('should close the browser when the node process closes', async({ server }) => {
       const {spawn, execSync} = require('child_process');
-      const options = {
-        ...defaultBrowserOptions,
+      const options = Object.assign({}, defaultBrowserOptions, {
         // Disable DUMPIO to cleanly read stdout.
         dumpio: false,
-      };
+      });
       const res = spawn('node', [path.join(__dirname, 'fixtures', 'closeme.js'), puppeteerPath, JSON.stringify(options)]);
       let wsEndPointCallback;
       const wsEndPointPromise = new Promise(x => wsEndPointCallback = x);
