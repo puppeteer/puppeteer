@@ -162,6 +162,17 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(detachedFrames.length).toBe(4);
       expect(navigatedFrames.length).toBe(1);
     });
+    it('should report frame from-inside shadow DOM', async({page, server}) => {
+      await page.goto(server.PREFIX + '/shadow.html');
+      await page.evaluate(async url => {
+        const frame = document.createElement('iframe');
+        frame.src = url;
+        document.body.shadowRoot.appendChild(frame);
+        await new Promise(x => frame.onload = x);
+      }, server.EMPTY_PAGE);
+      expect(page.frames().length).toBe(2);
+      expect(page.frames()[1].url()).toBe(server.EMPTY_PAGE);
+    });
     it('should report frame.name()', async({page, server}) => {
       await utils.attachFrame(page, 'theFrameId', server.EMPTY_PAGE);
       await page.evaluate(url => {
