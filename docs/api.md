@@ -2962,9 +2962,9 @@ const puppeteer = require('puppeteer');
 
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
-  await page.goto('https://google.com');
-  const inputElement = await page.$('input[type=submit]');
-  await inputElement.click();
+  await page.goto('https://example.com');
+  const hrefElement = await page.$('a');
+  await hrefElement.click();
   // ...
 });
 ```
