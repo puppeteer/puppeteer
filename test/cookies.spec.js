@@ -260,15 +260,15 @@ module.exports.addTests = function({testRunner, expect}) {
       const [cookie] = await page.cookies(SECURE_URL);
       expect(cookie.secure).toBe(true);
     });
-    it('should be able to set unsecure cookie for HTTPS website', async({page, server}) => {
+    it('should be able to set unsecure cookie for HTTP website', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
-      const SECURE_URL = 'http://example.com';
+      const HTTP_URL = 'http://example.com';
       await page.setCookie({
-        url: SECURE_URL,
+        url: HTTP_URL,
         name: 'foo',
         value: 'bar',
       });
-      const [cookie] = await page.cookies(SECURE_URL);
+      const [cookie] = await page.cookies(HTTP_URL);
       expect(cookie.secure).toBe(false);
     });
     it('should set a cookie on a different domain', async({page, server}) => {
