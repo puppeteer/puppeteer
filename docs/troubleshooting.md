@@ -248,14 +248,14 @@ how to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
 ### Running on Alpine
 
-The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 71, which was corresponding to [Puppeteer v1.9.0](https://github.com/GoogleChrome/puppeteer/releases/tag/v1.9.0).
+The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 72, which was corresponding to [Puppeteer v1.11.0](https://github.com/GoogleChrome/puppeteer/releases/tag/v1.11.0).
 
 Example Dockerfile:
 
 ```Dockerfile
 FROM node:10-alpine
 
-# Installs latest Chromium (71) package.
+# Installs latest Chromium (72) package.
 RUN apk update && apk upgrade && \
     echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
     echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
@@ -263,15 +263,16 @@ RUN apk update && apk upgrade && \
       chromium@edge \
       nss@edge \
       freetype@edge \
-      harfbuzz@edge
+      harfbuzz@edge \
+      ttf-freefont@edge
 
 ...
 
 # Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
-# Puppeteer v1.9.0 works with Chromium 71.
-RUN yarn add puppeteer@1.9.0
+# Puppeteer v1.11.0 works with Chromium 72.
+RUN yarn add puppeteer@1.11.0
 
 # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
