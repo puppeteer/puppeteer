@@ -1,8 +1,6 @@
-# Puppeteer API <!-- GEN:version -->Tip-Of-Tree<!-- GEN:stop-->
+# Puppeteer API <!-- GEN:version -->v1.14.0<!-- GEN:stop-->
 
-<!-- GEN:empty-if-release -->
-> NExt Release: **Mar 28, 2019**
-<!-- GEN:stop -->
+<!-- GEN:empty-if-release --><!-- GEN:stop -->
 - Interactive Documentation: https://pptr.dev
 - API Translations: [中文|Chinese](https://zhaoqize.github.io/puppeteer-api-zh_CN/#/)
 - Releases per Chromium Version:
