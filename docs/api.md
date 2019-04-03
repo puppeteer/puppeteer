@@ -3,6 +3,7 @@
 <!-- GEN:empty-if-release --><!-- GEN:stop -->
 - Interactive Documentation: https://pptr.dev
 - API Translations: [中文|Chinese](https://zhaoqize.github.io/puppeteer-api-zh_CN/#/)
+- Troubleshooting: [troubleshooting.md](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md)
 - Releases per Chromium Version:
   * Chromium 75.0.3738.0 - [Puppeteer v1.14.0](https://github.com/GoogleChrome/puppeteer/blob/v1.14.0/docs/api.md)
   * Chromium 74.0.3723.0 - [Puppeteer v1.13.0](https://github.com/GoogleChrome/puppeteer/blob/v1.13.0/docs/api.md)
