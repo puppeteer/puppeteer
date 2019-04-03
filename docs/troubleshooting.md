@@ -1,7 +1,8 @@
 # Troubleshooting
 
 <!-- GEN:toc -->
-- [Chrome headless doesn't launch](#chrome-headless-doesnt-launch)
+- [Chrome headless doesn't launch on Windows](#chrome-headless-doesnt-launch-on-windows)
+- [Chrome headless doesn't launch on UNIX](#chrome-headless-doesnt-launch-on-unix)
 - [Setting Up Chrome Linux Sandbox](#setting-up-chrome-linux-sandbox)
   * [[recommended] Enable user namespace cloning](#recommended-enable-user-namespace-cloning)
   * [[alternative] Setup setuid sandbox](#alternative-setup-setuid-sandbox)
@@ -17,7 +18,22 @@
 - [Code Transpilation Issues](#code-transpilation-issues)
 <!-- GEN:stop -->
 
-## Chrome headless doesn't launch
+## Chrome headless doesn't launch on Windows
+
+In some environments, running Chromium with `--disable-extensions` flag is forbidden (this is one of the flags
+Puppeteer passes by default).
+
+Try running without the flag:
+
+```js
+const browser = await puppeteer.launch({
+  ignoreDefaultArgs: ['--disable-extensions'],
+});
+```
+
+> Context: [issue 3681](https://github.com/GoogleChrome/puppeteer/issues/3681#issuecomment-447865342).
+
+## Chrome headless doesn't launch on UNIX
 
 Make sure all the necessary dependencies are installed. You can run `ldd chrome | grep not` on a Linux
 machine to check which dependencies are missing. The common ones are provided below.
