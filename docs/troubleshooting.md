@@ -23,9 +23,9 @@
 Some [chrome policies](https://support.google.com/chrome/a/answer/7532015?hl=en) might enforce running Chrome/Chromium
 with certain extensions.
 
-Puppeteer passes `--disable-extensions` flag by default and will fail to launch when such policies are taking place.
+Puppeteer passes `--disable-extensions` flag by default and will fail to launch when such policies are active.
 
-To work around, try running without the flag:
+To work around this, try running without the flag:
 
 ```js
 const browser = await puppeteer.launch({
