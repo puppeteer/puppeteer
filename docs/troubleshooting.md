@@ -1,5 +1,22 @@
 # Troubleshooting
 
+<!-- GEN:toc -->
+- [Chrome headless doesn't launch](#chrome-headless-doesnt-launch)
+- [Setting Up Chrome Linux Sandbox](#setting-up-chrome-linux-sandbox)
+  * [[recommended] Enable user namespace cloning](#recommended-enable-user-namespace-cloning)
+  * [[alternative] Setup setuid sandbox](#alternative-setup-setuid-sandbox)
+- [Running Puppeteer on Travis CI](#running-puppeteer-on-travis-ci)
+- [Running Puppeteer in Docker](#running-puppeteer-in-docker)
+  * [Running on Alpine](#running-on-alpine)
+    - [Tips](#tips)
+- [Running Puppeteer in the cloud](#running-puppeteer-in-the-cloud)
+  * [Running Puppeteer on Google App Engine](#running-puppeteer-on-google-app-engine)
+  * [Running Puppeteer on Google Cloud Functions](#running-puppeteer-on-google-cloud-functions)
+  * [Running Puppeteer on Heroku](#running-puppeteer-on-heroku)
+  * [Running Puppeteer on AWS Lambda](#running-puppeteer-on-aws-lambda)
+- [Code Transpilation Issues](#code-transpilation-issues)
+<!-- GEN:stop -->
+
 ## Chrome headless doesn't launch
 
 Make sure all the necessary dependencies are installed. You can run `ldd chrome | grep not` on a Linux

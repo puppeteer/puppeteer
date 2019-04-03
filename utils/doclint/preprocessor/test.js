@@ -156,6 +156,42 @@ describe('runCommands', function() {
         #### page.$
         #### page.$$`);
     });
+    it('should work with code blocks', () => {
+      const source = new Source('doc.md', `<!-- gen:toc -->XXX<!-- gen:stop -->
+        ### class: page
+
+        \`\`\`bash
+        # yo comment
+        \`\`\`
+      `);
+      const messages = runCommands([source], '1.3.0');
+      expect(messages.length).toBe(1);
+      expect(messages[0].type).toBe('warning');
+      expect(messages[0].text).toContain('doc.md');
+      expect(source.text()).toBe(`<!-- gen:toc -->
+- [class: page](#class-page)
+<!-- gen:stop -->
+        ### class: page
+
+        \`\`\`bash
+        # yo comment
+        \`\`\`
+      `);
+    });
+    it('should work with links in titles', () => {
+      const source = new Source('doc.md', `<!-- gen:toc -->XXX<!-- gen:stop -->
+        ### some [link](#foobar) here
+      `);
+      const messages = runCommands([source], '1.3.0');
+      expect(messages.length).toBe(1);
+      expect(messages[0].type).toBe('warning');
+      expect(messages[0].text).toContain('doc.md');
+      expect(source.text()).toBe(`<!-- gen:toc -->
+- [some link here](#some-link-here)
+<!-- gen:stop -->
+        ### some [link](#foobar) here
+      `);
+    });
   });
   it('should work with multiple commands', function() {
     const source = new Source('doc.md', `

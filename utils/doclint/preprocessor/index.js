@@ -93,11 +93,22 @@ function applyCommand(command, editText) {
 
 function generateTableOfContents(mdText) {
   const ids = new Set();
-  const titles = mdText.split('\n').map(line => line.trim()).filter(line => line.startsWith('#'));
+  const titles = [];
+  let insideCodeBlock = false;
+  for (const aLine of mdText.split('\n')) {
+    const line = aLine.trim();
+    if (line.startsWith('```')) {
+      insideCodeBlock = !insideCodeBlock;
+      continue;
+    }
+    if (!insideCodeBlock && line.startsWith('#'))
+      titles.push(line);
+  }
   const tocEntries = [];
   for (const title of titles) {
     const [, nesting, name] = title.match(/^(#+)\s+(.*)$/);
-    const id = name.trim().toLowerCase().replace(/\s/g, '-').replace(/[^-0-9a-zа-яё]/ig, '');
+    const delinkifiedName = name.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+    const id = delinkifiedName.trim().toLowerCase().replace(/\s/g, '-').replace(/[^-0-9a-zа-яё]/ig, '');
     let dedupId = id;
     let counter = 0;
     while (ids.has(dedupId))
@@ -105,7 +116,7 @@ function generateTableOfContents(mdText) {
     ids.add(dedupId);
     tocEntries.push({
       level: nesting.length,
-      name,
+      name: delinkifiedName,
       id: dedupId
     });
   }
