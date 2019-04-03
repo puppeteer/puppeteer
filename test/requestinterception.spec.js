@@ -298,6 +298,20 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(requests.length).toBe(1);
       expect(requests[0].url()).toBe(dataURL);
     });
+    it_fails_ffox('should be able to fetch dataURL and fire dataURL requests', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.setRequestInterception(true);
+      const requests = [];
+      page.on('request', request => {
+        requests.push(request);
+        request.continue();
+      });
+      const dataURL = 'data:text/html,<div>yo</div>';
+      const text = await page.evaluate(url => fetch(url).then(r => r.text()), dataURL);
+      console.log(text);
+      expect(requests.length).toBe(1);
+      expect(requests[0].url()).toBe(dataURL);
+    });
     it_fails_ffox('should navigate to URL with hash and and fire requests without hash', async({page, server}) => {
       await page.setRequestInterception(true);
       const requests = [];
