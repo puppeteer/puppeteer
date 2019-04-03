@@ -20,10 +20,12 @@
 
 ## Chrome headless doesn't launch on Windows
 
-In some environments, running Chromium with `--disable-extensions` flag is forbidden (this is one of the flags
-Puppeteer passes by default).
+Some [chrome policies](https://support.google.com/chrome/a/answer/7532015?hl=en) might enforce running Chrome/Chromium
+with certain extensions.
 
-Try running without the flag:
+Puppeteer passes `--disable-extensions` flag by default and will fail to launch when such policies are taking place.
+
+To workaround, try running without the flag:
 
 ```js
 const browser = await puppeteer.launch({
