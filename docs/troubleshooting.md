@@ -25,7 +25,7 @@ with certain extensions.
 
 Puppeteer passes `--disable-extensions` flag by default and will fail to launch when such policies are taking place.
 
-To workaround, try running without the flag:
+To work around, try running without the flag:
 
 ```js
 const browser = await puppeteer.launch({
