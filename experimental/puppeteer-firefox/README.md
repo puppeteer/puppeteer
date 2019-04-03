@@ -75,7 +75,7 @@ const getPort = require('get-port');
     );
 
     const browserWSEndpoint = `ws://127.0.0.1:${CDPPort}`
-    browser = await PP_FF.connect({
+    browser = await pptrFirefox.connect({
       browserWSEndpoint
     })
 })();
