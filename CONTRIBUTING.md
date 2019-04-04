@@ -1,3 +1,21 @@
+<!-- gen:toc -->
+- [How to Contribute](#how-to-contribute)
+  * [Contributor License Agreement](#contributor-license-agreement)
+  * [Getting setup](#getting-setup)
+  * [Code reviews](#code-reviews)
+  * [Code Style](#code-style)
+  * [API guidelines](#api-guidelines)
+  * [Commit Messages](#commit-messages)
+  * [Writing Documentation](#writing-documentation)
+  * [Adding New Dependencies](#adding-new-dependencies)
+  * [Writing Tests](#writing-tests)
+  * [Public API Coverage](#public-api-coverage)
+  * [Debugging Puppeteer](#debugging-puppeteer)
+- [For Project Maintainers](#for-project-maintainers)
+  * [Releasing to NPM](#releasing-to-npm)
+  * [Building Chromium Revisions](#building-chromium-revisions)
+<!-- gen:stop -->
+
 # How to Contribute
 
 First of all, thank you for your interest in Puppeteer!
@@ -199,7 +217,9 @@ npm run coverage
 
 See [Debugging Tips](README.md#debugging-tips) in the readme.
 
-## [For Project Maintainers] Releasing to NPM
+# For Project Maintainers
+
+## Releasing to NPM
 
 Releasing to NPM consists of 3 phases:
 1. Source Code: mark a release.
@@ -224,3 +244,12 @@ Releasing to NPM consists of 3 phases:
         - **NOTE**: make sure to update the "released APIs" section in the top of `docs/api.md`.
         - **NOTE**: no other commits should be landed in-between release commit and bump commit.
 
+## Building Chromium Revisions
+
+Google employers with explicit access can request Chromium builds.
+
+1. Goto [rpc explorer](https://cr-buildbucket.appspot.com/rpcexplorer/services/buildbucket.v2.Builds/ScheduleBuild?request={%20%20%20%20%22builder%22:%20{%20%20%20%20%20%20%20%20%22project%22:%20%22chromium%22,%20%20%20%20%20%20%20%20%22bucket%22:%20%22ci%22,%20%20%20%20%20%20%20%20%22builder%22:%20%22mac-rel%22%20%20%20%20},%20%20%20%20%22gitilesCommit%22:%20{%20%20%20%20%20%20%20%20%22host%22:%20%22chromium.googlesource.com%22,%20%20%20%20%20%20%20%20%22project%22:%20%22chromium/src%22,%20%20%20%20%20%20%20%20%22id%22:%20%22f6d8f73b94d1715b64f621d2112fbcecd0fc860a%22,%20%20%20%20%20%20%20%20%22ref%22:%20%22refs/heads/master%22%20%20%20%20},%20%20%20%20%22requestId%22:%20%22random%20string%20i%20guess%22})
+2. Login with Google account
+3. Set "builder" to either "mac-rel", "linux-rel", "win32-rel" or "win-rel"
+4. Set "id" to the full SHA of the commit to be built
+5. Hit "Send"
