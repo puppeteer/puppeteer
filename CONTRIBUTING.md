@@ -246,7 +246,7 @@ Releasing to NPM consists of 3 phases:
 
 ## Building Chromium Revisions
 
-Google employers with explicit access can request Chromium builds.
+Project maintainers with explicit access can request Chromium builds.
 
 1. Goto [rpc explorer](https://cr-buildbucket.appspot.com/rpcexplorer/services/buildbucket.v2.Builds/ScheduleBuild?request={%20%20%20%20%22builder%22:%20{%20%20%20%20%20%20%20%20%22project%22:%20%22chromium%22,%20%20%20%20%20%20%20%20%22bucket%22:%20%22ci%22,%20%20%20%20%20%20%20%20%22builder%22:%20%22mac-rel%22%20%20%20%20},%20%20%20%20%22gitilesCommit%22:%20{%20%20%20%20%20%20%20%20%22host%22:%20%22chromium.googlesource.com%22,%20%20%20%20%20%20%20%20%22project%22:%20%22chromium/src%22,%20%20%20%20%20%20%20%20%22id%22:%20%22f6d8f73b94d1715b64f621d2112fbcecd0fc860a%22,%20%20%20%20%20%20%20%20%22ref%22:%20%22refs/heads/master%22%20%20%20%20},%20%20%20%20%22requestId%22:%20%22random%20string%20i%20guess%22})
 2. Login with Google account
