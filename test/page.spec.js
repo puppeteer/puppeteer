@@ -366,6 +366,8 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
         expect(message.type()).toEqual('warn');
     });
     it_fails_ffox('should have location when fetch fails', async({page, server}) => {
+      // The point of this test is to make sure that we report console messages from
+      // Log domain: https://vanilla.aslushnikov.com/?Log.entryAdded
       await page.goto(server.EMPTY_PAGE);
       const [message] = await Promise.all([
         waitEvent(page, 'console'),
