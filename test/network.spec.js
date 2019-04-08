@@ -412,7 +412,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       ]);
     });
     // @see https://github.com/GoogleChrome/puppeteer/issues/3973
-    xit('should work when header manipulation headers with redirect', async({page, server}) => {
+    it('should work when header manipulation headers with redirect', async({page, server}) => {
       server.setRedirect('/rrredirect', '/empty.html');
       await page.setRequestInterception(true);
       page.on('request', request => {
