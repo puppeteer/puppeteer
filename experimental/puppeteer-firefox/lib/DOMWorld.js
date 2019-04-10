@@ -17,6 +17,7 @@ class DOMWorld {
     /** @type {!Set<!WaitTask>} */
     this._waitTasks = new Set();
     this._detached = false;
+    this._context = null;
   }
 
   frame() {
@@ -25,8 +26,10 @@ class DOMWorld {
 
   _setContext(context) {
     if (context) {
-      this._contextResolveCallback.call(null, context);
-      this._contextResolveCallback = null;
+      this._context = context;
+      if (this._contextResolveCallback)
+        this._contextResolveCallback.call(null, context);
+        this._contextResolveCallback = null;
       for (const waitTask of this._waitTasks)
         waitTask.rerun();
     } else {
@@ -46,6 +49,10 @@ class DOMWorld {
   async executionContext() {
     if (this._detached)
       throw new Error(`Execution Context is not available in detached frame "${this.url()}" (are you trying to evaluate?)`);
+
+    if (this._context)
+      return Promise.resolve(this._context);
+
     return this._contextPromise;
   }
 
