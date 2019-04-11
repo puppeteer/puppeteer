@@ -320,10 +320,12 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       it('should be able to connect to the same page simultaneously', async({server}) => {
         const browserOne = await puppeteer.launch();
         const browserTwo = await puppeteer.connect({ browserWSEndpoint: browserOne.wsEndpoint() });
-        await Promise.all([
+        const [page1, page2] = await Promise.all([
           new Promise(x => browserOne.once('targetcreated', target => x(target.page()))),
           browserTwo.newPage(),
         ]);
+        expect(await page1.evaluate(() => 7 * 8)).toBe(56);
+        expect(await page2.evaluate(() => 7 * 6)).toBe(42);
         await browserOne.close();
       });
 
