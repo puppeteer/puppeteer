@@ -316,6 +316,17 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(await restoredPage.evaluate(() => 7 * 8)).toBe(56);
         await browser.close();
       });
+      // @see https://github.com/GoogleChrome/puppeteer/issues/4197#issuecomment-481793410
+      it('should be able to connect to the same page simultaneously', async({server}) => {
+        const browserOne = await puppeteer.launch();
+        const browserTwo = await puppeteer.connect({ browserWSEndpoint: browserOne.wsEndpoint() });
+        await Promise.all([
+          new Promise(x => browserOne.once('targetcreated', target => x(target.page()))),
+          browserTwo.newPage(),
+        ]);
+        await browserOne.close();
+      });
+
     });
     describe('Puppeteer.executablePath', function() {
       it('should work', async({server}) => {
