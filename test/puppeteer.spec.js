@@ -137,6 +137,7 @@ module.exports.addTests = ({testRunner, product, puppeteerPath}) => {
       require('./mouse.spec.js').addTests(testOptions);
       require('./navigation.spec.js').addTests(testOptions);
       require('./network.spec.js').addTests(testOptions);
+      require('./requestinterception.spec.js').addTests(testOptions);
       require('./page.spec.js').addTests(testOptions);
       require('./screenshot.spec.js').addTests(testOptions);
       require('./queryselector.spec.js').addTests(testOptions);
