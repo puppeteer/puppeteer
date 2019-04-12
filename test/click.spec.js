@@ -50,6 +50,19 @@ module.exports.addTests = function({testRunner, expect}) {
       ]);
       expect(page.url()).toBe(server.PREFIX + '/wrappedlink.html#clicked');
     });
+    it_fails_ffox('should click when one of inline box children is outside of viewport', async({page, server}) => {
+      await page.setContent(`
+        <style>
+        i {
+          position: absolute;
+          top: -1000px;
+        }
+        </style>
+        <span onclick='javascript:window.CLICKED = 42;'><i>woof</i><b>doggo</b></span>
+      `);
+      await page.click('span');
+      expect(await page.evaluate(() => window.CLICKED)).toBe(42);
+    });
     it('should select the text by triple clicking', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       await page.focus('textarea');
