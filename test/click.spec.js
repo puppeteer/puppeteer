@@ -39,7 +39,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.setContent(`
         <style>
         span::before {
-          content: '\e003';
+          content: 'q';
         }
         </style>
         <span onclick='javascript:window.CLICKED=42'></span>
