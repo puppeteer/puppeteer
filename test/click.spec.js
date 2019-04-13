@@ -34,6 +34,19 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     });
+    // @see https://github.com/GoogleChrome/puppeteer/issues/4281
+    xit('should click on a span with an inline element inside', async({page, server}) => {
+      await page.setContent(`
+        <style>
+        span::before {
+          content: '\e003';
+        }
+        </style>
+        <span onclick='javascript:window.CLICKED=42'></span>
+      `);
+      await page.click('span');
+      expect(await page.evaluate(() => window.CLICKED)).toBe(42);
+    });
     it('should click the button after navigation ', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
       await page.click('button');
