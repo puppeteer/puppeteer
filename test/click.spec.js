@@ -35,7 +35,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(await page.evaluate(() => result)).toBe('Clicked');
     });
     // @see https://github.com/GoogleChrome/puppeteer/issues/4281
-    xit('should click on a span with an inline element inside', async({page, server}) => {
+    it('should click on a span with an inline element inside', async({page, server}) => {
       await page.setContent(`
         <style>
         span::before {
