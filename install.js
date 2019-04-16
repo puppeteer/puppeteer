@@ -36,7 +36,23 @@ if (process.env.NPM_PACKAGE_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.e
 const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host || process.env.npm_package_config_puppeteer_download_host;
 
 const puppeteer = require('./index');
-const browserFetcher = puppeteer.createBrowserFetcher({ host: downloadHost });
+
+// Override current environment proxy settings with npm configuration, if any.
+const NPM_HTTPS_PROXY = process.env.npm_config_https_proxy || process.env.npm_config_proxy;
+const NPM_HTTP_PROXY = process.env.npm_config_http_proxy || process.env.npm_config_proxy;
+const NPM_NO_PROXY = process.env.npm_config_no_proxy;
+const NPM_CONFIG_CAFILE = process.env.npm_config_cafile;
+
+if (NPM_HTTPS_PROXY)
+  process.env.HTTPS_PROXY = NPM_HTTPS_PROXY;
+if (NPM_HTTP_PROXY)
+  process.env.HTTP_PROXY = NPM_HTTP_PROXY;
+if (NPM_NO_PROXY)
+  process.env.NO_PROXY = NPM_NO_PROXY;
+
+const NPM_CONFIG_CA = getCertificateAuthority(NPM_CONFIG_CAFILE);
+const fetcherOptions = NPM_CONFIG_CA ? { host: downloadHost, ca: NPM_CONFIG_CA } : { host: downloadHost };
+const browserFetcher = puppeteer.createBrowserFetcher(fetcherOptions);
 
 const revision = process.env.PUPPETEER_CHROMIUM_REVISION || process.env.npm_config_puppeteer_chromium_revision || process.env.npm_package_config_puppeteer_chromium_revision
   || require('./package.json').puppeteer.chromium_revision;
@@ -48,18 +64,6 @@ if (revisionInfo.local) {
   generateProtocolTypesIfNecessary(false /* updated */);
   return;
 }
-
-// Override current environment proxy settings with npm configuration, if any.
-const NPM_HTTPS_PROXY = process.env.npm_config_https_proxy || process.env.npm_config_proxy;
-const NPM_HTTP_PROXY = process.env.npm_config_http_proxy || process.env.npm_config_proxy;
-const NPM_NO_PROXY = process.env.npm_config_no_proxy;
-
-if (NPM_HTTPS_PROXY)
-  process.env.HTTPS_PROXY = NPM_HTTPS_PROXY;
-if (NPM_HTTP_PROXY)
-  process.env.HTTP_PROXY = NPM_HTTP_PROXY;
-if (NPM_NO_PROXY)
-  process.env.NO_PROXY = NPM_NO_PROXY;
 
 browserFetcher.download(revisionInfo.revision, onProgress)
     .then(() => browserFetcher.localRevisions())
@@ -154,3 +158,23 @@ function logPolitely(toBeLogged) {
     console.log(toBeLogged);
 }
 
+function getCertificateAuthority(configCaFile) {
+  let ca;
+  if (configCaFile) {
+    if (!process.env.npm_config_ca) {
+      try {
+        const fs = require('fs');
+        ca = fs.readFileSync(process.env.npm_config_cafile, { encoding: 'utf8' })
+            .split(/\n(?=-----BEGIN CERTIFICATE-----)/g);
+        // Comments at the beginning of the file result in the first
+        // item not containing a certificate - in this case the
+        // download will fail
+        if (ca.length > 0 && !/-----BEGIN CERTIFICATE-----/.test(ca[0]))
+          ca = ca.shift();
+      } catch (e) {
+        console.error('Could not read cafile', process.env.npm_config_cafile, e);
+      }
+    }
+  }
+  return process.env.npm_config_ca || ca;
+}
