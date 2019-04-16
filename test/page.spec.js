@@ -289,6 +289,15 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       const values = await page.evaluate(objects => Array.from(objects[0].values()), objectsHandle);
       expect(values).toEqual(['hello', 'world']);
     });
+    xit('should work for non-blank page', async({page, server}) => {
+      // Instantiate an object
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => window.set = new Set(['hello', 'world']));
+      const prototypeHandle = await page.evaluateHandle(() => Set.prototype);
+      const objectsHandle = await page.queryObjects(prototypeHandle);
+      const count = await page.evaluate(objects => objects.length, objectsHandle);
+      expect(count).toBe(1);
+    });
     it('should fail for disposed handles', async({page, server}) => {
       const prototypeHandle = await page.evaluateHandle(() => HTMLBodyElement.prototype);
       await prototypeHandle.dispose();
