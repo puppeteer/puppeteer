@@ -238,12 +238,8 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
         # Basic verbose logging
         env DEBUG="puppeteer:*" node script.js
 
-        # Debug output can be enabled/disabled by namespace
-        env DEBUG="puppeteer:protocol" node script.js # protocol connection messages
-        env DEBUG="puppeteer:session" node script.js # protocol session messages (protocol messages to targets)
-
         # Protocol traffic can be rather noisy. This example filters out all Network domain messages
-        env DEBUG="puppeteer:session" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
+        env DEBUG="puppeteer:*" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
 
 6. Debug your Puppeteer (node) code easily, using [ndb](https://github.com/GoogleChromeLabs/ndb)
 
