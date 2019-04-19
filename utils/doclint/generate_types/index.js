@@ -21,8 +21,11 @@ import { EventEmitter } from 'events';
 interface Serializable {}
 interface ConnectionTransport {}
 
-${root.membersArray.map(member => `
-${memberJSDOC(member, '')}export function ${member.name}${argsFromMember(member)} : ${typeToString(member.type, member.name)};
+${root.methodsArray.map(method => `
+${memberJSDOC(method, '')}export function ${method.name}${argsFromMember(method)} : ${typeToString(method.type, method.name)};
+`).join('')}
+${root.propertiesArray.map(property => `
+${memberJSDOC(property, '')}export const ${property.name}${argsFromMember(property)} : ${typeToString(property.type, property.name)};
 `).join('')}
 ${classes.map(classDesc => classToString(classDesc)).join('\n')}
 ${objectDefinitionsToString()}

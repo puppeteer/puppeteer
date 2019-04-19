@@ -454,7 +454,7 @@ This methods attaches Puppeteer to an existing Chromium instance.
 The default flags that Chromium will be launched with.
 
 #### puppeteer.devices
-- `options` <[Object]>
+- returns: <[Object]>
 
 Returns a list of devices to be used with [`page.emulate(options)`](#pageemulateoptions). Actual list of
 devices can be found in [lib/DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/lib/DeviceDescriptors.js).
@@ -474,8 +474,8 @@ puppeteer.launch().then(async browser => {
 
 
 #### puppeteer.errors
-- returns: <[Object]> 
-  - `TimeoutError`: [TimeoutError] class
+- returns: <[Object]>
+  - `TimeoutError` <[function]> A class of [TimeoutError].
 
 Puppeteer methods might throw errors if they are unable to fufill a request. For example, [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
 might fail if the selector doesn't match any nodes during the given timeframe.

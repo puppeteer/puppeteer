@@ -41,20 +41,30 @@ Documentation.Class = class {
     this.members = new Map();
     /** @type {!Map<string, !Documentation.Member>} */
     this.properties = new Map();
+    /** @type {!Array<!Documentation.Member>} */
+    this.propertiesArray = []
     /** @type {!Map<string, !Documentation.Member>} */
     this.methods = new Map();
+    /** @type {!Array<!Documentation.Member>} */
+    this.methodsArray = []
     /** @type {!Map<string, !Documentation.Member>} */
     this.events = new Map();
+    /** @type {!Array<!Documentation.Member>} */
+    this.eventsArray = []
     this.comment = comment;
     this.extends = extendsName;
     for (const member of membersArray) {
       this.members.set(member.name, member);
-      if (member.kind === 'method')
+      if (member.kind === 'method') {
         this.methods.set(member.name, member);
-      else if (member.kind === 'property')
+        this.methodsArray.push(member);
+      } else if (member.kind === 'property') {
         this.properties.set(member.name, member);
-      else if (member.kind === 'event')
+        this.propertiesArray.push(member);
+      } else if (member.kind === 'event') {
         this.events.set(member.name, member);
+        this.eventsArray.push(member);
+      }
     }
   }
 };
