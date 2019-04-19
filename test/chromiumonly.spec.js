@@ -118,7 +118,9 @@ module.exports.addPageTests = function({testRunner, expect}) {
       await page.setRequestInterception(true);
       page.on('request', request => request.continue());
       await page.goto(server.PREFIX + '/intervention');
-      expect(serverRequest.headers.intervention).toContain('www.chromestatus.com');
+      // Check for feature URL substring rather than https://www.chromestatus.com to
+      // make it work with Edgium.
+      expect(serverRequest.headers.intervention).toContain('feature/5718547946799104');
     });
   });
 };
