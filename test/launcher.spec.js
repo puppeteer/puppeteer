@@ -24,7 +24,7 @@ const statAsync = helper.promisify(fs.stat);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const utils = require('./utils');
 
-module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer, CHROME}) {
+module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer, CHROME, puppeteerPath}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -336,6 +336,17 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(fs.existsSync(executablePath)).toBe(true);
         expect(fs.realpathSync(executablePath)).toBe(executablePath);
       });
+    });
+  });
+
+  describe('Top-level requires', function() {
+    it('should require top-level Errors', async() => {
+      const Errors = require(path.join(puppeteerPath, '/Errors'));
+      expect(Errors.TimeoutError).toBe(puppeteer.errors.TimeoutError);
+    });
+    it('should require top-level DeviceDescriptors', async() => {
+      const Devices = require(path.join(puppeteerPath, '/DeviceDescriptors'));
+      expect(Devices['iPhone 6']).toBe(puppeteer.devices['iPhone 6']);
     });
   });
 

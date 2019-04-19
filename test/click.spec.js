@@ -15,13 +15,12 @@
  */
 
 const utils = require('./utils');
-const DeviceDescriptors = utils.requireRoot('DeviceDescriptors');
-const iPhone = DeviceDescriptors['iPhone 6'];
 
-module.exports.addTests = function({testRunner, expect}) {
+module.exports.addTests = function({testRunner, expect, puppeteer}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+
   describe('Page.click', function() {
     it('should click the button', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
@@ -160,7 +159,7 @@ module.exports.addTests = function({testRunner, expect}) {
     });
     // @see https://github.com/GoogleChrome/puppeteer/issues/161
     it('should not hang with touch-enabled viewports', async({page, server}) => {
-      await page.setViewport(iPhone.viewport);
+      await page.setViewport(puppeteer.devices['iPhone 6'].viewport);
       await page.mouse.down();
       await page.mouse.move(100, 10);
       await page.mouse.up();

@@ -31,8 +31,6 @@ module.exports.addTests = ({testRunner, product, puppeteerPath}) => {
   const FFOX = product === 'Firefox';
 
   const puppeteer = require(puppeteerPath);
-  const Errors = require(path.join(puppeteerPath, 'Errors'));
-  const DeviceDescriptors = require(path.join(puppeteerPath, 'DeviceDescriptors'));
 
   const headless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
   const slowMo = parseInt((process.env.SLOW_MO || '0').trim(), 10);
@@ -67,8 +65,6 @@ module.exports.addTests = ({testRunner, product, puppeteerPath}) => {
     FFOX,
     CHROME,
     puppeteer,
-    Errors,
-    DeviceDescriptors,
     expect,
     defaultBrowserOptions,
     puppeteerPath,

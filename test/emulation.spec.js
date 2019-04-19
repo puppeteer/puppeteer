@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-const utils = require('./utils');
-const DeviceDescriptors = utils.requireRoot('DeviceDescriptors');
-const iPhone = DeviceDescriptors['iPhone 6'];
-const iPhoneLandscape = DeviceDescriptors['iPhone 6 landscape'];
-
-module.exports.addTests = function({testRunner, expect, product}) {
+module.exports.addTests = function({testRunner, expect, puppeteer}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+
+  const iPhone = puppeteer.devices['iPhone 6'];
+  const iPhoneLandscape = puppeteer.devices['iPhone 6 landscape'];
 
   describe('Page.viewport', function() {
     it('should get the proper viewport size', async({page, server}) => {
