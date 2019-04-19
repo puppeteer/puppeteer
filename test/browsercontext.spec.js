@@ -16,11 +16,10 @@
 
 const utils = require('./utils');
 
-module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
+module.exports.addTests = function({testRunner, expect, puppeteer}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  const {TimeoutError} = Errors;
 
   describe('BrowserContext', function() {
     it('should have default context', async function({browser, server}) {
@@ -94,7 +93,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
     it('should timeout waiting for a non-existent target', async function({browser, server}) {
       const context = await browser.createIncognitoBrowserContext();
       const error = await context.waitForTarget(target => target.url() === server.EMPTY_PAGE, {timeout: 1}).catch(e => e);
-      expect(error).toBeInstanceOf(TimeoutError);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
       await context.close();
     });
     it('should isolate localStorage and cookies', async function({browser, server}) {

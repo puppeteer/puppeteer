@@ -16,11 +16,10 @@
 
 const utils = require('./utils');
 
-module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
+module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  const {TimeoutError} = Errors;
 
   describe('Page.goto', function() {
     it('should work', async({page, server}) => {
@@ -139,7 +138,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
       let error = null;
       await page.goto(server.PREFIX + '/empty.html', {timeout: 1}).catch(e => error = e);
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
-      expect(error).toBeInstanceOf(TimeoutError);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should fail when exceeding default maximum navigation timeout', async({page, server}) => {
       // Hang for request to the empty.html
@@ -148,7 +147,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
       page.setDefaultNavigationTimeout(1);
       await page.goto(server.PREFIX + '/empty.html').catch(e => error = e);
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
-      expect(error).toBeInstanceOf(TimeoutError);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should fail when exceeding default maximum timeout', async({page, server}) => {
       // Hang for request to the empty.html
@@ -157,7 +156,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
       page.setDefaultTimeout(1);
       await page.goto(server.PREFIX + '/empty.html').catch(e => error = e);
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
-      expect(error).toBeInstanceOf(TimeoutError);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should prioritize default navigation timeout over default timeout', async({page, server}) => {
       // Hang for request to the empty.html
@@ -167,7 +166,7 @@ module.exports.addTests = function({testRunner, expect, Errors, CHROME}) {
       page.setDefaultNavigationTimeout(1);
       await page.goto(server.PREFIX + '/empty.html').catch(e => error = e);
       expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
-      expect(error).toBeInstanceOf(TimeoutError);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should disable timeout when its set to 0', async({page, server}) => {
       let error = null;

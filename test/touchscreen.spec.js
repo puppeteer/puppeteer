@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-module.exports.addTests = function({testRunner, expect, DeviceDescriptors}) {
+module.exports.addTests = function({testRunner, expect, puppeteer}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
-  const iPhone = DeviceDescriptors['iPhone 6'];
+  const iPhone = puppeteer.devices['iPhone 6'];
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
   describe('Touchscreen', function() {
     it('should tap the button', async({page, server}) => {

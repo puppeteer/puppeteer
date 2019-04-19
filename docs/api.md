@@ -19,12 +19,13 @@
 - [Overview](#overview)
 - [puppeteer vs puppeteer-core](#puppeteer-vs-puppeteer-core)
 - [Environment Variables](#environment-variables)
-- [Error handling](#error-handling)
 - [Working with Chrome Extensions](#working-with-chrome-extensions)
 - [class: Puppeteer](#class-puppeteer)
   * [puppeteer.connect(options)](#puppeteerconnectoptions)
   * [puppeteer.createBrowserFetcher([options])](#puppeteercreatebrowserfetcheroptions)
   * [puppeteer.defaultArgs([options])](#puppeteerdefaultargsoptions)
+  * [puppeteer.devices](#puppeteerdevices)
+  * [puppeteer.errors](#puppeteererrors)
   * [puppeteer.executablePath()](#puppeteerexecutablepath)
   * [puppeteer.launch([options])](#puppeteerlaunchoptions)
 - [class: BrowserFetcher](#class-browserfetcher)
@@ -372,32 +373,6 @@ If Puppeteer doesn't find them in the environment during the installation step, 
 
 > **NOTE** PUPPETEER_* env variables are not accounted for in the [`puppeteer-core`](https://www.npmjs.com/package/puppeteer-core) package.
 
-### Error handling
-
-Puppeteer methods might throw errors if they are unable to fufill a request. For example, [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
-might fail if the selector doesn't match any nodes during the given timeframe.
-
-For certain types of errors Puppeteer uses specific error classes.
-These classes are available via `require('puppeteer/Errors')`.
-
-List of supported classes:
-- [`TimeoutError`](#class-timeouterror)
-
-An example of handling a timeout error:
-```js
-const {TimeoutError} = require('puppeteer/Errors');
-
-// ...
-
-try {
-  await page.waitForSelector('.foo');
-} catch (e) {
-  if (e instanceof TimeoutError) {
-    // Do something if this is a timeout.
-  }
-}
-```
-
 
 ### Working with Chrome Extensions
 
@@ -478,10 +453,55 @@ This methods attaches Puppeteer to an existing Chromium instance.
 
 The default flags that Chromium will be launched with.
 
+#### puppeteer.devices
+- returns: <[Object]>
+
+Returns a list of devices to be used with [`page.emulate(options)`](#pageemulateoptions). Actual list of
+devices can be found in [lib/DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/lib/DeviceDescriptors.js).
+
+```js
+const puppeteer = require('puppeteer');
+const iPhone = puppeteer.devices['iPhone 6'];
+
+puppeteer.launch().then(async browser => {
+  const page = await browser.newPage();
+  await page.emulate(iPhone);
+  await page.goto('https://www.google.com');
+  // other actions...
+  await browser.close();
+});
+```
+
+> **NOTE** The old way (Puppeteer versions <= v1.14.0) devices can be obtained with `require('puppeteer/DeviceDescriptors')`.
+
+#### puppeteer.errors
+- returns: <[Object]>
+  - `TimeoutError` <[function]> A class of [TimeoutError].
+
+Puppeteer methods might throw errors if they are unable to fufill a request. For example, [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
+might fail if the selector doesn't match any nodes during the given timeframe.
+
+For certain types of errors Puppeteer uses specific error classes.
+These classes are available via [`puppeteer.errors`](#puppeteererrors)
+
+An example of handling a timeout error:
+```js
+try {
+  await page.waitForSelector('.foo');
+} catch (e) {
+  if (e instanceof puppeteer.errors.TimeoutError) {
+    // Do something if this is a timeout.
+  }
+}
+```
+
+> **NOTE** The old way (Puppeteer versions <= v1.14.0) errors can be obtained with `require('puppeteer/Errors')`.
+
 #### puppeteer.executablePath()
 - returns: <[string]> A path where Puppeteer expects to find bundled Chromium. Chromium might not exist there if the download was skipped with [`PUPPETEER_SKIP_CHROMIUM_DOWNLOAD`](#environment-variables).
 
 > **NOTE** `puppeteer.executablePath()` is affected by the `PUPPETEER_EXECUTABLE_PATH` and `PUPPETEER_CHROMIUM_REVISION` env variables. See [Environment Variables](#environment-variables) for details.
+
 
 #### puppeteer.launch([options])
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
@@ -1215,12 +1235,12 @@ Emulates given device metrics and user agent. This method is a shortcut for call
 - [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
 - [page.setViewport(viewport)](#pagesetviewportviewport)
 
-To aid emulation, puppeteer provides a list of device descriptors which can be obtained via the `require('puppeteer/DeviceDescriptors')` command.
+To aid emulation, puppeteer provides a list of device descriptors which can be obtained via the [`puppeteer.devices`](#puppeteerdevices).
 Below is an example of emulating an iPhone 6 in puppeteer:
+
 ```js
 const puppeteer = require('puppeteer');
-const devices = require('puppeteer/DeviceDescriptors');
-const iPhone = devices['iPhone 6'];
+const iPhone = puppeteer.devices['iPhone 6'];
 
 puppeteer.launch().then(async browser => {
   const page = await browser.newPage();
@@ -1231,7 +1251,7 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
-List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/DeviceDescriptors.js).
+List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/lib/DeviceDescriptors.js).
 
 #### page.emulateMedia(mediaType)
 - `mediaType` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation.
@@ -3589,6 +3609,7 @@ TimeoutError is emitted whenever certain operations are terminated due to timeou
 [Response]: #class-response  "Response"
 [Request]: #class-request  "Request"
 [Browser]: #class-browser  "Browser"
+[TimeoutError]: #class-timeouterror "TimeoutError"
 [Body]: #class-body  "Body"
 [Element]: https://developer.mozilla.org/en-US/docs/Web/API/element "Element"
 [Keyboard]: #class-keyboard "Keyboard"

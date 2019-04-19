@@ -25,13 +25,10 @@ try {
   asyncawait = false;
 }
 
-module.exports.addTests = function({testRunner, expect, headless, Errors, DeviceDescriptors, CHROME}) {
+module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHROME}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-
-  const {TimeoutError} = Errors;
-  const iPhone = DeviceDescriptors['iPhone 6'];
 
   describe('Page.close', function() {
     it('should reject all promises when page is closed', async({context}) => {
@@ -496,13 +493,13 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     it('should respect timeout', async({page, server}) => {
       let error = null;
       await page.waitForRequest(() => false, {timeout: 1}).catch(e => error = e);
-      expect(error).toBeInstanceOf(TimeoutError);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should respect default timeout', async({page, server}) => {
       let error = null;
       page.setDefaultTimeout(1);
       await page.waitForRequest(() => false).catch(e => error = e);
-      expect(error).toBeInstanceOf(TimeoutError);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should work with no timeout', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
@@ -534,13 +531,13 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     it('should respect timeout', async({page, server}) => {
       let error = null;
       await page.waitForResponse(() => false, {timeout: 1}).catch(e => error = e);
-      expect(error).toBeInstanceOf(TimeoutError);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should respect default timeout', async({page, server}) => {
       let error = null;
       page.setDefaultTimeout(1);
       await page.waitForResponse(() => false).catch(e => error = e);
-      expect(error).toBeInstanceOf(TimeoutError);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should work with predicate', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
@@ -695,7 +692,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
     it('should emulate device user-agent', async({page, server}) => {
       await page.goto(server.PREFIX + '/mobile.html');
       expect(await page.evaluate(() => navigator.userAgent)).not.toContain('iPhone');
-      await page.setUserAgent(iPhone.userAgent);
+      await page.setUserAgent(puppeteer.devices['iPhone 6'].userAgent);
       expect(await page.evaluate(() => navigator.userAgent)).toContain('iPhone');
     });
   });
@@ -726,7 +723,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       server.setRoute(imgPath, (req, res) => {});
       let error = null;
       await page.setContent(`<img src="${server.PREFIX + imgPath}"></img>`, {timeout: 1}).catch(e => error = e);
-      expect(error).toBeInstanceOf(TimeoutError);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it_fails_ffox('should respect default navigation timeout', async({page, server}) => {
       page.setDefaultNavigationTimeout(1);
@@ -735,7 +732,7 @@ module.exports.addTests = function({testRunner, expect, headless, Errors, Device
       server.setRoute(imgPath, (req, res) => {});
       let error = null;
       await page.setContent(`<img src="${server.PREFIX + imgPath}"></img>`).catch(e => error = e);
-      expect(error).toBeInstanceOf(TimeoutError);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it_fails_ffox('should await resources to load', async({page, server}) => {
       const imgPath = '/img.png';

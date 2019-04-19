@@ -23,11 +23,10 @@ try {
   asyncawait = false;
 }
 
-module.exports.addTests = function({testRunner, expect, product, Errors}) {
+module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  const {TimeoutError} = Errors;
 
   describe('Page.waitFor', function() {
     it('should wait for selector', async({page, server}) => {
@@ -172,13 +171,13 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
       await page.waitForFunction('false', {timeout: 10}).catch(e => error = e);
       expect(error).toBeTruthy();
       expect(error.message).toContain('waiting for function failed: timeout');
-      expect(error).toBeInstanceOf(TimeoutError);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should respect default timeout', async({page}) => {
       page.setDefaultTimeout(1);
       let error = null;
       await page.waitForFunction('false').catch(e => error = e);
-      expect(error).toBeInstanceOf(TimeoutError);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
       expect(error.message).toContain('waiting for function failed: timeout');
     });
     it('should disable timeout when its set to 0', async({page}) => {
@@ -356,7 +355,7 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
       await page.waitForSelector('div', {timeout: 10}).catch(e => error = e);
       expect(error).toBeTruthy();
       expect(error.message).toContain('waiting for selector "div" failed: timeout');
-      expect(error).toBeInstanceOf(TimeoutError);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should have an error message specifically for awaiting an element to be hidden', async({page, server}) => {
       await page.setContent(`<div></div>`);
@@ -399,7 +398,7 @@ module.exports.addTests = function({testRunner, expect, product, Errors}) {
       await page.waitForXPath('//div', {timeout: 10}).catch(e => error = e);
       expect(error).toBeTruthy();
       expect(error.message).toContain('waiting for XPath "//div" failed: timeout');
-      expect(error).toBeInstanceOf(TimeoutError);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should run in specified frame', async({page, server}) => {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);

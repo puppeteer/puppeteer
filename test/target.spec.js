@@ -17,11 +17,10 @@
 const utils = require('./utils');
 const {waitEvent} = utils;
 
-module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
+module.exports.addTests = function({testRunner, expect, puppeteer}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  const {TimeoutError} = Errors;
 
   describe('Target', function() {
     it('Browser.targets should return all of the targets', async({page, server, browser}) => {
@@ -161,7 +160,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, Errors}) {
       await browser.waitForTarget(target => target.url() === server.EMPTY_PAGE, {
         timeout: 1
       }).catch(e => error = e);
-      expect(error).toBeInstanceOf(TimeoutError);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
   });
 };
