@@ -472,6 +472,7 @@ puppeteer.launch().then(async browser => {
 });
 ```
 
+> **NOTE** The old way (Puppeteer versions <= v1.14.0) devices can be obtained with `require('puppeteer/DeviceDescriptors')`.
 
 #### puppeteer.errors
 - returns: <[Object]>
@@ -493,6 +494,8 @@ try {
   }
 }
 ```
+
+> **NOTE** The old way (Puppeteer versions <= v1.14.0) errors can be obtained with `require('puppeteer/Errors')`.
 
 #### puppeteer.executablePath()
 - returns: <[string]> A path where Puppeteer expects to find bundled Chromium. Chromium might not exist there if the download was skipped with [`PUPPETEER_SKIP_CHROMIUM_DOWNLOAD`](#environment-variables).
