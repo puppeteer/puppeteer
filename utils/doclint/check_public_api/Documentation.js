@@ -42,15 +42,15 @@ Documentation.Class = class {
     /** @type {!Map<string, !Documentation.Member>} */
     this.properties = new Map();
     /** @type {!Array<!Documentation.Member>} */
-    this.propertiesArray = []
+    this.propertiesArray = [];
     /** @type {!Map<string, !Documentation.Member>} */
     this.methods = new Map();
     /** @type {!Array<!Documentation.Member>} */
-    this.methodsArray = []
+    this.methodsArray = [];
     /** @type {!Map<string, !Documentation.Member>} */
     this.events = new Map();
     /** @type {!Array<!Documentation.Member>} */
-    this.eventsArray = []
+    this.eventsArray = [];
     this.comment = comment;
     this.extends = extendsName;
     for (const member of membersArray) {
