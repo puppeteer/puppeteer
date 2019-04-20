@@ -424,6 +424,18 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       ]);
       expect(await serverRequest.postBody).toBe('doggo');
     });
+    it_fails_ffox('should amend both post data and method on navigation', async({page, server}) => {
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        request.continue({ method: 'POST', postData: 'doggo' });
+      });
+      const [serverRequest] = await Promise.all([
+        server.waitForRequest('/empty.html'),
+        page.goto(server.EMPTY_PAGE),
+      ]);
+      expect(serverRequest.method).toBe('POST');
+      expect(await serverRequest.postBody).toBe('doggo');
+    });
   });
 
   describe_fails_ffox('Request.respond', function() {
