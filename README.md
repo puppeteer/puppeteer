@@ -214,8 +214,8 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
 
 4. Use debugger in application code browser
 
-  There are two browsers: the browser running test code, and the browser
-  running application code being tested. This lets you debug code inside `evaluate()`.
+    There are two browsers: the browser running test code, and the browser
+    running application code being tested. This lets you debug code inside `evaluate()`.
 
     - Use `{devtools: true}` when launching Puppeteer:
 
