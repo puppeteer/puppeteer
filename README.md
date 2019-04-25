@@ -215,7 +215,8 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
 4. Use debugger in application code browser
 
     There are two browsers: the browser running test code, and the browser
-    running application code being tested. This lets you debug code inside `evaluate()`.
+    running application code being tested. This lets you debug code in the
+    application code browser; ie code in `evaluate()`.
 
     - Use `{devtools: true}` when launching Puppeteer:
 
@@ -237,7 +238,7 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
 
 5. Use debugger in test browser
 
-    This will let you debug test code. For example, you can step over `await page.click()` and see the click happen in the browser.
+    This will let you debug test code. For example, you can step over `await page.click()` in the test browser and see the click happen in the application code browser.
 
     Note that you won't be able to run `await page.click()` in
     the test browser console due to this [Chromium bug](https://bugs.chromium.org/p/chromium/issues/detail?id=833928). So if
