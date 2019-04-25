@@ -212,25 +212,28 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
 
         await page.evaluate(() => console.log(`url is ${location.href}`));
 
-4. Stop test execution and use a debugger in browser
+4. Use debugger in application code browser
 
-  - Use `{devtools: true}` when launching Puppeteer:
+  There are two browsers: the browser running test code, and the browser
+  running application code being tested. This lets you debug code inside `evaluate()`.
 
-      `const browser = await puppeteer.launch({devtools: true});`
+    - Use `{devtools: true}` when launching Puppeteer:
 
-  - Change default test timeout:
+        `const browser = await puppeteer.launch({devtools: true});`
 
-      jest: `jest.setTimeout(100000);`
+    - Change default test timeout:
 
-      jasmine: `jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;`
+        jest: `jest.setTimeout(100000);`
 
-      mocha: `this.timeout(100000);` (don't forget to change test to use [function and not '=>'](https://stackoverflow.com/a/23492442))
+        jasmine: `jasmine.DEFAULT_TIMEOUT_INTERVAL = 100000;`
 
-  - Add an evaluate statement with `debugger` inside / add  `debugger` to an existing evaluate statement:
+        mocha: `this.timeout(100000);` (don't forget to change test to use [function and not '=>'](https://stackoverflow.com/a/23492442))
 
-    `await page.evaluate(() => {debugger;});`
+    - Add an evaluate statement with `debugger` inside / add  `debugger` to an existing evaluate statement:
 
-     The test will now stop executing in the above evaluate statement, and chromium will stop in debug mode.
+      `await page.evaluate(() => {debugger;});`
+
+       The test will now stop executing in the above evaluate statement, and chromium will stop in debug mode.
 
 5. Enable verbose logging - internal DevTools protocol traffic
    will be logged via the [`debug`](https://github.com/visionmedia/debug) module under the `puppeteer` namespace.
