@@ -235,7 +235,27 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
 
        The test will now stop executing in the above evaluate statement, and chromium will stop in debug mode.
 
-5. Enable verbose logging - internal DevTools protocol traffic
+5. Use debugger in test browser
+
+    This will let you debug test code. For example, you can step over `await page.click()` and see the click happen in the browser.
+
+    Note that you won't be able to run `await page.click()` in
+    the test browser console due to this [Chromium bug](https://bugs.chromium.org/p/chromium/issues/detail?id=833928). So if
+    you want to try something out, you have to add it to your test file.
+
+    - Add `debugger;` to your test, eg:
+      ```
+      debugger;
+      await page.click('a[target=_blank]');
+      ```
+    - Set `headless` to `false`
+    - Run `node --inspect-brk`, eg `node --inspect-brk node_modules/.bin/jest tests`
+    - In Chrome open `chrome://inspect/#devices` and click `inspect`
+    - In the newly opened test browser, type `F8` to resume test execution
+    - Now your `debugger` will be hit and you can debug in the test browser
+
+
+6. Enable verbose logging - internal DevTools protocol traffic
    will be logged via the [`debug`](https://github.com/visionmedia/debug) module under the `puppeteer` namespace.
 
         # Basic verbose logging
@@ -244,7 +264,7 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
         # Protocol traffic can be rather noisy. This example filters out all Network domain messages
         env DEBUG="puppeteer:*" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
 
-6. Debug your Puppeteer (node) code easily, using [ndb](https://github.com/GoogleChromeLabs/ndb)
+7. Debug your Puppeteer (node) code easily, using [ndb](https://github.com/GoogleChromeLabs/ndb)
 
   - `npm install -g ndb` (or even better, use [npx](https://github.com/zkat/npx)!)
 
