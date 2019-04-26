@@ -120,7 +120,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       server.setRedirect('/logo.png', '/pptr.png');
       await page.setRequestInterception(true);
       page.on('request', request => request.continue());
-      const status = await page.evaluate(async () => {
+      const status = await page.evaluate(async() => {
         const request = new XMLHttpRequest();
         request.open('GET', '/logo.png', false);  // `false` makes the request synchronous
         request.send(null);
