@@ -114,6 +114,20 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.ok()).toBe(true);
     });
+    // @see https://github.com/GoogleChrome/puppeteer/issues/4337
+    xit('should work with redirect inside sync XHR', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      server.setRedirect('/logo.png', '/pptr.png');
+      await page.setRequestInterception(true);
+      page.on('request', request => request.continue());
+      const status = await page.evaluate(async() => {
+        const request = new XMLHttpRequest();
+        request.open('GET', '/logo.png', false);  // `false` makes the request synchronous
+        request.send(null);
+        return request.status;
+      });
+      expect(status).toBe(200);
+    });
     it('should works with customizing referer headers', async({page, server}) => {
       await page.setExtraHTTPHeaders({ 'referer': server.EMPTY_PAGE });
       await page.setRequestInterception(true);
