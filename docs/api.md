@@ -1205,7 +1205,7 @@ Gets the full HTML contents of the page, including the doctype.
   - `httpOnly` <[boolean]>
   - `secure` <[boolean]>
   - `session` <[boolean]>
-  - `sameSite` <"Strict"|"Lax">
+  - `sameSite` <"Strict"|"Lax"|"Extended"|"None">
 
 If no URLs are specified, this method returns cookies for the current page URL.
 If URLs are specified, only cookies for those URLs are returned.
