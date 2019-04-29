@@ -89,9 +89,7 @@ module.exports.addTests = function({testRunner, expect}) {
       let error = null;
       await page.evaluate(() => {
         location.reload();
-        return new Promise(resolve => {
-          setTimeout(() => resolve(1), 0);
-        });
+        return new Promise(() => {});
       }).catch(e => error = e);
       expect(error.message).toContain('Protocol error');
     });
