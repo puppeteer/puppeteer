@@ -540,18 +540,20 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       expect(response.frame()).toBe(frame);
       expect(page.url()).toContain('/frames/one-frame.html');
     });
-    it_fails_ffox('should resolve when frame detaches', async({page, server}) => {
+    it('should fail when frame detaches', async({page, server}) => {
       await page.goto(server.PREFIX + '/frames/one-frame.html');
       const frame = page.frames()[1];
 
       server.setRoute('/empty.html', () => {});
-      const navigationPromise = frame.waitForNavigation();
+      let error = null;
+      const navigationPromise = frame.waitForNavigation().catch(e => error = e);
       await Promise.all([
         server.waitForRequest('/empty.html'),
         frame.evaluate(() => window.location = '/empty.html')
       ]);
       await page.$eval('iframe', frame => frame.remove());
       await navigationPromise;
+      expect(error.message).toBe('Navigating frame was detached');
     });
   });
 
