@@ -316,6 +316,16 @@ module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
       expect(await waitForSelector).toBe(true);
       expect(divVisible).toBe(true);
     });
+    it('should wait for visible when same selector has hidden elements too', async({page, server}) => {
+      let divVisible = false;
+      await page.setContent(`<div class="test" style='display: none;'></div><div class="test changeme" style='display: none;'></div>`);
+      const waitForSelector = page.waitForSelector('.test', {visible: true})
+          .then(() => divVisible = true);
+      expect(divVisible).toBe(false);
+      await page.evaluate(() => document.querySelector('div.changeme').style.removeProperty('display'));
+      expect(await waitForSelector).toBe(true);
+      expect(divVisible).toBe(true);
+    });
     it('hidden should wait for visibility: hidden', async({page, server}) => {
       let divHidden = false;
       await page.setContent(`<div style='display: block;'></div>`);
@@ -333,6 +343,16 @@ module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
       await page.waitForSelector('div'); // do a round trip
       expect(divHidden).toBe(false);
       await page.evaluate(() => document.querySelector('div').style.setProperty('display', 'none'));
+      expect(await waitForSelector).toBe(true);
+      expect(divHidden).toBe(true);
+    });
+    it('hidden should wait for display: none when multiple elements', async({page, server}) => {
+      let divHidden = false;
+      await page.setContent(`<div class="test" style='display: block;'></div><div class="test changeme" style='display: block;'></div>`);
+      const waitForSelector = page.waitForSelector('.test', {hidden: true}).then(() => divHidden = true);
+      await page.waitForSelector('.test'); // shouldn't throw
+      expect(divHidden).toBe(false);
+      await page.evaluate(() => document.querySelector('div.changeme').style.setProperty('display', 'none'));
       expect(await waitForSelector).toBe(true);
       expect(divHidden).toBe(true);
     });
@@ -421,13 +441,34 @@ module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
       expect(waitError).toBeTruthy();
       expect(waitError.message).toContain('waitForFunction failed: frame got detached.');
     });
+    it('should wait for visible when same xpath has hidden elements too', async({page, server}) => {
+      let divVisible = false;
+      // 2 elements matching selector, first one stays hidden
+      await page.setContent(`<div class="test" style='display: none;'></div><div class="test changeme" style='display: none;'></div>`);
+      const waitForXPath = page.waitForXPath('//*[contains(@class,\'test\')]', {visible: true})
+          .then(() => divVisible = true);
+      expect(divVisible).toBe(false);
+      await page.evaluate(() => document.querySelector('div.changeme').style.removeProperty('display'));
+      expect(await waitForXPath).toBe(true);
+      expect(divVisible).toBe(true);
+    });
     it('hidden should wait for display: none', async({page, server}) => {
       let divHidden = false;
-      await page.setContent(`<div style='display: block;'></div>`);
-      const waitForXPath = page.waitForXPath('//div', {hidden: true}).then(() => divHidden = true);
-      await page.waitForXPath('//div'); // do a round trip
+      await page.setContent(`<div class="test" style='display: block;'></div>`);
+      const waitForXPath = page.waitForXPath('//*[contains(@class,\'test\')]', {hidden: true}).then(() => divHidden = true);
+      await page.waitForXPath('//*[contains(@class,\'test\')]'); // do a round trip
       expect(divHidden).toBe(false);
-      await page.evaluate(() => document.querySelector('div').style.setProperty('display', 'none'));
+      await page.evaluate(() => document.querySelector('div.test').style.setProperty('display', 'none'));
+      expect(await waitForXPath).toBe(true);
+      expect(divHidden).toBe(true);
+    });
+    it('hidden should wait for display: none when multiple elements', async({page, server}) => {
+      let divHidden = false;
+      await page.setContent(`<div class="test" style='display: block;'></div><div class="test changeme" style='display: block;'></div>`);
+      const waitForXPath = page.waitForXPath('//*[contains(@class,\'test\')]', {hidden: true}).then(() => divHidden = true);
+      await page.waitForXPath('//*[contains(@class,\'test\')]'); // do a round trip
+      expect(divHidden).toBe(false);
+      await page.evaluate(() => document.querySelector('div.changeme').style.setProperty('display', 'none'));
       expect(await waitForXPath).toBe(true);
       expect(divHidden).toBe(true);
     });
