@@ -16,7 +16,7 @@
 
 module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Page.cookies', function() {
@@ -40,6 +40,56 @@ module.exports.addTests = function({testRunner, expect}) {
         secure: false,
         session: true
       }]);
+    });
+    it('should properly report httpOnly cookie', async({page, server}) => {
+      server.setRoute('/empty.html', (req, res) => {
+        res.setHeader('Set-Cookie', ';HttpOnly; Path=/');
+        res.end();
+      });
+      await page.goto(server.EMPTY_PAGE);
+      const cookies = await page.cookies();
+      expect(cookies.length).toBe(1);
+      expect(cookies[0].httpOnly).toBe(true);
+    });
+    it_fails_ffox('should properly report "Strict" sameSite cookie', async({page, server}) => {
+      server.setRoute('/empty.html', (req, res) => {
+        res.setHeader('Set-Cookie', ';SameSite=Strict');
+        res.end();
+      });
+      await page.goto(server.EMPTY_PAGE);
+      const cookies = await page.cookies();
+      expect(cookies.length).toBe(1);
+      expect(cookies[0].sameSite).toBe('Strict');
+    });
+    it_fails_ffox('should properly report "Lax" sameSite cookie', async({page, server}) => {
+      server.setRoute('/empty.html', (req, res) => {
+        res.setHeader('Set-Cookie', ';SameSite=Lax');
+        res.end();
+      });
+      await page.goto(server.EMPTY_PAGE);
+      const cookies = await page.cookies();
+      expect(cookies.length).toBe(1);
+      expect(cookies[0].sameSite).toBe('Lax');
+    });
+    it_fails_ffox('should properly report "Extended" sameSite cookie', async({page, server}) => {
+      server.setRoute('/empty.html', (req, res) => {
+        res.setHeader('Set-Cookie', ';SameSite=Extended');
+        res.end();
+      });
+      await page.goto(server.EMPTY_PAGE);
+      const cookies = await page.cookies();
+      expect(cookies.length).toBe(1);
+      expect(cookies[0].sameSite).toBe('Extended');
+    });
+    it_fails_ffox('should properly report "None" sameSite cookie', async({page, server}) => {
+      server.setRoute('/empty.html', (req, res) => {
+        res.setHeader('Set-Cookie', ';SameSite=None');
+        res.end();
+      });
+      await page.goto(server.EMPTY_PAGE);
+      const cookies = await page.cookies();
+      expect(cookies.length).toBe(1);
+      expect(cookies[0].sameSite).toBe('None');
     });
     it('should get multiple cookies', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
