@@ -749,6 +749,10 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       for (let i = 0; i < 20; ++i)
         await page.setContent('<div>yo</div>');
     });
+    it('should work with tricky content', async({page, server}) => {
+      await page.setContent('<div>hello world</div>' + '\x7F');
+      expect(await page.$eval('div', div => div.textContent)).toBe('hello world');
+    });
   });
 
   describe_fails_ffox('Page.setBypassCSP', function() {

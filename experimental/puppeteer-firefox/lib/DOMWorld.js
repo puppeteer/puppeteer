@@ -132,11 +132,11 @@ class DOMWorld {
    * @param {string} html
    */
   async setContent(html) {
-    await this.evaluate(html => {
+    await this.evaluate(base64html => {
       document.open();
-      document.write(html);
+      document.write(atob(base64html));
       document.close();
-    }, html);
+    }, Buffer.from(html).toString('base64'));
   }
 
   /**
