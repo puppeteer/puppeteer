@@ -506,6 +506,26 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       const img = await page.$('img');
       expect(await img.screenshot()).toBeGolden('mock-binary-response.png');
     });
+    it('should allow multiple headers with same name', async({page, server}) => {
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        request.respond({
+          status: 200,
+          headers: {
+            'foo': ['bar', 'baz']
+          },
+          body: 'Yo, page!'
+        });
+      });
+      const response = await page.goto(server.EMPTY_PAGE);
+      expect(response.status()).toBe(200);
+      const headers = response.headers();
+      expect(Array.isArray(headers.foo)).toBe(true);
+      expect(headers.foo.length).toBe(2);
+      expect(headers.foo[0]).toBe('bar');
+      expect(headers.foo[1]).toBe('baz');
+      expect(await page.evaluate(() => document.body.textContent)).toBe('Yo, page!');
+    });
   });
 
 };
