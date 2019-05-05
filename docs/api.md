@@ -2312,7 +2312,7 @@ await page.goto('https://www.google.com');
 await page.tracing.stop();
 ```
 
-#### tracing.start(options)
+#### tracing.start([options])
 - `options` <[Object]>
   - `path` <[string]> A path to write the trace file to.
   - `screenshots` <[boolean]> captures screenshots in the trace.
