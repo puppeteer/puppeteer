@@ -286,7 +286,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       const values = await page.evaluate(objects => Array.from(objects[0].values()), objectsHandle);
       expect(values).toEqual(['hello', 'world']);
     });
-    xit('should work for non-blank page', async({page, server}) => {
+    it('should work for non-blank page', async({page, server}) => {
       // Instantiate an object
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => window.set = new Set(['hello', 'world']));
