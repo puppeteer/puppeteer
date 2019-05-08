@@ -48,6 +48,7 @@
   * [browser.createIncognitoBrowserContext()](#browsercreateincognitobrowsercontext)
   * [browser.defaultBrowserContext()](#browserdefaultbrowsercontext)
   * [browser.disconnect()](#browserdisconnect)
+  * [browser.isConnected()](#browserisconnected)
   * [browser.newPage()](#browsernewpage)
   * [browser.pages()](#browserpages)
   * [browser.process()](#browserprocess)
@@ -699,6 +700,12 @@ Returns the default browser context. The default browser context can not be clos
 #### browser.disconnect()
 
 Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling `disconnect`, the [Browser] object is considered disposed and cannot be used anymore.
+
+#### browser.isConnected()
+
+- returns: <[boolean]>
+
+Indicates that the browser is connected.
 
 #### browser.newPage()
 - returns: <[Promise]<[Page]>>
