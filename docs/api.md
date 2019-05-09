@@ -179,7 +179,7 @@
 - [class: Touchscreen](#class-touchscreen)
   * [touchscreen.tap(x, y)](#touchscreentapx-y)
 - [class: Tracing](#class-tracing)
-  * [tracing.start(options)](#tracingstartoptions)
+  * [tracing.start([options])](#tracingstartoptions)
   * [tracing.stop()](#tracingstop)
 - [class: Dialog](#class-dialog)
   * [dialog.accept([promptText])](#dialogacceptprompttext)
