@@ -113,7 +113,7 @@ xorg-x11-fonts-Type1
 xorg-x11-fonts-misc
 ```
 
-After install dependencies you need to update nss library using this command
+After installing dependencies you need to update nss library using this command
 
 ```
 yum update nss -y
