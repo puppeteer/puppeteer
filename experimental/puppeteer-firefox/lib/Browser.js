@@ -58,6 +58,13 @@ class Browser extends EventEmitter {
   }
 
   /**
+   * @return {boolean}
+   */
+  isConnected() {
+    return !this._connection._closed;
+  }
+
+  /**
    * @return {!BrowserContext}
    */
   async createIncognitoBrowserContext() {
