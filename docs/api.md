@@ -2090,6 +2090,7 @@ Most of the accessibility tree gets filtered out when converting from Blink AX T
 #### accessibility.snapshot([options])
 - `options` <[Object]>
   - `interestingOnly` <[boolean]> Prune uninteresting nodes from the tree. Defaults to `true`.
+  - `element` <[ElementHandle]> The root DOM element for the snapshot. Defaults to the whole page.
 - returns: <[Promise]<[Object]>> An [AXNode] object with the following properties:
   - `role` <[string]> The [role](https://www.w3.org/TR/wai-aria/#usage_intro).
   - `name` <[string]> A human readable name for the node.

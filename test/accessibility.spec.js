@@ -307,6 +307,58 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
         const snapshot = await page.accessibility.snapshot();
         expect(snapshot.children[0]).toEqual(golden);
       });
+
+      describe_fails_ffox('element option', function() {
+        it('should work', async({page}) => {
+          await page.setContent(`
+          <button>My Button</button>
+          <input title="My Input" value="My Value">
+          <div role="menu" title="My Menu">
+            <div role="menuitem">First Item</div>
+            <div role="menuitem">Second Item</div>
+            <div role="menuitem">Third Item</div>
+          </div>`);
+
+          const button = await page.$('button');
+          expect(await await page.accessibility.snapshot({element: button})).toEqual({
+            role: 'button',
+            name: 'My Button'
+          });
+
+          const input = await page.$('input');
+          expect(await await page.accessibility.snapshot({element: input})).toEqual({
+            role: 'textbox',
+            name: 'My Input',
+            value: 'My Value'
+          });
+
+          const menu = await page.$('div[role="menu"]');
+          expect(await await page.accessibility.snapshot({element: menu})).toEqual({
+            role: 'menu',
+            name: 'My Menu',
+            children:
+            [ { role: 'menuitem', name: 'First Item' },
+              { role: 'menuitem', name: 'Second Item' },
+              { role: 'menuitem', name: 'Third Item' } ]
+          });
+        });
+        it('should return null when the element is no longer in DOM', async({page}) => {
+          await page.setContent(`<button>My Button</button>`);
+          const button = await page.$('button');
+          await page.$eval('button', button => button.remove());
+          expect(await await page.accessibility.snapshot({element: button})).toEqual(null);
+        });
+        it('should support the interestingOnly option', async({page}) => {
+          await page.setContent(`<div><button>My Button</button></div>`);
+          const div = await page.$('div');
+          expect(await await page.accessibility.snapshot({element: div})).toEqual(null);
+          expect(await await page.accessibility.snapshot({element: div, interestingOnly: false})).toEqual({
+            role: 'GenericContainer',
+            name: '',
+            children: [ { role: 'button', name: 'My Button' } ] }
+          );
+        });
+      });
     });
     function findFocusedNode(node) {
       if (node.focused)
