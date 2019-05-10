@@ -84,7 +84,6 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(await destroyedTarget).toBe(await createdTarget);
     });
     it_fails_ffox('should create a worker from a service worker', async({page, server, context}) => {
-      await page.goto(server.EMPTY_PAGE);
       await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
 
       const target = await context.waitForTarget(target => target.type() === 'service_worker');
