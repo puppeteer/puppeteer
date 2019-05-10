@@ -308,12 +308,12 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
         expect(snapshot.children[0]).toEqual(golden);
       });
 
-      describe_fails_ffox('element option', function() {
+      describe_fails_ffox('root option', function() {
         it('should work a button', async({page}) => {
           await page.setContent(`<button>My Button</button>`);
 
           const button = await page.$('button');
-          expect(await page.accessibility.snapshot({element: button})).toEqual({
+          expect(await page.accessibility.snapshot({root: button})).toEqual({
             role: 'button',
             name: 'My Button'
           });
@@ -322,7 +322,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
           await page.setContent(`<input title="My Input" value="My Value">`);
 
           const input = await page.$('input');
-          expect(await page.accessibility.snapshot({element: input})).toEqual({
+          expect(await page.accessibility.snapshot({root: input})).toEqual({
             role: 'textbox',
             name: 'My Input',
             value: 'My Value'
@@ -338,7 +338,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
           `);
 
           const menu = await page.$('div[role="menu"]');
-          expect(await page.accessibility.snapshot({element: menu})).toEqual({
+          expect(await page.accessibility.snapshot({root: menu})).toEqual({
             role: 'menu',
             name: 'My Menu',
             children:
@@ -351,13 +351,13 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
           await page.setContent(`<button>My Button</button>`);
           const button = await page.$('button');
           await page.$eval('button', button => button.remove());
-          expect(await page.accessibility.snapshot({element: button})).toEqual(null);
+          expect(await page.accessibility.snapshot({root: button})).toEqual(null);
         });
         it('should support the interestingOnly option', async({page}) => {
           await page.setContent(`<div><button>My Button</button></div>`);
           const div = await page.$('div');
-          expect(await page.accessibility.snapshot({element: div})).toEqual(null);
-          expect(await page.accessibility.snapshot({element: div, interestingOnly: false})).toEqual({
+          expect(await page.accessibility.snapshot({root: div})).toEqual(null);
+          expect(await page.accessibility.snapshot({root: div, interestingOnly: false})).toEqual({
             role: 'GenericContainer',
             name: '',
             children: [ { role: 'button', name: 'My Button' } ] }
