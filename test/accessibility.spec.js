@@ -309,31 +309,39 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       });
 
       describe_fails_ffox('element option', function() {
-        it('should work', async({page}) => {
+        it('should work a button', async({page}) => {
           await page.setContent(`
           <button>My Button</button>
+          `);
+
+          const button = await page.$('button');
+          expect(await page.accessibility.snapshot({element: button})).toEqual({
+            role: 'button',
+            name: 'My Button'
+          });
+        });
+        it('should work an input', async({page}) => {
+          await page.setContent(`
           <input title="My Input" value="My Value">
+          `);
+
+          const input = await page.$('input');
+          expect(await page.accessibility.snapshot({element: input})).toEqual({
+            role: 'textbox',
+            name: 'My Input',
+            value: 'My Value'
+          });
+        });
+        it('should work a menu', async({page}) => {
+          await page.setContent(`
           <div role="menu" title="My Menu">
             <div role="menuitem">First Item</div>
             <div role="menuitem">Second Item</div>
             <div role="menuitem">Third Item</div>
           </div>`);
 
-          const button = await page.$('button');
-          expect(await await page.accessibility.snapshot({element: button})).toEqual({
-            role: 'button',
-            name: 'My Button'
-          });
-
-          const input = await page.$('input');
-          expect(await await page.accessibility.snapshot({element: input})).toEqual({
-            role: 'textbox',
-            name: 'My Input',
-            value: 'My Value'
-          });
-
           const menu = await page.$('div[role="menu"]');
-          expect(await await page.accessibility.snapshot({element: menu})).toEqual({
+          expect(await page.accessibility.snapshot({element: menu})).toEqual({
             role: 'menu',
             name: 'My Menu',
             children:
@@ -346,13 +354,13 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
           await page.setContent(`<button>My Button</button>`);
           const button = await page.$('button');
           await page.$eval('button', button => button.remove());
-          expect(await await page.accessibility.snapshot({element: button})).toEqual(null);
+          expect(await page.accessibility.snapshot({element: button})).toEqual(null);
         });
         it('should support the interestingOnly option', async({page}) => {
           await page.setContent(`<div><button>My Button</button></div>`);
           const div = await page.$('div');
-          expect(await await page.accessibility.snapshot({element: div})).toEqual(null);
-          expect(await await page.accessibility.snapshot({element: div, interestingOnly: false})).toEqual({
+          expect(await page.accessibility.snapshot({element: div})).toEqual(null);
+          expect(await page.accessibility.snapshot({element: div, interestingOnly: false})).toEqual({
             role: 'GenericContainer',
             name: '',
             children: [ { role: 'button', name: 'My Button' } ] }
