@@ -66,6 +66,12 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       const buf = fs.readFileSync(outputFile);
       expect(trace.toString()).toEqual(buf.toString());
     });
+    it('should work without options', async({page, server, outputFile}) => {
+      await page.tracing.start();
+      await page.goto(server.PREFIX + '/grid.html');
+      const trace = await page.tracing.stop();
+      expect(trace).toBeTruthy();
+    });
     it('should return null in case of Buffer error', async({page, server}) => {
       await page.tracing.start({screenshots: true});
       await page.goto(server.PREFIX + '/grid.html');

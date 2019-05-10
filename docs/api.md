@@ -180,7 +180,7 @@
 - [class: Touchscreen](#class-touchscreen)
   * [touchscreen.tap(x, y)](#touchscreentapx-y)
 - [class: Tracing](#class-tracing)
-  * [tracing.start(options)](#tracingstartoptions)
+  * [tracing.start([options])](#tracingstartoptions)
   * [tracing.stop()](#tracingstop)
 - [class: Dialog](#class-dialog)
   * [dialog.accept([promptText])](#dialogacceptprompttext)
@@ -2319,7 +2319,7 @@ await page.goto('https://www.google.com');
 await page.tracing.stop();
 ```
 
-#### tracing.start(options)
+#### tracing.start([options])
 - `options` <[Object]>
   - `path` <[string]> A path to write the trace file to.
   - `screenshots` <[boolean]> captures screenshots in the trace.
