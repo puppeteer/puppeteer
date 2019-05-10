@@ -304,6 +304,7 @@
   * [target.page()](#targetpage)
   * [target.type()](#targettype)
   * [target.url()](#targeturl)
+  * [target.worker()](#targetworker)
 - [class: CDPSession](#class-cdpsession)
   * [cdpSession.detach()](#cdpsessiondetach)
   * [cdpSession.send(method[, params])](#cdpsessionsendmethod-params)
@@ -3479,12 +3480,17 @@ Get the target that opened this target. Top-level targets return `null`.
 If the target is not of type `"page"` or `"background_page"`, returns `null`.
 
 #### target.type()
-- returns: <"page"|"background_page"|"service_worker"|"other"|"browser">
+- returns: <"page"|"background_page"|"service_worker"|"shared_worker"|"other"|"browser">
 
-Identifies what kind of target this is. Can be `"page"`, [`"background_page"`](https://developer.chrome.com/extensions/background_pages), `"service_worker"`, `"browser"` or `"other"`.
+Identifies what kind of target this is. Can be `"page"`, [`"background_page"`](https://developer.chrome.com/extensions/background_pages), `"service_worker"`, `"shared_worker"`, `"browser"` or `"other"`.
 
 #### target.url()
 - returns: <[string]>
+
+#### target.worker()
+- returns: <[Promise]<?[Worker]>>
+
+If the target is not of type `"service_worker"` or `"shared_worker"`, returns `null`.
 
 ### class: CDPSession
 

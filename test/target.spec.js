@@ -83,6 +83,22 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       await page.evaluate(() => window.registrationPromise.then(registration => registration.unregister()));
       expect(await destroyedTarget).toBe(await createdTarget);
     });
+    it_fails_ffox('should create a worker from a service worker', async({page, server, context}) => {
+      await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
+
+      const target = await context.waitForTarget(target => target.type() === 'service_worker');
+      const worker = await target.worker();
+      expect(await worker.evaluate(() => self.toString())).toBe('[object ServiceWorkerGlobalScope]');
+    });
+    it_fails_ffox('should create a worker from a shared worker', async({page, server, context}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        new SharedWorker('data:text/javascript,console.log("hi")');
+      });
+      const target = await context.waitForTarget(target => target.type() === 'shared_worker');
+      const worker = await target.worker();
+      expect(await worker.evaluate(() => self.toString())).toBe('[object SharedWorkerGlobalScope]');
+    });
     it('should report when a target url changes', async({page, server, context}) => {
       await page.goto(server.EMPTY_PAGE);
       let changedTarget = new Promise(fulfill => context.once('targetchanged', target => fulfill(target)));
