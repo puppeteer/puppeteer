@@ -310,9 +310,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
 
       describe_fails_ffox('element option', function() {
         it('should work a button', async({page}) => {
-          await page.setContent(`
-          <button>My Button</button>
-          `);
+          await page.setContent(`<button>My Button</button>`);
 
           const button = await page.$('button');
           expect(await page.accessibility.snapshot({element: button})).toEqual({
@@ -321,9 +319,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
           });
         });
         it('should work an input', async({page}) => {
-          await page.setContent(`
-          <input title="My Input" value="My Value">
-          `);
+          await page.setContent(`<input title="My Input" value="My Value">`);
 
           const input = await page.$('input');
           expect(await page.accessibility.snapshot({element: input})).toEqual({
@@ -334,11 +330,12 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
         });
         it('should work a menu', async({page}) => {
           await page.setContent(`
-          <div role="menu" title="My Menu">
-            <div role="menuitem">First Item</div>
-            <div role="menuitem">Second Item</div>
-            <div role="menuitem">Third Item</div>
-          </div>`);
+            <div role="menu" title="My Menu">
+              <div role="menuitem">First Item</div>
+              <div role="menuitem">Second Item</div>
+              <div role="menuitem">Third Item</div>
+            </div>
+          `);
 
           const menu = await page.$('div[role="menu"]');
           expect(await page.accessibility.snapshot({element: menu})).toEqual({
