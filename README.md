@@ -214,9 +214,9 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
 
 4. Use debugger in application code browser
 
-    There are two browsers: the browser running test code, and the browser
+    There are two execution context: node.js that is running test code, and the browser
     running application code being tested. This lets you debug code in the
-    application code browser; ie code in `evaluate()`.
+    application code browser; ie code inside `evaluate()`.
 
     - Use `{devtools: true}` when launching Puppeteer:
 
@@ -236,12 +236,12 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
 
        The test will now stop executing in the above evaluate statement, and chromium will stop in debug mode.
 
-5. Use debugger in test browser
+5. Use debugger in node.js
 
-    This will let you debug test code. For example, you can step over `await page.click()` in the test browser and see the click happen in the application code browser.
+    This will let you debug test code. For example, you can step over `await page.click()` in the node.js script and see the click happen in the application code browser.
 
     Note that you won't be able to run `await page.click()` in
-    the test browser console due to this [Chromium bug](https://bugs.chromium.org/p/chromium/issues/detail?id=833928). So if
+    DevTools console due to this [Chromium bug](https://bugs.chromium.org/p/chromium/issues/detail?id=833928). So if
     you want to try something out, you have to add it to your test file.
 
     - Add `debugger;` to your test, eg:
