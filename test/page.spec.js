@@ -656,6 +656,13 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       });
       expect(result).toBe(15);
     });
+    it('should work with complex objects', async({page, server}) => {
+      await page.exposeFunction('complexObject', function(a, b) {
+        return {x: a.x + b.x};
+      });
+      const result = await page.evaluate(async() => complexObject({x: 5}, {x: 2}));
+      expect(result.x).toBe(7);
+    });
   });
 
   describe('Page.Events.PageError', function() {
