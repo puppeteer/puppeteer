@@ -532,7 +532,8 @@ try {
   - `env` <[Object]> Specify environment variables that will be visible to the browser. Defaults to `process.env`.
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
   - `pipe` <[boolean]> Connects to the browser over a pipe instead of a WebSocket. Defaults to `false`.
-- returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
+  - `detached` <[boolean]> Detaches from browser after launch and returns null. The browser will remain open after the process that launched it exits. To connect to it you need to know the websocket endpoint so this is best used with the --remote-debugging-port option so the endpoint is predictable. Defaults to `false`.
+- returns: <[Promise]<[Browser]>|null> Promise which resolves to browser instance.
 
 
 You can use `ignoreDefaultArgs` to filter out `--mute-audio` from default arguments:

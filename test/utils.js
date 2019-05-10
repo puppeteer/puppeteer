@@ -153,4 +153,31 @@ const utils = module.exports = {
       });
     });
   },
+
+  /**
+   * @param {string} url
+   * @return {!Promise<?string>}
+   */
+  fetch(url) {
+    let resolve;
+    const promise = new Promise(x => resolve = x);
+    const http = require('http');
+    http.get(url, response => {
+      if (response.statusCode !== 200) {
+        resolve(null);
+        return;
+      }
+      let body = '';
+      response.on('data', function(chunk){
+        body += chunk;
+      });
+      response.on('end', function(){
+        resolve(body);
+      });
+    }).on('error', function(e){
+      console.error('Error fetching json: ' + e);
+      resolve(null);
+    });
+    return promise;
+  }
 };

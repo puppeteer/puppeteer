@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+const utils = require('./utils');
+
 module.exports.addLauncherTests = function({testRunner, expect, defaultBrowserOptions, puppeteer}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
@@ -91,6 +93,31 @@ module.exports.addLauncherTests = function({testRunner, expect, defaultBrowserOp
         // Emulate user exiting browser.
         browser.process().kill();
         await disconnectedEventPromise;
+      });
+    });
+
+    describe('Puppeteer.launch |detached| option', function() {
+      it('should support the detached option', async() => {
+        const options = Object.assign({}, defaultBrowserOptions, {
+          args: ['--remote-debugging-port=9222'],
+          detached: true
+        });
+        let browser = await puppeteer.launch(options);
+        expect(browser).toBeNull();
+
+        // unfortunately, after this point if the test fails before reaching the end of this test
+        // there will be a chromium process left running
+
+        const responseBody = await utils.fetch('http://localhost:9222/json/version');
+        const endpoint = JSON.parse(responseBody).webSocketDebuggerUrl;
+
+        browser = await puppeteer.connect({
+          browserWSEndpoint: endpoint
+        });
+        const page = await browser.newPage();
+        expect(await page.evaluate(() => 7 * 8)).toBe(56);
+        await page.close();
+        await browser.close();
       });
     });
   });
