@@ -108,8 +108,16 @@ module.exports.addLauncherTests = function({testRunner, expect, defaultBrowserOp
         // unfortunately, after this point if the test fails before reaching the end of this test
         // there will be a chromium process left running
 
-        const responseBody = await utils.fetch('http://127.0.0.1:21223/json/version');
-        const endpoint = JSON.parse(responseBody).webSocketDebuggerUrl;
+        // it can take a little time for the chrome process to startup so we might have
+        // to retry this a few times
+        let endpoint = null;
+        for (let i = 0; i < 10; i++) {
+          const responseBody = await utils.fetch('http://127.0.0.1:21223/json/version');
+          if (responseBody !== null) {
+            endpoint = JSON.parse(responseBody).webSocketDebuggerUrl;
+            break;
+          }
+        }
 
         browser = await puppeteer.connect({
           browserWSEndpoint: endpoint
