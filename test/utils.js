@@ -175,9 +175,17 @@ const utils = module.exports = {
         resolve(body);
       });
     }).on('error', function(e){
-      console.error('Error fetching json: ' + e);
       resolve(null);
     });
+    return promise;
+  },
+
+  sleep(ms) {
+    let resolve;
+    const promise = new Promise(x => resolve = x);
+    setTimeout(() => {
+      resolve();
+    }, ms);
     return promise;
   }
 };

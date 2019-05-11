@@ -117,6 +117,7 @@ module.exports.addLauncherTests = function({testRunner, expect, defaultBrowserOp
             endpoint = JSON.parse(responseBody).webSocketDebuggerUrl;
             break;
           }
+          await utils.sleep(100);
         }
 
         browser = await puppeteer.connect({
