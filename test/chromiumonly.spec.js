@@ -99,7 +99,7 @@ module.exports.addLauncherTests = function({testRunner, expect, defaultBrowserOp
     describe('Puppeteer.launch |detached| option', function() {
       it('should support the detached option', async() => {
         const options = Object.assign({}, defaultBrowserOptions, {
-          args: ['--remote-debugging-port=9222'],
+          args: ['--remote-debugging-port=21223'],
           detached: true
         });
         let browser = await puppeteer.launch(options);
@@ -108,8 +108,7 @@ module.exports.addLauncherTests = function({testRunner, expect, defaultBrowserOp
         // unfortunately, after this point if the test fails before reaching the end of this test
         // there will be a chromium process left running
 
-        const responseBody = await utils.fetch('http://127.0.0.1:9222/json/version');
-        console.log(responseBody);
+        const responseBody = await utils.fetch('http://127.0.0.1:21223/json/version');
         const endpoint = JSON.parse(responseBody).webSocketDebuggerUrl;
 
         browser = await puppeteer.connect({
