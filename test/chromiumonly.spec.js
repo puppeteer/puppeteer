@@ -109,6 +109,7 @@ module.exports.addLauncherTests = function({testRunner, expect, defaultBrowserOp
         // there will be a chromium process left running
 
         const responseBody = await utils.fetch('http://127.0.0.1:9222/json/version');
+        console.log(responseBody);
         const endpoint = JSON.parse(responseBody).webSocketDebuggerUrl;
 
         browser = await puppeteer.connect({
