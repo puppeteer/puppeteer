@@ -1,7 +1,7 @@
 
 # Puppeteer API <!-- GEN:version -->Tip-Of-Tree<!-- GEN:stop-->
 <!-- GEN:empty-if-release -->
-#### Next Release: `June 6, 2019`
+#### Next Release: `May 23, 2019`
 <!-- GEN:stop -->
 
 - Interactive Documentation: https://pptr.dev
