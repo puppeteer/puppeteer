@@ -244,12 +244,23 @@ Releasing to NPM consists of 3 phases:
         - **NOTE**: make sure to update the "released APIs" section in the top of `docs/api.md`.
         - **NOTE**: no other commits should be landed in-between release commit and bump commit.
 
-## Building Chromium Revisions
+## Updating NPM dist tags
 
-Project maintainers with explicit access can request Chromium builds.
+For both `puppeteer` and `puppeteer-firefox` we maintain the following NPM Tags:
+- `chrome-*` tags, e.g. `chrome-75` and so on. These tags match Puppeteer version that corresponds to the `chrome-*` release.
+- `chrome-stable` tag. This tag points to the Puppeteer version that works with current Chrome stable.
 
-1. Goto [rpc explorer](https://cr-buildbucket.appspot.com/rpcexplorer/services/buildbucket.v2.Builds/ScheduleBuild?request={%20%20%20%20%22builder%22:%20{%20%20%20%20%20%20%20%20%22project%22:%20%22chromium%22,%20%20%20%20%20%20%20%20%22bucket%22:%20%22ci%22,%20%20%20%20%20%20%20%20%22builder%22:%20%22mac-rel%22%20%20%20%20},%20%20%20%20%22gitilesCommit%22:%20{%20%20%20%20%20%20%20%20%22host%22:%20%22chromium.googlesource.com%22,%20%20%20%20%20%20%20%20%22project%22:%20%22chromium/src%22,%20%20%20%20%20%20%20%20%22id%22:%20%22f6d8f73b94d1715b64f621d2112fbcecd0fc860a%22,%20%20%20%20%20%20%20%20%22ref%22:%20%22refs/heads/master%22%20%20%20%20},%20%20%20%20%22requestId%22:%20%22random%20string%20i%20guess%22})
-2. Login with Google account
-3. Set "builder" to either "mac-rel", "linux-rel", "win32-rel" or "win-rel"
-4. Set "id" to the full SHA of the commit to be built
-5. Hit "Send"
+These tags are updated on every Puppeteer release.
+
+> **NOTE**: due to Chrome's rolling release, we take [omahaproxy's linux stable version](https://omahaproxy.appspot.com/) as *stable*.
+
+Manging tags 101:
+
+```bash
+# list tags
+$ npm dist-tag ls puppeteer
+# Removing a tag
+$ npm dist-tag rm puppeteer-core chrome-stable
+# Adding a tag
+$ npm dist-tag add puppeteer-core@1.13.0 chrome-stable
+```
