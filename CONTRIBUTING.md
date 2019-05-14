@@ -13,7 +13,7 @@
   * [Debugging Puppeteer](#debugging-puppeteer)
 - [For Project Maintainers](#for-project-maintainers)
   * [Releasing to NPM](#releasing-to-npm)
-  * [Building Chromium Revisions](#building-chromium-revisions)
+  * [Updating NPM dist tags](#updating-npm-dist-tags)
 <!-- gen:stop -->
 
 # How to Contribute
