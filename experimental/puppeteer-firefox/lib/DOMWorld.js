@@ -134,7 +134,7 @@ class DOMWorld {
   async setContent(html) {
     await this.evaluate(base64html => {
       document.open();
-      document.write(atob(base64html));
+      document.write(decodeURIComponent(atob(base64html).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
       document.close();
     }, Buffer.from(html).toString('base64'));
   }
