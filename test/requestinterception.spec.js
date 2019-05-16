@@ -506,6 +506,23 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       const img = await page.$('img');
       expect(await img.screenshot()).toBeGolden('mock-binary-response.png');
     });
+    it('should stringify intercepted request response headers', async({page, server}) => {
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        request.respond({
+          status: 200,
+          headers: {
+            'foo': true
+          },
+          body: 'Yo, page!'
+        });
+      });
+      const response = await page.goto(server.EMPTY_PAGE);
+      expect(response.status()).toBe(200);
+      const headers = response.headers();
+      expect(headers.foo).toBe('true');
+      expect(await page.evaluate(() => document.body.textContent)).toBe('Yo, page!');
+    });
   });
 
 };
