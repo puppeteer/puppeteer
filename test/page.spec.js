@@ -768,6 +768,10 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await page.setContent('<div>🐥</div>');
       expect(await page.$eval('div', div => div.textContent)).toBe('🐥');
     });
+    it('should work with newline', async({page, server}) => {
+      await page.setContent('<div>\n</div>');
+      expect(await page.$eval('div', div => div.textContent)).toBe('\n');
+    });
   });
 
   describe_fails_ffox('Page.setBypassCSP', function() {
