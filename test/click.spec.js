@@ -27,6 +27,15 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       await page.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     });
+    it('should click svg', async({page, server}) => {
+      await page.setContent(`
+        <svg height="100" width="100">
+          <circle onclick="javascript:window.__CLICKED=42" cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
+        </svg>
+      `);
+      await page.click('circle');
+      expect(await page.evaluate(() => window.__CLICKED)).toBe(42);
+    });
     it_fails_ffox('should click the button if window.Node is removed', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
       await page.evaluate(() => delete window.Node);
