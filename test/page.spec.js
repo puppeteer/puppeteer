@@ -760,6 +760,18 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await page.setContent('<div>hello world</div>' + '\x7F');
       expect(await page.$eval('div', div => div.textContent)).toBe('hello world');
     });
+    it('should work with accents', async({page, server}) => {
+      await page.setContent('<div>aberración</div>');
+      expect(await page.$eval('div', div => div.textContent)).toBe('aberración');
+    });
+    it('should work with emojis', async({page, server}) => {
+      await page.setContent('<div>🐥</div>');
+      expect(await page.$eval('div', div => div.textContent)).toBe('🐥');
+    });
+    it('should work with newline', async({page, server}) => {
+      await page.setContent('<div>\n</div>');
+      expect(await page.$eval('div', div => div.textContent)).toBe('\n');
+    });
   });
 
   describe_fails_ffox('Page.setBypassCSP', function() {
