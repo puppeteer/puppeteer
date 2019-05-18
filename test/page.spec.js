@@ -761,11 +761,11 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(await page.$eval('div', div => div.textContent)).toBe('hello world');
     });
     it('should work with accents', async({page, server}) => {
-      await page.setContent('<div>aberración</div>' + '\x7F');
+      await page.setContent('<div>aberración</div>');
       expect(await page.$eval('div', div => div.textContent)).toBe('aberración');
     });
     it('should work with emojis', async({page, server}) => {
-      await page.setContent('<div>🐥</div>' + '\x7F');
+      await page.setContent('<div>🐥</div>');
       expect(await page.$eval('div', div => div.textContent)).toBe('🐥');
     });
   });
