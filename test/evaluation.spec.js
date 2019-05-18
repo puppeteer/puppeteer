@@ -85,6 +85,10 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(await page.evaluate(a.sum, 1, 2)).toBe(3);
       expect(await page.evaluate(a.mult, 2, 4)).toBe(8);
     });
+    xit('should work with unicode chars', async({page, server}) => {
+      const result = await page.evaluate(a => a['中文字符'], {'中文字符': 42});
+      expect(result).toBe(42);
+    });
     it('should throw when evaluation triggers reload', async({page, server}) => {
       let error = null;
       await page.evaluate(() => {
