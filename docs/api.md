@@ -3253,7 +3253,7 @@ Exception is immediately thrown if the request interception is not enabled.
   - `url` <[string]> If set, the request url will be changed. This is not a redirect. The request will be silently forwarded to the new url. For example, the address bar will show the original url.
   - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`)
   - `postData` <[string]> If set changes the post data of request
-  - `headers` <[Object]> If set changes the request HTTP headers
+  - `headers` <[Object]> If set changes the request HTTP headers. Header values will be converted to a string.
 - returns: <[Promise]>
 
 Continues request with optional request overrides. To use this, request interception should be enabled with `page.setRequestInterception`.
@@ -3339,7 +3339,7 @@ ResourceType will be one of the following: `document`, `stylesheet`, `image`, `m
 #### request.respond(response)
 - `response` <[Object]> Response that will fulfill this request
   - `status` <[number]> Response status code, defaults to `200`.
-  - `headers` <[Object]> Optional response headers
+  - `headers` <[Object]> Optional response headers. Header values will be converted to a string.
   - `contentType` <[string]> If set, equals to setting `Content-Type` response header
   - `body` <[string]|[Buffer]> Optional response body
 - returns: <[Promise]>
