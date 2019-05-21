@@ -67,7 +67,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         const page = await remote.newPage();
         const navigationPromise = page.goto(server.PREFIX + '/one-style.html', {timeout: 60000}).catch(e => e);
         await server.waitForRequest('/one-style.css');
-        await remote.disconnect();
+        remote.disconnect();
         const error = await navigationPromise;
         expect(error.message).toBe('Navigation failed because browser has disconnected!');
         await browser.close();
@@ -78,7 +78,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         const remote = await puppeteer.connect({browserWSEndpoint: browser.wsEndpoint()});
         const page = await remote.newPage();
         const watchdog = page.waitForSelector('div', {timeout: 60000}).catch(e => e);
-        await remote.disconnect();
+        remote.disconnect();
         const error = await watchdog;
         expect(error.message).toContain('Protocol error');
         await browser.close();
