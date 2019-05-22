@@ -196,7 +196,7 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
    the browser using  `headless: false`:
 
     ```js
-        const browser = await puppeteer.launch({headless: false});
+     const browser = await puppeteer.launch({headless: false});
     ```
 
 2. Slow it down - the `slowMo` option slows down Puppeteer operations by the
