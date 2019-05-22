@@ -1028,7 +1028,7 @@ In order to intercept and mutate requests, see `page.setRequestInterception`.
 #### event: 'requestfailed'
 - <[Request]>
 
-Emitted when a request fails, for example by timing out.
+Emitted when a request fails, for example by timing out. Not emitted if the server replies with an HTTP error code.
 
 #### event: 'requestfinished'
 - <[Request]>
