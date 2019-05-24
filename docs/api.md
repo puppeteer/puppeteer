@@ -1,6 +1,8 @@
 
-# Puppeteer API <!-- GEN:version -->v1.17.0<!-- GEN:stop-->
-<!-- GEN:empty-if-release --><!-- GEN:stop -->
+# Puppeteer API <!-- GEN:version -->Tip-Of-Tree<!-- GEN:stop-->
+<!-- GEN:empty-if-release -->
+#### Next Release: `June 20, 2019`
+<!-- GEN:stop -->
 
 - Interactive Documentation: https://pptr.dev
 - API Translations: [中文|Chinese](https://zhaoqize.github.io/puppeteer-api-zh_CN/#/)
