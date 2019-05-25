@@ -404,4 +404,4 @@ Make sure to search these channels before posting your question.
 
 Puppeteer is licensed as [Apache License 2.0](https://github.com/GoogleChrome/puppeteer/blob/master/LICENSE)
 
-
+<!-- [END license] -->
