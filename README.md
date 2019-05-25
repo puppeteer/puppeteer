@@ -399,3 +399,9 @@ Make sure to search these channels before posting your question.
 
 
 <!-- [END faq] -->
+<!-- [START license] -->
+# LICENSE
+
+Puppeteer IS LICENSED AS [Apache License 2.0](https://github.com/GoogleChrome/puppeteer/blob/master/LICENSE)
+
+
