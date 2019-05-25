@@ -402,6 +402,6 @@ Make sure to search these channels before posting your question.
 <!-- [START license] -->
 # LICENSE
 
-Puppeteer IS LICENSED AS [Apache License 2.0](https://github.com/GoogleChrome/puppeteer/blob/master/LICENSE)
+Puppeteer is licensed as [Apache License 2.0](https://github.com/GoogleChrome/puppeteer/blob/master/LICENSE)
 
 
