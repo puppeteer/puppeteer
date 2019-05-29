@@ -158,6 +158,7 @@ module.exports.addTests = ({testRunner, product, puppeteerPath}) => {
   require('./launcher.spec.js').addTests(testOptions);
   require('./fixtures.spec.js').addTests(testOptions);
   if (CHROME) {
+    require('./oopif.spec.js').addTests(testOptions);
     require('./headful.spec.js').addTests(testOptions);
     require('./tracing.spec.js').addTests(testOptions);
     // Add top-level Chromium-specific tests.
