@@ -55,6 +55,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       page.on('request', request => request.continue());
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(page, 'oopif', server.CROSS_PROCESS_PREFIX + '/grid.html');
+      expect(page.frames().length).toBe(2);
     });
   });
 };
