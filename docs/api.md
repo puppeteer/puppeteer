@@ -1030,6 +1030,8 @@ In order to intercept and mutate requests, see `page.setRequestInterception`.
 
 Emitted when a request fails, for example by timing out.
 
+> **NOTE** HTTP Error responses, such as 404 or 503, are still successful responses from HTTP standpoint, so request will complete with [`'requestfinished'`](#event-requestfinished) event and not with [`'requestfailed'`](#event-requestfailed).
+
 #### event: 'requestfinished'
 - <[Request]>
 
@@ -3217,11 +3219,13 @@ This method expects `elementHandle` to point to an [input element](https://devel
 ### class: Request
 
 Whenever the page sends a request, such as for a network resource, the following events are emitted by puppeteer's page:
-- ['request'](#event-request) emitted when the request is issued by the page.
-- ['response'](#event-response) emitted when/if the response is received for the request.
-- ['requestfinished'](#event-requestfinished) emitted when the response body is downloaded and the request is complete.
+- [`'request'`](#event-request) emitted when the request is issued by the page.
+- [`'response'`](#event-response) emitted when/if the response is received for the request.
+- [`'requestfinished'`](#event-requestfinished) emitted when the response body is downloaded and the request is complete.
 
-If request fails at some point, then instead of 'requestfinished' event (and possibly instead of 'response' event), the  ['requestfailed'](#event-requestfailed) event is emitted.
+If request fails at some point, then instead of `'requestfinished'` event (and possibly instead of 'response' event), the  [`'requestfailed'`](#event-requestfailed) event is emitted.
+
+> **NOTE** HTTP Error responses, such as 404 or 503, are still successful responses from HTTP standpoint, so request will complete with `'requestfinished'` event.
 
 If request gets a 'redirect' response, the request is successfully finished with the 'requestfinished' event, and a new request is  issued to a redirected url.
 
