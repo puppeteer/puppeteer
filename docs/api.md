@@ -3481,7 +3481,7 @@ Get the target that opened this target. Top-level targets return `null`.
 If the target is not of type `"page"` or `"background_page"`, returns `null`.
 
 #### target.type()
-- returns: <"page"|"background_page"|"service_worker"|"shared_worker"|"other"|"browser">
+- returns: <"page"|"background_page"|"service_worker"|"shared_worker"|"other"|"browser"|"iframe">
 
 Identifies what kind of target this is. Can be `"page"`, [`"background_page"`](https://developer.chrome.com/extensions/background_pages), `"service_worker"`, `"shared_worker"`, `"browser"` or `"other"`.
 
