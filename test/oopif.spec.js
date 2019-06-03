@@ -21,7 +21,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
-  xdescribe('OOPIF', function() {
+  describe('OOPIF', function() {
     beforeAll(async function(state) {
       state.browser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
         args: (defaultBrowserOptions.args || []).concat(['--site-per-process']),
@@ -40,17 +40,24 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       await state.browser.close();
       state.browser = null;
     });
-    it('should report oopif frames', async function({page, server}) {
-      await page.goto(server.EMPTY_PAGE);
-      await utils.attachFrame(page, 'oopif', server.CROSS_PROCESS_PREFIX + '/empty.html');
+    xit('should report oopif frames', async function({page, server, context}) {
+      await page.goto(server.PREFIX + '/dynamic-oopif.html');
+      expect(oopifs(context).length).toBe(1);
       expect(page.frames().length).toBe(2);
     });
-    it('should load oopif iframes with subresources and request interception', async function({page, server}) {
+    it('should load oopif iframes with subresources and request interception', async function({page, server, context}) {
       await page.setRequestInterception(true);
       page.on('request', request => request.continue());
-      await page.goto(server.EMPTY_PAGE);
-      await utils.attachFrame(page, 'oopif', server.CROSS_PROCESS_PREFIX + '/grid.html');
-      expect(page.frames().length).toBe(2);
+      await page.goto(server.PREFIX + '/dynamic-oopif.html');
+      expect(oopifs(context).length).toBe(1);
     });
   });
 };
+
+
+/**
+ * @param {!Puppeteer.BrowserContext} context
+ */
+function oopifs(context) {
+  return context.targets().filter(target => target._targetInfo.type === 'iframe');
+}
