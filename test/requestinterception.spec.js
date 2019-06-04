@@ -308,7 +308,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       });
       const dataURL = 'data:text/html,<div>yo</div>';
       const text = await page.evaluate(url => fetch(url).then(r => r.text()), dataURL);
-      console.log(text);
+      expect(text).toBe('<div>yo</div>');
       expect(requests.length).toBe(1);
       expect(requests[0].url()).toBe(dataURL);
     });
