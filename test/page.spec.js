@@ -1067,6 +1067,15 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
       expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
     });
+    it_fails_ffox('should not throw when select causes navigation', async({page, server}) => {
+      await page.goto(server.PREFIX + '/input/select.html');
+      await page.$eval('select', select => select.addEventListener('input', () => window.location = '/empty.html'));
+      await Promise.all([
+        page.select('select', 'blue'),
+        page.waitForNavigation(),
+      ]);
+      expect(page.url()).toContain('empty.html');
+    });
     it('should select multiple options', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/select.html');
       await page.evaluate(() => makeMultiple());

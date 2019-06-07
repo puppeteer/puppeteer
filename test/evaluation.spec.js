@@ -231,6 +231,14 @@ module.exports.addTests = function({testRunner, expect}) {
       const error = await executionContext.evaluate(() => null).catch(e => e);
       expect(error.message).toContain('navigation');
     });
+    it_fails_ffox('should not throw an error when evaluation does a navigation', async({page, server}) => {
+      await page.goto(server.PREFIX + '/one-style.html');
+      const result = await page.evaluate(() => {
+        window.location = '/empty.html';
+        return [42];
+      });
+      expect(result).toEqual([42]);
+    });
   });
 
   describe('Page.evaluateOnNewDocument', function() {
