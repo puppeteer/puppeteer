@@ -271,7 +271,7 @@ Build the container:
 docker build -t puppeteer-chrome-linux .
 ```
 
-Run the container by passing `node -e "<yourscript.js content as a string>` as the command:
+Run the container by passing `node -e "<yourscript.js content as a string>"` as the command:
 
 ```bash
  docker run -i --init --rm --cap-add=SYS_ADMIN \
