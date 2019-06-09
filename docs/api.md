@@ -1467,13 +1467,16 @@ Navigate to the next page in history.
   - `referer` <[string]> Referer header value. If provided it will take preference over the referer header value set by [page.setExtraHTTPHeaders()](#pagesetextrahttpheadersheaders).
 - returns: <[Promise]<?[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
-The `page.goto` will throw an error if:
+`page.goto` will throw an error if:
 - there's an SSL error (e.g. in case of self-signed certificates).
 - target URL is invalid.
 - the `timeout` is exceeded during navigation.
+- the remote server does not respond or is unreachable.
 - the main resource failed to load.
 
-> **NOTE** `page.goto` either throw or return a main resource response. The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
+`page.goto` will not throw an error when any valid HTTP status code is returned by the remote server, including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling [response.status()](#responsestatus).
+
+> **NOTE** `page.goto` either throws an error or returns a main resource response. The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
 
 > **NOTE** Headless mode doesn't support navigation to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
 
@@ -2606,13 +2609,16 @@ If there's no element matching `selector`, the method throws an error.
   - `referer` <[string]> Referer header value. If provided it will take preference over the referer header value set by [page.setExtraHTTPHeaders()](#pagesetextrahttpheadersheaders).
 - returns: <[Promise]<?[Response]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect.
 
-The `frame.goto` will throw an error if:
+`frame.goto` will throw an error if:
 - there's an SSL error (e.g. in case of self-signed certificates).
 - target URL is invalid.
 - the `timeout` is exceeded during navigation.
+- the remote server does not respond or is unreachable.
 - the main resource failed to load.
 
-> **NOTE** `frame.goto` either throw or return a main resource response. The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
+`frame.goto` will not throw an error when any valid HTTP status code is returned by the remote server, including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling [response.status()](#responsestatus).
+
+> **NOTE** `frame.goto` either throws an error or returns a main resource response. The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
 
 > **NOTE** Headless mode doesn't support navigation to a PDF document. See the [upstream issue](https://bugs.chromium.org/p/chromium/issues/detail?id=761295).
 
