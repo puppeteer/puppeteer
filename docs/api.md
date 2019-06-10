@@ -3343,6 +3343,7 @@ ResourceType will be one of the following: `document`, `stylesheet`, `image`, `m
 #### request.respond(response)
 - `response` <[Object]> Response that will fulfill this request
   - `status` <[number]> Response status code, defaults to `200`.
+  - `statusText` <[string]> Custom response status text. Must be present for non-standard HTTP status codes.
   - `headers` <[Object]> Optional response headers. Header values will be converted to a string.
   - `contentType` <[string]> If set, equals to setting `Content-Type` response header
   - `body` <[string]|[Buffer]> Optional response body

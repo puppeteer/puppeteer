@@ -483,6 +483,34 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(response.headers().foo).toBe('bar');
       expect(await page.evaluate(() => document.body.textContent)).toBe('Yo, page!');
     });
+    it('should allow specifying custom status text', async({page, server}) => {
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        request.respond({
+          status: 200,
+          statusText: 'of course!',
+          body: 'Yo, page!'
+        });
+      });
+      const response = await page.goto(server.EMPTY_PAGE);
+      expect(response.status()).toBe(200);
+      expect(response.statusText()).toBe('of course!');
+      expect(await page.evaluate(() => document.body.textContent)).toBe('Yo, page!');
+    });
+    it('should work with non-standard status codes', async({page, server}) => {
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        request.respond({
+          status: 422,
+          statusText: 'YEP',
+          body: 'Yo, page!'
+        });
+      });
+      const response = await page.goto(server.EMPTY_PAGE);
+      expect(response.status()).toBe(422);
+      expect(response.statusText()).toBe('YEP');
+      expect(await page.evaluate(() => document.body.textContent)).toBe('Yo, page!');
+    });
     it('should redirect', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
