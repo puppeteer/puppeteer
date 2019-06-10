@@ -182,11 +182,13 @@ module.exports.addTests = function({testRunner, expect}) {
       });
       expect(result).toBe(undefined);
     });
-    it('should be able to throw a tricky error', async({page}) => {
-      const error = await page.evaluate(() => {
-        throw new Error('Object reference chain is too long');
-      }).catch(e => e);
-      expect(error.message).toContain('Object reference chain is too long');
+    it_fails_ffox('should be able to throw a tricky error', async({page, server}) => {
+      const windowHandle = await page.evaluateHandle(() => window);
+      const errorText = await windowHandle.jsonValue().catch(e => e.message);
+      const error = await page.evaluate(errorText => {
+        throw new Error(errorText);
+      }, errorText).catch(e => e);
+      expect(error.message).toBe(errorText);
     });
     it('should accept a string', async({page, server}) => {
       const result = await page.evaluate('1 + 2');
