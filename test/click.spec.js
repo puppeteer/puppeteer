@@ -55,6 +55,13 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       await page.click('span');
       expect(await page.evaluate(() => window.CLICKED)).toBe(42);
     });
+    it('should not throw UnhandledPromiseRejection when page closes', async({page, server}) => {
+      const newPage = await page.browser().newPage();
+      await Promise.all([
+        newPage.close(),
+        newPage.mouse.click(1, 2),
+      ]).catch(e => {});
+    });
     it('should click the button after navigation ', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
       await page.click('button');
