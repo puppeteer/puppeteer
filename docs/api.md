@@ -1237,11 +1237,7 @@ Emulates given device metrics and user agent. This method is a shortcut for call
 
 To aid emulation, puppeteer provides a list of device descriptors which can be obtained via the [`puppeteer.devices`](#puppeteerdevices).
 
-To avoid race condition with page's logic that sniffs for viewport and user
-agent properties, it is recommended to call `page.emulate` *before* navigating
-page to the target URL.
-
-Example of emulating an iPhone 6 in puppeteer:
+`page.emulate` will resize the page. A lot of websites don't expect phones to change size, so you should emulate before navigating to the page.
 
 ```js
 const puppeteer = require('puppeteer');
@@ -1804,9 +1800,7 @@ puppeteer.launch().then(async browser => {
 
 In the case of multiple pages in a single browser, each page can have its own viewport size.
 
-To avoid race condition with page's logic that sniffs for viewport properties,
-it is recommended to call `page.setViewport` *before* navigating page to the target
-URL.
+`page.setViewport` will resize the page. A lot of websites don't expect phones to change size, so you should set the viewport before navigating to the page.
 
 ```js
 const page = await browser.newPage();
