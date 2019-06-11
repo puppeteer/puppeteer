@@ -182,6 +182,14 @@ module.exports.addTests = function({testRunner, expect}) {
       });
       expect(result).toBe(undefined);
     });
+    it_fails_ffox('should be able to throw a tricky error', async({page, server}) => {
+      const windowHandle = await page.evaluateHandle(() => window);
+      const errorText = await windowHandle.jsonValue().catch(e => e.message);
+      const error = await page.evaluate(errorText => {
+        throw new Error(errorText);
+      }, errorText).catch(e => e);
+      expect(error.message).toContain(errorText);
+    });
     it('should accept a string', async({page, server}) => {
       const result = await page.evaluate('1 + 2');
       expect(result).toBe(3);
