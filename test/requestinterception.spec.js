@@ -483,6 +483,19 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(response.headers().foo).toBe('bar');
       expect(await page.evaluate(() => document.body.textContent)).toBe('Yo, page!');
     });
+    it('should work with status code 422', async({page, server}) => {
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        request.respond({
+          status: 422,
+          body: 'Yo, page!'
+        });
+      });
+      const response = await page.goto(server.EMPTY_PAGE);
+      expect(response.status()).toBe(422);
+      expect(response.statusText()).toBe('Unprocessable Entity');
+      expect(await page.evaluate(() => document.body.textContent)).toBe('Yo, page!');
+    });
     it('should redirect', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
