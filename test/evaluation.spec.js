@@ -188,7 +188,7 @@ module.exports.addTests = function({testRunner, expect}) {
       const error = await page.evaluate(errorText => {
         throw new Error(errorText);
       }, errorText).catch(e => e);
-      expect(error.message).toBe(errorText);
+      expect(error.message).toContain(errorText);
     });
     it('should accept a string', async({page, server}) => {
       const result = await page.evaluate('1 + 2');
