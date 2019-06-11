@@ -1249,7 +1249,8 @@ Emulates given device metrics and user agent. This method is a shortcut for call
 - [page.setViewport(viewport)](#pagesetviewportviewport)
 
 To aid emulation, puppeteer provides a list of device descriptors which can be obtained via the [`puppeteer.devices`](#puppeteerdevices).
-Below is an example of emulating an iPhone 6 in puppeteer:
+
+`page.emulate` will resize the page. A lot of websites don't expect phones to change size, so you should emulate before navigating to the page.
 
 ```js
 const puppeteer = require('puppeteer');
@@ -1814,6 +1815,18 @@ puppeteer.launch().then(async browser => {
 > **NOTE** in certain cases, setting viewport will reload the page in order to set the `isMobile` or `hasTouch` properties.
 
 In the case of multiple pages in a single browser, each page can have its own viewport size.
+
+`page.setViewport` will resize the page. A lot of websites don't expect phones to change size, so you should set the viewport before navigating to the page.
+
+```js
+const page = await browser.newPage();
+await page.setViewport({
+  width: 640,
+  height: 480,
+  deviceScaleFactor: 1,
+});
+await page.goto('https://example.com');
+```
 
 #### page.tap(selector)
 - `selector` <[string]> A [selector] to search for element to tap. If there are multiple elements satisfying the selector, the first will be tapped.
