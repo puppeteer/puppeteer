@@ -341,6 +341,7 @@
   * [httpRequest.finalizeInterceptions()](#httprequestfinalizeinterceptions)
   * [httpRequest.frame()](#httprequestframe)
   * [httpRequest.headers()](#httprequestheaders)
+  * [httpRequest.initiator()](#httprequestinitiator)
   * [httpRequest.isNavigationRequest()](#httprequestisnavigationrequest)
   * [httpRequest.method()](#httprequestmethod)
   * [httpRequest.postData()](#httprequestpostdata)
@@ -4777,8 +4778,17 @@ When in Cooperative Mode, awaits pending interception handlers and then decides 
 
 - returns: <[Object]> An object with HTTP headers associated with the request. All header names are lower-case.
 
-#### httpRequest.isNavigationRequest()
+#### httpRequest.initiator()
+- returns: <[Object]> An object describing the initiator of the request
+  - `type` <[string]> Type of this initiator. Values : `'parser'`, `'script'`, `'preload'`, `'SignedExchange'`, `'other'`
+  - `stack` <?[Object]> Initiator JavaScript stack trace, set for Script only. Visit [ChromeDevTools Doc](https://chromedevtools.github.io/devtools-protocol/tot/Runtime#type-StackTrace "Runtime.StackTrace") for more information.
+  - `url` <?[string]> Initiator URL, set for Parser type or for Script type (when script is importing module) or for SignedExchange type.
+  - `lineNumber` <?[number]> Initiator line number, set for Parser type or for Script type (when script is importing module) (0-based).
 
+For more information about the returned object:
+https://chromedevtools.github.io/devtools-protocol/tot/Network#type-Initiator
+
+#### httpRequest.isNavigationRequest()
 - returns: <[boolean]>
 
 Whether this request is driving frame's navigation.

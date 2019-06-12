@@ -130,6 +130,7 @@ export class HTTPRequest {
   private _currentStrategy: InterceptResolutionStrategy;
   private _currentPriority: number | undefined;
   private _interceptActions: Array<() => void | PromiseLike<any>>;
+  private _initiator: Protocol.Network.Initiator;
 
   /**
    * @internal
@@ -158,6 +159,7 @@ export class HTTPRequest {
     this._currentStrategy = 'none';
     this._currentPriority = undefined;
     this._interceptActions = [];
+    this._initiator = event.initiator;
 
     for (const key of Object.keys(event.request.headers))
       this._headers[key.toLowerCase()] = event.request.headers[key];
@@ -273,6 +275,13 @@ export class HTTPRequest {
    */
   headers(): Record<string, string> {
     return this._headers;
+  }
+
+  /**
+   * @returns the initiator for the request.
+   */
+  initiator(): Protocol.Network.Initiator {
+    return this._initiator;
   }
 
   /**

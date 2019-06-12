@@ -469,6 +469,30 @@ describe('network', function () {
     });
   });
 
+  describe('Request.initiator', () => {
+    it('should work', async({page, server}) => {
+      const initiators = new Map();
+      page.on('request', request => initiators.set(request.url().split('/').pop(), request.initiator()));
+      await page.goto(server.PREFIX + '/initiator.html');
+
+      expect(initiators.get('initiator.html').type).toBe('other');
+      expect(initiators.get('initiator.js').type).toBe('parser');
+      expect(initiators.get('initiator.js').url).toBe(server.PREFIX + '/initiator.html');
+      expect(initiators.get('frame.html').type).toBe('parser');
+      expect(initiators.get('frame.html').url).toBe(server.PREFIX + '/initiator.html');
+      expect(initiators.get('script.js').type).toBe('parser');
+      expect(initiators.get('script.js').url).toBe(server.PREFIX + '/frames/frame.html');
+      expect(initiators.get('style.css').type).toBe('parser');
+      expect(initiators.get('style.css').url).toBe(server.PREFIX + '/frames/frame.html');
+      expect(initiators.get('initiator.js').type).toBe('parser');
+      expect(initiators.get('injectedfile.js').type).toBe('script');
+      expect(initiators.get('injectedfile.js').stack.callFrames[0].url).toBe(server.PREFIX + '/initiator.js');
+      expect(initiators.get('injectedstyle.css').type).toBe('script');
+      expect(initiators.get('injectedstyle.css').stack.callFrames[0].url).toBe(server.PREFIX + '/initiator.js');
+      expect(initiators.get('initiator.js').url).toBe(server.PREFIX + '/initiator.html');
+    });
+  });
+
   describe('Request.isNavigationRequest', () => {
     itFailsFirefox('should work', async () => {
       const { page, server } = getTestState();
