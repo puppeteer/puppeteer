@@ -247,6 +247,10 @@ module.exports.addTests = function({testRunner, expect}) {
       });
       expect(result).toEqual([42]);
     });
+    it_fails_ffox('should transfer 100Mb of data from page to node.js', async({page, server}) => {
+      const a = await page.evaluate(() => Array(100 * 1024 * 1024 + 1).join('a'));
+      expect(a.length).toBe(100 * 1024 * 1024);
+    });
   });
 
   describe('Page.evaluateOnNewDocument', function() {
