@@ -797,7 +797,7 @@ function getScreenshotMimeType(options) {
     const fileType = mime.getType(options.path);
     if (fileType === 'image/png' || fileType === 'image/jpeg')
       return fileType;
-    throw new Error('Unsupported screnshot mime type: ' + fileType);
+    throw new Error('Unsupported screenshot mime type: ' + fileType);
   }
   return 'image/png';
 }
