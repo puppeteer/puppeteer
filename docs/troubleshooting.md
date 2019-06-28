@@ -299,6 +299,7 @@ RUN apk update && apk upgrade && \
       chromium@edge=~73.0.3683.103 \
       nss@edge \
       freetype@edge \
+      freetype-dev@edge \
       harfbuzz@edge \
       ttf-freefont@edge
 
