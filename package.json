@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": "github:GoogleChrome/puppeteer",
   "engines": {
-    "node": ">=6.4.0"
+    "node": ">=8.9.0"
   },
   "puppeteer": {
     "chromium_revision": "673587"
@@ -15,14 +15,11 @@
     "funit": "BROWSER=firefox node test/test.js",
     "debug-unit": "node --inspect-brk test/test.js",
     "test-doclint": "node utils/doclint/check_public_api/test/test.js && node utils/doclint/preprocessor/test.js",
-    "test": "npm run lint --silent && npm run coverage && npm run test-doclint && npm run test-node6-transformer && npm run test-types",
+    "test": "npm run lint --silent && npm run coverage && npm run test-doclint && npm run test-types",
     "install": "node install.js",
     "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .) && npm run tsc && npm run doc",
     "doc": "node utils/doclint/cli.js",
     "coverage": "cross-env COVERAGE=true npm run unit",
-    "test-node6-transformer": "node utils/node6-transform/test/test.js",
-    "build": "node utils/node6-transform/index.js && node utils/doclint/generate_types",
-    "unit-node6": "node node6/test/test.js",
     "tsc": "tsc -p .",
     "prepublishOnly": "npm run build",
     "apply-next-version": "node utils/apply_next_version.js",
@@ -63,7 +60,6 @@
   },
   "browser": {
     "./lib/BrowserFetcher.js": false,
-    "./node6/lib/Puppeteer": false,
     "ws": "./utils/browser/WebSocket",
     "fs": false,
     "child_process": false,

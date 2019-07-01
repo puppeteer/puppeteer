@@ -18,8 +18,6 @@
 if (require('./package.json').name === 'puppeteer-core')
   return;
 
-buildNode6IfNecessary();
-
 if (process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD) {
   logPolitely('**INFO** Skipping Chromium download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" environment variable was found.');
   return;
@@ -107,22 +105,6 @@ function onProgress(downloadedBytes, totalBytes) {
 function toMegabytes(bytes) {
   const mb = bytes / 1024 / 1024;
   return `${Math.round(mb * 10) / 10} Mb`;
-}
-
-function buildNode6IfNecessary() {
-  const fs = require('fs');
-  const path = require('path');
-
-  // if this package is installed from NPM, then it already has up-to-date node6
-  // folder.
-  if (!fs.existsSync(path.join('utils', 'node6-transform')))
-    return;
-  // if async/await is supported, then node6 is not needed.
-  if (supportsAsyncAwait())
-    return;
-  // Re-build node6/ folder.
-  logPolitely('Building Puppeteer for Node 6');
-  require(path.join(__dirname, 'utils', 'node6-transform'));
 }
 
 function supportsAsyncAwait() {

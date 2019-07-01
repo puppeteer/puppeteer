@@ -82,10 +82,10 @@ function downloadURL(product, platform, host, revision) {
   return util.format(downloadURLs[product][platform], host, revision, archiveName(product, platform, revision));
 }
 
-const readdirAsync = helper.promisify(fs.readdir.bind(fs));
-const mkdirAsync = helper.promisify(fs.mkdir.bind(fs));
-const unlinkAsync = helper.promisify(fs.unlink.bind(fs));
-const chmodAsync = helper.promisify(fs.chmod.bind(fs));
+const readdirAsync = util.promisify(fs.readdir.bind(fs));
+const mkdirAsync = util.promisify(fs.mkdir.bind(fs));
+const unlinkAsync = util.promisify(fs.unlink.bind(fs));
+const chmodAsync = util.promisify(fs.chmod.bind(fs));
 
 function existsAsync(filePath) {
   let fulfill = null;

@@ -24,13 +24,10 @@ script:
   - 'if [ "$NODE8" = "true" ]; then npm run test-types; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run bundle; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run unit-bundle; fi'
-  - 'if [ "$NODE6" = "true" ]; then npm run unit-node6; fi'
 jobs:
   include:
     - node_js: "8.11.3"
       env: NODE8=true
-    - node_js: "6.12.3"
-      env: NODE6=true
 before_deploy: "npm run apply-next-version"
 deploy:
   provider: npm

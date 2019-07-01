@@ -16,13 +16,6 @@
 
 const utils = require('./utils');
 
-let asyncawait = true;
-try {
-  new Function('async function foo() {await 1}');
-} catch (e) {
-  asyncawait = false;
-}
-
 const bigint = typeof BigInt !== 'undefined';
 
 module.exports.addTests = function({testRunner, expect}) {
@@ -74,14 +67,12 @@ module.exports.addTests = function({testRunner, expect}) {
     it_fails_ffox('should return undefined for objects with symbols', async({page, server}) => {
       expect(await page.evaluate(() => [Symbol('foo4')])).toBe(undefined);
     });
-    (asyncawait ? it : xit)('should work with function shorthands', async({page, server}) => {
-      // trick node6 transpiler to not touch our object.
-      // TODO(lushnikov): remove eval once Node6 is dropped.
-      const a = eval(`({
+    it('should work with function shorthands', async({page, server}) => {
+      const a = {
         sum(a, b) { return a + b; },
 
         async mult(a, b) { return a * b; }
-      })`);
+      };
       expect(await page.evaluate(a.sum, 1, 2)).toBe(3);
       expect(await page.evaluate(a.mult, 2, 4)).toBe(8);
     });

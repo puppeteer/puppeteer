@@ -1,6 +1,5 @@
 environment:
   matrix:
-    - nodejs_version: "6.12.3"
     - nodejs_version: "8.11.3"
 
 build: off
@@ -13,6 +12,4 @@ install:
       npm run coverage  &&
       npm run test-doclint &&
       npm run test-types
-    ) else (
-      npm run unit-node6
     )

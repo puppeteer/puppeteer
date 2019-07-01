@@ -15,11 +15,12 @@
  */
 
 const path = require('path');
+const util = require('util');
 const fs = require('fs');
 
-const readFileAsync = promisify(fs.readFile);
-const readdirAsync = promisify(fs.readdir);
-const writeFileAsync = promisify(fs.writeFile);
+const readFileAsync = util.promisify(fs.readFile);
+const readdirAsync = util.promisify(fs.readdir);
+const writeFileAsync = util.promisify(fs.writeFile);
 
 const PROJECT_DIR = path.join(__dirname, '..', '..');
 
@@ -109,27 +110,4 @@ class Source {
   }
 }
 module.exports = Source;
-
-/**
- * @param {function(?)} nodeFunction
- * @return {function(?):!Promise<?>}
- */
-function promisify(nodeFunction) {
-  /**
-   * @param {!Array<?>} options
-   * @return {!Promise<?>}
-   */
-  return function(...options) {
-    return new Promise(function(fulfill, reject) {
-      options.push(callback);
-      nodeFunction.call(null, ...options);
-      function callback(err, result) {
-        if (err)
-          reject(err);
-        else
-          fulfill(result);
-      }
-    });
-  };
-}
 

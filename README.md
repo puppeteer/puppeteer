@@ -57,7 +57,8 @@ See [puppeteer vs puppeteer-core](https://github.com/GoogleChrome/puppeteer/blob
 
 ### Usage
 
-Note: Puppeteer requires at least Node v6.4.0, but the examples below use async/await which is only supported in Node v7.6.0 or greater.
+Note: Prior to v1.18.1, Puppeteer required at least Node v6.4.0. All subsequent versions rely on
+Node 8.9.0+. All examples below use async/await which is only supported in Node v7.6.0 or greater.
 
 Puppeteer will be familiar to people using other browser testing frameworks. You create an instance
 of `Browser`, open pages, and then manipulate them with [Puppeteer's API](https://github.com/GoogleChrome/puppeteer/blob/v1.18.1/docs/api.md#).
