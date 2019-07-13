@@ -67,7 +67,7 @@ class ExecutionContext {
         executionContextId: this._executionContextId
       });
     } catch (err) {
-      if (err instanceof TypeError && err.message === 'Converting circular structure to JSON')
+      if (err instanceof TypeError && err.message.startsWith('Converting circular structure to JSON'))
         err.message += ' Are you passing a nested JSHandle?';
       throw err;
     }
