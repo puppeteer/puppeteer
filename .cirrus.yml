@@ -15,7 +15,13 @@ task:
     - name: Chromium (node8 + linux)
       container:
         dockerfile: .ci/node8/Dockerfile.linux
-      xvfb_start_background_script: Xvfb :99 -ac -screen 0 1024x768x24
+    - name: Chromium (node10 + linux)
+      container:
+        dockerfile: .ci/node10/Dockerfile.linux
+    - name: Chromium (node12 + linux)
+      container:
+        dockerfile: .ci/node12/Dockerfile.linux
+  xvfb_start_background_script: Xvfb :99 -ac -screen 0 1024x768x24
   install_script: npm install --unsafe-perm
   lint_script: npm run lint
   coverage_script: npm run coverage
