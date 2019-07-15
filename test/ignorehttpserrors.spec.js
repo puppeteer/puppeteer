@@ -39,11 +39,13 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
 
     describe('Response.securityDetails', function() {
       it('should work', async({page, httpsServer}) => {
-        const requestEvent = httpsServer.waitForRequest('/empty.html');
-        const response = await page.goto(httpsServer.EMPTY_PAGE);
+        const [serverRequest, response] = await Promise.all([
+          httpsServer.waitForRequest('/empty.html'),
+          page.goto(httpsServer.EMPTY_PAGE)
+        ]);
         const securityDetails = response.securityDetails();
         expect(securityDetails.issuer()).toBe('puppeteer-tests');
-        const protocol = (await requestEvent).socket.getProtocol().replace('v', ' ');
+        const protocol = serverRequest.socket.getProtocol().replace('v', ' ');
         expect(securityDetails.protocol()).toBe(protocol);
         expect(securityDetails.subjectName()).toBe('puppeteer-tests');
         expect(securityDetails.validFrom()).toBe(1550084863);
@@ -57,12 +59,14 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         httpsServer.setRedirect('/plzredirect', '/empty.html');
         const responses =  [];
         page.on('response', response => responses.push(response));
-        const requestEvent = httpsServer.waitForRequest('/plzredirect');
-        await page.goto(httpsServer.PREFIX + '/plzredirect');
+        const [serverRequest, ] = await Promise.all([
+          httpsServer.waitForRequest('/plzredirect'),
+          page.goto(httpsServer.PREFIX + '/plzredirect')
+        ]);
         expect(responses.length).toBe(2);
         expect(responses[0].status()).toBe(302);
         const securityDetails = responses[0].securityDetails();
-        const protocol = (await requestEvent).socket.getProtocol().replace('v', ' ');
+        const protocol = serverRequest.socket.getProtocol().replace('v', ' ');
         expect(securityDetails.protocol()).toBe(protocol);
       });
     });
