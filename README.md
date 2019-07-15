@@ -25,6 +25,8 @@ Most things that you can do manually in the browser can be done using Puppeteer!
 
 Give it a spin: https://try-puppeteer.appspot.com/
 
+<!-- GEN:TOC >
+
 <!-- [START getstarted] -->
 ## Getting Started
 
