@@ -46,7 +46,6 @@ class TestServer {
     const server = new TestServer(dirPath, port, {
       key: fs.readFileSync(path.join(__dirname, 'key.pem')),
       cert: fs.readFileSync(path.join(__dirname, 'cert.pem')),
-      secureProtocol: 'TLSv1_2_method',
       passphrase: 'aaaa',
     });
     await new Promise(x => server._server.once('listening', x));

@@ -288,11 +288,15 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         const browser = await puppeteer.connect({browserWSEndpoint, ignoreHTTPSErrors: true});
         const page = await browser.newPage();
         let error = null;
-        const response = await page.goto(httpsServer.EMPTY_PAGE).catch(e => error = e);
+        const [serverRequest, response] = await Promise.all([
+          httpsServer.waitForRequest('/empty.html'),
+          page.goto(httpsServer.EMPTY_PAGE).catch(e => error = e)
+        ]);
         expect(error).toBe(null);
         expect(response.ok()).toBe(true);
         expect(response.securityDetails()).toBeTruthy();
-        expect(response.securityDetails().protocol()).toBe('TLS 1.2');
+        const protocol = serverRequest.socket.getProtocol().replace('v', ' ');
+        expect(response.securityDetails().protocol()).toBe(protocol);
         await page.close();
         await browser.close();
       });
