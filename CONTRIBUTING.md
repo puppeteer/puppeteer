@@ -1,14 +1,14 @@
 <!-- gen:toc -->
 - [How to Contribute](#how-to-contribute)
   * [Contributor License Agreement](#contributor-license-agreement)
-  * [Getting setup](#getting-setup)
+  * [Getting Code](#getting-code)
   * [Code reviews](#code-reviews)
   * [Code Style](#code-style)
   * [API guidelines](#api-guidelines)
   * [Commit Messages](#commit-messages)
   * [Writing Documentation](#writing-documentation)
   * [Adding New Dependencies](#adding-new-dependencies)
-  * [Writing Tests](#writing-tests)
+  * [Running & Writing Tests](#running--writing-tests)
   * [Public API Coverage](#public-api-coverage)
   * [Debugging Puppeteer](#debugging-puppeteer)
 - [For Project Maintainers](#for-project-maintainers)
@@ -33,7 +33,7 @@ You generally only need to submit a CLA once, so if you've already submitted one
 (even if it was for a different project), you probably don't need to do it
 again.
 
-## Getting setup
+## Getting Code
 
 1. Clone this repository
 
@@ -46,6 +46,12 @@ cd puppeteer
 
 ```bash
 npm install
+```
+
+3. Run Puppeteer tests locally. For more information about tests, read [Running & Writing Tests](#running--writing-tests).
+
+```bash
+npm run unit
 ```
 
 ## Code reviews
@@ -134,7 +140,7 @@ For all dependencies (both installation and development):
 A barrier for introducing new installation dependencies is especially high:
 - **Do not add** installation dependency unless it's critical to project success.
 
-## Writing Tests
+## Running & Writing Tests
 
 - Every feature should be accompanied by a test.
 - Every public api event/method should be accompanied by a test.
@@ -155,6 +161,13 @@ npm run unit
 
 ```bash
 npm run unit -- -j 4
+```
+
+- To run tests in "verbose" mode or to stop testrunner on first failure:
+
+```bash
+npm run unit -- --verbose
+npm run unit -- --break-on-failure
 ```
 
 - To run a specific test, substitute the `it` with `fit` (mnemonic rule: '*focus it*'):
