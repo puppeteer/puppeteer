@@ -73,6 +73,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, defaultBrowse
       const backgroundPageTarget = await waitForBackgroundPageTarget(browserWithExtension);
       const page = await backgroundPageTarget.page();
       expect(await page.evaluate(() => 2 * 3)).toBe(6);
+      expect(await page.evaluate(() => window.MAGIC)).toBe(42);
       await browserWithExtension.close();
     });
     it('should have default url when launching browser', async function() {
