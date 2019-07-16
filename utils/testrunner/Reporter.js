@@ -80,13 +80,13 @@ class Reporter {
         description = `${RED_COLOR}<UNKNOWN>${RESET_COLOR}`;
       console.log(`  ${workerId}: [${description}] ${test.fullName} (${formatTestLocation(test)})`);
     }
-    process.exit(2);
+    process.exitCode = 2;
   }
 
   _onFinished() {
     this._printTestResults();
     const failedTests = this._runner.failedTests();
-    process.exit(failedTests.length > 0 ? 1 : 0);
+    process.exitCode = failedTests.length > 0 ? 1 : 0;
   }
 
   _printTestResults() {
