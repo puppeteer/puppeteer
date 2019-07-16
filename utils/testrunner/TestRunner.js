@@ -35,8 +35,9 @@ class UserCallback {
   }
 
   async run(...args) {
+    let timeoutId;
     const timeoutPromise = new Promise(resolve => {
-      setTimeout(resolve.bind(null, TimeoutError), this.timeout);
+      timeoutId = setTimeout(resolve.bind(null, TimeoutError), this.timeout);
     });
     try {
       return await Promise.race([
@@ -46,6 +47,8 @@ class UserCallback {
       ]);
     } catch (e) {
       return e;
+    } finally {
+      clearTimeout(timeoutId);
     }
   }
 
@@ -192,6 +195,8 @@ class TestPass {
       return;
     await this._runHook(workerId, currentSuite, 'beforeAll', state);
     for (const child of currentSuite.children) {
+      if (this._termination)
+        break;
       if (!this._workerDistribution.hasValue(child, workerId))
         continue;
       if (child instanceof Test) {
@@ -234,8 +239,6 @@ class TestPass {
   }
 
   async _runHook(workerId, suite, hookName, ...args) {
-    if (this._termination)
-      return;
     const hook = suite[hookName];
     if (!hook)
       return;
