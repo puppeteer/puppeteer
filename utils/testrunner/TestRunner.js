@@ -306,6 +306,8 @@ class TestRunner extends EventEmitter {
     this.beforeEach = this._addHook.bind(this, 'beforeEach');
     this.afterAll = this._addHook.bind(this, 'afterAll');
     this.afterEach = this._addHook.bind(this, 'afterEach');
+
+    this._currentChildSuiteDescriptors = [];
   }
 
   addTestDSL(dslName, mode, comment) {
@@ -328,11 +330,22 @@ class TestRunner extends EventEmitter {
   }
 
   _addSuite(mode, comment, name, callback) {
+    this._currentChildSuiteDescriptors.push({mode, comment, name, callback});
+  }
+
+  async _populateChildSuiteDescriptors() {
+    for (const descriptor of this._currentChildSuiteDescriptors)
+      await this._populateSuiteDescriptor(descriptor);
+  }
+
+  async _populateSuiteDescriptor({mode, comment, name, callback}) {
+    this._currentChildSuiteDescriptors = [];
     const oldSuite = this._currentSuite;
     const suite = new Suite(this._currentSuite, name, mode, comment);
     this._currentSuite.children.push(suite);
     this._currentSuite = suite;
-    callback();
+    await callback();
+    await this._populateChildSuiteDescriptors();
     this._currentSuite = oldSuite;
     this._hasFocusedTestsOrSuites = this._hasFocusedTestsOrSuites || mode === TestMode.Focus;
   }
@@ -344,6 +357,7 @@ class TestRunner extends EventEmitter {
   }
 
   async run() {
+    await this._populateChildSuiteDescriptors();
     const runnableTests = this._runnableTests();
     this.emit(TestRunner.Events.Started, runnableTests);
     const pass = new TestPass(this, this._rootSuite, runnableTests, this._parallel, this._breakOnFailure);
