@@ -135,10 +135,11 @@ class Suite {
 }
 
 class TestPass {
-  constructor(runner, rootSuite, tests, parallel) {
+  constructor(runner, rootSuite, tests, parallel, breakOnFailure) {
     this._runner = runner;
     this._parallel = parallel;
     this._runningUserCallbacks = new Multimap();
+    this._breakOnFailure = breakOnFailure;
 
     this._rootSuite = rootSuite;
     this._workerDistribution = new Multimap();
@@ -236,6 +237,8 @@ class TestPass {
     else
       test.result = TestResult.Failed;
     this._runner._didFinishTest(test, workerId);
+    if (this._breakOnFailure && test.result !== TestResult.Ok)
+      this._terminate(`Terminating because a test has failed and |testRunner.breakOnFailure| is enabled`, null);
   }
 
   async _runHook(workerId, suite, hookName, ...args) {
@@ -268,22 +271,27 @@ class TestPass {
 class TestRunner extends EventEmitter {
   constructor(options = {}) {
     super();
+    const {
+      timeout = 10 * 1000, // Default timeout is 10 seconds.
+      parallel = 1,
+      breakOnFailure = false,
+      disableTimeoutWhenInspectorIsEnabled = true,
+    } = options;
     this._rootSuite = new Suite(null, '', TestMode.Run);
     this._currentSuite = this._rootSuite;
     this._tests = [];
-    // Default timeout is 10 seconds.
-    this._timeout = options.timeout === 0 ? 2147483647 : options.timeout || 10 * 1000;
-    this._parallel = options.parallel || 1;
+    this._timeout = timeout === 0 ? 2147483647 : timeout;
+    this._parallel = parallel;
+    this._breakOnFailure = breakOnFailure;
 
     this._hasFocusedTestsOrSuites = false;
 
-    if (MAJOR_NODEJS_VERSION >= 8) {
+    if (MAJOR_NODEJS_VERSION >= 8 && disableTimeoutWhenInspectorIsEnabled) {
       const inspector = require('inspector');
       if (inspector.url()) {
         console.log('TestRunner detected inspector; overriding certain properties to be debugger-friendly');
         console.log('  - timeout = 0 (Infinite)');
         this._timeout = 2147483647;
-        this._parallel = 1;
       }
     }
 
@@ -338,7 +346,7 @@ class TestRunner extends EventEmitter {
   async run() {
     const runnableTests = this._runnableTests();
     this.emit(TestRunner.Events.Started, runnableTests);
-    const pass = new TestPass(this, this._rootSuite, runnableTests, this._parallel);
+    const pass = new TestPass(this, this._rootSuite, runnableTests, this._parallel, this._breakOnFailure);
     const termination = await pass.run();
     if (termination)
       this.emit(TestRunner.Events.Terminated, termination.message, termination.error);

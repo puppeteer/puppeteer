@@ -30,7 +30,11 @@ require('events').defaultMaxListeners *= parallel;
 let timeout = process.env.APPVEYOR ? 20 * 1000 : 10 * 1000;
 if (!isNaN(process.env.TIMEOUT))
   timeout = parseInt(process.env.TIMEOUT, 10);
-const testRunner = new TestRunner({timeout, parallel});
+const testRunner = new TestRunner({
+  timeout,
+  parallel,
+  breakOnFailure: process.argv.indexOf('--break-on-failure') !== -1,
+});
 const {describe, fdescribe, beforeAll, afterAll, beforeEach, afterEach} = testRunner;
 
 console.log('Testing on Node', process.version);
