@@ -25,7 +25,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
     it('dumpio option should work with pipe option ', async({server}) => {
       let dumpioData = '';
       const {spawn} = require('child_process');
-      const options = Object.assign({}, defaultBrowserOptions, {pipe:true, dumpio: true});
+      const options = Object.assign({}, defaultBrowserOptions, {pipe: true, dumpio: true});
       const res = spawn('node',
           [path.join(__dirname, 'fixtures', 'dumpio.js'), puppeteerPath, JSON.stringify(options)]);
       if (CHROME)
