@@ -22,6 +22,19 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Fixtures', function() {
+    it('dumpio option should work with pipe option ', async({server}) => {
+      let dumpioData = '';
+      const {spawn} = require('child_process');
+      const options = Object.assign({}, defaultBrowserOptions, {pipe:true, dumpio: true});
+      const res = spawn('node',
+          [path.join(__dirname, 'fixtures', 'dumpio.js'), puppeteerPath, JSON.stringify(options)]);
+      if (CHROME)
+        res.stderr.on('data', data => dumpioData += data.toString('utf8'));
+      else
+        res.stdout.on('data', data => dumpioData += data.toString('utf8'));
+      await new Promise(resolve => res.on('close', resolve));
+      expect(dumpioData).toContain('message from dumpio');
+    });
     it('should dump browser process stderr', async({server}) => {
       let dumpioData = '';
       const {spawn} = require('child_process');
