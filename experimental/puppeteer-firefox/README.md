@@ -48,7 +48,7 @@ node example.js
 
 ### API Status
 
-Current tip-of-tree status of Puppeteer-Firefox is availabe at [isPuppeteerFirefoxReady?](https://aslushnikov.github.io/ispuppeteerfirefoxready/)
+Current tip-of-tree status of Puppeteer-Firefox is available at [isPuppeteerFirefoxReady?](https://aslushnikov.github.io/ispuppeteerfirefoxready/)
 
 
 ### Credits
