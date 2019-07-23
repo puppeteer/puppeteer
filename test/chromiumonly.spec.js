@@ -93,6 +93,23 @@ module.exports.addLauncherTests = function({testRunner, expect, defaultBrowserOp
         await disconnectedEventPromise;
       });
     });
+
+    describe('Page.waitForFileChooser', () => {
+      it('should fail gracefully when trying to work with filechoosers within multiple connections', async() => {
+        // 1. Launch a browser and connect to all pages.
+        const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+        await originalBrowser.pages();
+        // 2. Connect a remote browser and connect to first page.
+        const remoteBrowser = await puppeteer.connect({browserWSEndpoint: originalBrowser.wsEndpoint()});
+        const [page] = await remoteBrowser.pages();
+        // 3. Make sure |page.waitForFileChooser()| does not work with multiclient.
+        let error = null;
+        await page.waitForFileChooser().catch(e => error = e);
+        expect(error.message).toBe('File chooser handling does not work with multiple connections to the same page');
+        originalBrowser.close();
+      });
+
+    });
   });
 };
 
