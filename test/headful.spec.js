@@ -25,20 +25,6 @@ const mkdtempAsync = helper.promisify(fs.mkdtemp);
 
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 
-function waitForBackgroundPageTarget(browser) {
-  const target = browser.targets().find(target => target.type() === 'background_page');
-  if (target)
-    return Promise.resolve(target);
-  return new Promise(resolve => {
-    browser.on('targetcreated', function listener(target) {
-      if (target.type() !== 'background_page')
-        return;
-      browser.removeListener(listener);
-      resolve(target);
-    });
-  });
-}
-
 module.exports.addTests = function({testRunner, expect, puppeteer, defaultBrowserOptions}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit} = testRunner;
@@ -63,14 +49,14 @@ module.exports.addTests = function({testRunner, expect, puppeteer, defaultBrowse
     it('background_page target type should be available', async() => {
       const browserWithExtension = await puppeteer.launch(extensionOptions);
       const page = await browserWithExtension.newPage();
-      const backgroundPageTarget = await waitForBackgroundPageTarget(browserWithExtension);
+      const backgroundPageTarget = await browserWithExtension.waitForTarget(target => target.type() === 'background_page');
       await page.close();
       await browserWithExtension.close();
       expect(backgroundPageTarget).toBeTruthy();
     });
     it('target.page() should return a background_page', async({}) => {
       const browserWithExtension = await puppeteer.launch(extensionOptions);
-      const backgroundPageTarget = await waitForBackgroundPageTarget(browserWithExtension);
+      const backgroundPageTarget = await browserWithExtension.waitForTarget(target => target.type() === 'background_page');
       const page = await backgroundPageTarget.page();
       expect(await page.evaluate(() => 2 * 3)).toBe(6);
       expect(await page.evaluate(() => window.MAGIC)).toBe(42);
