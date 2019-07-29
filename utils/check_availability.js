@@ -64,7 +64,7 @@ Running command without arguments will check against omahaproxy revisions.`);
 
 const fromRevision = parseInt(process.argv[2], 10);
 const toRevision = parseInt(process.argv[3], 10);
-checkRangeAvailability(fromRevision, toRevision);
+checkRangeAvailability(fromRevision, toRevision, false /* stopWhenAllAvailable */);
 
 async function checkOmahaProxyAvailability() {
   const lastchanged = (await Promise.all([
@@ -74,25 +74,30 @@ async function checkOmahaProxyAvailability() {
     fetch('https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/LAST_CHANGE'),
   ])).map(s => parseInt(s, 10));
   const from = Math.max(...lastchanged);
-  checkRangeAvailability(from, 0);
+  checkRangeAvailability(from, 0, true /* stopWhenAllAvailable */);
 }
 
 /**
  * @param {number} fromRevision
  * @param {number} toRevision
+ * @param {boolean} stopWhenAllAvailable
  */
-async function checkRangeAvailability(fromRevision, toRevision) {
+async function checkRangeAvailability(fromRevision, toRevision, stopWhenAllAvailable) {
   const table = new Table([10, 7, 7, 7, 7]);
   table.drawRow([''].concat(SUPPORTER_PLATFORMS));
   const inc = fromRevision < toRevision ? 1 : -1;
-  for (let revision = fromRevision; revision !== toRevision; revision += inc)
-    await checkAndDrawRevisionAvailability(table, '', revision);
+  for (let revision = fromRevision; revision !== toRevision; revision += inc) {
+    const allAvailable = await checkAndDrawRevisionAvailability(table, '', revision);
+    if (allAvailable && stopWhenAllAvailable)
+      break;
+  }
 }
 
 /**
  * @param {!Table} table
  * @param {string} name
  * @param {number} revision
+ * @return {boolean}
  */
 async function checkAndDrawRevisionAvailability(table, name, revision) {
   const promises = fetchers.map(fetcher => fetcher.canDownload(revision));
@@ -105,6 +110,7 @@ async function checkAndDrawRevisionAvailability(table, name, revision) {
     values.push(color + decoration + colors.reset);
   }
   table.drawRow(values);
+  return allAvailable;
 }
 
 /**
