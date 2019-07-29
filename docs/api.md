@@ -488,7 +488,7 @@ puppeteer.launch().then(async browser => {
 - returns: <[Object]>
   - `TimeoutError` <[function]> A class of [TimeoutError].
 
-Puppeteer methods might throw errors if they are unable to fufill a request. For example, [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
+Puppeteer methods might throw errors if they are unable to fulfill a request. For example, [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
 might fail if the selector doesn't match any nodes during the given timeframe.
 
 For certain types of errors Puppeteer uses specific error classes.
