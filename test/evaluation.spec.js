@@ -226,9 +226,11 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(error.message).toContain('JSHandles can be evaluated only in the context they were created');
     });
     it('should simulate a user gesture', async({page, server}) => {
-      await page.evaluate(() => document.body.appendChild(document.createTextNode('test')));
-      await page.evaluate(() => document.execCommand('selectAll'));
-      const result = await page.evaluate(() => document.execCommand('copy'));
+      const result = await page.evaluate(() => {
+        document.body.appendChild(document.createTextNode('test'));
+        document.execCommand('selectAll');
+        return document.execCommand('copy');
+      });
       expect(result).toBe(true);
     });
     it('should throw a nice error after a navigation', async({page, server}) => {
