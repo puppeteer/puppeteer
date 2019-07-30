@@ -227,10 +227,9 @@ module.exports.addTests = function({testRunner, expect}) {
     });
     it('should simulate a user gesture', async({page, server}) => {
       await page.evaluate(() => document.body.appendChild(document.createTextNode('test')));
-      const selectResult = await page.evaluate(() => document.execCommand('selectAll'));
-      expect(selectResult).toBe(true);
-      const copyResult = await page.evaluate(() => document.execCommand('copy'));
-      expect(copyResult).toBe(true);
+      await page.evaluate(() => document.execCommand('selectAll'));
+      const result = await page.evaluate(() => document.execCommand('copy'));
+      expect(result).toBe(true);
     });
     it('should throw a nice error after a navigation', async({page, server}) => {
       const executionContext = await page.mainFrame().executionContext();
