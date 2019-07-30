@@ -64,7 +64,7 @@ class UserCallback {
         const from = frame.indexOf('(');
         frame = frame.substring(from + 1, frame.length - 1);
       } else {
-        frame = frame.substring('at '.length + 1);
+        frame = frame.substring('at '.length);
       }
 
       const match = frame.match(/^(.*):(\d+):(\d+)$/);
@@ -348,12 +348,19 @@ class TestRunner extends EventEmitter {
   async run() {
     const runnableTests = this._runnableTests();
     this.emit(TestRunner.Events.Started, runnableTests);
-    const pass = new TestPass(this, this._rootSuite, runnableTests, this._parallel, this._breakOnFailure);
-    const termination = await pass.run();
+    this._runningPass = new TestPass(this, this._rootSuite, runnableTests, this._parallel, this._breakOnFailure);
+    const termination = await this._runningPass.run();
+    this._runningPass = null;
     if (termination)
       this.emit(TestRunner.Events.Terminated, termination.message, termination.error);
     else
       this.emit(TestRunner.Events.Finished);
+  }
+
+  terminate() {
+    if (!this._runningPass)
+      return;
+    this._runningPass._terminate('Terminated with |TestRunner.terminate()| call', null);
   }
 
   timeout() {
