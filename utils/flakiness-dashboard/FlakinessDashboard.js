@@ -43,7 +43,7 @@ class FlakinessDashboard {
 
     // Do at max 5 attempts to upload changes to github.
     let success = false;
-    const MAX_ATTEMPTS = 3;
+    const MAX_ATTEMPTS = 7;
     for (let i = 0; !success && i < MAX_ATTEMPTS; ++i) {
       const dashboard = await Dashboard.create(this._dashboardName, git.path(), this._options);
       dashboard.addBuild(this._build);
