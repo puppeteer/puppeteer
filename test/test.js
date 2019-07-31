@@ -148,7 +148,7 @@ function initializeFlakinessDashboardIfNeeded(testRunner) {
   const {FlakinessDashboard} = require('../utils/flakiness-dashboard');
   const sha = process.env.CIRRUS_CHANGE_IN_REPO;
   const dashboard = new FlakinessDashboard({
-    dashboardName: process.env.CIRRUS_TASK_NAME,
+    dashboardName: 'Cirrus ' + process.env.CIRRUS_TASK_NAME,
     build: {
       url: `https://cirrus-ci.com/build/${process.env.CIRRUS_BUILD_ID}`,
       name: sha.substring(0, 8),
