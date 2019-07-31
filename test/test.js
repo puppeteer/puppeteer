@@ -112,12 +112,31 @@ new Reporter(testRunner, {
   showSlowTests: process.env.CI ? 5 : 0,
 });
 
+// Unconditionally generate testIDs for all tests and verify they don't clash.
+// This will add |test.testId| for every test.
+generateTestIDs(testRunner);
+
 const flakinessDashboard = initializeFlakinessDashboardIfNeeded(testRunner);
 testRunner.run().then(() => {
   if (flakinessDashboard)
     flakinessDashboard.uploadAndCleanup();
 });
 
+function generateTestIDs(testRunner) {
+  const testIds = new Map();
+  for (const test of testRunner.tests()) {
+    let testIdComponents = [test.name];
+    for (let suite = test.suite; !!suite.parentSuite; suite = suite.parentSuite)
+      testIdComponents.push(suite.name);
+    testIdComponents.reverse();
+    const testId = testIdComponents.join('>');
+    const clashingTest = testIds.get(testId);
+    if (clashingTest)
+      throw new Error(`Two tests with clashing IDs: ${test.location.fileName}:${test.location.lineNumber} and ${clashingTest.location.fileName}:${clashingTest.location.lineNumber}`);
+    testIds.set(testId, test);
+    test.testId = testId;
+  }
+}
 
 function initializeFlakinessDashboardIfNeeded(testRunner) {
   // whitelist Cirrus for now.
@@ -144,12 +163,12 @@ function initializeFlakinessDashboardIfNeeded(testRunner) {
       password: process.env.FLAKINESS_DASHBOARD_PASSWORD,
     },
   });
-  // TODO: make sure there are no tests with the same testId.
+
   testRunner.on('testfinished', test => {
     const testpath = test.location.filePath.substring(utils.projectRoot().length);
     const url = `https://github.com/GoogleChrome/puppeteer/blob/${sha}/${testpath}#L${test.location.lineNumber}`;
     dashboard.reportTestResult({
-      testId: test.fullName,
+      testId: test.testId,
       name: test.location.fileName + ':' + test.location.lineNumber,
       description: test.fullName,
       url,

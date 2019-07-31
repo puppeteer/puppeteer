@@ -64,10 +64,12 @@ class FlakinessDashboard {
       }
     }
     await rmAsync(git.path());
+    console.log(`  > TOTAL TIME: ${YELLOW_COLOR}${(Date.now() - startTimestamp)/1000}${RESET_COLOR} seconds`);
     if (success)
-      console.log(`  > OK! Total time is ${YELLOW_COLOR}${(Date.now() - startTimestamp) / 1000}${RESET_COLOR} seconds`);
+      console.log(`${YELLOW_COLOR}=== COMPLETE${RESET_COLOR}`);
     else
-      console.log(`  > ${RED_COLOR}UPLOAD FAILED!${RESET_COLOR} Total time is ${YELLOW_COLOR}${(Date.now() - startTimestamp) / 1000}${RESET_COLOR} seconds`);
+      console.log(`${RED_COLOR}=== FAILED${RESET_COLOR}`);
+    console.log('');
   }
 }
 
