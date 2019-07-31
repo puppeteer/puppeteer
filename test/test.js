@@ -115,12 +115,9 @@ new Reporter(testRunner, {
 // Unconditionally generate testIDs for all tests and verify they don't clash.
 // This will add |test.testId| for every test.
 generateTestIDs(testRunner);
+initializeFlakinessDashboardIfNeeded(testRunner);
 
-const flakinessDashboard = initializeFlakinessDashboardIfNeeded(testRunner);
-testRunner.run().then(() => {
-  if (flakinessDashboard)
-    flakinessDashboard.uploadAndCleanup();
-});
+testRunner.run();
 
 function generateTestIDs(testRunner) {
   const testIds = new Map();
@@ -141,13 +138,13 @@ function generateTestIDs(testRunner) {
 function initializeFlakinessDashboardIfNeeded(testRunner) {
   // whitelist Cirrus for now.
   if (!process.env.CIRRUS_CI)
-    return null;
+    return;
   // FLAKINESS_DASHBOARD_PASSWORD is encrypted. Cirrus DOES NOT inject enctrypted
   // variables if PR's are sent from users without write permissions to the repo.
   //
   // This makes sure we are running on Cirrus CI master branch, not a PR.
   if (!process.env.FLAKINESS_DASHBOARD_PASSWORD || process.env.CIRRUS_BASE_SHA)
-    return null;
+    return;
   const {FlakinessDashboard} = require('../utils/flakiness-dashboard');
   const sha = process.env.CIRRUS_CHANGE_IN_REPO;
   const dashboard = new FlakinessDashboard({
@@ -175,5 +172,6 @@ function initializeFlakinessDashboardIfNeeded(testRunner) {
       result: test.result,
     });
   });
-  return dashboard;
+  testRunner.on('terminated', () => dashboard.uploadAndCleanup());
+  testRunner.on('finished', () => dashboard.uploadAndCleanup());
 }
