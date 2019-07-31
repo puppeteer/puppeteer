@@ -111,4 +111,50 @@ new Reporter(testRunner, {
   projectFolder: utils.projectRoot(),
   showSlowTests: process.env.CI ? 5 : 0,
 });
-testRunner.run();
+
+const flakinessDashboard = initializeFlakinessDashboardIfNeeded(testRunner);
+testRunner.run().then(() => {
+  if (flakinessDashboard)
+    flakinessDashboard.uploadAndCleanup();
+});
+
+
+function initializeFlakinessDashboardIfNeeded(testRunner) {
+  // whitelist Cirrus for now.
+  if (!process.env.CIRRUS_CI)
+    return null;
+  // FLAKINESS_DASHBOARD_PASSWORD is encrypted. Cirrus DOES NOT inject enctrypted
+  // variables if PR's are sent from users without write permissions to the repo.
+  //
+  // This makes sure we are running on Cirrus CI master branch, not a PR.
+  if (!process.env.FLAKINESS_DASHBOARD_PASSWORD || process.env.CIRRUS_BASE_SHA)
+    return null;
+  const {FlakinessDashboard} = require('../utils/flakiness-dashboard');
+  const sha = process.env.CIRRUS_CHANGE_IN_REPO;
+  const dashboard = new FlakinessDashboard({
+    dashboardName: process.env.CIRRUS_TASK_NAME,
+    build: {
+      url: `https://cirrus-ci.com/build/${process.env.CIRRUS_BUILD_ID}`,
+      name: sha.substring(0, 8),
+    },
+    dashboardRepo: {
+      url: 'https://github.com/aslushnikov/puppeteer-flakiness-dashboard.git',
+      username: 'puppeteer-flakiness',
+      email: 'aslushnikov+puppeteerflakiness@gmail.com',
+      password: process.env.FLAKINESS_DASHBOARD_PASSWORD,
+    },
+  });
+  // TODO: make sure there are no tests with the same testId.
+  testRunner.on('testfinished', test => {
+    const testpath = test.location.filePath.substring(utils.projectRoot().length);
+    const url = `https://github.com/GoogleChrome/puppeteer/blob/${sha}/${testpath}#L${test.location.lineNumber}`;
+    dashboard.reportTestResult({
+      testId: test.fullName,
+      name: test.location.fileName + ':' + test.location.lineNumber,
+      description: test.fullName,
+      url,
+      result: test.result,
+    });
+  });
+  return dashboard;
+}

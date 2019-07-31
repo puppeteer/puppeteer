@@ -21,6 +21,8 @@ task:
     - name: Chromium (node12 + linux)
       container:
         dockerfile: .ci/node12/Dockerfile.linux
+  environment:
+    FLAKINESS_DASHBOARD_PASSWORD: ENCRYPTED[b3e207db5d153b543f219d3c3b9123d8321834b783b9e45ac7d380e026ab3a56398bde51b521ac5859e7e45cb95d0992]
   xvfb_start_background_script: Xvfb :99 -ac -screen 0 1024x768x24
   install_script: npm install --unsafe-perm
   lint_script: npm run lint
