@@ -69,7 +69,6 @@ beforeEach(async({server, httpsServer}) => {
 });
 
 const CHROMIUM_NO_COVERAGE = new Set([
-  'page.bringToFront',
 ]);
 
 if (process.env.BROWSER === 'firefox') {

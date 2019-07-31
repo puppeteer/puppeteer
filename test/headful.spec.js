@@ -130,5 +130,26 @@ module.exports.addTests = function({testRunner, expect, puppeteer, defaultBrowse
       await browser.close();
     });
   });
+
+  describe('Page.bringToFront', function() {
+    it('should work', async() => {
+      const browser = await puppeteer.launch(headfulOptions);
+      const page = await browser.newPage();
+
+      expect(await page.evaluate(() => document.visibilityState)).toBe('visible');
+
+      const newPage = await browser.newPage();
+      expect(await page.evaluate(() => document.visibilityState)).toBe('hidden');
+      expect(await newPage.evaluate(() => document.visibilityState)).toBe('visible');
+
+      await page.bringToFront();
+      expect(await page.evaluate(() => document.visibilityState)).toBe('visible');
+      expect(await newPage.evaluate(() => document.visibilityState)).toBe('hidden');
+
+      await newPage.close();
+      await page.close();
+      await browser.close();
+    });
+  });
 };
 
