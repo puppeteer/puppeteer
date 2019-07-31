@@ -125,7 +125,7 @@ testRunner.run().then(() => {
 function generateTestIDs(testRunner) {
   const testIds = new Map();
   for (const test of testRunner.tests()) {
-    let testIdComponents = [test.name];
+    const testIdComponents = [test.name];
     for (let suite = test.suite; !!suite.parentSuite; suite = suite.parentSuite)
       testIdComponents.push(suite.name);
     testIdComponents.reverse();

@@ -36,7 +36,7 @@ class FlakinessDashboard {
 
   async uploadAndCleanup() {
     console.log(`\n${YELLOW_COLOR}=== UPLOADING Flakiness Dashboard${RESET_COLOR}`);
-    let startTimestamp = Date.now();
+    const startTimestamp = Date.now();
     const branch = this._dashboardRepo.branch || this._dashboardName.trim().toLowerCase().replace(/\s/g, '-').replace(/[^-0-9a-zа-яё]/ig, '');
     const git = await Git.initialize(this._dashboardRepo.url, branch, this._dashboardRepo.username, this._dashboardRepo.email, this._dashboardRepo.password);
     console.log(`  > Dashboard Location: ${git.path()}`);
@@ -52,11 +52,11 @@ class FlakinessDashboard {
       // if push went through - great! We're done!
       if (await git.commitAllAndPush()) {
         success = true;
-        console.log(`  > Push attempt ${YELLOW_COLOR}${i+1}${RESET_COLOR} of ${YELLOW_COLOR}${MAX_ATTEMPTS}${RESET_COLOR}: ${GREEN_COLOR}SUCCESS${RESET_COLOR}`);
+        console.log(`  > Push attempt ${YELLOW_COLOR}${i + 1}${RESET_COLOR} of ${YELLOW_COLOR}${MAX_ATTEMPTS}${RESET_COLOR}: ${GREEN_COLOR}SUCCESS${RESET_COLOR}`);
       } else {
         // Otherwise - wait random time between 3 and 11 seconds.
         const cooldown = 3000 + Math.round(Math.random() * 1000) * 8;
-        console.log(`  > Push attempt ${YELLOW_COLOR}${i+1}${RESET_COLOR} of ${YELLOW_COLOR}${MAX_ATTEMPTS}${RESET_COLOR}: ${RED_COLOR}FAILED${RESET_COLOR}, cooldown ${YELLOW_COLOR}${cooldown / 1000}${RESET_COLOR} seconds`);
+        console.log(`  > Push attempt ${YELLOW_COLOR}${i + 1}${RESET_COLOR} of ${YELLOW_COLOR}${MAX_ATTEMPTS}${RESET_COLOR}: ${RED_COLOR}FAILED${RESET_COLOR}, cooldown ${YELLOW_COLOR}${cooldown / 1000}${RESET_COLOR} seconds`);
         await new Promise(x => setTimeout(x, cooldown));
         // Reset our generated dashboard and pull from origin.
         await git.hardResetToOriginMaster();
@@ -64,7 +64,7 @@ class FlakinessDashboard {
       }
     }
     await rmAsync(git.path());
-    console.log(`  > TOTAL TIME: ${YELLOW_COLOR}${(Date.now() - startTimestamp)/1000}${RESET_COLOR} seconds`);
+    console.log(`  > TOTAL TIME: ${YELLOW_COLOR}${(Date.now() - startTimestamp) / 1000}${RESET_COLOR} seconds`);
     if (success)
       console.log(`${YELLOW_COLOR}=== COMPLETE${RESET_COLOR}`);
     else
