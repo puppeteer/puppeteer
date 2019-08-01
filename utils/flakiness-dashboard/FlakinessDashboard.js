@@ -40,8 +40,10 @@ class FlakinessDashboard {
     console.log(`\n${YELLOW_COLOR}=== UPLOADING Flakiness Dashboard${RESET_COLOR}`);
     const startTimestamp = Date.now();
     const branch = this._dashboardRepo.branch || this._dashboardName.trim().toLowerCase().replace(/\s/g, '-').replace(/[^-0-9a-zа-яё]/ig, '');
+    console.log(`  > Dashboard URL: ${this._dashboardRepo.url}`);
+    console.log(`  > Dashboard Branch: ${branch}`);
     const git = await Git.initialize(this._dashboardRepo.url, branch, this._dashboardRepo.username, this._dashboardRepo.email, this._dashboardRepo.password);
-    console.log(`  > Dashboard Location: ${git.path()}`);
+    console.log(`  > Dashboard Checkout: ${git.path()}`);
 
     // Do at max 5 attempts to upload changes to github.
     let success = false;
