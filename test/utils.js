@@ -21,10 +21,11 @@ const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ?
 
 /**
  * @param {Map<string, boolean>} apiCoverage
+ * @param {Object} events
  * @param {string} className
  * @param {!Object} classType
  */
-function traceAPICoverage(apiCoverage, className, classType) {
+function traceAPICoverage(apiCoverage, events, className, classType) {
   className = className.substring(0, 1).toLowerCase() + className.substring(1);
   for (const methodName of Reflect.ownKeys(classType.prototype)) {
     const method = Reflect.get(classType.prototype, methodName);
@@ -37,12 +38,14 @@ function traceAPICoverage(apiCoverage, className, classType) {
     });
   }
 
-  if (classType.Events) {
-    for (const event of Object.values(classType.Events))
-      apiCoverage.set(`${className}.emit(${JSON.stringify(event)})`, false);
+  if (events[classType.name]) {
+    for (const event of Object.values(events[classType.name])) {
+      if (typeof event !== 'symbol')
+        apiCoverage.set(`${className}.emit(${JSON.stringify(event)})`, false);
+    }
     const method = Reflect.get(classType.prototype, 'emit');
     Reflect.set(classType.prototype, 'emit', function(event, ...args) {
-      if (this.listenerCount(event))
+      if (typeof event !== 'symbol' && this.listenerCount(event))
         apiCoverage.set(`${className}.emit(${JSON.stringify(event)})`, true);
       return method.call(this, event, ...args);
     });
@@ -50,17 +53,20 @@ function traceAPICoverage(apiCoverage, className, classType) {
 }
 
 const utils = module.exports = {
-  recordAPICoverage: function(testRunner, api, disabled) {
+  recordAPICoverage: function(testRunner, api, events, disabled) {
     const coverage = new Map();
     for (const [className, classType] of Object.entries(api))
-      traceAPICoverage(coverage, className, classType);
+      traceAPICoverage(coverage, events, className, classType);
     testRunner.describe('COVERAGE', () => {
-      for (const method of coverage.keys()) {
-        (disabled.has(method) ? testRunner.xit : testRunner.it)(`public api '${method}' should be called`, async({page, server}) => {
-          if (!coverage.get(method))
-            throw new Error('NOT CALLED!');
-        });
-      }
+      testRunner.it('should call all API methods', () => {
+        const missingMethods = [];
+        for (const method of coverage.keys()) {
+          if (!coverage.get(method) && !disabled.has(method))
+            missingMethods.push(method);
+        }
+        if (missingMethods.length)
+          throw new Error('Certain API Methods are not called: ' + missingMethods.join(', '));
+      });
     });
   },
 
