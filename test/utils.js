@@ -191,6 +191,10 @@ const utils = module.exports = {
     });
 
     testRunner.on('testfinished', test => {
+      // Do not report tests from COVERAGE testsuite.
+      // They don't bring much value to us.
+      if (test.fullName.startsWith('COVERAGE'))
+        return;
       const testpath = test.location.filePath.substring(utils.projectRoot().length);
       const url = `https://github.com/GoogleChrome/puppeteer/blob/${sha}/${testpath}#L${test.location.lineNumber}`;
       dashboard.reportTestResult({
