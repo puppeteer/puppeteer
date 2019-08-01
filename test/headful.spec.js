@@ -134,20 +134,19 @@ module.exports.addTests = function({testRunner, expect, puppeteer, defaultBrowse
   describe('Page.bringToFront', function() {
     it('should work', async() => {
       const browser = await puppeteer.launch(headfulOptions);
-      const page = await browser.newPage();
+      const page1 = await browser.newPage();
+      const page2 = await browser.newPage();
 
-      expect(await page.evaluate(() => document.visibilityState)).toBe('visible');
+      await page1.bringToFront();
+      expect(await page1.evaluate(() => document.visibilityState)).toBe('visible');
+      expect(await page2.evaluate(() => document.visibilityState)).toBe('hidden');
 
-      const newPage = await browser.newPage();
-      expect(await page.evaluate(() => document.visibilityState)).toBe('hidden');
-      expect(await newPage.evaluate(() => document.visibilityState)).toBe('visible');
+      await page2.bringToFront();
+      expect(await page1.evaluate(() => document.visibilityState)).toBe('hidden');
+      expect(await page2.evaluate(() => document.visibilityState)).toBe('visible');
 
-      await page.bringToFront();
-      expect(await page.evaluate(() => document.visibilityState)).toBe('visible');
-      expect(await newPage.evaluate(() => document.visibilityState)).toBe('hidden');
-
-      await newPage.close();
-      await page.close();
+      await page1.close();
+      await page2.close();
       await browser.close();
     });
   });
