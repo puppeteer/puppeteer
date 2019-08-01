@@ -162,20 +162,24 @@ const utils = module.exports = {
     // NOTE: we do this unconditionally so that developers can see problems in
     // their local setups.
     generateTestIDs(testRunner);
-    // whitelist Cirrus for now.
-    if (!process.env.CIRRUS_CI)
-      return;
-    // FLAKINESS_DASHBOARD_PASSWORD is encrypted. Cirrus DOES NOT inject enctrypted
-    // variables if PR's are sent from users without write permissions to the repo.
+    // FLAKINESS_DASHBOARD_PASSWORD is an encrypted/secured variable.
+    // Encrypted variables get a special treatment in CI's when handling PRs so that
+    // secrets are not leaked to untrusted code.
+    // - AppVeyor DOES NOT decrypt secured variables for PRs
+    // - Travis DOES NOT decrypt encrypted variables for PRs
+    // - Cirrus CI DOES NOT decrypt encrypted variables for PRs *unless* PR is sent
+    //   from someone who has WRITE ACCESS to the repo.
     //
-    // This makes sure we are running on Cirrus CI master branch, not a PR.
+    // Since we don't want to run flakiness dashboard for PRs on all CIs, we
+    // check existance of FLAKINESS_DASHBOARD_PASSWORD and absense of
+    // CIRRUS_BASE_SHA env variables.
     if (!process.env.FLAKINESS_DASHBOARD_PASSWORD || process.env.CIRRUS_BASE_SHA)
       return;
-    const sha = process.env.CIRRUS_CHANGE_IN_REPO;
+    const sha = process.env.FLAKINESS_DASHBOARD_BUILD_SHA;
     const dashboard = new FlakinessDashboard({
-      dashboardName: 'Cirrus ' + process.env.CIRRUS_TASK_NAME,
+      dashboardName: process.env.FLAKINESS_DASHBOARD_NAME,
       build: {
-        url: `https://cirrus-ci.com/build/${process.env.CIRRUS_BUILD_ID}`,
+        url: process.env.FLAKINESS_DASHBOARD_BUILD_URL,
         name: sha.substring(0, 8),
       },
       dashboardRepo: {
