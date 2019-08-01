@@ -96,7 +96,7 @@ class Dashboard {
       url: build._url,
       tests: build._tests,
     }));
-    await writeFileAsync(path.join(this._dashboardPath, DASHBOARD_FILENAME), JSON.stringify(data, null, 2));
+    await writeFileAsync(path.join(this._dashboardPath, DASHBOARD_FILENAME), JSON.stringify(data));
   }
 
   async generateReadme() {
