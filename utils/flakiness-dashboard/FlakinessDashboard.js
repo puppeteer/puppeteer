@@ -54,7 +54,7 @@ class FlakinessDashboard {
       await dashboard.saveJSON();
       await dashboard.generateReadme();
       // if push went through - great! We're done!
-      if (await git.commitAllAndPush()) {
+      if (await git.commitAllAndPush(`update dashboard\n\nbuild: ${this._build._url}`)) {
         success = true;
         console.log(`  > Push attempt ${YELLOW_COLOR}${i + 1}${RESET_COLOR} of ${YELLOW_COLOR}${MAX_ATTEMPTS}${RESET_COLOR}: ${GREEN_COLOR}SUCCESS${RESET_COLOR}`);
       } else {
@@ -228,9 +228,9 @@ class Git {
     return new Git(repoPath, url, branch, username);
   }
 
-  async commitAllAndPush() {
+  async commitAllAndPush(message) {
     await spawnAsyncOrDie('git', 'add', '.', {cwd: this._repoPath});
-    await spawnAsyncOrDie('git', 'commit', '-m', '"update dashboard"', '--author', '"puppeteer-flakiness <aslushnikov+puppeteerflakiness@gmail.com>"', {cwd: this._repoPath});
+    await spawnAsyncOrDie('git', 'commit', '-m', `${message}`, '--author', '"puppeteer-flakiness <aslushnikov+puppeteerflakiness@gmail.com>"', {cwd: this._repoPath});
     const {code} = await spawnAsync('git', 'push', 'origin', this._branch, {cwd: this._repoPath});
     return code === 0;
   }
