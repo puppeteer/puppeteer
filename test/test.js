@@ -111,4 +111,7 @@ new Reporter(testRunner, {
   projectFolder: utils.projectRoot(),
   showSlowTests: process.env.CI ? 5 : 0,
 });
+
+utils.initializeFlakinessDashboardIfNeeded(testRunner);
 testRunner.run();
+

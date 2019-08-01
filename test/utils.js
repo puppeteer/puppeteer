@@ -16,6 +16,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const {FlakinessDashboard} = require('../utils/flakiness-dashboard');
 const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ? path.join(__dirname, '..') : path.join(__dirname, '..', '..');
 
 /**
@@ -152,5 +153,71 @@ const utils = module.exports = {
         fulfill(event);
       });
     });
+  },
+
+  initializeFlakinessDashboardIfNeeded: function(testRunner) {
+    // Generate testIDs for all tests and verify they don't clash.
+    // This will add |test.testId| for every test.
+    //
+    // NOTE: we do this unconditionally so that developers can see problems in
+    // their local setups.
+    generateTestIDs(testRunner);
+    // FLAKINESS_DASHBOARD_PASSWORD is an encrypted/secured variable.
+    // Encrypted variables get a special treatment in CI's when handling PRs so that
+    // secrets are not leaked to untrusted code.
+    // - AppVeyor DOES NOT decrypt secured variables for PRs
+    // - Travis DOES NOT decrypt encrypted variables for PRs
+    // - Cirrus CI DOES NOT decrypt encrypted variables for PRs *unless* PR is sent
+    //   from someone who has WRITE ACCESS to the repo.
+    //
+    // Since we don't want to run flakiness dashboard for PRs on all CIs, we
+    // check existance of FLAKINESS_DASHBOARD_PASSWORD and absense of
+    // CIRRUS_BASE_SHA env variables.
+    if (!process.env.FLAKINESS_DASHBOARD_PASSWORD || process.env.CIRRUS_BASE_SHA)
+      return;
+    const sha = process.env.FLAKINESS_DASHBOARD_BUILD_SHA;
+    const dashboard = new FlakinessDashboard({
+      dashboardName: process.env.FLAKINESS_DASHBOARD_NAME,
+      build: {
+        url: process.env.FLAKINESS_DASHBOARD_BUILD_URL,
+        name: sha.substring(0, 8),
+      },
+      dashboardRepo: {
+        url: 'https://github.com/aslushnikov/puppeteer-flakiness-dashboard.git',
+        username: 'puppeteer-flakiness',
+        email: 'aslushnikov+puppeteerflakiness@gmail.com',
+        password: process.env.FLAKINESS_DASHBOARD_PASSWORD,
+      },
+    });
+
+    testRunner.on('testfinished', test => {
+      const testpath = test.location.filePath.substring(utils.projectRoot().length);
+      const url = `https://github.com/GoogleChrome/puppeteer/blob/${sha}/${testpath}#L${test.location.lineNumber}`;
+      dashboard.reportTestResult({
+        testId: test.testId,
+        name: test.location.fileName + ':' + test.location.lineNumber,
+        description: test.fullName,
+        url,
+        result: test.result,
+      });
+    });
+    testRunner.on('terminated', () => dashboard.uploadAndCleanup());
+    testRunner.on('finished', () => dashboard.uploadAndCleanup());
+
+    function generateTestIDs(testRunner) {
+      const testIds = new Map();
+      for (const test of testRunner.tests()) {
+        const testIdComponents = [test.name];
+        for (let suite = test.suite; !!suite.parentSuite; suite = suite.parentSuite)
+          testIdComponents.push(suite.name);
+        testIdComponents.reverse();
+        const testId = testIdComponents.join('>');
+        const clashingTest = testIds.get(testId);
+        if (clashingTest)
+          throw new Error(`Two tests with clashing IDs: ${test.location.fileName}:${test.location.lineNumber} and ${clashingTest.location.fileName}:${clashingTest.location.lineNumber}`);
+        testIds.set(testId, test);
+        test.testId = testId;
+      }
+    }
   },
 };

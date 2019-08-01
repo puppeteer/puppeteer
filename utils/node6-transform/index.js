@@ -35,6 +35,7 @@ copyFolder(path.join(root, 'lib'), path.join(dest, 'lib'));
 copyFolder(path.join(root, 'test'), path.join(dest, 'test'));
 copyFolder(path.join(root, 'utils', 'testrunner'), path.join(dest, 'utils', 'testrunner'));
 copyFolder(path.join(root, 'utils', 'testserver'), path.join(dest, 'utils', 'testserver'));
+copyFolder(path.join(root, 'utils', 'flakiness-dashboard'), path.join(dest, 'utils', 'flakiness-dashboard'));
 
 function copyFolder(source, target) {
   if (fs.existsSync(target))
