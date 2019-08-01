@@ -94,29 +94,17 @@ class Dashboard {
       throw new Error('cannot parse dashboard data: missing "version" field!');
     if (data.version > DASHBOARD_VERSION)
       throw new Error('cannot manage dashboards that are newer then this');
-    const builds = data.builds.map(build => new Build(build.ts, build.n, build.u, build.t.map(test => ({
-      testId: test.i,
-      name: test.n,
-      description: test.d,
-      url: test.u,
-      result: test.r,
-    }))));
+    const builds = data.builds.map(build => new Build(build.timestamp, build.name, build.url, build.tests));
     return new Dashboard(name, dashboardPath, builds, options);
   }
 
   async saveJSON() {
     const data = { version: DASHBOARD_VERSION };
     data.builds = this._builds.map(build => ({
-      ts: build._timestamp,
-      n: build._name,
-      u: build._url,
-      t: build._tests.map(test => ({
-        i: test.testId,
-        n: test.name,
-        d: test.description,
-        u: test.url,
-        r: test.result,
-      })),
+      timestamp: build._timestamp,
+      name: build._name,
+      url: build._url,
+      tests: build._tests,
     }));
     await writeFileAsync(path.join(this._dashboardPath, DASHBOARD_FILENAME), JSON.stringify(data));
   }
