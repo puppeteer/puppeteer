@@ -18,6 +18,14 @@ const RESET_COLOR = '\x1b[0m';
 
 class FlakinessDashboard {
   constructor({dashboardName, build, dashboardRepo, options}) {
+    if (!dashboardName)
+      throw new Error('"options.dashboardName" must be specified!');
+    if (!build)
+      throw new Error('"options.build" must be specified!');
+    if (!build.url)
+      throw new Error('"options.build.url" must be specified!');
+    if (!build.name)
+      throw new Error('"options.build.name" must be specified!');
     this._dashboardName = dashboardName;
     this._dashboardRepo = dashboardRepo;
     this._options = options;
