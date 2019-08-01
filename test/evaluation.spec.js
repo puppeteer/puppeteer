@@ -121,9 +121,9 @@ module.exports.addTests = function({testRunner, expect}) {
     });
     it('should reject promise with exception', async({page, server}) => {
       let error = null;
-      await page.evaluate(() => not.existing.object.property).catch(e => error = e);
+      await page.evaluate(() => not_existing_object.property).catch(e => error = e);
       expect(error).toBeTruthy();
-      expect(error.message).toContain('not is not defined');
+      expect(error.message).toContain('not_existing_object');
     });
     it('should support thrown strings as error messages', async({page, server}) => {
       let error = null;
