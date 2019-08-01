@@ -18,6 +18,14 @@ const RESET_COLOR = '\x1b[0m';
 
 class FlakinessDashboard {
   constructor({dashboardName, build, dashboardRepo, options}) {
+    if (!dashboardName)
+      throw new Error('"options.dashboardName" must be specified!');
+    if (!build)
+      throw new Error('"options.build" must be specified!');
+    if (!build.url)
+      throw new Error('"options.build.url" must be specified!');
+    if (!build.name)
+      throw new Error('"options.build.name" must be specified!');
     this._dashboardName = dashboardName;
     this._dashboardRepo = dashboardRepo;
     this._options = options;
@@ -32,8 +40,10 @@ class FlakinessDashboard {
     console.log(`\n${YELLOW_COLOR}=== UPLOADING Flakiness Dashboard${RESET_COLOR}`);
     const startTimestamp = Date.now();
     const branch = this._dashboardRepo.branch || this._dashboardName.trim().toLowerCase().replace(/\s/g, '-').replace(/[^-0-9a-zа-яё]/ig, '');
+    console.log(`  > Dashboard URL: ${this._dashboardRepo.url}`);
+    console.log(`  > Dashboard Branch: ${branch}`);
     const git = await Git.initialize(this._dashboardRepo.url, branch, this._dashboardRepo.username, this._dashboardRepo.email, this._dashboardRepo.password);
-    console.log(`  > Dashboard Location: ${git.path()}`);
+    console.log(`  > Dashboard Checkout: ${git.path()}`);
 
     // Do at max 5 attempts to upload changes to github.
     let success = false;
@@ -44,7 +54,7 @@ class FlakinessDashboard {
       await dashboard.saveJSON();
       await dashboard.generateReadme();
       // if push went through - great! We're done!
-      if (await git.commitAllAndPush()) {
+      if (await git.commitAllAndPush(`update dashboard\n\nbuild: ${this._build._url}`)) {
         success = true;
         console.log(`  > Push attempt ${YELLOW_COLOR}${i + 1}${RESET_COLOR} of ${YELLOW_COLOR}${MAX_ATTEMPTS}${RESET_COLOR}: ${GREEN_COLOR}SUCCESS${RESET_COLOR}`);
       } else {
@@ -84,19 +94,31 @@ class Dashboard {
       throw new Error('cannot parse dashboard data: missing "version" field!');
     if (data.version > DASHBOARD_VERSION)
       throw new Error('cannot manage dashboards that are newer then this');
-    const builds = data.builds.map(build => new Build(build.timestamp, build.name, build.url, build.tests));
+    const builds = data.builds.map(build => new Build(build.ts, build.n, build.u, build.t.map(test => ({
+      testId: test.i,
+      name: test.n,
+      description: test.d,
+      url: test.u,
+      result: test.r,
+    }))));
     return new Dashboard(name, dashboardPath, builds, options);
   }
 
   async saveJSON() {
     const data = { version: DASHBOARD_VERSION };
     data.builds = this._builds.map(build => ({
-      timestamp: build._timestamp,
-      name: build._name,
-      url: build._url,
-      tests: build._tests,
+      ts: build._timestamp,
+      n: build._name,
+      u: build._url,
+      t: build._tests.map(test => ({
+        i: test.testId,
+        n: test.name,
+        d: test.description,
+        u: test.url,
+        r: test.result,
+      })),
     }));
-    await writeFileAsync(path.join(this._dashboardPath, DASHBOARD_FILENAME), JSON.stringify(data, null, 2));
+    await writeFileAsync(path.join(this._dashboardPath, DASHBOARD_FILENAME), JSON.stringify(data));
   }
 
   async generateReadme() {
@@ -147,7 +169,7 @@ class Dashboard {
 
   constructor(name, dashboardPath, builds, options) {
     const {
-      maxBuilds = 30,
+      maxBuilds = 100,
     } = options;
     this._name = name;
     this._dashboardPath = dashboardPath;
@@ -218,9 +240,9 @@ class Git {
     return new Git(repoPath, url, branch, username);
   }
 
-  async commitAllAndPush() {
+  async commitAllAndPush(message) {
     await spawnAsyncOrDie('git', 'add', '.', {cwd: this._repoPath});
-    await spawnAsyncOrDie('git', 'commit', '-m', '"update dashboard"', '--author', '"puppeteer-flakiness <aslushnikov+puppeteerflakiness@gmail.com>"', {cwd: this._repoPath});
+    await spawnAsyncOrDie('git', 'commit', '-m', `${message}`, '--author', '"puppeteer-flakiness <aslushnikov+puppeteerflakiness@gmail.com>"', {cwd: this._repoPath});
     const {code} = await spawnAsync('git', 'push', 'origin', this._branch, {cwd: this._repoPath});
     return code === 0;
   }
