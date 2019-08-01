@@ -17,12 +17,6 @@ const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
 
 class FlakinessDashboard {
-  /**
-   * @param {{url: string, branch: string, username: string, password: string}} dashboardRepo
-   * @param {{url: string, name: string}} checkout
-   * @param {{name: string}} testrunInfo
-   * @param {{testHistory: number}} options
-   */
   constructor({dashboardName, build, dashboardRepo, options}) {
     this._dashboardName = dashboardName;
     this._dashboardRepo = dashboardRepo;

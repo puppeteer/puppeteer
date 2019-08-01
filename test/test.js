@@ -112,66 +112,6 @@ new Reporter(testRunner, {
   showSlowTests: process.env.CI ? 5 : 0,
 });
 
-// Unconditionally generate testIDs for all tests and verify they don't clash.
-// This will add |test.testId| for every test.
-generateTestIDs(testRunner);
-initializeFlakinessDashboardIfNeeded(testRunner);
-
+utils.initializeFlakinessDashboardIfNeeded(testRunner);
 testRunner.run();
 
-function generateTestIDs(testRunner) {
-  const testIds = new Map();
-  for (const test of testRunner.tests()) {
-    const testIdComponents = [test.name];
-    for (let suite = test.suite; !!suite.parentSuite; suite = suite.parentSuite)
-      testIdComponents.push(suite.name);
-    testIdComponents.reverse();
-    const testId = testIdComponents.join('>');
-    const clashingTest = testIds.get(testId);
-    if (clashingTest)
-      throw new Error(`Two tests with clashing IDs: ${test.location.fileName}:${test.location.lineNumber} and ${clashingTest.location.fileName}:${clashingTest.location.lineNumber}`);
-    testIds.set(testId, test);
-    test.testId = testId;
-  }
-}
-
-function initializeFlakinessDashboardIfNeeded(testRunner) {
-  // whitelist Cirrus for now.
-  if (!process.env.CIRRUS_CI)
-    return;
-  // FLAKINESS_DASHBOARD_PASSWORD is encrypted. Cirrus DOES NOT inject enctrypted
-  // variables if PR's are sent from users without write permissions to the repo.
-  //
-  // This makes sure we are running on Cirrus CI master branch, not a PR.
-  if (!process.env.FLAKINESS_DASHBOARD_PASSWORD || process.env.CIRRUS_BASE_SHA)
-    return;
-  const {FlakinessDashboard} = require('../utils/flakiness-dashboard');
-  const sha = process.env.CIRRUS_CHANGE_IN_REPO;
-  const dashboard = new FlakinessDashboard({
-    dashboardName: 'Cirrus ' + process.env.CIRRUS_TASK_NAME,
-    build: {
-      url: `https://cirrus-ci.com/build/${process.env.CIRRUS_BUILD_ID}`,
-      name: sha.substring(0, 8),
-    },
-    dashboardRepo: {
-      url: 'https://github.com/aslushnikov/puppeteer-flakiness-dashboard.git',
-      username: 'puppeteer-flakiness',
-      email: 'aslushnikov+puppeteerflakiness@gmail.com',
-      password: process.env.FLAKINESS_DASHBOARD_PASSWORD,
-    },
-  });
-
-  testRunner.on('testfinished', test => {
-    const testpath = test.location.filePath.substring(utils.projectRoot().length);
-    const url = `https://github.com/GoogleChrome/puppeteer/blob/${sha}/${testpath}#L${test.location.lineNumber}`;
-    dashboard.reportTestResult({
-      testId: test.testId,
-      name: test.location.fileName + ':' + test.location.lineNumber,
-      description: test.fullName,
-      url,
-      result: test.result,
-    });
-  });
-  testRunner.on('terminated', () => dashboard.uploadAndCleanup());
-  testRunner.on('finished', () => dashboard.uploadAndCleanup());
-}
