@@ -169,7 +169,7 @@ class Dashboard {
 
   constructor(name, dashboardPath, builds, options) {
     const {
-      maxBuilds = 30,
+      maxBuilds = 100,
     } = options;
     this._name = name;
     this._dashboardPath = dashboardPath;
