@@ -158,7 +158,7 @@ class Request {
     } = overrides;
     await this._session.send('Network.resumeSuspendedRequest', {
       requestId: this._id,
-      headers: headers ? Object.entries(headers).map(([name, value]) => ({name, value})) : undefined,
+      headers: headers ? Object.entries(headers).filter(([, value]) => !Object.is(value, undefined)).map(([name, value]) => ({name, value})) : undefined,
     }).catch(error => {
       debugError(error);
     });
