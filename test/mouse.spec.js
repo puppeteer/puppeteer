@@ -138,7 +138,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       ]);
     });
     // @see https://crbug.com/929806
-    xit('should work with mobile viewports and cross process navigations', async({page, server}) => {
+    it('should work with mobile viewports and cross process navigations', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setViewport({width: 360, height: 640, isMobile: true});
       await page.goto(server.CROSS_PROCESS_PREFIX + '/mobile.html');
