@@ -115,7 +115,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(response.ok()).toBe(true);
     });
     // @see https://github.com/GoogleChrome/puppeteer/issues/4337
-    xit('should work with redirect inside sync XHR', async({page, server}) => {
+    it('should work with redirect inside sync XHR', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       server.setRedirect('/logo.png', '/pptr.png');
       await page.setRequestInterception(true);
