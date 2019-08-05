@@ -111,6 +111,8 @@ new Reporter(testRunner, {
   showSlowTests: process.env.CI ? 5 : 0,
 });
 
-utils.initializeFlakinessDashboardIfNeeded(testRunner);
-testRunner.run();
+(async() => {
+  await utils.initializeFlakinessDashboardIfNeeded(testRunner);
+  testRunner.run();
+})();
 

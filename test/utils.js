@@ -161,7 +161,7 @@ const utils = module.exports = {
     });
   },
 
-  initializeFlakinessDashboardIfNeeded: function(testRunner) {
+  initializeFlakinessDashboardIfNeeded: async function(testRunner) {
     // Generate testIDs for all tests and verify they don't clash.
     // This will add |test.testId| for every test.
     //
@@ -181,18 +181,22 @@ const utils = module.exports = {
     // CIRRUS_BASE_SHA env variables.
     if (!process.env.FLAKINESS_DASHBOARD_PASSWORD || process.env.CIRRUS_BASE_SHA)
       return;
-    const sha = process.env.FLAKINESS_DASHBOARD_BUILD_SHA;
+    const {sha, timestamp} = await FlakinessDashboard.getCommitDetails(__dirname, 'HEAD');
     const dashboard = new FlakinessDashboard({
-      dashboardName: process.env.FLAKINESS_DASHBOARD_NAME,
+      commit: {
+        sha,
+        timestamp,
+        url: `https://github.com/GoogleChrome/puppeteer/commit/${sha}`,
+      },
       build: {
         url: process.env.FLAKINESS_DASHBOARD_BUILD_URL,
-        name: sha.substring(0, 8),
       },
       dashboardRepo: {
         url: 'https://github.com/aslushnikov/puppeteer-flakiness-dashboard.git',
         username: 'puppeteer-flakiness',
         email: 'aslushnikov+puppeteerflakiness@gmail.com',
         password: process.env.FLAKINESS_DASHBOARD_PASSWORD,
+        branch: process.env.FLAKINESS_DASHBOARD_NAME,
       },
     });
 
