@@ -340,7 +340,7 @@ npm install puppeteer-core@chrome-71
 
 #### Q: Which Chromium version does Puppeteer use?
 
-Look for `chromium_revision` in [package.json](https://github.com/GoogleChrome/puppeteer/blob/master/package.json).
+Look for `chromium_revision` in [package.json](https://github.com/GoogleChrome/puppeteer/blob/master/package.json). To find the specific Chromium commit, search for the revision prefixed by an "r" in the "Find Releases" section of [https://omahaproxy.appspot.com/](https://omahaproxy.appspot.com/).
 
 #### Q: What’s considered a “Navigation”?
 
