@@ -7,6 +7,7 @@
   * [[recommended] Enable user namespace cloning](#recommended-enable-user-namespace-cloning)
   * [[alternative] Setup setuid sandbox](#alternative-setup-setuid-sandbox)
 - [Running Puppeteer on Travis CI](#running-puppeteer-on-travis-ci)
+- [Running Puppeteer on CircleCI](#running-puppeteer-on-circleci)
 - [Running Puppeteer in Docker](#running-puppeteer-in-docker)
   * [Running on Alpine](#running-on-alpine)
     - [Tips](#tips)
@@ -214,6 +215,14 @@ before_install:
   - "sh -e /etc/init.d/xvfb start"
 ```
 
+## Running Puppeteer on CircleCI
+
+CircleCI has a shared [orb](https://circleci.com/orbs/) that can be used to
+install missing dependencies:
+[threetreeslight/puppeteer](https://circleci.com/orbs/registry/orb/threetreeslight/puppeteer).
+
+You can either use the orb as-is ([docs](https://circleci.com/orbs/)), or
+copy parts of that config into your own as-needed.
 
 ## Running Puppeteer in Docker
 
