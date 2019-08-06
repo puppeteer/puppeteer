@@ -23,7 +23,7 @@ class FlakinessDashboard {
   static async getCommitDetails(repoPath, ref = 'HEAD') {
     const {stdout: timestamp} = await spawnAsyncOrDie('git', 'show', '-s', '--format=%ct', ref, {cwd: repoPath});
     const {stdout: sha} = await spawnAsyncOrDie('git', 'rev-parse', ref, {cwd: repoPath});
-    return {timestamp: +timestamp, sha: sha.trim()};
+    return {timestamp: timestamp * 1000, sha: sha.trim()};
   }
 
   constructor({build, commit, dashboardRepo}) {
