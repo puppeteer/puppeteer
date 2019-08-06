@@ -10,7 +10,6 @@ environment:
 build: off
 
 install:
-  - ps: $env:FLAKINESS_DASHBOARD_BUILD_SHA="$env:APPVEYOR_REPO_COMMIT"
   - ps: $env:FLAKINESS_DASHBOARD_BUILD_URL="https://ci.appveyor.com/project/aslushnikov/puppeteer/branch/master/job/$env:APPVEYOR_JOB_ID"
   - ps: Install-Product node $env:nodejs_version
   - npm install

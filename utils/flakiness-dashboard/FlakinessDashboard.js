@@ -16,43 +16,51 @@ const GREEN_COLOR = '\x1b[32m';
 const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
 
+const DASHBOARD_VERSION = 1;
+const DASHBOARD_FILENAME = 'dashboard.json';
+
 class FlakinessDashboard {
-  constructor({dashboardName, build, dashboardRepo, options}) {
-    if (!dashboardName)
-      throw new Error('"options.dashboardName" must be specified!');
+  static async getCommitDetails(repoPath, ref = 'HEAD') {
+    const {stdout: timestamp} = await spawnAsyncOrDie('git', 'show', '-s', '--format=%ct', ref, {cwd: repoPath});
+    const {stdout: sha} = await spawnAsyncOrDie('git', 'rev-parse', ref, {cwd: repoPath});
+    return {timestamp: timestamp * 1000, sha: sha.trim()};
+  }
+
+  constructor({build, commit, dashboardRepo}) {
+    if (!commit)
+      throw new Error('"options.commit" must be specified!');
+    if (!commit.sha)
+      throw new Error('"options.commit.sha" must be specified!');
+    if (!commit.timestamp)
+      throw new Error('"options.commit.timestamp" must be specified!');
     if (!build)
       throw new Error('"options.build" must be specified!');
     if (!build.url)
       throw new Error('"options.build.url" must be specified!');
-    if (!build.name)
-      throw new Error('"options.build.name" must be specified!');
-    this._dashboardName = dashboardName;
+    if (!dashboardRepo.branch)
+      throw new Error('"options.dashboardRepo.branch" must be specified!');
     this._dashboardRepo = dashboardRepo;
-    this._options = options;
-    this._build = new Build(Date.now(), build.name, build.url, []);
+    this._build = new Build(Date.now(), build.url, commit, []);
   }
 
   reportTestResult(test) {
-    this._build.reportTestResult(test);
+    this._build._tests.push(test);
   }
 
   async uploadAndCleanup() {
     console.log(`\n${YELLOW_COLOR}=== UPLOADING Flakiness Dashboard${RESET_COLOR}`);
     const startTimestamp = Date.now();
-    const branch = this._dashboardRepo.branch || this._dashboardName.trim().toLowerCase().replace(/\s/g, '-').replace(/[^-0-9a-zа-яё]/ig, '');
+    const branch = this._dashboardRepo.branch.toLowerCase().replace(/\s/g, '-').replace(/[^-0-9a-zа-яё]/ig, '');
     console.log(`  > Dashboard URL: ${this._dashboardRepo.url}`);
     console.log(`  > Dashboard Branch: ${branch}`);
     const git = await Git.initialize(this._dashboardRepo.url, branch, this._dashboardRepo.username, this._dashboardRepo.email, this._dashboardRepo.password);
     console.log(`  > Dashboard Checkout: ${git.path()}`);
 
-    // Do at max 5 attempts to upload changes to github.
+    // Do at max 7 attempts to upload changes to github.
     let success = false;
     const MAX_ATTEMPTS = 7;
     for (let i = 0; !success && i < MAX_ATTEMPTS; ++i) {
-      const dashboard = await Dashboard.create(this._dashboardName, git.path(), this._options);
-      dashboard.addBuild(this._build);
-      await dashboard.saveJSON();
-      await dashboard.generateReadme();
+      await saveBuildToDashboard(git.path(), this._build);
       // if push went through - great! We're done!
       if (await git.commitAllAndPush(`update dashboard\n\nbuild: ${this._build._url}`)) {
         success = true;
@@ -77,112 +85,33 @@ class FlakinessDashboard {
   }
 }
 
-const DASHBOARD_VERSION = 1;
-const DASHBOARD_FILENAME = 'dashboard.json';
-
-class Dashboard {
-  static async create(name, dashboardPath, options = {}) {
-    const filePath = path.join(dashboardPath, DASHBOARD_FILENAME);
-    let data = null;
-    try {
-      data = JSON.parse(await readFileAsync(filePath));
-    } catch (e) {
-      // Looks like there's no dashboard yet - create one.
-      return new Dashboard(name, dashboardPath, [], options);
-    }
-    if (!data.version)
-      throw new Error('cannot parse dashboard data: missing "version" field!');
-    if (data.version > DASHBOARD_VERSION)
-      throw new Error('cannot manage dashboards that are newer then this');
-    const builds = data.builds.map(build => new Build(build.timestamp, build.name, build.url, build.tests));
-    return new Dashboard(name, dashboardPath, builds, options);
+async function saveBuildToDashboard(dashboardPath, build) {
+  const filePath = path.join(dashboardPath, DASHBOARD_FILENAME);
+  let data = null;
+  try {
+    data = JSON.parse(await readFileAsync(filePath));
+  } catch (e) {
+    // Looks like there's no dashboard yet - create one.
+    data = {builds: []};
   }
-
-  async saveJSON() {
-    const data = { version: DASHBOARD_VERSION };
-    data.builds = this._builds.map(build => ({
-      timestamp: build._timestamp,
-      name: build._name,
-      url: build._url,
-      tests: build._tests,
-    }));
-    await writeFileAsync(path.join(this._dashboardPath, DASHBOARD_FILENAME), JSON.stringify(data));
-  }
-
-  async generateReadme() {
-    const flakyTests = new Map();
-    for (const build of this._builds) {
-      for (const test of build._tests) {
-        if (test.result !== 'ok')
-          flakyTests.set(test.testId, test);
-      }
-    }
-
-    const text = [];
-    text.push(`# ${this._name}`);
-    text.push(``);
-
-    for (const [testId, test] of flakyTests) {
-      text.push(`#### [${test.name}](${test.url}) - ${test.description}`);
-      text.push('');
-
-      let headers = '|';
-      let splitters = '|';
-      let dataColumns = '|';
-      for (let i = this._builds.length - 1; i >= 0; --i) {
-        const build = this._builds[i];
-        headers += ` [${build._name}](${build._url}) |`;
-        splitters += ' :---: |';
-        const test = build._testsMap.get(testId);
-        if (test) {
-          const r = test.result.toLowerCase();
-          let text = r;
-          if (r === 'ok')
-            text = '✅';
-          else if (r.includes('fail'))
-            text = '🛑';
-          dataColumns += ` [${text}](${test.url}) |`;
-        } else {
-          dataColumns += ` missing |`;
-        }
-      }
-      text.push(headers);
-      text.push(splitters);
-      text.push(dataColumns);
-      text.push('');
-    }
-
-    await writeFileAsync(path.join(this._dashboardPath, 'README.md'), text.join('\n'));
-  }
-
-  constructor(name, dashboardPath, builds, options) {
-    const {
-      maxBuilds = 100,
-    } = options;
-    this._name = name;
-    this._dashboardPath = dashboardPath;
-    this._builds = builds.slice(builds.length - maxBuilds);
-  }
-
-  addBuild(build) {
-    this._builds.push(build);
-  }
+  if (!data.builds)
+    throw new Error('Unrecognized dashboard format!');
+  data.builds.push({
+    version: DASHBOARD_VERSION,
+    timestamp: build._timestamp,
+    url: build._url,
+    commit: build._commit,
+    tests: build._tests,
+  });
+  await writeFileAsync(filePath, JSON.stringify(data));
 }
 
 class Build {
-  constructor(timestamp, name, url, tests) {
+  constructor(timestamp, url, commit, tests) {
     this._timestamp = timestamp;
-    this._name = name;
     this._url = url;
+    this._commit = commit;
     this._tests = tests;
-    this._testsMap = new Map();
-    for (const test of tests)
-      this._testsMap.set(test.testId, test);
-  }
-
-  reportTestResult(test) {
-    this._tests.push(test);
-    this._testsMap.set(test.testId, test);
   }
 }
 
