@@ -165,9 +165,9 @@ const utils = module.exports = {
     // Generate testIDs for all tests and verify they don't clash.
     // This will add |test.testId| for every test.
     //
-    // NOTE: we do this unconditionally so that developers can see problems in
-    // their local setups.
-    generateTestIDs(testRunner);
+    // NOTE: we do this on CI's so that problems arise on PR trybots.
+    if (process.env.CI)
+      generateTestIDs(testRunner);
     // FLAKINESS_DASHBOARD_PASSWORD is an encrypted/secured variable.
     // Encrypted variables get a special treatment in CI's when handling PRs so that
     // secrets are not leaked to untrusted code.
