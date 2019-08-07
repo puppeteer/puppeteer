@@ -97,6 +97,8 @@ const TestResult = {
   Skipped: 'skipped', // User skipped the test
   Failed: 'failed', // Exception happened during running
   TimedOut: 'timedout', // Timeout Exceeded while running
+  Terminated: 'terminated', // Execution terminated
+  Crashed: 'crashed', // If testrunner crashed due to this test
 };
 
 class Test {
@@ -162,10 +164,10 @@ class TestPass {
 
   async run() {
     const terminations = [
-      createTermination.call(this, 'SIGINT', 'SIGINT received'),
-      createTermination.call(this, 'SIGHUP', 'SIGHUP received'),
-      createTermination.call(this, 'SIGTERM', 'SIGTERM received'),
-      createTermination.call(this, 'unhandledRejection', 'UNHANDLED PROMISE REJECTION'),
+      createTermination.call(this, 'SIGINT', TestResult.Terminated, 'SIGINT received'),
+      createTermination.call(this, 'SIGHUP', TestResult.Terminated, 'SIGHUP received'),
+      createTermination.call(this, 'SIGTERM', TestResult.Terminated, 'SIGTERM received'),
+      createTermination.call(this, 'unhandledRejection', TestResult.Crashed, 'UNHANDLED PROMISE REJECTION'),
     ];
     for (const termination of terminations)
       process.on(termination.event, termination.handler);
@@ -179,11 +181,11 @@ class TestPass {
       process.removeListener(termination.event, termination.handler);
     return this._termination;
 
-    function createTermination(event, message) {
+    function createTermination(event, result, message) {
       return {
         event,
         message,
-        handler: error => this._terminate(message, error)
+        handler: error => this._terminate(result, message, error)
       };
     }
   }
@@ -201,11 +203,7 @@ class TestPass {
       if (!this._workerDistribution.hasValue(child, workerId))
         continue;
       if (child instanceof Test) {
-        for (let i = 0; i < suitesStack.length; i++)
-          await this._runHook(workerId, suitesStack[i], 'beforeEach', state, child);
-        await this._runTest(workerId, child, state);
-        for (let i = suitesStack.length - 1; i >= 0; i--)
-          await this._runHook(workerId, suitesStack[i], 'afterEach', state, child);
+        await this._runTest(workerId, suitesStack, child, state);
       } else {
         suitesStack.push(child);
         await this._runSuite(workerId, suitesStack, state);
@@ -215,7 +213,7 @@ class TestPass {
     await this._runHook(workerId, currentSuite, 'afterAll', state);
   }
 
-  async _runTest(workerId, test, state) {
+  async _runTest(workerId, suitesStack, test, state) {
     if (this._termination)
       return;
     this._runner._willStartTest(test, workerId);
@@ -224,47 +222,65 @@ class TestPass {
       this._runner._didFinishTest(test, workerId);
       return;
     }
-    this._runningUserCallbacks.set(workerId, test._userCallback);
-    const error = await test._userCallback.run(state, test);
-    this._runningUserCallbacks.delete(workerId, test._userCallback);
-    if (this._termination)
-      return;
-    test.error = error;
-    if (!error)
-      test.result = TestResult.Ok;
-    else if (test.error === TimeoutError)
-      test.result = TestResult.TimedOut;
-    else
-      test.result = TestResult.Failed;
+    let crashed = false;
+    for (let i = 0; i < suitesStack.length; i++)
+      crashed = (await this._runHook(workerId, suitesStack[i], 'beforeEach', state, test)) || crashed;
+    // If some of the beofreEach hooks error'ed - terminate this test.
+    if (crashed) {
+      test.result = TestResult.Crashed;
+    } else if (this._termination) {
+      test.result = TestResult.Terminated;
+    } else {
+      // Otherwise, run the test itself if there is no scheduled termination.
+      this._runningUserCallbacks.set(workerId, test._userCallback);
+      test.error = await test._userCallback.run(state, test);
+      this._runningUserCallbacks.delete(workerId, test._userCallback);
+      if (!test.error)
+        test.result = TestResult.Ok;
+      else if (test.error === TimeoutError)
+        test.result = TestResult.TimedOut;
+      else if (test.error === TerminatedError)
+        test.result = TestResult.Terminated;
+      else
+        test.result = TestResult.Failed;
+    }
+    for (let i = suitesStack.length - 1; i >= 0; i--)
+      crashed = (await this._runHook(workerId, suitesStack[i], 'afterEach', state, test)) || crashed;
+    // If some of the afterEach hooks error'ed - then this test is considered to be crashed as well.
+    if (crashed)
+      test.result = TestResult.Crashed;
     this._runner._didFinishTest(test, workerId);
     if (this._breakOnFailure && test.result !== TestResult.Ok)
-      this._terminate(`Terminating because a test has failed and |testRunner.breakOnFailure| is enabled`, null);
+      this._terminate(TestResult.Terminated, `Terminating because a test has failed and |testRunner.breakOnFailure| is enabled`, null);
   }
 
   async _runHook(workerId, suite, hookName, ...args) {
     const hook = suite[hookName];
     if (!hook)
-      return;
+      return false;
     this._runningUserCallbacks.set(workerId, hook);
     const error = await hook.run(...args);
     this._runningUserCallbacks.delete(workerId, hook);
     if (error === TimeoutError) {
       const location = `${hook.location.fileName}:${hook.location.lineNumber}:${hook.location.columnNumber}`;
       const message = `${location} - Timeout Exceeded ${hook.timeout}ms while running "${hookName}" in suite "${suite.fullName}"`;
-      this._terminate(message, null);
-    } else if (error) {
+      return this._terminate(TestResult.Crashed, message, null);
+    }
+    if (error) {
       const location = `${hook.location.fileName}:${hook.location.lineNumber}:${hook.location.columnNumber}`;
       const message = `${location} - FAILED while running "${hookName}" in suite "${suite.fullName}"`;
-      this._terminate(message, error);
+      return this._terminate(TestResult.Crashed, message, error);
     }
+    return false;
   }
 
-  _terminate(message, error) {
+  _terminate(result, message, error) {
     if (this._termination)
-      return;
-    this._termination = {message, error};
+      return false;
+    this._termination = {result, message, error};
     for (const userCallback of this._runningUserCallbacks.valuesArray())
       userCallback.terminate();
+    return true;
   }
 }
 
@@ -351,16 +367,22 @@ class TestRunner extends EventEmitter {
     this._runningPass = new TestPass(this, this._rootSuite, runnableTests, this._parallel, this._breakOnFailure);
     const termination = await this._runningPass.run();
     this._runningPass = null;
-    if (termination)
-      this.emit(TestRunner.Events.Terminated, termination.message, termination.error);
-    else
-      this.emit(TestRunner.Events.Finished);
+    const result = {};
+    if (termination) {
+      result.result = termination.result;
+      result.terminationMessage = termination.message;
+      result.terminationError = termination.error;
+    } else {
+      result.result = this.failedTests().length ? TestResult.Failed : TestResult.Ok;
+    }
+    this.emit(TestRunner.Events.Finished, result);
+    return result;
   }
 
   terminate() {
     if (!this._runningPass)
       return;
-    this._runningPass._terminate('Terminated with |TestRunner.terminate()| call', null);
+    this._runningPass._terminate(TestResult.Terminated, 'Terminated with |TestRunner.terminate()| call', null);
   }
 
   timeout() {
@@ -405,7 +427,7 @@ class TestRunner extends EventEmitter {
   }
 
   failedTests() {
-    return this._tests.filter(test => test.result === 'failed' || test.result === 'timedout');
+    return this._tests.filter(test => test.result === 'failed' || test.result === 'timedout' || test.result === 'crashed');
   }
 
   passedTests() {
@@ -442,10 +464,9 @@ function assert(value, message) {
 
 TestRunner.Events = {
   Started: 'started',
+  Finished: 'finished',
   TestStarted: 'teststarted',
   TestFinished: 'testfinished',
-  Terminated: 'terminated',
-  Finished: 'finished',
 };
 
 module.exports = TestRunner;
