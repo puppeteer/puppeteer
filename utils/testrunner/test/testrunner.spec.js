@@ -570,5 +570,42 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(t.tests()[0].result).toBe('crashed');
     });
   });
+
+  describe('TestRunner Events', () => {
+    it('should emit events in proper order', async() => {
+      const log = [];
+      const t = new TestRunner();
+      t.beforeAll(() => log.push('beforeAll'));
+      t.beforeEach(() => log.push('beforeEach'));
+      t.it('test#1', () => log.push('test#1'));
+      t.afterEach(() => log.push('afterEach'));
+      t.afterAll(() => log.push('afterAll'));
+      t.on('started', () => log.push('E:started'));
+      t.on('teststarted', () => log.push('E:teststarted'));
+      t.on('testfinished', () => log.push('E:testfinished'));
+      t.on('finished', () => log.push('E:finished'));
+      await t.run();
+      expect(log).toEqual([
+        'E:started',
+        'beforeAll',
+        'E:teststarted',
+        'beforeEach',
+        'test#1',
+        'afterEach',
+        'E:testfinished',
+        'afterAll',
+        'E:finished',
+      ]);
+    });
+    it('should emit finish event with result', async() => {
+      const log = [];
+      const t = new TestRunner();
+      const [result] = await Promise.all([
+        new Promise(x => t.once('finished', x)),
+        t.run(),
+      ]);
+      expect(result.result).toBe('ok');
+    });
+  });
 };
 
