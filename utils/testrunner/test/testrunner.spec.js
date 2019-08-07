@@ -598,7 +598,6 @@ module.exports.addTests = function({testRunner, expect}) {
       ]);
     });
     it('should emit finish event with result', async() => {
-      const log = [];
       const t = new TestRunner();
       const [result] = await Promise.all([
         new Promise(x => t.once('finished', x)),
