@@ -217,12 +217,35 @@ before_install:
 
 ## Running Puppeteer on CircleCI
 
-CircleCI has a shared [orb](https://circleci.com/orbs/) that can be used to
-install missing dependencies:
-[threetreeslight/puppeteer](https://circleci.com/orbs/registry/orb/threetreeslight/puppeteer).
+Running Puppeteer smoothly on CircleCI requires the following steps:
 
-You can either use the orb as-is ([docs](https://circleci.com/orbs/)), or
-copy parts of that config into your own as-needed.
+1. Start with a [NodeJS
+   image](https://circleci.com/docs/2.0/circleci-images/#nodejs) in your config
+   like so:
+   ```yaml
+   docker:
+     - image: circleci/node:12 # Use your desired version
+       environment:
+         NODE_ENV: development # Only needed if puppeteer is in `devDependencies`
+   ```
+1. Dependencies like `libXtst6` probably need to be installed via `apt-get`,
+   so use the
+   [threetreeslight/puppeteer](https://circleci.com/orbs/registry/orb/threetreeslight/puppeteer)
+   orb
+   ([instructions](https://circleci.com/orbs/registry/orb/threetreeslight/puppeteer#quick-start)),
+   or paste parts of its
+   [source](https://circleci.com/orbs/registry/orb/threetreeslight/puppeteer#orb-source)
+   into your own config.
+1. Lastly, if you’re using Puppeteer through Jest, then you may encounter an
+   error spawning child processes:
+   ```
+   [00:00.0]  jest args: --e2e --spec --max-workers=36
+   Error: spawn ENOMEM
+      at ChildProcess.spawn (internal/child_process.js:394:11)
+   ```
+   This is likely caused by Jest autodetecting the number of processes on the
+   entire machine (`36`) rather than the number allowed to your container
+   (`2`). To fix this, set `jest --maxWorkers=2` in your test command.
 
 ## Running Puppeteer in Docker
 
