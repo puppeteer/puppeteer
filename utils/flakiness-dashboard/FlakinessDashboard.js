@@ -18,6 +18,7 @@ const RESET_COLOR = '\x1b[0m';
 
 const DASHBOARD_VERSION = 1;
 const DASHBOARD_FILENAME = 'dashboard.json';
+const DASHBOARD_MAX_BUILDS = 100;
 
 class FlakinessDashboard {
   static async getCommitDetails(repoPath, ref = 'HEAD') {
@@ -103,6 +104,8 @@ async function saveBuildToDashboard(dashboardPath, build) {
     commit: build._commit,
     tests: build._tests,
   });
+  if (data.builds.length > DASHBOARD_MAX_BUILDS)
+    data.builds = data.builds.slice(data.builds.length - DASHBOARD_MAX_BUILDS);
   await writeFileAsync(filePath, JSON.stringify(data));
 }
 
