@@ -215,7 +215,6 @@ const utils = module.exports = {
         result: test.result,
       });
     });
-    testRunner.on('terminated', () => dashboard.uploadAndCleanup());
     testRunner.on('finished', () => dashboard.uploadAndCleanup());
 
     function generateTestIDs(testRunner) {

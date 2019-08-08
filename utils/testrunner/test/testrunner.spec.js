@@ -204,6 +204,58 @@ module.exports.addTests = function({testRunner, expect}) {
       for (let i = 1; i < states.length; ++i)
         expect(states[i]).toBe(states[0]);
     });
+    it('should unwind hooks properly when terminated', async() => {
+      const log = [];
+      const t = new TestRunner({timeout: 10000});
+      t.beforeAll(() => log.push('beforeAll'));
+      t.beforeEach(() => log.push('beforeEach'));
+      t.afterEach(() => log.push('afterEach'));
+      t.afterAll(() => log.push('afterAll'));
+      t.it('uno', () => {
+        log.push('terminating...');
+        t.terminate();
+      });
+      await t.run();
+
+      expect(log).toEqual([
+        'beforeAll',
+        'beforeEach',
+        'terminating...',
+        'afterEach',
+        'afterAll',
+      ]);
+    });
+    it('should unwind hooks properly when crashed', async() => {
+      const log = [];
+      const t = new TestRunner({timeout: 10000});
+      t.beforeAll(() => log.push('root beforeAll'));
+      t.beforeEach(() => log.push('root beforeEach'));
+      t.describe('suite', () => {
+        t.beforeAll(() => log.push('suite beforeAll'));
+        t.beforeEach(() => log.push('suite beforeEach'));
+        t.it('uno', () => log.push('uno'));
+        t.afterEach(() => {
+          log.push('CRASH >> suite afterEach');
+          throw new Error('crash!');
+        });
+        t.afterAll(() => log.push('suite afterAll'));
+      });
+      t.afterEach(() => log.push('root afterEach'));
+      t.afterAll(() => log.push('root afterAll'));
+      await t.run();
+
+      expect(log).toEqual([
+        'root beforeAll',
+        'suite beforeAll',
+        'root beforeEach',
+        'suite beforeEach',
+        'uno',
+        'CRASH >> suite afterEach',
+        'root afterEach',
+        'suite afterAll',
+        'root afterAll'
+      ]);
+    });
   });
 
   describe('TestRunner.run', () => {
@@ -345,6 +397,43 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
+  describe('TestRunner.run result', () => {
+    it('should return OK if all tests pass', async() => {
+      const t = new TestRunner();
+      t.it('uno', () => {});
+      const result = await t.run();
+      expect(result.result).toBe('ok');
+    });
+    it('should return FAIL if at least one test fails', async() => {
+      const t = new TestRunner();
+      t.it('uno', () => { throw new Error('woof'); });
+      const result = await t.run();
+      expect(result.result).toBe('failed');
+    });
+    it('should return FAIL if at least one test times out', async() => {
+      const t = new TestRunner({timeout: 1});
+      t.it('uno', async() => new Promise(() => {}));
+      const result = await t.run();
+      expect(result.result).toBe('failed');
+    });
+    it('should return TERMINATED if it was terminated', async() => {
+      const t = new TestRunner({timeout: 1});
+      t.it('uno', async() => new Promise(() => {}));
+      const [result] = await Promise.all([
+        t.run(),
+        t.terminate(),
+      ]);
+      expect(result.result).toBe('terminated');
+    });
+    it('should return CRASHED if it crashed', async() => {
+      const t = new TestRunner({timeout: 1});
+      t.it('uno', async() => new Promise(() => {}));
+      t.afterAll(() => { throw new Error('woof');});
+      const result = await t.run();
+      expect(result.result).toBe('crashed');
+    });
+  });
+
   describe('TestRunner parallel', () => {
     it('should run tests in parallel', async() => {
       const log = [];
@@ -419,6 +508,14 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(test1.result).toBe('failed');
       expect(test2.result).toBe('timedout');
     });
+    it('should report crashed tests', async() => {
+      const t = new TestRunner();
+      t.beforeEach(() => { throw new Error('woof');});
+      t.it('uno', () => {});
+      await t.run();
+      expect(t.failedTests().length).toBe(1);
+      expect(t.failedTests()[0].result).toBe('crashed');
+    });
   });
 
   describe('TestRunner.skippedTests', () => {
@@ -434,88 +531,79 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
-  describe('TestRunner.on("terminated")', () => {
-    it('should terminate when hook crashes', async() => {
-      const log = [];
-      const t = new TestRunner({timeout: 1});
-      t.beforeEach(() => log.push('beforeEach'));
-      t.it('test#1', () => log.push('test#1'));
-      t.it('test#2', () => log.push('test#2'));
-      t.afterEach(() => { throw new Error('crash'); });
-      await Promise.all([
-        new Promise(x => t.once('terminated', x)),
-        t.run(),
-      ]);
-      expect(t.failedTests().length).toBe(0);
-      expect(log).toEqual([
-        'beforeEach',
-        'test#1'
-      ]);
+  describe('Test.result', () => {
+    it('should return OK', async() => {
+      const t = new TestRunner();
+      t.it('uno', () => {});
+      await t.run();
+      expect(t.tests()[0].result).toBe('ok');
     });
-    it('should terminate when hook times out', async() => {
-      const log = [];
+    it('should return TIMEDOUT', async() => {
       const t = new TestRunner({timeout: 1});
-      t.beforeEach(() => log.push('beforeEach'));
-      t.it('test#1', () => log.push('test#1'));
-      t.it('test#2', () => log.push('test#2'));
-      t.afterEach(() => new Promise(() => {}));
-      await Promise.all([
-        new Promise(x => t.once('terminated', x)),
-        t.run(),
-      ]);
-      expect(t.failedTests().length).toBe(0);
-      expect(log).toEqual([
-        'beforeEach',
-        'test#1'
-      ]);
+      t.it('uno', async() => new Promise(() => {}));
+      await t.run();
+      expect(t.tests()[0].result).toBe('timedout');
+    });
+    it('should return SKIPPED', async() => {
+      const t = new TestRunner();
+      t.xit('uno', () => {});
+      await t.run();
+      expect(t.tests()[0].result).toBe('skipped');
+    });
+    it('should return FAILED', async() => {
+      const t = new TestRunner();
+      t.it('uno', async() => Promise.reject('woof'));
+      await t.run();
+      expect(t.tests()[0].result).toBe('failed');
+    });
+    it('should return TERMINATED', async() => {
+      const t = new TestRunner();
+      t.it('uno', async() => t.terminate());
+      await t.run();
+      expect(t.tests()[0].result).toBe('terminated');
+    });
+    it('should return CRASHED', async() => {
+      const t = new TestRunner();
+      t.it('uno', () => {});
+      t.afterEach(() => {throw new Error('foo');});
+      await t.run();
+      expect(t.tests()[0].result).toBe('crashed');
     });
   });
 
-  describe('TestRunner.terminate', () => {
-    it('should unwind hooks properly', async() => {
+  describe('TestRunner Events', () => {
+    it('should emit events in proper order', async() => {
       const log = [];
-      const t = new TestRunner({timeout: 10000});
+      const t = new TestRunner();
       t.beforeAll(() => log.push('beforeAll'));
       t.beforeEach(() => log.push('beforeEach'));
+      t.it('test#1', () => log.push('test#1'));
       t.afterEach(() => log.push('afterEach'));
       t.afterAll(() => log.push('afterAll'));
-      t.it('uno', () => new Promise(() => {}));
-
-      await Promise.all([
-        t.run(),
-        new Promise(x => t.once('teststarted', x)).then(() => {
-          log.push('terminating...');
-          t.terminate();
-        }),
-      ]);
-
+      t.on('started', () => log.push('E:started'));
+      t.on('teststarted', () => log.push('E:teststarted'));
+      t.on('testfinished', () => log.push('E:testfinished'));
+      t.on('finished', () => log.push('E:finished'));
+      await t.run();
       expect(log).toEqual([
+        'E:started',
         'beforeAll',
+        'E:teststarted',
         'beforeEach',
-        'terminating...',
+        'test#1',
         'afterEach',
+        'E:testfinished',
         'afterAll',
+        'E:finished',
       ]);
     });
-    it('should unwind hooks even when they crash themselves', async() => {
-      const log = [];
-      const t = new TestRunner({timeout: 10000});
-      t.afterEach(() => { throw new Error('crash!'); });
-      t.afterAll(() => log.push('afterAll'));
-      t.it('uno', () => new Promise(() => {}));
-
-      await Promise.all([
+    it('should emit finish event with result', async() => {
+      const t = new TestRunner();
+      const [result] = await Promise.all([
+        new Promise(x => t.once('finished', x)),
         t.run(),
-        new Promise(x => t.once('teststarted', x)).then(() => {
-          log.push('terminating...');
-          t.terminate();
-        }),
       ]);
-
-      expect(log).toEqual([
-        'terminating...',
-        'afterAll',
-      ]);
+      expect(result.result).toBe('ok');
     });
   });
 };

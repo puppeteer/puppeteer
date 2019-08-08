@@ -17,6 +17,7 @@
 const RED_COLOR = '\x1b[31m';
 const GREEN_COLOR = '\x1b[32m';
 const YELLOW_COLOR = '\x1b[33m';
+const MAGENTA_COLOR = '\x1b[35m';
 const RESET_COLOR = '\x1b[0m';
 
 class Reporter {
@@ -34,7 +35,6 @@ class Reporter {
     this._summary = summary;
     this._testCounter = 0;
     runner.on('started', this._onStarted.bind(this));
-    runner.on('terminated', this._onTerminated.bind(this));
     runner.on('finished', this._onFinished.bind(this));
     runner.on('teststarted', this._onTestStarted.bind(this));
     runner.on('testfinished', this._onTestFinished.bind(this));
@@ -51,9 +51,8 @@ class Reporter {
       console.log(`Running ${YELLOW_COLOR}${runnableTests.length}${RESET_COLOR} focused tests out of total ${YELLOW_COLOR}${allTests.length}${RESET_COLOR} on ${YELLOW_COLOR}${this._runner.parallel()}${RESET_COLOR} worker(s):\n`);
   }
 
-  _onTerminated(message, error) {
-    this._printTestResults();
-    console.log(`${RED_COLOR}## TERMINATED ##${RESET_COLOR}`);
+  _printTermination(result, message, error) {
+    console.log(`${RED_COLOR}## ${result.toUpperCase()} ##${RESET_COLOR}`);
     console.log('Message:');
     console.log(`  ${RED_COLOR}${message}${RESET_COLOR}`);
     if (error && error.stack) {
@@ -74,8 +73,12 @@ class Reporter {
         description = `${YELLOW_COLOR}SKIPPED${RESET_COLOR}`;
       else if (test.result === 'failed')
         description = `${RED_COLOR}FAILED${RESET_COLOR}`;
+      else if (test.result === 'crashed')
+        description = `${RED_COLOR}CRASHED${RESET_COLOR}`;
       else if (test.result === 'timedout')
         description = `${RED_COLOR}TIMEDOUT${RESET_COLOR}`;
+      else if (test.result === 'terminated')
+        description = `${MAGENTA_COLOR}TERMINATED${RESET_COLOR}`;
       else
         description = `${RED_COLOR}<UNKNOWN>${RESET_COLOR}`;
       console.log(`  ${workerId}: [${description}] ${test.fullName} (${formatTestLocation(test)})`);
@@ -83,10 +86,11 @@ class Reporter {
     process.exitCode = 2;
   }
 
-  _onFinished() {
+  _onFinished({result, terminationError, terminationMessage}) {
     this._printTestResults();
-    const failedTests = this._runner.failedTests();
-    process.exitCode = failedTests.length > 0 ? 1 : 0;
+    if (terminationMessage || terminationError)
+      this._printTermination(result, terminationMessage, terminationError);
+    process.exitCode = result === 'ok' ? 0 : 1;
   }
 
   _printTestResults() {
@@ -102,6 +106,9 @@ class Reporter {
         if (test.result === 'timedout') {
           console.log('  Message:');
           console.log(`    ${RED_COLOR}Timeout Exceeded ${this._runner.timeout()}ms${RESET_COLOR}`);
+        } else if (test.result === 'crashed') {
+          console.log('  Message:');
+          console.log(`    ${RED_COLOR}CRASHED${RESET_COLOR}`);
         } else {
           console.log('  Message:');
           console.log(`    ${RED_COLOR}${test.error.message || test.error}${RESET_COLOR}`);
@@ -189,6 +196,10 @@ class Reporter {
       ++this._testCounter;
       if (test.result === 'ok') {
         console.log(`${this._testCounter}) ${GREEN_COLOR}[ OK ]${RESET_COLOR} ${test.fullName} (${formatTestLocation(test)})`);
+      } else if (test.result === 'terminated') {
+        console.log(`${this._testCounter}) ${MAGENTA_COLOR}[ TERMINATED ]${RESET_COLOR} ${test.fullName} (${formatTestLocation(test)})`);
+      } else if (test.result === 'crashed') {
+        console.log(`${this._testCounter}) ${RED_COLOR}[ CRASHED ]${RESET_COLOR} ${test.fullName} (${formatTestLocation(test)})`);
       } else if (test.result === 'skipped') {
         console.log(`${this._testCounter}) ${YELLOW_COLOR}[SKIP]${RESET_COLOR} ${test.fullName} (${formatTestLocation(test)})`);
       } else if (test.result === 'failed') {
@@ -214,6 +225,10 @@ class Reporter {
         process.stdout.write(`${YELLOW_COLOR}*${RESET_COLOR}`);
       else if (test.result === 'failed')
         process.stdout.write(`${RED_COLOR}F${RESET_COLOR}`);
+      else if (test.result === 'crashed')
+        process.stdout.write(`${RED_COLOR}C${RESET_COLOR}`);
+      else if (test.result === 'terminated')
+        process.stdout.write(`${MAGENTA_COLOR}.${RESET_COLOR}`);
       else if (test.result === 'timedout')
         process.stdout.write(`${RED_COLOR}T${RESET_COLOR}`);
     }
