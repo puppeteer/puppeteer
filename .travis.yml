@@ -19,7 +19,7 @@ before_install:
 script:
   - 'if [ "$NODE8" = "true" ]; then npm run lint; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run coverage; fi'
-  - 'if [ "$NODE8" = "true" ]; then npm run funit; fi'
+  - 'if [ "$FIREFOX" = "true" ]; then npm run funit; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run test-doclint; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run test-types; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run bundle; fi'
@@ -31,6 +31,11 @@ jobs:
       env:
         - NODE8=true
         - FLAKINESS_DASHBOARD_NAME="Travis Chromium (node8 + linux)"
+        - FLAKINESS_DASHBOARD_BUILD_URL="${TRAVIS_JOB_WEB_URL}"
+    - node_js: "8.11.3"
+      env:
+        - FIREFOX=true
+        - FLAKINESS_DASHBOARD_NAME="Travis Firefox (node8 + linux)"
         - FLAKINESS_DASHBOARD_BUILD_URL="${TRAVIS_JOB_WEB_URL}"
     - node_js: "6.12.3"
       env:
