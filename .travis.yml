@@ -32,7 +32,7 @@ jobs:
     - node_js: "8.11.3"
       env:
         - NODE8=true
-        - FLAKINESS_DASHBOARD_NAME=Travis Chromium (node6 + linux)
+        - FLAKINESS_DASHBOARD_NAME=Travis Chromium (node8 + linux)
     - node_js: "6.12.3"
       env:
         - NODE6=true
