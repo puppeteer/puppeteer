@@ -26,11 +26,17 @@ script:
   - 'if [ "$NODE8" = "true" ]; then npm run unit-bundle; fi'
   - 'if [ "$NODE6" = "true" ]; then npm run unit-node6; fi'
 jobs:
+  env:
+    - FLAKINESS_DASHBOARD_BUILD_URL=${TRAVIS_JOB_WEB_URL}
   include:
     - node_js: "8.11.3"
-      env: NODE8=true
+      env:
+        - NODE8=true
+        - FLAKINESS_DASHBOARD_NAME=Travis Chromium (node6 + linux)
     - node_js: "6.12.3"
-      env: NODE6=true
+      env:
+        - NODE6=true
+        - FLAKINESS_DASHBOARD_NAME=Travis Chromium (node6 + linux)
 before_deploy: "npm run apply-next-version"
 deploy:
   provider: npm
