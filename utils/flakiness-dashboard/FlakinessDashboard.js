@@ -48,6 +48,10 @@ class FlakinessDashboard {
     this._build._tests.push(test);
   }
 
+  setBuildResult(result) {
+    this._build._result = result;
+  }
+
   async uploadAndCleanup() {
     console.log(`\n${YELLOW_COLOR}=== UPLOADING Flakiness Dashboard${RESET_COLOR}`);
     const startTimestamp = Date.now();
@@ -99,6 +103,7 @@ async function saveBuildToDashboard(dashboardPath, build) {
     throw new Error('Unrecognized dashboard format!');
   data.builds.push({
     version: DASHBOARD_VERSION,
+    result: build._result,
     timestamp: build._timestamp,
     url: build._url,
     commit: build._commit,
@@ -115,6 +120,7 @@ class Build {
     this._url = url;
     this._commit = commit;
     this._tests = tests;
+    this._result = undefined;
   }
 }
 

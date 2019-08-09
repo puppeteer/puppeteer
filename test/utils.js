@@ -215,7 +215,10 @@ const utils = module.exports = {
         result: test.result,
       });
     });
-    testRunner.on('finished', () => dashboard.uploadAndCleanup());
+    testRunner.on('finished', async({result}) => {
+      dashboard.setBuildResult(result);
+      await dashboard.uploadAndCleanup();
+    });
 
     function generateTestIDs(testRunner) {
       const testIds = new Map();
