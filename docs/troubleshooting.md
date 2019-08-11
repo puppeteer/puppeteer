@@ -321,27 +321,27 @@ The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/communit
 Example Dockerfile:
 
 ```Dockerfile
-FROM node:10-alpine
+FROM alpine:edge
 
-# Installs latest Chromium (73) package.
-RUN apk update && apk upgrade && \
-    echo @edge http://nl.alpinelinux.org/alpine/edge/community >> /etc/apk/repositories && \
-    echo @edge http://nl.alpinelinux.org/alpine/edge/main >> /etc/apk/repositories && \
-    apk add --no-cache \
-      chromium@edge=~73.0.3683.103 \
-      nss@edge \
-      freetype@edge \
-      freetype-dev@edge \
-      harfbuzz@edge \
-      ttf-freefont@edge
+# Installs latest Chromium (76) package.
+RUN apk add --no-cache \
+      chromium \
+      nss \
+      freetype \
+      freetype-dev \
+      harfbuzz \
+      ca-certificates \
+      ttf-freefont \
+      nodejs \
+      yarn 
 
 ...
 
 # Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
-# Puppeteer v1.12.2 works with Chromium 73.
-RUN yarn add puppeteer@1.12.2
+# Puppeteer v1.17.0 works with Chromium 76.
+RUN yarn add puppeteer@1.17.0
 
 # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
