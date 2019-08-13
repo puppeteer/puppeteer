@@ -116,6 +116,7 @@ function runScript(scriptPath, revisionInfo) {
   const child = fork(scriptPath, [], {
     stdio: ['inherit', 'inherit', 'inherit', 'ipc'],
     env: {
+      ...process.env,
       PUPPETEER_EXECUTABLE_PATH: revisionInfo.executablePath,
     },
   });
