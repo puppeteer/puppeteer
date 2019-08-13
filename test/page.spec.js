@@ -903,7 +903,8 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(await page.evaluate(() => __injected)).toBe(35);
     });
 
-    it_fails_ffox('should throw when added with content to the CSP page', async({page, server}) => {
+    // @see https://github.com/GoogleChrome/puppeteer/issues/4840
+    xit('should throw when added with content to the CSP page', async({page, server}) => {
       await page.goto(server.PREFIX + '/csp.html');
       let error = null;
       await page.addScriptTag({ content: 'window.__injected = 35;' }).catch(e => error = e);
