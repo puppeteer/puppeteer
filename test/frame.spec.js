@@ -208,4 +208,25 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(frame1).not.toBe(frame2);
     });
   });
+
+  describe_fails_ffox('Frame.asElementHandle', function() {
+    it('should work', async({page,server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      const elementHandle = await page.$('#frame1');
+      const frame = await elementHandle.contentFrame();
+      const elementFromFrame = await frame.asElement();
+
+      expect(elementFromFrame._protocolValue).toBe(elementHandle._protocolValue);
+
+      const frameFromNewHandle = await elementFromFrame.contentFrame();
+      expect(frameFromNewHandle).toBe(frame);
+    });
+
+    it('should return null for mainFrame().asElemenHandle()', async({page,server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      expect(await page.mainFrame().asElement()).toBe(null);
+    });
+  });
 };

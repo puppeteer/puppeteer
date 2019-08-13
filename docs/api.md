@@ -229,6 +229,7 @@
   * [frame.waitForNavigation([options])](#framewaitfornavigationoptions)
   * [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
   * [frame.waitForXPath(xpath[, options])](#framewaitforxpathxpath-options)
+  * [frame.asElement()](#frameaselement)
 - [class: ExecutionContext](#class-executioncontext)
   * [executionContext.evaluate(pageFunction[, ...args])](#executioncontextevaluatepagefunction-args)
   * [executionContext.evaluateHandle(pageFunction[, ...args])](#executioncontextevaluatehandlepagefunction-args)
@@ -2911,6 +2912,9 @@ puppeteer.launch().then(async browser => {
   await browser.close();
 });
 ```
+
+#### frame.asElement()
+- returns: <[Promise]<?[ElementHandle]>> Resolves to the element handle representing frame node. The method will return null for the main frame.
 
 ### class: ExecutionContext
 
