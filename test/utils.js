@@ -19,6 +19,8 @@ const path = require('path');
 const {FlakinessDashboard} = require('../utils/flakiness-dashboard');
 const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ? path.join(__dirname, '..') : path.join(__dirname, '..', '..');
 
+const COVERAGE_TESTSUITE_NAME = '**API COVERAGE**';
+
 /**
  * @param {Map<string, boolean>} apiCoverage
  * @param {Object} events
@@ -57,7 +59,7 @@ const utils = module.exports = {
     const coverage = new Map();
     for (const [className, classType] of Object.entries(api))
       traceAPICoverage(coverage, events, className, classType);
-    testRunner.describe('COVERAGE', () => {
+    testRunner.describe(COVERAGE_TESTSUITE_NAME, () => {
       testRunner.it('should call all API methods', () => {
         const missingMethods = [];
         for (const method of coverage.keys()) {
@@ -203,7 +205,7 @@ const utils = module.exports = {
     testRunner.on('testfinished', test => {
       // Do not report tests from COVERAGE testsuite.
       // They don't bring much value to us.
-      if (test.fullName.startsWith('COVERAGE'))
+      if (test.fullName.includes(COVERAGE_TESTSUITE_NAME))
         return;
       const testpath = test.location.filePath.substring(utils.projectRoot().length);
       const url = `https://github.com/GoogleChrome/puppeteer/blob/${sha}/${testpath}#L${test.location.lineNumber}`;
