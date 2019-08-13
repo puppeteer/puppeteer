@@ -255,7 +255,7 @@ module.exports.addTests = function({testRunner, expect}) {
       const a = await page.evaluate(() => Array(100 * 1024 * 1024 + 1).join('a'));
       expect(a.length).toBe(100 * 1024 * 1024);
     });
-    fit('should throw error with detailed information on exception inside promise ', async({page, server}) => {
+    it('should throw error with detailed information on exception inside promise ', async({page, server}) => {
       let error = 'did not catch error';
       await page.evaluate(() => new Promise(() => {
         does_not_exist.click();
