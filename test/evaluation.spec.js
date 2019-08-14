@@ -256,11 +256,11 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(a.length).toBe(100 * 1024 * 1024);
     });
     it('should throw error with detailed information on exception inside promise ', async({page, server}) => {
-      let error = 'did not catch error';
+      let error = null;
       await page.evaluate(() => new Promise(() => {
-        does_not_exist.click();
+        throw new Error('Error in promise');
       })).catch(e => error = e);
-      expect(error.message).toContain('does_not_exist');
+      expect(error.message).toContain('Error in promise');
     });
   });
 
