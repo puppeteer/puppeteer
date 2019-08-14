@@ -86,7 +86,8 @@ module.exports.addTests = function({testRunner, expect, puppeteer, defaultBrowse
       await rmAsync(userDataDir).catch(e => {});
       expect(cookie).toBe('foo=true');
     });
-    it('OOPIF: should report google.com frame', async({server}) => {
+    // TODO: Support OOOPIF. @see https://github.com/GoogleChrome/puppeteer/issues/2548
+    xit('OOPIF: should report google.com frame', async({server}) => {
       // https://google.com is isolated by default in Chromium embedder.
       const browser = await puppeteer.launch(headfulOptions);
       const page = await browser.newPage();
@@ -114,6 +115,15 @@ module.exports.addTests = function({testRunner, expect, puppeteer, defaultBrowse
       // We have to interact with a page so that 'beforeunload' handlers
       // fire.
       await page.click('body');
+      await browser.close();
+    });
+    it('should open devtools when "devtools: true" option is given', async({server}) => {
+      const browser = await puppeteer.launch({...headfulOptions, devtools: true});
+      const context = await browser.createIncognitoBrowserContext();
+      await Promise.all([
+        context.newPage(),
+        context.waitForTarget(target => target.url().startsWith('devtools://')),
+      ]);
       await browser.close();
     });
   });
