@@ -206,6 +206,7 @@
   * [frame.$x(expression)](#framexexpression)
   * [frame.addScriptTag(options)](#frameaddscripttagoptions)
   * [frame.addStyleTag(options)](#frameaddstyletagoptions)
+  * [frame.asElement()](#frameaselement)
   * [frame.childFrames()](#framechildframes)
   * [frame.click(selector[, options])](#frameclickselector-options)
   * [frame.content()](#framecontent)
@@ -229,7 +230,6 @@
   * [frame.waitForNavigation([options])](#framewaitfornavigationoptions)
   * [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
   * [frame.waitForXPath(xpath[, options])](#framewaitforxpathxpath-options)
-  * [frame.asElement()](#frameaselement)
 - [class: ExecutionContext](#class-executioncontext)
   * [executionContext.evaluate(pageFunction[, ...args])](#executioncontextevaluatepagefunction-args)
   * [executionContext.evaluateHandle(pageFunction[, ...args])](#executioncontextevaluatehandlepagefunction-args)
@@ -2572,6 +2572,9 @@ Adds a `<script>` tag into the page with the desired url or content.
 
 Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
 
+#### frame.asElement()
+- returns: <[Promise]<?[ElementHandle]>> Resolves to the element handle representing frame node. The method will return null for the main frame.
+
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
 
@@ -2912,9 +2915,6 @@ puppeteer.launch().then(async browser => {
   await browser.close();
 });
 ```
-
-#### frame.asElement()
-- returns: <[Promise]<?[ElementHandle]>> Resolves to the element handle representing frame node. The method will return null for the main frame.
 
 ### class: ExecutionContext
 
