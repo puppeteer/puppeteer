@@ -35,7 +35,7 @@ module.exports.addTests = function({testRunner, expect}) {
       const result = await page.evaluate(() => 7 * 3);
       expect(result).toBe(21);
     });
-    (bigint ? it : xit)('should transfer BigInt', async({page, server}) => {
+    (bigint ? it_fails_ffox : xit)('should transfer BigInt', async({page, server}) => {
       const result = await page.evaluate(a => a, BigInt(42));
       expect(result).toBe(BigInt(42));
     });
@@ -143,7 +143,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(result).not.toBe(object);
       expect(result).toEqual(object);
     });
-    (bigint ? it : xit)('should return BigInt', async({page, server}) => {
+    (bigint ? it_fails_ffox : xit)('should return BigInt', async({page, server}) => {
       const result = await page.evaluate(() => BigInt(42));
       expect(result).toBe(BigInt(42));
     });
