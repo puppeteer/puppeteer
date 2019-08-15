@@ -88,7 +88,7 @@ class Page extends EventEmitter {
   async cookies(...urls) {
     const connection = Connection.fromSession(this._session);
     return (await connection.send('Browser.getCookies', {
-      browserContextId: this._target._context._browserContextId,
+      browserContextId: this._target._context._browserContextId || undefined,
       urls: urls.length ? urls : [this.url()]
     })).cookies;
   }
@@ -113,7 +113,7 @@ class Page extends EventEmitter {
 
     const connection = Connection.fromSession(this._session);
     await connection.send('Browser.deleteCookies', {
-      browserContextId: this._target._context._browserContextId,
+      browserContextId: this._target._context._browserContextId || undefined,
       cookies: items,
     });
   }
@@ -136,7 +136,7 @@ class Page extends EventEmitter {
     if (items.length) {
       const connection = Connection.fromSession(this._session);
       await connection.send('Browser.setCookies', {
-        browserContextId: this._target._context._browserContextId,
+        browserContextId: this._target._context._browserContextId || undefined,
         cookies: items
       });
     }
