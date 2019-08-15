@@ -118,11 +118,11 @@ module.exports.addTests = function({testRunner, expect, puppeteer, defaultBrowse
       await browser.close();
     });
     it('should open devtools when "devtools: true" option is given', async({server}) => {
-      const browser = await puppeteer.launch({...headfulOptions, devtools: true});
+      const browser = await puppeteer.launch(Object.assign({devtools: true}, headfulOptions));
       const context = await browser.createIncognitoBrowserContext();
       await Promise.all([
         context.newPage(),
-        context.waitForTarget(target => target.url().startsWith('devtools://')),
+        context.waitForTarget(target => target.url().includes('devtools://')),
       ]);
       await browser.close();
     });
