@@ -84,6 +84,23 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await browser.close();
       });
     });
+    describe('Browser.close', function() {
+      it_fails_ffox('should terminate network waiters', async({context, server}) => {
+        const browser = await puppeteer.launch(defaultBrowserOptions);
+        const remote = await puppeteer.connect({browserWSEndpoint: browser.wsEndpoint()});
+        const newPage = await remote.newPage();
+        const results = await Promise.all([
+          newPage.waitForRequest(server.EMPTY_PAGE).catch(e => e),
+          newPage.waitForResponse(server.EMPTY_PAGE).catch(e => e),
+          browser.close()
+        ]);
+        for (let i = 0; i < 2; i++) {
+          const message = results[i].message;
+          expect(message).toContain('Target closed');
+          expect(message).not.toContain('Timeout');
+        }
+      });
+    });
     describe('Puppeteer.launch', function() {
       it('should reject all promises when browser is closed', async() => {
         const browser = await puppeteer.launch(defaultBrowserOptions);
