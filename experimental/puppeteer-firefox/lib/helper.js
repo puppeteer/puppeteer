@@ -121,9 +121,11 @@ class Helper {
    * @param {!NodeJS.EventEmitter} emitter
    * @param {(string|symbol)} eventName
    * @param {function} predicate
+   * @param {number} timeout
+   * @param {!Promise<!Error>} abortPromise
    * @return {!Promise}
    */
-  static waitForEvent(emitter, eventName, predicate, timeout) {
+  static async waitForEvent(emitter, eventName, predicate, timeout, abortPromise) {
     let eventTimeout, resolveCallback, rejectCallback;
     const promise = new Promise((resolve, reject) => {
       resolveCallback = resolve;
@@ -132,12 +134,10 @@ class Helper {
     const listener = Helper.addEventListener(emitter, eventName, event => {
       if (!predicate(event))
         return;
-      cleanup();
       resolveCallback(event);
     });
     if (timeout) {
       eventTimeout = setTimeout(() => {
-        cleanup();
         rejectCallback(new TimeoutError('Timeout exceeded while waiting for event'));
       }, timeout);
     }
@@ -145,7 +145,16 @@ class Helper {
       Helper.removeEventListeners([listener]);
       clearTimeout(eventTimeout);
     }
-    return promise;
+    const result = await Promise.race([promise, abortPromise]).then(r => {
+      cleanup();
+      return r;
+    }, e => {
+      cleanup();
+      throw e;
+    });
+    if (result instanceof Error)
+      throw result;
+    return result;
   }
 
   /**

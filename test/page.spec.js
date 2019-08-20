@@ -77,7 +77,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await newPage.close();
       expect(newPage.isClosed()).toBe(true);
     });
-    it_fails_ffox('should terminate network waiters', async({context, server}) => {
+    it('should terminate network waiters', async({context, server}) => {
       const newPage = await context.newPage();
       const results = await Promise.all([
         newPage.waitForRequest(server.EMPTY_PAGE).catch(e => e),
