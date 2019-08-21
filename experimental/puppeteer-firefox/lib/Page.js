@@ -243,7 +243,7 @@ class Page extends EventEmitter {
 
   _sessionClosePromise() {
     if (!this._disconnectPromise)
-      this._disconnectPromise = this._target._isClosedPromise.then(() => new Error('Target closed'));
+      this._disconnectPromise = new Promise(fulfill => this._session.once(Events.JugglerSession.Disconnected, () => fulfill(new Error('Target closed'))));
     return this._disconnectPromise;
   }
 

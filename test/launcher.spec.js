@@ -85,7 +85,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       });
     });
     describe('Browser.close', function() {
-      it_fails_ffox('should terminate network waiters', async({context, server}) => {
+      it('should terminate network waiters', async({context, server}) => {
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const remote = await puppeteer.connect({browserWSEndpoint: browser.wsEndpoint()});
         const newPage = await remote.newPage();
