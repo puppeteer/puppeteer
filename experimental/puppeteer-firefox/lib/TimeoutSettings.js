@@ -47,6 +47,9 @@ class TimeoutSettings {
     return DEFAULT_TIMEOUT;
   }
 
+  /**
+   * @return {number}
+   */
   timeout() {
     if (this._defaultTimeout !== null)
       return this._defaultTimeout;

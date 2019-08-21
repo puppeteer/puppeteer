@@ -77,6 +77,19 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await newPage.close();
       expect(newPage.isClosed()).toBe(true);
     });
+    it('should terminate network waiters', async({context, server}) => {
+      const newPage = await context.newPage();
+      const results = await Promise.all([
+        newPage.waitForRequest(server.EMPTY_PAGE).catch(e => e),
+        newPage.waitForResponse(server.EMPTY_PAGE).catch(e => e),
+        newPage.close()
+      ]);
+      for (let i = 0; i < 2; i++) {
+        const message = results[i].message;
+        expect(message).toContain('Target closed');
+        expect(message).not.toContain('Timeout');
+      }
+    });
   });
 
   describe('Page.Events.Load', function() {

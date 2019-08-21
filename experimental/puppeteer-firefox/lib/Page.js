@@ -241,6 +241,12 @@ class Page extends EventEmitter {
     }
   }
 
+  _sessionClosePromise() {
+    if (!this._disconnectPromise)
+      this._disconnectPromise = new Promise(fulfill => this._session.once(Events.JugglerSession.Disconnected, () => fulfill(new Error('Target closed'))));
+    return this._disconnectPromise;
+  }
+
   /**
    * @param {(string|Function)} urlOrPredicate
    * @param {!{timeout?: number}=} options
@@ -256,7 +262,7 @@ class Page extends EventEmitter {
       if (typeof urlOrPredicate === 'function')
         return !!(urlOrPredicate(request));
       return false;
-    }, timeout);
+    }, timeout, this._sessionClosePromise());
   }
 
   /**
@@ -274,7 +280,7 @@ class Page extends EventEmitter {
       if (typeof urlOrPredicate === 'function')
         return !!(urlOrPredicate(response));
       return false;
-    }, timeout);
+    }, timeout, this._sessionClosePromise());
   }
 
   /**
