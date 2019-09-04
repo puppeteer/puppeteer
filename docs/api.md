@@ -237,6 +237,8 @@
 - [class: JSHandle](#class-jshandle)
   * [jsHandle.asElement()](#jshandleaselement)
   * [jsHandle.dispose()](#jshandledispose)
+  * [jsHandle.evaluate(pageFunction[, ...args])](#jshandleevaluatepagefunction-args)
+  * [jsHandle.evaluateHandle(pageFunction[, ...args])](#jshandleevaluatehandlepagefunction-args)
   * [jsHandle.executionContext()](#jshandleexecutioncontext)
   * [jsHandle.getProperties()](#jshandlegetproperties)
   * [jsHandle.getProperty(propertyName)](#jshandlegetpropertypropertyname)
@@ -253,6 +255,8 @@
   * [elementHandle.click([options])](#elementhandleclickoptions)
   * [elementHandle.contentFrame()](#elementhandlecontentframe)
   * [elementHandle.dispose()](#elementhandledispose)
+  * [elementHandle.evaluate(pageFunction[, ...args])](#elementhandleevaluatepagefunction-args)
+  * [elementHandle.evaluateHandle(pageFunction[, ...args])](#elementhandleevaluatehandlepagefunction-args)
   * [elementHandle.executionContext()](#elementhandleexecutioncontext)
   * [elementHandle.focus()](#elementhandlefocus)
   * [elementHandle.getProperties()](#elementhandlegetproperties)
@@ -262,6 +266,7 @@
   * [elementHandle.jsonValue()](#elementhandlejsonvalue)
   * [elementHandle.press(key[, options])](#elementhandlepresskey-options)
   * [elementHandle.screenshot([options])](#elementhandlescreenshotoptions)
+  * [elementHandle.select(...values)](#elementhandleselectvalues)
   * [elementHandle.tap()](#elementhandletap)
   * [elementHandle.toString()](#elementhandletostring)
   * [elementHandle.type(text[, options])](#elementhandletypetext-options)
@@ -3030,6 +3035,34 @@ Returns either `null` or the object handle itself, if the object handle is an in
 
 The `jsHandle.dispose` method stops referencing the element handle.
 
+#### jsHandle.evaluate(pageFunction[, ...args])
+- `pageFunction` <[function]\([Object]\)> Function to be evaluated in browser context
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
+
+This method passes this handle as the first argument to `pageFunction`.
+
+If `pageFunction` returns a [Promise], then `handle.evaluate` would wait for the promise to resolve and return its value.
+
+Examples:
+```js
+const tweetHandle = await page.$('.tweet .retweets');
+expect(await tweetHandle.evaluate(node => node.innerText)).toBe('10');
+```
+
+#### jsHandle.evaluateHandle(pageFunction[, ...args])
+- `pageFunction` <[function]|[string]> Function to be evaluated
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[JSHandle]>> Promise which resolves to the return value of `pageFunction` as in-page object (JSHandle)
+
+This method passes this handle as the first argument to `pageFunction`.
+
+The only difference between `jsHandle.evaluate` and `jsHandle.evaluateHandle` is that `executionContext.evaluateHandle` returns in-page object (JSHandle).
+
+If the function passed to the `jsHandle.evaluateHandle` returns a [Promise], then `jsHandle.evaluateHandle` would wait for the promise to resolve and return its value.
+
+See [Page.evaluateHandle](#pageevaluatehandlepagefunction-args) for more details.
+
 #### jsHandle.executionContext()
 - returns: <[ExecutionContext]>
 
@@ -3190,6 +3223,34 @@ If the element is detached from DOM, the method throws an error.
 
 The `elementHandle.dispose` method stops referencing the element handle.
 
+#### elementHandle.evaluate(pageFunction[, ...args])
+- `pageFunction` <[function]\([Object]\)> Function to be evaluated in browser context
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
+
+This method passes this handle as the first argument to `pageFunction`.
+
+If `pageFunction` returns a [Promise], then `handle.evaluate` would wait for the promise to resolve and return its value.
+
+Examples:
+```js
+const tweetHandle = await page.$('.tweet .retweets');
+expect(await tweetHandle.evaluate(node => node.innerText)).toBe('10');
+```
+
+#### elementHandle.evaluateHandle(pageFunction[, ...args])
+- `pageFunction` <[function]|[string]> Function to be evaluated
+- `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
+- returns: <[Promise]<[JSHandle]>> Promise which resolves to the return value of `pageFunction` as in-page object (JSHandle)
+
+This method passes this handle as the first argument to `pageFunction`.
+
+The only difference between `evaluateHandle.evaluate` and `evaluateHandle.evaluateHandle` is that `executionContext.evaluateHandle` returns in-page object (JSHandle).
+
+If the function passed to the `evaluateHandle.evaluateHandle` returns a [Promise], then `evaluateHandle.evaluateHandle` would wait for the promise to resolve and return its value.
+
+See [Page.evaluateHandle](#pageevaluatehandlepagefunction-args) for more details.
+
 #### elementHandle.executionContext()
 - returns: <[ExecutionContext]>
 
@@ -3256,6 +3317,18 @@ If `key` is a single character and no modifier keys besides `Shift` are being he
 
 This method scrolls element into view if needed, and then uses [page.screenshot](#pagescreenshotoptions) to take a screenshot of the element.
 If the element is detached from DOM, the method throws an error.
+
+#### elementHandle.select(...values)
+- `...values` <...[string]> Values of options to select. If the `<select>` has the `multiple` attribute, all values are considered, otherwise only the first one is taken into account.
+- returns: <[Promise]<[Array]<[string]>>> An array of option values that have been successfully selected.
+
+Triggers a `change` and `input` event once all the provided options have been selected.
+If there's no `<select>` element matching `selector`, the method throws an error.
+
+```js
+handle.select('blue'); // single selection
+handle.select('red', 'green', 'blue'); // multiple selections
+```
 
 #### elementHandle.tap()
 - returns: <[Promise]> Promise which resolves when the element is successfully tapped. Promise gets rejected if the element is detached from DOM.
