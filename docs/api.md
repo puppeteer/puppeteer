@@ -206,7 +206,6 @@
   * [frame.$x(expression)](#framexexpression)
   * [frame.addScriptTag(options)](#frameaddscripttagoptions)
   * [frame.addStyleTag(options)](#frameaddstyletagoptions)
-  * [frame.asElement()](#frameaselement)
   * [frame.childFrames()](#framechildframes)
   * [frame.click(selector[, options])](#frameclickselector-options)
   * [frame.content()](#framecontent)
@@ -218,6 +217,7 @@
   * [frame.hover(selector)](#framehoverselector)
   * [frame.isDetached()](#frameisdetached)
   * [frame.name()](#framename)
+  * [frame.ownerElement()](#frameownerelement)
   * [frame.parentFrame()](#frameparentframe)
   * [frame.select(selector, ...values)](#frameselectselector-values)
   * [frame.setContent(html[, options])](#framesetcontenthtml-options)
@@ -2572,9 +2572,6 @@ Adds a `<script>` tag into the page with the desired url or content.
 
 Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
 
-#### frame.asElement()
-- returns: <[Promise]<?[ElementHandle]>> Resolves to the element handle representing frame node. The method will return null for the main frame.
-
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
 
@@ -2719,6 +2716,9 @@ Returns frame's name attribute as specified in the tag.
 If the name is empty, returns the id attribute instead.
 
 > **NOTE** This value is calculated once when the frame is created, and will not update if the attribute is changed later.
+
+#### frame.ownerElement()
+- returns: <[Promise]<?[ElementHandle]>> Resolves to the element handle representing frame node. The method will return null for the main frame.
 
 #### frame.parentFrame()
 - returns: <?[Frame]> Parent frame, if any. Detached frames and main frames return `null`.

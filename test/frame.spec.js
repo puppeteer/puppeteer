@@ -209,20 +209,20 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
-  describe_fails_ffox('Frame.asElement', function() {
+  describe_fails_ffox('Frame.ownerElement', function() {
     it('should work', async({page,server}) => {
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const handle = await page.$('#frame1');
       const frame = await handle.contentFrame();
 
-      expect(await page.evaluate((f1, f2) => f1 === f2, handle, await frame.asElement())).toBe(true);
+      expect(await page.evaluate((f1, f2) => f1 === f2, handle, await frame.ownerElement())).toBe(true);
     });
 
-    it('should return null for mainFrame().asElement()', async({page,server}) => {
+    it('should return null for mainFrame().ownerElement()', async({page,server}) => {
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      expect(await page.mainFrame().asElement()).toBe(null);
+      expect(await page.mainFrame().ownerElement()).toBe(null);
     });
   });
 };
