@@ -432,6 +432,25 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       ]);
       expect(request.headers['foo']).toBe('bar');
     });
+    // @see https://github.com/GoogleChrome/puppeteer/issues/1893
+    it('should amend duplicate HTTP headers', async({page, server}) => {
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        const headers = Object.assign({}, request.headers());
+        headers['foo'] = 'a\nb';
+        request.continue({ headers });
+      });
+      await page.goto(server.EMPTY_PAGE);
+      const [request] = await Promise.all([
+        server.waitForRequest('/sleep.zzz'),
+        page.evaluate(() => fetch('/sleep.zzz'))
+      ]);
+      // not ideal. Previous behavior would hang indefinitely.
+      // Fetch.continueRequest doesn't seem to be respecting the multiple headers, and just takes the last value
+      // expect(request.headers['foo']).toBe(['a', 'b']);
+      expect(request.headers['foo']).toBe('b');
+
+    });
     it_fails_ffox('should redirect in a way non-observable to page', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
