@@ -568,6 +568,41 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(headers.foo).toBe('true');
       expect(await page.evaluate(() => document.body.textContent)).toBe('Yo, page!');
     });
+    // @see https://github.com/GoogleChrome/puppeteer/issues/1893
+    it('should treat a header value with a line break as a list of headers', async({page, server}) => {
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        request.respond({
+          status: 200,
+          headers: {
+            'foo': 'bar\nbaz'
+          },
+          body: 'Yo, Page!'
+        });
+      });
+      const response = await page.goto(server.EMPTY_PAGE);
+      const headers = response.headers();
+      expect(headers.foo).toBe('bar\nbaz');
+    });
+    // @see https://github.com/GoogleChrome/puppeteer/issues/1893
+    it('should set multiple cookies from a set-cookie header with a line break', async({page, server}) => {
+      await page.setRequestInterception(true);
+      page.on('request', request => {
+        request.respond({
+          status: 200,
+          headers: {
+            'set-cookie': 'a=1\nb=2'
+          },
+          body: 'Yo, Page!'
+        });
+      });
+      await page.goto(server.EMPTY_PAGE);
+      const cookies = await page.cookies();
+      const a = cookies.filter(c => c.name === 'a').map(c => c.value)[0];
+      const b = cookies.filter(c => c.name === 'b').map(c => c.value)[0];
+      expect(a).toBe('1');
+      expect(b).toBe('2');
+    });
   });
 
 };
