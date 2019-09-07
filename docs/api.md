@@ -3494,7 +3494,7 @@ ResourceType will be one of the following: `document`, `stylesheet`, `image`, `m
 #### request.respond(response)
 - `response` <[Object]> Response that will fulfill this request
   - `status` <[number]> Response status code, defaults to `200`.
-  - `headers` <[Object]> Optional response headers. Header values will be converted to a string.
+  - `headers` <[Object]> Optional response headers. Header values will be converted to a string. To set multiple values for the same header, separate them with a line break. For example, for setting multiple cookies: `'Set-Cookie': 'a=1\nb=2'`.
   - `contentType` <[string]> If set, equals to setting `Content-Type` response header
   - `body` <[string]|[Buffer]> Optional response body
 - returns: <[Promise]>
