@@ -238,7 +238,7 @@ See [Debugging Tips](README.md#debugging-tips) in the readme.
 Releasing to npm consists of the following phases:
 
 1. Source Code: mark a release.
-    1. Bump `package.json` version following the SEMVER rules and send a PR titled `'chore: mark version vXXX.YYY.ZZZ'` ([example](https://github.com/GoogleChrome/puppeteer/commit/808bf8e5582482a1d849ff22a51e52024810905c)).
+    1. Bump `package.json` version following the SEMVER rules, run `npm run doc` to update the docs accordingly, and send a PR titled `'chore: mark version vXXX.YYY.ZZZ'` ([example](https://github.com/GoogleChrome/puppeteer/commit/808bf8e5582482a1d849ff22a51e52024810905c)).
     2. Make sure the PR passes **all checks**.
         - **WHY**: there are linters in place that help to avoid unnecessary errors, e.g. [like this](https://github.com/GoogleChrome/puppeteer/pull/2446)
     3. Merge the PR.
