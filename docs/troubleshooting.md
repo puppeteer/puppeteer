@@ -191,7 +191,27 @@ Tips-n-tricks:
   proper sandboxing
 - [xvfb](https://en.wikipedia.org/wiki/Xvfb) should be launched in order to run Chromium in non-headless mode (e.g. to test Chrome Extensions)
 
-To sum up, your `.travis.yml` might look like this:
+To sum up, your `.travis.yml` might look like this with Bionic:
+
+```yml
+language: node_js
+dist: bionic
+services:
+  - xvfb
+notifications:
+  email: false
+cache:
+  directories:
+    - node_modules
+# allow headful tests
+before_install:
+  # Enable user namespace cloning
+  - "sysctl kernel.unprivileged_userns_clone=1"
+  # Launch XVFB
+  - "export DISPLAY=:99.0"
+```
+
+and this with Trusty:
 
 ```yml
 language: node_js
