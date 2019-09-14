@@ -242,13 +242,14 @@ Releasing to npm consists of the following phases:
     2. Make sure the PR passes **all checks**.
         - **WHY**: there are linters in place that help to avoid unnecessary errors, e.g. [like this](https://github.com/GoogleChrome/puppeteer/pull/2446)
     3. Merge the PR.
-    4. Once merged, publish release notes using the "create new tag" option.
+    4. Once merged, publish the release notes using [GitHub's "draft new release tag" option](https://github.com/GoogleChrome/puppeteer/releases/new).
         - **NOTE**: tag names are prefixed with `'v'`, e.g. for version `1.4.0` the tag is `v1.4.0`.
+        - For the "raw notes" section, use `git log --pretty="%h - %s" v1.19.0..HEAD`.
 2. Publish `puppeteer` to npm.
     1. On your local machine, pull from [upstream](https://github.com/GoogleChrome/puppeteer) and make sure the last commit is the one just merged.
     2. Run `git status` and make sure there are no untracked files.
         - **WHY**: this is to avoid adding unnecessary files to the npm package.
-    3. Run [`pkgfiles`](https://www.npmjs.com/package/pkgfiles) to make sure you don't publish anything unnecessary.
+    3. Run [`npx pkgfiles`](https://www.npmjs.com/package/pkgfiles) to make sure you don't publish anything unnecessary.
     4. Run `npm publish`. This publishes the `puppeteer` package.
 3. Publish `puppeteer-core` to npm.
     1. Run `./utils/prepare_puppeteer_core.js`. The script changes the name inside `package.json` to `puppeteer-core`.
@@ -256,7 +257,7 @@ Releasing to npm consists of the following phases:
     3. Run `git reset --hard` to reset the changes to `package.json`.
 4. Source Code: mark post-release.
     1. Bump `package.json` version to `-post` version and send a PR titled `'chore: bump version to vXXX.YYY.ZZZ-post'` ([example](https://github.com/GoogleChrome/puppeteer/commit/d02440d1eac98028e29f4e1cf55413062a259156))
-        - **NOTE**: make sure to update the "released APIs" section in the top of `docs/api.md`.
+        - **NOTE**: make sure to update the "released APIs" section in the top of `docs/api.md` by running `npm run doc`.
         - **NOTE**: no other commits should be landed in-between release commit and bump commit.
 
 ## Updating npm dist tags
