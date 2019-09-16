@@ -64,7 +64,7 @@
   "browser": {
     "./lib/BrowserFetcher.js": false,
     "./node6/lib/Puppeteer": false,
-    "ws": "./utils/browser/WebSocket",
+    "ws": "./node_modules/ws",
     "fs": false,
     "child_process": false,
     "rimraf": false,
