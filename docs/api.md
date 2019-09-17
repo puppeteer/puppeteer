@@ -109,6 +109,7 @@
   * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
   * [page.emulate(options)](#pageemulateoptions)
   * [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
+  * [page.emulateTimezone(timezoneId)](#pageemulatetimezonetimezoneid)
   * [page.evaluate(pageFunction[, ...args])](#pageevaluatepagefunction-args)
   * [page.evaluateHandle(pageFunction[, ...args])](#pageevaluatehandlepagefunction-args)
   * [page.evaluateOnNewDocument(pageFunction[, ...args])](#pageevaluateonnewdocumentpagefunction-args)
@@ -1278,6 +1279,10 @@ List of all available devices is available in the source code: [DeviceDescriptor
 
 #### page.emulateMedia(mediaType)
 - `mediaType` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation.
+- returns: <[Promise]>
+
+#### page.emulateTimezone(timezoneId)
+- `timezoneId` <?[string]> Changes the timezone of the page. See [ICU’s `metaZones.txt`](https://cs.chromium.org/chromium/src/third_party/icu/source/data/misc/metaZones.txt?rcl=faee8bc70570192d82d2978a71e2a615788597d1) for a list of supported timezone IDs. Passing `null` disables timezone emulation.
 - returns: <[Promise]>
 
 #### page.evaluate(pageFunction[, ...args])
