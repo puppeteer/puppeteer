@@ -564,6 +564,18 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       ]);
       expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
     });
+    it('should work with async predicate', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const [response] = await Promise.all([
+        page.waitForResponse(async response => response.url() === server.PREFIX + '/digits/2.png'),
+        page.evaluate(() => {
+          fetch('/digits/1.png');
+          fetch('/digits/2.png');
+          fetch('/digits/3.png');
+        })
+      ]);
+      expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
+    });
     it('should work with no timeout', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
