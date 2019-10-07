@@ -108,7 +108,8 @@
   * [page.coverage](#pagecoverage)
   * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
   * [page.emulate(options)](#pageemulateoptions)
-  * [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
+  * [page.emulateMediaFeatures(features)](#pageemulatemediafeaturesfeatures)
+  * [page.emulateMediaType(type)](#pageemulatemediatypetype)
   * [page.evaluate(pageFunction[, ...args])](#pageevaluatepagefunction-args)
   * [page.evaluateHandle(pageFunction[, ...args])](#pageevaluatehandlepagefunction-args)
   * [page.evaluateOnNewDocument(pageFunction[, ...args])](#pageevaluateonnewdocumentpagefunction-args)
@@ -1276,9 +1277,71 @@ puppeteer.launch().then(async browser => {
 
 List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/lib/DeviceDescriptors.js).
 
-#### page.emulateMedia(mediaType)
-- `mediaType` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation.
+#### page.emulateMediaFeatures(features)
+- `features` <?[Array]<[Object]>> Given an array of media feature objects, emulates CSS media features on the page. Each media feature object must have the following properties:
+  - `name` <[string]> The CSS media feature name. Supported names are `'prefers-colors-scheme'` and `'prefers-reduced-motion'`.
+  - `value` <[string]> The value for the given CSS media feature.
 - returns: <[Promise]>
+
+```js
+await page.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'dark' }]);
+await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches));
+// → true
+await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches));
+// → false
+await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches));
+// → false
+
+await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
+await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches));
+// → true
+await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches));
+// → false
+
+await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
+await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches));
+// → true
+await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches));
+// → false
+
+await page.emulateMediaFeatures([
+  { name: 'prefers-color-scheme', value: 'dark' },
+  { name: 'prefers-reduced-motion', value: 'reduce' },
+]);
+await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches));
+// → true
+await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches));
+// → false
+await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches));
+// → false
+await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches));
+// → true
+await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches));
+// → false
+```
+
+#### page.emulateMediaType(type)
+- `type` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables CSS media emulation.
+- returns: <[Promise]>
+
+```js
+await page.evaluate(() => matchMedia('screen').matches));
+// → true
+await page.evaluate(() => matchMedia('print').matches));
+// → true
+
+await page.emulateMediaType('print');
+await page.evaluate(() => matchMedia('screen').matches));
+// → false
+await page.evaluate(() => matchMedia('print').matches));
+// → true
+
+await page.emulateMediaType(null);
+await page.evaluate(() => matchMedia('screen').matches));
+// → true
+await page.evaluate(() => matchMedia('print').matches));
+// → true
+```
 
 #### page.evaluate(pageFunction[, ...args])
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context

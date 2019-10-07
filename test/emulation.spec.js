@@ -97,21 +97,58 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
     });
   });
 
-  describe('Page.emulateMedia', function() {
+  describe('Page.emulateMediaType', function() {
     it('should work', async({page, server}) => {
-      expect(await page.evaluate(() => window.matchMedia('screen').matches)).toBe(true);
-      expect(await page.evaluate(() => window.matchMedia('print').matches)).toBe(false);
-      await page.emulateMedia('print');
-      expect(await page.evaluate(() => window.matchMedia('screen').matches)).toBe(false);
-      expect(await page.evaluate(() => window.matchMedia('print').matches)).toBe(true);
-      await page.emulateMedia(null);
-      expect(await page.evaluate(() => window.matchMedia('screen').matches)).toBe(true);
-      expect(await page.evaluate(() => window.matchMedia('print').matches)).toBe(false);
+      expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(true);
+      expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
+      await page.emulateMediaType('print');
+      expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(false);
+      expect(await page.evaluate(() => matchMedia('print').matches)).toBe(true);
+      await page.emulateMediaType(null);
+      expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(true);
+      expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
     });
     it('should throw in case of bad argument', async({page, server}) => {
       let error = null;
-      await page.emulateMedia('bad').catch(e => error = e);
+      await page.emulateMediaType('bad').catch(e => error = e);
       expect(error.message).toBe('Unsupported media type: bad');
     });
   });
+
+  describe('Page.emulateMediaFeatures', function() {
+    it('should work', async({page, server}) => {
+      await page.emulateMediaFeatures([
+        { name: 'prefers-reduced-motion', value: 'reduce' },
+      ]);
+      expect(await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(true);
+      expect(await page.evaluate(() => matchMedia('(prefers-reduced-motion: no-preference)').matches)).toBe(false);
+      await page.emulateMediaFeatures([
+        { name: 'prefers-color-scheme', value: 'light' },
+      ]);
+      expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches)).toBe(true);
+      expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches)).toBe(false);
+      expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches)).toBe(false);
+      await page.emulateMediaFeatures([
+        { name: 'prefers-color-scheme', value: 'dark' },
+      ]);
+      expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches)).toBe(true);
+      expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches)).toBe(false);
+      expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches)).toBe(false);
+      await page.emulateMediaFeatures([
+        { name: 'prefers-reduced-motion', value: 'reduce' },
+        { name: 'prefers-color-scheme', value: 'light' },
+      ]);
+      expect(await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(true);
+      expect(await page.evaluate(() => matchMedia('(prefers-reduced-motion: no-preference)').matches)).toBe(false);
+      expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches)).toBe(true);
+      expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches)).toBe(false);
+      expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches)).toBe(false);
+    });
+    it('should throw in case of bad argument', async({page, server}) => {
+      let error = null;
+      await page.emulateMediaFeatures([{ name: 'bad', value: '' }]).catch(e => error = e);
+      expect(error.message).toBe('Unsupported media feature: bad');
+    });
+  });
+
 };
