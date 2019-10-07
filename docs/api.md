@@ -1872,8 +1872,8 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#keyboardpresskey-options).
 
 ```js
-page.type('#mytextarea', 'Hello'); // Types instantly
-page.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
+await page.type('#mytextarea', 'Hello'); // Types instantly
+await page.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
 ```
 
 Shortcut for [page.mainFrame().type(selector, text[, options])](#frametypeselector-text-options).
@@ -2286,8 +2286,8 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#keyboardpresskey-options).
 
 ```js
-page.keyboard.type('Hello'); // Types instantly
-page.keyboard.type('World', {delay: 100}); // Types slower, like a user
+await page.keyboard.type('Hello'); // Types instantly
+await page.keyboard.type('World', {delay: 100}); // Types slower, like a user
 ```
 
 > **NOTE** Modifier keys DO NOT effect `keyboard.type`. Holding down `Shift` will not type the text in upper case.
@@ -2768,8 +2768,8 @@ Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character in t
 To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#keyboardpresskey-options).
 
 ```js
-frame.type('#mytextarea', 'Hello'); // Types instantly
-frame.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
+await frame.type('#mytextarea', 'Hello'); // Types instantly
+await frame.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
 ```
 
 #### frame.url()
@@ -3348,8 +3348,8 @@ Focuses the element, and then sends a `keydown`, `keypress`/`input`, and `keyup`
 To press a special key, like `Control` or `ArrowDown`, use [`elementHandle.press`](#elementhandlepresskey-options).
 
 ```js
-elementHandle.type('Hello'); // Types instantly
-elementHandle.type('World', {delay: 100}); // Types slower, like a user
+await elementHandle.type('Hello'); // Types instantly
+await elementHandle.type('World', {delay: 100}); // Types slower, like a user
 ```
 
 An example of typing into a text field and then submitting the form:
