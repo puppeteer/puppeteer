@@ -245,6 +245,7 @@ Releasing to npm consists of the following phases:
     4. Once merged, publish the release notes using [GitHub's "draft new release tag" option](https://github.com/GoogleChrome/puppeteer/releases/new).
         - **NOTE**: tag names are prefixed with `'v'`, e.g. for version `1.4.0` the tag is `v1.4.0`.
         - For the "raw notes" section, use `git log --pretty="%h - %s" v1.19.0..HEAD`.
+    5. Update the “Releases per Chromium Version” list in [`docs/api.md`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md) to include the new version.
 2. Publish `puppeteer` to npm.
     1. On your local machine, pull from [upstream](https://github.com/GoogleChrome/puppeteer) and make sure the last commit is the one just merged.
     2. Run `git status` and make sure there are no untracked files.
