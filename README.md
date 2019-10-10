@@ -393,7 +393,7 @@ Please note that prerelease may be unstable and contain bugs.
 There are many ways to get help on Puppeteer:
 - [bugtracker](https://github.com/GoogleChrome/puppeteer/issues)
 - [Stack Overflow](https://stackoverflow.com/questions/tagged/puppeteer)
-- [slack channel](https://join.slack.com/t/puppeteer/shared_invite/enQtMzU4MjIyMDA5NTM4LTM1OTdkNDhlM2Y4ZGUzZDdjYjM5ZWZlZGFiZjc4MTkyYTVlYzIzYjU5NDIyNzgyMmFiNDFjN2UzNWU0N2ZhZDc)
+- [slack channel](https://join.slack.com/t/puppeteer/shared_invite/enQtMzU4MjIyMDA5NTM4LWI0YTE0MjM0NWQzYmE2MTRmNjM1ZTBkN2MxNmJmNTIwNTJjMmFhOWFjMGExMDViYjk2YjU2ZmYzMmE1NmExYzc)
 
 Make sure to search these channels before posting your question.
 
