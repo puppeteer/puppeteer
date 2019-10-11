@@ -26,7 +26,7 @@ const mkdtempAsync = helper.promisify(fs.mkdtemp);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 
 module.exports.addTests = function({testRunner, expect, puppeteer, defaultBrowserOptions}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
+  const {describe, xdescribe, fdescribe, it_fails_ffox} = testRunner;
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
@@ -144,6 +144,20 @@ module.exports.addTests = function({testRunner, expect, puppeteer, defaultBrowse
 
       await page1.close();
       await page2.close();
+      await browser.close();
+    });
+  });
+
+  describe('Page.newPage', function() {
+    it_fails_ffox('newPage in background', async() => {
+      const browser = await puppeteer.launch(headfulOptions);
+
+      const pageInFront = await browser.newPage();
+      expect(await pageInFront.evaluate(() => document.visibilityState)).toBe('visible');
+
+      const pageInBackground = await browser.newPage({background: true});
+      expect(await pageInBackground.evaluate(() => document.visibilityState)).toBe('hidden');
+
       await browser.close();
     });
   });

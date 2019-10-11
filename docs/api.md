@@ -47,7 +47,7 @@
   * [browser.defaultBrowserContext()](#browserdefaultbrowsercontext)
   * [browser.disconnect()](#browserdisconnect)
   * [browser.isConnected()](#browserisconnected)
-  * [browser.newPage()](#browsernewpage)
+  * [browser.newPage([options])](#browsernewpageoptions)
   * [browser.pages()](#browserpages)
   * [browser.process()](#browserprocess)
   * [browser.target()](#browsertarget)
@@ -64,7 +64,7 @@
   * [browserContext.clearPermissionOverrides()](#browsercontextclearpermissionoverrides)
   * [browserContext.close()](#browsercontextclose)
   * [browserContext.isIncognito()](#browsercontextisincognito)
-  * [browserContext.newPage()](#browsercontextnewpage)
+  * [browserContext.newPage([options])](#browsercontextnewpageoptions)
   * [browserContext.overridePermissions(origin, permissions)](#browsercontextoverridepermissionsorigin-permissions)
   * [browserContext.pages()](#browsercontextpages)
   * [browserContext.targets()](#browsercontexttargets)
@@ -716,7 +716,9 @@ Disconnects Puppeteer from the browser, but leaves the Chromium process running.
 
 Indicates that the browser is connected.
 
-#### browser.newPage()
+#### browser.newPage([options])
+- `options` <[Object]>
+  - `background` <[boolean]> Defaults to `false`. Whether to run open the new page in background or not.
 - returns: <[Promise]<[Page]>>
 
 Promise which resolves to a new [Page] object. The [Page] is created in a default browser context.
@@ -845,7 +847,9 @@ The default browser context is the only non-incognito browser context.
 
 > **NOTE** the default browser context cannot be closed.
 
-#### browserContext.newPage()
+#### browserContext.newPage([options])
+- `options` <[Object]>
+  - `background` <[boolean]> Defaults to `false`. Whether to run open the new page in background or not.
 - returns: <[Promise]<[Page]>>
 
 Creates a new page in the browser context.
