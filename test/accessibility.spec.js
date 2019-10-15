@@ -71,6 +71,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
           {role: 'textbox', name: 'Input with whitespace', value: '  '},
           {role: 'textbox', name: '', value: 'value only'},
           {role: 'textbox', name: 'placeholder', value: 'and a value'},
+          {role: 'text', name: 'This is a description!'},
           {role: 'textbox', name: 'placeholder', value: 'and a value', description: 'This is a description!'},
           {role: 'combobox', name: '', value: 'First Option', children: [
             {role: 'menuitem', name: 'First Option', selected: true},
