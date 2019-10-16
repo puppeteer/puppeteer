@@ -149,7 +149,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, defaultBrowse
   });
 
   describe('Page.newPage', function() {
-    it_fails_ffox('newPage in background', async() => {
+    it_fails_ffox('newPage in background', async () => {
       const browser = await puppeteer.launch(headfulOptions);
 
       const pageInFront = await browser.newPage();

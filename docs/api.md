@@ -718,7 +718,7 @@ Indicates that the browser is connected.
 
 #### browser.newPage([options])
 - `options` <[Object]>
-  - `background` <[boolean]> Defaults to `false`. Whether to run open the new page in background or not.
+  - `background` <[boolean]> Defaults to `false`. Whether to run open the new page in the background or not.
 - returns: <[Promise]<[Page]>>
 
 Promise which resolves to a new [Page] object. The [Page] is created in a default browser context.
@@ -849,7 +849,7 @@ The default browser context is the only non-incognito browser context.
 
 #### browserContext.newPage([options])
 - `options` <[Object]>
-  - `background` <[boolean]> Defaults to `false`. Whether to run open the new page in background or not.
+  - `background` <[boolean]> Defaults to `false`. Whether to run open the new page in the background or not.
 - returns: <[Promise]<[Page]>>
 
 Creates a new page in the browser context.
