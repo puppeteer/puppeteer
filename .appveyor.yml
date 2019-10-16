@@ -1,6 +1,6 @@
 environment:
   matrix:
-    - nodejs_version: "8.11.3"
+    - nodejs_version: "8.16.2"
       FLAKINESS_DASHBOARD_NAME: Appveyor Chromium (Win + node8)
   FLAKINESS_DASHBOARD_PASSWORD:
     secure: g66jP+j6C+hkXLutBV9fdxB5fRJgcQQzy93SgQzXUmcCl/RjkJwnzyHvX0xfCVnv
