@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 
-let asyncawait = true;
-try {
-  new Function('async function test(){await 1}');
-} catch (error) {
-  asyncawait = false;
-}
-
-if (asyncawait) {
-  const {helper} = require('./lib/helper');
-  const api = require('./lib/api');
-  for (const className in api) {
-    // Puppeteer-web excludes certain classes from bundle, e.g. BrowserFetcher.
-    if (typeof api[className] === 'function')
-      helper.installAsyncStackHooks(api[className]);
-  }
+const {helper} = require('./lib/helper');
+const api = require('./lib/api');
+for (const className in api) {
+  // Puppeteer-web excludes certain classes from bundle, e.g. BrowserFetcher.
+  if (typeof api[className] === 'function')
+    helper.installAsyncStackHooks(api[className]);
 }
 
 // If node does not support async await, use the compiled version.
-const Puppeteer = asyncawait ? require('./lib/Puppeteer') : require('./node6/lib/Puppeteer');
+const Puppeteer = require('./lib/Puppeteer');
 const packageJson = require('./package.json');
 const preferredRevision = packageJson.puppeteer.chromium_revision;
 const isPuppeteerCore = packageJson.name === 'puppeteer-core';

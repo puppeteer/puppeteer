@@ -233,9 +233,10 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         const browser = await puppeteer.launch(options);
         const pages = await browser.pages();
         expect(pages.length).toBe(1);
-        if (pages[0].url() !== server.EMPTY_PAGE)
-          await pages[0].waitForNavigation();
-        expect(pages[0].url()).toBe(server.EMPTY_PAGE);
+        const page = pages[0];
+        if (page.url() !== server.EMPTY_PAGE)
+          await page.waitForNavigation();
+        expect(page.url()).toBe(server.EMPTY_PAGE);
         await browser.close();
       });
       it('should set the default viewport', async() => {

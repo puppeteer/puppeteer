@@ -4,7 +4,6 @@ const {Dialog} = require('./Dialog');
 const {TimeoutError} = require('./Errors');
 const fs = require('fs');
 const mime = require('mime');
-const util = require('util');
 const EventEmitter = require('events');
 const {createHandle} = require('./JSHandle');
 const {Events} = require('./Events');
@@ -15,7 +14,7 @@ const {TimeoutSettings} = require('./TimeoutSettings');
 const {NavigationWatchdog} = require('./NavigationWatchdog');
 const {Accessibility} = require('./Accessibility');
 
-const writeFileAsync = util.promisify(fs.writeFile);
+const writeFileAsync = helper.promisify(fs.writeFile);
 
 class Page extends EventEmitter {
   /**
