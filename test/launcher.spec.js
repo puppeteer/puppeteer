@@ -16,11 +16,12 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const {helper} = require('../lib/helper');
-const rmAsync = helper.promisify(require('rimraf'));
-const mkdtempAsync = helper.promisify(fs.mkdtemp);
-const readFileAsync = helper.promisify(fs.readFile);
-const statAsync = helper.promisify(fs.stat);
+const util = require('util');
+
+const rmAsync = util.promisify(require('rimraf'));
+const mkdtempAsync = util.promisify(fs.mkdtemp);
+const readFileAsync = util.promisify(fs.readFile);
+const statAsync = util.promisify(fs.stat);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const utils = require('./utils');
 
