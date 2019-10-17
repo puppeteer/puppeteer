@@ -97,6 +97,12 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
     });
   });
 
+  describe('Page.emulateMedia', function() {
+    fit('should be an alias for Page.emulateMediaType', async({page, server}) => {
+      expect(page.emulateMedia).toEqual(page.emulateMediaType);
+    });
+  });
+
   describe('Page.emulateMediaType', function() {
     it('should work', async({page, server}) => {
       expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(true);
