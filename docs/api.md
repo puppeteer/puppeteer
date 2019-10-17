@@ -108,6 +108,7 @@
   * [page.coverage](#pagecoverage)
   * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
   * [page.emulate(options)](#pageemulateoptions)
+  * [page.emulateMedia(type)](#pageemulatemediatype)
   * [page.emulateMediaFeatures(features)](#pageemulatemediafeaturesfeatures)
   * [page.emulateMediaType(type)](#pageemulatemediatypetype)
   * [page.evaluate(pageFunction[, ...args])](#pageevaluatepagefunction-args)
@@ -1276,6 +1277,12 @@ puppeteer.launch().then(async browser => {
 ```
 
 List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/lib/DeviceDescriptors.js).
+
+#### page.emulateMedia(type)
+- `type` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables CSS media emulation.
+- returns: <[Promise]>
+
+**Note:** This method is deprecated, and only kept around as an alias for backwards compatibility. Use [`page.emulateMediaType(type)`](#pageemulatemediamediatypetype) instead.
 
 #### page.emulateMediaFeatures(features)
 - `features` <?[Array]<[Object]>> Given an array of media feature objects, emulates CSS media features on the page. Each media feature object must have the following properties:
