@@ -9,6 +9,8 @@
 - [Running Puppeteer on Travis CI](#running-puppeteer-on-travis-ci)
 - [Running Puppeteer on CircleCI](#running-puppeteer-on-circleci)
 - [Running Puppeteer in Docker](#running-puppeteer-in-docker)
+  * [Running on node:\<version\>](#running-on-nodeversion)
+  * [Running on node:slim](#running-on-nodeslim)
   * [Running on Alpine](#running-on-alpine)
     - [Tips](#tips)
 - [Running Puppeteer in the cloud](#running-puppeteer-in-the-cloud)
@@ -256,7 +258,68 @@ The bundled Chromium that Puppeteer installs is missing the necessary
 shared library dependencies.
 
 To fix, you'll need to install the missing dependencies and the
-latest Chromium package in your Dockerfile:
+latest Chromium package in your Dockerfile.
+
+### Running on `node:<version>`
+
+This a quite common case: a node project that has `puppeteer` as dependency in its `package.json`. 
+
+It also works if your project is a package inside a _monorepo_ and you use e.g. `lerna` - just uncomment some lines in that case. 
+
+This is the example Dockerfile (it uses `yarn`, replace with e.g `npm` if it's your package manager):
+
+```Dockerfile
+# change the node version as needed
+FROM node:10
+
+# uncomment this step if you use lerna
+# RUN yarn global add lerna
+
+# install missing deps
+RUN apt-get update && \
+    apt-get -y install xvfb gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 \
+      libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 \
+      libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 \
+      libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 \
+      libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /usr/src/app
+
+COPY package.json .
+COPY yarn.lock .
+# uncomment this step if you use lerna 
+# COPY lerna.json .
+
+COPY src/ src/
+# if you use lerna, replace this step with:
+# COPY packages/YOUR_PROJECT/ packages/YOUR_PROJECT/
+
+RUN yarn install
+# if you use lerna, replace this step with:
+# RUN lerna bootstrap
+
+ENV TEMP_DIR=/usr/src/app/tmp
+ENV LOG_DIR=/usr/log
+
+# assuming "start" is your package.json script, change as needed:
+CMD ["yarn", "start"] 
+# if you use lerna, replace this step with:
+# CMD ["yarn", "--cwd", "packages/YOUR_PROJECT", "start"]
+```
+
+With this setup you'll be able to use puppeteer this way:
+
+```js
+const browser = await puppeteer.launch({
+  args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+});
+```
+
+⚠️ Please consider [Setting Up Chrome Linux Sandbox](#setting-up-chrome-linux-sandbox).
+
+
+### Running on `node:slim`
 
 ```Dockerfile
 FROM node:10-slim
@@ -315,6 +378,8 @@ There's a full example at https://github.com/ebidel/try-puppeteer that shows
 how to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
 ### Running on Alpine
+
+⚠️ **This setup is not suited for CI** because, even with version pinning, `apk` will remove old packages and your build will fail randomly (see https://github.com/GoogleChrome/puppeteer/issues/4823).
 
 The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 77, which corresponds to [Puppeteer v1.19.0](https://github.com/GoogleChrome/puppeteer/releases/tag/v1.19.0).
 
