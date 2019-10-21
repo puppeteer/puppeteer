@@ -85,7 +85,6 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(coverage.length).toBe(1);
       const entry = coverage[0];
       expect(entry.url).toContain('unused.html');
-      // Broken because of https://bugs.chromium.org/p/v8/issues/detail?id=9857
       expect(entry.ranges.length).toBe(0);
     });
     it('should work with conditionals', async function({page, server}) {
