@@ -173,7 +173,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(await page.evaluate(() => date.toString())).toBe('Sat Nov 19 2016 19:12:34 GMT+0100 (Central European Standard Time)');
     });
 
-    fit('should throw for invalid timezone IDs', async({page, server}) => {
+    it('should throw for invalid timezone IDs', async({page, server}) => {
       let error = null;
       await page.emulateTimezone('Foo/Bar').catch(e => error = e);
       expect(error.message).toBe('Invalid timezone ID: Foo/Bar');
