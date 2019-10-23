@@ -159,7 +159,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
 
   describe_fails_ffox('Page.emulateTimezone', function() {
     it('should work', async({page, server}) => {
-      const date = new Date(1479579154987);
+      page.evaluate(() => {
+        globalThis.date = new Date(1479579154987);
+      });
       await page.emulateTimezone('America/Jamaica');
       expect(await page.evaluate(() => date.toString())).toBe('Sat Nov 19 2016 13:12:34 GMT-0500 (Eastern Standard Time)');
 
