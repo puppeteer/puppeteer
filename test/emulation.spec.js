@@ -121,7 +121,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
     });
   });
 
-  describe('Page.emulateMediaFeatures', function() {
+  describe_fails_ffox('Page.emulateMediaFeatures', function() {
     it('should work', async({page, server}) => {
       await page.emulateMediaFeatures([
         { name: 'prefers-reduced-motion', value: 'reduce' },

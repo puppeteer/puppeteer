@@ -150,11 +150,11 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {?string} mediaType
+   * @param {?string} type
    */
-  async emulateMedia(mediaType) {
-    assert(mediaType === 'screen' || mediaType === 'print' || mediaType === null, 'Unsupported media type: ' + mediaType);
-    await this._session.send('Page.setEmulatedMedia', {media: mediaType || ''});
+  async emulateMediaType(type) {
+    assert(type === 'screen' || type === 'print' || type === null, 'Unsupported media type: ' + type);
+    await this._session.send('Page.setEmulatedMedia', {media: type || ''});
   }
 
   /**
@@ -746,6 +746,9 @@ class Page extends EventEmitter {
     return this._closed;
   }
 }
+
+// Expose alias for deprecated method.
+Page.prototype.emulateMedia = Page.prototype.emulateMediaType;
 
 class ConsoleMessage {
   /**
