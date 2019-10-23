@@ -137,7 +137,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       server.setRoute('/empty.html', (req, res) => { });
       let error = null;
       await page.goto(server.PREFIX + '/empty.html', {timeout: 1}).catch(e => error = e);
-      expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
+      expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should fail when exceeding default maximum navigation timeout', async({page, server}) => {
@@ -146,7 +146,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       let error = null;
       page.setDefaultNavigationTimeout(1);
       await page.goto(server.PREFIX + '/empty.html').catch(e => error = e);
-      expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
+      expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should fail when exceeding default maximum timeout', async({page, server}) => {
@@ -155,7 +155,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       let error = null;
       page.setDefaultTimeout(1);
       await page.goto(server.PREFIX + '/empty.html').catch(e => error = e);
-      expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
+      expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should prioritize default navigation timeout over default timeout', async({page, server}) => {
@@ -165,7 +165,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       page.setDefaultTimeout(0);
       page.setDefaultNavigationTimeout(1);
       await page.goto(server.PREFIX + '/empty.html').catch(e => error = e);
-      expect(error.message).toContain('Navigation Timeout Exceeded: 1ms');
+      expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should disable timeout when its set to 0', async({page, server}) => {

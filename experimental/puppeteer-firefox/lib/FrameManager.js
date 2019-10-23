@@ -171,7 +171,7 @@ class Frame {
     } = options;
     const normalizedWaitUntil = normalizeWaitUntil(waitUntil);
 
-    const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
+    const timeoutError = new TimeoutError('Navigation timeout of ' + timeout + ' ms exceeded');
     let timeoutCallback;
     const timeoutPromise = new Promise(resolve => timeoutCallback = resolve.bind(null, timeoutError));
     const timeoutId = timeout ? setTimeout(timeoutCallback, timeout) : null;
@@ -228,7 +228,7 @@ class Frame {
     if (!navigationId)
       return;
 
-    const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
+    const timeoutError = new TimeoutError('Navigation timeout of ' + timeout + ' ms exceeded');
     let timeoutCallback;
     const timeoutPromise = new Promise(resolve => timeoutCallback = resolve.bind(null, timeoutError));
     const timeoutId = timeout ? setTimeout(timeoutCallback, timeout) : null;
