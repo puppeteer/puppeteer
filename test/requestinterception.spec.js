@@ -146,7 +146,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       });
       expect(status).toBe(200);
     });
-    it('should works with customizing referer headers', async({page, server}) => {
+    it('should work with custom referer headers', async({page, server}) => {
       await page.setExtraHTTPHeaders({ 'referer': server.EMPTY_PAGE });
       await page.setRequestInterception(true);
       page.on('request', request => {

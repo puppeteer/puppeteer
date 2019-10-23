@@ -73,6 +73,7 @@ beforeEach(async({server, httpsServer}) => {
 });
 
 const CHROMIUM_NO_COVERAGE = new Set([
+  'page.emulateMedia', // Legacy alias for `page.emulateMediaType`.
 ]);
 
 if (process.env.BROWSER === 'firefox') {

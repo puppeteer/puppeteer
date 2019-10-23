@@ -150,11 +150,11 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {?string} mediaType
+   * @param {?string} type
    */
-  async emulateMedia(mediaType) {
-    assert(mediaType === 'screen' || mediaType === 'print' || mediaType === null, 'Unsupported media type: ' + mediaType);
-    await this._session.send('Page.setEmulatedMedia', {media: mediaType || ''});
+  async emulateMediaType(type) {
+    assert(type === 'screen' || type === 'print' || type === null, 'Unsupported media type: ' + type);
+    await this._session.send('Page.setEmulatedMedia', {media: type || ''});
   }
 
   /**
@@ -446,7 +446,7 @@ class Page extends EventEmitter {
     if (!navigationId)
       return null;
 
-    const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
+    const timeoutError = new TimeoutError('Navigation timeout of ' + timeout + ' ms exceeded');
     let timeoutCallback;
     const timeoutPromise = new Promise(resolve => timeoutCallback = resolve.bind(null, timeoutError));
     const timeoutId = timeout ? setTimeout(timeoutCallback, timeout) : null;
@@ -479,7 +479,7 @@ class Page extends EventEmitter {
     if (!navigationId)
       return null;
 
-    const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
+    const timeoutError = new TimeoutError('Navigation timeout of ' + timeout + ' ms exceeded');
     let timeoutCallback;
     const timeoutPromise = new Promise(resolve => timeoutCallback = resolve.bind(null, timeoutError));
     const timeoutId = timeout ? setTimeout(timeoutCallback, timeout) : null;
@@ -512,7 +512,7 @@ class Page extends EventEmitter {
     if (!navigationId)
       return null;
 
-    const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
+    const timeoutError = new TimeoutError('Navigation timeout of ' + timeout + ' ms exceeded');
     let timeoutCallback;
     const timeoutPromise = new Promise(resolve => timeoutCallback = resolve.bind(null, timeoutError));
     const timeoutId = timeout ? setTimeout(timeoutCallback, timeout) : null;
@@ -746,6 +746,9 @@ class Page extends EventEmitter {
     return this._closed;
   }
 }
+
+// Expose alias for deprecated method.
+Page.prototype.emulateMedia = Page.prototype.emulateMediaType;
 
 class ConsoleMessage {
   /**

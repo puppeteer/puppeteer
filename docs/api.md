@@ -108,7 +108,9 @@
   * [page.coverage](#pagecoverage)
   * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
   * [page.emulate(options)](#pageemulateoptions)
-  * [page.emulateMedia(mediaType)](#pageemulatemediamediatype)
+  * [page.emulateMedia(type)](#pageemulatemediatype)
+  * [page.emulateMediaFeatures(features)](#pageemulatemediafeaturesfeatures)
+  * [page.emulateMediaType(type)](#pageemulatemediatypetype)
   * [page.emulateTimezone(timezoneId)](#pageemulatetimezonetimezoneid)
   * [page.evaluate(pageFunction[, ...args])](#pageevaluatepagefunction-args)
   * [page.evaluateHandle(pageFunction[, ...args])](#pageevaluatehandlepagefunction-args)
@@ -1277,9 +1279,77 @@ puppeteer.launch().then(async browser => {
 
 List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/lib/DeviceDescriptors.js).
 
-#### page.emulateMedia(mediaType)
-- `mediaType` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables media emulation.
+#### page.emulateMedia(type)
+- `type` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables CSS media emulation.
 - returns: <[Promise]>
+
+**Note:** This method is deprecated, and only kept around as an alias for backwards compatibility. Use [`page.emulateMediaType(type)`](#pageemulatemediatypetype) instead.
+
+#### page.emulateMediaFeatures(features)
+- `features` <?[Array]<[Object]>> Given an array of media feature objects, emulates CSS media features on the page. Each media feature object must have the following properties:
+  - `name` <[string]> The CSS media feature name. Supported names are `'prefers-colors-scheme'` and `'prefers-reduced-motion'`.
+  - `value` <[string]> The value for the given CSS media feature.
+- returns: <[Promise]>
+
+```js
+await page.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'dark' }]);
+await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches));
+// → true
+await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches));
+// → false
+await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches));
+// → false
+
+await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
+await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches));
+// → true
+await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches));
+// → false
+
+await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
+await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches));
+// → true
+await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches));
+// → false
+
+await page.emulateMediaFeatures([
+  { name: 'prefers-color-scheme', value: 'dark' },
+  { name: 'prefers-reduced-motion', value: 'reduce' },
+]);
+await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches));
+// → true
+await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches));
+// → false
+await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches));
+// → false
+await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches));
+// → true
+await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches));
+// → false
+```
+
+#### page.emulateMediaType(type)
+- `type` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables CSS media emulation.
+- returns: <[Promise]>
+
+```js
+await page.evaluate(() => matchMedia('screen').matches));
+// → true
+await page.evaluate(() => matchMedia('print').matches));
+// → true
+
+await page.emulateMediaType('print');
+await page.evaluate(() => matchMedia('screen').matches));
+// → false
+await page.evaluate(() => matchMedia('print').matches));
+// → true
+
+await page.emulateMediaType(null);
+await page.evaluate(() => matchMedia('screen').matches));
+// → true
+await page.evaluate(() => matchMedia('print').matches));
+// → true
+```
 
 #### page.emulateTimezone(timezoneId)
 - `timezoneId` <?[string]> Changes the timezone of the page. See [ICU’s `metaZones.txt`](https://cs.chromium.org/chromium/src/third_party/icu/source/data/misc/metaZones.txt?rcl=faee8bc70570192d82d2978a71e2a615788597d1) for a list of supported timezone IDs. Passing `null` disables timezone emulation.
