@@ -1306,12 +1306,6 @@ await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches
 await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches));
 // → false
 
-await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
-await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches));
-// → true
-await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches));
-// → false
-
 await page.emulateMediaFeatures([
   { name: 'prefers-color-scheme', value: 'dark' },
   { name: 'prefers-reduced-motion', value: 'reduce' },
