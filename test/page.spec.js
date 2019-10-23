@@ -18,13 +18,6 @@ const path = require('path');
 const utils = require('./utils');
 const {waitEvent} = utils;
 
-let asyncawait = true;
-try {
-  new Function('async function foo() {await 1}');
-} catch (e) {
-  asyncawait = false;
-}
-
 module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHROME}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
@@ -101,7 +94,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  (asyncawait ? describe : xdescribe)('Async stacks', () => {
+  describe('Async stacks', () => {
     it('should work', async({page, server}) => {
       server.setRoute('/empty.html', (req, res) => {
         res.statusCode = 204;

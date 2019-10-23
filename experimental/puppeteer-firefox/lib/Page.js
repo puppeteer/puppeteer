@@ -446,7 +446,7 @@ class Page extends EventEmitter {
     if (!navigationId)
       return null;
 
-    const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
+    const timeoutError = new TimeoutError('Navigation timeout of ' + timeout + ' ms exceeded');
     let timeoutCallback;
     const timeoutPromise = new Promise(resolve => timeoutCallback = resolve.bind(null, timeoutError));
     const timeoutId = timeout ? setTimeout(timeoutCallback, timeout) : null;
@@ -479,7 +479,7 @@ class Page extends EventEmitter {
     if (!navigationId)
       return null;
 
-    const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
+    const timeoutError = new TimeoutError('Navigation timeout of ' + timeout + ' ms exceeded');
     let timeoutCallback;
     const timeoutPromise = new Promise(resolve => timeoutCallback = resolve.bind(null, timeoutError));
     const timeoutId = timeout ? setTimeout(timeoutCallback, timeout) : null;
@@ -512,7 +512,7 @@ class Page extends EventEmitter {
     if (!navigationId)
       return null;
 
-    const timeoutError = new TimeoutError('Navigation Timeout Exceeded: ' + timeout + 'ms');
+    const timeoutError = new TimeoutError('Navigation timeout of ' + timeout + ' ms exceeded');
     let timeoutCallback;
     const timeoutPromise = new Promise(resolve => timeoutCallback = resolve.bind(null, timeoutError));
     const timeoutId = timeout ? setTimeout(timeoutCallback, timeout) : null;

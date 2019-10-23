@@ -16,13 +16,6 @@
 
 const utils = require('./utils');
 
-let asyncawait = true;
-try {
-  new Function('async function foo() {await 1}');
-} catch (e) {
-  asyncawait = false;
-}
-
 module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
   const {describe, xdescribe, fdescribe} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
@@ -378,7 +371,7 @@ module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
       await page.setContent(`<div class='zombo'>anything</div>`);
       expect(await page.evaluate(x => x.textContent, await waitForSelector)).toBe('anything');
     });
-    (asyncawait ? it : xit)('should have correct stack trace for timeout', async({page, server}) => {
+    it('should have correct stack trace for timeout', async({page, server}) => {
       let error;
       await page.waitForSelector('.zombo', {timeout: 10}).catch(e => error = e);
       expect(error.stack).toContain('waittask.spec.js');

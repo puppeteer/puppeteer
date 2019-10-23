@@ -221,13 +221,13 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(spawnargs.indexOf(defaultArgs[2])).toBe(-1);
         await browser.close();
       });
-      it_fails_ffox('should have default url when launching browser', async function() {
+      it_fails_ffox('should have default URL when launching browser', async function() {
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const pages = (await browser.pages()).map(page => page.url());
         expect(pages).toEqual(['about:blank']);
         await browser.close();
       });
-      it_fails_ffox('should have custom url when launching browser', async function({server}) {
+      it_fails_ffox('should have custom URL when launching browser', async function({server}) {
         const options = Object.assign({}, defaultBrowserOptions);
         options.args = [server.EMPTY_PAGE].concat(options.args || []);
         const browser = await puppeteer.launch(options);
