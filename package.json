@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "2.0.0",
+  "version": "2.0.0-post",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "main": "index.js",
   "repository": "github:GoogleChrome/puppeteer",
@@ -21,7 +21,6 @@
     "doc": "node utils/doclint/cli.js",
     "coverage": "cross-env COVERAGE=true npm run unit",
     "tsc": "tsc -p .",
-    "prepublishOnly": "npm run build",
     "apply-next-version": "node utils/apply_next_version.js",
     "bundle": "npx browserify -r ./index.js:puppeteer -o utils/browser/puppeteer-web.js",
     "test-types": "node utils/doclint/generate_types && npx -p typescript@2.1 tsc -p utils/doclint/generate_types/test/",

@@ -1,3 +1,6 @@
+.appveyor.yml
+.gitattributes
+
 # exclude all tests
 test
 utils/node6-transform
