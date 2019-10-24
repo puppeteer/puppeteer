@@ -1,11 +1,12 @@
 
-# Puppeteer API <!-- GEN:version -->Tip-Of-Tree<!-- GEN:stop-->
+# Puppeteer API <!-- GEN:version -->v2.0.0<!-- GEN:stop-->
 <!-- GEN:empty-if-release --><!-- GEN:stop -->
 
 - Interactive Documentation: https://pptr.dev
 - API Translations: [中文|Chinese](https://zhaoqize.github.io/puppeteer-api-zh_CN/#/)
 - Troubleshooting: [troubleshooting.md](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md)
 - Releases per Chromium Version:
+  * Chromium 79.0.3942.0 - [Puppeteer v2.0.0](https://github.com/GoogleChrome/puppeteer/blob/v2.0.0/docs/api.md)
   * Chromium 78.0.3882.0 - [Puppeteer v1.20.0](https://github.com/GoogleChrome/puppeteer/blob/v1.20.0/docs/api.md)
   * Chromium 77.0.3803.0 - [Puppeteer v1.19.0](https://github.com/GoogleChrome/puppeteer/blob/v1.19.0/docs/api.md)
   * Chromium 76.0.3803.0 - [Puppeteer v1.17.0](https://github.com/GoogleChrome/puppeteer/blob/v1.17.0/docs/api.md)
