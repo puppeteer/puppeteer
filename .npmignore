@@ -1,13 +1,15 @@
 .appveyor.yml
 .gitattributes
 
+# no longer generated, but old checkouts might still have it
+node6
+
 # exclude all tests
 test
 utils/node6-transform
 
 # exclude internal type definition files
 /lib/*.d.ts
-/node6/lib/*.d.ts
 
 # repeats from .gitignore
 node_modules
