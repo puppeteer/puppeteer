@@ -39,6 +39,19 @@ module.exports.addTests = function({testRunner, expect, product}) {
       });
       expect(screenshot).toBeGolden('screenshot-clip-rect.png');
     });
+    it_fails_ffox('should clip elements to the viewport', async({page, server}) => {
+      await page.setViewport({width: 500, height: 500});
+      await page.goto(server.PREFIX + '/grid.html');
+      const screenshot = await page.screenshot({
+        clip: {
+          x: 50,
+          y: 600,
+          width: 100,
+          height: 100
+        }
+      });
+      expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
+    });
     it('should run in parallel', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/grid.html');
