@@ -321,7 +321,7 @@ The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/communit
 Example Dockerfile:
 
 ```Dockerfile
-FROM alpine:edge
+FROM alpine
 
 # Installs latest Chromium (77) package.
 RUN apk add --no-cache \
