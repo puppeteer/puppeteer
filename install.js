@@ -32,9 +32,10 @@ if (process.env.NPM_PACKAGE_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.e
 }
 
 const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host || process.env.npm_package_config_puppeteer_download_host;
+const downloadPath = process.env.PUPPETEER_DOWNLOAD_PATH || process.env.npm_config_puppeteer_download_path || process.env.npm_package_config_puppeteer_download_path;
 
 const puppeteer = require('./index');
-const browserFetcher = puppeteer.createBrowserFetcher({ host: downloadHost });
+const browserFetcher = puppeteer.createBrowserFetcher({ host: downloadHost, path: downloadPath });
 
 const revision = process.env.PUPPETEER_CHROMIUM_REVISION || process.env.npm_config_puppeteer_chromium_revision || process.env.npm_package_config_puppeteer_chromium_revision
   || require('./package.json').puppeteer.chromium_revision;
@@ -124,4 +125,3 @@ function logPolitely(toBeLogged) {
   if (!logLevelDisplay)
     console.log(toBeLogged);
 }
-
