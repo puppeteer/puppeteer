@@ -42,6 +42,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
         </select>
       </body>`);
 
+      await page.focus('[placeholder="Empty input"]');
       const golden = FFOX ? {
         role: 'document',
         name: 'Accessibility Test',
@@ -81,6 +82,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
     });
     it('should report uninteresting nodes', async function({page}) {
       await page.setContent(`<textarea autofocus>hi</textarea>`);
+      await page.focus('textarea');
       const golden = FFOX ? {
         role: 'entry',
         name: '',
