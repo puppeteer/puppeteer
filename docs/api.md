@@ -718,6 +718,7 @@ Creates a new incognito browser context. This won't share cookies/cache with oth
 Returns the default browser context. The default browser context can not be closed.
 
 #### browser.disconnect()
+- returns: <[Promise]<[void]>>
 
 Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling `disconnect`, the [Browser] object is considered disposed and cannot be used anymore.
 
