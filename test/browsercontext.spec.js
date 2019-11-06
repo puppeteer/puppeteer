@@ -149,7 +149,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       });
       const contexts = remoteBrowser.browserContexts();
       expect(contexts.length).toBe(2);
-      remoteBrowser.disconnect();
+      await remoteBrowser.disconnect();
       await context.close();
     });
   });

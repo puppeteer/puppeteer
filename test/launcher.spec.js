@@ -67,7 +67,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         const page = await remote.newPage();
         const navigationPromise = page.goto(server.PREFIX + '/one-style.html', {timeout: 60000}).catch(e => e);
         await server.waitForRequest('/one-style.css');
-        remote.disconnect();
+        await remote.disconnect();
         const error = await navigationPromise;
         expect(error.message).toBe('Navigation failed because browser has disconnected!');
         await browser.close();
@@ -78,7 +78,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         const remote = await puppeteer.connect({browserWSEndpoint: browser.wsEndpoint()});
         const page = await remote.newPage();
         const watchdog = page.waitForSelector('div', {timeout: 60000}).catch(e => e);
-        remote.disconnect();
+        await remote.disconnect();
         const error = await watchdog;
         expect(error.message).toContain('Protocol error');
         await browser.close();
@@ -283,7 +283,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         });
         const page = await browser.newPage();
         expect(await page.evaluate(() => 7 * 8)).toBe(56);
-        browser.disconnect();
+        await browser.disconnect();
 
         const secondPage = await originalBrowser.newPage();
         expect(await secondPage.evaluate(() => 7 * 6)).toBe(42, 'original browser should still work');
@@ -323,7 +323,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         const browserWSEndpoint = originalBrowser.wsEndpoint();
         const page = await originalBrowser.newPage();
         await page.goto(server.PREFIX + '/frames/nested-frames.html');
-        originalBrowser.disconnect();
+        await originalBrowser.disconnect();
 
         const browser = await puppeteer.connect({browserWSEndpoint});
         const pages = await browser.pages();
