@@ -40,6 +40,7 @@
   * [browserFetcher.revisionInfo(revision)](#browserfetcherrevisioninforevision)
 - [class: Browser](#class-browser)
   * [event: 'disconnected'](#event-disconnected)
+  * [event: 'disconnecting'](#event-disconnecting)
   * [event: 'targetchanged'](#event-targetchanged)
   * [event: 'targetcreated'](#event-targetcreated)
   * [event: 'targetdestroyed'](#event-targetdestroyed)
@@ -658,7 +659,10 @@ const puppeteer = require('puppeteer');
 })();
 ```
 #### event: 'disconnected'
-Emitted when Puppeteer gets disconnected from the Chromium instance. This might happen because of one of the following:
+Emitted when Puppeteer gets disconnected from the Chromium instance.  This happens once [`browser.disconnect`](#browserdisconnect) method completes
+
+#### event: 'disconnecting'
+Emitted when Puppeteer starts disconnecting from the Chromium instance. This might happen because of one of the following:
 - Chromium is closed or crashed
 - The [`browser.disconnect`](#browserdisconnect) method was called
 
