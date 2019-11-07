@@ -387,8 +387,43 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
     });
   });
 
+  describe('Browser.Events.disconnecting', function() {
+    it('should be emitted when browser gets closed, disconnected or underlying websocket gets closed', async() => {
+      const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
+      const browserWSEndpoint = originalBrowser.wsEndpoint();
+      const remoteBrowser1 = await puppeteer.connect({browserWSEndpoint});
+      const remoteBrowser2 = await puppeteer.connect({browserWSEndpoint});
+
+      let disconnectingOriginal = 0;
+      let disconnectingRemote1 = 0;
+      let disconnectingRemote2 = 0;
+      originalBrowser.on('disconnecting', () => ++disconnectingOriginal);
+      remoteBrowser1.on('disconnecting', () => ++disconnectingRemote1);
+      remoteBrowser2.on('disconnecting', () => ++disconnectingRemote2);
+
+      await Promise.all([
+        utils.waitEvent(remoteBrowser2, 'disconnecting'),
+        remoteBrowser2.disconnect(),
+      ]);
+
+      expect(disconnectingOriginal).toBe(0);
+      expect(disconnectingRemote1).toBe(0);
+      expect(disconnectingRemote2).toBe(1);
+
+      await Promise.all([
+        utils.waitEvent(remoteBrowser1, 'disconnecting'),
+        utils.waitEvent(originalBrowser, 'disconnecting'),
+        originalBrowser.close(),
+      ]);
+
+      expect(disconnectingOriginal).toBe(1);
+      expect(disconnectingRemote1).toBe(1);
+      expect(disconnectingRemote2).toBe(1);
+    });
+  });
+
   describe('Browser.Events.disconnected', function() {
-    it('should be emitted when: browser gets closed, disconnected or underlying websocket gets closed', async() => {
+    it('should be emitted after browser gets closed, disconnected or underlying websocket gets closed', async() => {
       const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
       const browserWSEndpoint = originalBrowser.wsEndpoint();
       const remoteBrowser1 = await puppeteer.connect({browserWSEndpoint});
