@@ -66,7 +66,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       });
       const browser = await puppeteer.connect({ browserWSEndpoint: await wsEndPointPromise });
       const promises = [
-        new Promise(resolve => browser.once('disconnected', resolve)),
+        new Promise(resolve => browser.once('disconnecting', resolve)),
         new Promise(resolve => res.on('close', resolve))
       ];
       if (process.platform === 'win32')

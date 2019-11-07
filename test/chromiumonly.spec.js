@@ -84,13 +84,13 @@ module.exports.addLauncherTests = function({testRunner, expect, defaultBrowserOp
         await page.close();
         await browser.close();
       });
-      it('should fire "disconnected" when closing with pipe', async() => {
+      it('should fire "disconnecting" when closing with pipe', async() => {
         const options = Object.assign({pipe: true}, defaultBrowserOptions);
         const browser = await puppeteer.launch(options);
-        const disconnectedEventPromise = new Promise(resolve => browser.once('disconnected', resolve));
+        const disconnectingEventPromise = new Promise(resolve => browser.once('disconnecting', resolve));
         // Emulate user exiting browser.
         browser.process().kill();
-        await disconnectedEventPromise;
+        await disconnectingEventPromise;
       });
     });
 
