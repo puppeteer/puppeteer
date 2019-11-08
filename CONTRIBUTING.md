@@ -199,10 +199,10 @@ npm run unit -- --break-on-failure
 HEADLESS=false npm run unit
 ```
 
-- To run tests with custom Chromium executable:
+- To run tests with custom browser executable:
 
 ```bash
-CHROME=<path-to-executable> npm run unit
+BINARY=<path-to-executable> npm run unit
 ```
 
 - To run tests in slow-mode:
@@ -210,6 +210,13 @@ CHROME=<path-to-executable> npm run unit
 ```bash
 HEADLESS=false SLOW_MO=500 npm run unit
 ```
+
+- To run tests with additional Launcher options:
+
+```bash
+EXTRA_LAUNCH_OPTIONS='{"args": ["--user-data-dir=some/path"], "handleSIGINT": true}' npm run unit
+```
+
 
 - To debug a test, "focus" a test first and then run:
 
