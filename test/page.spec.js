@@ -571,6 +571,63 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
+  describe('Page.waitForNetworkIdle', function() {
+    it('should work', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      let res;
+      const [t1, t2] = await Promise.all([
+        page.waitForNetworkIdle().then(r => {
+          res = r;
+          return Date.now();
+        }),
+        page.evaluate(() => (async() => {
+          // TODO why does this break with local url?
+          const url = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png';
+          await Promise.all([fetch(url, {mode: 'no-cors'}), fetch(url, {mode: 'no-cors'})]);
+          await new Promise(resolve => setTimeout(resolve, 200));
+          await fetch(url, {mode: 'no-cors'});
+          await new Promise(resolve => setTimeout(resolve, 400));
+          await fetch(url, {mode: 'no-cors'});
+        })()).then(() => Date.now())
+      ]);
+      expect(res).toBe(undefined);
+      expect(t1).toBeGreaterThan(t2);
+      expect(t1 - t2).toBeGreaterThanOrEqual(400);
+    });
+    it('should respect timeout', async({page, server}) => {
+      let error = null;
+      await page.waitForNetworkIdle({timeout: 1}).catch(e => error = e);
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+    });
+    it('should respect idleTime', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const [t1, t2] = await Promise.all([
+        page.waitForNetworkIdle({idleTime: 10}).then(() => Date.now()),
+        page.evaluate(() => (async() => {
+          // TODO why does this break with local url?
+          const url = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png';
+          await Promise.all([fetch(url, {mode: 'no-cors'}), fetch(url, {mode: 'no-cors'})]);
+          await new Promise(resolve => setTimeout(resolve, 250));
+        })()).then(() => Date.now())
+      ]);
+      expect(t2).toBeGreaterThan(t1);
+    });
+    it('should work with no timeout', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      const [result] = await Promise.all([
+        page.waitForNetworkIdle({timeout: 0}),
+        page.evaluate(() => setTimeout(() => {
+          // TODO why does this break with local url?
+          const url = 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_150x54dp.png';
+          fetch(url, {mode: 'no-cors'});
+          fetch(url, {mode: 'no-cors'});
+          fetch(url, {mode: 'no-cors'});
+        }, 50))
+      ]);
+      expect(result).toBe(undefined);
+    });
+  });
+
   describe('Page.exposeFunction', function() {
     it('should work', async({page, server}) => {
       await page.exposeFunction('compute', function(a, b) {
