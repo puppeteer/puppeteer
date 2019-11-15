@@ -38,8 +38,8 @@ module.exports.addTests = ({testRunner, product, puppeteerPath}) => {
   let extraLaunchOptions = {};
   try {
     extraLaunchOptions = JSON.parse(process.env.EXTRA_LAUNCH_OPTIONS || '{}');
-  } catch (e) {
-    console.warn(`${YELLOW_COLOR}Error parsing EXTRA_LAUNCH_OPTIONS: ${e.message}. Skipping.${RESET_COLOR}`);
+  } catch (error) {
+    console.warn(`${YELLOW_COLOR}Error parsing EXTRA_LAUNCH_OPTIONS: ${error.message}. Skipping.${RESET_COLOR}`);
   }
 
   const defaultBrowserOptions = Object.assign({
@@ -54,9 +54,9 @@ module.exports.addTests = ({testRunner, product, puppeteerPath}) => {
   if (defaultBrowserOptions.executablePath) {
     console.warn(`${YELLOW_COLOR}WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}${RESET_COLOR}`);
   } else {
-    const path = puppeteer.executablePath();
-    if (!fs.existsSync(path))
-      throw new Error(`Browser is not downloaded at ${path}. Run 'npm install' and try to re-run tests`);
+    const executablePath = puppeteer.executablePath();
+    if (!fs.existsSync(executablePath))
+      throw new Error(`Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`);
   }
 
   const suffix = JUGGLER ? 'firefox' : product.toLowerCase();
