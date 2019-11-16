@@ -69,8 +69,8 @@ declare global {
     }
   }
 }
-// empty export to keep file a module
-export {}
+
+export default Protocol;
 `;
   const outputPath = path.join(__dirname, '..', '..', 'lib', 'protocol.d.ts');
   require('fs').writeFileSync(outputPath, output);
