@@ -252,7 +252,7 @@ Releasing to npm consists of the following phases:
     1. On your local machine, pull from [upstream](https://github.com/GoogleChrome/puppeteer) and make sure the last commit is the one just merged.
     2. Run `git status` and make sure there are no untracked files.
         - **WHY**: this is to avoid adding unnecessary files to the npm package.
-    3. Run `yarn` to make sure the latest `lib/protocol.d.ts` is generated.
+    3. Run `npm install` to make sure the latest `lib/protocol.d.ts` is generated.
     4. Run [`npx pkgfiles`](https://www.npmjs.com/package/pkgfiles) to make sure you don't publish anything unnecessary.
     5. Run `npm publish`. This publishes the `puppeteer` package.
 3. Publish `puppeteer-core` to npm.
