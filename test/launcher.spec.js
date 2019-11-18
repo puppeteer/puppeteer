@@ -246,8 +246,8 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
           timeout: expectedTimeout
         });
         const originalProto = Browser.prototype.waitForTarget;
-		let resTimeout = 0;
-		// function() because we want Browser's 'this'
+        let resTimeout = 0;
+        // function() because we want Browser's 'this'
         Browser.prototype.waitForTarget = async function (predicate, options) {
           resTimeout = options.timeout;
           await originalProto.call(this, predicate, options);
