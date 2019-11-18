@@ -16,6 +16,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const {Browser} = require('../lib/Browser');
 const {helper} = require('../lib/helper');
 const rmAsync = helper.promisify(require('rimraf'));
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
@@ -237,6 +238,23 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         if (page.url() !== server.EMPTY_PAGE)
           await page.waitForNavigation();
         expect(page.url()).toBe(server.EMPTY_PAGE);
+        await browser.close();
+      });
+      it('should pass the timeout parameter to browser.waitForTarget', async () => {
+        const expectedTimeout = 100000;
+        const options = Object.assign({}, defaultBrowserOptions, {
+          timeout: expectedTimeout
+        });
+        const originalProto = Browser.prototype.waitForTarget;
+		let resTimeout = 0;
+		// function() because we want Browser's 'this'
+        Browser.prototype.waitForTarget = async function (predicate, options) {
+          resTimeout = options.timeout;
+          await originalProto.call(this, predicate, options);
+        };
+        const browser = await puppeteer.launch(options);
+        Browser.prototype.waitForTarget = originalProto;
+        expect(resTimeout).toBe(expectedTimeout);
         await browser.close();
       });
       it('should set the default viewport', async() => {
