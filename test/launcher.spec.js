@@ -240,7 +240,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(page.url()).toBe(server.EMPTY_PAGE);
         await browser.close();
       });
-      it('should pass the timeout parameter to browser.waitForTarget', async () => {
+      it('should pass the timeout parameter to browser.waitForTarget', async() => {
         const expectedTimeout = 100000;
         const options = Object.assign({}, defaultBrowserOptions, {
           timeout: expectedTimeout
@@ -248,7 +248,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         const originalProto = Browser.prototype.waitForTarget;
         let resTimeout = 0;
         // function() because we want Browser's 'this'
-        Browser.prototype.waitForTarget = async function (predicate, options) {
+        Browser.prototype.waitForTarget = async function(predicate, options) {
           resTimeout = options.timeout;
           await originalProto.call(this, predicate, options);
         };
