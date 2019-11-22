@@ -60,7 +60,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
         page.waitForNavigation()
       ]);
     });
-    // @see https://github.com/GoogleChrome/puppeteer/issues/3973
+    // @see https://github.com/puppeteer/puppeteer/issues/3973
     it('should work when header manipulation headers with redirect', async({page, server}) => {
       server.setRedirect('/rrredirect', '/empty.html');
       await page.setRequestInterception(true);
@@ -72,7 +72,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       });
       await page.goto(server.PREFIX + '/rrredirect');
     });
-    // @see https://github.com/GoogleChrome/puppeteer/issues/4743
+    // @see https://github.com/puppeteer/puppeteer/issues/4743
     it('should be able to remove headers', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
@@ -132,7 +132,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.ok()).toBe(true);
     });
-    // @see https://github.com/GoogleChrome/puppeteer/issues/4337
+    // @see https://github.com/puppeteer/puppeteer/issues/4337
     it('should work with redirect inside sync XHR', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       server.setRedirect('/logo.png', '/pptr.png');

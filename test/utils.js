@@ -188,7 +188,7 @@ const utils = module.exports = {
       commit: {
         sha,
         timestamp,
-        url: `https://github.com/GoogleChrome/puppeteer/commit/${sha}`,
+        url: `https://github.com/puppeteer/puppeteer/commit/${sha}`,
       },
       build: {
         url: process.env.FLAKINESS_DASHBOARD_BUILD_URL,
@@ -208,7 +208,7 @@ const utils = module.exports = {
       if (test.fullName.includes(COVERAGE_TESTSUITE_NAME))
         return;
       const testpath = test.location.filePath.substring(utils.projectRoot().length);
-      const url = `https://github.com/GoogleChrome/puppeteer/blob/${sha}/${testpath}#L${test.location.lineNumber}`;
+      const url = `https://github.com/puppeteer/puppeteer/blob/${sha}/${testpath}#L${test.location.lineNumber}`;
       dashboard.reportTestResult({
         testId: test.testId,
         name: test.location.fileName + ':' + test.location.lineNumber,

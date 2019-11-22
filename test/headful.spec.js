@@ -83,11 +83,11 @@ module.exports.addTests = function({testRunner, expect, puppeteer, defaultBrowse
       await headlessPage.goto(server.EMPTY_PAGE);
       const cookie = await headlessPage.evaluate(() => document.cookie);
       await headlessBrowser.close();
-      // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
+      // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
       await rmAsync(userDataDir).catch(e => {});
       expect(cookie).toBe('foo=true');
     });
-    // TODO: Support OOOPIF. @see https://github.com/GoogleChrome/puppeteer/issues/2548
+    // TODO: Support OOOPIF. @see https://github.com/puppeteer/puppeteer/issues/2548
     xit('OOPIF: should report google.com frame', async({server}) => {
       // https://google.com is isolated by default in Chromium embedder.
       const browser = await puppeteer.launch(headfulOptions);

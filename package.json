@@ -3,7 +3,7 @@
   "version": "2.0.0-post",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "main": "index.js",
-  "repository": "github:GoogleChrome/puppeteer",
+  "repository": "github:puppeteer/puppeteer",
   "engines": {
     "node": ">=8.16.0"
   },

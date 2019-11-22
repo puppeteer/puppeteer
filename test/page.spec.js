@@ -406,7 +406,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
         columnNumber: CHROME ? 14 : 6, // console.|log vs |console.log
       });
     });
-    // @see https://github.com/GoogleChrome/puppeteer/issues/3865
+    // @see https://github.com/puppeteer/puppeteer/issues/3865
     it_fails_ffox('should not throw when there are console messages in detached iframes', async({browser, page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(async() => {
@@ -909,7 +909,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(await page.evaluate(() => __injected)).toBe(35);
     });
 
-    // @see https://github.com/GoogleChrome/puppeteer/issues/4840
+    // @see https://github.com/puppeteer/puppeteer/issues/4840
     xit('should throw when added with content to the CSP page', async({page, server}) => {
       await page.goto(server.PREFIX + '/csp.html');
       let error = null;
@@ -1146,7 +1146,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       }
       expect(error.message).toContain('Values must be strings');
     });
-    // @see https://github.com/GoogleChrome/puppeteer/issues/3327
+    // @see https://github.com/puppeteer/puppeteer/issues/3327
     it_fails_ffox('should work when re-defining top-level Event class', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/select.html');
       await page.evaluate(() => window.Event = null);
