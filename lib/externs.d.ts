@@ -44,6 +44,14 @@ declare global {
       onclose?: () => void,
     }
 
+    export interface ProductLauncher {
+      launch(object)
+      connect(object)
+      executablePath: () => string,
+      defaultArgs(object)
+      product:string,
+    }
+
     export interface ChildProcess extends child_process.ChildProcess { }
 
     export type Viewport = {

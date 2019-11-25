@@ -28,4 +28,11 @@ const packageJson = require('./package.json');
 const preferredRevision = packageJson.puppeteer.chromium_revision;
 const isPuppeteerCore = packageJson.name === 'puppeteer-core';
 
-module.exports = new Puppeteer(__dirname, preferredRevision, isPuppeteerCore);
+const puppeteer = new Puppeteer(__dirname, preferredRevision, isPuppeteerCore);
+
+// The introspection in `Helper.installAsyncStackHooks` references `Puppeteer._launcher`
+// before the Puppeteer ctor is called, such that an invalid Launcher is selected at import,
+// so we reset it.
+puppeteer._lazyLauncher = undefined;
+
+module.exports = puppeteer;
