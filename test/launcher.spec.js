@@ -24,7 +24,7 @@ const statAsync = helper.promisify(fs.stat);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const utils = require('./utils');
 
-module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer, CHROME, puppeteerPath}) {
+module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer, CHROME, FFOX, JUGGLER, puppeteerPath}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -198,6 +198,12 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
           expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain('-profile');
           expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain('foo');
         }
+      });
+      it('should report the correct product', async() => {
+        if (CHROME)
+          expect(puppeteer.product).toBe('chrome');
+        else if (FFOX && !JUGGLER)
+          expect(puppeteer.product).toBe('firefox');
       });
       it('should work with no default arguments', async() => {
         const options = Object.assign({}, defaultBrowserOptions);

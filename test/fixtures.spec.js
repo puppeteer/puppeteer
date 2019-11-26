@@ -16,7 +16,7 @@
 
 const path = require('path');
 
-module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer, puppeteerPath, CHROME}) {
+module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer, puppeteerPath, JUGGLER}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -38,16 +38,16 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       const options = Object.assign({}, defaultBrowserOptions, {dumpio: true});
       const res = spawn('node',
           [path.join(__dirname, 'fixtures', 'dumpio.js'), puppeteerPath, JSON.stringify(options)]);
-      if (CHROME)
-        res.stderr.on('data', data => dumpioData += data.toString('utf8'));
-      else
+      if (JUGGLER)
         res.stdout.on('data', data => dumpioData += data.toString('utf8'));
+      else
+        res.stderr.on('data', data => dumpioData += data.toString('utf8'));
       await new Promise(resolve => res.on('close', resolve));
 
-      if (CHROME)
-        expect(dumpioData).toContain('DevTools listening on ws://');
-      else
+      if (JUGGLER)
         expect(dumpioData).toContain('Juggler listening on ws://');
+      else
+        expect(dumpioData).toContain('DevTools listening on ws://');
     });
     it('should close the browser when the node process closes', async({ server }) => {
       const {spawn, execSync} = require('child_process');
