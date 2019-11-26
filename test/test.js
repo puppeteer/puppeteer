@@ -76,28 +76,44 @@ const CHROMIUM_NO_COVERAGE = new Set([
   'page.emulateMedia', // Legacy alias for `page.emulateMediaType`.
 ]);
 
-if (process.env.BROWSER === 'firefox') {
-  testRunner.addTestDSL('it_fails_ffox', 'skip');
-  testRunner.addSuiteDSL('describe_fails_ffox', 'skip');
-  describe('Firefox', () => {
-    require('./puppeteer.spec.js').addTests({
-      product: 'Firefox',
-      puppeteerPath: path.resolve(__dirname, '../experimental/puppeteer-firefox/'),
-      testRunner,
+switch (process.env.PUPPETEER_PRODUCT) {
+  case 'firefox':
+    testRunner.addTestDSL('it_fails_ffox', 'skip');
+    testRunner.addSuiteDSL('describe_fails_ffox', 'skip');
+    describe('Firefox', () => {
+      require('./puppeteer.spec.js').addTests({
+        product: 'Firefox',
+        puppeteerPath: utils.projectRoot(),
+        testRunner,
+      });
+      if (process.env.COVERAGE)
+        utils.recordAPICoverage(testRunner, require('../lib/api'), require('../lib/Events').Events, CHROMIUM_NO_COVERAGE);
     });
-  });
-} else {
-  testRunner.addTestDSL('it_fails_ffox', 'run');
-  testRunner.addSuiteDSL('describe_fails_ffox', 'run');
-  describe('Chromium', () => {
-    require('./puppeteer.spec.js').addTests({
-      product: 'Chromium',
-      puppeteerPath: utils.projectRoot(),
-      testRunner,
+    break;
+  case 'juggler':
+    testRunner.addTestDSL('it_fails_ffox', 'skip');
+    testRunner.addSuiteDSL('describe_fails_ffox', 'skip');
+    describe('Firefox (Juggler)', () => {
+      require('./puppeteer.spec.js').addTests({
+        product: 'Juggler',
+        puppeteerPath: path.resolve(__dirname, '../experimental/puppeteer-firefox/'),
+        testRunner,
+      });
     });
-    if (process.env.COVERAGE)
-      utils.recordAPICoverage(testRunner, require('../lib/api'), require('../lib/Events').Events, CHROMIUM_NO_COVERAGE);
-  });
+    break;
+  case 'chrome':
+  default:
+    testRunner.addTestDSL('it_fails_ffox', 'run');
+    testRunner.addSuiteDSL('describe_fails_ffox', 'run');
+    describe('Chromium', () => {
+      require('./puppeteer.spec.js').addTests({
+        product: 'Chromium',
+        puppeteerPath: utils.projectRoot(),
+        testRunner,
+      });
+      if (process.env.COVERAGE)
+        utils.recordAPICoverage(testRunner, require('../lib/api'), require('../lib/Events').Events, CHROMIUM_NO_COVERAGE);
+    });
 }
 
 if (process.env.CI && testRunner.hasFocusedTestsOrSuites()) {

@@ -19,7 +19,7 @@ script:
   - 'if [ "$NODE8" = "true" ]; then npm run lint; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run coverage; fi'
   - 'if [ "$FIREFOX" = "true" ]; then cd experimental/puppeteer-firefox && npm i && cd ../..; fi'
-  - 'if [ "$FIREFOX" = "true" ]; then npm run funit; fi'
+  - 'if [ "$FIREFOX" = "true" ]; then npm run fjunit; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run test-doclint; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run test-types; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run bundle; fi'
