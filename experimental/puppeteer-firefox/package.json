@@ -3,8 +3,8 @@
   "version": "0.5.0",
   "description": "Puppeteer API for Firefox",
   "main": "index.js",
-  "repository": "github:GoogleChrome/puppeteer",
-  "homepage": "https://github.com/GoogleChrome/puppeteer/tree/master/experimental/puppeteer-firefox",
+  "repository": "github:puppeteer/puppeteer",
+  "homepage": "https://github.com/puppeteer/puppeteer/tree/master/experimental/puppeteer-firefox",
   "engines": {
     "node": ">=8.9.4"
   },

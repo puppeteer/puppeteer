@@ -34,7 +34,7 @@ const browser = await puppeteer.launch({
 });
 ```
 
-> Context: [issue 3681](https://github.com/GoogleChrome/puppeteer/issues/3681#issuecomment-447865342).
+> Context: [issue 3681](https://github.com/puppeteer/puppeteer/issues/3681#issuecomment-447865342).
 
 ## Chrome headless doesn't launch on UNIX
 
@@ -123,10 +123,10 @@ yum update nss -y
 
 <details>
   <summary>Check out discussions</summary>
-  
-- [#290](https://github.com/GoogleChrome/puppeteer/issues/290) - Debian troubleshooting <br/>
-- [#391](https://github.com/GoogleChrome/puppeteer/issues/391) - CentOS troubleshooting <br/>
-- [#379](https://github.com/GoogleChrome/puppeteer/issues/379) - Alpine troubleshooting <br/>
+
+- [#290](https://github.com/puppeteer/puppeteer/issues/290) - Debian troubleshooting <br/>
+- [#391](https://github.com/puppeteer/puppeteer/issues/391) - CentOS troubleshooting <br/>
+- [#379](https://github.com/puppeteer/puppeteer/issues/379) - Alpine troubleshooting <br/>
 </details>
 
 ## Setting Up Chrome Linux Sandbox
@@ -183,7 +183,7 @@ export CHROME_DEVEL_SANDBOX=/usr/local/sbin/chrome-devel-sandbox
 
 ## Running Puppeteer on Travis CI
 
-> 👋 We run our tests for Puppeteer on Travis CI - see our [`.travis.yml`](https://github.com/GoogleChrome/puppeteer/blob/master/.travis.yml) for reference.
+> 👋 We run our tests for Puppeteer on Travis CI - see our [`.travis.yml`](https://github.com/puppeteer/puppeteer/blob/master/.travis.yml) for reference.
 
 Tips-n-tricks:
 - The `libnss3` package must be installed in order to run Chromium on Ubuntu Trusty
@@ -249,7 +249,7 @@ Running Puppeteer smoothly on CircleCI requires the following steps:
 
 ## Running Puppeteer in Docker
 
-> 👋 We use [Cirrus Ci](https://cirrus-ci.org/) to run our tests for Puppeteer in a Docker container - see our [`Dockerfile.linux`](https://github.com/GoogleChrome/puppeteer/blob/master/.ci/node8/Dockerfile.linux) for reference.
+> 👋 We use [Cirrus Ci](https://cirrus-ci.org/) to run our tests for Puppeteer in a Docker container - see our [`Dockerfile.linux`](https://github.com/puppeteer/puppeteer/blob/master/.ci/node8/Dockerfile.linux) for reference.
 
 Getting headless Chrome up and running in Docker can be tricky.
 The bundled Chromium that Puppeteer installs is missing the necessary
@@ -316,7 +316,7 @@ how to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
 ### Running on Alpine
 
-The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 77, which corresponds to [Puppeteer v1.19.0](https://github.com/GoogleChrome/puppeteer/releases/tag/v1.19.0).
+The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 77, which corresponds to [Puppeteer v1.19.0](https://github.com/puppeteer/puppeteer/releases/tag/v1.19.0).
 
 Example Dockerfile:
 
@@ -333,7 +333,7 @@ RUN apk add --no-cache \
       ca-certificates \
       ttf-freefont \
       nodejs \
-      yarn 
+      yarn
 
 ...
 

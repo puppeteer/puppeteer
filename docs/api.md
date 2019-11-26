@@ -4,16 +4,16 @@
 
 - Interactive Documentation: https://pptr.dev
 - API Translations: [中文|Chinese](https://zhaoqize.github.io/puppeteer-api-zh_CN/#/)
-- Troubleshooting: [troubleshooting.md](https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md)
+- Troubleshooting: [troubleshooting.md](https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md)
 - Releases per Chromium Version:
-  * Chromium 79.0.3942.0 - [Puppeteer v2.0.0](https://github.com/GoogleChrome/puppeteer/blob/v2.0.0/docs/api.md)
-  * Chromium 78.0.3882.0 - [Puppeteer v1.20.0](https://github.com/GoogleChrome/puppeteer/blob/v1.20.0/docs/api.md)
-  * Chromium 77.0.3803.0 - [Puppeteer v1.19.0](https://github.com/GoogleChrome/puppeteer/blob/v1.19.0/docs/api.md)
-  * Chromium 76.0.3803.0 - [Puppeteer v1.17.0](https://github.com/GoogleChrome/puppeteer/blob/v1.17.0/docs/api.md)
-  * Chromium 75.0.3765.0 - [Puppeteer v1.15.0](https://github.com/GoogleChrome/puppeteer/blob/v1.15.0/docs/api.md)
-  * Chromium 74.0.3723.0 - [Puppeteer v1.13.0](https://github.com/GoogleChrome/puppeteer/blob/v1.13.0/docs/api.md)
-  * Chromium 73.0.3679.0 - [Puppeteer v1.12.2](https://github.com/GoogleChrome/puppeteer/blob/v1.12.2/docs/api.md)
-  * [All releases](https://github.com/GoogleChrome/puppeteer/releases)
+  * Chromium 79.0.3942.0 - [Puppeteer v2.0.0](https://github.com/puppeteer/puppeteer/blob/v2.0.0/docs/api.md)
+  * Chromium 78.0.3882.0 - [Puppeteer v1.20.0](https://github.com/puppeteer/puppeteer/blob/v1.20.0/docs/api.md)
+  * Chromium 77.0.3803.0 - [Puppeteer v1.19.0](https://github.com/puppeteer/puppeteer/blob/v1.19.0/docs/api.md)
+  * Chromium 76.0.3803.0 - [Puppeteer v1.17.0](https://github.com/puppeteer/puppeteer/blob/v1.17.0/docs/api.md)
+  * Chromium 75.0.3765.0 - [Puppeteer v1.15.0](https://github.com/puppeteer/puppeteer/blob/v1.15.0/docs/api.md)
+  * Chromium 74.0.3723.0 - [Puppeteer v1.13.0](https://github.com/puppeteer/puppeteer/blob/v1.13.0/docs/api.md)
+  * Chromium 73.0.3679.0 - [Puppeteer v1.12.2](https://github.com/puppeteer/puppeteer/blob/v1.12.2/docs/api.md)
+  * [All releases](https://github.com/puppeteer/puppeteer/releases)
 
 
 ##### Table of Contents
@@ -387,8 +387,8 @@ If Puppeteer doesn't find them in the environment during the installation step, 
 - `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
 - `PUPPETEER_DOWNLOAD_HOST` - overwrite URL prefix that is used to download Chromium. Note: this includes protocol and might even include path prefix. Defaults to `https://storage.googleapis.com`.
-- `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of Chromium you'd like Puppeteer to use. See [puppeteer.launch([options])](#puppeteerlaunchoptions) on how executable path is inferred. **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
-- `PUPPETEER_EXECUTABLE_PATH` - specify an executable path to be used in `puppeteer.launch`. See [puppeteer.launch([options])](#puppeteerlaunchoptions) on how the executable path is inferred. **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
+- `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of Chromium you'd like Puppeteer to use. See [puppeteer.launch([options])](#puppeteerlaunchoptions) on how executable path is inferred. **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/puppeteer/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
+- `PUPPETEER_EXECUTABLE_PATH` - specify an executable path to be used in `puppeteer.launch`. See [puppeteer.launch([options])](#puppeteerlaunchoptions) on how the executable path is inferred. **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/puppeteer/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
 - `PUPPETEER_PRODUCT` - specify which browser you'd like Puppeteer to use. Must be one of `chrome` or `firefox`. Setting `product` programmatically in [puppeteer.launch([options])](#puppeteerlaunchoptions) supercedes this environment variable. The product is exposed in [`puppeteer.product`](#puppeteerproduct)
 
 > **NOTE** PUPPETEER_* env variables are not accounted for in the [`puppeteer-core`](https://www.npmjs.com/package/puppeteer-core) package.
@@ -478,7 +478,7 @@ The default flags that Chromium will be launched with.
 - returns: <[Object]>
 
 Returns a list of devices to be used with [`page.emulate(options)`](#pageemulateoptions). Actual list of
-devices can be found in [lib/DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/lib/DeviceDescriptors.js).
+devices can be found in [lib/DeviceDescriptors.js](https://github.com/puppeteer/puppeteer/blob/master/lib/DeviceDescriptors.js).
 
 ```js
 const puppeteer = require('puppeteer');
@@ -530,7 +530,7 @@ try {
   - `product` <[string]> Which browser to launch. At this time, this is either `chrome` or `firefox`. See also `PUPPETEER_PRODUCT`.
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
   - `headless` <[boolean]> Whether to run browser in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). Defaults to `true` unless the `devtools` option is `true`.
-  - `executablePath` <[string]> Path to a browser executable to run instead of the bundled Chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/GoogleChrome/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
+  - `executablePath` <[string]> Path to a browser executable to run instead of the bundled Chromium. If `executablePath` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd). **BEWARE**: Puppeteer is only [guaranteed to work](https://github.compuppeteer/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
   - `defaultViewport` <?[Object]> Sets a consistent viewport for each page. Defaults to an 800x600 viewport. `null` disables the default viewport.
     - `width` <[number]> page width in pixels.
@@ -1296,7 +1296,7 @@ const iPhone = puppeteer.devices['iPhone 6'];
 })();
 ```
 
-List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/GoogleChrome/puppeteer/blob/master/lib/DeviceDescriptors.js).
+List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/puppeteer/puppeteer/blob/master/lib/DeviceDescriptors.js).
 
 #### page.emulateMedia(type)
 - `type` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables CSS media emulation.
@@ -2334,7 +2334,7 @@ await page.keyboard.press('KeyA');
 await page.keyboard.up('Shift');
 ```
 
-> **NOTE** On MacOS, keyboard shortcuts like `⌘ A` -> Select All do not work. See [#1313](https://github.com/GoogleChrome/puppeteer/issues/1313)
+> **NOTE** On MacOS, keyboard shortcuts like `⌘ A` -> Select All do not work. See [#1313](https://github.com/puppeteer/puppeteer/issues/1313)
 
 #### keyboard.down(key[, options])
 - `key` <[string]> Name of key to press, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.

@@ -90,7 +90,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       await page.goto(httpsServer.PREFIX + '/mixedcontent.html', {waitUntil: 'load'});
       expect(page.frames().length).toBe(2);
       // Make sure blocked iframe has functional execution context
-      // @see https://github.com/GoogleChrome/puppeteer/issues/2709
+      // @see https://github.com/puppeteer/puppeteer/issues/2709
       expect(await page.frames()[0].evaluate('1 + 2')).toBe(3);
       expect(await page.frames()[1].evaluate('2 + 3')).toBe(5);
     });

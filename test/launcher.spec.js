@@ -126,7 +126,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
         await browser.close();
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
-        // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
+        // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(e => {});
       });
       it('userDataDir argument', async({server}) => {
@@ -148,7 +148,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
         await browser.close();
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
-        // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
+        // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(e => {});
       });
       it('userDataDir option should restore state', async({server}) => {
@@ -165,10 +165,10 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await page2.goto(server.EMPTY_PAGE);
         expect(await page2.evaluate(() => localStorage.hey)).toBe('hello');
         await browser2.close();
-        // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
+        // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(e => {});
       });
-      // This mysteriously fails on Windows on AppVeyor. See https://github.com/GoogleChrome/puppeteer/issues/4111
+      // This mysteriously fails on Windows on AppVeyor. See https://github.com/puppeteer/puppeteer/issues/4111
       xit('userDataDir option should restore cookies', async({server}) => {
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
@@ -183,7 +183,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await page2.goto(server.EMPTY_PAGE);
         expect(await page2.evaluate(() => document.cookie)).toBe('doSomethingOnlyOnce=true');
         await browser2.close();
-        // This might throw. See https://github.com/GoogleChrome/puppeteer/issues/2778
+        // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
         await rmAsync(userDataDir).catch(e => {});
       });
       it('should return the default arguments', async() => {
@@ -344,7 +344,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(await restoredPage.evaluate(() => 7 * 8)).toBe(56);
         await browser.close();
       });
-      // @see https://github.com/GoogleChrome/puppeteer/issues/4197#issuecomment-481793410
+      // @see https://github.com/puppeteer/puppeteer/issues/4197#issuecomment-481793410
       it('should be able to connect to the same page simultaneously', async({server}) => {
         const browserOne = await puppeteer.launch();
         const browserTwo = await puppeteer.connect({ browserWSEndpoint: browserOne.wsEndpoint() });

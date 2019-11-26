@@ -38,7 +38,7 @@ again.
 1. Clone this repository
 
 ```bash
-git clone https://github.com/GoogleChrome/puppeteer
+git clone https://github.com/puppeteer/puppeteer
 cd puppeteer
 ```
 
@@ -63,7 +63,7 @@ information on using pull requests.
 
 ## Code Style
 
-- Coding style is fully defined in [.eslintrc](https://github.com/GoogleChrome/puppeteer/blob/master/.eslintrc.js)
+- Coding style is fully defined in [.eslintrc](https://github.com/puppeteer/puppeteer/blob/master/.eslintrc.js)
 - Code should be annotated with [closure annotations](https://github.com/google/closure-compiler/wiki/Annotating-JavaScript-for-the-Closure-Compiler).
 - Comments should be generally avoided. If the code would not be understood without comments, consider re-writing the code to make it self-explanatory.
 
@@ -124,7 +124,7 @@ To deliver to a different location, use "deliver" option:
 
 ## Writing Documentation
 
-All public API should have a descriptive entry in [`docs/api.md`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md). There's a [documentation linter](https://github.com/GoogleChrome/puppeteer/tree/master/utils/doclint) which makes sure documentation is aligned with the codebase.
+All public API should have a descriptive entry in [`docs/api.md`](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md). There's a [documentation linter](https://github.com/puppeteer/puppeteer/tree/master/utils/doclint) which makes sure documentation is aligned with the codebase.
 
 To run the documentation linter, use:
 
@@ -148,8 +148,8 @@ A barrier for introducing new installation dependencies is especially high:
 - Tests should be *hermetic*. Tests should not depend on external services.
 - Tests should work on all three platforms: Mac, Linux and Win. This is especially important for screenshot tests.
 
-Puppeteer tests are located in [`test/test.js`](https://github.com/GoogleChrome/puppeteer/blob/master/test/test.js)
-and are written with a [TestRunner](https://github.com/GoogleChrome/puppeteer/tree/master/utils/testrunner) framework.
+Puppeteer tests are located in [`test/test.js`](https://github.com/puppeteer/puppeteer/blob/master/test/test.js)
+and are written with a [TestRunner](https://github.com/puppeteer/puppeteer/tree/master/utils/testrunner) framework.
 Despite being named 'unit', these are integration tests, making sure public API methods and events work as expected.
 
 - To run all tests:
@@ -247,16 +247,16 @@ Releasing to npm consists of the following phases:
 1. Source Code: mark a release.
     1. Bump `package.json` version following the SEMVER rules.
     2. Run `npm run doc` to update the docs accordingly.
-    3. Update the “Releases per Chromium Version” list in [`docs/api.md`](https://github.com/GoogleChrome/puppeteer/blob/master/docs/api.md) to include the new version.
-    4. Send a PR titled `'chore: mark version vXXX.YYY.ZZZ'` ([example](https://github.com/GoogleChrome/puppeteer/pull/5078)).
+    3. Update the “Releases per Chromium Version” list in [`docs/api.md`](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md) to include the new version.
+    4. Send a PR titled `'chore: mark version vXXX.YYY.ZZZ'` ([example](https://github.com/puppeteer/puppeteer/pull/5078)).
     5. Make sure the PR passes **all checks**.
-        - **WHY**: there are linters in place that help to avoid unnecessary errors, e.g. [like this](https://github.com/GoogleChrome/puppeteer/pull/2446)
+        - **WHY**: there are linters in place that help to avoid unnecessary errors, e.g. [like this](https://github.com/puppeteer/puppeteer/pull/2446)
     6. Merge the PR.
-    7. Once merged, publish the release notes using [GitHub's “draft new release tag” option](https://github.com/GoogleChrome/puppeteer/releases/new).
+    7. Once merged, publish the release notes using [GitHub's “draft new release tag” option](https://github.com/puppeteer/puppeteer/releases/new).
         - **NOTE**: tag names are prefixed with `'v'`, e.g. for version `1.4.0` the tag is `v1.4.0`.
         - For the “raw notes” section, use `git log --pretty="%h - %s" v2.0.0..HEAD`.
 2. Publish `puppeteer` to npm.
-    1. On your local machine, pull from [upstream](https://github.com/GoogleChrome/puppeteer) and make sure the last commit is the one just merged.
+    1. On your local machine, pull from [upstream](https://github.com/puppeteer/puppeteer) and make sure the last commit is the one just merged.
     2. Run `git status` and make sure there are no untracked files.
         - **WHY**: this is to avoid adding unnecessary files to the npm package.
     3. Run `npm install` to make sure the latest `lib/protocol.d.ts` is generated.
@@ -267,7 +267,7 @@ Releasing to npm consists of the following phases:
     2. Run `npm publish`. This publishes the `puppeteer-core` package.
     3. Run `git reset --hard` to reset the changes to `package.json`.
 4. Source Code: mark post-release.
-    1. Bump `package.json` version to `-post` version, run `npm run doc` to update the “released APIs” section at the top of `docs/api.md` accordingly, and send a PR titled `'chore: bump version to vXXX.YYY.ZZZ-post'` ([example](https://github.com/GoogleChrome/puppeteer/commit/d02440d1eac98028e29f4e1cf55413062a259156))
+    1. Bump `package.json` version to `-post` version, run `npm run doc` to update the “released APIs” section at the top of `docs/api.md` accordingly, and send a PR titled `'chore: bump version to vXXX.YYY.ZZZ-post'` ([example](https://github.com/puppeteer/puppeteer/commit/d02440d1eac98028e29f4e1cf55413062a259156))
         - **NOTE**: no other commits should be landed in-between release commit and bump commit.
 
 ## Updating npm dist tags
