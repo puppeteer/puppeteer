@@ -11,6 +11,7 @@
 package-lock.json
 yarn.lock
 /node6
-/lib/protocol.d.ts
+/lib
+/src/protocol.d.ts
 /utils/browser/puppeteer-web.js
 /index.d.ts

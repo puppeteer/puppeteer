@@ -112,7 +112,7 @@ function generateProtocolTypesIfNecessary(updated) {
   const path = require('path');
   if (!fs.existsSync(path.join(__dirname, 'utils', 'protocol-types-generator')))
     return;
-  if (!updated && fs.existsSync(path.join(__dirname, 'lib', 'protocol.d.ts')))
+  if (!updated && fs.existsSync(path.join(__dirname, 'src', 'protocol.d.ts')))
     return;
   return require('./utils/protocol-types-generator');
 }
