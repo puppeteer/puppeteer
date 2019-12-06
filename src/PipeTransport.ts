@@ -16,7 +16,7 @@
 import { helper, debugError } from './helper';
 import { AnyFunction, ConnectionTransport } from './types';
 
-export default class PipeTransport implements ConnectionTransport {
+export class PipeTransport implements ConnectionTransport {
   onmessage?: ((message: string) => void);
   onclose?: (() => void);
 

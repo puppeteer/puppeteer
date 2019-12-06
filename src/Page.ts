@@ -26,7 +26,7 @@ import {Dialog} from './Dialog';
 import {EmulationManager} from './EmulationManager';
 import {FrameManager, Frame} from './FrameManager';
 import {Keyboard, Mouse, Touchscreen} from './Input';
-import Tracing from './Tracing';
+import {Tracing} from './Tracing';
 import {helper, debugError, assert} from './helper';
 import {Coverage} from './Coverage';
 import {Worker} from './Worker';

@@ -16,7 +16,7 @@
 import {helper, assert} from './helper';
 import { CDPSession } from './Connection';
 
-export default class Tracing {
+export class Tracing {
   private _recording: boolean
   private _path: string | null
 

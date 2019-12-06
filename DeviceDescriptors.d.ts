@@ -1,2 +1,2 @@
-import devices from './lib/DeviceDescriptors';
+import { devices } from './lib/DeviceDescriptors';
 export = devices

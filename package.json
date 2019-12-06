@@ -11,6 +11,7 @@
     "chromium_revision": "706915"
   },
   "scripts": {
+    "prebuild": "rimraf ./lib",
     "build": "tsc",
     "unit": "node test/test.js",
     "fjunit": "PUPPETEER_PRODUCT=juggler node test/test.js",

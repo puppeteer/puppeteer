@@ -878,10 +878,7 @@ const deviceDescriptors: Device[] = [
   }
 ];
 
-const devices = deviceDescriptors.reduce((acc, device) => {
+export const devices = deviceDescriptors.reduce((acc, device) => {
   acc[device.name] = device
   return acc;
 }, {} as Record<string, Device>)
-
-export default devices
-

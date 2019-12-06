@@ -90,7 +90,7 @@ function detectPlatform(): Platform {
   }
 }
 
-export default class BrowserFetcher {
+export class BrowserFetcher {
   private _downloadsFolder: string;
   private _downloadHost: string;
   private _platform: Platform;

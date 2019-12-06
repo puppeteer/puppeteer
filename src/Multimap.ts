@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export default class Multimap<K, V> {
+export class Multimap<K, V> {
   private _map = new Map<K, Set<V>>();
 
   set(key: K, value: V): void {

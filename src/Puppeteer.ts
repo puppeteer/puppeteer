@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Launcher, { LaunchOptions, ChromeArgOptions, BrowserOptions, ProductLauncher } from './Launcher';
-import BrowserFetcher, { BrowserFetcherOptions } from './BrowserFetcher';
+import { Launcher, LaunchOptions, ChromeArgOptions, BrowserOptions, ProductLauncher } from './Launcher';
+import { BrowserFetcher, BrowserFetcherOptions } from './BrowserFetcher';
 import * as Errors from './Errors';
-import DeviceDescriptors from './DeviceDescriptors';
+import { devices } from './DeviceDescriptors';
 import { ConnectionTransport } from './types';
-import { Browser } from './api';
+import { Browser } from './Browser';
 
-export default class Puppeteer {
+export class Puppeteer {
   _productName?: string
   _lazyLauncher?: ProductLauncher
 
@@ -53,7 +53,7 @@ export default class Puppeteer {
   }
 
   get devices() {
-    return DeviceDescriptors;
+    return devices;
   }
 
   get errors() {

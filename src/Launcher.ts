@@ -21,15 +21,15 @@ import URL from 'url';
 import debug from 'debug';
 import removeFolder from 'rimraf';
 import childProcess, { ChildProcess } from 'child_process';
-import BrowserFetcher from './BrowserFetcher';
+import { BrowserFetcher } from './BrowserFetcher';
 import {Connection} from './Connection';
 import {Browser} from './Browser';
 import readline from 'readline';
 import fs from 'fs';
 import {helper, assert, debugError} from './helper';
 import {TimeoutError} from './Errors';
-import WebSocketTransport from './WebSocketTransport';
-import PipeTransport from './PipeTransport';
+import {WebSocketTransport} from './WebSocketTransport';
+import {PipeTransport} from './PipeTransport';
 import { promisify } from 'util';
 import { Viewport, AnyFunction, ConnectionTransport } from './types';
 
@@ -813,7 +813,7 @@ function resolveExecutablePath(launcher: ChromeLauncher|FirefoxLauncher): {execu
   return {executablePath: revisionInfo.executablePath, missingText};
 }
 
-export default function Launcher(projectRoot: string, preferredRevision: string, isPuppeteerCore: boolean, product?: string): ProductLauncher {
+export function Launcher(projectRoot: string, preferredRevision: string, isPuppeteerCore: boolean, product?: string): ProductLauncher {
   // puppeteer-core doesn't take into account PUPPETEER_* env variables.
   if (!product && !isPuppeteerCore)
     product = process.env.PUPPETEER_PRODUCT || process.env.npm_config_puppeteer_product || process.env.npm_package_config_puppeteer_product;

@@ -17,7 +17,7 @@
 import WebSocket from 'ws';
 import { ConnectionTransport } from './types';
 
-export default class WebSocketTransport implements ConnectionTransport {
+export class WebSocketTransport implements ConnectionTransport {
 
   onmessage?: ((message: string) => void);
   onclose?: (() => void);
