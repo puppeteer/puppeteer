@@ -16,6 +16,7 @@
 
 import { CDPSession } from "./Connection";
 import { ElementHandle } from "./JSHandle";
+import { Protocol } from './protocol';
 
 export interface SerializedAXNode {
   role: string;

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
+import * as fs from 'fs';
 import debug from 'debug';
 import {TimeoutError} from './Errors';
 import { AnyFunction } from './types';
 import { CDPSession } from './Connection';
 import { promisify } from 'util';
+import { Protocol } from './protocol';
 
 export const debugError = debug(`puppeteer:error`);
 const openAsync = promisify(fs.open);

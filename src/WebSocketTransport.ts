@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import WebSocket from 'ws';
+import * as WebSocket from 'ws';
 import { ConnectionTransport } from './types';
 
 export class WebSocketTransport implements ConnectionTransport {
@@ -32,7 +32,8 @@ export class WebSocketTransport implements ConnectionTransport {
       ws.addEventListener('error', reject);
     });
   }
-  _ws: WebSocket
+
+  private _ws: WebSocket
 
   constructor(ws: WebSocket) {
     this._ws = ws;

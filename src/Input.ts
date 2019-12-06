@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import {assert} from './helper';
-import keyDefinitions from './USKeyboardLayout';
+import { assert } from './helper';
+import { keyDefinitions } from './USKeyboardLayout';
 import { CDPSession } from './Connection';
+import { Protocol } from './protocol';
 
 export interface KeyDescription {
   keyCode: number;

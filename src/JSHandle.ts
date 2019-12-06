@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import path from 'path';
-import fs from 'fs';
+import * as path from 'path';
+import { readFile } from 'fs';
 import { promisify } from 'util';
-import mime from 'mime-types';
+import * as mime from 'mime-types';
 
 import {helper, assert, debugError} from './helper';
 import { ExecutionContext } from './ExecutionContext';
@@ -25,8 +25,9 @@ import { CDPSession } from './Connection';
 import { AnyFunction } from './types';
 import { Page, ScreenshotOptions } from './Page';
 import { FrameManager, Frame } from './FrameManager';
+import { Protocol } from './protocol';
 
-const readFileAsync = promisify(fs.readFile);
+const readFileAsync = promisify(readFile);
 
 export interface BoxModel {
   content: {
@@ -59,19 +60,13 @@ export function createJSHandle(context: ExecutionContext, remoteObject: Protocol
 }
 
 export class JSHandle {
-  _context: ExecutionContext
-  _client: CDPSession
-  _remoteObject: Protocol.Runtime.RemoteObject
   _disposed = false;
 
-  constructor(context: ExecutionContext, client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject) {
-    this._context = context;
-    this._client = client;
-    this._remoteObject = remoteObject;
+  constructor(public context: ExecutionContext, protected client: CDPSession, public _remoteObject: Protocol.Runtime.RemoteObject) {
   }
 
   executionContext(): ExecutionContext {
-    return this._context;
+    return this.context;
   }
 
   async evaluate(pageFunction: AnyFunction|string, ...args: any[]): Promise<any> {
@@ -95,7 +90,7 @@ export class JSHandle {
   }
 
   async getProperties(): Promise<Map<string, JSHandle>> {
-    const response = await this._client.send('Runtime.getProperties', {
+    const response = await this.client.send('Runtime.getProperties', {
       objectId: this._remoteObject.objectId!,
       ownProperties: true
     });
@@ -103,14 +98,14 @@ export class JSHandle {
     for (const property of response.result) {
       if (!property.enumerable)
         continue;
-      result.set(property.name, createJSHandle(this._context, property.value!));
+      result.set(property.name, createJSHandle(this.context, property.value!));
     }
     return result;
   }
 
   async jsonValue(): Promise<any> {
     if (this._remoteObject.objectId) {
-      const response = await this._client.send('Runtime.callFunctionOn', {
+      const response = await this.client.send('Runtime.callFunctionOn', {
         functionDeclaration: 'function() { return this; }',
         objectId: this._remoteObject.objectId,
         returnByValue: true,
@@ -129,7 +124,7 @@ export class JSHandle {
     if (this._disposed)
       return;
     this._disposed = true;
-    await helper.releaseObject(this._client, this._remoteObject);
+    await helper.releaseObject(this.client, this._remoteObject);
   }
 
   toString(): string {
@@ -142,16 +137,12 @@ export class JSHandle {
 }
 
 export class ElementHandle extends JSHandle {
-  _client: CDPSession
-  _remoteObject: Protocol.Runtime.RemoteObject
   _page: Page
   _frameManager: FrameManager
   _disposed: boolean
 
   constructor(context: ExecutionContext, client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject, page: Page, frameManager: FrameManager) {
     super(context, client, remoteObject);
-    this._client = client;
-    this._remoteObject = remoteObject;
     this._page = page;
     this._frameManager = frameManager;
     this._disposed = false;
@@ -162,7 +153,7 @@ export class ElementHandle extends JSHandle {
   }
 
   async contentFrame(): Promise<Frame | null> {
-    const nodeInfo = await this._client.send('DOM.describeNode', {
+    const nodeInfo = await this.client.send('DOM.describeNode', {
       objectId: this._remoteObject.objectId
     });
     if (typeof nodeInfo.node.frameId !== 'string')
@@ -198,10 +189,10 @@ export class ElementHandle extends JSHandle {
 
   async _clickablePoint(): Promise<{x: number, y: number}> {
     const [result, layoutMetrics] = await Promise.all([
-      this._client.send('DOM.getContentQuads', {
+      this.client.send('DOM.getContentQuads', {
         objectId: this._remoteObject.objectId
       }).catch(debugError),
-      this._client.send('Page.getLayoutMetrics'),
+      this.client.send('Page.getLayoutMetrics'),
     ]);
     if (!result || !result.quads.length)
       throw new Error('Node is either not visible or not an HTMLElement');
@@ -225,7 +216,7 @@ export class ElementHandle extends JSHandle {
   }
 
   _getBoxModel(): Promise<void|Protocol.DOM.getBoxModelReturnValue> {
-    return this._client.send('DOM.getBoxModel', {
+    return this.client.send('DOM.getBoxModel', {
       objectId: this._remoteObject.objectId
     }).catch(error => debugError(error));
   }
@@ -380,7 +371,7 @@ export class ElementHandle extends JSHandle {
     assert(boundingBox.width !== 0, 'Node has 0 width.');
     assert(boundingBox.height !== 0, 'Node has 0 height.');
 
-    const { layoutViewport: { pageX, pageY } } = await this._client.send('Page.getLayoutMetrics');
+    const { layoutViewport: { pageX, pageY } } = await this.client.send('Page.getLayoutMetrics');
 
     const clip = Object.assign({}, boundingBox);
     clip.x += pageX;

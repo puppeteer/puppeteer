@@ -12,5 +12,4 @@ package-lock.json
 yarn.lock
 /node6
 /lib
-/src/protocol.ts
 /utils/browser/puppeteer-web.js

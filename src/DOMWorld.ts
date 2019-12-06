@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
+import { readFile } from 'fs';
 import { promisify } from 'util';
 import { helper, assert } from './helper';
 import { LifecycleWatcher } from './LifecycleWatcher';
@@ -25,7 +25,7 @@ import { ExecutionContext } from './ExecutionContext';
 import { JSHandle, ElementHandle } from './JSHandle';
 import { AnyFunction } from './types';
 
-const readFileAsync = promisify(fs.readFile);
+const readFileAsync = promisify(readFile);
 
 export class DOMWorld {
   _documentPromise: Promise<ElementHandle> | null = null;

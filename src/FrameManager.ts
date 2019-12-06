@@ -14,18 +14,19 @@
  * limitations under the License.
  */
 
-import EventEmitter from 'events';
-import {helper, assert, debugError} from './helper';
-import {Events} from './Events';
-import {ExecutionContext, EVALUATION_SCRIPT_URL} from './ExecutionContext';
-import {LifecycleWatcher} from './LifecycleWatcher';
-import {DOMWorld} from './DOMWorld';
-import {NetworkManager, Response} from './NetworkManager';
+import { EventEmitter } from 'events';
+import { helper, assert, debugError } from './helper';
+import { Events } from './Events';
+import { ExecutionContext, EVALUATION_SCRIPT_URL } from './ExecutionContext';
+import { LifecycleWatcher } from './LifecycleWatcher';
+import { DOMWorld } from './DOMWorld';
+import { NetworkManager, Response } from './NetworkManager';
 import { CDPSession } from './Connection';
 import { Page } from './Page';
 import { TimeoutSettings } from './TimeoutSettings';
 import { JSHandle, ElementHandle } from './JSHandle';
 import { AnyFunction } from './types';
+import { Protocol } from './protocol';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 

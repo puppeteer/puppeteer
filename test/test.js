@@ -111,8 +111,8 @@ switch (process.env.PUPPETEER_PRODUCT) {
         puppeteerPath: utils.projectRoot(),
         testRunner,
       });
-      if (process.env.COVERAGE)
-        utils.recordAPICoverage(testRunner, require('../lib/api'), require('../lib/Events').Events, CHROMIUM_NO_COVERAGE);
+      // if (process.env.COVERAGE)
+      // utils.recordAPICoverage(testRunner, require('../lib'), require('../lib/Events').Events, CHROMIUM_NO_COVERAGE);
     });
 }
 

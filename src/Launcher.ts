@@ -13,66 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import os from 'os';
-import path from 'path';
-import http from 'http';
-import https from 'https';
-import URL from 'url';
+import * as os from 'os';
+import * as path from 'path';
+import * as http from 'http';
+import * as https from 'https';
+import * as URL from 'url';
+import * as readline from 'readline';
+import * as fs from 'fs';
+
 import debug from 'debug';
-import removeFolder from 'rimraf';
-import childProcess, { ChildProcess } from 'child_process';
+import * as rimraf from 'rimraf';
+import * as childProcess from 'child_process';
 import { BrowserFetcher } from './BrowserFetcher';
-import {Connection} from './Connection';
-import {Browser} from './Browser';
-import readline from 'readline';
-import fs from 'fs';
-import {helper, assert, debugError} from './helper';
-import {TimeoutError} from './Errors';
-import {WebSocketTransport} from './WebSocketTransport';
-import {PipeTransport} from './PipeTransport';
+import { Connection } from './Connection';
+import { Browser } from './Browser';
+import { helper, assert, debugError } from './helper';
+import { TimeoutError } from './Errors';
+import { WebSocketTransport } from './WebSocketTransport';
+import { PipeTransport } from './PipeTransport';
 import { promisify } from 'util';
-import { Viewport, AnyFunction, ConnectionTransport } from './types';
+import { AnyFunction, ConnectionTransport, LaunchOptions, ConnectOptions, ChromeArgOptions } from './types';
 
 const debugLauncher = debug(`puppeteer:launcher`);
 const mkdtempAsync = promisify(fs.mkdtemp);
-const removeFolderAsync = promisify(removeFolder);
+const removeFolderAsync = promisify(rimraf);
 const writeFileAsync = promisify(fs.writeFile);
 
-export interface ProductLauncher {
-  launch(options?: LaunchOptions & ChromeArgOptions & BrowserOptions & {product?: string, extraPrefsFirefox?: object}): Promise<Browser>;
-  connect(options?: LaunchOptions & ChromeArgOptions & BrowserOptions & {product?: string, extraPrefsFirefox?: object}): Promise<Browser>;
-  executablePath(): string;
-  defaultArgs(args?: ChromeArgOptions): string[];
-  product: string;
-}
-
-export interface ChromeArgOptions {
-  headless?: boolean
-  args?: string[]
-  userDataDir?: string
-  devtools?: boolean
-}
-
-export interface LaunchOptions {
-  executablePath?: string
-  ignoreDefaultArgs?: boolean|string[]
-  handleSIGINT?: boolean
-  handleSIGTERM?: boolean
-  handleSIGHUP?: boolean
-  timeout?: number
-  dumpio?: boolean
-  env?: Record<string, string | boolean | undefined>
-  pipe?: boolean
-}
-
-export interface BrowserOptions {
-  ignoreHTTPSErrors?: boolean
-  defaultViewport?: Viewport | null
-  slowMo?: number
-}
-
 class BrowserRunner {
-  proc: ChildProcess | null = null;
+  proc: childProcess.ChildProcess | null = null;
   connection: Connection | null = null;
   private _closed = true;
   private _listeners: Array<{emitter: NodeJS.EventEmitter, eventName: (string|symbol), handler: AnyFunction}> = [];
@@ -170,7 +138,7 @@ class BrowserRunner {
     // Attempt to remove temporary profile directory to avoid littering.
     try {
       if (this.tempDirectory) {
-        removeFolder.sync(this.tempDirectory);
+        rimraf.sync(this.tempDirectory);
       }
     } catch (error) { }
   }
@@ -194,6 +162,15 @@ class BrowserRunner {
   }
 }
 
+  
+export interface ProductLauncher {
+  launch(options?: LaunchOptions & {product?: string, extraPrefsFirefox?: object}): Promise<Browser>;
+  connect(options?: ConnectOptions & {product?: string, extraPrefsFirefox?: object}): Promise<Browser>;
+  executablePath(): string;
+  defaultArgs(args?: ChromeArgOptions): string[];
+  product: string;
+}
+
 class ChromeLauncher implements ProductLauncher {
   _projectRoot: string
   _preferredRevision: string
@@ -206,7 +183,7 @@ class ChromeLauncher implements ProductLauncher {
   }
 
   
-  async launch(options: (LaunchOptions & ChromeArgOptions & BrowserOptions) = {}): Promise<Browser> {
+  async launch(options: (LaunchOptions) = {}): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
@@ -255,7 +232,7 @@ class ChromeLauncher implements ProductLauncher {
 
     try {
       const connection = await runner.setupConnection({usePipe, timeout, slowMo, preferredRevision: this._preferredRevision});
-      const browser = await Browser.create(connection, [], ignoreHTTPSErrors, defaultViewport, runner.proc!, runner.close.bind(runner));
+      const browser = await Browser.create(connection, [], ignoreHTTPSErrors, defaultViewport, runner.proc, runner.close.bind(runner));
       await browser.waitForTarget(t => t.type() === 'page');
       return browser;
     } catch (error) {
@@ -321,7 +298,7 @@ class ChromeLauncher implements ProductLauncher {
     return 'chrome';
   }
 
-  async connect(options: (BrowserOptions & {browserWSEndpoint?: string, browserURL?: string, transport?: ConnectionTransport})): Promise<Browser> {
+  async connect(options: (ConnectOptions & {browserWSEndpoint?: string, browserURL?: string, transport?: ConnectionTransport})): Promise<Browser> {
     const {
       browserWSEndpoint,
       browserURL,
@@ -362,7 +339,7 @@ class FirefoxLauncher implements ProductLauncher {
     this._isPuppeteerCore = isPuppeteerCore;
   }
 
-  async launch(options: (LaunchOptions & ChromeArgOptions & BrowserOptions & {extraPrefsFirefox?: object}) = {}): Promise<Browser> {
+  async launch(options: (LaunchOptions & {extraPrefsFirefox?: object}) = {}): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
@@ -418,7 +395,7 @@ class FirefoxLauncher implements ProductLauncher {
     }
   }
 
-  async connect(options: (BrowserOptions & {browserWSEndpoint?: string, browserURL?: string, transport?: ConnectionTransport})): Promise<Browser> {
+  async connect(options: (ConnectOptions & {browserWSEndpoint?: string, browserURL?: string, transport?: ConnectionTransport})): Promise<Browser> {
     const {
       browserWSEndpoint,
       browserURL,
@@ -696,7 +673,7 @@ class FirefoxLauncher implements ProductLauncher {
   }
 }
 
-function waitForWSEndpoint(browserProcess: ChildProcess, timeout: number, preferredRevision: string): Promise<string> {
+function waitForWSEndpoint(browserProcess: childProcess.ChildProcess, timeout: number, preferredRevision: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const rl = readline.createInterface({ input: browserProcess.stderr });
     let stderr = '';

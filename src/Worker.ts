@@ -20,6 +20,7 @@ import {ExecutionContext} from './ExecutionContext';
 import {JSHandle} from './JSHandle';
 import { CDPSession } from './Connection';
 import { AnyFunction } from './types';
+import { Protocol } from './protocol';
 
 export class Worker extends EventEmitter {
   _client: CDPSession

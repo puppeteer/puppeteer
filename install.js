@@ -42,10 +42,8 @@ const revision = process.env.PUPPETEER_CHROMIUM_REVISION || process.env.npm_conf
 const revisionInfo = browserFetcher.revisionInfo(revision);
 
 // Do nothing if the revision is already downloaded.
-if (revisionInfo.local) {
-  generateProtocolTypesIfNecessary(false /* updated */);
+if (revisionInfo.local)
   return;
-}
 
 // Override current environment proxy settings with npm configuration, if any.
 const NPM_HTTPS_PROXY = process.env.npm_config_https_proxy || process.env.npm_config_proxy;
@@ -73,7 +71,7 @@ function onSuccess(localRevisions) {
   localRevisions = localRevisions.filter(revision => revision !== revisionInfo.revision);
   // Remove previous chromium revisions.
   const cleanupOldVersions = localRevisions.map(revision => browserFetcher.remove(revision));
-  return Promise.all([...cleanupOldVersions, generateProtocolTypesIfNecessary(true /* updated */)]);
+  return Promise.all(cleanupOldVersions);
 }
 
 /**
@@ -107,16 +105,6 @@ function toMegabytes(bytes) {
   return `${Math.round(mb * 10) / 10} Mb`;
 }
 
-function generateProtocolTypesIfNecessary(updated) {
-  const fs = require('fs');
-  const path = require('path');
-  if (!fs.existsSync(path.join(__dirname, 'utils', 'protocol-types-generator')))
-    return;
-  if (!updated && fs.existsSync(path.join(__dirname, 'src', 'protocol.ts')))
-    return;
-  return require('./utils/protocol-types-generator');
-}
-
 function logPolitely(toBeLogged) {
   const logLevel = process.env.npm_config_loglevel;
   const logLevelDisplay = ['silent', 'error', 'warn'].indexOf(logLevel) > -1;
@@ -124,4 +112,3 @@ function logPolitely(toBeLogged) {
   if (!logLevelDisplay)
     console.log(toBeLogged);
 }
-

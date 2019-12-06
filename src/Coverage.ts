@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import {helper, debugError, assert} from './helper';
-import {EVALUATION_SCRIPT_URL} from './ExecutionContext';
+import { helper, debugError, assert } from './helper';
+import { EVALUATION_SCRIPT_URL } from './ExecutionContext';
 import { CDPSession } from './Connection';
 import { AnyFunction } from './types';
+import { Protocol } from './protocol';
 
 export interface CoverageEntry {
   url: string;

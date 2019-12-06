@@ -21,6 +21,7 @@ import { BrowserContext, Browser } from './Browser';
 import { CDPSession } from './Connection';
 import { Viewport } from './types';
 import { TaskQueue } from './TaskQueue';
+import { Protocol } from './protocol';
 
 export class Target {
   _targetInfo: Protocol.Target.TargetInfo

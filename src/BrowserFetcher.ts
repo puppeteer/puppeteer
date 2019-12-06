@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-import os from 'os';
-import fs from 'fs';
-import path from 'path';
-import util, { promisify } from 'util';
+import * as os from 'os';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as util from 'util';
 import { ConnectionOptions } from 'tls';
-import URL, { UrlWithStringQuery } from 'url';
-import http, { IncomingMessage, RequestOptions } from 'http';
-import https from 'https';
-import removeRecursive from 'rimraf';
-import ProxyAgent, { HttpsProxyAgentOptions } from 'https-proxy-agent';
-import extract from 'extract-zip';
+import * as URL from 'url';
+import * as http from 'http';
+import * as https from 'https';
+import * as removeRecursive from 'rimraf';
+import * as ProxyAgent from 'https-proxy-agent';
+import * as extract from 'extract-zip';
 import { getProxyForUrl } from 'proxy-from-env';
 import { assert } from './helper';
+
+const readdirAsync = util.promisify(fs.readdir);
+const mkdirAsync = util.promisify(fs.mkdir);
+const unlinkAsync = util.promisify(fs.unlink);
+const chmodAsync = util.promisify(fs.chmod);
+const existsAsync = util.promisify(fs.exists);
 
 export type Platform = "mac" | "win32" | "win64" | "linux";
 
@@ -70,12 +76,6 @@ function archiveName(platform: Platform, revision: string): string {
 function downloadURL(platform: Platform, host: string, revision: string): string {
   return util.format(downloadURLs[platform], host, revision, archiveName(platform, revision));
 }
-
-const readdirAsync = promisify(fs.readdir);
-const mkdirAsync = promisify(fs.mkdir);
-const unlinkAsync = promisify(fs.unlink);
-const chmodAsync = promisify(fs.chmod);
-const existsAsync = promisify(fs.exists);
 
 function detectPlatform(): Platform {
   const platform = os.platform();
@@ -227,8 +227,8 @@ function extractZip(zipPath: string, folderPath: string): Promise<void> {
   }));
 }
 
-function httpRequest(url: string, method: string, response: (res: IncomingMessage) => void) {
-  let options = URL.parse(url) as UrlWithStringQuery & RequestOptions & ConnectionOptions;
+function httpRequest(url: string, method: string, response: (res: http.IncomingMessage) => void) {
+  let options = URL.parse(url) as URL.UrlWithStringQuery & http.RequestOptions & ConnectionOptions;
   options.method = method;
 
   const proxyURL = getProxyForUrl(url);
@@ -239,9 +239,9 @@ function httpRequest(url: string, method: string, response: (res: IncomingMessag
         path: options.href,
         host: proxy.hostname,
         port: proxy.port,
-      } as UrlWithStringQuery & RequestOptions & ConnectionOptions;
+      } as URL.UrlWithStringQuery & http.RequestOptions & ConnectionOptions;
     } else {
-      const parsedProxyURL = URL.parse(proxyURL) as HttpsProxyAgentOptions;
+      const parsedProxyURL = URL.parse(proxyURL) as ProxyAgent.HttpsProxyAgentOptions;
       parsedProxyURL.secureProxy = parsedProxyURL.protocol === 'https:';
 
       options.agent = new ProxyAgent(parsedProxyURL);
@@ -249,7 +249,7 @@ function httpRequest(url: string, method: string, response: (res: IncomingMessag
     }
   }
 
-  const requestCallback = (res: IncomingMessage) => {
+  const requestCallback = (res: http.IncomingMessage) => {
     if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location)
       httpRequest(res.headers.location, method, response);
     else

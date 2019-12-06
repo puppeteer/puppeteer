@@ -28,7 +28,8 @@
     "apply-next-version": "node utils/apply_next_version.js",
     "bundle": "npx browserify -r ./index.js:puppeteer -o utils/browser/puppeteer-web.js",
     "test-types": "tsc -p utils/doclint/generate_types/test/",
-    "unit-bundle": "node utils/browser/test.js"
+    "unit-bundle": "node utils/browser/test.js",
+    "generate-protocol": "node -r ts-node/register ./scripts/generate-protocol-types"
   },
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
@@ -62,6 +63,7 @@
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.3.3",
     "text-diff": "^1.0.1",
+    "ts-node": "^8.5.4",
     "typescript": "~3.7.3"
   },
   "browser": {

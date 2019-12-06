@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import EventEmitter from 'events';
-import {helper, assert, debugError} from './helper';
-import {Events} from './Events';
+
+import { EventEmitter } from 'events';
+import { helper, assert, debugError } from './helper';
+import { Events } from './Events';
 import { CDPSession } from './Connection';
 import { FrameManager, Frame } from './FrameManager';
+import { Protocol } from './protocol';
 
 export class NetworkManager extends EventEmitter {
   _client: CDPSession

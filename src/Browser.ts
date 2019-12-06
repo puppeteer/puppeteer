@@ -23,6 +23,7 @@ import { Events } from './Events';
 import { Connection } from './Connection';
 import { Viewport, AnyFunction } from './types';
 import { Page } from './Page';
+import { Protocol } from './protocol';
 
 const noop = () => undefined
 
@@ -33,10 +34,12 @@ export class Browser extends EventEmitter {
     return browser;
   }
   
+  /*@internal*/
   private _screenshotTaskQueue = new TaskQueue();
+  /*@internal*/
   private _defaultContext: BrowserContext
+  /*@internal*/
   private _contexts = new Map<string, BrowserContext>();
-  
   /*@internal*/
   public _targets = new Map<string, Target>();
 

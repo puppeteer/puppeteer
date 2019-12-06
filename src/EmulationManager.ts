@@ -16,13 +16,13 @@
 
 import { CDPSession } from "./Connection";
 import { Viewport } from "./types";
+import { Protocol } from './protocol';
 
 export class EmulationManager {
   private _emulatingMobile = false;
   private _hasTouch = false;
 
-  constructor(private client: CDPSession) {
-  }
+  constructor(private client: CDPSession) {}
 
   async emulateViewport(viewport: Viewport): Promise<boolean> {
     const mobile = viewport.isMobile || false;

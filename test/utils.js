@@ -28,6 +28,8 @@ const COVERAGE_TESTSUITE_NAME = '**API COVERAGE**';
  * @param {!Object} classType
  */
 function traceAPICoverage(apiCoverage, events, className, classType) {
+  if (true && className.startsWith('_') || typeof classType !== 'function')
+    return;
   className = className.substring(0, 1).toLowerCase() + className.substring(1);
   for (const methodName of Reflect.ownKeys(classType.prototype)) {
     const method = Reflect.get(classType.prototype, methodName);

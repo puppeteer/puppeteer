@@ -14,32 +14,33 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
-import path from 'path';
+import { writeFile } from 'fs';
+import * as path from 'path';
 import { promisify } from 'util';
-import EventEmitter from 'events';
-import mime from 'mime';
+import { EventEmitter } from 'events';
+import * as mime from 'mime';
 
-import {Events} from './Events';
-import {Connection, CDPSession} from './Connection';
-import {Dialog} from './Dialog';
-import {EmulationManager} from './EmulationManager';
-import {FrameManager, Frame} from './FrameManager';
-import {Keyboard, Mouse, Touchscreen} from './Input';
-import {Tracing} from './Tracing';
-import {helper, debugError, assert} from './helper';
-import {Coverage} from './Coverage';
-import {Worker} from './Worker';
-import {createJSHandle, ElementHandle, JSHandle} from './JSHandle';
-import {Accessibility} from './Accessibility';
-import {TimeoutSettings} from './TimeoutSettings';
+import { Events } from './Events';
+import { Connection, CDPSession } from './Connection';
+import { Dialog } from './Dialog';
+import { EmulationManager } from './EmulationManager';
+import { FrameManager, Frame } from './FrameManager';
+import { Keyboard, Mouse, Touchscreen } from './Input';
+import { Tracing } from './Tracing';
+import { helper, debugError, assert } from './helper';
+import { Coverage } from './Coverage';
+import { Worker } from './Worker';
+import { createJSHandle, ElementHandle, JSHandle } from './JSHandle';
+import { Accessibility } from './Accessibility';
+import { TimeoutSettings } from './TimeoutSettings';
 import { Target } from './Target';
 import { Viewport, AnyFunction } from './types';
 import { TaskQueue } from './TaskQueue';
 import { Browser, BrowserContext } from './Browser';
-import {Response} from './NetworkManager';
+import { Response } from './NetworkManager';
+import { Protocol } from './protocol';
 
-const writeFileAsync = promisify(fs.writeFile);
+const writeFileAsync = promisify(writeFile);
 
 export class Page extends EventEmitter {
   static async create(client: CDPSession, target: Target, ignoreHTTPSErrors: boolean, defaultViewport: Viewport | null | undefined, screenshotTaskQueue: TaskQueue): Promise<Page> {
@@ -961,11 +962,15 @@ export interface ConsoleMessageLocation {
 
 export class ConsoleMessage {
   constructor(
-    public readonly type: string,
-    public readonly text: string,
-    public readonly args: ReadonlyArray<JSHandle>,
-    public readonly location: Readonly<ConsoleMessageLocation> = {}) {
+    private _type: string,
+    private _text: string,
+    private _args: Array<JSHandle>,
+    private _location: ConsoleMessageLocation = {}) {
   }
+  public type() { return this._type; }
+  public text() { return this._text; }
+  public args() { return this._args; }
+  public location() { return this._location; }
 }
 
 export class FileChooser {

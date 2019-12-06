@@ -20,6 +20,7 @@ import { CDPSession } from './Connection';
 import { DOMWorld } from './DOMWorld';
 import { Frame } from './FrameManager';
 import { AnyFunction } from './types';
+import { Protocol } from './protocol';
 
 export const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
@@ -141,7 +142,7 @@ function convertArgument(this: ExecutionContext, arg: unknown): any {
     return { unserializableValue: 'NaN' };
   const objectHandle = arg && (arg instanceof JSHandle) ? arg : null;
   if (objectHandle) {
-    if (objectHandle._context !== this)
+    if (objectHandle.context !== this)
       throw new Error('JSHandles can be evaluated only in the context they were created!');
     if (objectHandle._disposed)
       throw new Error('JSHandle is disposed!');
