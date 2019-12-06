@@ -3,7 +3,5 @@ third_party/*
 utils/browser/puppeteer-web.js
 utils/doclint/check_public_api/test/
 utils/testrunner/examples/
-node6/*
-node6-test/*
-node6-testrunner/*
 experimental/
+lib/

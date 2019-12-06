@@ -108,11 +108,11 @@ export class Target {
     return this._browserContext;
   }
 
-  opener(): Target | undefined {
+  opener(): Target | null {
     const { openerId } = this._targetInfo;
     if (!openerId)
-      return undefined;
-    return this.browser()._targets.get(openerId);
+      return null;
+    return this.browser()._targets.get(openerId) || null;
   }
 
   /*@internal*/

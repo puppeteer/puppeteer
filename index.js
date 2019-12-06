@@ -23,7 +23,7 @@ for (const className in api) {
 }
 
 // If node does not support async await, use the compiled version.
-const Puppeteer = require('./lib/Puppeteer');
+const Puppeteer = require('./lib/Puppeteer').default;
 const packageJson = require('./package.json');
 const preferredRevision = packageJson.puppeteer.chromium_revision;
 const isPuppeteerCore = packageJson.name === 'puppeteer-core';

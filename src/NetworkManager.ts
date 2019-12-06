@@ -96,16 +96,10 @@ export class NetworkManager extends EventEmitter {
     });
   }
 
-  /**
-   * @param {string} userAgent
-   */
   async setUserAgent(userAgent: string) {
     await this._client.send('Network.setUserAgentOverride', { userAgent });
   }
 
-  /**
-   * @param {boolean} enabled
-   */
   async setCacheEnabled(enabled: boolean) {
     this._userCacheDisabled = !enabled;
     await this._updateProtocolCacheDisabled();

@@ -20,9 +20,10 @@ import DeviceDescriptors from './DeviceDescriptors';
 import { ConnectionTransport } from './types';
 import { Browser } from './api';
 
-export default class {
+export default class Puppeteer {
   _productName?: string
   _lazyLauncher?: ProductLauncher
+
   constructor(private _projectRoot: string, private _preferredRevision: string, private _isPuppeteerCore: boolean) {
   }
 
@@ -51,7 +52,7 @@ export default class {
     return this._launcher.product;
   }
 
-  get devices(): object {
+  get devices() {
     return DeviceDescriptors;
   }
 
