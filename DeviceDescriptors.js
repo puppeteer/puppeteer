@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-module.exports = require('./lib/DeviceDescriptors').default;
+module.exports = require('./lib/DeviceDescriptors').devices;

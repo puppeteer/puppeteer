@@ -35,10 +35,7 @@ export class Keyboard {
     this._client = client;
   }
 
-  /**
-   * @param {string} key
-   * @param {{text?: string}=} options
-   */
+  
   async down(key: string, options: {text?: string} = { text: undefined }) {
     const description = this._keyDescriptionForString(key);
 
@@ -61,11 +58,8 @@ export class Keyboard {
     });
   }
 
-  /**
-   * @param {string} key
-   * @return {number}
-   */
-  _modifierBit(key: string): number {
+  
+  private _modifierBit(key: string): number {
     if (key === 'Alt')
       return 1;
     if (key === 'Control')
@@ -77,11 +71,8 @@ export class Keyboard {
     return 0;
   }
 
-  /**
-   * @param {string} keyString
-   * @return {KeyDescription}
-   */
-  _keyDescriptionForString(keyString: string): KeyDescription {
+  
+  private _keyDescriptionForString(keyString: string): KeyDescription {
     const shift = this._modifiers & 8;
     const description = {
       key: '',
@@ -125,9 +116,6 @@ export class Keyboard {
     return description;
   }
 
-  /**
-   * @param {string} key
-   */
   async up(key: string) {
     const description = this._keyDescriptionForString(key);
 
@@ -143,9 +131,6 @@ export class Keyboard {
     });
   }
 
-  /**
-   * @param {string} char
-   */
   async sendCharacter(char: string) {
     await this._client.send('Input.insertText', {text: char});
   }
@@ -172,23 +157,14 @@ export class Keyboard {
   }
 }
 
+export type MouseButton = Required<Protocol.Input.dispatchMouseEventParameters>['button'];
+
 export class Mouse {
-  _client: CDPSession
-  _keyboard: Keyboard
-  _x: number
-  _y: number
-  _button: string
-  /**
-   * @param {Puppeteer.CDPSession} client
-   * @param {!Keyboard} keyboard
-   */
-  constructor(client: CDPSession, keyboard: Keyboard) {
-    this._client = client;
-    this._keyboard = keyboard;
-    this._x = 0;
-    this._y = 0;
-    /** @type {'none'|'left'|'right'|'middle'} */
-    this._button = 'none';
+  _x = 0;
+  _y = 0;
+  _button: MouseButton = 'none';
+  
+  constructor(private _client: CDPSession, private _keyboard: Keyboard) {
   }
 
   async move(x: number, y: number, options: {steps?: number} = {}) {
@@ -207,7 +183,7 @@ export class Mouse {
     }
   }
 
-  async click(x: number, y: number, options: {delay?: number, button?: "left"|"right"|"middle", clickCount?: number} = {}) {
+  async click(x: number, y: number, options: {delay?: number, button?: MouseButton, clickCount?: number} = {}) {
     const {delay = null} = options;
     if (delay !== null) {
       await Promise.all([
@@ -225,7 +201,7 @@ export class Mouse {
     }
   }
 
-  async down(options: {button?: "left"|"right"|"middle", clickCount?: number} = {}) {
+  async down(options: {button?: MouseButton, clickCount?: number} = {}) {
     const {button = 'left', clickCount = 1} = options;
     this._button = button;
     await this._client.send('Input.dispatchMouseEvent', {
@@ -238,7 +214,7 @@ export class Mouse {
     });
   }
 
-  async up(options: {button?: "left"|"right"|"middle", clickCount?: number} = {}) {
+  async up(options: {button?: MouseButton, clickCount?: number} = {}) {
     const {button = 'left', clickCount = 1} = options;
     this._button = 'none';
     await this._client.send('Input.dispatchMouseEvent', {

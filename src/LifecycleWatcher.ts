@@ -83,9 +83,7 @@ export class LifecycleWatcher {
     this._checkLifecycleComplete();
   }
 
-  /**
-   * @param {!Puppeteer.Request} request
-   */
+  
   _onRequest(request: Request) {
     if (request.frame() !== this._frame || !request.isNavigationRequest())
       return;
@@ -104,37 +102,27 @@ export class LifecycleWatcher {
     return this._navigationRequest ? this._navigationRequest.response() : null;
   }
 
-  /**
-   * @param {!Error} error
-   */
+  
   _terminate(error: Error) {
     this._terminationCallback.call(null, error);
   }
 
-  /**
-   * @return {!Promise<?Error>}
-   */
+  
   sameDocumentNavigationPromise(): Promise<Error | null> {
     return this._sameDocumentNavigationPromise;
   }
 
-  /**
-   * @return {!Promise<?Error>}
-   */
+  
   newDocumentNavigationPromise(): Promise<Error | null> {
     return this._newDocumentNavigationPromise;
   }
 
-  /**
-   * @return {!Promise}
-   */
+  
   lifecyclePromise(): Promise<void> {
     return this._lifecyclePromise;
   }
 
-  /**
-   * @return {!Promise<?Error>}
-   */
+  
   timeoutOrTerminationPromise(): Promise<Error | null> {
     return Promise.race([this._timeoutPromise, this._terminationPromise]);
   }
@@ -147,9 +135,7 @@ export class LifecycleWatcher {
         .then(() => new TimeoutError(errorMessage));
   }
 
-  /**
-   * @param {!Puppeteer.Frame} frame
-   */
+  
   _navigatedWithinDocument(frame: Frame) {
     if (frame !== this._frame)
       return;
@@ -169,11 +155,7 @@ export class LifecycleWatcher {
     if (this._frame._loaderId !== this._initialLoaderId)
       this._newDocumentNavigationCompleteCallback();
 
-    /**
-     * @param {!Puppeteer.Frame} frame
-     * @param {!string[]} expectedLifecycle
-     * @return {boolean}
-     */
+    
     function checkLifecycle(frame: Frame, expectedLifecycle: string[]): boolean {
       for (const event of expectedLifecycle) {
         if (!frame._lifecycleEvents.has(event))

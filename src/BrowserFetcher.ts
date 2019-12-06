@@ -227,7 +227,6 @@ function extractZip(zipPath: string, folderPath: string): Promise<void> {
   }));
 }
 
-
 function httpRequest(url: string, method: string, response: (res: IncomingMessage) => void) {
   let options = URL.parse(url) as UrlWithStringQuery & RequestOptions & ConnectionOptions;
   options.method = method;

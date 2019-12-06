@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 import { Viewport } from "./types";
 
 export interface Device {

@@ -113,7 +113,7 @@ export class Page extends EventEmitter {
         return;
       }
       const session = Connection.fromSession(client).session(event.sessionId)!;
-      const worker = new Worker(session, event.targetInfo.url, this._addConsoleMessage.bind(this), this._handleException.bind(this));
+      const worker = new Worker(session, event.targetInfo.url, this._addConsoleMessage, this._handleException);
       this._workers.set(event.sessionId, worker);
       this.emit(Events.Page.WorkerCreated, worker);
     });
@@ -384,9 +384,6 @@ export class Page extends EventEmitter {
     return this._frameManager.networkManager().setUserAgent(userAgent);
   }
 
-  /**
-   * @return {!Promise<!Metrics>}
-   */
   async metrics(): Promise<Metrics> {
     const response = await this._client.send('Performance.getMetrics');
     return this._buildMetricsObject(response.metrics);
@@ -408,7 +405,7 @@ export class Page extends EventEmitter {
     return result;
   }
 
-  _handleException(exceptionDetails: Protocol.Runtime.ExceptionDetails) {
+  _handleException = (exceptionDetails: Protocol.Runtime.ExceptionDetails) => {
     const message = helper.getExceptionMessage(exceptionDetails);
     const err = new Error(message);
     err.stack = ''; // Don't report clientside error with a node stack attached
@@ -469,7 +466,7 @@ export class Page extends EventEmitter {
     }
   }
 
-  _addConsoleMessage(type: string, args: Array<JSHandle>, stackTrace?: Protocol.Runtime.StackTrace) {
+  private _addConsoleMessage = (type: string, args: Array<JSHandle>, stackTrace?: Protocol.Runtime.StackTrace) => {
     if (!this.listenerCount(Events.Page.Console)) {
       args.forEach(arg => arg.dispose());
       return;
@@ -522,10 +519,6 @@ export class Page extends EventEmitter {
     return await this._frameManager.mainFrame()!.goto(url, options);
   }
 
-  /**
-   * @param {!{timeout?: number, waitUntil?: string|!string[]}=} options
-   * @return {!Promise<?Puppeteer.Response>}
-   */
   async reload(options?: {timeout?: number, waitUntil?: string|string[]}): Promise<Response | null> {
     const [response] = await Promise.all([
       this.waitForNavigation(options),
@@ -594,9 +587,6 @@ export class Page extends EventEmitter {
     await this._client.send('Page.bringToFront');
   }
 
-  /**
-   * @param {!{viewport: !Puppeteer.Viewport, userAgent: string}} options
-   */
   async emulate(options: {viewport: Viewport, userAgent: string}) {
     await Promise.all([
       this.setViewport(options.viewport),
@@ -604,9 +594,6 @@ export class Page extends EventEmitter {
     ]);
   }
 
-  /**
-   * @param {boolean} enabled
-   */
   async setJavaScriptEnabled(enabled: boolean) {
     if (this._javascriptEnabled === enabled)
       return;
@@ -614,9 +601,6 @@ export class Page extends EventEmitter {
     await this._client.send('Emulation.setScriptExecutionDisabled', { value: !enabled });
   }
 
-  /**
-   * @param {boolean} enabled
-   */
   async setBypassCSP(enabled: boolean) {
     await this._client.send('Page.setBypassCSP', { enabled });
   }
@@ -626,14 +610,11 @@ export class Page extends EventEmitter {
     await this._client.send('Emulation.setEmulatedMedia', {media: type || ''});
   }
 
-  /**
-   * @deprecated use `page.emulateMediaType` instead
-   */
   emulateMedia = this.emulateMediaType
 
   async emulateMediaFeatures(features?: Array<MediaFeature>) {
     if (features === null)
-      await this._client.send('Emulation.setEmulatedMedia', {features: null});
+      await this._client.send('Emulation.setEmulatedMedia', {features: undefined});
     if (Array.isArray(features)) {
       features.every(mediaFeature => {
         const name = mediaFeature.name;
@@ -715,11 +696,6 @@ export class Page extends EventEmitter {
     return this._screenshotTaskQueue.postTask(this._screenshotTask.bind(this, screenshotType, options));
   }
 
-  /**
-   * @param {"png"|"jpeg"} format
-   * @param {!ScreenshotOptions=} options
-   * @return {!Promise<!Buffer|!String>}
-   */
   async _screenshotTask(format: "png"|"jpeg", options: ScreenshotOptions = {}): Promise<Buffer|String> {
     await this._client.send('Target.activateTarget', {targetId: this._target._targetId});
     let clip = options.clip ? processClip(options.clip) : undefined;
@@ -736,8 +712,7 @@ export class Page extends EventEmitter {
         deviceScaleFactor = 1,
         isLandscape = false
       } = this._viewport || {};
-      /** @type {!Protocol.Emulation.ScreenOrientation} */
-      const screenOrientation = isLandscape ? { angle: 90, type: 'landscapePrimary' } : { angle: 0, type: 'portraitPrimary' };
+      const screenOrientation: Protocol.Emulation.ScreenOrientation = isLandscape ? { angle: 90, type: 'landscapePrimary' } : { angle: 0, type: 'portraitPrimary' };
       await this._client.send('Emulation.setDeviceMetricsOverride', { mobile: isMobile, width, height, deviceScaleFactor, screenOrientation });
     }
     const shouldSetDefaultBackground = options.omitBackground && format === 'png';
@@ -757,10 +732,6 @@ export class Page extends EventEmitter {
 
   }
 
-  /**
-   * @param {!PDFOptions=} options
-   * @return {!Promise<!Buffer>}
-   */
   async pdf(options: PDFOptions = {}): Promise<Buffer | null> {
     const {
       scale = 1,
@@ -809,7 +780,7 @@ export class Page extends EventEmitter {
       pageRanges,
       preferCSSPageSize
     });
-    return await helper.readProtocolStream(this._client, result.stream, path);
+    return await helper.readProtocolStream(this._client, result.stream!, path);
   }
 
   async title(): Promise<string> {
@@ -863,31 +834,15 @@ export class Page extends EventEmitter {
     return this.mainFrame().waitFor(selectorOrFunctionOrTimeout, options, ...args);
   }
 
-  /**
-   * @param {string} selector
-   * @param {!{visible?: boolean, hidden?: boolean, timeout?: number}=} options
-   * @return {!Promise<?Puppeteer.ElementHandle>}
-   */
   waitForSelector(selector: string, options: {visible?: boolean, hidden?: boolean, timeout?: number} = {}): Promise<ElementHandle | null> {
     return this.mainFrame().waitForSelector(selector, options);
   }
 
-  /**
-   * @param {string} xpath
-   * @param {!{visible?: boolean, hidden?: boolean, timeout?: number}=} options
-   * @return {!Promise<?Puppeteer.ElementHandle>}
-   */
   waitForXPath(xpath: string, options: {visible?: boolean, hidden?: boolean, timeout?: number} = {}): Promise<ElementHandle | null> {
     return this.mainFrame().waitForXPath(xpath, options);
   }
 
-  /**
-   * @param {Function} pageFunction
-   * @param {!{polling?: string|number, timeout?: number}=} options
-   * @param {!Array<*>} args
-   * @return {!Promise<!Puppeteer.JSHandle>}
-   */
-  waitForFunction(pageFunction: AnyFunction, options: {polling?: string|number, timeout?: number} = {}, ...args: any[]): Promise<JSHandle> {
+  waitForFunction(pageFunction: AnyFunction | string, options: {polling?: string|number, timeout?: number} = {}, ...args: any[]): Promise<JSHandle> {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);
   }
 }
@@ -970,10 +925,6 @@ const unitToPixels = {
   'mm': 3.78
 } as const;
 
-/**
- * @param {(string|number|undefined)} parameter
- * @return {(number|undefined)}
- */
 function convertPrintParameterToInches(parameter: (string|number|undefined)): (number|undefined) {
   if (typeof parameter === 'undefined')
     return undefined;
@@ -1002,31 +953,6 @@ function convertPrintParameterToInches(parameter: (string|number|undefined)): (n
   return pixels / 96;
 }
 
-export interface NetworkCookie {
-  name: string
-  value: string
-  domain: string
-  path: string
-  expires: number
-  size: number
-  httpOnly: boolean
-  secure: boolean
-  session: boolean
-  sameSite?: "Strict"|"Lax"|"Extended"|"None"
-}
-
-export interface NetworkCookieParam {
-  name: string
-  value: string
-  url?: string
-  domain?: string
-  path?: string
-  expires?: number
-  httpOnly?: boolean
-  secure?: boolean
-  sameSite?: "Strict"|"Lax"
-}
-
 export interface ConsoleMessageLocation {
   url?: string;
   lineNumber?: number;
@@ -1034,49 +960,11 @@ export interface ConsoleMessageLocation {
 }
 
 export class ConsoleMessage {
-  _type: string
-  _text: string
-  _args: Array<JSHandle>
-  _location: ConsoleMessageLocation
-  /**
-   * @param {string} type
-   * @param {string} text
-   * @param {!Array<!Puppeteer.JSHandle>} args
-   * @param {ConsoleMessageLocation} location
-   */
-  constructor(type: string, text: string, args: Array<JSHandle>, location: ConsoleMessageLocation = {}) {
-    this._type = type;
-    this._text = text;
-    this._args = args;
-    this._location = location;
-  }
-
-  /**
-   * @return {string}
-   */
-  type(): string {
-    return this._type;
-  }
-
-  /**
-   * @return {string}
-   */
-  text(): string {
-    return this._text;
-  }
-
-  /**
-   * @return {!Array<!Puppeteer.JSHandle>}
-   */
-  args(): Array<JSHandle> {
-    return this._args;
-  }
-
-  /**
-   * @return {Object}
-   */
-  location(): object {
-    return this._location;
+  constructor(
+    public readonly type: string,
+    public readonly text: string,
+    public readonly args: ReadonlyArray<JSHandle>,
+    public readonly location: Readonly<ConsoleMessageLocation> = {}) {
   }
 }
 

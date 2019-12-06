@@ -72,11 +72,9 @@ export class Browser extends EventEmitter {
   }
 
   /*@internal*/
-  public async _disposeContext(contextId?: string) {
-    await this.connection.send('Target.disposeBrowserContext', {browserContextId: contextId || undefined});
-    if (contextId !== undefined) {
-      this._contexts.delete(contextId);
-    }
+  public async _disposeContext(contextId: string) {
+    await this.connection.send('Target.disposeBrowserContext', {browserContextId: contextId});
+    this._contexts.delete(contextId);
   }
 
   /*@internal*/
@@ -203,11 +201,11 @@ export class Browser extends EventEmitter {
   }
 }
 
-const webPermissionToProtocol = new Map([
+const webPermissionToProtocol = new Map<string, Protocol.Browser.PermissionType>([
   ['geolocation', 'geolocation'],
   ['midi', 'midi'],
   ['notifications', 'notifications'],
-  ['push', 'push'],
+  // ['push', 'push'],
   ['camera', 'videoCapture'],
   ['microphone', 'audioCapture'],
   ['background-sync', 'backgroundSync'],
@@ -250,13 +248,13 @@ export class BrowserContext extends EventEmitter {
   }
 
   async overridePermissions(origin: string, permissions: string[]) {
-    permissions = permissions.map(permission => {
+    const protocolPermissions = permissions.map(permission => {
       const protocolPermission = webPermissionToProtocol.get(permission);
       if (!protocolPermission)
         throw new Error('Unknown permission: ' + permission);
       return protocolPermission;
     });
-    await this.connection.send('Browser.grantPermissions', {origin, browserContextId: this.id || undefined, permissions});
+    await this.connection.send('Browser.grantPermissions', {origin, browserContextId: this.id || undefined, permissions: protocolPermissions});
   }
 
   async clearPermissionOverrides() {

@@ -61,7 +61,7 @@ export interface LaunchOptions {
   handleSIGHUP?: boolean
   timeout?: number
   dumpio?: boolean
-  env?: Record<string, string | undefined>
+  env?: Record<string, string | boolean | undefined>
   pipe?: boolean
 }
 
@@ -198,21 +198,14 @@ class ChromeLauncher implements ProductLauncher {
   _projectRoot: string
   _preferredRevision: string
   _isPuppeteerCore: boolean
-  /**
-   * @param {string} projectRoot
-   * @param {string} preferredRevision
-   * @param {boolean} isPuppeteerCore
-   */
+  
   constructor(projectRoot: string, preferredRevision: string, isPuppeteerCore: boolean) {
     this._projectRoot = projectRoot;
     this._preferredRevision = preferredRevision;
     this._isPuppeteerCore = isPuppeteerCore;
   }
 
-  /**
-   * @param {!(LaunchOptions & ChromeArgOptions & BrowserOptions)=} options
-   * @return {!Promise<!Browser>}
-   */
+  
   async launch(options: (LaunchOptions & ChromeArgOptions & BrowserOptions) = {}): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
@@ -461,17 +454,12 @@ class FirefoxLauncher implements ProductLauncher {
     return executablePath;
   }
 
-  /**
-   * @return {string}
-   */
+  
   get product(): string {
     return 'firefox';
   }
 
-  /**
-   * @param {!ChromeArgOptions=} options
-   * @return {!string[]}
-   */
+  
   defaultArgs(options: ChromeArgOptions = {}): string[] {
     const firefoxArguments = [
       '--remote-debugging-port=0',
@@ -517,7 +505,6 @@ class FirefoxLauncher implements ProductLauncher {
       // Prevent various error message on the console
       // jest-puppeteer asserts that no error message is emitted by the console
       'browser.contentblocking.features.standard': '-tp,tpPrivate,cookieBehavior0,-cm,-fp',
-
 
       // Enable the dump function: which sends messages to the system
       // console
@@ -709,7 +696,6 @@ class FirefoxLauncher implements ProductLauncher {
   }
 }
 
-
 function waitForWSEndpoint(browserProcess: ChildProcess, timeout: number, preferredRevision: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const rl = readline.createInterface({ input: browserProcess.stderr });
@@ -722,9 +708,7 @@ function waitForWSEndpoint(browserProcess: ChildProcess, timeout: number, prefer
     ];
     const timeoutId = timeout ? setTimeout(onTimeout, timeout) : 0;
 
-    /**
-     * @param {!Error=} error
-     */
+    
     function onClose(error?: Error) {
       cleanup();
       reject(new Error([
@@ -741,9 +725,7 @@ function waitForWSEndpoint(browserProcess: ChildProcess, timeout: number, prefer
       reject(new TimeoutError(`Timed out after ${timeout} ms while trying to connect to the browser! Only Chrome at revision r${preferredRevision} is guaranteed to work.`));
     }
 
-    /**
-     * @param {string} line
-     */
+    
     function onLine(line: string) {
       stderr += line + '\n';
       const match = line.match(/^DevTools listening on (ws:\/\/.*)$/);

@@ -96,14 +96,14 @@ export class JSHandle {
 
   async getProperties(): Promise<Map<string, JSHandle>> {
     const response = await this._client.send('Runtime.getProperties', {
-      objectId: this._remoteObject.objectId,
+      objectId: this._remoteObject.objectId!,
       ownProperties: true
     });
     const result = new Map();
     for (const property of response.result) {
       if (!property.enumerable)
         continue;
-      result.set(property.name, createJSHandle(this._context, property.value));
+      result.set(property.name, createJSHandle(this._context, property.value!));
     }
     return result;
   }

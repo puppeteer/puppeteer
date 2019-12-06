@@ -16,26 +16,18 @@
 
 export * from './Accessibility';
 export * from './Browser';
-export * from './Browser';
 export * from './BrowserFetcher';
 export * from './Connection';
 export * from './Page';
 export * from './Coverage';
 export * from './Dialog';
-export * from './JSHandle';
+export { JSHandle, ElementHandle, BoxModel } from './JSHandle';
 export * from './ExecutionContext';
-export * from './Page';
 export * from './FrameManager';
-export * from './JSHandle';
 export * from './Input';
-export * from './Input';
-export * from './Page';
 export * from './Puppeteer';
-export * from './NetworkManager';
-export * from './NetworkManager';
 export * from './NetworkManager';
 export * from './Target';
 export * from './Errors';
-export * from './Input';
 export * from './Tracing';
 export * from './Worker';

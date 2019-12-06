@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-const {helper} = require('./lib/helper');
+// const {helper} = require('./lib/helper');
 const api = require('./lib/api');
-for (const className in api) {
-  // Puppeteer-web excludes certain classes from bundle, e.g. BrowserFetcher.
-  if (typeof api[className] === 'function')
-    helper.installAsyncStackHooks(api[className]);
-}
+// for (const className in api) {
+//   // Puppeteer-web excludes certain classes from bundle, e.g. BrowserFetcher.
+//   if (typeof api[className] === 'function')
+//     helper.installAsyncStackHooks(api[className]);
+// }
 
 // If node does not support async await, use the compiled version.
 const { Puppeteer } = require('./lib/Puppeteer');
@@ -29,6 +29,12 @@ const preferredRevision = packageJson.puppeteer.chromium_revision;
 const isPuppeteerCore = packageJson.name === 'puppeteer-core';
 
 const puppeteer = new Puppeteer(__dirname, preferredRevision, isPuppeteerCore);
+
+for (const className in api) {
+  if (typeof api[className] === 'function' && !puppeteer[className])
+    puppeteer[className] = api[className];
+}
+puppeteer.default = puppeteer;
 
 // The introspection in `Helper.installAsyncStackHooks` references `Puppeteer._launcher`
 // before the Puppeteer ctor is called, such that an invalid Launcher is selected at import,

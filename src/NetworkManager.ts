@@ -60,9 +60,6 @@ export class NetworkManager extends EventEmitter {
     await this._updateProtocolRequestInterception();
   }
 
-  /**
-   * @param {!Object<string, string>} extraHTTPHeaders
-   */
   async setExtraHTTPHeaders(extraHTTPHeaders: Record<string, string>) {
     this._extraHTTPHeaders = {};
     for (const key of Object.keys(extraHTTPHeaders)) {
@@ -73,16 +70,10 @@ export class NetworkManager extends EventEmitter {
     await this._client.send('Network.setExtraHTTPHeaders', { headers: this._extraHTTPHeaders });
   }
 
-  /**
-   * @return {!Object<string, string>}
-   */
   extraHTTPHeaders(): Record<string, string> {
     return Object.assign({}, this._extraHTTPHeaders);
   }
 
-  /**
-   * @param {boolean} value
-   */
   async setOfflineMode(value: boolean) {
     if (this._offline === value)
       return;
@@ -105,9 +96,6 @@ export class NetworkManager extends EventEmitter {
     await this._updateProtocolCacheDisabled();
   }
 
-  /**
-   * @param {boolean} value
-   */
   async setRequestInterception(value: boolean) {
     this._userRequestInterceptionEnabled = value;
     await this._updateProtocolRequestInterception();
@@ -140,9 +128,6 @@ export class NetworkManager extends EventEmitter {
     });
   }
 
-  /**
-   * @param {!Protocol.Network.requestWillBeSentPayload} event
-   */
   _onRequestWillBeSent(event: Protocol.Network.requestWillBeSentPayload) {
     // Request interception doesn't happen for data URLs with Network Service.
     if (this._protocolRequestInterceptionEnabled && !event.request.url.startsWith('data:')) {
@@ -159,12 +144,8 @@ export class NetworkManager extends EventEmitter {
     this._onRequest(event, null);
   }
 
-  /**
-   * @param {!Protocol.Fetch.authRequiredPayload} event
-   */
   _onAuthRequired(event: Protocol.Fetch.authRequiredPayload) {
-    /** @type {"Default"|"CancelAuth"|"ProvideCredentials"} */
-    let response = 'Default';
+    let response: Protocol.Network.AuthChallengeResponse['response'] = 'Default';
     if (this._attemptedAuthentications.has(event.requestId)) {
       response = 'CancelAuth';
     } else if (this._credentials) {
@@ -178,9 +159,6 @@ export class NetworkManager extends EventEmitter {
     }).catch(debugError);
   }
 
-  /**
-   * @param {!Protocol.Fetch.requestPausedPayload} event
-   */
   _onRequestPaused(event: Protocol.Fetch.requestPausedPayload) {
     if (!this._userRequestInterceptionEnabled && this._protocolRequestInterceptionEnabled) {
       this._client.send('Fetch.continueRequest', {
@@ -199,10 +177,6 @@ export class NetworkManager extends EventEmitter {
     }
   }
 
-  /**
-   * @param {!Protocol.Network.requestWillBeSentPayload} event
-   * @param {?string} interceptionId
-   */
   _onRequest(event: Protocol.Network.requestWillBeSentPayload, interceptionId: string | null) {
     let redirectChain: Request[] = [];
     if (event.redirectResponse) {
@@ -214,25 +188,17 @@ export class NetworkManager extends EventEmitter {
       }
     }
     const frame = event.frameId ? this._frameManager.frame(event.frameId) : null;
-    const request = new Request(this._client, frame, interceptionId, this._userRequestInterceptionEnabled, event, redirectChain);
+    const request = new Request(this._client, frame, interceptionId!, this._userRequestInterceptionEnabled, event, redirectChain);
     this._requestIdToRequest.set(event.requestId, request);
     this.emit(Events.NetworkManager.Request, request);
   }
 
-
-  /**
-   * @param {!Protocol.Network.requestServedFromCachePayload} event
-   */
   _onRequestServedFromCache(event: Protocol.Network.requestServedFromCachePayload) {
     const request = this._requestIdToRequest.get(event.requestId);
     if (request)
       request._fromMemoryCache = true;
   }
 
-  /**
-   * @param {!Request} request
-   * @param {!Protocol.Network.Response} responsePayload
-   */
   _handleRequestRedirect(request: Request, responsePayload: Protocol.Network.Response) {
     const response = new Response(this._client, request, responsePayload);
     request._response = response;
@@ -246,9 +212,6 @@ export class NetworkManager extends EventEmitter {
     this.emit(Events.NetworkManager.RequestFinished, request);
   }
 
-  /**
-   * @param {!Protocol.Network.responseReceivedPayload} event
-   */
   _onResponseReceived(event: Protocol.Network.responseReceivedPayload) {
     const request = this._requestIdToRequest.get(event.requestId);
     // FileUpload sends a response without a matching request.
@@ -259,9 +222,6 @@ export class NetworkManager extends EventEmitter {
     this.emit(Events.NetworkManager.Response, response);
   }
 
-  /**
-   * @param {!Protocol.Network.loadingFinishedPayload} event
-   */
   _onLoadingFinished(event: Protocol.Network.loadingFinishedPayload) {
     const request = this._requestIdToRequest.get(event.requestId);
     // For certain requestIds we never receive requestWillBeSent event.
@@ -280,9 +240,6 @@ export class NetworkManager extends EventEmitter {
     this.emit(Events.NetworkManager.RequestFinished, request);
   }
 
-  /**
-   * @param {!Protocol.Network.loadingFailedPayload} event
-   */
   _onLoadingFailed(event: Protocol.Network.loadingFailedPayload) {
     const request = this._requestIdToRequest.get(event.requestId);
     // For certain requestIds we never receive requestWillBeSent event.
@@ -304,7 +261,7 @@ export class NetworkManager extends EventEmitter {
 export class Request {
   _client: CDPSession
   _requestId: string
-  _interceptionId: string | null
+  _interceptionId: string
   _allowInterception: boolean
   _interceptionHandled = false
   _isNavigationRequest: boolean
@@ -318,15 +275,8 @@ export class Request {
   _resourceType: string
   _method: string
   _postData?: string
-  /**
-   * @param {!Puppeteer.CDPSession} client
-   * @param {?Puppeteer.Frame} frame
-   * @param {string} interceptionId
-   * @param {boolean} allowInterception
-   * @param {!Protocol.Network.requestWillBeSentPayload} event
-   * @param {!Array<!Request>} redirectChain
-   */
-  constructor(client: CDPSession, frame: Frame | null, interceptionId: string | null, allowInterception: boolean, event: Protocol.Network.requestWillBeSentPayload, redirectChain: Array<Request>) {
+  
+  constructor(client: CDPSession, frame: Frame | null, interceptionId: string, allowInterception: boolean, event: Protocol.Network.requestWillBeSentPayload, redirectChain: Array<Request>) {
     this._client = client;
     this._requestId = event.requestId;
     this._isNavigationRequest = event.requestId === event.loaderId && event.type === 'Document';
@@ -416,9 +366,6 @@ export class Request {
     });
   }
 
-  /**
-   * @param {!{status: number, headers: Object, contentType: string, body: (string|Buffer)}} response
-   */
   async respond(response: {status: number, headers: object, contentType: string, body: (string|Buffer)}) {
     // Mocking responses for dataURL requests is not currently supported.
     if (this._url.startsWith('data:'))
@@ -452,10 +399,8 @@ export class Request {
     });
   }
 
-  /**
-   * @param {string=} errorCode
-   */
-  async abort(errorCode: string = 'failed') {
+  
+  async abort(errorCode: keyof typeof errorReasons = 'failed') {
     // Request interception is not supported for data: urls.
     if (this._url.startsWith('data:'))
       return;
@@ -467,7 +412,7 @@ export class Request {
     await this._client.send('Fetch.failRequest', {
       requestId: this._interceptionId,
       errorReason
-    }).catch(error => {
+    }).catch((error: Error) => {
       // In certain cases, protocol will return error if the request was already canceled
       // or the page was closed. We should tolerate these errors.
       debugError(error);
@@ -475,7 +420,7 @@ export class Request {
   }
 }
 
-const errorReasons: Record<string, string> = {
+const errorReasons = {
   'aborted': 'Aborted',
   'accessdenied': 'AccessDenied',
   'addressunreachable': 'AddressUnreachable',
@@ -490,7 +435,7 @@ const errorReasons: Record<string, string> = {
   'namenotresolved': 'NameNotResolved',
   'timedout': 'TimedOut',
   'failed': 'Failed',
-};
+} as const;
 
 export class Response {
   _client: CDPSession
@@ -538,30 +483,22 @@ export class Response {
     return this._url;
   }
 
-  /**
-   * @return {boolean}
-   */
+  
   ok(): boolean {
     return this._status === 0 || (this._status >= 200 && this._status <= 299);
   }
 
-  /**
-   * @return {number}
-   */
+  
   status(): number {
     return this._status;
   }
 
-  /**
-   * @return {string}
-   */
+  
   statusText(): string {
     return this._statusText;
   }
 
-  /**
-   * @return {!Object}
-   */
+  
   headers(): object {
     return this._headers;
   }
@@ -570,9 +507,7 @@ export class Response {
     return this._securityDetails;
   }
 
-  /**
-   * @return {!Promise<!Buffer>}
-   */
+  
   buffer(): Promise<Buffer> {
     if (!this._contentPromise) {
       this._contentPromise = this._bodyLoadedPromise.then(async error => {
@@ -587,9 +522,7 @@ export class Response {
     return this._contentPromise;
   }
 
-  /**
-   * @return {!Promise<string>}
-   */
+  
   async text(): Promise<string> {
     const content = await this.buffer();
     return content.toString('utf8');
@@ -623,9 +556,7 @@ export class SecurityDetails {
   _validFrom: number
   _validTo: number
   _protocol: string
-  /**
-   * @param {!Protocol.Network.SecurityDetails} securityPayload
-   */
+  
   constructor(securityPayload: Protocol.Network.SecurityDetails) {
     this._subjectName = securityPayload['subjectName'];
     this._issuer = securityPayload['issuer'];
@@ -655,10 +586,6 @@ export class SecurityDetails {
   }
 }
 
-/**
- * @param {Object<string, string>} headers
- * @return {!Array<{name: string, value: string}>}
- */
 function headersArray(headers: Record<string, string>): Array<{name: string, value: string}> {
   const result = [];
   for (const name in headers) {

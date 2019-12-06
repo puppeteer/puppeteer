@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { EventEmitter } from 'events';
 import debug from 'debug';
 import { assert } from './helper';
@@ -46,8 +47,13 @@ export class Connection extends EventEmitter {
     return this._url;
   }
 
-  send(method: string, params: any = {}): Promise<any> {
-    const id = this._rawSend({method, params});
+  on(event: string | symbol, listener: AnyFunction): this
+  on<T extends keyof Protocol.Events>(event: T, listener: (arg: Protocol.Events[T]) => void): this {
+    return super.on(event, listener)
+  }
+
+  send<T extends keyof Protocol.CommandParameters>(method: T, parameters?: Protocol.CommandParameters[T]): Promise<Protocol.CommandReturnValues[T]>{
+    const id = this._rawSend({method, parameters});
     return new Promise((resolve, reject) => {
       this._callbacks.set(id, {resolve, reject, error: new Error(), method});
     });
@@ -131,10 +137,14 @@ export class CDPSession extends EventEmitter {
     this._connection = connection
   }
 
-  send(method: string, params: object = {}): Promise<any> {
+  on<T extends keyof Protocol.Events>(event: T, listener: (arg: Protocol.Events[T]) => void): this {
+    return super.on(event, listener)
+  }
+
+  send<T extends keyof Protocol.CommandParameters>(method: T, parameters?: Protocol.CommandParameters[T]): Promise<Protocol.CommandReturnValues[T]>{
     if (!this._connection)
       return Promise.reject(new Error(`Protocol error (${method}): Session closed. Most likely the ${this._targetType} has been closed.`));
-    const id = this._connection._rawSend({sessionId: this._sessionId, method, params});
+    const id = this._connection._rawSend({sessionId: this._sessionId, method, parameters});
     return new Promise((resolve, reject) => {
       this._callbacks.set(id, {resolve, reject, error: new Error(), method});
     });

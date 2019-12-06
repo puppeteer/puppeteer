@@ -22,6 +22,19 @@ import { CDPSession } from './Connection';
 import { promisify } from 'util';
 
 export const debugError = debug(`puppeteer:error`);
+const openAsync = promisify(fs.open);
+const writeAsync = promisify(fs.write);
+const closeAsync = promisify(fs.close);
+
+export function assert(value: unknown, message?: string): asserts value {
+  if (!value) {
+    throw new Error(message);
+  }
+}
+
+export {
+  Helper as helper,
+};
 
 export class Helper {
   static evaluationString(fun: AnyFunction|string, ...args: any[]): string {
@@ -31,10 +44,7 @@ export class Helper {
     }
     return `(${fun})(${args.map(serializeArgument).join(',')})`;
 
-    /**
-     * @param {*} arg
-     * @return {string}
-     */
+    
     function serializeArgument(arg: any): string {
       if (Object.is(arg, undefined))
         return 'undefined';
@@ -197,17 +207,3 @@ export class Helper {
     }
   }
 }
-
-const openAsync = promisify(fs.open);
-const writeAsync = promisify(fs.write);
-const closeAsync = promisify(fs.close);
-
-export function assert(value: unknown, message?: string): asserts value {
-  if (!value) {
-    throw new Error(message);
-  }
-}
-
-export {
-  Helper as helper,
-};

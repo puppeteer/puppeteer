@@ -113,31 +113,21 @@ export class DOMWorld {
     return document.$eval(selector, pageFunction, ...args);
   }
 
-  /**
-   * @param {string} selector
-   * @param {Function|string} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<(!Object|undefined)>}
-   */
+  
   async $$eval(selector: string, pageFunction: AnyFunction | string, ...args: any[]): Promise<any> {
     const document = await this._document();
     const value = await document.$$eval(selector, pageFunction, ...args);
     return value;
   }
 
-  /**
-   * @param {string} selector
-   * @return {!Promise<!Array<!Puppeteer.ElementHandle>>}
-   */
+  
   async $$(selector: string): Promise<Array<ElementHandle>> {
     const document = await this._document();
     const value = await document.$$(selector);
     return value;
   }
 
-  /**
-   * @return {!Promise<String>}
-   */
+  
   async content(): Promise<string> {
     return await this.evaluate(() => {
       let retVal = '';
@@ -149,10 +139,7 @@ export class DOMWorld {
     });
   }
 
-  /**
-   * @param {string} html
-   * @param {!{timeout?: number, waitUntil?: string|!string[]}=} options
-   */
+  
   async setContent(html: string, options: {timeout?: number, waitUntil?: string|string[]} = {}) {
     const {
       waitUntil = ['load'],
@@ -205,11 +192,7 @@ export class DOMWorld {
 
     throw new Error('Provide an object with a `url`, `path` or `content` property');
 
-    /**
-     * @param {string} url
-     * @param {string} type
-     * @return {!Promise<!HTMLElement>}
-     */
+    
     async function addScriptUrl(url: string, type: string): Promise<HTMLElement> {
       const script = document.createElement('script');
       script.src = url;
@@ -224,11 +207,7 @@ export class DOMWorld {
       return script;
     }
 
-    /**
-     * @param {string} content
-     * @param {string} type
-     * @return {!HTMLElement}
-     */
+    
     function addScriptContent(content: string, type: string = 'text/javascript'): HTMLElement {
       const script = document.createElement('script');
       script.type = type;
@@ -242,10 +221,7 @@ export class DOMWorld {
     }
   }
 
-  /**
-   * @param {!{url?: string, path?: string, content?: string}} options
-   * @return {!Promise<!Puppeteer.ElementHandle>}
-   */
+  
   async addStyleTag(options: {url?: string, path?: string, content?: string}): Promise<ElementHandle> {
     const {
       url = null,
@@ -275,10 +251,7 @@ export class DOMWorld {
 
     throw new Error('Provide an object with a `url`, `path` or `content` property');
 
-    /**
-     * @param {string} url
-     * @return {!Promise<!HTMLElement>}
-     */
+    
     async function addStyleUrl(url: string): Promise<HTMLElement> {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
@@ -292,10 +265,7 @@ export class DOMWorld {
       return link;
     }
 
-    /**
-     * @param {string} content
-     * @return {!Promise<!HTMLElement>}
-     */
+    
     async function addStyleContent(content: string): Promise<HTMLElement> {
       const style = document.createElement('style');
       style.type = 'text/css';
@@ -310,10 +280,7 @@ export class DOMWorld {
     }
   }
 
-  /**
-   * @param {string} selector
-   * @param {!{delay?: number, button?: "left"|"right"|"middle", clickCount?: number}=} options
-   */
+  
   async click(selector: string, options?: {delay?: number, button?: "left"|"right"|"middle", clickCount?: number}) {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
@@ -321,9 +288,7 @@ export class DOMWorld {
     await handle.dispose();
   }
 
-  /**
-   * @param {string} selector
-   */
+  
   async focus(selector: string) {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
@@ -331,9 +296,7 @@ export class DOMWorld {
     await handle.dispose();
   }
 
-  /**
-   * @param {string} selector
-   */
+  
   async hover(selector: string) {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
@@ -341,11 +304,7 @@ export class DOMWorld {
     await handle.dispose();
   }
 
-  /**
-   * @param {string} selector
-   * @param {!string[]} values
-   * @return {!Promise<!string[]>}
-   */
+  
   async select(selector: string, ...values: string[]): Promise<string[]> {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
@@ -354,9 +313,7 @@ export class DOMWorld {
     return result;
   }
 
-  /**
-   * @param {string} selector
-   */
+  
   async tap(selector: string) {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
@@ -364,11 +321,7 @@ export class DOMWorld {
     await handle.dispose();
   }
 
-  /**
-   * @param {string} selector
-   * @param {string} text
-   * @param {{delay: (number|undefined)}=} options
-   */
+  
   async type(selector: string, text: string, options?: {delay: (number|undefined)}) {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
@@ -392,19 +345,12 @@ export class DOMWorld {
     return new WaitTask(this, pageFunction, 'function', polling, timeout, ...args).promise;
   }
 
-  /**
-   * @return {!Promise<string>}
-   */
+  
   async title(): Promise<string> {
     return this.evaluate(() => document.title);
   }
 
-  /**
-   * @param {string} selectorOrXPath
-   * @param {boolean} isXPath
-   * @param {!{visible?: boolean, hidden?: boolean, timeout?: number}=} options
-   * @return {!Promise<?Puppeteer.ElementHandle>}
-   */
+  
   async _waitForSelectorOrXPath(selectorOrXPath: string, isXPath: boolean, options: {visible?: boolean, hidden?: boolean, timeout?: number} = {}): Promise<ElementHandle | null> {
     const {
       visible: waitForVisible = false,
@@ -421,13 +367,7 @@ export class DOMWorld {
     }
     return handle.asElement();
 
-    /**
-     * @param {string} selectorOrXPath
-     * @param {boolean} isXPath
-     * @param {boolean} waitForVisible
-     * @param {boolean} waitForHidden
-     * @return {?Node|boolean}
-     */
+    
     function predicate(selectorOrXPath: string, isXPath: boolean, waitForVisible: boolean, waitForHidden: boolean): Node|boolean | null {
       const node = isXPath
         ? document.evaluate(selectorOrXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
@@ -443,9 +383,7 @@ export class DOMWorld {
       const success = (waitForVisible === isVisible || waitForHidden === !isVisible);
       return success ? node : null;
 
-      /**
-       * @return {boolean}
-       */
+      
       function hasVisibleBoundingBox(): boolean {
         const rect = element.getBoundingClientRect();
         return !!(rect.top || rect.bottom || rect.width || rect.height);
@@ -467,13 +405,7 @@ class WaitTask {
   _reject!: (e: Error) => void
   _terminated?: boolean
 
-  /**
-   * @param {!DOMWorld} domWorld
-   * @param {Function|string} predicateBody
-   * @param {string|number} polling
-   * @param {number} timeout
-   * @param {!Array<*>} args
-   */
+  
   constructor(domWorld: DOMWorld, predicateBody: AnyFunction | string, title: string, polling: string|number, timeout: number, ...args: any[]) {
     if (helper.isString(polling))
       assert(polling === 'raf' || polling === 'mutation', 'Unknown polling option: ' + polling);
@@ -502,9 +434,7 @@ class WaitTask {
     this.rerun();
   }
 
-  /**
-   * @param {!Error} error
-   */
+  
   terminate(error: Error) {
     this._terminated = true;
     this._reject(error);
@@ -562,12 +492,6 @@ class WaitTask {
   }
 }
 
-/**
- * @param {string} predicateBody
- * @param {string} polling
- * @param {number} timeout
- * @return {!Promise<*>}
- */
 async function waitForPredicatePageFunction(predicateBody: string, polling: string, timeout: number, ...args: any[]): Promise<any> {
   const predicate = new Function('...args', predicateBody);
   let timedOut = false;
@@ -580,9 +504,7 @@ async function waitForPredicatePageFunction(predicateBody: string, polling: stri
   if (typeof polling === 'number')
     return await pollInterval(polling);
 
-  /**
-   * @return {!Promise<*>}
-   */
+  
   function pollMutation(): Promise<any> {
     const success = predicate.apply(null, args);
     if (success)
@@ -610,9 +532,7 @@ async function waitForPredicatePageFunction(predicateBody: string, polling: stri
     return result;
   }
 
-  /**
-   * @return {!Promise<*>}
-   */
+  
   function pollRaf(): Promise<any> {
     let fulfill: (value?: any) => void;
     const result = new Promise(x => fulfill = x);

@@ -27,7 +27,7 @@ export class Worker extends EventEmitter {
   _executionContextPromise: Promise<ExecutionContext>
   _executionContextCallback!: (context: ExecutionContext) => void
 
-  constructor(client: CDPSession, url: string, consoleAPICalled: (name: string, args: Array<JSHandle>, stack: Protocol.Runtime.StackTrace) => void, exceptionThrown: (details: Protocol.Runtime.ExceptionDetails) => void) {
+  constructor(client: CDPSession, url: string, consoleAPICalled: (name: string, args: Array<JSHandle>, stack?: Protocol.Runtime.StackTrace) => void, exceptionThrown: (details: Protocol.Runtime.ExceptionDetails) => void) {
     super();
     this._client = client;
     this._url = url;

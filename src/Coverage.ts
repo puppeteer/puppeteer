@@ -119,7 +119,7 @@ class JSCoverage {
       this.client.send('Profiler.stopPreciseCoverage'),
       this.client.send('Profiler.disable'),
       this.client.send('Debugger.disable'),
-    ]);
+    ] as const);
     helper.removeEventListeners(this._eventListeners);
 
     const coverage = [];
