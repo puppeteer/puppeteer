@@ -17,32 +17,45 @@
 import os from 'os';
 import fs from 'fs';
 import path from 'path';
-import util from 'util';
-import extract from 'extract-zip';
-import URL from 'url';
-import {helper, assert} from './helper';
+import util, { promisify } from 'util';
+import { ConnectionOptions } from 'tls';
+import URL, { UrlWithStringQuery } from 'url';
+import http, { IncomingMessage, RequestOptions } from 'http';
+import https from 'https';
 import removeRecursive from 'rimraf';
-// @ts-ignore
-import ProxyAgent from 'https-proxy-agent';
-// @ts-ignore
-const getProxyForUrl = require('proxy-from-env').getProxyForUrl;
+import ProxyAgent, { HttpsProxyAgentOptions } from 'https-proxy-agent';
+import extract from 'extract-zip';
+import { getProxyForUrl } from 'proxy-from-env';
+import { assert } from './helper';
+
+export type Platform = "mac" | "win32" | "win64" | "linux";
+
+export interface BrowserFetcherOptions {
+  platform?: Platform;
+  path?: string;
+  host?: string;
+}
+
+export interface RevisionInfo {
+  folderPath: string;
+  executablePath: string;
+  url: string;
+  local: boolean;
+  revision: string;
+}
 
 const DEFAULT_DOWNLOAD_HOST = 'https://storage.googleapis.com';
 
-const supportedPlatforms = ['mac', 'linux', 'win32', 'win64'];
-const downloadURLs = {
+const supportedPlatforms = new Set<Platform>(['mac', 'linux', 'win32', 'win64']);
+
+const downloadURLs: Record<Platform, string> = {
   linux: '%s/chromium-browser-snapshots/Linux_x64/%d/%s.zip',
   mac: '%s/chromium-browser-snapshots/Mac/%d/%s.zip',
   win32: '%s/chromium-browser-snapshots/Win/%d/%s.zip',
   win64: '%s/chromium-browser-snapshots/Win_x64/%d/%s.zip',
 };
 
-/**
- * @param {string} platform
- * @param {string} revision
- * @return {string}
- */
-function archiveName(platform: string, revision: string): string {
+function archiveName(platform: Platform, revision: string): string {
   if (platform === 'linux')
     return 'chrome-linux';
   if (platform === 'mac')
@@ -51,68 +64,51 @@ function archiveName(platform: string, revision: string): string {
     // Windows archive name changed at r591479.
     return parseInt(revision, 10) > 591479 ? 'chrome-win' : 'chrome-win32';
   }
-  return null;
+  throw new Error(`Unknown platform: ${platform}`)
 }
 
-/**
- * @param {string} platform
- * @param {string} host
- * @param {string} revision
- * @return {string}
- */
-function downloadURL(platform: string, host: string, revision: string): string {
+function downloadURL(platform: Platform, host: string, revision: string): string {
   return util.format(downloadURLs[platform], host, revision, archiveName(platform, revision));
 }
 
-const readdirAsync = helper.promisify(fs.readdir.bind(fs));
-const mkdirAsync = helper.promisify(fs.mkdir.bind(fs));
-const unlinkAsync = helper.promisify(fs.unlink.bind(fs));
-const chmodAsync = helper.promisify(fs.chmod.bind(fs));
+const readdirAsync = promisify(fs.readdir);
+const mkdirAsync = promisify(fs.mkdir);
+const unlinkAsync = promisify(fs.unlink);
+const chmodAsync = promisify(fs.chmod);
+const existsAsync = promisify(fs.exists);
 
-function existsAsync(filePath) {
-  let fulfill = null;
-  const promise = new Promise(x => fulfill = x);
-  fs.access(filePath, err => fulfill(!err));
-  return promise;
+function detectPlatform(): Platform {
+  const platform = os.platform();
+  if (platform === 'darwin') {
+    return 'mac';
+  } else if (platform === 'linux') {
+    return 'linux';
+  } else if (platform === 'win32') {
+    return os.arch() === 'x64' ? 'win64' : 'win32';
+  } else {
+    throw new Error(`Unsupported platform: ${platform}`)
+  }
 }
 
-class BrowserFetcher {
-  /**
-   * @param {string} projectRoot
-   * @param {!BrowserFetcher.Options=} options
-   */
-  constructor(projectRoot: string, options: BrowserFetcher.Options = {}) {
+export default class BrowserFetcher {
+  private _downloadsFolder: string;
+  private _downloadHost: string;
+  private _platform: Platform;
+
+  constructor(projectRoot: string, options: BrowserFetcherOptions = {}) {
     this._downloadsFolder = options.path || path.join(projectRoot, '.local-chromium');
     this._downloadHost = options.host || DEFAULT_DOWNLOAD_HOST;
-    this._platform = options.platform || '';
-    if (!this._platform) {
-      const platform = os.platform();
-      if (platform === 'darwin')
-        this._platform = 'mac';
-      else if (platform === 'linux')
-        this._platform = 'linux';
-      else if (platform === 'win32')
-        this._platform = os.arch() === 'x64' ? 'win64' : 'win32';
-      assert(this._platform, 'Unsupported platform: ' + os.platform());
-    }
-    assert(supportedPlatforms.includes(this._platform), 'Unsupported platform: ' + this._platform);
+    this._platform = options.platform || detectPlatform();
   }
 
-  /**
-   * @return {string}
-   */
   platform(): string {
     return this._platform;
   }
 
-  /**
-   * @param {string} revision
-   * @return {!Promise<boolean>}
-   */
   canDownload(revision: string): Promise<boolean> {
     const url = downloadURL(this._platform, this._downloadHost, revision);
-    let resolve;
-    const promise = new Promise(x => resolve = x);
+    let resolve: (sucess: boolean) => void;
+    const promise = new Promise<boolean>(x => resolve = x);
     const request = httpRequest(url, 'HEAD', response => {
       resolve(response.statusCode === 200);
     });
@@ -123,12 +119,7 @@ class BrowserFetcher {
     return promise;
   }
 
-  /**
-   * @param {string} revision
-   * @param {?function(number, number):void} progressCallback
-   * @return {!Promise<!BrowserFetcher.RevisionInfo>}
-   */
-  async download(revision: string, progressCallback?: function(number, number):void): Promise<BrowserFetcher.RevisionInfo> {
+  async download(revision: string, progressCallback?: (current: number, total: number)=>void): Promise<RevisionInfo> {
     const url = downloadURL(this._platform, this._downloadHost, revision);
     const zipPath = path.join(this._downloadsFolder, `download-${this._platform}-${revision}.zip`);
     const folderPath = this._getFolderPath(revision);
@@ -149,30 +140,20 @@ class BrowserFetcher {
     return revisionInfo;
   }
 
-  /**
-   * @return {!Promise<!Array<string>>}
-   */
-  async localRevisions(): Promise<Array<string>> {
+  async localRevisions(): Promise<string[]> {
     if (!await existsAsync(this._downloadsFolder))
       return [];
     const fileNames = await readdirAsync(this._downloadsFolder);
-    return fileNames.map(fileName => parseFolderPath(fileName)).filter(entry => entry && entry.platform === this._platform).map(entry => entry.revision);
+    return fileNames.map(fileName => parseFolderPath(fileName)).filter(entry => entry && entry.platform === this._platform).map(entry => entry!.revision);
   }
 
-  /**
-   * @param {string} revision
-   */
   async remove(revision: string) {
     const folderPath = this._getFolderPath(revision);
     assert(await existsAsync(folderPath), `Failed to remove: revision ${revision} is not downloaded`);
     await new Promise(fulfill => removeRecursive(folderPath, fulfill));
   }
 
-  /**
-   * @param {string} revision
-   * @return {!BrowserFetcher.RevisionInfo}
-   */
-  revisionInfo(revision: string): BrowserFetcher.RevisionInfo {
+  revisionInfo(revision: string): RevisionInfo {
     const folderPath = this._getFolderPath(revision);
     let executablePath = '';
     if (this._platform === 'mac')
@@ -188,44 +169,28 @@ class BrowserFetcher {
     return {revision, executablePath, folderPath, local, url};
   }
 
-  /**
-   * @param {string} revision
-   * @return {string}
-   */
-  _getFolderPath(revision: string): string {
+  private _getFolderPath(revision: string): string {
     return path.join(this._downloadsFolder, this._platform + '-' + revision);
   }
 }
 
-export default BrowserFetcher;
-
-/**
- * @param {string} folderPath
- * @return {?{platform: string, revision: string}}
- */
-function parseFolderPath(folderPath: string): {platform: string, revision: string} | undefined {
+function parseFolderPath(folderPath: string): {platform: Platform, revision: string} | null {
   const name = path.basename(folderPath);
   const splits = name.split('-');
   if (splits.length !== 2)
     return null;
-  const [platform, revision] = splits;
-  if (!supportedPlatforms.includes(platform))
+  const [platform, revision] = splits as [Platform, string];
+  if (!supportedPlatforms.has(platform))
     return null;
   return {platform, revision};
 }
 
-/**
- * @param {string} url
- * @param {string} destinationPath
- * @param {?function(number, number):void} progressCallback
- * @return {!Promise}
- */
-function downloadFile(url: string, destinationPath: string, progressCallback?: function(number, number):void): Promise<void> {
-  let fulfill, reject;
+function downloadFile(url: string, destinationPath: string, progressCallback?: (downloadedBytes: number, totalBytes: number) =>void): Promise<void> {
+  let fulfill: () => void, reject: (e: Error) => void;
   let downloadedBytes = 0;
   let totalBytes = 0;
 
-  const promise = new Promise((x, y) => { fulfill = x; reject = y; });
+  const promise = new Promise<void>((x, y) => { fulfill = x; reject = y; });
 
   const request = httpRequest(url, 'GET', response => {
     if (response.statusCode !== 200) {
@@ -239,25 +204,21 @@ function downloadFile(url: string, destinationPath: string, progressCallback?: f
     file.on('finish', () => fulfill());
     file.on('error', error => reject(error));
     response.pipe(file);
-    totalBytes = parseInt(/** @type {string} */ (response.headers['content-length']), 10);
+    const contentLength = response.headers['content-length']
+    totalBytes = contentLength !== undefined ? parseInt(contentLength, 10) : 0;
     if (progressCallback)
       response.on('data', onData);
   });
   request.on('error', error => reject(error));
   return promise;
 
-  function onData(chunk) {
+  function onData(chunk: string) {
     downloadedBytes += chunk.length;
-    progressCallback(downloadedBytes, totalBytes);
+    progressCallback!(downloadedBytes, totalBytes);
   }
 }
 
-/**
- * @param {string} zipPath
- * @param {string} folderPath
- * @return {!Promise<?Error>}
- */
-function extractZip(zipPath: string, folderPath: string): Promise<?Error> {
+function extractZip(zipPath: string, folderPath: string): Promise<void> {
   return new Promise((fulfill, reject) => extract(zipPath, {dir: folderPath}, err => {
     if (err)
       reject(err);
@@ -266,9 +227,9 @@ function extractZip(zipPath: string, folderPath: string): Promise<?Error> {
   }));
 }
 
-function httpRequest(url, method, response) {
-  /** @type {Object} */
-  let options = URL.parse(url);
+
+function httpRequest(url: string, method: string, response: (res: IncomingMessage) => void) {
+  let options = URL.parse(url) as UrlWithStringQuery & RequestOptions & ConnectionOptions;
   options.method = method;
 
   const proxyURL = getProxyForUrl(url);
@@ -279,10 +240,9 @@ function httpRequest(url, method, response) {
         path: options.href,
         host: proxy.hostname,
         port: proxy.port,
-      };
+      } as UrlWithStringQuery & RequestOptions & ConnectionOptions;
     } else {
-      /** @type {Object} */
-      const parsedProxyURL = URL.parse(proxyURL);
+      const parsedProxyURL = URL.parse(proxyURL) as HttpsProxyAgentOptions;
       parsedProxyURL.secureProxy = parsedProxyURL.protocol === 'https:';
 
       options.agent = new ProxyAgent(parsedProxyURL);
@@ -290,31 +250,17 @@ function httpRequest(url, method, response) {
     }
   }
 
-  const requestCallback = res => {
-    if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location)
+  const requestCallback = (res: IncomingMessage) => {
+    if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location)
       httpRequest(res.headers.location, method, response);
     else
       response(res);
   };
+
   const request = options.protocol === 'https:' ?
-    require('https').request(options, requestCallback) :
-    require('http').request(options, requestCallback);
+    https.request(options, requestCallback) :
+    http.request(options, requestCallback);
+  
   request.end();
   return request;
 }
-
-/**
- * @typedef {Object} BrowserFetcher.Options
- * @property {string=} platform
- * @property {string=} path
- * @property {string=} host
- */
-
-/**
- * @typedef {Object} BrowserFetcher.RevisionInfo
- * @property {string} folderPath
- * @property {string} executablePath
- * @property {string} url
- * @property {boolean} local
- * @property {string} revision
- */

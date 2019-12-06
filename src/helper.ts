@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {TimeoutError} from './Errors';
-const debugError = require('debug')(`puppeteer:error`);
-import fs from 'fs';
 
-class Helper {
-  /**
-   * @param {Function|string} fun
-   * @param {!Array<*>} args
-   * @return {string}
-   */
-  static evaluationString(fun: Function|string, ...args: Array<any>): string {
+import fs from 'fs';
+import debug from 'debug';
+import {TimeoutError} from './Errors';
+import { AnyFunction } from './types';
+import { CDPSession } from './Connection';
+import { promisify } from 'util';
+
+export const debugError = debug(`puppeteer:error`);
+
+export class Helper {
+  static evaluationString(fun: AnyFunction|string, ...args: any[]): string {
     if (Helper.isString(fun)) {
       assert(args.length === 0, 'Cannot evaluate a string with arguments');
       return /** @type {string} */ (fun);
@@ -41,10 +42,6 @@ class Helper {
     }
   }
 
-  /**
-   * @param {!Protocol.Runtime.ExceptionDetails} exceptionDetails
-   * @return {string}
-   */
   static getExceptionMessage(exceptionDetails: Protocol.Runtime.ExceptionDetails): string {
     if (exceptionDetails.exception)
       return exceptionDetails.exception.description || exceptionDetails.exception.value;
@@ -59,10 +56,6 @@ class Helper {
     return message;
   }
 
-  /**
-   * @param {!Protocol.Runtime.RemoteObject} remoteObject
-   * @return {*}
-   */
   static valueFromRemoteObject(remoteObject: Protocol.Runtime.RemoteObject): any {
     assert(!remoteObject.objectId, 'Cannot extract value when objectId is given');
     if (remoteObject.unserializableValue) {
@@ -84,10 +77,6 @@ class Helper {
     return remoteObject.value;
   }
 
-  /**
-   * @param {!Puppeteer.CDPSession} client
-   * @param {!Protocol.Runtime.RemoteObject} remoteObject
-   */
   static async releaseObject(client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject) {
     if (!remoteObject.objectId)
       return;
@@ -98,18 +87,15 @@ class Helper {
     });
   }
 
-  /**
-   * @param {!Object} classType
-   */
-  static installAsyncStackHooks(classType: object) {
+  static installAsyncStackHooks(classType: {new(): unknown}) {
     for (const methodName of Reflect.ownKeys(classType.prototype)) {
       const method = Reflect.get(classType.prototype, methodName);
       if (methodName === 'constructor' || typeof methodName !== 'string' || methodName.startsWith('_') || typeof method !== 'function' || method.constructor.name !== 'AsyncFunction')
         continue;
-      Reflect.set(classType.prototype, methodName, function(...args) {
-        const syncStack = {};
+      Reflect.set(classType.prototype, methodName, function(this: any, ...args: any[]) {
+        const syncStack = {} as {stack: string};
         Error.captureStackTrace(syncStack);
-        return method.call(this, ...args).catch(e => {
+        return method.call(this, ...args).catch((e: Error) => {
           const stack = syncStack.stack.substring(syncStack.stack.indexOf('\n') + 1);
           const clientStack = stack.substring(stack.indexOf('\n'));
           if (e instanceof Error && e.stack && !e.stack.includes(clientStack))
@@ -120,72 +106,27 @@ class Helper {
     }
   }
 
-  /**
-   * @param {!NodeJS.EventEmitter} emitter
-   * @param {(string|symbol)} eventName
-   * @param {function(?):void} handler
-   * @return {{emitter: !NodeJS.EventEmitter, eventName: (string|symbol), handler: function(?)}}
-   */
-  static addEventListener(emitter: NodeJS.EventEmitter, eventName: (string|symbol), handler: (...args: any[]) => void): {emitter: NodeJS.EventEmitter, eventName: (string|symbol), handler: function(?)} {
+  static addEventListener(emitter: NodeJS.EventEmitter, eventName: (string|symbol), handler: AnyFunction): {emitter: NodeJS.EventEmitter, eventName: (string|symbol), handler: AnyFunction} {
     emitter.on(eventName, handler);
     return { emitter, eventName, handler };
   }
 
-  /**
-   * @param {!Array<{emitter: !NodeJS.EventEmitter, eventName: (string|symbol), handler: function(?):void}>} listeners
-   */
-  static removeEventListeners(listeners: Array<{emitter: NodeJS.EventEmitter, eventName: (string|symbol), handler: (...args: any[]) => void}>) {
+  static removeEventListeners(listeners: Array<{emitter: NodeJS.EventEmitter, eventName: (string|symbol), handler: AnyFunction}>) {
     for (const listener of listeners)
       listener.emitter.removeListener(listener.eventName, listener.handler);
     listeners.length = 0;
   }
 
-  /**
-   * @param {!Object} obj
-   * @return {boolean}
-   */
-  static isString(obj: object): boolean {
-    return typeof obj === 'string' || obj instanceof String;
+  static isString(value: unknown): value is string {
+    return typeof value === 'string' || value instanceof String;
   }
 
-  /**
-   * @param {!Object} obj
-   * @return {boolean}
-   */
-  static isNumber(obj: object): boolean {
-    return typeof obj === 'number' || obj instanceof Number;
+  static isNumber(value: unknown): value is number {
+    return typeof value === 'number' || value instanceof Number;
   }
 
-  /**
-   * @param {function} nodeFunction
-   * @return {function}
-   */
-  static promisify(nodeFunction: AnyFunction): AnyFunction {
-    function promisified(...args) {
-      return new Promise((resolve, reject) => {
-        function callback(err, ...result) {
-          if (err)
-            return reject(err);
-          if (result.length === 1)
-            return resolve(result[0]);
-          return resolve(result);
-        }
-        nodeFunction.call(null, ...args, callback);
-      });
-    }
-    return promisified;
-  }
-
-  /**
-   * @param {!NodeJS.EventEmitter} emitter
-   * @param {(string|symbol)} eventName
-   * @param {function} predicate
-   * @param {number} timeout
-   * @param {!Promise<!Error>} abortPromise
-   * @return {!Promise}
-   */
-  static async waitForEvent(emitter: NodeJS.EventEmitter, eventName: (string|symbol), predicate: AnyFunction, timeout: number, abortPromise: Promise<Error>): Promise<void> {
-    let eventTimeout, resolveCallback, rejectCallback;
+  static async waitForEvent(emitter: NodeJS.EventEmitter, eventName: (string|symbol), predicate: AnyFunction, timeout: number, abortPromise: Promise<Error>): Promise<any> {
+    let eventTimeout: ReturnType<typeof setTimeout>, resolveCallback: (event: any) => void, rejectCallback: (e: TimeoutError) => void;
     const promise = new Promise((resolve, reject) => {
       resolveCallback = resolve;
       rejectCallback = reject;
@@ -216,37 +157,24 @@ class Helper {
     return result;
   }
 
-  /**
-   * @template T
-   * @param {!Promise<T>} promise
-   * @param {string} taskName
-   * @param {number} timeout
-   * @return {!Promise<T>}
-   */
-  static async waitWithTimeout(promise: Promise<T>, taskName: string, timeout: number): Promise<T> {
-    let reject;
+  static async waitWithTimeout<T>(promise: Promise<T>, taskName: string, timeout: number): Promise<T> {
+    let reject: (e: TimeoutError) => void;
     const timeoutError = new TimeoutError(`waiting for ${taskName} failed: timeout ${timeout}ms exceeded`);
-    const timeoutPromise = new Promise((resolve, x) => reject = x);
+    const timeoutPromise = new Promise<T>((_resolve, x) => reject = x);
     let timeoutTimer = null;
     if (timeout)
       timeoutTimer = setTimeout(() => reject(timeoutError), timeout);
     try {
       return await Promise.race([promise, timeoutPromise]);
     } finally {
-      if (timeoutTimer)
+      if (timeoutTimer !== null)
         clearTimeout(timeoutTimer);
     }
   }
 
-  /**
-   * @param {!Puppeteer.CDPSession} client
-   * @param {string} handle
-   * @param {?string} path
-   * @return {!Promise<!Buffer>}
-   */
-  static async readProtocolStream(client: CDPSession, handle: string, path?: string): Promise<Buffer> {
+  static async readProtocolStream(client: CDPSession, handle: string, path?: string | null): Promise<Buffer | null> {
     let eof = false;
-    let file;
+    let file: number | undefined;
     if (path)
       file = await openAsync(path, 'w');
     const bufs = [];
@@ -255,10 +183,10 @@ class Helper {
       eof = response.eof;
       const buf = Buffer.from(response.data, response.base64Encoded ? 'base64' : undefined);
       bufs.push(buf);
-      if (path)
+      if (file !== undefined)
         await writeAsync(file, buf);
     }
-    if (path)
+    if (file !== undefined)
       await closeAsync(file);
     await client.send('IO.close', {handle});
     let resultBuffer = null;
@@ -270,21 +198,16 @@ class Helper {
   }
 }
 
-const openAsync = Helper.promisify(fs.open);
-const writeAsync = Helper.promisify(fs.write);
-const closeAsync = Helper.promisify(fs.close);
+const openAsync = promisify(fs.open);
+const writeAsync = promisify(fs.write);
+const closeAsync = promisify(fs.close);
 
-/**
- * @param {*} value
- * @param {string=} message
- */
-function assert(value: any, message?: string) {
-  if (!value)
+export function assert(value: unknown, message?: string): asserts value {
+  if (!value) {
     throw new Error(message);
+  }
 }
 
 export {
-  helper: Helper,
-  assert,
-  debugError
+  Helper as helper,
 };

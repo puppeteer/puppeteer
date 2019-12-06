@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * @template T
- * @template V
- */
-class Multimap {
-  constructor() {
-    this._map = new Map();
-  }
 
-  /**
-   * @param {T} key
-   * @param {V} value
-   */
-  set(key: T, value: V) {
+export default class Multimap<K, V> {
+  private _map = new Map<K, Set<V>>();
+
+  set(key: K, value: V): void {
     let set = this._map.get(key);
     if (!set) {
       set = new Set();
@@ -35,50 +26,29 @@ class Multimap {
     set.add(value);
   }
 
-  /**
-   * @param {T} key
-   * @return {!Set<V>}
-   */
-  get(key: T): Set<V> {
+  get(key: K): Set<V> {
     let result = this._map.get(key);
     if (!result)
       result = new Set();
     return result;
   }
 
-  /**
-   * @param {T} key
-   * @return {boolean}
-   */
-  has(key: T): boolean {
+  has(key: K): boolean {
     return this._map.has(key);
   }
 
-  /**
-   * @param {T} key
-   * @param {V} value
-   * @return {boolean}
-   */
-  hasValue(key: T, value: V): boolean {
+  hasValue(key: K, value: V): boolean {
     const set = this._map.get(key);
     if (!set)
       return false;
     return set.has(value);
   }
 
-  /**
-   * @return {number}
-   */
   get size(): number {
     return this._map.size;
   }
 
-  /**
-   * @param {T} key
-   * @param {V} value
-   * @return {boolean}
-   */
-  delete(key: T, value: V): boolean {
+  delete(key: K, value: V): boolean {
     const values = this.get(key);
     const result = values.delete(value);
     if (!values.size)
@@ -86,45 +56,29 @@ class Multimap {
     return result;
   }
 
-  /**
-   * @param {T} key
-   */
-  deleteAll(key: T) {
+  deleteAll(key: K) {
     this._map.delete(key);
   }
 
-  /**
-   * @param {T} key
-   * @return {V}
-   */
-  firstValue(key: T): V {
+  firstValue(key: K): V | undefined {
     const set = this._map.get(key);
     if (!set)
-      return null;
+      return undefined;
     return set.values().next().value;
   }
 
-  /**
-   * @return {T}
-   */
-  firstKey(): T {
+  firstKey(): K | undefined {
     return this._map.keys().next().value;
   }
 
-  /**
-   * @return {!Array<V>}
-   */
   valuesArray(): Array<V> {
-    const result = [];
-    for (const key of this._map.keys())
-      result.push(...Array.from(this._map.get(key).values()));
+    const result: V[] = [];
+    for (const set of this._map.values())
+      result.push(...Array.from(set.values()));
     return result;
   }
 
-  /**
-   * @return {!Array<T>}
-   */
-  keysArray(): Array<T> {
+  keysArray(): Array<K> {
     return Array.from(this._map.keys());
   }
 
@@ -132,5 +86,3 @@ class Multimap {
     this._map.clear();
   }
 }
-
-export default Multimap;

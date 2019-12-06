@@ -14,31 +14,20 @@
  * limitations under the License.
  */
 
-const DEFAULT_TIMEOUT = 30000;
+const DEFAULT_TIMEOUT = 30_000;
 
-class TimeoutSettings {
-  constructor() {
-    this._defaultTimeout = null;
-    this._defaultNavigationTimeout = null;
-  }
+export class TimeoutSettings {
+  private _defaultTimeout: number | null = null;
+  private _defaultNavigationTimeout: number | null = null;
 
-  /**
-   * @param {number} timeout
-   */
   setDefaultTimeout(timeout: number) {
     this._defaultTimeout = timeout;
   }
 
-  /**
-   * @param {number} timeout
-   */
   setDefaultNavigationTimeout(timeout: number) {
     this._defaultNavigationTimeout = timeout;
   }
 
-  /**
-   * @return {number}
-   */
   navigationTimeout(): number {
     if (this._defaultNavigationTimeout !== null)
       return this._defaultNavigationTimeout;
@@ -53,5 +42,3 @@ class TimeoutSettings {
     return DEFAULT_TIMEOUT;
   }
 }
-
-export {TimeoutSettings};

@@ -14,56 +14,38 @@
  * limitations under the License.
  */
 
-import {assert} from './helper';
+import { assert } from './helper';
+import { CDPSession } from './Connection';
 
-class Dialog {
-  _client: CDPSession
-  _type: string
-  _message: string
-  _handled: boolean
-  _defaultValue: (string|undefined)
-  /**
-   * @param {!Puppeteer.CDPSession} client
-   * @param {string} type
-   * @param {string} message
-   * @param {(string|undefined)} defaultValue
-   */
-  constructor(client: CDPSession, type: string, message: string, defaultValue: (string|undefined) = '') {
-    this._client = client;
-    this._type = type;
-    this._message = message;
-    this._handled = false;
-    this._defaultValue = defaultValue;
+export class Dialog {
+  static Type = {
+    Alert: 'alert',
+    BeforeUnload: 'beforeunload',
+    Confirm: 'confirm',
+    Prompt: 'prompt'
+  } as const;
+
+  private _handled = false;
+
+  constructor(private client: CDPSession, private _type: string, private _message: string, private _defaultValue = '') {
   }
 
-  /**
-   * @return {string}
-   */
   type(): string {
     return this._type;
   }
 
-  /**
-   * @return {string}
-   */
   message(): string {
     return this._message;
   }
 
-  /**
-   * @return {string}
-   */
   defaultValue(): string {
     return this._defaultValue;
   }
 
-  /**
-   * @param {string=} promptText
-   */
   async accept(promptText?: string) {
     assert(!this._handled, 'Cannot accept dialog which is already handled!');
     this._handled = true;
-    await this._client.send('Page.handleJavaScriptDialog', {
+    await this.client.send('Page.handleJavaScriptDialog', {
       accept: true,
       promptText: promptText
     });
@@ -72,17 +54,8 @@ class Dialog {
   async dismiss() {
     assert(!this._handled, 'Cannot dismiss dialog which is already handled!');
     this._handled = true;
-    await this._client.send('Page.handleJavaScriptDialog', {
+    await this.client.send('Page.handleJavaScriptDialog', {
       accept: false
     });
   }
 }
-
-Dialog.Type = {
-  Alert: 'alert',
-  BeforeUnload: 'beforeunload',
-  Confirm: 'confirm',
-  Prompt: 'prompt'
-};
-
-export {Dialog};

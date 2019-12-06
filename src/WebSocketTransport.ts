@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import WebSocket from 'ws';
 
-/**
- * @implements {!Puppeteer.ConnectionTransport}
- */
-class WebSocketTransport {
-  /**
-   * @param {string} url
-   * @return {!Promise<!WebSocketTransport>}
-   */
+import WebSocket from 'ws';
+import { ConnectionTransport } from './types';
+
+export default class WebSocketTransport implements ConnectionTransport {
+
+  onmessage?: ((message: string) => void);
+  onclose?: (() => void);
+
   static create(url: string): Promise<WebSocketTransport> {
     return new Promise((resolve, reject) => {
       const ws = new WebSocket(url, [], {
@@ -35,28 +34,20 @@ class WebSocketTransport {
   }
   _ws: WebSocket
 
-  /**
-   * @param {!WebSocket} ws
-   */
   constructor(ws: WebSocket) {
     this._ws = ws;
     this._ws.addEventListener('message', event => {
       if (this.onmessage)
         this.onmessage.call(null, event.data);
     });
-    this._ws.addEventListener('close', event => {
+    this._ws.addEventListener('close', () => {
       if (this.onclose)
         this.onclose.call(null);
     });
     // Silently ignore all errors - we don't know what to do with them.
     this._ws.addEventListener('error', () => {});
-    this.onmessage = null;
-    this.onclose = null;
   }
 
-  /**
-   * @param {string} message
-   */
   send(message: string) {
     this._ws.send(message);
   }
@@ -65,5 +56,3 @@ class WebSocketTransport {
     this._ws.close();
   }
 }
-
-export default WebSocketTransport;

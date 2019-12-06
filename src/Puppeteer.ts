@@ -13,54 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Launcher from './Launcher';
-import BrowserFetcher from './BrowserFetcher';
-import Errors from './Errors';
+import Launcher, { LaunchOptions, ChromeArgOptions, BrowserOptions, ProductLauncher } from './Launcher';
+import BrowserFetcher, { BrowserFetcherOptions } from './BrowserFetcher';
+import * as Errors from './Errors';
 import DeviceDescriptors from './DeviceDescriptors';
+import { ConnectionTransport } from './types';
+import { Browser } from './api';
 
 export default class {
-  _projectRoot: string
-  _preferredRevision: string
-  _isPuppeteerCore: boolean
-  /**
-   * @param {string} projectRoot
-   * @param {string} preferredRevision
-   * @param {boolean} isPuppeteerCore
-   */
-  constructor(projectRoot: string, preferredRevision: string, isPuppeteerCore: boolean) {
-    this._projectRoot = projectRoot;
-    this._preferredRevision = preferredRevision;
-    this._isPuppeteerCore = isPuppeteerCore;
+  _productName?: string
+  _lazyLauncher?: ProductLauncher
+  constructor(private _projectRoot: string, private _preferredRevision: string, private _isPuppeteerCore: boolean) {
   }
 
-  /**
-   * @param {!(Launcher.LaunchOptions & Launcher.ChromeArgOptions & Launcher.BrowserOptions & {product?: string, extraPrefsFirefox?: !object})=} options
-   * @return {!Promise<!Puppeteer.Browser>}
-   */
-  launch(options?: (Launcher.LaunchOptions & Launcher.ChromeArgOptions & Launcher.BrowserOptions & {product?: string, extraPrefsFirefox?: object})): Promise<Browser> {
+  launch(options?: LaunchOptions & ChromeArgOptions & BrowserOptions & {product?: string, extraPrefsFirefox?: object}): Promise<Browser> {
     if (!this._productName && options)
       this._productName = options.product;
     return this._launcher.launch(options);
   }
 
-  /**
-   * @param {!(Launcher.BrowserOptions & {browserWSEndpoint?: string, browserURL?: string, transport?: !Puppeteer.ConnectionTransport})} options
-   * @return {!Promise<!Puppeteer.Browser>}
-   */
-  connect(options: (Launcher.BrowserOptions & {browserWSEndpoint?: string, browserURL?: string, transport?: ConnectionTransport})): Promise<Browser> {
+  connect(options: (BrowserOptions & {browserWSEndpoint?: string, browserURL?: string, transport?: ConnectionTransport})): Promise<Browser> {
     return this._launcher.connect(options);
   }
 
-  /**
-   * @return {string}
-   */
   executablePath(): string {
     return this._launcher.executablePath();
   }
 
-  /**
-   * @return {!Puppeteer.ProductLauncher}
-   */
   get _launcher(): ProductLauncher {
     if (!this._lazyLauncher)
       this._lazyLauncher = Launcher(this._projectRoot, this._preferredRevision, this._isPuppeteerCore, this._productName);
@@ -68,40 +47,23 @@ export default class {
 
   }
 
-  /**
-   * @return {string}
-   */
   get product(): string {
     return this._launcher.product;
   }
 
-  /**
-   * @return {Object}
-   */
   get devices(): object {
     return DeviceDescriptors;
   }
 
-  /**
-   * @return {Object}
-   */
-  get errors(): object {
+  get errors() {
     return Errors;
   }
 
-  /**
-   * @param {!Launcher.ChromeArgOptions=} options
-   * @return {!Array<string>}
-   */
-  defaultArgs(options?: Launcher.ChromeArgOptions): Array<string> {
+  defaultArgs(options?: ChromeArgOptions): string[] {
     return this._launcher.defaultArgs(options);
   }
 
-  /**
-   * @param {!BrowserFetcher.Options=} options
-   * @return {!BrowserFetcher}
-   */
-  createBrowserFetcher(options?: BrowserFetcher.Options): BrowserFetcher {
+  createBrowserFetcher(options?: BrowserFetcherOptions): BrowserFetcher {
     return new BrowserFetcher(this._projectRoot, options);
   }
 };

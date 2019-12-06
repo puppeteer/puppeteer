@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 import {helper, assert} from './helper';
+import { CDPSession } from './Connection';
 
-class Tracing {
-  _client: CDPSession
-  _recording: boolean
-  _path: string
-  /**
-   * @param {!Puppeteer.CDPSession} client
-   */
-  constructor(client: CDPSession) {
-    this._client = client;
+export default class Tracing {
+  private _recording: boolean
+  private _path: string | null
+
+  constructor(private client: CDPSession) {
     this._recording = false;
     this._path = '';
   }
 
-  /**
-   * @param {!{path?: string, screenshots?: boolean, categories?: !Array<string>}} options
-   */
-  async start(options: {path?: string, screenshots?: boolean, categories?: Array<string>} = {}) {
+  async start(options: {path?: string, screenshots?: boolean, categories?: string[]} = {}):Promise<void> {
     assert(!this._recording, 'Cannot start recording trace while already recording trace.');
 
     const defaultCategories = [
@@ -51,25 +45,20 @@ class Tracing {
 
     this._path = path;
     this._recording = true;
-    await this._client.send('Tracing.start', {
+    await this.client.send('Tracing.start', {
       transferMode: 'ReturnAsStream',
       categories: categories.join(',')
     });
   }
 
-  /**
-   * @return {!Promise<!Buffer>}
-   */
-  async stop(): Promise<Buffer> {
-    let fulfill;
-    const contentPromise = new Promise(x => fulfill = x);
-    this._client.once('Tracing.tracingComplete', event => {
-      helper.readProtocolStream(this._client, event.stream, this._path).then(fulfill);
+  async stop(): Promise<Buffer | null> {
+    let fulfill: (value?: Buffer | null) => void;
+    const contentPromise = new Promise<Buffer | null>(x => fulfill = x);
+    this.client.once('Tracing.tracingComplete', event => {
+      helper.readProtocolStream(this.client, event.stream, this._path).then(fulfill);
     });
-    await this._client.send('Tracing.end');
+    await this.client.send('Tracing.end');
     this._recording = false;
     return contentPromise;
   }
 }
-
-export default Tracing;

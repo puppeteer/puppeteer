@@ -46,6 +46,7 @@
     "@types/mime": "^2.0.1",
     "@types/mime-types": "^2.1.0",
     "@types/node": "8",
+    "@types/proxy-from-env": "^1.0.0",
     "@types/rimraf": "^2.0.3",
     "@types/ws": "^6.0.4",
     "commonmark": "^0.28.1",

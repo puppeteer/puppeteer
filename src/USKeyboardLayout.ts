@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-/**
- * @typedef {Object} KeyDefinition
- * @property {number=} keyCode
- * @property {number=} shiftKeyCode
- * @property {string=} key
- * @property {string=} shiftKey
- * @property {string=} code
- * @property {string=} text
- * @property {string=} shiftText
- * @property {number=} location
- */
+export interface KeyDefinition {
+  keyCode?: number;
+  shiftKeyCode?: number;
+  key?: string;
+  shiftKey?: string;
+  code?: string;
+  text?: string;
+  shiftText?: string;
+  location?: number;
+};
 
-/**
- * @type {Object<string, KeyDefinition>}
- */
-export {
+
+const keyDefinitions: Record<string, KeyDefinition> = {
   '0': {'keyCode': 48, 'key': '0', 'code': 'Digit0'},
   '1': {'keyCode': 49, 'key': '1', 'code': 'Digit1'},
   '2': {'keyCode': 50, 'key': '2', 'code': 'Digit2'},
@@ -286,3 +283,5 @@ export {
   'VolumeDown': {'keyCode': 182, 'key': 'VolumeDown', 'code': 'VolumeDown', 'location': 4},
   'VolumeUp': {'keyCode': 183, 'key': 'VolumeUp', 'code': 'VolumeUp', 'location': 4},
 };
+
+export default keyDefinitions

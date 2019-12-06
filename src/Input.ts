@@ -16,26 +16,23 @@
 
 import {assert} from './helper';
 import keyDefinitions from './USKeyboardLayout';
+import { CDPSession } from './Connection';
 
-/**
- * @typedef {Object} KeyDescription
- * @property {number} keyCode
- * @property {string} key
- * @property {string} text
- * @property {string} code
- * @property {number} location
- */
+export interface KeyDescription {
+  keyCode: number;
+  key: string;
+  text: string;
+  code: string;
+  location: number;
+};
 
-class Keyboard {
+export class Keyboard {
   _client: CDPSession
-  _modifiers: number
-  /**
-   * @param {!Puppeteer.CDPSession} client
-   */
+  _modifiers = 0
+  _pressedKeys = new Set<string>();
+
   constructor(client: CDPSession) {
     this._client = client;
-    this._modifiers = 0;
-    this._pressedKeys = new Set();
   }
 
   /**
@@ -153,12 +150,8 @@ class Keyboard {
     await this._client.send('Input.insertText', {text: char});
   }
 
-  /**
-   * @param {string} text
-   * @param {{delay: (number|undefined)}=} options
-   */
   async type(text: string, options?: {delay: (number|undefined)}) {
-    const delay = (options && options.delay) || null;
+    const delay = (options && options.delay) || undefined;
     for (const char of text) {
       if (keyDefinitions[char]) {
         await this.press(char, {delay});
@@ -170,10 +163,6 @@ class Keyboard {
     }
   }
 
-  /**
-   * @param {string} key
-   * @param {!{delay?: number, text?: string}=} options
-   */
   async press(key: string, options: {delay?: number, text?: string} = {}) {
     const {delay = null} = options;
     await this.down(key, options);
@@ -183,7 +172,7 @@ class Keyboard {
   }
 }
 
-class Mouse {
+export class Mouse {
   _client: CDPSession
   _keyboard: Keyboard
   _x: number
@@ -202,11 +191,6 @@ class Mouse {
     this._button = 'none';
   }
 
-  /**
-   * @param {number} x
-   * @param {number} y
-   * @param {!{steps?: number}=} options
-   */
   async move(x: number, y: number, options: {steps?: number} = {}) {
     const {steps = 1} = options;
     const fromX = this._x, fromY = this._y;
@@ -223,11 +207,6 @@ class Mouse {
     }
   }
 
-  /**
-   * @param {number} x
-   * @param {number} y
-   * @param {!{delay?: number, button?: "left"|"right"|"middle", clickCount?: number}=} options
-   */
   async click(x: number, y: number, options: {delay?: number, button?: "left"|"right"|"middle", clickCount?: number} = {}) {
     const {delay = null} = options;
     if (delay !== null) {
@@ -246,9 +225,6 @@ class Mouse {
     }
   }
 
-  /**
-   * @param {!{button?: "left"|"right"|"middle", clickCount?: number}=} options
-   */
   async down(options: {button?: "left"|"right"|"middle", clickCount?: number} = {}) {
     const {button = 'left', clickCount = 1} = options;
     this._button = button;
@@ -262,9 +238,6 @@ class Mouse {
     });
   }
 
-  /**
-   * @param {!{button?: "left"|"right"|"middle", clickCount?: number}=} options
-   */
   async up(options: {button?: "left"|"right"|"middle", clickCount?: number} = {}) {
     const {button = 'left', clickCount = 1} = options;
     this._button = 'none';
@@ -279,22 +252,15 @@ class Mouse {
   }
 }
 
-class Touchscreen {
+export class Touchscreen {
   _client: CDPSession
   _keyboard: Keyboard
-  /**
-   * @param {Puppeteer.CDPSession} client
-   * @param {Keyboard} keyboard
-   */
+
   constructor(client: CDPSession, keyboard: Keyboard) {
     this._client = client;
     this._keyboard = keyboard;
   }
 
-  /**
-   * @param {number} x
-   * @param {number} y
-   */
   async tap(x: number, y: number) {
     // Touches appear to be lost during the first frame after navigation.
     // This waits a frame before sending the tap.
@@ -317,5 +283,3 @@ class Touchscreen {
     });
   }
 }
-
-export { Keyboard, Mouse, Touchscreen};

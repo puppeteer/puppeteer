@@ -14,30 +14,28 @@
  * limitations under the License.
  */
 
-export {
-  Accessibility: require('./Accessibility').Accessibility,
-  Browser: require('./Browser').Browser,
-  BrowserContext: require('./Browser').BrowserContext,
-  BrowserFetcher: require('./BrowserFetcher'),
-  CDPSession: require('./Connection').CDPSession,
-  ConsoleMessage: require('./Page').ConsoleMessage,
-  Coverage: require('./Coverage').Coverage,
-  Dialog: require('./Dialog').Dialog,
-  ElementHandle: require('./JSHandle').ElementHandle,
-  ExecutionContext: require('./ExecutionContext').ExecutionContext,
-  FileChooser: require('./Page').FileChooser,
-  Frame: require('./FrameManager').Frame,
-  JSHandle: require('./JSHandle').JSHandle,
-  Keyboard: require('./Input').Keyboard,
-  Mouse: require('./Input').Mouse,
-  Page: require('./Page').Page,
-  Puppeteer: require('./Puppeteer'),
-  Request: require('./NetworkManager').Request,
-  Response: require('./NetworkManager').Response,
-  SecurityDetails: require('./NetworkManager').SecurityDetails,
-  Target: require('./Target').Target,
-  TimeoutError: require('./Errors').TimeoutError,
-  Touchscreen: require('./Input').Touchscreen,
-  Tracing: require('./Tracing'),
-  Worker: require('./Worker').Worker,
-};
+export * from './Accessibility';
+export * from './Browser';
+export * from './Browser';
+export * from './BrowserFetcher';
+export * from './Connection';
+export * from './Page';
+export * from './Coverage';
+export * from './Dialog';
+export * from './JSHandle';
+export * from './ExecutionContext';
+export * from './Page';
+export * from './FrameManager';
+export * from './JSHandle';
+export * from './Input';
+export * from './Input';
+export * from './Page';
+export * from './Puppeteer';
+export * from './NetworkManager';
+export * from './NetworkManager';
+export * from './NetworkManager';
+export * from './Target';
+export * from './Errors';
+export * from './Input';
+export * from './Tracing';
+export * from './Worker';

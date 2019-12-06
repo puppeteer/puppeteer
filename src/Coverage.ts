@@ -15,75 +15,55 @@
  */
 
 import {helper, debugError, assert} from './helper';
-
 import {EVALUATION_SCRIPT_URL} from './ExecutionContext';
+import { CDPSession } from './Connection';
+import { AnyFunction } from './types';
 
-/**
- * @typedef {Object} CoverageEntry
- * @property {string} url
- * @property {string} text
- * @property {!Array<!{start: number, end: number}>} ranges
- */
+export interface CoverageEntry {
+  url: string;
+  text: string;
+  ranges: Array<{
+      start: number;
+      end: number;
+  }>;
+};
 
-class Coverage {
-  /**
-   * @param {!Puppeteer.CDPSession} client
-   */
+export class Coverage {
+  private _jsCoverage: JSCoverage
+  private _cssCoverage: CSSCoverage
+
   constructor(client: CDPSession) {
     this._jsCoverage = new JSCoverage(client);
     this._cssCoverage = new CSSCoverage(client);
   }
 
-  /**
-   * @param {!{resetOnNavigation?: boolean, reportAnonymousScripts?: boolean}} options
-   */
   async startJSCoverage(options: {resetOnNavigation?: boolean, reportAnonymousScripts?: boolean}) {
     return await this._jsCoverage.start(options);
   }
 
-  /**
-   * @return {!Promise<!Array<!CoverageEntry>>}
-   */
   async stopJSCoverage(): Promise<Array<CoverageEntry>> {
     return await this._jsCoverage.stop();
   }
 
-  /**
-   * @param {{resetOnNavigation?: boolean}=} options
-   */
   async startCSSCoverage(options?: {resetOnNavigation?: boolean}) {
     return await this._cssCoverage.start(options);
   }
 
-  /**
-   * @return {!Promise<!Array<!CoverageEntry>>}
-   */
   async stopCSSCoverage(): Promise<Array<CoverageEntry>> {
     return await this._cssCoverage.stop();
   }
 }
 
-export {Coverage};
-
 class JSCoverage {
-  _client: CDPSession
-  _enabled: boolean
-  _resetOnNavigation: boolean
-  /**
-   * @param {!Puppeteer.CDPSession} client
-   */
-  constructor(client: CDPSession) {
-    this._client = client;
-    this._enabled = false;
-    this._scriptURLs = new Map();
-    this._scriptSources = new Map();
-    this._eventListeners = [];
-    this._resetOnNavigation = false;
-  }
+  private _enabled = false;
+  private _scriptURLs = new Map<string, string>();
+  private _scriptSources = new Map<string, string>();
+  private _eventListeners: Array<{emitter: NodeJS.EventEmitter, eventName: (string|symbol), handler: AnyFunction}> = [];
+  private _resetOnNavigation = false;
+  private _reportAnonymousScripts?: boolean;
 
-  /**
-   * @param {!{resetOnNavigation?: boolean, reportAnonymousScripts?: boolean}} options
-   */
+  constructor(private client: CDPSession) { }
+
   async start(options: {resetOnNavigation?: boolean, reportAnonymousScripts?: boolean} = {}) {
     assert(!this._enabled, 'JSCoverage is already enabled');
     const {
@@ -96,27 +76,24 @@ class JSCoverage {
     this._scriptURLs.clear();
     this._scriptSources.clear();
     this._eventListeners = [
-      helper.addEventListener(this._client, 'Debugger.scriptParsed', this._onScriptParsed.bind(this)),
-      helper.addEventListener(this._client, 'Runtime.executionContextsCleared', this._onExecutionContextsCleared.bind(this)),
+      helper.addEventListener(this.client, 'Debugger.scriptParsed', this._onScriptParsed.bind(this)),
+      helper.addEventListener(this.client, 'Runtime.executionContextsCleared', this._onExecutionContextsCleared.bind(this)),
     ];
     await Promise.all([
-      this._client.send('Profiler.enable'),
-      this._client.send('Profiler.startPreciseCoverage', {callCount: false, detailed: true}),
-      this._client.send('Debugger.enable'),
-      this._client.send('Debugger.setSkipAllPauses', {skip: true})
+      this.client.send('Profiler.enable'),
+      this.client.send('Profiler.startPreciseCoverage', {callCount: false, detailed: true}),
+      this.client.send('Debugger.enable'),
+      this.client.send('Debugger.setSkipAllPauses', {skip: true})
     ]);
   }
 
-  _onExecutionContextsCleared() {
+  private _onExecutionContextsCleared() {
     if (!this._resetOnNavigation)
       return;
     this._scriptURLs.clear();
     this._scriptSources.clear();
   }
 
-  /**
-   * @param {!Protocol.Debugger.scriptParsedPayload} event
-   */
   async _onScriptParsed(event: Protocol.Debugger.scriptParsedPayload) {
     // Ignore puppeteer-injected scripts
     if (event.url === EVALUATION_SCRIPT_URL)
@@ -125,7 +102,7 @@ class JSCoverage {
     if (!event.url && !this._reportAnonymousScripts)
       return;
     try {
-      const response = await this._client.send('Debugger.getScriptSource', {scriptId: event.scriptId});
+      const response = await this.client.send('Debugger.getScriptSource', {scriptId: event.scriptId});
       this._scriptURLs.set(event.scriptId, event.url);
       this._scriptSources.set(event.scriptId, response.scriptSource);
     } catch (e) {
@@ -134,17 +111,14 @@ class JSCoverage {
     }
   }
 
-  /**
-   * @return {!Promise<!Array<!CoverageEntry>>}
-   */
   async stop(): Promise<Array<CoverageEntry>> {
     assert(this._enabled, 'JSCoverage is not enabled');
     this._enabled = false;
     const [profileResponse] = await Promise.all([
-      this._client.send('Profiler.takePreciseCoverage'),
-      this._client.send('Profiler.stopPreciseCoverage'),
-      this._client.send('Profiler.disable'),
-      this._client.send('Debugger.disable'),
+      this.client.send('Profiler.takePreciseCoverage'),
+      this.client.send('Profiler.stopPreciseCoverage'),
+      this.client.send('Profiler.disable'),
+      this.client.send('Debugger.disable'),
     ]);
     helper.removeEventListeners(this._eventListeners);
 
@@ -167,24 +141,14 @@ class JSCoverage {
 }
 
 class CSSCoverage {
-  _client: CDPSession
-  _enabled: boolean
-  _resetOnNavigation: boolean
-  /**
-   * @param {!Puppeteer.CDPSession} client
-   */
-  constructor(client: CDPSession) {
-    this._client = client;
-    this._enabled = false;
-    this._stylesheetURLs = new Map();
-    this._stylesheetSources = new Map();
-    this._eventListeners = [];
-    this._resetOnNavigation = false;
-  }
+  private _enabled = false;
+  private _stylesheetURLs = new Map<string, string>();
+  private _stylesheetSources = new Map<string, string>();
+  private _eventListeners: Array<{emitter: NodeJS.EventEmitter, eventName: (string|symbol), handler: AnyFunction}> = [];
+  private _resetOnNavigation = false;
 
-  /**
-   * @param {{resetOnNavigation?: boolean}=} options
-   */
+  constructor(private client: CDPSession) { }
+
   async start(options: {resetOnNavigation?: boolean} = {}) {
     assert(!this._enabled, 'CSSCoverage is already enabled');
     const {resetOnNavigation = true} = options;
@@ -193,33 +157,30 @@ class CSSCoverage {
     this._stylesheetURLs.clear();
     this._stylesheetSources.clear();
     this._eventListeners = [
-      helper.addEventListener(this._client, 'CSS.styleSheetAdded', this._onStyleSheet.bind(this)),
-      helper.addEventListener(this._client, 'Runtime.executionContextsCleared', this._onExecutionContextsCleared.bind(this)),
+      helper.addEventListener(this.client, 'CSS.styleSheetAdded', this._onStyleSheet.bind(this)),
+      helper.addEventListener(this.client, 'Runtime.executionContextsCleared', this._onExecutionContextsCleared.bind(this)),
     ];
     await Promise.all([
-      this._client.send('DOM.enable'),
-      this._client.send('CSS.enable'),
-      this._client.send('CSS.startRuleUsageTracking'),
+      this.client.send('DOM.enable'),
+      this.client.send('CSS.enable'),
+      this.client.send('CSS.startRuleUsageTracking'),
     ]);
   }
 
-  _onExecutionContextsCleared() {
+  private _onExecutionContextsCleared() {
     if (!this._resetOnNavigation)
       return;
     this._stylesheetURLs.clear();
     this._stylesheetSources.clear();
   }
 
-  /**
-   * @param {!Protocol.CSS.styleSheetAddedPayload} event
-   */
-  async _onStyleSheet(event: Protocol.CSS.styleSheetAddedPayload) {
+  private async _onStyleSheet(event: Protocol.CSS.styleSheetAddedPayload) {
     const header = event.header;
     // Ignore anonymous scripts
     if (!header.sourceURL)
       return;
     try {
-      const response = await this._client.send('CSS.getStyleSheetText', {styleSheetId: header.styleSheetId});
+      const response = await this.client.send('CSS.getStyleSheetText', {styleSheetId: header.styleSheetId});
       this._stylesheetURLs.set(header.styleSheetId, header.sourceURL);
       this._stylesheetSources.set(header.styleSheetId, response.text);
     } catch (e) {
@@ -228,16 +189,13 @@ class CSSCoverage {
     }
   }
 
-  /**
-   * @return {!Promise<!Array<!CoverageEntry>>}
-   */
   async stop(): Promise<Array<CoverageEntry>> {
     assert(this._enabled, 'CSSCoverage is not enabled');
     this._enabled = false;
-    const ruleTrackingResponse = await this._client.send('CSS.stopRuleUsageTracking');
+    const ruleTrackingResponse = await this.client.send('CSS.stopRuleUsageTracking');
     await Promise.all([
-      this._client.send('CSS.disable'),
-      this._client.send('DOM.disable'),
+      this.client.send('CSS.disable'),
+      this.client.send('DOM.disable'),
     ]);
     helper.removeEventListeners(this._eventListeners);
 
@@ -256,10 +214,10 @@ class CSSCoverage {
       });
     }
 
-    const coverage = [];
+    const coverage: Array<CoverageEntry> = [];
     for (const styleSheetId of this._stylesheetURLs.keys()) {
-      const url = this._stylesheetURLs.get(styleSheetId);
-      const text = this._stylesheetSources.get(styleSheetId);
+      const url = this._stylesheetURLs.get(styleSheetId)!;
+      const text = this._stylesheetSources.get(styleSheetId)!;
       const ranges = convertToDisjointRanges(styleSheetIdToCoverage.get(styleSheetId) || []);
       coverage.push({url, ranges, text});
     }
@@ -268,12 +226,8 @@ class CSSCoverage {
   }
 }
 
-/**
- * @param {!Array<!{startOffset:number, endOffset:number, count:number}>} nestedRanges
- * @return {!Array<!{start:number, end:number}>}
- */
 function convertToDisjointRanges(nestedRanges: Array<{startOffset:number, endOffset:number, count:number}>): Array<{start:number, end:number}> {
-  const points = [];
+  const points: Array<{offset: number; type: number, range: {startOffset:number, endOffset:number, count:number}}> = [];
   for (const range of nestedRanges) {
     points.push({ offset: range.startOffset, type: 0, range });
     points.push({ offset: range.endOffset, type: 1, range });
@@ -295,8 +249,8 @@ function convertToDisjointRanges(nestedRanges: Array<{startOffset:number, endOff
     return aLength - bLength;
   });
 
-  const hitCountStack = [];
-  const results = [];
+  const hitCountStack: number[] = [];
+  const results: Array<{start:number, end:number}> = [];
   let lastOffset = 0;
   // Run scanning line to intersect all ranges.
   for (const point of points) {
@@ -316,4 +270,3 @@ function convertToDisjointRanges(nestedRanges: Array<{startOffset:number, endOff
   // Filter out empty ranges.
   return results.filter(range => range.end - range.start > 1);
 }
-

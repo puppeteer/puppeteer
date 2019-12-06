@@ -14,79 +14,64 @@
  * limitations under the License.
  */
 
-/**
- * @typedef {Object} SerializedAXNode
- * @property {string} role
- *
- * @property {string=} name
- * @property {string|number=} value
- * @property {string=} description
- *
- * @property {string=} keyshortcuts
- * @property {string=} roledescription
- * @property {string=} valuetext
- *
- * @property {boolean=} disabled
- * @property {boolean=} expanded
- * @property {boolean=} focused
- * @property {boolean=} modal
- * @property {boolean=} multiline
- * @property {boolean=} multiselectable
- * @property {boolean=} readonly
- * @property {boolean=} required
- * @property {boolean=} selected
- *
- * @property {boolean|"mixed"=} checked
- * @property {boolean|"mixed"=} pressed
- *
- * @property {number=} level
- * @property {number=} valuemin
- * @property {number=} valuemax
- *
- * @property {string=} autocomplete
- * @property {string=} haspopup
- * @property {string=} invalid
- * @property {string=} orientation
- *
- * @property {Array<SerializedAXNode>=} children
- */
+import { CDPSession } from "./Connection";
+import { ElementHandle } from "./JSHandle";
 
-class Accessibility {
-  _client: CDPSession
-  /**
-   * @param {!Puppeteer.CDPSession} client
-   */
-  constructor(client: CDPSession) {
-    this._client = client;
+export interface SerializedAXNode {
+  role: string;
+  name?: string;
+  value?: string | number;
+  description?: string;
+  keyshortcuts?: string;
+  roledescription?: string;
+  valuetext?: string;
+  disabled?: boolean;
+  expanded?: boolean;
+  focused?: boolean;
+  modal?: boolean;
+  multiline?: boolean;
+  multiselectable?: boolean;
+  readonly?: boolean;
+  required?: boolean;
+  selected?: boolean;
+  checked?: boolean | "mixed";
+  pressed?: boolean | "mixed";
+  level?: number;
+  valuemin?: number;
+  valuemax?: number;
+  autocomplete?: string;
+  haspopup?: string;
+  invalid?: string;
+  orientation?: string;
+  children?: SerializedAXNode[];
+};
+
+export class Accessibility {
+  constructor(private _client: CDPSession) {
   }
 
-  /**
-   * @param {{interestingOnly?: boolean, root?: ?Puppeteer.ElementHandle}=} options
-   * @return {!Promise<!SerializedAXNode>}
-   */
-  async snapshot(options: {interestingOnly?: boolean, root?: ElementHandle} = {}): Promise<SerializedAXNode> {
+  async snapshot(options: {interestingOnly?: boolean, root?: ElementHandle} = {}): Promise<SerializedAXNode |null> {
     const {
       interestingOnly = true,
       root = null,
     } = options;
     const {nodes} = await this._client.send('Accessibility.getFullAXTree');
-    let backendNodeId = null;
+    let backendNodeId: number | null = null;
     if (root) {
       const {node} = await this._client.send('DOM.describeNode', {objectId: root._remoteObject.objectId});
       backendNodeId = node.backendNodeId;
     }
     const defaultRoot = AXNode.createTree(nodes);
-    let needle = defaultRoot;
+    let needle: AXNode | null = defaultRoot;
     if (backendNodeId) {
-      needle = defaultRoot.find(node => node._payload.backendDOMNodeId === backendNodeId);
+      needle = defaultRoot.find(node => node.payload.backendDOMNodeId === backendNodeId);
       if (!needle)
         return null;
     }
     if (!interestingOnly)
       return serializeTree(needle)[0];
 
-    /** @type {!Set<!AXNode>} */
-    const interestingNodes = new Set();
+    const interestingNodes = new Set<AXNode>();
     collectInterestingNodes(interestingNodes, defaultRoot, false);
     if (!interestingNodes.has(needle))
       return null;
@@ -94,11 +79,6 @@ class Accessibility {
   }
 }
 
-/**
- * @param {!Set<!AXNode>} collection
- * @param {!AXNode} node
- * @param {boolean} insideControl
- */
 function collectInterestingNodes(collection: Set<AXNode>, node: AXNode, insideControl: boolean) {
   if (node.isInteresting(insideControl))
     collection.add(node);
@@ -109,14 +89,8 @@ function collectInterestingNodes(collection: Set<AXNode>, node: AXNode, insideCo
     collectInterestingNodes(collection, child, insideControl);
 }
 
-/**
- * @param {!AXNode} node
- * @param {!Set<!AXNode>=} whitelistedNodes
- * @return {!Array<!SerializedAXNode>}
- */
 function serializeTree(node: AXNode, whitelistedNodes?: Set<AXNode>): Array<SerializedAXNode> {
-  /** @type {!Array<!SerializedAXNode>} */
-  const children = [];
+  const children: Array<SerializedAXNode> = [];
   for (const child of node._children)
     children.push(...serializeTree(child, whitelistedNodes));
 
@@ -129,50 +103,38 @@ function serializeTree(node: AXNode, whitelistedNodes?: Set<AXNode>): Array<Seri
   return [serializedNode];
 }
 
-
 class AXNode {
-  _payload: Protocol.Accessibility.AXNode
-  _richlyEditable: boolean
-  _editable: boolean
-  _focusable: boolean
-  _expanded: boolean
-  _hidden: boolean
-  /**
-   * @param {!Protocol.Accessibility.AXNode} payload
-   */
-  constructor(payload: Protocol.Accessibility.AXNode) {
-    this._payload = payload;
+  private _richlyEditable = false;
+  private _editable = false;
+  private _focusable = false;
+  // private _expanded = false;
+  private _hidden = false;
 
-    /** @type {!Array<!AXNode>} */
-    this._children = [];
+  /*@internal*/
+  public _children: Array<AXNode> = [];
+  private _name: string;
+  private _role: string;
+  private _cachedHasFocusableChild?: boolean;
+  
+  constructor(public payload: Protocol.Accessibility.AXNode) {
+    this._name = this.payload.name ? this.payload.name.value : '';
+    this._role = this.payload.role ? this.payload.role.value : 'Unknown';
 
-    this._richlyEditable = false;
-    this._editable = false;
-    this._focusable = false;
-    this._expanded = false;
-    this._hidden = false;
-    this._name = this._payload.name ? this._payload.name.value : '';
-    this._role = this._payload.role ? this._payload.role.value : 'Unknown';
-    this._cachedHasFocusableChild;
-
-    for (const property of this._payload.properties || []) {
+    for (const property of this.payload.properties || []) {
       if (property.name === 'editable') {
         this._richlyEditable = property.value.value === 'richtext';
         this._editable = true;
       }
       if (property.name === 'focusable')
         this._focusable = property.value.value;
-      if (property.name === 'expanded')
-        this._expanded = property.value.value;
+      // if (property.name === 'expanded')
+      //   this._expanded = property.value.value;
       if (property.name === 'hidden')
         this._hidden = property.value.value;
     }
   }
 
-  /**
-   * @return {boolean}
-   */
-  _isPlainTextField(): boolean {
+  private _isPlainTextField(): boolean {
     if (this._richlyEditable)
       return false;
     if (this._editable)
@@ -180,19 +142,13 @@ class AXNode {
     return this._role === 'textbox' || this._role === 'ComboBox' || this._role === 'searchbox';
   }
 
-  /**
-   * @return {boolean}
-   */
-  _isTextOnlyObject(): boolean {
+  private _isTextOnlyObject(): boolean {
     const role = this._role;
     return (role === 'LineBreak' || role === 'text' ||
             role === 'InlineTextBox');
   }
 
-  /**
-   * @return {boolean}
-   */
-  _hasFocusableChild(): boolean {
+  private _hasFocusableChild(): boolean {
     if (this._cachedHasFocusableChild === undefined) {
       this._cachedHasFocusableChild = false;
       for (const child of this._children) {
@@ -205,11 +161,7 @@ class AXNode {
     return this._cachedHasFocusableChild;
   }
 
-  /**
-   * @param {function(AXNode):boolean} predicate
-   * @return {?AXNode}
-   */
-  find(predicate: function(AXNode):boolean): AXNode | undefined {
+  find(predicate: (node: AXNode) => boolean): AXNode | null {
     if (predicate(this))
       return this;
     for (const child of this._children) {
@@ -220,9 +172,6 @@ class AXNode {
     return null;
   }
 
-  /**
-   * @return {boolean}
-   */
   isLeafNode(): boolean {
     if (!this._children.length)
       return true;
@@ -262,9 +211,6 @@ class AXNode {
     return false;
   }
 
-  /**
-   * @return {boolean}
-   */
   isControl(): boolean {
     switch (this._role) {
       case 'button':
@@ -293,10 +239,6 @@ class AXNode {
     }
   }
 
-  /**
-   * @param {boolean} insideControl
-   * @return {boolean}
-   */
   isInteresting(insideControl: boolean): boolean {
     const role = this._role;
     if (role === 'Ignored' || this._hidden)
@@ -316,27 +258,21 @@ class AXNode {
     return this.isLeafNode() && !!this._name;
   }
 
-  /**
-   * @return {!SerializedAXNode}
-   */
   serialize(): SerializedAXNode {
-    /** @type {!Map<string, number|string|boolean>} */
-    const properties = new Map();
-    for (const property of this._payload.properties || [])
+    const properties = new Map<string, any>();
+    for (const property of this.payload.properties || [])
       properties.set(property.name.toLowerCase(), property.value.value);
-    if (this._payload.name)
-      properties.set('name', this._payload.name.value);
-    if (this._payload.value)
-      properties.set('value', this._payload.value.value);
-    if (this._payload.description)
-      properties.set('description', this._payload.description.value);
+    if (this.payload.name)
+      properties.set('name', this.payload.name.value);
+    if (this.payload.value)
+      properties.set('value', this.payload.value.value);
+    if (this.payload.description)
+      properties.set('description', this.payload.description.value);
 
-    /** @type {SerializedAXNode} */
-    const node = {
+    const node: SerializedAXNode = {
       role: this._role
     };
 
-    /** @type {!Array<keyof SerializedAXNode>} */
     const userStringProperties = [
       'name',
       'value',
@@ -344,14 +280,14 @@ class AXNode {
       'keyshortcuts',
       'roledescription',
       'valuetext',
-    ];
+    ] as const;
+
     for (const userStringProperty of userStringProperties) {
       if (!properties.has(userStringProperty))
         continue;
       node[userStringProperty] = properties.get(userStringProperty);
     }
 
-    /** @type {!Array<keyof SerializedAXNode>} */
     const booleanProperties = [
       'disabled',
       'expanded',
@@ -362,7 +298,8 @@ class AXNode {
       'readonly',
       'required',
       'selected',
-    ];
+    ] as const;
+
     for (const booleanProperty of booleanProperties) {
       // WebArea's treat focus differently than other nodes. They report whether their frame  has focus,
       // not whether focus is specifically on the root node.
@@ -374,35 +311,36 @@ class AXNode {
       node[booleanProperty] = value;
     }
 
-    /** @type {!Array<keyof SerializedAXNode>} */
     const tristateProperties = [
       'checked',
       'pressed',
-    ];
+    ] as const;
+
     for (const tristateProperty of tristateProperties) {
       if (!properties.has(tristateProperty))
         continue;
       const value = properties.get(tristateProperty);
       node[tristateProperty] = value === 'mixed' ? 'mixed' : value === 'true' ? true : false;
     }
-    /** @type {!Array<keyof SerializedAXNode>} */
+
     const numericalProperties = [
       'level',
       'valuemax',
       'valuemin',
-    ];
+    ] as const;
+
     for (const numericalProperty of numericalProperties) {
       if (!properties.has(numericalProperty))
         continue;
       node[numericalProperty] = properties.get(numericalProperty);
     }
-    /** @type {!Array<keyof SerializedAXNode>} */
     const tokenProperties = [
       'autocomplete',
       'haspopup',
       'invalid',
       'orientation',
-    ];
+    ] as const;
+
     for (const tokenProperty of tokenProperties) {
       const value = properties.get(tokenProperty);
       if (!value || value === 'false')
@@ -412,21 +350,14 @@ class AXNode {
     return node;
   }
 
-  /**
-   * @param {!Array<!Protocol.Accessibility.AXNode>} payloads
-   * @return {!AXNode}
-   */
   static createTree(payloads: Array<Protocol.Accessibility.AXNode>): AXNode {
-    /** @type {!Map<string, !AXNode>} */
-    const nodeById = new Map();
+    const nodeById = new Map<string, AXNode>();
     for (const payload of payloads)
       nodeById.set(payload.nodeId, new AXNode(payload));
     for (const node of nodeById.values()) {
-      for (const childId of node._payload.childIds || [])
-        node._children.push(nodeById.get(childId));
+      for (const childId of node.payload.childIds || [])
+        node._children.push(nodeById.get(childId)!);
     }
     return nodeById.values().next().value;
   }
 }
-
-export {Accessibility};

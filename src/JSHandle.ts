@@ -14,66 +14,77 @@
  * limitations under the License.
  */
 
-import {helper, assert, debugError} from './helper';
+import path from 'path';
+import fs from 'fs';
+import { promisify } from 'util';
+import mime from 'mime-types';
 
-function createJSHandle(context, remoteObject) {
+import {helper, assert, debugError} from './helper';
+import { ExecutionContext } from './ExecutionContext';
+import { CDPSession } from './Connection';
+import { AnyFunction } from './types';
+import { Page, ScreenshotOptions } from './Page';
+import { FrameManager, Frame } from './FrameManager';
+
+const readFileAsync = promisify(fs.readFile);
+
+export interface BoxModel {
+  content: {
+      x: number;
+      y: number;
+  }[];
+  padding: {
+      x: number;
+      y: number;
+  }[];
+  border: {
+      x: number;
+      y: number;
+  }[];
+  margin: {
+      x: number;
+      y: number;
+  }[];
+  width: number;
+  height: number;
+};
+
+export function createJSHandle(context: ExecutionContext, remoteObject: Protocol.Runtime.RemoteObject) {
   const frame = context.frame();
   if (remoteObject.subtype === 'node' && frame) {
     const frameManager = frame._frameManager;
-    return new ElementHandle(context, context._client, remoteObject, frameManager.page(), frameManager);
+    return new ElementHandle(context, context.client, remoteObject, frameManager.page(), frameManager);
   }
-  return new JSHandle(context, context._client, remoteObject);
+  return new JSHandle(context, context.client, remoteObject);
 }
 
-class JSHandle {
+export class JSHandle {
   _context: ExecutionContext
   _client: CDPSession
   _remoteObject: Protocol.Runtime.RemoteObject
-  _disposed: boolean
-  /**
-   * @param {!Puppeteer.ExecutionContext} context
-   * @param {!Puppeteer.CDPSession} client
-   * @param {!Protocol.Runtime.RemoteObject} remoteObject
-   */
+  _disposed = false;
+
   constructor(context: ExecutionContext, client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject) {
     this._context = context;
     this._client = client;
     this._remoteObject = remoteObject;
-    this._disposed = false;
   }
 
-  /**
-   * @return {!Puppeteer.ExecutionContext}
-   */
   executionContext(): ExecutionContext {
     return this._context;
   }
 
-  /**
-   * @param {Function|String} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<(!Object|undefined)>}
-   */
-  async evaluate(pageFunction: Function|String, ...args: Array<any>): Promise<(object|undefined)> {
+  async evaluate(pageFunction: AnyFunction|string, ...args: any[]): Promise<any> {
     return await this.executionContext().evaluate(pageFunction, this, ...args);
   }
 
-  /**
-   * @param {Function|string} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<!Puppeteer.JSHandle>}
-   */
-  async evaluateHandle(pageFunction: Function|string, ...args: Array<any>): Promise<JSHandle> {
+  async evaluateHandle(pageFunction: AnyFunction | string, ...args: any[]): Promise<JSHandle> {
     return await this.executionContext().evaluateHandle(pageFunction, this, ...args);
   }
 
-  /**
-   * @param {string} propertyName
-   * @return {!Promise<?JSHandle>}
-   */
-  async getProperty(propertyName: string): Promise<?JSHandle> {
-    const objectHandle = await this.evaluateHandle((object, propertyName) => {
-      const result = {__proto__: null};
+  async getProperty(propertyName: string): Promise<JSHandle | null> {
+    const objectHandle = await this.evaluateHandle((object: Record<string, unknown>, propertyName: string) => {
+      const result = Object.create(null) as Record<string, unknown>;
       result[propertyName] = object[propertyName];
       return result;
     }, propertyName);
@@ -83,9 +94,6 @@ class JSHandle {
     return result;
   }
 
-  /**
-   * @return {!Promise<!Map<string, !JSHandle>>}
-   */
   async getProperties(): Promise<Map<string, JSHandle>> {
     const response = await this._client.send('Runtime.getProperties', {
       objectId: this._remoteObject.objectId,
@@ -100,10 +108,7 @@ class JSHandle {
     return result;
   }
 
-  /**
-   * @return {!Promise<?Object>}
-   */
-  async jsonValue(): Promise<?object> {
+  async jsonValue(): Promise<any> {
     if (this._remoteObject.objectId) {
       const response = await this._client.send('Runtime.callFunctionOn', {
         functionDeclaration: 'function() { return this; }',
@@ -116,10 +121,7 @@ class JSHandle {
     return helper.valueFromRemoteObject(this._remoteObject);
   }
 
-  /**
-   * @return {?Puppeteer.ElementHandle}
-   */
-  asElement(): ElementHandle | undefined {
+  asElement(): ElementHandle | null {
     return null;
   }
 
@@ -130,10 +132,6 @@ class JSHandle {
     await helper.releaseObject(this._client, this._remoteObject);
   }
 
-  /**
-   * @override
-   * @return {string}
-   */
   toString(): string {
     if (this._remoteObject.objectId) {
       const type =  this._remoteObject.subtype || this._remoteObject.type;
@@ -143,19 +141,13 @@ class JSHandle {
   }
 }
 
-class ElementHandle extends JSHandle {
+export class ElementHandle extends JSHandle {
   _client: CDPSession
   _remoteObject: Protocol.Runtime.RemoteObject
   _page: Page
   _frameManager: FrameManager
   _disposed: boolean
-  /**
-   * @param {!Puppeteer.ExecutionContext} context
-   * @param {!Puppeteer.CDPSession} client
-   * @param {!Protocol.Runtime.RemoteObject} remoteObject
-   * @param {!Puppeteer.Page} page
-   * @param {!Puppeteer.FrameManager} frameManager
-   */
+
   constructor(context: ExecutionContext, client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject, page: Page, frameManager: FrameManager) {
     super(context, client, remoteObject);
     this._client = client;
@@ -165,18 +157,11 @@ class ElementHandle extends JSHandle {
     this._disposed = false;
   }
 
-  /**
-   * @override
-   * @return {?ElementHandle}
-   */
-  asElement(): ElementHandle | undefined {
+  asElement(): this {
     return this;
   }
 
-  /**
-   * @return {!Promise<?Puppeteer.Frame>}
-   */
-  async contentFrame(): Promise<?Frame> {
+  async contentFrame(): Promise<Frame | null> {
     const nodeInfo = await this._client.send('DOM.describeNode', {
       objectId: this._remoteObject.objectId
     });
@@ -186,7 +171,7 @@ class ElementHandle extends JSHandle {
   }
 
   async _scrollIntoViewIfNeeded() {
-    const error = await this.evaluate(async(element, pageJavascriptEnabled) => {
+    const error: string | false = await this.evaluate(async(element, pageJavascriptEnabled) => {
       if (!element.isConnected)
         return 'Node is detached from document';
       if (element.nodeType !== Node.ELEMENT_NODE)
@@ -211,9 +196,6 @@ class ElementHandle extends JSHandle {
       throw new Error(error);
   }
 
-  /**
-   * @return {!Promise<!{x: number, y: number}>}
-   */
   async _clickablePoint(): Promise<{x: number, y: number}> {
     const [result, layoutMetrics] = await Promise.all([
       this._client.send('DOM.getContentQuads', {
@@ -225,7 +207,7 @@ class ElementHandle extends JSHandle {
       throw new Error('Node is either not visible or not an HTMLElement');
     // Filter out quads that have too small area to click into.
     const {clientWidth, clientHeight} = layoutMetrics.layoutViewport;
-    const quads = result.quads.map(quad => this._fromProtocolQuad(quad)).map(quad => this._intersectQuadWithViewport(quad, clientWidth, clientHeight)).filter(quad => computeQuadArea(quad) > 1);
+    const quads = (result.quads as number[][]).map(quad => this._fromProtocolQuad(quad)).map((quad: Array<{x: number, y: number}>) => this._intersectQuadWithViewport(quad, clientWidth, clientHeight)).filter(quad => computeQuadArea(quad) > 1);
     if (!quads.length)
       throw new Error('Node is either not visible or not an HTMLElement');
     // Return the middle point of the first quad.
@@ -242,19 +224,12 @@ class ElementHandle extends JSHandle {
     };
   }
 
-  /**
-   * @return {!Promise<void|Protocol.DOM.getBoxModelReturnValue>}
-   */
   _getBoxModel(): Promise<void|Protocol.DOM.getBoxModelReturnValue> {
     return this._client.send('DOM.getBoxModel', {
       objectId: this._remoteObject.objectId
     }).catch(error => debugError(error));
   }
 
-  /**
-   * @param {!Array<number>} quad
-   * @return {!Array<{x: number, y: number}>}
-   */
   _fromProtocolQuad(quad: Array<number>): Array<{x: number, y: number}> {
     return [
       {x: quad[0], y: quad[1]},
@@ -264,12 +239,6 @@ class ElementHandle extends JSHandle {
     ];
   }
 
-  /**
-   * @param {!Array<{x: number, y: number}>} quad
-   * @param {number} width
-   * @param {number} height
-   * @return {!Array<{x: number, y: number}>}
-   */
   _intersectQuadWithViewport(quad: Array<{x: number, y: number}>, width: number, height: number): Array<{x: number, y: number}> {
     return quad.map(point => ({
       x: Math.min(Math.max(point.x, 0), width),
@@ -283,28 +252,21 @@ class ElementHandle extends JSHandle {
     await this._page.mouse.move(x, y);
   }
 
-  /**
-   * @param {!{delay?: number, button?: "left"|"right"|"middle", clickCount?: number}=} options
-   */
   async click(options?: {delay?: number, button?: "left"|"right"|"middle", clickCount?: number}) {
     await this._scrollIntoViewIfNeeded();
     const {x, y} = await this._clickablePoint();
     await this._page.mouse.click(x, y, options);
   }
 
-  /**
-   * @param {!Array<string>} values
-   * @return {!Promise<!Array<string>>}
-   */
-  async select(...values: Array<string>): Promise<Array<string>> {
+  async select(...values: string[]): Promise<string[]> {
     for (const value of values)
       assert(helper.isString(value), 'Values must be strings. Found value "' + value + '" of type "' + (typeof value) + '"');
-    return this.evaluate((element, values) => {
+    return this.evaluate((element: HTMLSelectElement, values) => {
       if (element.nodeName.toLowerCase() !== 'select')
         throw new Error('Element is not a <select> element.');
 
       const options = Array.from(element.options);
-      element.value = undefined;
+      element.value = '';
       for (const option of options) {
         option.selected = values.includes(option.value);
         if (option.selected && !element.multiple)
@@ -316,19 +278,9 @@ class ElementHandle extends JSHandle {
     }, values);
   }
 
-  /**
-   * @param {!Array<string>} filePaths
-   */
-  async uploadFile(...filePaths: Array<string>) {
-    // These imports are only needed for `uploadFile`, so keep them
-    // scoped here to avoid paying the cost unnecessarily.
-    const path = require('path');
-    const mime = require('mime-types');
-    const fs = require('fs');
-    const readFileAsync = helper.promisify(fs.readFile);
-
+  async uploadFile(...filePaths: string[]) {
     const promises = filePaths.map(filePath => readFileAsync(filePath));
-    const files = [];
+    const files: Array<{name: string, content: string; mimeType: string | false}> = [];
     for (let i = 0; i < filePaths.length; i++) {
       const buffer = await promises[i];
       const filePath = path.basename(filePaths[i]);
@@ -339,7 +291,7 @@ class ElementHandle extends JSHandle {
       };
       files.push(file);
     }
-    await this.evaluateHandle(async(element, files) => {
+    await this.evaluateHandle(async(element: HTMLInputElement, files: Array<{name: string, content: string; mimeType: string | false}>) => {
       const dt = new DataTransfer();
       for (const item of files) {
         const response = await fetch(`data:${item.mimeType};base64,${item.content}`);
@@ -361,28 +313,17 @@ class ElementHandle extends JSHandle {
     await this.evaluate(element => element.focus());
   }
 
-  /**
-   * @param {string} text
-   * @param {{delay: (number|undefined)}=} options
-   */
   async type(text: string, options?: {delay: (number|undefined)}) {
     await this.focus();
     await this._page.keyboard.type(text, options);
   }
 
-  /**
-   * @param {string} key
-   * @param {!{delay?: number, text?: string}=} options
-   */
   async press(key: string, options?: {delay?: number, text?: string}) {
     await this.focus();
     await this._page.keyboard.press(key, options);
   }
 
-  /**
-   * @return {!Promise<?{x: number, y: number, width: number, height: number}>}
-   */
-  async boundingBox(): Promise<?{x: number, y: number, width: number, height: number}> {
+  async boundingBox(): Promise<{x: number, y: number, width: number, height: number} | null> {
     const result = await this._getBoxModel();
 
     if (!result)
@@ -397,10 +338,7 @@ class ElementHandle extends JSHandle {
     return {x, y, width, height};
   }
 
-  /**
-   * @return {!Promise<?BoxModel>}
-   */
-  async boxModel(): Promise<?BoxModel> {
+  async boxModel(): Promise<BoxModel | null> {
     const result = await this._getBoxModel();
 
     if (!result)
@@ -417,12 +355,7 @@ class ElementHandle extends JSHandle {
     };
   }
 
-  /**
-   *
-   * @param {!Object=} options
-   * @returns {!Promise<string|!Buffer>}
-   */
-  async screenshot(options: object = {}): Promise<string|Buffer> {
+  async screenshot(options: ScreenshotOptions = {}): Promise<string|Buffer> {
     let needsViewportReset = false;
 
     let boundingBox = await this.boundingBox();
@@ -458,18 +391,14 @@ class ElementHandle extends JSHandle {
     }, options));
 
     if (needsViewportReset)
-      await this._page.setViewport(viewport);
+      await this._page.setViewport(viewport!);
 
     return imageData;
   }
 
-  /**
-   * @param {string} selector
-   * @return {!Promise<?ElementHandle>}
-   */
-  async $(selector: string): Promise<?ElementHandle> {
+  async $(selector: string): Promise<ElementHandle | null> {
     const handle = await this.evaluateHandle(
-        (element, selector) => element.querySelector(selector),
+        (element: Element, selector: string) => element.querySelector(selector),
         selector
     );
     const element = handle.asElement();
@@ -479,13 +408,9 @@ class ElementHandle extends JSHandle {
     return null;
   }
 
-  /**
-   * @param {string} selector
-   * @return {!Promise<!Array<!ElementHandle>>}
-   */
   async $$(selector: string): Promise<Array<ElementHandle>> {
     const arrayHandle = await this.evaluateHandle(
-        (element, selector) => element.querySelectorAll(selector),
+        (element: Element, selector: string) => element.querySelectorAll(selector),
         selector
     );
     const properties = await arrayHandle.getProperties();
@@ -499,13 +424,7 @@ class ElementHandle extends JSHandle {
     return result;
   }
 
-  /**
-   * @param {string} selector
-   * @param {Function|String} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<(!Object|undefined)>}
-   */
-  async $eval(selector: string, pageFunction: Function|String, ...args: Array<any>): Promise<(object|undefined)> {
+  async $eval(selector: string, pageFunction: AnyFunction|string, ...args: any[]): Promise<any> {
     const elementHandle = await this.$(selector);
     if (!elementHandle)
       throw new Error(`Error: failed to find element matching selector "${selector}"`);
@@ -514,15 +433,9 @@ class ElementHandle extends JSHandle {
     return result;
   }
 
-  /**
-   * @param {string} selector
-   * @param {Function|String} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<(!Object|undefined)>}
-   */
-  async $$eval(selector: string, pageFunction: Function|String, ...args: Array<any>): Promise<(object|undefined)> {
+  async $$eval(selector: string, pageFunction: AnyFunction|string, ...args: any[]): Promise<any> {
     const arrayHandle = await this.evaluateHandle(
-        (element, selector) => Array.from(element.querySelectorAll(selector)),
+        (element: Element, selector: string) => Array.from(element.querySelectorAll(selector)),
         selector
     );
 
@@ -531,16 +444,12 @@ class ElementHandle extends JSHandle {
     return result;
   }
 
-  /**
-   * @param {string} expression
-   * @return {!Promise<!Array<!ElementHandle>>}
-   */
   async $x(expression: string): Promise<Array<ElementHandle>> {
     const arrayHandle = await this.evaluateHandle(
-        (element, expression) => {
+        (element: Document, expression: string) => {
           const document = element.ownerDocument || element;
           const iterator = document.evaluate(expression, element, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
-          const array = [];
+          const array: Node[] = [];
           let item;
           while ((item = iterator.iterateNext()))
             array.push(item);
@@ -559,12 +468,9 @@ class ElementHandle extends JSHandle {
     return result;
   }
 
-  /**
-   * @returns {!Promise<boolean>}
-   */
   isIntersectingViewport(): Promise<boolean> {
     return this.evaluate(async element => {
-      const visibleRatio = await new Promise(resolve => {
+      const visibleRatio = await new Promise<number>(resolve => {
         const observer = new IntersectionObserver(entries => {
           resolve(entries[0].intersectionRatio);
           observer.disconnect();
@@ -576,7 +482,7 @@ class ElementHandle extends JSHandle {
   }
 }
 
-function computeQuadArea(quad) {
+function computeQuadArea(quad: Array<{x: number, y: number}>) {
   // Compute sum of all directed areas of adjacent triangles
   // https://en.wikipedia.org/wiki/Polygon#Simple_polygons
   let area = 0;
@@ -587,15 +493,3 @@ function computeQuadArea(quad) {
   }
   return Math.abs(area);
 }
-
-/**
- * @typedef {Object} BoxModel
- * @property {!Array<!{x: number, y: number}>} content
- * @property {!Array<!{x: number, y: number}>} padding
- * @property {!Array<!{x: number, y: number}>} border
- * @property {!Array<!{x: number, y: number}>} margin
- * @property {number} width
- * @property {number} height
- */
-
-export {createJSHandle, JSHandle, ElementHandle};

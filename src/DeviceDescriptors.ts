@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-export default [
+const deviceDescriptors = [
   {
     'name': 'Blackberry PlayBook',
     'userAgent': 'Mozilla/5.0 (PlayBook; U; RIM Tablet OS 2.1.0; en-US) AppleWebKit/536.2+ (KHTML like Gecko) Version/7.2.1.0 Safari/536.2+',
@@ -867,6 +867,10 @@ export default [
       'isLandscape': true
     }
   }
-];
-for (const device of module.exports)
+] as const;
+
+export default deviceDescriptors
+
+for (const device of deviceDescriptors) {
   module.exports[device.name] = device;
+}

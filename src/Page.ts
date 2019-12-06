@@ -16,56 +16,79 @@
 
 import fs from 'fs';
 import path from 'path';
+import { promisify } from 'util';
 import EventEmitter from 'events';
 import mime from 'mime';
+
 import {Events} from './Events';
-import {Connection} from './Connection';
+import {Connection, CDPSession} from './Connection';
 import {Dialog} from './Dialog';
 import {EmulationManager} from './EmulationManager';
-import {FrameManager} from './FrameManager';
+import {FrameManager, Frame} from './FrameManager';
 import {Keyboard, Mouse, Touchscreen} from './Input';
 import Tracing from './Tracing';
 import {helper, debugError, assert} from './helper';
 import {Coverage} from './Coverage';
 import {Worker} from './Worker';
-import {createJSHandle} from './JSHandle';
+import {createJSHandle, ElementHandle, JSHandle} from './JSHandle';
 import {Accessibility} from './Accessibility';
 import {TimeoutSettings} from './TimeoutSettings';
+import { Target } from './Target';
+import { Viewport, AnyFunction } from './types';
+import { TaskQueue } from './TaskQueue';
+import { Browser, BrowserContext } from './Browser';
+import {Response} from './NetworkManager';
 
-const writeFileAsync = helper.promisify(fs.writeFile);
+const writeFileAsync = promisify(fs.writeFile);
 
-class Page extends EventEmitter {
-  /**
-   * @param {!Puppeteer.CDPSession} client
-   * @param {!Puppeteer.Target} target
-   * @param {boolean} ignoreHTTPSErrors
-   * @param {?Puppeteer.Viewport} defaultViewport
-   * @param {!Puppeteer.TaskQueue} screenshotTaskQueue
-   * @return {!Promise<!Page>}
-   */
-  static async create(client: CDPSession, target: Target, ignoreHTTPSErrors: boolean, defaultViewport?: Viewport, screenshotTaskQueue: TaskQueue): Promise<Page> {
+export class Page extends EventEmitter {
+  static async create(client: CDPSession, target: Target, ignoreHTTPSErrors: boolean, defaultViewport: Viewport | null | undefined, screenshotTaskQueue: TaskQueue): Promise<Page> {
     const page = new Page(client, target, ignoreHTTPSErrors, screenshotTaskQueue);
     await page._initialize();
     if (defaultViewport)
       await page.setViewport(defaultViewport);
     return page;
   }
-  _closed: boolean
-  _client: CDPSession
-  _target: Target
-  _javascriptEnabled: boolean
-  _screenshotTaskQueue: TaskQueue
-  _fileChooserInterceptionIsDisabled: boolean
 
-  /**
-   * @param {!Puppeteer.CDPSession} client
-   * @param {!Puppeteer.Target} target
-   * @param {boolean} ignoreHTTPSErrors
-   * @param {!Puppeteer.TaskQueue} screenshotTaskQueue
-   */
+  static PaperFormats: Record<string, {width: number; height: number;}> = {
+    letter: {width: 8.5, height: 11},
+    legal: {width: 8.5, height: 14},
+    tabloid: {width: 11, height: 17},
+    ledger: {width: 17, height: 11},
+    a0: {width: 33.1, height: 46.8 },
+    a1: {width: 23.4, height: 33.1 },
+    a2: {width: 16.54, height: 23.4 },
+    a3: {width: 11.7, height: 16.54 },
+    a4: {width: 8.27, height: 11.7 },
+    a5: {width: 5.83, height: 8.27 },
+    a6: {width: 4.13, height: 5.83 },
+  };
+
+  private _closed = false;
+  private _client: CDPSession
+  private _target: Target
+  
+  /*@internal*/
+  public _javascriptEnabled: boolean
+  private _screenshotTaskQueue: TaskQueue
+  private _fileChooserInterceptionIsDisabled: boolean
+  private _pageBindings = new Map<string, AnyFunction>();
+  private _keyboard: Keyboard;
+  private _mouse: Mouse;
+  private _viewport: Viewport | null = null;
+  private _workers = new Map<string, Worker>();
+  private _tracing: Tracing;
+  private _coverage: Coverage;
+  private _timeoutSettings: TimeoutSettings;
+  private _touchscreen: Touchscreen
+  private _accessibility: Accessibility;
+  private _frameManager: FrameManager;
+  private _emulationManager: EmulationManager;  
+  private _fileChooserInterceptors = new Set<(chooser: FileChooser) => void>()
+  private _disconnectPromise?: Promise<Error>
+
   constructor(client: CDPSession, target: Target, ignoreHTTPSErrors: boolean, screenshotTaskQueue: TaskQueue) {
     super();
-    this._closed = false;
     this._client = client;
     this._target = target;
     this._keyboard = new Keyboard(client);
@@ -73,21 +96,14 @@ class Page extends EventEmitter {
     this._timeoutSettings = new TimeoutSettings();
     this._touchscreen = new Touchscreen(client, this._keyboard);
     this._accessibility = new Accessibility(client);
-    /** @type {!FrameManager} */
     this._frameManager = new FrameManager(client, this, ignoreHTTPSErrors, this._timeoutSettings);
     this._emulationManager = new EmulationManager(client);
     this._tracing = new Tracing(client);
-    /** @type {!Map<string, Function>} */
-    this._pageBindings = new Map();
     this._coverage = new Coverage(client);
     this._javascriptEnabled = true;
-    /** @type {?Puppeteer.Viewport} */
-    this._viewport = null;
 
     this._screenshotTaskQueue = screenshotTaskQueue;
 
-    /** @type {!Map<string, Worker>} */
-    this._workers = new Map();
     client.on('Target.attachedToTarget', event => {
       if (event.targetInfo.type !== 'worker') {
         // If we don't detach from service workers, they will never die.
@@ -96,7 +112,7 @@ class Page extends EventEmitter {
         }).catch(debugError);
         return;
       }
-      const session = Connection.fromSession(client).session(event.sessionId);
+      const session = Connection.fromSession(client).session(event.sessionId)!;
       const worker = new Worker(session, event.targetInfo.url, this._addConsoleMessage.bind(this), this._handleException.bind(this));
       this._workers.set(event.sessionId, worker);
       this.emit(Events.Page.WorkerCreated, worker);
@@ -119,15 +135,14 @@ class Page extends EventEmitter {
     networkManager.on(Events.NetworkManager.RequestFailed, event => this.emit(Events.Page.RequestFailed, event));
     networkManager.on(Events.NetworkManager.RequestFinished, event => this.emit(Events.Page.RequestFinished, event));
     this._fileChooserInterceptionIsDisabled = false;
-    this._fileChooserInterceptors = new Set();
 
-    client.on('Page.domContentEventFired', event => this.emit(Events.Page.DOMContentLoaded));
-    client.on('Page.loadEventFired', event => this.emit(Events.Page.Load));
+    client.on('Page.domContentEventFired', () => this.emit(Events.Page.DOMContentLoaded));
+    client.on('Page.loadEventFired', () => this.emit(Events.Page.Load));
     client.on('Runtime.consoleAPICalled', event => this._onConsoleAPI(event));
     client.on('Runtime.bindingCalled', event => this._onBindingCalled(event));
     client.on('Page.javascriptDialogOpening', event => this._onDialog(event));
     client.on('Runtime.exceptionThrown', exception => this._handleException(exception.exceptionDetails));
-    client.on('Inspector.targetCrashed', event => this._onTargetCrashed());
+    client.on('Inspector.targetCrashed', () => this._onTargetCrashed());
     client.on('Performance.metrics', event => this._emitMetrics(event));
     client.on('Log.entryAdded', event => this._onLogEntryAdded(event));
     client.on('Page.fileChooserOpened', event => this._onFileChooser(event));
@@ -143,16 +158,13 @@ class Page extends EventEmitter {
       this._client.send('Target.setAutoAttach', {autoAttach: true, waitForDebuggerOnStart: false, flatten: true}),
       this._client.send('Performance.enable', {}),
       this._client.send('Log.enable', {}),
-      this._client.send('Page.setInterceptFileChooserDialog', {enabled: true}).catch(e => {
+      this._client.send('Page.setInterceptFileChooserDialog', {enabled: true}).catch(() => {
         this._fileChooserInterceptionIsDisabled = true;
       }),
     ]);
   }
 
-  /**
-   * @param {!Protocol.Page.fileChooserOpenedPayload} event
-   */
-  _onFileChooser(event: Protocol.Page.fileChooserOpenedPayload) {
+  private _onFileChooser(event: Protocol.Page.fileChooserOpenedPayload) {
     if (!this._fileChooserInterceptors.size) {
       this._client.send('Page.handleFileChooser', { action: 'fallback' }).catch(debugError);
       return;
@@ -164,17 +176,13 @@ class Page extends EventEmitter {
       interceptor.call(null, fileChooser);
   }
 
-  /**
-   * @param {!{timeout?: number}=} options
-   * @return !Promise<!FileChooser>}
-   */
   async waitForFileChooser(options: {timeout?: number} = {}) {
     if (this._fileChooserInterceptionIsDisabled)
       throw new Error('File chooser handling does not work with multiple connections to the same page');
     const {
       timeout = this._timeoutSettings.timeout(),
     } = options;
-    let callback;
+    let callback!: () => void;
     const promise = new Promise(x => callback = x);
     this._fileChooserInterceptors.add(callback);
     return helper.waitWithTimeout(promise, 'waiting for file chooser', timeout).catch(e => {
@@ -183,9 +191,6 @@ class Page extends EventEmitter {
     });
   }
 
-  /**
-   * @param {!{longitude: number, latitude: number, accuracy: (number|undefined)}} options
-   */
   async setGeolocation(options: {longitude: number, latitude: number, accuracy: (number|undefined)}) {
     const { longitude, latitude, accuracy = 0} = options;
     if (longitude < -180 || longitude > 180)
@@ -197,35 +202,23 @@ class Page extends EventEmitter {
     await this._client.send('Emulation.setGeolocationOverride', {longitude, latitude, accuracy});
   }
 
-  /**
-   * @return {!Puppeteer.Target}
-   */
   target(): Target {
     return this._target;
   }
 
-  /**
-   * @return {!Puppeteer.Browser}
-   */
   browser(): Browser {
     return this._target.browser();
   }
 
-  /**
-   * @return {!Puppeteer.BrowserContext}
-   */
   browserContext(): BrowserContext {
     return this._target.browserContext();
   }
 
-  _onTargetCrashed() {
+  private _onTargetCrashed() {
     this.emit('error', new Error('Page crashed!'));
   }
 
-  /**
-   * @param {!Protocol.Log.entryAddedPayload} event
-   */
-  _onLogEntryAdded(event: Protocol.Log.entryAddedPayload) {
+  private _onLogEntryAdded(event: Protocol.Log.entryAddedPayload) {
     const {level, text, args, source, url, lineNumber} = event.entry;
     if (args)
       args.map(arg => helper.releaseObject(this._client, arg));
@@ -233,166 +226,90 @@ class Page extends EventEmitter {
       this.emit(Events.Page.Console, new ConsoleMessage(level, text, [], {url, lineNumber}));
   }
 
-  /**
-   * @return {!Puppeteer.Frame}
-   */
   mainFrame(): Frame {
-    return this._frameManager.mainFrame();
+    return this._frameManager.mainFrame()!;
   }
 
-  /**
-   * @return {!Keyboard}
-   */
   get keyboard(): Keyboard {
     return this._keyboard;
   }
 
-  /**
-   * @return {!Touchscreen}
-   */
   get touchscreen(): Touchscreen {
     return this._touchscreen;
   }
 
-  /**
-   * @return {!Coverage}
-   */
   get coverage(): Coverage {
     return this._coverage;
   }
 
-  /**
-   * @return {!Tracing}
-   */
   get tracing(): Tracing {
     return this._tracing;
   }
 
-  /**
-   * @return {!Accessibility}
-   */
   get accessibility(): Accessibility {
     return this._accessibility;
   }
 
-  /**
-   * @return {!Array<Puppeteer.Frame>}
-   */
   frames(): Array<Frame> {
     return this._frameManager.frames();
   }
 
-  /**
-   * @return {!Array<!Worker>}
-   */
   workers(): Array<Worker> {
     return Array.from(this._workers.values());
   }
 
-  /**
-   * @param {boolean} value
-   */
   async setRequestInterception(value: boolean) {
     return this._frameManager.networkManager().setRequestInterception(value);
   }
 
-  /**
-   * @param {boolean} enabled
-   */
   setOfflineMode(enabled: boolean) {
     return this._frameManager.networkManager().setOfflineMode(enabled);
   }
 
-  /**
-   * @param {number} timeout
-   */
   setDefaultNavigationTimeout(timeout: number) {
     this._timeoutSettings.setDefaultNavigationTimeout(timeout);
   }
 
-  /**
-   * @param {number} timeout
-   */
   setDefaultTimeout(timeout: number) {
     this._timeoutSettings.setDefaultTimeout(timeout);
   }
 
-  /**
-   * @param {string} selector
-   * @return {!Promise<?Puppeteer.ElementHandle>}
-   */
-  async $(selector: string): Promise<?ElementHandle> {
+  async $(selector: string): Promise<ElementHandle | null> {
     return this.mainFrame().$(selector);
   }
 
-  /**
-   * @param {Function|string} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<!Puppeteer.JSHandle>}
-   */
-  async evaluateHandle(pageFunction: Function|string, ...args: Array<any>): Promise<JSHandle> {
+  async evaluateHandle(pageFunction: AnyFunction | string, ...args: any[]): Promise<JSHandle> {
     const context = await this.mainFrame().executionContext();
     return context.evaluateHandle(pageFunction, ...args);
   }
 
-  /**
-   * @param {!Puppeteer.JSHandle} prototypeHandle
-   * @return {!Promise<!Puppeteer.JSHandle>}
-   */
   async queryObjects(prototypeHandle: JSHandle): Promise<JSHandle> {
     const context = await this.mainFrame().executionContext();
     return context.queryObjects(prototypeHandle);
   }
 
-  /**
-   * @param {string} selector
-   * @param {Function|string} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<(!Object|undefined)>}
-   */
-  async $eval(selector: string, pageFunction: Function|string, ...args: Array<any>): Promise<(object|undefined)> {
+  async $eval(selector: string, pageFunction: AnyFunction | string, ...args: any[]): Promise<(object|undefined)> {
     return this.mainFrame().$eval(selector, pageFunction, ...args);
   }
 
-  /**
-   * @param {string} selector
-   * @param {Function|string} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<(!Object|undefined)>}
-   */
-  async $$eval(selector: string, pageFunction: Function|string, ...args: Array<any>): Promise<(object|undefined)> {
+  async $$eval(selector: string, pageFunction: AnyFunction | string, ...args: any[]): Promise<(object|undefined)> {
     return this.mainFrame().$$eval(selector, pageFunction, ...args);
   }
 
-  /**
-   * @param {string} selector
-   * @return {!Promise<!Array<!Puppeteer.ElementHandle>>}
-   */
   async $$(selector: string): Promise<Array<ElementHandle>> {
     return this.mainFrame().$$(selector);
   }
 
-  /**
-   * @param {string} expression
-   * @return {!Promise<!Array<!Puppeteer.ElementHandle>>}
-   */
   async $x(expression: string): Promise<Array<ElementHandle>> {
     return this.mainFrame().$x(expression);
   }
 
-  /**
-   * @param {!Array<string>} urls
-   * @return {!Promise<!Array<Network.Cookie>>}
-   */
-  async cookies(...urls: Array<string>): Promise<Array<Network.Cookie>> {
+  async cookies(...urls: string[]): Promise<Array<Protocol.Network.Cookie>> {
     return (await this._client.send('Network.getCookies', {
       urls: urls.length ? urls : [this.url()]
     })).cookies;
   }
 
-  /**
-   * @param {Array<Protocol.Network.deleteCookiesParameters>} cookies
-   */
   async deleteCookie(...cookies: Array<Protocol.Network.deleteCookiesParameters>) {
     const pageURL = this.url();
     for (const cookie of cookies) {
@@ -403,10 +320,7 @@ class Page extends EventEmitter {
     }
   }
 
-  /**
-   * @param {Array<Network.CookieParam>} cookies
-   */
-  async setCookie(...cookies: Array<Network.CookieParam>) {
+  async setCookie(...cookies: Array<Protocol.Network.CookieParam>) {
     const pageURL = this.url();
     const startsWithHTTP = pageURL.startsWith('http');
     const items = cookies.map(cookie => {
@@ -422,26 +336,14 @@ class Page extends EventEmitter {
       await this._client.send('Network.setCookies', { cookies: items });
   }
 
-  /**
-   * @param {!{url?: string, path?: string, content?: string, type?: string}} options
-   * @return {!Promise<!Puppeteer.ElementHandle>}
-   */
   async addScriptTag(options: {url?: string, path?: string, content?: string, type?: string}): Promise<ElementHandle> {
     return this.mainFrame().addScriptTag(options);
   }
 
-  /**
-   * @param {!{url?: string, path?: string, content?: string}} options
-   * @return {!Promise<!Puppeteer.ElementHandle>}
-   */
   async addStyleTag(options: {url?: string, path?: string, content?: string}): Promise<ElementHandle> {
     return this.mainFrame().addStyleTag(options);
   }
 
-  /**
-   * @param {string} name
-   * @param {Function} puppeteerFunction
-   */
   async exposeFunction(name: string, puppeteerFunction: AnyFunction) {
     if (this._pageBindings.has(name))
       throw new Error(`Failed to add page binding with name ${name}: window['${name}'] already exists!`);
@@ -452,10 +354,10 @@ class Page extends EventEmitter {
     await this._client.send('Page.addScriptToEvaluateOnNewDocument', {source: expression});
     await Promise.all(this.frames().map(frame => frame.evaluate(expression).catch(debugError)));
 
-    function addPageBinding(bindingName) {
-      const binding = window[bindingName];
-      window[bindingName] = (...args) => {
-        const me = window[bindingName];
+    function addPageBinding(bindingName: string) {
+      const binding = (window as any)[bindingName];
+      (window as any)[bindingName] = (...args: any[]) => {
+        const me = (window as any)[bindingName];
         let callbacks = me['callbacks'];
         if (!callbacks) {
           callbacks = new Map();
@@ -470,23 +372,14 @@ class Page extends EventEmitter {
     }
   }
 
-  /**
-   * @param {?{username: string, password: string}} credentials
-   */
   async authenticate(credentials?: {username: string, password: string}) {
     return this._frameManager.networkManager().authenticate(credentials);
   }
 
-  /**
-   * @param {!Object<string, string>} headers
-   */
   async setExtraHTTPHeaders(headers: Record<string, string>) {
     return this._frameManager.networkManager().setExtraHTTPHeaders(headers);
   }
 
-  /**
-   * @param {string} userAgent
-   */
   async setUserAgent(userAgent: string) {
     return this._frameManager.networkManager().setUserAgent(userAgent);
   }
@@ -499,32 +392,22 @@ class Page extends EventEmitter {
     return this._buildMetricsObject(response.metrics);
   }
 
-  /**
-   * @param {!Protocol.Performance.metricsPayload} event
-   */
-  _emitMetrics(event: Protocol.Performance.metricsPayload) {
+  private _emitMetrics(event: Protocol.Performance.metricsPayload) {
     this.emit(Events.Page.Metrics, {
       title: event.title,
       metrics: this._buildMetricsObject(event.metrics)
     });
   }
 
-  /**
-   * @param {?Array<!Protocol.Performance.Metric>} metrics
-   * @return {!Metrics}
-   */
-  _buildMetricsObject(metrics?: Array<Protocol.Performance.Metric>): Metrics {
-    const result = {};
-    for (const metric of metrics || []) {
-      if (supportedMetrics.has(metric.name))
-        result[metric.name] = metric.value;
+  _buildMetricsObject(metrics: Array<Protocol.Performance.Metric> = []): Metrics {
+    const result: Metrics = {};
+    for (const metric of metrics) {
+      if (supportedMetrics.has(metric.name as keyof Metrics))
+        result[metric.name as keyof Metrics] = metric.value;
     }
     return result;
   }
 
-  /**
-   * @param {!Protocol.Runtime.ExceptionDetails} exceptionDetails
-   */
   _handleException(exceptionDetails: Protocol.Runtime.ExceptionDetails) {
     const message = helper.getExceptionMessage(exceptionDetails);
     const err = new Error(message);
@@ -532,9 +415,6 @@ class Page extends EventEmitter {
     this.emit(Events.Page.PageError, err);
   }
 
-  /**
-   * @param {!Protocol.Runtime.consoleAPICalledPayload} event
-   */
   async _onConsoleAPI(event: Protocol.Runtime.consoleAPICalledPayload) {
     if (event.executionContextId === 0) {
       // DevTools protocol stores the last 1000 console messages. These
@@ -557,14 +437,11 @@ class Page extends EventEmitter {
     this._addConsoleMessage(event.type, values, event.stackTrace);
   }
 
-  /**
-   * @param {!Protocol.Runtime.bindingCalledPayload} event
-   */
   async _onBindingCalled(event: Protocol.Runtime.bindingCalledPayload) {
     const {name, seq, args} = JSON.parse(event.payload);
     let expression = null;
     try {
-      const result = await this._pageBindings.get(name)(...args);
+      const result = await this._pageBindings.get(name)!(...args);
       expression = helper.evaluationString(deliverResult, name, seq, result);
     } catch (error) {
       if (error instanceof Error)
@@ -574,51 +451,30 @@ class Page extends EventEmitter {
     }
     this._client.send('Runtime.evaluate', { expression, contextId: event.executionContextId }).catch(debugError);
 
-    /**
-     * @param {string} name
-     * @param {number} seq
-     * @param {*} result
-     */
     function deliverResult(name: string, seq: number, result: any) {
-      window[name]['callbacks'].get(seq).resolve(result);
-      window[name]['callbacks'].delete(seq);
+      (window as any)[name]['callbacks'].get(seq).resolve(result);
+      (window as any)[name]['callbacks'].delete(seq);
     }
 
-    /**
-     * @param {string} name
-     * @param {number} seq
-     * @param {string} message
-     * @param {string} stack
-     */
     function deliverError(name: string, seq: number, message: string, stack: string) {
       const error = new Error(message);
       error.stack = stack;
-      window[name]['callbacks'].get(seq).reject(error);
-      window[name]['callbacks'].delete(seq);
+      (window as any)[name]['callbacks'].get(seq).reject(error);
+      (window as any)[name]['callbacks'].delete(seq);
     }
 
-    /**
-     * @param {string} name
-     * @param {number} seq
-     * @param {*} value
-     */
     function deliverErrorValue(name: string, seq: number, value: any) {
-      window[name]['callbacks'].get(seq).reject(value);
-      window[name]['callbacks'].delete(seq);
+      (window as any)[name]['callbacks'].get(seq).reject(value);
+      (window as any)[name]['callbacks'].delete(seq);
     }
   }
 
-  /**
-   * @param {string} type
-   * @param {!Array<!Puppeteer.JSHandle>} args
-   * @param {Protocol.Runtime.StackTrace=} stackTrace
-   */
   _addConsoleMessage(type: string, args: Array<JSHandle>, stackTrace?: Protocol.Runtime.StackTrace) {
     if (!this.listenerCount(Events.Page.Console)) {
       args.forEach(arg => arg.dispose());
       return;
     }
-    const textTokens = [];
+    const textTokens: string[] = [];
     for (const arg of args) {
       const remoteObject = arg._remoteObject;
       if (remoteObject.objectId)
@@ -635,7 +491,7 @@ class Page extends EventEmitter {
     this.emit(Events.Page.Console, message);
   }
 
-  _onDialog(event) {
+  private _onDialog(event: Protocol.Page.javascriptDialogOpeningPayload) {
     let dialogType = null;
     if (event.type === 'alert')
       dialogType = Dialog.Type.Alert;
@@ -650,42 +506,27 @@ class Page extends EventEmitter {
     this.emit(Events.Page.Dialog, dialog);
   }
 
-  /**
-   * @return {!string}
-   */
   url(): string {
     return this.mainFrame().url();
   }
 
-  /**
-   * @return {!Promise<string>}
-   */
   async content(): Promise<string> {
-    return await this._frameManager.mainFrame().content();
+    return await this._frameManager.mainFrame()!.content();
+  }
+
+  async setContent(html: string, options?: {timeout?: number, waitUntil?: string|string[]}) {
+    await this._frameManager.mainFrame()!.setContent(html, options);
+  }
+
+  async goto(url: string, options?: {referer?: string, timeout?: number, waitUntil?: string|string[]}): Promise<Response | null> {
+    return await this._frameManager.mainFrame()!.goto(url, options);
   }
 
   /**
-   * @param {string} html
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}=} options
-   */
-  async setContent(html: string, options?: {timeout?: number, waitUntil?: string|Array<string>}) {
-    await this._frameManager.mainFrame().setContent(html, options);
-  }
-
-  /**
-   * @param {string} url
-   * @param {!{referer?: string, timeout?: number, waitUntil?: string|!Array<string>}=} options
+   * @param {!{timeout?: number, waitUntil?: string|!string[]}=} options
    * @return {!Promise<?Puppeteer.Response>}
    */
-  async goto(url: string, options?: {referer?: string, timeout?: number, waitUntil?: string|Array<string>}): Promise<?Response> {
-    return await this._frameManager.mainFrame().goto(url, options);
-  }
-
-  /**
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}=} options
-   * @return {!Promise<?Puppeteer.Response>}
-   */
-  async reload(options?: {timeout?: number, waitUntil?: string|Array<string>}): Promise<?Response> {
+  async reload(options?: {timeout?: number, waitUntil?: string|string[]}): Promise<Response | null> {
     const [response] = await Promise.all([
       this.waitForNavigation(options),
       this._client.send('Page.reload')
@@ -693,25 +534,16 @@ class Page extends EventEmitter {
     return response;
   }
 
-  /**
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}=} options
-   * @return {!Promise<?Puppeteer.Response>}
-   */
-  async waitForNavigation(options: {timeout?: number, waitUntil?: string|Array<string>} = {}): Promise<?Response> {
-    return await this._frameManager.mainFrame().waitForNavigation(options);
+  async waitForNavigation(options: {timeout?: number, waitUntil?: string|string[]} = {}): Promise<Response | null> {
+    return await this._frameManager.mainFrame()!.waitForNavigation(options);
   }
 
-  _sessionClosePromise() {
+  private _sessionClosePromise() {
     if (!this._disconnectPromise)
       this._disconnectPromise = new Promise(fulfill => this._client.once(Events.CDPSession.Disconnected, () => fulfill(new Error('Target closed'))));
     return this._disconnectPromise;
   }
 
-  /**
-   * @param {(string|Function)} urlOrPredicate
-   * @param {!{timeout?: number}=} options
-   * @return {!Promise<!Puppeteer.Request>}
-   */
   async waitForRequest(urlOrPredicate: (string|Function), options: {timeout?: number} = {}): Promise<Request> {
     const {
       timeout = this._timeoutSettings.timeout(),
@@ -725,11 +557,6 @@ class Page extends EventEmitter {
     }, timeout, this._sessionClosePromise());
   }
 
-  /**
-   * @param {(string|Function)} urlOrPredicate
-   * @param {!{timeout?: number}=} options
-   * @return {!Promise<!Puppeteer.Response>}
-   */
   async waitForResponse(urlOrPredicate: (string|Function), options: {timeout?: number} = {}): Promise<Response> {
     const {
       timeout = this._timeoutSettings.timeout(),
@@ -743,27 +570,15 @@ class Page extends EventEmitter {
     }, timeout, this._sessionClosePromise());
   }
 
-  /**
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}=} options
-   * @return {!Promise<?Puppeteer.Response>}
-   */
-  async goBack(options?: {timeout?: number, waitUntil?: string|Array<string>}): Promise<?Response> {
+  async goBack(options?: {timeout?: number, waitUntil?: string|string[]}): Promise<Response | null> {
     return this._go(-1, options);
   }
 
-  /**
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}=} options
-   * @return {!Promise<?Puppeteer.Response>}
-   */
-  async goForward(options?: {timeout?: number, waitUntil?: string|Array<string>}): Promise<?Response> {
+  async goForward(options?: {timeout?: number, waitUntil?: string|string[]}): Promise<Response | null> {
     return this._go(+1, options);
   }
 
-  /**
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}=} options
-   * @return {!Promise<?Puppeteer.Response>}
-   */
-  async _go(delta, options?: {timeout?: number, waitUntil?: string|Array<string>}): Promise<?Response> {
+  private async _go(delta: number, options?: {timeout?: number, waitUntil?: string|string[]}): Promise<Response | null> {
     const history = await this._client.send('Page.getNavigationHistory');
     const entry = history.entries[history.currentIndex + delta];
     if (!entry)
@@ -806,17 +621,16 @@ class Page extends EventEmitter {
     await this._client.send('Page.setBypassCSP', { enabled });
   }
 
-  /**
-   * @param {?string} type
-   */
   async emulateMediaType(type?: string) {
     assert(type === 'screen' || type === 'print' || type === null, 'Unsupported media type: ' + type);
     await this._client.send('Emulation.setEmulatedMedia', {media: type || ''});
   }
 
   /**
-   * @param {?Array<MediaFeature>} features
+   * @deprecated use `page.emulateMediaType` instead
    */
+  emulateMedia = this.emulateMediaType
+
   async emulateMediaFeatures(features?: Array<MediaFeature>) {
     if (features === null)
       await this._client.send('Emulation.setEmulatedMedia', {features: null});
@@ -830,9 +644,6 @@ class Page extends EventEmitter {
     }
   }
 
-  /**
-   * @param {?string} timezoneId
-   */
   async emulateTimezone(timezoneId?: string) {
     try {
       await this._client.send('Emulation.setTimezoneOverride', {timezoneId: timezoneId || ''});
@@ -843,9 +654,6 @@ class Page extends EventEmitter {
     }
   }
 
-  /**
-   * @param {!Puppeteer.Viewport} viewport
-   */
   async setViewport(viewport: Viewport) {
     const needsReload = await this._emulationManager.emulateViewport(viewport);
     this._viewport = viewport;
@@ -853,44 +661,25 @@ class Page extends EventEmitter {
       await this.reload();
   }
 
-  /**
-   * @return {?Puppeteer.Viewport}
-   */
-  viewport(): Viewport | undefined {
+  viewport(): Viewport | null {
     return this._viewport;
   }
 
-  /**
-   * @param {Function|string} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<*>}
-   */
-  async evaluate(pageFunction: Function|string, ...args: Array<any>): Promise<any> {
-    return this._frameManager.mainFrame().evaluate(pageFunction, ...args);
+  async evaluate(pageFunction: AnyFunction | string, ...args: any[]): Promise<any> {
+    return this._frameManager.mainFrame()!.evaluate(pageFunction, ...args);
   }
 
-  /**
-   * @param {Function|string} pageFunction
-   * @param {!Array<*>} args
-   */
-  async evaluateOnNewDocument(pageFunction: Function|string, ...args: Array<any>) {
+  async evaluateOnNewDocument(pageFunction: AnyFunction | string, ...args: any[]) {
     const source = helper.evaluationString(pageFunction, ...args);
     await this._client.send('Page.addScriptToEvaluateOnNewDocument', { source });
   }
 
-  /**
-   * @param {boolean} enabled
-   */
   async setCacheEnabled(enabled: boolean = true) {
     await this._frameManager.networkManager().setCacheEnabled(enabled);
   }
 
-  /**
-   * @param {!ScreenshotOptions=} options
-   * @return {!Promise<!Buffer|!String>}
-   */
-  async screenshot(options: ScreenshotOptions = {}): Promise<Buffer|String> {
-    let screenshotType = null;
+  async screenshot(options: ScreenshotOptions = {}): Promise<Buffer|string> {
+    let screenshotType: "png"|"jpeg" | null = null;
     // options.type takes precedence over inferring the type from options.path
     // because it may be a 0-length file with no extension created beforehand (i.e. as a temp file).
     if (options.type) {
@@ -931,7 +720,7 @@ class Page extends EventEmitter {
    * @param {!ScreenshotOptions=} options
    * @return {!Promise<!Buffer|!String>}
    */
-  async _screenshotTask(format: "png"|"jpeg", options?: ScreenshotOptions): Promise<Buffer|String> {
+  async _screenshotTask(format: "png"|"jpeg", options: ScreenshotOptions = {}): Promise<Buffer|String> {
     await this._client.send('Target.activateTarget', {targetId: this._target._targetId});
     let clip = options.clip ? processClip(options.clip) : undefined;
 
@@ -966,20 +755,13 @@ class Page extends EventEmitter {
       await writeFileAsync(options.path, buffer);
     return buffer;
 
-    function processClip(clip) {
-      const x = Math.round(clip.x);
-      const y = Math.round(clip.y);
-      const width = Math.round(clip.width + clip.x - x);
-      const height = Math.round(clip.height + clip.y - y);
-      return {x, y, width, height, scale: 1};
-    }
   }
 
   /**
    * @param {!PDFOptions=} options
    * @return {!Promise<!Buffer>}
    */
-  async pdf(options: PDFOptions = {}): Promise<Buffer> {
+  async pdf(options: PDFOptions = {}): Promise<Buffer | null> {
     const {
       scale = 1,
       displayHeaderFooter = false,
@@ -1030,16 +812,10 @@ class Page extends EventEmitter {
     return await helper.readProtocolStream(this._client, result.stream, path);
   }
 
-  /**
-   * @return {!Promise<string>}
-   */
   async title(): Promise<string> {
     return this.mainFrame().title();
   }
 
-  /**
-   * @param {!{runBeforeUnload: (boolean|undefined)}=} options
-   */
   async close(options: {runBeforeUnload: (boolean|undefined)} = {runBeforeUnload: undefined}) {
     assert(!!this._client._connection, 'Protocol error: Connection closed. Most likely the page has been closed.');
     const runBeforeUnload = !!options.runBeforeUnload;
@@ -1051,74 +827,39 @@ class Page extends EventEmitter {
     }
   }
 
-  /**
-   * @return {boolean}
-   */
   isClosed(): boolean {
     return this._closed;
   }
 
-  /**
-   * @return {!Mouse}
-   */
   get mouse(): Mouse {
     return this._mouse;
   }
 
-  /**
-   * @param {string} selector
-   * @param {!{delay?: number, button?: "left"|"right"|"middle", clickCount?: number}=} options
-   */
   click(selector: string, options: {delay?: number, button?: "left"|"right"|"middle", clickCount?: number} = {}) {
     return this.mainFrame().click(selector, options);
   }
 
-  /**
-   * @param {string} selector
-   */
   focus(selector: string) {
     return this.mainFrame().focus(selector);
   }
 
-  /**
-   * @param {string} selector
-   */
   hover(selector: string) {
     return this.mainFrame().hover(selector);
   }
 
-  /**
-   * @param {string} selector
-   * @param {!Array<string>} values
-   * @return {!Promise<!Array<string>>}
-   */
-  select(selector: string, ...values: Array<string>): Promise<Array<string>> {
+  select(selector: string, ...values: string[]): Promise<string[]> {
     return this.mainFrame().select(selector, ...values);
   }
 
-  /**
-   * @param {string} selector
-   */
   tap(selector: string) {
     return this.mainFrame().tap(selector);
   }
 
-  /**
-   * @param {string} selector
-   * @param {string} text
-   * @param {{delay: (number|undefined)}=} options
-   */
   type(selector: string, text: string, options?: {delay: (number|undefined)}) {
     return this.mainFrame().type(selector, text, options);
   }
 
-  /**
-   * @param {(string|number|Function)} selectorOrFunctionOrTimeout
-   * @param {!{visible?: boolean, hidden?: boolean, timeout?: number, polling?: string|number}=} options
-   * @param {!Array<*>} args
-   * @return {!Promise<!Puppeteer.JSHandle>}
-   */
-  waitFor(selectorOrFunctionOrTimeout: (string|number|Function), options: {visible?: boolean, hidden?: boolean, timeout?: number, polling?: string|number} = {}, ...args: Array<any>): Promise<JSHandle> {
+  waitFor(selectorOrFunctionOrTimeout: (string|number|AnyFunction), options: {visible?: boolean, hidden?: boolean, timeout?: number, polling?: string|number} = {}, ...args: any[]): Promise<JSHandle | null> {
     return this.mainFrame().waitFor(selectorOrFunctionOrTimeout, options, ...args);
   }
 
@@ -1127,7 +868,7 @@ class Page extends EventEmitter {
    * @param {!{visible?: boolean, hidden?: boolean, timeout?: number}=} options
    * @return {!Promise<?Puppeteer.ElementHandle>}
    */
-  waitForSelector(selector: string, options: {visible?: boolean, hidden?: boolean, timeout?: number} = {}): Promise<?ElementHandle> {
+  waitForSelector(selector: string, options: {visible?: boolean, hidden?: boolean, timeout?: number} = {}): Promise<ElementHandle | null> {
     return this.mainFrame().waitForSelector(selector, options);
   }
 
@@ -1136,7 +877,7 @@ class Page extends EventEmitter {
    * @param {!{visible?: boolean, hidden?: boolean, timeout?: number}=} options
    * @return {!Promise<?Puppeteer.ElementHandle>}
    */
-  waitForXPath(xpath: string, options: {visible?: boolean, hidden?: boolean, timeout?: number} = {}): Promise<?ElementHandle> {
+  waitForXPath(xpath: string, options: {visible?: boolean, hidden?: boolean, timeout?: number} = {}): Promise<ElementHandle | null> {
     return this.mainFrame().waitForXPath(xpath, options);
   }
 
@@ -1146,67 +887,67 @@ class Page extends EventEmitter {
    * @param {!Array<*>} args
    * @return {!Promise<!Puppeteer.JSHandle>}
    */
-  waitForFunction(pageFunction: AnyFunction, options: {polling?: string|number, timeout?: number} = {}, ...args: Array<any>): Promise<JSHandle> {
+  waitForFunction(pageFunction: AnyFunction, options: {polling?: string|number, timeout?: number} = {}, ...args: any[]): Promise<JSHandle> {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);
   }
 }
 
-// Expose alias for deprecated method.
-Page.prototype.emulateMedia = Page.prototype.emulateMediaType;
+function processClip(clip: {x: number, y: number, width: number, height: number}) {
+  const x = Math.round(clip.x);
+  const y = Math.round(clip.y);
+  const width = Math.round(clip.width + clip.x - x);
+  const height = Math.round(clip.height + clip.y - y);
+  return {x, y, width, height, scale: 1};
+}
 
-/**
- * @typedef {Object} PDFOptions
- * @property {number=} scale
- * @property {boolean=} displayHeaderFooter
- * @property {string=} headerTemplate
- * @property {string=} footerTemplate
- * @property {boolean=} printBackground
- * @property {boolean=} landscape
- * @property {string=} pageRanges
- * @property {string=} format
- * @property {string|number=} width
- * @property {string|number=} height
- * @property {boolean=} preferCSSPageSize
- * @property {!{top?: string|number, bottom?: string|number, left?: string|number, right?: string|number}=} margin
- * @property {string=} path
- */
+export interface PDFOptions {
+  scale?: number
+  displayHeaderFooter?: boolean
+  headerTemplate?: string
+  footerTemplate?: string
+  printBackground?: boolean
+  landscape?: boolean
+  pageRanges?: string
+  format?: string
+  width?: string|number
+  height?: string|number
+  preferCSSPageSize?: boolean
+  margin?: {top?: string|number, bottom?: string|number, left?: string|number, right?: string|number}
+  path?: string
+}
 
-/**
- * @typedef {Object} Metrics
- * @property {number=} Timestamp
- * @property {number=} Documents
- * @property {number=} Frames
- * @property {number=} JSEventListeners
- * @property {number=} Nodes
- * @property {number=} LayoutCount
- * @property {number=} RecalcStyleCount
- * @property {number=} LayoutDuration
- * @property {number=} RecalcStyleDuration
- * @property {number=} ScriptDuration
- * @property {number=} TaskDuration
- * @property {number=} JSHeapUsedSize
- * @property {number=} JSHeapTotalSize
- */
+export interface Metrics {
+  Timestamp?: number
+  Documents?: number
+  Frames?: number
+  JSEventListeners?: number
+  Nodes?: number
+  LayoutCount?: number
+  RecalcStyleCount?: number
+  LayoutDuration?: number
+  RecalcStyleDuration?: number
+  ScriptDuration?: number
+  TaskDuration?: number
+  JSHeapUsedSize?: number
+  JSHeapTotalSize?: number
+}
 
-/**
- * @typedef {Object} ScreenshotOptions
- * @property {string=} type
- * @property {string=} path
- * @property {boolean=} fullPage
- * @property {{x: number, y: number, width: number, height: number}=} clip
- * @property {number=} quality
- * @property {boolean=} omitBackground
- * @property {string=} encoding
- */
+export interface ScreenshotOptions {
+  type?: string
+  path?: string
+  fullPage?: boolean
+  clip?: {x: number, y: number, width: number, height: number}
+  quality?: number
+  omitBackground?: boolean
+  encoding?: string
+}
 
-/**
- * @typedef {Object} MediaFeature
- * @property {string} name
- * @property {string} value
- */
+export interface MediaFeature {
+  name: string;
+  value: string;
+}
 
-/** @type {!Set<string>} */
-const supportedMetrics = new Set([
+const supportedMetrics = new Set<keyof Metrics>([
   'Timestamp',
   'Documents',
   'Frames',
@@ -1222,27 +963,12 @@ const supportedMetrics = new Set([
   'JSHeapTotalSize',
 ]);
 
-/** @enum {!{width: number, height: number}} */
-Page.PaperFormats = {
-  letter: {width: 8.5, height: 11},
-  legal: {width: 8.5, height: 14},
-  tabloid: {width: 11, height: 17},
-  ledger: {width: 17, height: 11},
-  a0: {width: 33.1, height: 46.8 },
-  a1: {width: 23.4, height: 33.1 },
-  a2: {width: 16.54, height: 23.4 },
-  a3: {width: 11.7, height: 16.54 },
-  a4: {width: 8.27, height: 11.7 },
-  a5: {width: 5.83, height: 8.27 },
-  a6: {width: 4.13, height: 5.83 },
-};
-
 const unitToPixels = {
   'px': 1,
   'in': 96,
   'cm': 37.8,
   'mm': 3.78
-};
+} as const;
 
 /**
  * @param {(string|number|undefined)} parameter
@@ -1254,9 +980,9 @@ function convertPrintParameterToInches(parameter: (string|number|undefined)): (n
   let pixels;
   if (helper.isNumber(parameter)) {
     // Treat numbers as pixel values to be aligned with phantom's paperSize.
-    pixels = /** @type {number} */ (parameter);
+    pixels = (parameter);
   } else if (helper.isString(parameter)) {
-    const text = /** @type {string} */ (parameter);
+    const text = (parameter);
     let unit = text.substring(text.length - 2).toLowerCase();
     let valueText = '';
     if (unitToPixels.hasOwnProperty(unit)) {
@@ -1269,60 +995,56 @@ function convertPrintParameterToInches(parameter: (string|number|undefined)): (n
     }
     const value = Number(valueText);
     assert(!isNaN(value), 'Failed to parse parameter value: ' + text);
-    pixels = value * unitToPixels[unit];
+    pixels = value * unitToPixels[unit as keyof typeof unitToPixels];
   } else {
     throw new Error('page.pdf() Cannot handle parameter type: ' + (typeof parameter));
   }
   return pixels / 96;
 }
 
-/**
- * @typedef {Object} Network.Cookie
- * @property {string} name
- * @property {string} value
- * @property {string} domain
- * @property {string} path
- * @property {number} expires
- * @property {number} size
- * @property {boolean} httpOnly
- * @property {boolean} secure
- * @property {boolean} session
- * @property {("Strict"|"Lax"|"Extended"|"None")=} sameSite
- */
+export interface NetworkCookie {
+  name: string
+  value: string
+  domain: string
+  path: string
+  expires: number
+  size: number
+  httpOnly: boolean
+  secure: boolean
+  session: boolean
+  sameSite?: "Strict"|"Lax"|"Extended"|"None"
+}
 
+export interface NetworkCookieParam {
+  name: string
+  value: string
+  url?: string
+  domain?: string
+  path?: string
+  expires?: number
+  httpOnly?: boolean
+  secure?: boolean
+  sameSite?: "Strict"|"Lax"
+}
 
-/**
- * @typedef {Object} Network.CookieParam
- * @property {string} name
- * @property {string} value
- * @property {string=} url
- * @property {string=} domain
- * @property {string=} path
- * @property {number=} expires
- * @property {boolean=} httpOnly
- * @property {boolean=} secure
- * @property {("Strict"|"Lax")=} sameSite
- */
+export interface ConsoleMessageLocation {
+  url?: string;
+  lineNumber?: number;
+  columnNumber?: number;
+}
 
-/**
- * @typedef {Object} ConsoleMessage.Location
- * @property {string=} url
- * @property {number=} lineNumber
- * @property {number=} columnNumber
- */
-
-class ConsoleMessage {
+export class ConsoleMessage {
   _type: string
   _text: string
   _args: Array<JSHandle>
-  _location: ConsoleMessage.Location
+  _location: ConsoleMessageLocation
   /**
    * @param {string} type
    * @param {string} text
    * @param {!Array<!Puppeteer.JSHandle>} args
-   * @param {ConsoleMessage.Location} location
+   * @param {ConsoleMessageLocation} location
    */
-  constructor(type: string, text: string, args: Array<JSHandle>, location: ConsoleMessage.Location = {}) {
+  constructor(type: string, text: string, args: Array<JSHandle>, location: ConsoleMessageLocation = {}) {
     this._type = type;
     this._text = text;
     this._args = args;
@@ -1358,31 +1080,22 @@ class ConsoleMessage {
   }
 }
 
-class FileChooser {
-  _client: CDPSession
-  _handled: boolean
-  /**
-   * @param {Puppeteer.CDPSession} client
-   * @param {!Protocol.Page.fileChooserOpenedPayload} event
-   */
+export class FileChooser {
+  private _client: CDPSession
+  private _handled: boolean
+  private _multiple: boolean
+
   constructor(client: CDPSession, event: Protocol.Page.fileChooserOpenedPayload) {
     this._client = client;
     this._multiple = event.mode !== 'selectSingle';
     this._handled = false;
   }
 
-  /**
-   * @return {boolean}
-   */
   isMultiple(): boolean {
     return this._multiple;
   }
 
-  /**
-   * @param {!Array<string>} filePaths
-   * @return {!Promise}
-   */
-  async accept(filePaths: Array<string>): Promise<void> {
+  async accept(filePaths: string[]): Promise<void> {
     assert(!this._handled, 'Cannot accept FileChooser which is already handled!');
     this._handled = true;
     const files = filePaths.map(filePath => path.resolve(filePath));
@@ -1392,9 +1105,6 @@ class FileChooser {
     });
   }
 
-  /**
-   * @return {!Promise}
-   */
   async cancel(): Promise<void> {
     assert(!this._handled, 'Cannot cancel FileChooser which is already handled!');
     this._handled = true;
@@ -1403,5 +1113,3 @@ class FileChooser {
     });
   }
 }
-
-export {Page, ConsoleMessage, FileChooser};

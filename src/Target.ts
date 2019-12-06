@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 
-import {Events} from './Events';
-import {Page} from './Page';
-import {Worker} from './Worker';
+import { Events } from './Events';
+import { Page } from './Page';
+import { Worker } from './Worker';
+import { BrowserContext, Browser } from './Browser';
+import { CDPSession } from './Connection';
+import { Viewport } from './types';
+import { TaskQueue } from './TaskQueue';
 
-class Target {
+export class Target {
   _targetInfo: Protocol.Target.TargetInfo
+  _targetId: string
   _browserContext: BrowserContext
   _sessionFactory: () => Promise<CDPSession>
   _ignoreHTTPSErrors: boolean
-  _defaultViewport: Viewport
+  _defaultViewport?: Viewport | null
   _screenshotTaskQueue: TaskQueue
-  /**
-   * @param {!Protocol.Target.TargetInfo} targetInfo
-   * @param {!Puppeteer.BrowserContext} browserContext
-   * @param {!function():!Promise<!Puppeteer.CDPSession>} sessionFactory
-   * @param {boolean} ignoreHTTPSErrors
-   * @param {?Puppeteer.Viewport} defaultViewport
-   * @param {!Puppeteer.TaskQueue} screenshotTaskQueue
-   */
-  constructor(targetInfo: Protocol.Target.TargetInfo, browserContext: BrowserContext, sessionFactory: () => Promise<CDPSession>, ignoreHTTPSErrors: boolean, defaultViewport?: Viewport, screenshotTaskQueue: TaskQueue) {
+  _pagePromise: Promise<Page> | null = null;
+  _workerPromise: Promise<Worker> | null = null;
+  _initializedPromise: Promise<Worker | boolean>
+  _initializedCallback!: (value: Worker | PromiseLike<Worker> | boolean) => void
+  _isClosedPromise: Promise<void>
+  _closedCallback!: () => void
+  _isInitialized: boolean;
+
+  constructor(targetInfo: Protocol.Target.TargetInfo, browserContext: BrowserContext, sessionFactory: () => Promise<CDPSession>, ignoreHTTPSErrors: boolean, defaultViewport: Viewport | undefined | null, screenshotTaskQueue: TaskQueue) {
     this._targetInfo = targetInfo;
     this._browserContext = browserContext;
     this._targetId = targetInfo.targetId;
@@ -41,10 +46,7 @@ class Target {
     this._ignoreHTTPSErrors = ignoreHTTPSErrors;
     this._defaultViewport = defaultViewport;
     this._screenshotTaskQueue = screenshotTaskQueue;
-    /** @type {?Promise<!Puppeteer.Page>} */
-    this._pagePromise = null;
-    /** @type {?Promise<!Worker>} */
-    this._workerPromise = null;
+
     this._initializedPromise = new Promise(fulfill => this._initializedCallback = fulfill).then(async success => {
       if (!success)
         return false;
@@ -64,28 +66,19 @@ class Target {
       this._initializedCallback(true);
   }
 
-  /**
-   * @return {!Promise<!Puppeteer.CDPSession>}
-   */
   createCDPSession(): Promise<CDPSession> {
     return this._sessionFactory();
   }
 
-  /**
-   * @return {!Promise<?Page>}
-   */
-  async page(): Promise<?Page> {
+  async page(): Promise<Page> {
     if ((this._targetInfo.type === 'page' || this._targetInfo.type === 'background_page') && !this._pagePromise) {
       this._pagePromise = this._sessionFactory()
           .then(client => Page.create(client, this, this._ignoreHTTPSErrors, this._defaultViewport, this._screenshotTaskQueue));
     }
-    return this._pagePromise;
+    return this._pagePromise!;
   }
 
-  /**
-   * @return {!Promise<?Worker>}
-   */
-  async worker(): Promise<?Worker> {
+  async worker(): Promise<Worker | null> {
     if (this._targetInfo.type !== 'service_worker' && this._targetInfo.type !== 'shared_worker')
       return null;
     if (!this._workerPromise) {
@@ -96,16 +89,10 @@ class Target {
     return this._workerPromise;
   }
 
-  /**
-   * @return {string}
-   */
   url(): string {
     return this._targetInfo.url;
   }
 
-  /**
-   * @return {"page"|"background_page"|"service_worker"|"shared_worker"|"other"|"browser"}
-   */
   type(): "page"|"background_page"|"service_worker"|"shared_worker"|"other"|"browser" {
     const type = this._targetInfo.type;
     if (type === 'page' || type === 'background_page' || type === 'service_worker' || type === 'shared_worker' || type === 'browser')
@@ -113,34 +100,23 @@ class Target {
     return 'other';
   }
 
-  /**
-   * @return {!Puppeteer.Browser}
-   */
   browser(): Browser {
     return this._browserContext.browser();
   }
 
-  /**
-   * @return {!Puppeteer.BrowserContext}
-   */
   browserContext(): BrowserContext {
     return this._browserContext;
   }
 
-  /**
-   * @return {?Puppeteer.Target}
-   */
   opener(): Target | undefined {
     const { openerId } = this._targetInfo;
     if (!openerId)
-      return null;
+      return undefined;
     return this.browser()._targets.get(openerId);
   }
 
-  /**
-   * @param {!Protocol.Target.TargetInfo} targetInfo
-   */
-  _targetInfoChanged(targetInfo: Protocol.Target.TargetInfo) {
+  /*@internal*/
+  public _targetInfoChanged(targetInfo: Protocol.Target.TargetInfo) {
     this._targetInfo = targetInfo;
 
     if (!this._isInitialized && (this._targetInfo.type !== 'page' || this._targetInfo.url !== '')) {
@@ -150,5 +126,3 @@ class Target {
     }
   }
 }
-
-export {Target};

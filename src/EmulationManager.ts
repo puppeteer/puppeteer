@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-class EmulationManager {
-  _client: CDPSession
-  _emulatingMobile: boolean
-  _hasTouch: boolean
-  /**
-   * @param {!Puppeteer.CDPSession} client
-   */
-  constructor(client: CDPSession) {
-    this._client = client;
-    this._emulatingMobile = false;
-    this._hasTouch = false;
+
+import { CDPSession } from "./Connection";
+import { Viewport } from "./types";
+
+export class EmulationManager {
+  private _emulatingMobile = false;
+  private _hasTouch = false;
+
+  constructor(private client: CDPSession) {
   }
 
-  /**
-   * @param {!Puppeteer.Viewport} viewport
-   * @return {Promise<boolean>}
-   */
   async emulateViewport(viewport: Viewport): Promise<boolean> {
     const mobile = viewport.isMobile || false;
     const width = viewport.width;
@@ -41,8 +35,8 @@ class EmulationManager {
     const hasTouch = viewport.hasTouch || false;
 
     await Promise.all([
-      this._client.send('Emulation.setDeviceMetricsOverride', { mobile, width, height, deviceScaleFactor, screenOrientation }),
-      this._client.send('Emulation.setTouchEmulationEnabled', {
+      this.client.send('Emulation.setDeviceMetricsOverride', { mobile, width, height, deviceScaleFactor, screenOrientation }),
+      this.client.send('Emulation.setTouchEmulationEnabled', {
         enabled: hasTouch
       })
     ]);
@@ -53,5 +47,3 @@ class EmulationManager {
     return reloadNeeded;
   }
 }
-
-export {EmulationManager};

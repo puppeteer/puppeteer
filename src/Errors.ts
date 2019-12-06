@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-class CustomError extends Error {
-  constructor(message) {
+export class TimeoutError extends Error {
+  constructor(message?: string) {
     super(message);
-    this.name = this.constructor.name;
-    Error.captureStackTrace(this, this.constructor);
+    // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html#support-for-newtarget
+    Object.setPrototypeOf(this, new.target.prototype)
   }
 }
-
-class TimeoutError extends CustomError {}
-
-export {
-  TimeoutError,
-};
