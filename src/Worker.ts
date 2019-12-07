@@ -19,10 +19,10 @@ import {debugError} from './helper';
 import {ExecutionContext} from './ExecutionContext';
 import {JSHandle} from './JSHandle';
 import { CDPSession } from './Connection';
-import { AnyFunction } from './types';
+import { JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
 import { Protocol } from './protocol';
 
-export class Worker extends EventEmitter {
+export class Worker extends EventEmitter implements JSEvalable {
   _client: CDPSession
   _url: string
   _executionContextPromise: Promise<ExecutionContext>
@@ -54,11 +54,14 @@ export class Worker extends EventEmitter {
     return this._executionContextPromise;
   }
 
-  async evaluate(pageFunction: AnyFunction|string, ...args: any[]): Promise<any> {
+  async evaluate<V extends EvaluateFn<any>>(pageFunction: V, ...args: SerializableOrJSHandle[]): Promise<EvaluateFnReturnType<V>> {
     return (await this._executionContextPromise).evaluate(pageFunction, ...args);
   }
 
-  async evaluateHandle(pageFunction: AnyFunction|string, ...args: any[]): Promise<JSHandle> {
+  async evaluateHandle<V extends EvaluateFn<any>>(
+    pageFunction: V,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<JSHandle<EvaluateFnReturnType<V>>> {
     return (await this._executionContextPromise).evaluateHandle(pageFunction, ...args);
   }
 }

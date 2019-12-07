@@ -2,6 +2,8 @@ import { ElementHandle, JSHandle } from "./JSHandle";
 
 export type AnyFunction = (...args: any[]) => unknown;
 
+export type UnwrapPromise<T> = T extends Promise<infer V> ? V : T;
+
 /** Wraps a DOM element into an ElementHandle instance */
 export type WrapElementHandle<X> = X extends Element ? ElementHandle<X> : X;
 
@@ -332,7 +334,7 @@ export interface Evalable {
     ...args: SerializableOrJSHandle[]
   ): Promise<WrapElementHandle<R>>;
 }
-export interface JSEvalable<A = any> {
+export interface JSEvalable<T = any> {
   /**
    * Evaluates a function in the browser context.
    * If the function, passed to the frame.evaluate, returns a Promise, then frame.evaluate would wait for the promise to resolve and return its value.
@@ -340,10 +342,10 @@ export interface JSEvalable<A = any> {
    * @param fn Function to be evaluated in browser context
    * @param args Arguments to pass to `fn`
    */
-  evaluate<T extends EvaluateFn<A>>(
-    pageFunction: T,
+  evaluate<V extends EvaluateFn<T>>(
+    pageFunction: V,
     ...args: SerializableOrJSHandle[]
-  ): Promise<EvaluateFnReturnType<T>>;
+  ): Promise<EvaluateFnReturnType<V>>;
   /**
    * The only difference between `evaluate` and `evaluateHandle` is that `evaluateHandle` returns in-page object (`JSHandle`).
    * If the function, passed to the `evaluateHandle`, returns a `Promise`, then `evaluateHandle` would wait for the
@@ -351,14 +353,14 @@ export interface JSEvalable<A = any> {
    * @param fn Function to be evaluated in browser context
    * @param args Arguments to pass to `fn`
    */
-  evaluateHandle(
-    pageFunction: string | ((arg1: A, ...args: any[]) => any),
+  evaluateHandle<V extends EvaluateFn<any>>(
+    pageFunction: V,
     ...args: SerializableOrJSHandle[]
-  ): Promise<JSHandle>;
+  ): Promise<JSHandle<EvaluateFnReturnType<V>>>;
 }
 
 export type EvaluateFn<T = any> = string | ((arg1: T, ...args: any[]) => any);
-export type EvaluateFnReturnType<T extends EvaluateFn> = T extends ((...args: any[]) => infer R) ? R : unknown;
+export type EvaluateFnReturnType<T extends EvaluateFn> = T extends ((...args: any[]) => infer R) ? UnwrapPromise<R> : unknown;
 
 export type Serializable =
   | number

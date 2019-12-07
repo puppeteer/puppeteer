@@ -34,7 +34,7 @@ import { createJSHandle, ElementHandle, JSHandle } from './JSHandle';
 import { Accessibility } from './Accessibility';
 import { TimeoutSettings } from './TimeoutSettings';
 import { Target } from './Target';
-import { Viewport, AnyFunction, Evalable } from './types';
+import { Viewport, AnyFunction, Evalable, JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
 import { TaskQueue } from './TaskQueue';
 import { Browser, BrowserContext } from './Browser';
 import { Response } from './NetworkManager';
@@ -42,7 +42,7 @@ import { Protocol } from './protocol';
 
 const writeFileAsync = promisify(writeFile);
 
-export class Page extends EventEmitter implements Evalable {
+export class Page extends EventEmitter implements Evalable, JSEvalable {
   static async create(client: CDPSession, target: Target, ignoreHTTPSErrors: boolean, defaultViewport: Viewport | null | undefined, screenshotTaskQueue: TaskQueue): Promise<Page> {
     const page = new Page(client, target, ignoreHTTPSErrors, screenshotTaskQueue);
     await page._initialize();
@@ -279,7 +279,10 @@ export class Page extends EventEmitter implements Evalable {
     return this.mainFrame().$(selector);
   }
 
-  async evaluateHandle(pageFunction: AnyFunction | string, ...args: any[]): Promise<JSHandle> {
+  async evaluateHandle<V extends EvaluateFn<any>>(
+    pageFunction: V,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<JSHandle<EvaluateFnReturnType<V>>> {
     const context = await this.mainFrame().executionContext();
     return context.evaluateHandle(pageFunction, ...args);
   }
@@ -289,12 +292,12 @@ export class Page extends EventEmitter implements Evalable {
     return context.queryObjects(prototypeHandle);
   }
 
-  async $eval(selector: string, pageFunction: AnyFunction | string, ...args: any[]): Promise<(object|undefined)> {
-    return this.mainFrame().$eval(selector, pageFunction, ...args);
+  $eval: Evalable['$eval'] = async (...args: Parameters<Evalable['$eval']>) => {
+    return this.mainFrame().$eval(...args);
   }
 
-  async $$eval(selector: string, pageFunction: AnyFunction | string, ...args: any[]): Promise<(object|undefined)> {
-    return this.mainFrame().$$eval(selector, pageFunction, ...args);
+  $$eval: Evalable['$$eval'] = async (...args: Parameters<Evalable['$$eval']>) => {
+    return this.mainFrame().$$eval(...args);
   }
 
   async $$(selector: string): Promise<Array<ElementHandle>> {
@@ -647,7 +650,7 @@ export class Page extends EventEmitter implements Evalable {
     return this._viewport;
   }
 
-  async evaluate(pageFunction: AnyFunction | string, ...args: any[]): Promise<any> {
+  async evaluate<V extends EvaluateFn<any>>(pageFunction: V, ...args: SerializableOrJSHandle[]): Promise<EvaluateFnReturnType<V>> {
     return this._frameManager.mainFrame()!.evaluate(pageFunction, ...args);
   }
 

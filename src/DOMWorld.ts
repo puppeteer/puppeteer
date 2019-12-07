@@ -23,11 +23,11 @@ import { FrameManager, Frame } from './FrameManager';
 import { TimeoutSettings } from './TimeoutSettings';
 import { ExecutionContext } from './ExecutionContext';
 import { JSHandle, ElementHandle } from './JSHandle';
-import { AnyFunction, Evalable } from './types';
+import { AnyFunction, Evalable, JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
 
 const readFileAsync = promisify(readFile);
 
-export class DOMWorld implements Evalable {
+export class DOMWorld implements Evalable, JSEvalable {
   _documentPromise: Promise<ElementHandle> | null = null;
   _contextPromise!: Promise<ExecutionContext>;
   _contextResolveCallback: ((context: ExecutionContext) => void) | null = null;
@@ -76,12 +76,15 @@ export class DOMWorld implements Evalable {
     return this._contextPromise;
   }
 
-  async evaluateHandle(pageFunction: AnyFunction | string, ...args: any[]): Promise<JSHandle> {
+  async evaluateHandle<V extends EvaluateFn<any>>(
+    pageFunction: V,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<JSHandle<EvaluateFnReturnType<V>>> {
     const context = await this.executionContext();
     return context.evaluateHandle(pageFunction, ...args);
   }
 
-  async evaluate(pageFunction: AnyFunction|string, ...args: any[]): Promise<any> {
+  async evaluate<V extends EvaluateFn<any>>(pageFunction: V, ...args: SerializableOrJSHandle[]): Promise<EvaluateFnReturnType<V>> {
     const context = await this.executionContext();
     return context.evaluate(pageFunction, ...args);
   }
@@ -108,15 +111,14 @@ export class DOMWorld implements Evalable {
     return value;
   }
 
-  async $eval(selector: string, pageFunction: AnyFunction|string, ...args: any[]): Promise<any> {
+  $eval: Evalable['$eval'] = async (...args: Parameters<Evalable['$eval']>) => {
     const document = await this._document();
-    return document.$eval(selector, pageFunction, ...args);
+    return document.$eval(...args);
   }
 
-  
-  async $$eval(selector: string, pageFunction: AnyFunction | string, ...args: any[]): Promise<any> {
+  $$eval: Evalable['$$eval'] = async (...args: Parameters<Evalable['$$eval']>) => {
     const document = await this._document();
-    const value = await document.$$eval(selector, pageFunction, ...args);
+    const value = await document.$$eval(...args);
     return value;
   }
 

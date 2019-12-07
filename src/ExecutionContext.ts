@@ -19,13 +19,13 @@ import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
 import { CDPSession } from './Connection';
 import { DOMWorld } from './DOMWorld';
 import { Frame } from './FrameManager';
-import { AnyFunction } from './types';
+import { AnyFunction, JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
 import { Protocol } from './protocol';
 
 export const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
 
-export class ExecutionContext {
+export class ExecutionContext<T = any> implements JSEvalable<T> {
   private _contextId: number;
 
   constructor(public client: CDPSession, contextPayload: Protocol.Runtime.ExecutionContextDescription, /*@internal*/public world?: DOMWorld) {
@@ -36,11 +36,14 @@ export class ExecutionContext {
     return this.world ? this.world.frame() : null;
   }
 
-  async evaluate(pageFunction: AnyFunction|string, ...args: any[]): Promise<any> {
-    return await this._evaluateInternal(true /* returnByValue */, pageFunction, ...args);
+  evaluate<V extends EvaluateFn<T>>(pageFunction: V, ...args: SerializableOrJSHandle[]): Promise<EvaluateFnReturnType<V>> {
+    return this._evaluateInternal(true /* returnByValue */, pageFunction, ...args);
   }
 
-  async evaluateHandle(pageFunction: AnyFunction | string, ...args: any[]): Promise<JSHandle> {
+  async evaluateHandle<V extends EvaluateFn<any>>(
+    pageFunction: V,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<JSHandle<EvaluateFnReturnType<V>>> {
     return this._evaluateInternal(false /* returnByValue */, pageFunction, ...args);
   }
 

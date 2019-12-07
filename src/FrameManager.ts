@@ -25,7 +25,7 @@ import { CDPSession } from './Connection';
 import { Page } from './Page';
 import { TimeoutSettings } from './TimeoutSettings';
 import { JSHandle, ElementHandle } from './JSHandle';
-import { AnyFunction, Evalable } from './types';
+import { AnyFunction, Evalable, JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
 import { Protocol } from './protocol';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
@@ -302,7 +302,7 @@ export class FrameManager extends EventEmitter {
   }
 }
 
-export class Frame implements Evalable {
+export class Frame implements Evalable, JSEvalable {
   _frameManager: FrameManager
   _client: CDPSession
   _parentFrame?: Frame | null
@@ -345,12 +345,14 @@ export class Frame implements Evalable {
     return this._mainWorld.executionContext();
   }
 
-  async evaluateHandle(pageFunction: AnyFunction | string, ...args: any[]): Promise<JSHandle> {
+  async evaluateHandle<V extends EvaluateFn<any>>(
+    pageFunction: V,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<JSHandle<EvaluateFnReturnType<V>>> {
     return this._mainWorld.evaluateHandle(pageFunction, ...args);
   }
 
-  
-  async evaluate(pageFunction: AnyFunction | string, ...args: any[]): Promise<any> {
+  async evaluate<V extends EvaluateFn<any>>(pageFunction: V, ...args: SerializableOrJSHandle[]): Promise<EvaluateFnReturnType<V>> {
     return this._mainWorld.evaluate(pageFunction, ...args);
   }
 
@@ -365,13 +367,13 @@ export class Frame implements Evalable {
   }
 
   
-  async $eval(selector: string, pageFunction: AnyFunction | string, ...args: any[]): Promise<(object|undefined)> {
-    return this._mainWorld.$eval(selector, pageFunction, ...args);
+  $eval: Evalable['$eval'] = async (...args: Parameters<Evalable['$eval']>) => {
+    return this._mainWorld.$eval(...args);
   }
 
   
-  async $$eval(selector: string, pageFunction: AnyFunction | string, ...args: any[]): Promise<(object|undefined)> {
-    return this._mainWorld.$$eval(selector, pageFunction, ...args);
+  $$eval: Evalable['$$eval'] = async (...args: Parameters<Evalable['$$eval']>) => {
+    return this._mainWorld.$$eval(...args);
   }
 
   

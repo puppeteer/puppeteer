@@ -22,7 +22,7 @@ import * as mime from 'mime-types';
 import {helper, assert, debugError} from './helper';
 import { ExecutionContext } from './ExecutionContext';
 import { CDPSession } from './Connection';
-import { AnyFunction, Evalable, JSEvalable } from './types';
+import { Evalable, JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
 import { Page, ScreenshotOptions } from './Page';
 import { FrameManager, Frame } from './FrameManager';
 import { Protocol } from './protocol';
@@ -69,11 +69,14 @@ export class JSHandle<T = any> implements JSEvalable<T> {
     return this.context;
   }
 
-  async evaluate(pageFunction: AnyFunction|string, ...args: any[]): Promise<any> {
-    return await this.executionContext().evaluate(pageFunction, this, ...args);
+  evaluate<F extends EvaluateFn<T>>(pageFunction: F,...args: SerializableOrJSHandle[]): Promise<EvaluateFnReturnType<F>> {
+    return this.executionContext().evaluate(pageFunction, this, ...args);
   }
 
-  async evaluateHandle(pageFunction: AnyFunction | string, ...args: any[]): Promise<JSHandle> {
+  async evaluateHandle<V extends EvaluateFn<any>>(
+    pageFunction: V,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<JSHandle<EvaluateFnReturnType<V>>> {
     return await this.executionContext().evaluateHandle(pageFunction, this, ...args);
   }
 
@@ -162,17 +165,17 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
   }
 
   async _scrollIntoViewIfNeeded() {
-    const error: string | false = await this.evaluate(async(element, pageJavascriptEnabled) => {
+    const error: string | false = await this.evaluate(async(element: Element, pageJavascriptEnabled) => {
       if (!element.isConnected)
         return 'Node is detached from document';
       if (element.nodeType !== Node.ELEMENT_NODE)
         return 'Node is not of type HTMLElement';
       // force-scroll if page's javascript is disabled.
       if (!pageJavascriptEnabled) {
-        element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
+        element.scrollIntoView({block: 'center', inline: 'center', behavior: 'auto'});
         return false;
       }
-      const visibleRatio = await new Promise(resolve => {
+      const visibleRatio = await new Promise<number>(resolve => {
         const observer = new IntersectionObserver(entries => {
           resolve(entries[0].intersectionRatio);
           observer.disconnect();
@@ -180,7 +183,7 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
         observer.observe(element);
       });
       if (visibleRatio !== 1.0)
-        element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
+        element.scrollIntoView({block: 'center', inline: 'center', behavior: 'auto'});
       return false;
     }, this._page._javascriptEnabled);
     if (error)
@@ -252,7 +255,7 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
   async select(...values: string[]): Promise<string[]> {
     for (const value of values)
       assert(helper.isString(value), 'Values must be strings. Found value "' + value + '" of type "' + (typeof value) + '"');
-    return this.evaluate((element: HTMLSelectElement, values) => {
+    return (this as ElementHandle<HTMLSelectElement>).evaluate((element: HTMLSelectElement, values) => {
       if (element.nodeName.toLowerCase() !== 'select')
         throw new Error('Element is not a <select> element.');
 
@@ -301,7 +304,7 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
   }
 
   async focus() {
-    await this.evaluate(element => element.focus());
+    await (this as ElementHandle<HTMLElement>).evaluate(element => element.focus());
   }
 
   async type(text: string, options?: {delay: (number|undefined)}) {
@@ -415,22 +418,22 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
     return result;
   }
 
-  async $eval(selector: string, pageFunction: AnyFunction|string, ...args: any[]): Promise<any> {
+  $eval: Evalable['$eval'] = async (selector: string, ...args: Parameters<JSEvalable['evaluate']>) => {
     const elementHandle = await this.$(selector);
     if (!elementHandle)
       throw new Error(`Error: failed to find element matching selector "${selector}"`);
-    const result = await elementHandle.evaluate(pageFunction, ...args);
+    const result = await elementHandle.evaluate(...args);
     await elementHandle.dispose();
     return result;
   }
 
-  async $$eval(selector: string, pageFunction: AnyFunction|string, ...args: any[]): Promise<any> {
+  $$eval: Evalable['$$eval'] = async (selector: string, ...args: Parameters<JSEvalable['evaluate']>) => {
     const arrayHandle = await this.evaluateHandle(
         (element: Element, selector: string) => Array.from(element.querySelectorAll(selector)),
         selector
     );
 
-    const result = await arrayHandle.evaluate(pageFunction, ...args);
+    const result = await arrayHandle.evaluate(...args);
     await arrayHandle.dispose();
     return result;
   }
