@@ -36,9 +36,8 @@ const path = require('path');
 const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host || process.env.npm_package_config_puppeteer_download_host;
 const libIsBuilt = fs.existsSync(path.join(__dirname, 'lib'));
 
-if (!libIsBuilt) {
-  require('ts-node/register')
-}
+if (!libIsBuilt)
+  require('ts-node/register');
 
 const puppeteer = require(libIsBuilt ? './lib' : './src');
 const browserFetcher = puppeteer.createBrowserFetcher({ host: downloadHost });
