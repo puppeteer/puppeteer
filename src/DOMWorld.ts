@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { readFile } from 'fs';
-import { promisify } from 'util';
+import * as fs from 'fs';
+import * as util from 'util';
 import { helper, assert } from './helper';
 import { LifecycleWatcher } from './LifecycleWatcher';
 import { TimeoutError } from './Errors';
@@ -25,7 +25,7 @@ import { ExecutionContext } from './ExecutionContext';
 import { JSHandle, ElementHandle } from './JSHandle';
 import { AnyFunction, Evalable, JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
 
-const readFileAsync = promisify(readFile);
+const readFileAsync = util.promisify(fs.readFile);
 
 export class DOMWorld implements Evalable, JSEvalable {
   _documentPromise: Promise<ElementHandle> | null = null;

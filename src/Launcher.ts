@@ -21,6 +21,7 @@ import * as https from 'https';
 import * as URL from 'url';
 import * as readline from 'readline';
 import * as fs from 'fs';
+import * as util from 'util';
 
 import debug from 'debug';
 import * as rimraf from 'rimraf';
@@ -32,13 +33,12 @@ import { helper, assert, debugError } from './helper';
 import { TimeoutError } from './Errors';
 import { WebSocketTransport } from './WebSocketTransport';
 import { PipeTransport } from './PipeTransport';
-import { promisify } from 'util';
 import { AnyFunction, ConnectionTransport, LaunchOptions, ConnectOptions, ChromeArgOptions } from './types';
 
 const debugLauncher = debug(`puppeteer:launcher`);
-const mkdtempAsync = promisify(fs.mkdtemp);
-const removeFolderAsync = promisify(rimraf);
-const writeFileAsync = promisify(fs.writeFile);
+const mkdtempAsync = util.promisify(fs.mkdtemp);
+const removeFolderAsync = util.promisify(rimraf);
+const writeFileAsync = util.promisify(fs.writeFile);
 
 class BrowserRunner {
   proc: childProcess.ChildProcess | null = null;

@@ -15,17 +15,18 @@
  */
 
 import * as fs from 'fs';
+import * as util from 'util';
+
 import debug from 'debug';
 import {TimeoutError} from './Errors';
 import { AnyFunction, Debugger } from './types';
 import { CDPSession } from './Connection';
-import { promisify } from 'util';
 import { Protocol } from './protocol';
 
 export const debugError: Debugger = debug(`puppeteer:error`);
-const openAsync = promisify(fs.open);
-const writeAsync = promisify(fs.write);
-const closeAsync = promisify(fs.close);
+const openAsync = util.promisify(fs.open);
+const writeAsync = util.promisify(fs.write);
+const closeAsync = util.promisify(fs.close);
 
 export function assert(value: unknown, message?: string): asserts value {
   if (!value) {
