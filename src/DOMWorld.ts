@@ -43,7 +43,7 @@ export class DOMWorld implements Evalable, JSEvalable {
     return this._frame;
   }
 
-  /*@internal*/
+  /* @internal */
   public _setContext(context: ExecutionContext | null) {
     if (context) {
       this._contextResolveCallback!.call(null, context);
@@ -58,12 +58,12 @@ export class DOMWorld implements Evalable, JSEvalable {
     }
   }
 
-  /*@internal*/
+  /* @internal */
   public _hasContext(): boolean {
     return !this._contextResolveCallback;
   }
 
-  /*@internal*/
+  /* @internal */
   public _detach() {
     this._detached = true;
     for (const waitTask of this._waitTasks)

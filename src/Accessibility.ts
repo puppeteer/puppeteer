@@ -111,7 +111,7 @@ class AXNode {
   // private _expanded = false;
   private _hidden = false;
 
-  /*@internal*/
+  /* @internal */
   public _children: Array<AXNode> = [];
   private _name: string;
   private _role: string;

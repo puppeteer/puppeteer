@@ -116,7 +116,7 @@ export class Target {
     return this.browser()._targets.get(openerId) || null;
   }
 
-  /*@internal*/
+  /* @internal */
   public _targetInfoChanged(targetInfo: Protocol.Target.TargetInfo) {
     this._targetInfo = targetInfo;
 

@@ -28,6 +28,7 @@ const openAsync = util.promisify(fs.open);
 const writeAsync = util.promisify(fs.write);
 const closeAsync = util.promisify(fs.close);
 
+/* @internal */
 export function assert(value: unknown, message?: string): asserts value {
   if (!value) {
     throw new Error(message);

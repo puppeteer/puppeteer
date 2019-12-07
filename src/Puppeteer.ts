@@ -40,6 +40,7 @@ export class Puppeteer {
     return this._launcher.executablePath();
   }
 
+  /* @internal */
   private get _launcher(): ProductLauncher {
     if (!this._lazyLauncher)
       this._lazyLauncher = Launcher(this._projectRoot, this._preferredRevision, this._isPuppeteerCore, this._productName);

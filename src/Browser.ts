@@ -34,13 +34,13 @@ export class Browser extends EventEmitter {
     return browser;
   }
   
-  /*@internal*/
+  /* @internal */
   private _screenshotTaskQueue = new TaskQueue();
-  /*@internal*/
+  /* @internal */
   private _defaultContext: BrowserContext
-  /*@internal*/
+  /* @internal */
   private _contexts = new Map<string, BrowserContext>();
-  /*@internal*/
+  /* @internal */
   public _targets = new Map<string, Target>();
 
   constructor(private connection: Connection, contextIds: string[], private ignoreHTTPSErrors: boolean, private defaultViewport?: Viewport | null, private _process?: ChildProcess | null, private closeCallback: AnyFunction = noop) {
@@ -74,13 +74,13 @@ export class Browser extends EventEmitter {
     return this._defaultContext;
   }
 
-  /*@internal*/
+  /* @internal */
   public async _disposeContext(contextId: string) {
     await this.connection.send('Target.disposeBrowserContext', {browserContextId: contextId});
     this._contexts.delete(contextId);
   }
 
-  /*@internal*/
+  /* @internal */
   private _targetCreated = async (event: Protocol.Target.targetCreatedPayload) => {
     const targetInfo = event.targetInfo;
     const {browserContextId} = targetInfo;
@@ -127,7 +127,7 @@ export class Browser extends EventEmitter {
     return this._defaultContext.newPage();
   }
 
-  /*@internal*/
+  /* @internal */
   public async _createPageInContext(contextId?: string): Promise<Page> {
     const {targetId} = await this.connection.send('Target.createTarget', {url: 'about:blank', browserContextId: contextId || undefined});
     const target = await this._targets.get(targetId)!;

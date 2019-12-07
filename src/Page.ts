@@ -69,7 +69,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
   private _client: CDPSession
   private _target: Target
   
-  /*@internal*/
+  /* @internal */
   public _javascriptEnabled: boolean
   private _screenshotTaskQueue: TaskQueue
   private _fileChooserInterceptionIsDisabled: boolean

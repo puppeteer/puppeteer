@@ -28,7 +28,7 @@ const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
 export class ExecutionContext<T = any> implements JSEvalable<T> {
   private _contextId: number;
 
-  constructor(public client: CDPSession, contextPayload: Protocol.Runtime.ExecutionContextDescription, /*@internal*/public world?: DOMWorld) {
+  constructor(public client: CDPSession, contextPayload: Protocol.Runtime.ExecutionContextDescription, /* @internal */public world?: DOMWorld) {
     this._contextId = contextPayload.id;
   }
 
@@ -107,7 +107,7 @@ export class ExecutionContext<T = any> implements JSEvalable<T> {
     return returnByValue ? helper.valueFromRemoteObject(remoteObject) : createJSHandle(this, remoteObject);
   }
 
-  /*@internal*/
+  /* @internal */
   public async queryObjects(prototypeHandle: JSHandle): Promise<JSHandle> {
     assert(!prototypeHandle._disposed, 'Prototype JSHandle is disposed!');
     assert(prototypeHandle._remoteObject.objectId, 'Prototype JSHandle must not be referencing primitive value');
@@ -117,7 +117,7 @@ export class ExecutionContext<T = any> implements JSEvalable<T> {
     return createJSHandle(this, response.objects);
   }
 
-  /*@internal*/
+  /* @internal */
   public async _adoptElementHandle(elementHandle: ElementHandle): Promise<ElementHandle> {
     assert(elementHandle.executionContext() !== this, 'Cannot adopt handle that already belongs to this execution context');
     assert(this.world, 'Cannot adopt handle without DOMWorld');
