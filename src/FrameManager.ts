@@ -25,12 +25,12 @@ import { CDPSession } from './Connection';
 import { Page } from './Page';
 import { TimeoutSettings } from './TimeoutSettings';
 import { JSHandle, ElementHandle } from './JSHandle';
-import { AnyFunction } from './types';
+import { AnyFunction, Evalable } from './types';
 import { Protocol } from './protocol';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
-class FrameManager extends EventEmitter {
+export class FrameManager extends EventEmitter {
   _client: CDPSession
   _page: Page
   _timeoutSettings: TimeoutSettings
@@ -302,7 +302,7 @@ class FrameManager extends EventEmitter {
   }
 }
 
-class Frame {
+export class Frame implements Evalable {
   _frameManager: FrameManager
   _client: CDPSession
   _parentFrame?: Frame | null
@@ -535,5 +535,3 @@ function assertNoLegacyNavigationOptions(options: any) {
   assert(options['networkIdleInflight'] === undefined, 'ERROR: networkIdleInflight option is no longer supported.');
   assert(options.waitUntil !== 'networkidle', 'ERROR: "networkidle" option is no longer supported. Use "networkidle2" instead');
 }
-
-export {FrameManager, Frame};

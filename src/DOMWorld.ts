@@ -23,11 +23,11 @@ import { FrameManager, Frame } from './FrameManager';
 import { TimeoutSettings } from './TimeoutSettings';
 import { ExecutionContext } from './ExecutionContext';
 import { JSHandle, ElementHandle } from './JSHandle';
-import { AnyFunction } from './types';
+import { AnyFunction, Evalable } from './types';
 
 const readFileAsync = promisify(readFile);
 
-export class DOMWorld {
+export class DOMWorld implements Evalable {
   _documentPromise: Promise<ElementHandle> | null = null;
   _contextPromise!: Promise<ExecutionContext>;
   _contextResolveCallback: ((context: ExecutionContext) => void) | null = null;

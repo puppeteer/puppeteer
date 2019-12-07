@@ -34,7 +34,7 @@ import { createJSHandle, ElementHandle, JSHandle } from './JSHandle';
 import { Accessibility } from './Accessibility';
 import { TimeoutSettings } from './TimeoutSettings';
 import { Target } from './Target';
-import { Viewport, AnyFunction } from './types';
+import { Viewport, AnyFunction, Evalable } from './types';
 import { TaskQueue } from './TaskQueue';
 import { Browser, BrowserContext } from './Browser';
 import { Response } from './NetworkManager';
@@ -42,7 +42,7 @@ import { Protocol } from './protocol';
 
 const writeFileAsync = promisify(writeFile);
 
-export class Page extends EventEmitter {
+export class Page extends EventEmitter implements Evalable {
   static async create(client: CDPSession, target: Target, ignoreHTTPSErrors: boolean, defaultViewport: Viewport | null | undefined, screenshotTaskQueue: TaskQueue): Promise<Page> {
     const page = new Page(client, target, ignoreHTTPSErrors, screenshotTaskQueue);
     await page._initialize();

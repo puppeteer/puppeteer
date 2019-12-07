@@ -22,7 +22,7 @@ import * as mime from 'mime-types';
 import {helper, assert, debugError} from './helper';
 import { ExecutionContext } from './ExecutionContext';
 import { CDPSession } from './Connection';
-import { AnyFunction } from './types';
+import { AnyFunction, Evalable, JSEvalable } from './types';
 import { Page, ScreenshotOptions } from './Page';
 import { FrameManager, Frame } from './FrameManager';
 import { Protocol } from './protocol';
@@ -59,7 +59,7 @@ export function createJSHandle(context: ExecutionContext, remoteObject: Protocol
   return new JSHandle(context, context.client, remoteObject);
 }
 
-export class JSHandle {
+export class JSHandle<T = any> implements JSEvalable<T> {
   _disposed = false;
 
   constructor(public context: ExecutionContext, protected client: CDPSession, public _remoteObject: Protocol.Runtime.RemoteObject) {
@@ -136,7 +136,7 @@ export class JSHandle {
   }
 }
 
-export class ElementHandle extends JSHandle {
+export class ElementHandle<E extends Element = Element> extends JSHandle<E> implements Evalable {
   _page: Page
   _frameManager: FrameManager
   _disposed: boolean
