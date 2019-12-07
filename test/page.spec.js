@@ -94,7 +94,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe('Async stacks', () => {
+  xdescribe('Async stacks', () => {
     it('should work', async({page, server}) => {
       server.setRoute('/empty.html', (req, res) => {
         res.statusCode = 204;
