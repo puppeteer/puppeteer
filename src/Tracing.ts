@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {helper, assert} from './helper';
 import { CDPSession } from './Connection';
 

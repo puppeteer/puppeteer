@@ -17,12 +17,12 @@
 import * as fs from 'fs';
 import debug from 'debug';
 import {TimeoutError} from './Errors';
-import { AnyFunction } from './types';
+import { AnyFunction, Debugger } from './types';
 import { CDPSession } from './Connection';
 import { promisify } from 'util';
 import { Protocol } from './protocol';
 
-export const debugError = debug(`puppeteer:error`);
+export const debugError: Debugger = debug(`puppeteer:error`);
 const openAsync = promisify(fs.open);
 const writeAsync = promisify(fs.write);
 const closeAsync = promisify(fs.close);

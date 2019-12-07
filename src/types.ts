@@ -375,3 +375,14 @@ export interface JSONObject {
   [key: string]: Serializable;
 }
 export type SerializableOrJSHandle = Serializable | JSHandle;
+
+export interface Debugger {
+  (formatter: any, ...args: any[]): void;
+
+  color: string;
+  enabled: boolean;
+  log: (...args: any[]) => any;
+  namespace: string;
+  destroy: () => boolean;
+  extend: (namespace: string, delimiter?: string) => Debugger;
+}
