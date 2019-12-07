@@ -12,6 +12,7 @@
     "chromium_revision": "706915"
   },
   "scripts": {
+    "prepare": "npm run build",
     "install": "node install.js",
     "unit": "node test/test.js",
     "fjunit": "PUPPETEER_PRODUCT=juggler node test/test.js",
