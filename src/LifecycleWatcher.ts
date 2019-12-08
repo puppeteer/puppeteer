@@ -63,20 +63,20 @@ export class LifecycleWatcher {
         this._terminate(new Error('Navigation failed because browser has disconnected!'))
       ),
       helper.addEventListener(
-        this._frameManager,
-        Events.FrameManager.LifecycleEvent,
-        this._checkLifecycleComplete.bind(this)
+          this._frameManager,
+          Events.FrameManager.LifecycleEvent,
+          this._checkLifecycleComplete.bind(this)
       ),
       helper.addEventListener(
-        this._frameManager,
-        Events.FrameManager.FrameNavigatedWithinDocument,
-        this._navigatedWithinDocument.bind(this)
+          this._frameManager,
+          Events.FrameManager.FrameNavigatedWithinDocument,
+          this._navigatedWithinDocument.bind(this)
       ),
       helper.addEventListener(this._frameManager, Events.FrameManager.FrameDetached, this._onFrameDetached.bind(this)),
       helper.addEventListener(
-        this._frameManager.networkManager(),
-        Events.NetworkManager.Request,
-        this._onRequest.bind(this)
+          this._frameManager.networkManager(),
+          Events.NetworkManager.Request,
+          this._onRequest.bind(this)
       )
     ];
 
@@ -140,7 +140,7 @@ export class LifecycleWatcher {
     if (!this._timeout) return Promise.resolve(null);
     const errorMessage = 'Navigation timeout of ' + this._timeout + ' ms exceeded';
     return new Promise(fulfill => (this._maximumTimer = setTimeout(fulfill, this._timeout))).then(
-      () => new TimeoutError(errorMessage)
+        () => new TimeoutError(errorMessage)
     );
   }
 
@@ -159,12 +159,12 @@ export class LifecycleWatcher {
     if (this._frame._loaderId !== this._initialLoaderId) this._newDocumentNavigationCompleteCallback();
 
     function checkLifecycle(frame: Frame, expectedLifecycle: string[]): boolean {
-      for (const event of expectedLifecycle) {
+      for (const event of expectedLifecycle)
         if (!frame._lifecycleEvents.has(event)) return false;
-      }
-      for (const child of frame.childFrames()) {
+
+      for (const child of frame.childFrames())
         if (!checkLifecycle(child, expectedLifecycle)) return false;
-      }
+
       return true;
     }
   }

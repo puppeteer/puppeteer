@@ -71,7 +71,7 @@ export class Connection extends EventEmitter {
     return id;
   }
 
-  private _onMessage = async (message: string) => {
+  private _onMessage = async(message: string) => {
     if (this.delay) await new Promise(f => setTimeout(f, this.delay));
     debugProtocol('◀ RECV ' + message);
     const object = JSON.parse(message);
@@ -143,10 +143,11 @@ export class CDPSession extends EventEmitter {
     method: T,
     parameters?: Protocol.CommandParameters[T]
   ): Promise<Protocol.CommandReturnValues[T]> {
-    if (!this._connection)
+    if (!this._connection) {
       return Promise.reject(
-        new Error(`Protocol error (${method}): Session closed. Most likely the ${this._targetType} has been closed.`)
+          new Error(`Protocol error (${method}): Session closed. Most likely the ${this._targetType} has been closed.`)
       );
+    }
     const id = this._connection._rawSend({ sessionId: this._sessionId, method, params: parameters });
     return new Promise((resolve, reject) => {
       this._callbacks.set(id, { resolve, reject, error: new Error(), method });

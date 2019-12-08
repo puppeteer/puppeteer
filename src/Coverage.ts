@@ -80,9 +80,9 @@ class JSCoverage {
     this._eventListeners = [
       helper.addEventListener(this.client, 'Debugger.scriptParsed', this._onScriptParsed.bind(this)),
       helper.addEventListener(
-        this.client,
-        'Runtime.executionContextsCleared',
-        this._onExecutionContextsCleared.bind(this)
+          this.client,
+          'Runtime.executionContextsCleared',
+          this._onExecutionContextsCleared.bind(this)
       )
     ];
     await Promise.all([
@@ -163,9 +163,9 @@ class CSSCoverage {
     this._eventListeners = [
       helper.addEventListener(this.client, 'CSS.styleSheetAdded', this._onStyleSheet.bind(this)),
       helper.addEventListener(
-        this.client,
-        'Runtime.executionContextsCleared',
-        this._onExecutionContextsCleared.bind(this)
+          this.client,
+          'Runtime.executionContextsCleared',
+          this._onExecutionContextsCleared.bind(this)
       )
     ];
     await Promise.all([

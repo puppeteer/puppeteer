@@ -47,9 +47,10 @@ import { Browser, BrowserContext } from './Browser';
 import { Response } from './NetworkManager';
 import { Protocol } from './protocol';
 
-const noop = () => undefined
+const noop = () => undefined;
 const writeFileAsync = helper.promisify(fs.writeFile);
 const { hasOwnProperty } = Object.prototype;
+
 export class Page extends EventEmitter implements Evalable, JSEvalable {
   static async create(
     client: CDPSession,
@@ -122,10 +123,10 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
       if (event.targetInfo.type !== 'worker') {
         // If we don't detach from service workers, they will never die.
         client
-          .send('Target.detachFromTarget', {
-            sessionId: event.sessionId
-          })
-          .catch(debugError);
+            .send('Target.detachFromTarget', {
+              sessionId: event.sessionId
+            })
+            .catch(debugError);
         return;
       }
       const session = Connection.fromSession(client).session(event.sessionId)!;
@@ -154,7 +155,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     client.on('Page.domContentEventFired', () => this.emit(Events.Page.DOMContentLoaded));
     client.on('Page.loadEventFired', () => this.emit(Events.Page.Load));
     client.on('Runtime.consoleAPICalled', event => this._onConsoleAPI(event));
-    client.on('Runtime.bindingCalled', event => {this._onBindingCalled(event).catch(noop)});
+    client.on('Runtime.bindingCalled', event => {this._onBindingCalled(event).catch(noop);});
     client.on('Page.javascriptDialogOpening', event => this._onDialog(event));
     client.on('Runtime.exceptionThrown', exception => this._handleException(exception.exceptionDetails));
     client.on('Inspector.targetCrashed', () => this._onTargetCrashed());
@@ -300,13 +301,9 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     return context.queryObjects(prototypeHandle);
   }
 
-  $eval: Evalable['$eval'] = async (...args: Parameters<Evalable['$eval']>) => {
-    return this.mainFrame().$eval(...args);
-  };
+  $eval: Evalable['$eval'] = async(...args: Parameters<Evalable['$eval']>) => this.mainFrame().$eval(...args);
 
-  $$eval: Evalable['$$eval'] = async (...args: Parameters<Evalable['$$eval']>) => {
-    return this.mainFrame().$$eval(...args);
-  };
+  $$eval: Evalable['$$eval'] = async(...args: Parameters<Evalable['$$eval']>) => this.mainFrame().$$eval(...args);
 
   async $$(selector: string): Promise<Array<ElementHandle>> {
     return this.mainFrame().$$(selector);
@@ -341,8 +338,8 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
       if (!item.url && startsWithHTTP) item.url = pageURL;
       assert(item.url !== 'about:blank', `Blank page can not have cookie "${item.name}"`);
       assert(
-        !String.prototype.startsWith.call(item.url || '', 'data:'),
-        `Data URL page can not have cookie "${item.name}"`
+          !String.prototype.startsWith.call(item.url || '', 'data:'),
+          `Data URL page can not have cookie "${item.name}"`
       );
       return item;
     });
@@ -417,9 +414,9 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
 
   _buildMetricsObject(metrics: Array<Protocol.Performance.Metric> = []): Metrics {
     const result: Metrics = {};
-    for (const metric of metrics) {
+    for (const metric of metrics)
       if (supportedMetrics.has(metric.name as keyof Metrics)) result[metric.name as keyof Metrics] = metric.value;
-    }
+
     return result;
   }
 
@@ -485,9 +482,9 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
 
   private _addConsoleMessage = (type: string, args: Array<JSHandle>, stackTrace?: Protocol.Runtime.StackTrace) => {
     if (!this.listenerCount(Events.Page.Console)) {
-      for (const arg of args) {
-        arg.dispose().catch(noop)
-      }
+      for (const arg of args)
+        arg.dispose().catch(noop);
+
       return;
     }
     const textTokens: string[] = [];
@@ -499,10 +496,10 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     const location =
       stackTrace && stackTrace.callFrames.length
         ? {
-            url: stackTrace.callFrames[0].url,
-            lineNumber: stackTrace.callFrames[0].lineNumber,
-            columnNumber: stackTrace.callFrames[0].columnNumber
-          }
+          url: stackTrace.callFrames[0].url,
+          lineNumber: stackTrace.callFrames[0].lineNumber,
+          columnNumber: stackTrace.callFrames[0].columnNumber
+        }
         : {};
     const message = new ConsoleMessage(type, textTokens.join(' '), args, location);
     this.emit(Events.Page.Console, message);
@@ -548,40 +545,41 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
   }
 
   private _sessionClosePromise() {
-    if (!this._disconnectPromise)
+    if (!this._disconnectPromise) {
       this._disconnectPromise = new Promise(fulfill =>
         this._client.once(Events.CDPSession.Disconnected, () => fulfill(new Error('Target closed')))
       );
+    }
     return this._disconnectPromise;
   }
 
   async waitForRequest(urlOrPredicate: string | Function, options: { timeout?: number } = {}): Promise<Request> {
     const { timeout = this._timeoutSettings.timeout() } = options;
     return helper.waitForEvent(
-      this._frameManager.networkManager(),
-      Events.NetworkManager.Request,
-      request => {
-        if (helper.isString(urlOrPredicate)) return urlOrPredicate === request.url();
-        if (typeof urlOrPredicate === 'function') return !!urlOrPredicate(request);
-        return false;
-      },
-      timeout,
-      this._sessionClosePromise()
+        this._frameManager.networkManager(),
+        Events.NetworkManager.Request,
+        request => {
+          if (helper.isString(urlOrPredicate)) return urlOrPredicate === request.url();
+          if (typeof urlOrPredicate === 'function') return !!urlOrPredicate(request);
+          return false;
+        },
+        timeout,
+        this._sessionClosePromise()
     );
   }
 
   async waitForResponse(urlOrPredicate: string | Function, options: { timeout?: number } = {}): Promise<Response> {
     const { timeout = this._timeoutSettings.timeout() } = options;
     return helper.waitForEvent(
-      this._frameManager.networkManager(),
-      Events.NetworkManager.Response,
-      response => {
-        if (helper.isString(urlOrPredicate)) return urlOrPredicate === response.url();
-        if (typeof urlOrPredicate === 'function') return !!urlOrPredicate(response);
-        return false;
-      },
-      timeout,
-      this._sessionClosePromise()
+        this._frameManager.networkManager(),
+        Events.NetworkManager.Response,
+        response => {
+          if (helper.isString(urlOrPredicate)) return urlOrPredicate === response.url();
+          if (typeof urlOrPredicate === 'function') return !!urlOrPredicate(response);
+          return false;
+        },
+        timeout,
+        this._sessionClosePromise()
     );
   }
 
@@ -698,32 +696,32 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     if (options.quality) {
       assert(screenshotType === 'jpeg', 'options.quality is unsupported for the ' + screenshotType + ' screenshots');
       assert(
-        typeof options.quality === 'number',
-        'Expected options.quality to be a number but found ' + typeof options.quality
+          typeof options.quality === 'number',
+          'Expected options.quality to be a number but found ' + typeof options.quality
       );
       assert(Number.isInteger(options.quality), 'Expected options.quality to be an integer');
       assert(
-        options.quality >= 0 && options.quality <= 100,
-        'Expected options.quality to be between 0 and 100 (inclusive), got ' + options.quality
+          options.quality >= 0 && options.quality <= 100,
+          'Expected options.quality to be between 0 and 100 (inclusive), got ' + options.quality
       );
     }
     assert(!options.clip || !options.fullPage, 'options.clip and options.fullPage are exclusive');
     if (options.clip) {
       assert(
-        typeof options.clip.x === 'number',
-        'Expected options.clip.x to be a number but found ' + typeof options.clip.x
+          typeof options.clip.x === 'number',
+          'Expected options.clip.x to be a number but found ' + typeof options.clip.x
       );
       assert(
-        typeof options.clip.y === 'number',
-        'Expected options.clip.y to be a number but found ' + typeof options.clip.y
+          typeof options.clip.y === 'number',
+          'Expected options.clip.y to be a number but found ' + typeof options.clip.y
       );
       assert(
-        typeof options.clip.width === 'number',
-        'Expected options.clip.width to be a number but found ' + typeof options.clip.width
+          typeof options.clip.width === 'number',
+          'Expected options.clip.width to be a number but found ' + typeof options.clip.width
       );
       assert(
-        typeof options.clip.height === 'number',
-        'Expected options.clip.height to be a number but found ' + typeof options.clip.height
+          typeof options.clip.height === 'number',
+          'Expected options.clip.height to be a number but found ' + typeof options.clip.height
       );
       assert(options.clip.width !== 0, 'Expected options.clip.width not to be 0.');
       assert(options.clip.height !== 0, 'Expected options.clip.height not to be 0.');

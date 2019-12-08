@@ -80,15 +80,15 @@ function downloadURL(platform: Platform, host: string, revision: string): string
 
 function detectPlatform(): Platform {
   const platform = os.platform();
-  if (platform === 'darwin') {
+  if (platform === 'darwin')
     return 'mac';
-  } else if (platform === 'linux') {
+  else if (platform === 'linux')
     return 'linux';
-  } else if (platform === 'win32') {
+  else if (platform === 'win32')
     return os.arch() === 'x64' ? 'win64' : 'win32';
-  } else {
+  else
     throw new Error(`Unsupported platform: ${platform}`);
-  }
+
 }
 
 export class BrowserFetcher {
@@ -141,9 +141,9 @@ export class BrowserFetcher {
     if (!(await existsAsync(this._downloadsFolder))) return [];
     const fileNames = await readdirAsync(this._downloadsFolder);
     return fileNames
-      .map(fileName => parseFolderPath(fileName))
-      .filter(entry => entry && entry.platform === this._platform)
-      .map(entry => entry!.revision);
+        .map(fileName => parseFolderPath(fileName))
+        .filter(entry => entry && entry.platform === this._platform)
+        .map(entry => entry!.revision);
   }
 
   async remove(revision: string) {
@@ -155,20 +155,22 @@ export class BrowserFetcher {
   revisionInfo(revision: string): RevisionInfo {
     const folderPath = this._getFolderPath(revision);
     let executablePath = '';
-    if (this._platform === 'mac')
+    if (this._platform === 'mac') {
       executablePath = path.join(
-        folderPath,
-        archiveName(this._platform, revision),
-        'Chromium.app',
-        'Contents',
-        'MacOS',
-        'Chromium'
+          folderPath,
+          archiveName(this._platform, revision),
+          'Chromium.app',
+          'Contents',
+          'MacOS',
+          'Chromium'
       );
-    else if (this._platform === 'linux')
+    } else if (this._platform === 'linux') {
       executablePath = path.join(folderPath, archiveName(this._platform, revision), 'chrome');
-    else if (this._platform === 'win32' || this._platform === 'win64')
+    } else if (this._platform === 'win32' || this._platform === 'win64') {
       executablePath = path.join(folderPath, archiveName(this._platform, revision), 'chrome.exe');
-    else throw new Error('Unsupported platform: ' + this._platform);
+    } else {
+      throw new Error('Unsupported platform: ' + this._platform);
+    }
     const url = downloadURL(this._platform, this._downloadHost, revision);
     const local = fs.existsSync(folderPath);
     return { revision, executablePath, folderPath, local, url };

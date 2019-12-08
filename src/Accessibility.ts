@@ -304,9 +304,9 @@ class AXNode {
   static createTree(payloads: Array<Protocol.Accessibility.AXNode>): AXNode {
     const nodeById = new Map<string, AXNode>();
     for (const payload of payloads) nodeById.set(payload.nodeId, new AXNode(payload));
-    for (const node of nodeById.values()) {
+    for (const node of nodeById.values())
       for (const childId of node.payload.childIds || []) node._children.push(nodeById.get(childId)!);
-    }
+
     return nodeById.values().next().value;
   }
 }

@@ -24,8 +24,8 @@ import { ExecutionContext } from './ExecutionContext';
 import { JSHandle, ElementHandle } from './JSHandle';
 import { AnyFunction, Evalable, JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
 
+const noop = () => undefined;
 const readFileAsync = helper.promisify(fs.readFile);
-const noop = () => undefined
 
 export class DOMWorld implements Evalable, JSEvalable {
   _documentPromise: Promise<ElementHandle> | null = null;
@@ -69,10 +69,11 @@ export class DOMWorld implements Evalable, JSEvalable {
   }
 
   executionContext(): Promise<ExecutionContext> {
-    if (this._detached)
+    if (this._detached) {
       throw new Error(
-        `Execution Context is not available in detached frame "${this._frame.url()}" (are you trying to evaluate?)`
+          `Execution Context is not available in detached frame "${this._frame.url()}" (are you trying to evaluate?)`
       );
+    }
     return this._contextPromise;
   }
 
@@ -113,12 +114,12 @@ export class DOMWorld implements Evalable, JSEvalable {
     return value;
   }
 
-  $eval: Evalable['$eval'] = async (...args: Parameters<Evalable['$eval']>) => {
+  $eval: Evalable['$eval'] = async(...args: Parameters<Evalable['$eval']>) => {
     const document = await this._document();
     return document.$eval(...args);
   };
 
-  $$eval: Evalable['$$eval'] = async (...args: Parameters<Evalable['$$eval']>) => {
+  $$eval: Evalable['$$eval'] = async(...args: Parameters<Evalable['$$eval']>) => {
     const document = await this._document();
     const value = await document.$$eval(...args);
     return value;
@@ -347,15 +348,15 @@ export class DOMWorld implements Evalable, JSEvalable {
     const polling = waitForVisible || waitForHidden ? 'raf' : 'mutation';
     const title = `${isXPath ? 'XPath' : 'selector'} "${selectorOrXPath}"${waitForHidden ? ' to be hidden' : ''}`;
     const waitTask = new WaitTask(
-      this,
-      predicate,
-      title,
-      polling,
-      timeout,
-      selectorOrXPath,
-      isXPath,
-      waitForVisible,
-      waitForHidden
+        this,
+        predicate,
+        title,
+        polling,
+        timeout,
+        selectorOrXPath,
+        isXPath,
+        waitForVisible,
+        waitForHidden
     );
     const handle = await waitTask.promise;
     if (!handle.asElement()) {
@@ -450,11 +451,11 @@ class WaitTask {
     let error: Error | null = null;
     try {
       success = await (await this._domWorld.executionContext()).evaluateHandle(
-        waitForPredicatePageFunction,
-        this._predicateBody,
-        this._polling,
-        this._timeout,
-        ...this._args
+          waitForPredicatePageFunction,
+          this._predicateBody,
+          this._polling,
+          this._timeout,
+          ...this._args
       );
     } catch (e) {
       error = e;
@@ -488,9 +489,9 @@ class WaitTask {
   }
 
   _cleanup() {
-    if (this._timeoutTimer !== undefined) {
+    if (this._timeoutTimer !== undefined)
       clearTimeout(this._timeoutTimer);
-    }
+
     this._domWorld._waitTasks.delete(this);
   }
 }

@@ -88,13 +88,13 @@ export class Target {
     if (!this._workerPromise) {
       // TODO(einbinder): Make workers send their console logs.
       this._workerPromise = this._sessionFactory().then(
-        client =>
-          new Worker(
-            client,
-            this._targetInfo.url,
-            () => undefined /* consoleAPICalled */,
-            () => undefined /* exceptionThrown */
-          )
+          client =>
+            new Worker(
+                client,
+                this._targetInfo.url,
+                () => undefined /* consoleAPICalled */,
+                () => undefined /* exceptionThrown */
+            )
       );
     }
     return this._workerPromise;

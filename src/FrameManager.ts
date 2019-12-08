@@ -188,9 +188,9 @@ export class FrameManager extends EventEmitter {
     assert(isMainFrame || frame, 'We either navigate top level or have old version of the navigated frame');
 
     // Detach all child frames first.
-    if (frame) {
+    if (frame)
       for (const child of frame.childFrames()) this._removeFramesRecursively(child);
-    }
+
 
     // Update or create main frame.
     if (isMainFrame) {
@@ -219,17 +219,17 @@ export class FrameManager extends EventEmitter {
       source: `//# sourceURL=${EVALUATION_SCRIPT_URL}`,
       worldName: name
     }),
-      await Promise.all(
+    await Promise.all(
         this.frames().map(frame =>
           this._client
-            .send('Page.createIsolatedWorld', {
-              frameId: frame._id,
-              grantUniveralAccess: true,
-              worldName: name
-            })
-            .catch(debugError)
+              .send('Page.createIsolatedWorld', {
+                frameId: frame._id,
+                grantUniveralAccess: true,
+                worldName: name
+              })
+              .catch(debugError)
         )
-      ); // frames might be removed before we send this
+    ); // frames might be removed before we send this
   }
 
   _onFrameNavigatedWithinDocument(frameId: string, url: string) {
@@ -274,9 +274,9 @@ export class FrameManager extends EventEmitter {
   }
 
   private _onExecutionContextsCleared() {
-    for (const context of this._contextIdToContext.values()) {
+    for (const context of this._contextIdToContext.values())
       if (context.world) context.world._setContext(null);
-    }
+
     this._contextIdToContext.clear();
   }
 
@@ -361,13 +361,9 @@ export class Frame implements Evalable, JSEvalable {
     return this._mainWorld.$x(expression);
   }
 
-  $eval: Evalable['$eval'] = async (...args: Parameters<Evalable['$eval']>) => {
-    return this._mainWorld.$eval(...args);
-  };
+  $eval: Evalable['$eval'] = async(...args: Parameters<Evalable['$eval']>) => this._mainWorld.$eval(...args);
 
-  $$eval: Evalable['$$eval'] = async (...args: Parameters<Evalable['$$eval']>) => {
-    return this._mainWorld.$$eval(...args);
-  };
+  $$eval: Evalable['$$eval'] = async(...args: Parameters<Evalable['$$eval']>) => this._mainWorld.$$eval(...args);
 
   async $$(selector: string): Promise<Array<ElementHandle>> {
     return this._mainWorld.$$(selector);
@@ -533,7 +529,7 @@ function assertNoLegacyNavigationOptions(options: any) {
   assert(options['networkIdleTimeout'] === undefined, 'ERROR: networkIdleTimeout option is no longer supported.');
   assert(options['networkIdleInflight'] === undefined, 'ERROR: networkIdleInflight option is no longer supported.');
   assert(
-    options.waitUntil !== 'networkidle',
-    'ERROR: "networkidle" option is no longer supported. Use "networkidle2" instead'
+      options.waitUntil !== 'networkidle',
+      'ERROR: "networkidle" option is no longer supported. Use "networkidle2" instead'
   );
 }

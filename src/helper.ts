@@ -27,9 +27,9 @@ export const debugError: Debugger = debug(`puppeteer:error`);
 
 /* @internal */
 export function assert(value: unknown, message?: string): asserts value {
-  if (!value) {
+  if (!value)
     throw new Error(message);
-  }
+
 }
 
 export { Helper as helper };
@@ -181,14 +181,14 @@ export class Helper {
       clearTimeout(eventTimeout);
     }
     const result = await Promise.race([promise, abortPromise]).then(
-      r => {
-        cleanup();
-        return r;
-      },
-      e => {
-        cleanup();
-        throw e;
-      }
+        r => {
+          cleanup();
+          return r;
+        },
+        e => {
+          cleanup();
+          throw e;
+        }
     );
     if (result instanceof Error) throw result;
     return result;

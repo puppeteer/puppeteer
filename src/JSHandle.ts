@@ -173,7 +173,7 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
   }
 
   async _scrollIntoViewIfNeeded() {
-    const error: string | false = await this.evaluate(async (element: Element, pageJavascriptEnabled) => {
+    const error: string | false = await this.evaluate(async(element: Element, pageJavascriptEnabled) => {
       if (!element.isConnected) return 'Node is detached from document';
       if (element.nodeType !== Node.ELEMENT_NODE) return 'Node is not of type HTMLElement';
       // force-scroll if page's javascript is disabled.
@@ -197,19 +197,19 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
   async _clickablePoint(): Promise<{ x: number; y: number }> {
     const [result, layoutMetrics] = await Promise.all([
       this.client
-        .send('DOM.getContentQuads', {
-          objectId: this._remoteObject.objectId
-        })
-        .catch(debugError),
+          .send('DOM.getContentQuads', {
+            objectId: this._remoteObject.objectId
+          })
+          .catch(debugError),
       this.client.send('Page.getLayoutMetrics')
     ]);
     if (!result || !result.quads.length) throw new Error('Node is either not visible or not an HTMLElement');
     // Filter out quads that have too small area to click into.
     const { clientWidth, clientHeight } = layoutMetrics.layoutViewport;
     const quads = (result.quads as number[][])
-      .map(quad => this._fromProtocolQuad(quad))
-      .map((quad: Array<{ x: number; y: number }>) => this._intersectQuadWithViewport(quad, clientWidth, clientHeight))
-      .filter(quad => computeQuadArea(quad) > 1);
+        .map(quad => this._fromProtocolQuad(quad))
+        .map((quad: Array<{ x: number; y: number }>) => this._intersectQuadWithViewport(quad, clientWidth, clientHeight))
+        .filter(quad => computeQuadArea(quad) > 1);
     if (!quads.length) throw new Error('Node is either not visible or not an HTMLElement');
     // Return the middle point of the first quad.
     const quad = quads[0];
@@ -227,10 +227,10 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
 
   _getBoxModel(): Promise<void | Protocol.DOM.getBoxModelReturnValue> {
     return this.client
-      .send('DOM.getBoxModel', {
-        objectId: this._remoteObject.objectId
-      })
-      .catch(error => debugError(error));
+        .send('DOM.getBoxModel', {
+          objectId: this._remoteObject.objectId
+        })
+        .catch(error => debugError(error));
   }
 
   _fromProtocolQuad(quad: Array<number>): Array<{ x: number; y: number }> {
@@ -266,11 +266,12 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
   }
 
   async select(...values: string[]): Promise<string[]> {
-    for (const value of values)
+    for (const value of values) {
       assert(
-        helper.isString(value),
-        'Values must be strings. Found value "' + value + '" of type "' + typeof value + '"'
+          helper.isString(value),
+          'Values must be strings. Found value "' + value + '" of type "' + typeof value + '"'
       );
+    }
     return (this as ElementHandle<HTMLSelectElement>).evaluate((element: HTMLSelectElement, values) => {
       if (element.nodeName.toLowerCase() !== 'select') throw new Error('Element is not a <select> element.');
 
@@ -300,17 +301,17 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
       files.push(file);
     }
     await this.evaluateHandle(
-      async (element: HTMLInputElement, files: Array<{ name: string; content: string; mimeType: string | false }>) => {
-        const dt = new DataTransfer();
-        for (const item of files) {
-          const response = await fetch(`data:${item.mimeType};base64,${item.content}`);
-          const file = new File([await response.blob()], item.name);
-          dt.items.add(file);
-        }
-        element.files = dt.files;
-        element.dispatchEvent(new Event('input', { bubbles: true }));
-      },
-      files
+        async(element: HTMLInputElement, files: Array<{ name: string; content: string; mimeType: string | false }>) => {
+          const dt = new DataTransfer();
+          for (const item of files) {
+            const response = await fetch(`data:${item.mimeType};base64,${item.content}`);
+            const file = new File([await response.blob()], item.name);
+            dt.items.add(file);
+          }
+          element.files = dt.files;
+          element.dispatchEvent(new Event('input', { bubbles: true }));
+        },
+        files
     );
   }
 
@@ -398,13 +399,13 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
     clip.y += pageY;
 
     const imageData = await this._page.screenshot(
-      Object.assign(
-        {},
-        {
-          clip
-        },
-        options
-      )
+        Object.assign(
+            {},
+            {
+              clip
+            },
+            options
+        )
     );
 
     if (needsViewportReset) await this._page.setViewport(viewport!);
@@ -414,8 +415,8 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
 
   async $(selector: string): Promise<ElementHandle | null> {
     const handle = await this.evaluateHandle(
-      (element: Element, selector: string) => element.querySelector(selector),
-      selector
+        (element: Element, selector: string) => element.querySelector(selector),
+        selector
     );
     const element = handle.asElement();
     if (element) return element;
@@ -425,8 +426,8 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
 
   async $$(selector: string): Promise<Array<ElementHandle>> {
     const arrayHandle = await this.evaluateHandle(
-      (element: Element, selector: string) => element.querySelectorAll(selector),
-      selector
+        (element: Element, selector: string) => element.querySelectorAll(selector),
+        selector
     );
     const properties = await arrayHandle.getProperties();
     await arrayHandle.dispose();
@@ -438,7 +439,7 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
     return result;
   }
 
-  $eval: Evalable['$eval'] = async (selector: string, ...args: Parameters<JSEvalable['evaluate']>) => {
+  $eval: Evalable['$eval'] = async(selector: string, ...args: Parameters<JSEvalable['evaluate']>) => {
     const elementHandle = await this.$(selector);
     if (!elementHandle) throw new Error(`Error: failed to find element matching selector "${selector}"`);
     const result = await elementHandle.evaluate(...args);
@@ -446,10 +447,10 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
     return result;
   };
 
-  $$eval: Evalable['$$eval'] = async (selector: string, ...args: Parameters<JSEvalable['evaluate']>) => {
+  $$eval: Evalable['$$eval'] = async(selector: string, ...args: Parameters<JSEvalable['evaluate']>) => {
     const arrayHandle = await this.evaluateHandle(
-      (element: Element, selector: string) => Array.from(element.querySelectorAll(selector)),
-      selector
+        (element: Element, selector: string) => Array.from(element.querySelectorAll(selector)),
+        selector
     );
 
     const result = await arrayHandle.evaluate(...args);

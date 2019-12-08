@@ -5,3 +5,7 @@ utils/doclint/check_public_api/test/
 utils/testrunner/examples/
 experimental/
 lib/
+*.d.ts
+utils/doclint/generate_types/test/test.ts
+scripts/
+src/protocol.ts

@@ -38,9 +38,9 @@ export class PipeTransport implements ConnectionTransport {
   }
 
   send(message: string) {
-    if (!this._pipeWrite) {
+    if (!this._pipeWrite)
       throw new Error(`Cannot send message. PipeTransport has been closed.`);
-    }
+
     this._pipeWrite.write(message);
     this._pipeWrite.write('\0');
   }

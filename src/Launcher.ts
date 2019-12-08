@@ -76,21 +76,22 @@ class BrowserRunner {
         // Cleanup as processes exit.
         if (this.tempDirectory) {
           removeFolderAsync(this.tempDirectory)
-            .then(() => fulfill())
-            .catch(err => console.error(err));
+              .then(() => fulfill())
+              .catch(err => console.error(err));
         } else {
           fulfill();
         }
       });
     });
     this._listeners = [helper.addEventListener(process, 'exit', this.kill.bind(this))];
-    if (handleSIGINT)
+    if (handleSIGINT) {
       this._listeners.push(
-        helper.addEventListener(process, 'SIGINT', () => {
-          this.kill();
-          process.exit(130);
-        })
+          helper.addEventListener(process, 'SIGINT', () => {
+            this.kill();
+            process.exit(130);
+          })
       );
+    }
     if (handleSIGTERM) this._listeners.push(helper.addEventListener(process, 'SIGTERM', this.close.bind(this)));
     if (handleSIGHUP) this._listeners.push(helper.addEventListener(process, 'SIGHUP', this.close.bind(this)));
   }
@@ -123,9 +124,9 @@ class BrowserRunner {
     }
     // Attempt to remove temporary profile directory to avoid littering.
     try {
-      if (this.tempDirectory) {
+      if (this.tempDirectory)
         rimraf.sync(this.tempDirectory);
-      }
+
     } catch (error) { /* */ }
   }
 
@@ -222,12 +223,12 @@ class ChromeLauncher implements ProductLauncher {
         preferredRevision: this._preferredRevision
       });
       const browser = await Browser.create(
-        connection,
-        [],
-        ignoreHTTPSErrors,
-        defaultViewport,
-        runner.proc,
-        runner.close.bind(runner)
+          connection,
+          [],
+          ignoreHTTPSErrors,
+          defaultViewport,
+          runner.proc,
+          runner.close.bind(runner)
       );
       await browser.waitForTarget(t => t.type() === 'page');
       return browser;
@@ -266,9 +267,9 @@ class ChromeLauncher implements ProductLauncher {
     const { devtools = false, headless = !devtools, args = [], userDataDir = null } = options;
     if (userDataDir) chromeArguments.push(`--user-data-dir=${userDataDir}`);
     if (devtools) chromeArguments.push('--auto-open-devtools-for-tabs');
-    if (headless) {
+    if (headless)
       chromeArguments.push('--headless', '--hide-scrollbars', '--mute-audio');
-    }
+
     if (args.every(arg => arg.startsWith('-'))) chromeArguments.push('about:blank');
     chromeArguments.push(...args);
     return chromeArguments;
@@ -295,8 +296,8 @@ class ChromeLauncher implements ProductLauncher {
     } = options;
 
     assert(
-      Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) === 1,
-      'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
+        Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) === 1,
+        'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
     );
 
     let connection!: Connection;
@@ -379,12 +380,12 @@ class FirefoxLauncher implements ProductLauncher {
         preferredRevision: this._preferredRevision
       });
       const browser = await Browser.create(
-        connection,
-        [],
-        ignoreHTTPSErrors,
-        defaultViewport,
-        runner.proc,
-        runner.close.bind(runner)
+          connection,
+          [],
+          ignoreHTTPSErrors,
+          defaultViewport,
+          runner.proc,
+          runner.close.bind(runner)
       );
       await browser.waitForTarget(t => t.type() === 'page');
       return browser;
@@ -407,8 +408,8 @@ class FirefoxLauncher implements ProductLauncher {
     } = options;
 
     assert(
-      Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) === 1,
-      'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
+        Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) === 1,
+        'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
     );
 
     let connection: Connection;
@@ -685,24 +686,24 @@ function waitForWSEndpoint(
     function onClose(error?: Error) {
       cleanup();
       reject(
-        new Error(
-          [
-            'Failed to launch the browser process!' + (error ? ' ' + error.message : ''),
-            stderr,
-            '',
-            'TROUBLESHOOTING: https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md',
-            ''
-          ].join('\n')
-        )
+          new Error(
+              [
+                'Failed to launch the browser process!' + (error ? ' ' + error.message : ''),
+                stderr,
+                '',
+                'TROUBLESHOOTING: https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md',
+                ''
+              ].join('\n')
+          )
       );
     }
 
     function onTimeout() {
       cleanup();
       reject(
-        new TimeoutError(
-          `Timed out after ${timeout} ms while trying to connect to the browser! Only Chrome at revision r${preferredRevision} is guaranteed to work.`
-        )
+          new TimeoutError(
+              `Timed out after ${timeout} ms while trying to connect to the browser! Only Chrome at revision r${preferredRevision} is guaranteed to work.`
+          )
       );
     }
 
@@ -796,11 +797,12 @@ export function Launcher(
   product?: string
 ): ProductLauncher {
   // puppeteer-core doesn't take into account PUPPETEER_* env variables.
-  if (!product && !isPuppeteerCore)
+  if (!product && !isPuppeteerCore) {
     product =
       process.env.PUPPETEER_PRODUCT ||
       process.env.npm_config_puppeteer_product ||
       process.env.npm_package_config_puppeteer_product;
+  }
   switch (product) {
     case 'firefox':
       return new FirefoxLauncher(projectRoot, preferredRevision, isPuppeteerCore);

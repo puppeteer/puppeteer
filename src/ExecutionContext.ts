@@ -64,24 +64,25 @@ export class ExecutionContext<T = any> implements JSEvalable<T> {
     if (helper.isString(pageFunction)) {
       const expressionWithSourceUrl = SOURCE_URL_REGEX.test(pageFunction) ? pageFunction : pageFunction + '\n' + suffix;
       const { exceptionDetails, result: remoteObject } = await this.client
-        .send('Runtime.evaluate', {
-          expression: expressionWithSourceUrl,
-          contextId: this._contextId,
-          returnByValue,
-          awaitPromise: true,
-          userGesture: true
-        })
-        .catch(rewriteError);
+          .send('Runtime.evaluate', {
+            expression: expressionWithSourceUrl,
+            contextId: this._contextId,
+            returnByValue,
+            awaitPromise: true,
+            userGesture: true
+          })
+          .catch(rewriteError);
 
       if (exceptionDetails) throw new Error('Evaluation failed: ' + helper.getExceptionMessage(exceptionDetails));
 
       return returnByValue ? helper.valueFromRemoteObject(remoteObject) : createJSHandle(this, remoteObject);
     }
 
-    if (typeof pageFunction !== 'function')
+    if (typeof pageFunction !== 'function') {
       throw new Error(
-        `Expected to get |string| or |function| as the first argument, but got "${pageFunction}" instead.`
+          `Expected to get |string| or |function| as the first argument, but got "${pageFunction}" instead.`
       );
+    }
 
     let functionText = pageFunction.toString();
     try {
@@ -131,8 +132,8 @@ export class ExecutionContext<T = any> implements JSEvalable<T> {
   /* @internal */
   public async _adoptElementHandle(elementHandle: ElementHandle): Promise<ElementHandle> {
     assert(
-      elementHandle.executionContext() !== this,
-      'Cannot adopt handle that already belongs to this execution context'
+        elementHandle.executionContext() !== this,
+        'Cannot adopt handle that already belongs to this execution context'
     );
     assert(this.world, 'Cannot adopt handle without DOMWorld');
     const nodeInfo = await this.client.send('DOM.describeNode', {

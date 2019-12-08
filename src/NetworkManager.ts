@@ -150,20 +150,20 @@ export class NetworkManager extends EventEmitter {
     }
     const { username, password } = this._credentials || { username: undefined, password: undefined };
     this._client
-      .send('Fetch.continueWithAuth', {
-        requestId: event.requestId,
-        authChallengeResponse: { response, username, password }
-      })
-      .catch(debugError);
+        .send('Fetch.continueWithAuth', {
+          requestId: event.requestId,
+          authChallengeResponse: { response, username, password }
+        })
+        .catch(debugError);
   }
 
   _onRequestPaused(event: Protocol.Fetch.requestPausedPayload) {
     if (!this._userRequestInterceptionEnabled && this._protocolRequestInterceptionEnabled) {
       this._client
-        .send('Fetch.continueRequest', {
-          requestId: event.requestId
-        })
-        .catch(debugError);
+          .send('Fetch.continueRequest', {
+            requestId: event.requestId
+          })
+          .catch(debugError);
     }
 
     const requestId = event.networkId;
@@ -189,8 +189,8 @@ export class NetworkManager extends EventEmitter {
     }
     const frame = event.frameId ? this._frameManager.frame(event.frameId) : null;
     const request = new Request(
-      this._client,
-      frame,
+        this._client,
+        frame,
       interceptionId!,
       this._userRequestInterceptionEnabled,
       event,
@@ -211,9 +211,9 @@ export class NetworkManager extends EventEmitter {
     request._redirectChain.push(request);
     response._bodyLoadedPromiseFulfill.call(null, new Error('Response body is unavailable for redirect responses'));
     this._requestIdToRequest.delete(request._requestId);
-    if (request._interceptionId !== null) {
+    if (request._interceptionId !== null)
       this._attemptedAuthentications.delete(request._interceptionId);
-    }
+
     this.emit(Events.NetworkManager.Response, response);
     this.emit(Events.NetworkManager.RequestFinished, request);
   }
@@ -237,9 +237,9 @@ export class NetworkManager extends EventEmitter {
     // event from protocol. @see https://crbug.com/883475
     if (request.response()) request.response()!._bodyLoadedPromiseFulfill.call(null);
     this._requestIdToRequest.delete(request._requestId);
-    if (request._interceptionId !== null) {
+    if (request._interceptionId !== null)
       this._attemptedAuthentications.delete(request._interceptionId);
-    }
+
     this.emit(Events.NetworkManager.RequestFinished, request);
   }
 
@@ -252,9 +252,9 @@ export class NetworkManager extends EventEmitter {
     const response = request.response();
     if (response) response._bodyLoadedPromiseFulfill.call(null);
     this._requestIdToRequest.delete(request._requestId);
-    if (request._interceptionId !== null) {
+    if (request._interceptionId !== null)
       this._attemptedAuthentications.delete(request._interceptionId);
-    }
+
     this.emit(Events.NetworkManager.RequestFailed, request);
   }
 }
@@ -357,18 +357,18 @@ export class Request {
     const { url, method, postData, headers } = overrides;
     this._interceptionHandled = true;
     await this._client
-      .send('Fetch.continueRequest', {
-        requestId: this._interceptionId,
-        url,
-        method,
-        postData,
-        headers: headers ? headersArray(headers) : undefined
-      })
-      .catch(error => {
+        .send('Fetch.continueRequest', {
+          requestId: this._interceptionId,
+          url,
+          method,
+          postData,
+          headers: headers ? headersArray(headers) : undefined
+        })
+        .catch(error => {
         // In certain cases, protocol will return error if the request was already canceled
         // or the page was closed. We should tolerate these errors.
-        debugError(error);
-      });
+          debugError(error);
+        });
   }
 
   async respond(response: { status: number; headers: object; contentType: string; body: string | Buffer }) {
@@ -391,18 +391,18 @@ export class Request {
       responseHeaders['content-length'] = String(Buffer.byteLength(responseBody));
 
     await this._client
-      .send('Fetch.fulfillRequest', {
-        requestId: this._interceptionId,
-        responseCode: response.status || 200,
-        responsePhrase: STATUS_TEXTS[response.status || 200],
-        responseHeaders: headersArray(responseHeaders),
-        body: responseBody ? responseBody.toString('base64') : undefined
-      })
-      .catch(error => {
+        .send('Fetch.fulfillRequest', {
+          requestId: this._interceptionId,
+          responseCode: response.status || 200,
+          responsePhrase: STATUS_TEXTS[response.status || 200],
+          responseHeaders: headersArray(responseHeaders),
+          body: responseBody ? responseBody.toString('base64') : undefined
+        })
+        .catch(error => {
         // In certain cases, protocol will return error if the request was already canceled
         // or the page was closed. We should tolerate these errors.
-        debugError(error);
-      });
+          debugError(error);
+        });
   }
 
   async abort(errorCode: keyof typeof errorReasons = 'failed') {
@@ -414,15 +414,15 @@ export class Request {
     assert(!this._interceptionHandled, 'Request is already handled!');
     this._interceptionHandled = true;
     await this._client
-      .send('Fetch.failRequest', {
-        requestId: this._interceptionId,
-        errorReason
-      })
-      .catch((error: Error) => {
+        .send('Fetch.failRequest', {
+          requestId: this._interceptionId,
+          errorReason
+        })
+        .catch((error: Error) => {
         // In certain cases, protocol will return error if the request was already canceled
         // or the page was closed. We should tolerate these errors.
-        debugError(error);
-      });
+          debugError(error);
+        });
   }
 }
 
@@ -589,9 +589,9 @@ export class SecurityDetails {
 
 function headersArray(headers: Record<string, string>): Array<{ name: string; value: string }> {
   const result = [];
-  for (const name in headers) {
+  for (const name in headers)
     if (!Object.is(headers[name], undefined)) result.push({ name, value: headers[name] + '' });
-  }
+
   return result;
 }
 

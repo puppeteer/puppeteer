@@ -59,8 +59,8 @@ export class Tracing {
     let fulfill: (value?: Buffer | null) => void;
     let reject: (e?: Error) => void;
     const contentPromise = new Promise<Buffer | null>((res, rej) => {
-      fulfill = res
-      reject = rej
+      fulfill = res;
+      reject = rej;
     });
     this.client.once('Tracing.tracingComplete', event => {
       helper.readProtocolStream(this.client, event.stream, this._path).then(fulfill, reject);

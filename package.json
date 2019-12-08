@@ -26,7 +26,7 @@
     "coverage": "cross-env COVERAGE=true npm run unit",
     "test-doclint": "node utils/doclint/check_public_api/test/test.js && node utils/doclint/preprocessor/test.js",
     "unit-test-runner": "node utils/testrunner/test/test.js",
-    "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .)",
+    "lint": "eslint . --ext .js,.ts -f codeframe",
     "doc": "node utils/doclint/cli.js",
     "apply-next-version": "node utils/apply_next_version.js",
     "bundle": "npx browserify -r ./index.js:puppeteer -o utils/browser/puppeteer-web.js",

@@ -95,7 +95,7 @@ export class Browser extends EventEmitter {
   }
 
   /* @internal */
-  private _targetCreated = async (event: Protocol.Target.targetCreatedPayload) => {
+  private _targetCreated = async(event: Protocol.Target.targetCreatedPayload) => {
     const targetInfo = event.targetInfo;
     const { browserContextId } = targetInfo;
     const context =
@@ -104,12 +104,12 @@ export class Browser extends EventEmitter {
         : this._defaultContext;
 
     const target = new Target(
-      targetInfo,
-      context,
-      () => this.connection.createSession(targetInfo),
-      this.ignoreHTTPSErrors,
-      this.defaultViewport,
-      this._screenshotTaskQueue
+        targetInfo,
+        context,
+        () => this.connection.createSession(targetInfo),
+        this.ignoreHTTPSErrors,
+        this.defaultViewport,
+        this._screenshotTaskQueue
     );
     assert(!this._targets.has(event.targetInfo.targetId), 'Target should not exist before targetCreated');
     this._targets.set(event.targetInfo.targetId, target);
@@ -120,7 +120,7 @@ export class Browser extends EventEmitter {
     }
   };
 
-  private _targetDestroyed = async (event: { targetId: string }) => {
+  private _targetDestroyed = async(event: { targetId: string }) => {
     const target = this._targets.get(event.targetId)!;
     target._initializedCallback(false);
     this._targets.delete(event.targetId);
@@ -261,9 +261,9 @@ export class BrowserContext extends EventEmitter {
 
   async pages(): Promise<Array<Page>> {
     const pages = await Promise.all(
-      this.targets()
-        .filter(target => target.type() === 'page')
-        .map(target => target.page())
+        this.targets()
+            .filter(target => target.type() === 'page')
+            .map(target => target.page())
     );
     return pages.filter(page => !!page);
   }
