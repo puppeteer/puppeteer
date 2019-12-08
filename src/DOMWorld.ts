@@ -15,7 +15,6 @@
  */
 
 import * as fs from 'fs';
-import * as util from 'util';
 import { helper, assert } from './helper';
 import { LifecycleWatcher } from './LifecycleWatcher';
 import { TimeoutError } from './Errors';
@@ -25,7 +24,7 @@ import { ExecutionContext } from './ExecutionContext';
 import { JSHandle, ElementHandle } from './JSHandle';
 import { AnyFunction, Evalable, JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
 
-const readFileAsync = util.promisify(fs.readFile);
+const readFileAsync = helper.promisify(fs.readFile);
 
 export class DOMWorld implements Evalable, JSEvalable {
   _documentPromise: Promise<ElementHandle> | null = null;

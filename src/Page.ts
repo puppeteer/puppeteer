@@ -16,7 +16,6 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import * as util from 'util';
 import { EventEmitter } from 'events';
 import * as mime from 'mime';
 
@@ -40,7 +39,7 @@ import { Browser, BrowserContext } from './Browser';
 import { Response } from './NetworkManager';
 import { Protocol } from './protocol';
 
-const writeFileAsync = util.promisify(fs.writeFile);
+const writeFileAsync = helper.promisify(fs.writeFile);
 
 export class Page extends EventEmitter implements Evalable, JSEvalable {
   static async create(client: CDPSession, target: Target, ignoreHTTPSErrors: boolean, defaultViewport: Viewport | null | undefined, screenshotTaskQueue: TaskQueue): Promise<Page> {

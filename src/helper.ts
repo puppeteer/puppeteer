@@ -24,9 +24,6 @@ import { CDPSession } from './Connection';
 import { Protocol } from './protocol';
 
 export const debugError: Debugger = debug(`puppeteer:error`);
-const openAsync = util.promisify(fs.open);
-const writeAsync = util.promisify(fs.write);
-const closeAsync = util.promisify(fs.close);
 
 /* @internal */
 export function assert(value: unknown, message?: string): asserts value {
@@ -138,6 +135,22 @@ export class Helper {
     return typeof value === 'number' || value instanceof Number;
   }
 
+  static promisify = ((nodeFunction: AnyFunction) => {
+    function promisified(...args: any[]) {
+      return new Promise((resolve, reject) => {
+        function callback(err: Error | undefined, ...result: any[]) {
+          if (err)
+            return reject(err);
+          if (result.length === 1)
+            return resolve(result[0]);
+          return resolve(result);
+        }
+        nodeFunction.call(null, ...args, callback);
+      });
+    }
+    return promisified;
+  }) as typeof util.promisify
+
   static async waitForEvent(emitter: NodeJS.EventEmitter, eventName: (string|symbol), predicate: AnyFunction, timeout: number, abortPromise: Promise<Error>): Promise<any> {
     let eventTimeout: ReturnType<typeof setTimeout>, resolveCallback: (event: any) => void, rejectCallback: (e: TimeoutError) => void;
     const promise = new Promise((resolve, reject) => {
@@ -210,3 +223,7 @@ export class Helper {
     }
   }
 }
+
+const openAsync = Helper.promisify(fs.open);
+const writeAsync = Helper.promisify(fs.write);
+const closeAsync = Helper.promisify(fs.close);

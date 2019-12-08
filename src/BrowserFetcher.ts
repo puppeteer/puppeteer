@@ -26,13 +26,13 @@ import * as removeRecursive from 'rimraf';
 import * as ProxyAgent from 'https-proxy-agent';
 import * as extract from 'extract-zip';
 import { getProxyForUrl } from 'proxy-from-env';
-import { assert } from './helper';
+import { assert, helper } from './helper';
 
-const readdirAsync = util.promisify(fs.readdir);
-const mkdirAsync = util.promisify(fs.mkdir);
-const unlinkAsync = util.promisify(fs.unlink);
-const chmodAsync = util.promisify(fs.chmod);
-const existsAsync = util.promisify(fs.exists);
+const readdirAsync = helper.promisify(fs.readdir);
+const mkdirAsync = helper.promisify(fs.mkdir);
+const unlinkAsync = helper.promisify(fs.unlink);
+const chmodAsync = helper.promisify(fs.chmod);
+const existsAsync = helper.promisify(fs.exists);
 
 export type Platform = "mac" | "win32" | "win64" | "linux";
 

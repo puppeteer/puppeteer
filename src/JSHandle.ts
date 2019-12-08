@@ -16,7 +16,6 @@
 
 import * as path from 'path';
 import * as fs from 'fs';
-import * as util from 'util';
 import * as mime from 'mime-types';
 
 import {helper, assert, debugError} from './helper';
@@ -27,7 +26,7 @@ import { Page, ScreenshotOptions } from './Page';
 import { FrameManager, Frame } from './FrameManager';
 import { Protocol } from './protocol';
 
-const readFileAsync = util.promisify(fs.readFile);
+const readFileAsync = helper.promisify(fs.readFile);
 
 export interface BoxModel {
   content: {
