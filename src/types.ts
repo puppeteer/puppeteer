@@ -368,12 +368,8 @@ export type EvaluateFnReturnType<T extends EvaluateFn> = T extends (...args: any
   ? UnwrapPromise<R>
   : unknown;
 
-export type Serializable = number | string | boolean | null | JSONArray | JSONObject;
+export type Serializable = number | string | boolean | null | Array<Serializable> | {[key: string]: Serializable};
 
-export interface JSONArray extends Array<Serializable> {}
-export interface JSONObject {
-  [key: string]: Serializable;
-}
 export type SerializableOrJSHandle = Serializable | JSHandle;
 
 export interface Debugger {
