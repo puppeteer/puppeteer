@@ -27,8 +27,12 @@ export class Dialog {
 
   private _handled = false;
 
-  constructor(private client: CDPSession, private _type: string, private _message: string, private _defaultValue = '') {
-  }
+  constructor(
+    private client: CDPSession,
+    private _type: string,
+    private _message: string,
+    private _defaultValue = ''
+  ) {}
 
   type(): string {
     return this._type;

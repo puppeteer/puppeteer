@@ -1,6 +1,6 @@
-import { AnyFunction } from "./types";
+import { AnyFunction } from './types';
 
-const noop = () => undefined
+const noop = () => undefined;
 
 export class TaskQueue {
   private _chain = Promise.resolve() as Promise<any>;

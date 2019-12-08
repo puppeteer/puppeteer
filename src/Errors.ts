@@ -18,6 +18,6 @@ export class TimeoutError extends Error {
   constructor(message?: string) {
     super(message);
     // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-2.html#support-for-newtarget
-    Object.setPrototypeOf(this, new.target.prototype)
+    Object.setPrototypeOf(this, new.target.prototype);
   }
 }

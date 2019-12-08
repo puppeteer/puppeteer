@@ -35,7 +35,7 @@ export const Events = {
     Metrics: 'metrics',
     Popup: 'popup',
     WorkerCreated: 'workercreated',
-    WorkerDestroyed: 'workerdestroyed',
+    WorkerDestroyed: 'workerdestroyed'
   },
 
   Browser: {
@@ -48,14 +48,14 @@ export const Events = {
   BrowserContext: {
     TargetCreated: 'targetcreated',
     TargetDestroyed: 'targetdestroyed',
-    TargetChanged: 'targetchanged',
+    TargetChanged: 'targetchanged'
   },
 
   NetworkManager: {
     Request: Symbol('Events.NetworkManager.Request'),
     Response: Symbol('Events.NetworkManager.Response'),
     RequestFailed: Symbol('Events.NetworkManager.RequestFailed'),
-    RequestFinished: Symbol('Events.NetworkManager.RequestFinished'),
+    RequestFinished: Symbol('Events.NetworkManager.RequestFinished')
   },
 
   FrameManager: {
@@ -65,14 +65,14 @@ export const Events = {
     LifecycleEvent: Symbol('Events.FrameManager.LifecycleEvent'),
     FrameNavigatedWithinDocument: Symbol('Events.FrameManager.FrameNavigatedWithinDocument'),
     ExecutionContextCreated: Symbol('Events.FrameManager.ExecutionContextCreated'),
-    ExecutionContextDestroyed: Symbol('Events.FrameManager.ExecutionContextDestroyed'),
+    ExecutionContextDestroyed: Symbol('Events.FrameManager.ExecutionContextDestroyed')
   },
 
   Connection: {
-    Disconnected: Symbol('Events.Connection.Disconnected'),
+    Disconnected: Symbol('Events.Connection.Disconnected')
   },
 
   CDPSession: {
-    Disconnected: Symbol('Events.CDPSession.Disconnected'),
-  },
+    Disconnected: Symbol('Events.CDPSession.Disconnected')
+  }
 } as const;

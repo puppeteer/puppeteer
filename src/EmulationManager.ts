@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { CDPSession } from "./Connection";
-import { Viewport } from "./types";
+import { CDPSession } from './Connection';
+import { Viewport } from './types';
 import { Protocol } from './protocol';
 
 export class EmulationManager {
@@ -29,11 +29,19 @@ export class EmulationManager {
     const width = viewport.width;
     const height = viewport.height;
     const deviceScaleFactor = viewport.deviceScaleFactor || 1;
-    const screenOrientation: Protocol.Emulation.ScreenOrientation = viewport.isLandscape ? { angle: 90, type: 'landscapePrimary' } : { angle: 0, type: 'portraitPrimary' };
+    const screenOrientation: Protocol.Emulation.ScreenOrientation = viewport.isLandscape
+      ? { angle: 90, type: 'landscapePrimary' }
+      : { angle: 0, type: 'portraitPrimary' };
     const hasTouch = viewport.hasTouch || false;
 
     await Promise.all([
-      this.client.send('Emulation.setDeviceMetricsOverride', { mobile, width, height, deviceScaleFactor, screenOrientation }),
+      this.client.send('Emulation.setDeviceMetricsOverride', {
+        mobile,
+        width,
+        height,
+        deviceScaleFactor,
+        screenOrientation
+      }),
       this.client.send('Emulation.setTouchEmulationEnabled', {
         enabled: hasTouch
       })

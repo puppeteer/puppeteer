@@ -25,19 +25,18 @@ export interface KeyDescription {
   text: string;
   code: string;
   location: number;
-};
+}
 
 export class Keyboard {
-  _client: CDPSession
-  _modifiers = 0
+  _client: CDPSession;
+  _modifiers = 0;
   _pressedKeys = new Set<string>();
 
   constructor(client: CDPSession) {
     this._client = client;
   }
 
-  
-  async down(key: string, options: {text?: string} = { text: undefined }) {
+  async down(key: string, options: { text?: string } = { text: undefined }) {
     const description = this._keyDescriptionForString(key);
 
     const autoRepeat = this._pressedKeys.has(description.code);
@@ -59,20 +58,14 @@ export class Keyboard {
     });
   }
 
-  
   private _modifierBit(key: string): number {
-    if (key === 'Alt')
-      return 1;
-    if (key === 'Control')
-      return 2;
-    if (key === 'Meta')
-      return 4;
-    if (key === 'Shift')
-      return 8;
+    if (key === 'Alt') return 1;
+    if (key === 'Control') return 2;
+    if (key === 'Meta') return 4;
+    if (key === 'Shift') return 8;
     return 0;
   }
 
-  
   private _keyDescriptionForString(keyString: string): KeyDescription {
     const shift = this._modifiers & 8;
     const description = {
@@ -86,33 +79,23 @@ export class Keyboard {
     const definition = keyDefinitions[keyString];
     assert(definition, `Unknown key: "${keyString}"`);
 
-    if (definition.key)
-      description.key = definition.key;
-    if (shift && definition.shiftKey)
-      description.key = definition.shiftKey;
+    if (definition.key) description.key = definition.key;
+    if (shift && definition.shiftKey) description.key = definition.shiftKey;
 
-    if (definition.keyCode)
-      description.keyCode = definition.keyCode;
-    if (shift && definition.shiftKeyCode)
-      description.keyCode = definition.shiftKeyCode;
+    if (definition.keyCode) description.keyCode = definition.keyCode;
+    if (shift && definition.shiftKeyCode) description.keyCode = definition.shiftKeyCode;
 
-    if (definition.code)
-      description.code = definition.code;
+    if (definition.code) description.code = definition.code;
 
-    if (definition.location)
-      description.location = definition.location;
+    if (definition.location) description.location = definition.location;
 
-    if (description.key.length === 1)
-      description.text = description.key;
+    if (description.key.length === 1) description.text = description.key;
 
-    if (definition.text)
-      description.text = definition.text;
-    if (shift && definition.shiftText)
-      description.text = definition.shiftText;
+    if (definition.text) description.text = definition.text;
+    if (shift && definition.shiftText) description.text = definition.shiftText;
 
     // if any modifiers besides shift are pressed, no text should be sent
-    if (this._modifiers & ~8)
-      description.text = '';
+    if (this._modifiers & ~8) description.text = '';
 
     return description;
   }
@@ -133,27 +116,25 @@ export class Keyboard {
   }
 
   async sendCharacter(char: string) {
-    await this._client.send('Input.insertText', {text: char});
+    await this._client.send('Input.insertText', { text: char });
   }
 
-  async type(text: string, options?: {delay: (number|undefined)}) {
+  async type(text: string, options?: { delay: number | undefined }) {
     const delay = (options && options.delay) || undefined;
     for (const char of text) {
       if (keyDefinitions[char]) {
-        await this.press(char, {delay});
+        await this.press(char, { delay });
       } else {
-        if (delay)
-          await new Promise(f => setTimeout(f, delay));
+        if (delay) await new Promise(f => setTimeout(f, delay));
         await this.sendCharacter(char);
       }
     }
   }
 
-  async press(key: string, options: {delay?: number, text?: string} = {}) {
-    const {delay = null} = options;
+  async press(key: string, options: { delay?: number; text?: string } = {}) {
+    const { delay = null } = options;
     await this.down(key, options);
-    if (delay)
-      await new Promise(f => setTimeout(f, options.delay));
+    if (delay) await new Promise(f => setTimeout(f, options.delay));
     await this.up(key);
   }
 }
@@ -164,13 +145,13 @@ export class Mouse {
   _x = 0;
   _y = 0;
   _button: MouseButton = 'none';
-  
-  constructor(private _client: CDPSession, private _keyboard: Keyboard) {
-  }
 
-  async move(x: number, y: number, options: {steps?: number} = {}) {
-    const {steps = 1} = options;
-    const fromX = this._x, fromY = this._y;
+  constructor(private _client: CDPSession, private _keyboard: Keyboard) {}
+
+  async move(x: number, y: number, options: { steps?: number } = {}) {
+    const { steps = 1 } = options;
+    const fromX = this._x,
+      fromY = this._y;
     this._x = x;
     this._y = y;
     for (let i = 1; i <= steps; i++) {
@@ -184,26 +165,19 @@ export class Mouse {
     }
   }
 
-  async click(x: number, y: number, options: {delay?: number, button?: MouseButton, clickCount?: number} = {}) {
-    const {delay = null} = options;
+  async click(x: number, y: number, options: { delay?: number; button?: MouseButton; clickCount?: number } = {}) {
+    const { delay = null } = options;
     if (delay !== null) {
-      await Promise.all([
-        this.move(x, y),
-        this.down(options),
-      ]);
+      await Promise.all([this.move(x, y), this.down(options)]);
       await new Promise(f => setTimeout(f, delay));
       await this.up(options);
     } else {
-      await Promise.all([
-        this.move(x, y),
-        this.down(options),
-        this.up(options),
-      ]);
+      await Promise.all([this.move(x, y), this.down(options), this.up(options)]);
     }
   }
 
-  async down(options: {button?: MouseButton, clickCount?: number} = {}) {
-    const {button = 'left', clickCount = 1} = options;
+  async down(options: { button?: MouseButton; clickCount?: number } = {}) {
+    const { button = 'left', clickCount = 1 } = options;
     this._button = button;
     await this._client.send('Input.dispatchMouseEvent', {
       type: 'mousePressed',
@@ -215,8 +189,8 @@ export class Mouse {
     });
   }
 
-  async up(options: {button?: MouseButton, clickCount?: number} = {}) {
-    const {button = 'left', clickCount = 1} = options;
+  async up(options: { button?: MouseButton; clickCount?: number } = {}) {
+    const { button = 'left', clickCount = 1 } = options;
     this._button = 'none';
     await this._client.send('Input.dispatchMouseEvent', {
       type: 'mouseReleased',
@@ -230,8 +204,8 @@ export class Mouse {
 }
 
 export class Touchscreen {
-  _client: CDPSession
-  _keyboard: Keyboard
+  _client: CDPSession;
+  _keyboard: Keyboard;
 
   constructor(client: CDPSession, keyboard: Keyboard) {
     this._client = client;
@@ -247,7 +221,7 @@ export class Touchscreen {
       awaitPromise: true
     });
 
-    const touchPoints = [{x: Math.round(x), y: Math.round(y)}];
+    const touchPoints = [{ x: Math.round(x), y: Math.round(y) }];
     await this._client.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
       touchPoints,

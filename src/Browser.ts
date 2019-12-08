@@ -25,25 +25,39 @@ import { Viewport, AnyFunction } from './types';
 import { Page } from './Page';
 import { Protocol } from './protocol';
 
-const noop = () => undefined
+const noop = () => undefined;
 
 export class Browser extends EventEmitter {
-  static async create(connection: Connection, contextIds: string[], ignoreHTTPSErrors: boolean, defaultViewport?: Viewport | null, process?: ChildProcess | null, closeCallback?: AnyFunction) {
+  static async create(
+    connection: Connection,
+    contextIds: string[],
+    ignoreHTTPSErrors: boolean,
+    defaultViewport?: Viewport | null,
+    process?: ChildProcess | null,
+    closeCallback?: AnyFunction
+  ) {
     const browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewport, process, closeCallback);
-    await connection.send('Target.setDiscoverTargets', {discover: true});
+    await connection.send('Target.setDiscoverTargets', { discover: true });
     return browser;
   }
-  
+
   /* @internal */
   private _screenshotTaskQueue = new TaskQueue();
   /* @internal */
-  private _defaultContext: BrowserContext
+  private _defaultContext: BrowserContext;
   /* @internal */
   private _contexts = new Map<string, BrowserContext>();
   /* @internal */
   public _targets = new Map<string, Target>();
 
-  constructor(private connection: Connection, contextIds: string[], private ignoreHTTPSErrors: boolean, private defaultViewport?: Viewport | null, private _process?: ChildProcess | null, private closeCallback: AnyFunction = noop) {
+  constructor(
+    private connection: Connection,
+    contextIds: string[],
+    private ignoreHTTPSErrors: boolean,
+    private defaultViewport?: Viewport | null,
+    private _process?: ChildProcess | null,
+    private closeCallback: AnyFunction = noop
+  ) {
     super();
     this._defaultContext = new BrowserContext(this.connection, this, undefined);
     for (const contextId of contextIds)
@@ -60,7 +74,7 @@ export class Browser extends EventEmitter {
   }
 
   async createIncognitoBrowserContext(): Promise<BrowserContext> {
-    const {browserContextId} = await this.connection.send('Target.createBrowserContext');
+    const { browserContextId } = await this.connection.send('Target.createBrowserContext');
     const context = new BrowserContext(this.connection, this, browserContextId);
     this._contexts.set(browserContextId, context);
     return context;
@@ -76,17 +90,27 @@ export class Browser extends EventEmitter {
 
   /* @internal */
   public async _disposeContext(contextId: string) {
-    await this.connection.send('Target.disposeBrowserContext', {browserContextId: contextId});
+    await this.connection.send('Target.disposeBrowserContext', { browserContextId: contextId });
     this._contexts.delete(contextId);
   }
 
   /* @internal */
   private _targetCreated = async (event: Protocol.Target.targetCreatedPayload) => {
     const targetInfo = event.targetInfo;
-    const {browserContextId} = targetInfo;
-    const context = (browserContextId && this._contexts.has(browserContextId)) ? this._contexts.get(browserContextId)! : this._defaultContext;
+    const { browserContextId } = targetInfo;
+    const context =
+      browserContextId && this._contexts.has(browserContextId)
+        ? this._contexts.get(browserContextId)!
+        : this._defaultContext;
 
-    const target = new Target(targetInfo, context, () => this.connection.createSession(targetInfo), this.ignoreHTTPSErrors, this.defaultViewport, this._screenshotTaskQueue);
+    const target = new Target(
+      targetInfo,
+      context,
+      () => this.connection.createSession(targetInfo),
+      this.ignoreHTTPSErrors,
+      this.defaultViewport,
+      this._screenshotTaskQueue
+    );
     assert(!this._targets.has(event.targetInfo.targetId), 'Target should not exist before targetCreated');
     this._targets.set(event.targetInfo.targetId, target);
 
@@ -94,9 +118,9 @@ export class Browser extends EventEmitter {
       this.emit(Events.Browser.TargetCreated, target);
       context.emit(Events.BrowserContext.TargetCreated, target);
     }
-  }
+  };
 
-  private _targetDestroyed = async (event: {targetId: string}) => {
+  private _targetDestroyed = async (event: { targetId: string }) => {
     const target = this._targets.get(event.targetId)!;
     target._initializedCallback(false);
     this._targets.delete(event.targetId);
@@ -105,7 +129,7 @@ export class Browser extends EventEmitter {
       this.emit(Events.Browser.TargetDestroyed, target);
       target.browserContext().emit(Events.BrowserContext.TargetDestroyed, target);
     }
-  }
+  };
 
   private _targetInfoChanged = (event: Protocol.Target.targetInfoChangedPayload) => {
     const target = this._targets.get(event.targetInfo.targetId);
@@ -117,7 +141,7 @@ export class Browser extends EventEmitter {
       this.emit(Events.Browser.TargetChanged, target);
       target.browserContext().emit(Events.BrowserContext.TargetChanged, target);
     }
-  }
+  };
 
   wsEndpoint(): string {
     return this.connection.url();
@@ -129,7 +153,10 @@ export class Browser extends EventEmitter {
 
   /* @internal */
   public async _createPageInContext(contextId?: string): Promise<Page> {
-    const {targetId} = await this.connection.send('Target.createTarget', {url: 'about:blank', browserContextId: contextId || undefined});
+    const { targetId } = await this.connection.send('Target.createTarget', {
+      url: 'about:blank',
+      browserContextId: contextId || undefined
+    });
     const target = await this._targets.get(targetId)!;
     assert(await target._initializedPromise, 'Failed to create target for page');
     const page = await target.page();
@@ -144,20 +171,16 @@ export class Browser extends EventEmitter {
     return this.targets().find(target => target.type() === 'browser');
   }
 
-  async waitForTarget(predicate: (target: Target) => boolean, options: {timeout?: number} = {}): Promise<Target> {
-    const {
-      timeout = 30000
-    } = options;
+  async waitForTarget(predicate: (target: Target) => boolean, options: { timeout?: number } = {}): Promise<Target> {
+    const { timeout = 30000 } = options;
     const existingTarget = this.targets().find(predicate);
-    if (existingTarget)
-      return existingTarget;
+    if (existingTarget) return existingTarget;
     let resolve: (target: Target) => void;
-    const targetPromise = new Promise<Target>(x => resolve = x);
+    const targetPromise = new Promise<Target>(x => (resolve = x));
     this.on(Events.Browser.TargetCreated, check);
     this.on(Events.Browser.TargetChanged, check);
     try {
-      if (!timeout)
-        return await targetPromise;
+      if (!timeout) return await targetPromise;
       return await helper.waitWithTimeout(targetPromise, 'target', timeout);
     } finally {
       this.removeListener(Events.Browser.TargetCreated, check);
@@ -165,8 +188,7 @@ export class Browser extends EventEmitter {
     }
 
     function check(target: Target) {
-      if (predicate(target))
-        resolve(target);
+      if (predicate(target)) resolve(target);
     }
   }
 
@@ -221,7 +243,7 @@ const webPermissionToProtocol = new Map<string, Protocol.Browser.PermissionType>
   ['clipboard-write', 'clipboardWrite'],
   ['payment-handler', 'paymentHandler'],
   // chrome-specific permissions we have.
-  ['midi-sysex', 'midiSysex'],
+  ['midi-sysex', 'midiSysex']
 ]);
 
 export class BrowserContext extends EventEmitter {
@@ -233,15 +255,15 @@ export class BrowserContext extends EventEmitter {
     return this._browser.targets().filter(target => target.browserContext() === this);
   }
 
-  waitForTarget(predicate: (target: Target) => boolean, options?: {timeout?: number}): Promise<Target> {
+  waitForTarget(predicate: (target: Target) => boolean, options?: { timeout?: number }): Promise<Target> {
     return this._browser.waitForTarget(target => target.browserContext() === this && predicate(target), options);
   }
 
   async pages(): Promise<Array<Page>> {
     const pages = await Promise.all(
-        this.targets()
-            .filter(target => target.type() === 'page')
-            .map(target => target.page())
+      this.targets()
+        .filter(target => target.type() === 'page')
+        .map(target => target.page())
     );
     return pages.filter(page => !!page) as Array<Page>;
   }
@@ -253,15 +275,18 @@ export class BrowserContext extends EventEmitter {
   async overridePermissions(origin: string, permissions: string[]) {
     const protocolPermissions = permissions.map(permission => {
       const protocolPermission = webPermissionToProtocol.get(permission);
-      if (!protocolPermission)
-        throw new Error('Unknown permission: ' + permission);
+      if (!protocolPermission) throw new Error('Unknown permission: ' + permission);
       return protocolPermission;
     });
-    await this.connection.send('Browser.grantPermissions', {origin, browserContextId: this.id || undefined, permissions: protocolPermissions});
+    await this.connection.send('Browser.grantPermissions', {
+      origin,
+      browserContextId: this.id || undefined,
+      permissions: protocolPermissions
+    });
   }
 
   async clearPermissionOverrides() {
-    await this.connection.send('Browser.resetPermissions', {browserContextId: this.id || undefined});
+    await this.connection.send('Browser.resetPermissions', { browserContextId: this.id || undefined });
   }
 
   newPage(): Promise<Page> {

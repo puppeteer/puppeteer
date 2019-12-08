@@ -14,25 +14,30 @@
  * limitations under the License.
  */
 
-import {EventEmitter} from 'events';
-import {debugError} from './helper';
-import {ExecutionContext} from './ExecutionContext';
-import {JSHandle} from './JSHandle';
+import { EventEmitter } from 'events';
+import { debugError } from './helper';
+import { ExecutionContext } from './ExecutionContext';
+import { JSHandle } from './JSHandle';
 import { CDPSession } from './Connection';
 import { JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
 import { Protocol } from './protocol';
 
 export class Worker extends EventEmitter implements JSEvalable {
-  _client: CDPSession
-  _url: string
-  _executionContextPromise: Promise<ExecutionContext>
-  _executionContextCallback!: (context: ExecutionContext) => void
+  _client: CDPSession;
+  _url: string;
+  _executionContextPromise: Promise<ExecutionContext>;
+  _executionContextCallback!: (context: ExecutionContext) => void;
 
-  constructor(client: CDPSession, url: string, consoleAPICalled: (name: string, args: Array<JSHandle>, stack?: Protocol.Runtime.StackTrace) => void, exceptionThrown: (details: Protocol.Runtime.ExceptionDetails) => void) {
+  constructor(
+    client: CDPSession,
+    url: string,
+    consoleAPICalled: (name: string, args: Array<JSHandle>, stack?: Protocol.Runtime.StackTrace) => void,
+    exceptionThrown: (details: Protocol.Runtime.ExceptionDetails) => void
+  ) {
     super();
     this._client = client;
     this._url = url;
-    this._executionContextPromise = new Promise<ExecutionContext>(x => this._executionContextCallback = x);
+    this._executionContextPromise = new Promise<ExecutionContext>(x => (this._executionContextCallback = x));
     let jsHandleFactory: (remoteObject: Protocol.Runtime.RemoteObject) => JSHandle;
     this._client.once('Runtime.executionContextCreated', async event => {
       jsHandleFactory = remoteObject => new JSHandle(executionContext, client, remoteObject);
@@ -42,7 +47,9 @@ export class Worker extends EventEmitter implements JSEvalable {
     // This might fail if the target is closed before we recieve all execution contexts.
     this._client.send('Runtime.enable', {}).catch(debugError);
 
-    this._client.on('Runtime.consoleAPICalled', event => consoleAPICalled(event.type, event.args.map(jsHandleFactory), event.stackTrace));
+    this._client.on('Runtime.consoleAPICalled', event =>
+      consoleAPICalled(event.type, event.args.map(jsHandleFactory), event.stackTrace)
+    );
     this._client.on('Runtime.exceptionThrown', exception => exceptionThrown(exception.exceptionDetails));
   }
 
@@ -54,7 +61,10 @@ export class Worker extends EventEmitter implements JSEvalable {
     return this._executionContextPromise;
   }
 
-  async evaluate<V extends EvaluateFn<any>>(pageFunction: V, ...args: SerializableOrJSHandle[]): Promise<EvaluateFnReturnType<V>> {
+  async evaluate<V extends EvaluateFn<any>>(
+    pageFunction: V,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<EvaluateFnReturnType<V>> {
     return (await this._executionContextPromise).evaluate(pageFunction, ...args);
   }
 

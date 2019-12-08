@@ -28,8 +28,7 @@ export class Multimap<K, V> {
 
   get(key: K): Set<V> {
     let result = this._map.get(key);
-    if (!result)
-      result = new Set();
+    if (!result) result = new Set();
     return result;
   }
 
@@ -39,8 +38,7 @@ export class Multimap<K, V> {
 
   hasValue(key: K, value: V): boolean {
     const set = this._map.get(key);
-    if (!set)
-      return false;
+    if (!set) return false;
     return set.has(value);
   }
 
@@ -51,8 +49,7 @@ export class Multimap<K, V> {
   delete(key: K, value: V): boolean {
     const values = this.get(key);
     const result = values.delete(value);
-    if (!values.size)
-      this._map.delete(key);
+    if (!values.size) this._map.delete(key);
     return result;
   }
 
@@ -62,8 +59,7 @@ export class Multimap<K, V> {
 
   firstValue(key: K): V | undefined {
     const set = this._map.get(key);
-    if (!set)
-      return undefined;
+    if (!set) return undefined;
     return set.values().next().value;
   }
 
@@ -73,8 +69,7 @@ export class Multimap<K, V> {
 
   valuesArray(): Array<V> {
     const result: V[] = [];
-    for (const set of this._map.values())
-      result.push(...Array.from(set.values()));
+    for (const set of this._map.values()) result.push(...Array.from(set.values()));
     return result;
   }
 

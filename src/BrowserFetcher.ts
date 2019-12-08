@@ -34,10 +34,10 @@ const unlinkAsync = helper.promisify(fs.unlink);
 const chmodAsync = helper.promisify(fs.chmod);
 
 function existsAsync(p: fs.PathLike): Promise<boolean> {
-  return new Promise<boolean>(res => fs.exists(p, res))
+  return new Promise<boolean>(res => fs.exists(p, res));
 }
 
-export type Platform = "mac" | "win32" | "win64" | "linux";
+export type Platform = 'mac' | 'win32' | 'win64' | 'linux';
 
 export interface BrowserFetcherOptions {
   platform?: Platform;
@@ -61,19 +61,17 @@ const downloadURLs: Record<Platform, string> = {
   linux: '%s/chromium-browser-snapshots/Linux_x64/%d/%s.zip',
   mac: '%s/chromium-browser-snapshots/Mac/%d/%s.zip',
   win32: '%s/chromium-browser-snapshots/Win/%d/%s.zip',
-  win64: '%s/chromium-browser-snapshots/Win_x64/%d/%s.zip',
+  win64: '%s/chromium-browser-snapshots/Win_x64/%d/%s.zip'
 };
 
 function archiveName(platform: Platform, revision: string): string {
-  if (platform === 'linux')
-    return 'chrome-linux';
-  if (platform === 'mac')
-    return 'chrome-mac';
+  if (platform === 'linux') return 'chrome-linux';
+  if (platform === 'mac') return 'chrome-mac';
   if (platform === 'win32' || platform === 'win64') {
     // Windows archive name changed at r591479.
     return parseInt(revision, 10) > 591479 ? 'chrome-win' : 'chrome-win32';
   }
-  throw new Error(`Unknown platform: ${platform}`)
+  throw new Error(`Unknown platform: ${platform}`);
 }
 
 function downloadURL(platform: Platform, host: string, revision: string): string {
@@ -89,7 +87,7 @@ function detectPlatform(): Platform {
   } else if (platform === 'win32') {
     return os.arch() === 'x64' ? 'win64' : 'win32';
   } else {
-    throw new Error(`Unsupported platform: ${platform}`)
+    throw new Error(`Unsupported platform: ${platform}`);
   }
 }
 
@@ -111,7 +109,7 @@ export class BrowserFetcher {
   canDownload(revision: string): Promise<boolean> {
     const url = downloadURL(this._platform, this._downloadHost, revision);
     let resolve: (sucess: boolean) => void;
-    const promise = new Promise<boolean>(x => resolve = x);
+    const promise = new Promise<boolean>(x => (resolve = x));
     const request = httpRequest(url, 'HEAD', response => {
       resolve(response.statusCode === 200);
     });
@@ -122,32 +120,30 @@ export class BrowserFetcher {
     return promise;
   }
 
-  async download(revision: string, progressCallback?: (current: number, total: number)=>void): Promise<RevisionInfo> {
+  async download(revision: string, progressCallback?: (current: number, total: number) => void): Promise<RevisionInfo> {
     const url = downloadURL(this._platform, this._downloadHost, revision);
     const zipPath = path.join(this._downloadsFolder, `download-${this._platform}-${revision}.zip`);
     const folderPath = this._getFolderPath(revision);
-    if (await existsAsync(folderPath))
-      return this.revisionInfo(revision);
-    if (!(await existsAsync(this._downloadsFolder)))
-      await mkdirAsync(this._downloadsFolder);
+    if (await existsAsync(folderPath)) return this.revisionInfo(revision);
+    if (!(await existsAsync(this._downloadsFolder))) await mkdirAsync(this._downloadsFolder);
     try {
       await downloadFile(url, zipPath, progressCallback);
       await extractZip(zipPath, folderPath);
     } finally {
-      if (await existsAsync(zipPath))
-        await unlinkAsync(zipPath);
+      if (await existsAsync(zipPath)) await unlinkAsync(zipPath);
     }
     const revisionInfo = this.revisionInfo(revision);
-    if (revisionInfo)
-      await chmodAsync(revisionInfo.executablePath, 0o755);
+    if (revisionInfo) await chmodAsync(revisionInfo.executablePath, 0o755);
     return revisionInfo;
   }
 
   async localRevisions(): Promise<string[]> {
-    if (!await existsAsync(this._downloadsFolder))
-      return [];
+    if (!(await existsAsync(this._downloadsFolder))) return [];
     const fileNames = await readdirAsync(this._downloadsFolder);
-    return fileNames.map(fileName => parseFolderPath(fileName)).filter(entry => entry && entry.platform === this._platform).map(entry => entry!.revision);
+    return fileNames
+      .map(fileName => parseFolderPath(fileName))
+      .filter(entry => entry && entry.platform === this._platform)
+      .map(entry => entry!.revision);
   }
 
   async remove(revision: string) {
@@ -160,16 +156,22 @@ export class BrowserFetcher {
     const folderPath = this._getFolderPath(revision);
     let executablePath = '';
     if (this._platform === 'mac')
-      executablePath = path.join(folderPath, archiveName(this._platform, revision), 'Chromium.app', 'Contents', 'MacOS', 'Chromium');
+      executablePath = path.join(
+        folderPath,
+        archiveName(this._platform, revision),
+        'Chromium.app',
+        'Contents',
+        'MacOS',
+        'Chromium'
+      );
     else if (this._platform === 'linux')
       executablePath = path.join(folderPath, archiveName(this._platform, revision), 'chrome');
     else if (this._platform === 'win32' || this._platform === 'win64')
       executablePath = path.join(folderPath, archiveName(this._platform, revision), 'chrome.exe');
-    else
-      throw new Error('Unsupported platform: ' + this._platform);
+    else throw new Error('Unsupported platform: ' + this._platform);
     const url = downloadURL(this._platform, this._downloadHost, revision);
     const local = fs.existsSync(folderPath);
-    return {revision, executablePath, folderPath, local, url};
+    return { revision, executablePath, folderPath, local, url };
   }
 
   private _getFolderPath(revision: string): string {
@@ -177,23 +179,28 @@ export class BrowserFetcher {
   }
 }
 
-function parseFolderPath(folderPath: string): {platform: Platform, revision: string} | null {
+function parseFolderPath(folderPath: string): { platform: Platform; revision: string } | null {
   const name = path.basename(folderPath);
   const splits = name.split('-');
-  if (splits.length !== 2)
-    return null;
+  if (splits.length !== 2) return null;
   const [platform, revision] = splits as [Platform, string];
-  if (!supportedPlatforms.has(platform))
-    return null;
-  return {platform, revision};
+  if (!supportedPlatforms.has(platform)) return null;
+  return { platform, revision };
 }
 
-function downloadFile(url: string, destinationPath: string, progressCallback?: (downloadedBytes: number, totalBytes: number) =>void): Promise<void> {
+function downloadFile(
+  url: string,
+  destinationPath: string,
+  progressCallback?: (downloadedBytes: number, totalBytes: number) => void
+): Promise<void> {
   let fulfill: () => void, reject: (e: Error) => void;
   let downloadedBytes = 0;
   let totalBytes = 0;
 
-  const promise = new Promise<void>((x, y) => { fulfill = x; reject = y; });
+  const promise = new Promise<void>((x, y) => {
+    fulfill = x;
+    reject = y;
+  });
 
   const request = httpRequest(url, 'GET', response => {
     if (response.statusCode !== 200) {
@@ -207,10 +214,9 @@ function downloadFile(url: string, destinationPath: string, progressCallback?: (
     file.on('finish', () => fulfill());
     file.on('error', error => reject(error));
     response.pipe(file);
-    const contentLength = response.headers['content-length']
+    const contentLength = response.headers['content-length'];
     totalBytes = contentLength !== undefined ? parseInt(contentLength, 10) : 0;
-    if (progressCallback)
-      response.on('data', onData);
+    if (progressCallback) response.on('data', onData);
   });
   request.on('error', error => reject(error));
   return promise;
@@ -222,12 +228,12 @@ function downloadFile(url: string, destinationPath: string, progressCallback?: (
 }
 
 function extractZip(zipPath: string, folderPath: string): Promise<void> {
-  return new Promise((fulfill, reject) => extract(zipPath, {dir: folderPath}, err => {
-    if (err)
-      reject(err);
-    else
-      fulfill();
-  }));
+  return new Promise((fulfill, reject) =>
+    extract(zipPath, { dir: folderPath }, err => {
+      if (err) reject(err);
+      else fulfill();
+    })
+  );
 }
 
 function httpRequest(url: string, method: string, response: (res: http.IncomingMessage) => void) {
@@ -241,7 +247,7 @@ function httpRequest(url: string, method: string, response: (res: http.IncomingM
       options = {
         path: options.href,
         host: proxy.hostname,
-        port: proxy.port,
+        port: proxy.port
       } as URL.UrlWithStringQuery & http.RequestOptions & ConnectionOptions;
     } else {
       const parsedProxyURL = URL.parse(proxyURL) as ProxyAgent.HttpsProxyAgentOptions;
@@ -255,14 +261,12 @@ function httpRequest(url: string, method: string, response: (res: http.IncomingM
   const requestCallback = (res: http.IncomingMessage) => {
     if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location)
       httpRequest(res.headers.location, method, response);
-    else
-      response(res);
+    else response(res);
   };
 
-  const request = options.protocol === 'https:' ?
-    https.request(options, requestCallback) :
-    http.request(options, requestCallback);
-  
+  const request =
+    options.protocol === 'https:' ? https.request(options, requestCallback) : http.request(options, requestCallback);
+
   request.end();
   return request;
 }

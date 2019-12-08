@@ -1,4 +1,4 @@
-import { ElementHandle, JSHandle } from "./JSHandle";
+import { ElementHandle, JSHandle } from './JSHandle';
 
 export type AnyFunction = (...args: any[]) => unknown;
 
@@ -166,10 +166,7 @@ export interface Evalable {
    * @param pageFunction Function to be evaluated in browser context
    * @returns Promise which resolves to the return value of pageFunction
    */
-  $eval<R>(
-    selector: string,
-    pageFunction: (element: Element) => R | Promise<R>,
-  ): Promise<WrapElementHandle<R>>;
+  $eval<R>(selector: string, pageFunction: (element: Element) => R | Promise<R>): Promise<WrapElementHandle<R>>;
 
   /**
    * This method runs `document.querySelector` within the context and passes it as the first argument to `pageFunction`.
@@ -185,7 +182,7 @@ export interface Evalable {
   $eval<R, X1>(
     selector: string,
     pageFunction: (element: Element, x1: UnwrapElementHandle<X1>) => R | Promise<R>,
-    x1: X1,
+    x1: X1
   ): Promise<WrapElementHandle<R>>;
 
   /**
@@ -204,7 +201,7 @@ export interface Evalable {
     selector: string,
     pageFunction: (element: Element, x1: UnwrapElementHandle<X1>, x2: UnwrapElementHandle<X2>) => R | Promise<R>,
     x1: X1,
-    x2: X2,
+    x2: X2
   ): Promise<WrapElementHandle<R>>;
 
   /**
@@ -222,10 +219,15 @@ export interface Evalable {
    */
   $eval<R, X1, X2, X3>(
     selector: string,
-    pageFunction: (element: Element, x1: UnwrapElementHandle<X1>, x2: UnwrapElementHandle<X2>, x3: UnwrapElementHandle<X3>) => R | Promise<R>,
+    pageFunction: (
+      element: Element,
+      x1: UnwrapElementHandle<X1>,
+      x2: UnwrapElementHandle<X2>,
+      x3: UnwrapElementHandle<X3>
+    ) => R | Promise<R>,
     x1: X1,
     x2: X2,
-    x3: X3,
+    x3: X3
   ): Promise<WrapElementHandle<R>>;
 
   /**
@@ -255,10 +257,7 @@ export interface Evalable {
    * @param pageFunction Function to be evaluated in browser context
    * @returns Promise which resolves to the return value of pageFunction
    */
-  $$eval<R>(
-    selector: string,
-    pageFunction: (elements: Element[]) => R | Promise<R>,
-  ): Promise<WrapElementHandle<R>>;
+  $$eval<R>(selector: string, pageFunction: (elements: Element[]) => R | Promise<R>): Promise<WrapElementHandle<R>>;
 
   /**
    * This method runs `Array.from(document.querySelectorAll(selector))` within the context and passes it as the
@@ -274,7 +273,7 @@ export interface Evalable {
   $$eval<R, X1>(
     selector: string,
     pageFunction: (elements: Element[], x1: UnwrapElementHandle<X1>) => R | Promise<R>,
-    x1: X1,
+    x1: X1
   ): Promise<WrapElementHandle<R>>;
 
   /**
@@ -293,7 +292,7 @@ export interface Evalable {
     selector: string,
     pageFunction: (elements: Element[], x1: UnwrapElementHandle<X1>, x2: UnwrapElementHandle<X2>) => R | Promise<R>,
     x1: X1,
-    x2: X2,
+    x2: X2
   ): Promise<WrapElementHandle<R>>;
 
   /**
@@ -311,10 +310,15 @@ export interface Evalable {
    */
   $$eval<R, X1, X2, X3>(
     selector: string,
-    pageFunction: (elements: Element[], x1: UnwrapElementHandle<X1>, x2: UnwrapElementHandle<X2>, x3: UnwrapElementHandle<X3>) => R | Promise<R>,
+    pageFunction: (
+      elements: Element[],
+      x1: UnwrapElementHandle<X1>,
+      x2: UnwrapElementHandle<X2>,
+      x3: UnwrapElementHandle<X3>
+    ) => R | Promise<R>,
     x1: X1,
     x2: X2,
-    x3: X3,
+    x3: X3
   ): Promise<WrapElementHandle<R>>;
 
   /**
@@ -360,17 +364,13 @@ export interface JSEvalable<T = any> {
 }
 
 export type EvaluateFn<T = any> = string | ((arg1: T, ...args: any[]) => any);
-export type EvaluateFnReturnType<T extends EvaluateFn> = T extends ((...args: any[]) => infer R) ? UnwrapPromise<R> : unknown;
+export type EvaluateFnReturnType<T extends EvaluateFn> = T extends (...args: any[]) => infer R
+  ? UnwrapPromise<R>
+  : unknown;
 
-export type Serializable =
-  | number
-  | string
-  | boolean
-  | null
-  | JSONArray
-  | JSONObject;
+export type Serializable = number | string | boolean | null | JSONArray | JSONObject;
 
-export interface JSONArray extends Array<Serializable> { }
+export interface JSONArray extends Array<Serializable> {}
 export interface JSONObject {
   [key: string]: Serializable;
 }

@@ -43,42 +43,28 @@ class BrowserRunner {
   proc: childProcess.ChildProcess | null = null;
   connection: Connection | null = null;
   private _closed = true;
-  private _listeners: Array<{emitter: NodeJS.EventEmitter, eventName: (string|symbol), handler: AnyFunction}> = [];
-  private _processClosing?: Promise<void>
+  private _listeners: Array<{ emitter: NodeJS.EventEmitter; eventName: string | symbol; handler: AnyFunction }> = [];
+  private _processClosing?: Promise<void>;
 
-  constructor(private executablePath: string, private processArguments: string[], private tempDirectory?: string) {
-  }
+  constructor(private executablePath: string, private processArguments: string[], private tempDirectory?: string) {}
 
   start(options: LaunchOptions = {}) {
-    const {
-      handleSIGINT,
-      handleSIGTERM,
-      handleSIGHUP,
-      dumpio,
-      env,
-      pipe
-    } = options;
+    const { handleSIGINT, handleSIGTERM, handleSIGHUP, dumpio, env, pipe } = options;
     let stdio: Array<'pipe' | 'ignore'> = ['pipe', 'pipe', 'pipe'];
     if (pipe) {
-      if (dumpio)
-        stdio = ['ignore', 'pipe', 'pipe', 'pipe', 'pipe'];
-      else
-        stdio = ['ignore', 'ignore', 'ignore', 'pipe', 'pipe'];
+      if (dumpio) stdio = ['ignore', 'pipe', 'pipe', 'pipe', 'pipe'];
+      else stdio = ['ignore', 'ignore', 'ignore', 'pipe', 'pipe'];
     }
     assert(!this.proc, 'This process has previously been started.');
     debugLauncher(`Calling ${this.executablePath} ${this.processArguments.join(' ')}`);
-    this.proc = childProcess.spawn(
-        this.executablePath,
-        this.processArguments,
-        {
-          // On non-windows platforms, `detached: true` makes child process a leader of a new
-          // process group, making it possible to kill child process tree with `.kill(-pid)` command.
-          // @see https://nodejs.org/api/child_process.html#child_process_options_detached
-          detached: process.platform !== 'win32',
-          env,
-          stdio
-        }
-    );
+    this.proc = childProcess.spawn(this.executablePath, this.processArguments, {
+      // On non-windows platforms, `detached: true` makes child process a leader of a new
+      // process group, making it possible to kill child process tree with `.kill(-pid)` command.
+      // @see https://nodejs.org/api/child_process.html#child_process_options_detached
+      detached: process.platform !== 'win32',
+      env,
+      stdio
+    });
     if (dumpio) {
       this.proc.stderr.pipe(process.stderr);
       this.proc.stdout.pipe(process.stdout);
@@ -90,25 +76,27 @@ class BrowserRunner {
         // Cleanup as processes exit.
         if (this.tempDirectory) {
           removeFolderAsync(this.tempDirectory)
-              .then(() => fulfill())
-              .catch(err => console.error(err));
+            .then(() => fulfill())
+            .catch(err => console.error(err));
         } else {
           fulfill();
         }
       });
     });
-    this._listeners = [ helper.addEventListener(process, 'exit', this.kill.bind(this)) ];
+    this._listeners = [helper.addEventListener(process, 'exit', this.kill.bind(this))];
     if (handleSIGINT)
-      this._listeners.push(helper.addEventListener(process, 'SIGINT', () => { this.kill(); process.exit(130); }));
-    if (handleSIGTERM)
-      this._listeners.push(helper.addEventListener(process, 'SIGTERM', this.close.bind(this)));
-    if (handleSIGHUP)
-      this._listeners.push(helper.addEventListener(process, 'SIGHUP', this.close.bind(this)));
+      this._listeners.push(
+        helper.addEventListener(process, 'SIGINT', () => {
+          this.kill();
+          process.exit(130);
+        })
+      );
+    if (handleSIGTERM) this._listeners.push(helper.addEventListener(process, 'SIGTERM', this.close.bind(this)));
+    if (handleSIGHUP) this._listeners.push(helper.addEventListener(process, 'SIGHUP', this.close.bind(this)));
   }
 
   async close(): Promise<void> {
-    if (this._closed)
-      return;
+    if (this._closed) return;
     helper.removeEventListeners(this._listeners);
     if (this.tempDirectory) {
       this.kill();
@@ -127,10 +115,8 @@ class BrowserRunner {
     helper.removeEventListeners(this._listeners);
     if (this.proc && this.proc.pid && !this.proc.killed && !this._closed) {
       try {
-        if (process.platform === 'win32')
-          childProcess.execSync(`taskkill /pid ${this.proc.pid} /T /F`);
-        else
-          process.kill(-this.proc.pid, 'SIGKILL');
+        if (process.platform === 'win32') childProcess.execSync(`taskkill /pid ${this.proc.pid} /T /F`);
+        else process.kill(-this.proc.pid, 'SIGKILL');
       } catch (error) {
         // the process might have already stopped
       }
@@ -140,50 +126,51 @@ class BrowserRunner {
       if (this.tempDirectory) {
         rimraf.sync(this.tempDirectory);
       }
-    } catch (error) { }
+    } catch (error) {}
   }
 
-  async setupConnection(options: ({usePipe?: boolean, timeout: number, slowMo: number, preferredRevision: string})): Promise<Connection> {
-    const {
-      usePipe,
-      timeout,
-      slowMo,
-      preferredRevision
-    } = options;
+  async setupConnection(options: {
+    usePipe?: boolean;
+    timeout: number;
+    slowMo: number;
+    preferredRevision: string;
+  }): Promise<Connection> {
+    const { usePipe, timeout, slowMo, preferredRevision } = options;
     if (!usePipe) {
       const browserWSEndpoint = await waitForWSEndpoint(this.proc!, timeout, preferredRevision);
       const transport = await WebSocketTransport.create(browserWSEndpoint);
       this.connection = new Connection(browserWSEndpoint, transport, slowMo);
     } else {
-      const transport = new PipeTransport(this.proc!.stdio[3] as NodeJS.WritableStream, this.proc!.stdio[4] as NodeJS.ReadableStream);
+      const transport = new PipeTransport(
+        this.proc!.stdio[3] as NodeJS.WritableStream,
+        this.proc!.stdio[4] as NodeJS.ReadableStream
+      );
       this.connection = new Connection('', transport, slowMo);
     }
     return this.connection;
   }
 }
 
-  
 export interface ProductLauncher {
-  launch(options?: LaunchOptions & {product?: string, extraPrefsFirefox?: object}): Promise<Browser>;
-  connect(options?: ConnectOptions & {product?: string, extraPrefsFirefox?: object}): Promise<Browser>;
+  launch(options?: LaunchOptions & { product?: string; extraPrefsFirefox?: object }): Promise<Browser>;
+  connect(options?: ConnectOptions & { product?: string; extraPrefsFirefox?: object }): Promise<Browser>;
   executablePath(): string;
   defaultArgs(args?: ChromeArgOptions): string[];
   product: string;
 }
 
 class ChromeLauncher implements ProductLauncher {
-  _projectRoot: string
-  _preferredRevision: string
-  _isPuppeteerCore: boolean
-  
+  _projectRoot: string;
+  _preferredRevision: string;
+  _isPuppeteerCore: boolean;
+
   constructor(projectRoot: string, preferredRevision: string, isPuppeteerCore: boolean) {
     this._projectRoot = projectRoot;
     this._preferredRevision = preferredRevision;
     this._isPuppeteerCore = isPuppeteerCore;
   }
 
-  
-  async launch(options: (LaunchOptions) = {}): Promise<Browser> {
+  async launch(options: LaunchOptions = {}): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
@@ -195,19 +182,17 @@ class ChromeLauncher implements ProductLauncher {
       handleSIGTERM = true,
       handleSIGHUP = true,
       ignoreHTTPSErrors = false,
-      defaultViewport = {width: 800, height: 600},
+      defaultViewport = { width: 800, height: 600 },
       slowMo = 0,
       timeout = 30000
     } = options;
 
     const profilePath = path.join(os.tmpdir(), 'puppeteer_dev_chrome_profile-');
     const chromeArguments = [];
-    if (!ignoreDefaultArgs)
-      chromeArguments.push(...this.defaultArgs(options));
+    if (!ignoreDefaultArgs) chromeArguments.push(...this.defaultArgs(options));
     else if (Array.isArray(ignoreDefaultArgs))
       chromeArguments.push(...this.defaultArgs(options).filter(arg => !ignoreDefaultArgs.includes(arg)));
-    else
-      chromeArguments.push(...args);
+    else chromeArguments.push(...args);
 
     let temporaryUserDataDir = undefined;
 
@@ -220,19 +205,30 @@ class ChromeLauncher implements ProductLauncher {
 
     let chromeExecutable = executablePath;
     if (!executablePath) {
-      const {missingText, executablePath} = resolveExecutablePath(this);
-      if (missingText)
-        throw new Error(missingText);
+      const { missingText, executablePath } = resolveExecutablePath(this);
+      if (missingText) throw new Error(missingText);
       chromeExecutable = executablePath;
     }
 
     const usePipe = chromeArguments.includes('--remote-debugging-pipe');
     const runner = new BrowserRunner(chromeExecutable!, chromeArguments, temporaryUserDataDir);
-    runner.start({handleSIGHUP, handleSIGTERM, handleSIGINT, dumpio, env, pipe: usePipe});
+    runner.start({ handleSIGHUP, handleSIGTERM, handleSIGINT, dumpio, env, pipe: usePipe });
 
     try {
-      const connection = await runner.setupConnection({usePipe, timeout, slowMo, preferredRevision: this._preferredRevision});
-      const browser = await Browser.create(connection, [], ignoreHTTPSErrors, defaultViewport, runner.proc, runner.close.bind(runner));
+      const connection = await runner.setupConnection({
+        usePipe,
+        timeout,
+        slowMo,
+        preferredRevision: this._preferredRevision
+      });
+      const browser = await Browser.create(
+        connection,
+        [],
+        ignoreHTTPSErrors,
+        defaultViewport,
+        runner.proc,
+        runner.close.bind(runner)
+      );
       await browser.waitForTarget(t => t.type() === 'page');
       return browser;
     } catch (error) {
@@ -265,27 +261,15 @@ class ChromeLauncher implements ProductLauncher {
       '--no-first-run',
       '--enable-automation',
       '--password-store=basic',
-      '--use-mock-keychain',
+      '--use-mock-keychain'
     ];
-    const {
-      devtools = false,
-      headless = !devtools,
-      args = [],
-      userDataDir = null
-    } = options;
-    if (userDataDir)
-      chromeArguments.push(`--user-data-dir=${userDataDir}`);
-    if (devtools)
-      chromeArguments.push('--auto-open-devtools-for-tabs');
+    const { devtools = false, headless = !devtools, args = [], userDataDir = null } = options;
+    if (userDataDir) chromeArguments.push(`--user-data-dir=${userDataDir}`);
+    if (devtools) chromeArguments.push('--auto-open-devtools-for-tabs');
     if (headless) {
-      chromeArguments.push(
-          '--headless',
-          '--hide-scrollbars',
-          '--mute-audio'
-      );
+      chromeArguments.push('--headless', '--hide-scrollbars', '--mute-audio');
     }
-    if (args.every(arg => arg.startsWith('-')))
-      chromeArguments.push('about:blank');
+    if (args.every(arg => arg.startsWith('-'))) chromeArguments.push('about:blank');
     chromeArguments.push(...args);
     return chromeArguments;
   }
@@ -298,17 +282,22 @@ class ChromeLauncher implements ProductLauncher {
     return 'chrome';
   }
 
-  async connect(options: (ConnectOptions & {browserWSEndpoint?: string, browserURL?: string, transport?: ConnectionTransport})): Promise<Browser> {
+  async connect(
+    options: ConnectOptions & { browserWSEndpoint?: string; browserURL?: string; transport?: ConnectionTransport }
+  ): Promise<Browser> {
     const {
       browserWSEndpoint,
       browserURL,
       ignoreHTTPSErrors = false,
-      defaultViewport = {width: 800, height: 600},
+      defaultViewport = { width: 800, height: 600 },
       transport,
-      slowMo = 0,
+      slowMo = 0
     } = options;
 
-    assert(Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) === 1, 'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect');
+    assert(
+      Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) === 1,
+      'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
+    );
 
     let connection!: Connection;
     if (transport) {
@@ -322,16 +311,17 @@ class ChromeLauncher implements ProductLauncher {
       connection = new Connection(connectionURL, connectionTransport, slowMo);
     }
 
-    const {browserContextIds} = await connection.send('Target.getBrowserContexts');
-    return Browser.create(connection, browserContextIds, ignoreHTTPSErrors, defaultViewport, null, () => connection.send('Browser.close').catch(debugError));
+    const { browserContextIds } = await connection.send('Target.getBrowserContexts');
+    return Browser.create(connection, browserContextIds, ignoreHTTPSErrors, defaultViewport, null, () =>
+      connection.send('Browser.close').catch(debugError)
+    );
   }
-
 }
 
 class FirefoxLauncher implements ProductLauncher {
-  _projectRoot: string
-  _preferredRevision: string
-  _isPuppeteerCore: boolean
+  _projectRoot: string;
+  _preferredRevision: string;
+  _isPuppeteerCore: boolean;
 
   constructor(projectRoot: string, preferredRevision: string, isPuppeteerCore: boolean) {
     this._projectRoot = projectRoot;
@@ -339,7 +329,7 @@ class FirefoxLauncher implements ProductLauncher {
     this._isPuppeteerCore = isPuppeteerCore;
   }
 
-  async launch(options: (LaunchOptions & {extraPrefsFirefox?: object}) = {}): Promise<Browser> {
+  async launch(options: LaunchOptions & { extraPrefsFirefox?: object } = {}): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
@@ -351,19 +341,17 @@ class FirefoxLauncher implements ProductLauncher {
       handleSIGTERM = true,
       handleSIGHUP = true,
       ignoreHTTPSErrors = false,
-      defaultViewport = {width: 800, height: 600},
+      defaultViewport = { width: 800, height: 600 },
       slowMo = 0,
       timeout = 30000,
       extraPrefsFirefox = {}
     } = options;
 
     const firefoxArguments = [];
-    if (!ignoreDefaultArgs)
-      firefoxArguments.push(...this.defaultArgs(options));
+    if (!ignoreDefaultArgs) firefoxArguments.push(...this.defaultArgs(options));
     else if (Array.isArray(ignoreDefaultArgs))
       firefoxArguments.push(...this.defaultArgs(options).filter(arg => !ignoreDefaultArgs.includes(arg)));
-    else
-      firefoxArguments.push(...args);
+    else firefoxArguments.push(...args);
 
     let temporaryUserDataDir = undefined;
 
@@ -375,18 +363,29 @@ class FirefoxLauncher implements ProductLauncher {
 
     let executable = executablePath;
     if (!executablePath) {
-      const {missingText, executablePath: resolvedExecutablePath} = resolveExecutablePath(this);
-      if (missingText)
-        throw new Error(missingText);
+      const { missingText, executablePath: resolvedExecutablePath } = resolveExecutablePath(this);
+      if (missingText) throw new Error(missingText);
       executable = resolvedExecutablePath;
     }
 
     const runner = new BrowserRunner(executable!, firefoxArguments, temporaryUserDataDir);
-    runner.start({handleSIGHUP, handleSIGTERM, handleSIGINT, dumpio, env, pipe});
+    runner.start({ handleSIGHUP, handleSIGTERM, handleSIGINT, dumpio, env, pipe });
 
     try {
-      const connection = await runner.setupConnection({usePipe: pipe, timeout, slowMo, preferredRevision: this._preferredRevision});
-      const browser = await Browser.create(connection, [], ignoreHTTPSErrors, defaultViewport, runner.proc, runner.close.bind(runner));
+      const connection = await runner.setupConnection({
+        usePipe: pipe,
+        timeout,
+        slowMo,
+        preferredRevision: this._preferredRevision
+      });
+      const browser = await Browser.create(
+        connection,
+        [],
+        ignoreHTTPSErrors,
+        defaultViewport,
+        runner.proc,
+        runner.close.bind(runner)
+      );
       await browser.waitForTarget(t => t.type() === 'page');
       return browser;
     } catch (error) {
@@ -395,17 +394,22 @@ class FirefoxLauncher implements ProductLauncher {
     }
   }
 
-  async connect(options: (ConnectOptions & {browserWSEndpoint?: string, browserURL?: string, transport?: ConnectionTransport})): Promise<Browser> {
+  async connect(
+    options: ConnectOptions & { browserWSEndpoint?: string; browserURL?: string; transport?: ConnectionTransport }
+  ): Promise<Browser> {
     const {
       browserWSEndpoint,
       browserURL,
       ignoreHTTPSErrors = false,
-      defaultViewport = {width: 800, height: 600},
+      defaultViewport = { width: 800, height: 600 },
       transport,
-      slowMo = 0,
+      slowMo = 0
     } = options;
 
-    assert(Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) === 1, 'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect');
+    assert(
+      Number(!!browserWSEndpoint) + Number(!!browserURL) + Number(!!transport) === 1,
+      'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
+    );
 
     let connection: Connection;
     if (transport) {
@@ -419,46 +423,36 @@ class FirefoxLauncher implements ProductLauncher {
       connection = new Connection(connectionURL, connectionTransport, slowMo);
     }
 
-    const {browserContextIds} = await connection!.send('Target.getBrowserContexts');
-    return Browser.create(connection!, browserContextIds, ignoreHTTPSErrors, defaultViewport, null, () => connection!.send('Browser.close').catch(debugError));
+    const { browserContextIds } = await connection!.send('Target.getBrowserContexts');
+    return Browser.create(connection!, browserContextIds, ignoreHTTPSErrors, defaultViewport, null, () =>
+      connection!.send('Browser.close').catch(debugError)
+    );
   }
 
   executablePath(): string {
-    const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || process.env.npm_config_puppeteer_executable_path || process.env.npm_package_config_puppeteer_executable_path;
+    const executablePath =
+      process.env.PUPPETEER_EXECUTABLE_PATH ||
+      process.env.npm_config_puppeteer_executable_path ||
+      process.env.npm_package_config_puppeteer_executable_path;
     // TODO get resolveExecutablePath working for Firefox
-    if (!executablePath)
-      throw new Error('Please set PUPPETEER_EXECUTABLE_PATH to a Firefox binary.');
+    if (!executablePath) throw new Error('Please set PUPPETEER_EXECUTABLE_PATH to a Firefox binary.');
     return executablePath;
   }
 
-  
   get product(): string {
     return 'firefox';
   }
 
-  
   defaultArgs(options: ChromeArgOptions = {}): string[] {
-    const firefoxArguments = [
-      '--remote-debugging-port=0',
-      '--no-remote',
-      '--foreground',
-    ];
-    const {
-      devtools = false,
-      headless = !devtools,
-      args = [],
-      userDataDir = null
-    } = options;
+    const firefoxArguments = ['--remote-debugging-port=0', '--no-remote', '--foreground'];
+    const { devtools = false, headless = !devtools, args = [], userDataDir = null } = options;
     if (userDataDir) {
       firefoxArguments.push('--profile');
       firefoxArguments.push(userDataDir);
     }
-    if (headless)
-      firefoxArguments.push('--headless');
-    if (devtools)
-      firefoxArguments.push('--devtools');
-    if (args.every(arg => arg.startsWith('-')))
-      firefoxArguments.push('about:blank');
+    if (headless) firefoxArguments.push('--headless');
+    if (devtools) firefoxArguments.push('--devtools');
+    if (args.every(arg => arg.startsWith('-'))) firefoxArguments.push('about:blank');
     firefoxArguments.push(...args);
     return firefoxArguments;
   }
@@ -660,8 +654,7 @@ class FirefoxLauncher implements ProductLauncher {
       // We want to collect telemetry, but we don't want to send in the results
       'toolkit.telemetry.server': `https://${server}/dummy/telemetry/`,
       // Prevent starting into safe mode after application crashes
-      'toolkit.startup.max_resumed_crashes': -1,
-
+      'toolkit.startup.max_resumed_crashes': -1
     };
 
     Object.assign(defaultPreferences, extraPrefs);
@@ -673,7 +666,11 @@ class FirefoxLauncher implements ProductLauncher {
   }
 }
 
-function waitForWSEndpoint(browserProcess: childProcess.ChildProcess, timeout: number, preferredRevision: string): Promise<string> {
+function waitForWSEndpoint(
+  browserProcess: childProcess.ChildProcess,
+  timeout: number,
+  preferredRevision: string
+): Promise<string> {
   return new Promise((resolve, reject) => {
     const rl = readline.createInterface({ input: browserProcess.stderr });
     let stderr = '';
@@ -685,44 +682,51 @@ function waitForWSEndpoint(browserProcess: childProcess.ChildProcess, timeout: n
     ];
     const timeoutId = timeout ? setTimeout(onTimeout, timeout) : 0;
 
-    
     function onClose(error?: Error) {
       cleanup();
-      reject(new Error([
-        'Failed to launch the browser process!' + (error ? ' ' + error.message : ''),
-        stderr,
-        '',
-        'TROUBLESHOOTING: https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md',
-        '',
-      ].join('\n')));
+      reject(
+        new Error(
+          [
+            'Failed to launch the browser process!' + (error ? ' ' + error.message : ''),
+            stderr,
+            '',
+            'TROUBLESHOOTING: https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md',
+            ''
+          ].join('\n')
+        )
+      );
     }
 
     function onTimeout() {
       cleanup();
-      reject(new TimeoutError(`Timed out after ${timeout} ms while trying to connect to the browser! Only Chrome at revision r${preferredRevision} is guaranteed to work.`));
+      reject(
+        new TimeoutError(
+          `Timed out after ${timeout} ms while trying to connect to the browser! Only Chrome at revision r${preferredRevision} is guaranteed to work.`
+        )
+      );
     }
 
-    
     function onLine(line: string) {
       stderr += line + '\n';
       const match = line.match(/^DevTools listening on (ws:\/\/.*)$/);
-      if (!match)
-        return;
+      if (!match) return;
       cleanup();
       resolve(match[1]);
     }
 
     function cleanup() {
-      if (timeoutId)
-        clearTimeout(timeoutId);
+      if (timeoutId) clearTimeout(timeoutId);
       helper.removeEventListeners(listeners);
     }
   });
 }
 
 function getWSEndpoint(browserURL: string): Promise<string> {
-  let resolve: (url: string) => void , reject!: (e: Error) => void;
-  const promise = new Promise<string>((res, rej) => { resolve = res; reject = rej; });
+  let resolve: (url: string) => void, reject!: (e: Error) => void;
+  const promise = new Promise<string>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
 
   const endpointURL = URL.resolve(browserURL, '/json/version');
   const protocol = endpointURL.startsWith('https') ? https : http;
@@ -736,7 +740,7 @@ function getWSEndpoint(browserURL: string): Promise<string> {
       return;
     }
     res.setEncoding('utf8');
-    res.on('data', chunk => data += chunk);
+    res.on('data', chunk => (data += chunk));
     res.on('end', () => resolve(JSON.parse(data).webSocketDebuggerUrl));
   });
 
@@ -749,12 +753,20 @@ function getWSEndpoint(browserURL: string): Promise<string> {
   });
 }
 
-function resolveExecutablePath(launcher: ChromeLauncher|FirefoxLauncher): {executablePath: string, missingText?: string} {
+function resolveExecutablePath(
+  launcher: ChromeLauncher | FirefoxLauncher
+): { executablePath: string; missingText?: string } {
   // puppeteer-core doesn't take into account PUPPETEER_* env variables.
   if (!launcher._isPuppeteerCore) {
-    const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || process.env.npm_config_puppeteer_executable_path || process.env.npm_package_config_puppeteer_executable_path;
+    const executablePath =
+      process.env.PUPPETEER_EXECUTABLE_PATH ||
+      process.env.npm_config_puppeteer_executable_path ||
+      process.env.npm_package_config_puppeteer_executable_path;
     if (executablePath) {
-      const missingText = !fs.existsSync(executablePath) ? 'Tried to use PUPPETEER_EXECUTABLE_PATH env variable to launch browser but did not find any executable at: ' + executablePath : undefined;
+      const missingText = !fs.existsSync(executablePath)
+        ? 'Tried to use PUPPETEER_EXECUTABLE_PATH env variable to launch browser but did not find any executable at: ' +
+          executablePath
+        : undefined;
       return { executablePath, missingText };
     }
   }
@@ -763,19 +775,32 @@ function resolveExecutablePath(launcher: ChromeLauncher|FirefoxLauncher): {execu
     const revision = process.env['PUPPETEER_CHROMIUM_REVISION'];
     if (revision) {
       const revisionInfo = browserFetcher.revisionInfo(revision);
-      const missingText = !revisionInfo.local ? 'Tried to use PUPPETEER_CHROMIUM_REVISION env variable to launch browser but did not find executable at: ' + revisionInfo.executablePath : undefined;
-      return {executablePath: revisionInfo.executablePath, missingText};
+      const missingText = !revisionInfo.local
+        ? 'Tried to use PUPPETEER_CHROMIUM_REVISION env variable to launch browser but did not find executable at: ' +
+          revisionInfo.executablePath
+        : undefined;
+      return { executablePath: revisionInfo.executablePath, missingText };
     }
   }
   const revisionInfo = browserFetcher.revisionInfo(launcher._preferredRevision);
-  const missingText = !revisionInfo.local ? `Browser is not downloaded. Run "npm install" or "yarn install"` : undefined;
-  return {executablePath: revisionInfo.executablePath, missingText};
+  const missingText = !revisionInfo.local
+    ? `Browser is not downloaded. Run "npm install" or "yarn install"`
+    : undefined;
+  return { executablePath: revisionInfo.executablePath, missingText };
 }
 
-export function Launcher(projectRoot: string, preferredRevision: string, isPuppeteerCore: boolean, product?: string): ProductLauncher {
+export function Launcher(
+  projectRoot: string,
+  preferredRevision: string,
+  isPuppeteerCore: boolean,
+  product?: string
+): ProductLauncher {
   // puppeteer-core doesn't take into account PUPPETEER_* env variables.
   if (!product && !isPuppeteerCore)
-    product = process.env.PUPPETEER_PRODUCT || process.env.npm_config_puppeteer_product || process.env.npm_package_config_puppeteer_product;
+    product =
+      process.env.PUPPETEER_PRODUCT ||
+      process.env.npm_config_puppeteer_product ||
+      process.env.npm_package_config_puppeteer_product;
   switch (product) {
     case 'firefox':
       return new FirefoxLauncher(projectRoot, preferredRevision, isPuppeteerCore);

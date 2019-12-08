@@ -18,29 +18,28 @@ import { helper, debugError } from './helper';
 import { AnyFunction, ConnectionTransport } from './types';
 
 export class PipeTransport implements ConnectionTransport {
-  onmessage?: ((message: string) => void);
-  onclose?: (() => void);
+  onmessage?: (message: string) => void;
+  onclose?: () => void;
 
-  _pipeWrite: NodeJS.WritableStream | null
-  _pendingMessage = ''
-  _eventListeners: Array<{emitter: NodeJS.EventEmitter, eventName: (string|symbol), handler: AnyFunction}>
+  _pipeWrite: NodeJS.WritableStream | null;
+  _pendingMessage = '';
+  _eventListeners: Array<{ emitter: NodeJS.EventEmitter; eventName: string | symbol; handler: AnyFunction }>;
 
   constructor(pipeWrite: NodeJS.WritableStream, pipeRead: NodeJS.ReadableStream) {
     this._pipeWrite = pipeWrite;
     this._eventListeners = [
       helper.addEventListener(pipeRead, 'data', buffer => this._dispatch(buffer)),
       helper.addEventListener(pipeRead, 'close', () => {
-        if (this.onclose)
-          this.onclose.call(null);
+        if (this.onclose) this.onclose.call(null);
       }),
       helper.addEventListener(pipeRead, 'error', debugError),
-      helper.addEventListener(pipeWrite, 'error', debugError),
+      helper.addEventListener(pipeWrite, 'error', debugError)
     ];
   }
 
   send(message: string) {
     if (!this._pipeWrite) {
-      throw new Error(`Cannot send message. PipeTransport has been closed.`)
+      throw new Error(`Cannot send message. PipeTransport has been closed.`);
     }
     this._pipeWrite.write(message);
     this._pipeWrite.write('\0');
@@ -53,14 +52,12 @@ export class PipeTransport implements ConnectionTransport {
       return;
     }
     const message = this._pendingMessage + buffer.toString(undefined, 0, end);
-    if (this.onmessage)
-      this.onmessage.call(null, message);
+    if (this.onmessage) this.onmessage.call(null, message);
 
     let start = end + 1;
     end = buffer.indexOf('\0', start);
     while (end !== -1) {
-      if (this.onmessage)
-        this.onmessage.call(null, buffer.toString(undefined, start, end));
+      if (this.onmessage) this.onmessage.call(null, buffer.toString(undefined, start, end));
       start = end + 1;
       end = buffer.indexOf('\0', start);
     }

@@ -28,7 +28,11 @@ const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
 export class ExecutionContext<T = any> implements JSEvalable<T> {
   private _contextId: number;
 
-  constructor(public client: CDPSession, contextPayload: Protocol.Runtime.ExecutionContextDescription, /* @internal */public world?: DOMWorld) {
+  constructor(
+    public client: CDPSession,
+    contextPayload: Protocol.Runtime.ExecutionContextDescription,
+    /* @internal */ public world?: DOMWorld
+  ) {
     this._contextId = contextPayload.id;
   }
 
@@ -36,7 +40,10 @@ export class ExecutionContext<T = any> implements JSEvalable<T> {
     return this.world ? this.world.frame() : null;
   }
 
-  evaluate<V extends EvaluateFn<T>>(pageFunction: V, ...args: SerializableOrJSHandle[]): Promise<EvaluateFnReturnType<V>> {
+  evaluate<V extends EvaluateFn<T>>(
+    pageFunction: V,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<EvaluateFnReturnType<V>> {
     return this._evaluateInternal(true /* returnByValue */, pageFunction, ...args);
   }
 
@@ -47,27 +54,34 @@ export class ExecutionContext<T = any> implements JSEvalable<T> {
     return this._evaluateInternal(false /* returnByValue */, pageFunction, ...args);
   }
 
-  private async _evaluateInternal(returnByValue: boolean, pageFunction: AnyFunction | string, ...args: any[]): Promise<any> {
+  private async _evaluateInternal(
+    returnByValue: boolean,
+    pageFunction: AnyFunction | string,
+    ...args: any[]
+  ): Promise<any> {
     const suffix = `//# sourceURL=${EVALUATION_SCRIPT_URL}`;
 
     if (helper.isString(pageFunction)) {
       const expressionWithSourceUrl = SOURCE_URL_REGEX.test(pageFunction) ? pageFunction : pageFunction + '\n' + suffix;
-      const {exceptionDetails, result: remoteObject} = await this.client.send('Runtime.evaluate', {
-        expression: expressionWithSourceUrl,
-        contextId: this._contextId,
-        returnByValue,
-        awaitPromise: true,
-        userGesture: true
-      }).catch(rewriteError);
+      const { exceptionDetails, result: remoteObject } = await this.client
+        .send('Runtime.evaluate', {
+          expression: expressionWithSourceUrl,
+          contextId: this._contextId,
+          returnByValue,
+          awaitPromise: true,
+          userGesture: true
+        })
+        .catch(rewriteError);
 
-      if (exceptionDetails)
-        throw new Error('Evaluation failed: ' + helper.getExceptionMessage(exceptionDetails));
+      if (exceptionDetails) throw new Error('Evaluation failed: ' + helper.getExceptionMessage(exceptionDetails));
 
       return returnByValue ? helper.valueFromRemoteObject(remoteObject) : createJSHandle(this, remoteObject);
     }
 
     if (typeof pageFunction !== 'function')
-      throw new Error(`Expected to get |string| or |function| as the first argument, but got "${pageFunction}" instead.`);
+      throw new Error(
+        `Expected to get |string| or |function| as the first argument, but got "${pageFunction}" instead.`
+      );
 
     let functionText = pageFunction.toString();
     try {
@@ -75,12 +89,10 @@ export class ExecutionContext<T = any> implements JSEvalable<T> {
     } catch (e1) {
       // This means we might have a function shorthand. Try another
       // time prefixing 'function '.
-      if (functionText.startsWith('async '))
-        functionText = 'async function ' + functionText.substring('async '.length);
-      else
-        functionText = 'function ' + functionText;
+      if (functionText.startsWith('async ')) functionText = 'async function ' + functionText.substring('async '.length);
+      else functionText = 'function ' + functionText;
       try {
-        new Function('(' + functionText  + ')');
+        new Function('(' + functionText + ')');
       } catch (e2) {
         // We tried hard to serialize, but there's a weird beast here.
         throw new Error('Passed function is not well-serializable!');
@@ -102,8 +114,7 @@ export class ExecutionContext<T = any> implements JSEvalable<T> {
       throw err;
     }
     const { exceptionDetails, result: remoteObject } = await callFunctionOnPromise.catch(rewriteError);
-    if (exceptionDetails)
-      throw new Error('Evaluation failed: ' + helper.getExceptionMessage(exceptionDetails));
+    if (exceptionDetails) throw new Error('Evaluation failed: ' + helper.getExceptionMessage(exceptionDetails));
     return returnByValue ? helper.valueFromRemoteObject(remoteObject) : createJSHandle(this, remoteObject);
   }
 
@@ -119,52 +130,49 @@ export class ExecutionContext<T = any> implements JSEvalable<T> {
 
   /* @internal */
   public async _adoptElementHandle(elementHandle: ElementHandle): Promise<ElementHandle> {
-    assert(elementHandle.executionContext() !== this, 'Cannot adopt handle that already belongs to this execution context');
+    assert(
+      elementHandle.executionContext() !== this,
+      'Cannot adopt handle that already belongs to this execution context'
+    );
     assert(this.world, 'Cannot adopt handle without DOMWorld');
     const nodeInfo = await this.client.send('DOM.describeNode', {
-      objectId: elementHandle._remoteObject.objectId,
+      objectId: elementHandle._remoteObject.objectId
     });
-    const {object} = await this.client.send('DOM.resolveNode', {
+    const { object } = await this.client.send('DOM.resolveNode', {
       backendNodeId: nodeInfo.node.backendNodeId,
-      executionContextId: this._contextId,
+      executionContextId: this._contextId
     });
     return createJSHandle(this, object) as ElementHandle;
   }
 }
 
 function convertArgument(this: ExecutionContext, arg: unknown): any {
-  if (typeof arg === 'bigint') // eslint-disable-line valid-typeof
-    return { unserializableValue: `${arg.toString()}n` };
-  if (Object.is(arg, -0))
-    return { unserializableValue: '-0' };
-  if (Object.is(arg, Infinity))
-    return { unserializableValue: 'Infinity' };
-  if (Object.is(arg, -Infinity))
-    return { unserializableValue: '-Infinity' };
-  if (Object.is(arg, NaN))
-    return { unserializableValue: 'NaN' };
-  const objectHandle = arg && (arg instanceof JSHandle) ? arg : null;
+  if (typeof arg === 'bigint') return { unserializableValue: `${arg.toString()}n` };
+  if (Object.is(arg, -0)) return { unserializableValue: '-0' };
+  if (Object.is(arg, Infinity)) return { unserializableValue: 'Infinity' };
+  if (Object.is(arg, -Infinity)) return { unserializableValue: '-Infinity' };
+  if (Object.is(arg, NaN)) return { unserializableValue: 'NaN' };
+  const objectHandle = arg && arg instanceof JSHandle ? arg : null;
   if (objectHandle) {
     if (objectHandle.context !== this)
       throw new Error('JSHandles can be evaluated only in the context they were created!');
-    if (objectHandle._disposed)
-      throw new Error('JSHandle is disposed!');
+    if (objectHandle._disposed) throw new Error('JSHandle is disposed!');
     if (objectHandle._remoteObject.unserializableValue)
       return { unserializableValue: objectHandle._remoteObject.unserializableValue };
-    if (!objectHandle._remoteObject.objectId)
-      return { value: objectHandle._remoteObject.value };
+    if (!objectHandle._remoteObject.objectId) return { value: objectHandle._remoteObject.value };
     return { objectId: objectHandle._remoteObject.objectId };
   }
   return { value: arg };
 }
 
 function rewriteError(error: Error): Protocol.Runtime.evaluateReturnValue {
-  if (error.message.includes('Object reference chain is too long'))
-    return {result: {type: 'undefined'}};
-  if (error.message.includes('Object couldn\'t be returned by value'))
-    return {result: {type: 'undefined'}};
+  if (error.message.includes('Object reference chain is too long')) return { result: { type: 'undefined' } };
+  if (error.message.includes("Object couldn't be returned by value")) return { result: { type: 'undefined' } };
 
-  if (error.message.endsWith('Cannot find context with specified id') || error.message.endsWith('Inspected target navigated or closed'))
+  if (
+    error.message.endsWith('Cannot find context with specified id') ||
+    error.message.endsWith('Inspected target navigated or closed')
+  )
     throw new Error('Execution context was destroyed, most likely because of a navigation.');
   throw error;
 }

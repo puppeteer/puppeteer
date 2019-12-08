@@ -49,23 +49,23 @@ const isPuppeteerCore = packageJson.name === 'puppeteer-core';
 const puppeteer = new Puppeteer(join(__dirname, '..'), preferredRevision, isPuppeteerCore);
 
 export function launch(options?: LaunchOptions) {
-    return puppeteer.launch(options)
+  return puppeteer.launch(options);
 }
 
 export function connect(options?: ConnectOptions) {
-    return puppeteer.connect(options)
+  return puppeteer.connect(options);
 }
 
 export function executablePath() {
-    return puppeteer.executablePath()
+  return puppeteer.executablePath();
 }
 
 export const product = puppeteer.product;
 
 export function defaultArgs(options?: ChromeArgOptions): string[] {
-    return puppeteer.defaultArgs(options);
-  }
+  return puppeteer.defaultArgs(options);
+}
 
 export function createBrowserFetcher(options?: BrowserFetcherOptions) {
-    return puppeteer.createBrowserFetcher(options);
-  }
+  return puppeteer.createBrowserFetcher(options);
+}

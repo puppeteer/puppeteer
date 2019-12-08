@@ -24,22 +24,29 @@ import { TaskQueue } from './TaskQueue';
 import { Protocol } from './protocol';
 
 export class Target {
-  _targetInfo: Protocol.Target.TargetInfo
-  _targetId: string
-  _browserContext: BrowserContext
-  _sessionFactory: () => Promise<CDPSession>
-  _ignoreHTTPSErrors: boolean
-  _defaultViewport?: Viewport | null
-  _screenshotTaskQueue: TaskQueue
+  _targetInfo: Protocol.Target.TargetInfo;
+  _targetId: string;
+  _browserContext: BrowserContext;
+  _sessionFactory: () => Promise<CDPSession>;
+  _ignoreHTTPSErrors: boolean;
+  _defaultViewport?: Viewport | null;
+  _screenshotTaskQueue: TaskQueue;
   _pagePromise: Promise<Page> | null = null;
   _workerPromise: Promise<Worker> | null = null;
-  _initializedPromise: Promise<Worker | boolean>
-  _initializedCallback!: (value: Worker | PromiseLike<Worker> | boolean) => void
-  _isClosedPromise: Promise<void>
-  _closedCallback!: () => void
+  _initializedPromise: Promise<Worker | boolean>;
+  _initializedCallback!: (value: Worker | PromiseLike<Worker> | boolean) => void;
+  _isClosedPromise: Promise<void>;
+  _closedCallback!: () => void;
   _isInitialized: boolean;
 
-  constructor(targetInfo: Protocol.Target.TargetInfo, browserContext: BrowserContext, sessionFactory: () => Promise<CDPSession>, ignoreHTTPSErrors: boolean, defaultViewport: Viewport | undefined | null, screenshotTaskQueue: TaskQueue) {
+  constructor(
+    targetInfo: Protocol.Target.TargetInfo,
+    browserContext: BrowserContext,
+    sessionFactory: () => Promise<CDPSession>,
+    ignoreHTTPSErrors: boolean,
+    defaultViewport: Viewport | undefined | null,
+    screenshotTaskQueue: TaskQueue
+  ) {
     this._targetInfo = targetInfo;
     this._browserContext = browserContext;
     this._targetId = targetInfo.targetId;
@@ -48,23 +55,19 @@ export class Target {
     this._defaultViewport = defaultViewport;
     this._screenshotTaskQueue = screenshotTaskQueue;
 
-    this._initializedPromise = new Promise(fulfill => this._initializedCallback = fulfill).then(async success => {
-      if (!success)
-        return false;
+    this._initializedPromise = new Promise(fulfill => (this._initializedCallback = fulfill)).then(async success => {
+      if (!success) return false;
       const opener = this.opener();
-      if (!opener || !opener._pagePromise || this.type() !== 'page')
-        return true;
+      if (!opener || !opener._pagePromise || this.type() !== 'page') return true;
       const openerPage = await opener._pagePromise;
-      if (!openerPage.listenerCount(Events.Page.Popup))
-        return true;
+      if (!openerPage.listenerCount(Events.Page.Popup)) return true;
       const popupPage = await this.page();
       openerPage.emit(Events.Page.Popup, popupPage);
       return true;
     });
-    this._isClosedPromise = new Promise(fulfill => this._closedCallback = fulfill);
+    this._isClosedPromise = new Promise(fulfill => (this._closedCallback = fulfill));
     this._isInitialized = this._targetInfo.type !== 'page' || this._targetInfo.url !== '';
-    if (this._isInitialized)
-      this._initializedCallback(true);
+    if (this._isInitialized) this._initializedCallback(true);
   }
 
   createCDPSession(): Promise<CDPSession> {
@@ -73,19 +76,26 @@ export class Target {
 
   async page(): Promise<Page> {
     if ((this._targetInfo.type === 'page' || this._targetInfo.type === 'background_page') && !this._pagePromise) {
-      this._pagePromise = this._sessionFactory()
-          .then(client => Page.create(client, this, this._ignoreHTTPSErrors, this._defaultViewport, this._screenshotTaskQueue));
+      this._pagePromise = this._sessionFactory().then(client =>
+        Page.create(client, this, this._ignoreHTTPSErrors, this._defaultViewport, this._screenshotTaskQueue)
+      );
     }
     return this._pagePromise!;
   }
 
   async worker(): Promise<Worker | null> {
-    if (this._targetInfo.type !== 'service_worker' && this._targetInfo.type !== 'shared_worker')
-      return null;
+    if (this._targetInfo.type !== 'service_worker' && this._targetInfo.type !== 'shared_worker') return null;
     if (!this._workerPromise) {
       // TODO(einbinder): Make workers send their console logs.
-      this._workerPromise = this._sessionFactory()
-          .then(client => new Worker(client, this._targetInfo.url, () => {} /* consoleAPICalled */, () => {} /* exceptionThrown */));
+      this._workerPromise = this._sessionFactory().then(
+        client =>
+          new Worker(
+            client,
+            this._targetInfo.url,
+            () => {} /* consoleAPICalled */,
+            () => {} /* exceptionThrown */
+          )
+      );
     }
     return this._workerPromise;
   }
@@ -94,9 +104,15 @@ export class Target {
     return this._targetInfo.url;
   }
 
-  type(): "page"|"background_page"|"service_worker"|"shared_worker"|"other"|"browser" {
+  type(): 'page' | 'background_page' | 'service_worker' | 'shared_worker' | 'other' | 'browser' {
     const type = this._targetInfo.type;
-    if (type === 'page' || type === 'background_page' || type === 'service_worker' || type === 'shared_worker' || type === 'browser')
+    if (
+      type === 'page' ||
+      type === 'background_page' ||
+      type === 'service_worker' ||
+      type === 'shared_worker' ||
+      type === 'browser'
+    )
       return type;
     return 'other';
   }
@@ -111,8 +127,7 @@ export class Target {
 
   opener(): Target | null {
     const { openerId } = this._targetInfo;
-    if (!openerId)
-      return null;
+    if (!openerId) return null;
     return this.browser()._targets.get(openerId) || null;
   }
 
