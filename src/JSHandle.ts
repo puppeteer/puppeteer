@@ -175,7 +175,7 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
     return this._frameManager.frame(nodeInfo.node.frameId);
   }
 
-  public async _scrollIntoViewIfNeeded() {
+  private async _scrollIntoViewIfNeeded() {
     const error: string | false = await this.evaluate(async(element: Element, pageJavascriptEnabled) => {
       if (!element.isConnected) return 'Node is detached from document';
       if (element.nodeType !== Node.ELEMENT_NODE) return 'Node is not of type HTMLElement';
@@ -197,7 +197,7 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
     if (error) throw new Error(error);
   }
 
-  public async _clickablePoint(): Promise<{ x: number; y: number }> {
+  private async _clickablePoint(): Promise<{ x: number; y: number }> {
     const [result, layoutMetrics] = await Promise.all([
       this.client
           .send('DOM.getContentQuads', {

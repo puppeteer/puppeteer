@@ -93,7 +93,7 @@ class JSCoverage {
     ]);
   }
 
-  public async _onScriptParsed(event: Protocol.Debugger.scriptParsedPayload) {
+  private async _onScriptParsed(event: Protocol.Debugger.scriptParsedPayload) {
     // Ignore puppeteer-injected scripts
     if (event.url === EVALUATION_SCRIPT_URL) return;
     // Ignore other anonymous scripts unless the reportAnonymousScripts option is true.

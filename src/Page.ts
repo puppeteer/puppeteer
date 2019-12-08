@@ -193,7 +193,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     }, noop);
   }
 
-  public async _initialize() {
+  private async _initialize() {
     await Promise.all([
       this._frameManager.initialize(),
       this._client.send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: false, flatten: true }),
@@ -426,7 +426,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     this._addConsoleMessage(event.type, values, event.stackTrace);
   }
 
-  public async _onBindingCalled(event: Protocol.Runtime.bindingCalledPayload) {
+  private async _onBindingCalled(event: Protocol.Runtime.bindingCalledPayload) {
     const { name, seq, args } = JSON.parse(event.payload);
     let expression = null;
     try {
@@ -645,7 +645,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     return this._screenshotTaskQueue.postTask(this._screenshotTask.bind(this, screenshotType, options));
   }
 
-  public async _screenshotTask(format: 'png' | 'jpeg', options: ScreenshotOptions = {}): Promise<Buffer | string> {
+  private async _screenshotTask(format: 'png' | 'jpeg', options: ScreenshotOptions = {}): Promise<Buffer | string> {
     await this._client.send('Target.activateTarget', { targetId: this._target._targetId });
     let clip = options.clip ? processClip(options.clip) : undefined;
 

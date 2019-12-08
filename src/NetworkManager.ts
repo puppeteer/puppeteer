@@ -101,7 +101,7 @@ export class NetworkManager extends EventEmitter {
     await this._updateProtocolRequestInterception();
   }
 
-  public async _updateProtocolRequestInterception() {
+  private async _updateProtocolRequestInterception() {
     const enabled = this._userRequestInterceptionEnabled || !!this._credentials;
     if (enabled === this._protocolRequestInterceptionEnabled) return;
     this._protocolRequestInterceptionEnabled = enabled;
@@ -118,7 +118,7 @@ export class NetworkManager extends EventEmitter {
     }
   }
 
-  public async _updateProtocolCacheDisabled() {
+  private async _updateProtocolCacheDisabled() {
     await this._client.send('Network.setCacheDisabled', {
       cacheDisabled: this._userCacheDisabled || this._protocolRequestInterceptionEnabled
     });

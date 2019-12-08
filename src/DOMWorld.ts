@@ -100,7 +100,7 @@ export class DOMWorld implements Evalable, JSEvalable {
     return value;
   }
 
-  public async _document(): Promise<ElementHandle> {
+  private async _document(): Promise<ElementHandle> {
     if (this._documentPromise) return this._documentPromise;
     this._documentPromise = this.executionContext().then(async context => {
       const document = await context.evaluateHandle('document');
@@ -336,7 +336,7 @@ export class DOMWorld implements Evalable, JSEvalable {
     return this.evaluate(() => document.title);
   }
 
-  public async _waitForSelectorOrXPath(
+  private async _waitForSelectorOrXPath(
     selectorOrXPath: string,
     isXPath: boolean,
     options: { visible?: boolean; hidden?: boolean; timeout?: number } = {}

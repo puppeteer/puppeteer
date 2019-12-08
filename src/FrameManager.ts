@@ -198,7 +198,7 @@ export class FrameManager extends EventEmitter {
     this.emit(Events.FrameManager.FrameNavigated, frame);
   }
 
-  public async _ensureIsolatedWorld(name: string) {
+  private async _ensureIsolatedWorld(name: string) {
     if (this._isolatedWorlds.has(name)) return;
     this._isolatedWorlds.add(name);
     await this._client.send('Page.addScriptToEvaluateOnNewDocument', {
