@@ -27,22 +27,18 @@ export class Puppeteer {
 
   constructor(private _projectRoot: string, private _preferredRevision: string, private _isPuppeteerCore: boolean) {}
 
-  public launch(options?: LaunchOptions & { product?: string; extraPrefsFirefox?: object }): Promise<Browser> {
+  public launch = (options?: LaunchOptions & { product?: string; extraPrefsFirefox?: object }): Promise<Browser> => {
     if (!this._productName && options) this._productName = options.product;
     return this._launcher.launch(options);
   }
 
-  public connect(options?: ConnectOptions): Promise<Browser> {
-    return this._launcher.connect(options);
-  }
+  public connect = (options?: ConnectOptions): Promise<Browser> => this._launcher.connect(options);
 
   /**
    * @returns A path where Puppeteer expects to find bundled Chromium. Chromium might not exist
    * there if the download was skipped with `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD`.
    */
-  public executablePath(): string {
-    return this._launcher.executablePath();
-  }
+  public executablePath = (): string => this._launcher.executablePath();
 
   /* @internal */
   private get _launcher(): ProductLauncher {
@@ -103,11 +99,8 @@ export class Puppeteer {
   /**
    * The default flags that Chromium will be launched with.
    */
-  public defaultArgs(options?: ChromeArgOptions): string[] {
-    return this._launcher.defaultArgs(options);
-  }
+  public defaultArgs = (options?: ChromeArgOptions): string[] => this._launcher.defaultArgs(options);
 
-  public createBrowserFetcher(options?: BrowserFetcherOptions): BrowserFetcher {
-    return new BrowserFetcher(this._projectRoot, options);
-  }
+  public createBrowserFetcher = (options?: BrowserFetcherOptions): BrowserFetcher =>
+    new BrowserFetcher(this._projectRoot, options);
 }

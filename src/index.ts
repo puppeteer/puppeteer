@@ -37,8 +37,6 @@ export * from './Worker';
 import { join } from 'path';
 import { Puppeteer } from './Puppeteer';
 import * as errors from './Errors';
-import { LaunchOptions, ConnectOptions, ChromeArgOptions } from './types';
-import { BrowserFetcherOptions } from './BrowserFetcher';
 
 export { errors };
 
@@ -49,24 +47,9 @@ const isPuppeteerCore = packageJson.name === 'puppeteer-core';
 
 const puppeteer = new Puppeteer(join(__dirname, '..'), preferredRevision, isPuppeteerCore);
 
-export function launch(options?: LaunchOptions) {
-  return puppeteer.launch(options);
-}
-
-export function connect(options?: ConnectOptions) {
-  return puppeteer.connect(options);
-}
-
-export function executablePath() {
-  return puppeteer.executablePath();
-}
-
+export const launch = puppeteer.launch;
+export const connect = puppeteer.connect;
+export const executablePath = puppeteer.executablePath;
 export const product = puppeteer.product;
-
-export function defaultArgs(options?: ChromeArgOptions): string[] {
-  return puppeteer.defaultArgs(options);
-}
-
-export function createBrowserFetcher(options?: BrowserFetcherOptions) {
-  return puppeteer.createBrowserFetcher(options);
-}
+export const defaultArgs = puppeteer.defaultArgs;
+export const createBrowserFetcher = puppeteer.createBrowserFetcher;
