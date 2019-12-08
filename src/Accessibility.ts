@@ -260,7 +260,7 @@ class AXNode {
   }
 
   serialize(): SerializedAXNode {
-    const properties = new Map<string, any>();
+    const properties = new Map<string, number | string | boolean>();
     for (const property of this.payload.properties || [])
       properties.set(property.name.toLowerCase(), property.value.value);
     if (this.payload.name)
@@ -286,7 +286,7 @@ class AXNode {
     for (const userStringProperty of userStringProperties) {
       if (!properties.has(userStringProperty))
         continue;
-      node[userStringProperty] = properties.get(userStringProperty);
+      node[userStringProperty] = properties.get(userStringProperty) as string;
     }
 
     const booleanProperties = [
@@ -306,7 +306,7 @@ class AXNode {
       // not whether focus is specifically on the root node.
       if (booleanProperty === 'focused' && this._role === 'WebArea')
         continue;
-      const value = properties.get(booleanProperty);
+      const value = properties.get(booleanProperty) as boolean | undefined;
       if (!value)
         continue;
       node[booleanProperty] = value;
@@ -333,7 +333,7 @@ class AXNode {
     for (const numericalProperty of numericalProperties) {
       if (!properties.has(numericalProperty))
         continue;
-      node[numericalProperty] = properties.get(numericalProperty);
+      node[numericalProperty] = properties.get(numericalProperty) as number;
     }
     const tokenProperties = [
       'autocomplete',
@@ -346,7 +346,7 @@ class AXNode {
       const value = properties.get(tokenProperty);
       if (!value || value === 'false')
         continue;
-      node[tokenProperty] = value;
+      node[tokenProperty] = value as string;
     }
     return node;
   }
