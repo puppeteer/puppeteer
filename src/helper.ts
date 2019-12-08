@@ -38,7 +38,7 @@ export class Helper {
   static evaluationString(fun: AnyFunction | string, ...args: any[]): string {
     if (Helper.isString(fun)) {
       assert(args.length === 0, 'Cannot evaluate a string with arguments');
-      return /** @type {string} */ fun;
+      return fun;
     }
     return `(${fun})(${args.map(serializeArgument).join(',')})`;
 

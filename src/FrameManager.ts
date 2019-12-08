@@ -445,12 +445,12 @@ export class Frame implements Evalable, JSEvalable {
     const xPathPattern = '//';
 
     if (helper.isString(selectorOrFunctionOrTimeout)) {
-      const string = /** @type {string} */ selectorOrFunctionOrTimeout;
-      if (string.startsWith(xPathPattern)) return this.waitForXPath(string, options);
-      return this.waitForSelector(string, options);
+      if (selectorOrFunctionOrTimeout.startsWith(xPathPattern))
+        return this.waitForXPath(selectorOrFunctionOrTimeout, options);
+      return this.waitForSelector(selectorOrFunctionOrTimeout, options);
     }
     if (helper.isNumber(selectorOrFunctionOrTimeout))
-      return new Promise(fulfill => setTimeout(fulfill, /** @type {number} */ selectorOrFunctionOrTimeout));
+      return new Promise(fulfill => setTimeout(fulfill, selectorOrFunctionOrTimeout));
     if (typeof selectorOrFunctionOrTimeout === 'function')
       return this.waitForFunction(selectorOrFunctionOrTimeout, options, ...args);
     return Promise.reject(new Error('Unsupported target type: ' + typeof selectorOrFunctionOrTimeout));
