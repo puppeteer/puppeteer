@@ -43,7 +43,7 @@ export class WebSocketTransport implements ConnectionTransport {
       if (this.onclose) this.onclose.call(null);
     });
     // Silently ignore all errors - we don't know what to do with them.
-    this._ws.addEventListener('error', () => {});
+    this._ws.addEventListener('error', () => undefined);
   }
 
   send(message: string) {

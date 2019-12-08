@@ -47,8 +47,9 @@ import { Browser, BrowserContext } from './Browser';
 import { Response } from './NetworkManager';
 import { Protocol } from './protocol';
 
+const noop = () => undefined
 const writeFileAsync = helper.promisify(fs.writeFile);
-
+const { hasOwnProperty } = Object.prototype;
 export class Page extends EventEmitter implements Evalable, JSEvalable {
   static async create(
     client: CDPSession,
@@ -153,7 +154,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     client.on('Page.domContentEventFired', () => this.emit(Events.Page.DOMContentLoaded));
     client.on('Page.loadEventFired', () => this.emit(Events.Page.Load));
     client.on('Runtime.consoleAPICalled', event => this._onConsoleAPI(event));
-    client.on('Runtime.bindingCalled', event => this._onBindingCalled(event));
+    client.on('Runtime.bindingCalled', event => {this._onBindingCalled(event).catch(noop)});
     client.on('Page.javascriptDialogOpening', event => this._onDialog(event));
     client.on('Runtime.exceptionThrown', exception => this._handleException(exception.exceptionDetails));
     client.on('Inspector.targetCrashed', () => this._onTargetCrashed());
@@ -163,7 +164,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     this._target._isClosedPromise.then(() => {
       this.emit(Events.Page.Close);
       this._closed = true;
-    });
+    }, noop);
   }
 
   async _initialize() {
@@ -429,7 +430,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     this.emit(Events.Page.PageError, err);
   };
 
-  async _onConsoleAPI(event: Protocol.Runtime.consoleAPICalledPayload) {
+  _onConsoleAPI(event: Protocol.Runtime.consoleAPICalledPayload) {
     if (event.executionContextId === 0) {
       // DevTools protocol stores the last 1000 console messages. These
       // messages are always reported even for removed execution contexts. In
@@ -484,7 +485,9 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
 
   private _addConsoleMessage = (type: string, args: Array<JSHandle>, stackTrace?: Protocol.Runtime.StackTrace) => {
     if (!this.listenerCount(Events.Page.Console)) {
-      args.forEach(arg => arg.dispose());
+      for (const arg of args) {
+        arg.dispose().catch(noop)
+      }
       return;
     }
     const textTokens: string[] = [];
@@ -672,7 +675,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     await this._client.send('Page.addScriptToEvaluateOnNewDocument', { source });
   }
 
-  async setCacheEnabled(enabled: boolean = true) {
+  async setCacheEnabled(enabled = true) {
     await this._frameManager.networkManager().setCacheEnabled(enabled);
   }
 
@@ -728,7 +731,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     return this._screenshotTaskQueue.postTask(this._screenshotTask.bind(this, screenshotType, options));
   }
 
-  async _screenshotTask(format: 'png' | 'jpeg', options: ScreenshotOptions = {}): Promise<Buffer | String> {
+  async _screenshotTask(format: 'png' | 'jpeg', options: ScreenshotOptions = {}): Promise<Buffer | string> {
     await this._client.send('Target.activateTarget', { targetId: this._target._targetId });
     let clip = options.clip ? processClip(options.clip) : undefined;
 
@@ -981,7 +984,7 @@ function convertPrintParameterToInches(parameter: string | number | undefined): 
     const text = parameter;
     let unit = text.substring(text.length - 2).toLowerCase();
     let valueText = '';
-    if (unitToPixels.hasOwnProperty(unit)) {
+    if (hasOwnProperty.call(unitToPixels, unit)) {
       valueText = text.substring(0, text.length - 2);
     } else {
       // In case of unknown unit try to parse the whole parameter as number of pixels.

@@ -70,7 +70,7 @@ class BrowserRunner {
       this.proc.stdout.pipe(process.stdout);
     }
     this._closed = false;
-    this._processClosing = new Promise((fulfill, _reject) => {
+    this._processClosing = new Promise(fulfill => {
       this.proc!.once('exit', () => {
         this._closed = true;
         // Cleanup as processes exit.
@@ -126,7 +126,7 @@ class BrowserRunner {
       if (this.tempDirectory) {
         rimraf.sync(this.tempDirectory);
       }
-    } catch (error) {}
+    } catch (error) { /* */ }
   }
 
   async setupConnection(options: {
@@ -708,7 +708,7 @@ function waitForWSEndpoint(
 
     function onLine(line: string) {
       stderr += line + '\n';
-      const match = line.match(/^DevTools listening on (ws:\/\/.*)$/);
+      const match = /^DevTools listening on (ws:\/\/.*)$/.exec(line);
       if (!match) return;
       cleanup();
       resolve(match[1]);

@@ -42,7 +42,8 @@ import { BrowserFetcherOptions } from './BrowserFetcher';
 
 export { errors };
 
-const packageJson = require('../package.json');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const packageJson = require('../package.json')
 const preferredRevision = packageJson.puppeteer.chromium_revision;
 const isPuppeteerCore = packageJson.name === 'puppeteer-core';
 

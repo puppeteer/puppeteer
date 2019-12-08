@@ -92,8 +92,8 @@ export class Target {
           new Worker(
             client,
             this._targetInfo.url,
-            () => {} /* consoleAPICalled */,
-            () => {} /* exceptionThrown */
+            () => undefined /* consoleAPICalled */,
+            () => undefined /* exceptionThrown */
           )
       );
     }

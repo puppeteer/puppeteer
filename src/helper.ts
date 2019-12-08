@@ -224,9 +224,8 @@ export class Helper {
     let resultBuffer = null;
     try {
       resultBuffer = Buffer.concat(bufs);
-    } finally {
-      return resultBuffer;
-    }
+    } catch { /* */ }
+    return resultBuffer;
   }
 }
 

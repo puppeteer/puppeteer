@@ -25,6 +25,7 @@ import { JSHandle, ElementHandle } from './JSHandle';
 import { AnyFunction, Evalable, JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
 
 const readFileAsync = helper.promisify(fs.readFile);
+const noop = () => undefined
 
 export class DOMWorld implements Evalable, JSEvalable {
   _documentPromise: Promise<ElementHandle> | null = null;
@@ -46,7 +47,7 @@ export class DOMWorld implements Evalable, JSEvalable {
     if (context) {
       this._contextResolveCallback!.call(null, context);
       this._contextResolveCallback = null;
-      for (const waitTask of this._waitTasks) waitTask.rerun();
+      for (const waitTask of this._waitTasks) waitTask.rerun().catch(noop);
     } else {
       this._documentPromise = null;
       this._contextPromise = new Promise(fulfill => {
@@ -196,7 +197,7 @@ export class DOMWorld implements Evalable, JSEvalable {
       return script;
     }
 
-    function addScriptContent(content: string, type: string = 'text/javascript'): HTMLElement {
+    function addScriptContent(content: string, type = 'text/javascript'): HTMLElement {
       const script = document.createElement('script');
       script.type = type;
       script.text = content;
@@ -434,7 +435,7 @@ class WaitTask {
       const timeoutError = new TimeoutError(`waiting for ${title} failed: timeout ${timeout}ms exceeded`);
       this._timeoutTimer = setTimeout(() => this.terminate(timeoutError), timeout);
     }
-    this.rerun();
+    this.rerun().catch(noop);
   }
 
   terminate(error: Error) {
@@ -445,9 +446,8 @@ class WaitTask {
 
   async rerun() {
     const runCount = ++this._runCount;
-    /** @type {?Puppeteer.JSHandle} */
-    let success = null;
-    let error = null;
+    let success: JSHandle | null = null;
+    let error: Error | null = null;
     try {
       success = await (await this._domWorld.executionContext()).evaluateHandle(
         waitForPredicatePageFunction,
@@ -509,7 +509,7 @@ async function waitForPredicatePageFunction(
   if (typeof polling === 'number') return await pollInterval(polling);
 
   function pollMutation(): Promise<any> {
-    const success = predicate.apply(null, args);
+    const success = predicate(...args);
     if (success) return Promise.resolve(success);
 
     let fulfill: (value?: any) => void;
@@ -520,7 +520,7 @@ async function waitForPredicatePageFunction(
         observer.disconnect();
         fulfill();
       }
-      const success = predicate.apply(null, args);
+      const success = predicate(...args);
       if (success) {
         observer.disconnect();
         fulfill(success);
@@ -545,7 +545,7 @@ async function waitForPredicatePageFunction(
         fulfill();
         return;
       }
-      const success = predicate.apply(null, args);
+      const success = predicate(...args);
       if (success) fulfill(success);
       else requestAnimationFrame(onRaf);
     }
@@ -562,7 +562,7 @@ async function waitForPredicatePageFunction(
         fulfill();
         return;
       }
-      const success = predicate.apply(null, args);
+      const success = predicate(...args);
       if (success) fulfill(success);
       else setTimeout(onTimeout, pollInterval);
     }

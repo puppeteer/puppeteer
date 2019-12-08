@@ -39,7 +39,7 @@ export class Worker extends EventEmitter implements JSEvalable {
     this._url = url;
     this._executionContextPromise = new Promise<ExecutionContext>(x => (this._executionContextCallback = x));
     let jsHandleFactory: (remoteObject: Protocol.Runtime.RemoteObject) => JSHandle;
-    this._client.once('Runtime.executionContextCreated', async event => {
+    this._client.once('Runtime.executionContextCreated', event => {
       jsHandleFactory = remoteObject => new JSHandle(executionContext, client, remoteObject);
       const executionContext = new ExecutionContext(client, event.context, undefined);
       this._executionContextCallback(executionContext);

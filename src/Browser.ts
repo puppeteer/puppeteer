@@ -157,7 +157,7 @@ export class Browser extends EventEmitter {
       url: 'about:blank',
       browserContextId: contextId || undefined
     });
-    const target = await this._targets.get(targetId)!;
+    const target = this._targets.get(targetId)!;
     assert(await target._initializedPromise, 'Failed to create target for page');
     const page = await target.page();
     return page;
@@ -265,7 +265,7 @@ export class BrowserContext extends EventEmitter {
         .filter(target => target.type() === 'page')
         .map(target => target.page())
     );
-    return pages.filter(page => !!page) as Array<Page>;
+    return pages.filter(page => !!page);
   }
 
   isIncognito(): boolean {
