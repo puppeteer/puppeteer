@@ -32,7 +32,10 @@ const readdirAsync = helper.promisify(fs.readdir);
 const mkdirAsync = helper.promisify(fs.mkdir);
 const unlinkAsync = helper.promisify(fs.unlink);
 const chmodAsync = helper.promisify(fs.chmod);
-const existsAsync = helper.promisify(fs.exists);
+
+function existsAsync(p: fs.PathLike): Promise<boolean> {
+  return new Promise<boolean>(res => fs.exists(p, res))
+}
 
 export type Platform = "mac" | "win32" | "win64" | "linux";
 
