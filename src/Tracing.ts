@@ -26,7 +26,7 @@ export class Tracing {
     this._path = '';
   }
 
-  async start(options: { path?: string; screenshots?: boolean; categories?: string[] } = {}): Promise<void> {
+  public async start(options: { path?: string; screenshots?: boolean; categories?: string[] } = {}): Promise<void> {
     assert(!this._recording, 'Cannot start recording trace while already recording trace.');
 
     const defaultCategories = [
@@ -55,7 +55,7 @@ export class Tracing {
     });
   }
 
-  async stop(): Promise<Buffer | null> {
+  public async stop(): Promise<Buffer | null> {
     let fulfill: (value?: Buffer | null) => void;
     let reject: (e?: Error) => void;
     const contentPromise = new Promise<Buffer | null>((res, rej) => {

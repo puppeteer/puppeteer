@@ -23,15 +23,15 @@ import { JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } 
 import { Protocol } from './protocol';
 
 export class Worker extends EventEmitter implements JSEvalable {
-  _client: CDPSession;
-  _url: string;
-  _executionContextPromise: Promise<ExecutionContext>;
-  _executionContextCallback!: (context: ExecutionContext) => void;
+  private _client: CDPSession;
+  private _url: string;
+  private _executionContextPromise: Promise<ExecutionContext>;
+  private _executionContextCallback!: (context: ExecutionContext) => void;
 
   constructor(
     client: CDPSession,
     url: string,
-    consoleAPICalled: (name: string, args: Array<JSHandle>, stack?: Protocol.Runtime.StackTrace) => void,
+    consoleAPICalled: (name: string, args: JSHandle[], stack?: Protocol.Runtime.StackTrace) => void,
     exceptionThrown: (details: Protocol.Runtime.ExceptionDetails) => void
   ) {
     super();
@@ -53,22 +53,22 @@ export class Worker extends EventEmitter implements JSEvalable {
     this._client.on('Runtime.exceptionThrown', exception => exceptionThrown(exception.exceptionDetails));
   }
 
-  url(): string {
+  public url(): string {
     return this._url;
   }
 
-  async executionContext(): Promise<ExecutionContext> {
+  public async executionContext(): Promise<ExecutionContext> {
     return this._executionContextPromise;
   }
 
-  async evaluate<V extends EvaluateFn<any>>(
+  public async evaluate<V extends EvaluateFn<any>>(
     pageFunction: V,
     ...args: SerializableOrJSHandle[]
   ): Promise<EvaluateFnReturnType<V>> {
     return (await this._executionContextPromise).evaluate(pageFunction, ...args);
   }
 
-  async evaluateHandle<V extends EvaluateFn<any>>(
+  public async evaluateHandle<V extends EvaluateFn<any>>(
     pageFunction: V,
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle<EvaluateFnReturnType<V>>> {

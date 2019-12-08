@@ -368,7 +368,7 @@ export type EvaluateFnReturnType<T extends EvaluateFn> = T extends (...args: any
   ? UnwrapPromise<R>
   : unknown;
 
-export type Serializable = number | string | boolean | null | Array<Serializable> | {[key: string]: Serializable};
+export type Serializable = number | string | boolean | null | Serializable[] | {[key: string]: Serializable};
 
 export type SerializableOrJSHandle = Serializable | JSHandle;
 

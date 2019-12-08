@@ -18,12 +18,12 @@ import { helper, debugError } from './helper';
 import { AnyFunction, ConnectionTransport } from './types';
 
 export class PipeTransport implements ConnectionTransport {
-  onmessage?: (message: string) => void;
-  onclose?: () => void;
+  public onmessage?: (message: string) => void;
+  public onclose?: () => void;
 
-  _pipeWrite: NodeJS.WritableStream | null;
-  _pendingMessage = '';
-  _eventListeners: Array<{ emitter: NodeJS.EventEmitter; eventName: string | symbol; handler: AnyFunction }>;
+  private _pipeWrite: NodeJS.WritableStream | null;
+  private _pendingMessage = '';
+  private _eventListeners: Array<{ emitter: NodeJS.EventEmitter; eventName: string | symbol; handler: AnyFunction }>;
 
   constructor(pipeWrite: NodeJS.WritableStream, pipeRead: NodeJS.ReadableStream) {
     this._pipeWrite = pipeWrite;
@@ -37,7 +37,7 @@ export class PipeTransport implements ConnectionTransport {
     ];
   }
 
-  send(message: string) {
+  public send(message: string) {
     if (!this._pipeWrite)
       throw new Error(`Cannot send message. PipeTransport has been closed.`);
 
@@ -45,7 +45,7 @@ export class PipeTransport implements ConnectionTransport {
     this._pipeWrite.write('\0');
   }
 
-  _dispatch(buffer: Buffer) {
+  private _dispatch(buffer: Buffer) {
     let end = buffer.indexOf('\0');
     if (end === -1) {
       this._pendingMessage += buffer.toString();
@@ -64,7 +64,7 @@ export class PipeTransport implements ConnectionTransport {
     this._pendingMessage = buffer.toString(undefined, start);
   }
 
-  close() {
+  public close() {
     this._pipeWrite = null;
     helper.removeEventListeners(this._eventListeners);
   }

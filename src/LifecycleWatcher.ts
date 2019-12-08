@@ -99,44 +99,36 @@ export class LifecycleWatcher {
     this._checkLifecycleComplete();
   }
 
-  _onRequest(request: Request) {
+  private _onRequest(request: Request) {
     if (request.frame() !== this._frame || !request.isNavigationRequest()) return;
     this._navigationRequest = request;
   }
 
-  private _onFrameDetached(frame: Frame) {
-    if (this._frame === frame) {
-      this._terminationCallback.call(null, new Error('Navigating frame was detached'));
-      return;
-    }
-    this._checkLifecycleComplete();
-  }
-
-  navigationResponse(): Response | null {
+  public navigationResponse(): Response | null {
     return this._navigationRequest ? this._navigationRequest.response() : null;
   }
 
-  _terminate(error: Error) {
+  private _terminate(error: Error) {
     this._terminationCallback.call(null, error);
   }
 
-  sameDocumentNavigationPromise(): Promise<Error | null> {
+  public sameDocumentNavigationPromise(): Promise<Error | null> {
     return this._sameDocumentNavigationPromise;
   }
 
-  newDocumentNavigationPromise(): Promise<Error | null> {
+  public newDocumentNavigationPromise(): Promise<Error | null> {
     return this._newDocumentNavigationPromise;
   }
 
-  lifecyclePromise(): Promise<void> {
+  public lifecyclePromise(): Promise<void> {
     return this._lifecyclePromise;
   }
 
-  timeoutOrTerminationPromise(): Promise<Error | null> {
+  public timeoutOrTerminationPromise(): Promise<Error | null> {
     return Promise.race([this._timeoutPromise, this._terminationPromise]);
   }
 
-  _createTimeoutPromise(): Promise<Error | null> {
+  private _createTimeoutPromise(): Promise<Error | null> {
     if (!this._timeout) return new Promise(() => undefined);
     const errorMessage = 'Navigation timeout of ' + this._timeout + ' ms exceeded';
     return new Promise(fulfill => (this._maximumTimer = setTimeout(fulfill, this._timeout))).then(
@@ -144,13 +136,13 @@ export class LifecycleWatcher {
     );
   }
 
-  _navigatedWithinDocument(frame: Frame) {
+  private _navigatedWithinDocument(frame: Frame) {
     if (frame !== this._frame) return;
     this._hasSameDocumentNavigation = true;
     this._checkLifecycleComplete();
   }
 
-  _checkLifecycleComplete() {
+  private _checkLifecycleComplete() {
     // We expect navigation to commit.
     if (!checkLifecycle(this._frame, this._expectedLifecycle)) return;
     this._lifecycleCallback();
@@ -169,9 +161,17 @@ export class LifecycleWatcher {
     }
   }
 
-  dispose() {
+  public dispose() {
     helper.removeEventListeners(this._eventListeners);
     clearTimeout(this._maximumTimer);
+  }
+
+  private _onFrameDetached(frame: Frame) {
+    if (this._frame === frame) {
+      this._terminationCallback.call(null, new Error('Navigating frame was detached'));
+      return;
+    }
+    this._checkLifecycleComplete();
   }
 }
 

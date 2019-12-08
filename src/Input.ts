@@ -28,15 +28,16 @@ export interface KeyDescription {
 }
 
 export class Keyboard {
-  _client: CDPSession;
-  _modifiers = 0;
-  _pressedKeys = new Set<string>();
+  private _client: CDPSession;
+  /* @internal */
+  public _modifiers = 0;
+  private _pressedKeys = new Set<string>();
 
   constructor(client: CDPSession) {
     this._client = client;
   }
 
-  async down(key: string, options: { text?: string } = { text: undefined }) {
+  public async down(key: string, options: { text?: string } = { text: undefined }) {
     const description = this._keyDescriptionForString(key);
 
     const autoRepeat = this._pressedKeys.has(description.code);
@@ -50,12 +51,50 @@ export class Keyboard {
       windowsVirtualKeyCode: description.keyCode,
       code: description.code,
       key: description.key,
-      text: text,
+      text,
       unmodifiedText: text,
       autoRepeat,
       location: description.location,
       isKeypad: description.location === 3
     });
+  }
+
+  public async up(key: string) {
+    const description = this._keyDescriptionForString(key);
+
+    this._modifiers &= ~this._modifierBit(description.key);
+    this._pressedKeys.delete(description.code);
+    await this._client.send('Input.dispatchKeyEvent', {
+      type: 'keyUp',
+      modifiers: this._modifiers,
+      key: description.key,
+      windowsVirtualKeyCode: description.keyCode,
+      code: description.code,
+      location: description.location
+    });
+  }
+
+  public async sendCharacter(char: string) {
+    await this._client.send('Input.insertText', { text: char });
+  }
+
+  public async type(text: string, options?: { delay: number | undefined }) {
+    const delay = (options && options.delay) || undefined;
+    for (const char of text) {
+      if (keyDefinitions[char]) {
+        await this.press(char, { delay });
+      } else {
+        if (delay) await new Promise(f => setTimeout(f, delay));
+        await this.sendCharacter(char);
+      }
+    }
+  }
+
+  public async press(key: string, options: { delay?: number; text?: string } = {}) {
+    const { delay = null } = options;
+    await this.down(key, options);
+    if (delay) await new Promise(f => setTimeout(f, options.delay));
+    await this.up(key);
   }
 
   private _modifierBit(key: string): number {
@@ -99,56 +138,18 @@ export class Keyboard {
 
     return description;
   }
-
-  async up(key: string) {
-    const description = this._keyDescriptionForString(key);
-
-    this._modifiers &= ~this._modifierBit(description.key);
-    this._pressedKeys.delete(description.code);
-    await this._client.send('Input.dispatchKeyEvent', {
-      type: 'keyUp',
-      modifiers: this._modifiers,
-      key: description.key,
-      windowsVirtualKeyCode: description.keyCode,
-      code: description.code,
-      location: description.location
-    });
-  }
-
-  async sendCharacter(char: string) {
-    await this._client.send('Input.insertText', { text: char });
-  }
-
-  async type(text: string, options?: { delay: number | undefined }) {
-    const delay = (options && options.delay) || undefined;
-    for (const char of text) {
-      if (keyDefinitions[char]) {
-        await this.press(char, { delay });
-      } else {
-        if (delay) await new Promise(f => setTimeout(f, delay));
-        await this.sendCharacter(char);
-      }
-    }
-  }
-
-  async press(key: string, options: { delay?: number; text?: string } = {}) {
-    const { delay = null } = options;
-    await this.down(key, options);
-    if (delay) await new Promise(f => setTimeout(f, options.delay));
-    await this.up(key);
-  }
 }
 
 export type MouseButton = Required<Protocol.Input.dispatchMouseEventParameters>['button'];
 
 export class Mouse {
-  _x = 0;
-  _y = 0;
-  _button: MouseButton = 'none';
+  private _x = 0;
+  private _y = 0;
+  private _button: MouseButton = 'none';
 
   constructor(private _client: CDPSession, private _keyboard: Keyboard) {}
 
-  async move(x: number, y: number, options: { steps?: number } = {}) {
+  public async move(x: number, y: number, options: { steps?: number } = {}) {
     const { steps = 1 } = options;
     const fromX = this._x,
       fromY = this._y;
@@ -165,7 +166,7 @@ export class Mouse {
     }
   }
 
-  async click(x: number, y: number, options: { delay?: number; button?: MouseButton; clickCount?: number } = {}) {
+  public async click(x: number, y: number, options: { delay?: number; button?: MouseButton; clickCount?: number } = {}) {
     const { delay = null } = options;
     if (delay !== null) {
       await Promise.all([this.move(x, y), this.down(options)]);
@@ -176,7 +177,7 @@ export class Mouse {
     }
   }
 
-  async down(options: { button?: MouseButton; clickCount?: number } = {}) {
+  public async down(options: { button?: MouseButton; clickCount?: number } = {}) {
     const { button = 'left', clickCount = 1 } = options;
     this._button = button;
     await this._client.send('Input.dispatchMouseEvent', {
@@ -189,7 +190,7 @@ export class Mouse {
     });
   }
 
-  async up(options: { button?: MouseButton; clickCount?: number } = {}) {
+  public async up(options: { button?: MouseButton; clickCount?: number } = {}) {
     const { button = 'left', clickCount = 1 } = options;
     this._button = 'none';
     await this._client.send('Input.dispatchMouseEvent', {
@@ -204,15 +205,15 @@ export class Mouse {
 }
 
 export class Touchscreen {
-  _client: CDPSession;
-  _keyboard: Keyboard;
+  private _client: CDPSession;
+  private _keyboard: Keyboard;
 
   constructor(client: CDPSession, keyboard: Keyboard) {
     this._client = client;
     this._keyboard = keyboard;
   }
 
-  async tap(x: number, y: number) {
+  public async tap(x: number, y: number) {
     // Touches appear to be lost during the first frame after navigation.
     // This waits a frame before sending the tap.
     // @see https://crbug.com/613219

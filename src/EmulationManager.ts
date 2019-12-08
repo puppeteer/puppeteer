@@ -24,7 +24,7 @@ export class EmulationManager {
 
   constructor(private client: CDPSession) {}
 
-  async emulateViewport(viewport: Viewport): Promise<boolean> {
+  public async emulateViewport(viewport: Viewport): Promise<boolean> {
     const mobile = viewport.isMobile || false;
     const width = viewport.width;
     const height = viewport.height;

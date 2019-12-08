@@ -40,15 +40,15 @@ const removeFolderAsync = helper.promisify(rimraf);
 const writeFileAsync = helper.promisify(fs.writeFile);
 
 class BrowserRunner {
-  proc: childProcess.ChildProcess | null = null;
-  connection: Connection | null = null;
+  public proc: childProcess.ChildProcess | null = null;
+  public connection: Connection | null = null;
   private _closed = true;
   private _listeners: Array<{ emitter: NodeJS.EventEmitter; eventName: string | symbol; handler: AnyFunction }> = [];
   private _processClosing?: Promise<void>;
 
   constructor(private executablePath: string, private processArguments: string[], private tempDirectory?: string) {}
 
-  start(options: LaunchOptions = {}) {
+  public start(options: LaunchOptions = {}) {
     const { handleSIGINT, handleSIGTERM, handleSIGHUP, dumpio, env, pipe } = options;
     let stdio: Array<'pipe' | 'ignore'> = ['pipe', 'pipe', 'pipe'];
     if (pipe) {
@@ -96,7 +96,7 @@ class BrowserRunner {
     if (handleSIGHUP) this._listeners.push(helper.addEventListener(process, 'SIGHUP', this.close.bind(this)));
   }
 
-  async close(): Promise<void> {
+  public async close(): Promise<void> {
     if (this._closed) return;
     helper.removeEventListeners(this._listeners);
     if (this.tempDirectory) {
@@ -112,7 +112,7 @@ class BrowserRunner {
   }
 
   // This function has to be sync to be used as 'exit' event handler.
-  kill() {
+  public kill() {
     helper.removeEventListeners(this._listeners);
     if (this.proc && this.proc.pid && !this.proc.killed && !this._closed) {
       try {
@@ -130,7 +130,7 @@ class BrowserRunner {
     } catch (error) { /* */ }
   }
 
-  async setupConnection(options: {
+  public async setupConnection(options: {
     usePipe?: boolean;
     timeout: number;
     slowMo: number;
@@ -153,17 +153,20 @@ class BrowserRunner {
 }
 
 export interface ProductLauncher {
+  product: string;
   launch(options?: LaunchOptions & { product?: string; extraPrefsFirefox?: object }): Promise<Browser>;
   connect(options?: ConnectOptions & { product?: string; extraPrefsFirefox?: object }): Promise<Browser>;
   executablePath(): string;
   defaultArgs(args?: ChromeArgOptions): string[];
-  product: string;
 }
 
 class ChromeLauncher implements ProductLauncher {
-  _projectRoot: string;
-  _preferredRevision: string;
-  _isPuppeteerCore: boolean;
+  /* @internal */
+  public _projectRoot: string;
+  /* @internal */
+  public _preferredRevision: string;
+  /* @internal */
+  public _isPuppeteerCore: boolean;
 
   constructor(projectRoot: string, preferredRevision: string, isPuppeteerCore: boolean) {
     this._projectRoot = projectRoot;
@@ -171,7 +174,7 @@ class ChromeLauncher implements ProductLauncher {
     this._isPuppeteerCore = isPuppeteerCore;
   }
 
-  async launch(options: LaunchOptions = {}): Promise<Browser> {
+  public async launch(options: LaunchOptions = {}): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
@@ -195,7 +198,7 @@ class ChromeLauncher implements ProductLauncher {
       chromeArguments.push(...this.defaultArgs(options).filter(arg => !ignoreDefaultArgs.includes(arg)));
     else chromeArguments.push(...args);
 
-    let temporaryUserDataDir = undefined;
+    let temporaryUserDataDir;
 
     if (!chromeArguments.some(argument => argument.startsWith('--remote-debugging-')))
       chromeArguments.push(pipe ? '--remote-debugging-pipe' : '--remote-debugging-port=0');
@@ -238,7 +241,7 @@ class ChromeLauncher implements ProductLauncher {
     }
   }
 
-  defaultArgs(options: ChromeArgOptions = {}): string[] {
+  public defaultArgs(options: ChromeArgOptions = {}): string[] {
     const chromeArguments = [
       '--disable-background-networking',
       '--enable-features=NetworkService,NetworkServiceInProcess',
@@ -275,7 +278,7 @@ class ChromeLauncher implements ProductLauncher {
     return chromeArguments;
   }
 
-  executablePath(): string {
+  public executablePath(): string {
     return resolveExecutablePath(this).executablePath;
   }
 
@@ -283,7 +286,7 @@ class ChromeLauncher implements ProductLauncher {
     return 'chrome';
   }
 
-  async connect(
+  public async connect(
     options: ConnectOptions & { browserWSEndpoint?: string; browserURL?: string; transport?: ConnectionTransport }
   ): Promise<Browser> {
     const {
@@ -320,9 +323,12 @@ class ChromeLauncher implements ProductLauncher {
 }
 
 class FirefoxLauncher implements ProductLauncher {
-  _projectRoot: string;
-  _preferredRevision: string;
-  _isPuppeteerCore: boolean;
+  /* @internal */
+  public _projectRoot: string;
+  /* @internal */
+  public _preferredRevision: string;
+  /* @internal */
+  public _isPuppeteerCore: boolean;
 
   constructor(projectRoot: string, preferredRevision: string, isPuppeteerCore: boolean) {
     this._projectRoot = projectRoot;
@@ -330,7 +336,7 @@ class FirefoxLauncher implements ProductLauncher {
     this._isPuppeteerCore = isPuppeteerCore;
   }
 
-  async launch(options: LaunchOptions & { extraPrefsFirefox?: object } = {}): Promise<Browser> {
+  public async launch(options: LaunchOptions & { extraPrefsFirefox?: object } = {}): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
@@ -354,7 +360,7 @@ class FirefoxLauncher implements ProductLauncher {
       firefoxArguments.push(...this.defaultArgs(options).filter(arg => !ignoreDefaultArgs.includes(arg)));
     else firefoxArguments.push(...args);
 
-    let temporaryUserDataDir = undefined;
+    let temporaryUserDataDir;
 
     if (!firefoxArguments.includes('-profile') && !firefoxArguments.includes('--profile')) {
       temporaryUserDataDir = await this._createProfile(extraPrefsFirefox);
@@ -395,7 +401,7 @@ class FirefoxLauncher implements ProductLauncher {
     }
   }
 
-  async connect(
+  public async connect(
     options: ConnectOptions & { browserWSEndpoint?: string; browserURL?: string; transport?: ConnectionTransport }
   ): Promise<Browser> {
     const {
@@ -430,7 +436,7 @@ class FirefoxLauncher implements ProductLauncher {
     );
   }
 
-  executablePath(): string {
+  public executablePath(): string {
     const executablePath =
       process.env.PUPPETEER_EXECUTABLE_PATH ||
       process.env.npm_config_puppeteer_executable_path ||
@@ -444,7 +450,7 @@ class FirefoxLauncher implements ProductLauncher {
     return 'firefox';
   }
 
-  defaultArgs(options: ChromeArgOptions = {}): string[] {
+  public defaultArgs(options: ChromeArgOptions = {}): string[] {
     const firefoxArguments = ['--remote-debugging-port=0', '--no-remote', '--foreground'];
     const { devtools = false, headless = !devtools, args = [], userDataDir = null } = options;
     if (userDataDir) {
@@ -458,7 +464,7 @@ class FirefoxLauncher implements ProductLauncher {
     return firefoxArguments;
   }
 
-  async _createProfile(extraPrefs?: object): Promise<string> {
+  public async _createProfile(extraPrefs?: object): Promise<string> {
     const profilePath = await mkdtempAsync(path.join(os.tmpdir(), 'puppeteer_dev_firefox_profile-'));
     const prefsJS: string[] = [];
     const userJS: string[] = [];
@@ -773,7 +779,7 @@ function resolveExecutablePath(
   }
   const browserFetcher = new BrowserFetcher(launcher._projectRoot);
   if (!launcher._isPuppeteerCore) {
-    const revision = process.env['PUPPETEER_CHROMIUM_REVISION'];
+    const revision = process.env.PUPPETEER_CHROMIUM_REVISION;
     if (revision) {
       const revisionInfo = browserFetcher.revisionInfo(revision);
       const missingText = !revisionInfo.local

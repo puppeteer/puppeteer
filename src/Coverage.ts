@@ -38,20 +38,20 @@ export class Coverage {
     this._cssCoverage = new CSSCoverage(client);
   }
 
-  async startJSCoverage(options: { resetOnNavigation?: boolean; reportAnonymousScripts?: boolean }) {
-    return await this._jsCoverage.start(options);
+  public async startJSCoverage(options: { resetOnNavigation?: boolean; reportAnonymousScripts?: boolean }) {
+    return this._jsCoverage.start(options);
   }
 
-  async stopJSCoverage(): Promise<Array<CoverageEntry>> {
-    return await this._jsCoverage.stop();
+  public async stopJSCoverage(): Promise<CoverageEntry[]> {
+    return this._jsCoverage.stop();
   }
 
-  async startCSSCoverage(options?: { resetOnNavigation?: boolean }) {
-    return await this._cssCoverage.start(options);
+  public async startCSSCoverage(options?: { resetOnNavigation?: boolean }) {
+    return this._cssCoverage.start(options);
   }
 
-  async stopCSSCoverage(): Promise<Array<CoverageEntry>> {
-    return await this._cssCoverage.stop();
+  public async stopCSSCoverage(): Promise<CoverageEntry[]> {
+    return this._cssCoverage.stop();
   }
 }
 
@@ -69,7 +69,7 @@ class JSCoverage {
 
   constructor(private client: CDPSession) {}
 
-  async start(options: { resetOnNavigation?: boolean; reportAnonymousScripts?: boolean } = {}) {
+  public async start(options: { resetOnNavigation?: boolean; reportAnonymousScripts?: boolean } = {}) {
     assert(!this._enabled, 'JSCoverage is already enabled');
     const { resetOnNavigation = true, reportAnonymousScripts = false } = options;
     this._resetOnNavigation = resetOnNavigation;
@@ -93,13 +93,7 @@ class JSCoverage {
     ]);
   }
 
-  private _onExecutionContextsCleared() {
-    if (!this._resetOnNavigation) return;
-    this._scriptURLs.clear();
-    this._scriptSources.clear();
-  }
-
-  async _onScriptParsed(event: Protocol.Debugger.scriptParsedPayload) {
+  public async _onScriptParsed(event: Protocol.Debugger.scriptParsedPayload) {
     // Ignore puppeteer-injected scripts
     if (event.url === EVALUATION_SCRIPT_URL) return;
     // Ignore other anonymous scripts unless the reportAnonymousScripts option is true.
@@ -114,7 +108,7 @@ class JSCoverage {
     }
   }
 
-  async stop(): Promise<Array<CoverageEntry>> {
+  public async stop(): Promise<CoverageEntry[]> {
     assert(this._enabled, 'JSCoverage is not enabled');
     this._enabled = false;
     const [profileResponse] = await Promise.all([
@@ -138,6 +132,12 @@ class JSCoverage {
     }
     return coverage;
   }
+
+  private _onExecutionContextsCleared() {
+    if (!this._resetOnNavigation) return;
+    this._scriptURLs.clear();
+    this._scriptSources.clear();
+  }
 }
 
 class CSSCoverage {
@@ -153,7 +153,7 @@ class CSSCoverage {
 
   constructor(private client: CDPSession) {}
 
-  async start(options: { resetOnNavigation?: boolean } = {}) {
+  public async start(options: { resetOnNavigation?: boolean } = {}) {
     assert(!this._enabled, 'CSSCoverage is already enabled');
     const { resetOnNavigation = true } = options;
     this._resetOnNavigation = resetOnNavigation;
@@ -175,27 +175,7 @@ class CSSCoverage {
     ]);
   }
 
-  private _onExecutionContextsCleared() {
-    if (!this._resetOnNavigation) return;
-    this._stylesheetURLs.clear();
-    this._stylesheetSources.clear();
-  }
-
-  private async _onStyleSheet(event: Protocol.CSS.styleSheetAddedPayload) {
-    const header = event.header;
-    // Ignore anonymous scripts
-    if (!header.sourceURL) return;
-    try {
-      const response = await this.client.send('CSS.getStyleSheetText', { styleSheetId: header.styleSheetId });
-      this._stylesheetURLs.set(header.styleSheetId, header.sourceURL);
-      this._stylesheetSources.set(header.styleSheetId, response.text);
-    } catch (e) {
-      // This might happen if the page has already navigated away.
-      debugError(e);
-    }
-  }
-
-  async stop(): Promise<Array<CoverageEntry>> {
+  public async stop(): Promise<CoverageEntry[]> {
     assert(this._enabled, 'CSSCoverage is not enabled');
     this._enabled = false;
     const ruleTrackingResponse = await this.client.send('CSS.stopRuleUsageTracking');
@@ -217,7 +197,7 @@ class CSSCoverage {
       });
     }
 
-    const coverage: Array<CoverageEntry> = [];
+    const coverage: CoverageEntry[] = [];
     for (const styleSheetId of this._stylesheetURLs.keys()) {
       const url = this._stylesheetURLs.get(styleSheetId)!;
       const text = this._stylesheetSources.get(styleSheetId)!;
@@ -226,6 +206,26 @@ class CSSCoverage {
     }
 
     return coverage;
+  }
+
+  private _onExecutionContextsCleared() {
+    if (!this._resetOnNavigation) return;
+    this._stylesheetURLs.clear();
+    this._stylesheetSources.clear();
+  }
+
+  private async _onStyleSheet(event: Protocol.CSS.styleSheetAddedPayload) {
+    const header = event.header;
+    // Ignore anonymous scripts
+    if (!header.sourceURL) return;
+    try {
+      const response = await this.client.send('CSS.getStyleSheetText', { styleSheetId: header.styleSheetId });
+      this._stylesheetURLs.set(header.styleSheetId, header.sourceURL);
+      this._stylesheetSources.set(header.styleSheetId, response.text);
+    } catch (e) {
+      // This might happen if the page has already navigated away.
+      debugError(e);
+    }
   }
 }
 

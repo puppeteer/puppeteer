@@ -28,17 +28,18 @@ const noop = () => undefined;
 const readFileAsync = helper.promisify(fs.readFile);
 
 export class DOMWorld implements Evalable, JSEvalable {
-  _documentPromise: Promise<ElementHandle> | null = null;
-  _contextPromise!: Promise<ExecutionContext>;
-  _contextResolveCallback: ((context: ExecutionContext) => void) | null = null;
-  _waitTasks = new Set<WaitTask>();
-  _detached = false;
+  private _documentPromise: Promise<ElementHandle> | null = null;
+  private _contextPromise!: Promise<ExecutionContext>;
+  private _contextResolveCallback: ((context: ExecutionContext) => void) | null = null;
+  /* @internal */
+  public _waitTasks = new Set<WaitTask>();
+  private _detached = false;
 
   constructor(private frameManager: FrameManager, private _frame: Frame, private timeoutSettings: TimeoutSettings) {
     this._setContext(null);
   }
 
-  frame(): Frame {
+  public frame(): Frame {
     return this._frame;
   }
 
@@ -68,7 +69,7 @@ export class DOMWorld implements Evalable, JSEvalable {
       waitTask.terminate(new Error('waitForFunction failed: frame got detached.'));
   }
 
-  executionContext(): Promise<ExecutionContext> {
+  public executionContext(): Promise<ExecutionContext> {
     if (this._detached) {
       throw new Error(
           `Execution Context is not available in detached frame "${this._frame.url()}" (are you trying to evaluate?)`
@@ -77,7 +78,7 @@ export class DOMWorld implements Evalable, JSEvalable {
     return this._contextPromise;
   }
 
-  async evaluateHandle<V extends EvaluateFn<any>>(
+  public async evaluateHandle<V extends EvaluateFn<any>>(
     pageFunction: V,
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle<EvaluateFnReturnType<V>>> {
@@ -85,7 +86,7 @@ export class DOMWorld implements Evalable, JSEvalable {
     return context.evaluateHandle(pageFunction, ...args);
   }
 
-  async evaluate<V extends EvaluateFn<any>>(
+  public async evaluate<V extends EvaluateFn<any>>(
     pageFunction: V,
     ...args: SerializableOrJSHandle[]
   ): Promise<EvaluateFnReturnType<V>> {
@@ -93,13 +94,13 @@ export class DOMWorld implements Evalable, JSEvalable {
     return context.evaluate(pageFunction, ...args);
   }
 
-  async $(selector: string): Promise<ElementHandle | null> {
+  public async $(selector: string): Promise<ElementHandle | null> {
     const document = await this._document();
     const value = await document.$(selector);
     return value;
   }
 
-  async _document(): Promise<ElementHandle> {
+  public async _document(): Promise<ElementHandle> {
     if (this._documentPromise) return this._documentPromise;
     this._documentPromise = this.executionContext().then(async context => {
       const document = await context.evaluateHandle('document');
@@ -108,31 +109,31 @@ export class DOMWorld implements Evalable, JSEvalable {
     return this._documentPromise;
   }
 
-  async $x(expression: string): Promise<Array<ElementHandle>> {
+  public async $x(expression: string): Promise<ElementHandle[]> {
     const document = await this._document();
     const value = await document.$x(expression);
     return value;
   }
 
-  $eval: Evalable['$eval'] = async(...args: Parameters<Evalable['$eval']>) => {
+  public $eval: Evalable['$eval'] = async(...args: Parameters<Evalable['$eval']>) => {
     const document = await this._document();
     return document.$eval(...args);
   };
 
-  $$eval: Evalable['$$eval'] = async(...args: Parameters<Evalable['$$eval']>) => {
+  public $$eval: Evalable['$$eval'] = async(...args: Parameters<Evalable['$$eval']>) => {
     const document = await this._document();
     const value = await document.$$eval(...args);
     return value;
   };
 
-  async $$(selector: string): Promise<Array<ElementHandle>> {
+  public async $$(selector: string): Promise<ElementHandle[]> {
     const document = await this._document();
     const value = await document.$$(selector);
     return value;
   }
 
-  async content(): Promise<string> {
-    return await this.evaluate(() => {
+  public async content(): Promise<string> {
+    return this.evaluate(() => {
       let retVal = '';
       if (document.doctype) retVal = new XMLSerializer().serializeToString(document.doctype);
       if (document.documentElement) retVal += document.documentElement.outerHTML;
@@ -140,7 +141,7 @@ export class DOMWorld implements Evalable, JSEvalable {
     });
   }
 
-  async setContent(html: string, options: { timeout?: number; waitUntil?: string | string[] } = {}) {
+  public async setContent(html: string, options: { timeout?: number; waitUntil?: string | string[] } = {}) {
     const { waitUntil = ['load'], timeout = this.timeoutSettings.navigationTimeout() } = options;
     // We rely upon the fact that document.open() will reset frame lifecycle with "init"
     // lifecycle event. @see https://crrev.com/608658
@@ -155,7 +156,7 @@ export class DOMWorld implements Evalable, JSEvalable {
     if (error) throw error;
   }
 
-  async addScriptTag(options: {
+  public async addScriptTag(options: {
     url?: string;
     path?: string;
     content?: string;
@@ -210,7 +211,7 @@ export class DOMWorld implements Evalable, JSEvalable {
     }
   }
 
-  async addStyleTag(options: { url?: string; path?: string; content?: string }): Promise<ElementHandle> {
+  public async addStyleTag(options: { url?: string; path?: string; content?: string }): Promise<ElementHandle> {
     const { url = null, path = null, content = null } = options;
     if (url !== null) {
       try {
@@ -262,7 +263,7 @@ export class DOMWorld implements Evalable, JSEvalable {
     }
   }
 
-  async click(
+  public async click(
     selector: string,
     options?: { delay?: number; button?: 'left' | 'right' | 'middle'; clickCount?: number }
   ) {
@@ -272,21 +273,21 @@ export class DOMWorld implements Evalable, JSEvalable {
     await handle.dispose();
   }
 
-  async focus(selector: string) {
+  public async focus(selector: string) {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
     await handle.focus();
     await handle.dispose();
   }
 
-  async hover(selector: string) {
+  public async hover(selector: string) {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
     await handle.hover();
     await handle.dispose();
   }
 
-  async select(selector: string, ...values: string[]): Promise<string[]> {
+  public async select(selector: string, ...values: string[]): Promise<string[]> {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
     const result = await handle.select(...values);
@@ -294,35 +295,35 @@ export class DOMWorld implements Evalable, JSEvalable {
     return result;
   }
 
-  async tap(selector: string) {
+  public async tap(selector: string) {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
     await handle.tap();
     await handle.dispose();
   }
 
-  async type(selector: string, text: string, options?: { delay: number | undefined }) {
+  public async type(selector: string, text: string, options?: { delay: number | undefined }) {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
     await handle.type(text, options);
     await handle.dispose();
   }
 
-  waitForSelector(
+  public waitForSelector(
     selector: string,
     options?: { visible?: boolean; hidden?: boolean; timeout?: number }
   ): Promise<ElementHandle | null> {
     return this._waitForSelectorOrXPath(selector, false, options);
   }
 
-  waitForXPath(
+  public waitForXPath(
     xpath: string,
     options?: { visible?: boolean; hidden?: boolean; timeout?: number }
   ): Promise<ElementHandle | null> {
     return this._waitForSelectorOrXPath(xpath, true, options);
   }
 
-  waitForFunction(
+  public waitForFunction(
     pageFunction: AnyFunction | string,
     options: { polling?: string | number; timeout?: number } = {},
     ...args: any[]
@@ -331,11 +332,11 @@ export class DOMWorld implements Evalable, JSEvalable {
     return new WaitTask(this, pageFunction, 'function', polling, timeout, ...args).promise;
   }
 
-  async title(): Promise<string> {
+  public async title(): Promise<string> {
     return this.evaluate(() => document.title);
   }
 
-  async _waitForSelectorOrXPath(
+  public async _waitForSelectorOrXPath(
     selectorOrXPath: string,
     isXPath: boolean,
     options: { visible?: boolean; hidden?: boolean; timeout?: number } = {}
@@ -392,17 +393,17 @@ export class DOMWorld implements Evalable, JSEvalable {
 }
 
 class WaitTask {
-  _domWorld: DOMWorld;
-  _polling: string | number;
-  _timeout: number;
-  _args: any[];
-  _runCount: number;
-  _predicateBody: string;
-  _timeoutTimer?: ReturnType<typeof setTimeout>;
-  promise: Promise<JSHandle>;
-  _resolve!: (handle: JSHandle) => void;
-  _reject!: (e: Error) => void;
-  _terminated?: boolean;
+  private _domWorld: DOMWorld;
+  private _polling: string | number;
+  private _timeout: number;
+  private _args: any[];
+  private _runCount: number;
+  private _predicateBody: string;
+  private _timeoutTimer?: ReturnType<typeof setTimeout>;
+  public promise: Promise<JSHandle>;
+  private _resolve!: (handle: JSHandle) => void;
+  private _reject!: (e: Error) => void;
+  private _terminated?: boolean;
 
   constructor(
     domWorld: DOMWorld,
@@ -439,13 +440,13 @@ class WaitTask {
     this.rerun().catch(noop);
   }
 
-  terminate(error: Error) {
+  public terminate(error: Error) {
     this._terminated = true;
     this._reject(error);
     this._cleanup();
   }
 
-  async rerun() {
+  public async rerun() {
     const runCount = ++this._runCount;
     let success: JSHandle | null = null;
     let error: Error | null = null;
@@ -488,7 +489,7 @@ class WaitTask {
     this._cleanup();
   }
 
-  _cleanup() {
+  private _cleanup() {
     if (this._timeoutTimer !== undefined)
       clearTimeout(this._timeoutTimer);
 
@@ -505,9 +506,9 @@ async function waitForPredicatePageFunction(
   const predicate = new Function('...args', predicateBody);
   let timedOut = false;
   if (timeout) setTimeout(() => (timedOut = true), timeout);
-  if (polling === 'raf') return await pollRaf();
-  if (polling === 'mutation') return await pollMutation();
-  if (typeof polling === 'number') return await pollInterval(polling);
+  if (polling === 'raf') return pollRaf();
+  if (polling === 'mutation') return pollMutation();
+  if (typeof polling === 'number') return pollInterval(polling);
 
   function pollMutation(): Promise<any> {
     const success = predicate(...args);

@@ -24,8 +24,12 @@ import { Protocol } from './protocol';
 const debugProtocol = debug('puppeteer:protocol');
 
 export class Connection extends EventEmitter {
-  private _lastId = 0;
+
+  public static fromSession(session: CDPSession): Connection {
+    return session._connection!;
+  }
   public closed = false;
+  private _lastId = 0;
   private _callbacks = new Map<number, { resolve: AnyFunction; reject: AnyFunction; error: Error; method: string }>();
   private _sessions = new Map<string, CDPSession>();
 
@@ -36,24 +40,20 @@ export class Connection extends EventEmitter {
     _transport.onclose = this._onClose;
   }
 
-  static fromSession(session: CDPSession): Connection {
-    return session._connection!;
-  }
-
-  session(sessionId: string): CDPSession | null {
+  public session(sessionId: string): CDPSession | null {
     return this._sessions.get(sessionId) || null;
   }
 
-  url(): string {
+  public url(): string {
     return this._url;
   }
 
-  on(event: string | symbol, listener: AnyFunction): this;
-  on<T extends keyof Protocol.Events>(event: T, listener: (arg: Protocol.Events[T]) => void): this {
+  public on(event: string | symbol, listener: AnyFunction): this;
+  public on<T extends keyof Protocol.Events>(event: T, listener: (arg: Protocol.Events[T]) => void): this {
     return super.on(event, listener);
   }
 
-  send<T extends keyof Protocol.CommandParameters>(
+  public send<T extends keyof Protocol.CommandParameters>(
     method: T,
     parameters?: Protocol.CommandParameters[T]
   ): Promise<Protocol.CommandReturnValues[T]> {
@@ -63,12 +63,23 @@ export class Connection extends EventEmitter {
     });
   }
 
-  _rawSend(message: any): number {
+  /* @internal */
+  public _rawSend(message: any): number {
     const id = ++this._lastId;
     message = JSON.stringify(Object.assign({}, message, { id }));
     debugProtocol('SEND ► ' + message);
     this._transport.send(message);
     return id;
+  }
+
+  public dispose() {
+    this._onClose();
+    this._transport.close();
+  }
+
+  public async createSession(targetInfo: Protocol.Target.TargetInfo): Promise<CDPSession> {
+    const { sessionId } = await this.send('Target.attachToTarget', { targetId: targetInfo.targetId, flatten: true });
+    return this._sessions.get(sessionId)!;
   }
 
   private _onMessage = async(message: string) => {
@@ -114,32 +125,23 @@ export class Connection extends EventEmitter {
     this._sessions.clear();
     this.emit(Events.Connection.Disconnected);
   };
-
-  dispose() {
-    this._onClose();
-    this._transport.close();
-  }
-
-  async createSession(targetInfo: Protocol.Target.TargetInfo): Promise<CDPSession> {
-    const { sessionId } = await this.send('Target.attachToTarget', { targetId: targetInfo.targetId, flatten: true });
-    return this._sessions.get(sessionId)!;
-  }
 }
 
 export class CDPSession extends EventEmitter {
-  _callbacks = new Map<number, { resolve: AnyFunction; reject: AnyFunction; error: Error; method: string }>();
-  _connection: Connection | null;
+  private _callbacks = new Map<number, { resolve: AnyFunction; reject: AnyFunction; error: Error; method: string }>();
+  /* @internal */
+  public _connection: Connection | null;
 
   constructor(connection: Connection, private _targetType: string, private _sessionId: string) {
     super();
     this._connection = connection;
   }
 
-  on<T extends keyof Protocol.Events>(event: T, listener: (arg: Protocol.Events[T]) => void): this {
+  public on<T extends keyof Protocol.Events>(event: T, listener: (arg: Protocol.Events[T]) => void): this {
     return super.on(event, listener);
   }
 
-  send<T extends keyof Protocol.CommandParameters>(
+  public send<T extends keyof Protocol.CommandParameters>(
     method: T,
     parameters?: Protocol.CommandParameters[T]
   ): Promise<Protocol.CommandReturnValues[T]> {
@@ -154,7 +156,8 @@ export class CDPSession extends EventEmitter {
     });
   }
 
-  _onMessage(object: {
+  /* @internal */
+  public _onMessage(object: {
     id?: number;
     method: string;
     params: object;
@@ -172,13 +175,14 @@ export class CDPSession extends EventEmitter {
     }
   }
 
-  async detach() {
+  public async detach() {
     if (!this._connection)
       throw new Error(`Session already detached. Most likely the ${this._targetType} has been closed.`);
     await this._connection.send('Target.detachFromTarget', { sessionId: this._sessionId });
   }
 
-  _onClosed() {
+  /* @internal */
+  public _onClosed() {
     for (const callback of this._callbacks.values())
       callback.reject(rewriteError(callback.error, `Protocol error (${callback.method}): Target closed.`));
     this._callbacks.clear();

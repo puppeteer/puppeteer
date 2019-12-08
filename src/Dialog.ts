@@ -18,7 +18,7 @@ import { assert } from './helper';
 import { CDPSession } from './Connection';
 
 export class Dialog {
-  static Type = {
+  public static Type = {
     Alert: 'alert',
     BeforeUnload: 'beforeunload',
     Confirm: 'confirm',
@@ -34,28 +34,28 @@ export class Dialog {
     private _defaultValue = ''
   ) {}
 
-  type(): string {
+  public type(): string {
     return this._type;
   }
 
-  message(): string {
+  public message(): string {
     return this._message;
   }
 
-  defaultValue(): string {
+  public defaultValue(): string {
     return this._defaultValue;
   }
 
-  async accept(promptText?: string) {
+  public async accept(promptText?: string) {
     assert(!this._handled, 'Cannot accept dialog which is already handled!');
     this._handled = true;
     await this.client.send('Page.handleJavaScriptDialog', {
       accept: true,
-      promptText: promptText
+      promptText
     });
   }
 
-  async dismiss() {
+  public async dismiss() {
     assert(!this._handled, 'Cannot dismiss dialog which is already handled!');
     this._handled = true;
     await this.client.send('Page.handleJavaScriptDialog', {

@@ -28,7 +28,7 @@ import { Protocol } from './protocol';
 const noop = () => undefined;
 
 export class Browser extends EventEmitter {
-  static async create(
+  public static async create(
     connection: Connection,
     contextIds: string[],
     ignoreHTTPSErrors: boolean,
@@ -40,6 +40,8 @@ export class Browser extends EventEmitter {
     await connection.send('Target.setDiscoverTargets', { discover: true });
     return browser;
   }
+  /* @internal */
+  public _targets = new Map<string, Target>();
 
   /* @internal */
   private _screenshotTaskQueue = new TaskQueue();
@@ -47,8 +49,6 @@ export class Browser extends EventEmitter {
   private _defaultContext: BrowserContext;
   /* @internal */
   private _contexts = new Map<string, BrowserContext>();
-  /* @internal */
-  public _targets = new Map<string, Target>();
 
   constructor(
     private connection: Connection,
@@ -69,22 +69,22 @@ export class Browser extends EventEmitter {
     this.connection.on('Target.targetInfoChanged', this._targetInfoChanged);
   }
 
-  process(): ChildProcess | undefined | null {
+  public process(): ChildProcess | undefined | null {
     return this._process;
   }
 
-  async createIncognitoBrowserContext(): Promise<BrowserContext> {
+  public async createIncognitoBrowserContext(): Promise<BrowserContext> {
     const { browserContextId } = await this.connection.send('Target.createBrowserContext');
     const context = new BrowserContext(this.connection, this, browserContextId);
     this._contexts.set(browserContextId, context);
     return context;
   }
 
-  browserContexts(): Array<BrowserContext> {
+  public browserContexts(): BrowserContext[] {
     return [this._defaultContext, ...Array.from(this._contexts.values())];
   }
 
-  defaultBrowserContext(): BrowserContext {
+  public defaultBrowserContext(): BrowserContext {
     return this._defaultContext;
   }
 
@@ -92,6 +92,84 @@ export class Browser extends EventEmitter {
   public async _disposeContext(contextId: string) {
     await this.connection.send('Target.disposeBrowserContext', { browserContextId: contextId });
     this._contexts.delete(contextId);
+  }
+
+  public wsEndpoint(): string {
+    return this.connection.url();
+  }
+
+  public async newPage(): Promise<Page> {
+    return this._defaultContext.newPage();
+  }
+
+  /* @internal */
+  public async _createPageInContext(contextId?: string): Promise<Page> {
+    const { targetId } = await this.connection.send('Target.createTarget', {
+      url: 'about:blank',
+      browserContextId: contextId || undefined
+    });
+    const target = this._targets.get(targetId)!;
+    assert(await target._initializedPromise, 'Failed to create target for page');
+    const page = await target.page();
+    return page;
+  }
+
+  public targets(): Target[] {
+    return Array.from(this._targets.values()).filter(target => target._isInitialized);
+  }
+
+  public target(): Target | undefined {
+    return this.targets().find(target => target.type() === 'browser');
+  }
+
+  public async waitForTarget(predicate: (target: Target) => boolean, options: { timeout?: number } = {}): Promise<Target> {
+    const { timeout = 30000 } = options;
+    const existingTarget = this.targets().find(predicate);
+    if (existingTarget) return existingTarget;
+    let resolve: (target: Target) => void;
+    const targetPromise = new Promise<Target>(x => (resolve = x));
+    this.on(Events.Browser.TargetCreated, check);
+    this.on(Events.Browser.TargetChanged, check);
+    try {
+      if (!timeout) return await targetPromise;
+      return await helper.waitWithTimeout(targetPromise, 'target', timeout);
+    } finally {
+      this.removeListener(Events.Browser.TargetCreated, check);
+      this.removeListener(Events.Browser.TargetChanged, check);
+    }
+
+    function check(target: Target) {
+      if (predicate(target)) resolve(target);
+    }
+  }
+
+  public async pages(): Promise<Page[]> {
+    const contextPages = await Promise.all(this.browserContexts().map(context => context.pages()));
+    // Flatten array.
+    return contextPages.reduce((acc, x) => acc.concat(x), []);
+  }
+
+  public async version(): Promise<string> {
+    const version = await this._getVersion();
+    return version.product;
+  }
+
+  public async userAgent(): Promise<string> {
+    const version = await this._getVersion();
+    return version.userAgent;
+  }
+
+  public async close() {
+    await this.closeCallback.call(null);
+    this.disconnect();
+  }
+
+  public disconnect() {
+    this.connection.dispose();
+  }
+
+  public isConnected(): boolean {
+    return !this.connection.closed;
   }
 
   /* @internal */
@@ -143,84 +221,6 @@ export class Browser extends EventEmitter {
     }
   };
 
-  wsEndpoint(): string {
-    return this.connection.url();
-  }
-
-  async newPage(): Promise<Page> {
-    return this._defaultContext.newPage();
-  }
-
-  /* @internal */
-  public async _createPageInContext(contextId?: string): Promise<Page> {
-    const { targetId } = await this.connection.send('Target.createTarget', {
-      url: 'about:blank',
-      browserContextId: contextId || undefined
-    });
-    const target = this._targets.get(targetId)!;
-    assert(await target._initializedPromise, 'Failed to create target for page');
-    const page = await target.page();
-    return page;
-  }
-
-  targets(): Array<Target> {
-    return Array.from(this._targets.values()).filter(target => target._isInitialized);
-  }
-
-  target(): Target | undefined {
-    return this.targets().find(target => target.type() === 'browser');
-  }
-
-  async waitForTarget(predicate: (target: Target) => boolean, options: { timeout?: number } = {}): Promise<Target> {
-    const { timeout = 30000 } = options;
-    const existingTarget = this.targets().find(predicate);
-    if (existingTarget) return existingTarget;
-    let resolve: (target: Target) => void;
-    const targetPromise = new Promise<Target>(x => (resolve = x));
-    this.on(Events.Browser.TargetCreated, check);
-    this.on(Events.Browser.TargetChanged, check);
-    try {
-      if (!timeout) return await targetPromise;
-      return await helper.waitWithTimeout(targetPromise, 'target', timeout);
-    } finally {
-      this.removeListener(Events.Browser.TargetCreated, check);
-      this.removeListener(Events.Browser.TargetChanged, check);
-    }
-
-    function check(target: Target) {
-      if (predicate(target)) resolve(target);
-    }
-  }
-
-  async pages(): Promise<Array<Page>> {
-    const contextPages = await Promise.all(this.browserContexts().map(context => context.pages()));
-    // Flatten array.
-    return contextPages.reduce((acc, x) => acc.concat(x), []);
-  }
-
-  async version(): Promise<string> {
-    const version = await this._getVersion();
-    return version.product;
-  }
-
-  async userAgent(): Promise<string> {
-    const version = await this._getVersion();
-    return version.userAgent;
-  }
-
-  async close() {
-    await this.closeCallback.call(null);
-    this.disconnect();
-  }
-
-  disconnect() {
-    this.connection.dispose();
-  }
-
-  isConnected(): boolean {
-    return !this.connection.closed;
-  }
-
   private _getVersion(): Promise<any> {
     return this.connection.send('Browser.getVersion');
   }
@@ -251,15 +251,15 @@ export class BrowserContext extends EventEmitter {
     super();
   }
 
-  targets(): Array<Target> {
+  public targets(): Target[] {
     return this._browser.targets().filter(target => target.browserContext() === this);
   }
 
-  waitForTarget(predicate: (target: Target) => boolean, options?: { timeout?: number }): Promise<Target> {
+  public waitForTarget(predicate: (target: Target) => boolean, options?: { timeout?: number }): Promise<Target> {
     return this._browser.waitForTarget(target => target.browserContext() === this && predicate(target), options);
   }
 
-  async pages(): Promise<Array<Page>> {
+  public async pages(): Promise<Page[]> {
     const pages = await Promise.all(
         this.targets()
             .filter(target => target.type() === 'page')
@@ -268,11 +268,11 @@ export class BrowserContext extends EventEmitter {
     return pages.filter(page => !!page);
   }
 
-  isIncognito(): boolean {
+  public isIncognito(): boolean {
     return !!this.id;
   }
 
-  async overridePermissions(origin: string, permissions: string[]) {
+  public async overridePermissions(origin: string, permissions: string[]) {
     const protocolPermissions = permissions.map(permission => {
       const protocolPermission = webPermissionToProtocol.get(permission);
       if (!protocolPermission) throw new Error('Unknown permission: ' + permission);
@@ -285,19 +285,19 @@ export class BrowserContext extends EventEmitter {
     });
   }
 
-  async clearPermissionOverrides() {
+  public async clearPermissionOverrides() {
     await this.connection.send('Browser.resetPermissions', { browserContextId: this.id || undefined });
   }
 
-  newPage(): Promise<Page> {
+  public newPage(): Promise<Page> {
     return this._browser._createPageInContext(this.id);
   }
 
-  browser(): Browser {
+  public browser(): Browser {
     return this._browser;
   }
 
-  async close(): Promise<void> {
+  public async close(): Promise<void> {
     assert(this.id, 'Non-incognito profiles cannot be closed!');
     await this._browser._disposeContext(this.id);
   }

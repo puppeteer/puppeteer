@@ -50,7 +50,7 @@ export interface SerializedAXNode {
 export class Accessibility {
   constructor(private _client: CDPSession) {}
 
-  async snapshot(options: { interestingOnly?: boolean; root?: ElementHandle } = {}): Promise<SerializedAXNode | null> {
+  public async snapshot(options: { interestingOnly?: boolean; root?: ElementHandle } = {}): Promise<SerializedAXNode | null> {
     const { interestingOnly = true, root = null } = options;
     const { nodes } = await this._client.send('Accessibility.getFullAXTree');
     let backendNodeId: number | null = null;
@@ -80,8 +80,8 @@ function collectInterestingNodes(collection: Set<AXNode>, node: AXNode, insideCo
   for (const child of node._children) collectInterestingNodes(collection, child, insideControl);
 }
 
-function serializeTree(node: AXNode, whitelistedNodes?: Set<AXNode>): Array<SerializedAXNode> {
-  const children: Array<SerializedAXNode> = [];
+function serializeTree(node: AXNode, whitelistedNodes?: Set<AXNode>): SerializedAXNode[] {
+  const children: SerializedAXNode[] = [];
   for (const child of node._children) children.push(...serializeTree(child, whitelistedNodes));
 
   if (whitelistedNodes && !whitelistedNodes.has(node)) return children;
@@ -92,14 +92,22 @@ function serializeTree(node: AXNode, whitelistedNodes?: Set<AXNode>): Array<Seri
 }
 
 class AXNode {
+  public static createTree(payloads: Protocol.Accessibility.AXNode[]): AXNode {
+    const nodeById = new Map<string, AXNode>();
+    for (const payload of payloads) nodeById.set(payload.nodeId, new AXNode(payload));
+    for (const node of nodeById.values())
+      for (const childId of node.payload.childIds || []) node._children.push(nodeById.get(childId)!);
+
+    return nodeById.values().next().value;
+  }
+
+  /* @internal */
+  public _children: AXNode[] = [];
   private _richlyEditable = false;
   private _editable = false;
   private _focusable = false;
   // private _expanded = false;
   private _hidden = false;
-
-  /* @internal */
-  public _children: Array<AXNode> = [];
   private _name: string;
   private _role: string;
   private _cachedHasFocusableChild?: boolean;
@@ -120,31 +128,7 @@ class AXNode {
     }
   }
 
-  private _isPlainTextField(): boolean {
-    if (this._richlyEditable) return false;
-    if (this._editable) return true;
-    return this._role === 'textbox' || this._role === 'ComboBox' || this._role === 'searchbox';
-  }
-
-  private _isTextOnlyObject(): boolean {
-    const role = this._role;
-    return role === 'LineBreak' || role === 'text' || role === 'InlineTextBox';
-  }
-
-  private _hasFocusableChild(): boolean {
-    if (this._cachedHasFocusableChild === undefined) {
-      this._cachedHasFocusableChild = false;
-      for (const child of this._children) {
-        if (child._focusable || child._hasFocusableChild()) {
-          this._cachedHasFocusableChild = true;
-          break;
-        }
-      }
-    }
-    return this._cachedHasFocusableChild;
-  }
-
-  find(predicate: (node: AXNode) => boolean): AXNode | null {
+  public find(predicate: (node: AXNode) => boolean): AXNode | null {
     if (predicate(this)) return this;
     for (const child of this._children) {
       const result = child.find(predicate);
@@ -153,7 +137,7 @@ class AXNode {
     return null;
   }
 
-  isLeafNode(): boolean {
+  public isLeafNode(): boolean {
     if (!this._children.length) return true;
 
     // These types of objects may have children that we use as internal
@@ -187,7 +171,7 @@ class AXNode {
     return false;
   }
 
-  isControl(): boolean {
+  public isControl(): boolean {
     switch (this._role) {
       case 'button':
       case 'checkbox':
@@ -215,7 +199,7 @@ class AXNode {
     }
   }
 
-  isInteresting(insideControl: boolean): boolean {
+  public isInteresting(insideControl: boolean): boolean {
     const role = this._role;
     if (role === 'Ignored' || this._hidden) return false;
 
@@ -230,7 +214,7 @@ class AXNode {
     return this.isLeafNode() && !!this._name;
   }
 
-  serialize(): SerializedAXNode {
+  public serialize(): SerializedAXNode {
     const properties = new Map<string, number | string | boolean>();
     for (const property of this.payload.properties || [])
       properties.set(property.name.toLowerCase(), property.value.value);
@@ -301,12 +285,27 @@ class AXNode {
     return node;
   }
 
-  static createTree(payloads: Array<Protocol.Accessibility.AXNode>): AXNode {
-    const nodeById = new Map<string, AXNode>();
-    for (const payload of payloads) nodeById.set(payload.nodeId, new AXNode(payload));
-    for (const node of nodeById.values())
-      for (const childId of node.payload.childIds || []) node._children.push(nodeById.get(childId)!);
+  private _isPlainTextField(): boolean {
+    if (this._richlyEditable) return false;
+    if (this._editable) return true;
+    return this._role === 'textbox' || this._role === 'ComboBox' || this._role === 'searchbox';
+  }
 
-    return nodeById.values().next().value;
+  private _isTextOnlyObject(): boolean {
+    const role = this._role;
+    return role === 'LineBreak' || role === 'text' || role === 'InlineTextBox';
+  }
+
+  private _hasFocusableChild(): boolean {
+    if (this._cachedHasFocusableChild === undefined) {
+      this._cachedHasFocusableChild = false;
+      for (const child of this._children) {
+        if (child._focusable || child._hasFocusableChild()) {
+          this._cachedHasFocusableChild = true;
+          break;
+        }
+      }
+    }
+    return this._cachedHasFocusableChild;
   }
 }

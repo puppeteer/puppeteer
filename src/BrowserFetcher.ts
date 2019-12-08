@@ -102,11 +102,11 @@ export class BrowserFetcher {
     this._platform = options.platform || detectPlatform();
   }
 
-  platform(): string {
+  public platform(): string {
     return this._platform;
   }
 
-  canDownload(revision: string): Promise<boolean> {
+  public canDownload(revision: string): Promise<boolean> {
     const url = downloadURL(this._platform, this._downloadHost, revision);
     let resolve: (sucess: boolean) => void;
     const promise = new Promise<boolean>(x => (resolve = x));
@@ -120,7 +120,7 @@ export class BrowserFetcher {
     return promise;
   }
 
-  async download(revision: string, progressCallback?: (current: number, total: number) => void): Promise<RevisionInfo> {
+  public async download(revision: string, progressCallback?: (current: number, total: number) => void): Promise<RevisionInfo> {
     const url = downloadURL(this._platform, this._downloadHost, revision);
     const zipPath = path.join(this._downloadsFolder, `download-${this._platform}-${revision}.zip`);
     const folderPath = this._getFolderPath(revision);
@@ -137,7 +137,7 @@ export class BrowserFetcher {
     return revisionInfo;
   }
 
-  async localRevisions(): Promise<string[]> {
+  public async localRevisions(): Promise<string[]> {
     if (!(await existsAsync(this._downloadsFolder))) return [];
     const fileNames = await readdirAsync(this._downloadsFolder);
     return fileNames
@@ -146,13 +146,13 @@ export class BrowserFetcher {
         .map(entry => entry!.revision);
   }
 
-  async remove(revision: string) {
+  public async remove(revision: string) {
     const folderPath = this._getFolderPath(revision);
     assert(await existsAsync(folderPath), `Failed to remove: revision ${revision} is not downloaded`);
     await new Promise(fulfill => removeRecursive(folderPath, fulfill));
   }
 
-  revisionInfo(revision: string): RevisionInfo {
+  public revisionInfo(revision: string): RevisionInfo {
     const folderPath = this._getFolderPath(revision);
     let executablePath = '';
     if (this._platform === 'mac') {
@@ -195,7 +195,8 @@ function downloadFile(
   destinationPath: string,
   progressCallback?: (downloadedBytes: number, totalBytes: number) => void
 ): Promise<void> {
-  let fulfill: () => void, reject: (e: Error) => void;
+  let fulfill: () => void;
+  let reject: (e: Error) => void;
   let downloadedBytes = 0;
   let totalBytes = 0;
 

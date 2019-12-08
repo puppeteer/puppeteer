@@ -20,21 +20,21 @@ export class TimeoutSettings {
   private _defaultTimeout: number | null = null;
   private _defaultNavigationTimeout: number | null = null;
 
-  setDefaultTimeout(timeout: number) {
+  public setDefaultTimeout(timeout: number) {
     this._defaultTimeout = timeout;
   }
 
-  setDefaultNavigationTimeout(timeout: number) {
+  public setDefaultNavigationTimeout(timeout: number) {
     this._defaultNavigationTimeout = timeout;
   }
 
-  navigationTimeout(): number {
+  public navigationTimeout(): number {
     if (this._defaultNavigationTimeout !== null) return this._defaultNavigationTimeout;
     if (this._defaultTimeout !== null) return this._defaultTimeout;
     return DEFAULT_TIMEOUT;
   }
 
-  timeout() {
+  public timeout() {
     if (this._defaultTimeout !== null) return this._defaultTimeout;
     return DEFAULT_TIMEOUT;
   }

@@ -31,14 +31,16 @@ import { Protocol } from './protocol';
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
 export class FrameManager extends EventEmitter {
-  _client: CDPSession;
-  _page: Page;
-  _timeoutSettings: TimeoutSettings;
-  _frames = new Map<string, Frame>();
-  _networkManager: NetworkManager;
-  _contextIdToContext = new Map<number, ExecutionContext>();
-  _isolatedWorlds = new Set<string>();
-  _mainFrame: Frame | null = null;
+  /* @internal */
+  public _client: CDPSession;
+  private _page: Page;
+  /* @internal */
+  public _timeoutSettings: TimeoutSettings;
+  private _frames = new Map<string, Frame>();
+  private _networkManager: NetworkManager;
+  private _contextIdToContext = new Map<number, ExecutionContext>();
+  private _isolatedWorlds = new Set<string>();
+  private _mainFrame: Frame | null = null;
 
   constructor(client: CDPSession, page: Page, ignoreHTTPSErrors: boolean, timeoutSettings: TimeoutSettings) {
     super();
@@ -62,7 +64,7 @@ export class FrameManager extends EventEmitter {
     this._client.on('Page.lifecycleEvent', event => this._onLifecycleEvent(event));
   }
 
-  async initialize() {
+  public async initialize() {
     const [, { frameTree }] = await Promise.all([
       this._client.send('Page.enable'),
       this._client.send('Page.getFrameTree')
@@ -75,18 +77,18 @@ export class FrameManager extends EventEmitter {
     ]);
   }
 
-  networkManager(): NetworkManager {
+  public networkManager(): NetworkManager {
     return this._networkManager;
   }
 
-  async navigateFrame(
+  public async navigateFrame(
     frame: Frame,
     url: string,
     options: { referer?: string; timeout?: number; waitUntil?: string | string[] } = {}
   ): Promise<Response | null> {
     assertNoLegacyNavigationOptions(options);
     const {
-      referer = this._networkManager.extraHTTPHeaders()['referer'],
+      referer = this._networkManager.extraHTTPHeaders().referer,
       waitUntil = ['load'],
       timeout = this._timeoutSettings.navigationTimeout()
     } = options;
@@ -118,7 +120,7 @@ export class FrameManager extends EventEmitter {
     }
   }
 
-  async waitForFrameNavigation(
+  public async waitForFrameNavigation(
     frame: Frame,
     options: { timeout?: number; waitUntil?: string | string[] } = {}
   ): Promise<Response | null> {
@@ -135,45 +137,30 @@ export class FrameManager extends EventEmitter {
     return watcher.navigationResponse();
   }
 
-  _onLifecycleEvent(event: Protocol.Page.lifecycleEventPayload) {
+  private _onLifecycleEvent(event: Protocol.Page.lifecycleEventPayload) {
     const frame = this._frames.get(event.frameId);
     if (!frame) return;
     frame._onLifecycleEvent(event.loaderId, event.name);
     this.emit(Events.FrameManager.LifecycleEvent, frame);
   }
 
-  private _onFrameStoppedLoading(frameId: string) {
-    const frame = this._frames.get(frameId);
-    if (!frame) return;
-    frame._onLoadingStopped();
-    this.emit(Events.FrameManager.LifecycleEvent, frame);
-  }
-
-  private _handleFrameTree(frameTree: Protocol.Page.FrameTree) {
-    if (frameTree.frame.parentId) this._onFrameAttached(frameTree.frame.id, frameTree.frame.parentId);
-    this._onFrameNavigated(frameTree.frame);
-    if (!frameTree.childFrames) return;
-
-    for (const child of frameTree.childFrames) this._handleFrameTree(child);
-  }
-
-  page(): Page {
+  public page(): Page {
     return this._page;
   }
 
-  mainFrame(): Frame | null {
+  public mainFrame(): Frame | null {
     return this._mainFrame;
   }
 
-  frames(): Array<Frame> {
+  public frames(): Frame[] {
     return Array.from(this._frames.values());
   }
 
-  frame(frameId: string): Frame | null {
+  public frame(frameId: string): Frame | null {
     return this._frames.get(frameId) || null;
   }
 
-  _onFrameAttached(frameId: string, parentFrameId?: string) {
+  private _onFrameAttached(frameId: string, parentFrameId?: string) {
     if (this._frames.has(frameId)) return;
     assert(parentFrameId);
     const parentFrame = this._frames.get(parentFrameId);
@@ -182,7 +169,7 @@ export class FrameManager extends EventEmitter {
     this.emit(Events.FrameManager.FrameAttached, frame);
   }
 
-  _onFrameNavigated(framePayload: Protocol.Page.Frame) {
+  private _onFrameNavigated(framePayload: Protocol.Page.Frame) {
     const isMainFrame = !framePayload.parentId;
     let frame = isMainFrame ? this._mainFrame : this._frames.get(framePayload.id);
     assert(isMainFrame || frame, 'We either navigate top level or have old version of the navigated frame');
@@ -190,7 +177,6 @@ export class FrameManager extends EventEmitter {
     // Detach all child frames first.
     if (frame)
       for (const child of frame.childFrames()) this._removeFramesRecursively(child);
-
 
     // Update or create main frame.
     if (isMainFrame) {
@@ -212,7 +198,7 @@ export class FrameManager extends EventEmitter {
     this.emit(Events.FrameManager.FrameNavigated, frame);
   }
 
-  async _ensureIsolatedWorld(name: string) {
+  public async _ensureIsolatedWorld(name: string) {
     if (this._isolatedWorlds.has(name)) return;
     this._isolatedWorlds.add(name);
     await this._client.send('Page.addScriptToEvaluateOnNewDocument', {
@@ -232,12 +218,40 @@ export class FrameManager extends EventEmitter {
     ); // frames might be removed before we send this
   }
 
-  _onFrameNavigatedWithinDocument(frameId: string, url: string) {
+  private _onFrameNavigatedWithinDocument(frameId: string, url: string) {
     const frame = this._frames.get(frameId);
     if (!frame) return;
     frame._navigatedWithinDocument(url);
     this.emit(Events.FrameManager.FrameNavigatedWithinDocument, frame);
     this.emit(Events.FrameManager.FrameNavigated, frame);
+  }
+
+  public executionContextById(contextId: number): ExecutionContext {
+    const context = this._contextIdToContext.get(contextId);
+    assert(context, 'INTERNAL ERROR: missing context with id = ' + contextId);
+    return context;
+  }
+
+  private _removeFramesRecursively(frame: Frame) {
+    for (const child of frame.childFrames()) this._removeFramesRecursively(child);
+    frame._detach();
+    this._frames.delete(frame._id);
+    this.emit(Events.FrameManager.FrameDetached, frame);
+  }
+
+  private _onFrameStoppedLoading(frameId: string) {
+    const frame = this._frames.get(frameId);
+    if (!frame) return;
+    frame._onLoadingStopped();
+    this.emit(Events.FrameManager.LifecycleEvent, frame);
+  }
+
+  private _handleFrameTree(frameTree: Protocol.Page.FrameTree) {
+    if (frameTree.frame.parentId) this._onFrameAttached(frameTree.frame.id, frameTree.frame.parentId);
+    this._onFrameNavigated(frameTree.frame);
+    if (!frameTree.childFrames) return;
+
+    for (const child of frameTree.childFrames) this._handleFrameTree(child);
   }
 
   private _onFrameDetached(frameId: string) {
@@ -248,9 +262,9 @@ export class FrameManager extends EventEmitter {
   private _onExecutionContextCreated(contextPayload: any /* Protocol.Runtime.ExecutionContextDescription ? */) {
     const frameId = contextPayload.auxData ? contextPayload.auxData.frameId : null;
     const frame = this._frames.get(frameId) || null;
-    let world = undefined;
+    let world;
     if (frame) {
-      if (contextPayload.auxData && !!contextPayload.auxData['isDefault']) {
+      if (contextPayload.auxData && !!contextPayload.auxData.isDefault) {
         world = frame._mainWorld;
       } else if (contextPayload.name === UTILITY_WORLD_NAME && !frame._secondaryWorld._hasContext()) {
         // In case of multiple sessions to the same target, there's a race between
@@ -259,7 +273,7 @@ export class FrameManager extends EventEmitter {
         world = frame._secondaryWorld;
       }
     }
-    if (contextPayload.auxData && contextPayload.auxData['type'] === 'isolated')
+    if (contextPayload.auxData && contextPayload.auxData.type === 'isolated')
       this._isolatedWorlds.add(contextPayload.name);
     const context = new ExecutionContext(this._client, contextPayload, world);
     if (world) world._setContext(context);
@@ -279,35 +293,28 @@ export class FrameManager extends EventEmitter {
 
     this._contextIdToContext.clear();
   }
-
-  executionContextById(contextId: number): ExecutionContext {
-    const context = this._contextIdToContext.get(contextId);
-    assert(context, 'INTERNAL ERROR: missing context with id = ' + contextId);
-    return context;
-  }
-
-  _removeFramesRecursively(frame: Frame) {
-    for (const child of frame.childFrames()) this._removeFramesRecursively(child);
-    frame._detach();
-    this._frames.delete(frame._id);
-    this.emit(Events.FrameManager.FrameDetached, frame);
-  }
 }
 
 export class Frame implements Evalable, JSEvalable {
-  _frameManager: FrameManager;
-  _client: CDPSession;
-  _parentFrame?: Frame | null;
-  _url: string;
-  _id: string;
-  _name?: string;
-  _navigationURL?: string;
-  _detached: boolean;
-  _loaderId: string;
-  _lifecycleEvents = new Set<string>();
-  _mainWorld: DOMWorld;
-  _secondaryWorld: DOMWorld;
-  _childFrames = new Set<Frame>();
+  /* @internal */
+  public _frameManager: FrameManager;
+  protected _client: CDPSession;
+  private _parentFrame?: Frame | null;
+  private _url: string;
+  /* @internal */
+  public _id: string;
+  private _name?: string;
+  protected _navigationURL?: string;
+  private _detached: boolean;
+  /* @internal */
+  public _loaderId: string;
+  /* @internal */
+  public _lifecycleEvents = new Set<string>();
+  /* @internal */
+  public _mainWorld: DOMWorld;
+  /* @internal */
+  public _secondaryWorld: DOMWorld;
+  private _childFrames = new Set<Frame>();
 
   constructor(frameManager: FrameManager, client: CDPSession, parentFrame: Frame | null | undefined, frameId: string) {
     this._frameManager = frameManager;
@@ -324,80 +331,80 @@ export class Frame implements Evalable, JSEvalable {
     if (this._parentFrame) this._parentFrame._childFrames.add(this);
   }
 
-  async goto(
+  public async goto(
     url: string,
     options?: { referer?: string; timeout?: number; waitUntil?: string | string[] }
   ): Promise<Response | null> {
-    return await this._frameManager.navigateFrame(this, url, options);
+    return this._frameManager.navigateFrame(this, url, options);
   }
 
-  async waitForNavigation(options?: { timeout?: number; waitUntil?: string | string[] }): Promise<Response | null> {
-    return await this._frameManager.waitForFrameNavigation(this, options);
+  public async waitForNavigation(options?: { timeout?: number; waitUntil?: string | string[] }): Promise<Response | null> {
+    return this._frameManager.waitForFrameNavigation(this, options);
   }
 
-  executionContext(): Promise<ExecutionContext> {
+  public executionContext(): Promise<ExecutionContext> {
     return this._mainWorld.executionContext();
   }
 
-  async evaluateHandle<V extends EvaluateFn<any>>(
+  public async evaluateHandle<V extends EvaluateFn<any>>(
     pageFunction: V,
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle<EvaluateFnReturnType<V>>> {
     return this._mainWorld.evaluateHandle(pageFunction, ...args);
   }
 
-  async evaluate<V extends EvaluateFn<any>>(
+  public async evaluate<V extends EvaluateFn<any>>(
     pageFunction: V,
     ...args: SerializableOrJSHandle[]
   ): Promise<EvaluateFnReturnType<V>> {
     return this._mainWorld.evaluate(pageFunction, ...args);
   }
 
-  async $(selector: string): Promise<ElementHandle | null> {
+  public async $(selector: string): Promise<ElementHandle | null> {
     return this._mainWorld.$(selector);
   }
 
-  async $x(expression: string): Promise<Array<ElementHandle>> {
+  public async $x(expression: string): Promise<ElementHandle[]> {
     return this._mainWorld.$x(expression);
   }
 
-  $eval: Evalable['$eval'] = async(...args: Parameters<Evalable['$eval']>) => this._mainWorld.$eval(...args);
+  public $eval: Evalable['$eval'] = async(...args: Parameters<Evalable['$eval']>) => this._mainWorld.$eval(...args);
 
-  $$eval: Evalable['$$eval'] = async(...args: Parameters<Evalable['$$eval']>) => this._mainWorld.$$eval(...args);
+  public $$eval: Evalable['$$eval'] = async(...args: Parameters<Evalable['$$eval']>) => this._mainWorld.$$eval(...args);
 
-  async $$(selector: string): Promise<Array<ElementHandle>> {
+  public async $$(selector: string): Promise<ElementHandle[]> {
     return this._mainWorld.$$(selector);
   }
 
-  async content(): Promise<string> {
+  public async content(): Promise<string> {
     return this._secondaryWorld.content();
   }
 
-  async setContent(html: string, options: { timeout?: number; waitUntil?: string | string[] } = {}) {
+  public async setContent(html: string, options: { timeout?: number; waitUntil?: string | string[] } = {}) {
     return this._secondaryWorld.setContent(html, options);
   }
 
-  name(): string {
+  public name(): string {
     return this._name || '';
   }
 
-  url(): string {
+  public url(): string {
     return this._url;
   }
 
-  parentFrame(): Frame | null | undefined {
+  public parentFrame(): Frame | null | undefined {
     return this._parentFrame;
   }
 
-  childFrames(): Array<Frame> {
+  public childFrames(): Frame[] {
     return Array.from(this._childFrames);
   }
 
-  isDetached(): boolean {
+  public isDetached(): boolean {
     return this._detached;
   }
 
-  async addScriptTag(options: {
+  public async addScriptTag(options: {
     url?: string;
     path?: string;
     content?: string;
@@ -406,38 +413,38 @@ export class Frame implements Evalable, JSEvalable {
     return this._mainWorld.addScriptTag(options);
   }
 
-  async addStyleTag(options: { url?: string; path?: string; content?: string }): Promise<ElementHandle> {
+  public async addStyleTag(options: { url?: string; path?: string; content?: string }): Promise<ElementHandle> {
     return this._mainWorld.addStyleTag(options);
   }
 
-  async click(
+  public async click(
     selector: string,
     options?: { delay?: number; button?: 'left' | 'right' | 'middle'; clickCount?: number }
   ) {
     return this._secondaryWorld.click(selector, options);
   }
 
-  async focus(selector: string) {
+  public async focus(selector: string) {
     return this._secondaryWorld.focus(selector);
   }
 
-  async hover(selector: string) {
+  public async hover(selector: string) {
     return this._secondaryWorld.hover(selector);
   }
 
-  select(selector: string, ...values: string[]): Promise<string[]> {
+  public select(selector: string, ...values: string[]): Promise<string[]> {
     return this._secondaryWorld.select(selector, ...values);
   }
 
-  async tap(selector: string) {
+  public async tap(selector: string) {
     return this._secondaryWorld.tap(selector);
   }
 
-  async type(selector: string, text: string, options?: { delay: number | undefined }) {
+  public async type(selector: string, text: string, options?: { delay: number | undefined }) {
     return this._mainWorld.type(selector, text, options);
   }
 
-  waitFor(
+  public waitFor(
     selectorOrFunctionOrTimeout: string | number | AnyFunction,
     options: { visible?: boolean; hidden?: boolean; timeout?: number } = {},
     ...args: any[]
@@ -456,7 +463,7 @@ export class Frame implements Evalable, JSEvalable {
     return Promise.reject(new Error('Unsupported target type: ' + typeof selectorOrFunctionOrTimeout));
   }
 
-  async waitForSelector(
+  public async waitForSelector(
     selector: string,
     options?: { visible?: boolean; hidden?: boolean; timeout?: number }
   ): Promise<ElementHandle | null> {
@@ -468,7 +475,7 @@ export class Frame implements Evalable, JSEvalable {
     return result;
   }
 
-  async waitForXPath(
+  public async waitForXPath(
     xpath: string,
     options?: { visible?: boolean; hidden?: boolean; timeout?: number }
   ): Promise<ElementHandle | null> {
@@ -480,7 +487,7 @@ export class Frame implements Evalable, JSEvalable {
     return result;
   }
 
-  waitForFunction(
+  public waitForFunction(
     pageFunction: AnyFunction | string,
     options: { polling?: string | number; timeout?: number } = {},
     ...args: any[]
@@ -488,22 +495,25 @@ export class Frame implements Evalable, JSEvalable {
     return this._mainWorld.waitForFunction(pageFunction, options, ...args);
   }
 
-  async title(): Promise<string> {
+  public async title(): Promise<string> {
     return this._secondaryWorld.title();
   }
 
-  _navigated(framePayload: Protocol.Page.Frame) {
+  /* @internal */
+  public _navigated(framePayload: Protocol.Page.Frame) {
     this._name = framePayload.name;
     // TODO(lushnikov): remove this once requestInterception has loaderId exposed.
     this._navigationURL = framePayload.url;
     this._url = framePayload.url;
   }
 
-  _navigatedWithinDocument(url: string) {
+  /* @internal */
+  public _navigatedWithinDocument(url: string) {
     this._url = url;
   }
 
-  _onLifecycleEvent(loaderId: string, name: string) {
+  /* @internal */
+  public _onLifecycleEvent(loaderId: string, name: string) {
     if (name === 'init') {
       this._loaderId = loaderId;
       this._lifecycleEvents.clear();
@@ -511,12 +521,14 @@ export class Frame implements Evalable, JSEvalable {
     this._lifecycleEvents.add(name);
   }
 
-  _onLoadingStopped() {
+  /* @internal */
+  public _onLoadingStopped() {
     this._lifecycleEvents.add('DOMContentLoaded');
     this._lifecycleEvents.add('load');
   }
 
-  _detach() {
+  /* @internal */
+  public _detach() {
     this._detached = true;
     this._mainWorld._detach();
     this._secondaryWorld._detach();
@@ -526,8 +538,8 @@ export class Frame implements Evalable, JSEvalable {
 }
 
 function assertNoLegacyNavigationOptions(options: any) {
-  assert(options['networkIdleTimeout'] === undefined, 'ERROR: networkIdleTimeout option is no longer supported.');
-  assert(options['networkIdleInflight'] === undefined, 'ERROR: networkIdleInflight option is no longer supported.');
+  assert(options.networkIdleTimeout === undefined, 'ERROR: networkIdleTimeout option is no longer supported.');
+  assert(options.networkIdleInflight === undefined, 'ERROR: networkIdleInflight option is no longer supported.');
   assert(
       options.waitUntil !== 'networkidle',
       'ERROR: "networkidle" option is no longer supported. Use "networkidle2" instead'

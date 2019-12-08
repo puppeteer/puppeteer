@@ -36,22 +36,49 @@ export class ExecutionContext<T = any> implements JSEvalable<T> {
     this._contextId = contextPayload.id;
   }
 
-  frame(): Frame | null {
+  public frame(): Frame | null {
     return this.world ? this.world.frame() : null;
   }
 
-  evaluate<V extends EvaluateFn<T>>(
+  public evaluate<V extends EvaluateFn<T>>(
     pageFunction: V,
     ...args: SerializableOrJSHandle[]
   ): Promise<EvaluateFnReturnType<V>> {
     return this._evaluateInternal(true /* returnByValue */, pageFunction, ...args);
   }
 
-  async evaluateHandle<V extends EvaluateFn<any>>(
+  public async evaluateHandle<V extends EvaluateFn<any>>(
     pageFunction: V,
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle<EvaluateFnReturnType<V>>> {
     return this._evaluateInternal(false /* returnByValue */, pageFunction, ...args);
+  }
+
+  /* @internal */
+  public async queryObjects(prototypeHandle: JSHandle): Promise<JSHandle> {
+    assert(!prototypeHandle._disposed, 'Prototype JSHandle is disposed!');
+    assert(prototypeHandle._remoteObject.objectId, 'Prototype JSHandle must not be referencing primitive value');
+    const response = await this.client.send('Runtime.queryObjects', {
+      prototypeObjectId: prototypeHandle._remoteObject.objectId
+    });
+    return createJSHandle(this, response.objects);
+  }
+
+  /* @internal */
+  public async _adoptElementHandle(elementHandle: ElementHandle): Promise<ElementHandle> {
+    assert(
+        elementHandle.executionContext() !== this,
+        'Cannot adopt handle that already belongs to this execution context'
+    );
+    assert(this.world, 'Cannot adopt handle without DOMWorld');
+    const nodeInfo = await this.client.send('DOM.describeNode', {
+      objectId: elementHandle._remoteObject.objectId
+    });
+    const { object } = await this.client.send('DOM.resolveNode', {
+      backendNodeId: nodeInfo.node.backendNodeId,
+      executionContextId: this._contextId
+    });
+    return createJSHandle(this, object) as ElementHandle;
   }
 
   private async _evaluateInternal(
@@ -118,33 +145,6 @@ export class ExecutionContext<T = any> implements JSEvalable<T> {
     if (exceptionDetails) throw new Error('Evaluation failed: ' + helper.getExceptionMessage(exceptionDetails));
     return returnByValue ? helper.valueFromRemoteObject(remoteObject) : createJSHandle(this, remoteObject);
   }
-
-  /* @internal */
-  public async queryObjects(prototypeHandle: JSHandle): Promise<JSHandle> {
-    assert(!prototypeHandle._disposed, 'Prototype JSHandle is disposed!');
-    assert(prototypeHandle._remoteObject.objectId, 'Prototype JSHandle must not be referencing primitive value');
-    const response = await this.client.send('Runtime.queryObjects', {
-      prototypeObjectId: prototypeHandle._remoteObject.objectId
-    });
-    return createJSHandle(this, response.objects);
-  }
-
-  /* @internal */
-  public async _adoptElementHandle(elementHandle: ElementHandle): Promise<ElementHandle> {
-    assert(
-        elementHandle.executionContext() !== this,
-        'Cannot adopt handle that already belongs to this execution context'
-    );
-    assert(this.world, 'Cannot adopt handle without DOMWorld');
-    const nodeInfo = await this.client.send('DOM.describeNode', {
-      objectId: elementHandle._remoteObject.objectId
-    });
-    const { object } = await this.client.send('DOM.resolveNode', {
-      backendNodeId: nodeInfo.node.backendNodeId,
-      executionContextId: this._contextId
-    });
-    return createJSHandle(this, object) as ElementHandle;
-  }
 }
 
 function convertArgument(this: ExecutionContext, arg: unknown): any {
@@ -168,7 +168,7 @@ function convertArgument(this: ExecutionContext, arg: unknown): any {
 
 function rewriteError(error: Error): Protocol.Runtime.evaluateReturnValue {
   if (error.message.includes('Object reference chain is too long')) return { result: { type: 'undefined' } };
-  if (error.message.includes("Object couldn't be returned by value")) return { result: { type: 'undefined' } };
+  if (error.message.includes('Object couldn\'t be returned by value')) return { result: { type: 'undefined' } };
 
   if (
     error.message.endsWith('Cannot find context with specified id') ||

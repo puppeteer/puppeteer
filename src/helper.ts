@@ -35,7 +35,20 @@ export function assert(value: unknown, message?: string): asserts value {
 export { Helper as helper };
 
 export class Helper {
-  static evaluationString(fun: AnyFunction | string, ...args: any[]): string {
+  public static promisify = ((nodeFunction: AnyFunction) => {
+    function promisified(...args: any[]) {
+      return new Promise((resolve, reject) => {
+        function callback(err: Error | undefined, ...result: any[]) {
+          if (err) return reject(err);
+          if (result.length === 1) return resolve(result[0]);
+          return resolve(result);
+        }
+        nodeFunction.call(null, ...args, callback);
+      });
+    }
+    return promisified;
+  }) as typeof util.promisify;
+  public static evaluationString(fun: AnyFunction | string, ...args: any[]): string {
     if (Helper.isString(fun)) {
       assert(args.length === 0, 'Cannot evaluate a string with arguments');
       return fun;
@@ -48,7 +61,7 @@ export class Helper {
     }
   }
 
-  static getExceptionMessage(exceptionDetails: Protocol.Runtime.ExceptionDetails): string {
+  public static getExceptionMessage(exceptionDetails: Protocol.Runtime.ExceptionDetails): string {
     if (exceptionDetails.exception) return exceptionDetails.exception.description || exceptionDetails.exception.value;
     let message = exceptionDetails.text;
     if (exceptionDetails.stackTrace) {
@@ -61,7 +74,7 @@ export class Helper {
     return message;
   }
 
-  static valueFromRemoteObject(remoteObject: Protocol.Runtime.RemoteObject): any {
+  public static valueFromRemoteObject(remoteObject: Protocol.Runtime.RemoteObject): any {
     assert(!remoteObject.objectId, 'Cannot extract value when objectId is given');
     if (remoteObject.unserializableValue) {
       if (remoteObject.type === 'bigint' && typeof BigInt !== 'undefined')
@@ -82,7 +95,7 @@ export class Helper {
     return remoteObject.value;
   }
 
-  static async releaseObject(client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject) {
+  public static async releaseObject(client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject) {
     if (!remoteObject.objectId) return;
     await client.send('Runtime.releaseObject', { objectId: remoteObject.objectId }).catch(error => {
       // Exceptions might happen in case of a page been navigated or closed.
@@ -91,7 +104,7 @@ export class Helper {
     });
   }
 
-  static installAsyncStackHooks(classType: { new (): unknown }) {
+  public static installAsyncStackHooks(classType: new () => unknown) {
     for (const methodName of Reflect.ownKeys(classType.prototype)) {
       const method = Reflect.get(classType.prototype, methodName);
       if (
@@ -115,7 +128,7 @@ export class Helper {
     }
   }
 
-  static addEventListener(
+  public static addEventListener(
     emitter: NodeJS.EventEmitter,
     eventName: string | symbol,
     handler: AnyFunction
@@ -124,45 +137,31 @@ export class Helper {
     return { emitter, eventName, handler };
   }
 
-  static removeEventListeners(
+  public static removeEventListeners(
     listeners: Array<{ emitter: NodeJS.EventEmitter; eventName: string | symbol; handler: AnyFunction }>
   ) {
     for (const listener of listeners) listener.emitter.removeListener(listener.eventName, listener.handler);
     listeners.length = 0;
   }
 
-  static isString(value: unknown): value is string {
+  public static isString(value: unknown): value is string {
     return typeof value === 'string' || value instanceof String;
   }
 
-  static isNumber(value: unknown): value is number {
+  public static isNumber(value: unknown): value is number {
     return typeof value === 'number' || value instanceof Number;
   }
 
-  static promisify = ((nodeFunction: AnyFunction) => {
-    function promisified(...args: any[]) {
-      return new Promise((resolve, reject) => {
-        function callback(err: Error | undefined, ...result: any[]) {
-          if (err) return reject(err);
-          if (result.length === 1) return resolve(result[0]);
-          return resolve(result);
-        }
-        nodeFunction.call(null, ...args, callback);
-      });
-    }
-    return promisified;
-  }) as typeof util.promisify;
-
-  static async waitForEvent(
+  public static async waitForEvent(
     emitter: NodeJS.EventEmitter,
     eventName: string | symbol,
     predicate: AnyFunction,
     timeout: number,
     abortPromise: Promise<Error>
   ): Promise<any> {
-    let eventTimeout: ReturnType<typeof setTimeout>,
-      resolveCallback: (event: any) => void,
-      rejectCallback: (e: TimeoutError) => void;
+    let eventTimeout: ReturnType<typeof setTimeout>;
+    let resolveCallback: (event: any) => void;
+    let rejectCallback: (e: TimeoutError) => void;
     const promise = new Promise((resolve, reject) => {
       resolveCallback = resolve;
       rejectCallback = reject;
@@ -194,7 +193,7 @@ export class Helper {
     return result;
   }
 
-  static async waitWithTimeout<T>(promise: Promise<T>, taskName: string, timeout: number): Promise<T> {
+  public static async waitWithTimeout<T>(promise: Promise<T>, taskName: string, timeout: number): Promise<T> {
     let reject: (e: TimeoutError) => void;
     const timeoutError = new TimeoutError(`waiting for ${taskName} failed: timeout ${timeout}ms exceeded`);
     const timeoutPromise = new Promise<T>((_resolve, x) => (reject = x));
@@ -207,7 +206,7 @@ export class Helper {
     }
   }
 
-  static async readProtocolStream(client: CDPSession, handle: string, path?: string | null): Promise<Buffer | null> {
+  public static async readProtocolStream(client: CDPSession, handle: string, path?: string | null): Promise<Buffer | null> {
     let eof = false;
     let file: number | undefined;
     if (path) file = await openAsync(path, 'w');

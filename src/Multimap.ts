@@ -17,7 +17,7 @@
 export class Multimap<K, V> {
   private _map = new Map<K, Set<V>>();
 
-  set(key: K, value: V): void {
+  public set(key: K, value: V): void {
     let set = this._map.get(key);
     if (!set) {
       set = new Set();
@@ -26,17 +26,17 @@ export class Multimap<K, V> {
     set.add(value);
   }
 
-  get(key: K): Set<V> {
+  public get(key: K): Set<V> {
     let result = this._map.get(key);
     if (!result) result = new Set();
     return result;
   }
 
-  has(key: K): boolean {
+  public has(key: K): boolean {
     return this._map.has(key);
   }
 
-  hasValue(key: K, value: V): boolean {
+  public hasValue(key: K, value: V): boolean {
     const set = this._map.get(key);
     if (!set) return false;
     return set.has(value);
@@ -46,38 +46,38 @@ export class Multimap<K, V> {
     return this._map.size;
   }
 
-  delete(key: K, value: V): boolean {
+  public delete(key: K, value: V): boolean {
     const values = this.get(key);
     const result = values.delete(value);
     if (!values.size) this._map.delete(key);
     return result;
   }
 
-  deleteAll(key: K) {
+  public deleteAll(key: K) {
     this._map.delete(key);
   }
 
-  firstValue(key: K): V | undefined {
+  public firstValue(key: K): V | undefined {
     const set = this._map.get(key);
     if (!set) return undefined;
     return set.values().next().value;
   }
 
-  firstKey(): K | undefined {
+  public firstKey(): K | undefined {
     return this._map.keys().next().value;
   }
 
-  valuesArray(): Array<V> {
+  public valuesArray(): V[] {
     const result: V[] = [];
     for (const set of this._map.values()) result.push(...Array.from(set.values()));
     return result;
   }
 
-  keysArray(): Array<K> {
+  public keysArray(): K[] {
     return Array.from(this._map.keys());
   }
 
-  clear() {
+  public clear() {
     this._map.clear();
   }
 }

@@ -24,20 +24,26 @@ import { TaskQueue } from './TaskQueue';
 import { Protocol } from './protocol';
 
 export class Target {
-  _targetInfo: Protocol.Target.TargetInfo;
-  _targetId: string;
-  _browserContext: BrowserContext;
-  _sessionFactory: () => Promise<CDPSession>;
-  _ignoreHTTPSErrors: boolean;
-  _defaultViewport?: Viewport | null;
-  _screenshotTaskQueue: TaskQueue;
-  _pagePromise: Promise<Page> | null = null;
-  _workerPromise: Promise<Worker> | null = null;
-  _initializedPromise: Promise<Worker | boolean>;
-  _initializedCallback!: (value: Worker | PromiseLike<Worker> | boolean) => void;
-  _isClosedPromise: Promise<void>;
-  _closedCallback!: () => void;
-  _isInitialized: boolean;
+  private _targetInfo: Protocol.Target.TargetInfo;
+  /* @internal */
+  public _targetId: string;
+  private _browserContext: BrowserContext;
+  private _sessionFactory: () => Promise<CDPSession>;
+  private _ignoreHTTPSErrors: boolean;
+  private _defaultViewport?: Viewport | null;
+  private _screenshotTaskQueue: TaskQueue;
+  private _pagePromise: Promise<Page> | null = null;
+  private _workerPromise: Promise<Worker> | null = null;
+  /* @internal */
+  public _initializedPromise: Promise<Worker | boolean>;
+  /* @internal */
+  public _initializedCallback!: (value: Worker | PromiseLike<Worker> | boolean) => void;
+  /* @internal */
+  public _isClosedPromise: Promise<void>;
+  /* @internal */
+  public _closedCallback!: () => void;
+  /* @internal */
+  public _isInitialized: boolean;
 
   constructor(
     targetInfo: Protocol.Target.TargetInfo,
@@ -70,11 +76,11 @@ export class Target {
     if (this._isInitialized) this._initializedCallback(true);
   }
 
-  createCDPSession(): Promise<CDPSession> {
+  public createCDPSession(): Promise<CDPSession> {
     return this._sessionFactory();
   }
 
-  async page(): Promise<Page> {
+  public async page(): Promise<Page> {
     if ((this._targetInfo.type === 'page' || this._targetInfo.type === 'background_page') && !this._pagePromise) {
       this._pagePromise = this._sessionFactory().then(client =>
         Page.create(client, this, this._ignoreHTTPSErrors, this._defaultViewport, this._screenshotTaskQueue)
@@ -83,7 +89,7 @@ export class Target {
     return this._pagePromise!;
   }
 
-  async worker(): Promise<Worker | null> {
+  public async worker(): Promise<Worker | null> {
     if (this._targetInfo.type !== 'service_worker' && this._targetInfo.type !== 'shared_worker') return null;
     if (!this._workerPromise) {
       // TODO(einbinder): Make workers send their console logs.
@@ -100,11 +106,11 @@ export class Target {
     return this._workerPromise;
   }
 
-  url(): string {
+  public url(): string {
     return this._targetInfo.url;
   }
 
-  type(): 'page' | 'background_page' | 'service_worker' | 'shared_worker' | 'other' | 'browser' {
+  public type(): 'page' | 'background_page' | 'service_worker' | 'shared_worker' | 'other' | 'browser' {
     const type = this._targetInfo.type;
     if (
       type === 'page' ||
@@ -117,15 +123,15 @@ export class Target {
     return 'other';
   }
 
-  browser(): Browser {
+  public browser(): Browser {
     return this._browserContext.browser();
   }
 
-  browserContext(): BrowserContext {
+  public browserContext(): BrowserContext {
     return this._browserContext;
   }
 
-  opener(): Target | null {
+  public opener(): Target | null {
     const { openerId } = this._targetInfo;
     if (!openerId) return null;
     return this.browser()._targets.get(openerId) || null;

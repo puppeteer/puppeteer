@@ -18,10 +18,8 @@ import * as WebSocket from 'ws';
 import { ConnectionTransport } from './types';
 
 export class WebSocketTransport implements ConnectionTransport {
-  onmessage?: (message: string) => void;
-  onclose?: () => void;
 
-  static create(url: string): Promise<WebSocketTransport> {
+  public static create(url: string): Promise<WebSocketTransport> {
     return new Promise((resolve, reject) => {
       const ws = new WebSocket(url, [], {
         perMessageDeflate: false,
@@ -31,6 +29,9 @@ export class WebSocketTransport implements ConnectionTransport {
       ws.addEventListener('error', reject);
     });
   }
+
+  public onmessage?: (message: string) => void;
+  public onclose?: () => void;
 
   private _ws: WebSocket;
 
@@ -46,11 +47,11 @@ export class WebSocketTransport implements ConnectionTransport {
     this._ws.addEventListener('error', () => undefined);
   }
 
-  send(message: string) {
+  public send(message: string) {
     this._ws.send(message);
   }
 
-  close() {
+  public close() {
     this._ws.close();
   }
 }

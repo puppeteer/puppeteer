@@ -52,20 +52,31 @@ const writeFileAsync = helper.promisify(fs.writeFile);
 const { hasOwnProperty } = Object.prototype;
 
 export class Page extends EventEmitter implements Evalable, JSEvalable {
-  static async create(
-    client: CDPSession,
-    target: Target,
-    ignoreHTTPSErrors: boolean,
-    defaultViewport: Viewport | null | undefined,
-    screenshotTaskQueue: TaskQueue
-  ): Promise<Page> {
-    const page = new Page(client, target, ignoreHTTPSErrors, screenshotTaskQueue);
-    await page._initialize();
-    if (defaultViewport) await page.setViewport(defaultViewport);
-    return page;
+  get keyboard(): Keyboard {
+    return this._keyboard;
   }
 
-  static PaperFormats: Record<string, { width: number; height: number }> = {
+  get touchscreen(): Touchscreen {
+    return this._touchscreen;
+  }
+
+  get coverage(): Coverage {
+    return this._coverage;
+  }
+
+  get tracing(): Tracing {
+    return this._tracing;
+  }
+
+  get accessibility(): Accessibility {
+    return this._accessibility;
+  }
+
+  get mouse(): Mouse {
+    return this._mouse;
+  }
+
+  public static PaperFormats: Record<string, { width: number; height: number }> = {
     letter: { width: 8.5, height: 11 },
     legal: { width: 8.5, height: 14 },
     tabloid: { width: 11, height: 17 },
@@ -78,13 +89,27 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     a5: { width: 5.83, height: 8.27 },
     a6: { width: 4.13, height: 5.83 }
   };
+  public static async create(
+    client: CDPSession,
+    target: Target,
+    ignoreHTTPSErrors: boolean,
+    defaultViewport: Viewport | null | undefined,
+    screenshotTaskQueue: TaskQueue
+  ): Promise<Page> {
+    const page = new Page(client, target, ignoreHTTPSErrors, screenshotTaskQueue);
+    await page._initialize();
+    if (defaultViewport) await page.setViewport(defaultViewport);
+    return page;
+  }
+
+  /* @internal */
+  public _javascriptEnabled: boolean;
+
+  public emulateMedia = this.emulateMediaType;
 
   private _closed = false;
   private _client: CDPSession;
   private _target: Target;
-
-  /* @internal */
-  public _javascriptEnabled: boolean;
   private _screenshotTaskQueue: TaskQueue;
   private _fileChooserInterceptionIsDisabled: boolean;
   private _pageBindings = new Map<string, AnyFunction>();
@@ -155,7 +180,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     client.on('Page.domContentEventFired', () => this.emit(Events.Page.DOMContentLoaded));
     client.on('Page.loadEventFired', () => this.emit(Events.Page.Load));
     client.on('Runtime.consoleAPICalled', event => this._onConsoleAPI(event));
-    client.on('Runtime.bindingCalled', event => {this._onBindingCalled(event).catch(noop);});
+    client.on('Runtime.bindingCalled', event => {this._onBindingCalled(event).catch(noop); });
     client.on('Page.javascriptDialogOpening', event => this._onDialog(event));
     client.on('Runtime.exceptionThrown', exception => this._handleException(exception.exceptionDetails));
     client.on('Inspector.targetCrashed', () => this._onTargetCrashed());
@@ -168,7 +193,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     }, noop);
   }
 
-  async _initialize() {
+  public async _initialize() {
     await Promise.all([
       this._frameManager.initialize(),
       this._client.send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: false, flatten: true }),
@@ -180,18 +205,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     ]);
   }
 
-  private _onFileChooser(event: Protocol.Page.fileChooserOpenedPayload) {
-    if (!this._fileChooserInterceptors.size) {
-      this._client.send('Page.handleFileChooser', { action: 'fallback' }).catch(debugError);
-      return;
-    }
-    const interceptors = Array.from(this._fileChooserInterceptors);
-    this._fileChooserInterceptors.clear();
-    const fileChooser = new FileChooser(this._client, event);
-    for (const interceptor of interceptors) interceptor.call(null, fileChooser);
-  }
-
-  async waitForFileChooser(options: { timeout?: number } = {}) {
+  public async waitForFileChooser(options: { timeout?: number } = {}) {
     if (this._fileChooserInterceptionIsDisabled)
       throw new Error('File chooser handling does not work with multiple connections to the same page');
     const { timeout = this._timeoutSettings.timeout() } = options;
@@ -204,7 +218,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     });
   }
 
-  async setGeolocation(options: { longitude: number; latitude: number; accuracy: number | undefined }) {
+  public async setGeolocation(options: { longitude: number; latitude: number; accuracy: number | undefined }) {
     const { longitude, latitude, accuracy = 0 } = options;
     if (longitude < -180 || longitude > 180)
       throw new Error(`Invalid longitude "${longitude}": precondition -180 <= LONGITUDE <= 180 failed.`);
@@ -214,81 +228,51 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     await this._client.send('Emulation.setGeolocationOverride', { longitude, latitude, accuracy });
   }
 
-  target(): Target {
+  public target(): Target {
     return this._target;
   }
 
-  browser(): Browser {
+  public browser(): Browser {
     return this._target.browser();
   }
 
-  browserContext(): BrowserContext {
+  public browserContext(): BrowserContext {
     return this._target.browserContext();
   }
 
-  private _onTargetCrashed() {
-    this.emit('error', new Error('Page crashed!'));
-  }
-
-  private _onLogEntryAdded(event: Protocol.Log.entryAddedPayload) {
-    const { level, text, args, source, url, lineNumber } = event.entry;
-    if (args) args.map(arg => helper.releaseObject(this._client, arg));
-    if (source !== 'worker') this.emit(Events.Page.Console, new ConsoleMessage(level, text, [], { url, lineNumber }));
-  }
-
-  mainFrame(): Frame {
+  public mainFrame(): Frame {
     return this._frameManager.mainFrame()!;
   }
 
-  get keyboard(): Keyboard {
-    return this._keyboard;
-  }
-
-  get touchscreen(): Touchscreen {
-    return this._touchscreen;
-  }
-
-  get coverage(): Coverage {
-    return this._coverage;
-  }
-
-  get tracing(): Tracing {
-    return this._tracing;
-  }
-
-  get accessibility(): Accessibility {
-    return this._accessibility;
-  }
-
-  frames(): Array<Frame> {
+  public frames(): Frame[] {
     return this._frameManager.frames();
   }
 
-  workers(): Array<Worker> {
+  public workers(): Worker[] {
     return Array.from(this._workers.values());
   }
 
-  async setRequestInterception(value: boolean) {
+  public async setRequestInterception(value: boolean) {
     return this._frameManager.networkManager().setRequestInterception(value);
   }
 
-  setOfflineMode(enabled: boolean) {
+  public setOfflineMode(enabled: boolean) {
     return this._frameManager.networkManager().setOfflineMode(enabled);
   }
 
-  setDefaultNavigationTimeout(timeout: number) {
+  public setDefaultNavigationTimeout(timeout: number) {
     this._timeoutSettings.setDefaultNavigationTimeout(timeout);
   }
 
-  setDefaultTimeout(timeout: number) {
+  public setDefaultTimeout(timeout: number) {
     this._timeoutSettings.setDefaultTimeout(timeout);
   }
 
-  async $(selector: string): Promise<ElementHandle | null> {
+  public async $(selector: string): Promise<ElementHandle | null> {
     return this.mainFrame().$(selector);
   }
 
-  async evaluateHandle<V extends EvaluateFn<any>>(
+  public async evaluateHandle<V extends EvaluateFn<any>>(
     pageFunction: V,
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle<EvaluateFnReturnType<V>>> {
@@ -296,24 +280,24 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     return context.evaluateHandle(pageFunction, ...args);
   }
 
-  async queryObjects(prototypeHandle: JSHandle): Promise<JSHandle> {
+  public async queryObjects(prototypeHandle: JSHandle): Promise<JSHandle> {
     const context = await this.mainFrame().executionContext();
     return context.queryObjects(prototypeHandle);
   }
 
-  $eval: Evalable['$eval'] = async(...args: Parameters<Evalable['$eval']>) => this.mainFrame().$eval(...args);
+  public $eval: Evalable['$eval'] = async(...args: Parameters<Evalable['$eval']>) => this.mainFrame().$eval(...args);
 
-  $$eval: Evalable['$$eval'] = async(...args: Parameters<Evalable['$$eval']>) => this.mainFrame().$$eval(...args);
+  public $$eval: Evalable['$$eval'] = async(...args: Parameters<Evalable['$$eval']>) => this.mainFrame().$$eval(...args);
 
-  async $$(selector: string): Promise<Array<ElementHandle>> {
+  public async $$(selector: string): Promise<ElementHandle[]> {
     return this.mainFrame().$$(selector);
   }
 
-  async $x(expression: string): Promise<Array<ElementHandle>> {
+  public async $x(expression: string): Promise<ElementHandle[]> {
     return this.mainFrame().$x(expression);
   }
 
-  async cookies(...urls: string[]): Promise<Array<Protocol.Network.Cookie>> {
+  public async cookies(...urls: string[]): Promise<Protocol.Network.Cookie[]> {
     return (
       await this._client.send('Network.getCookies', {
         urls: urls.length ? urls : [this.url()]
@@ -321,7 +305,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     ).cookies;
   }
 
-  async deleteCookie(...cookies: Array<Protocol.Network.deleteCookiesParameters>) {
+  public async deleteCookie(...cookies: Protocol.Network.deleteCookiesParameters[]) {
     const pageURL = this.url();
     for (const cookie of cookies) {
       const item = Object.assign({}, cookie);
@@ -330,7 +314,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     }
   }
 
-  async setCookie(...cookies: Array<Protocol.Network.CookieParam>) {
+  public async setCookie(...cookies: Protocol.Network.CookieParam[]) {
     const pageURL = this.url();
     const startsWithHTTP = pageURL.startsWith('http');
     const items = cookies.map(cookie => {
@@ -347,7 +331,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     if (items.length) await this._client.send('Network.setCookies', { cookies: items });
   }
 
-  async addScriptTag(options: {
+  public async addScriptTag(options: {
     url?: string;
     path?: string;
     content?: string;
@@ -356,17 +340,17 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     return this.mainFrame().addScriptTag(options);
   }
 
-  async addStyleTag(options: { url?: string; path?: string; content?: string }): Promise<ElementHandle> {
+  public async addStyleTag(options: { url?: string; path?: string; content?: string }): Promise<ElementHandle> {
     return this.mainFrame().addStyleTag(options);
   }
 
-  async exposeFunction(name: string, puppeteerFunction: AnyFunction) {
+  public async exposeFunction(name: string, puppeteerFunction: AnyFunction) {
     if (this._pageBindings.has(name))
       throw new Error(`Failed to add page binding with name ${name}: window['${name}'] already exists!`);
     this._pageBindings.set(name, puppeteerFunction);
 
     const expression = helper.evaluationString(addPageBinding, name);
-    await this._client.send('Runtime.addBinding', { name: name });
+    await this._client.send('Runtime.addBinding', { name });
     await this._client.send('Page.addScriptToEvaluateOnNewDocument', { source: expression });
     await Promise.all(this.frames().map(frame => frame.evaluate(expression).catch(debugError)));
 
@@ -374,13 +358,13 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
       const binding = (window as any)[bindingName];
       (window as any)[bindingName] = (...args: any[]) => {
         const me = (window as any)[bindingName];
-        let callbacks = me['callbacks'];
+        let callbacks = me.callbacks;
         if (!callbacks) {
           callbacks = new Map();
-          me['callbacks'] = callbacks;
+          me.callbacks = callbacks;
         }
-        const seq = (me['lastSeq'] || 0) + 1;
-        me['lastSeq'] = seq;
+        const seq = (me.lastSeq || 0) + 1;
+        me.lastSeq = seq;
         const promise = new Promise((resolve, reject) => callbacks.set(seq, { resolve, reject }));
         binding(JSON.stringify({ name: bindingName, seq, args }));
         return promise;
@@ -388,31 +372,24 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     }
   }
 
-  async authenticate(credentials?: { username: string; password: string }) {
+  public async authenticate(credentials?: { username: string; password: string }) {
     return this._frameManager.networkManager().authenticate(credentials);
   }
 
-  async setExtraHTTPHeaders(headers: Record<string, string>) {
+  public async setExtraHTTPHeaders(headers: Record<string, string>) {
     return this._frameManager.networkManager().setExtraHTTPHeaders(headers);
   }
 
-  async setUserAgent(userAgent: string) {
+  public async setUserAgent(userAgent: string) {
     return this._frameManager.networkManager().setUserAgent(userAgent);
   }
 
-  async metrics(): Promise<Metrics> {
+  public async metrics(): Promise<Metrics> {
     const response = await this._client.send('Performance.getMetrics');
     return this._buildMetricsObject(response.metrics);
   }
 
-  private _emitMetrics(event: Protocol.Performance.metricsPayload) {
-    this.emit(Events.Page.Metrics, {
-      title: event.title,
-      metrics: this._buildMetricsObject(event.metrics)
-    });
-  }
-
-  _buildMetricsObject(metrics: Array<Protocol.Performance.Metric> = []): Metrics {
+  private _buildMetricsObject(metrics: Protocol.Performance.Metric[] = []): Metrics {
     const result: Metrics = {};
     for (const metric of metrics)
       if (supportedMetrics.has(metric.name as keyof Metrics)) result[metric.name as keyof Metrics] = metric.value;
@@ -420,14 +397,14 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     return result;
   }
 
-  _handleException = (exceptionDetails: Protocol.Runtime.ExceptionDetails) => {
+  private _handleException = (exceptionDetails: Protocol.Runtime.ExceptionDetails) => {
     const message = helper.getExceptionMessage(exceptionDetails);
     const err = new Error(message);
     err.stack = ''; // Don't report clientside error with a node stack attached
     this.emit(Events.Page.PageError, err);
   };
 
-  _onConsoleAPI(event: Protocol.Runtime.consoleAPICalledPayload) {
+  private _onConsoleAPI(event: Protocol.Runtime.consoleAPICalledPayload) {
     if (event.executionContextId === 0) {
       // DevTools protocol stores the last 1000 console messages. These
       // messages are always reported even for removed execution contexts. In
@@ -449,7 +426,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     this._addConsoleMessage(event.type, values, event.stackTrace);
   }
 
-  async _onBindingCalled(event: Protocol.Runtime.bindingCalledPayload) {
+  public async _onBindingCalled(event: Protocol.Runtime.bindingCalledPayload) {
     const { name, seq, args } = JSON.parse(event.payload);
     let expression = null;
     try {
@@ -463,97 +440,52 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     this._client.send('Runtime.evaluate', { expression, contextId: event.executionContextId }).catch(debugError);
 
     function deliverResult(name: string, seq: number, result: any) {
-      (window as any)[name]['callbacks'].get(seq).resolve(result);
-      (window as any)[name]['callbacks'].delete(seq);
+      (window as any)[name].callbacks.get(seq).resolve(result);
+      (window as any)[name].callbacks.delete(seq);
     }
 
     function deliverError(name: string, seq: number, message: string, stack: string) {
       const error = new Error(message);
       error.stack = stack;
-      (window as any)[name]['callbacks'].get(seq).reject(error);
-      (window as any)[name]['callbacks'].delete(seq);
+      (window as any)[name].callbacks.get(seq).reject(error);
+      (window as any)[name].callbacks.delete(seq);
     }
 
     function deliverErrorValue(name: string, seq: number, value: any) {
-      (window as any)[name]['callbacks'].get(seq).reject(value);
-      (window as any)[name]['callbacks'].delete(seq);
+      (window as any)[name].callbacks.get(seq).reject(value);
+      (window as any)[name].callbacks.delete(seq);
     }
   }
 
-  private _addConsoleMessage = (type: string, args: Array<JSHandle>, stackTrace?: Protocol.Runtime.StackTrace) => {
-    if (!this.listenerCount(Events.Page.Console)) {
-      for (const arg of args)
-        arg.dispose().catch(noop);
-
-      return;
-    }
-    const textTokens: string[] = [];
-    for (const arg of args) {
-      const remoteObject = arg._remoteObject;
-      if (remoteObject.objectId) textTokens.push(arg.toString());
-      else textTokens.push(helper.valueFromRemoteObject(remoteObject));
-    }
-    const location =
-      stackTrace && stackTrace.callFrames.length
-        ? {
-          url: stackTrace.callFrames[0].url,
-          lineNumber: stackTrace.callFrames[0].lineNumber,
-          columnNumber: stackTrace.callFrames[0].columnNumber
-        }
-        : {};
-    const message = new ConsoleMessage(type, textTokens.join(' '), args, location);
-    this.emit(Events.Page.Console, message);
-  };
-
-  private _onDialog(event: Protocol.Page.javascriptDialogOpeningPayload) {
-    let dialogType = null;
-    if (event.type === 'alert') dialogType = Dialog.Type.Alert;
-    else if (event.type === 'confirm') dialogType = Dialog.Type.Confirm;
-    else if (event.type === 'prompt') dialogType = Dialog.Type.Prompt;
-    else if (event.type === 'beforeunload') dialogType = Dialog.Type.BeforeUnload;
-    assert(dialogType, 'Unknown javascript dialog type: ' + event.type);
-    const dialog = new Dialog(this._client, dialogType, event.message, event.defaultPrompt);
-    this.emit(Events.Page.Dialog, dialog);
-  }
-
-  url(): string {
+  public url(): string {
     return this.mainFrame().url();
   }
 
-  async content(): Promise<string> {
-    return await this._frameManager.mainFrame()!.content();
+  public async content(): Promise<string> {
+    return this._frameManager.mainFrame()!.content();
   }
 
-  async setContent(html: string, options?: { timeout?: number; waitUntil?: string | string[] }) {
+  public async setContent(html: string, options?: { timeout?: number; waitUntil?: string | string[] }) {
     await this._frameManager.mainFrame()!.setContent(html, options);
   }
 
-  async goto(
+  public async goto(
     url: string,
     options?: { referer?: string; timeout?: number; waitUntil?: string | string[] }
   ): Promise<Response | null> {
-    return await this._frameManager.mainFrame()!.goto(url, options);
+    return this._frameManager.mainFrame()!.goto(url, options);
   }
 
-  async reload(options?: { timeout?: number; waitUntil?: string | string[] }): Promise<Response | null> {
+  public async reload(options?: { timeout?: number; waitUntil?: string | string[] }): Promise<Response | null> {
     const [response] = await Promise.all([this.waitForNavigation(options), this._client.send('Page.reload')]);
     return response;
   }
 
-  async waitForNavigation(options: { timeout?: number; waitUntil?: string | string[] } = {}): Promise<Response | null> {
-    return await this._frameManager.mainFrame()!.waitForNavigation(options);
+  public async waitForNavigation(options: { timeout?: number; waitUntil?: string | string[] } = {}): Promise<Response | null> {
+    return this._frameManager.mainFrame()!.waitForNavigation(options);
   }
 
-  private _sessionClosePromise() {
-    if (!this._disconnectPromise) {
-      this._disconnectPromise = new Promise(fulfill =>
-        this._client.once(Events.CDPSession.Disconnected, () => fulfill(new Error('Target closed')))
-      );
-    }
-    return this._disconnectPromise;
-  }
-
-  async waitForRequest(urlOrPredicate: string | Function, options: { timeout?: number } = {}): Promise<Request> {
+  public async waitForRequest(urlOrPredicate: string | AnyFunction, options: { timeout?: number } = {}): Promise<Request> {
     const { timeout = this._timeoutSettings.timeout() } = options;
     return helper.waitForEvent(
         this._frameManager.networkManager(),
@@ -568,7 +500,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     );
   }
 
-  async waitForResponse(urlOrPredicate: string | Function, options: { timeout?: number } = {}): Promise<Response> {
+  public async waitForResponse(urlOrPredicate: string | AnyFunction, options: { timeout?: number } = {}): Promise<Response> {
     const { timeout = this._timeoutSettings.timeout() } = options;
     return helper.waitForEvent(
         this._frameManager.networkManager(),
@@ -583,54 +515,38 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     );
   }
 
-  async goBack(options?: { timeout?: number; waitUntil?: string | string[] }): Promise<Response | null> {
+  public async goBack(options?: { timeout?: number; waitUntil?: string | string[] }): Promise<Response | null> {
     return this._go(-1, options);
   }
 
-  async goForward(options?: { timeout?: number; waitUntil?: string | string[] }): Promise<Response | null> {
+  public async goForward(options?: { timeout?: number; waitUntil?: string | string[] }): Promise<Response | null> {
     return this._go(+1, options);
   }
 
-  private async _go(
-    delta: number,
-    options?: { timeout?: number; waitUntil?: string | string[] }
-  ): Promise<Response | null> {
-    const history = await this._client.send('Page.getNavigationHistory');
-    const entry = history.entries[history.currentIndex + delta];
-    if (!entry) return null;
-    const [response] = await Promise.all([
-      this.waitForNavigation(options),
-      this._client.send('Page.navigateToHistoryEntry', { entryId: entry.id })
-    ]);
-    return response;
-  }
-
-  async bringToFront() {
+  public async bringToFront() {
     await this._client.send('Page.bringToFront');
   }
 
-  async emulate(options: { viewport: Viewport; userAgent: string }) {
+  public async emulate(options: { viewport: Viewport; userAgent: string }) {
     await Promise.all([this.setViewport(options.viewport), this.setUserAgent(options.userAgent)]);
   }
 
-  async setJavaScriptEnabled(enabled: boolean) {
+  public async setJavaScriptEnabled(enabled: boolean) {
     if (this._javascriptEnabled === enabled) return;
     this._javascriptEnabled = enabled;
     await this._client.send('Emulation.setScriptExecutionDisabled', { value: !enabled });
   }
 
-  async setBypassCSP(enabled: boolean) {
+  public async setBypassCSP(enabled: boolean) {
     await this._client.send('Page.setBypassCSP', { enabled });
   }
 
-  async emulateMediaType(type?: string) {
+  public async emulateMediaType(type?: string) {
     assert(type === 'screen' || type === 'print' || type === null, 'Unsupported media type: ' + type);
     await this._client.send('Emulation.setEmulatedMedia', { media: type || '' });
   }
 
-  emulateMedia = this.emulateMediaType;
-
-  async emulateMediaFeatures(features?: Array<MediaFeature>) {
+  public async emulateMediaFeatures(features?: MediaFeature[]) {
     if (features === null) await this._client.send('Emulation.setEmulatedMedia', { features: undefined });
     if (Array.isArray(features)) {
       features.every(mediaFeature => {
@@ -638,11 +554,11 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
         assert(/^prefers-(?:color-scheme|reduced-motion)$/.test(name), 'Unsupported media feature: ' + name);
         return true;
       });
-      await this._client.send('Emulation.setEmulatedMedia', { features: features });
+      await this._client.send('Emulation.setEmulatedMedia', { features });
     }
   }
 
-  async emulateTimezone(timezoneId?: string) {
+  public async emulateTimezone(timezoneId?: string) {
     try {
       await this._client.send('Emulation.setTimezoneOverride', { timezoneId: timezoneId || '' });
     } catch (exception) {
@@ -651,33 +567,33 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     }
   }
 
-  async setViewport(viewport: Viewport) {
+  public async setViewport(viewport: Viewport) {
     const needsReload = await this._emulationManager.emulateViewport(viewport);
     this._viewport = viewport;
     if (needsReload) await this.reload();
   }
 
-  viewport(): Viewport | null {
+  public viewport(): Viewport | null {
     return this._viewport;
   }
 
-  async evaluate<V extends EvaluateFn<any>>(
+  public async evaluate<V extends EvaluateFn<any>>(
     pageFunction: V,
     ...args: SerializableOrJSHandle[]
   ): Promise<EvaluateFnReturnType<V>> {
     return this._frameManager.mainFrame()!.evaluate(pageFunction, ...args);
   }
 
-  async evaluateOnNewDocument(pageFunction: AnyFunction | string, ...args: any[]) {
+  public async evaluateOnNewDocument(pageFunction: AnyFunction | string, ...args: any[]) {
     const source = helper.evaluationString(pageFunction, ...args);
     await this._client.send('Page.addScriptToEvaluateOnNewDocument', { source });
   }
 
-  async setCacheEnabled(enabled = true) {
+  public async setCacheEnabled(enabled = true) {
     await this._frameManager.networkManager().setCacheEnabled(enabled);
   }
 
-  async screenshot(options: ScreenshotOptions = {}): Promise<Buffer | string> {
+  public async screenshot(options: ScreenshotOptions = {}): Promise<Buffer | string> {
     let screenshotType: 'png' | 'jpeg' | null = null;
     // options.type takes precedence over inferring the type from options.path
     // because it may be a 0-length file with no extension created beforehand (i.e. as a temp file).
@@ -729,7 +645,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     return this._screenshotTaskQueue.postTask(this._screenshotTask.bind(this, screenshotType, options));
   }
 
-  async _screenshotTask(format: 'png' | 'jpeg', options: ScreenshotOptions = {}): Promise<Buffer | string> {
+  public async _screenshotTask(format: 'png' | 'jpeg', options: ScreenshotOptions = {}): Promise<Buffer | string> {
     await this._client.send('Target.activateTarget', { targetId: this._target._targetId });
     let clip = options.clip ? processClip(options.clip) : undefined;
 
@@ -765,7 +681,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     return buffer;
   }
 
-  async pdf(options: PDFOptions = {}): Promise<Buffer | null> {
+  public async pdf(options: PDFOptions = {}): Promise<Buffer | null> {
     const {
       scale = 1,
       displayHeaderFooter = false,
@@ -813,14 +729,14 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
       pageRanges,
       preferCSSPageSize
     });
-    return await helper.readProtocolStream(this._client, result.stream!, path);
+    return helper.readProtocolStream(this._client, result.stream!, path);
   }
 
-  async title(): Promise<string> {
+  public async title(): Promise<string> {
     return this.mainFrame().title();
   }
 
-  async close(options: { runBeforeUnload: boolean | undefined } = { runBeforeUnload: undefined }) {
+  public async close(options: { runBeforeUnload: boolean | undefined } = { runBeforeUnload: undefined }) {
     assert(!!this._client._connection, 'Protocol error: Connection closed. Most likely the page has been closed.');
     const runBeforeUnload = !!options.runBeforeUnload;
     if (runBeforeUnload) {
@@ -831,39 +747,35 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     }
   }
 
-  isClosed(): boolean {
+  public isClosed(): boolean {
     return this._closed;
   }
 
-  get mouse(): Mouse {
-    return this._mouse;
-  }
-
-  click(selector: string, options: { delay?: number; button?: 'left' | 'right' | 'middle'; clickCount?: number } = {}) {
+  public click(selector: string, options: { delay?: number; button?: 'left' | 'right' | 'middle'; clickCount?: number } = {}) {
     return this.mainFrame().click(selector, options);
   }
 
-  focus(selector: string) {
+  public focus(selector: string) {
     return this.mainFrame().focus(selector);
   }
 
-  hover(selector: string) {
+  public hover(selector: string) {
     return this.mainFrame().hover(selector);
   }
 
-  select(selector: string, ...values: string[]): Promise<string[]> {
+  public select(selector: string, ...values: string[]): Promise<string[]> {
     return this.mainFrame().select(selector, ...values);
   }
 
-  tap(selector: string) {
+  public tap(selector: string) {
     return this.mainFrame().tap(selector);
   }
 
-  type(selector: string, text: string, options?: { delay: number | undefined }) {
+  public type(selector: string, text: string, options?: { delay: number | undefined }) {
     return this.mainFrame().type(selector, text, options);
   }
 
-  waitFor(
+  public waitFor(
     selectorOrFunctionOrTimeout: string | number | AnyFunction,
     options: { visible?: boolean; hidden?: boolean; timeout?: number; polling?: string | number } = {},
     ...args: any[]
@@ -871,26 +783,113 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     return this.mainFrame().waitFor(selectorOrFunctionOrTimeout, options, ...args);
   }
 
-  waitForSelector(
+  public waitForSelector(
     selector: string,
     options: { visible?: boolean; hidden?: boolean; timeout?: number } = {}
   ): Promise<ElementHandle | null> {
     return this.mainFrame().waitForSelector(selector, options);
   }
 
-  waitForXPath(
+  public waitForXPath(
     xpath: string,
     options: { visible?: boolean; hidden?: boolean; timeout?: number } = {}
   ): Promise<ElementHandle | null> {
     return this.mainFrame().waitForXPath(xpath, options);
   }
 
-  waitForFunction(
+  public waitForFunction(
     pageFunction: AnyFunction | string,
     options: { polling?: string | number; timeout?: number } = {},
     ...args: any[]
   ): Promise<JSHandle> {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);
+  }
+
+  private _onFileChooser(event: Protocol.Page.fileChooserOpenedPayload) {
+    if (!this._fileChooserInterceptors.size) {
+      this._client.send('Page.handleFileChooser', { action: 'fallback' }).catch(debugError);
+      return;
+    }
+    const interceptors = Array.from(this._fileChooserInterceptors);
+    this._fileChooserInterceptors.clear();
+    const fileChooser = new FileChooser(this._client, event);
+    for (const interceptor of interceptors) interceptor.call(null, fileChooser);
+  }
+
+  private _onTargetCrashed() {
+    this.emit('error', new Error('Page crashed!'));
+  }
+
+  private _onLogEntryAdded(event: Protocol.Log.entryAddedPayload) {
+    const { level, text, args, source, url, lineNumber } = event.entry;
+    if (args) args.map(arg => helper.releaseObject(this._client, arg));
+    if (source !== 'worker') this.emit(Events.Page.Console, new ConsoleMessage(level, text, [], { url, lineNumber }));
+  }
+
+  private _emitMetrics(event: Protocol.Performance.metricsPayload) {
+    this.emit(Events.Page.Metrics, {
+      title: event.title,
+      metrics: this._buildMetricsObject(event.metrics)
+    });
+  }
+
+  private _addConsoleMessage = (type: string, args: JSHandle[], stackTrace?: Protocol.Runtime.StackTrace) => {
+    if (!this.listenerCount(Events.Page.Console)) {
+      for (const arg of args)
+        arg.dispose().catch(noop);
+
+      return;
+    }
+    const textTokens: string[] = [];
+    for (const arg of args) {
+      const remoteObject = arg._remoteObject;
+      if (remoteObject.objectId) textTokens.push(arg.toString());
+      else textTokens.push(helper.valueFromRemoteObject(remoteObject));
+    }
+    const location =
+      stackTrace && stackTrace.callFrames.length
+        ? {
+          url: stackTrace.callFrames[0].url,
+          lineNumber: stackTrace.callFrames[0].lineNumber,
+          columnNumber: stackTrace.callFrames[0].columnNumber
+        }
+        : {};
+    const message = new ConsoleMessage(type, textTokens.join(' '), args, location);
+    this.emit(Events.Page.Console, message);
+  };
+
+  private _onDialog(event: Protocol.Page.javascriptDialogOpeningPayload) {
+    let dialogType = null;
+    if (event.type === 'alert') dialogType = Dialog.Type.Alert;
+    else if (event.type === 'confirm') dialogType = Dialog.Type.Confirm;
+    else if (event.type === 'prompt') dialogType = Dialog.Type.Prompt;
+    else if (event.type === 'beforeunload') dialogType = Dialog.Type.BeforeUnload;
+    assert(dialogType, 'Unknown javascript dialog type: ' + event.type);
+    const dialog = new Dialog(this._client, dialogType, event.message, event.defaultPrompt);
+    this.emit(Events.Page.Dialog, dialog);
+  }
+
+  private _sessionClosePromise() {
+    if (!this._disconnectPromise) {
+      this._disconnectPromise = new Promise(fulfill =>
+        this._client.once(Events.CDPSession.Disconnected, () => fulfill(new Error('Target closed')))
+      );
+    }
+    return this._disconnectPromise;
+  }
+
+  private async _go(
+    delta: number,
+    options?: { timeout?: number; waitUntil?: string | string[] }
+  ): Promise<Response | null> {
+    const history = await this._client.send('Page.getNavigationHistory');
+    const entry = history.entries[history.currentIndex + delta];
+    if (!entry) return null;
+    const [response] = await Promise.all([
+      this.waitForNavigation(options),
+      this._client.send('Page.navigateToHistoryEntry', { entryId: entry.id })
+    ]);
+    return response;
   }
 }
 
@@ -1009,7 +1008,7 @@ export class ConsoleMessage {
   constructor(
     private _type: string,
     private _text: string,
-    private _args: Array<JSHandle>,
+    private _args: JSHandle[],
     private _location: ConsoleMessageLocation = {}
   ) {}
   public type() {
@@ -1037,11 +1036,11 @@ export class FileChooser {
     this._handled = false;
   }
 
-  isMultiple(): boolean {
+  public isMultiple(): boolean {
     return this._multiple;
   }
 
-  async accept(filePaths: string[]): Promise<void> {
+  public async accept(filePaths: string[]): Promise<void> {
     assert(!this._handled, 'Cannot accept FileChooser which is already handled!');
     this._handled = true;
     const files = filePaths.map(filePath => path.resolve(filePath));
@@ -1051,7 +1050,7 @@ export class FileChooser {
     });
   }
 
-  async cancel(): Promise<void> {
+  public async cancel(): Promise<void> {
     assert(!this._handled, 'Cannot cancel FileChooser which is already handled!');
     this._handled = true;
     await this._client.send('Page.handleFileChooser', {
