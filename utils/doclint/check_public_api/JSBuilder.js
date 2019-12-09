@@ -109,18 +109,8 @@ function checkSources(sources) {
   /**
    * @param {!ts.ObjectType} type
    */
-  function isRegularObject(type) {
-    if (type.isIntersection())
-      return true;
-    if (!type.objectFlags)
-      return false;
-    if (!('aliasSymbol' in type))
-      return false;
-    if (type.getConstructSignatures().length)
-      return false;
-    if (type.getCallSignatures().length)
-      return false;
-    return true;
+  function isPlainObjectType(type) {
+    return (type.flags & ts.TypeFlags.Object && type.objectFlags & ts.ObjectFlags.Anonymous);
   }
 
   /**
@@ -133,7 +123,7 @@ function checkSources(sources) {
       typeName = 'Object';
     const nextCircular = [typeName].concat(circular);
 
-    if (isRegularObject(type)) {
+    if (isPlainObjectType(type)) {
       let properties = undefined;
       if (!circular.includes(typeName))
         properties = type.getProperties().map(property => serializeSymbol(property, nextCircular));

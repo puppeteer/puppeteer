@@ -46,7 +46,7 @@ describe('checkPublicAPI', function() {
   it('diff-classes', testLint);
   it('diff-methods', testLint);
   it('diff-properties', testLint);
-  // it('diff-arguments', testLint);
+  it('diff-arguments', testLint);
   it('diff-events', testLint);
   it('check-duplicates', testLint);
   it('check-sorting', testLint);
