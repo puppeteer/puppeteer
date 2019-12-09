@@ -350,7 +350,7 @@ export class DOMWorld implements Evalable, JSEvalable {
     const title = `${isXPath ? 'XPath' : 'selector'} "${selectorOrXPath}"${waitForHidden ? ' to be hidden' : ''}`;
     const waitTask = new WaitTask(
         this,
-        predicate,
+        waitForSelectorPredicate,
         title,
         polling,
         timeout,
@@ -366,29 +366,30 @@ export class DOMWorld implements Evalable, JSEvalable {
     }
     return handle.asElement();
 
-    function predicate(
-      selectorOrXPath: string,
-      isXPath: boolean,
-      waitForVisible: boolean,
-      waitForHidden: boolean
-    ): Node | boolean | null {
-      const node = isXPath
-        ? document.evaluate(selectorOrXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
-        : document.querySelector(selectorOrXPath);
-      if (!node) return waitForHidden;
-      if (!waitForVisible && !waitForHidden) return node;
-      const element = (node.nodeType === Node.TEXT_NODE ? node.parentElement : node) as Element;
+  }
+}
 
-      const style = window.getComputedStyle(element);
-      const isVisible = style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
-      const success = waitForVisible === isVisible || waitForHidden === !isVisible;
-      return success ? node : null;
+function waitForSelectorPredicate(
+  selectorOrXPath: string,
+  isXPath: boolean,
+  waitForVisible: boolean,
+  waitForHidden: boolean
+): Node | boolean | null {
+  const node = isXPath
+    ? document.evaluate(selectorOrXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
+    : document.querySelector(selectorOrXPath);
+  if (!node) return waitForHidden;
+  if (!waitForVisible && !waitForHidden) return node;
+  const element = (node.nodeType === Node.TEXT_NODE ? node.parentElement : node) as Element;
 
-      function hasVisibleBoundingBox(): boolean {
-        const rect = element.getBoundingClientRect();
-        return !!(rect.top || rect.bottom || rect.width || rect.height);
-      }
-    }
+  const style = window.getComputedStyle(element);
+  const isVisible = style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
+  const success = waitForVisible === isVisible || waitForHidden === !isVisible;
+  return success ? node : null;
+
+  function hasVisibleBoundingBox(): boolean {
+    const rect = element.getBoundingClientRect();
+    return !!(rect.top || rect.bottom || rect.width || rect.height);
   }
 }
 
