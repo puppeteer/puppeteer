@@ -8,9 +8,6 @@ node6
 test
 utils/node6-transform
 
-# exclude internal type definitions
-/lib/externs.d.ts
-
 # repeats from .gitignore
 node_modules
 .local-chromium
