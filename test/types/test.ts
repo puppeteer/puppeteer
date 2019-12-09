@@ -1,4 +1,4 @@
-import * as puppeteer from "../../../../index";
+import * as puppeteer from "../../index";
 
 // Examples taken from README
 (async () => {

@@ -6,6 +6,6 @@ utils/testrunner/examples/
 experimental/
 lib/
 *.d.ts
-utils/doclint/generate_types/test/test.ts
+test/types/test.ts
 scripts/
 src/protocol.ts
