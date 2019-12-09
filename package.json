@@ -21,7 +21,7 @@
     "prebuild": "rimraf ./lib",
     "build": "tsc",
     "build-protocol": "node -r ts-node/register ./scripts/generate-protocol-types",
-    "pretest": "npm run build && npm run lint --silent",
+    "pretest": "npm run build && npm run lint",
     "test": "npm run coverage && npm run test-types && npm run unit-test-runner",
     "coverage": "cross-env COVERAGE=true npm run unit",
     "test-doclint": "node utils/doclint/check_public_api/test/test.js && node utils/doclint/preprocessor/test.js",
