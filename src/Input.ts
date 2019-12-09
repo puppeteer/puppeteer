@@ -27,6 +27,9 @@ export interface KeyDescription {
   location: number;
 }
 
+/**
+ * Provides an api for managing a virtual keyboard.
+ */
 export class Keyboard {
   private _client: CDPSession;
   /* @internal */
@@ -37,7 +40,13 @@ export class Keyboard {
     this._client = client;
   }
 
-  public async down(key: string, options: { text?: string } = { text: undefined }) {
+  /**
+   * Dispatches a keydown event.
+   *
+   * @param key name of key to press, such as `ArrowLeft`.
+   * @param options specifies a input text event.
+   */
+  public async down(key: string, options: { text?: string } = { }) {
     const description = this._keyDescriptionForString(key);
 
     const autoRepeat = this._pressedKeys.has(description.code);
@@ -59,6 +68,11 @@ export class Keyboard {
     });
   }
 
+  /**
+   * Dispatches a `keyup` event.
+   *
+   * @param key name of key to release, such as `ArrowLeft`.
+   */
   public async up(key: string) {
     const description = this._keyDescriptionForString(key);
 
@@ -74,10 +88,19 @@ export class Keyboard {
     });
   }
 
+  /**
+   * Dispatches a `keypress` and `input` events. Does not send a `keydown` or `keyup` events.
+   */
   public async sendCharacter(char: string) {
     await this._client.send('Input.insertText', { text: char });
   }
 
+  /**
+   * Sends a `keydown`, `keypress` / `input`, and `keyup` events for each character in the text.
+   *
+   * @param text the text to type into a focused element.
+   * @param options specifies the typing options.
+   */
   public async type(text: string, options?: { delay: number | undefined }) {
     const delay = (options && options.delay) || undefined;
     for (const char of text) {
@@ -90,8 +113,11 @@ export class Keyboard {
     }
   }
 
+  /**
+   * Shortcut for `Keyboard.down` and `Keyboard.up`.
+   */
   public async press(key: string, options: { delay?: number; text?: string } = {}) {
-    const { delay = null } = options;
+    const { delay } = options;
     await this.down(key, options);
     if (delay) await new Promise(f => setTimeout(f, options.delay));
     await this.up(key);
