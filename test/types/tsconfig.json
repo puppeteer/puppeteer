@@ -1,8 +1,13 @@
 {
   "compilerOptions": {
-    "noImplicitAny": true,
+    "strict": true,
     "target": "es2015",
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "puppeteer": ["../../index"],
+      "puppeteer/*": ["../../*"]
+    }
   },
   "include": [
     "test.ts",
