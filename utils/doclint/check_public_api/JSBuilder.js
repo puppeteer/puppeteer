@@ -123,7 +123,7 @@ function checkSources(sources) {
       typeName = 'Object';
     const nextCircular = [typeName].concat(circular);
 
-    if (isPlainObjectType(type)) {
+    if (isPlainObjectType(type) || type.isIntersection()) {
       let properties = undefined;
       if (!circular.includes(typeName))
         properties = type.getProperties().map(property => serializeSymbol(property, nextCircular));
