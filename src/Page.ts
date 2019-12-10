@@ -209,8 +209,8 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     if (this._fileChooserInterceptionIsDisabled)
       throw new Error('File chooser handling does not work with multiple connections to the same page');
     const { timeout = this._timeoutSettings.timeout() } = options;
-    let callback!: () => void;
-    const promise = new Promise(x => (callback = x));
+    let callback!: (chooser: FileChooser) => void;
+    const promise = new Promise<FileChooser>(x => (callback = x));
     this._fileChooserInterceptors.add(callback);
     return helper.waitWithTimeout(promise, 'waiting for file chooser', timeout).catch(e => {
       this._fileChooserInterceptors.delete(callback);
@@ -472,16 +472,16 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
   public async goto(
     url: string,
     options?: { referer?: string; timeout?: number; waitUntil?: string | string[] }
-  ): Promise<Response | null> {
+  ): Promise<Response> {
     return this._frameManager.mainFrame()!.goto(url, options);
   }
 
-  public async reload(options?: { timeout?: number; waitUntil?: string | string[] }): Promise<Response | null> {
-    const [response] = await Promise.all([this.waitForNavigation(options), this._client.send('Page.reload')]);
+  public async reload(options?: { timeout?: number; waitUntil?: string | string[] }): Promise<Response> {
+    const [response] = await Promise.all([this.waitForNavigation(options), this._client.send('Page.reload')] as const);
     return response;
   }
 
-  public async waitForNavigation(options: { timeout?: number; waitUntil?: string | string[] } = {}): Promise<Response | null> {
+  public async waitForNavigation(options: { timeout?: number; waitUntil?: string | string[] } = {}): Promise<Response> {
     return this._frameManager.mainFrame()!.waitForNavigation(options);
   }
 
@@ -593,7 +593,10 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     await this._frameManager.networkManager().setCacheEnabled(enabled);
   }
 
-  public async screenshot(options: ScreenshotOptions = {}): Promise<Buffer | string> {
+  public async screenshot(options?: BinaryScreenShotOptions): Promise<Buffer>
+  public async screenshot(options?: Base64ScreenShotOptions): Promise<string>
+  public async screenshot(options?: ScreenshotOptions): Promise<string | Buffer>
+  public async screenshot(options: ScreenshotOptions = {}): Promise<string | Buffer> {
     let screenshotType: 'png' | 'jpeg' | null = null;
     // options.type takes precedence over inferring the type from options.path
     // because it may be a 0-length file with no extension created beforehand (i.e. as a temp file).
@@ -888,7 +891,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     const [response] = await Promise.all([
       this.waitForNavigation(options),
       this._client.send('Page.navigateToHistoryEntry', { entryId: entry.id })
-    ]);
+    ] as const);
     return response;
   }
 }
@@ -933,14 +936,64 @@ export interface Metrics {
   JSHeapTotalSize?: number;
 }
 
+export interface BoundingBox {
+  /** The x-coordinate of top-left corner. */
+  x: number;
+  /** The y-coordinate of top-left corner. */
+  y: number;
+  /** The width. */
+  width: number;
+  /** The height. */
+  height: number;
+}
+
 export interface ScreenshotOptions {
-  type?: string;
+  /**
+   * The file path to save the image to. The screenshot type will be inferred from file extension.
+   * If `path` is a relative path, then it is resolved relative to current working directory.
+   * If no path is provided, the image won't be saved to the disk.
+   */
   path?: string;
-  fullPage?: boolean;
-  clip?: { x: number; y: number; width: number; height: number };
+
+  /**
+   * The screenshot type.
+   * @default 'png'
+   */
+  type?: 'jpeg' | 'png';
+
+  /** The quality of the image, between 0-100. Not applicable to png images. */
   quality?: number;
+
+  /**
+   * When true, takes a screenshot of the full scrollable page.
+   * @default false
+   */
+  fullPage?: boolean;
+
+  /**
+   * An object which specifies clipping region of the page.
+   */
+  clip?: BoundingBox;
+
+  /**
+   * Hides default white background and allows capturing screenshots with transparency.
+   * @default false
+   */
   omitBackground?: boolean;
-  encoding?: string;
+
+  /**
+   * The encoding of the image, can be either base64 or binary.
+   * @default binary
+   */
+  encoding?: 'base64' | 'binary';
+}
+
+export interface BinaryScreenShotOptions extends ScreenshotOptions {
+  encoding?: 'binary';
+}
+
+export interface Base64ScreenShotOptions extends ScreenshotOptions {
+  encoding: 'base64';
 }
 
 export interface MediaFeature {
@@ -1036,10 +1089,15 @@ export class FileChooser {
     this._handled = false;
   }
 
+  /** Whether file chooser allow for multiple file selection. */
   public isMultiple(): boolean {
     return this._multiple;
   }
 
+  /**
+   * Accept the file chooser request with given paths.
+   * If some of the filePaths are relative paths, then they are resolved relative to the current working directory.
+   */
   public async accept(filePaths: string[]): Promise<void> {
     assert(!this._handled, 'Cannot accept FileChooser which is already handled!');
     this._handled = true;
@@ -1050,6 +1108,7 @@ export class FileChooser {
     });
   }
 
+  /** Closes the file chooser without selecting any files. */
   public async cancel(): Promise<void> {
     assert(!this._handled, 'Cannot cancel FileChooser which is already handled!');
     this._handled = true;

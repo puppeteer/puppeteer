@@ -17,7 +17,7 @@
 import { assert } from './helper';
 import { keyDefinitions } from './USKeyboardLayout';
 import { CDPSession } from './Connection';
-import { Protocol } from './protocol';
+import { MouseButton } from './types';
 
 export interface KeyDescription {
   keyCode: number;
@@ -165,8 +165,6 @@ export class Keyboard {
     return description;
   }
 }
-
-export type MouseButton = Required<Protocol.Input.dispatchMouseEventParameters>['button'];
 
 export class Mouse {
   private _x = 0;

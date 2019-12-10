@@ -126,7 +126,7 @@ export class ExecutionContext<T = any> implements JSEvalable<T> {
         throw new Error('Passed function is not well-serializable!');
       }
     }
-    let callFunctionOnPromise;
+    let callFunctionOnPromise: Promise<Protocol.Runtime.callFunctionOnReturnValue>;
     try {
       callFunctionOnPromise = this.client.send('Runtime.callFunctionOn', {
         functionDeclaration: functionText + '\n' + suffix + '\n',

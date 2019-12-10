@@ -38,7 +38,7 @@ export class Coverage {
     this._cssCoverage = new CSSCoverage(client);
   }
 
-  public async startJSCoverage(options: { resetOnNavigation?: boolean; reportAnonymousScripts?: boolean }) {
+  public async startJSCoverage(options?: { resetOnNavigation?: boolean; reportAnonymousScripts?: boolean }) {
     return this._jsCoverage.start(options);
   }
 

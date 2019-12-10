@@ -510,7 +510,7 @@ export class Response {
     return this._statusText;
   }
 
-  public headers(): object {
+  public headers(): Record<string, string> {
     return this._headers;
   }
 

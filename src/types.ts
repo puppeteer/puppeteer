@@ -1,4 +1,6 @@
 import { ElementHandle, JSHandle } from './JSHandle';
+import { Protocol } from './protocol';
+import { Response } from './NetworkManager';
 
 export type AnyFunction = (...args: any[]) => unknown;
 
@@ -368,6 +370,12 @@ export type EvaluateFnReturnType<T extends EvaluateFn> = T extends (...args: any
   ? UnwrapPromise<R>
   : unknown;
 
+export type LoadEvent =
+| 'load'
+| 'domcontentloaded'
+| 'networkidle0'
+| 'networkidle2';
+
 export type Serializable = number | string | boolean | null | Serializable[] | {[key: string]: Serializable};
 
 export type SerializableOrJSHandle = Serializable | JSHandle;
@@ -381,4 +389,224 @@ export interface Debugger {
   namespace: string;
   destroy: () => boolean;
   extend: (namespace: string, delimiter?: string) => Debugger;
+}
+
+export interface WaitForSelectorOptions extends Timeoutable {
+  /**
+   * Wait for element to be present in DOM and to be visible,
+   * i.e. to not have display: none or visibility: hidden CSS properties.
+   * @default false
+   */
+  visible?: boolean;
+  /**
+   * Wait for element to not be found in the DOM or to be hidden,
+   * i.e. have display: none or visibility: hidden CSS properties.
+   * @default false
+   */
+  hidden?: boolean;
+}
+
+export interface WaitForSelectorOptionsHidden extends WaitForSelectorOptions {
+  hidden: true;
+}
+
+export interface PageFnOptions extends Timeoutable {
+  polling?: 'raf' | 'mutation' | number;
+}
+
+export interface StyleTagOptions {
+  /** Url of the <link> tag. */
+  url?: string;
+  /** Path to the CSS file to be injected into frame. If `path` is a relative path, then it is resolved relative to current working directory. */
+  path?: string;
+  /** Raw CSS content to be injected into frame. */
+  content?: string;
+}
+
+export interface ScriptTagOptions {
+  /** Url of a script to be added. */
+  url?: string;
+  /** Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to current working directory. */
+  path?: string;
+  /** Raw JavaScript content to be injected into frame. */
+  content?: string;
+  /** Script type. Use 'module' in order to load a Javascript ES6 module. */
+  type?: string;
+}
+
+export type MouseButton = Required<Protocol.Input.dispatchMouseEventParameters>['button'];
+
+export interface ClickOptions {
+  /** @default MouseButtons.Left */
+  button?: MouseButton;
+  /** @default 1 */
+  clickCount?: number;
+  /**
+   * Time to wait between mousedown and mouseup in milliseconds.
+   * @default 0
+   */
+  delay?: number;
+}
+
+export interface NavigationOptions extends Timeoutable {
+  /**
+   * When to consider navigation succeeded.
+   * @default load Navigation is consider when the `load` event is fired.
+   */
+  waitUntil?: LoadEvent | LoadEvent[];
+}
+
+/**
+ * Navigation options for `page.goto`.
+ */
+export interface DirectNavigationOptions extends NavigationOptions {
+  /**
+   * Referer header value.
+   * If provided it will take preference over the referer header value set by
+   * [page.setExtraHTTPHeaders()](#pagesetextrahttpheadersheaders).
+   */
+  referer?: string;
+}
+
+export interface FrameBase extends Evalable, JSEvalable {
+  /**
+   * The method queries frame for the selector.
+   * If there's no such element within the frame, the method will resolve to null.
+   */
+  $(selector: string): Promise<ElementHandle | null>;
+
+  /**
+   * The method runs document.querySelectorAll within the frame.
+   * If no elements match the selector, the return value resolve to [].
+   */
+  $$(selector: string): Promise<ElementHandle[]>;
+
+  /**
+   * The method evaluates the XPath expression.
+   * @param expression XPath expression to evaluate.
+   */
+  $x(expression: string): Promise<ElementHandle[]>;
+
+  /** Adds a `<script>` tag into the page with the desired url or content. */
+  addScriptTag(options: ScriptTagOptions): Promise<ElementHandle>;
+
+  /** Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content. */
+  addStyleTag(options: StyleTagOptions): Promise<ElementHandle>;
+
+  /**
+   * This method fetches an element with selector, scrolls it into view if needed, and
+   * then uses `page.mouse` to click in the center of the element. If there's no element
+   * matching selector, the method throws an error.
+   * @param selector A selector to search for element to click. If there are multiple elements satisfying the selector, the first will be clicked.
+   * @param options Specifies the click options.
+   */
+  click(selector: string, options?: ClickOptions): Promise<void>;
+
+  /** Gets the full HTML contents of the page, including the doctype. */
+  content(): Promise<string>;
+
+  /**
+   * Navigates to a URL.
+   * @param url URL to navigate page to. The url should include scheme, e.g. `https://`
+   * @param options The navigation parameters.
+   */
+  goto(url: string, options?: DirectNavigationOptions): Promise<Response>;
+
+  /** This method fetches an element with selector and focuses it. */
+  focus(selector: string): Promise<void>;
+
+  /**
+   * This method fetches an element with `selector`, scrolls it into view if needed,
+   * and then uses page.mouse to hover over the center of the element. If there's no
+   * element matching `selector`, the method throws an error.
+   * @param selector A selector to search for element to hover. If there are multiple elements satisfying the selector, the first will be hovered.
+   */
+  hover(selector: string): Promise<void>;
+
+  /**
+   * Triggers a `change` and `input` event once all the provided options have been selected.
+   * If there's no `<select>` element matching selector, the method throws an error.
+   * @param selector A selector to query page for.
+   * @param values Values of options to select. If the `<select>` has the `multiple` attribute,
+   * all values are considered, otherwise only the first one is taken into account.
+   */
+  select(selector: string, ...values: string[]): Promise<string[]>;
+
+  /**
+   * Sets the page content.
+   * @param html HTML markup to assign to the page.
+   * @param options The navigation parameters.
+   */
+  setContent(html: string, options?: NavigationOptions): Promise<void>;
+
+  /**
+   * This method fetches an element with `selector`, scrolls it into view if needed,
+   * and then uses page.touchscreen to tap in the center of the element.
+   * @param selector A `selector` to search for element to tap. If there are multiple elements
+   * satisfying the selector, the first will be tapped.
+   */
+  tap(selector: string): Promise<void>;
+
+  /** Returns page's title. */
+  title(): Promise<string>;
+
+  /**
+   * Sends a `keydown`, `keypress/input`, and `keyup` event for each character in the text.
+   * @param selector A selector of an element to type into. If there are multiple elements satisfying the selector, the first will be used.
+   * @param text: A text to type into a focused element.
+   * @param options: The typing parameters.
+   */
+  type(selector: string, text: string, options?: { delay: number }): Promise<void>;
+
+  /** Returns frame's url. */
+  url(): string;
+
+  /**
+   * Waits for a certain amount of time before resolving.
+   * @param duration The time to wait for.
+   */
+  waitFor(duration: number): Promise<void>;
+  /**
+   * Shortcut for waitForSelector and waitForXPath
+   */
+  waitFor(selector: string, options: WaitForSelectorOptionsHidden): Promise<ElementHandle | null>;
+  waitFor(selector: string, options?: WaitForSelectorOptions): Promise<ElementHandle>;
+
+  /**
+   * Shortcut for waitForFunction.
+   */
+  waitFor(
+    selector: EvaluateFn,
+    options?: WaitForSelectorOptions,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<JSHandle>;
+
+  /**
+   * Allows waiting for various conditions.
+   */
+  waitForFunction(
+    fn: EvaluateFn,
+    options?: PageFnOptions,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<JSHandle>;
+
+  /**
+   * Wait for the page navigation occur.
+   * @param options The navigation parameters.
+   */
+  waitForNavigation(options?: NavigationOptions): Promise<Response>;
+
+  waitForSelector(
+    selector: string,
+    options?: WaitForSelectorOptions,
+  ): Promise<ElementHandle>;
+  waitForSelector(
+      selector: string,
+      options?: WaitForSelectorOptionsHidden,
+  ): Promise<ElementHandle | null>;
+
+  waitForXPath(
+    xpath: string,
+    options?: WaitForSelectorOptions,
+  ): Promise<ElementHandle>;
 }

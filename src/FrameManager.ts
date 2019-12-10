@@ -85,7 +85,7 @@ export class FrameManager extends EventEmitter {
     frame: Frame,
     url: string,
     options: { referer?: string; timeout?: number; waitUntil?: string | string[] } = {}
-  ): Promise<Response | null> {
+  ): Promise<Response> {
     assertNoLegacyNavigationOptions(options);
     const {
       referer = this._networkManager.extraHTTPHeaders().referer,
@@ -107,7 +107,7 @@ export class FrameManager extends EventEmitter {
     }
     watcher.dispose();
     if (error) throw error;
-    return watcher.navigationResponse();
+    return watcher.navigationResponse()!;
 
     async function navigate(client: CDPSession, url: string, referrer: string, frameId: string): Promise<Error | null> {
       try {
@@ -123,7 +123,7 @@ export class FrameManager extends EventEmitter {
   public async waitForFrameNavigation(
     frame: Frame,
     options: { timeout?: number; waitUntil?: string | string[] } = {}
-  ): Promise<Response | null> {
+  ): Promise<Response> {
     assertNoLegacyNavigationOptions(options);
     const { waitUntil = ['load'], timeout = this._timeoutSettings.navigationTimeout() } = options;
     const watcher = new LifecycleWatcher(this, frame, waitUntil, timeout);
@@ -134,7 +134,7 @@ export class FrameManager extends EventEmitter {
     ]);
     watcher.dispose();
     if (error) throw error;
-    return watcher.navigationResponse();
+    return watcher.navigationResponse()!;
   }
 
   private _onLifecycleEvent(event: Protocol.Page.lifecycleEventPayload) {
@@ -334,14 +334,15 @@ export class Frame implements Evalable, JSEvalable {
   public async goto(
     url: string,
     options?: { referer?: string; timeout?: number; waitUntil?: string | string[] }
-  ): Promise<Response | null> {
+  ): Promise<Response> {
     return this._frameManager.navigateFrame(this, url, options);
   }
 
-  public async waitForNavigation(options?: { timeout?: number; waitUntil?: string | string[] }): Promise<Response | null> {
+  public async waitForNavigation(options?: { timeout?: number; waitUntil?: string | string[] }): Promise<Response> {
     return this._frameManager.waitForFrameNavigation(this, options);
   }
 
+  /** Execution context associated with this frame. */
   public executionContext(): Promise<ExecutionContext> {
     return this._mainWorld.executionContext();
   }
@@ -384,6 +385,7 @@ export class Frame implements Evalable, JSEvalable {
     return this._secondaryWorld.setContent(html, options);
   }
 
+  /** @returns frame's name attribute as specified in the tag. */
   public name(): string {
     return this._name || '';
   }
@@ -400,6 +402,7 @@ export class Frame implements Evalable, JSEvalable {
     return Array.from(this._childFrames);
   }
 
+  /** @returns `true` if the frame has been detached, or `false` otherwise. */
   public isDetached(): boolean {
     return this._detached;
   }

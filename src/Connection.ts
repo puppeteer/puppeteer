@@ -137,8 +137,14 @@ export class CDPSession extends EventEmitter {
     this._connection = connection;
   }
 
+  public on(event: string | symbol, listener: AnyFunction): this;
   public on<T extends keyof Protocol.Events>(event: T, listener: (arg: Protocol.Events[T]) => void): this {
     return super.on(event, listener);
+  }
+
+  public once(event: string | symbol, listener: AnyFunction): this;
+  public once<T extends keyof Protocol.Events>(event: T, listener: (arg: Protocol.Events[T]) => void): this {
+    return super.once(event, listener);
   }
 
   public send<T extends keyof Protocol.CommandParameters>(

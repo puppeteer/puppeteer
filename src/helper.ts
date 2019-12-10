@@ -220,11 +220,13 @@ export class Helper {
     }
     if (file !== undefined) await closeAsync(file);
     await client.send('IO.close', { handle });
-    let resultBuffer = null;
+
     try {
-      resultBuffer = Buffer.concat(bufs);
-    } catch { /* */ }
-    return resultBuffer;
+      return Buffer.concat(bufs);
+    } catch {
+      /**/
+    }
+    return null;
   }
 }
 
