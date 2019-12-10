@@ -39,10 +39,13 @@ function existsAsync(p: fs.PathLike): Promise<boolean> {
 
 export type Platform = 'mac' | 'win32' | 'win64' | 'linux';
 
-export interface BrowserFetcherOptions {
-  platform?: Platform;
-  path?: string;
+export interface FetcherOptions {
+  /** A download host to be used. Defaults to `https://storage.googleapis.com`. */
   host?: string;
+  /** A path for the downloads folder. Defaults to `<root>/.local-chromium`, where `<root>` is puppeteer's package root. */
+  path?: string;
+  /** Possible values are: `mac`, `win32`, `win64`, `linux`. Defaults to the current platform. */
+  platform?: Platform;
 }
 
 export interface RevisionInfo {
@@ -96,7 +99,7 @@ export class BrowserFetcher {
   private _downloadHost: string;
   private _platform: Platform;
 
-  constructor(projectRoot: string, options: BrowserFetcherOptions = {}) {
+  constructor(projectRoot: string, options: FetcherOptions = {}) {
     this._downloadsFolder = options.path || path.join(projectRoot, '.local-chromium');
     this._downloadHost = options.host || DEFAULT_DOWNLOAD_HOST;
     this._platform = options.platform || detectPlatform();

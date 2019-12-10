@@ -15,7 +15,7 @@
  */
 
 import { Launcher, ProductLauncher } from './Launcher';
-import { BrowserFetcher, BrowserFetcherOptions } from './BrowserFetcher';
+import { BrowserFetcher, FetcherOptions } from './BrowserFetcher';
 import { LaunchOptions, ConnectOptions, ChromeArgOptions } from './types';
 import { Browser } from './Browser';
 import { devices, Device } from './DeviceDescriptors';
@@ -101,6 +101,6 @@ export class Puppeteer {
    */
   public defaultArgs = (options?: ChromeArgOptions): string[] => this._launcher.defaultArgs(options);
 
-  public createBrowserFetcher = (options?: BrowserFetcherOptions): BrowserFetcher =>
+  public createBrowserFetcher = (options?: FetcherOptions): BrowserFetcher =>
     new BrowserFetcher(this._projectRoot, options);
 }
