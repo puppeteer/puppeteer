@@ -25,7 +25,7 @@ import { CDPSession } from './Connection';
 import { Page } from './Page';
 import { TimeoutSettings } from './TimeoutSettings';
 import { JSHandle, ElementHandle } from './JSHandle';
-import { AnyFunction, Evalable, JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
+import { AnyFunction, Evalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType, FrameBase, WaitForSelectorOptionsHidden, WaitForSelectorOptions, NavigationOptions, DirectNavigationOptions, StyleTagOptions, ScriptTagOptions, ClickOptions } from './types';
 import { Protocol } from './protocol';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
@@ -84,7 +84,7 @@ export class FrameManager extends EventEmitter {
   public async navigateFrame(
     frame: Frame,
     url: string,
-    options: { referer?: string; timeout?: number; waitUntil?: string | string[] } = {}
+    options: DirectNavigationOptions = {}
   ): Promise<Response> {
     assertNoLegacyNavigationOptions(options);
     const {
@@ -122,7 +122,7 @@ export class FrameManager extends EventEmitter {
 
   public async waitForFrameNavigation(
     frame: Frame,
-    options: { timeout?: number; waitUntil?: string | string[] } = {}
+    options: NavigationOptions = {}
   ): Promise<Response> {
     assertNoLegacyNavigationOptions(options);
     const { waitUntil = ['load'], timeout = this._timeoutSettings.navigationTimeout() } = options;
@@ -175,8 +175,7 @@ export class FrameManager extends EventEmitter {
     assert(isMainFrame || frame, 'We either navigate top level or have old version of the navigated frame');
 
     // Detach all child frames first.
-    if (frame)
-      for (const child of frame.childFrames()) this._removeFramesRecursively(child);
+    if (frame) for (const child of frame.childFrames()) this._removeFramesRecursively(child);
 
     // Update or create main frame.
     if (isMainFrame) {
@@ -204,7 +203,7 @@ export class FrameManager extends EventEmitter {
     await this._client.send('Page.addScriptToEvaluateOnNewDocument', {
       source: `//# sourceURL=${EVALUATION_SCRIPT_URL}`,
       worldName: name
-    }),
+    });
     await Promise.all(
         this.frames().map(frame =>
           this._client
@@ -288,14 +287,13 @@ export class FrameManager extends EventEmitter {
   }
 
   private _onExecutionContextsCleared() {
-    for (const context of this._contextIdToContext.values())
-      if (context.world) context.world._setContext(null);
+    for (const context of this._contextIdToContext.values()) if (context.world) context.world._setContext(null);
 
     this._contextIdToContext.clear();
   }
 }
 
-export class Frame implements Evalable, JSEvalable {
+export class Frame implements FrameBase {
   /* @internal */
   public _frameManager: FrameManager;
   protected _client: CDPSession;
@@ -333,12 +331,12 @@ export class Frame implements Evalable, JSEvalable {
 
   public async goto(
     url: string,
-    options?: { referer?: string; timeout?: number; waitUntil?: string | string[] }
+    options?: DirectNavigationOptions
   ): Promise<Response> {
     return this._frameManager.navigateFrame(this, url, options);
   }
 
-  public async waitForNavigation(options?: { timeout?: number; waitUntil?: string | string[] }): Promise<Response> {
+  public async waitForNavigation(options?: NavigationOptions): Promise<Response> {
     return this._frameManager.waitForFrameNavigation(this, options);
   }
 
@@ -369,9 +367,13 @@ export class Frame implements Evalable, JSEvalable {
     return this._mainWorld.$x(expression);
   }
 
-  public $eval: Evalable['$eval'] = async(...args: Parameters<Evalable['$eval']>) => this._mainWorld.$eval(...args);
+  public async $eval(...args: Parameters<Evalable['$eval']>) {
+    return this._mainWorld.$eval(...args);
+  }
 
-  public $$eval: Evalable['$$eval'] = async(...args: Parameters<Evalable['$$eval']>) => this._mainWorld.$$eval(...args);
+  public async $$eval(...args: Parameters<Evalable['$$eval']>) {
+    return this._mainWorld.$$eval(...args);
+  }
 
   public async $$(selector: string): Promise<ElementHandle[]> {
     return this._mainWorld.$$(selector);
@@ -381,7 +383,7 @@ export class Frame implements Evalable, JSEvalable {
     return this._secondaryWorld.content();
   }
 
-  public async setContent(html: string, options: { timeout?: number; waitUntil?: string | string[] } = {}) {
+  public async setContent(html: string, options: NavigationOptions = {}) {
     return this._secondaryWorld.setContent(html, options);
   }
 
@@ -407,23 +409,15 @@ export class Frame implements Evalable, JSEvalable {
     return this._detached;
   }
 
-  public async addScriptTag(options: {
-    url?: string;
-    path?: string;
-    content?: string;
-    type?: string;
-  }): Promise<ElementHandle> {
+  public async addScriptTag(options: ScriptTagOptions): Promise<ElementHandle> {
     return this._mainWorld.addScriptTag(options);
   }
 
-  public async addStyleTag(options: { url?: string; path?: string; content?: string }): Promise<ElementHandle> {
+  public async addStyleTag(options: StyleTagOptions): Promise<ElementHandle> {
     return this._mainWorld.addStyleTag(options);
   }
 
-  public async click(
-    selector: string,
-    options?: { delay?: number; button?: 'left' | 'right' | 'middle'; clickCount?: number }
-  ) {
+  public async click(selector: string, options?: ClickOptions) {
     return this._secondaryWorld.click(selector, options);
   }
 
@@ -447,23 +441,23 @@ export class Frame implements Evalable, JSEvalable {
     return this._mainWorld.type(selector, text, options);
   }
 
-  public waitFor(
-    selectorOrFunctionOrTimeout: string | number | AnyFunction,
-    options: { visible?: boolean; hidden?: boolean; timeout?: number } = {},
-    ...args: any[]
-  ): Promise<JSHandle | null> {
+  waitFor(duration: number): Promise<void>
+  waitFor(selector: string, options: WaitForSelectorOptionsHidden): Promise<ElementHandle | null>
+  waitFor(selector: string, options?: WaitForSelectorOptions): Promise<ElementHandle>
+  waitFor(selector: EvaluateFn, options?: WaitForSelectorOptions, ...args: SerializableOrJSHandle[]): Promise<JSHandle>
+  public waitFor(selector: string | number | EvaluateFn, options?: WaitForSelectorOptionsHidden, ...args: SerializableOrJSHandle[]):  Promise<ElementHandle | JSHandle | null | void> {
     const xPathPattern = '//';
 
-    if (helper.isString(selectorOrFunctionOrTimeout)) {
-      if (selectorOrFunctionOrTimeout.startsWith(xPathPattern))
-        return this.waitForXPath(selectorOrFunctionOrTimeout, options);
-      return this.waitForSelector(selectorOrFunctionOrTimeout, options);
+    if (helper.isString(selector)) {
+      if (selector.startsWith(xPathPattern))
+        return this.waitForXPath(selector, options);
+      return this.waitForSelector(selector, options);
     }
-    if (helper.isNumber(selectorOrFunctionOrTimeout))
-      return new Promise(fulfill => setTimeout(fulfill, selectorOrFunctionOrTimeout));
-    if (typeof selectorOrFunctionOrTimeout === 'function')
-      return this.waitForFunction(selectorOrFunctionOrTimeout, options, ...args);
-    return Promise.reject(new Error('Unsupported target type: ' + typeof selectorOrFunctionOrTimeout));
+    if (helper.isNumber(selector))
+      return new Promise(fulfill => setTimeout(fulfill, selector));
+    if (typeof selector === 'function')
+      return this.waitForFunction(selector, options, ...args);
+    return Promise.reject(new Error('Unsupported target type: ' + typeof selector));
   }
 
   public async waitForSelector(

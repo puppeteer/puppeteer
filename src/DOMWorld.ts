@@ -22,7 +22,19 @@ import { FrameManager, Frame } from './FrameManager';
 import { TimeoutSettings } from './TimeoutSettings';
 import { ExecutionContext } from './ExecutionContext';
 import { JSHandle, ElementHandle } from './JSHandle';
-import { AnyFunction, Evalable, JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
+import {
+  AnyFunction,
+  Evalable,
+  JSEvalable,
+  EvaluateFn,
+  SerializableOrJSHandle,
+  EvaluateFnReturnType,
+  WaitForSelectorOptions,
+  NavigationOptions,
+  StyleTagOptions,
+  ScriptTagOptions,
+  ClickOptions,
+} from './types';
 
 const noop = () => undefined;
 const readFileAsync = helper.promisify(fs.readFile);
@@ -115,10 +127,10 @@ export class DOMWorld implements Evalable, JSEvalable {
     return value;
   }
 
-  public $eval: Evalable['$eval'] = async(...args: Parameters<Evalable['$eval']>) => {
+  public async $eval(...args: Parameters<Evalable['$eval']>) {
     const document = await this._document();
     return document.$eval(...args);
-  };
+  }
 
   public $$eval: Evalable['$$eval'] = async(...args: Parameters<Evalable['$$eval']>) => {
     const document = await this._document();
@@ -141,7 +153,7 @@ export class DOMWorld implements Evalable, JSEvalable {
     });
   }
 
-  public async setContent(html: string, options: { timeout?: number; waitUntil?: string | string[] } = {}) {
+  public async setContent(html: string, options: NavigationOptions = {}) {
     const { waitUntil = ['load'], timeout = this.timeoutSettings.navigationTimeout() } = options;
     // We rely upon the fact that document.open() will reset frame lifecycle with "init"
     // lifecycle event. @see https://crrev.com/608658
@@ -156,12 +168,7 @@ export class DOMWorld implements Evalable, JSEvalable {
     if (error) throw error;
   }
 
-  public async addScriptTag(options: {
-    url?: string;
-    path?: string;
-    content?: string;
-    type?: string;
-  }): Promise<ElementHandle> {
+  public async addScriptTag(options: ScriptTagOptions): Promise<ElementHandle> {
     const { url = null, path = null, content = null, type = '' } = options;
     if (url !== null) {
       try {
@@ -211,7 +218,7 @@ export class DOMWorld implements Evalable, JSEvalable {
     }
   }
 
-  public async addStyleTag(options: { url?: string; path?: string; content?: string }): Promise<ElementHandle> {
+  public async addStyleTag(options: StyleTagOptions): Promise<ElementHandle> {
     const { url = null, path = null, content = null } = options;
     if (url !== null) {
       try {
@@ -263,10 +270,7 @@ export class DOMWorld implements Evalable, JSEvalable {
     }
   }
 
-  public async click(
-    selector: string,
-    options?: { delay?: number; button?: 'left' | 'right' | 'middle'; clickCount?: number }
-  ) {
+  public async click(selector: string, options?: ClickOptions) {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
     await handle.click(options);
@@ -311,14 +315,14 @@ export class DOMWorld implements Evalable, JSEvalable {
 
   public waitForSelector(
     selector: string,
-    options?: { visible?: boolean; hidden?: boolean; timeout?: number }
+    options?: WaitForSelectorOptions
   ): Promise<ElementHandle | null> {
     return this._waitForSelectorOrXPath(selector, false, options);
   }
 
   public waitForXPath(
     xpath: string,
-    options?: { visible?: boolean; hidden?: boolean; timeout?: number }
+    options?: WaitForSelectorOptions
   ): Promise<ElementHandle | null> {
     return this._waitForSelectorOrXPath(xpath, true, options);
   }
@@ -339,7 +343,7 @@ export class DOMWorld implements Evalable, JSEvalable {
   private async _waitForSelectorOrXPath(
     selectorOrXPath: string,
     isXPath: boolean,
-    options: { visible?: boolean; hidden?: boolean; timeout?: number } = {}
+    options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle | null> {
     const {
       visible: waitForVisible = false,
@@ -365,7 +369,6 @@ export class DOMWorld implements Evalable, JSEvalable {
       return null;
     }
     return handle.asElement();
-
   }
 }
 
@@ -491,8 +494,7 @@ class WaitTask {
   }
 
   private _cleanup() {
-    if (this._timeoutTimer !== undefined)
-      clearTimeout(this._timeoutTimer);
+    if (this._timeoutTimer !== undefined) clearTimeout(this._timeoutTimer);
 
     this._domWorld._waitTasks.delete(this);
   }

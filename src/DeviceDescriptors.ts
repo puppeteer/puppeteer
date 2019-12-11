@@ -22,7 +22,7 @@ export interface Device {
   viewport: Viewport;
 }
 
-const deviceDescriptors: Device[] = [
+export const devices = [
   {
     'name': 'Blackberry PlayBook',
     'userAgent': 'Mozilla/5.0 (PlayBook; U; RIM Tablet OS 2.1.0; en-US) AppleWebKit/536.2+ (KHTML like Gecko) Version/7.2.1.0 Safari/536.2+',
@@ -851,9 +851,7 @@ const deviceDescriptors: Device[] = [
       'isLandscape': true
     }
   }
-];
+] as Device[] & { [key: string]: Device };
 
-export const devices = deviceDescriptors.reduce((acc, device) => {
-  acc[device.name] = device;
-  return acc;
-}, {} as Record<string, Device>);
+for (const device of devices)
+  devices[device.name] = device;

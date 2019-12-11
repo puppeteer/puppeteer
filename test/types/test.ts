@@ -11,10 +11,8 @@ import * as Devices from "puppeteer/DeviceDescriptors";
     interestingOnly: true,
     root: undefined,
   });
-  if (snap && snap.children) {
-    for (const child of snap.children) {
-      console.log(child.name);
-    }
+  for (const child of snap!.children!) {
+    console.log(child.name);
   }
 });
 
@@ -51,8 +49,8 @@ import * as Devices from "puppeteer/DeviceDescriptors";
   // Get the "viewport" of the page, as reported by the page.
   const dimensions = await page.evaluate(() => {
     return {
-      width: document.documentElement!.clientWidth,
-      height: document.documentElement!.clientHeight,
+      width: document.documentElement.clientWidth,
+      height: document.documentElement.clientHeight,
       deviceScaleFactor: window.devicePixelRatio
     };
   });
@@ -120,8 +118,8 @@ puppeteer.launch().then(async browser => {
     console.log(content);
   });
 
-  // Devices.forEach(device => console.log(device.name));
-  // puppeteer.devices.forEach(device => console.log(device.name));
+  Devices.forEach(device => console.log(device.name));
+  puppeteer.devices.forEach(device => console.log(device.name));
 
   await page.emulateMediaType("screen");
   await page.emulate(Devices['test']);
@@ -267,10 +265,7 @@ puppeteer.launch().then(async browser => {
   console.log(button.toString());
   input.type("Hello World", { delay: 10 });
 
-  const buttonTextContent = await button.getProperty('textContent');
-  if (buttonTextContent) {
-    const buttonText = await buttonTextContent.jsonValue();
-  }
+  const buttonText = await (await button.getProperty('textContent'))!.jsonValue();
 
   await page.deleteCookie(...await page.cookies());
 
@@ -411,7 +406,7 @@ puppeteer.launch().then(async browser => {
 
   const target = page.target();
   const session = await target.createCDPSession();
-  // await session.send('methodname', { option: 42 });
+  await session.send('Animation.setPaused', {animations: [], paused: false});
   await session.detach();
 
   await page.tracing.start({ path: "trace.json", categories: ["one", "two"] });
@@ -478,15 +473,13 @@ puppeteer.launch().then(async browser => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.waitFor(1000); // $ExpectType void
-  
-  // TODO
-  // const el: puppeteer.ElementHandle = await page.waitFor('selector');
-  // const nullableEl: puppeteer.ElementHandle | null = await page.waitFor('selector', {
-  //   hidden: true,
-  // });
-  // const el2: puppeteer.ElementHandle = await page.waitFor('selector', {
-  //     timeout: 123,
-  // });
+  const el: puppeteer.ElementHandle = await page.waitFor('selector');
+  const nullableEl: puppeteer.ElementHandle | null = await page.waitFor('selector', {
+    hidden: true,
+  });
+  const el2: puppeteer.ElementHandle = await page.waitFor('selector', {
+      timeout: 123,
+  });
   await page.waitFor(() => !!document.querySelector('.foo'), {
     hidden: true,
   });

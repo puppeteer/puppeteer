@@ -21,7 +21,7 @@ import * as mime from 'mime-types';
 import { helper, assert, debugError } from './helper';
 import { ExecutionContext } from './ExecutionContext';
 import { CDPSession } from './Connection';
-import { Evalable, JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
+import { Evalable, JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType, ClickOptions } from './types';
 import { Page, ScreenshotOptions } from './Page';
 import { FrameManager, Frame } from './FrameManager';
 import { Protocol } from './protocol';
@@ -80,7 +80,7 @@ export class JSHandle<T = any> implements JSEvalable<T> {
     return this.executionContext().evaluate(pageFunction, this, ...args);
   }
 
-  public async evaluateHandle<V extends EvaluateFn<any>>(
+  public async evaluateHandle<V extends EvaluateFn<any> = EvaluateFn<T>>(
     pageFunction: V,
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle<EvaluateFnReturnType<V>>> {
@@ -233,7 +233,7 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
         .send('DOM.getBoxModel', {
           objectId: this._remoteObject.objectId
         })
-        .catch(error => debugError(error));
+        .catch(debugError);
   }
 
   private _fromProtocolQuad(quad: number[]): Array<{ x: number; y: number }> {
@@ -262,7 +262,7 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
     await this._page.mouse.move(x, y);
   }
 
-  public async click(options?: { delay?: number; button?: 'left' | 'right' | 'middle'; clickCount?: number }) {
+  public async click(options?: ClickOptions) {
     await this._scrollIntoViewIfNeeded();
     const { x, y } = await this._clickablePoint();
     await this._page.mouse.click(x, y, options);
@@ -442,13 +442,13 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
     return result;
   }
 
-  public $eval: Evalable['$eval'] = async(selector: string, ...args: Parameters<JSEvalable['evaluate']>) => {
+  public async $eval(selector: string, ...args: Parameters<JSEvalable['evaluate']>) {
     const elementHandle = await this.$(selector);
     if (!elementHandle) throw new Error(`Error: failed to find element matching selector "${selector}"`);
     const result = await elementHandle.evaluate(...args);
     await elementHandle.dispose();
     return result;
-  };
+  }
 
   public $$eval: Evalable['$$eval'] = async(selector: string, ...args: Parameters<JSEvalable['evaluate']>) => {
     const arrayHandle = await this.evaluateHandle(

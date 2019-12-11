@@ -17,7 +17,7 @@
 import { assert } from './helper';
 import { keyDefinitions } from './USKeyboardLayout';
 import { CDPSession } from './Connection';
-import { MouseButton } from './types';
+import { MouseButton, ClickOptions } from './types';
 
 export interface KeyDescription {
   keyCode: number;
@@ -190,7 +190,7 @@ export class Mouse {
     }
   }
 
-  public async click(x: number, y: number, options: { delay?: number; button?: MouseButton; clickCount?: number } = {}) {
+  public async click(x: number, y: number, options: ClickOptions = {}) {
     const { delay = null } = options;
     if (delay !== null) {
       await Promise.all([this.move(x, y), this.down(options)]);
@@ -201,7 +201,7 @@ export class Mouse {
     }
   }
 
-  public async down(options: { button?: MouseButton; clickCount?: number } = {}) {
+  public async down(options: ClickOptions = {}) {
     const { button = 'left', clickCount = 1 } = options;
     this._button = button;
     await this._client.send('Input.dispatchMouseEvent', {
@@ -214,7 +214,7 @@ export class Mouse {
     });
   }
 
-  public async up(options: { button?: MouseButton; clickCount?: number } = {}) {
+  public async up(options: ClickOptions = {}) {
     const { button = 'left', clickCount = 1 } = options;
     this._button = 'none';
     await this._client.send('Input.dispatchMouseEvent', {
@@ -229,33 +229,27 @@ export class Mouse {
 }
 
 export class Touchscreen {
-  private _client: CDPSession;
-  private _keyboard: Keyboard;
-
-  constructor(client: CDPSession, keyboard: Keyboard) {
-    this._client = client;
-    this._keyboard = keyboard;
-  }
+  constructor(private client: CDPSession, private keyboard: Keyboard) { }
 
   public async tap(x: number, y: number) {
     // Touches appear to be lost during the first frame after navigation.
     // This waits a frame before sending the tap.
     // @see https://crbug.com/613219
-    await this._client.send('Runtime.evaluate', {
+    await this.client.send('Runtime.evaluate', {
       expression: 'new Promise(x => requestAnimationFrame(() => requestAnimationFrame(x)))',
       awaitPromise: true
     });
 
     const touchPoints = [{ x: Math.round(x), y: Math.round(y) }];
-    await this._client.send('Input.dispatchTouchEvent', {
+    await this.client.send('Input.dispatchTouchEvent', {
       type: 'touchStart',
       touchPoints,
-      modifiers: this._keyboard._modifiers
+      modifiers: this.keyboard._modifiers
     });
-    await this._client.send('Input.dispatchTouchEvent', {
+    await this.client.send('Input.dispatchTouchEvent', {
       type: 'touchEnd',
       touchPoints: [],
-      modifiers: this._keyboard._modifiers
+      modifiers: this.keyboard._modifiers
     });
   }
 }

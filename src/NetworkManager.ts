@@ -456,7 +456,10 @@ export class Response {
   private _statusText: string;
   private _url: string;
   private _contentPromise: Promise<Buffer> | null = null;
-  private _remoteAddress: { ip?: string; port?: number };
+  private _remoteAddress: {
+    ip?: Protocol.Network.Response['remoteIPAddress'];
+    port?: Protocol.Network.Response['remotePort'];
+  };
   private _fromDiskCache: boolean;
   private _fromServiceWorker: boolean;
   private _headers: Record<string, string> = {};

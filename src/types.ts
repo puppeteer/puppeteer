@@ -599,7 +599,7 @@ export interface FrameBase extends Evalable, JSEvalable {
   waitForSelector(
     selector: string,
     options?: WaitForSelectorOptions,
-  ): Promise<ElementHandle>;
+  ): Promise<ElementHandle | null>;
   waitForSelector(
       selector: string,
       options?: WaitForSelectorOptionsHidden,
@@ -608,5 +608,5 @@ export interface FrameBase extends Evalable, JSEvalable {
   waitForXPath(
     xpath: string,
     options?: WaitForSelectorOptions,
-  ): Promise<ElementHandle>;
+  ): Promise<ElementHandle | null>;
 }

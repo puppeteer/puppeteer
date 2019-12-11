@@ -37,10 +37,17 @@ import {
   Viewport,
   AnyFunction,
   Evalable,
-  JSEvalable,
   EvaluateFn,
   SerializableOrJSHandle,
-  EvaluateFnReturnType
+  EvaluateFnReturnType,
+  FrameBase,
+  WaitForSelectorOptionsHidden,
+  WaitForSelectorOptions,
+  NavigationOptions,
+  DirectNavigationOptions,
+  StyleTagOptions,
+  ScriptTagOptions,
+  ClickOptions
 } from './types';
 import { TaskQueue } from './TaskQueue';
 import { Browser, BrowserContext } from './Browser';
@@ -51,7 +58,7 @@ const noop = () => undefined;
 const writeFileAsync = helper.promisify(fs.writeFile);
 const { hasOwnProperty } = Object.prototype;
 
-export class Page extends EventEmitter implements Evalable, JSEvalable {
+export class Page extends EventEmitter implements FrameBase {
   get keyboard(): Keyboard {
     return this._keyboard;
   }
@@ -89,6 +96,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     a5: { width: 5.83, height: 8.27 },
     a6: { width: 4.13, height: 5.83 }
   };
+
   public static async create(
     client: CDPSession,
     target: Target,
@@ -331,16 +339,11 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     if (items.length) await this._client.send('Network.setCookies', { cookies: items });
   }
 
-  public async addScriptTag(options: {
-    url?: string;
-    path?: string;
-    content?: string;
-    type?: string;
-  }): Promise<ElementHandle> {
+  public async addScriptTag(options: ScriptTagOptions): Promise<ElementHandle> {
     return this.mainFrame().addScriptTag(options);
   }
 
-  public async addStyleTag(options: { url?: string; path?: string; content?: string }): Promise<ElementHandle> {
+  public async addStyleTag(options: StyleTagOptions): Promise<ElementHandle> {
     return this.mainFrame().addStyleTag(options);
   }
 
@@ -465,23 +468,23 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     return this._frameManager.mainFrame()!.content();
   }
 
-  public async setContent(html: string, options?: { timeout?: number; waitUntil?: string | string[] }) {
+  public async setContent(html: string, options?: NavigationOptions) {
     await this._frameManager.mainFrame()!.setContent(html, options);
   }
 
   public async goto(
     url: string,
-    options?: { referer?: string; timeout?: number; waitUntil?: string | string[] }
+    options?: DirectNavigationOptions
   ): Promise<Response> {
     return this._frameManager.mainFrame()!.goto(url, options);
   }
 
-  public async reload(options?: { timeout?: number; waitUntil?: string | string[] }): Promise<Response> {
+  public async reload(options?: NavigationOptions): Promise<Response> {
     const [response] = await Promise.all([this.waitForNavigation(options), this._client.send('Page.reload')] as const);
     return response;
   }
 
-  public async waitForNavigation(options: { timeout?: number; waitUntil?: string | string[] } = {}): Promise<Response> {
+  public async waitForNavigation(options: NavigationOptions = {}): Promise<Response> {
     return this._frameManager.mainFrame()!.waitForNavigation(options);
   }
 
@@ -515,11 +518,11 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     );
   }
 
-  public async goBack(options?: { timeout?: number; waitUntil?: string | string[] }): Promise<Response | null> {
+  public async goBack(options?: NavigationOptions): Promise<Response | null> {
     return this._go(-1, options);
   }
 
-  public async goForward(options?: { timeout?: number; waitUntil?: string | string[] }): Promise<Response | null> {
+  public async goForward(options?: NavigationOptions): Promise<Response | null> {
     return this._go(+1, options);
   }
 
@@ -754,7 +757,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     return this._closed;
   }
 
-  public click(selector: string, options: { delay?: number; button?: 'left' | 'right' | 'middle'; clickCount?: number } = {}) {
+  public click(selector: string, options: ClickOptions = {}) {
     return this.mainFrame().click(selector, options);
   }
 
@@ -778,12 +781,12 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
     return this.mainFrame().type(selector, text, options);
   }
 
-  public waitFor(
-    selectorOrFunctionOrTimeout: string | number | AnyFunction,
-    options: { visible?: boolean; hidden?: boolean; timeout?: number; polling?: string | number } = {},
-    ...args: any[]
-  ): Promise<JSHandle | null> {
-    return this.mainFrame().waitFor(selectorOrFunctionOrTimeout, options, ...args);
+  waitFor(duration: number): Promise<void>
+  waitFor(selector: string, options: WaitForSelectorOptionsHidden): Promise<ElementHandle | null>
+  waitFor(selector: string, options?: WaitForSelectorOptions): Promise<ElementHandle>
+  waitFor(selector: EvaluateFn, options?: WaitForSelectorOptions, ...args: SerializableOrJSHandle[]): Promise<JSHandle>
+  public waitFor(selector: string | number | EvaluateFn, options?: WaitForSelectorOptionsHidden, ...args: SerializableOrJSHandle[]):  Promise<ElementHandle | JSHandle | null | void> {
+    return this.mainFrame().waitFor(selector as string, options, ...args);
   }
 
   public waitForSelector(
@@ -883,7 +886,7 @@ export class Page extends EventEmitter implements Evalable, JSEvalable {
 
   private async _go(
     delta: number,
-    options?: { timeout?: number; waitUntil?: string | string[] }
+    options?: NavigationOptions
   ): Promise<Response | null> {
     const history = await this._client.send('Page.getNavigationHistory');
     const entry = history.entries[history.currentIndex + delta];
