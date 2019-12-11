@@ -217,7 +217,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await context.clearPermissionOverrides();
       expect(await page.evaluate(() => window.events)).toEqual(['prompt', 'denied', 'granted', 'prompt']);
     });
-    it('should isolate permissions between browser contexs', async({page, server, context, browser}) => {
+    it('should isolate permissions between browser contexts', async({page, server, context, browser}) => {
       await page.goto(server.EMPTY_PAGE);
       const otherContext = await browser.createIncognitoBrowserContext();
       const otherPage = await otherContext.newPage();
