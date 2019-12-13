@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
+    "noEmit": true,
     "strict": true,
     "target": "es2015",
-    "noEmit": true,
     "baseUrl": ".",
     "paths": {
       "puppeteer": ["../../index"],
@@ -10,7 +10,6 @@
     }
   },
   "include": [
-    "test.ts",
-    "../../../../index.d.ts"
+    "test.ts"
   ]
 }
