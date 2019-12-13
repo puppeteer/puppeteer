@@ -20,7 +20,7 @@
     "debug-unit": "node --inspect-brk test/test.js",
     "prebuild": "rimraf ./lib",
     "build": "tsc",
-    "build-protocol": "node -r ts-node/register ./scripts/generate-protocol-types",
+    "generate-protocol": "ts-node ./scripts/generate-protocol-types",
     "pretest": "npm run build && npm run lint",
     "test": "npm run coverage && npm run test-types && npm run unit-test-runner && npm run test-doclint",
     "coverage": "cross-env COVERAGE=true npm run unit",
