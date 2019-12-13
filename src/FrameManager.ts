@@ -25,7 +25,23 @@ import { CDPSession } from './Connection';
 import { Page } from './Page';
 import { TimeoutSettings } from './TimeoutSettings';
 import { JSHandle, ElementHandle } from './JSHandle';
-import { AnyFunction, Evalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType, FrameBase, WaitForSelectorOptionsHidden, WaitForSelectorOptions, NavigationOptions, DirectNavigationOptions, StyleTagOptions, ScriptTagOptions, ClickOptions } from './types';
+import {
+  AnyFunction,
+  EvaluateFn,
+  SerializableOrJSHandle,
+  EvaluateFnReturnType,
+  FrameBase,
+  WaitForSelectorOptionsHidden,
+  WaitForSelectorOptions,
+  NavigationOptions,
+  DirectNavigationOptions,
+  StyleTagOptions,
+  ScriptTagOptions,
+  ClickOptions,
+  PageFnOptions,
+  WrapElementHandle,
+  UnwrapElementHandle
+} from './types';
 import { Protocol } from './protocol';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
@@ -81,11 +97,7 @@ export class FrameManager extends EventEmitter {
     return this._networkManager;
   }
 
-  public async navigateFrame(
-    frame: Frame,
-    url: string,
-    options: DirectNavigationOptions = {}
-  ): Promise<Response> {
+  public async navigateFrame(frame: Frame, url: string, options: DirectNavigationOptions = {}): Promise<Response> {
     assertNoLegacyNavigationOptions(options);
     const {
       referer = this._networkManager.extraHTTPHeaders().referer,
@@ -120,10 +132,7 @@ export class FrameManager extends EventEmitter {
     }
   }
 
-  public async waitForFrameNavigation(
-    frame: Frame,
-    options: NavigationOptions = {}
-  ): Promise<Response> {
+  public async waitForFrameNavigation(frame: Frame, options: NavigationOptions = {}): Promise<Response> {
     assertNoLegacyNavigationOptions(options);
     const { waitUntil = ['load'], timeout = this._timeoutSettings.navigationTimeout() } = options;
     const watcher = new LifecycleWatcher(this, frame, waitUntil, timeout);
@@ -329,10 +338,7 @@ export class Frame implements FrameBase {
     if (this._parentFrame) this._parentFrame._childFrames.add(this);
   }
 
-  public async goto(
-    url: string,
-    options?: DirectNavigationOptions
-  ): Promise<Response> {
+  public async goto(url: string, options?: DirectNavigationOptions): Promise<Response> {
     return this._frameManager.navigateFrame(this, url, options);
   }
 
@@ -367,11 +373,69 @@ export class Frame implements FrameBase {
     return this._mainWorld.$x(expression);
   }
 
-  public async $eval(...args: Parameters<Evalable['$eval']>) {
+  $eval<R>(selector: string, pageFunction: (element: Element) => R | Promise<R>): Promise<WrapElementHandle<R>>;
+  $eval<R, X1>(
+    selector: string,
+    pageFunction: (element: Element, x1: UnwrapElementHandle<X1>) => R | Promise<R>,
+    x1: X1
+  ): Promise<WrapElementHandle<R>>;
+  $eval<R, X1, X2>(
+    selector: string,
+    pageFunction: (element: Element, x1: UnwrapElementHandle<X1>, x2: UnwrapElementHandle<X2>) => R | Promise<R>,
+    x1: X1,
+    x2: X2
+  ): Promise<WrapElementHandle<R>>;
+  $eval<R, X1, X2, X3>(
+    selector: string,
+    pageFunction: (
+      element: Element,
+      x1: UnwrapElementHandle<X1>,
+      x2: UnwrapElementHandle<X2>,
+      x3: UnwrapElementHandle<X3>
+    ) => R | Promise<R>,
+    x1: X1,
+    x2: X2,
+    x3: X3
+  ): Promise<WrapElementHandle<R>>;
+  $eval<R>(
+    selector: string,
+    pageFunction: (element: Element, ...args: any[]) => R | Promise<R>,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<WrapElementHandle<R>>;
+  public async $eval(...args: Parameters<FrameBase['$eval']>) {
     return this._mainWorld.$eval(...args);
   }
 
-  public async $$eval(...args: Parameters<Evalable['$$eval']>) {
+  $$eval<R>(selector: string, pageFunction: (elements: Element[]) => R | Promise<R>): Promise<WrapElementHandle<R>>;
+  $$eval<R, X1>(
+    selector: string,
+    pageFunction: (elements: Element[], x1: UnwrapElementHandle<X1>) => R | Promise<R>,
+    x1: X1
+  ): Promise<WrapElementHandle<R>>;
+  $$eval<R, X1, X2>(
+    selector: string,
+    pageFunction: (elements: Element[], x1: UnwrapElementHandle<X1>, x2: UnwrapElementHandle<X2>) => R | Promise<R>,
+    x1: X1,
+    x2: X2
+  ): Promise<WrapElementHandle<R>>;
+  $$eval<R, X1, X2, X3>(
+    selector: string,
+    pageFunction: (
+      elements: Element[],
+      x1: UnwrapElementHandle<X1>,
+      x2: UnwrapElementHandle<X2>,
+      x3: UnwrapElementHandle<X3>
+    ) => R | Promise<R>,
+    x1: X1,
+    x2: X2,
+    x3: X3
+  ): Promise<WrapElementHandle<R>>;
+  $$eval<R>(
+    selector: string,
+    pageFunction: (elements: Element[], ...args: any[]) => R | Promise<R>,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<WrapElementHandle<R>>;
+  public async $$eval(...args: Parameters<FrameBase['$$eval']>) {
     return this._mainWorld.$$eval(...args);
   }
 
@@ -441,22 +505,23 @@ export class Frame implements FrameBase {
     return this._mainWorld.type(selector, text, options);
   }
 
-  waitFor(duration: number): Promise<void>
-  waitFor(selector: string, options: WaitForSelectorOptionsHidden): Promise<ElementHandle | null>
-  waitFor(selector: string, options?: WaitForSelectorOptions): Promise<ElementHandle>
-  waitFor(selector: EvaluateFn, options?: WaitForSelectorOptions, ...args: SerializableOrJSHandle[]): Promise<JSHandle>
-  public waitFor(selector: string | number | EvaluateFn, options?: WaitForSelectorOptionsHidden, ...args: SerializableOrJSHandle[]):  Promise<ElementHandle | JSHandle | null | void> {
+  waitFor(duration: number): Promise<void>;
+  waitFor(selector: string, options: WaitForSelectorOptionsHidden): Promise<ElementHandle | null>;
+  waitFor(selector: string, options?: WaitForSelectorOptions): Promise<ElementHandle>;
+  waitFor(selector: EvaluateFn, options?: WaitForSelectorOptions, ...args: SerializableOrJSHandle[]): Promise<JSHandle>;
+  public waitFor(
+    selector: string | number | EvaluateFn,
+    options?: WaitForSelectorOptionsHidden,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<ElementHandle | JSHandle | null | void> {
     const xPathPattern = '//';
 
     if (helper.isString(selector)) {
-      if (selector.startsWith(xPathPattern))
-        return this.waitForXPath(selector, options);
+      if (selector.startsWith(xPathPattern)) return this.waitForXPath(selector, options);
       return this.waitForSelector(selector, options);
     }
-    if (helper.isNumber(selector))
-      return new Promise(fulfill => setTimeout(fulfill, selector));
-    if (typeof selector === 'function')
-      return this.waitForFunction(selector, options, ...args);
+    if (helper.isNumber(selector)) return new Promise(fulfill => setTimeout(fulfill, selector));
+    if (typeof selector === 'function') return this.waitForFunction(selector, options, ...args);
     return Promise.reject(new Error('Unsupported target type: ' + typeof selector));
   }
 
@@ -486,7 +551,7 @@ export class Frame implements FrameBase {
 
   public waitForFunction(
     pageFunction: AnyFunction | string,
-    options: { polling?: string | number; timeout?: number } = {},
+    options: PageFnOptions = {},
     ...args: any[]
   ): Promise<JSHandle> {
     return this._mainWorld.waitForFunction(pageFunction, options, ...args);

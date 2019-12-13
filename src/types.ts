@@ -2,7 +2,7 @@ import { ElementHandle, JSHandle } from './JSHandle';
 import { Protocol } from './protocol';
 import { Response } from './NetworkManager';
 
-export type AnyFunction = (...args: any[]) => unknown;
+export type AnyFunction = (...args: any[]) => any;
 
 export type UnwrapPromise<T> = T extends Promise<infer V> ? V : T;
 
@@ -370,13 +370,11 @@ export type EvaluateFnReturnType<T extends EvaluateFn> = T extends (...args: any
   ? UnwrapPromise<R>
   : unknown;
 
-export type LoadEvent =
-| 'load'
-| 'domcontentloaded'
-| 'networkidle0'
-| 'networkidle2';
+export type LoadEvent = 'load' | 'domcontentloaded' | 'networkidle0' | 'networkidle2';
 
-export type Serializable = number | string | boolean | null | Serializable[] | {[key: string]: Serializable};
+export type MediaType = 'screen' | 'print';
+
+export type Serializable = number | string | boolean | null | Serializable[] | { [key: string]: Serializable };
 
 export type SerializableOrJSHandle = Serializable | JSHandle;
 
@@ -575,20 +573,12 @@ export interface FrameBase extends Evalable, JSEvalable {
   /**
    * Shortcut for waitForFunction.
    */
-  waitFor(
-    selector: EvaluateFn,
-    options?: WaitForSelectorOptions,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<JSHandle>;
+  waitFor(selector: EvaluateFn, options?: WaitForSelectorOptions, ...args: SerializableOrJSHandle[]): Promise<JSHandle>;
 
   /**
    * Allows waiting for various conditions.
    */
-  waitForFunction(
-    fn: EvaluateFn,
-    options?: PageFnOptions,
-    ...args: SerializableOrJSHandle[]
-  ): Promise<JSHandle>;
+  waitForFunction(fn: EvaluateFn, options?: PageFnOptions, ...args: SerializableOrJSHandle[]): Promise<JSHandle>;
 
   /**
    * Wait for the page navigation occur.
@@ -596,17 +586,8 @@ export interface FrameBase extends Evalable, JSEvalable {
    */
   waitForNavigation(options?: NavigationOptions): Promise<Response>;
 
-  waitForSelector(
-    selector: string,
-    options?: WaitForSelectorOptions,
-  ): Promise<ElementHandle | null>;
-  waitForSelector(
-      selector: string,
-      options?: WaitForSelectorOptionsHidden,
-  ): Promise<ElementHandle | null>;
+  waitForSelector(selector: string, options?: WaitForSelectorOptions): Promise<ElementHandle | null>;
+  waitForSelector(selector: string, options?: WaitForSelectorOptionsHidden): Promise<ElementHandle | null>;
 
-  waitForXPath(
-    xpath: string,
-    options?: WaitForSelectorOptions,
-  ): Promise<ElementHandle | null>;
+  waitForXPath(xpath: string, options?: WaitForSelectorOptions): Promise<ElementHandle | null>;
 }

@@ -21,7 +21,16 @@ import * as mime from 'mime-types';
 import { helper, assert, debugError } from './helper';
 import { ExecutionContext } from './ExecutionContext';
 import { CDPSession } from './Connection';
-import { Evalable, JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType, ClickOptions } from './types';
+import {
+  Evalable,
+  JSEvalable,
+  EvaluateFn,
+  SerializableOrJSHandle,
+  EvaluateFnReturnType,
+  ClickOptions,
+  WrapElementHandle,
+  UnwrapElementHandle
+} from './types';
 import { Page, ScreenshotOptions } from './Page';
 import { FrameManager, Frame } from './FrameManager';
 import { Protocol } from './protocol';
@@ -442,6 +451,35 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
     return result;
   }
 
+  $eval<R>(selector: string, pageFunction: (element: Element) => R | Promise<R>): Promise<WrapElementHandle<R>>;
+  $eval<R, X1>(
+    selector: string,
+    pageFunction: (element: Element, x1: UnwrapElementHandle<X1>) => R | Promise<R>,
+    x1: X1
+  ): Promise<WrapElementHandle<R>>;
+  $eval<R, X1, X2>(
+    selector: string,
+    pageFunction: (element: Element, x1: UnwrapElementHandle<X1>, x2: UnwrapElementHandle<X2>) => R | Promise<R>,
+    x1: X1,
+    x2: X2
+  ): Promise<WrapElementHandle<R>>;
+  $eval<R, X1, X2, X3>(
+    selector: string,
+    pageFunction: (
+      element: Element,
+      x1: UnwrapElementHandle<X1>,
+      x2: UnwrapElementHandle<X2>,
+      x3: UnwrapElementHandle<X3>
+    ) => R | Promise<R>,
+    x1: X1,
+    x2: X2,
+    x3: X3
+  ): Promise<WrapElementHandle<R>>;
+  $eval<R>(
+    selector: string,
+    pageFunction: (element: Element, ...args: any[]) => R | Promise<R>,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<WrapElementHandle<R>>;
   public async $eval(selector: string, ...args: Parameters<JSEvalable['evaluate']>) {
     const elementHandle = await this.$(selector);
     if (!elementHandle) throw new Error(`Error: failed to find element matching selector "${selector}"`);
@@ -450,7 +488,36 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
     return result;
   }
 
-  public $$eval: Evalable['$$eval'] = async(selector: string, ...args: Parameters<JSEvalable['evaluate']>) => {
+  $$eval<R>(selector: string, pageFunction: (elements: Element[]) => R | Promise<R>): Promise<WrapElementHandle<R>>;
+  $$eval<R, X1>(
+    selector: string,
+    pageFunction: (elements: Element[], x1: UnwrapElementHandle<X1>) => R | Promise<R>,
+    x1: X1
+  ): Promise<WrapElementHandle<R>>;
+  $$eval<R, X1, X2>(
+    selector: string,
+    pageFunction: (elements: Element[], x1: UnwrapElementHandle<X1>, x2: UnwrapElementHandle<X2>) => R | Promise<R>,
+    x1: X1,
+    x2: X2
+  ): Promise<WrapElementHandle<R>>;
+  $$eval<R, X1, X2, X3>(
+    selector: string,
+    pageFunction: (
+      elements: Element[],
+      x1: UnwrapElementHandle<X1>,
+      x2: UnwrapElementHandle<X2>,
+      x3: UnwrapElementHandle<X3>
+    ) => R | Promise<R>,
+    x1: X1,
+    x2: X2,
+    x3: X3
+  ): Promise<WrapElementHandle<R>>;
+  $$eval<R>(
+    selector: string,
+    pageFunction: (elements: Element[], ...args: any[]) => R | Promise<R>,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<WrapElementHandle<R>>;
+  public async $$eval(selector: string, ...args: Parameters<JSEvalable['evaluate']>) {
     const arrayHandle = await this.evaluateHandle(
         (element: Element, selector: string) => Array.from(element.querySelectorAll(selector)),
         selector
@@ -459,7 +526,7 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
     const result = await arrayHandle.evaluate(...args);
     await arrayHandle.dispose();
     return result;
-  };
+  }
 
   public async $x(expression: string): Promise<ElementHandle[]> {
     const arrayHandle = await this.evaluateHandle((element: Document, expression: string) => {

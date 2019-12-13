@@ -19,7 +19,7 @@ import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
 import { CDPSession } from './Connection';
 import { DOMWorld } from './DOMWorld';
 import { Frame } from './FrameManager';
-import { AnyFunction, JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
+import { JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
 import { Protocol } from './protocol';
 
 export const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
@@ -83,8 +83,8 @@ export class ExecutionContext<T = any> implements JSEvalable<T> {
 
   private async _evaluateInternal(
     returnByValue: boolean,
-    pageFunction: AnyFunction | string,
-    ...args: any[]
+    pageFunction: EvaluateFn,
+    ...args: SerializableOrJSHandle[]
   ): Promise<any> {
     const suffix = `//# sourceURL=${EVALUATION_SCRIPT_URL}`;
 
@@ -168,7 +168,7 @@ function convertArgument(this: ExecutionContext, arg: unknown): any {
 
 function rewriteError(error: Error): Protocol.Runtime.evaluateReturnValue {
   if (error.message.includes('Object reference chain is too long')) return { result: { type: 'undefined' } };
-  if (error.message.includes('Object couldn\'t be returned by value')) return { result: { type: 'undefined' } };
+  if (error.message.includes(`Object couldn't be returned by value`)) return { result: { type: 'undefined' } };
 
   if (
     error.message.endsWith('Cannot find context with specified id') ||

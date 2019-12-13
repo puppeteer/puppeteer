@@ -36,7 +36,6 @@ import { Target } from './Target';
 import {
   Viewport,
   AnyFunction,
-  Evalable,
   EvaluateFn,
   SerializableOrJSHandle,
   EvaluateFnReturnType,
@@ -47,7 +46,11 @@ import {
   DirectNavigationOptions,
   StyleTagOptions,
   ScriptTagOptions,
-  ClickOptions
+  ClickOptions,
+  PageFnOptions,
+  WrapElementHandle,
+  UnwrapElementHandle,
+  MediaType
 } from './types';
 import { TaskQueue } from './TaskQueue';
 import { Browser, BrowserContext } from './Browser';
@@ -188,7 +191,9 @@ export class Page extends EventEmitter implements FrameBase {
     client.on('Page.domContentEventFired', () => this.emit(Events.Page.DOMContentLoaded));
     client.on('Page.loadEventFired', () => this.emit(Events.Page.Load));
     client.on('Runtime.consoleAPICalled', event => this._onConsoleAPI(event));
-    client.on('Runtime.bindingCalled', event => {this._onBindingCalled(event).catch(noop); });
+    client.on('Runtime.bindingCalled', event => {
+      this._onBindingCalled(event).catch(noop);
+    });
     client.on('Page.javascriptDialogOpening', event => this._onDialog(event));
     client.on('Runtime.exceptionThrown', exception => this._handleException(exception.exceptionDetails));
     client.on('Inspector.targetCrashed', () => this._onTargetCrashed());
@@ -293,9 +298,71 @@ export class Page extends EventEmitter implements FrameBase {
     return context.queryObjects(prototypeHandle);
   }
 
-  public $eval: Evalable['$eval'] = async(...args: Parameters<Evalable['$eval']>) => this.mainFrame().$eval(...args);
+  $eval<R>(selector: string, pageFunction: (element: Element) => R | Promise<R>): Promise<WrapElementHandle<R>>;
+  $eval<R, X1>(
+    selector: string,
+    pageFunction: (element: Element, x1: UnwrapElementHandle<X1>) => R | Promise<R>,
+    x1: X1
+  ): Promise<WrapElementHandle<R>>;
+  $eval<R, X1, X2>(
+    selector: string,
+    pageFunction: (element: Element, x1: UnwrapElementHandle<X1>, x2: UnwrapElementHandle<X2>) => R | Promise<R>,
+    x1: X1,
+    x2: X2
+  ): Promise<WrapElementHandle<R>>;
+  $eval<R, X1, X2, X3>(
+    selector: string,
+    pageFunction: (
+      element: Element,
+      x1: UnwrapElementHandle<X1>,
+      x2: UnwrapElementHandle<X2>,
+      x3: UnwrapElementHandle<X3>
+    ) => R | Promise<R>,
+    x1: X1,
+    x2: X2,
+    x3: X3
+  ): Promise<WrapElementHandle<R>>;
+  $eval<R>(
+    selector: string,
+    pageFunction: (element: Element, ...args: any[]) => R | Promise<R>,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<WrapElementHandle<R>>;
+  public $eval(...args: Parameters<FrameBase['$eval']>) {
+    return this.mainFrame().$eval(...args);
+  }
 
-  public $$eval: Evalable['$$eval'] = async(...args: Parameters<Evalable['$$eval']>) => this.mainFrame().$$eval(...args);
+  $$eval<R>(selector: string, pageFunction: (elements: Element[]) => R | Promise<R>): Promise<WrapElementHandle<R>>;
+  $$eval<R, X1>(
+    selector: string,
+    pageFunction: (elements: Element[], x1: UnwrapElementHandle<X1>) => R | Promise<R>,
+    x1: X1
+  ): Promise<WrapElementHandle<R>>;
+  $$eval<R, X1, X2>(
+    selector: string,
+    pageFunction: (elements: Element[], x1: UnwrapElementHandle<X1>, x2: UnwrapElementHandle<X2>) => R | Promise<R>,
+    x1: X1,
+    x2: X2
+  ): Promise<WrapElementHandle<R>>;
+  $$eval<R, X1, X2, X3>(
+    selector: string,
+    pageFunction: (
+      elements: Element[],
+      x1: UnwrapElementHandle<X1>,
+      x2: UnwrapElementHandle<X2>,
+      x3: UnwrapElementHandle<X3>
+    ) => R | Promise<R>,
+    x1: X1,
+    x2: X2,
+    x3: X3
+  ): Promise<WrapElementHandle<R>>;
+  $$eval<R>(
+    selector: string,
+    pageFunction: (elements: Element[], ...args: any[]) => R | Promise<R>,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<WrapElementHandle<R>>;
+  public $$eval(...args: Parameters<FrameBase['$$eval']>) {
+    return this.mainFrame().$$eval(...args);
+  }
 
   public async $$(selector: string): Promise<ElementHandle[]> {
     return this.mainFrame().$$(selector);
@@ -472,10 +539,7 @@ export class Page extends EventEmitter implements FrameBase {
     await this._frameManager.mainFrame()!.setContent(html, options);
   }
 
-  public async goto(
-    url: string,
-    options?: DirectNavigationOptions
-  ): Promise<Response> {
+  public async goto(url: string, options?: DirectNavigationOptions): Promise<Response> {
     return this._frameManager.mainFrame()!.goto(url, options);
   }
 
@@ -488,7 +552,10 @@ export class Page extends EventEmitter implements FrameBase {
     return this._frameManager.mainFrame()!.waitForNavigation(options);
   }
 
-  public async waitForRequest(urlOrPredicate: string | AnyFunction, options: { timeout?: number } = {}): Promise<Request> {
+  public async waitForRequest(
+    urlOrPredicate: string | AnyFunction,
+    options: { timeout?: number } = {}
+  ): Promise<Request> {
     const { timeout = this._timeoutSettings.timeout() } = options;
     return helper.waitForEvent(
         this._frameManager.networkManager(),
@@ -503,7 +570,10 @@ export class Page extends EventEmitter implements FrameBase {
     );
   }
 
-  public async waitForResponse(urlOrPredicate: string | AnyFunction, options: { timeout?: number } = {}): Promise<Response> {
+  public async waitForResponse(
+    urlOrPredicate: string | AnyFunction,
+    options: { timeout?: number } = {}
+  ): Promise<Response> {
     const { timeout = this._timeoutSettings.timeout() } = options;
     return helper.waitForEvent(
         this._frameManager.networkManager(),
@@ -544,13 +614,17 @@ export class Page extends EventEmitter implements FrameBase {
     await this._client.send('Page.setBypassCSP', { enabled });
   }
 
-  public async emulateMediaType(type?: string) {
-    assert(type === 'screen' || type === 'print' || type === null, 'Unsupported media type: ' + type);
+  public async emulateMediaType(type?: MediaType | null) {
+    assert(
+        type === 'screen' || type === 'print' || type === null || type === undefined,
+        'Unsupported media type: ' + type
+    );
     await this._client.send('Emulation.setEmulatedMedia', { media: type || '' });
   }
 
-  public async emulateMediaFeatures(features?: MediaFeature[]) {
-    if (features === null) await this._client.send('Emulation.setEmulatedMedia', { features: undefined });
+  public async emulateMediaFeatures(features?: Protocol.Emulation.MediaFeature[] | null): Promise<void> {
+    if (features === null || features === undefined)
+      await this._client.send('Emulation.setEmulatedMedia', { features: undefined });
     if (Array.isArray(features)) {
       features.every(mediaFeature => {
         const name = mediaFeature.name;
@@ -561,7 +635,7 @@ export class Page extends EventEmitter implements FrameBase {
     }
   }
 
-  public async emulateTimezone(timezoneId?: string) {
+  public async emulateTimezone(timezoneId?: string): Promise<void> {
     try {
       await this._client.send('Emulation.setTimezoneOverride', { timezoneId: timezoneId || '' });
     } catch (exception) {
@@ -570,7 +644,7 @@ export class Page extends EventEmitter implements FrameBase {
     }
   }
 
-  public async setViewport(viewport: Viewport) {
+  public async setViewport(viewport: Viewport): Promise<void> {
     const needsReload = await this._emulationManager.emulateViewport(viewport);
     this._viewport = viewport;
     if (needsReload) await this.reload();
@@ -587,7 +661,13 @@ export class Page extends EventEmitter implements FrameBase {
     return this._frameManager.mainFrame()!.evaluate(pageFunction, ...args);
   }
 
-  public async evaluateOnNewDocument(pageFunction: AnyFunction | string, ...args: any[]) {
+  /**
+   * Adds a function which would be invoked in one of the following scenarios: whenever the page is navigated; whenever the child frame is attached or navigated.
+   * The function is invoked after the document was created but before any of its scripts were run. This is useful to amend JavaScript environment, e.g. to seed Math.random.
+   * @param pageFunction The function to be evaluated in browser context.
+   * @param args The arguments to pass to the `fn`.
+   */
+  public async evaluateOnNewDocument(pageFunction: EvaluateFn, ...args: SerializableOrJSHandle[]) {
     const source = helper.evaluationString(pageFunction, ...args);
     await this._client.send('Page.addScriptToEvaluateOnNewDocument', { source });
   }
@@ -596,9 +676,9 @@ export class Page extends EventEmitter implements FrameBase {
     await this._frameManager.networkManager().setCacheEnabled(enabled);
   }
 
-  public async screenshot(options?: BinaryScreenShotOptions): Promise<Buffer>
-  public async screenshot(options?: Base64ScreenShotOptions): Promise<string>
-  public async screenshot(options?: ScreenshotOptions): Promise<string | Buffer>
+  public async screenshot(options?: BinaryScreenShotOptions): Promise<Buffer>;
+  public async screenshot(options?: Base64ScreenShotOptions): Promise<string>;
+  public async screenshot(options?: ScreenshotOptions): Promise<string | Buffer>;
   public async screenshot(options: ScreenshotOptions = {}): Promise<string | Buffer> {
     let screenshotType: 'png' | 'jpeg' | null = null;
     // options.type takes precedence over inferring the type from options.path
@@ -781,32 +861,30 @@ export class Page extends EventEmitter implements FrameBase {
     return this.mainFrame().type(selector, text, options);
   }
 
-  waitFor(duration: number): Promise<void>
-  waitFor(selector: string, options: WaitForSelectorOptionsHidden): Promise<ElementHandle | null>
-  waitFor(selector: string, options?: WaitForSelectorOptions): Promise<ElementHandle>
-  waitFor(selector: EvaluateFn, options?: WaitForSelectorOptions, ...args: SerializableOrJSHandle[]): Promise<JSHandle>
-  public waitFor(selector: string | number | EvaluateFn, options?: WaitForSelectorOptionsHidden, ...args: SerializableOrJSHandle[]):  Promise<ElementHandle | JSHandle | null | void> {
+  waitFor(duration: number): Promise<void>;
+  waitFor(selector: string, options: WaitForSelectorOptionsHidden): Promise<ElementHandle | null>;
+  waitFor(selector: string, options?: WaitForSelectorOptions): Promise<ElementHandle>;
+  waitFor(selector: EvaluateFn, options?: WaitForSelectorOptions, ...args: SerializableOrJSHandle[]): Promise<JSHandle>;
+  public waitFor(
+    selector: string | number | EvaluateFn,
+    options?: WaitForSelectorOptionsHidden,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<ElementHandle | JSHandle | null | void> {
     return this.mainFrame().waitFor(selector as string, options, ...args);
   }
 
-  public waitForSelector(
-    selector: string,
-    options: { visible?: boolean; hidden?: boolean; timeout?: number } = {}
-  ): Promise<ElementHandle | null> {
+  public waitForSelector(selector: string, options: WaitForSelectorOptions = {}): Promise<ElementHandle | null> {
     return this.mainFrame().waitForSelector(selector, options);
   }
 
-  public waitForXPath(
-    xpath: string,
-    options: { visible?: boolean; hidden?: boolean; timeout?: number } = {}
-  ): Promise<ElementHandle | null> {
+  public waitForXPath(xpath: string, options: WaitForSelectorOptions = {}): Promise<ElementHandle | null> {
     return this.mainFrame().waitForXPath(xpath, options);
   }
 
   public waitForFunction(
-    pageFunction: AnyFunction | string,
-    options: { polling?: string | number; timeout?: number } = {},
-    ...args: any[]
+    pageFunction: EvaluateFn,
+    options: PageFnOptions = {},
+    ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle> {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);
   }
@@ -841,9 +919,7 @@ export class Page extends EventEmitter implements FrameBase {
 
   private _addConsoleMessage = (type: string, args: JSHandle[], stackTrace?: Protocol.Runtime.StackTrace) => {
     if (!this.listenerCount(Events.Page.Console)) {
-      for (const arg of args)
-        arg.dispose().catch(noop);
-
+      for (const arg of args) arg.dispose().catch(noop);
       return;
     }
     const textTokens: string[] = [];
@@ -884,10 +960,7 @@ export class Page extends EventEmitter implements FrameBase {
     return this._disconnectPromise;
   }
 
-  private async _go(
-    delta: number,
-    options?: NavigationOptions
-  ): Promise<Response | null> {
+  private async _go(delta: number, options?: NavigationOptions): Promise<Response | null> {
     const history = await this._client.send('Page.getNavigationHistory');
     const entry = history.entries[history.currentIndex + delta];
     if (!entry) return null;
@@ -997,11 +1070,6 @@ export interface BinaryScreenShotOptions extends ScreenshotOptions {
 
 export interface Base64ScreenShotOptions extends ScreenshotOptions {
   encoding: 'base64';
-}
-
-export interface MediaFeature {
-  name: string;
-  value: string;
 }
 
 const supportedMetrics = new Set<keyof Metrics>([

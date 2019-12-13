@@ -19,7 +19,7 @@ import * as util from 'util';
 
 import debug from 'debug';
 import { TimeoutError } from './Errors';
-import { AnyFunction, Debugger } from './types';
+import { AnyFunction, Debugger, SerializableOrJSHandle, EvaluateFn } from './types';
 import { CDPSession } from './Connection';
 import { Protocol } from './protocol';
 
@@ -27,9 +27,7 @@ export const debugError: Debugger = debug(`puppeteer:error`);
 
 /* @internal */
 export function assert(value: unknown, message?: string): asserts value {
-  if (!value)
-    throw new Error(message);
-
+  if (!value) throw new Error(message);
 }
 
 export { Helper as helper };
@@ -48,7 +46,8 @@ export class Helper {
     }
     return promisified;
   }) as typeof util.promisify;
-  public static evaluationString(fun: AnyFunction | string, ...args: any[]): string {
+
+  public static evaluationString(fun: EvaluateFn, ...args: (SerializableOrJSHandle | undefined)[]): string {
     if (Helper.isString(fun)) {
       assert(args.length === 0, 'Cannot evaluate a string with arguments');
       return fun;
@@ -206,7 +205,11 @@ export class Helper {
     }
   }
 
-  public static async readProtocolStream(client: CDPSession, handle: string, path?: string | null): Promise<Buffer | null> {
+  public static async readProtocolStream(
+    client: CDPSession,
+    handle: string,
+    path?: string | null
+  ): Promise<Buffer | null> {
     let eof = false;
     let file: number | undefined;
     if (path) file = await openAsync(path, 'w');

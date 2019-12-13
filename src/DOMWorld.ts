@@ -23,7 +23,6 @@ import { TimeoutSettings } from './TimeoutSettings';
 import { ExecutionContext } from './ExecutionContext';
 import { JSHandle, ElementHandle } from './JSHandle';
 import {
-  AnyFunction,
   Evalable,
   JSEvalable,
   EvaluateFn,
@@ -34,6 +33,9 @@ import {
   StyleTagOptions,
   ScriptTagOptions,
   ClickOptions,
+  PageFnOptions,
+  WrapElementHandle,
+  UnwrapElementHandle
 } from './types';
 
 const noop = () => undefined;
@@ -127,16 +129,74 @@ export class DOMWorld implements Evalable, JSEvalable {
     return value;
   }
 
+  $eval<R>(selector: string, pageFunction: (element: Element) => R | Promise<R>): Promise<WrapElementHandle<R>>;
+  $eval<R, X1>(
+    selector: string,
+    pageFunction: (element: Element, x1: UnwrapElementHandle<X1>) => R | Promise<R>,
+    x1: X1
+  ): Promise<WrapElementHandle<R>>;
+  $eval<R, X1, X2>(
+    selector: string,
+    pageFunction: (element: Element, x1: UnwrapElementHandle<X1>, x2: UnwrapElementHandle<X2>) => R | Promise<R>,
+    x1: X1,
+    x2: X2
+  ): Promise<WrapElementHandle<R>>;
+  $eval<R, X1, X2, X3>(
+    selector: string,
+    pageFunction: (
+      element: Element,
+      x1: UnwrapElementHandle<X1>,
+      x2: UnwrapElementHandle<X2>,
+      x3: UnwrapElementHandle<X3>
+    ) => R | Promise<R>,
+    x1: X1,
+    x2: X2,
+    x3: X3
+  ): Promise<WrapElementHandle<R>>;
+  $eval<R>(
+    selector: string,
+    pageFunction: (element: Element, ...args: any[]) => R | Promise<R>,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<WrapElementHandle<R>>;
   public async $eval(...args: Parameters<Evalable['$eval']>) {
     const document = await this._document();
     return document.$eval(...args);
   }
 
-  public $$eval: Evalable['$$eval'] = async(...args: Parameters<Evalable['$$eval']>) => {
+  $$eval<R>(selector: string, pageFunction: (elements: Element[]) => R | Promise<R>): Promise<WrapElementHandle<R>>;
+  $$eval<R, X1>(
+    selector: string,
+    pageFunction: (elements: Element[], x1: UnwrapElementHandle<X1>) => R | Promise<R>,
+    x1: X1
+  ): Promise<WrapElementHandle<R>>;
+  $$eval<R, X1, X2>(
+    selector: string,
+    pageFunction: (elements: Element[], x1: UnwrapElementHandle<X1>, x2: UnwrapElementHandle<X2>) => R | Promise<R>,
+    x1: X1,
+    x2: X2
+  ): Promise<WrapElementHandle<R>>;
+  $$eval<R, X1, X2, X3>(
+    selector: string,
+    pageFunction: (
+      elements: Element[],
+      x1: UnwrapElementHandle<X1>,
+      x2: UnwrapElementHandle<X2>,
+      x3: UnwrapElementHandle<X3>
+    ) => R | Promise<R>,
+    x1: X1,
+    x2: X2,
+    x3: X3
+  ): Promise<WrapElementHandle<R>>;
+  $$eval<R>(
+    selector: string,
+    pageFunction: (elements: Element[], ...args: any[]) => R | Promise<R>,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<WrapElementHandle<R>>;
+  public async $$eval(...args: Parameters<Evalable['$$eval']>) {
     const document = await this._document();
     const value = await document.$$eval(...args);
     return value;
-  };
+  }
 
   public async $$(selector: string): Promise<ElementHandle[]> {
     const document = await this._document();
@@ -313,24 +373,18 @@ export class DOMWorld implements Evalable, JSEvalable {
     await handle.dispose();
   }
 
-  public waitForSelector(
-    selector: string,
-    options?: WaitForSelectorOptions
-  ): Promise<ElementHandle | null> {
+  public waitForSelector(selector: string, options?: WaitForSelectorOptions): Promise<ElementHandle | null> {
     return this._waitForSelectorOrXPath(selector, false, options);
   }
 
-  public waitForXPath(
-    xpath: string,
-    options?: WaitForSelectorOptions
-  ): Promise<ElementHandle | null> {
+  public waitForXPath(xpath: string, options?: WaitForSelectorOptions): Promise<ElementHandle | null> {
     return this._waitForSelectorOrXPath(xpath, true, options);
   }
 
   public waitForFunction(
-    pageFunction: AnyFunction | string,
-    options: { polling?: string | number; timeout?: number } = {},
-    ...args: any[]
+    pageFunction: EvaluateFn,
+    options: PageFnOptions = {},
+    ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle> {
     const { polling = 'raf', timeout = this.timeoutSettings.timeout() } = options;
     return new WaitTask(this, pageFunction, 'function', polling, timeout, ...args).promise;
@@ -411,7 +465,7 @@ class WaitTask {
 
   constructor(
     domWorld: DOMWorld,
-    predicateBody: AnyFunction | string,
+    predicateBody: EvaluateFn,
     title: string,
     polling: string | number,
     timeout: number,
