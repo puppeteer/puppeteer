@@ -21,6 +21,7 @@ package-lock.json
 /node6/utils
 /test
 /utils
+/scripts
 /docs
 yarn.lock
 
@@ -36,6 +37,3 @@ yarn.lock
 README.md
 tsconfig.json
 experimental
-
-# exclude types, see https://github.com/puppeteer/puppeteer/issues/3878
-/index.d.ts
