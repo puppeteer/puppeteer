@@ -374,7 +374,15 @@ export type LoadEvent = 'load' | 'domcontentloaded' | 'networkidle0' | 'networki
 
 export type MediaType = 'screen' | 'print';
 
-export type Serializable = number | string | boolean | null | Serializable[] | { [key: string]: Serializable };
+export type Serializable = number | string | boolean | null | SerializableArray | SerializableObject;
+
+export interface SerializableObject {
+    [property: string]: Serializable;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface SerializableArray extends Array<Serializable> {}
+
 
 export type SerializableOrJSHandle = Serializable | JSHandle;
 

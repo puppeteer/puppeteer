@@ -30,7 +30,7 @@
     "doc": "node utils/doclint/cli.js",
     "apply-next-version": "node utils/apply_next_version.js",
     "bundle": "npx browserify -r ./index.js:puppeteer -o utils/browser/puppeteer-web.js",
-    "test-types": "tsc -p test/types/tsconfig.json && tsc -p test/types/tsconfig.interop.json",
+    "test-types": "npx -p typescript@3.6 tsc -p test/types/tsconfig.json && npx -p typescript@3.6 tsc -p test/types/tsconfig.interop.json",
     "unit-bundle": "node utils/browser/test.js"
   },
   "author": "The Chromium Authors",
