@@ -50,12 +50,10 @@ export interface Device {
   viewport: Viewport;
 }
 
-const deviceDescriptors: Device[] = %s;
+export const devices = %s as Device[] & { [key: string]: Device };
 
-export const devices = deviceDescriptors.reduce((acc, device) => {
-  acc[device.name] = device;
-  return acc;
-}, {} as Record<string, Device>);
+for (const device of devices)
+  devices[device.name] = device;
 `;
 
 const help = `Usage:  node ${path.basename(__filename)} [-u <from>] <outputPath>
