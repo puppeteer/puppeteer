@@ -14,31 +14,23 @@
  * limitations under the License.
  */
 
-export * from './Accessibility';
-export * from './Browser';
-export * from './BrowserFetcher';
-export * from './Connection';
-export * from './Coverage';
-export * from './DeviceDescriptors';
-export * from './Dialog';
-export * from './Errors';
-export * from './ExecutionContext';
-export * from './FrameManager';
-export * from './Input';
-export * from './JSHandle';
-export * from './NetworkManager';
-export * from './Page';
-export * from './Puppeteer';
-export * from './Target';
-export * from './Tracing';
-export * from './types';
-export * from './Worker';
-
 import { join } from 'path';
 import { Puppeteer } from './Puppeteer';
+import * as api from './api';
 import * as errors from './Errors';
+import { helper } from './helper';
 
+for (const className in api) {
+  // Puppeteer-web excludes certain classes from bundle, e.g. BrowserFetcher.
+  if (typeof (api as Record<string, any>)[className] === 'function')
+    helper.installAsyncStackHooks((api as Record<string, any>)[className]);
+}
+
+export * from './api';
+export * from './protocol';
+export * from './types';
 export { errors };
+export { devices } from './DeviceDescriptors';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const packageJson = require('../package.json');
@@ -47,6 +39,12 @@ const isPuppeteerCore = packageJson.name === 'puppeteer-core';
 
 const puppeteer = new Puppeteer(join(__dirname, '..'), preferredRevision, isPuppeteerCore);
 
+// The introspection in `Helper.installAsyncStackHooks` references `Puppeteer._launcher`
+// before the Puppeteer ctor is called, such that an invalid Launcher is selected at import,
+// so we reset it.
+puppeteer._lazyLauncher = undefined;
+
+export default puppeteer;
 export const launch = puppeteer.launch;
 export const connect = puppeteer.connect;
 export const executablePath = puppeteer.executablePath;

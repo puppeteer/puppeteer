@@ -23,7 +23,8 @@ import * as Errors from './Errors';
 
 export class Puppeteer {
   private _productName?: string;
-  private _lazyLauncher?: ProductLauncher;
+  /* @internal */
+  public _lazyLauncher?: ProductLauncher;
 
   constructor(private _projectRoot: string, private _preferredRevision: string, private _isPuppeteerCore: boolean) {}
 
