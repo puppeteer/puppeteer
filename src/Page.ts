@@ -18,7 +18,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { EventEmitter } from 'events';
 import * as mime from 'mime';
-
+import { Protocol } from 'devtools-protocol';
 import { Events } from './Events';
 import { Connection, CDPSession } from './Connection';
 import { Dialog } from './Dialog';
@@ -55,7 +55,6 @@ import {
 import { TaskQueue } from './TaskQueue';
 import { Browser, BrowserContext } from './Browser';
 import { Response } from './NetworkManager';
-import { Protocol } from './protocol';
 
 const noop = () => undefined;
 const writeFileAsync = helper.promisify(fs.writeFile);
@@ -210,8 +209,8 @@ export class Page extends EventEmitter implements FrameBase {
     await Promise.all([
       this._frameManager.initialize(),
       this._client.send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: false, flatten: true }),
-      this._client.send('Performance.enable', {}),
-      this._client.send('Log.enable', {}),
+      this._client.send('Performance.enable'),
+      this._client.send('Log.enable'),
       this._client.send('Page.setInterceptFileChooserDialog', { enabled: true }).catch(() => {
         this._fileChooserInterceptionIsDisabled = true;
       })
@@ -380,7 +379,7 @@ export class Page extends EventEmitter implements FrameBase {
     ).cookies;
   }
 
-  public async deleteCookie(...cookies: Protocol.Network.deleteCookiesParameters[]) {
+  public async deleteCookie(...cookies: Protocol.Network.DeleteCookiesRequest[]) {
     const pageURL = this.url();
     for (const cookie of cookies) {
       const item = Object.assign({}, cookie);
@@ -474,7 +473,7 @@ export class Page extends EventEmitter implements FrameBase {
     this.emit(Events.Page.PageError, err);
   };
 
-  private _onConsoleAPI(event: Protocol.Runtime.consoleAPICalledPayload) {
+  private _onConsoleAPI(event: Protocol.Runtime.ConsoleAPICalledEvent) {
     if (event.executionContextId === 0) {
       // DevTools protocol stores the last 1000 console messages. These
       // messages are always reported even for removed execution contexts. In
@@ -496,7 +495,7 @@ export class Page extends EventEmitter implements FrameBase {
     this._addConsoleMessage(event.type, values, event.stackTrace);
   }
 
-  private async _onBindingCalled(event: Protocol.Runtime.bindingCalledPayload) {
+  private async _onBindingCalled(event: Protocol.Runtime.BindingCalledEvent) {
     const { name, seq, args } = JSON.parse(event.payload);
     let expression = null;
     try {
@@ -889,7 +888,7 @@ export class Page extends EventEmitter implements FrameBase {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);
   }
 
-  private _onFileChooser(event: Protocol.Page.fileChooserOpenedPayload) {
+  private _onFileChooser(event: Protocol.Page.FileChooserOpenedEvent) {
     if (!this._fileChooserInterceptors.size) {
       this._client.send('Page.handleFileChooser', { action: 'fallback' }).catch(debugError);
       return;
@@ -904,13 +903,13 @@ export class Page extends EventEmitter implements FrameBase {
     this.emit('error', new Error('Page crashed!'));
   }
 
-  private _onLogEntryAdded(event: Protocol.Log.entryAddedPayload) {
+  private _onLogEntryAdded(event: Protocol.Log.EntryAddedEvent) {
     const { level, text, args, source, url, lineNumber } = event.entry;
     if (args) args.map(arg => helper.releaseObject(this._client, arg));
     if (source !== 'worker') this.emit(Events.Page.Console, new ConsoleMessage(level, text, [], { url, lineNumber }));
   }
 
-  private _emitMetrics(event: Protocol.Performance.metricsPayload) {
+  private _emitMetrics(event: Protocol.Performance.MetricsEvent) {
     this.emit(Events.Page.Metrics, {
       title: event.title,
       metrics: this._buildMetricsObject(event.metrics)
@@ -940,7 +939,7 @@ export class Page extends EventEmitter implements FrameBase {
     this.emit(Events.Page.Console, message);
   };
 
-  private _onDialog(event: Protocol.Page.javascriptDialogOpeningPayload) {
+  private _onDialog(event: Protocol.Page.JavascriptDialogOpeningEvent) {
     let dialogType = null;
     if (event.type === 'alert') dialogType = Dialog.Type.Alert;
     else if (event.type === 'confirm') dialogType = Dialog.Type.Confirm;
@@ -1154,7 +1153,7 @@ export class FileChooser {
   private _handled: boolean;
   private _multiple: boolean;
 
-  constructor(client: CDPSession, event: Protocol.Page.fileChooserOpenedPayload) {
+  constructor(client: CDPSession, event: Protocol.Page.FileChooserOpenedEvent) {
     this._client = client;
     this._multiple = event.mode !== 'selectSingle';
     this._handled = false;

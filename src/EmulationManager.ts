@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+import { Protocol } from 'devtools-protocol';
 import { CDPSession } from './Connection';
 import { Viewport } from './types';
-import { Protocol } from './protocol';
 
 export class EmulationManager {
   private _emulatingMobile = false;

@@ -17,7 +17,7 @@
 import * as path from 'path';
 import * as fs from 'fs';
 import * as mime from 'mime-types';
-
+import { Protocol } from 'devtools-protocol';
 import { helper, assert, debugError } from './helper';
 import { ExecutionContext } from './ExecutionContext';
 import { CDPSession } from './Connection';
@@ -33,7 +33,6 @@ import {
 } from './types';
 import { Page, ScreenshotOptions } from './Page';
 import { FrameManager, Frame } from './FrameManager';
-import { Protocol } from './protocol';
 
 const readFileAsync = helper.promisify(fs.readFile);
 
@@ -237,7 +236,7 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
     };
   }
 
-  private _getBoxModel(): Promise<void | Protocol.DOM.getBoxModelReturnValue> {
+  private _getBoxModel(): Promise<void | Protocol.DOM.GetBoxModelResponse> {
     return this.client
         .send('DOM.getBoxModel', {
           objectId: this._remoteObject.objectId

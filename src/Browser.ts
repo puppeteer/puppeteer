@@ -15,6 +15,7 @@
  */
 
 import { ChildProcess } from 'child_process';
+import { Protocol } from 'devtools-protocol';
 import { helper, assert } from './helper';
 import { Target } from './Target';
 import { EventEmitter } from 'events';
@@ -23,7 +24,6 @@ import { Events } from './Events';
 import { Connection } from './Connection';
 import { Viewport, AnyFunction } from './types';
 import { Page } from './Page';
-import { Protocol } from './protocol';
 
 const noop = () => undefined;
 
@@ -173,7 +173,7 @@ export class Browser extends EventEmitter {
   }
 
   /* @internal */
-  private _targetCreated = async(event: Protocol.Target.targetCreatedPayload) => {
+  private _targetCreated = async(event: Protocol.Target.TargetCreatedEvent) => {
     const targetInfo = event.targetInfo;
     const { browserContextId } = targetInfo;
     const context =
@@ -209,7 +209,7 @@ export class Browser extends EventEmitter {
     }
   };
 
-  private _targetInfoChanged = (event: Protocol.Target.targetInfoChangedPayload) => {
+  private _targetInfoChanged = (event: Protocol.Target.TargetInfoChangedEvent) => {
     const target = this._targets.get(event.targetInfo.targetId);
     assert(target, 'target should exist before targetInfoChanged');
     const previousURL = target.url();

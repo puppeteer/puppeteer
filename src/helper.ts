@@ -17,11 +17,11 @@
 import * as fs from 'fs';
 import * as util from 'util';
 
+import { Protocol } from 'devtools-protocol';
 import debug from 'debug';
 import { TimeoutError } from './Errors';
 import { AnyFunction, Debugger, SerializableOrJSHandle, EvaluateFn } from './types';
 import { CDPSession } from './Connection';
-import { Protocol } from './protocol';
 
 export const debugError: Debugger = debug(`puppeteer:error`);
 

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { Protocol } from 'devtools-protocol';
 import { helper, debugError, assert } from './helper';
 import { EVALUATION_SCRIPT_URL } from './ExecutionContext';
 import { CDPSession } from './Connection';
 import { AnyFunction } from './types';
-import { Protocol } from './protocol';
 
 export interface CoverageEntry {
   url: string;
@@ -93,7 +93,7 @@ class JSCoverage {
     ]);
   }
 
-  private async _onScriptParsed(event: Protocol.Debugger.scriptParsedPayload) {
+  private async _onScriptParsed(event: Protocol.Debugger.ScriptParsedEvent) {
     // Ignore puppeteer-injected scripts
     if (event.url === EVALUATION_SCRIPT_URL) return;
     // Ignore other anonymous scripts unless the reportAnonymousScripts option is true.
@@ -214,7 +214,7 @@ class CSSCoverage {
     this._stylesheetSources.clear();
   }
 
-  private async _onStyleSheet(event: Protocol.CSS.styleSheetAddedPayload) {
+  private async _onStyleSheet(event: Protocol.CSS.StyleSheetAddedEvent) {
     const header = event.header;
     // Ignore anonymous scripts
     if (!header.sourceURL) return;

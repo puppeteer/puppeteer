@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { Protocol } from 'devtools-protocol';
 import { helper, assert } from './helper';
 import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
 import { CDPSession } from './Connection';
 import { DOMWorld } from './DOMWorld';
 import { Frame } from './FrameManager';
 import { JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
-import { Protocol } from './protocol';
 
 export const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
@@ -126,7 +126,7 @@ export class ExecutionContext<T = any> implements JSEvalable<T> {
         throw new Error('Passed function is not well-serializable!');
       }
     }
-    let callFunctionOnPromise: Promise<Protocol.Runtime.callFunctionOnReturnValue>;
+    let callFunctionOnPromise: Promise<Protocol.Runtime.CallFunctionOnResponse>;
     try {
       callFunctionOnPromise = this.client.send('Runtime.callFunctionOn', {
         functionDeclaration: functionText + '\n' + suffix + '\n',
@@ -166,7 +166,7 @@ function convertArgument(this: ExecutionContext, arg: unknown): any {
   return { value: arg };
 }
 
-function rewriteError(error: Error): Protocol.Runtime.evaluateReturnValue {
+function rewriteError(error: Error): Protocol.Runtime.EvaluateResponse {
   if (error.message.includes('Object reference chain is too long')) return { result: { type: 'undefined' } };
   if (error.message.includes(`Object couldn't be returned by value`)) return { result: { type: 'undefined' } };
 

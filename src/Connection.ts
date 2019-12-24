@@ -15,11 +15,12 @@
  */
 
 import { EventEmitter } from 'events';
+import { Protocol } from 'devtools-protocol';
+import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping';
 import debug from 'debug';
 import { assert } from './helper';
 import { Events } from './Events';
 import { ConnectionTransport, AnyFunction } from './types';
-import { Protocol } from './protocol';
 
 const debugProtocol = debug('puppeteer:protocol');
 
@@ -49,14 +50,14 @@ export class Connection extends EventEmitter {
   }
 
   public on(event: string | symbol, listener: AnyFunction): this
-  public on<T extends keyof Protocol.Events>(event: T, listener: (arg: Protocol.Events[T]) => void): this {
+  public on<T extends keyof ProtocolMapping.Events>(event: T, listener: (arg: ProtocolMapping.Events[T][0]) => void): this {
     return super.on(event, listener);
   }
 
-  public send<T extends keyof Protocol.CommandParameters>(
+  public send<T extends keyof ProtocolMapping.Commands>(
     method: T,
-    parameters?: Protocol.CommandParameters[T]
-  ): Promise<Protocol.CommandReturnValues[T]> {
+    parameters?: ProtocolMapping.Commands[T]['paramsType'][0]
+  ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     const id = this._rawSend({ method, params: parameters });
     return new Promise((resolve, reject) => {
       this._callbacks.set(id, { resolve, reject, error: new Error(), method });
@@ -137,19 +138,19 @@ export class CDPSession extends EventEmitter {
     this._connection = connection;
   }
 
-  public on<T extends keyof Protocol.Events>(event: T, listener: (arg: Protocol.Events[T]) => void): this {
+  public on<T extends keyof ProtocolMapping.Events>(event: T, listener: (arg: ProtocolMapping.Events[T][0]) => void): this {
     return super.on(event, listener);
   }
 
   public once(event: string | symbol, listener: AnyFunction): this
-  public once<T extends keyof Protocol.Events>(event: T, listener: (arg: Protocol.Events[T]) => void): this {
+  public once<T extends keyof ProtocolMapping.Events>(event: T, listener: (arg: ProtocolMapping.Events[T][0]) => void): this {
     return super.once(event, listener);
   }
 
-  public send<T extends keyof Protocol.CommandParameters>(
+  public send<T extends keyof ProtocolMapping.Commands>(
     method: T,
-    parameters?: Protocol.CommandParameters[T]
-  ): Promise<Protocol.CommandReturnValues[T]> {
+    parameters?: ProtocolMapping.Commands[T]['paramsType'][0]
+  ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     if (!this._connection) {
       return Promise.reject(
           new Error(`Protocol error (${method}): Session closed. Most likely the ${this._targetType} has been closed.`)

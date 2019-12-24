@@ -15,11 +15,11 @@
  */
 
 import { EventEmitter } from 'events';
+import { Protocol } from 'devtools-protocol';
 import { helper, assert, debugError } from './helper';
 import { Events } from './Events';
 import { CDPSession } from './Connection';
 import { FrameManager, Frame } from './FrameManager';
-import { Protocol } from './protocol';
 
 export class NetworkManager extends EventEmitter {
   private _client: CDPSession;
@@ -30,7 +30,7 @@ export class NetworkManager extends EventEmitter {
   private _userCacheDisabled = false;
   private _ignoreHTTPSErrors: boolean;
   private _requestIdToRequest = new Map<string, Request>();
-  private _requestIdToRequestWillBeSentEvent = new Map<string, Protocol.Network.requestWillBeSentPayload>();
+  private _requestIdToRequestWillBeSentEvent = new Map<string, Protocol.Network.RequestWillBeSentEvent>();
   private _extraHTTPHeaders: Record<string, string> = {};
   private _credentials?: { username: string; password: string };
   private _attemptedAuthentications = new Set<string>();
@@ -124,7 +124,7 @@ export class NetworkManager extends EventEmitter {
     });
   }
 
-  private _onRequestWillBeSent(event: Protocol.Network.requestWillBeSentPayload) {
+  private _onRequestWillBeSent(event: Protocol.Network.RequestWillBeSentEvent) {
     // Request interception doesn't happen for data URLs with Network Service.
     if (this._protocolRequestInterceptionEnabled && !event.request.url.startsWith('data:')) {
       const requestId = event.requestId;
@@ -140,7 +140,7 @@ export class NetworkManager extends EventEmitter {
     this._onRequest(event, null);
   }
 
-  private _onAuthRequired(event: Protocol.Fetch.authRequiredPayload) {
+  private _onAuthRequired(event: Protocol.Fetch.AuthRequiredEvent) {
     let response: Protocol.Network.AuthChallengeResponse['response'] = 'Default';
     if (this._attemptedAuthentications.has(event.requestId)) {
       response = 'CancelAuth';
@@ -157,7 +157,7 @@ export class NetworkManager extends EventEmitter {
         .catch(debugError);
   }
 
-  private _onRequestPaused(event: Protocol.Fetch.requestPausedPayload) {
+  private _onRequestPaused(event: Protocol.Fetch.RequestPausedEvent) {
     if (!this._userRequestInterceptionEnabled && this._protocolRequestInterceptionEnabled) {
       this._client
           .send('Fetch.continueRequest', {
@@ -177,7 +177,7 @@ export class NetworkManager extends EventEmitter {
     }
   }
 
-  private _onRequest(event: Protocol.Network.requestWillBeSentPayload, interceptionId: string | null) {
+  private _onRequest(event: Protocol.Network.RequestWillBeSentEvent, interceptionId: string | null) {
     let redirectChain: Request[] = [];
     if (event.redirectResponse) {
       const request = this._requestIdToRequest.get(event.requestId);
@@ -200,7 +200,7 @@ export class NetworkManager extends EventEmitter {
     this.emit(Events.NetworkManager.Request, request);
   }
 
-  private _onRequestServedFromCache(event: Protocol.Network.requestServedFromCachePayload) {
+  private _onRequestServedFromCache(event: Protocol.Network.RequestServedFromCacheEvent) {
     const request = this._requestIdToRequest.get(event.requestId);
     if (request) request._fromMemoryCache = true;
   }
@@ -218,7 +218,7 @@ export class NetworkManager extends EventEmitter {
     this.emit(Events.NetworkManager.RequestFinished, request);
   }
 
-  private _onResponseReceived(event: Protocol.Network.responseReceivedPayload) {
+  private _onResponseReceived(event: Protocol.Network.ResponseReceivedEvent) {
     const request = this._requestIdToRequest.get(event.requestId);
     // FileUpload sends a response without a matching request.
     if (!request) return;
@@ -227,7 +227,7 @@ export class NetworkManager extends EventEmitter {
     this.emit(Events.NetworkManager.Response, response);
   }
 
-  private _onLoadingFinished(event: Protocol.Network.loadingFinishedPayload) {
+  private _onLoadingFinished(event: Protocol.Network.LoadingFinishedEvent) {
     const request = this._requestIdToRequest.get(event.requestId);
     // For certain requestIds we never receive requestWillBeSent event.
     // @see https://crbug.com/750469
@@ -243,7 +243,7 @@ export class NetworkManager extends EventEmitter {
     this.emit(Events.NetworkManager.RequestFinished, request);
   }
 
-  private _onLoadingFailed(event: Protocol.Network.loadingFailedPayload) {
+  private _onLoadingFailed(event: Protocol.Network.LoadingFailedEvent) {
     const request = this._requestIdToRequest.get(event.requestId);
     // For certain requestIds we never receive requestWillBeSent event.
     // @see https://crbug.com/750469
@@ -288,7 +288,7 @@ export class Request {
     frame: Frame | null,
     interceptionId: string,
     allowInterception: boolean,
-    event: Protocol.Network.requestWillBeSentPayload,
+    event: Protocol.Network.RequestWillBeSentEvent,
     redirectChain: Request[]
   ) {
     this._client = client;

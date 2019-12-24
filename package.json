@@ -20,7 +20,6 @@
     "debug-unit": "node --inspect-brk test/test.js",
     "prebuild": "rimraf ./lib",
     "build": "tsc",
-    "generate-protocol": "ts-node ./scripts/generate-protocol-types",
     "pretest": "npm run build && npm run lint",
     "test": "npm run coverage && npm run test-types && npm run unit-test-runner && npm run test-doclint",
     "coverage": "cross-env COVERAGE=true npm run unit",
@@ -37,6 +36,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "debug": "^4.1.1",
+    "devtools-protocol": "0.0.707473",
     "extract-zip": "^1.6.7",
     "https-proxy-agent": "^4.0.0",
     "mime": "^2.4.4",

@@ -15,12 +15,12 @@
  */
 
 import { EventEmitter } from 'events';
+import { Protocol } from 'devtools-protocol';
 import { debugError } from './helper';
 import { ExecutionContext } from './ExecutionContext';
 import { JSHandle } from './JSHandle';
 import { CDPSession } from './Connection';
 import { JSEvalable, EvaluateFn, SerializableOrJSHandle, EvaluateFnReturnType } from './types';
-import { Protocol } from './protocol';
 
 export class Worker extends EventEmitter implements JSEvalable {
   private _client: CDPSession;
@@ -45,7 +45,7 @@ export class Worker extends EventEmitter implements JSEvalable {
       this._executionContextCallback(executionContext);
     });
     // This might fail if the target is closed before we recieve all execution contexts.
-    this._client.send('Runtime.enable', {}).catch(debugError);
+    this._client.send('Runtime.enable').catch(debugError);
 
     this._client.on('Runtime.consoleAPICalled', event =>
       consoleAPICalled(event.type, event.args.map(jsHandleFactory), event.stackTrace)

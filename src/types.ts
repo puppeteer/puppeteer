@@ -1,5 +1,5 @@
+import { Protocol } from 'devtools-protocol';
 import { ElementHandle, JSHandle } from './JSHandle';
-import { Protocol } from './protocol';
 import { Response } from './NetworkManager';
 
 export type AnyFunction = (...args: any[]) => any;
@@ -440,7 +440,8 @@ export interface ScriptTagOptions {
   type?: string;
 }
 
-export type MouseButton = Required<Protocol.Input.dispatchMouseEventParameters>['button'];
+export type MouseButton = Required<Protocol.Input.DispatchMouseEventRequest>['button'];
+
 
 export interface ClickOptions {
   /** @default MouseButtons.Left */

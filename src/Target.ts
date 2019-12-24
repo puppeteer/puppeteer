@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Protocol } from 'devtools-protocol';
 import { Events } from './Events';
 import { Page } from './Page';
 import { Worker } from './Worker';
@@ -21,7 +22,6 @@ import { BrowserContext, Browser } from './Browser';
 import { CDPSession } from './Connection';
 import { Viewport } from './types';
 import { TaskQueue } from './TaskQueue';
-import { Protocol } from './protocol';
 
 export class Target {
   private _targetInfo: Protocol.Target.TargetInfo;

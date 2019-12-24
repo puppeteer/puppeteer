@@ -4,6 +4,7 @@
     "strict": true,
     "target": "es2015",
     "baseUrl": ".",
+    "moduleResolution": "node",
     "paths": {
       "puppeteer": ["../../index"],
       "puppeteer/*": ["../../*"]

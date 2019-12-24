@@ -26,8 +26,8 @@ for (const className in api) {
     helper.installAsyncStackHooks((api as Record<string, any>)[className]);
 }
 
+export * from 'devtools-protocol';
 export * from './api';
-export * from './protocol';
 export * from './types';
 export { errors };
 export { devices } from './DeviceDescriptors';

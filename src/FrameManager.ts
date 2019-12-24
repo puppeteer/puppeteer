@@ -15,6 +15,7 @@
  */
 
 import { EventEmitter } from 'events';
+import { Protocol } from 'devtools-protocol';
 import { helper, assert, debugError } from './helper';
 import { Events } from './Events';
 import { ExecutionContext, EVALUATION_SCRIPT_URL } from './ExecutionContext';
@@ -42,7 +43,6 @@ import {
   WrapElementHandle,
   UnwrapElementHandle
 } from './types';
-import { Protocol } from './protocol';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
@@ -88,7 +88,7 @@ export class FrameManager extends EventEmitter {
     this._handleFrameTree(frameTree);
     await Promise.all([
       this._client.send('Page.setLifecycleEventsEnabled', { enabled: true }),
-      this._client.send('Runtime.enable', {}).then(() => this._ensureIsolatedWorld(UTILITY_WORLD_NAME)),
+      this._client.send('Runtime.enable').then(() => this._ensureIsolatedWorld(UTILITY_WORLD_NAME)),
       this._networkManager.initialize()
     ]);
   }
@@ -146,7 +146,7 @@ export class FrameManager extends EventEmitter {
     return watcher.navigationResponse()!;
   }
 
-  private _onLifecycleEvent(event: Protocol.Page.lifecycleEventPayload) {
+  private _onLifecycleEvent(event: Protocol.Page.LifecycleEventEvent) {
     const frame = this._frames.get(event.frameId);
     if (!frame) return;
     frame._onLifecycleEvent(event.loaderId, event.name);
