@@ -268,7 +268,7 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
         # Protocol traffic can be rather noisy. This example filters out all Network domain messages
         env DEBUG="puppeteer:*" env DEBUG_COLORS=true node script.js 2>&1 | grep -v '"Network'
 
-7. Debug your Puppeteer (node) code easily, using [ndb](https://github.com/puppeteerLabs/ndb)
+7. Debug your Puppeteer (node) code easily, using [ndb](https://github.com/GoogleChromeLabs/ndb)
 
   - `npm install -g ndb` (or even better, use [npx](https://github.com/zkat/npx)!)
 
