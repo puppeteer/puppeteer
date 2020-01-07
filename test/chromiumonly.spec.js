@@ -95,7 +95,7 @@ module.exports.addLauncherTests = function({testRunner, expect, defaultBrowserOp
     });
 
     describe('Page.waitForFileChooser', () => {
-      it('should fail gracefully when trying to work with filechoosers within multiple connections', async() => {
+      xit('should fail gracefully when trying to work with filechoosers within multiple connections', async() => {
         // 1. Launch a browser and connect to all pages.
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         await originalBrowser.pages();
