@@ -259,7 +259,7 @@ To fix, you'll need to install the missing dependencies and the
 latest Chromium package in your Dockerfile:
 
 ```Dockerfile
-FROM node:10-slim
+FROM node:10-stretch
 
 # Install latest chrome dev package and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
 # Note: this installs the necessary libs to make the bundled version of Chromium that Puppeteer
