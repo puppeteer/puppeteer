@@ -19,7 +19,7 @@ const utils = require('./utils');
 const bigint = typeof BigInt !== 'undefined';
 
 module.exports.addTests = function({testRunner, expect}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
+  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
@@ -32,19 +32,19 @@ module.exports.addTests = function({testRunner, expect}) {
       const result = await page.evaluate(a => a, BigInt(42));
       expect(result).toBe(BigInt(42));
     });
-    it('should transfer NaN', async({page, server}) => {
+    it_fails_ffox('should transfer NaN', async({page, server}) => {
       const result = await page.evaluate(a => a, NaN);
       expect(Object.is(result, NaN)).toBe(true);
     });
-    it('should transfer -0', async({page, server}) => {
+    it_fails_ffox('should transfer -0', async({page, server}) => {
       const result = await page.evaluate(a => a, -0);
       expect(Object.is(result, -0)).toBe(true);
     });
-    it('should transfer Infinity', async({page, server}) => {
+    it_fails_ffox('should transfer Infinity', async({page, server}) => {
       const result = await page.evaluate(a => a, Infinity);
       expect(Object.is(result, Infinity)).toBe(true);
     });
-    it('should transfer -Infinity', async({page, server}) => {
+    it_fails_ffox('should transfer -Infinity', async({page, server}) => {
       const result = await page.evaluate(a => a, -Infinity);
       expect(Object.is(result, -Infinity)).toBe(true);
     });
@@ -80,7 +80,7 @@ module.exports.addTests = function({testRunner, expect}) {
       const result = await page.evaluate(a => a['中文字符'], {'中文字符': 42});
       expect(result).toBe(42);
     });
-    it('should throw when evaluation triggers reload', async({page, server}) => {
+    it_fails_ffox('should throw when evaluation triggers reload', async({page, server}) => {
       let error = null;
       await page.evaluate(() => {
         location.reload();
@@ -100,7 +100,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.goto(server.EMPTY_PAGE);
       expect(await frameEvaluation).toBe(42);
     });
-    it('should work from-inside an exposed function', async({page, server}) => {
+    it_fails_ffox('should work from-inside an exposed function', async({page, server}) => {
       // Setup inpage callback, which calls Page.evaluate
       await page.exposeFunction('callController', async function(a, b) {
         return await page.evaluate((a, b) => a * b, a, b);
@@ -138,19 +138,19 @@ module.exports.addTests = function({testRunner, expect}) {
       const result = await page.evaluate(() => BigInt(42));
       expect(result).toBe(BigInt(42));
     });
-    it('should return NaN', async({page, server}) => {
+    it_fails_ffox('should return NaN', async({page, server}) => {
       const result = await page.evaluate(() => NaN);
       expect(Object.is(result, NaN)).toBe(true);
     });
-    it('should return -0', async({page, server}) => {
+    it_fails_ffox('should return -0', async({page, server}) => {
       const result = await page.evaluate(() => -0);
       expect(Object.is(result, -0)).toBe(true);
     });
-    it('should return Infinity', async({page, server}) => {
+    it_fails_ffox('should return Infinity', async({page, server}) => {
       const result = await page.evaluate(() => Infinity);
       expect(Object.is(result, Infinity)).toBe(true);
     });
-    it('should return -Infinity', async({page, server}) => {
+    it_fails_ffox('should return -Infinity', async({page, server}) => {
       const result = await page.evaluate(() => -Infinity);
       expect(Object.is(result, -Infinity)).toBe(true);
     });
@@ -161,10 +161,10 @@ module.exports.addTests = function({testRunner, expect}) {
     it('should properly serialize null fields', async({page}) => {
       expect(await page.evaluate(() => ({a: undefined}))).toEqual({});
     });
-    it('should return undefined for non-serializable objects', async({page, server}) => {
+    it_fails_ffox('should return undefined for non-serializable objects', async({page, server}) => {
       expect(await page.evaluate(() => window)).toBe(undefined);
     });
-    it('should fail for circular object', async({page, server}) => {
+    it_fails_ffox('should fail for circular object', async({page, server}) => {
       const result = await page.evaluate(() => {
         const a = {};
         const b = {a};
@@ -193,13 +193,13 @@ module.exports.addTests = function({testRunner, expect}) {
       const result = await page.evaluate('2 + 5;\n// do some math!');
       expect(result).toBe(7);
     });
-    it('should accept element handle as an argument', async({page, server}) => {
+    it_fails_ffox('should accept element handle as an argument', async({page, server}) => {
       await page.setContent('<section>42</section>');
       const element = await page.$('section');
       const text = await page.evaluate(e => e.textContent, element);
       expect(text).toBe('42');
     });
-    it('should throw if underlying element was disposed', async({page, server}) => {
+    it_fails_ffox('should throw if underlying element was disposed', async({page, server}) => {
       await page.setContent('<section>39</section>');
       const element = await page.$('section');
       expect(element).toBeTruthy();
@@ -208,7 +208,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.evaluate(e => e.textContent, element).catch(e => error = e);
       expect(error.message).toContain('JSHandle is disposed');
     });
-    it('should throw if elementHandles are from other frames', async({page, server}) => {
+    it_fails_ffox('should throw if elementHandles are from other frames', async({page, server}) => {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const bodyHandle = await page.frames()[1].$('body');
       let error = null;
@@ -216,7 +216,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(error).toBeTruthy();
       expect(error.message).toContain('JSHandles can be evaluated only in the context they were created');
     });
-    it('should simulate a user gesture', async({page, server}) => {
+    it_fails_ffox('should simulate a user gesture', async({page, server}) => {
       const result = await page.evaluate(() => {
         document.body.appendChild(document.createTextNode('test'));
         document.execCommand('selectAll');
@@ -224,7 +224,7 @@ module.exports.addTests = function({testRunner, expect}) {
       });
       expect(result).toBe(true);
     });
-    it('should throw a nice error after a navigation', async({page, server}) => {
+    it_fails_ffox('should throw a nice error after a navigation', async({page, server}) => {
       const executionContext = await page.mainFrame().executionContext();
 
       await Promise.all([
@@ -255,7 +255,7 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
-  describe('Page.evaluateOnNewDocument', function() {
+  describe_fails_ffox('Page.evaluateOnNewDocument', function() {
     it('should evaluate before anything else on the page', async({page, server}) => {
       await page.evaluateOnNewDocument(function(){
         window.injected = 123;
@@ -278,7 +278,7 @@ module.exports.addTests = function({testRunner, expect}) {
   });
 
   describe('Frame.evaluate', function() {
-    it('should have different execution contexts', async({page, server}) => {
+    it_fails_ffox('should have different execution contexts', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       expect(page.frames().length).toBe(2);
@@ -287,7 +287,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(await page.frames()[0].evaluate(() => window.FOO)).toBe('foo');
       expect(await page.frames()[1].evaluate(() => window.FOO)).toBe('bar');
     });
-    it('should have correct execution contexts', async({page, server}) => {
+    it_fails_ffox('should have correct execution contexts', async({page, server}) => {
       await page.goto(server.PREFIX + '/frames/one-frame.html');
       expect(page.frames().length).toBe(2);
       expect(await page.frames()[0].evaluate(() => document.body.textContent.trim())).toBe('');

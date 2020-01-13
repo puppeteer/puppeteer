@@ -15,11 +15,11 @@
  */
 
 module.exports.addTests = function({testRunner, expect, product}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
-  describe('Page.$eval', function() {
+  describe_fails_ffox('Page.$eval', function() {
     it('should work', async({page, server}) => {
       await page.setContent('<section id="testAttribute">43543</section>');
       const idAttribute = await page.$eval('section', e => e.id);
@@ -43,7 +43,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
     });
   });
 
-  describe('Page.$$eval', function() {
+  describe_fails_ffox('Page.$$eval', function() {
     it('should work', async({page, server}) => {
       await page.setContent('<div>hello</div><div>beautiful</div><div>world!</div>');
       const divsCount = await page.$$eval('div', divs => divs.length);
@@ -51,7 +51,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
     });
   });
 
-  describe('Page.$', function() {
+  describe_fails_ffox('Page.$', function() {
     it('should query existing element', async({page, server}) => {
       await page.setContent('<section>test</section>');
       const element = await page.$('section');
@@ -64,7 +64,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
   });
 
   describe('Page.$$', function() {
-    it('should query existing elements', async({page, server}) => {
+    it_fails_ffox('should query existing elements', async({page, server}) => {
       await page.setContent('<div>A</div><br/><div>B</div>');
       const elements = await page.$$('div');
       expect(elements.length).toBe(2);
@@ -78,7 +78,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
     });
   });
 
-  describe('Path.$x', function() {
+  describe_fails_ffox('Path.$x', function() {
     it('should query existing element', async({page, server}) => {
       await page.setContent('<section>test</section>');
       const elements = await page.$x('/html/body/section');
@@ -108,14 +108,14 @@ module.exports.addTests = function({testRunner, expect, product}) {
       expect(content).toBe('A');
     });
 
-    it('should return null for non-existing element', async({page, server}) => {
+    it_fails_ffox('should return null for non-existing element', async({page, server}) => {
       await page.setContent('<html><body><div class="second"><div class="inner">B</div></div></body></html>');
       const html = await page.$('html');
       const second = await html.$('.third');
       expect(second).toBe(null);
     });
   });
-  describe('ElementHandle.$eval', function() {
+  describe_fails_ffox('ElementHandle.$eval', function() {
     it('should work', async({page, server}) => {
       await page.setContent('<html><body><div class="tweet"><div class="like">100</div><div class="retweets">10</div></div></body></html>');
       const tweet = await page.$('.tweet');
@@ -139,7 +139,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
       expect(errorMessage).toBe(`Error: failed to find element matching selector ".a"`);
     });
   });
-  describe('ElementHandle.$$eval', function() {
+  describe_fails_ffox('ElementHandle.$$eval', function() {
     it('should work', async({page, server}) => {
       await page.setContent('<html><body><div class="tweet"><div class="like">100</div><div class="like">10</div></div></body></html>');
       const tweet = await page.$('.tweet');
@@ -165,7 +165,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
 
   });
 
-  describe('ElementHandle.$$', function() {
+  describe_fails_ffox('ElementHandle.$$', function() {
     it('should query existing elements', async({page, server}) => {
       await page.setContent('<html><body><div>A</div><br/><div>B</div></body></html>');
       const html = await page.$('html');
@@ -195,7 +195,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
       expect(content).toBe('A');
     });
 
-    it('should return null for non-existing element', async({page, server}) => {
+    it_fails_ffox('should return null for non-existing element', async({page, server}) => {
       await page.setContent('<html><body><div class="second"><div class="inner">B</div></div></body></html>');
       const html = await page.$('html');
       const second = await html.$x(`/div[contains(@class, 'third')]`);

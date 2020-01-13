@@ -24,7 +24,7 @@ const statAsync = helper.promisify(fs.stat);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 const utils = require('./utils');
 
-module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer, CHROME, FFOX, JUGGLER, puppeteerPath}) {
+module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer, CHROME, FFOX, puppeteerPath}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
@@ -192,6 +192,13 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
           expect(puppeteer.defaultArgs()).toContain('--headless');
           expect(puppeteer.defaultArgs({headless: false})).not.toContain('--headless');
           expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain('--user-data-dir=foo');
+        } else if (FFOX) {
+          expect(puppeteer.defaultArgs()).toContain('--headless');
+          expect(puppeteer.defaultArgs()).toContain('--no-remote');
+          expect(puppeteer.defaultArgs()).toContain('--foreground');
+          expect(puppeteer.defaultArgs({headless: false})).not.toContain('--headless');
+          expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain('--profile');
+          expect(puppeteer.defaultArgs({userDataDir: 'foo'})).toContain('foo');
         } else {
           expect(puppeteer.defaultArgs()).toContain('-headless');
           expect(puppeteer.defaultArgs({headless: false})).not.toContain('-headless');
@@ -202,10 +209,10 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       it('should report the correct product', async() => {
         if (CHROME)
           expect(puppeteer.product).toBe('chrome');
-        else if (FFOX && !JUGGLER)
+        else if (FFOX)
           expect(puppeteer.product).toBe('firefox');
       });
-      it('should work with no default arguments', async() => {
+      it_fails_ffox('should work with no default arguments', async() => {
         const options = Object.assign({}, defaultBrowserOptions);
         options.ignoreDefaultArgs = true;
         const browser = await puppeteer.launch(options);
@@ -214,7 +221,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await page.close();
         await browser.close();
       });
-      it('should filter out ignored default arguments', async() => {
+      it_fails_ffox('should filter out ignored default arguments', async() => {
         // Make sure we launch with `--enable-automation` by default.
         const defaultArgs = puppeteer.defaultArgs();
         const browser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
@@ -227,7 +234,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(spawnargs.indexOf(defaultArgs[2])).toBe(-1);
         await browser.close();
       });
-      it_fails_ffox('should have default URL when launching browser', async function() {
+      it('should have default URL when launching browser', async function() {
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const pages = (await browser.pages()).map(page => page.url());
         expect(pages).toEqual(['about:blank']);
@@ -267,7 +274,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         expect(page.viewport()).toBe(null);
         await browser.close();
       });
-      it('should take fullPage screenshots when defaultViewport is null', async({server}) => {
+      it_fails_ffox('should take fullPage screenshots when defaultViewport is null', async({server}) => {
         const options = Object.assign({}, defaultBrowserOptions, {
           defaultViewport: null
         });
@@ -305,7 +312,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
           remoteBrowser.close(),
         ]);
       });
-      it('should support ignoreHTTPSErrors option', async({httpsServer}) => {
+      it_fails_ffox('should support ignoreHTTPSErrors option', async({httpsServer}) => {
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const browserWSEndpoint = originalBrowser.wsEndpoint();
 
@@ -324,7 +331,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await page.close();
         await browser.close();
       });
-      it('should be able to reconnect to a disconnected browser', async({server}) => {
+      it_fails_ffox('should be able to reconnect to a disconnected browser', async({server}) => {
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const browserWSEndpoint = originalBrowser.wsEndpoint();
         const page = await originalBrowser.newPage();
@@ -345,7 +352,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         await browser.close();
       });
       // @see https://github.com/puppeteer/puppeteer/issues/4197#issuecomment-481793410
-      it('should be able to connect to the same page simultaneously', async({server}) => {
+      it_fails_ffox('should be able to connect to the same page simultaneously', async({server}) => {
         const browserOne = await puppeteer.launch();
         const browserTwo = await puppeteer.connect({ browserWSEndpoint: browserOne.wsEndpoint() });
         const [page1, page2] = await Promise.all([
@@ -359,7 +366,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
 
     });
     describe('Puppeteer.executablePath', function() {
-      it('should work', async({server}) => {
+      it_fails_ffox('should work', async({server}) => {
         const executablePath = puppeteer.executablePath();
         expect(fs.existsSync(executablePath)).toBe(true);
         expect(fs.realpathSync(executablePath)).toBe(executablePath);
@@ -379,7 +386,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
   });
 
   describe('Browser target events', function() {
-    it('should work', async({server}) => {
+    it_fails_ffox('should work', async({server}) => {
       const browser = await puppeteer.launch(defaultBrowserOptions);
       const events = [];
       browser.on('targetcreated', () => events.push('CREATED'));

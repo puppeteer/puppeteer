@@ -22,7 +22,7 @@ module.exports.addTests = function({testRunner, expect}) {
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Frame.executionContext', function() {
-    it('should work', async({page, server}) => {
+    it_fails_ffox('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       expect(page.frames().length).toBe(2);
@@ -68,7 +68,7 @@ module.exports.addTests = function({testRunner, expect}) {
   });
 
   describe('Frame Management', function() {
-    it('should handle nested frames', async({page, server}) => {
+    it_fails_ffox('should handle nested frames', async({page, server}) => {
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
       expect(utils.dumpFrames(page.mainFrame())).toEqual([
         'http://localhost:<PORT>/frames/nested-frames.html',
@@ -78,7 +78,7 @@ module.exports.addTests = function({testRunner, expect}) {
         '    http://localhost:<PORT>/frames/frame.html (aframe)'
       ]);
     });
-    it('should send events when frames are manipulated dynamically', async({page, server}) => {
+    it_fails_ffox('should send events when frames are manipulated dynamically', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       // validate frameattached events
       const attachedFrames = [];
@@ -101,7 +101,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(detachedFrames.length).toBe(1);
       expect(detachedFrames[0].isDetached()).toBe(true);
     });
-    it('should send "framenavigated" when navigating on anchor URLs', async({page, server}) => {
+    it_fails_ffox('should send "framenavigated" when navigating on anchor URLs', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await Promise.all([
         page.goto(server.EMPTY_PAGE + '#foo'),
@@ -122,7 +122,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.goto(server.EMPTY_PAGE);
       expect(hasEvents).toBe(false);
     });
-    it('should detach child frames on navigation', async({page, server}) => {
+    it_fails_ffox('should detach child frames on navigation', async({page, server}) => {
       let attachedFrames = [];
       let detachedFrames = [];
       let navigatedFrames = [];
@@ -142,7 +142,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(detachedFrames.length).toBe(4);
       expect(navigatedFrames.length).toBe(1);
     });
-    it('should support framesets', async({page, server}) => {
+    it_fails_ffox('should support framesets', async({page, server}) => {
       let attachedFrames = [];
       let detachedFrames = [];
       let navigatedFrames = [];
@@ -162,7 +162,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(detachedFrames.length).toBe(4);
       expect(navigatedFrames.length).toBe(1);
     });
-    it('should report frame from-inside shadow DOM', async({page, server}) => {
+    it_fails_ffox('should report frame from-inside shadow DOM', async({page, server}) => {
       await page.goto(server.PREFIX + '/shadow.html');
       await page.evaluate(async url => {
         const frame = document.createElement('iframe');
@@ -173,7 +173,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(page.frames().length).toBe(2);
       expect(page.frames()[1].url()).toBe(server.EMPTY_PAGE);
     });
-    it('should report frame.name()', async({page, server}) => {
+    it_fails_ffox('should report frame.name()', async({page, server}) => {
       await utils.attachFrame(page, 'theFrameId', server.EMPTY_PAGE);
       await page.evaluate(url => {
         const frame = document.createElement('iframe');
@@ -186,14 +186,14 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(page.frames()[1].name()).toBe('theFrameId');
       expect(page.frames()[2].name()).toBe('theFrameName');
     });
-    it('should report frame.parent()', async({page, server}) => {
+    it_fails_ffox('should report frame.parent()', async({page, server}) => {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
       expect(page.frames()[0].parentFrame()).toBe(null);
       expect(page.frames()[1].parentFrame()).toBe(page.mainFrame());
       expect(page.frames()[2].parentFrame()).toBe(page.mainFrame());
     });
-    it('should report different frame instance when frame re-attaches', async({page, server}) => {
+    it_fails_ffox('should report different frame instance when frame re-attaches', async({page, server}) => {
       const frame1 = await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       await page.evaluate(() => {
         window.frame = document.querySelector('#frame1');
