@@ -55,9 +55,9 @@
     "@types/proxy-from-env": "^1.0.0",
     "@types/rimraf": "^2.0.3",
     "@types/ws": "^6.0.4",
-    "@typescript-eslint/eslint-plugin": "^2.15.0",
-    "@typescript-eslint/parser": "^2.15.0",
-    "commonmark": "^0.29.0",
+    "@typescript-eslint/eslint-plugin": "^2.16.0",
+    "@typescript-eslint/parser": "^2.16.0",
+    "commonmark": "^0.29.1",
     "cross-env": "^6.0.3",
     "eslint": "^6.8.0",
     "jpeg-js": "^0.3.6",
@@ -66,7 +66,7 @@
     "pixelmatch": "^5.1.0",
     "pngjs": "^3.4.0",
     "text-diff": "^1.0.1",
-    "ts-node": "^8.5.4",
+    "ts-node": "^8.6.2",
     "typescript": "~3.7.4"
   },
   "browser": {
