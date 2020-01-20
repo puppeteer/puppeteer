@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-// puppeteer-core should not install anything.
-if (require('./package.json').name === 'puppeteer-core')
-  return;
-
 if (process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD) {
   logPolitely('**INFO** Skipping Chromium download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" environment variable was found.');
   return;
