@@ -22,5 +22,5 @@ const packagePath = path.join(__dirname, '..', 'package.json');
 const json = require(packagePath);
 
 json.name = 'puppeteer-core';
-delete json.scripts['install'];
+delete json.scripts.install;
 fs.writeFileSync(packagePath, JSON.stringify(json, null, '  '));
