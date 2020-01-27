@@ -299,6 +299,8 @@ export class ElementHandle<E extends Element = Element> extends JSHandle<E> impl
   }
 
   public async uploadFile(...filePaths: string[]) {
+    const isMultiple = await this.evaluate(element => (element as Element as HTMLInputElement).multiple);
+    assert(filePaths.length <= 1 || isMultiple, 'Multiple file uploads only work with <input type=file multiple>');
     const promises = filePaths.map(filePath => readFileAsync(filePath));
     const files: Array<{ name: string; content: string; mimeType: string | false }> = [];
     for (let i = 0; i < filePaths.length; i++) {

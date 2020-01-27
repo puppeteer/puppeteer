@@ -15,7 +15,6 @@
  */
 
 import * as fs from 'fs';
-import * as path from 'path';
 import { EventEmitter } from 'events';
 import * as mime from 'mime';
 import { Protocol } from 'devtools-protocol';
@@ -121,7 +120,6 @@ export class Page extends EventEmitter implements FrameBase {
   private _client: CDPSession;
   private _target: Target;
   private _screenshotTaskQueue: TaskQueue;
-  private _fileChooserInterceptionIsDisabled: boolean;
   private _pageBindings = new Map<string, AnyFunction>();
   private _keyboard: Keyboard;
   private _mouse: Mouse;
@@ -185,7 +183,6 @@ export class Page extends EventEmitter implements FrameBase {
     networkManager.on(Events.NetworkManager.Response, event => this.emit(Events.Page.Response, event));
     networkManager.on(Events.NetworkManager.RequestFailed, event => this.emit(Events.Page.RequestFailed, event));
     networkManager.on(Events.NetworkManager.RequestFinished, event => this.emit(Events.Page.RequestFinished, event));
-    this._fileChooserInterceptionIsDisabled = false;
 
     client.on('Page.domContentEventFired', () => this.emit(Events.Page.DOMContentLoaded));
     client.on('Page.loadEventFired', () => this.emit(Events.Page.Load));
@@ -198,7 +195,9 @@ export class Page extends EventEmitter implements FrameBase {
     client.on('Inspector.targetCrashed', () => this._onTargetCrashed());
     client.on('Performance.metrics', event => this._emitMetrics(event));
     client.on('Log.entryAdded', event => this._onLogEntryAdded(event));
-    client.on('Page.fileChooserOpened', event => this._onFileChooser(event));
+    client.on('Page.fileChooserOpened', event => {
+      this._onFileChooser(event).catch(console.error);
+    });
     this._target._isClosedPromise.then(() => {
       this.emit(Events.Page.Close);
       this._closed = true;
@@ -211,15 +210,11 @@ export class Page extends EventEmitter implements FrameBase {
       this._client.send('Target.setAutoAttach', { autoAttach: true, waitForDebuggerOnStart: false, flatten: true }),
       this._client.send('Performance.enable'),
       this._client.send('Log.enable'),
-      this._client.send('Page.setInterceptFileChooserDialog', { enabled: true }).catch(() => {
-        this._fileChooserInterceptionIsDisabled = true;
-      })
+      this._client.send('Page.setInterceptFileChooserDialog', { enabled: true })
     ]);
   }
 
   public async waitForFileChooser(options: { timeout?: number } = {}) {
-    if (this._fileChooserInterceptionIsDisabled)
-      throw new Error('File chooser handling does not work with multiple connections to the same page');
     const { timeout = this._timeoutSettings.timeout() } = options;
     let callback!: (chooser: FileChooser) => void;
     const promise = new Promise<FileChooser>(x => (callback = x));
@@ -888,15 +883,17 @@ export class Page extends EventEmitter implements FrameBase {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);
   }
 
-  private _onFileChooser(event: Protocol.Page.FileChooserOpenedEvent) {
-    if (!this._fileChooserInterceptors.size) {
-      this._client.send('Page.handleFileChooser', { action: 'fallback' }).catch(debugError);
+  private async _onFileChooser(event: Protocol.Page.FileChooserOpenedEvent) {
+    if (!this._fileChooserInterceptors.size)
       return;
-    }
+    const frame = this._frameManager.frame(event.frameId);
+    const context = await frame!.executionContext();
+    const element = await context._adoptBackendNodeId(event.backendNodeId);
     const interceptors = Array.from(this._fileChooserInterceptors);
     this._fileChooserInterceptors.clear();
-    const fileChooser = new FileChooser(this._client, event);
-    for (const interceptor of interceptors) interceptor.call(null, fileChooser);
+    const fileChooser = new FileChooser(element, event);
+    for (const interceptor of interceptors)
+      interceptor.call(null, fileChooser);
   }
 
   private _onTargetCrashed() {
@@ -1149,12 +1146,12 @@ export class ConsoleMessage {
 }
 
 export class FileChooser {
-  private _client: CDPSession;
+  private _element: ElementHandle;
   private _handled: boolean;
   private _multiple: boolean;
 
-  constructor(client: CDPSession, event: Protocol.Page.FileChooserOpenedEvent) {
-    this._client = client;
+  constructor(element: ElementHandle, event: Protocol.Page.FileChooserOpenedEvent) {
+    this._element = element;
     this._multiple = event.mode !== 'selectSingle';
     this._handled = false;
   }
@@ -1171,19 +1168,12 @@ export class FileChooser {
   public async accept(filePaths: string[]): Promise<void> {
     assert(!this._handled, 'Cannot accept FileChooser which is already handled!');
     this._handled = true;
-    const files = filePaths.map(filePath => path.resolve(filePath));
-    await this._client.send('Page.handleFileChooser', {
-      action: 'accept',
-      files
-    });
+    await this._element.uploadFile(...filePaths);
   }
 
   /** Closes the file chooser without selecting any files. */
-  public async cancel(): Promise<void> {
+  public async cancel(): Promise<void> { // eslint-disable-line @typescript-eslint/require-await
     assert(!this._handled, 'Cannot cancel FileChooser which is already handled!');
     this._handled = true;
-    await this._client.send('Page.handleFileChooser', {
-      action: 'cancel'
-    });
   }
 }

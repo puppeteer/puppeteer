@@ -74,9 +74,14 @@ export class ExecutionContext<T = any> implements JSEvalable<T> {
     const nodeInfo = await this.client.send('DOM.describeNode', {
       objectId: elementHandle._remoteObject.objectId
     });
+    return this._adoptBackendNodeId(nodeInfo.node.backendNodeId);
+  }
+
+  /* @internal */
+  public async _adoptBackendNodeId(backendNodeId: Protocol.DOM.BackendNodeId): Promise<ElementHandle> {
     const { object } = await this.client.send('DOM.resolveNode', {
-      backendNodeId: nodeInfo.node.backendNodeId,
-      executionContextId: this._contextId
+      backendNodeId: backendNodeId,
+      executionContextId: this._contextId,
     });
     return createJSHandle(this, object) as ElementHandle;
   }
