@@ -1111,7 +1111,11 @@ If `pageFunction` returns a [Promise], then `page.$$eval` would wait for the pro
 
 Examples:
 ```js
-const divsCounts = await page.$$eval('div', divs => divs.length);
+const divCount = await page.$$eval('div', divs => divs.length);
+```
+
+```js
+const options = await page.$$eval('div > span.options', options => options.map(option => option.textContent));
 ```
 
 #### page.$eval(selector, pageFunction[, ...args])
