@@ -6,6 +6,7 @@
 - API Translations: [中文|Chinese](https://zhaoqize.github.io/puppeteer-api-zh_CN/#/)
 - Troubleshooting: [troubleshooting.md](https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md)
 - Releases per Chromium Version:
+  * Chromium 80.0.3987.0 - [Puppeteer v2.1.0](https://github.com/puppeteer/puppeteer/blob/v2.1.0/docs/api.md)
   * Chromium 79.0.3942.0 - [Puppeteer v2.0.0](https://github.com/puppeteer/puppeteer/blob/v2.0.0/docs/api.md)
   * Chromium 78.0.3882.0 - [Puppeteer v1.20.0](https://github.com/puppeteer/puppeteer/blob/v1.20.0/docs/api.md)
   * Chromium 77.0.3803.0 - [Puppeteer v1.19.0](https://github.com/puppeteer/puppeteer/blob/v1.19.0/docs/api.md)
@@ -1110,7 +1111,11 @@ If `pageFunction` returns a [Promise], then `page.$$eval` would wait for the pro
 
 Examples:
 ```js
-const divsCounts = await page.$$eval('div', divs => divs.length);
+const divCount = await page.$$eval('div', divs => divs.length);
+```
+
+```js
+const options = await page.$$eval('div > span.options', options => options.map(option => option.textContent));
 ```
 
 #### page.$eval(selector, pageFunction[, ...args])

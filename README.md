@@ -6,7 +6,7 @@
 
 <img src="https://user-images.githubusercontent.com/10379601/29446482-04f7036a-841f-11e7-9872-91d1fc2ea683.png" height="200" align="right">
 
-###### [API](https://github.com/puppeteer/puppeteer/blob/v2.0.0/docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/puppeteer/puppeteer/blob/master/CONTRIBUTING.md) | [Troubleshooting](https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md)
+###### [API](https://github.com/puppeteer/puppeteer/blob/v2.1.0/docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/puppeteer/puppeteer/blob/master/CONTRIBUTING.md) | [Troubleshooting](https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md)
 
 > Puppeteer is a Node library which provides a high-level API to control Chrome or Chromium over the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/). Puppeteer runs [headless](https://developers.google.com/web/updates/2017/04/headless-chrome) by default, but can be configured to run full (non-headless) Chrome or Chromium.
 
@@ -37,7 +37,7 @@ npm i puppeteer
 # or "yarn add puppeteer"
 ```
 
-Note: When you install Puppeteer, it downloads a recent version of Chromium (~170MB Mac, ~282MB Linux, ~280MB Win) that is guaranteed to work with the API. To skip the download, see [Environment variables](https://github.com/puppeteer/puppeteer/blob/v2.0.0/docs/api.md#environment-variables).
+Note: When you install Puppeteer, it downloads a recent version of Chromium (~170MB Mac, ~282MB Linux, ~280MB Win) that is guaranteed to work with the API. To skip the download, see [Environment variables](https://github.com/puppeteer/puppeteer/blob/v2.1.0/docs/api.md#environment-variables).
 
 
 ### puppeteer-core
@@ -63,7 +63,7 @@ Note: Prior to v1.18.1, Puppeteer required at least Node v6.4.0. All subsequent 
 Node 8.9.0+. All examples below use async/await which is only supported in Node v7.6.0 or greater.
 
 Puppeteer will be familiar to people using other browser testing frameworks. You create an instance
-of `Browser`, open pages, and then manipulate them with [Puppeteer's API](https://github.com/puppeteer/puppeteer/blob/v2.0.0/docs/api.md#).
+of `Browser`, open pages, and then manipulate them with [Puppeteer's API](https://github.com/puppeteer/puppeteer/blob/v2.1.0/docs/api.md#).
 
 **Example** - navigating to https://example.com and saving a screenshot as *example.png*:
 
@@ -88,7 +88,7 @@ Execute script on the command line
 node example.js
 ```
 
-Puppeteer sets an initial page size to 800×600px, which defines the screenshot size. The page size can be customized  with [`Page.setViewport()`](https://github.com/puppeteer/puppeteer/blob/v2.0.0/docs/api.md#pagesetviewportviewport).
+Puppeteer sets an initial page size to 800×600px, which defines the screenshot size. The page size can be customized  with [`Page.setViewport()`](https://github.com/puppeteer/puppeteer/blob/v2.1.0/docs/api.md#pagesetviewportviewport).
 
 **Example** - create a PDF.
 
@@ -113,7 +113,7 @@ Execute script on the command line
 node hn.js
 ```
 
-See [`Page.pdf()`](https://github.com/puppeteer/puppeteer/blob/v2.0.0/docs/api.md#pagepdfoptions) for more information about creating pdfs.
+See [`Page.pdf()`](https://github.com/puppeteer/puppeteer/blob/v2.1.0/docs/api.md#pagepdfoptions) for more information about creating pdfs.
 
 **Example** - evaluate script in the context of the page
 
@@ -148,7 +148,7 @@ Execute script on the command line
 node get-dimensions.js
 ```
 
-See [`Page.evaluate()`](https://github.com/puppeteer/puppeteer/blob/v2.0.0/docs/api.md#pageevaluatepagefunction-args) for more information on `evaluate` and related methods like `evaluateOnNewDocument` and `exposeFunction`.
+See [`Page.evaluate()`](https://github.com/puppeteer/puppeteer/blob/v2.1.0/docs/api.md#pageevaluatepagefunction-args) for more information on `evaluate` and related methods like `evaluateOnNewDocument` and `exposeFunction`.
 
 <!-- [END getstarted] -->
 
@@ -157,7 +157,7 @@ See [`Page.evaluate()`](https://github.com/puppeteer/puppeteer/blob/v2.0.0/docs/
 
 **1. Uses Headless mode**
 
-Puppeteer launches Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). To launch a full version of Chromium, set the [`headless` option](https://github.com/puppeteer/puppeteer/blob/v2.0.0/docs/api.md#puppeteerlaunchoptions) when launching a browser:
+Puppeteer launches Chromium in [headless mode](https://developers.google.com/web/updates/2017/04/headless-chrome). To launch a full version of Chromium, set the [`headless` option](https://github.com/puppeteer/puppeteer/blob/v2.1.0/docs/api.md#puppeteerlaunchoptions) when launching a browser:
 
 ```js
 const browser = await puppeteer.launch({headless: false}); // default is true
@@ -173,7 +173,7 @@ pass in the executable's path when creating a `Browser` instance:
 const browser = await puppeteer.launch({executablePath: '/path/to/Chrome'});
 ```
 
-See [`Puppeteer.launch()`](https://github.com/puppeteer/puppeteer/blob/v2.0.0/docs/api.md#puppeteerlaunchoptions) for more information.
+See [`Puppeteer.launch()`](https://github.com/puppeteer/puppeteer/blob/v2.1.0/docs/api.md#puppeteerlaunchoptions) for more information.
 
 See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description of the differences between Chromium and Chrome. [`This article`](https://chromium.googlesource.com/chromium/src/+/master/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users.
 
@@ -185,7 +185,7 @@ Puppeteer creates its own Chromium user profile which it **cleans up on every ru
 
 ## Resources
 
-- [API Documentation](https://github.com/puppeteer/puppeteer/blob/v2.0.0/docs/api.md)
+- [API Documentation](https://github.com/puppeteer/puppeteer/blob/v2.1.0/docs/api.md)
 - [Examples](https://github.com/puppeteer/puppeteer/tree/master/examples/)
 - [Community list of Puppeteer resources](https://github.com/transitive-bullshit/awesome-puppeteer)
 
@@ -375,7 +375,7 @@ await page.evaluate(() => {
 
 You may find that Puppeteer does not behave as expected when controlling pages that incorporate audio and video. (For example, [video playback/screenshots is likely to fail](https://github.com/puppeteer/puppeteer/issues/291).) There are two reasons for this:
 
-* Puppeteer is bundled with Chromium — not Chrome — and so by default, it inherits all of [Chromium's media-related limitations](https://www.chromium.org/audio-video). This means that Puppeteer does not support licensed formats such as AAC or H.264. (However, it is possible to force Puppeteer to use a separately-installed version Chrome instead of Chromium via the [`executablePath` option to `puppeteer.launch`](https://github.com/puppeteer/puppeteer/blob/v2.0.0/docs/api.md#puppeteerlaunchoptions). You should only use this configuration if you need an official release of Chrome that supports these media formats.)
+* Puppeteer is bundled with Chromium — not Chrome — and so by default, it inherits all of [Chromium's media-related limitations](https://www.chromium.org/audio-video). This means that Puppeteer does not support licensed formats such as AAC or H.264. (However, it is possible to force Puppeteer to use a separately-installed version Chrome instead of Chromium via the [`executablePath` option to `puppeteer.launch`](https://github.com/puppeteer/puppeteer/blob/v2.1.0/docs/api.md#puppeteerlaunchoptions). You should only use this configuration if you need an official release of Chrome that supports these media formats.)
 * Since Puppeteer (in all configurations) controls a desktop version of Chromium/Chrome, features that are only supported by the mobile version of Chrome are not supported. This means that Puppeteer [does not support HTTP Live Streaming (HLS)](https://caniuse.com/#feat=http-live-streaming).
 
 #### Q: I am having trouble installing / running Puppeteer in my test environment. Where should I look for help?
