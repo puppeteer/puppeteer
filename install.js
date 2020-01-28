@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+/**
+ * This file is part of public API.
+ *
+ * By default, the `puppeteer` package runs this script during the installation
+ * process unless one of the env flags is provided.
+ * `puppeteer-core` package doesn't include this step at all. However, it's
+ * still possible to install Chromium using this script when necessary.
+ */
 if (process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD) {
   logPolitely('**INFO** Skipping Chromium download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" environment variable was found.');
   return;
