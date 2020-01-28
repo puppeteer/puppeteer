@@ -47,8 +47,7 @@ machine to check which dependencies are missing. The common ones are provided be
 ```
 ca-certificates
 fonts-liberation
-gconf-service
-libappindicator1
+libappindicator3-1
 libasound2
 libatk-bridge2.0-0
 libatk1.0-0
@@ -60,8 +59,6 @@ libexpat1
 libfontconfig1
 libgbm1
 libgcc1
-libgconf-2-4
-libgdk-pixbuf2.0-0
 libglib2.0-0
 libgtk-3-0
 libnspr4
@@ -95,7 +92,6 @@ xdg-utils
 alsa-lib.x86_64
 atk.x86_64
 cups-libs.x86_64
-GConf2.x86_64
 gtk3.x86_64
 ipa-gothic-fonts
 libXcomposite.x86_64
