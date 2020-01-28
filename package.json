@@ -43,7 +43,7 @@
     "mime-types": "^2.1.26",
     "progress": "^2.0.3",
     "proxy-from-env": "^1.0.0",
-    "rimraf": "^3.0.0",
+    "rimraf": "^3.0.1",
     "ws": "^7.2.1"
   },
   "devDependencies": {
@@ -55,8 +55,8 @@
     "@types/proxy-from-env": "^1.0.0",
     "@types/rimraf": "^2.0.3",
     "@types/ws": "^7.2.0",
-    "@typescript-eslint/eslint-plugin": "^2.17.0",
-    "@typescript-eslint/parser": "^2.17.0",
+    "@typescript-eslint/eslint-plugin": "^2.18.0",
+    "@typescript-eslint/parser": "^2.18.0",
     "commonmark": "^0.29.1",
     "cross-env": "^6.0.3",
     "eslint": "^6.8.0",
