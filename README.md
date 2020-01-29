@@ -296,7 +296,8 @@ Check out [contributing guide](https://github.com/puppeteer/puppeteer/blob/maste
 The Chrome DevTools team maintains the library, but we'd love your help and expertise on the project!
 See [Contributing](https://github.com/puppeteer/puppeteer/blob/master/CONTRIBUTING.md).
 
-#### Q: What is the status of cross-browser support
+#### Q: What is the status of cross-browser support?
+
 Historically, Puppeteer supported Firefox indirectly through puppeteer-firefox, which relied on a custom, patched version of Firefox. This approach was also known as “Juggler”.
 After discussions with Mozilla, we collectively concluded that relying on custom patches was infeasible.
 Since then, we have been collaborating with Mozilla on supporting Puppeteer on “stock” Firefox.
