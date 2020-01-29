@@ -29,6 +29,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       const input = await page.$('input');
       await input.uploadFile(filePath);
       expect(await page.evaluate(e => e.files[0].name, input)).toBe('file-to-upload.txt');
+      expect(await page.evaluate(e => e.files[0].type, input)).toBe('text/plain');
       expect(await page.evaluate(e => {
         const reader = new FileReader();
         const promise = new Promise(fulfill => reader.onload = fulfill);
