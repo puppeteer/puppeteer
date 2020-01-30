@@ -6,9 +6,6 @@ env:
 
 task:
   matrix:
-    - name: Chromium (node8 + linux)
-      container:
-        dockerfile: .ci/node8/Dockerfile.linux
     - name: Chromium (node10 + linux)
       container:
         dockerfile: .ci/node10/Dockerfile.linux
@@ -24,9 +21,9 @@ task:
 
 task:
   matrix:
-    - name: Firefox Juggler (node8 + linux)
+    - name: Firefox Juggler (node10 + linux)
       container:
-        dockerfile: .ci/node8/Dockerfile.linux
+        dockerfile: .ci/node10/Dockerfile.linux
       xvfb_start_background_script: Xvfb :99 -ac -screen 0 1024x768x24
   install_script: npm install --unsafe-perm && cd experimental/puppeteer-firefox && npm install --unsafe-perm
   test_script: npm run fjunit
@@ -34,12 +31,12 @@ task:
 task:
   osx_instance:
     image: high-sierra-base
-  name: Chromium (node8 + macOS)
+  name: Chromium (node10 + macOS)
   env:
     HOMEBREW_NO_AUTO_UPDATE: 1
   node_install_script:
-    - brew install node@8
-    - brew link --force node@8
+    - brew install node@10
+    - brew link --force node@10
   install_script: npm install --unsafe-perm
   lint_script: npm run lint
   coverage_script: npm run coverage
