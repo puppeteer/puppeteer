@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": "github:puppeteer/puppeteer",
   "engines": {
-    "node": ">=8.16.0"
+    "node": ">=10.18.1"
   },
   "puppeteer": {
     "chromium_revision": "722234"
@@ -44,7 +44,7 @@
     "@types/debug": "0.0.31",
     "@types/extract-zip": "^1.6.2",
     "@types/mime": "^2.0.0",
-    "@types/node": "^8.10.34",
+    "@types/node": "^10.17.14",
     "@types/rimraf": "^2.0.2",
     "@types/ws": "^6.0.1",
     "commonmark": "^0.28.1",
