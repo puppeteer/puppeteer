@@ -23,7 +23,7 @@
     "tsc": "tsc -p .",
     "apply-next-version": "node utils/apply_next_version.js",
     "bundle": "npx browserify -r ./index.js:puppeteer -o utils/browser/puppeteer-web.js",
-    "test-types": "node utils/doclint/generate_types && npx -p typescript@2.1 tsc -p utils/doclint/generate_types/test/",
+    "test-types": "node utils/doclint/generate_types && npx -p typescript@3.2 tsc -p utils/doclint/generate_types/test/",
     "unit-bundle": "node utils/browser/test.js"
   },
   "author": "The Chromium Authors",
