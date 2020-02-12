@@ -20,105 +20,147 @@
  * By default, the `puppeteer` package runs this script during the installation
  * process unless one of the env flags is provided.
  * `puppeteer-core` package doesn't include this step at all. However, it's
- * still possible to install Chromium using this script when necessary.
+ * still possible to install a supported browser using this script when
+ * necessary.
  */
-if (process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD) {
-  logPolitely('**INFO** Skipping Chromium download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" environment variable was found.');
-  return;
-}
-if (process.env.NPM_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.env.npm_config_puppeteer_skip_chromium_download) {
-  logPolitely('**INFO** Skipping Chromium download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" was set in npm config.');
-  return;
-}
-if (process.env.NPM_PACKAGE_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.env.npm_package_config_puppeteer_skip_chromium_download) {
-  logPolitely('**INFO** Skipping Chromium download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" was set in project config.');
-  return;
-}
+const supportedProducts = {
+  'chrome': 'Chromium',
+  'firefox': 'Firefox Nightly'
+};
 
-const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host || process.env.npm_package_config_puppeteer_download_host;
-
-const puppeteer = require('./index');
-const browserFetcher = puppeteer.createBrowserFetcher({ host: downloadHost });
-
-const revision = process.env.PUPPETEER_CHROMIUM_REVISION || process.env.npm_config_puppeteer_chromium_revision || process.env.npm_package_config_puppeteer_chromium_revision
-  || require('./package.json').puppeteer.chromium_revision;
-
-const revisionInfo = browserFetcher.revisionInfo(revision);
-
-// Do nothing if the revision is already downloaded.
-if (revisionInfo.local) {
-  generateProtocolTypesIfNecessary(false /* updated */);
-  return;
-}
-
-// Override current environment proxy settings with npm configuration, if any.
-const NPM_HTTPS_PROXY = process.env.npm_config_https_proxy || process.env.npm_config_proxy;
-const NPM_HTTP_PROXY = process.env.npm_config_http_proxy || process.env.npm_config_proxy;
-const NPM_NO_PROXY = process.env.npm_config_no_proxy;
-
-if (NPM_HTTPS_PROXY)
-  process.env.HTTPS_PROXY = NPM_HTTPS_PROXY;
-if (NPM_HTTP_PROXY)
-  process.env.HTTP_PROXY = NPM_HTTP_PROXY;
-if (NPM_NO_PROXY)
-  process.env.NO_PROXY = NPM_NO_PROXY;
-
-browserFetcher.download(revisionInfo.revision, onProgress)
-    .then(() => browserFetcher.localRevisions())
-    .then(onSuccess)
-    .catch(onError);
-
-/**
- * @param {!Array<string>}
- * @return {!Promise}
- */
-function onSuccess(localRevisions) {
-  logPolitely('Chromium downloaded to ' + revisionInfo.folderPath);
-  localRevisions = localRevisions.filter(revision => revision !== revisionInfo.revision);
-  // Remove previous chromium revisions.
-  const cleanupOldVersions = localRevisions.map(revision => browserFetcher.remove(revision));
-  return Promise.all([...cleanupOldVersions, generateProtocolTypesIfNecessary(true /* updated */)]);
-}
-
-/**
- * @param {!Error} error
- */
-function onError(error) {
-  console.error(`ERROR: Failed to download Chromium r${revision}! Set "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" env variable to skip download.`);
-  console.error(error);
-  process.exit(1);
-}
-
-let progressBar = null;
-let lastDownloadedBytes = 0;
-function onProgress(downloadedBytes, totalBytes) {
-  if (!progressBar) {
-    const ProgressBar = require('progress');
-    progressBar = new ProgressBar(`Downloading Chromium r${revision} - ${toMegabytes(totalBytes)} [:bar] :percent :etas `, {
-      complete: '=',
-      incomplete: ' ',
-      width: 20,
-      total: totalBytes,
-    });
+function download() {
+  const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host || process.env.npm_package_config_puppeteer_download_host;
+  const puppeteer = require('./index');
+  const product = process.env.PUPPETEER_PRODUCT || process.env.npm_config_puppeteer_product || process.env.npm_package_config_puppeteer_product || 'chrome';
+  const browserFetcher = puppeteer.createBrowserFetcher({ product, host: downloadHost });
+  let revisionPromise;
+  if (product === 'chrome') {
+    revisionPromise = Promise.resolve(process.env.PUPPETEER_CHROMIUM_REVISION || process.env.npm_config_puppeteer_chromium_revision || process.env.npm_package_config_puppeteer_chromium_revision
+        || require('./package.json').puppeteer.chromium_revision);
+  } else if (product === 'firefox') {
+    puppeteer._preferredRevision = require('./package.json').puppeteer.firefox_revision;
+    revisionPromise = getFirefoxNightlyVersion(browserFetcher.host());
+  } else {
+    throw new Error(`Unsupported product ${product}`);
   }
-  const delta = downloadedBytes - lastDownloadedBytes;
-  lastDownloadedBytes = downloadedBytes;
-  progressBar.tick(delta);
-}
 
-function toMegabytes(bytes) {
-  const mb = bytes / 1024 / 1024;
-  return `${Math.round(mb * 10) / 10} Mb`;
-}
+  revisionPromise
+      .then(fetchBinary)
+      .catch(error => {
+        console.error(error);
+        process.exit(1);
+      });
 
-function generateProtocolTypesIfNecessary(updated) {
-  const fs = require('fs');
-  const path = require('path');
-  if (!fs.existsSync(path.join(__dirname, 'utils', 'protocol-types-generator')))
-    return;
-  if (!updated && fs.existsSync(path.join(__dirname, 'lib', 'protocol.d.ts')))
-    return;
-  return require('./utils/protocol-types-generator');
+  function fetchBinary(revision) {
+    const revisionInfo = browserFetcher.revisionInfo(revision);
+
+    // Do nothing if the revision is already downloaded.
+    if (revisionInfo.local) {
+      generateProtocolTypesIfNecessary(false /* updated */, product);
+      logPolitely(`${supportedProducts[product]} is already in ${revisionInfo.folderPath}; skipping download.`);
+      return;
+    }
+
+    // Override current environment proxy settings with npm configuration, if any.
+    const NPM_HTTPS_PROXY = process.env.npm_config_https_proxy || process.env.npm_config_proxy;
+    const NPM_HTTP_PROXY = process.env.npm_config_http_proxy || process.env.npm_config_proxy;
+    const NPM_NO_PROXY = process.env.npm_config_no_proxy;
+
+    if (NPM_HTTPS_PROXY)
+      process.env.HTTPS_PROXY = NPM_HTTPS_PROXY;
+    if (NPM_HTTP_PROXY)
+      process.env.HTTP_PROXY = NPM_HTTP_PROXY;
+    if (NPM_NO_PROXY)
+      process.env.NO_PROXY = NPM_NO_PROXY;
+
+    browserFetcher.download(revisionInfo.revision, onProgress)
+        .then(() => browserFetcher.localRevisions())
+        .then(onSuccess)
+        .catch(onError);
+
+    /**
+     * @param {!Array<string>}
+     * @return {!Promise}
+     */
+    function onSuccess(localRevisions) {
+      logPolitely(`${supportedProducts[product]} (${revisionInfo.revision}) downloaded to ${revisionInfo.folderPath}`);
+      localRevisions = localRevisions.filter(revision => revision !== revisionInfo.revision);
+      const cleanupOldVersions = localRevisions.map(revision => browserFetcher.remove(revision));
+      Promise.all([...cleanupOldVersions, generateProtocolTypesIfNecessary(true /* updated */, product)]);
+    }
+
+    /**
+     * @param {!Error} error
+     */
+    function onError(error) {
+      console.error(`ERROR: Failed to set up ${supportedProducts[product]} r${revision}! Set "PUPPETEER_SKIP_DOWNLOAD" env variable to skip download.`);
+      console.error(error);
+      process.exit(1);
+    }
+
+    let progressBar = null;
+    let lastDownloadedBytes = 0;
+    function onProgress(downloadedBytes, totalBytes) {
+      if (!progressBar) {
+        const ProgressBar = require('progress');
+        progressBar = new ProgressBar(`Downloading ${supportedProducts[product]} r${revision} - ${toMegabytes(totalBytes)} [:bar] :percent :etas `, {
+          complete: '=',
+          incomplete: ' ',
+          width: 20,
+          total: totalBytes,
+        });
+      }
+      const delta = downloadedBytes - lastDownloadedBytes;
+      lastDownloadedBytes = downloadedBytes;
+      progressBar.tick(delta);
+    }
+  }
+
+  function toMegabytes(bytes) {
+    const mb = bytes / 1024 / 1024;
+    return `${Math.round(mb * 10) / 10} Mb`;
+  }
+
+  function generateProtocolTypesIfNecessary(updated, product) {
+    if (product !== 'chrome')
+      return;
+    const fs = require('fs');
+    const path = require('path');
+    if (!fs.existsSync(path.join(__dirname, 'utils', 'protocol-types-generator')))
+      return;
+    if (!updated && fs.existsSync(path.join(__dirname, 'lib', 'protocol.d.ts')))
+      return;
+    return require('./utils/protocol-types-generator');
+  }
+
+  function getFirefoxNightlyVersion(host) {
+    const https = require('https');
+    const promise = new Promise((resolve, reject) => {
+      let data = '';
+      logPolitely(`Requesting latest Firefox Nightly version from ${host}`);
+      https.get(host + '/', r => {
+        r.on('data', chunk => {
+          data += chunk;
+        });
+        r.on('end', parseVersion);
+      }).on('error', e => reject(e));
+
+      function parseVersion() {
+        const regex = /firefox\-(?<version>\d\d)\..*/gm;
+        const matches = data.matchAll(regex);
+        let result = 0;
+        for (const match of matches) {
+          const version = parseInt(match.groups.version, 10);
+          if (version > result)
+            result = version;
+        }
+        if (result)
+          resolve(result.toString());
+        else reject(new Error('Firefox version not found'));
+      }
+    });
+    return promise;
+  }
 }
 
 function logPolitely(toBeLogged) {
@@ -128,4 +170,31 @@ function logPolitely(toBeLogged) {
   if (!logLevelDisplay)
     console.log(toBeLogged);
 }
+
+if (process.env.PUPPETEER_SKIP_DOWNLOAD) {
+  logPolitely('**INFO** Skipping browser download. "PUPPETEER_SKIP_DOWNLOAD" environment variable was found.');
+  return;
+}
+if (process.env.NPM_CONFIG_PUPPETEER_SKIP_DOWNLOAD || process.env.npm_config_puppeteer_skip_download) {
+  logPolitely('**INFO** Skipping browser download. "PUPPETEER_SKIP_DOWNLOAD" was set in npm config.');
+  return;
+}
+if (process.env.NPM_PACKAGE_CONFIG_PUPPETEER_SKIP_DOWNLOAD || process.env.npm_package_config_puppeteer_skip_download) {
+  logPolitely('**INFO** Skipping browser download. "PUPPETEER_SKIP_DOWNLOAD" was set in project config.');
+  return;
+}
+if (process.env.PUPPETEER_SKIP_CHROMIUM_DOWNLOAD) {
+  logPolitely('**INFO** Skipping browser download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" environment variable was found.');
+  return;
+}
+if (process.env.NPM_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.env.npm_config_puppeteer_skip_chromium_download) {
+  logPolitely('**INFO** Skipping browser download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" was set in npm config.');
+  return;
+}
+if (process.env.NPM_PACKAGE_CONFIG_PUPPETEER_SKIP_CHROMIUM_DOWNLOAD || process.env.npm_package_config_puppeteer_skip_chromium_download) {
+  logPolitely('**INFO** Skipping browser download. "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD" was set in project config.');
+  return;
+}
+
+download();
 

@@ -36,8 +36,10 @@
 - [class: BrowserFetcher](#class-browserfetcher)
   * [browserFetcher.canDownload(revision)](#browserfetchercandownloadrevision)
   * [browserFetcher.download(revision[, progressCallback])](#browserfetcherdownloadrevision-progresscallback)
+  * [browserFetcher.host()](#browserfetcherhost)
   * [browserFetcher.localRevisions()](#browserfetcherlocalrevisions)
   * [browserFetcher.platform()](#browserfetcherplatform)
+  * [browserFetcher.product()](#browserfetcherproduct)
   * [browserFetcher.remove(revision)](#browserfetcherremoverevision)
   * [browserFetcher.revisionInfo(revision)](#browserfetcherrevisioninforevision)
 - [class: Browser](#class-browser)
@@ -391,7 +393,7 @@ If Puppeteer doesn't find them in the environment during the installation step, 
 - `PUPPETEER_DOWNLOAD_HOST` - overwrite URL prefix that is used to download Chromium. Note: this includes protocol and might even include path prefix. Defaults to `https://storage.googleapis.com`.
 - `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of Chromium you'd like Puppeteer to use. See [puppeteer.launch([options])](#puppeteerlaunchoptions) on how executable path is inferred. **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/puppeteer/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
 - `PUPPETEER_EXECUTABLE_PATH` - specify an executable path to be used in `puppeteer.launch`. See [puppeteer.launch([options])](#puppeteerlaunchoptions) on how the executable path is inferred. **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/puppeteer/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
-- `PUPPETEER_PRODUCT` - specify which browser you'd like Puppeteer to use. Must be one of `chrome` or `firefox`. Setting `product` programmatically in [puppeteer.launch([options])](#puppeteerlaunchoptions) supercedes this environment variable. The product is exposed in [`puppeteer.product`](#puppeteerproduct)
+- `PUPPETEER_PRODUCT` - specify which browser you'd like Puppeteer to use. Must be one of `chrome` or `firefox`. This can also be used during installation to fetch the recommended browser binary. Setting `product` programmatically in [puppeteer.launch([options])](#puppeteerlaunchoptions) supercedes this environment variable. The product is exposed in [`puppeteer.product`](#puppeteerproduct)
 
 > **NOTE** PUPPETEER_* env variables are not accounted for in the [`puppeteer-core`](https://www.npmjs.com/package/puppeteer-core) package.
 
@@ -461,9 +463,10 @@ This methods attaches Puppeteer to an existing Chromium instance.
 
 #### puppeteer.createBrowserFetcher([options])
 - `options` <[Object]>
-  - `host` <[string]> A download host to be used. Defaults to `https://storage.googleapis.com`.
-  - `path` <[string]> A path for the downloads folder. Defaults to `<root>/.local-chromium`, where `<root>` is puppeteer's package root.
+  - `host` <[string]> A download host to be used. Defaults to `https://storage.googleapis.com`. If the `product` is `firefox`, this defaults to `https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central`.
+  - `path` <[string]> A path for the downloads folder. Defaults to `<root>/.local-chromium`, where `<root>` is puppeteer's package root. If the `product` is `firefox`, this defaults to `<root>/.local-firefox`.
   - `platform` <[string]> Possible values are: `mac`, `win32`, `win64`, `linux`. Defaults to the current platform.
+  - `product` <[string]> Possible values are: `chrome`, `firefox`. Defaults to `chrome`.
 - returns: <[BrowserFetcher]>
 
 #### puppeteer.defaultArgs([options])
@@ -522,7 +525,7 @@ try {
 > **NOTE** The old way (Puppeteer versions <= v1.14.0) errors can be obtained with `require('puppeteer/Errors')`.
 
 #### puppeteer.executablePath()
-- returns: <[string]> A path where Puppeteer expects to find bundled Chromium. Chromium might not exist there if the download was skipped with [`PUPPETEER_SKIP_CHROMIUM_DOWNLOAD`](#environment-variables).
+- returns: <[string]> A path where Puppeteer expects to find the bundled browser. The browser binary might not be there if the download was skipped with [`PUPPETEER_SKIP_DOWNLOAD`](#environment-variables).
 
 > **NOTE** `puppeteer.executablePath()` is affected by the `PUPPETEER_EXECUTABLE_PATH` and `PUPPETEER_CHROMIUM_REVISION` env variables. See [Environment Variables](#environment-variables) for details.
 
@@ -572,16 +575,18 @@ const browser = await puppeteer.launch({
 > See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description of the differences between Chromium and Chrome. [`This article`](https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users.
 
 #### puppeteer.product
-- returns: <[string]> returns the name of the browser that is under automation ("chrome" or "firefox")
+- returns: <[string]> returns the name of the browser that is under automation (`chrome` or `firefox`)
 
 The product is set by the `PUPPETEER_PRODUCT` environment variable or the `product` option in [puppeteer.launch([options])](#puppeteerlaunchoptions) and defaults to `chrome`. Firefox support is experimental.
 
 
 ### class: BrowserFetcher
 
-BrowserFetcher can download and manage different versions of Chromium.
+BrowserFetcher can download and manage different versions of Chromium and Firefox.
 
 BrowserFetcher operates on revision strings that specify a precise version of Chromium, e.g. `"533271"`. Revision strings can be obtained from [omahaproxy.appspot.com](http://omahaproxy.appspot.com/).
+
+In the Firefox case, BrowserFetcher downloads Firefox Nightly and operates on version numbers such as `"75"`.
 
 An example of using BrowserFetcher to download a specific version of Chromium and running
 Puppeteer against it:
@@ -615,14 +620,20 @@ The method initiates a HEAD request to check if the revision is available.
 
 The method initiates a GET request to download the revision from the host.
 
+#### browserFetcher.host()
+- returns: <[string]> The download host being used.
+
 #### browserFetcher.localRevisions()
-- returns: <[Promise]<[Array]<[string]>>> A list of all revisions available locally on disk.
+- returns: <[Promise]<[Array]<[string]>>> A list of all revisions (for the current `product`) available locally on disk.
 
 #### browserFetcher.platform()
 - returns: <[string]> One of `mac`, `linux`, `win32` or `win64`.
 
+#### browserFetcher.product()
+- returns: <[string]> One of `chrome` or `firefox`.
+
 #### browserFetcher.remove(revision)
-- `revision` <[string]> a revision to remove. The method will throw if the revision has not been downloaded.
+- `revision` <[string]> a revision to remove for the current `product`. The method will throw if the revision has not been downloaded.
 - returns: <[Promise]> Resolves when the revision has been removed.
 
 #### browserFetcher.revisionInfo(revision)
@@ -633,6 +644,10 @@ The method initiates a GET request to download the revision from the host.
   - `executablePath` <[string]> path to the revision executable
   - `url` <[string]> URL this revision can be downloaded from
   - `local` <[boolean]> whether the revision is locally available on disk
+  - `product` <[string]> one of `chrome` or `firefox`
+
+> **NOTE** Many BrowserFetcher methods, like `remove` and `revisionInfo`
+> are affected the choice of `product`. See [puppeteer.createBrowserFetcher([options])](#puppeteercreatebrowserfetcheroptions).
 
 ### class: Browser
 

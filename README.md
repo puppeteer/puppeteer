@@ -37,13 +37,13 @@ npm i puppeteer
 # or "yarn add puppeteer"
 ```
 
-Note: When you install Puppeteer, it downloads a recent version of Chromium (~170MB Mac, ~282MB Linux, ~280MB Win) that is guaranteed to work with the API. To skip the download, see [Environment variables](https://github.com/puppeteer/puppeteer/blob/v2.1.1/docs/api.md#environment-variables).
+Note: When you install Puppeteer, it downloads a recent version of Chromium (~170MB Mac, ~282MB Linux, ~280MB Win) that is guaranteed to work with the API. To skip the download, or to download a different browser, see [Environment variables](https://github.com/puppeteer/puppeteer/blob/v2.1.1/docs/api.md#environment-variables).
 
 
 ### puppeteer-core
 
 Since version 1.7.0 we publish the [`puppeteer-core`](https://www.npmjs.com/package/puppeteer-core) package,
-a version of Puppeteer that doesn't download Chromium by default.
+a version of Puppeteer that doesn't download any browser by default.
 
 ```bash
 npm i puppeteer-core
@@ -173,13 +173,13 @@ pass in the executable's path when creating a `Browser` instance:
 const browser = await puppeteer.launch({executablePath: '/path/to/Chrome'});
 ```
 
-See [`Puppeteer.launch()`](https://github.com/puppeteer/puppeteer/blob/v2.1.1/docs/api.md#puppeteerlaunchoptions) for more information.
+You can also use Puppeteer with Firefox Nightly (experimental support). See [`Puppeteer.launch()`](https://github.com/puppeteer/puppeteer/blob/v2.1.1/docs/api.md#puppeteerlaunchoptions) for more information.
 
 See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description of the differences between Chromium and Chrome. [`This article`](https://chromium.googlesource.com/chromium/src/+/master/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users.
 
 **3. Creates a fresh user profile**
 
-Puppeteer creates its own Chromium user profile which it **cleans up on every run**.
+Puppeteer creates its own browser user profile which it **cleans up on every run**.
 
 <!-- [END runtimesettings] -->
 
@@ -301,7 +301,7 @@ See [Contributing](https://github.com/puppeteer/puppeteer/blob/master/CONTRIBUTI
 Historically, Puppeteer supported Firefox indirectly through puppeteer-firefox, which relied on a custom, patched version of Firefox. This approach was also known as “Juggler”.
 After discussions with Mozilla, we collectively concluded that relying on custom patches was infeasible.
 Since then, we have been collaborating with Mozilla on supporting Puppeteer on “stock” Firefox.
-From Puppeteer v2.1.0 onwards, as an experimental feature, you can specify [`puppeteer.launch({product: 'firefox'})`](https://github.com/puppeteer/puppeteer/blob/v2.1.1/docs/api.md#puppeteerlaunchoptions) to run your Puppeteer scripts in Firefox, without any additional custom patches.
+From Puppeteer v2.1.0 onwards, as an experimental feature, you can specify [`puppeteer.launch({product: 'firefox'})`](https://github.com/puppeteer/puppeteer/blob/v2.1.1/docs/api.md#puppeteerlaunchoptions) to run your Puppeteer scripts in Firefox Nightly, without any additional custom patches.
 
 We will continue collaborating with other browser vendors to bring Puppeteer support to browsers such as Safari.
 This effort includes exploration of a standard for executing cross-browser commands (instead of relying on the non-standard DevTools Protocol used by Chrome).
@@ -355,6 +355,18 @@ npm install puppeteer-core@chrome-71
 #### Q: Which Chromium version does Puppeteer use?
 
 Look for `chromium_revision` in [package.json](https://github.com/puppeteer/puppeteer/blob/master/package.json). To find the corresponding Chromium commit and version number, search for the revision prefixed by an `r` in [OmahaProxy](https://omahaproxy.appspot.com/)'s "Find Releases" section.
+
+
+#### Q: Which Firefox version does Puppeteer use?
+
+Since Firefox support is experimental, Puppeteer downloads the latest [Firefox Nightly](https://wiki.mozilla.org/Nightly) when the `PUPPETEER_PRODUCT` environment variable is set to `firefox`. That's also why the value of `firefox_revision` in [package.json](https://github.com/puppeteer/puppeteer/blob/master/package.json) is `latest` -- Puppeteer isn't tied to a particular Firefox version.
+
+To fetch Firefox Nightly as part of Puppeteer installation:
+
+```bash
+PUPPETEER_PRODUCT=firefox npm i puppeteer
+# or "yarn add puppeteer"
+```
 
 #### Q: What’s considered a “Navigation”?
 
