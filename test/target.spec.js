@@ -49,7 +49,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(await originalPage.evaluate(() => ['Hello', 'world'].join(' '))).toBe('Hello world');
       expect(await originalPage.$('body')).toBeTruthy();
     });
-    it('should report when a new page is created and closed', async({page, server, context}) => {
+    it_fails_ffox('should report when a new page is created and closed', async({page, server, context}) => {
       const [otherPage] = await Promise.all([
         context.waitForTarget(target => target.url() === server.CROSS_PROCESS_PREFIX + '/empty.html').then(target => target.page()),
         page.evaluate(url => window.open(url), server.CROSS_PROCESS_PREFIX + '/empty.html'),
@@ -99,7 +99,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       const worker = await target.worker();
       expect(await worker.evaluate(() => self.toString())).toBe('[object SharedWorkerGlobalScope]');
     });
-    it('should report when a target url changes', async({page, server, context}) => {
+    it_fails_ffox('should report when a target url changes', async({page, server, context}) => {
       await page.goto(server.EMPTY_PAGE);
       let changedTarget = new Promise(fulfill => context.once('targetchanged', target => fulfill(target)));
       await page.goto(server.CROSS_PROCESS_PREFIX + '/');
@@ -128,7 +128,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(targetChanged).toBe(false, 'target should not be reported as changed');
       context.removeListener('targetchanged', listener);
     });
-    it('should not crash while redirecting if original request was missed', async({page, server, context}) => {
+    it_fails_ffox('should not crash while redirecting if original request was missed', async({page, server, context}) => {
       let serverResponse = null;
       server.setRoute('/one-style.css', (req, res) => serverResponse = res);
       // Open a new page. Use window.open to connect to the page later.
@@ -147,7 +147,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       // Cleanup.
       await newPage.close();
     });
-    it('should have an opener', async({page, server, context}) => {
+    it_fails_ffox('should have an opener', async({page, server, context}) => {
       await page.goto(server.EMPTY_PAGE);
       const [createdTarget] = await Promise.all([
         new Promise(fulfill => context.once('targetcreated', target => fulfill(target))),
@@ -160,7 +160,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
   });
 
   describe('Browser.waitForTarget', () => {
-    it('should wait for a target', async function({browser, server}) {
+    it_fails_ffox('should wait for a target', async function({browser, server}) {
       let resolved = false;
       const targetPromise = browser.waitForTarget(target => target.url() === server.EMPTY_PAGE);
       targetPromise.then(() => resolved = true);

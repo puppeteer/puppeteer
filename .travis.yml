@@ -15,11 +15,13 @@ before_install:
   - "sysctl kernel.unprivileged_userns_clone=1"
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
+  - 'if [ "$FIREFOX" = "true" ]; then pyenv shell 3.6; pip3 install --user mozdownload; fi'
+  - 'if [ "$FIREFOX" = "true" ]; then rm -rf $FIREFOX_HOME; mozdownload -t daily -d $FIREFOX_HOME/latest.tar.bz --log-level DEBUG; fi'
+  - 'if [ "$FIREFOX" = "true" ]; then cd $FIREFOX_HOME; tar -xvf latest.tar.bz; cd -; ls $FIREFOX_HOME/firefox/firefox; fi'
 script:
   - 'if [ "$NODE8" = "true" ]; then npm run lint; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run coverage; fi'
-  - 'if [ "$FIREFOX" = "true" ]; then cd experimental/puppeteer-firefox && npm i && cd ../..; fi'
-  - 'if [ "$FIREFOX" = "true" ]; then npm run fjunit; fi'
+  - 'if [ "$FIREFOX" = "true" ]; then BINARY=$FIREFOX_HOME/firefox/firefox npm run funit; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run test-doclint; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run test-types; fi'
   - 'if [ "$NODE8" = "true" ]; then npm run bundle; fi'
@@ -34,8 +36,9 @@ jobs:
     - node_js: "8.16.0"
       env:
         - FIREFOX=true
-        - FLAKINESS_DASHBOARD_NAME="Travis Firefox (node8 + linux)"
+        - FLAKINESS_DASHBOARD_NAME="Travis Firefox Nightly (node8 + linux)"
         - FLAKINESS_DASHBOARD_BUILD_URL="${TRAVIS_JOB_WEB_URL}"
+        - FIREFOX_HOME=$TRAVIS_HOME/firefox-latest
 before_deploy: "npm run apply-next-version"
 deploy:
   provider: npm

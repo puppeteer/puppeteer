@@ -17,12 +17,12 @@
 const utils = require('./utils');
 
 module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
+  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Page.waitFor', function() {
-    it('should wait for selector', async({page, server}) => {
+    it_fails_ffox('should wait for selector', async({page, server}) => {
       let found = false;
       const waitFor = page.waitFor('div').then(() => found = true);
       await page.goto(server.EMPTY_PAGE);
@@ -31,7 +31,7 @@ module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
       await waitFor;
       expect(found).toBe(true);
     });
-    it('should wait for an xpath', async({page, server}) => {
+    it_fails_ffox('should wait for an xpath', async({page, server}) => {
       let found = false;
       const waitFor = page.waitFor('//div').then(() => found = true);
       await page.goto(server.EMPTY_PAGE);
@@ -40,7 +40,7 @@ module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
       await waitFor;
       expect(found).toBe(true);
     });
-    it('should not allow you to select an element with single slash xpath', async({page, server}) => {
+    it_fails_ffox('should not allow you to select an element with single slash xpath', async({page, server}) => {
       await page.setContent(`<div>some text</div>`);
       let error = null;
       await page.waitFor('/html/body/div').catch(e => error = e);
@@ -80,7 +80,7 @@ module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
       await page.evaluate(() => window.__FOO = 1);
       await watchdog;
     });
-    it('should work when resolved right before execution context disposal', async({page, server}) => {
+    it_fails_ffox('should work when resolved right before execution context disposal', async({page, server}) => {
       await page.evaluateOnNewDocument(() => window.__RELOADED = true);
       await page.waitForFunction(() => {
         if (!window.__RELOADED)
@@ -150,7 +150,7 @@ module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
     it('should return the window as a success value', async({ page }) => {
       expect(await page.waitForFunction(() => window)).toBeTruthy();
     });
-    it('should accept ElementHandle arguments', async({page}) => {
+    it_fails_ffox('should accept ElementHandle arguments', async({page}) => {
       await page.setContent('<div></div>');
       const div = await page.$('div');
       let resolved = false;
@@ -204,7 +204,7 @@ module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
     });
   });
 
-  describe('Frame.waitForSelector', function() {
+  describe_fails_ffox('Frame.waitForSelector', function() {
     const addElement = tag => document.body.appendChild(document.createElement(tag));
 
     it('should immediately resolve promise if node exists', async({page, server}) => {
@@ -215,7 +215,7 @@ module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
       await frame.waitForSelector('div');
     });
 
-    it_fails_ffox('should work with removed MutationObserver', async({page, server}) => {
+    it('should work with removed MutationObserver', async({page, server}) => {
       await page.evaluate(() => delete window.MutationObserver);
       const [handle] = await Promise.all([
         page.waitForSelector('.zombo'),
@@ -366,7 +366,7 @@ module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
       await page.evaluate(() => document.querySelector('div').className = 'zombo');
       expect(await waitForSelector).toBe(true);
     });
-    it('should return the element handle', async({page, server}) => {
+    it_fails_ffox('should return the element handle', async({page, server}) => {
       const waitForSelector = page.waitForSelector('.zombo');
       await page.setContent(`<div class='zombo'>anything</div>`);
       expect(await page.evaluate(x => x.textContent, await waitForSelector)).toBe('anything');
@@ -378,7 +378,7 @@ module.exports.addTests = function({testRunner, expect, product, puppeteer}) {
     });
   });
 
-  describe('Frame.waitForXPath', function() {
+  describe_fails_ffox('Frame.waitForXPath', function() {
     const addElement = tag => document.body.appendChild(document.createElement(tag));
 
     it('should support some fancy xpath', async({page, server}) => {

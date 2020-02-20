@@ -17,7 +17,7 @@
 const utils = require('./utils');
 
 module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
+  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
@@ -26,7 +26,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       await page.goto(server.EMPTY_PAGE);
       expect(page.url()).toBe(server.EMPTY_PAGE);
     });
-    it('should work with anchor navigation', async({page, server}) => {
+    it_fails_ffox('should work with anchor navigation', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       expect(page.url()).toBe(server.EMPTY_PAGE);
       await page.goto(server.EMPTY_PAGE + '#foo');
@@ -44,7 +44,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       const response = await page.goto('about:blank');
       expect(response).toBe(null);
     });
-    it('should return response when page changes its URL after load', async({page, server}) => {
+    it_fails_ffox('should return response when page changes its URL after load', async({page, server}) => {
       const response = await page.goto(server.PREFIX + '/historyapi.html');
       expect(response.status()).toBe(200);
     });
@@ -55,7 +55,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       });
       await page.goto(server.PREFIX + '/frames/one-frame.html');
     });
-    it('should fail when server returns 204', async({page, server}) => {
+    it_fails_ffox('should fail when server returns 204', async({page, server}) => {
       server.setRoute('/empty.html', (req, res) => {
         res.statusCode = 204;
         res.end();
@@ -68,11 +68,11 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       else
         expect(error.message).toContain('NS_BINDING_ABORTED');
     });
-    it('should navigate to empty page with domcontentloaded', async({page, server}) => {
+    it_fails_ffox('should navigate to empty page with domcontentloaded', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'domcontentloaded'});
       expect(response.status()).toBe(200);
     });
-    it('should work when page calls history API in beforeunload', async({page, server}) => {
+    it_fails_ffox('should work when page calls history API in beforeunload', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
         window.addEventListener('beforeunload', () => history.replaceState(null, 'initial', window.location.href), false);
@@ -88,7 +88,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       const response = await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle2'});
       expect(response.status()).toBe(200);
     });
-    it('should fail when navigating to bad url', async({page, server}) => {
+    it_fails_ffox('should fail when navigating to bad url', async({page, server}) => {
       let error = null;
       await page.goto('asdfasdf').catch(e => error = e);
       if (CHROME)
@@ -96,7 +96,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       else
         expect(error.message).toContain('Invalid url');
     });
-    it('should fail when navigating to bad SSL', async({page, httpsServer}) => {
+    it_fails_ffox('should fail when navigating to bad SSL', async({page, httpsServer}) => {
       // Make sure that network events do not emit 'undefined'.
       // @see https://crbug.com/750469
       page.on('request', request => expect(request).toBeTruthy());
@@ -109,7 +109,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       else
         expect(error.message).toContain('SSL_ERROR_UNKNOWN');
     });
-    it('should fail when navigating to bad SSL after redirects', async({page, server, httpsServer}) => {
+    it_fails_ffox('should fail when navigating to bad SSL after redirects', async({page, server, httpsServer}) => {
       server.setRedirect('/redirect/1.html', '/redirect/2.html');
       server.setRedirect('/redirect/2.html', '/empty.html');
       let error = null;
@@ -119,12 +119,12 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       else
         expect(error.message).toContain('SSL_ERROR_UNKNOWN');
     });
-    it_fails_ffox('should throw if networkidle is passed as an option', async({page, server}) => {
+    it('should throw if networkidle is passed as an option', async({page, server}) => {
       let error = null;
       await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle'}).catch(err => error = err);
       expect(error.message).toContain('"networkidle" option is no longer supported');
     });
-    it('should fail when main resources failed to load', async({page, server}) => {
+    it_fails_ffox('should fail when main resources failed to load', async({page, server}) => {
       let error = null;
       await page.goto('http://localhost:44123/non-existing-url').catch(e => error = e);
       if (CHROME)
@@ -176,7 +176,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       expect(error).toBe(null);
       expect(loaded).toBe(true);
     });
-    it('should work when navigating to valid url', async({page, server}) => {
+    it_fails_ffox('should work when navigating to valid url', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.ok()).toBe(true);
     });
@@ -184,12 +184,12 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       const response = await page.goto('data:text/html,hello');
       expect(response.ok()).toBe(true);
     });
-    it('should work when navigating to 404', async({page, server}) => {
+    it_fails_ffox('should work when navigating to 404', async({page, server}) => {
       const response = await page.goto(server.PREFIX + '/not-found');
       expect(response.ok()).toBe(false);
       expect(response.status()).toBe(404);
     });
-    it('should return last response in redirect chain', async({page, server}) => {
+    it_fails_ffox('should return last response in redirect chain', async({page, server}) => {
       server.setRedirect('/redirect/1.html', '/redirect/2.html');
       server.setRedirect('/redirect/2.html', '/redirect/3.html');
       server.setRedirect('/redirect/3.html', server.EMPTY_PAGE);
@@ -263,7 +263,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       process.removeListener('warning', warningHandler);
       expect(warning).toBe(null);
     });
-    it('should not leak listeners during bad navigation', async({page, server}) => {
+    it_fails_ffox('should not leak listeners during bad navigation', async({page, server}) => {
       let warning = null;
       const warningHandler = w => warning = w;
       process.on('warning', warningHandler);
@@ -302,12 +302,12 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       expect(requests.length).toBe(1);
       expect(requests[0].url()).toBe(server.EMPTY_PAGE);
     });
-    it('should work with self requesting page', async({page, server}) => {
+    it_fails_ffox('should work with self requesting page', async({page, server}) => {
       const response = await page.goto(server.PREFIX + '/self-request.html');
       expect(response.status()).toBe(200);
       expect(response.url()).toContain('self-request.html');
     });
-    it('should fail when navigating and show the url at the error message', async function({page, server, httpsServer}) {
+    it_fails_ffox('should fail when navigating and show the url at the error message', async function({page, server, httpsServer}) {
       const url = httpsServer.PREFIX + '/redirect/1.html';
       let error = null;
       try {
@@ -317,7 +317,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       }
       expect(error.message).toContain(url);
     });
-    it('should send referer', async({page, server}) => {
+    it_fails_ffox('should send referer', async({page, server}) => {
       const [request1, request2] = await Promise.all([
         server.waitForRequest('/grid.html'),
         server.waitForRequest('/digits/1.png'),
@@ -332,7 +332,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
   });
 
   describe('Page.waitForNavigation', function() {
-    it('should work', async({page, server}) => {
+    it_fails_ffox('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
         page.waitForNavigation(),
@@ -361,7 +361,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       await bothFiredPromise;
       await navigationPromise;
     });
-    it('should work with clicking on anchor links', async({page, server}) => {
+    it_fails_ffox('should work with clicking on anchor links', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(`<a href='#foobar'>foobar</a>`);
       const [response] = await Promise.all([
@@ -371,7 +371,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       expect(response).toBe(null);
       expect(page.url()).toBe(server.EMPTY_PAGE + '#foobar');
     });
-    it('should work with history.pushState()', async({page, server}) => {
+    it_fails_ffox('should work with history.pushState()', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(`
         <a onclick='javascript:pushState()'>SPA</a>
@@ -386,7 +386,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       expect(response).toBe(null);
       expect(page.url()).toBe(server.PREFIX + '/wow.html');
     });
-    it('should work with history.replaceState()', async({page, server}) => {
+    it_fails_ffox('should work with history.replaceState()', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent(`
         <a onclick='javascript:replaceState()'>SPA</a>
@@ -427,7 +427,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
       expect(forwardResponse).toBe(null);
       expect(page.url()).toBe(server.PREFIX + '/second.html');
     });
-    it('should work when subframe issues window.stop()', async({page, server}) => {
+    it_fails_ffox('should work when subframe issues window.stop()', async({page, server}) => {
       server.setRoute('/frames/style.css', (req, res) => {});
       const navigationPromise = page.goto(server.PREFIX + '/frames/one-frame.html');
       const frame = await utils.waitEvent(page, 'frameattached');
@@ -444,7 +444,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
     });
   });
 
-  describe('Page.goBack', function() {
+  describe_fails_ffox('Page.goBack', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.goto(server.PREFIX + '/grid.html');
@@ -477,7 +477,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
     });
   });
 
-  describe('Frame.goto', function() {
+  describe_fails_ffox('Frame.goto', function() {
     it('should navigate subframes', async({page, server}) => {
       await page.goto(server.PREFIX + '/frames/one-frame.html');
       expect(page.frames()[0].url()).toContain('/frames/one-frame.html');
@@ -527,7 +527,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer, CHROME}) {
     });
   });
 
-  describe('Frame.waitForNavigation', function() {
+  describe_fails_ffox('Frame.waitForNavigation', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.PREFIX + '/frames/one-frame.html');
       const frame = page.frames()[1];

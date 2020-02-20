@@ -16,7 +16,7 @@
 
 module.exports.addTests = function({testRunner, expect}) {
   const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Page.Events.Dialog', function() {
@@ -29,7 +29,7 @@ module.exports.addTests = function({testRunner, expect}) {
       });
       await page.evaluate(() => alert('yo'));
     });
-    it('should allow accepting prompts', async({page, server}) => {
+    it_fails_ffox('should allow accepting prompts', async({page, server}) => {
       page.on('dialog', dialog => {
         expect(dialog.type()).toBe('prompt');
         expect(dialog.defaultValue()).toBe('yes.');

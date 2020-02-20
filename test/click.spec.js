@@ -27,7 +27,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       await page.click('button');
       expect(await page.evaluate(() => result)).toBe('Clicked');
     });
-    it('should click svg', async({page, server}) => {
+    it_fails_ffox('should click svg', async({page, server}) => {
       await page.setContent(`
         <svg height="100" width="100">
           <circle onclick="javascript:window.__CLICKED=42" cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="red" />
@@ -43,7 +43,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(await page.evaluate(() => result)).toBe('Clicked');
     });
     // @see https://github.com/puppeteer/puppeteer/issues/4281
-    it('should click on a span with an inline element inside', async({page, server}) => {
+    it_fails_ffox('should click on a span with an inline element inside', async({page, server}) => {
       await page.setContent(`
         <style>
         span::before {
@@ -104,7 +104,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
         return textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
       })).toBe(text);
     });
-    it('should click offscreen buttons', async({page, server}) => {
+    it_fails_ffox('should click offscreen buttons', async({page, server}) => {
       await page.goto(server.PREFIX + '/offscreenbuttons.html');
       const messages = [];
       page.on('console', msg => messages.push(msg.text()));
@@ -153,7 +153,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(await page.evaluate(() => result.check)).toBe(false);
     });
 
-    it('should click on checkbox label and toggle', async({page, server}) => {
+    it_fails_ffox('should click on checkbox label and toggle', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/checkbox.html');
       expect(await page.evaluate(() => result.check)).toBe(null);
       await page.click('label[for="agree"]');
@@ -187,7 +187,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       await page.click('#button-80');
       expect(await page.evaluate(() => document.querySelector('#button-80').textContent)).toBe('clicked');
     });
-    it('should double click the button', async({page, server}) => {
+    it_fails_ffox('should double click the button', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/button.html');
       await page.evaluate(() => {
         window.double = false;
@@ -223,12 +223,12 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(await page.evaluate(() => document.querySelector('#button-8').textContent)).toBe('context menu');
     });
     // @see https://github.com/puppeteer/puppeteer/issues/206
-    it('should click links which cause navigation', async({page, server}) => {
+    it_fails_ffox('should click links which cause navigation', async({page, server}) => {
       await page.setContent(`<a href="${server.EMPTY_PAGE}">empty.html</a>`);
       // This await should not hang.
       await page.click('a');
     });
-    it('should click the button inside an iframe', async({page, server}) => {
+    it_fails_ffox('should click the button inside an iframe', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setContent('<div style="width:100px;height:100px">spacer</div>');
       await utils.attachFrame(page, 'button-test', server.PREFIX + '/input/button.html');
@@ -248,7 +248,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       await frame.click('button');
       expect(await frame.evaluate(() => window.result)).toBe('Clicked');
     });
-    it('should click the button with deviceScaleFactor set', async({page, server}) => {
+    it_fails_ffox('should click the button with deviceScaleFactor set', async({page, server}) => {
       await page.setViewport({width: 400, height: 400, deviceScaleFactor: 5});
       expect(await page.evaluate(() => window.devicePixelRatio)).toBe(5);
       await page.setContent('<div style="width:100px;height:100px">spacer</div>');

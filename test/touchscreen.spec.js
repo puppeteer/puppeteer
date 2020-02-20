@@ -15,11 +15,11 @@
  */
 
 module.exports.addTests = function({testRunner, expect, puppeteer}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
+  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const iPhone = puppeteer.devices['iPhone 6'];
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  describe('Touchscreen', function() {
+  describe_fails_ffox('Touchscreen', function() {
     it('should tap the button', async({page, server}) => {
       await page.emulate(iPhone);
       await page.goto(server.PREFIX + '/input/button.html');
