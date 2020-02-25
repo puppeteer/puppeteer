@@ -909,6 +909,14 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(await page.evaluate(() => __injected)).toBe(35);
     });
 
+    it('should add id when provided', async({page, server}) => {
+      await page.goto(server.EMPTY_PAGE);
+      await page.addScriptTag({ content: 'window.__injected = 1;', id: 'one' });
+      await page.addScriptTag({ url: '/injectedfile.js', id: 'two'});
+      expect(await page.$('#one')).not.toBeNull();
+      expect(await page.$('#two')).not.toBeNull();
+    });
+
     // @see https://github.com/puppeteer/puppeteer/issues/4840
     xit('should throw when added with content to the CSP page', async({page, server}) => {
       await page.goto(server.PREFIX + '/csp.html');
