@@ -36,6 +36,8 @@ To use Puppeteer in your project, run:
 npm i puppeteer
 # or "yarn add puppeteer"
 ```
+*Note: you will not be able to simply install with `npm i`. This package requires unsafe installation due to the Chromium dependency. The real install command for npm is `sudo npm install -g puppeteer --unsafe-perm=true --allow-root`
+
 
 Note: When you install Puppeteer, it downloads a recent version of Chromium (~170MB Mac, ~282MB Linux, ~280MB Win) that is guaranteed to work with the API. To skip the download, see [Environment variables](https://github.com/puppeteer/puppeteer/blob/v2.1.1/docs/api.md#environment-variables).
 
