@@ -136,11 +136,13 @@ async function download() {
       let data = '';
       logPolitely(`Requesting latest Firefox Nightly version from ${host}`);
       https.get(host + '/', r => {
+        if (r.statusCode >= 400)
+          return reject(new Error(`Got status code ${r.statusCode}`));
         r.on('data', chunk => {
           data += chunk;
         });
         r.on('end', parseVersion);
-      }).on('error', e => reject(e));
+      }).on('error', reject);
 
       function parseVersion() {
         const regex = /firefox\-(?<version>\d\d)\..*/gm;
