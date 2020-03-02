@@ -146,9 +146,9 @@ async function download() {
 
       function parseVersion() {
         const regex = /firefox\-(?<version>\d\d)\..*/gm;
-        const matches = data.matchAll(regex);
         let result = 0;
-        for (const match of matches) {
+        let match;
+        while ((match = regex.exec(data)) !== null) {
           const version = parseInt(match.groups.version, 10);
           if (version > result)
             result = version;
