@@ -28,28 +28,25 @@ const supportedProducts = {
   'firefox': 'Firefox Nightly'
 };
 
-function download() {
+async function download() {
   const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host || process.env.npm_package_config_puppeteer_download_host;
   const puppeteer = require('./index');
   const product = process.env.PUPPETEER_PRODUCT || process.env.npm_config_puppeteer_product || process.env.npm_package_config_puppeteer_product || 'chrome';
   const browserFetcher = puppeteer.createBrowserFetcher({ product, host: downloadHost });
-  let revisionPromise;
-  if (product === 'chrome') {
-    revisionPromise = Promise.resolve(process.env.PUPPETEER_CHROMIUM_REVISION || process.env.npm_config_puppeteer_chromium_revision || process.env.npm_package_config_puppeteer_chromium_revision
-        || require('./package.json').puppeteer.chromium_revision);
-  } else if (product === 'firefox') {
-    puppeteer._preferredRevision = require('./package.json').puppeteer.firefox_revision;
-    revisionPromise = getFirefoxNightlyVersion(browserFetcher.host());
-  } else {
-    throw new Error(`Unsupported product ${product}`);
-  }
+  const revision = await getRevision();
+  await fetchBinary(revision);
 
-  revisionPromise
-      .then(fetchBinary)
-      .catch(error => {
-        console.error(error);
-        process.exit(1);
-      });
+  function getRevision() {
+    if (product === 'chrome') {
+      return process.env.PUPPETEER_CHROMIUM_REVISION || process.env.npm_config_puppeteer_chromium_revision || process.env.npm_package_config_puppeteer_chromium_revision
+        || require('./package.json').puppeteer.chromium_revision;
+    } else if (product === 'firefox') {
+      puppeteer._preferredRevision = require('./package.json').puppeteer.firefox_revision;
+      return getFirefoxNightlyVersion(browserFetcher.host()).catch(error => { console.error(error); process.exit(1); });
+    } else {
+      throw new Error(`Unsupported product ${product}`);
+    }
+  }
 
   function fetchBinary(revision) {
     const revisionInfo = browserFetcher.revisionInfo(revision);
@@ -72,11 +69,6 @@ function download() {
       process.env.HTTP_PROXY = NPM_HTTP_PROXY;
     if (NPM_NO_PROXY)
       process.env.NO_PROXY = NPM_NO_PROXY;
-
-    browserFetcher.download(revisionInfo.revision, onProgress)
-        .then(() => browserFetcher.localRevisions())
-        .then(onSuccess)
-        .catch(onError);
 
     /**
      * @param {!Array<string>}
@@ -114,6 +106,11 @@ function download() {
       lastDownloadedBytes = downloadedBytes;
       progressBar.tick(delta);
     }
+
+    return browserFetcher.download(revisionInfo.revision, onProgress)
+        .then(() => browserFetcher.localRevisions())
+        .then(onSuccess)
+        .catch(onError);
   }
 
   function toMegabytes(bytes) {
