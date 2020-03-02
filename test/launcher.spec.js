@@ -54,8 +54,8 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         revisionInfo = await browserFetcher.download(expectedRevision);
         expect(revisionInfo.local).toBe(true);
         expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe('LINUX BINARY\n');
-        const expectedPermissions = os.platform() === 'win32' ? 0666 : 0755;
-        expect((await statAsync(revisionInfo.executablePath)).mode & 0777).toBe(expectedPermissions);
+        const expectedPermissions = os.platform() === 'win32' ? 0o666 : 0o755;
+        expect((await statAsync(revisionInfo.executablePath)).mode & 0o777).toBe(expectedPermissions);
         expect(await browserFetcher.localRevisions()).toEqual([expectedRevision]);
         await browserFetcher.remove(expectedRevision);
         expect(await browserFetcher.localRevisions()).toEqual([]);
@@ -86,8 +86,8 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
         revisionInfo = await browserFetcher.download(expectedVersion);
         expect(revisionInfo.local).toBe(true);
         expect(await readFileAsync(revisionInfo.executablePath, 'utf8')).toBe('FIREFOX LINUX BINARY\n');
-        const expectedPermissions = os.platform() === 'win32' ? 0666 : 0755;
-        expect((await statAsync(revisionInfo.executablePath)).mode & 0777).toBe(expectedPermissions);
+        const expectedPermissions = os.platform() === 'win32' ? 0o666 : 0o755;
+        expect((await statAsync(revisionInfo.executablePath)).mode & 0o777).toBe(expectedPermissions);
         expect(await browserFetcher.localRevisions()).toEqual([expectedVersion]);
         await browserFetcher.remove(expectedVersion);
         expect(await browserFetcher.localRevisions()).toEqual([]);
