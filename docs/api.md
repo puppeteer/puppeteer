@@ -647,7 +647,7 @@ The method initiates a GET request to download the revision from the host.
   - `product` <[string]> one of `chrome` or `firefox`
 
 > **NOTE** Many BrowserFetcher methods, like `remove` and `revisionInfo`
-> are affected the choice of `product`. See [puppeteer.createBrowserFetcher([options])](#puppeteercreatebrowserfetcheroptions).
+> are affected by the choice of `product`. See [puppeteer.createBrowserFetcher([options])](#puppeteercreatebrowserfetcheroptions).
 
 ### class: Browser
 
