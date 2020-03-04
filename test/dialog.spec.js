@@ -25,16 +25,22 @@ const {
 describe('Page.Events.Dialog', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
+
   it('should fire', async () => {
     const { page } = getTestState();
 
-    page.on('dialog', (dialog) => {
-      expect(dialog.type()).toBe('alert');
-      expect(dialog.defaultValue()).toBe('');
-      expect(dialog.message()).toBe('yo');
+    const onDialog = sinon.stub().callsFake((dialog) => {
       dialog.accept();
     });
+    page.on('dialog', onDialog);
+
     await page.evaluate(() => alert('yo'));
+
+    expect(onDialog.callCount).toEqual(1);
+    const dialog = onDialog.firstCall.args[0];
+    expect(dialog.type()).toBe('alert');
+    expect(dialog.defaultValue()).toBe('');
+    expect(dialog.message()).toBe('yo');
   });
 
   itFailsFirefox('should allow accepting prompts', async () => {

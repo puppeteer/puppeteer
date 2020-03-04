@@ -163,15 +163,21 @@ describe('navigation', function () {
 
       // Make sure that network events do not emit 'undefined'.
       // @see https://crbug.com/750469
-      page.on('request', (request) => expect(request).toBeTruthy());
-      page.on('requestfinished', (request) => expect(request).toBeTruthy());
-      page.on('requestfailed', (request) => expect(request).toBeTruthy());
+      const requests = [];
+      page.on('request', (request) => requests.push('request'));
+      page.on('requestfinished', (request) => requests.push('requestfinished'));
+      page.on('requestfailed', (request) => requests.push('requestfailed'));
+
       let error = null;
       await page
         .goto(httpsServer.EMPTY_PAGE)
         .catch((error_) => (error = error_));
       if (isChrome) expect(error.message).toContain(EXPECTED_SSL_CERT_MESSAGE);
       else expect(error.message).toContain('SSL_ERROR_UNKNOWN');
+
+      expect(requests.length).toBe(2);
+      expect(requests[0]).toBe('request');
+      expect(requests[1]).toBe('requestfailed');
     });
     itFailsFirefox(
       'should fail when navigating to bad SSL after redirects',
