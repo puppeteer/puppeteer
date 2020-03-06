@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "2.1.0-post",
+  "version": "2.1.1-post",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "main": "index.js",
   "repository": "github:puppeteer/puppeteer",
@@ -12,7 +12,6 @@
   },
   "scripts": {
     "unit": "node test/test.js",
-    "fjunit": "PUPPETEER_PRODUCT=juggler node test/test.js",
     "funit": "PUPPETEER_PRODUCT=firefox node test/test.js",
     "debug-unit": "node --inspect-brk test/test.js",
     "test-doclint": "node utils/doclint/check_public_api/test/test.js && node utils/doclint/preprocessor/test.js",

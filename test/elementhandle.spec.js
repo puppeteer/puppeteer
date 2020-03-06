@@ -21,7 +21,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
-  describe('ElementHandle.boundingBox', function() {
+  describe_fails_ffox('ElementHandle.boundingBox', function() {
     it('should work', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/grid.html');
@@ -133,7 +133,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
   });
 
   describe('ElementHandle.contentFrame', function() {
-    it('should work', async({page,server}) => {
+    it_fails_ffox('should work', async({page,server}) => {
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const elementHandle = await page.$('#frame1');
@@ -184,7 +184,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       const error = await button.click().catch(err => err);
       expect(error.message).toBe('Node is either not visible or not an HTMLElement');
     });
-    it('should throw for <br> elements', async({page, server}) => {
+    it_fails_ffox('should throw for <br> elements', async({page, server}) => {
       await page.setContent('hello<br>goodbye');
       const br = await page.$('br');
       const error = await br.click().catch(err => err);
@@ -193,7 +193,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
   });
 
   describe('ElementHandle.hover', function() {
-    it('should work', async({page, server}) => {
+    it_fails_ffox('should work', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/scrollable.html');
       const button = await page.$('#button-6');
       await button.hover();

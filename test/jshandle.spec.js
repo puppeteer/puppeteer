@@ -139,14 +139,14 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       const element = aHandle.asElement();
       expect(element).toBeFalsy();
     });
-    it('should return ElementHandle for TextNodes', async({page, server}) => {
+    it_fails_ffox('should return ElementHandle for TextNodes', async({page, server}) => {
       await page.setContent('<div>ee!</div>');
       const aHandle = await page.evaluateHandle(() => document.querySelector('div').firstChild);
       const element = aHandle.asElement();
       expect(element).toBeTruthy();
       expect(await page.evaluate(e => e.nodeType === HTMLElement.TEXT_NODE, element));
     });
-    it('should work with nullified Node', async({page, server}) => {
+    it_fails_ffox('should work with nullified Node', async({page, server}) => {
       await page.setContent('<section>test</section>');
       await page.evaluate(() => delete Node);
       const handle = await page.evaluateHandle(() => document.querySelector('section'));

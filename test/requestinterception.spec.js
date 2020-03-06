@@ -23,7 +23,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
-  describe('Page.setRequestInterception', function() {
+  describe_fails_ffox('Page.setRequestInterception', function() {
     it('should intercept', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
@@ -171,7 +171,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(response.request().failure()).toBe(null);
       expect(failedRequests).toBe(1);
     });
-    it_fails_ffox('should be abortable with custom error codes', async({page, server}) => {
+    it('should be abortable with custom error codes', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
         request.abort('internetdisconnected');
@@ -303,7 +303,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       ]));
       expect(results).toEqual(['11', 'FAILED', '22']);
     });
-    it_fails_ffox('should navigate to dataURL and fire dataURL requests', async({page, server}) => {
+    it('should navigate to dataURL and fire dataURL requests', async({page, server}) => {
       await page.setRequestInterception(true);
       const requests = [];
       page.on('request', request => {
@@ -316,7 +316,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(requests.length).toBe(1);
       expect(requests[0].url()).toBe(dataURL);
     });
-    it_fails_ffox('should be able to fetch dataURL and fire dataURL requests', async({page, server}) => {
+    it('should be able to fetch dataURL and fire dataURL requests', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setRequestInterception(true);
       const requests = [];
@@ -330,7 +330,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(requests.length).toBe(1);
       expect(requests[0].url()).toBe(dataURL);
     });
-    it_fails_ffox('should navigate to URL with hash and and fire requests without hash', async({page, server}) => {
+    it('should navigate to URL with hash and and fire requests without hash', async({page, server}) => {
       await page.setRequestInterception(true);
       const requests = [];
       page.on('request', request => {
@@ -358,7 +358,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       const response = await page.goto(server.PREFIX + '/malformed?rnd=%911');
       expect(response.status()).toBe(200);
     });
-    it_fails_ffox('should work with encoded server - 2', async({page, server}) => {
+    it('should work with encoded server - 2', async({page, server}) => {
       // The requestWillBeSent will report URL as-is, whereas interception will
       // report encoded URL for stylesheet. @see crbug.com/759388
       await page.setRequestInterception(true);
@@ -372,7 +372,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(requests.length).toBe(2);
       expect(requests[1].response().status()).toBe(404);
     });
-    it_fails_ffox('should not throw "Invalid Interception Id" if the request was cancelled', async({page, server}) => {
+    it('should not throw "Invalid Interception Id" if the request was cancelled', async({page, server}) => {
       await page.setContent('<iframe></iframe>');
       await page.setRequestInterception(true);
       let request = null;
@@ -398,7 +398,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       await page.goto(server.EMPTY_PAGE);
       expect(error.message).toContain('Request Interception is not enabled');
     });
-    it_fails_ffox('should work with file URLs', async({page, server}) => {
+    it('should work with file URLs', async({page, server}) => {
       await page.setRequestInterception(true);
       const urls = new Set();
       page.on('request', request => {
@@ -412,7 +412,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
     });
   });
 
-  describe('Request.continue', function() {
+  describe_fails_ffox('Request.continue', function() {
     it('should work', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => request.continue());
@@ -432,7 +432,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       ]);
       expect(request.headers['foo']).toBe('bar');
     });
-    it_fails_ffox('should redirect in a way non-observable to page', async({page, server}) => {
+    it('should redirect in a way non-observable to page', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
         const redirectURL = request.url().includes('/empty.html') ? server.PREFIX + '/consolelog.html' : undefined;
@@ -444,7 +444,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(page.url()).toBe(server.EMPTY_PAGE);
       expect(consoleMessage.text()).toBe('yellow');
     });
-    it_fails_ffox('should amend method', async({page, server}) => {
+    it('should amend method', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
 
       await page.setRequestInterception(true);
@@ -457,7 +457,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       ]);
       expect(request.method).toBe('POST');
     });
-    it_fails_ffox('should amend post data', async({page, server}) => {
+    it('should amend post data', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
 
       await page.setRequestInterception(true);
@@ -470,7 +470,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       ]);
       expect(await serverRequest.postBody).toBe('doggo');
     });
-    it_fails_ffox('should amend both post data and method on navigation', async({page, server}) => {
+    it('should amend both post data and method on navigation', async({page, server}) => {
       await page.setRequestInterception(true);
       page.on('request', request => {
         request.continue({ method: 'POST', postData: 'doggo' });

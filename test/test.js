@@ -26,10 +26,10 @@ if (parallelArgIndex !== -1)
   parallel = parseInt(process.argv[parallelArgIndex + 1], 10);
 require('events').defaultMaxListeners *= parallel;
 
-// Timeout to 20 seconds on Appveyor instances.
-let timeout = process.env.APPVEYOR ? 20 * 1000 : 10 * 1000;
+const defaultTimeout = process.env.PUPPETEER_PRODUCT === 'firefox' ? 15 * 1000 : 10 * 1000;
+let timeout = process.env.APPVEYOR ? 20 * 1000 : defaultTimeout;
 if (!isNaN(process.env.TIMEOUT))
-  timeout = parseInt(process.env.TIMEOUT, 10);
+  timeout = parseInt(process.env.TIMEOUT, defaultTimeout);
 const testRunner = new TestRunner({
   timeout,
   parallel,
@@ -84,19 +84,6 @@ switch (process.env.PUPPETEER_PRODUCT) {
       require('./puppeteer.spec.js').addTests({
         product: 'Firefox',
         puppeteerPath: utils.projectRoot(),
-        testRunner,
-      });
-      if (process.env.COVERAGE)
-        utils.recordAPICoverage(testRunner, require('../lib/api'), require('../lib/Events').Events, CHROMIUM_NO_COVERAGE);
-    });
-    break;
-  case 'juggler':
-    testRunner.addTestDSL('it_fails_ffox', 'skip');
-    testRunner.addSuiteDSL('describe_fails_ffox', 'skip');
-    describe('Firefox (Juggler)', () => {
-      require('./puppeteer.spec.js').addTests({
-        product: 'Juggler',
-        puppeteerPath: path.resolve(__dirname, '../experimental/puppeteer-firefox/'),
         testRunner,
       });
     });

@@ -55,7 +55,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       expect(event.isTrusted).toBe(true);
       expect(event.button).toBe(0);
     });
-    it('should resize the textarea', async({page, server}) => {
+    it_fails_ffox('should resize the textarea', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       const {x, y, width, height} = await page.evaluate(dimensions);
       const mouse = page.mouse;
@@ -67,7 +67,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       expect(newDimensions.width).toBe(Math.round(width + 104));
       expect(newDimensions.height).toBe(Math.round(height + 104));
     });
-    it('should select the text with mouse', async({page, server}) => {
+    it_fails_ffox('should select the text with mouse', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       const text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
@@ -85,7 +85,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
         return textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
       })).toBe(text);
     });
-    it('should trigger hover state', async({page, server}) => {
+    it_fails_ffox('should trigger hover state', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/scrollable.html');
       await page.hover('#button-6');
       expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-6');
@@ -120,7 +120,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
           throw new Error(modifiers[modifier] + ' should be false');
       }
     });
-    it('should tween mouse movement', async({page, server}) => {
+    it_fails_ffox('should tween mouse movement', async({page, server}) => {
       await page.mouse.move(100, 100);
       await page.evaluate(() => {
         window.result = [];
@@ -138,7 +138,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       ]);
     });
     // @see https://crbug.com/929806
-    it('should work with mobile viewports and cross process navigations', async({page, server}) => {
+    it_fails_ffox('should work with mobile viewports and cross process navigations', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setViewport({width: 360, height: 640, isMobile: true});
       await page.goto(server.CROSS_PROCESS_PREFIX + '/mobile.html');

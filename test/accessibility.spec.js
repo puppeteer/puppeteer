@@ -19,7 +19,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
   const {it, fit, xit} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
-  describe('Accessibility', function() {
+  describe_fails_ffox('Accessibility', function() {
     it('should work', async function({page}) {
       await page.setContent(`
       <head>
@@ -310,7 +310,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
         expect(snapshot.children[0]).toEqual(golden);
       });
 
-      describe_fails_ffox('root option', function() {
+      describe('root option', function() {
         it('should work a button', async({page}) => {
           await page.setContent(`<button>My Button</button>`);
 
