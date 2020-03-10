@@ -36,11 +36,7 @@ jobs:
     - node_js: "10.18.1"
       env:
         - FIREFOX=true
-<<<<<<< HEAD
-        - FLAKINESS_DASHBOARD_NAME="Travis Firefox Nightly (node8 + linux)"
-=======
-        - FLAKINESS_DASHBOARD_NAME="Travis Firefox (node10 + linux)"
->>>>>>> chore: update relevant Node.js versions from 8 to 10
+        - FLAKINESS_DASHBOARD_NAME="Travis Firefox Nightly (node10 + linux)"
         - FLAKINESS_DASHBOARD_BUILD_URL="${TRAVIS_JOB_WEB_URL}"
         - FIREFOX_HOME=$TRAVIS_HOME/firefox-latest
 before_deploy: "npm run apply-next-version"
