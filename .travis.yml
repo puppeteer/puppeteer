@@ -19,24 +19,24 @@ before_install:
   - 'if [ "$FIREFOX" = "true" ]; then rm -rf $FIREFOX_HOME; mozdownload -t daily -d $FIREFOX_HOME/latest.tar.bz --log-level DEBUG; fi'
   - 'if [ "$FIREFOX" = "true" ]; then cd $FIREFOX_HOME; tar -xvf latest.tar.bz; cd -; ls $FIREFOX_HOME/firefox/firefox; fi'
 script:
-  - 'if [ "$NODE8" = "true" ]; then npm run lint; fi'
-  - 'if [ "$NODE8" = "true" ]; then npm run coverage; fi'
+  - 'if [ "$NODE10" = "true" ]; then npm run lint; fi'
+  - 'if [ "$NODE10" = "true" ]; then npm run coverage; fi'
   - 'if [ "$FIREFOX" = "true" ]; then BINARY=$FIREFOX_HOME/firefox/firefox npm run funit; fi'
-  - 'if [ "$NODE8" = "true" ]; then npm run test-doclint; fi'
-  - 'if [ "$NODE8" = "true" ]; then npm run test-types; fi'
-  - 'if [ "$NODE8" = "true" ]; then npm run bundle; fi'
-  - 'if [ "$NODE8" = "true" ]; then npm run unit-bundle; fi'
+  - 'if [ "$NODE10" = "true" ]; then npm run test-doclint; fi'
+  - 'if [ "$NODE10" = "true" ]; then npm run test-types; fi'
+  - 'if [ "$NODE10" = "true" ]; then npm run bundle; fi'
+  - 'if [ "$NODE10" = "true" ]; then npm run unit-bundle; fi'
 jobs:
   include:
-    - node_js: "8.16.0"
+    - node_js: "10.18.1"
       env:
-        - NODE8=true
-        - FLAKINESS_DASHBOARD_NAME="Travis Chromium (node8 + linux)"
+        - NODE10=true
+        - FLAKINESS_DASHBOARD_NAME="Travis Chromium (node10 + linux)"
         - FLAKINESS_DASHBOARD_BUILD_URL="${TRAVIS_JOB_WEB_URL}"
-    - node_js: "8.16.0"
+    - node_js: "10.18.1"
       env:
         - FIREFOX=true
-        - FLAKINESS_DASHBOARD_NAME="Travis Firefox Nightly (node8 + linux)"
+        - FLAKINESS_DASHBOARD_NAME="Travis Firefox Nightly (node10 + linux)"
         - FLAKINESS_DASHBOARD_BUILD_URL="${TRAVIS_JOB_WEB_URL}"
         - FIREFOX_HOME=$TRAVIS_HOME/firefox-latest
 before_deploy: "npm run apply-next-version"
@@ -47,6 +47,6 @@ deploy:
     secure: Ng8o2KwJf90XCBNgUKK3jRZnwtdBSJatjYNmZBERJEqBWFTadFAp1NdhxZaqjnuG8aFYaH5bRJdL+EQBYUksVCbrv/gcaXeEFkwsfPfVX1QXGqu7NnZmtme2hbxppLQ7dEJ8hz2Z9K4vehqVOxmLabxvoupOumxEQMLCphVHh2FOmsm/S5JrRZqZ4V9k76eIc0/PiyfXNMdx5WTZjHbIRDIHRy9nqOXjFp2Rx3PMa3uU2fS8mTshYEYs151TA6e6VdHjqmBwEQC/M5tXbDlLCMNUr4JBtLTcL4OipNYjzkwD1N2xYlbSRqtvqqF4ifdvFhoI65a31GinlMC7Z/SH1Zy+d+/z3Mo7D63eYcsJVnsg9OYxTFy2piUntr0JqTBHtQoe/CvGxJmkcVt+H6YSkcBibSG9s9tG3qpAD5wBCFqqOYnfClX+YZziEd+Hngd9inxAf87qdvgVIZ5tPD2dygtE+te2/qoEHtvccv/HuS8MxNj5iKwlP7JaBPM6uAkazYqZP2R99I2ph9gNOEVuQLtk+3+OIdb8HWrEKUrJBgKhdKY1dvcKYElI+D8NRlyzrr6BnZfudACuAt2EtfKpfJ3mL+iRMFdBJ3ntLt93xBrB+j4z3pD0iWZcg1g3I742PFzQEHzyd/DDTP1yRTUoJeQWwoQRJyNO1m6Qk4wx77c=
   on:
     branch: master
-    condition: "$NODE8 = true"
+    condition: "$NODE10 = true"
   skip_cleanup: true
   tag: next

@@ -5,7 +5,7 @@
   "main": "index.js",
   "repository": "github:puppeteer/puppeteer",
   "engines": {
-    "node": ">=8.16.0"
+    "node": ">=10.18.1"
   },
   "puppeteer": {
     "chromium_revision": "722234"
@@ -23,7 +23,7 @@
     "tsc": "tsc -p .",
     "apply-next-version": "node utils/apply_next_version.js",
     "bundle": "npx browserify -r ./index.js:puppeteer -o utils/browser/puppeteer-web.js",
-    "test-types": "node utils/doclint/generate_types && npx -p typescript@2.1 tsc -p utils/doclint/generate_types/test/",
+    "test-types": "node utils/doclint/generate_types && npx -p typescript@3.2 tsc -p utils/doclint/generate_types/test/",
     "unit-bundle": "node utils/browser/test.js"
   },
   "author": "The Chromium Authors",
@@ -44,7 +44,7 @@
     "@types/debug": "0.0.31",
     "@types/extract-zip": "^1.6.2",
     "@types/mime": "^2.0.0",
-    "@types/node": "^8.10.34",
+    "@types/node": "^10.17.14",
     "@types/rimraf": "^2.0.2",
     "@types/ws": "^6.0.1",
     "commonmark": "^0.28.1",
