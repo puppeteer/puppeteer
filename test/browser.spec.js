@@ -23,10 +23,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     it('should return whether we are in headless', async({browser}) => {
       const version = await browser.version();
       expect(version.length).toBeGreaterThan(0);
-      if (CHROME)
-        expect(version.startsWith('Headless')).toBe(headless);
-      else
-        expect(version.startsWith('Firefox/')).toBe(true);
+      expect(version.startsWith('Headless')).toBe(headless);
     });
   });
 

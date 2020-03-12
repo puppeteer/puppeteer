@@ -33,7 +33,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await page.keyboard.type(text);
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe(text);
     });
-    it('should press the metaKey', async({page}) => {
+    it_fails_ffox('should press the metaKey', async({page}) => {
       await page.evaluate(() => {
         window.keyPromise = new Promise(resolve => document.addEventListener('keydown', event => resolve(event.key)));
       });
@@ -72,7 +72,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await textarea.press('a', {text: 'ё'});
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('ё');
     });
-    it('should send a character with sendCharacter', async({page, server}) => {
+    it_fails_ffox('should send a character with sendCharacter', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       await page.keyboard.sendCharacter('嗨');
@@ -81,7 +81,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await page.keyboard.sendCharacter('a');
       expect(await page.evaluate(() => document.querySelector('textarea').value)).toBe('嗨a');
     });
-    it('should report shiftKey', async({page, server}) => {
+    it_fails_ffox('should report shiftKey', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/keyboard.html');
       const keyboard = page.keyboard;
       const codeForKey = {'Shift': 16, 'Alt': 18, 'Control': 17};
@@ -158,7 +158,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await page.keyboard.type('Hello World!');
       expect(await page.evaluate(() => textarea.value)).toBe('He Wrd!');
     });
-    it('should specify repeat property', async({page, server}) => {
+    it_fails_ffox('should specify repeat property', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       await page.evaluate(() => document.querySelector('textarea').addEventListener('keydown', e => window.lastEvent = e, true));
@@ -176,14 +176,14 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await page.keyboard.down('a');
       expect(await page.evaluate(() => window.lastEvent.repeat)).toBe(false);
     });
-    it('should type all kinds of characters', async({page, server}) => {
+    it_fails_ffox('should type all kinds of characters', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       await page.focus('textarea');
       const text = 'This text goes onto two lines.\nThis character is 嗨.';
       await page.keyboard.type(text);
       expect(await page.evaluate('result')).toBe(text);
     });
-    it('should specify location', async({page, server}) => {
+    it_fails_ffox('should specify location', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       await page.evaluate(() => {
         window.addEventListener('keydown', event => window.keyLocation = event.location, true);
@@ -212,12 +212,12 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       error = await page.keyboard.press('😊').catch(e => e);
       expect(error && error.message).toBe('Unknown key: "😊"');
     });
-    it('should type emoji', async({page, server}) => {
+    it_fails_ffox('should type emoji', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/textarea.html');
       await page.type('textarea', '👹 Tokyo street Japan 🇯🇵');
       expect(await page.$eval('textarea', textarea => textarea.value)).toBe('👹 Tokyo street Japan 🇯🇵');
     });
-    it('should type emoji into an iframe', async({page, server}) => {
+    it_fails_ffox('should type emoji into an iframe', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(page, 'emoji-test', server.PREFIX + '/input/textarea.html');
       const frame = page.frames()[1];
@@ -225,7 +225,7 @@ module.exports.addTests = function({testRunner, expect, FFOX}) {
       await textarea.type('👹 Tokyo street Japan 🇯🇵');
       expect(await frame.$eval('textarea', textarea => textarea.value)).toBe('👹 Tokyo street Japan 🇯🇵');
     });
-    it('should press the meta key', async({page}) => {
+    it_fails_ffox('should press the meta key', async({page}) => {
       await page.evaluate(() => {
         window.result = null;
         document.addEventListener('keydown', event => {

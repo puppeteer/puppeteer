@@ -22,13 +22,19 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  describe('input', function() {
+  describe_fails_ffox('input', function() {
     it('should upload the file', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/fileupload.html');
       const filePath = path.relative(process.cwd(), FILE_TO_UPLOAD);
       const input = await page.$('input');
+      await page.evaluate(e => {
+        window._inputEvents = [];
+        e.addEventListener('change', ev => window._inputEvents.push(ev.type));
+        e.addEventListener('input', ev => window._inputEvents.push(ev.type));
+      }, input);
       await input.uploadFile(filePath);
       expect(await page.evaluate(e => e.files[0].name, input)).toBe('file-to-upload.txt');
+      expect(await page.evaluate(() => window._inputEvents)).toEqual(['input', 'change']);
       expect(await page.evaluate(e => {
         const reader = new FileReader();
         const promise = new Promise(fulfill => reader.onload = fulfill);

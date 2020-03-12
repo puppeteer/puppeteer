@@ -36,7 +36,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       await page.setViewport({width: 400, height: 300});
       expect(await page.evaluate(() => window.innerWidth)).toBe(400);
     });
-    it('should support touch emulation', async({page, server}) => {
+    it_fails_ffox('should support touch emulation', async({page, server}) => {
       await page.goto(server.PREFIX + '/mobile.html');
       expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(false);
       await page.setViewport(iPhone.viewport);
@@ -58,14 +58,14 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
         return promise;
       }
     });
-    it('should be detectable by Modernizr', async({page, server}) => {
+    it_fails_ffox('should be detectable by Modernizr', async({page, server}) => {
       await page.goto(server.PREFIX + '/detect-touch.html');
       expect(await page.evaluate(() => document.body.textContent.trim())).toBe('NO');
       await page.setViewport(iPhone.viewport);
       await page.goto(server.PREFIX + '/detect-touch.html');
       expect(await page.evaluate(() => document.body.textContent.trim())).toBe('YES');
     });
-    it('should detect touch when applying viewport with touches', async({page, server}) => {
+    it_fails_ffox('should detect touch when applying viewport with touches', async({page, server}) => {
       await page.setViewport({ width: 800, height: 600, hasTouch: true });
       await page.addScriptTag({url: server.PREFIX + '/modernizr.js'});
       expect(await page.evaluate(() => Modernizr.touchevents)).toBe(true);
@@ -104,7 +104,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
   });
 
   describe('Page.emulateMediaType', function() {
-    it('should work', async({page, server}) => {
+    it_fails_ffox('should work', async({page, server}) => {
       expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(true);
       expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
       await page.emulateMediaType('print');
@@ -121,8 +121,8 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
     });
   });
 
-  describe_fails_ffox('Page.emulateMediaFeatures', function() {
-    it('should work', async({page, server}) => {
+  describe('Page.emulateMediaFeatures', function() {
+    it_fails_ffox('should work', async({page, server}) => {
       await page.emulateMediaFeatures([
         { name: 'prefers-reduced-motion', value: 'reduce' },
       ]);

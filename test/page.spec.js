@@ -39,7 +39,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await newPage.close();
       expect(await browser.pages()).not.toContain(newPage);
     });
-    it('should run beforeunload if asked for', async({context, server}) => {
+    it_fails_ffox('should run beforeunload if asked for', async({context, server}) => {
       const newPage = await context.newPage();
       await newPage.goto(server.PREFIX + '/beforeunload.html');
       // We have to interact with a page so that 'beforeunload' handlers
@@ -56,7 +56,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await dialog.accept();
       await pageClosingPromise;
     });
-    it('should *not* run beforeunload by default', async({context, server}) => {
+    it_fails_ffox('should *not* run beforeunload by default', async({context, server}) => {
       const newPage = await context.newPage();
       await newPage.goto(server.PREFIX + '/beforeunload.html');
       // We have to interact with a page so that 'beforeunload' handlers
@@ -94,7 +94,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe('Async stacks', () => {
+  describe_fails_ffox('Async stacks', () => {
     it('should work', async({page, server}) => {
       server.setRoute('/empty.html', (req, res) => {
         res.statusCode = 204;
@@ -117,7 +117,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe('Page.Events.Popup', function() {
+  describe_fails_ffox('Page.Events.Popup', function() {
     it('should work', async({page}) => {
       const [popup] = await Promise.all([
         new Promise(x => page.once('popup', x)),
@@ -175,7 +175,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await page.goto(server.EMPTY_PAGE);
       expect(await getPermission(page, 'geolocation')).toBe('prompt');
     });
-    it('should deny permission when not listed', async({page, server, context}) => {
+    it_fails_ffox('should deny permission when not listed', async({page, server, context}) => {
       await page.goto(server.EMPTY_PAGE);
       await context.overridePermissions(server.EMPTY_PAGE, []);
       expect(await getPermission(page, 'geolocation')).toBe('denied');
@@ -186,19 +186,19 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await context.overridePermissions(server.EMPTY_PAGE, ['foo']).catch(e => error = e);
       expect(error.message).toBe('Unknown permission: foo');
     });
-    it('should grant permission when listed', async({page, server, context}) => {
+    it_fails_ffox('should grant permission when listed', async({page, server, context}) => {
       await page.goto(server.EMPTY_PAGE);
       await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
       expect(await getPermission(page, 'geolocation')).toBe('granted');
     });
-    it('should reset permissions', async({page, server, context}) => {
+    it_fails_ffox('should reset permissions', async({page, server, context}) => {
       await page.goto(server.EMPTY_PAGE);
       await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
       expect(await getPermission(page, 'geolocation')).toBe('granted');
       await context.clearPermissionOverrides();
       expect(await getPermission(page, 'geolocation')).toBe('prompt');
     });
-    it('should trigger permission onchange', async({page, server, context}) => {
+    it_fails_ffox('should trigger permission onchange', async({page, server, context}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
         window.events = [];
@@ -217,7 +217,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await context.clearPermissionOverrides();
       expect(await page.evaluate(() => window.events)).toEqual(['prompt', 'denied', 'granted', 'prompt']);
     });
-    it('should isolate permissions between browser contexts', async({page, server, context, browser}) => {
+    it_fails_ffox('should isolate permissions between browser contexs', async({page, server, context, browser}) => {
       await page.goto(server.EMPTY_PAGE);
       const otherContext = await browser.createIncognitoBrowserContext();
       const otherPage = await otherContext.newPage();
@@ -238,8 +238,8 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe_fails_ffox('Page.setGeolocation', function() {
-    it('should work', async({page, server, context}) => {
+  describe('Page.setGeolocation', function() {
+    it_fails_ffox('should work', async({page, server, context}) => {
       await context.overridePermissions(server.PREFIX, ['geolocation']);
       await page.goto(server.EMPTY_PAGE);
       await page.setGeolocation({longitude: 10, latitude: 10});
@@ -281,8 +281,8 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe_fails_ffox('ExecutionContext.queryObjects', function() {
-    it('should work', async({page, server}) => {
+  describe('ExecutionContext.queryObjects', function() {
+    it_fails_ffox('should work', async({page, server}) => {
       // Instantiate an object
       await page.evaluate(() => window.set = new Set(['hello', 'world']));
       const prototypeHandle = await page.evaluateHandle(() => Set.prototype);
@@ -292,7 +292,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       const values = await page.evaluate(objects => Array.from(objects[0].values()), objectsHandle);
       expect(values).toEqual(['hello', 'world']);
     });
-    it('should work for non-blank page', async({page, server}) => {
+    it_fails_ffox('should work for non-blank page', async({page, server}) => {
       // Instantiate an object
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => window.set = new Set(['hello', 'world']));
@@ -316,7 +316,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe('Page.Events.Console', function() {
+  describe_fails_ffox('Page.Events.Console', function() {
     it('should work', async({page, server}) => {
       let message = null;
       page.once('console', m => message = m);
@@ -377,7 +377,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       else
         expect(message.type()).toEqual('warn');
     });
-    it_fails_ffox('should have location when fetch fails', async({page, server}) => {
+    it('should have location when fetch fails', async({page, server}) => {
       // The point of this test is to make sure that we report console messages from
       // Log domain: https://vanilla.aslushnikov.com/?Log.entryAdded
       await page.goto(server.EMPTY_PAGE);
@@ -407,7 +407,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       });
     });
     // @see https://github.com/puppeteer/puppeteer/issues/3865
-    it_fails_ffox('should not throw when there are console messages in detached iframes', async({browser, page, server}) => {
+    it('should not throw when there are console messages in detached iframes', async({browser, page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(async() => {
         // 1. Create a popup that Puppeteer is not connected to.
@@ -522,7 +522,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
   });
 
   describe('Page.waitForResponse', function() {
-    it('should work', async({page, server}) => {
+    it_fails_ffox('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
         page.waitForResponse(server.PREFIX + '/digits/2.png'),
@@ -545,7 +545,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await page.waitForResponse(() => false).catch(e => error = e);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
-    it('should work with predicate', async({page, server}) => {
+    it_fails_ffox('should work with predicate', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
         page.waitForResponse(response => response.url() === server.PREFIX + '/digits/2.png'),
@@ -557,7 +557,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       ]);
       expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
     });
-    it('should work with no timeout', async({page, server}) => {
+    it_fails_ffox('should work with no timeout', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
         page.waitForResponse(server.PREFIX + '/digits/2.png', {timeout: 0}),
@@ -571,7 +571,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe('Page.exposeFunction', function() {
+  describe_fails_ffox('Page.exposeFunction', function() {
     it('should work', async({page, server}) => {
       await page.exposeFunction('compute', function(a, b) {
         return a * b;
@@ -671,7 +671,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe('Page.Events.PageError', function() {
+  describe_fails_ffox('Page.Events.PageError', function() {
     it('should fire', async({page, server}) => {
       let error = null;
       page.once('pageerror', e => error = e);
@@ -693,7 +693,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       ]);
       expect(request.headers['user-agent']).toBe('foobar');
     });
-    it('should work for subframes', async({page, server}) => {
+    it_fails_ffox('should work for subframes', async({page, server}) => {
       expect(await page.evaluate(() => navigator.userAgent)).toContain('Mozilla');
       await page.setUserAgent('foobar');
       const [request] = await Promise.all([
@@ -710,7 +710,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe('Page.setContent', function() {
+  describe_fails_ffox('Page.setContent', function() {
     const expectedOutput = '<html><head></head><body><div>hello</div></body></html>';
     it('should work', async({page, server}) => {
       await page.setContent('<div>hello</div>');
@@ -730,7 +730,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       const result = await page.content();
       expect(result).toBe(`${doctype}${expectedOutput}`);
     });
-    it_fails_ffox('should respect timeout', async({page, server}) => {
+    it('should respect timeout', async({page, server}) => {
       const imgPath = '/img.png';
       // stall for image
       server.setRoute(imgPath, (req, res) => {});
@@ -738,7 +738,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await page.setContent(`<img src="${server.PREFIX + imgPath}"></img>`, {timeout: 1}).catch(e => error = e);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
-    it_fails_ffox('should respect default navigation timeout', async({page, server}) => {
+    it('should respect default navigation timeout', async({page, server}) => {
       page.setDefaultNavigationTimeout(1);
       const imgPath = '/img.png';
       // stall for image
@@ -747,7 +747,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await page.setContent(`<img src="${server.PREFIX + imgPath}"></img>`).catch(e => error = e);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
-    it_fails_ffox('should await resources to load', async({page, server}) => {
+    it('should await resources to load', async({page, server}) => {
       const imgPath = '/img.png';
       let imgResponse = null;
       server.setRoute(imgPath, (req, res) => imgResponse = res);
@@ -969,7 +969,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(styleContent).toContain(path.join('assets', 'injectedstyle.css'));
     });
 
-    it('should work with content', async({page, server}) => {
+    it_fails_ffox('should work with content', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const styleHandle = await page.addStyleTag({ content: 'body { background-color: green; }' });
       expect(styleHandle.asElement()).not.toBeNull();
@@ -999,7 +999,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe('Page.setJavaScriptEnabled', function() {
+  describe_fails_ffox('Page.setJavaScriptEnabled', function() {
     it('should work', async({page, server}) => {
       await page.setJavaScriptEnabled(false);
       await page.goto('data:text/html, <script>var something = "forbidden"</script>');
@@ -1030,7 +1030,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       ]);
       expect(nonCachedRequest.headers['if-modified-since']).toBe(undefined);
     });
-    it('should stay disabled when toggling request interception on/off', async({page, server}) => {
+    it_fails_ffox('should stay disabled when toggling request interception on/off', async({page, server}) => {
       await page.setCacheEnabled(false);
       await page.setRequestInterception(true);
       await page.setRequestInterception(false);
@@ -1074,7 +1074,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
       expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
     });
-    it_fails_ffox('should not throw when select causes navigation', async({page, server}) => {
+    it('should not throw when select causes navigation', async({page, server}) => {
       await page.goto(server.PREFIX + '/input/select.html');
       await page.$eval('select', select => select.addEventListener('input', () => window.location = '/empty.html'));
       await Promise.all([
@@ -1136,7 +1136,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await page.select('select');
       expect(await page.$eval('select', select => Array.from(select.options).every(option => !option.selected))).toEqual(true);
     });
-    it('should throw if passed in non-strings', async({page, server}) => {
+    it_fails_ffox('should throw if passed in non-strings', async({page, server}) => {
       await page.setContent('<select><option value="12"/></select>');
       let error = null;
       try {
@@ -1157,7 +1157,7 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
   });
 
   describe('Page.Events.Close', function() {
-    it('should work with window.close', async function({ page, context, server }) {
+    it_fails_ffox('should work with window.close', async function({ page, context, server }) {
       const newPagePromise = new Promise(fulfill => context.once('targetcreated', target => fulfill(target.page())));
       await page.evaluate(() => window['newPage'] = window.open('about:blank'));
       const newPage = await newPagePromise;

@@ -18,7 +18,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
   const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
   const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  describe('ignoreHTTPSErrors', function() {
+  describe_fails_ffox('ignoreHTTPSErrors', function() {
     beforeAll(async state => {
       const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
       state.browser = await puppeteer.launch(options);

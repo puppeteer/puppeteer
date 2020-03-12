@@ -20,13 +20,13 @@ module.exports.addTests = function({testRunner, expect, product}) {
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('Page.screenshot', function() {
-    it('should work', async({page, server}) => {
+    it_fails_ffox('should work', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/grid.html');
       const screenshot = await page.screenshot();
       expect(screenshot).toBeGolden('screenshot-sanity.png');
     });
-    it('should clip rect', async({page, server}) => {
+    it_fails_ffox('should clip rect', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/grid.html');
       const screenshot = await page.screenshot({
@@ -69,7 +69,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
       const screenshots = await Promise.all(promises);
       expect(screenshots[1]).toBeGolden('grid-cell-1.png');
     });
-    it('should take fullPage screenshots', async({page, server}) => {
+    it_fails_ffox('should take fullPage screenshots', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/grid.html');
       const screenshot = await page.screenshot({
@@ -115,7 +115,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
       });
       expect(screenshot).toBeGolden('screenshot-clip-odd-size.png');
     });
-    it('should return base64', async({page, server}) => {
+    it_fails_ffox('should return base64', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.goto(server.PREFIX + '/grid.html');
       const screenshot = await page.screenshot({
@@ -134,7 +134,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
     });
-    it('should take into account padding and border', async({page, server}) => {
+    it_fails_ffox('should take into account padding and border', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
         something above
@@ -151,7 +151,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
     });
-    it('should capture full element when larger than viewport', async({page, server}) => {
+    it_fails_ffox('should capture full element when larger than viewport', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
 
       await page.setContent(`
@@ -175,7 +175,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
 
       expect(await page.evaluate(() => ({ w: window.innerWidth, h: window.innerHeight }))).toEqual({ w: 500, h: 500 });
     });
-    it('should scroll element into view', async({page, server}) => {
+    it_fails_ffox('should scroll element into view', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
         something above
@@ -198,7 +198,7 @@ module.exports.addTests = function({testRunner, expect, product}) {
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-scrolled-into-view.png');
     });
-    it('should work with a rotated element', async({page, server}) => {
+    it_fails_ffox('should work with a rotated element', async({page, server}) => {
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`<div style="position:absolute;
                                         top: 100px;
@@ -211,26 +211,26 @@ module.exports.addTests = function({testRunner, expect, product}) {
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-rotate.png');
     });
-    it('should fail to screenshot a detached element', async({page, server}) => {
+    it_fails_ffox('should fail to screenshot a detached element', async({page, server}) => {
       await page.setContent('<h1>remove this</h1>');
       const elementHandle = await page.$('h1');
       await page.evaluate(element => element.remove(), elementHandle);
       const screenshotError = await elementHandle.screenshot().catch(error => error);
       expect(screenshotError.message).toBe('Node is either not visible or not an HTMLElement');
     });
-    it('should not hang with zero width/height element', async({page, server}) => {
+    it_fails_ffox('should not hang with zero width/height element', async({page, server}) => {
       await page.setContent('<div style="width: 50px; height: 0"></div>');
       const div = await page.$('div');
       const error = await div.screenshot().catch(e => e);
       expect(error.message).toBe('Node has 0 height.');
     });
-    it('should work for an element with fractional dimensions', async({page}) => {
+    it_fails_ffox('should work for an element with fractional dimensions', async({page}) => {
       await page.setContent('<div style="width:48.51px;height:19.8px;border:1px solid black;"></div>');
       const elementHandle = await page.$('div');
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-fractional.png');
     });
-    it('should work for an element with an offset', async({page}) => {
+    it_fails_ffox('should work for an element with an offset', async({page}) => {
       await page.setContent('<div style="position:absolute; top: 10.3px; left: 20.4px;width:50.3px;height:20.2px;border:1px solid black;"></div>');
       const elementHandle = await page.$('div');
       const screenshot = await elementHandle.screenshot();

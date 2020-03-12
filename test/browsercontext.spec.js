@@ -18,11 +18,11 @@ const utils = require('./utils');
 
 module.exports.addTests = function({testRunner, expect, puppeteer}) {
   const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
+  const {it, fit, xit, it_fails_ffox} = testRunner;
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   describe('BrowserContext', function() {
-    it('should have default context', async function({browser, server}) {
+    it_fails_ffox('should have default context', async function({browser, server}) {
       expect(browser.browserContexts().length).toBe(1);
       const defaultContext = browser.browserContexts()[0];
       expect(defaultContext.isIncognito()).toBe(false);
@@ -31,7 +31,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(browser.defaultBrowserContext()).toBe(defaultContext);
       expect(error.message).toContain('cannot be closed');
     });
-    it('should create new incognito context', async function({browser, server}) {
+    it_fails_ffox('should create new incognito context', async function({browser, server}) {
       expect(browser.browserContexts().length).toBe(1);
       const context = await browser.createIncognitoBrowserContext();
       expect(context.isIncognito()).toBe(true);
@@ -40,7 +40,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       await context.close();
       expect(browser.browserContexts().length).toBe(1);
     });
-    it('should close all belonging targets once closing context', async function({browser, server}) {
+    it_fails_ffox('should close all belonging targets once closing context', async function({browser, server}) {
       expect((await browser.pages()).length).toBe(1);
 
       const context = await browser.createIncognitoBrowserContext();
@@ -51,7 +51,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       await context.close();
       expect((await browser.pages()).length).toBe(1);
     });
-    it('window.open should use parent tab context', async function({browser, server}) {
+    it_fails_ffox('window.open should use parent tab context', async function({browser, server}) {
       const context = await browser.createIncognitoBrowserContext();
       const page = await context.newPage();
       await page.goto(server.EMPTY_PAGE);
@@ -62,7 +62,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(popupTarget.browserContext()).toBe(context);
       await context.close();
     });
-    it('should fire target events', async function({browser, server}) {
+    it_fails_ffox('should fire target events', async function({browser, server}) {
       const context = await browser.createIncognitoBrowserContext();
       const events = [];
       context.on('targetcreated', target => events.push('CREATED: ' + target.url()));
@@ -78,7 +78,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       ]);
       await context.close();
     });
-    it('should wait for a target', async function({browser, server}) {
+    it_fails_ffox('should wait for a target', async function({browser, server}) {
       const context = await browser.createIncognitoBrowserContext();
       let resolved = false;
       const targetPromise = context.waitForTarget(target => target.url() === server.EMPTY_PAGE);
@@ -96,7 +96,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
       await context.close();
     });
-    it('should isolate localStorage and cookies', async function({browser, server}) {
+    it_fails_ffox('should isolate localStorage and cookies', async function({browser, server}) {
       // Create two incognito contexts.
       const context1 = await browser.createIncognitoBrowserContext();
       const context2 = await browser.createIncognitoBrowserContext();
@@ -140,7 +140,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       ]);
       expect(browser.browserContexts().length).toBe(1);
     });
-    it('should work across sessions', async function({browser, server}) {
+    it_fails_ffox('should work across sessions', async function({browser, server}) {
       expect(browser.browserContexts().length).toBe(1);
       const context = await browser.createIncognitoBrowserContext();
       expect(browser.browserContexts().length).toBe(2);

@@ -28,8 +28,7 @@ module.exports.addTests = ({testRunner, product, puppeteerPath}) => {
   const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
 
   const CHROME = product === 'Chromium';
-  const FFOX = (product === 'Firefox' || product === 'Juggler');
-  const JUGGLER = product === 'Juggler';
+  const FFOX = product === 'Firefox';
 
   const puppeteer = require(puppeteerPath);
 
@@ -59,7 +58,7 @@ module.exports.addTests = ({testRunner, product, puppeteerPath}) => {
       throw new Error(`Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`);
   }
 
-  const suffix = JUGGLER ? 'firefox' : product.toLowerCase();
+  const suffix = FFOX ? 'firefox' : product.toLowerCase();
   const GOLDEN_DIR = path.join(__dirname, 'golden-' + suffix);
   const OUTPUT_DIR = path.join(__dirname, 'output-' + suffix);
   if (fs.existsSync(OUTPUT_DIR))
@@ -73,7 +72,6 @@ module.exports.addTests = ({testRunner, product, puppeteerPath}) => {
     product,
     FFOX,
     CHROME,
-    JUGGLER,
     puppeteer,
     expect,
     defaultBrowserOptions,
@@ -81,10 +79,6 @@ module.exports.addTests = ({testRunner, product, puppeteerPath}) => {
     headless: !!defaultBrowserOptions.headless,
   };
 
-  beforeAll(async() => {
-    if (JUGGLER && defaultBrowserOptions.executablePath)
-      await require('../experimental/puppeteer-firefox/misc/install-preferences')(defaultBrowserOptions.executablePath);
-  });
 
   describe('Browser', function() {
     beforeAll(async state => {

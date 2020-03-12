@@ -51,7 +51,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(cookies.length).toBe(1);
       expect(cookies[0].httpOnly).toBe(true);
     });
-    it_fails_ffox('should properly report "Strict" sameSite cookie', async({page, server}) => {
+    it('should properly report "Strict" sameSite cookie', async({page, server}) => {
       server.setRoute('/empty.html', (req, res) => {
         res.setHeader('Set-Cookie', ';SameSite=Strict');
         res.end();
@@ -61,7 +61,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(cookies.length).toBe(1);
       expect(cookies[0].sameSite).toBe('Strict');
     });
-    it_fails_ffox('should properly report "Lax" sameSite cookie', async({page, server}) => {
+    it('should properly report "Lax" sameSite cookie', async({page, server}) => {
       server.setRoute('/empty.html', (req, res) => {
         res.setHeader('Set-Cookie', ';SameSite=Lax');
         res.end();
@@ -104,7 +104,7 @@ module.exports.addTests = function({testRunner, expect}) {
         },
       ]);
     });
-    it('should get cookies from multiple urls', async({page, server}) => {
+    it_fails_ffox('should get cookies from multiple urls', async({page, server}) => {
       await page.setCookie({
         url: 'https://foo.com',
         name: 'doggo',
@@ -145,7 +145,7 @@ module.exports.addTests = function({testRunner, expect}) {
   });
 
   describe('Page.setCookie', function() {
-    it('should work', async({page, server}) => {
+    it_fails_ffox('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
         name: 'password',
@@ -153,7 +153,7 @@ module.exports.addTests = function({testRunner, expect}) {
       });
       expect(await page.evaluate(() => document.cookie)).toEqual('password=123456');
     });
-    it('should isolate cookies in browser contexts', async({page, server, browser}) => {
+    it_fails_ffox('should isolate cookies in browser contexts', async({page, server, browser}) => {
       const anotherContext = await browser.createIncognitoBrowserContext();
       const anotherPage = await anotherContext.newPage();
 
@@ -173,7 +173,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(cookies2[0].value).toBe('page2value');
       await anotherContext.close();
     });
-    it('should set multiple cookies', async({page, server}) => {
+    it_fails_ffox('should set multiple cookies', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
         name: 'password',
@@ -190,7 +190,7 @@ module.exports.addTests = function({testRunner, expect}) {
         'password=123456',
       ]);
     });
-    it('should have |expires| set to |-1| for session cookies', async({page, server}) => {
+    it_fails_ffox('should have |expires| set to |-1| for session cookies', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
         name: 'password',
@@ -200,7 +200,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(cookies[0].session).toBe(true);
       expect(cookies[0].expires).toBe(-1);
     });
-    it('should set cookie with reasonable defaults', async({page, server}) => {
+    it_fails_ffox('should set cookie with reasonable defaults', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
         name: 'password',
@@ -219,7 +219,7 @@ module.exports.addTests = function({testRunner, expect}) {
         session: true
       }]);
     });
-    it('should set a cookie with a path', async({page, server}) => {
+    it_fails_ffox('should set a cookie with a path', async({page, server}) => {
       await page.goto(server.PREFIX + '/grid.html');
       await page.setCookie({
         name: 'gridcookie',
@@ -279,7 +279,7 @@ module.exports.addTests = function({testRunner, expect}) {
       }
       expect(error.message).toContain('At least one of the url and domain needs to be specified');
     });
-    it('should default to setting secure cookie for HTTPS websites', async({page, server}) => {
+    it_fails_ffox('should default to setting secure cookie for HTTPS websites', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const SECURE_URL = 'https://example.com';
       await page.setCookie({
@@ -290,7 +290,7 @@ module.exports.addTests = function({testRunner, expect}) {
       const [cookie] = await page.cookies(SECURE_URL);
       expect(cookie.secure).toBe(true);
     });
-    it('should be able to set unsecure cookie for HTTP website', async({page, server}) => {
+    it_fails_ffox('should be able to set unsecure cookie for HTTP website', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const HTTP_URL = 'http://example.com';
       await page.setCookie({
@@ -301,7 +301,7 @@ module.exports.addTests = function({testRunner, expect}) {
       const [cookie] = await page.cookies(HTTP_URL);
       expect(cookie.secure).toBe(false);
     });
-    it('should set a cookie on a different domain', async({page, server}) => {
+    it_fails_ffox('should set a cookie on a different domain', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
         url: 'https://www.example.com',
@@ -322,7 +322,7 @@ module.exports.addTests = function({testRunner, expect}) {
         session: true
       }]);
     });
-    it('should set cookies from a frame', async({page, server}) => {
+    it_fails_ffox('should set cookies from a frame', async({page, server}) => {
       await page.goto(server.PREFIX + '/grid.html');
       await page.setCookie({name: 'localhost-cookie', value: 'best'});
       await page.evaluate(src => {
@@ -365,7 +365,7 @@ module.exports.addTests = function({testRunner, expect}) {
   });
 
   describe('Page.deleteCookie', function() {
-    it('should work', async({page, server}) => {
+    it_fails_ffox('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
         name: 'cookie1',

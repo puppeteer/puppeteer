@@ -30,7 +30,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       await page.goto(server.EMPTY_PAGE);
       expect(requests.length).toBe(1);
     });
-    it('should fire for iframes', async({page, server}) => {
+    it_fails_ffox('should fire for iframes', async({page, server}) => {
       const requests = [];
       page.on('request', request => !utils.isFavicon(request) && requests.push(request));
       await page.goto(server.EMPTY_PAGE);
@@ -54,7 +54,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(requests.length).toBe(1);
       expect(requests[0].frame()).toBe(page.mainFrame());
     });
-    it('should work for subframe navigation request', async({page, server}) => {
+    it_fails_ffox('should work for subframe navigation request', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       const requests = [];
       page.on('request', request => !utils.isFavicon(request) && requests.push(request));
@@ -73,7 +73,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
     });
   });
 
-  describe('Request.headers', function() {
+  describe_fails_ffox('Request.headers', function() {
     it('should work', async({page, server}) => {
       const response = await page.goto(server.EMPTY_PAGE);
       if (CHROME)
@@ -83,7 +83,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
     });
   });
 
-  describe('Response.headers', function() {
+  describe_fails_ffox('Response.headers', function() {
     it('should work', async({page, server}) => {
       server.setRoute('/empty.html', (req, res) => {
         res.setHeader('foo', 'bar');
@@ -139,7 +139,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
     });
   });
 
-  describe('Request.postData', function() {
+  describe_fails_ffox('Request.postData', function() {
     it('should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       server.setRoute('/post', (req, res) => res.end());
@@ -155,7 +155,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
     });
   });
 
-  describe('Response.text', function() {
+  describe_fails_ffox('Response.text', function() {
     it('should work', async({page, server}) => {
       const response = await page.goto(server.PREFIX + '/simple.json');
       expect(await response.text()).toBe('{"foo": "bar"}\n');
@@ -212,14 +212,14 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
     });
   });
 
-  describe('Response.json', function() {
+  describe_fails_ffox('Response.json', function() {
     it('should work', async({page, server}) => {
       const response = await page.goto(server.PREFIX + '/simple.json');
       expect(await response.json()).toEqual({foo: 'bar'});
     });
   });
 
-  describe('Response.buffer', function() {
+  describe_fails_ffox('Response.buffer', function() {
     it('should work', async({page, server}) => {
       const response = await page.goto(server.PREFIX + '/pptr.png');
       const imageBuffer = fs.readFileSync(path.join(__dirname, 'assets', 'pptr.png'));
@@ -235,7 +235,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
     });
   });
 
-  describe('Response.statusText', function() {
+  describe_fails_ffox('Response.statusText', function() {
     it('should work', async({page, server}) => {
       server.setRoute('/cool', (req, res) => {
         res.writeHead(200, 'cool!');
@@ -246,7 +246,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
     });
   });
 
-  describe('Network Events', function() {
+  describe_fails_ffox('Network Events', function() {
     it('Page.Events.Request', async({page, server}) => {
       const requests = [];
       page.on('request', request => requests.push(request));
@@ -340,7 +340,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
   });
 
   describe('Request.isNavigationRequest', () => {
-    it('should work', async({page, server}) => {
+    it_fails_ffox('should work', async({page, server}) => {
       const requests = new Map();
       page.on('request', request => requests.set(request.url().split('/').pop(), request));
       server.setRedirect('/rrredirect', '/frames/one-frame.html');
@@ -351,7 +351,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(requests.get('script.js').isNavigationRequest()).toBe(false);
       expect(requests.get('style.css').isNavigationRequest()).toBe(false);
     });
-    it('should work with request interception', async({page, server}) => {
+    it_fails_ffox('should work with request interception', async({page, server}) => {
       const requests = new Map();
       page.on('request', request => {
         requests.set(request.url().split('/').pop(), request);
@@ -374,7 +374,7 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
     });
   });
 
-  describe('Page.setExtraHTTPHeaders', function() {
+  describe_fails_ffox('Page.setExtraHTTPHeaders', function() {
     it('should work', async({page, server}) => {
       await page.setExtraHTTPHeaders({
         foo: 'bar'
