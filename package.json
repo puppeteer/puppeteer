@@ -21,7 +21,7 @@
     "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .) && npm run tsc && npm run doc",
     "doc": "node utils/doclint/cli.js",
     "coverage": "cross-env COVERAGE=true npm run unit",
-    "tsc": "tsc -p .",
+    "tsc": "tsc --version && tsc -p .",
     "apply-next-version": "node utils/apply_next_version.js",
     "bundle": "npx browserify -r ./index.js:puppeteer -o utils/browser/puppeteer-web.js",
     "test-types": "node utils/doclint/generate_types && npx -p typescript@3.2 tsc -p utils/doclint/generate_types/test/",
@@ -61,7 +61,7 @@
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.3.3",
     "text-diff": "^1.0.1",
-    "typescript": "3.2.2"
+    "typescript": "3.5.3"
   },
   "browser": {
     "./lib/BrowserFetcher.js": false,
