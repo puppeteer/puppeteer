@@ -160,7 +160,7 @@ function checkSources(sources) {
           properties.push(...innerType.properties);
         innerTypeNames.push(innerType.name);
       }
-      if (innerTypeNames.length === 1 && innerTypeNames[0] === 'void')
+      if (innerTypeNames.length === 0 || innerTypeNames.length === 1 && innerTypeNames[0] === 'void')
         return new Documentation.Type(type.symbol.name);
       return new Documentation.Type(`${type.symbol.name}<${innerTypeNames.join(', ')}>`, properties);
     }
