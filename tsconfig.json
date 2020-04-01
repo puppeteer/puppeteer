@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
-    "noEmit": true,
     "allowJs": true,
     "checkJs": true,
+    "outDir": "./lib",
     "target": "ESNext"
   },
   "include": [
-    "lib"
+    "src"
   ]
 }
