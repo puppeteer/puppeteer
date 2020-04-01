@@ -24,7 +24,7 @@
     "tsc": "tsc --version && tsc -p .",
     "apply-next-version": "node utils/apply_next_version.js",
     "bundle": "npx browserify -r ./index.js:puppeteer -o utils/browser/puppeteer-web.js",
-    "test-types": "node utils/doclint/generate_types && npx -p typescript@3.2 tsc -p utils/doclint/generate_types/test/",
+    "test-types": "node utils/doclint/generate_types && npx -p typescript@3.8 tsc -p utils/doclint/generate_types/test/",
     "unit-bundle": "node utils/browser/test.js"
   },
   "author": "The Chromium Authors",
@@ -61,7 +61,7 @@
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.3.3",
     "text-diff": "^1.0.1",
-    "typescript": "3.7.5"
+    "typescript": "3.8.3"
   },
   "browser": {
     "./lib/BrowserFetcher.js": false,
