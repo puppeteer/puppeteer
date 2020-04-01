@@ -459,7 +459,7 @@ const puppeteer = require('puppeteer');
   - `transport` <[ConnectionTransport]> **Experimental** Specify a custom transport object for Puppeteer to use.
 - returns: <[Promise]<[Browser]>>
 
-This methods attaches Puppeteer to an existing Chromium instance.
+This methods attaches Puppeteer to an existing browser instance.
 
 #### puppeteer.createBrowserFetcher([options])
 - `options` <[Object]>
