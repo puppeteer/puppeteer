@@ -281,6 +281,13 @@ Puppeteer creates its own browser user profile which it **cleans up on every run
   - debug your test inside chromium like a boss!
 
 
+8. Automatic deploy screenshot Puppeteer
+
+You can automate a process with Buddy and Puppeteer. 
+You can run your script on every push to the branch.
+
+[Read tutorial](https://buddy.works/guides/how-take-screenshots-with-puppeteer-headless-chrome)
+
 <!-- [END debugging] -->
 
 ## Contributing to Puppeteer
