@@ -43,3 +43,6 @@ experimental
 
 # exclude types, see https://github.com/puppeteer/puppeteer/issues/3878
 /index.d.ts
+
+# don't expose src/ as we ship the generated code in lib/
+/src

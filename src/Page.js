@@ -30,7 +30,6 @@ const {Worker: PuppeteerWorker} = require('./Worker');
 const {createJSHandle} = require('./JSHandle');
 const {Accessibility} = require('./Accessibility');
 const {TimeoutSettings} = require('./TimeoutSettings');
-
 const writeFileAsync = helper.promisify(fs.writeFile);
 
 class Page extends EventEmitter {
