@@ -16,8 +16,9 @@
 const fs = require('fs');
 const path = require('path');
 const rm = require('rimraf').sync;
-const GoldenUtils = require('./golden-utils');
-const {Matchers} = require('../utils/testrunner/');
+const utils = require('./utils');
+
+const expect = require('expect');
 
 const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
@@ -59,13 +60,13 @@ module.exports.addTests = ({testRunner, product, puppeteerPath}) => {
   }
 
   const suffix = FFOX ? 'firefox' : product.toLowerCase();
+
   const GOLDEN_DIR = path.join(__dirname, 'golden-' + suffix);
   const OUTPUT_DIR = path.join(__dirname, 'output-' + suffix);
   if (fs.existsSync(OUTPUT_DIR))
     rm(OUTPUT_DIR);
-  const {expect} = new Matchers({
-    toBeGolden: GoldenUtils.compare.bind(null, GOLDEN_DIR, OUTPUT_DIR)
-  });
+
+  utils.extendExpectWithToBeGolden(GOLDEN_DIR, OUTPUT_DIR);
 
   const testOptions = {
     testRunner,

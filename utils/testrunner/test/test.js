@@ -1,7 +1,7 @@
-const {TestRunner, Matchers, Reporter} = require('..');
+const {TestRunner, Reporter} = require('..');
 
 const testRunner = new TestRunner();
-const {expect} = new Matchers();
+const expect = require('expect');
 
 require('./testrunner.spec.js').addTests({testRunner, expect});
 

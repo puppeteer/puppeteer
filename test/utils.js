@@ -16,6 +16,8 @@
 
 const fs = require('fs');
 const path = require('path');
+const expect = require('expect');
+const GoldenUtils = require('./golden-utils');
 const {FlakinessDashboard} = require('../utils/flakiness-dashboard');
 const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ? path.join(__dirname, '..') : path.join(__dirname, '..', '..');
 
@@ -69,6 +71,19 @@ const utils = module.exports = {
         if (missingMethods.length)
           throw new Error('Certain API Methods are not called: ' + missingMethods.join(', '));
       });
+    });
+  },
+
+  extendExpectWithToBeGolden: function(goldenDir, outputDir) {
+    expect.extend({
+      toBeGolden: (testScreenshot, goldenFilePath) => {
+        const result = GoldenUtils.compare(goldenDir, outputDir, testScreenshot, goldenFilePath);
+
+        return {
+          message: () => result.message,
+          pass: result.pass
+        };
+      }
     });
   },
 

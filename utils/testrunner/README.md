@@ -7,6 +7,7 @@ This test runner is used internally by Puppeteer to test Puppeteer itself.
 - supports async/await
 - modular
 - well-isolated state per execution thread
+- uses the `expect` library from `npm` for assertions.
 
 ### Installation
 
@@ -23,15 +24,14 @@ node test.js
 ```
 
 ```js
-const {TestRunner, Reporter, Matchers} = require('@pptr/testrunner');
+const {TestRunner, Reporter} = require('@pptr/testrunner');
+const expect = require('expect')
 
 // Runner holds and runs all the tests
 const runner = new TestRunner({
   parallel: 2, // run 2 parallel threads
   timeout: 1000, // setup timeout of 1 second per test
 });
-// Simple expect-like matchers
-const {expect} = new Matchers();
 
 // Extract jasmine-like DSL into the global namespace
 const {describe, xdescribe, fdescribe} = runner;

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-const {TestRunner, Reporter, Matchers} = require('..');
+const {TestRunner, Reporter} = require('..');
 
 const runner = new TestRunner();
 const reporter = new Reporter(runner);
-const {expect} = new Matchers();
+const expect = require('expect');
 
 const {describe, xdescribe, fdescribe} = runner;
 const {it, fit, xit} = runner;
