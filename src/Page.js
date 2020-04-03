@@ -1146,9 +1146,6 @@ class Page extends EventEmitter {
   }
 }
 
-// Expose alias for deprecated method.
-Page.prototype.emulateMedia = Page.prototype.emulateMediaType;
-
 /**
  * @typedef {Object} PDFOptions
  * @property {number=} scale

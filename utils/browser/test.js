@@ -2,7 +2,8 @@ const path = require('path');
 const fs = require('fs');
 const puppeteer = require('../..');
 const {TestServer} = require('../testserver/');
-const {TestRunner, Reporter, Matchers} = require('../testrunner/');
+const {TestRunner, Reporter} = require('../testrunner/');
+const expect = require('expect');
 
 const puppeteerWebPath = path.join(__dirname, 'puppeteer-web.js');
 if (!fs.existsSync(puppeteerWebPath))
@@ -13,7 +14,6 @@ const testRunner = new TestRunner();
 const {describe, fdescribe, xdescribe} = testRunner;
 const {it, xit, fit} = testRunner;
 const {afterAll, beforeAll, afterEach, beforeEach} = testRunner;
-const {expect} = new Matchers();
 
 beforeAll(async state => {
   const assetsPath = path.join(__dirname, '..', '..', 'test', 'assets');

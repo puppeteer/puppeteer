@@ -22,7 +22,10 @@ const mdBuilder = require('../MDBuilder');
 const jsBuilder = require('../JSBuilder');
 const GoldenUtils = require('../../../../test/golden-utils');
 
-const {TestRunner, Reporter, Matchers}  = require('../../../testrunner/');
+const testUtils = require('../../../../test/utils')
+
+const {TestRunner, Reporter}  = require('../../../testrunner/');
+const expect = require('expect')
 const runner = new TestRunner();
 const reporter = new Reporter(runner);
 
@@ -60,9 +63,7 @@ runner.run();
 
 async function testLint(state, test) {
   const dirPath = path.join(__dirname, test.name);
-  const {expect} = new Matchers({
-    toBeGolden: GoldenUtils.compare.bind(null, dirPath, dirPath)
-  });
+  testUtils.extendExpectWithToBeGolden(dirPath, dirPath)
 
   const mdSources = await Source.readdir(dirPath, '.md');
   const jsSources = await Source.readdir(dirPath, '.js');
@@ -73,9 +74,8 @@ async function testLint(state, test) {
 
 async function testMDBuilder(state, test) {
   const dirPath = path.join(__dirname, test.name);
-  const {expect} = new Matchers({
-    toBeGolden: GoldenUtils.compare.bind(null, dirPath, dirPath)
-  });
+  testUtils.extendExpectWithToBeGolden(dirPath, dirPath)
+
   const sources = await Source.readdir(dirPath, '.md');
   const {documentation} = await mdBuilder(page, sources);
   expect(serialize(documentation)).toBeGolden('result.txt');
@@ -83,9 +83,9 @@ async function testMDBuilder(state, test) {
 
 async function testJSBuilder(state, test) {
   const dirPath = path.join(__dirname, test.name);
-  const {expect} = new Matchers({
-    toBeGolden: GoldenUtils.compare.bind(null, dirPath, dirPath)
-  });
+  testUtils.extendExpectWithToBeGolden(dirPath, dirPath)
+
+
   const sources = await Source.readdir(dirPath, '.js');
   const {documentation} = await jsBuilder(sources);
   expect(serialize(documentation)).toBeGolden('result.txt');
