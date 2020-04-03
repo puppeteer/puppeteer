@@ -1,4 +1,5 @@
 language: node_js
+os: linux
 dist: trusty
 addons:
   apt:
@@ -10,31 +11,13 @@ notifications:
 cache:
   directories:
     - node_modules
-# allow headful tests
-before_install:
-  - "sysctl kernel.unprivileged_userns_clone=1"
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
-  - 'if [ "$FIREFOX" = "true" ]; then pyenv shell 3.6; pip3 install --user mozdownload; fi'
-  - 'if [ "$FIREFOX" = "true" ]; then rm -rf $FIREFOX_HOME; mozdownload -t daily -d $FIREFOX_HOME/latest.tar.bz --log-level DEBUG; fi'
-  - 'if [ "$FIREFOX" = "true" ]; then cd $FIREFOX_HOME; tar -xvf latest.tar.bz; cd -; ls $FIREFOX_HOME/firefox/firefox; fi'
-script:
-  - 'if [ "$CHROMIUM" = "true" ]; then npm run lint; fi'
-  - 'if [ "$CHROMIUM" = "true" ]; then npm run coverage; fi'
-  - 'if [ "$FIREFOX" = "true" ]; then BINARY=$FIREFOX_HOME/firefox/firefox npm run funit; fi'
-  - 'if [ "$CHROMIUM" = "true" ]; then npm run test-doclint; fi'
-  - 'if [ "$CHROMIUM" = "true" ]; then npm run test-types; fi'
-  - 'if [ "$CHROMIUM" = "true" ]; then npm run bundle; fi'
-  - 'if [ "$CHROMIUM" = "true" ]; then npm run unit-bundle; fi'
 jobs:
   include:
-    - node_js: "12.16.1"
+    - node_js: "10.19.0"
+      dist: trusty
       env:
         - CHROMIUM=true
-    - node_js: "10.18.1"
-      env:
-        - CHROMIUM=true
-    - node_js: "10.18.1"
-      env:
-        - FIREFOX=true
-        - FIREFOX_HOME=$TRAVIS_HOME/firefox-latest
+      before_install:
+        - "export DISPLAY=:99.0"
+        - "sh -e /etc/init.d/xvfb start"
+      script: ./travis/chromium.sh
