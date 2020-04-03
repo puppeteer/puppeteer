@@ -19,18 +19,23 @@ before_install:
   - 'if [ "$FIREFOX" = "true" ]; then rm -rf $FIREFOX_HOME; mozdownload -t daily -d $FIREFOX_HOME/latest.tar.bz --log-level DEBUG; fi'
   - 'if [ "$FIREFOX" = "true" ]; then cd $FIREFOX_HOME; tar -xvf latest.tar.bz; cd -; ls $FIREFOX_HOME/firefox/firefox; fi'
 script:
-  - 'if [ "$NODE10" = "true" ]; then npm run lint; fi'
-  - 'if [ "$NODE10" = "true" ]; then npm run coverage; fi'
+  - 'if [ "$CHROMIUM" = "true" ]; then npm run lint; fi'
+  - 'if [ "$CHROMIUM" = "true" ]; then npm run coverage; fi'
   - 'if [ "$FIREFOX" = "true" ]; then BINARY=$FIREFOX_HOME/firefox/firefox npm run funit; fi'
-  - 'if [ "$NODE10" = "true" ]; then npm run test-doclint; fi'
-  - 'if [ "$NODE10" = "true" ]; then npm run test-types; fi'
-  - 'if [ "$NODE10" = "true" ]; then npm run bundle; fi'
-  - 'if [ "$NODE10" = "true" ]; then npm run unit-bundle; fi'
+  - 'if [ "$CHROMIUM" = "true" ]; then npm run test-doclint; fi'
+  - 'if [ "$CHROMIUM" = "true" ]; then npm run test-types; fi'
+  - 'if [ "$CHROMIUM" = "true" ]; then npm run bundle; fi'
+  - 'if [ "$CHROMIUM" = "true" ]; then npm run unit-bundle; fi'
 jobs:
   include:
+    - node_js: "12.16.1"
+      env:
+        - CHROMIUM=true
+        - FLAKINESS_DASHBOARD_NAME="Travis Chromium (node12 + linux)"
+        - FLAKINESS_DASHBOARD_BUILD_URL="${TRAVIS_JOB_WEB_URL}"
     - node_js: "10.18.1"
       env:
-        - NODE10=true
+        - CHROMIUM=true
         - FLAKINESS_DASHBOARD_NAME="Travis Chromium (node10 + linux)"
         - FLAKINESS_DASHBOARD_BUILD_URL="${TRAVIS_JOB_WEB_URL}"
     - node_js: "10.18.1"
