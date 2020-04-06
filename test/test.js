@@ -116,7 +116,6 @@ new Reporter(testRunner, {
 });
 
 (async() => {
-  await utils.initializeFlakinessDashboardIfNeeded(testRunner);
   testRunner.run();
 })();
 
