@@ -97,13 +97,38 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
     });
   });
 
-  describe('Page.emulateMedia', function() {
-    it('should be an alias for Page.emulateMediaType', async({page, server}) => {
-      expect(page.emulateMedia).toEqual(page.emulateMediaType);
+  describe('Page.emulateMedia [deprecated]', function() {
+    /* emulateMedia is deprecated in favour of emulateMediaType but we
+     * don't want to remove it from Puppeteer just yet. We can't check
+     * that emulateMedia === emulateMediaType because when running tests
+     * with COVERAGE=1 the methods get rewritten. So instead we
+     * duplicate the tests for emulateMediaType and ensure they pass
+     * when calling the deprecated emulateMedia method.
+     *
+     * If you update these tests, you should update emulateMediaType's
+     * tests, and vice-versa.
+     */
+    it_fails_ffox('should work', async({page, server}) => {
+      expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(true);
+      expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
+      await page.emulateMedia('print');
+      expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(false);
+      expect(await page.evaluate(() => matchMedia('print').matches)).toBe(true);
+      await page.emulateMedia(null);
+      expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(true);
+      expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
+    });
+    it('should throw in case of bad argument', async({page, server}) => {
+      let error = null;
+      await page.emulateMedia('bad').catch(e => error = e);
+      expect(error.message).toBe('Unsupported media type: bad');
     });
   });
 
   describe('Page.emulateMediaType', function() {
+    /* NOTE! Updating these tests? Update the emulateMedia tests above
+     * too (and see the big comment for why we have these duplicated).
+     */
     it_fails_ffox('should work', async({page, server}) => {
       expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(true);
       expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
