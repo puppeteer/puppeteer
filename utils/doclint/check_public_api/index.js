@@ -185,8 +185,8 @@ function compareDocumentations(actual, expected) {
     const methodDiff = diff(actualMethods, expectedMethods);
     for (const methodName of methodDiff.extra) {
       const missingMethodsForClass = expectedNonExistingMethods.get(className);
-      const methodNameIsExpectedMissing = missingMethodsForClass ? missingMethodsForClass.has(methodName) : false;
-      if (methodNameIsExpectedMissing) continue;
+      if (!missingMethodsForClass) continue;
+      if (missingMethodsForClass.has(methodName)) continue;
       errors.push(`Non-existing method found: ${className}.${methodName}()`);
     }
     for (const methodName of methodDiff.missing)
@@ -346,4 +346,3 @@ function diff(actual, expected) {
     return i < 0 || j < 0 ? 0 : d[i][j];
   }
 }
-
