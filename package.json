@@ -25,7 +25,7 @@
     "coverage": "cross-env COVERAGE=true npm run unit",
     "tsc": "tsc --version && tsc -p . && cp src/protocol.d.ts lib/ && cp src/externs.d.ts lib/",
     "apply-next-version": "node utils/apply_next_version.js",
-    "bundle": "npx browserify -r ./index.js:puppeteer -o utils/browser/puppeteer-web.js",
+    "bundle": "npm run tsc && npx browserify -r ./index.js:puppeteer -o utils/browser/puppeteer-web.js",
     "test-types": "node utils/doclint/generate_types && tsc --version && tsc -p utils/doclint/generate_types/test/",
     "unit-bundle": "node utils/browser/test.js",
     "update-protocol-d-ts": "node utils/protocol-types-generator"
