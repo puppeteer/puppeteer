@@ -31,16 +31,10 @@ jobs:
     - node_js: "12.16.1"
       env:
         - CHROMIUM=true
-        - FLAKINESS_DASHBOARD_NAME="Travis Chromium (node12 + linux)"
-        - FLAKINESS_DASHBOARD_BUILD_URL="${TRAVIS_JOB_WEB_URL}"
     - node_js: "10.18.1"
       env:
         - CHROMIUM=true
-        - FLAKINESS_DASHBOARD_NAME="Travis Chromium (node10 + linux)"
-        - FLAKINESS_DASHBOARD_BUILD_URL="${TRAVIS_JOB_WEB_URL}"
     - node_js: "10.18.1"
       env:
         - FIREFOX=true
-        - FLAKINESS_DASHBOARD_NAME="Travis Firefox Nightly (node10 + linux)"
-        - FLAKINESS_DASHBOARD_BUILD_URL="${TRAVIS_JOB_WEB_URL}"
         - FIREFOX_HOME=$TRAVIS_HOME/firefox-latest
