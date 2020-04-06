@@ -12,7 +12,8 @@
     "firefox_revision": "latest"
   },
   "scripts": {
-    "unit": "node test/test.js",
+    "unit": "mocha --config .mocharc.js",
+    "coverage": "cross-env COVERAGE=1 npm run unit",
     "funit": "PUPPETEER_PRODUCT=firefox node test/test.js",
     "debug-unit": "node --inspect-brk test/test.js",
     "test-doclint": "node utils/doclint/check_public_api/test/test.js && node utils/doclint/preprocessor/test.js",
@@ -22,7 +23,7 @@
     "install": "node install.js",
     "lint": "([ \"$CI\" = true ] && eslint --quiet -f codeframe . || eslint .) && npm run tsc && npm run doc",
     "doc": "node utils/doclint/cli.js",
-    "coverage": "cross-env COVERAGE=true npm run unit",
+    "mocha-tests": "mocha --config .mocharc.js",
     "tsc": "tsc --version && tsc -p . && cp src/protocol.d.ts lib/ && cp src/externs.d.ts lib/",
     "apply-next-version": "node utils/apply_next_version.js",
     "bundle": "npm run tsc && npx browserify -r ./index.js:puppeteer -o utils/browser/puppeteer-web.js",
@@ -61,6 +62,7 @@
     "expect": "^25.2.7",
     "jpeg-js": "^0.3.4",
     "minimist": "^1.2.0",
+    "mocha": "^7.1.1",
     "ncp": "^2.0.0",
     "pixelmatch": "^4.0.2",
     "pngjs": "^3.3.3",

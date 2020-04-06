@@ -14,43 +14,53 @@
  * limitations under the License.
  */
 
-module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, puppeteer}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
-  const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+const expect = require('expect');
+const {getTestState} = require('./mocha-utils');
 
-  describe('OOPIF', function() {
-    beforeAll(async function(state) {
-      state.browser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
-        args: (defaultBrowserOptions.args || []).concat(['--site-per-process']),
-      }));
-    });
-    beforeEach(async function(state) {
-      state.context = await state.browser.createIncognitoBrowserContext();
-      state.page = await state.context.newPage();
-    });
-    afterEach(async function(state) {
-      await state.context.close();
-      state.page = null;
-      state.context = null;
-    });
-    afterAll(async function(state) {
-      await state.browser.close();
-      state.browser = null;
-    });
-    xit('should report oopif frames', async function({page, server, context}) {
-      await page.goto(server.PREFIX + '/dynamic-oopif.html');
-      expect(oopifs(context).length).toBe(1);
-      expect(page.frames().length).toBe(2);
-    });
-    it('should load oopif iframes with subresources and request interception', async function({page, server, context}) {
-      await page.setRequestInterception(true);
-      page.on('request', request => request.continue());
-      await page.goto(server.PREFIX + '/dynamic-oopif.html');
-      expect(oopifs(context).length).toBe(1);
-    });
+describe('OOPIF', function() {
+  /* We use a special browser for this test as we need the --site-per-process flag */
+  let browser;
+  let context;
+  let page;
+
+  before(async() => {
+    const {puppeteer, defaultBrowserOptions} = getTestState();
+    browser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
+      args: (defaultBrowserOptions.args || []).concat(['--site-per-process']),
+    }));
   });
-};
+
+  beforeEach(async() => {
+    context = await browser.createIncognitoBrowserContext();
+    page = await context.newPage();
+  });
+
+  afterEach(async() => {
+    await context.close();
+    page = null;
+    context = null;
+  });
+
+  after(async() => {
+    await browser.close();
+    browser = null;
+  });
+  xit('should report oopif frames', async() => {
+    const { server } = getTestState();
+
+    await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    expect(oopifs(context).length).toBe(1);
+    expect(page.frames().length).toBe(2);
+  });
+  it('should load oopif iframes with subresources and request interception', async() => {
+    const { server } = getTestState();
+
+    await page.setRequestInterception(true);
+    page.on('request', request => request.continue());
+    await page.goto(server.PREFIX + '/dynamic-oopif.html');
+    expect(oopifs(context).length).toBe(1);
+  });
+});
 
 
 /**

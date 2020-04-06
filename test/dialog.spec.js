@@ -1,3 +1,5 @@
+const expect = require('expect');
+const {getTestState} = require('./mocha-utils');
 /**
  * Copyright 2018 Google Inc. All rights reserved.
  *
@@ -13,38 +15,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+describe('Page.Events.Dialog', function() {
+  it('should fire', async() => {
+    const { page } = getTestState();
 
-module.exports.addTests = function({testRunner, expect}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit, it_fails_ffox} = testRunner;
-  const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-
-  describe('Page.Events.Dialog', function() {
-    it('should fire', async({page, server}) => {
-      page.on('dialog', dialog => {
-        expect(dialog.type()).toBe('alert');
-        expect(dialog.defaultValue()).toBe('');
-        expect(dialog.message()).toBe('yo');
-        dialog.accept();
-      });
-      await page.evaluate(() => alert('yo'));
+    page.on('dialog', dialog => {
+      expect(dialog.type()).toBe('alert');
+      expect(dialog.defaultValue()).toBe('');
+      expect(dialog.message()).toBe('yo');
+      dialog.accept();
     });
-    it_fails_ffox('should allow accepting prompts', async({page, server}) => {
-      page.on('dialog', dialog => {
-        expect(dialog.type()).toBe('prompt');
-        expect(dialog.defaultValue()).toBe('yes.');
-        expect(dialog.message()).toBe('question?');
-        dialog.accept('answer!');
-      });
-      const result = await page.evaluate(() => prompt('question?', 'yes.'));
-      expect(result).toBe('answer!');
-    });
-    it('should dismiss the prompt', async({page, server}) => {
-      page.on('dialog', dialog => {
-        dialog.dismiss();
-      });
-      const result = await page.evaluate(() => prompt('question?'));
-      expect(result).toBe(null);
-    });
+    await page.evaluate(() => alert('yo'));
   });
-};
+  itFailsFirefox('should allow accepting prompts', async() => {
+    const { page } = getTestState();
+
+    page.on('dialog', dialog => {
+      expect(dialog.type()).toBe('prompt');
+      expect(dialog.defaultValue()).toBe('yes.');
+      expect(dialog.message()).toBe('question?');
+      dialog.accept('answer!');
+    });
+    const result = await page.evaluate(() => prompt('question?', 'yes.'));
+    expect(result).toBe('answer!');
+  });
+  it('should dismiss the prompt', async() => {
+    const { page } = getTestState();
+
+    page.on('dialog', dialog => {
+      dialog.dismiss();
+    });
+    const result = await page.evaluate(() => prompt('question?'));
+    expect(result).toBe(null);
+  });
+});

@@ -14,27 +14,34 @@
  * limitations under the License.
  */
 
-module.exports.addTests = function({testRunner, expect, CHROME}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit, it_fails_ffox} = testRunner;
-  const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+const expect = require('expect');
+const {getTestState} = require('./mocha-utils');
 
+describe('JSHandle', function() {
   describe('Page.evaluateHandle', function() {
-    it('should work', async({page, server}) => {
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       const windowHandle = await page.evaluateHandle(() => window);
       expect(windowHandle).toBeTruthy();
     });
-    it('should accept object handle as an argument', async({page, server}) => {
+    it('should accept object handle as an argument', async() => {
+      const { page, server } = getTestState();
+
       const navigatorHandle = await page.evaluateHandle(() => navigator);
       const text = await page.evaluate(e => e.userAgent, navigatorHandle);
       expect(text).toContain('Mozilla');
     });
-    it('should accept object handle to primitive types', async({page, server}) => {
+    it('should accept object handle to primitive types', async() => {
+      const { page, server } = getTestState();
+
       const aHandle = await page.evaluateHandle(() => 5);
       const isFive = await page.evaluate(e => Object.is(e, 5), aHandle);
       expect(isFive).toBeTruthy();
     });
-    it('should warn on nested object handles', async({page, server}) => {
+    it('should warn on nested object handles', async() => {
+      const { page, server } = getTestState();
+
       const aHandle = await page.evaluateHandle(() => document.body);
       let error = null;
       await page.evaluateHandle(
@@ -43,18 +50,24 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       ).catch(e => error = e);
       expect(error.message).toContain('Are you passing a nested JSHandle?');
     });
-    it('should accept object handle to unserializable value', async({page, server}) => {
+    it('should accept object handle to unserializable value', async() => {
+      const { page, server } = getTestState();
+
       const aHandle = await page.evaluateHandle(() => Infinity);
       expect(await page.evaluate(e => Object.is(e, Infinity), aHandle)).toBe(true);
     });
-    it('should use the same JS wrappers', async({page, server}) => {
+    it('should use the same JS wrappers', async() => {
+      const { page, server } = getTestState();
+
       const aHandle = await page.evaluateHandle(() => {
         window.FOO = 123;
         return window;
       });
       expect(await page.evaluate(e => e.FOO, aHandle)).toBe(123);
     });
-    it('should work with primitives', async({page, server}) => {
+    it('should work with primitives', async() => {
+      const { page, server } = getTestState();
+
       const aHandle = await page.evaluateHandle(() => {
         window.FOO = 123;
         return window;
@@ -64,7 +77,9 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
   });
 
   describe('JSHandle.getProperty', function() {
-    it('should work', async({page, server}) => {
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       const aHandle = await page.evaluateHandle(() => ({
         one: 1,
         two: 2,
@@ -76,21 +91,27 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
   });
 
   describe('JSHandle.jsonValue', function() {
-    it('should work', async({page, server}) => {
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       const aHandle = await page.evaluateHandle(() => ({foo: 'bar'}));
       const json = await aHandle.jsonValue();
       expect(json).toEqual({foo: 'bar'});
     });
-    it_fails_ffox('should not work with dates', async({page, server}) => {
+    itFailsFirefox('should not work with dates', async() => {
+      const { page, server } = getTestState();
+
       const dateHandle = await page.evaluateHandle(() => new Date('2017-09-26T00:00:00.000Z'));
       const json = await dateHandle.jsonValue();
       expect(json).toEqual({});
     });
-    it('should throw for circular objects', async({page, server}) => {
+    it('should throw for circular objects', async() => {
+      const { page, isChrome } = getTestState();
+
       const windowHandle = await page.evaluateHandle('window');
       let error = null;
       await windowHandle.jsonValue().catch(e => error = e);
-      if (CHROME)
+      if (isChrome)
         expect(error.message).toContain('Object reference chain is too long');
       else
         expect(error.message).toContain('Object is not serializable');
@@ -98,7 +119,9 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
   });
 
   describe('JSHandle.getProperties', function() {
-    it('should work', async({page, server}) => {
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       const aHandle = await page.evaluateHandle(() => ({
         foo: 'bar'
       }));
@@ -107,7 +130,9 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect(foo).toBeTruthy();
       expect(await foo.jsonValue()).toBe('bar');
     });
-    it('should return even non-own properties', async({page, server}) => {
+    it('should return even non-own properties', async() => {
+      const { page, server } = getTestState();
+
       const aHandle = await page.evaluateHandle(() => {
         class A {
           constructor() {
@@ -129,24 +154,32 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
   });
 
   describe('JSHandle.asElement', function() {
-    it('should work', async({page, server}) => {
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       const aHandle = await page.evaluateHandle(() => document.body);
       const element = aHandle.asElement();
       expect(element).toBeTruthy();
     });
-    it('should return null for non-elements', async({page, server}) => {
+    it('should return null for non-elements', async() => {
+      const { page, server } = getTestState();
+
       const aHandle = await page.evaluateHandle(() => 2);
       const element = aHandle.asElement();
       expect(element).toBeFalsy();
     });
-    it_fails_ffox('should return ElementHandle for TextNodes', async({page, server}) => {
+    itFailsFirefox('should return ElementHandle for TextNodes', async() => {
+      const { page, server } = getTestState();
+
       await page.setContent('<div>ee!</div>');
       const aHandle = await page.evaluateHandle(() => document.querySelector('div').firstChild);
       const element = aHandle.asElement();
       expect(element).toBeTruthy();
       expect(await page.evaluate(e => e.nodeType === HTMLElement.TEXT_NODE, element));
     });
-    it_fails_ffox('should work with nullified Node', async({page, server}) => {
+    itFailsFirefox('should work with nullified Node', async() => {
+      const { page, server } = getTestState();
+
       await page.setContent('<section>test</section>');
       await page.evaluate(() => delete Node);
       const handle = await page.evaluateHandle(() => document.querySelector('section'));
@@ -156,17 +189,23 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
   });
 
   describe('JSHandle.toString', function() {
-    it('should work for primitives', async({page, server}) => {
+    it('should work for primitives', async() => {
+      const { page, server } = getTestState();
+
       const numberHandle = await page.evaluateHandle(() => 2);
       expect(numberHandle.toString()).toBe('JSHandle:2');
       const stringHandle = await page.evaluateHandle(() => 'a');
       expect(stringHandle.toString()).toBe('JSHandle:a');
     });
-    it('should work for complicated objects', async({page, server}) => {
+    it('should work for complicated objects', async() => {
+      const { page, server } = getTestState();
+
       const aHandle = await page.evaluateHandle(() => window);
       expect(aHandle.toString()).toBe('JSHandle@object');
     });
-    it('should work with different subtypes', async({page, server}) => {
+    it('should work with different subtypes', async() => {
+      const { page, server } = getTestState();
+
       expect((await page.evaluateHandle('(function(){})')).toString()).toBe('JSHandle@function');
       expect((await page.evaluateHandle('12')).toString()).toBe('JSHandle:12');
       expect((await page.evaluateHandle('true')).toString()).toBe('JSHandle:true');
@@ -187,4 +226,4 @@ module.exports.addTests = function({testRunner, expect, CHROME}) {
       expect((await page.evaluateHandle('new Proxy({}, {})')).toString()).toBe('JSHandle@proxy');
     });
   });
-};
+});

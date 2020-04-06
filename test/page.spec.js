@@ -17,14 +17,14 @@ const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
 const {waitEvent} = utils;
+const expect = require('expect');
+const {getTestState} = require('./mocha-utils');
 
-module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHROME}) {
-  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
-  const {it, fit, xit, it_fails_ffox} = testRunner;
-  const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-
+describe('Page', function() {
   describe('Page.close', function() {
-    it('should reject all promises when page is closed', async({context}) => {
+    it('should reject all promises when page is closed', async() => {
+      const { context } = getTestState();
+
       const newPage = await context.newPage();
       let error = null;
       await Promise.all([
@@ -33,13 +33,17 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       ]);
       expect(error.message).toContain('Protocol error');
     });
-    it('should not be visible in browser.pages', async({browser}) => {
+    it('should not be visible in browser.pages', async() => {
+      const { browser } = getTestState();
+
       const newPage = await browser.newPage();
       expect(await browser.pages()).toContain(newPage);
       await newPage.close();
       expect(await browser.pages()).not.toContain(newPage);
     });
-    it_fails_ffox('should run beforeunload if asked for', async({context, server}) => {
+    itFailsFirefox('should run beforeunload if asked for', async() => {
+      const { context, server, isChrome } = getTestState();
+
       const newPage = await context.newPage();
       await newPage.goto(server.PREFIX + '/beforeunload.html');
       // We have to interact with a page so that 'beforeunload' handlers
@@ -49,14 +53,16 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       const dialog = await waitEvent(newPage, 'dialog');
       expect(dialog.type()).toBe('beforeunload');
       expect(dialog.defaultValue()).toBe('');
-      if (CHROME)
+      if (isChrome)
         expect(dialog.message()).toBe('');
       else
         expect(dialog.message()).toBe('This page is asking you to confirm that you want to leave - data you have entered may not be saved.');
       await dialog.accept();
       await pageClosingPromise;
     });
-    it_fails_ffox('should *not* run beforeunload by default', async({context, server}) => {
+    itFailsFirefox('should *not* run beforeunload by default', async() => {
+      const { context, server } = getTestState();
+
       const newPage = await context.newPage();
       await newPage.goto(server.PREFIX + '/beforeunload.html');
       // We have to interact with a page so that 'beforeunload' handlers
@@ -64,13 +70,17 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await newPage.click('body');
       await newPage.close();
     });
-    it('should set the page close state', async({context}) => {
+    it('should set the page close state', async() => {
+      const { context } = getTestState();
+
       const newPage = await context.newPage();
       expect(newPage.isClosed()).toBe(false);
       await newPage.close();
       expect(newPage.isClosed()).toBe(true);
     });
-    it_fails_ffox('should terminate network waiters', async({context, server}) => {
+    itFailsFirefox('should terminate network waiters', async() => {
+      const { context, server } = getTestState();
+
       const newPage = await context.newPage();
       const results = await Promise.all([
         newPage.waitForRequest(server.EMPTY_PAGE).catch(e => e),
@@ -86,7 +96,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
   });
 
   describe('Page.Events.Load', function() {
-    it('should fire when expected', async({page, server}) => {
+    it('should fire when expected', async() => {
+      const { page, server } = getTestState();
+
       await Promise.all([
         page.goto('about:blank'),
         utils.waitEvent(page, 'load'),
@@ -94,8 +106,10 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe_fails_ffox('Async stacks', () => {
-    it('should work', async({page, server}) => {
+  describeFailsFirefox('Async stacks', () => {
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       server.setRoute('/empty.html', (req, res) => {
         res.statusCode = 204;
         res.end();
@@ -107,8 +121,10 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe_fails_ffox('Page.Events.error', function() {
-    it('should throw when page crashes', async({page}) => {
+  describeFailsFirefox('Page.Events.error', function() {
+    it('should throw when page crashes', async() => {
+      const { page } = getTestState();
+
       let error = null;
       page.on('error', err => error = err);
       page.goto('chrome://crash').catch(e => {});
@@ -117,8 +133,10 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe_fails_ffox('Page.Events.Popup', function() {
-    it('should work', async({page}) => {
+  describeFailsFirefox('Page.Events.Popup', function() {
+    it('should work', async() => {
+      const { page } = getTestState();
+
       const [popup] = await Promise.all([
         new Promise(x => page.once('popup', x)),
         page.evaluate(() => window.open('about:blank')),
@@ -126,7 +144,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(await page.evaluate(() => !!window.opener)).toBe(false);
       expect(await popup.evaluate(() => !!window.opener)).toBe(true);
     });
-    it('should work with noopener', async({page}) => {
+    it('should work with noopener', async() => {
+      const { page } = getTestState();
+
       const [popup] = await Promise.all([
         new Promise(x => page.once('popup', x)),
         page.evaluate(() => window.open('about:blank', null, 'noopener')),
@@ -134,7 +154,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(await page.evaluate(() => !!window.opener)).toBe(false);
       expect(await popup.evaluate(() => !!window.opener)).toBe(false);
     });
-    it('should work with clicking target=_blank', async({page, server}) => {
+    it('should work with clicking target=_blank', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await page.setContent('<a target=_blank href="/one-style.html">yo</a>');
       const [popup] = await Promise.all([
@@ -144,7 +166,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(await page.evaluate(() => !!window.opener)).toBe(false);
       expect(await popup.evaluate(() => !!window.opener)).toBe(true);
     });
-    it('should work with fake-clicking target=_blank and rel=noopener', async({page, server}) => {
+    it('should work with fake-clicking target=_blank and rel=noopener', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await page.setContent('<a target=_blank rel=noopener href="/one-style.html">yo</a>');
       const [popup] = await Promise.all([
@@ -154,7 +178,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(await page.evaluate(() => !!window.opener)).toBe(false);
       expect(await popup.evaluate(() => !!window.opener)).toBe(false);
     });
-    it('should work with clicking target=_blank and rel=noopener', async({page, server}) => {
+    it('should work with clicking target=_blank and rel=noopener', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await page.setContent('<a target=_blank rel=noopener href="/one-style.html">yo</a>');
       const [popup] = await Promise.all([
@@ -171,34 +197,46 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       return page.evaluate(name => navigator.permissions.query({name}).then(result => result.state), name);
     }
 
-    it('should be prompt by default', async({page, server, context}) => {
+    it('should be prompt by default', async() => {
+      const { page, server, context } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       expect(await getPermission(page, 'geolocation')).toBe('prompt');
     });
-    it_fails_ffox('should deny permission when not listed', async({page, server, context}) => {
+    itFailsFirefox('should deny permission when not listed', async() => {
+      const { page, server, context } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await context.overridePermissions(server.EMPTY_PAGE, []);
       expect(await getPermission(page, 'geolocation')).toBe('denied');
     });
-    it('should fail when bad permission is given', async({page, server, context}) => {
+    it('should fail when bad permission is given', async() => {
+      const { page, server, context } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       let error = null;
       await context.overridePermissions(server.EMPTY_PAGE, ['foo']).catch(e => error = e);
       expect(error.message).toBe('Unknown permission: foo');
     });
-    it_fails_ffox('should grant permission when listed', async({page, server, context}) => {
+    itFailsFirefox('should grant permission when listed', async() => {
+      const { page, server, context } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
       expect(await getPermission(page, 'geolocation')).toBe('granted');
     });
-    it_fails_ffox('should reset permissions', async({page, server, context}) => {
+    itFailsFirefox('should reset permissions', async() => {
+      const { page, server, context } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await context.overridePermissions(server.EMPTY_PAGE, ['geolocation']);
       expect(await getPermission(page, 'geolocation')).toBe('granted');
       await context.clearPermissionOverrides();
       expect(await getPermission(page, 'geolocation')).toBe('prompt');
     });
-    it_fails_ffox('should trigger permission onchange', async({page, server, context}) => {
+    itFailsFirefox('should trigger permission onchange', async() => {
+      const { page, server, context } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
         window.events = [];
@@ -217,7 +255,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await context.clearPermissionOverrides();
       expect(await page.evaluate(() => window.events)).toEqual(['prompt', 'denied', 'granted', 'prompt']);
     });
-    it_fails_ffox('should isolate permissions between browser contexs', async({page, server, context, browser}) => {
+    itFailsFirefox('should isolate permissions between browser contexs', async() => {
+      const { page, server, context, browser } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const otherContext = await browser.createIncognitoBrowserContext();
       const otherPage = await otherContext.newPage();
@@ -239,7 +279,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
   });
 
   describe('Page.setGeolocation', function() {
-    it_fails_ffox('should work', async({page, server, context}) => {
+    itFailsFirefox('should work', async() => {
+      const { page, server, context } = getTestState();
+
       await context.overridePermissions(server.PREFIX, ['geolocation']);
       await page.goto(server.EMPTY_PAGE);
       await page.setGeolocation({longitude: 10, latitude: 10});
@@ -251,7 +293,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
         longitude: 10
       });
     });
-    it('should throw when invalid longitude', async({page, server, context}) => {
+    it('should throw when invalid longitude', async() => {
+      const { page, server, context } = getTestState();
+
       let error = null;
       try {
         await page.setGeolocation({longitude: 200, latitude: 10});
@@ -262,8 +306,10 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe_fails_ffox('Page.setOfflineMode', function() {
-    it('should work', async({page, server}) => {
+  describeFailsFirefox('Page.setOfflineMode', function() {
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       await page.setOfflineMode(true);
       let error = null;
       await page.goto(server.EMPTY_PAGE).catch(e => error = e);
@@ -272,7 +318,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       const response = await page.reload();
       expect(response.status()).toBe(200);
     });
-    it('should emulate navigator.onLine', async({page, server}) => {
+    it('should emulate navigator.onLine', async() => {
+      const { page, server } = getTestState();
+
       expect(await page.evaluate(() => window.navigator.onLine)).toBe(true);
       await page.setOfflineMode(true);
       expect(await page.evaluate(() => window.navigator.onLine)).toBe(false);
@@ -282,7 +330,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
   });
 
   describe('ExecutionContext.queryObjects', function() {
-    it_fails_ffox('should work', async({page, server}) => {
+    itFailsFirefox('should work', async() => {
+      const { page, server } = getTestState();
+
       // Instantiate an object
       await page.evaluate(() => window.set = new Set(['hello', 'world']));
       const prototypeHandle = await page.evaluateHandle(() => Set.prototype);
@@ -292,7 +342,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       const values = await page.evaluate(objects => Array.from(objects[0].values()), objectsHandle);
       expect(values).toEqual(['hello', 'world']);
     });
-    it_fails_ffox('should work for non-blank page', async({page, server}) => {
+    itFailsFirefox('should work for non-blank page', async() => {
+      const { page, server } = getTestState();
+
       // Instantiate an object
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => window.set = new Set(['hello', 'world']));
@@ -301,14 +353,18 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       const count = await page.evaluate(objects => objects.length, objectsHandle);
       expect(count).toBe(1);
     });
-    it('should fail for disposed handles', async({page, server}) => {
+    it('should fail for disposed handles', async() => {
+      const { page, server } = getTestState();
+
       const prototypeHandle = await page.evaluateHandle(() => HTMLBodyElement.prototype);
       await prototypeHandle.dispose();
       let error = null;
       await page.queryObjects(prototypeHandle).catch(e => error = e);
       expect(error.message).toBe('Prototype JSHandle is disposed!');
     });
-    it('should fail primitive values as prototypes', async({page, server}) => {
+    it('should fail primitive values as prototypes', async() => {
+      const { page, server } = getTestState();
+
       const prototypeHandle = await page.evaluateHandle(() => 42);
       let error = null;
       await page.queryObjects(prototypeHandle).catch(e => error = e);
@@ -316,8 +372,10 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe_fails_ffox('Page.Events.Console', function() {
-    it('should work', async({page, server}) => {
+  describeFailsFirefox('Page.Events.Console', function() {
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       let message = null;
       page.once('console', m => message = m);
       await Promise.all([
@@ -330,7 +388,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(await message.args()[1].jsonValue()).toEqual(5);
       expect(await message.args()[2].jsonValue()).toEqual({foo: 'bar'});
     });
-    it('should work for different console API calls', async({page, server}) => {
+    it('should work for different console API calls', async() => {
+      const { page, server } = getTestState();
+
       const messages = [];
       page.on('console', msg => messages.push(msg));
       // All console events will be reported before `page.evaluate` is finished.
@@ -356,7 +416,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
         'JSHandle@promise',
       ]);
     });
-    it('should not fail for window object', async({page, server}) => {
+    it('should not fail for window object', async() => {
+      const { page, server } = getTestState();
+
       let message = null;
       page.once('console', msg => message = msg);
       await Promise.all([
@@ -365,19 +427,23 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       ]);
       expect(message.text()).toBe('JSHandle@object');
     });
-    it('should trigger correct Log', async({page, server}) => {
+    it('should trigger correct Log', async() => {
+      const { page, server, isChrome } = getTestState();
+
       await page.goto('about:blank');
       const [message] = await Promise.all([
         waitEvent(page, 'console'),
         page.evaluate(async url => fetch(url).catch(e => {}), server.EMPTY_PAGE)
       ]);
       expect(message.text()).toContain('Access-Control-Allow-Origin');
-      if (CHROME)
+      if (isChrome)
         expect(message.type()).toEqual('error');
       else
         expect(message.type()).toEqual('warn');
     });
-    it('should have location when fetch fails', async({page, server}) => {
+    it('should have location when fetch fails', async() => {
+      const { page, server } = getTestState();
+
       // The point of this test is to make sure that we report console messages from
       // Log domain: https://vanilla.aslushnikov.com/?Log.entryAdded
       await page.goto(server.EMPTY_PAGE);
@@ -392,7 +458,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
         lineNumber: undefined
       });
     });
-    it('should have location for console API calls', async({page, server}) => {
+    it('should have location for console API calls', async() => {
+      const { page, server, isChrome} = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const [message] = await Promise.all([
         waitEvent(page, 'console'),
@@ -403,11 +471,13 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(message.location()).toEqual({
         url: server.PREFIX + '/consolelog.html',
         lineNumber: 7,
-        columnNumber: CHROME ? 14 : 6, // console.|log vs |console.log
+        columnNumber: isChrome ? 14 : 6, // console.|log vs |console.log
       });
     });
     // @see https://github.com/puppeteer/puppeteer/issues/3865
-    it('should not throw when there are console messages in detached iframes', async({browser, page, server}) => {
+    it('should not throw when there are console messages in detached iframes', async() => {
+      const { browser, page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(async() => {
         // 1. Create a popup that Puppeteer is not connected to.
@@ -427,19 +497,25 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
   });
 
   describe('Page.Events.DOMContentLoaded', function() {
-    it('should fire when expected', async({page, server}) => {
+    it('should fire when expected', async() => {
+      const { page, server } = getTestState();
+
       page.goto('about:blank');
       await waitEvent(page, 'domcontentloaded');
     });
   });
 
-  describe_fails_ffox('Page.metrics', function() {
-    it('should get metrics from a page', async({page, server}) => {
+  describeFailsFirefox('Page.metrics', function() {
+    it('should get metrics from a page', async() => {
+      const { page, server } = getTestState();
+
       await page.goto('about:blank');
       const metrics = await page.metrics();
       checkMetrics(metrics);
     });
-    it('metrics event fired on console.timeStamp', async({page, server}) => {
+    it('metrics event fired on console.timeStamp', async() => {
+      const { page, server } = getTestState();
+
       const metricsPromise = new Promise(fulfill => page.once('metrics', fulfill));
       await page.evaluate(() => console.timeStamp('test42'));
       const metrics = await metricsPromise;
@@ -472,7 +548,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
   });
 
   describe('Page.waitForRequest', function() {
-    it('should work', async({page, server}) => {
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const [request] = await Promise.all([
         page.waitForRequest(server.PREFIX + '/digits/2.png'),
@@ -484,7 +562,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       ]);
       expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
     });
-    it('should work with predicate', async({page, server}) => {
+    it('should work with predicate', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const [request] = await Promise.all([
         page.waitForRequest(request => request.url() === server.PREFIX + '/digits/2.png'),
@@ -496,18 +576,24 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       ]);
       expect(request.url()).toBe(server.PREFIX + '/digits/2.png');
     });
-    it('should respect timeout', async({page, server}) => {
+    it('should respect timeout', async() => {
+      const { page, puppeteer } = getTestState();
+
       let error = null;
       await page.waitForRequest(() => false, {timeout: 1}).catch(e => error = e);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
-    it('should respect default timeout', async({page, server}) => {
+    it('should respect default timeout', async() => {
+      const { page, puppeteer } = getTestState();
+
       let error = null;
       page.setDefaultTimeout(1);
       await page.waitForRequest(() => false).catch(e => error = e);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
-    it('should work with no timeout', async({page, server}) => {
+    it('should work with no timeout', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const [request] = await Promise.all([
         page.waitForRequest(server.PREFIX + '/digits/2.png', {timeout: 0}),
@@ -522,7 +608,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
   });
 
   describe('Page.waitForResponse', function() {
-    it_fails_ffox('should work', async({page, server}) => {
+    itFailsFirefox('should work', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
         page.waitForResponse(server.PREFIX + '/digits/2.png'),
@@ -534,18 +622,24 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       ]);
       expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
     });
-    it('should respect timeout', async({page, server}) => {
+    it('should respect timeout', async() => {
+      const { page, puppeteer } = getTestState();
+
       let error = null;
       await page.waitForResponse(() => false, {timeout: 1}).catch(e => error = e);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
-    it('should respect default timeout', async({page, server}) => {
+    it('should respect default timeout', async() => {
+      const { page, puppeteer } = getTestState();
+
       let error = null;
       page.setDefaultTimeout(1);
       await page.waitForResponse(() => false).catch(e => error = e);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
-    it_fails_ffox('should work with predicate', async({page, server}) => {
+    itFailsFirefox('should work with predicate', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
         page.waitForResponse(response => response.url() === server.PREFIX + '/digits/2.png'),
@@ -557,7 +651,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       ]);
       expect(response.url()).toBe(server.PREFIX + '/digits/2.png');
     });
-    it_fails_ffox('should work with no timeout', async({page, server}) => {
+    itFailsFirefox('should work with no timeout', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
         page.waitForResponse(server.PREFIX + '/digits/2.png', {timeout: 0}),
@@ -571,8 +667,10 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe_fails_ffox('Page.exposeFunction', function() {
-    it('should work', async({page, server}) => {
+  describeFailsFirefox('Page.exposeFunction', function() {
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       await page.exposeFunction('compute', function(a, b) {
         return a * b;
       });
@@ -581,7 +679,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       });
       expect(result).toBe(36);
     });
-    it('should throw exception in page context', async({page, server}) => {
+    it('should throw exception in page context', async() => {
+      const { page, server } = getTestState();
+
       await page.exposeFunction('woof', function() {
         throw new Error('WOOF WOOF');
       });
@@ -595,7 +695,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(message).toBe('WOOF WOOF');
       expect(stack).toContain(__filename);
     });
-    it('should support throwing "null"', async({page, server}) => {
+    it('should support throwing "null"', async() => {
+      const { page, server } = getTestState();
+
       await page.exposeFunction('woof', function() {
         throw null;
       });
@@ -608,7 +710,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       });
       expect(thrown).toBe(null);
     });
-    it('should be callable from-inside evaluateOnNewDocument', async({page, server}) => {
+    it('should be callable from-inside evaluateOnNewDocument', async() => {
+      const { page, server } = getTestState();
+
       let called = false;
       await page.exposeFunction('woof', function() {
         called = true;
@@ -617,7 +721,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await page.reload();
       expect(called).toBe(true);
     });
-    it('should survive navigation', async({page, server}) => {
+    it('should survive navigation', async() => {
+      const { page, server } = getTestState();
+
       await page.exposeFunction('compute', function(a, b) {
         return a * b;
       });
@@ -628,7 +734,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       });
       expect(result).toBe(36);
     });
-    it('should await returned promise', async({page, server}) => {
+    it('should await returned promise', async() => {
+      const { page, server } = getTestState();
+
       await page.exposeFunction('compute', function(a, b) {
         return Promise.resolve(a * b);
       });
@@ -638,7 +746,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       });
       expect(result).toBe(15);
     });
-    it('should work on frames', async({page, server}) => {
+    it('should work on frames', async() => {
+      const { page, server } = getTestState();
+
       await page.exposeFunction('compute', function(a, b) {
         return Promise.resolve(a * b);
       });
@@ -650,7 +760,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       });
       expect(result).toBe(15);
     });
-    it('should work on frames before navigation', async({page, server}) => {
+    it('should work on frames before navigation', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
       await page.exposeFunction('compute', function(a, b) {
         return Promise.resolve(a * b);
@@ -662,7 +774,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       });
       expect(result).toBe(15);
     });
-    it('should work with complex objects', async({page, server}) => {
+    it('should work with complex objects', async() => {
+      const { page, server } = getTestState();
+
       await page.exposeFunction('complexObject', function(a, b) {
         return {x: a.x + b.x};
       });
@@ -671,8 +785,10 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe_fails_ffox('Page.Events.PageError', function() {
-    it('should fire', async({page, server}) => {
+  describeFailsFirefox('Page.Events.PageError', function() {
+    it('should fire', async() => {
+      const { page, server } = getTestState();
+
       let error = null;
       page.once('pageerror', e => error = e);
       await Promise.all([
@@ -684,7 +800,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
   });
 
   describe('Page.setUserAgent', function() {
-    it('should work', async({page, server}) => {
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       expect(await page.evaluate(() => navigator.userAgent)).toContain('Mozilla');
       await page.setUserAgent('foobar');
       const [request] = await Promise.all([
@@ -693,7 +811,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       ]);
       expect(request.headers['user-agent']).toBe('foobar');
     });
-    it_fails_ffox('should work for subframes', async({page, server}) => {
+    itFailsFirefox('should work for subframes', async() => {
+      const { page, server } = getTestState();
+
       expect(await page.evaluate(() => navigator.userAgent)).toContain('Mozilla');
       await page.setUserAgent('foobar');
       const [request] = await Promise.all([
@@ -702,7 +822,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       ]);
       expect(request.headers['user-agent']).toBe('foobar');
     });
-    it('should emulate device user-agent', async({page, server}) => {
+    it('should emulate device user-agent', async() => {
+      const { page, server, puppeteer } = getTestState();
+
       await page.goto(server.PREFIX + '/mobile.html');
       expect(await page.evaluate(() => navigator.userAgent)).not.toContain('iPhone');
       await page.setUserAgent(puppeteer.devices['iPhone 6'].userAgent);
@@ -710,27 +832,35 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  describe_fails_ffox('Page.setContent', function() {
+  describeFailsFirefox('Page.setContent', function() {
     const expectedOutput = '<html><head></head><body><div>hello</div></body></html>';
-    it('should work', async({page, server}) => {
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       await page.setContent('<div>hello</div>');
       const result = await page.content();
       expect(result).toBe(expectedOutput);
     });
-    it('should work with doctype', async({page, server}) => {
+    it('should work with doctype', async() => {
+      const { page, server } = getTestState();
+
       const doctype = '<!DOCTYPE html>';
       await page.setContent(`${doctype}<div>hello</div>`);
       const result = await page.content();
       expect(result).toBe(`${doctype}${expectedOutput}`);
     });
-    it('should work with HTML 4 doctype', async({page, server}) => {
+    it('should work with HTML 4 doctype', async() => {
+      const { page, server } = getTestState();
+
       const doctype = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" ' +
         '"http://www.w3.org/TR/html4/strict.dtd">';
       await page.setContent(`${doctype}<div>hello</div>`);
       const result = await page.content();
       expect(result).toBe(`${doctype}${expectedOutput}`);
     });
-    it('should respect timeout', async({page, server}) => {
+    it('should respect timeout', async() => {
+      const { page, server, puppeteer } = getTestState();
+
       const imgPath = '/img.png';
       // stall for image
       server.setRoute(imgPath, (req, res) => {});
@@ -738,7 +868,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await page.setContent(`<img src="${server.PREFIX + imgPath}"></img>`, {timeout: 1}).catch(e => error = e);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
-    it('should respect default navigation timeout', async({page, server}) => {
+    it('should respect default navigation timeout', async() => {
+      const { page, server, puppeteer } = getTestState();
+
       page.setDefaultNavigationTimeout(1);
       const imgPath = '/img.png';
       // stall for image
@@ -747,7 +879,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await page.setContent(`<img src="${server.PREFIX + imgPath}"></img>`).catch(e => error = e);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
-    it('should await resources to load', async({page, server}) => {
+    it('should await resources to load', async() => {
+      const { page, server } = getTestState();
+
       const imgPath = '/img.png';
       let imgResponse = null;
       server.setRoute(imgPath, (req, res) => imgResponse = res);
@@ -758,30 +892,42 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       imgResponse.end();
       await contentPromise;
     });
-    it('should work fast enough', async({page, server}) => {
+    it('should work fast enough', async() => {
+      const { page, server } = getTestState();
+
       for (let i = 0; i < 20; ++i)
         await page.setContent('<div>yo</div>');
     });
-    it('should work with tricky content', async({page, server}) => {
+    it('should work with tricky content', async() => {
+      const { page, server } = getTestState();
+
       await page.setContent('<div>hello world</div>' + '\x7F');
       expect(await page.$eval('div', div => div.textContent)).toBe('hello world');
     });
-    it('should work with accents', async({page, server}) => {
+    it('should work with accents', async() => {
+      const { page, server } = getTestState();
+
       await page.setContent('<div>aberración</div>');
       expect(await page.$eval('div', div => div.textContent)).toBe('aberración');
     });
-    it('should work with emojis', async({page, server}) => {
+    it('should work with emojis', async() => {
+      const { page, server } = getTestState();
+
       await page.setContent('<div>🐥</div>');
       expect(await page.$eval('div', div => div.textContent)).toBe('🐥');
     });
-    it('should work with newline', async({page, server}) => {
+    it('should work with newline', async() => {
+      const { page, server } = getTestState();
+
       await page.setContent('<div>\n</div>');
       expect(await page.$eval('div', div => div.textContent)).toBe('\n');
     });
   });
 
-  describe_fails_ffox('Page.setBypassCSP', function() {
-    it('should bypass CSP meta tag', async({page, server}) => {
+  describeFailsFirefox('Page.setBypassCSP', function() {
+    it('should bypass CSP meta tag', async() => {
+      const { page, server } = getTestState();
+
       // Make sure CSP prohibits addScriptTag.
       await page.goto(server.PREFIX + '/csp.html');
       await page.addScriptTag({content: 'window.__injected = 42;'}).catch(e => void e);
@@ -794,7 +940,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(await page.evaluate(() => window.__injected)).toBe(42);
     });
 
-    it('should bypass CSP header', async({page, server}) => {
+    it('should bypass CSP header', async() => {
+      const { page, server } = getTestState();
+
       // Make sure CSP prohibits addScriptTag.
       server.setCSP('/empty.html', 'default-src "self"');
       await page.goto(server.EMPTY_PAGE);
@@ -808,7 +956,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(await page.evaluate(() => window.__injected)).toBe(42);
     });
 
-    it('should bypass after cross-process navigation', async({page, server}) => {
+    it('should bypass after cross-process navigation', async() => {
+      const { page, server } = getTestState();
+
       await page.setBypassCSP(true);
       await page.goto(server.PREFIX + '/csp.html');
       await page.addScriptTag({content: 'window.__injected = 42;'});
@@ -818,7 +968,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await page.addScriptTag({content: 'window.__injected = 42;'});
       expect(await page.evaluate(() => window.__injected)).toBe(42);
     });
-    it('should bypass CSP in iframes as well', async({page, server}) => {
+    it('should bypass CSP in iframes as well', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       {
         // Make sure CSP prohibits addScriptTag in an iframe.
@@ -840,7 +992,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
   });
 
   describe('Page.addScriptTag', function() {
-    it('should throw an error if no options are provided', async({page, server}) => {
+    it('should throw an error if no options are provided', async() => {
+      const { page, server } = getTestState();
+
       let error = null;
       try {
         await page.addScriptTag('/injectedfile.js');
@@ -850,34 +1004,44 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(error.message).toBe('Provide an object with a `url`, `path` or `content` property');
     });
 
-    it('should work with a url', async({page, server}) => {
+    it('should work with a url', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const scriptHandle = await page.addScriptTag({ url: '/injectedfile.js' });
       expect(scriptHandle.asElement()).not.toBeNull();
       expect(await page.evaluate(() => __injected)).toBe(42);
     });
 
-    it('should work with a url and type=module', async({page, server}) => {
+    it('should work with a url and type=module', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await page.addScriptTag({ url: '/es6/es6import.js', type: 'module' });
       expect(await page.evaluate(() => __es6injected)).toBe(42);
     });
 
-    it('should work with a path and type=module', async({page, server}) => {
+    it('should work with a path and type=module', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await page.addScriptTag({ path: path.join(__dirname, 'assets/es6/es6pathimport.js'), type: 'module' });
       await page.waitForFunction('window.__es6injected');
       expect(await page.evaluate(() => __es6injected)).toBe(42);
     });
 
-    it('should work with a content and type=module', async({page, server}) => {
+    it('should work with a content and type=module', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await page.addScriptTag({ content: `import num from '/es6/es6module.js';window.__es6injected = num;`, type: 'module' });
       await page.waitForFunction('window.__es6injected');
       expect(await page.evaluate(() => __es6injected)).toBe(42);
     });
 
-    it('should throw an error if loading from url fail', async({page, server}) => {
+    it('should throw an error if loading from url fail', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       let error = null;
       try {
@@ -888,21 +1052,27 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(error.message).toBe('Loading script from /nonexistfile.js failed');
     });
 
-    it('should work with a path', async({page, server}) => {
+    it('should work with a path', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const scriptHandle = await page.addScriptTag({ path: path.join(__dirname, 'assets/injectedfile.js') });
       expect(scriptHandle.asElement()).not.toBeNull();
       expect(await page.evaluate(() => __injected)).toBe(42);
     });
 
-    it('should include sourcemap when path is provided', async({page, server}) => {
+    it('should include sourcemap when path is provided', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await page.addScriptTag({ path: path.join(__dirname, 'assets/injectedfile.js') });
       const result = await page.evaluate(() => __injectedError.stack);
       expect(result).toContain(path.join('assets', 'injectedfile.js'));
     });
 
-    it('should work with content', async({page, server}) => {
+    it('should work with content', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const scriptHandle = await page.addScriptTag({ content: 'window.__injected = 35;' });
       expect(scriptHandle.asElement()).not.toBeNull();
@@ -910,14 +1080,18 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
 
     // @see https://github.com/puppeteer/puppeteer/issues/4840
-    xit('should throw when added with content to the CSP page', async({page, server}) => {
+    xit('should throw when added with content to the CSP page', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/csp.html');
       let error = null;
       await page.addScriptTag({ content: 'window.__injected = 35;' }).catch(e => error = e);
       expect(error).toBeTruthy();
     });
 
-    it('should throw when added with URL to the CSP page', async({page, server}) => {
+    it('should throw when added with URL to the CSP page', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/csp.html');
       let error = null;
       await page.addScriptTag({ url: server.CROSS_PROCESS_PREFIX + '/injectedfile.js' }).catch(e => error = e);
@@ -926,7 +1100,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
   });
 
   describe('Page.addStyleTag', function() {
-    it('should throw an error if no options are provided', async({page, server}) => {
+    it('should throw an error if no options are provided', async() => {
+      const { page, server } = getTestState();
+
       let error = null;
       try {
         await page.addStyleTag('/injectedstyle.css');
@@ -936,14 +1112,18 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(error.message).toBe('Provide an object with a `url`, `path` or `content` property');
     });
 
-    it('should work with a url', async({page, server}) => {
+    it('should work with a url', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const styleHandle = await page.addStyleTag({ url: '/injectedstyle.css' });
       expect(styleHandle.asElement()).not.toBeNull();
       expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(255, 0, 0)');
     });
 
-    it('should throw an error if loading from url fail', async({page, server}) => {
+    it('should throw an error if loading from url fail', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       let error = null;
       try {
@@ -954,14 +1134,18 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(error.message).toBe('Loading style from /nonexistfile.js failed');
     });
 
-    it('should work with a path', async({page, server}) => {
+    it('should work with a path', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const styleHandle = await page.addStyleTag({ path: path.join(__dirname, 'assets/injectedstyle.css') });
       expect(styleHandle.asElement()).not.toBeNull();
       expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(255, 0, 0)');
     });
 
-    it('should include sourcemap when path is provided', async({page, server}) => {
+    it('should include sourcemap when path is provided', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await page.addStyleTag({ path: path.join(__dirname, 'assets/injectedstyle.css') });
       const styleHandle = await page.$('style');
@@ -969,21 +1153,27 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(styleContent).toContain(path.join('assets', 'injectedstyle.css'));
     });
 
-    it_fails_ffox('should work with content', async({page, server}) => {
+    itFailsFirefox('should work with content', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const styleHandle = await page.addStyleTag({ content: 'body { background-color: green; }' });
       expect(styleHandle.asElement()).not.toBeNull();
       expect(await page.evaluate(`window.getComputedStyle(document.querySelector('body')).getPropertyValue('background-color')`)).toBe('rgb(0, 128, 0)');
     });
 
-    it_fails_ffox('should throw when added with content to the CSP page', async({page, server}) => {
+    itFailsFirefox('should throw when added with content to the CSP page', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/csp.html');
       let error = null;
       await page.addStyleTag({ content: 'body { background-color: green; }' }).catch(e => error = e);
       expect(error).toBeTruthy();
     });
 
-    it('should throw when added with URL to the CSP page', async({page, server}) => {
+    it('should throw when added with URL to the CSP page', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/csp.html');
       let error = null;
       await page.addStyleTag({ url: server.CROSS_PROCESS_PREFIX + '/injectedstyle.css' }).catch(e => error = e);
@@ -992,15 +1182,19 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
   });
 
   describe('Page.url', function() {
-    it('should work', async({page, server}) => {
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       expect(page.url()).toBe('about:blank');
       await page.goto(server.EMPTY_PAGE);
       expect(page.url()).toBe(server.EMPTY_PAGE);
     });
   });
 
-  describe_fails_ffox('Page.setJavaScriptEnabled', function() {
-    it('should work', async({page, server}) => {
+  describeFailsFirefox('Page.setJavaScriptEnabled', function() {
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       await page.setJavaScriptEnabled(false);
       await page.goto('data:text/html, <script>var something = "forbidden"</script>');
       let error = null;
@@ -1014,7 +1208,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
   });
 
   describe('Page.setCacheEnabled', function() {
-    it('should enable or disable the cache based on the state passed', async({page, server}) => {
+    it('should enable or disable the cache based on the state passed', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/cached/one-style.html');
       const [cachedRequest] = await Promise.all([
         server.waitForRequest('/cached/one-style.html'),
@@ -1030,7 +1226,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       ]);
       expect(nonCachedRequest.headers['if-modified-since']).toBe(undefined);
     });
-    it_fails_ffox('should stay disabled when toggling request interception on/off', async({page, server}) => {
+    itFailsFirefox('should stay disabled when toggling request interception on/off', async() => {
+      const { page, server } = getTestState();
+
       await page.setCacheEnabled(false);
       await page.setRequestInterception(true);
       await page.setRequestInterception(false);
@@ -1044,9 +1242,13 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
     });
   });
 
-  // Printing to pdf is currently only supported in headless
-  (headless ? describe_fails_ffox : xdescribe)('Page.pdf', function() {
-    it('should be able to save file', async({page, server}) => {
+  describe('printing to PDF', function() {
+    itFailsFirefox('can print to PDF and save to file', async() => {
+    // Printing to pdf is currently only supported in headless
+      const {isHeadless, page} = getTestState();
+
+      if (!isHeadless) return;
+
       const outputFile = __dirname + '/assets/output.pdf';
       await page.pdf({path: outputFile});
       expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
@@ -1055,26 +1257,34 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
   });
 
   describe('Page.title', function() {
-    it('should return the page title', async({page, server}) => {
+    it('should return the page title', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/title.html');
       expect(await page.title()).toBe('Woof-Woof');
     });
   });
 
   describe('Page.select', function() {
-    it('should select single option', async({page, server}) => {
+    it('should select single option', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/input/select.html');
       await page.select('select', 'blue');
       expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
       expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
     });
-    it('should select only first option', async({page, server}) => {
+    it('should select only first option', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/input/select.html');
       await page.select('select', 'blue', 'green', 'red');
       expect(await page.evaluate(() => result.onInput)).toEqual(['blue']);
       expect(await page.evaluate(() => result.onChange)).toEqual(['blue']);
     });
-    it('should not throw when select causes navigation', async({page, server}) => {
+    it('should not throw when select causes navigation', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/input/select.html');
       await page.$eval('select', select => select.addEventListener('input', () => window.location = '/empty.html'));
       await Promise.all([
@@ -1083,60 +1293,80 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       ]);
       expect(page.url()).toContain('empty.html');
     });
-    it('should select multiple options', async({page, server}) => {
+    it('should select multiple options', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/input/select.html');
       await page.evaluate(() => makeMultiple());
       await page.select('select', 'blue', 'green', 'red');
       expect(await page.evaluate(() => result.onInput)).toEqual(['blue', 'green', 'red']);
       expect(await page.evaluate(() => result.onChange)).toEqual(['blue', 'green', 'red']);
     });
-    it('should respect event bubbling', async({page, server}) => {
+    it('should respect event bubbling', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/input/select.html');
       await page.select('select', 'blue');
       expect(await page.evaluate(() => result.onBubblingInput)).toEqual(['blue']);
       expect(await page.evaluate(() => result.onBubblingChange)).toEqual(['blue']);
     });
-    it('should throw when element is not a <select>', async({page, server}) => {
+    it('should throw when element is not a <select>', async() => {
+      const { page, server } = getTestState();
+
       let error = null;
       await page.goto(server.PREFIX + '/input/select.html');
       await page.select('body', '').catch(e => error = e);
       expect(error.message).toContain('Element is not a <select> element.');
     });
-    it('should return [] on no matched values', async({page, server}) => {
+    it('should return [] on no matched values', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/input/select.html');
       const result = await page.select('select','42','abc');
       expect(result).toEqual([]);
     });
-    it('should return an array of matched values', async({page, server}) => {
+    it('should return an array of matched values', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/input/select.html');
       await page.evaluate(() => makeMultiple());
       const result = await page.select('select','blue','black','magenta');
       expect(result.reduce((accumulator,current) => ['blue', 'black', 'magenta'].includes(current) && accumulator, true)).toEqual(true);
     });
-    it('should return an array of one element when multiple is not set', async({page, server}) => {
+    it('should return an array of one element when multiple is not set', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/input/select.html');
       const result = await page.select('select','42','blue','black','magenta');
       expect(result.length).toEqual(1);
     });
-    it('should return [] on no values',async({page, server}) => {
+    it('should return [] on no values',async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/input/select.html');
       const result = await page.select('select');
       expect(result).toEqual([]);
     });
-    it('should deselect all options when passed no values for a multiple select',async({page, server}) => {
+    it('should deselect all options when passed no values for a multiple select',async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/input/select.html');
       await page.evaluate(() => makeMultiple());
       await page.select('select','blue','black','magenta');
       await page.select('select');
       expect(await page.$eval('select', select => Array.from(select.options).every(option => !option.selected))).toEqual(true);
     });
-    it('should deselect all options when passed no values for a select without multiple',async({page, server}) => {
+    it('should deselect all options when passed no values for a select without multiple',async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/input/select.html');
       await page.select('select','blue','black','magenta');
       await page.select('select');
       expect(await page.$eval('select', select => Array.from(select.options).every(option => !option.selected))).toEqual(true);
     });
-    it_fails_ffox('should throw if passed in non-strings', async({page, server}) => {
+    itFailsFirefox('should throw if passed in non-strings', async() => {
+      const { page, server } = getTestState();
+
       await page.setContent('<select><option value="12"/></select>');
       let error = null;
       try {
@@ -1147,7 +1377,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       expect(error.message).toContain('Values must be strings');
     });
     // @see https://github.com/puppeteer/puppeteer/issues/3327
-    it_fails_ffox('should work when re-defining top-level Event class', async({page, server}) => {
+    itFailsFirefox('should work when re-defining top-level Event class', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/input/select.html');
       await page.evaluate(() => window.Event = null);
       await page.select('select', 'blue');
@@ -1157,7 +1389,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
   });
 
   describe('Page.Events.Close', function() {
-    it_fails_ffox('should work with window.close', async function({ page, context, server }) {
+    itFailsFirefox('should work with window.close', async() => {
+      const {  page, context, server  } = getTestState();
+
       const newPagePromise = new Promise(fulfill => context.once('targetcreated', target => fulfill(target.page())));
       await page.evaluate(() => window['newPage'] = window.open('about:blank'));
       const newPage = await newPagePromise;
@@ -1165,7 +1399,9 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
       await page.evaluate(() => window['newPage'].close());
       await closedPromise;
     });
-    it('should work with page.close', async function({ page, context, server }) {
+    it('should work with page.close', async() => {
+      const {  page, context, server  } = getTestState();
+
       const newPage = await context.newPage();
       const closedPromise = new Promise(x => newPage.on('close', x));
       await newPage.close();
@@ -1174,14 +1410,18 @@ module.exports.addTests = function({testRunner, expect, headless, puppeteer, CHR
   });
 
   describe('Page.browser', function() {
-    it('should return the correct browser instance', async function({ page, browser }) {
+    it('should return the correct browser instance', async() => {
+      const {  page, browser  } = getTestState();
+
       expect(page.browser()).toBe(browser);
     });
   });
 
   describe('Page.browserContext', function() {
-    it('should return the correct browser instance', async function({page, context, browser}) {
+    it('should return the correct browser instance', async() => {
+      const { page, context, browser } = getTestState();
+
       expect(page.browserContext()).toBe(context);
     });
   });
-};
+});
