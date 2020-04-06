@@ -6,6 +6,7 @@ Puppeteer's source code.
 Doclint works in a few steps:
 
 1. Read sources in `lib/` folder, parse AST trees and extract public API
+    - note that we run DocLint on the outputted JavaScript in `lib/` rather than the source code in `src/`. We will do this until we have migrated `src/` to be exclusively TypeScript and then we can update DocLint to support TypeScript.
 2. Read sources in `docs/` folder, render markdown to HTML, use puppeteer to traverse the HTML
   and extract described API
 3. Compare one API to another
