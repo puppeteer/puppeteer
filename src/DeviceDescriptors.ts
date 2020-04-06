@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
-module.exports = [
+interface Device {
+  name: string;
+  userAgent: string;
+  viewport: {
+    width: number;
+    height: number;
+    deviceScaleFactor: number;
+    isMobile: boolean;
+    hasTouch: boolean;
+    isLandscape: boolean;
+  };
+};
+
+const devices: Device[] = [
   {
     'name': 'Blackberry PlayBook',
     'userAgent': 'Mozilla/5.0 (PlayBook; U; RIM Tablet OS 2.1.0; en-US) AppleWebKit/536.2+ (KHTML like Gecko) Version/7.2.1.0 Safari/536.2+',
@@ -868,5 +881,15 @@ module.exports = [
     }
   }
 ];
-for (const device of module.exports)
-  module.exports[device.name] = device;
+
+type DevicesMap = {
+  [name: string]: Device;
+};
+
+const devicesMap: DevicesMap = {};
+
+for (const device of devices) {
+  devicesMap[device.name] = device;
+}
+
+export = devicesMap;
