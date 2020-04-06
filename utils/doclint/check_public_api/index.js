@@ -172,6 +172,7 @@ function compareDocumentations(actual, expected) {
   const actualClasses = Array.from(actual.classes.keys()).sort();
   const expectedClasses = Array.from(expected.classes.keys()).sort();
   const classesDiff = diff(actualClasses, expectedClasses);
+
   for (const className of classesDiff.extra)
     errors.push(`Non-existing class found: ${className}`);
   for (const className of classesDiff.missing)
@@ -183,10 +184,11 @@ function compareDocumentations(actual, expected) {
     const actualMethods = Array.from(actualClass.methods.keys()).sort();
     const expectedMethods = Array.from(expectedClass.methods.keys()).sort();
     const methodDiff = diff(actualMethods, expectedMethods);
+
     for (const methodName of methodDiff.extra) {
       const missingMethodsForClass = expectedNonExistingMethods.get(className);
-      if (!missingMethodsForClass) continue;
-      if (missingMethodsForClass.has(methodName)) continue;
+      if (missingMethodsForClass && missingMethodsForClass.has(methodName)) continue;
+
       errors.push(`Non-existing method found: ${className}.${methodName}()`);
     }
     for (const methodName of methodDiff.missing)
