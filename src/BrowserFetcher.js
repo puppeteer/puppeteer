@@ -32,12 +32,14 @@ const getProxyForUrl = require('proxy-from-env').getProxyForUrl;
 const downloadURLs = {
   chrome: {
     linux: '%s/chromium-browser-snapshots/Linux_x64/%d/%s.zip',
+    freebsd: 'nil',    
     mac: '%s/chromium-browser-snapshots/Mac/%d/%s.zip',
     win32: '%s/chromium-browser-snapshots/Win/%d/%s.zip',
     win64: '%s/chromium-browser-snapshots/Win_x64/%d/%s.zip',
   },
   firefox: {
     linux: '%s/firefox-%s.0a1.en-US.%s-x86_64.tar.bz2',
+    freebsd: 'nil',
     mac: '%s/firefox-%s.0a1.en-US.%s.dmg',
     win32: '%s/firefox-%s.0a1.en-US.%s.zip',
     win64: '%s/firefox-%s.0a1.en-US.%s.zip',
@@ -67,6 +69,8 @@ function archiveName(product, platform, revision) {
       return 'chrome-linux';
     if (platform === 'mac')
       return 'chrome-mac';
+    if (platform === 'freebsd')
+      return 'chrome-freebsd'; // dummy
     if (platform === 'win32' || platform === 'win64') {
       // Windows archive name changed at r591479.
       return parseInt(revision, 10) > 591479 ? 'chrome-win' : 'chrome-win32';
@@ -118,6 +122,8 @@ class BrowserFetcher {
         this._platform = 'mac';
       else if (platform === 'linux')
         this._platform = 'linux';
+      else if (platform === 'freebsd')
+        this._platform = 'freebsd'; // dummy
       else if (platform === 'win32')
         this._platform = os.arch() === 'x64' ? 'win64' : 'win32';
       assert(this._platform, 'Unsupported platform: ' + os.platform());
@@ -222,6 +228,8 @@ class BrowserFetcher {
         executablePath = path.join(folderPath, archiveName(this._product, this._platform, revision), 'Chromium.app', 'Contents', 'MacOS', 'Chromium');
       else if (this._platform === 'linux')
         executablePath = path.join(folderPath, archiveName(this._product, this._platform, revision), 'chrome');
+      else if (this._platform === 'freebsd')
+        executablePath = path.join(folderPath, archiveName(this._product, this._platform, revision), 'chrome');
       else if (this._platform === 'win32' || this._platform === 'win64')
         executablePath = path.join(folderPath, archiveName(this._product, this._platform, revision), 'chrome.exe');
       else
@@ -230,6 +238,8 @@ class BrowserFetcher {
       if (this._platform === 'mac')
         executablePath = path.join(folderPath, 'Firefox Nightly.app', 'Contents', 'MacOS', 'firefox');
       else if (this._platform === 'linux')
+        executablePath = path.join(folderPath, 'firefox', 'firefox');
+      else if (this._platform === 'freebsd')
         executablePath = path.join(folderPath, 'firefox', 'firefox');
       else if (this._platform === 'win32' || this._platform === 'win64')
         executablePath = path.join(folderPath, 'firefox', 'firefox.exe');
