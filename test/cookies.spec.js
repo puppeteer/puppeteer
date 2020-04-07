@@ -24,7 +24,7 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.goto(server.EMPTY_PAGE);
       expect(await page.cookies()).toEqual([]);
     });
-    it('should get a cookie', async({page, server}) => {
+    it_fails_ffox('should get a cookie', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
         document.cookie = 'username=John Doe';
@@ -71,7 +71,7 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(cookies.length).toBe(1);
       expect(cookies[0].sameSite).toBe('Lax');
     });
-    it('should get multiple cookies', async({page, server}) => {
+    it_fails_ffox('should get multiple cookies', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
         document.cookie = 'username=John Doe';

@@ -29,7 +29,7 @@ module.exports.addTests = function({testRunner, expect, defaultBrowserOptions, p
       delete state.browser;
       delete state.page;
     });
-    it('page.cookies() should work', async({page, server}) => {
+    it_fails_ffox('page.cookies() should work', async({page, server}) => {
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
         document.cookie = 'username=John Doe';

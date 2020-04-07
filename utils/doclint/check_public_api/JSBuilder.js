@@ -98,7 +98,7 @@ function checkSources(sources) {
   function serializeSymbol(symbol, circular = []) {
     const type = checker.getTypeOfSymbolAtLocation(symbol, symbol.valueDeclaration);
     const name = symbol.getName();
-    if (symbol.valueDeclaration.dotDotDotToken) {
+    if (symbol.valueDeclaration && symbol.valueDeclaration.dotDotDotToken) {
       const innerType = serializeType(type.typeArguments[0], circular);
       innerType.name = '...' + innerType.name;
       return Documentation.Member.createProperty('...' + name, innerType);
@@ -120,6 +120,12 @@ function checkSources(sources) {
       return false;
     if (type.getCallSignatures().length)
       return false;
+    if (type.isLiteral())
+      return false;
+    if (type.isUnion())
+      return false;
+
+
     return true;
   }
 
@@ -154,7 +160,7 @@ function checkSources(sources) {
           properties.push(...innerType.properties);
         innerTypeNames.push(innerType.name);
       }
-      if (innerTypeNames.length === 1 && innerTypeNames[0] === 'void')
+      if (innerTypeNames.length === 0 || innerTypeNames.length === 1 && innerTypeNames[0] === 'void')
         return new Documentation.Type(type.symbol.name);
       return new Documentation.Type(`${type.symbol.name}<${innerTypeNames.join(', ')}>`, properties);
     }

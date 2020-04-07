@@ -16,14 +16,14 @@
 
 const {runCommands, ensureReleasedAPILinks} = require('.');
 const Source = require('../Source');
-const {TestRunner, Reporter, Matchers}  = require('../../testrunner/');
+const expect = require('expect');
+const {TestRunner, Reporter}  = require('../../testrunner/');
 const runner = new TestRunner();
 new Reporter(runner);
 
 const {describe, xdescribe, fdescribe} = runner;
 const {it, fit, xit} = runner;
 const {beforeAll, beforeEach, afterAll, afterEach} = runner;
-const {expect} = new Matchers();
 
 describe('ensureReleasedAPILinks', function() {
   it('should work with non-release version', function() {

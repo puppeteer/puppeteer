@@ -26,11 +26,10 @@ const {Keyboard, Mouse, Touchscreen} = require('./Input');
 const Tracing = require('./Tracing');
 const {helper, debugError, assert} = require('./helper');
 const {Coverage} = require('./Coverage');
-const {Worker} = require('./Worker');
+const {Worker: PuppeteerWorker} = require('./Worker');
 const {createJSHandle} = require('./JSHandle');
 const {Accessibility} = require('./Accessibility');
 const {TimeoutSettings} = require('./TimeoutSettings');
-
 const writeFileAsync = helper.promisify(fs.writeFile);
 
 class Page extends EventEmitter {
@@ -79,7 +78,7 @@ class Page extends EventEmitter {
 
     this._screenshotTaskQueue = screenshotTaskQueue;
 
-    /** @type {!Map<string, Worker>} */
+    /** @type {!Map<string, PuppeteerWorker>} */
     this._workers = new Map();
     client.on('Target.attachedToTarget', event => {
       if (event.targetInfo.type !== 'worker') {
@@ -90,7 +89,7 @@ class Page extends EventEmitter {
         return;
       }
       const session = Connection.fromSession(client).session(event.sessionId);
-      const worker = new Worker(session, event.targetInfo.url, this._addConsoleMessage.bind(this), this._handleException.bind(this));
+      const worker = new PuppeteerWorker(session, event.targetInfo.url, this._addConsoleMessage.bind(this), this._handleException.bind(this));
       this._workers.set(event.sessionId, worker);
       this.emit(Events.Page.WorkerCreated, worker);
     });
@@ -274,7 +273,7 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @return {!Array<!Worker>}
+   * @return {!Array<!PuppeteerWorker>}
    */
   workers() {
     return Array.from(this._workers.values());
@@ -444,8 +443,10 @@ class Page extends EventEmitter {
     await Promise.all(this.frames().map(frame => frame.evaluate(expression).catch(debugError)));
 
     function addPageBinding(bindingName) {
-      const binding = window[bindingName];
-      window[bindingName] = (...args) => {
+      const win = /** @type * */ (window);
+      const binding = /** @type function(string):* */ (win[bindingName]);
+
+      win[bindingName] = (...args) => {
         const me = window[bindingName];
         let callbacks = me['callbacks'];
         if (!callbacks) {
@@ -677,10 +678,12 @@ class Page extends EventEmitter {
    * @return {!Promise<?Puppeteer.Response>}
    */
   async reload(options) {
-    const [response] = await Promise.all([
+    const result = await Promise.all([
       this.waitForNavigation(options),
       this._client.send('Page.reload')
     ]);
+
+    const response = /** @type Puppeteer.Response */ (result[0]);
     return response;
   }
 
@@ -759,10 +762,11 @@ class Page extends EventEmitter {
     const entry = history.entries[history.currentIndex + delta];
     if (!entry)
       return null;
-    const [response] = await Promise.all([
+    const result = await Promise.all([
       this.waitForNavigation(options),
       this._client.send('Page.navigateToHistoryEntry', {entryId: entry.id}),
     ]);
+    const response = /** @type Puppeteer.Response */ (result[0]);
     return response;
   }
 
@@ -1141,9 +1145,6 @@ class Page extends EventEmitter {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);
   }
 }
-
-// Expose alias for deprecated method.
-Page.prototype.emulateMedia = Page.prototype.emulateMediaType;
 
 /**
  * @typedef {Object} PDFOptions

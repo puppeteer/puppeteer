@@ -154,6 +154,13 @@ function checkDuplicates(doc) {
   return errors;
 }
 
+const expectedNonExistingMethods = new Map([
+  /* Expected to be missing as the method is deprecated
+   * and we alias it to Page.prototype.emulateMediaType in index.js
+   * which is not checked by DocLint
+   */
+  ['Page', new Set(['emulateMedia'])],
+]);
 /**
  * @param {!Documentation} actual
  * @param {!Documentation} expected
@@ -165,6 +172,7 @@ function compareDocumentations(actual, expected) {
   const actualClasses = Array.from(actual.classes.keys()).sort();
   const expectedClasses = Array.from(expected.classes.keys()).sort();
   const classesDiff = diff(actualClasses, expectedClasses);
+
   for (const className of classesDiff.extra)
     errors.push(`Non-existing class found: ${className}`);
   for (const className of classesDiff.missing)
@@ -176,8 +184,13 @@ function compareDocumentations(actual, expected) {
     const actualMethods = Array.from(actualClass.methods.keys()).sort();
     const expectedMethods = Array.from(expectedClass.methods.keys()).sort();
     const methodDiff = diff(actualMethods, expectedMethods);
-    for (const methodName of methodDiff.extra)
+
+    for (const methodName of methodDiff.extra) {
+      const missingMethodsForClass = expectedNonExistingMethods.get(className);
+      if (missingMethodsForClass && missingMethodsForClass.has(methodName)) continue;
+
       errors.push(`Non-existing method found: ${className}.${methodName}()`);
+    }
     for (const methodName of methodDiff.missing)
       errors.push(`Method not found: ${className}.${methodName}()`);
 
@@ -335,4 +348,3 @@ function diff(actual, expected) {
     return i < 0 || j < 0 ? 0 : d[i][j];
   }
 }
-

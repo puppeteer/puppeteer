@@ -459,7 +459,7 @@ const puppeteer = require('puppeteer');
   - `transport` <[ConnectionTransport]> **Experimental** Specify a custom transport object for Puppeteer to use.
 - returns: <[Promise]<[Browser]>>
 
-This methods attaches Puppeteer to an existing Chromium instance.
+This methods attaches Puppeteer to an existing browser instance.
 
 #### puppeteer.createBrowserFetcher([options])
 - `options` <[Object]>
@@ -483,7 +483,7 @@ The default flags that Chromium will be launched with.
 - returns: <[Object]>
 
 Returns a list of devices to be used with [`page.emulate(options)`](#pageemulateoptions). Actual list of
-devices can be found in [lib/DeviceDescriptors.js](https://github.com/puppeteer/puppeteer/blob/master/lib/DeviceDescriptors.js).
+devices can be found in [src/DeviceDescriptors.js](https://github.com/puppeteer/puppeteer/blob/master/src/DeviceDescriptors.js).
 
 ```js
 const puppeteer = require('puppeteer');
@@ -3898,7 +3898,7 @@ TimeoutError is emitted whenever certain operations are terminated due to timeou
 [Buffer]: https://nodejs.org/api/buffer.html#buffer_class_buffer "Buffer"
 [CDPSession]: #class-cdpsession  "CDPSession"
 [ChildProcess]: https://nodejs.org/api/child_process.html "ChildProcess"
-[ConnectionTransport]: ../lib/WebSocketTransport.js "ConnectionTransport"
+[ConnectionTransport]: ../src/WebSocketTransport.js "ConnectionTransport"
 [ConsoleMessage]: #class-consolemessage "ConsoleMessage"
 [Coverage]: #class-coverage "Coverage"
 [Dialog]: #class-dialog "Dialog"
@@ -3924,7 +3924,7 @@ TimeoutError is emitted whenever certain operations are terminated due to timeou
 [Touchscreen]: #class-touchscreen "Touchscreen"
 [Tracing]: #class-tracing "Tracing"
 [UIEvent.detail]: https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail "UIEvent.detail"
-[USKeyboardLayout]: ../lib/USKeyboardLayout.js "USKeyboardLayout"
+[USKeyboardLayout]: ../src/USKeyboardLayout.js "USKeyboardLayout"
 [UnixTime]: https://en.wikipedia.org/wiki/Unix_time "Unix Time"
 [Worker]: #class-worker "Worker"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"

@@ -27,8 +27,8 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       // The pages will be the testing page and the original newtab page
       const targets = browser.targets();
       expect(targets.some(target => target.type() === 'page' &&
-        target.url() === 'about:blank')).toBeTruthy('Missing blank page');
-      expect(targets.some(target => target.type() === 'browser')).toBeTruthy('Missing browser target');
+        target.url() === 'about:blank')).toBeTruthy();
+      expect(targets.some(target => target.type() === 'browser')).toBeTruthy();
     });
     it('Browser.pages should return all of the pages', async({page, server, context}) => {
       // The pages will be the testing page
