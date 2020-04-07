@@ -32,14 +32,14 @@ const getProxyForUrl = require('proxy-from-env').getProxyForUrl;
 const downloadURLs = {
   chrome: {
     linux: '%s/chromium-browser-snapshots/Linux_x64/%d/%s.zip',
-    freebsd: 'nil',    
+    freebsd: '%s/chromium-browser-snapshots/Linux_x64/%d/%s.zip',
     mac: '%s/chromium-browser-snapshots/Mac/%d/%s.zip',
     win32: '%s/chromium-browser-snapshots/Win/%d/%s.zip',
     win64: '%s/chromium-browser-snapshots/Win_x64/%d/%s.zip',
   },
   firefox: {
     linux: '%s/firefox-%s.0a1.en-US.%s-x86_64.tar.bz2',
-    freebsd: 'nil',
+    freebsd: '%s/firefox-%s.0a1.en-US.%s-x86_64.tar.bz2',
     mac: '%s/firefox-%s.0a1.en-US.%s.dmg',
     win32: '%s/firefox-%s.0a1.en-US.%s.zip',
     win64: '%s/firefox-%s.0a1.en-US.%s.zip',
@@ -70,7 +70,7 @@ function archiveName(product, platform, revision) {
     if (platform === 'mac')
       return 'chrome-mac';
     if (platform === 'freebsd')
-      return 'chrome-freebsd'; // dummy
+      return 'chrome-linux'; // dummy
     if (platform === 'win32' || platform === 'win64') {
       // Windows archive name changed at r591479.
       return parseInt(revision, 10) > 591479 ? 'chrome-win' : 'chrome-win32';
@@ -123,7 +123,7 @@ class BrowserFetcher {
       else if (platform === 'linux')
         this._platform = 'linux';
       else if (platform === 'freebsd')
-        this._platform = 'freebsd'; // dummy
+        this._platform = 'linux'; // dummy
       else if (platform === 'win32')
         this._platform = os.arch() === 'x64' ? 'win64' : 'win32';
       assert(this._platform, 'Unsupported platform: ' + os.platform());
