@@ -1,5 +1,3 @@
-const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
 /**
  * Copyright 2018 Google Inc. All rights reserved.
  *
@@ -17,6 +15,8 @@ const {getTestState} = require('./mocha-utils');
  */
 
 const {waitEvent} = require('./utils');
+const expect = require('expect');
+const {getTestState} = require('./mocha-utils');
 
 describeChromeOnly('Target.createCDPSession', function() {
   it('should work', async() => {
