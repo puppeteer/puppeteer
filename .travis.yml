@@ -21,3 +21,16 @@ jobs:
         - "export DISPLAY=:99.0"
         - "sh -e /etc/init.d/xvfb start"
       script: ./travis/chromium.sh
+    - node_js: "10.19.0"
+      dist: trusty
+      env:
+        - FIREFOX=true
+        - FIREFOX_HOME=$TRAVIS_HOME/firefox-latest
+      before_install:
+        - "export DISPLAY=:99.0"
+        - "sh -e /etc/init.d/xvfb start"
+        - "pyenv shell 3.6 && pip3 install --user mozdownload"
+        - "rm -rf $FIREFOX_HOME && mozdownload -t daily -d $FIREFOX_HOME/latest.tar.bz --log-level DEBUG"
+        - "cd $FIREFOX_HOME; tar -xvf latest.tar.bz; cd -; ls $FIREFOX_HOME/firefox/firefox"
+      script:
+        -  "BINARY=$FIREFOX_HOME/firefox/firefox npm run funit"
