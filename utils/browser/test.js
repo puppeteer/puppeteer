@@ -72,6 +72,8 @@ describe('Puppeteer-Web', () => {
     await session.send('Target.exposeDevToolsProtocol', {targetId: pageInfo.targetId});
     await session.detach();
 
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     // Use in-page puppeteer to create a new page and navigate it to the EMPTY_PAGE
     await page.evaluate(async serverConfig  => {
       const puppeteer = require('puppeteer');
