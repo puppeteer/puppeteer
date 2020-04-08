@@ -4,18 +4,12 @@ Unit tests in Puppeteer are written using [Mocha] as the test runner and [Expect
 
 ## Test state
 
-We have some common setup that runs before each test and is defined in `mocha-utils.js`. This code creates a Puppeteer browser that can be used by tests. It also creates a `context` and `page` that are reset between each test and can be used to save the boilerplate of creating one every single time.
 
-If you are in an `it` and want to use the provided state, you can call `getTestState` from `mocha-utils.js` to access them:
+We have some common setup that runs before each test and is defined in `mocha-utils.js`.
 
-```js
-const { page } = getTestState();
-```
-
-`getTestState` exposes the following that you can use in your tests. These will be reset/tidied between tests automatically for you:
+You can use the `getTestState` function to read state. It exposes the following that you can use in your tests. These will be reset/tidied between tests automatically for you:
 
 * `puppeteer`: an instance of the Puppeteer library. This is exactly what you'd get if you ran `require('puppeteer')`.
-* `browser`: a launched Puppeteer browser. Note that this persists for the entire test suite, rather than re-launch this on each test.
 * `puppeteerPath`: the path to the root source file for Puppeteer.
 * `defaultBrowserOptions`: the default options the Puppeteer browser is launched from in test mode, so tests can use them and override if required.
 * `server`: a dummy test server instance (see `utils/testserver` for more).
@@ -23,6 +17,12 @@ const { page } = getTestState();
 * `isFirefox`: true if running in Firefox.
 * `isChrome`: true if running Chromium.
 * `isHeadless`: true if the test is in headless mode.
+
+If your test needs a browser instance, you can use the `setupTestBrowserHooks()` function which will automatically configure a browser that will be cleaned between each test suite run. You access this via `getTestState()`.
+
+If your test needs a Puppeteer page and context, you can use the `setupTestPageAndContextHooks()` function which will configure these. You can access `page` and `context` from `getTestState()` once you have done this.
+
+The best place to look is an existing test to see how they use the helpers.
 
 ## Skipping tests for Firefox
 
