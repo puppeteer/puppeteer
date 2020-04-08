@@ -335,12 +335,7 @@ function install(archivePath, folderPath) {
  * @return {!Promise<?Error>}
  */
 function extractZip(zipPath, folderPath) {
-  return new Promise((fulfill, reject) => extract(zipPath, {dir: folderPath}, err => {
-    if (err)
-      reject(err);
-    else
-      fulfill();
-  }));
+  return extract(zipPath, {dir: folderPath});
 }
 
 /**
