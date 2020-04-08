@@ -75,6 +75,7 @@ describe('Puppeteer-Web', () => {
     // Use in-page puppeteer to create a new page and navigate it to the EMPTY_PAGE
     await page.evaluate(async serverConfig  => {
       const puppeteer = require('puppeteer');
+      window.cdp = window.cdp || {};
       window.cdp.close = () => {};
       const browser = await puppeteer.connect({transport: window.cdp});
       const page = await browser.newPage();
