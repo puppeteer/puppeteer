@@ -18,9 +18,11 @@ const path = require('path');
 const utils = require('./utils');
 const {waitEvent} = utils;
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState,setupTestBrowserHooks,setupTestPageAndContextHooks} = require('./mocha-utils');
 
 describe('Page', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
   describe('Page.close', function() {
     it('should reject all promises when page is closed', async() => {
       const { context } = getTestState();

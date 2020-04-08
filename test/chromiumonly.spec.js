@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState, setupTestBrowserHooks, setupTestPageAndContextHooks} = require('./mocha-utils');
 
-describe('Chromium-Specific Launcher tests', function() {
+describeChromeOnly('Chromium-Specific Launcher tests', function() {
   describe('Puppeteer.launch |browserURL| option', function() {
     it('should be able to connect using browserUrl, with and without trailing slash', async() => {
       const {defaultBrowserOptions, puppeteer} = getTestState();
@@ -102,7 +102,9 @@ describe('Chromium-Specific Launcher tests', function() {
 
 });
 
-describe('Chromium-Specific Page Tests', function() {
+describeChromeOnly('Chromium-Specific Page Tests', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
   it('Page.setRequestInterception should work with intervention headers', async() => {
     const { server, page } = getTestState();
 

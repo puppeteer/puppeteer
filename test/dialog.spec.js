@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState,setupTestPageAndContextHooks, setupTestBrowserHooks} = require('./mocha-utils');
 
 describe('Page.Events.Dialog', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
   it('should fire', async() => {
     const { page } = getTestState();
 

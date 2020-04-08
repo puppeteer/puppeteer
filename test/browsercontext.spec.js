@@ -15,18 +15,11 @@
  */
 
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState, setupTestBrowserHooks} = require('./mocha-utils');
 const utils = require('./utils');
 
 describe('BrowserContext', function() {
-  beforeEach(async() => {
-    /* we don't need the default test context so let's clear it
-     * before running any tests
-     */
-    const {context} = getTestState();
-    await context.close();
-  });
-
+  setupTestBrowserHooks();
   itFailsFirefox('should have default context', async() => {
     const { browser } = getTestState();
     expect(browser.browserContexts().length).toEqual(1);

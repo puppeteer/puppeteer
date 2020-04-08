@@ -15,7 +15,7 @@
  */
 const os = require('os');
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState,setupTestBrowserHooks,setupTestPageAndContextHooks} = require('./mocha-utils');
 
 function dimensions() {
   const rect = document.querySelector('textarea').getBoundingClientRect();
@@ -28,6 +28,8 @@ function dimensions() {
 }
 
 describe('Mouse', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
   it('should click the document', async() => {
     const { page } = getTestState();
 

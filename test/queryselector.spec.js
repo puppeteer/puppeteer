@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState,setupTestBrowserHooks,setupTestPageAndContextHooks} = require('./mocha-utils');
 
 describe('querySelector', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
   describeFailsFirefox('Page.$eval', function() {
     it('should work', async() => {
       const { page } = getTestState();

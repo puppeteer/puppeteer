@@ -18,9 +18,11 @@ const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState,setupTestBrowserHooks,setupTestPageAndContextHooks} = require('./mocha-utils');
 
 describe('network', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
 
   describe('Page.Events.Request', function() {
     it('should fire for navigation requests', async() => {

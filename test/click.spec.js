@@ -15,10 +15,12 @@
  */
 
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState,setupTestPageAndContextHooks, setupTestBrowserHooks} = require('./mocha-utils');
 const utils = require('./utils');
 
 describe('Page.click', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
   it('should click the button', async() => {
     const { page, server } = getTestState();
 

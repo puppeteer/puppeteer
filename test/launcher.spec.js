@@ -61,8 +61,6 @@ describe('Launcher specs', function() {
         expect(await browserFetcher.localRevisions()).toEqual([]);
         await rmAsync(downloadsFolder);
       });
-    });
-    describe('BrowserFetcher', function() {
       it('should download and extract firefox linux binary', async() => {
         const { server , puppeteer} = getTestState();
 
@@ -96,10 +94,10 @@ describe('Launcher specs', function() {
         await rmAsync(downloadsFolder);
       });
     });
+
     describe('Browser.disconnect', function() {
       it('should reject navigation when browser closes', async() => {
-        const { server , puppeteer, defaultBrowserOptions} = getTestState();
-
+        const { server, puppeteer, defaultBrowserOptions} = getTestState();
         server.setRoute('/one-style.css', () => {});
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const remote = await puppeteer.connect({browserWSEndpoint: browser.wsEndpoint()});
@@ -112,7 +110,7 @@ describe('Launcher specs', function() {
         await browser.close();
       });
       it('should reject waitForSelector when browser closes', async() => {
-        const { server , puppeteer, defaultBrowserOptions} = getTestState();
+        const { server, puppeteer, defaultBrowserOptions} = getTestState();
 
         server.setRoute('/empty.html', () => {});
         const browser = await puppeteer.launch(defaultBrowserOptions);
@@ -142,6 +140,7 @@ describe('Launcher specs', function() {
           expect(message).toContain('Target closed');
           expect(message).not.toContain('Timeout');
         }
+        await browser.close();
       });
     });
     describe('Puppeteer.launch', function() {
@@ -359,12 +358,12 @@ describe('Launcher specs', function() {
         const { puppeteer, defaultBrowserOptions} = getTestState();
 
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
-        const browser = await puppeteer.connect({
+        const otherBrowser = await puppeteer.connect({
           browserWSEndpoint: originalBrowser.wsEndpoint()
         });
-        const page = await browser.newPage();
+        const page = await otherBrowser.newPage();
         expect(await page.evaluate(() => 7 * 8)).toBe(56);
-        browser.disconnect();
+        otherBrowser.disconnect();
 
         const secondPage = await originalBrowser.newPage();
         expect(await secondPage.evaluate(() => 7 * 6)).toBe(42, 'original browser should still work');

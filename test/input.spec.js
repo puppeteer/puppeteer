@@ -16,11 +16,14 @@
 
 const path = require('path');
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState,setupTestBrowserHooks,setupTestPageAndContextHooks} = require('./mocha-utils');
 
 const FILE_TO_UPLOAD = path.join(__dirname, '/assets/file-to-upload.txt');
 
 describe('input tests', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
+
   describeFailsFirefox('input', function() {
     it('should upload the file', async() => {
       const { page, server } = getTestState();

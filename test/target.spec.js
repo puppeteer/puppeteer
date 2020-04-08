@@ -17,9 +17,12 @@
 const utils = require('./utils');
 const {waitEvent} = utils;
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState, setupTestBrowserHooks,setupTestPageAndContextHooks} = require('./mocha-utils');
 
 describe('Target', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
+
   it('Browser.targets should return all of the targets', async() => {
     const { browser } = getTestState();
 

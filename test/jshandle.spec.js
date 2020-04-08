@@ -15,9 +15,12 @@
  */
 
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState,setupTestBrowserHooks,setupTestPageAndContextHooks} = require('./mocha-utils');
 
 describe('JSHandle', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
+
   describe('Page.evaluateHandle', function() {
     it('should work', async() => {
       const { page } = getTestState();

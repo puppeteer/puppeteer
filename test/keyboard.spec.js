@@ -17,9 +17,12 @@
 const utils = require('./utils');
 const os = require('os');
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState,setupTestBrowserHooks,setupTestPageAndContextHooks} = require('./mocha-utils');
 
 describe('Keyboard', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
+
   it('should type into a textarea', async() => {
     const { page } = getTestState();
 

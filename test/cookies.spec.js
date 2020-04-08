@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState, setupTestBrowserHooks, setupTestPageAndContextHooks} = require('./mocha-utils');
 
-describe('Page tests in Mocha land', () => {
+describe('Cookie specs', () => {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
+
   describe('Page.cookies', function() {
     it('should return no cookies in pristine browser context', async() => {
       const {page, server} = getTestState();

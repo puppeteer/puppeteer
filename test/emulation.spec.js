@@ -15,9 +15,11 @@
  */
 
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState,setupTestBrowserHooks, setupTestPageAndContextHooks} = require('./mocha-utils');
 
 describe('Emulation', () => {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
   let iPhone;
   let iPhoneLandscape;
 

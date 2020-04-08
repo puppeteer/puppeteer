@@ -1,5 +1,3 @@
-const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
 /**
  * Copyright 2018 Google Inc. All rights reserved.
  *
@@ -17,8 +15,12 @@ const {getTestState} = require('./mocha-utils');
  */
 
 const utils = require('./utils');
+const expect = require('expect');
+const {getTestState,setupTestBrowserHooks,setupTestPageAndContextHooks} = require('./mocha-utils');
 
 describe('navigation', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
   describe('Page.goto', function() {
     it('should work', async() => {
       const { page, server } = getTestState();

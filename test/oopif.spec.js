@@ -17,7 +17,7 @@
 const expect = require('expect');
 const {getTestState} = require('./mocha-utils');
 
-describe('OOPIF', function() {
+describeChromeOnly('OOPIF', function() {
   /* We use a special browser for this test as we need the --site-per-process flag */
   let browser;
   let context;

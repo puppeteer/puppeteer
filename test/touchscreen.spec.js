@@ -15,9 +15,12 @@
  */
 
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState,setupTestBrowserHooks,setupTestPageAndContextHooks} = require('./mocha-utils');
 
 describeFailsFirefox('Touchscreen', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
+
   it('should tap the button', async() => {
     const {puppeteer, page, server} = getTestState();
     const iPhone = puppeteer.devices['iPhone 6'];

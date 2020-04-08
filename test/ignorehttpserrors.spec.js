@@ -17,13 +17,11 @@
 const expect = require('expect');
 const {getTestState} = require('./mocha-utils');
 
-describe('ignoreHTTPSErrors', function() {
-
+describeFailsFirefox('ignoreHTTPSErrors', function() {
   /* Note that this test creates its own browser rather than use
    * the one provided by the test set-up as we need one
    * with ignoreHTTPSErrors set to true
    */
-
   let browser;
   let context;
   let page;

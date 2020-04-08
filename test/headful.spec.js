@@ -29,7 +29,7 @@ const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 
 const extensionPath = path.join(__dirname, 'assets', 'simple-extension');
 
-describe('headful tests', function() {
+describeChromeOnly('headful tests', function() {
 
   /* These tests fire up an actual browser so let's
    * allow a higher timeout
@@ -60,8 +60,6 @@ describe('headful tests', function() {
   });
 
   describe('HEADFUL', function() {
-    beforeEach(() => {
-    });
     it('background_page target type should be available', async() => {
       const {puppeteer} = getTestState();
       const browserWithExtension = await puppeteer.launch(extensionOptions);

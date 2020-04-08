@@ -15,9 +15,12 @@
  */
 
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState, setupTestBrowserHooks, setupTestPageAndContextHooks} = require('./mocha-utils');
 
-describe('Accessibility', function() {
+describeFailsFirefox('Accessibility', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
+
   it('should work', async() => {
     const { page, isFirefox } = getTestState();
 

@@ -19,7 +19,7 @@ const path = require('path');
 const expect = require('expect');
 const {getTestState} = require('./mocha-utils');
 
-describe('Tracing', function() {
+describeChromeOnly('Tracing', function() {
   let outputFile;
   let browser;
   let page;

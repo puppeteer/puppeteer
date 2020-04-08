@@ -46,7 +46,7 @@ const setupServer = async() => {
 
 exports.getTestState = () => state;
 
-const product = process.env.PRODUCT || 'Chromium';
+const product = process.env.PRODUCT || process.env.PUPPETEER_PRODUCT || 'Chromium';
 
 const isHeadless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
 const isFirefox = product === 'firefox';
@@ -58,6 +58,15 @@ const defaultBrowserOptions = {
   headless: isHeadless,
   dumpio: !!process.env.DUMPIO,
 };
+
+
+if (defaultBrowserOptions.executablePath) {
+  console.warn(`WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`);
+} else {
+  const executablePath = puppeteer.executablePath();
+  if (!fs.existsSync(executablePath))
+    throw new Error(`Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`);
+}
 
 const setupGoldenAssertions = () => {
   const suffix = product.toLowerCase();
@@ -94,13 +103,37 @@ global.describeChromeOnly = (...args) => {
 if (process.env.COVERAGE)
   assertCoverage();
 
+exports.setupTestBrowserHooks = () => {
+  before(async() => {
+    const browser = await puppeteer.launch(defaultBrowserOptions);
+    state.browser = browser;
+  });
+
+  after(async() => {
+    await state.browser.close();
+    state.browser = null;
+  });
+};
+
+exports.setupTestPageAndContextHooks = () => {
+  beforeEach(async() => {
+    state.context = await state.browser.createIncognitoBrowserContext();
+    state.page = await state.context.newPage();
+  });
+
+  afterEach(async() => {
+    await state.context.close();
+    state.context = null;
+    state.page = null;
+  });
+};
+
 
 before(async() => {
   const {server, httpsServer} = await setupServer();
 
   state.puppeteer = puppeteer;
   state.defaultBrowserOptions = defaultBrowserOptions;
-  state.browser = await puppeteer.launch(defaultBrowserOptions);
   state.server = server;
   state.httpsServer = httpsServer;
   state.isFirefox = isFirefox;
@@ -112,28 +145,9 @@ before(async() => {
 beforeEach(async() => {
   state.server.reset();
   state.httpsServer.reset();
-  state.context = await state.browser.createIncognitoBrowserContext();
-  state.page = await state.context.newPage();
-});
-
-afterEach(async() => {
-  /* some tests deliberately clear out the pre-built context that we create
-     * and if they do that we don't have a context to close
-     * so this is wrapped in a try - and if it errors we don't need
-     * to do anything
-     */
-  try {
-    await state.context.close();
-    state.context = null;
-    state.page = null;
-  } catch (e) {
-    // do nothing - see larger comment above
-  }
 });
 
 after(async() => {
-  await state.browser.close();
-  state.browser = null;
   await state.server.stop();
   state.server = null;
   await state.httpsServer.stop();

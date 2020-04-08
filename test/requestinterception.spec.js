@@ -18,9 +18,11 @@ const fs = require('fs');
 const path = require('path');
 const utils = require('./utils');
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState,setupTestBrowserHooks,setupTestPageAndContextHooks} = require('./mocha-utils');
 
 describe('request interception', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
   describeFailsFirefox('Page.setRequestInterception', function() {
     it('should intercept', async() => {
       const { page, server } = getTestState();

@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const {getTestState,setupTestBrowserHooks, setupTestPageAndContextHooks} = require('./mocha-utils');
 
 describe('DefaultBrowserContext', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
   itFailsFirefox('page.cookies() should work', async() => {
     const { page, server } = getTestState();
 
