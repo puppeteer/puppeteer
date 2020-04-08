@@ -1682,7 +1682,7 @@ Page is guaranteed to have a main frame which persists during navigations.
 
 ```js
 // Generates a PDF with 'screen' media type.
-await page.emulateMedia('screen');
+await page.emulateMediaType('screen');
 await page.pdf({path: 'page.pdf'});
 ```
 
