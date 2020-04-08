@@ -58,6 +58,7 @@
     "commonmark": "^0.28.1",
     "cross-env": "^5.0.5",
     "eslint": "^6.8.0",
+    "eslint-plugin-mocha": "^6.3.0",
     "esprima": "^4.0.0",
     "expect": "^25.2.7",
     "jpeg-js": "^0.3.4",

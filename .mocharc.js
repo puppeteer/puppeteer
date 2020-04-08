@@ -3,4 +3,4 @@ module.exports = {
   spec: 'test/*.spec.js',
   reporter: 'dot',
   timeout: 4000,
-}
+};

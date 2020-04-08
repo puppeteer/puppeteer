@@ -10,6 +10,10 @@ module.exports = {
         "ecmaVersion": 9
     },
 
+    "plugins": [
+        "mocha"
+    ],
+
     /**
      * ESLint rules
      *
@@ -107,6 +111,9 @@ module.exports = {
         "indent": [2, 2, { "SwitchCase": 1, "CallExpression": {"arguments": 2}, "MemberExpression": 2 }],
         "key-spacing": [2, {
             "beforeColon": false
-        }]
+        }],
+
+        // ensure we don't have any it.only or describe.only in prod
+        "mocha/no-exclusive-tests": "error"
     }
 };
