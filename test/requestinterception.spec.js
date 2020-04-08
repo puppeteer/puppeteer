@@ -338,7 +338,7 @@ describe('request interception', function() {
       expect(results).toEqual(['11', 'FAILED', '22']);
     });
     it('should navigate to dataURL and fire dataURL requests', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setRequestInterception(true);
       const requests = [];
@@ -449,7 +449,7 @@ describe('request interception', function() {
       expect(error.message).toContain('Request Interception is not enabled');
     });
     it('should work with file URLs', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setRequestInterception(true);
       const urls = new Set();

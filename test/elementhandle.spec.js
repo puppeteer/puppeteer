@@ -43,14 +43,14 @@ describeFailsFirefox('ElementHandle.boundingBox', function() {
       expect(box).toEqual({ x: 28, y: 182, width: 254, height: 18 });
   });
   it('should return null for invisible elements', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.setContent('<div style="display:none">hi</div>');
     const element = await page.$('div');
     expect(await element.boundingBox()).toBe(null);
   });
   it('should force a layout', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.setViewport({ width: 500, height: 500 });
     await page.setContent('<div style="width: 100px; height: 100px">hello</div>');
@@ -60,7 +60,7 @@ describeFailsFirefox('ElementHandle.boundingBox', function() {
     expect(box).toEqual({ x: 8, y: 8, width: 100, height: 200 });
   });
   it('should work with SVG nodes', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.setContent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="500" height="500">
@@ -136,7 +136,7 @@ describeFailsFirefox('ElementHandle.boxModel', function() {
   });
 
   it('should return null for invisible elements', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.setContent('<div style="display:none">hi</div>');
     const element = await page.$('div');
@@ -211,7 +211,7 @@ describe('ElementHandle.click', function() {
     expect(error.message).toBe('Node is either not visible or not an HTMLElement');
   });
   itFailsFirefox('should throw for <br> elements', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.setContent('hello<br>goodbye');
     const br = await page.$('br');

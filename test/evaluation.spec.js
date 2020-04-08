@@ -22,49 +22,49 @@ const bigint = typeof BigInt !== 'undefined';
 
 describe('Page.evaluate', function() {
   it('should work', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(() => 7 * 3);
     expect(result).toBe(21);
   });
   (bigint ? itFailsFirefox : xit)('should transfer BigInt', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(a => a, BigInt(42));
     expect(result).toBe(BigInt(42));
   });
   itFailsFirefox('should transfer NaN', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(a => a, NaN);
     expect(Object.is(result, NaN)).toBe(true);
   });
   itFailsFirefox('should transfer -0', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(a => a, -0);
     expect(Object.is(result, -0)).toBe(true);
   });
   itFailsFirefox('should transfer Infinity', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(a => a, Infinity);
     expect(Object.is(result, Infinity)).toBe(true);
   });
   itFailsFirefox('should transfer -Infinity', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(a => a, -Infinity);
     expect(Object.is(result, -Infinity)).toBe(true);
   });
   it('should transfer arrays', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(a => a, [1, 2, 3]);
     expect(result).toEqual([1,2,3]);
   });
   it('should transfer arrays as arrays, not objects', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(a => Array.isArray(a), [1, 2, 3]);
     expect(result).toBe(true);
@@ -82,12 +82,12 @@ describe('Page.evaluate', function() {
     expect(await page.evaluate('globalVar')).toBe(123);
   });
   itFailsFirefox('should return undefined for objects with symbols', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     expect(await page.evaluate(() => [Symbol('foo4')])).toBe(undefined);
   });
   it('should work with function shorthands', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const a = {
       sum(a, b) { return a + b; },
@@ -98,13 +98,13 @@ describe('Page.evaluate', function() {
     expect(await page.evaluate(a.mult, 2, 4)).toBe(8);
   });
   it('should work with unicode chars', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(a => a['中文字符'], {'中文字符': 42});
     expect(result).toBe(42);
   });
   itFailsFirefox('should throw when evaluation triggers reload', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let error = null;
     await page.evaluate(() => {
@@ -114,7 +114,7 @@ describe('Page.evaluate', function() {
     expect(error.message).toContain('Protocol error');
   });
   it('should await promise', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(() => Promise.resolve(8 * 7));
     expect(result).toBe(56);
@@ -130,7 +130,7 @@ describe('Page.evaluate', function() {
     expect(await frameEvaluation).toBe(42);
   });
   itFailsFirefox('should work from-inside an exposed function', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     // Setup inpage callback, which calls Page.evaluate
     await page.exposeFunction('callController', async function(a, b) {
@@ -142,7 +142,7 @@ describe('Page.evaluate', function() {
     expect(result).toBe(27);
   });
   it('should reject promise with exception', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let error = null;
     await page.evaluate(() => not_existing_object.property).catch(e => error = e);
@@ -150,7 +150,7 @@ describe('Page.evaluate', function() {
     expect(error.message).toContain('not_existing_object');
   });
   it('should support thrown strings as error messages', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let error = null;
     await page.evaluate(() => { throw 'qwerty'; }).catch(e => error = e);
@@ -158,7 +158,7 @@ describe('Page.evaluate', function() {
     expect(error.message).toContain('qwerty');
   });
   it('should support thrown numbers as error messages', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let error = null;
     await page.evaluate(() => { throw 100500; }).catch(e => error = e);
@@ -166,7 +166,7 @@ describe('Page.evaluate', function() {
     expect(error.message).toContain('100500');
   });
   it('should return complex objects', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const object = {foo: 'bar!'};
     const result = await page.evaluate(a => a, object);
@@ -174,37 +174,37 @@ describe('Page.evaluate', function() {
     expect(result).toEqual(object);
   });
   (bigint ? itFailsFirefox : xit)('should return BigInt', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(() => BigInt(42));
     expect(result).toBe(BigInt(42));
   });
   itFailsFirefox('should return NaN', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(() => NaN);
     expect(Object.is(result, NaN)).toBe(true);
   });
   itFailsFirefox('should return -0', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(() => -0);
     expect(Object.is(result, -0)).toBe(true);
   });
   itFailsFirefox('should return Infinity', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(() => Infinity);
     expect(Object.is(result, Infinity)).toBe(true);
   });
   itFailsFirefox('should return -Infinity', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(() => -Infinity);
     expect(Object.is(result, -Infinity)).toBe(true);
   });
   it('should accept "undefined" as one of multiple parameters', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate((a, b) => Object.is(a, undefined) && Object.is(b, 'foo'), undefined, 'foo');
     expect(result).toBe(true);
@@ -215,12 +215,12 @@ describe('Page.evaluate', function() {
     expect(await page.evaluate(() => ({a: undefined}))).toEqual({});
   });
   itFailsFirefox('should return undefined for non-serializable objects', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     expect(await page.evaluate(() => window)).toBe(undefined);
   });
   itFailsFirefox('should fail for circular object', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(() => {
       const a = {};
@@ -231,7 +231,7 @@ describe('Page.evaluate', function() {
     expect(result).toBe(undefined);
   });
   itFailsFirefox('should be able to throw a tricky error', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const windowHandle = await page.evaluateHandle(() => window);
     const errorText = await windowHandle.jsonValue().catch(e => e.message);
@@ -241,25 +241,25 @@ describe('Page.evaluate', function() {
     expect(error.message).toContain(errorText);
   });
   it('should accept a string', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate('1 + 2');
     expect(result).toBe(3);
   });
   it('should accept a string with semi colons', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate('1 + 5;');
     expect(result).toBe(6);
   });
   it('should accept a string with comments', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate('2 + 5;\n// do some math!');
     expect(result).toBe(7);
   });
   itFailsFirefox('should accept element handle as an argument', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.setContent('<section>42</section>');
     const element = await page.$('section');
@@ -267,7 +267,7 @@ describe('Page.evaluate', function() {
     expect(text).toBe('42');
   });
   itFailsFirefox('should throw if underlying element was disposed', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.setContent('<section>39</section>');
     const element = await page.$('section');
@@ -288,7 +288,7 @@ describe('Page.evaluate', function() {
     expect(error.message).toContain('JSHandles can be evaluated only in the context they were created');
   });
   itFailsFirefox('should simulate a user gesture', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.evaluate(() => {
       document.body.appendChild(document.createTextNode('test'));
@@ -298,7 +298,7 @@ describe('Page.evaluate', function() {
     expect(result).toBe(true);
   });
   itFailsFirefox('should throw a nice error after a navigation', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const executionContext = await page.mainFrame().executionContext();
 
@@ -320,13 +320,13 @@ describe('Page.evaluate', function() {
     expect(result).toEqual([42]);
   });
   itFailsFirefox('should transfer 100Mb of data from page to node.js', async function() {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const a = await page.evaluate(() => Array(100 * 1024 * 1024 + 1).join('a'));
     expect(a.length).toBe(100 * 1024 * 1024);
   });
   it('should throw error with detailed information on exception inside promise ', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let error = null;
     await page.evaluate(() => new Promise(() => {

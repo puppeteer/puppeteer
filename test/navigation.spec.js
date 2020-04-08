@@ -45,7 +45,7 @@ describe('navigation', function() {
       expect(page.url()).toBe(server.EMPTY_PAGE);
     });
     it('should navigate to about:blank', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const response = await page.goto('about:blank');
       expect(response).toBe(null);
@@ -223,7 +223,7 @@ describe('navigation', function() {
       expect(response.ok()).toBe(true);
     });
     itFailsFirefox('should work when navigating to data url', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const response = await page.goto('data:text/html,hello');
       expect(response.ok()).toBe(true);
@@ -316,7 +316,7 @@ describe('navigation', function() {
       expect(warning).toBe(null);
     });
     itFailsFirefox('should not leak listeners during bad navigation', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       let warning = null;
       const warningHandler = w => warning = w;
@@ -327,7 +327,7 @@ describe('navigation', function() {
       expect(warning).toBe(null);
     });
     it('should not leak listeners during navigation of 11 pages', async() => {
-      const { page, context, server } = getTestState();
+      const { context, server } = getTestState();
 
       let warning = null;
       const warningHandler = w => warning = w;
@@ -341,7 +341,7 @@ describe('navigation', function() {
       expect(warning).toBe(null);
     });
     itFailsFirefox('should navigate to dataURL and fire dataURL requests', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const requests = [];
       page.on('request', request => !utils.isFavicon(request) && requests.push(request));
@@ -370,7 +370,7 @@ describe('navigation', function() {
       expect(response.url()).toContain('self-request.html');
     });
     itFailsFirefox('should fail when navigating and show the url at the error message', async() => {
-      const { page, server, httpsServer } = getTestState();
+      const { page, httpsServer } = getTestState();
 
       const url = httpsServer.PREFIX + '/redirect/1.html';
       let error = null;

@@ -19,7 +19,6 @@ const {getTestState} = require('./mocha-utils');
 describe('JSCoverage', function() {
   it('should work', async() => {
     const { page, server } = getTestState();
-  
     await page.coverage.startJSCoverage();
     await page.goto(server.PREFIX + '/jscoverage/simple.html', {waitUntil: 'networkidle0'});
     const coverage = await page.coverage.stopJSCoverage();
@@ -32,7 +31,7 @@ describe('JSCoverage', function() {
   });
   it('should report sourceURLs', async() => {
     const { page, server } = getTestState();
-  
+
     await page.coverage.startJSCoverage();
     await page.goto(server.PREFIX + '/jscoverage/sourceurl.html');
     const coverage = await page.coverage.stopJSCoverage();
@@ -41,7 +40,7 @@ describe('JSCoverage', function() {
   });
   it('should ignore eval() scripts by default', async() => {
     const { page, server } = getTestState();
-  
+
     await page.coverage.startJSCoverage();
     await page.goto(server.PREFIX + '/jscoverage/eval.html');
     const coverage = await page.coverage.stopJSCoverage();
@@ -49,7 +48,7 @@ describe('JSCoverage', function() {
   });
   it('shouldn\'t ignore eval() scripts if reportAnonymousScripts is true', async() => {
     const { page, server } = getTestState();
-  
+
     await page.coverage.startJSCoverage({reportAnonymousScripts: true});
     await page.goto(server.PREFIX + '/jscoverage/eval.html');
     const coverage = await page.coverage.stopJSCoverage();
@@ -58,7 +57,7 @@ describe('JSCoverage', function() {
   });
   it('should ignore pptr internal scripts if reportAnonymousScripts is true', async() => {
     const { page, server } = getTestState();
-  
+
     await page.coverage.startJSCoverage({reportAnonymousScripts: true});
     await page.goto(server.EMPTY_PAGE);
     await page.evaluate('console.log("foo")');
@@ -68,7 +67,7 @@ describe('JSCoverage', function() {
   });
   it('should report multiple scripts', async() => {
     const { page, server } = getTestState();
-  
+
     await page.coverage.startJSCoverage();
     await page.goto(server.PREFIX + '/jscoverage/multiple.html');
     const coverage = await page.coverage.stopJSCoverage();
@@ -79,7 +78,7 @@ describe('JSCoverage', function() {
   });
   it('should report right ranges', async() => {
     const { page, server } = getTestState();
-  
+
     await page.coverage.startJSCoverage();
     await page.goto(server.PREFIX + '/jscoverage/ranges.html');
     const coverage = await page.coverage.stopJSCoverage();
@@ -91,7 +90,7 @@ describe('JSCoverage', function() {
   });
   it('should report scripts that have no coverage', async() => {
     const { page, server } = getTestState();
-  
+
     await page.coverage.startJSCoverage();
     await page.goto(server.PREFIX + '/jscoverage/unused.html');
     const coverage = await page.coverage.stopJSCoverage();
@@ -102,7 +101,7 @@ describe('JSCoverage', function() {
   });
   it('should work with conditionals', async() => {
     const { page, server } = getTestState();
-  
+
     await page.coverage.startJSCoverage();
     await page.goto(server.PREFIX + '/jscoverage/involved.html');
     const coverage = await page.coverage.stopJSCoverage();
@@ -110,17 +109,18 @@ describe('JSCoverage', function() {
   });
   describe('resetOnNavigation', function() {
     it('should report scripts across navigations when disabled', async() => {
-    const { page, server } = getTestState();
-  
+      const { page, server } = getTestState();
+
       await page.coverage.startJSCoverage({resetOnNavigation: false});
       await page.goto(server.PREFIX + '/jscoverage/multiple.html');
       await page.goto(server.EMPTY_PAGE);
       const coverage = await page.coverage.stopJSCoverage();
       expect(coverage.length).toBe(2);
     });
+
     it('should NOT report scripts across navigations when enabled', async() => {
-    const { page, server } = getTestState();
-  
+      const { page, server } = getTestState();
+
       await page.coverage.startJSCoverage(); // Enabled by default.
       await page.goto(server.PREFIX + '/jscoverage/multiple.html');
       await page.goto(server.EMPTY_PAGE);
@@ -131,7 +131,7 @@ describe('JSCoverage', function() {
   // @see https://crbug.com/990945
   xit('should not hang when there is a debugger statement', async() => {
     const { page, server } = getTestState();
-  
+
     await page.coverage.startJSCoverage();
     await page.goto(server.EMPTY_PAGE);
     await page.evaluate(() => {
@@ -144,7 +144,7 @@ describe('JSCoverage', function() {
 describe('CSSCoverage', function() {
   it('should work', async() => {
     const { page, server } = getTestState();
-  
+
     await page.coverage.startCSSCoverage();
     await page.goto(server.PREFIX + '/csscoverage/simple.html');
     const coverage = await page.coverage.stopCSSCoverage();
@@ -158,7 +158,7 @@ describe('CSSCoverage', function() {
   });
   it('should report sourceURLs', async() => {
     const { page, server } = getTestState();
-  
+
     await page.coverage.startCSSCoverage();
     await page.goto(server.PREFIX + '/csscoverage/sourceurl.html');
     const coverage = await page.coverage.stopCSSCoverage();
@@ -167,7 +167,7 @@ describe('CSSCoverage', function() {
   });
   it('should report multiple stylesheets', async() => {
     const { page, server } = getTestState();
-  
+
     await page.coverage.startCSSCoverage();
     await page.goto(server.PREFIX + '/csscoverage/multiple.html');
     const coverage = await page.coverage.stopCSSCoverage();
@@ -178,7 +178,7 @@ describe('CSSCoverage', function() {
   });
   it('should report stylesheets that have no coverage', async() => {
     const { page, server } = getTestState();
-  
+
     await page.coverage.startCSSCoverage();
     await page.goto(server.PREFIX + '/csscoverage/unused.html');
     const coverage = await page.coverage.stopCSSCoverage();
@@ -188,7 +188,7 @@ describe('CSSCoverage', function() {
   });
   it('should work with media queries', async() => {
     const { page, server } = getTestState();
-  
+
     await page.coverage.startCSSCoverage();
     await page.goto(server.PREFIX + '/csscoverage/media.html');
     const coverage = await page.coverage.stopCSSCoverage();
@@ -200,15 +200,15 @@ describe('CSSCoverage', function() {
   });
   it('should work with complicated usecases', async() => {
     const { page, server } = getTestState();
-  
+
     await page.coverage.startCSSCoverage();
     await page.goto(server.PREFIX + '/csscoverage/involved.html');
     const coverage = await page.coverage.stopCSSCoverage();
     expect(JSON.stringify(coverage, null, 2).replace(/:\d{4}\//g, ':<PORT>/')).toBeGolden('csscoverage-involved.txt');
   });
   it('should ignore injected stylesheets', async() => {
-    const { page, server } = getTestState();
-  
+    const { page } = getTestState();
+
     await page.coverage.startCSSCoverage();
     await page.addStyleTag({content: 'body { margin: 10px;}'});
     // trigger style recalc
@@ -219,8 +219,8 @@ describe('CSSCoverage', function() {
   });
   describe('resetOnNavigation', function() {
     it('should report stylesheets across navigations', async() => {
-    const { page, server } = getTestState();
-  
+      const { page, server } = getTestState();
+
       await page.coverage.startCSSCoverage({resetOnNavigation: false});
       await page.goto(server.PREFIX + '/csscoverage/multiple.html');
       await page.goto(server.EMPTY_PAGE);
@@ -228,8 +228,8 @@ describe('CSSCoverage', function() {
       expect(coverage.length).toBe(2);
     });
     it('should NOT report scripts across navigations', async() => {
-    const { page, server } = getTestState();
-  
+      const { page, server } = getTestState();
+
       await page.coverage.startCSSCoverage(); // Enabled by default.
       await page.goto(server.PREFIX + '/csscoverage/multiple.html');
       await page.goto(server.EMPTY_PAGE);
@@ -239,7 +239,7 @@ describe('CSSCoverage', function() {
   });
   it('should work with a recently loaded stylesheet', async() => {
     const { page, server } = getTestState();
-  
+
     await page.coverage.startCSSCoverage();
     await page.evaluate(async url => {
       document.body.textContent = 'hello, world';

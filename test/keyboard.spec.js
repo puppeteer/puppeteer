@@ -21,7 +21,7 @@ const {getTestState} = require('./mocha-utils');
 
 describe('Keyboard', function() {
   it('should type into a textarea', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.evaluate(() => {
       const textarea = document.createElement('textarea');
@@ -228,7 +228,7 @@ describe('Keyboard', function() {
     expect(await page.evaluate('keyLocation')).toBe(3);
   });
   it('should throw on unknown keys', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let error = await page.keyboard.press('NotARealKey').catch(e => e);
     expect(error.message).toBe('Unknown key: "NotARealKey"');

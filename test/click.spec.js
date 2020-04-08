@@ -27,7 +27,7 @@ describe('Page.click', function() {
     expect(await page.evaluate(() => result)).toBe('Clicked');
   });
   itFailsFirefox('should click svg', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.setContent(`
         <svg height="100" width="100">
@@ -47,7 +47,7 @@ describe('Page.click', function() {
   });
   // @see https://github.com/puppeteer/puppeteer/issues/4281
   itFailsFirefox('should click on a span with an inline element inside', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.setContent(`
         <style>
@@ -61,7 +61,7 @@ describe('Page.click', function() {
     expect(await page.evaluate(() => window.CLICKED)).toBe(42);
   });
   it('should not throw UnhandledPromiseRejection when page closes', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const newPage = await page.browser().newPage();
     await Promise.all([
@@ -90,7 +90,7 @@ describe('Page.click', function() {
     expect(page.url()).toBe(server.PREFIX + '/wrappedlink.html#clicked');
   });
   itFailsFirefox('should click when one of inline box children is outside of viewport', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.setContent(`
         <style>

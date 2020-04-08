@@ -20,27 +20,27 @@ const {getTestState} = require('./mocha-utils');
 describe('JSHandle', function() {
   describe('Page.evaluateHandle', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const windowHandle = await page.evaluateHandle(() => window);
       expect(windowHandle).toBeTruthy();
     });
     it('should accept object handle as an argument', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const navigatorHandle = await page.evaluateHandle(() => navigator);
       const text = await page.evaluate(e => e.userAgent, navigatorHandle);
       expect(text).toContain('Mozilla');
     });
     it('should accept object handle to primitive types', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => 5);
       const isFive = await page.evaluate(e => Object.is(e, 5), aHandle);
       expect(isFive).toBeTruthy();
     });
     it('should warn on nested object handles', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => document.body);
       let error = null;
@@ -51,13 +51,13 @@ describe('JSHandle', function() {
       expect(error.message).toContain('Are you passing a nested JSHandle?');
     });
     it('should accept object handle to unserializable value', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => Infinity);
       expect(await page.evaluate(e => Object.is(e, Infinity), aHandle)).toBe(true);
     });
     it('should use the same JS wrappers', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         window.FOO = 123;
@@ -66,7 +66,7 @@ describe('JSHandle', function() {
       expect(await page.evaluate(e => e.FOO, aHandle)).toBe(123);
     });
     it('should work with primitives', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         window.FOO = 123;
@@ -78,7 +78,7 @@ describe('JSHandle', function() {
 
   describe('JSHandle.getProperty', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => ({
         one: 1,
@@ -92,14 +92,14 @@ describe('JSHandle', function() {
 
   describe('JSHandle.jsonValue', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => ({foo: 'bar'}));
       const json = await aHandle.jsonValue();
       expect(json).toEqual({foo: 'bar'});
     });
     itFailsFirefox('should not work with dates', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const dateHandle = await page.evaluateHandle(() => new Date('2017-09-26T00:00:00.000Z'));
       const json = await dateHandle.jsonValue();
@@ -120,7 +120,7 @@ describe('JSHandle', function() {
 
   describe('JSHandle.getProperties', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => ({
         foo: 'bar'
@@ -131,7 +131,7 @@ describe('JSHandle', function() {
       expect(await foo.jsonValue()).toBe('bar');
     });
     it('should return even non-own properties', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         class A {
@@ -155,21 +155,21 @@ describe('JSHandle', function() {
 
   describe('JSHandle.asElement', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => document.body);
       const element = aHandle.asElement();
       expect(element).toBeTruthy();
     });
     it('should return null for non-elements', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => 2);
       const element = aHandle.asElement();
       expect(element).toBeFalsy();
     });
     itFailsFirefox('should return ElementHandle for TextNodes', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<div>ee!</div>');
       const aHandle = await page.evaluateHandle(() => document.querySelector('div').firstChild);
@@ -178,7 +178,7 @@ describe('JSHandle', function() {
       expect(await page.evaluate(e => e.nodeType === HTMLElement.TEXT_NODE, element));
     });
     itFailsFirefox('should work with nullified Node', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<section>test</section>');
       await page.evaluate(() => delete Node);
@@ -190,7 +190,7 @@ describe('JSHandle', function() {
 
   describe('JSHandle.toString', function() {
     it('should work for primitives', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const numberHandle = await page.evaluateHandle(() => 2);
       expect(numberHandle.toString()).toBe('JSHandle:2');
@@ -198,13 +198,13 @@ describe('JSHandle', function() {
       expect(stringHandle.toString()).toBe('JSHandle:a');
     });
     it('should work for complicated objects', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => window);
       expect(aHandle.toString()).toBe('JSHandle@object');
     });
     it('should work with different subtypes', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       expect((await page.evaluateHandle('(function(){})')).toString()).toBe('JSHandle@function');
       expect((await page.evaluateHandle('12')).toString()).toBe('JSHandle:12');

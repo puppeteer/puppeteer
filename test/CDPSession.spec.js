@@ -20,7 +20,7 @@ const {waitEvent} = require('./utils');
 
 describeChromeOnly('Target.createCDPSession', function() {
   it('should work', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const client = await page.target().createCDPSession();
 
@@ -42,7 +42,7 @@ describeChromeOnly('Target.createCDPSession', function() {
     expect(events.length).toBe(1);
   });
   it('should enable and disable domains independently', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const client = await page.target().createCDPSession();
     await client.send('Runtime.enable');
@@ -59,7 +59,7 @@ describeChromeOnly('Target.createCDPSession', function() {
     expect(event.url).toBe('foo.js');
   });
   it('should be able to detach session', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const client = await page.target().createCDPSession();
     await client.send('Runtime.enable');

@@ -21,7 +21,7 @@ const {getTestState} = require('./mocha-utils');
 
 describe('Target', function() {
   it('Browser.targets should return all of the targets', async() => {
-    const { page, server, browser } = getTestState();
+    const { browser } = getTestState();
 
     // The pages will be the testing page and the original newtab page
     const targets = browser.targets();
@@ -30,7 +30,7 @@ describe('Target', function() {
     expect(targets.some(target => target.type() === 'browser')).toBeTruthy();
   });
   it('Browser.pages should return all of the pages', async() => {
-    const { page, server, context } = getTestState();
+    const { page, context } = getTestState();
 
     // The pages will be the testing page
     const allPages = await context.pages();
@@ -46,7 +46,7 @@ describe('Target', function() {
     expect(browserTarget).toBeTruthy();
   });
   it('should be able to use the default page in the browser', async() => {
-    const { page, server, browser } = getTestState();
+    const { page, browser } = getTestState();
 
     // The pages will be the testing page and the original newtab page
     const allPages = await browser.pages();
@@ -125,7 +125,7 @@ describe('Target', function() {
     expect((await changedTarget).url()).toBe(server.EMPTY_PAGE);
   });
   itFailsFirefox('should not report uninitialized pages', async() => {
-    const { page, server, context } = getTestState();
+    const { context } = getTestState();
 
     let targetChanged = false;
     const listener = () => targetChanged = true;

@@ -30,7 +30,7 @@ describe('Emulation', () => {
   describe('Page.viewport', function() {
 
     it('should get the proper viewport size', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       expect(page.viewport()).toEqual({width: 800, height: 600});
       await page.setViewport({width: 123, height: 456});
@@ -131,7 +131,7 @@ describe('Emulation', () => {
      * tests, and vice-versa.
      */
     itFailsFirefox('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(true);
       expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
@@ -143,7 +143,7 @@ describe('Emulation', () => {
       expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
     });
     it('should throw in case of bad argument', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       let error = null;
       await page.emulateMedia('bad').catch(e => error = e);
@@ -156,7 +156,7 @@ describe('Emulation', () => {
      * too (and see the big comment for why we have these duplicated).
      */
     itFailsFirefox('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(true);
       expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
@@ -168,7 +168,7 @@ describe('Emulation', () => {
       expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
     });
     it('should throw in case of bad argument', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       let error = null;
       await page.emulateMediaType('bad').catch(e => error = e);
@@ -178,7 +178,7 @@ describe('Emulation', () => {
 
   describe('Page.emulateMediaFeatures', function() {
     itFailsFirefox('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.emulateMediaFeatures([
         { name: 'prefers-reduced-motion', value: 'reduce' },
@@ -208,7 +208,7 @@ describe('Emulation', () => {
       expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches)).toBe(false);
     });
     it('should throw in case of bad argument', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       let error = null;
       await page.emulateMediaFeatures([{ name: 'bad', value: '' }]).catch(e => error = e);
@@ -218,7 +218,7 @@ describe('Emulation', () => {
 
   describeFailsFirefox('Page.emulateTimezone', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       page.evaluate(() => {
         globalThis.date = new Date(1479579154987);
@@ -237,7 +237,7 @@ describe('Emulation', () => {
     });
 
     it('should throw for invalid timezone IDs', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       let error = null;
       await page.emulateTimezone('Foo/Bar').catch(e => error = e);

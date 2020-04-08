@@ -29,7 +29,7 @@ function dimensions() {
 
 describe('Mouse', function() {
   it('should click the document', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.evaluate(() => {
       window.clickPromise = new Promise(resolve => {
@@ -130,7 +130,7 @@ describe('Mouse', function() {
     }
   });
   itFailsFirefox('should tween mouse movement', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.mouse.move(100, 100);
     await page.evaluate(() => {

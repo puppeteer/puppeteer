@@ -449,7 +449,7 @@ describe('network', function() {
       expect(request.headers['foo']).toBe('bar');
     });
     it('should throw for non-string header values', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       let error = null;
       try {

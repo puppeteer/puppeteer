@@ -87,7 +87,7 @@ describe('Screenshots', function() {
       expect(screenshot).toBeGolden('screenshot-grid-fullpage.png');
     });
     it('should run in parallel in multiple pages', async() => {
-      const { page, server, context } = getTestState();
+      const { server, context } = getTestState();
 
       const N = 2;
       const pages = await Promise.all(Array(N).fill(0).map(async() => {
@@ -120,7 +120,7 @@ describe('Screenshots', function() {
       expect(screenshot).toBeGolden('white.jpg');
     });
     it('should work with odd clip size on Retina displays', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const screenshot = await page.screenshot({
         clip: {
@@ -156,7 +156,7 @@ describe('Screenshots', function() {
       expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
     });
     itFailsFirefox('should take into account padding and border', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
@@ -175,7 +175,7 @@ describe('Screenshots', function() {
       expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
     });
     itFailsFirefox('should capture full element when larger than viewport', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setViewport({width: 500, height: 500});
 
@@ -201,7 +201,7 @@ describe('Screenshots', function() {
       expect(await page.evaluate(() => ({ w: window.innerWidth, h: window.innerHeight }))).toEqual({ w: 500, h: 500 });
     });
     itFailsFirefox('should scroll element into view', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`
@@ -226,7 +226,7 @@ describe('Screenshots', function() {
       expect(screenshot).toBeGolden('screenshot-element-scrolled-into-view.png');
     });
     itFailsFirefox('should work with a rotated element', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setViewport({width: 500, height: 500});
       await page.setContent(`<div style="position:absolute;
@@ -241,7 +241,7 @@ describe('Screenshots', function() {
       expect(screenshot).toBeGolden('screenshot-element-rotate.png');
     });
     itFailsFirefox('should fail to screenshot a detached element', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<h1>remove this</h1>');
       const elementHandle = await page.$('h1');
@@ -250,7 +250,7 @@ describe('Screenshots', function() {
       expect(screenshotError.message).toBe('Node is either not visible or not an HTMLElement');
     });
     itFailsFirefox('should not hang with zero width/height element', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<div style="width: 50px; height: 0"></div>');
       const div = await page.$('div');

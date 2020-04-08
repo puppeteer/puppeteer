@@ -127,7 +127,7 @@ describe('Launcher specs', function() {
     });
     describe('Browser.close', function() {
       it('should terminate network waiters', async() => {
-        const { context, server , puppeteer, defaultBrowserOptions} = getTestState();
+        const { server, puppeteer, defaultBrowserOptions } = getTestState();
 
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const remote = await puppeteer.connect({browserWSEndpoint: browser.wsEndpoint()});
@@ -427,7 +427,7 @@ describe('Launcher specs', function() {
       });
       // @see https://github.com/puppeteer/puppeteer/issues/4197#issuecomment-481793410
       itFailsFirefox('should be able to connect to the same page simultaneously', async() => {
-        const { server , puppeteer} = getTestState();
+        const { puppeteer } = getTestState();
 
         const browserOne = await puppeteer.launch();
         const browserTwo = await puppeteer.connect({ browserWSEndpoint: browserOne.wsEndpoint() });
@@ -443,7 +443,7 @@ describe('Launcher specs', function() {
     });
     describe('Puppeteer.executablePath', function() {
       itFailsFirefox('should work', async() => {
-        const { server , puppeteer} = getTestState();
+        const { puppeteer } = getTestState();
 
         const executablePath = puppeteer.executablePath();
         expect(fs.existsSync(executablePath)).toBe(true);

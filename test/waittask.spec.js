@@ -43,7 +43,7 @@ describe('Page.waitFor', function() {
     expect(found).toBe(true);
   });
   itFailsFirefox('should not allow you to select an element with single slash xpath', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.setContent(`<div>some text</div>`);
     let error = null;
@@ -51,7 +51,7 @@ describe('Page.waitFor', function() {
     expect(error).toBeTruthy();
   });
   it('should timeout', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const startTime = Date.now();
     const timeout = 42;
@@ -59,7 +59,7 @@ describe('Page.waitFor', function() {
     expect(Date.now() - startTime).not.toBeLessThan(timeout / 2);
   });
   it('should work with multiline body', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const result = await page.waitForFunction(`
         (() => true)()
@@ -67,7 +67,7 @@ describe('Page.waitFor', function() {
     expect(await result.jsonValue()).toBe(true);
   });
   it('should wait for predicate', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await Promise.all([
       page.waitFor(() => window.innerWidth < 100),
@@ -75,14 +75,14 @@ describe('Page.waitFor', function() {
     ]);
   });
   it('should throw when unknown type', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let error = null;
     await page.waitFor({foo: 'bar'}).catch(e => error = e);
     expect(error.message).toContain('Unsupported target type');
   });
   it('should wait for predicate with arguments', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.waitFor((arg1, arg2) => arg1 !== arg2, {}, 1, 2);
   });
@@ -90,14 +90,14 @@ describe('Page.waitFor', function() {
 
 describe('Frame.waitForFunction', function() {
   it('should accept a string', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const watchdog = page.waitForFunction('window.__FOO === 1');
     await page.evaluate(() => window.__FOO = 1);
     await watchdog;
   });
   itFailsFirefox('should work when resolved right before execution context disposal', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.evaluateOnNewDocument(() => window.__RELOADED = true);
     await page.waitForFunction(() => {
@@ -107,7 +107,7 @@ describe('Frame.waitForFunction', function() {
     });
   });
   it('should poll on interval', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let success = false;
     const startTime = Date.now();
@@ -121,7 +121,7 @@ describe('Frame.waitForFunction', function() {
     expect(Date.now() - startTime).not.toBeLessThan(polling / 2);
   });
   it('should poll on mutation', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let success = false;
     const watchdog = page.waitForFunction(() => window.__FOO === 'hit', {polling: 'mutation'})
@@ -132,7 +132,7 @@ describe('Frame.waitForFunction', function() {
     await watchdog;
   });
   it('should poll on raf', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const watchdog = page.waitForFunction(() => window.__FOO === 'hit', {polling: 'raf'});
     await page.evaluate(() => window.__FOO = 'hit');
@@ -151,7 +151,7 @@ describe('Frame.waitForFunction', function() {
     expect(error).toBe(null);
   });
   it('should throw on bad polling value', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let error = null;
     try {
@@ -163,7 +163,7 @@ describe('Frame.waitForFunction', function() {
     expect(error.message).toContain('polling');
   });
   it('should throw negative polling interval', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let error = null;
     try {
@@ -264,7 +264,7 @@ describeFailsFirefox('Frame.waitForSelector', function() {
   });
 
   it('should work with removed MutationObserver', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.evaluate(() => delete window.MutationObserver);
     const [handle] = await Promise.all([
@@ -350,7 +350,7 @@ describeFailsFirefox('Frame.waitForSelector', function() {
     expect(boxFound).toBe(true);
   });
   it('should wait for visible', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let divFound = false;
     const waitForSelector = page.waitForSelector('div', {visible: true}).then(() => divFound = true);
@@ -363,7 +363,7 @@ describeFailsFirefox('Frame.waitForSelector', function() {
     expect(divFound).toBe(true);
   });
   it('should wait for visible recursively', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let divVisible = false;
     const waitForSelector = page.waitForSelector('div#inner', {visible: true}).then(() => divVisible = true);
@@ -376,7 +376,7 @@ describeFailsFirefox('Frame.waitForSelector', function() {
     expect(divVisible).toBe(true);
   });
   it('hidden should wait for visibility: hidden', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let divHidden = false;
     await page.setContent(`<div style='display: block;'></div>`);
@@ -388,7 +388,7 @@ describeFailsFirefox('Frame.waitForSelector', function() {
     expect(divHidden).toBe(true);
   });
   it('hidden should wait for display: none', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let divHidden = false;
     await page.setContent(`<div style='display: block;'></div>`);
@@ -400,7 +400,7 @@ describeFailsFirefox('Frame.waitForSelector', function() {
     expect(divHidden).toBe(true);
   });
   it('hidden should wait for removal', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.setContent(`<div></div>`);
     let divRemoved = false;
@@ -412,7 +412,7 @@ describeFailsFirefox('Frame.waitForSelector', function() {
     expect(divRemoved).toBe(true);
   });
   it('should return null if waiting to hide non-existing element', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const handle = await page.waitForSelector('non-existing', { hidden: true });
     expect(handle).toBe(null);
@@ -427,7 +427,7 @@ describeFailsFirefox('Frame.waitForSelector', function() {
     expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
   });
   it('should have an error message specifically for awaiting an element to be hidden', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.setContent(`<div></div>`);
     let error = null;
@@ -437,7 +437,7 @@ describeFailsFirefox('Frame.waitForSelector', function() {
   });
 
   it('should respond to node attribute mutation', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let divFound = false;
     const waitForSelector = page.waitForSelector('.zombo').then(() => divFound = true);
@@ -447,14 +447,14 @@ describeFailsFirefox('Frame.waitForSelector', function() {
     expect(await waitForSelector).toBe(true);
   });
   itFailsFirefox('should return the element handle', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const waitForSelector = page.waitForSelector('.zombo');
     await page.setContent(`<div class='zombo'>anything</div>`);
     expect(await page.evaluate(x => x.textContent, await waitForSelector)).toBe('anything');
   });
   it('should have correct stack trace for timeout', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let error;
     await page.waitForSelector('.zombo', {timeout: 10}).catch(e => error = e);
@@ -466,7 +466,7 @@ describeFailsFirefox('Frame.waitForXPath', function() {
   const addElement = tag => document.body.appendChild(document.createElement(tag));
 
   it('should support some fancy xpath', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.setContent(`<p>red herring</p><p>hello  world  </p>`);
     const waitForXPath = page.waitForXPath('//p[normalize-space(.)="hello world"]');
@@ -507,7 +507,7 @@ describeFailsFirefox('Frame.waitForXPath', function() {
     expect(waitError.message).toContain('waitForFunction failed: frame got detached.');
   });
   it('hidden should wait for display: none', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     let divHidden = false;
     await page.setContent(`<div style='display: block;'></div>`);
@@ -519,21 +519,21 @@ describeFailsFirefox('Frame.waitForXPath', function() {
     expect(divHidden).toBe(true);
   });
   it('should return the element handle', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     const waitForXPath = page.waitForXPath('//*[@class="zombo"]');
     await page.setContent(`<div class='zombo'>anything</div>`);
     expect(await page.evaluate(x => x.textContent, await waitForXPath)).toBe('anything');
   });
   it('should allow you to select a text node', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.setContent(`<div>some text</div>`);
     const text = await page.waitForXPath('//div/text()');
     expect(await (await text.getProperty('nodeType')).jsonValue()).toBe(3 /* Node.TEXT_NODE */);
   });
   it('should allow you to select an element with single slash', async() => {
-    const { page, server } = getTestState();
+    const { page } = getTestState();
 
     await page.setContent(`<div>some text</div>`);
     const waitForXPath = page.waitForXPath('/html/body/div');

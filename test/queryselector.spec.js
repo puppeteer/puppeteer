@@ -19,21 +19,21 @@ const {getTestState} = require('./mocha-utils');
 describe('querySelector', function() {
   describeFailsFirefox('Page.$eval', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<section id="testAttribute">43543</section>');
       const idAttribute = await page.$eval('section', e => e.id);
       expect(idAttribute).toBe('testAttribute');
     });
     it('should accept arguments', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<section>hello</section>');
       const text = await page.$eval('section', (e, suffix) => e.textContent + suffix, ' world!');
       expect(text).toBe('hello world!');
     });
     it('should accept ElementHandles as arguments', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<section>hello</section><div> world</div>');
       const divHandle = await page.$('div');
@@ -41,7 +41,7 @@ describe('querySelector', function() {
       expect(text).toBe('hello world');
     });
     it('should throw error if no element is found', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       let error = null;
       await page.$eval('section', e => e.id).catch(e => error = e);
@@ -51,7 +51,7 @@ describe('querySelector', function() {
 
   describeFailsFirefox('Page.$$eval', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<div>hello</div><div>beautiful</div><div>world!</div>');
       const divsCount = await page.$$eval('div', divs => divs.length);
@@ -61,14 +61,14 @@ describe('querySelector', function() {
 
   describeFailsFirefox('Page.$', function() {
     it('should query existing element', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<section>test</section>');
       const element = await page.$('section');
       expect(element).toBeTruthy();
     });
     it('should return null for non-existing element', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const element = await page.$('non-existing-element');
       expect(element).toBe(null);
@@ -77,7 +77,7 @@ describe('querySelector', function() {
 
   describe('Page.$$', function() {
     itFailsFirefox('should query existing elements', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<div>A</div><br/><div>B</div>');
       const elements = await page.$$('div');
@@ -96,7 +96,7 @@ describe('querySelector', function() {
 
   describeFailsFirefox('Path.$x', function() {
     it('should query existing element', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<section>test</section>');
       const elements = await page.$x('/html/body/section');
@@ -104,13 +104,13 @@ describe('querySelector', function() {
       expect(elements.length).toBe(1);
     });
     it('should return empty array for non-existing element', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const element = await page.$x('/html/body/non-existing-element');
       expect(element).toEqual([]);
     });
     it('should return multiple elements', async() => {
-      const { page, sever } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<div></div><div></div>');
       const elements = await page.$x('/html/body/div');
@@ -133,7 +133,7 @@ describe('querySelector', function() {
     });
 
     itFailsFirefox('should return null for non-existing element', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<html><body><div class="second"><div class="inner">B</div></div></body></html>');
       const html = await page.$('html');
@@ -143,7 +143,7 @@ describe('querySelector', function() {
   });
   describeFailsFirefox('ElementHandle.$eval', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<html><body><div class="tweet"><div class="like">100</div><div class="retweets">10</div></div></body></html>');
       const tweet = await page.$('.tweet');
@@ -152,7 +152,7 @@ describe('querySelector', function() {
     });
 
     it('should retrieve content from subtree', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const htmlContent = '<div class="a">not-a-child-div</div><div id="myId"><div class="a">a-child-div</div></div>';
       await page.setContent(htmlContent);
@@ -162,7 +162,7 @@ describe('querySelector', function() {
     });
 
     it('should throw in case of missing selector', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const htmlContent = '<div class="a">not-a-child-div</div><div id="myId"></div>';
       await page.setContent(htmlContent);
@@ -173,7 +173,7 @@ describe('querySelector', function() {
   });
   describeFailsFirefox('ElementHandle.$$eval', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<html><body><div class="tweet"><div class="like">100</div><div class="like">10</div></div></body></html>');
       const tweet = await page.$('.tweet');
@@ -182,7 +182,7 @@ describe('querySelector', function() {
     });
 
     it('should retrieve content from subtree', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const htmlContent = '<div class="a">not-a-child-div</div><div id="myId"><div class="a">a1-child-div</div><div class="a">a2-child-div</div></div>';
       await page.setContent(htmlContent);
@@ -192,7 +192,7 @@ describe('querySelector', function() {
     });
 
     it('should not throw in case of missing selector', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const htmlContent = '<div class="a">not-a-child-div</div><div id="myId"></div>';
       await page.setContent(htmlContent);
@@ -205,7 +205,7 @@ describe('querySelector', function() {
 
   describeFailsFirefox('ElementHandle.$$', function() {
     it('should query existing elements', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<html><body><div>A</div><br/><div>B</div></body></html>');
       const html = await page.$('html');
@@ -216,7 +216,7 @@ describe('querySelector', function() {
     });
 
     it('should return empty array for non-existing elements', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<html><body><span>A</span><br/><span>B</span></body></html>');
       const html = await page.$('html');
@@ -240,7 +240,7 @@ describe('querySelector', function() {
     });
 
     itFailsFirefox('should return null for non-existing element', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<html><body><div class="second"><div class="inner">B</div></div></body></html>');
       const html = await page.$('html');

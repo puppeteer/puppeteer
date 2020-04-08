@@ -97,7 +97,7 @@ describe('Page', function() {
 
   describe('Page.Events.Load', function() {
     it('should fire when expected', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await Promise.all([
         page.goto('about:blank'),
@@ -198,7 +198,7 @@ describe('Page', function() {
     }
 
     it('should be prompt by default', async() => {
-      const { page, server, context } = getTestState();
+      const { page, server } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       expect(await getPermission(page, 'geolocation')).toBe('prompt');
@@ -294,7 +294,7 @@ describe('Page', function() {
       });
     });
     it('should throw when invalid longitude', async() => {
-      const { page, server, context } = getTestState();
+      const { page } = getTestState();
 
       let error = null;
       try {
@@ -319,7 +319,7 @@ describe('Page', function() {
       expect(response.status()).toBe(200);
     });
     it('should emulate navigator.onLine', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       expect(await page.evaluate(() => window.navigator.onLine)).toBe(true);
       await page.setOfflineMode(true);
@@ -331,7 +331,7 @@ describe('Page', function() {
 
   describe('ExecutionContext.queryObjects', function() {
     itFailsFirefox('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       // Instantiate an object
       await page.evaluate(() => window.set = new Set(['hello', 'world']));
@@ -354,7 +354,7 @@ describe('Page', function() {
       expect(count).toBe(1);
     });
     it('should fail for disposed handles', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const prototypeHandle = await page.evaluateHandle(() => HTMLBodyElement.prototype);
       await prototypeHandle.dispose();
@@ -363,7 +363,7 @@ describe('Page', function() {
       expect(error.message).toBe('Prototype JSHandle is disposed!');
     });
     it('should fail primitive values as prototypes', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const prototypeHandle = await page.evaluateHandle(() => 42);
       let error = null;
@@ -374,7 +374,7 @@ describe('Page', function() {
 
   describeFailsFirefox('Page.Events.Console', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       let message = null;
       page.once('console', m => message = m);
@@ -389,7 +389,7 @@ describe('Page', function() {
       expect(await message.args()[2].jsonValue()).toEqual({foo: 'bar'});
     });
     it('should work for different console API calls', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const messages = [];
       page.on('console', msg => messages.push(msg));
@@ -417,7 +417,7 @@ describe('Page', function() {
       ]);
     });
     it('should not fail for window object', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       let message = null;
       page.once('console', msg => message = msg);
@@ -476,7 +476,7 @@ describe('Page', function() {
     });
     // @see https://github.com/puppeteer/puppeteer/issues/3865
     it('should not throw when there are console messages in detached iframes', async() => {
-      const { browser, page, server } = getTestState();
+      const { page, server } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(async() => {
@@ -498,7 +498,7 @@ describe('Page', function() {
 
   describe('Page.Events.DOMContentLoaded', function() {
     it('should fire when expected', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       page.goto('about:blank');
       await waitEvent(page, 'domcontentloaded');
@@ -507,14 +507,14 @@ describe('Page', function() {
 
   describeFailsFirefox('Page.metrics', function() {
     it('should get metrics from a page', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.goto('about:blank');
       const metrics = await page.metrics();
       checkMetrics(metrics);
     });
     it('metrics event fired on console.timeStamp', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const metricsPromise = new Promise(fulfill => page.once('metrics', fulfill));
       await page.evaluate(() => console.timeStamp('test42'));
@@ -669,7 +669,7 @@ describe('Page', function() {
 
   describeFailsFirefox('Page.exposeFunction', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.exposeFunction('compute', function(a, b) {
         return a * b;
@@ -680,7 +680,7 @@ describe('Page', function() {
       expect(result).toBe(36);
     });
     it('should throw exception in page context', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.exposeFunction('woof', function() {
         throw new Error('WOOF WOOF');
@@ -696,7 +696,7 @@ describe('Page', function() {
       expect(stack).toContain(__filename);
     });
     it('should support throwing "null"', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.exposeFunction('woof', function() {
         throw null;
@@ -711,7 +711,7 @@ describe('Page', function() {
       expect(thrown).toBe(null);
     });
     it('should be callable from-inside evaluateOnNewDocument', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       let called = false;
       await page.exposeFunction('woof', function() {
@@ -735,7 +735,7 @@ describe('Page', function() {
       expect(result).toBe(36);
     });
     it('should await returned promise', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.exposeFunction('compute', function(a, b) {
         return Promise.resolve(a * b);
@@ -775,7 +775,7 @@ describe('Page', function() {
       expect(result).toBe(15);
     });
     it('should work with complex objects', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.exposeFunction('complexObject', function(a, b) {
         return {x: a.x + b.x};
@@ -835,14 +835,14 @@ describe('Page', function() {
   describeFailsFirefox('Page.setContent', function() {
     const expectedOutput = '<html><head></head><body><div>hello</div></body></html>';
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<div>hello</div>');
       const result = await page.content();
       expect(result).toBe(expectedOutput);
     });
     it('should work with doctype', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const doctype = '<!DOCTYPE html>';
       await page.setContent(`${doctype}<div>hello</div>`);
@@ -850,7 +850,7 @@ describe('Page', function() {
       expect(result).toBe(`${doctype}${expectedOutput}`);
     });
     it('should work with HTML 4 doctype', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       const doctype = '<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" ' +
         '"http://www.w3.org/TR/html4/strict.dtd">';
@@ -893,31 +893,31 @@ describe('Page', function() {
       await contentPromise;
     });
     it('should work fast enough', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       for (let i = 0; i < 20; ++i)
         await page.setContent('<div>yo</div>');
     });
     it('should work with tricky content', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<div>hello world</div>' + '\x7F');
       expect(await page.$eval('div', div => div.textContent)).toBe('hello world');
     });
     it('should work with accents', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<div>aberración</div>');
       expect(await page.$eval('div', div => div.textContent)).toBe('aberración');
     });
     it('should work with emojis', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<div>🐥</div>');
       expect(await page.$eval('div', div => div.textContent)).toBe('🐥');
     });
     it('should work with newline', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<div>\n</div>');
       expect(await page.$eval('div', div => div.textContent)).toBe('\n');
@@ -993,7 +993,7 @@ describe('Page', function() {
 
   describe('Page.addScriptTag', function() {
     it('should throw an error if no options are provided', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       let error = null;
       try {
@@ -1101,7 +1101,7 @@ describe('Page', function() {
 
   describe('Page.addStyleTag', function() {
     it('should throw an error if no options are provided', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       let error = null;
       try {
@@ -1193,7 +1193,7 @@ describe('Page', function() {
 
   describeFailsFirefox('Page.setJavaScriptEnabled', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setJavaScriptEnabled(false);
       await page.goto('data:text/html, <script>var something = "forbidden"</script>');
@@ -1365,7 +1365,7 @@ describe('Page', function() {
       expect(await page.$eval('select', select => Array.from(select.options).every(option => !option.selected))).toEqual(true);
     });
     itFailsFirefox('should throw if passed in non-strings', async() => {
-      const { page, server } = getTestState();
+      const { page } = getTestState();
 
       await page.setContent('<select><option value="12"/></select>');
       let error = null;
@@ -1390,7 +1390,7 @@ describe('Page', function() {
 
   describe('Page.Events.Close', function() {
     itFailsFirefox('should work with window.close', async() => {
-      const {  page, context, server  } = getTestState();
+      const { page, context } = getTestState();
 
       const newPagePromise = new Promise(fulfill => context.once('targetcreated', target => fulfill(target.page())));
       await page.evaluate(() => window['newPage'] = window.open('about:blank'));
@@ -1400,7 +1400,7 @@ describe('Page', function() {
       await closedPromise;
     });
     it('should work with page.close', async() => {
-      const {  page, context, server  } = getTestState();
+      const { context } = getTestState();
 
       const newPage = await context.newPage();
       const closedPromise = new Promise(x => newPage.on('close', x));
@@ -1419,7 +1419,7 @@ describe('Page', function() {
 
   describe('Page.browserContext', function() {
     it('should return the correct browser instance', async() => {
-      const { page, context, browser } = getTestState();
+      const { page, context } = getTestState();
 
       expect(page.browserContext()).toBe(context);
     });
