@@ -1,5 +1,3 @@
-const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
 /**
  * Copyright 2018 Google Inc. All rights reserved.
  *
@@ -15,6 +13,9 @@ const {getTestState} = require('./mocha-utils');
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const expect = require('expect');
+const {getTestState} = require('./mocha-utils');
+
 describe('Page.Events.Dialog', function() {
   it('should fire', async() => {
     const { page } = getTestState();
