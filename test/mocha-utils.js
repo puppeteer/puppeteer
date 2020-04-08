@@ -32,6 +32,7 @@ const setupServer = async() => {
   server.PREFIX = `http://localhost:${port}`;
   server.CROSS_PROCESS_PREFIX = `http://127.0.0.1:${port}`;
   server.EMPTY_PAGE = `http://localhost:${port}/empty.html`;
+
   const httpsPort = port + 1;
   const httpsServer = await TestServer.createHTTPS(assetsPath, httpsPort);
   httpsServer.enableHTTPCache(cachedPath);
@@ -71,9 +72,7 @@ setupGoldenAssertions();
 
 const state = {};
 
-// purposefully global
 if (process.argv.some(part => part.includes('mocha'))) {
-
   global.itFailsFirefox = (...args) => {
     if (isFirefox)
       return xit(...args);
@@ -138,6 +137,8 @@ if (process.argv.some(part => part.includes('mocha'))) {
     await state.browser.close();
     state.browser = null;
     await state.server.stop();
+    state.server = null;
     await state.httpsServer.stop();
+    state.httpsServer = null;
   });
 }
