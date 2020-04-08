@@ -72,73 +72,70 @@ setupGoldenAssertions();
 
 const state = {};
 
-if (process.argv.some(part => part.includes('mocha'))) {
-  global.itFailsFirefox = (...args) => {
-    if (isFirefox)
-      return xit(...args);
-    else
-      return it(...args);
-  };
+global.itFailsFirefox = (...args) => {
+  if (isFirefox)
+    return xit(...args);
+  else
+    return it(...args);
+};
 
-  global.describeFailsFirefox = (...args) => {
-    if (isFirefox)
-      return xdescribe(...args);
-    else
-      return describe(...args);
-  };
+global.describeFailsFirefox = (...args) => {
+  if (isFirefox)
+    return xdescribe(...args);
+  else
+    return describe(...args);
+};
 
-  global.describeChromeOnly = (...args) => {
-    if (isChrome)
-      return describe(...args);
-  };
+global.describeChromeOnly = (...args) => {
+  if (isChrome)
+    return describe(...args);
+};
 
-  if (process.env.COVERAGE)
-    assertCoverage();
+if (process.env.COVERAGE)
+  assertCoverage();
 
 
-  before(async() => {
+before(async() => {
+  const {server, httpsServer} = await setupServer();
 
-    const {server, httpsServer} = await setupServer();
+  state.puppeteer = puppeteer;
+  state.defaultBrowserOptions = defaultBrowserOptions;
+  state.browser = await puppeteer.launch(defaultBrowserOptions);
+  state.server = server;
+  state.httpsServer = httpsServer;
+  state.isFirefox = isFirefox;
+  state.isChrome = isChrome;
+  state.isHeadless = isHeadless;
+  state.puppeteerPath = path.resolve(path.join(__dirname, '..'));
+});
 
-    state.puppeteer = puppeteer;
-    state.defaultBrowserOptions = defaultBrowserOptions;
-    state.browser = await puppeteer.launch(defaultBrowserOptions);
-    state.server = server;
-    state.httpsServer = httpsServer;
-    state.isFirefox = isFirefox;
-    state.isChrome = isChrome;
-    state.isHeadless = isHeadless;
-    state.puppeteerPath = path.resolve(path.join(__dirname, '..'));
-  });
+beforeEach(async() => {
+  state.server.reset();
+  state.httpsServer.reset();
+  state.context = await state.browser.createIncognitoBrowserContext();
+  state.page = await state.context.newPage();
+});
 
-  beforeEach(async() => {
-    state.server.reset();
-    state.httpsServer.reset();
-    state.context = await state.browser.createIncognitoBrowserContext();
-    state.page = await state.context.newPage();
-  });
-
-  afterEach(async() => {
-    /* some tests deliberately clear out the pre-built context that we create
+afterEach(async() => {
+  /* some tests deliberately clear out the pre-built context that we create
      * and if they do that we don't have a context to close
      * so this is wrapped in a try - and if it errors we don't need
      * to do anything
      */
-    try {
-      await state.context.close();
-      state.context = null;
-      state.page = null;
-    } catch (e) {
-      // do nothing - see larger comment above
-    }
-  });
+  try {
+    await state.context.close();
+    state.context = null;
+    state.page = null;
+  } catch (e) {
+    // do nothing - see larger comment above
+  }
+});
 
-  after(async() => {
-    await state.browser.close();
-    state.browser = null;
-    await state.server.stop();
-    state.server = null;
-    await state.httpsServer.stop();
-    state.httpsServer = null;
-  });
-}
+after(async() => {
+  await state.browser.close();
+  state.browser = null;
+  await state.server.stop();
+  state.server = null;
+  await state.httpsServer.stop();
+  state.httpsServer = null;
+});
