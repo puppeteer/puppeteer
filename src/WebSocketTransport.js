@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 const NodeWebSocket = require('ws');
+const pkg = require('../package.json');
 
 /**
  * @implements {!Puppeteer.ConnectionTransport}
@@ -28,6 +29,9 @@ class WebSocketTransport {
       const ws = new NodeWebSocket(url, [], {
         perMessageDeflate: false,
         maxPayload: 256 * 1024 * 1024, // 256Mb
+        headers: {
+          'User-Agent' : `Puppeteer ${pkg.version}`,
+        }
       });
 
       ws.addEventListener('open', () => resolve(new WebSocketTransport(ws)));
