@@ -12,12 +12,12 @@
     "firefox_revision": "latest"
   },
   "scripts": {
-    "unit": "mocha --config .mocharc.js",
+    "unit": "mocha --config mocha-config/puppeteer-unit-tests.js",
     "coverage": "cross-env COVERAGE=1 npm run unit",
     "funit": "PUPPETEER_PRODUCT=firefox npm run unit",
     "debug-unit": "node --inspect-brk test/test.js",
-    "test-doclint": "node utils/doclint/check_public_api/test/test.js && node utils/doclint/preprocessor/test.js",
-    "test": "npm run tsc && npm run lint --silent && npm run coverage && npm run test-doclint && npm run test-types && node utils/testrunner/test/test.js",
+    "test-doclint": "mocha --config mocha-config/doclint-tests.js",
+    "test": "npm run tsc && npm run lint --silent && npm run coverage && npm run test-doclint && npm run test-types",
     "prepublishOnly": "npm run tsc",
     "dev-install": "npm run tsc && node install.js",
     "install": "node install.js",
@@ -27,7 +27,7 @@
     "apply-next-version": "node utils/apply_next_version.js",
     "bundle": "npm run tsc && npx browserify -r ./index.js:puppeteer -o utils/browser/puppeteer-web.js",
     "test-types": "node utils/doclint/generate_types && tsc --version && tsc -p utils/doclint/generate_types/test/",
-    "unit-bundle": "node utils/browser/test.js",
+    "unit-bundle": "mocha --config mocha-config/browser-bundle-tests.js",
     "update-protocol-d-ts": "node utils/protocol-types-generator"
   },
   "author": "The Chromium Authors",

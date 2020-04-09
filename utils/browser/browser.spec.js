@@ -2,7 +2,6 @@ const path = require('path');
 const fs = require('fs');
 const puppeteer = require('../..');
 const {TestServer} = require('../testserver/');
-const {TestRunner, Reporter} = require('../testrunner/');
 const expect = require('expect');
 
 const puppeteerWebPath = path.join(__dirname, 'puppeteer-web.js');
@@ -10,12 +9,9 @@ if (!fs.existsSync(puppeteerWebPath))
   throw new Error(`puppeteer-web is not built; run "npm run bundle"`);
 const puppeteerWeb = fs.readFileSync(puppeteerWebPath, 'utf8');
 
-const testRunner = new TestRunner();
-const {describe, fdescribe, xdescribe} = testRunner;
-const {it, xit, fit} = testRunner;
-const {afterAll, beforeAll, afterEach, beforeEach} = testRunner;
+const state = {};
 
-beforeAll(async state => {
+before(async() => {
   const assetsPath = path.join(__dirname, '..', '..', 'test', 'assets');
   const port = 8998;
   state.server = await TestServer.create(assetsPath, port);
@@ -26,7 +22,7 @@ beforeAll(async state => {
   state.browser = await puppeteer.launch();
 });
 
-afterAll(async state => {
+after(async() => {
   await Promise.all([
     state.server.stop(),
     state.browser.close()
@@ -35,7 +31,7 @@ afterAll(async state => {
   state.server = null;
 });
 
-beforeEach(async state => {
+beforeEach(async() => {
   state.page = await state.browser.newPage();
   await state.page.evaluateOnNewDocument(puppeteerWeb);
   await state.page.addScriptTag({
@@ -43,13 +39,14 @@ beforeEach(async state => {
   });
 });
 
-afterEach(async state => {
+afterEach(async() => {
   await state.page.close();
   state.page = null;
 });
 
 describe('Puppeteer-Web', () => {
-  it('should work over web socket', async({page, serverConfig}) => {
+  it('should work over web socket', async() => {
+    const {page, serverConfig} = state;
     const browser2 = await puppeteer.launch();
     // Use in-page puppeteer to create a new page and navigate it to the EMPTY_PAGE
     await page.evaluate(async(browserWSEndpoint, serverConfig) => {
@@ -65,7 +62,8 @@ describe('Puppeteer-Web', () => {
     ]);
     await browser2.close();
   });
-  it('should work over exposed DevTools protocol', async({browser, page, serverConfig}) => {
+  it('should work over exposed DevTools protocol', async() => {
+    const {browser, page, serverConfig} = state;
     // Expose devtools protocol binding into page.
     const session = await browser.target().createCDPSession();
     const pageInfo = (await session.send('Target.getTargets')).targetInfos.find(info => info.attached);
@@ -90,11 +88,3 @@ describe('Puppeteer-Web', () => {
     ]);
   });
 });
-
-if (process.env.CI && testRunner.hasFocusedTestsOrSuites()) {
-  console.error('ERROR: "focused" tests/suites are prohibitted on bots. Remove any "fit"/"fdescribe" declarations.');
-  process.exit(1);
-}
-
-new Reporter(testRunner);
-testRunner.run();
