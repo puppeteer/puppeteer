@@ -334,8 +334,12 @@ function install(archivePath, folderPath) {
  * @param {string} folderPath
  * @return {!Promise<?Error>}
  */
-function extractZip(zipPath, folderPath) {
-  return extract(zipPath, {dir: folderPath});
+async function extractZip(zipPath, folderPath) {
+  try {
+    extract(zipPath, {dir: folderPath});
+  } catch (e) {
+    return e;
+  }
 }
 
 /**
