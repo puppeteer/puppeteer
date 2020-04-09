@@ -337,8 +337,8 @@ function install(archivePath, folderPath) {
 async function extractZip(zipPath, folderPath) {
   try {
     await extract(zipPath, {dir: folderPath});
-  } catch (e) {
-    return e;
+  } catch (error) {
+    return error;
   }
 }
 
