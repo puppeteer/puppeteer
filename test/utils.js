@@ -20,59 +20,7 @@ const expect = require('expect');
 const GoldenUtils = require('./golden-utils');
 const PROJECT_ROOT = fs.existsSync(path.join(__dirname, '..', 'package.json')) ? path.join(__dirname, '..') : path.join(__dirname, '..', '..');
 
-const COVERAGE_TESTSUITE_NAME = '**API COVERAGE**';
-
-/**
- * @param {Map<string, boolean>} apiCoverage
- * @param {Object} events
- * @param {string} className
- * @param {!Object} classType
- */
-function traceAPICoverage(apiCoverage, events, className, classType) {
-  className = className.substring(0, 1).toLowerCase() + className.substring(1);
-  for (const methodName of Reflect.ownKeys(classType.prototype)) {
-    const method = Reflect.get(classType.prototype, methodName);
-    if (methodName === 'constructor' || typeof methodName !== 'string' || methodName.startsWith('_') || typeof method !== 'function')
-      continue;
-    apiCoverage.set(`${className}.${methodName}`, false);
-    Reflect.set(classType.prototype, methodName, function(...args) {
-      apiCoverage.set(`${className}.${methodName}`, true);
-      return method.call(this, ...args);
-    });
-  }
-
-  if (events[classType.name]) {
-    for (const event of Object.values(events[classType.name])) {
-      if (typeof event !== 'symbol')
-        apiCoverage.set(`${className}.emit(${JSON.stringify(event)})`, false);
-    }
-    const method = Reflect.get(classType.prototype, 'emit');
-    Reflect.set(classType.prototype, 'emit', function(event, ...args) {
-      if (typeof event !== 'symbol' && this.listenerCount(event))
-        apiCoverage.set(`${className}.emit(${JSON.stringify(event)})`, true);
-      return method.call(this, event, ...args);
-    });
-  }
-}
-
 const utils = module.exports = {
-  recordAPICoverage: function(testRunner, api, events, disabled) {
-    const coverage = new Map();
-    for (const [className, classType] of Object.entries(api))
-      traceAPICoverage(coverage, events, className, classType);
-    testRunner.describe(COVERAGE_TESTSUITE_NAME, () => {
-      testRunner.it('should call all API methods', () => {
-        const missingMethods = [];
-        for (const method of coverage.keys()) {
-          if (!coverage.get(method) && !disabled.has(method))
-            missingMethods.push(method);
-        }
-        if (missingMethods.length)
-          throw new Error('Certain API Methods are not called: ' + missingMethods.join(', '));
-      });
-    });
-  },
-
   extendExpectWithToBeGolden: function(goldenDir, outputDir) {
     expect.extend({
       toBeGolden: (testScreenshot, goldenFilePath) => {

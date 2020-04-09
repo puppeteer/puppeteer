@@ -15,15 +15,19 @@
  */
 
 const path = require('path');
+const expect = require('expect');
+const {getTestState,setupTestBrowserHooks,setupTestPageAndContextHooks} = require('./mocha-utils');
 
 const FILE_TO_UPLOAD = path.join(__dirname, '/assets/file-to-upload.txt');
 
-module.exports.addTests = function({testRunner, expect, puppeteer}) {
-  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
-  const {it, fit, xit, it_fails_ffox} = testRunner;
-  const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
-  describe_fails_ffox('input', function() {
-    it('should upload the file', async({page, server}) => {
+describe('input tests', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
+
+  describeFailsFirefox('input', function() {
+    it('should upload the file', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/input/fileupload.html');
       const filePath = path.relative(process.cwd(), FILE_TO_UPLOAD);
       const input = await page.$('input');
@@ -44,8 +48,10 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
     });
   });
 
-  describe_fails_ffox('Page.waitForFileChooser', function() {
-    it('should work when file input is attached to DOM', async({page, server}) => {
+  describeFailsFirefox('Page.waitForFileChooser', function() {
+    it('should work when file input is attached to DOM', async() => {
+      const { page } = getTestState();
+
       await page.setContent(`<input type=file>`);
       const [chooser] = await Promise.all([
         page.waitForFileChooser(),
@@ -53,7 +59,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       ]);
       expect(chooser).toBeTruthy();
     });
-    it('should work when file input is not attached to DOM', async({page, server}) => {
+    it('should work when file input is not attached to DOM', async() => {
+      const { page } = getTestState();
+
       const [chooser] = await Promise.all([
         page.waitForFileChooser(),
         page.evaluate(() => {
@@ -64,24 +72,32 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       ]);
       expect(chooser).toBeTruthy();
     });
-    it('should respect timeout', async({page, server}) => {
+    it('should respect timeout', async() => {
+      const { page, puppeteer } = getTestState();
+
       let error = null;
       await page.waitForFileChooser({timeout: 1}).catch(e => error = e);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
-    it('should respect default timeout when there is no custom timeout', async({page, server}) => {
+    it('should respect default timeout when there is no custom timeout', async() => {
+      const { page, puppeteer } = getTestState();
+
       page.setDefaultTimeout(1);
       let error = null;
       await page.waitForFileChooser().catch(e => error = e);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
-    it('should prioritize exact timeout over default timeout', async({page, server}) => {
+    it('should prioritize exact timeout over default timeout', async() => {
+      const { page, puppeteer } = getTestState();
+
       page.setDefaultTimeout(0);
       let error = null;
       await page.waitForFileChooser({timeout: 1}).catch(e => error = e);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
-    it('should work with no timeout', async({page, server}) => {
+    it('should work with no timeout', async() => {
+      const { page } = getTestState();
+
       const [chooser] = await Promise.all([
         page.waitForFileChooser({timeout: 0}),
         page.evaluate(() => setTimeout(() => {
@@ -92,7 +108,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       ]);
       expect(chooser).toBeTruthy();
     });
-    it('should return the same file chooser when there are many watchdogs simultaneously', async({page, server}) => {
+    it('should return the same file chooser when there are many watchdogs simultaneously', async() => {
+      const { page } = getTestState();
+
       await page.setContent(`<input type=file>`);
       const [fileChooser1, fileChooser2] = await Promise.all([
         page.waitForFileChooser(),
@@ -103,8 +121,10 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
     });
   });
 
-  describe_fails_ffox('FileChooser.accept', function() {
-    it('should accept single file', async({page, server}) => {
+  describeFailsFirefox('FileChooser.accept', function() {
+    it('should accept single file', async() => {
+      const { page } = getTestState();
+
       await page.setContent(`<input type=file oninput='javascript:console.timeStamp()'>`);
       const [chooser] = await Promise.all([
         page.waitForFileChooser(),
@@ -117,7 +137,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(await page.$eval('input', input => input.files.length)).toBe(1);
       expect(await page.$eval('input', input => input.files[0].name)).toBe('file-to-upload.txt');
     });
-    it('should be able to read selected file', async({page, server}) => {
+    it('should be able to read selected file', async() => {
+      const { page } = getTestState();
+
       await page.setContent(`<input type=file>`);
       page.waitForFileChooser().then(chooser => chooser.accept([FILE_TO_UPLOAD]));
       expect(await page.$eval('input', async picker => {
@@ -129,7 +151,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
         return promise.then(() => reader.result);
       })).toBe('contents of the file');
     });
-    it('should be able to reset selected files with empty file list', async({page, server}) => {
+    it('should be able to reset selected files with empty file list', async() => {
+      const { page } = getTestState();
+
       await page.setContent(`<input type=file>`);
       page.waitForFileChooser().then(chooser => chooser.accept([FILE_TO_UPLOAD]));
       expect(await page.$eval('input', async picker => {
@@ -144,7 +168,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
         return picker.files.length;
       })).toBe(0);
     });
-    it('should not accept multiple files for single-file input', async({page, server}) => {
+    it('should not accept multiple files for single-file input', async() => {
+      const { page } = getTestState();
+
       await page.setContent(`<input type=file>`);
       const [chooser] = await Promise.all([
         page.waitForFileChooser(),
@@ -157,7 +183,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       ]).catch(e => error = e);
       expect(error).not.toBe(null);
     });
-    it('should fail when accepting file chooser twice', async({page, server}) => {
+    it('should fail when accepting file chooser twice', async() => {
+      const { page } = getTestState();
+
       await page.setContent(`<input type=file>`);
       const [fileChooser] = await Promise.all([
         page.waitForFileChooser(),
@@ -170,8 +198,10 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
     });
   });
 
-  describe_fails_ffox('FileChooser.cancel', function() {
-    it('should cancel dialog', async({page, server}) => {
+  describeFailsFirefox('FileChooser.cancel', function() {
+    it('should cancel dialog', async() => {
+      const { page } = getTestState();
+
       // Consider file chooser canceled if we can summon another one.
       // There's no reliable way in WebPlatform to see that FileChooser was
       // canceled.
@@ -187,7 +217,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
         page.$eval('input', input => input.click()),
       ]);
     });
-    it('should fail when canceling file chooser twice', async({page, server}) => {
+    it('should fail when canceling file chooser twice', async() => {
+      const { page } = getTestState();
+
       await page.setContent(`<input type=file>`);
       const [fileChooser] = await Promise.all([
         page.waitForFileChooser(),
@@ -200,8 +232,10 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
     });
   });
 
-  describe_fails_ffox('FileChooser.isMultiple', () => {
-    it('should work for single file pick', async({page, server}) => {
+  describeFailsFirefox('FileChooser.isMultiple', () => {
+    it('should work for single file pick', async() => {
+      const { page } = getTestState();
+
       await page.setContent(`<input type=file>`);
       const [chooser] = await Promise.all([
         page.waitForFileChooser(),
@@ -209,7 +243,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       ]);
       expect(chooser.isMultiple()).toBe(false);
     });
-    it('should work for "multiple"', async({page, server}) => {
+    it('should work for "multiple"', async() => {
+      const { page } = getTestState();
+
       await page.setContent(`<input multiple type=file>`);
       const [chooser] = await Promise.all([
         page.waitForFileChooser(),
@@ -217,7 +253,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       ]);
       expect(chooser.isMultiple()).toBe(true);
     });
-    it('should work for "webkitdirectory"', async({page, server}) => {
+    it('should work for "webkitdirectory"', async() => {
+      const { page } = getTestState();
+
       await page.setContent(`<input multiple webkitdirectory type=file>`);
       const [chooser] = await Promise.all([
         page.waitForFileChooser(),
@@ -226,4 +264,4 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(chooser.isMultiple()).toBe(true);
     });
   });
-};
+});

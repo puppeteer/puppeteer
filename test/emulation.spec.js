@@ -14,21 +14,33 @@
  * limitations under the License.
  */
 
-module.exports.addTests = function({testRunner, expect, puppeteer}) {
-  const {describe, xdescribe, fdescribe, describe_fails_ffox} = testRunner;
-  const {it, fit, xit, it_fails_ffox} = testRunner;
-  const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+const expect = require('expect');
+const {getTestState,setupTestBrowserHooks, setupTestPageAndContextHooks} = require('./mocha-utils');
 
-  const iPhone = puppeteer.devices['iPhone 6'];
-  const iPhoneLandscape = puppeteer.devices['iPhone 6 landscape'];
+describe('Emulation', () => {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
+  let iPhone;
+  let iPhoneLandscape;
+
+  before(() => {
+    const {puppeteer} = getTestState();
+    iPhone = puppeteer.devices['iPhone 6'];
+    iPhoneLandscape = puppeteer.devices['iPhone 6 landscape'];
+  });
 
   describe('Page.viewport', function() {
-    it('should get the proper viewport size', async({page, server}) => {
+
+    it('should get the proper viewport size', async() => {
+      const { page } = getTestState();
+
       expect(page.viewport()).toEqual({width: 800, height: 600});
       await page.setViewport({width: 123, height: 456});
       expect(page.viewport()).toEqual({width: 123, height: 456});
     });
-    it('should support mobile emulation', async({page, server}) => {
+    it('should support mobile emulation', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/mobile.html');
       expect(await page.evaluate(() => window.innerWidth)).toBe(800);
       await page.setViewport(iPhone.viewport);
@@ -36,7 +48,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       await page.setViewport({width: 400, height: 300});
       expect(await page.evaluate(() => window.innerWidth)).toBe(400);
     });
-    it_fails_ffox('should support touch emulation', async({page, server}) => {
+    itFailsFirefox('should support touch emulation', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/mobile.html');
       expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(false);
       await page.setViewport(iPhone.viewport);
@@ -58,19 +72,25 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
         return promise;
       }
     });
-    it_fails_ffox('should be detectable by Modernizr', async({page, server}) => {
+    itFailsFirefox('should be detectable by Modernizr', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/detect-touch.html');
       expect(await page.evaluate(() => document.body.textContent.trim())).toBe('NO');
       await page.setViewport(iPhone.viewport);
       await page.goto(server.PREFIX + '/detect-touch.html');
       expect(await page.evaluate(() => document.body.textContent.trim())).toBe('YES');
     });
-    it_fails_ffox('should detect touch when applying viewport with touches', async({page, server}) => {
+    itFailsFirefox('should detect touch when applying viewport with touches', async() => {
+      const { page, server } = getTestState();
+
       await page.setViewport({ width: 800, height: 600, hasTouch: true });
       await page.addScriptTag({url: server.PREFIX + '/modernizr.js'});
       expect(await page.evaluate(() => Modernizr.touchevents)).toBe(true);
     });
-    it_fails_ffox('should support landscape emulation', async({page, server}) => {
+    itFailsFirefox('should support landscape emulation', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/mobile.html');
       expect(await page.evaluate(() => screen.orientation.type)).toBe('portrait-primary');
       await page.setViewport(iPhoneLandscape.viewport);
@@ -81,13 +101,17 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
   });
 
   describe('Page.emulate', function() {
-    it('should work', async({page, server}) => {
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/mobile.html');
       await page.emulate(iPhone);
       expect(await page.evaluate(() => window.innerWidth)).toBe(375);
       expect(await page.evaluate(() => navigator.userAgent)).toContain('iPhone');
     });
-    it('should support clicking', async({page, server}) => {
+    it('should support clicking', async() => {
+      const { page, server } = getTestState();
+
       await page.emulate(iPhone);
       await page.goto(server.PREFIX + '/input/button.html');
       const button = await page.$('button');
@@ -98,7 +122,7 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
   });
 
   describe('Page.emulateMedia [deprecated]', function() {
-    /* emulateMedia is deprecated in favour of emulateMediaType but we
+  /* emulateMedia is deprecated in favour of emulateMediaType but we
      * don't want to remove it from Puppeteer just yet. We can't check
      * that emulateMedia === emulateMediaType because when running tests
      * with COVERAGE=1 the methods get rewritten. So instead we
@@ -108,7 +132,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
      * If you update these tests, you should update emulateMediaType's
      * tests, and vice-versa.
      */
-    it_fails_ffox('should work', async({page, server}) => {
+    itFailsFirefox('should work', async() => {
+      const { page } = getTestState();
+
       expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(true);
       expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
       await page.emulateMedia('print');
@@ -118,7 +144,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(true);
       expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
     });
-    it('should throw in case of bad argument', async({page, server}) => {
+    it('should throw in case of bad argument', async() => {
+      const { page } = getTestState();
+
       let error = null;
       await page.emulateMedia('bad').catch(e => error = e);
       expect(error.message).toBe('Unsupported media type: bad');
@@ -126,10 +154,12 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
   });
 
   describe('Page.emulateMediaType', function() {
-    /* NOTE! Updating these tests? Update the emulateMedia tests above
+  /* NOTE! Updating these tests? Update the emulateMedia tests above
      * too (and see the big comment for why we have these duplicated).
      */
-    it_fails_ffox('should work', async({page, server}) => {
+    itFailsFirefox('should work', async() => {
+      const { page } = getTestState();
+
       expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(true);
       expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
       await page.emulateMediaType('print');
@@ -139,7 +169,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(true);
       expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
     });
-    it('should throw in case of bad argument', async({page, server}) => {
+    it('should throw in case of bad argument', async() => {
+      const { page } = getTestState();
+
       let error = null;
       await page.emulateMediaType('bad').catch(e => error = e);
       expect(error.message).toBe('Unsupported media type: bad');
@@ -147,7 +179,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
   });
 
   describe('Page.emulateMediaFeatures', function() {
-    it_fails_ffox('should work', async({page, server}) => {
+    itFailsFirefox('should work', async() => {
+      const { page } = getTestState();
+
       await page.emulateMediaFeatures([
         { name: 'prefers-reduced-motion', value: 'reduce' },
       ]);
@@ -175,15 +209,19 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches)).toBe(false);
       expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches)).toBe(false);
     });
-    it('should throw in case of bad argument', async({page, server}) => {
+    it('should throw in case of bad argument', async() => {
+      const { page } = getTestState();
+
       let error = null;
       await page.emulateMediaFeatures([{ name: 'bad', value: '' }]).catch(e => error = e);
       expect(error.message).toBe('Unsupported media feature: bad');
     });
   });
 
-  describe_fails_ffox('Page.emulateTimezone', function() {
-    it('should work', async({page, server}) => {
+  describeFailsFirefox('Page.emulateTimezone', function() {
+    it('should work', async() => {
+      const { page } = getTestState();
+
       page.evaluate(() => {
         globalThis.date = new Date(1479579154987);
       });
@@ -200,7 +238,9 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
       expect(await page.evaluate(() => date.toString())).toBe('Sat Nov 19 2016 19:12:34 GMT+0100 (Central European Standard Time)');
     });
 
-    it('should throw for invalid timezone IDs', async({page, server}) => {
+    it('should throw for invalid timezone IDs', async() => {
+      const { page } = getTestState();
+
       let error = null;
       await page.emulateTimezone('Foo/Bar').catch(e => error = e);
       expect(error.message).toBe('Invalid timezone ID: Foo/Bar');
@@ -209,4 +249,4 @@ module.exports.addTests = function({testRunner, expect, puppeteer}) {
     });
   });
 
-};
+});

@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-module.exports.addTests = function({testRunner, expect}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
-  const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+const expect = require('expect');
+const {getTestState, setupTestPageAndContextHooks, setupTestBrowserHooks} = require('./mocha-utils');
 
-  describe('JSCoverage', function() {
-    it('should work', async function({page, server}) {
+describe('Coverage specs', function() {
+  describeChromeOnly('JSCoverage', function() {
+    setupTestBrowserHooks();
+    setupTestPageAndContextHooks();
+
+    it('should work', async() => {
+      const { page, server } = getTestState();
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/simple.html', {waitUntil: 'networkidle0'});
       const coverage = await page.coverage.stopJSCoverage();
@@ -31,27 +34,35 @@ module.exports.addTests = function({testRunner, expect}) {
         { start: 35, end: 61 },
       ]);
     });
-    it('should report sourceURLs', async function({page, server}) {
+    it('should report sourceURLs', async() => {
+      const { page, server } = getTestState();
+
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/sourceurl.html');
       const coverage = await page.coverage.stopJSCoverage();
       expect(coverage.length).toBe(1);
       expect(coverage[0].url).toBe('nicename.js');
     });
-    it('should ignore eval() scripts by default', async function({page, server}) {
+    it('should ignore eval() scripts by default', async() => {
+      const { page, server } = getTestState();
+
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/eval.html');
       const coverage = await page.coverage.stopJSCoverage();
       expect(coverage.length).toBe(1);
     });
-    it('shouldn\'t ignore eval() scripts if reportAnonymousScripts is true', async function({page, server}) {
+    it('shouldn\'t ignore eval() scripts if reportAnonymousScripts is true', async() => {
+      const { page, server } = getTestState();
+
       await page.coverage.startJSCoverage({reportAnonymousScripts: true});
       await page.goto(server.PREFIX + '/jscoverage/eval.html');
       const coverage = await page.coverage.stopJSCoverage();
       expect(coverage.find(entry => entry.url.startsWith('debugger://'))).not.toBe(null);
       expect(coverage.length).toBe(2);
     });
-    it('should ignore pptr internal scripts if reportAnonymousScripts is true', async function({page, server}) {
+    it('should ignore pptr internal scripts if reportAnonymousScripts is true', async() => {
+      const { page, server } = getTestState();
+
       await page.coverage.startJSCoverage({reportAnonymousScripts: true});
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate('console.log("foo")');
@@ -59,7 +70,9 @@ module.exports.addTests = function({testRunner, expect}) {
       const coverage = await page.coverage.stopJSCoverage();
       expect(coverage.length).toBe(0);
     });
-    it('should report multiple scripts', async function({page, server}) {
+    it('should report multiple scripts', async() => {
+      const { page, server } = getTestState();
+
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/multiple.html');
       const coverage = await page.coverage.stopJSCoverage();
@@ -68,7 +81,9 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(coverage[0].url).toContain('/jscoverage/script1.js');
       expect(coverage[1].url).toContain('/jscoverage/script2.js');
     });
-    it('should report right ranges', async function({page, server}) {
+    it('should report right ranges', async() => {
+      const { page, server } = getTestState();
+
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/ranges.html');
       const coverage = await page.coverage.stopJSCoverage();
@@ -78,7 +93,9 @@ module.exports.addTests = function({testRunner, expect}) {
       const range = entry.ranges[0];
       expect(entry.text.substring(range.start, range.end)).toBe(`console.log('used!');`);
     });
-    it('should report scripts that have no coverage', async function({page, server}) {
+    it('should report scripts that have no coverage', async() => {
+      const { page, server } = getTestState();
+
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/unused.html');
       const coverage = await page.coverage.stopJSCoverage();
@@ -87,21 +104,28 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(entry.url).toContain('unused.html');
       expect(entry.ranges.length).toBe(0);
     });
-    it('should work with conditionals', async function({page, server}) {
+    it('should work with conditionals', async() => {
+      const { page, server } = getTestState();
+
       await page.coverage.startJSCoverage();
       await page.goto(server.PREFIX + '/jscoverage/involved.html');
       const coverage = await page.coverage.stopJSCoverage();
       expect(JSON.stringify(coverage, null, 2).replace(/:\d{4}\//g, ':<PORT>/')).toBeGolden('jscoverage-involved.txt');
     });
     describe('resetOnNavigation', function() {
-      it('should report scripts across navigations when disabled', async function({page, server}) {
+      it('should report scripts across navigations when disabled', async() => {
+        const { page, server } = getTestState();
+
         await page.coverage.startJSCoverage({resetOnNavigation: false});
         await page.goto(server.PREFIX + '/jscoverage/multiple.html');
         await page.goto(server.EMPTY_PAGE);
         const coverage = await page.coverage.stopJSCoverage();
         expect(coverage.length).toBe(2);
       });
-      it('should NOT report scripts across navigations when enabled', async function({page, server}) {
+
+      it('should NOT report scripts across navigations when enabled', async() => {
+        const { page, server } = getTestState();
+
         await page.coverage.startJSCoverage(); // Enabled by default.
         await page.goto(server.PREFIX + '/jscoverage/multiple.html');
         await page.goto(server.EMPTY_PAGE);
@@ -110,7 +134,9 @@ module.exports.addTests = function({testRunner, expect}) {
       });
     });
     // @see https://crbug.com/990945
-    xit('should not hang when there is a debugger statement', async function({page, server}) {
+    xit('should not hang when there is a debugger statement', async() => {
+      const { page, server } = getTestState();
+
       await page.coverage.startJSCoverage();
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
@@ -120,8 +146,13 @@ module.exports.addTests = function({testRunner, expect}) {
     });
   });
 
-  describe('CSSCoverage', function() {
-    it('should work', async function({page, server}) {
+  describeChromeOnly('CSSCoverage', function() {
+    setupTestBrowserHooks();
+    setupTestPageAndContextHooks();
+
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/simple.html');
       const coverage = await page.coverage.stopCSSCoverage();
@@ -133,14 +164,18 @@ module.exports.addTests = function({testRunner, expect}) {
       const range = coverage[0].ranges[0];
       expect(coverage[0].text.substring(range.start, range.end)).toBe('div { color: green; }');
     });
-    it('should report sourceURLs', async function({page, server}) {
+    it('should report sourceURLs', async() => {
+      const { page, server } = getTestState();
+
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/sourceurl.html');
       const coverage = await page.coverage.stopCSSCoverage();
       expect(coverage.length).toBe(1);
       expect(coverage[0].url).toBe('nicename.css');
     });
-    it('should report multiple stylesheets', async function({page, server}) {
+    it('should report multiple stylesheets', async() => {
+      const { page, server } = getTestState();
+
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/multiple.html');
       const coverage = await page.coverage.stopCSSCoverage();
@@ -149,7 +184,9 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(coverage[0].url).toContain('/csscoverage/stylesheet1.css');
       expect(coverage[1].url).toContain('/csscoverage/stylesheet2.css');
     });
-    it('should report stylesheets that have no coverage', async function({page, server}) {
+    it('should report stylesheets that have no coverage', async() => {
+      const { page, server } = getTestState();
+
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/unused.html');
       const coverage = await page.coverage.stopCSSCoverage();
@@ -157,7 +194,9 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(coverage[0].url).toBe('unused.css');
       expect(coverage[0].ranges.length).toBe(0);
     });
-    it('should work with media queries', async function({page, server}) {
+    it('should work with media queries', async() => {
+      const { page, server } = getTestState();
+
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/media.html');
       const coverage = await page.coverage.stopCSSCoverage();
@@ -167,13 +206,17 @@ module.exports.addTests = function({testRunner, expect}) {
         {start: 17, end: 38}
       ]);
     });
-    it('should work with complicated usecases', async function({page, server}) {
+    it('should work with complicated usecases', async() => {
+      const { page, server } = getTestState();
+
       await page.coverage.startCSSCoverage();
       await page.goto(server.PREFIX + '/csscoverage/involved.html');
       const coverage = await page.coverage.stopCSSCoverage();
       expect(JSON.stringify(coverage, null, 2).replace(/:\d{4}\//g, ':<PORT>/')).toBeGolden('csscoverage-involved.txt');
     });
-    it('should ignore injected stylesheets', async function({page, server}) {
+    it('should ignore injected stylesheets', async() => {
+      const { page } = getTestState();
+
       await page.coverage.startCSSCoverage();
       await page.addStyleTag({content: 'body { margin: 10px;}'});
       // trigger style recalc
@@ -183,14 +226,18 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(coverage.length).toBe(0);
     });
     describe('resetOnNavigation', function() {
-      it('should report stylesheets across navigations', async function({page, server}) {
+      it('should report stylesheets across navigations', async() => {
+        const { page, server } = getTestState();
+
         await page.coverage.startCSSCoverage({resetOnNavigation: false});
         await page.goto(server.PREFIX + '/csscoverage/multiple.html');
         await page.goto(server.EMPTY_PAGE);
         const coverage = await page.coverage.stopCSSCoverage();
         expect(coverage.length).toBe(2);
       });
-      it('should NOT report scripts across navigations', async function({page, server}) {
+      it('should NOT report scripts across navigations', async() => {
+        const { page, server } = getTestState();
+
         await page.coverage.startCSSCoverage(); // Enabled by default.
         await page.goto(server.PREFIX + '/csscoverage/multiple.html');
         await page.goto(server.EMPTY_PAGE);
@@ -198,7 +245,9 @@ module.exports.addTests = function({testRunner, expect}) {
         expect(coverage.length).toBe(0);
       });
     });
-    it('should work with a recently loaded stylesheet', async function({page, server}) {
+    it('should work with a recently loaded stylesheet', async() => {
+      const { page, server } = getTestState();
+
       await page.coverage.startCSSCoverage();
       await page.evaluate(async url => {
         document.body.textContent = 'hello, world';
@@ -213,4 +262,4 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(coverage.length).toBe(1);
     });
   });
-};
+});

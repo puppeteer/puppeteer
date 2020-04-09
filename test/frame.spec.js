@@ -15,14 +15,17 @@
  */
 
 const utils = require('./utils');
+const expect = require('expect');
+const {getTestState, setupTestBrowserHooks, setupTestPageAndContextHooks} = require('./mocha-utils');
 
-module.exports.addTests = function({testRunner, expect}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit, it_fails_ffox} = testRunner;
-  const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+describe('Frame specs', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
 
   describe('Frame.executionContext', function() {
-    it_fails_ffox('should work', async({page, server}) => {
+    itFailsFirefox('should work', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       expect(page.frames().length).toBe(2);
@@ -49,7 +52,9 @@ module.exports.addTests = function({testRunner, expect}) {
   });
 
   describe('Frame.evaluateHandle', function() {
-    it('should work', async({page, server}) => {
+    it('should work', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const mainFrame = page.mainFrame();
       const windowHandle = await mainFrame.evaluateHandle(() => window);
@@ -58,7 +63,9 @@ module.exports.addTests = function({testRunner, expect}) {
   });
 
   describe('Frame.evaluate', function() {
-    it_fails_ffox('should throw for detached frames', async({page, server}) => {
+    itFailsFirefox('should throw for detached frames', async() => {
+      const { page, server } = getTestState();
+
       const frame1 = await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       await utils.detachFrame(page, 'frame1');
       let error = null;
@@ -68,7 +75,9 @@ module.exports.addTests = function({testRunner, expect}) {
   });
 
   describe('Frame Management', function() {
-    it_fails_ffox('should handle nested frames', async({page, server}) => {
+    itFailsFirefox('should handle nested frames', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/frames/nested-frames.html');
       expect(utils.dumpFrames(page.mainFrame())).toEqual([
         'http://localhost:<PORT>/frames/nested-frames.html',
@@ -78,7 +87,9 @@ module.exports.addTests = function({testRunner, expect}) {
         '    http://localhost:<PORT>/frames/frame.html (aframe)'
       ]);
     });
-    it_fails_ffox('should send events when frames are manipulated dynamically', async({page, server}) => {
+    itFailsFirefox('should send events when frames are manipulated dynamically', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       // validate frameattached events
       const attachedFrames = [];
@@ -101,7 +112,9 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(detachedFrames.length).toBe(1);
       expect(detachedFrames[0].isDetached()).toBe(true);
     });
-    it_fails_ffox('should send "framenavigated" when navigating on anchor URLs', async({page, server}) => {
+    itFailsFirefox('should send "framenavigated" when navigating on anchor URLs', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await Promise.all([
         page.goto(server.EMPTY_PAGE + '#foo'),
@@ -109,20 +122,26 @@ module.exports.addTests = function({testRunner, expect}) {
       ]);
       expect(page.url()).toBe(server.EMPTY_PAGE + '#foo');
     });
-    it('should persist mainFrame on cross-process navigation', async({page, server}) => {
+    it('should persist mainFrame on cross-process navigation', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const mainFrame = page.mainFrame();
       await page.goto(server.CROSS_PROCESS_PREFIX + '/empty.html');
       expect(page.mainFrame() === mainFrame).toBeTruthy();
     });
-    it('should not send attach/detach events for main frame', async({page, server}) => {
+    it('should not send attach/detach events for main frame', async() => {
+      const { page, server } = getTestState();
+
       let hasEvents = false;
       page.on('frameattached', frame => hasEvents = true);
       page.on('framedetached', frame => hasEvents = true);
       await page.goto(server.EMPTY_PAGE);
       expect(hasEvents).toBe(false);
     });
-    it_fails_ffox('should detach child frames on navigation', async({page, server}) => {
+    itFailsFirefox('should detach child frames on navigation', async() => {
+      const { page, server } = getTestState();
+
       let attachedFrames = [];
       let detachedFrames = [];
       let navigatedFrames = [];
@@ -142,7 +161,9 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(detachedFrames.length).toBe(4);
       expect(navigatedFrames.length).toBe(1);
     });
-    it_fails_ffox('should support framesets', async({page, server}) => {
+    itFailsFirefox('should support framesets', async() => {
+      const { page, server } = getTestState();
+
       let attachedFrames = [];
       let detachedFrames = [];
       let navigatedFrames = [];
@@ -162,7 +183,9 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(detachedFrames.length).toBe(4);
       expect(navigatedFrames.length).toBe(1);
     });
-    it_fails_ffox('should report frame from-inside shadow DOM', async({page, server}) => {
+    itFailsFirefox('should report frame from-inside shadow DOM', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/shadow.html');
       await page.evaluate(async url => {
         const frame = document.createElement('iframe');
@@ -173,7 +196,9 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(page.frames().length).toBe(2);
       expect(page.frames()[1].url()).toBe(server.EMPTY_PAGE);
     });
-    it_fails_ffox('should report frame.name()', async({page, server}) => {
+    itFailsFirefox('should report frame.name()', async() => {
+      const { page, server } = getTestState();
+
       await utils.attachFrame(page, 'theFrameId', server.EMPTY_PAGE);
       await page.evaluate(url => {
         const frame = document.createElement('iframe');
@@ -186,14 +211,18 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(page.frames()[1].name()).toBe('theFrameId');
       expect(page.frames()[2].name()).toBe('theFrameName');
     });
-    it_fails_ffox('should report frame.parent()', async({page, server}) => {
+    itFailsFirefox('should report frame.parent()', async() => {
+      const { page, server } = getTestState();
+
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
       expect(page.frames()[0].parentFrame()).toBe(null);
       expect(page.frames()[1].parentFrame()).toBe(page.mainFrame());
       expect(page.frames()[2].parentFrame()).toBe(page.mainFrame());
     });
-    it_fails_ffox('should report different frame instance when frame re-attaches', async({page, server}) => {
+    itFailsFirefox('should report different frame instance when frame re-attaches', async() => {
+      const { page, server } = getTestState();
+
       const frame1 = await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       await page.evaluate(() => {
         window.frame = document.querySelector('#frame1');
@@ -208,4 +237,4 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(frame1).not.toBe(frame2);
     });
   });
-};
+});

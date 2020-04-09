@@ -15,69 +15,78 @@
  */
 
 const {waitEvent} = require('./utils');
+const expect = require('expect');
+const {getTestState, setupTestBrowserHooks, setupTestPageAndContextHooks} = require('./mocha-utils');
 
-module.exports.addTests = function({testRunner, expect}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit} = testRunner;
-  const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+describeChromeOnly('Target.createCDPSession', function() {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
 
-  describe('Target.createCDPSession', function() {
-    it('should work', async function({page, server}) {
-      const client = await page.target().createCDPSession();
+  it('should work', async() => {
+    const { page } = getTestState();
 
-      await Promise.all([
-        client.send('Runtime.enable'),
-        client.send('Runtime.evaluate', { expression: 'window.foo = "bar"' })
-      ]);
-      const foo = await page.evaluate(() => window.foo);
-      expect(foo).toBe('bar');
-    });
-    it('should send events', async function({page, server}) {
-      const client = await page.target().createCDPSession();
-      await client.send('Network.enable');
-      const events = [];
-      client.on('Network.requestWillBeSent', event => events.push(event));
-      await page.goto(server.EMPTY_PAGE);
-      expect(events.length).toBe(1);
-    });
-    it('should enable and disable domains independently', async function({page, server}) {
-      const client = await page.target().createCDPSession();
-      await client.send('Runtime.enable');
-      await client.send('Debugger.enable');
-      // JS coverage enables and then disables Debugger domain.
-      await page.coverage.startJSCoverage();
-      await page.coverage.stopJSCoverage();
-      // generate a script in page and wait for the event.
-      const [event] = await Promise.all([
-        waitEvent(client, 'Debugger.scriptParsed'),
-        page.evaluate('//# sourceURL=foo.js')
-      ]);
-      // expect events to be dispatched.
-      expect(event.url).toBe('foo.js');
-    });
-    it('should be able to detach session', async function({page, server}) {
-      const client = await page.target().createCDPSession();
-      await client.send('Runtime.enable');
-      const evalResponse = await client.send('Runtime.evaluate', {expression: '1 + 2', returnByValue: true});
-      expect(evalResponse.result.value).toBe(3);
-      await client.detach();
-      let error = null;
-      try {
-        await client.send('Runtime.evaluate', {expression: '3 + 1', returnByValue: true});
-      } catch (e) {
-        error = e;
-      }
-      expect(error.message).toContain('Session closed.');
-    });
-    it('should throw nice errors', async function({page}) {
-      const client = await page.target().createCDPSession();
-      const error = await theSourceOfTheProblems().catch(error => error);
-      expect(error.stack).toContain('theSourceOfTheProblems');
-      expect(error.message).toContain('ThisCommand.DoesNotExist');
+    const client = await page.target().createCDPSession();
 
-      async function theSourceOfTheProblems() {
-        await client.send('ThisCommand.DoesNotExist');
-      }
-    });
+    await Promise.all([
+      client.send('Runtime.enable'),
+      client.send('Runtime.evaluate', { expression: 'window.foo = "bar"' })
+    ]);
+    const foo = await page.evaluate(() => window.foo);
+    expect(foo).toBe('bar');
   });
-};
+  it('should send events', async() => {
+    const { page, server } = getTestState();
+
+    const client = await page.target().createCDPSession();
+    await client.send('Network.enable');
+    const events = [];
+    client.on('Network.requestWillBeSent', event => events.push(event));
+    await page.goto(server.EMPTY_PAGE);
+    expect(events.length).toBe(1);
+  });
+  it('should enable and disable domains independently', async() => {
+    const { page } = getTestState();
+
+    const client = await page.target().createCDPSession();
+    await client.send('Runtime.enable');
+    await client.send('Debugger.enable');
+    // JS coverage enables and then disables Debugger domain.
+    await page.coverage.startJSCoverage();
+    await page.coverage.stopJSCoverage();
+    // generate a script in page and wait for the event.
+    const [event] = await Promise.all([
+      waitEvent(client, 'Debugger.scriptParsed'),
+      page.evaluate('//# sourceURL=foo.js')
+    ]);
+      // expect events to be dispatched.
+    expect(event.url).toBe('foo.js');
+  });
+  it('should be able to detach session', async() => {
+    const { page } = getTestState();
+
+    const client = await page.target().createCDPSession();
+    await client.send('Runtime.enable');
+    const evalResponse = await client.send('Runtime.evaluate', {expression: '1 + 2', returnByValue: true});
+    expect(evalResponse.result.value).toBe(3);
+    await client.detach();
+    let error = null;
+    try {
+      await client.send('Runtime.evaluate', {expression: '3 + 1', returnByValue: true});
+    } catch (e) {
+      error = e;
+    }
+    expect(error.message).toContain('Session closed.');
+  });
+  it('should throw nice errors', async() => {
+    const { page } = getTestState();
+
+    const client = await page.target().createCDPSession();
+    const error = await theSourceOfTheProblems().catch(error => error);
+    expect(error.stack).toContain('theSourceOfTheProblems');
+    expect(error.message).toContain('ThisCommand.DoesNotExist');
+
+    async function theSourceOfTheProblems() {
+      await client.send('ThisCommand.DoesNotExist');
+    }
+  });
+});

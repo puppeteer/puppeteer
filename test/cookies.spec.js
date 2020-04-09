@@ -13,18 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+const expect = require('expect');
+const {getTestState, setupTestBrowserHooks, setupTestPageAndContextHooks} = require('./mocha-utils');
 
-module.exports.addTests = function({testRunner, expect}) {
-  const {describe, xdescribe, fdescribe} = testRunner;
-  const {it, fit, xit, it_fails_ffox} = testRunner;
-  const {beforeAll, beforeEach, afterAll, afterEach} = testRunner;
+describe('Cookie specs', () => {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
 
   describe('Page.cookies', function() {
-    it('should return no cookies in pristine browser context', async({page, server}) => {
+    it('should return no cookies in pristine browser context', async() => {
+      const {page, server} = getTestState();
       await page.goto(server.EMPTY_PAGE);
       expect(await page.cookies()).toEqual([]);
     });
-    it_fails_ffox('should get a cookie', async({page, server}) => {
+    itFailsFirefox('should get a cookie', async() => {
+      const {page, server} = getTestState();
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
         document.cookie = 'username=John Doe';
@@ -41,7 +44,8 @@ module.exports.addTests = function({testRunner, expect}) {
         session: true
       }]);
     });
-    it('should properly report httpOnly cookie', async({page, server}) => {
+    it('should properly report httpOnly cookie', async() => {
+      const {page, server} = getTestState();
       server.setRoute('/empty.html', (req, res) => {
         res.setHeader('Set-Cookie', ';HttpOnly; Path=/');
         res.end();
@@ -51,7 +55,8 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(cookies.length).toBe(1);
       expect(cookies[0].httpOnly).toBe(true);
     });
-    it('should properly report "Strict" sameSite cookie', async({page, server}) => {
+    it('should properly report "Strict" sameSite cookie', async() => {
+      const {page, server} = getTestState();
       server.setRoute('/empty.html', (req, res) => {
         res.setHeader('Set-Cookie', ';SameSite=Strict');
         res.end();
@@ -61,7 +66,8 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(cookies.length).toBe(1);
       expect(cookies[0].sameSite).toBe('Strict');
     });
-    it('should properly report "Lax" sameSite cookie', async({page, server}) => {
+    it('should properly report "Lax" sameSite cookie', async() => {
+      const {page, server} = getTestState();
       server.setRoute('/empty.html', (req, res) => {
         res.setHeader('Set-Cookie', ';SameSite=Lax');
         res.end();
@@ -71,7 +77,8 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(cookies.length).toBe(1);
       expect(cookies[0].sameSite).toBe('Lax');
     });
-    it_fails_ffox('should get multiple cookies', async({page, server}) => {
+    itFailsFirefox('should get multiple cookies', async() => {
+      const {page, server} = getTestState();
       await page.goto(server.EMPTY_PAGE);
       await page.evaluate(() => {
         document.cookie = 'username=John Doe';
@@ -104,7 +111,8 @@ module.exports.addTests = function({testRunner, expect}) {
         },
       ]);
     });
-    it_fails_ffox('should get cookies from multiple urls', async({page, server}) => {
+    itFailsFirefox('should get cookies from multiple urls', async() => {
+      const {page} = getTestState();
       await page.setCookie({
         url: 'https://foo.com',
         name: 'doggo',
@@ -143,9 +151,10 @@ module.exports.addTests = function({testRunner, expect}) {
       }]);
     });
   });
-
   describe('Page.setCookie', function() {
-    it_fails_ffox('should work', async({page, server}) => {
+    itFailsFirefox('should work', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
         name: 'password',
@@ -153,7 +162,9 @@ module.exports.addTests = function({testRunner, expect}) {
       });
       expect(await page.evaluate(() => document.cookie)).toEqual('password=123456');
     });
-    it_fails_ffox('should isolate cookies in browser contexts', async({page, server, browser}) => {
+    itFailsFirefox('should isolate cookies in browser contexts', async() => {
+      const { page, server, browser } = getTestState();
+
       const anotherContext = await browser.createIncognitoBrowserContext();
       const anotherPage = await anotherContext.newPage();
 
@@ -173,7 +184,9 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(cookies2[0].value).toBe('page2value');
       await anotherContext.close();
     });
-    it_fails_ffox('should set multiple cookies', async({page, server}) => {
+    itFailsFirefox('should set multiple cookies', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
         name: 'password',
@@ -190,7 +203,9 @@ module.exports.addTests = function({testRunner, expect}) {
         'password=123456',
       ]);
     });
-    it_fails_ffox('should have |expires| set to |-1| for session cookies', async({page, server}) => {
+    itFailsFirefox('should have |expires| set to |-1| for session cookies', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
         name: 'password',
@@ -200,7 +215,9 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(cookies[0].session).toBe(true);
       expect(cookies[0].expires).toBe(-1);
     });
-    it_fails_ffox('should set cookie with reasonable defaults', async({page, server}) => {
+    itFailsFirefox('should set cookie with reasonable defaults', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
         name: 'password',
@@ -219,7 +236,9 @@ module.exports.addTests = function({testRunner, expect}) {
         session: true
       }]);
     });
-    it_fails_ffox('should set a cookie with a path', async({page, server}) => {
+    itFailsFirefox('should set a cookie with a path', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/grid.html');
       await page.setCookie({
         name: 'gridcookie',
@@ -244,7 +263,9 @@ module.exports.addTests = function({testRunner, expect}) {
       await page.goto(server.PREFIX + '/grid.html');
       expect(await page.evaluate('document.cookie')).toBe('gridcookie=GRID');
     });
-    it('should not set a cookie on a blank page', async function({page}) {
+    it('should not set a cookie on a blank page', async() => {
+      const { page } = getTestState();
+
       await page.goto('about:blank');
       let error = null;
       try {
@@ -254,7 +275,9 @@ module.exports.addTests = function({testRunner, expect}) {
       }
       expect(error.message).toContain('At least one of the url and domain needs to be specified');
     });
-    it('should not set a cookie with blank page URL', async function({page, server}) {
+    it('should not set a cookie with blank page URL', async() => {
+      const { page, server } = getTestState();
+
       let error = null;
       await page.goto(server.EMPTY_PAGE);
       try {
@@ -269,7 +292,9 @@ module.exports.addTests = function({testRunner, expect}) {
           `Blank page can not have cookie "example-cookie-blank"`
       );
     });
-    it('should not set a cookie on a data URL page', async function({page}) {
+    it('should not set a cookie on a data URL page', async() => {
+      const { page } = getTestState();
+
       let error = null;
       await page.goto('data:,Hello%2C%20World!');
       try {
@@ -279,7 +304,9 @@ module.exports.addTests = function({testRunner, expect}) {
       }
       expect(error.message).toContain('At least one of the url and domain needs to be specified');
     });
-    it_fails_ffox('should default to setting secure cookie for HTTPS websites', async({page, server}) => {
+    itFailsFirefox('should default to setting secure cookie for HTTPS websites', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const SECURE_URL = 'https://example.com';
       await page.setCookie({
@@ -290,7 +317,9 @@ module.exports.addTests = function({testRunner, expect}) {
       const [cookie] = await page.cookies(SECURE_URL);
       expect(cookie.secure).toBe(true);
     });
-    it_fails_ffox('should be able to set unsecure cookie for HTTP website', async({page, server}) => {
+    itFailsFirefox('should be able to set unsecure cookie for HTTP website', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       const HTTP_URL = 'http://example.com';
       await page.setCookie({
@@ -301,7 +330,9 @@ module.exports.addTests = function({testRunner, expect}) {
       const [cookie] = await page.cookies(HTTP_URL);
       expect(cookie.secure).toBe(false);
     });
-    it_fails_ffox('should set a cookie on a different domain', async({page, server}) => {
+    itFailsFirefox('should set a cookie on a different domain', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
         url: 'https://www.example.com',
@@ -322,7 +353,9 @@ module.exports.addTests = function({testRunner, expect}) {
         session: true
       }]);
     });
-    it_fails_ffox('should set cookies from a frame', async({page, server}) => {
+    itFailsFirefox('should set cookies from a frame', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.PREFIX + '/grid.html');
       await page.setCookie({name: 'localhost-cookie', value: 'best'});
       await page.evaluate(src => {
@@ -365,7 +398,9 @@ module.exports.addTests = function({testRunner, expect}) {
   });
 
   describe('Page.deleteCookie', function() {
-    it_fails_ffox('should work', async({page, server}) => {
+    itFailsFirefox('should work', async() => {
+      const { page, server } = getTestState();
+
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
         name: 'cookie1',
@@ -382,4 +417,4 @@ module.exports.addTests = function({testRunner, expect}) {
       expect(await page.evaluate('document.cookie')).toBe('cookie1=1; cookie3=3');
     });
   });
-};
+});
