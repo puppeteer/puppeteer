@@ -3,7 +3,8 @@
     "allowJs": true,
     "checkJs": true,
     "outDir": "./lib",
-    "target": "ESNext"
+    "target": "ESNext",
+    "moduleResolution": "node"
   },
   "include": [
     "src"
