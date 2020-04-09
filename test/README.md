@@ -32,3 +32,48 @@ There is also `describeChromeOnly` which will only execute the test if running i
 
 [Mocha]: https://mochajs.org/
 [Expect]: https://www.npmjs.com/package/expect
+
+## Running tests
+
+Despite being named 'unit', these are integration tests, making sure public API methods and events work as expected.
+
+- To run all tests:
+
+```bash
+npm run unit
+```
+
+- To run a specific test, substitute the `it` with `it.only`:
+
+```js
+  ...
+  it.only('should work', async function() {
+    const {server, page} = getTestState();
+    const response = await page.goto(server.EMPTY_PAGE);
+    expect(response.ok).toBe(true);
+  });
+```
+
+- To disable a specific test, substitute the `it` with `xit` (mnemonic rule: '*cross it*'):
+
+```js
+  ...
+  // Using "xit" to skip specific test
+  xit('should work', async function({server, page}) {
+    const {server, page} = getTestState();
+    const response = await page.goto(server.EMPTY_PAGE);
+    expect(response.ok).toBe(true);
+  });
+```
+
+- To run tests in non-headless mode:
+
+```bash
+HEADLESS=false npm run unit
+```
+
+- To run tests with custom browser executable:
+
+```bash
+BINARY=<path-to-executable> npm run unit
+```

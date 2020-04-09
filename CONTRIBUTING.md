@@ -148,8 +148,8 @@ A barrier for introducing new installation dependencies is especially high:
 - Tests should be *hermetic*. Tests should not depend on external services.
 - Tests should work on all three platforms: Mac, Linux and Win. This is especially important for screenshot tests.
 
-Puppeteer tests are located in [`test/test.js`](https://github.com/puppeteer/puppeteer/blob/master/test/test.js)
-and are written with a [TestRunner](https://github.com/puppeteer/puppeteer/tree/master/utils/testrunner) framework.
+Puppeteer tests are located in the test directory ([`test`](https://github.com/puppeteer/puppeteer/blob/master/test/) and are written using Mocha. See [`test/README.md`](https://github.com/puppeteer/puppeteer/blob/master/test/) for more details.
+
 Despite being named 'unit', these are integration tests, making sure public API methods and events work as expected.
 
 - To run all tests:
