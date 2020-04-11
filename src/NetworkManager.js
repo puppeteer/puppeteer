@@ -673,6 +673,7 @@ class SecurityDetails {
     this._validFrom = securityPayload['validFrom'];
     this._validTo = securityPayload['validTo'];
     this._protocol = securityPayload['protocol'];
+    this._sanList = securityPayload['sanList'];
   }
 
   /**
@@ -708,6 +709,13 @@ class SecurityDetails {
    */
   protocol() {
     return this._protocol;
+  }
+
+  /**
+   * @return {!Array<string>}
+   */
+  sanList() {
+    return this._sanList;
   }
 }
 

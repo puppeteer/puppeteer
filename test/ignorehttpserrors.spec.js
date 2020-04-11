@@ -63,6 +63,7 @@ describeFailsFirefox('ignoreHTTPSErrors', function() {
       expect(securityDetails.subjectName()).toBe('puppeteer-tests');
       expect(securityDetails.validFrom()).toBe(1550084863);
       expect(securityDetails.validTo()).toBe(33086084863);
+      expect(securityDetails.sanList()).toEqual([]);
     });
     it('should be |null| for non-secure requests', async() => {
       const { server } = getTestState();
