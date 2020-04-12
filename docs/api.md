@@ -310,10 +310,10 @@
 - [class: SecurityDetails](#class-securitydetails)
   * [securityDetails.issuer()](#securitydetailsissuer)
   * [securityDetails.protocol()](#securitydetailsprotocol)
+  * [securityDetails.sanList()](#securitydetailssanlist)
   * [securityDetails.subjectName()](#securitydetailssubjectname)
   * [securityDetails.validFrom()](#securitydetailsvalidfrom)
   * [securityDetails.validTo()](#securitydetailsvalidto)
-  * [securityDetails.sanList()](#securitydetailssanlist)
 - [class: Target](#class-target)
   * [target.browser()](#targetbrowser)
   * [target.browserContext()](#targetbrowsercontext)
@@ -3728,6 +3728,9 @@ Contains the URL of the response.
 #### securityDetails.protocol()
 - returns: <[string]> String with the security protocol, eg. "TLS 1.2".
 
+#### securityDetails.sanList()
+- returns: <[Array]<[string]>> Returns the list of SANs (subject alternative names) of the certificate.
+
 #### securityDetails.subjectName()
 - returns: <[string]> Name of the subject to which the certificate was issued to.
 
@@ -3736,9 +3739,6 @@ Contains the URL of the response.
 
 #### securityDetails.validTo()
 - returns: <[number]> [UnixTime] stating the end of validity of the certificate.
-
-#### securityDetails.sanList()
-- returns: <[Array]<[string]>> Returns the list of SANs (subject alternative names) of the certificate.
 
 ### class: Target
 
