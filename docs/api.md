@@ -313,6 +313,7 @@
   * [securityDetails.subjectName()](#securitydetailssubjectname)
   * [securityDetails.validFrom()](#securitydetailsvalidfrom)
   * [securityDetails.validTo()](#securitydetailsvalidto)
+  * [securityDetails.sanList()](#securitydetailssanlist)
 - [class: Target](#class-target)
   * [target.browser()](#targetbrowser)
   * [target.browserContext()](#targetbrowsercontext)
@@ -3735,6 +3736,9 @@ Contains the URL of the response.
 
 #### securityDetails.validTo()
 - returns: <[number]> [UnixTime] stating the end of validity of the certificate.
+
+#### securityDetails.sanList()
+- returns: <[Array]<[string]>> Returns the list of SANs (subject alternative names) of the certificate.
 
 ### class: Target
 
