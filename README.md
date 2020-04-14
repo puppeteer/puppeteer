@@ -298,14 +298,12 @@ See [Contributing](https://github.com/puppeteer/puppeteer/blob/master/CONTRIBUTI
 
 #### Q: What is the status of cross-browser support?
 
-Historically, Puppeteer supported Firefox indirectly through puppeteer-firefox, which relied on a custom, patched version of Firefox. This approach was also known as “Juggler”.
-After discussions with Mozilla, we collectively concluded that relying on custom patches was infeasible.
-Since then, we have been collaborating with Mozilla on supporting Puppeteer on “stock” Firefox.
-From Puppeteer v2.1.0 onwards, as an experimental feature, you can specify [`puppeteer.launch({product: 'firefox'})`](https://github.com/puppeteer/puppeteer/blob/v2.1.1/docs/api.md#puppeteerlaunchoptions) to run your Puppeteer scripts in Firefox Nightly, without any additional custom patches.
+Official Firefox support is currently experimental. The ongoing collaboration with Mozilla aims to support common end-to-end testing use cases, for which developers expect cross-browser coverage. The Puppeteer team needs input from users to stabilize Firefox support and to bring missing APIs to our attention.
 
-We will continue collaborating with other browser vendors to bring Puppeteer support to browsers such as Safari.
+From Puppeteer v2.1.0 onwards you can specify [`puppeteer.launch({product: 'firefox'})`](https://github.com/puppeteer/puppeteer/blob/v2.1.1/docs/api.md#puppeteerlaunchoptions) to run your Puppeteer scripts in Firefox Nightly, without any additional custom patches. While [an older experiment](https://www.npmjs.com/package/puppeteer-firefox) required a patched version of Firefox, [the current approach](https://wiki.mozilla.org/Remote) works with “stock” Firefox.
+
+We will continue to collaborate with other browser vendors to bring Puppeteer support to browsers such as Safari.
 This effort includes exploration of a standard for executing cross-browser commands (instead of relying on the non-standard DevTools Protocol used by Chrome).
-
 
 #### Q: What are Puppeteer’s goals and principles?
 
