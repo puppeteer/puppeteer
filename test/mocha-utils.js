@@ -59,14 +59,18 @@ const defaultBrowserOptions = {
   dumpio: !!process.env.DUMPIO,
 };
 
+(async() => {
+  if (defaultBrowserOptions.executablePath) {
+    console.warn(`WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`);
+  } else {
+    if (product === 'firefox')
+      await puppeteer._launcher._updateRevision();
+    const executablePath = puppeteer.executablePath();
+    if (!fs.existsSync(executablePath))
+      throw new Error(`Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`);
+  }
+})();
 
-if (defaultBrowserOptions.executablePath) {
-  console.warn(`WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`);
-} else {
-  const executablePath = puppeteer.executablePath();
-  if (!fs.existsSync(executablePath))
-    throw new Error(`Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`);
-}
 
 const setupGoldenAssertions = () => {
   const suffix = product.toLowerCase();
