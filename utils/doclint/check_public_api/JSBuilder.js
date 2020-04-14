@@ -3,6 +3,7 @@ const path = require('path');
 const Documentation = require('./Documentation');
 module.exports = checkSources;
 
+
 /**
  * @param {!Array<!import('../Source')>} sources
  */
@@ -30,7 +31,23 @@ function checkSources(sources) {
   const classes = [];
   /** @type {!Map<string, string>} */
   const inheritance = new Map();
-  sourceFiles.filter(x => !x.fileName.includes('node_modules')).map(x => visit(x));
+
+  const sourceFilesNoNodeModules = sourceFiles.filter(x => !x.fileName.includes('node_modules'));
+  const sourceFileNamesSet = new Set(sourceFilesNoNodeModules.map(x => x.fileName));
+  sourceFilesNoNodeModules.map(x => {
+    if (x.fileName.includes('/lib/')) {
+      const potentialTSSource = x.fileName.replace('lib', 'src').replace('.js', '.ts');
+      if (sourceFileNamesSet.has(potentialTSSource)) {
+        /* Not going to visit this file because we have the TypeScript src code
+         * which we'll use instead.
+         */
+        return;
+      }
+    }
+
+    visit(x);
+  });
+
   const errors = [];
   const documentation = new Documentation(recreateClassesWithInheritance(classes, inheritance));
 

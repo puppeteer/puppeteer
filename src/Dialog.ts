@@ -14,48 +14,46 @@
  * limitations under the License.
  */
 
-const {assert} = require('./helper');
+import helpers = require('./helper');
+
+const {assert} = helpers;
+
+enum DialogType {
+  Alert = 'alert',
+  BeforeUnload = 'beforeunload',
+  Confirm = 'confirm',
+  Prompt = 'prompt'
+}
 
 class Dialog {
-  /**
-   * @param {!Puppeteer.CDPSession} client
-   * @param {string} type
-   * @param {string} message
-   * @param {(string|undefined)} defaultValue
-   */
-  constructor(client, type, message, defaultValue = '') {
+  static Type = DialogType;
+
+  private _client: Puppeteer.CDPSession;
+  private _type: DialogType;
+  private _message: string;
+  private _defaultValue: string;
+  private _handled = false;
+
+  constructor(client: Puppeteer.CDPSession, type: DialogType, message: string, defaultValue = '') {
     this._client = client;
     this._type = type;
     this._message = message;
-    this._handled = false;
     this._defaultValue = defaultValue;
   }
 
-  /**
-   * @return {string}
-   */
-  type() {
+  type(): DialogType {
     return this._type;
   }
 
-  /**
-   * @return {string}
-   */
-  message() {
+  message(): string {
     return this._message;
   }
 
-  /**
-   * @return {string}
-   */
-  defaultValue() {
+  defaultValue(): string {
     return this._defaultValue;
   }
 
-  /**
-   * @param {string=} promptText
-   */
-  async accept(promptText) {
+  async accept(promptText?: string): Promise<void> {
     assert(!this._handled, 'Cannot accept dialog which is already handled!');
     this._handled = true;
     await this._client.send('Page.handleJavaScriptDialog', {
@@ -64,7 +62,7 @@ class Dialog {
     });
   }
 
-  async dismiss() {
+  async dismiss(): Promise<void> {
     assert(!this._handled, 'Cannot dismiss dialog which is already handled!');
     this._handled = true;
     await this._client.send('Page.handleJavaScriptDialog', {
@@ -73,11 +71,4 @@ class Dialog {
   }
 }
 
-Dialog.Type = {
-  Alert: 'alert',
-  BeforeUnload: 'beforeunload',
-  Confirm: 'confirm',
-  Prompt: 'prompt'
-};
-
-module.exports = {Dialog};
+export = {Dialog};

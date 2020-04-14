@@ -102,12 +102,17 @@ module.exports = {
     },
     "overrides": [
         {
-            // apply TypeScript linting to the TS files in src/
-            "files": ["src/*.ts"],
+            "files": ["*.ts"],
             "extends": [
                 'plugin:@typescript-eslint/eslint-recommended',
                 'plugin:@typescript-eslint/recommended',
-            ]
+            ],
+            "rules": {
+                "no-unused-vars": 0,
+                "@typescript-eslint/no-unused-vars": 2,
+                "semi": 0,
+                "@typescript-eslint/semi": 2
+            }
         }
     ]
 };
