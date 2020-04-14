@@ -457,6 +457,7 @@ const puppeteer = require('puppeteer');
     - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
   - `transport` <[ConnectionTransport]> **Experimental** Specify a custom transport object for Puppeteer to use.
+  - `product` <[string]> Possible values are: `chrome`, `firefox`. Defaults to `chrome`.
 - returns: <[Promise]<[Browser]>>
 
 This methods attaches Puppeteer to an existing browser instance.
