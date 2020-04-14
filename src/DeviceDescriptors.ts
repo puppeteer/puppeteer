@@ -25,7 +25,7 @@ interface Device {
     hasTouch: boolean;
     isLandscape: boolean;
   };
-};
+}
 
 const devices: Device[] = [
   {
@@ -888,8 +888,8 @@ type DevicesMap = {
 
 const devicesMap: DevicesMap = {};
 
-for (const device of devices) {
+for (const device of devices)
   devicesMap[device.name] = device;
-}
+
 
 export = devicesMap;
