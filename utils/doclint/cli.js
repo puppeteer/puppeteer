@@ -36,31 +36,29 @@ async function run() {
   let changedFiles = false;
 
   // Documentation checks.
-  {
-    const readme = await Source.readFile(path.join(PROJECT_DIR, 'README.md'));
-    const contributing = await Source.readFile(path.join(PROJECT_DIR, 'CONTRIBUTING.md'));
-    const api = await Source.readFile(path.join(PROJECT_DIR, 'docs', 'api.md'));
-    const troubleshooting = await Source.readFile(path.join(PROJECT_DIR, 'docs', 'troubleshooting.md'));
-    const mdSources = [readme, api, troubleshooting, contributing];
+  const readme = await Source.readFile(path.join(PROJECT_DIR, 'README.md'));
+  const contributing = await Source.readFile(path.join(PROJECT_DIR, 'CONTRIBUTING.md'));
+  const api = await Source.readFile(path.join(PROJECT_DIR, 'docs', 'api.md'));
+  const troubleshooting = await Source.readFile(path.join(PROJECT_DIR, 'docs', 'troubleshooting.md'));
+  const mdSources = [readme, api, troubleshooting, contributing];
 
-    const preprocessor = require('./preprocessor');
-    messages.push(...await preprocessor.runCommands(mdSources, VERSION));
-    messages.push(...await preprocessor.ensureReleasedAPILinks([readme], VERSION));
+  const preprocessor = require('./preprocessor');
+  messages.push(...await preprocessor.runCommands(mdSources, VERSION));
+  messages.push(...await preprocessor.ensureReleasedAPILinks([readme], VERSION));
 
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    const checkPublicAPI = require('./check_public_api');
-    const jsSources = await Source.readdir(path.join(PROJECT_DIR, 'lib'));
-    messages.push(...await checkPublicAPI(page, mdSources, jsSources));
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  const checkPublicAPI = require('./check_public_api');
+  const jsSources = await Source.readdir(path.join(PROJECT_DIR, 'lib'));
+  messages.push(...await checkPublicAPI(page, mdSources, jsSources));
 
-    await browser.close();
+  await browser.close();
 
-    for (const source of mdSources) {
-      if (!source.hasUpdatedText())
-        continue;
-      await source.save();
-      changedFiles = true;
-    }
+  for (const source of mdSources) {
+    if (!source.hasUpdatedText())
+      continue;
+    await source.save();
+    changedFiles = true;
   }
 
   // Report results.

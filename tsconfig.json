@@ -4,7 +4,8 @@
     "checkJs": true,
     "outDir": "./lib",
     "target": "ESNext",
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "module": "CommonJS"
   },
   "include": [
     "src"
