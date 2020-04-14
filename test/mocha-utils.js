@@ -17,6 +17,7 @@
 const {TestServer} = require('../utils/testserver/index');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const puppeteer = require('../');
 const utils = require('./utils');
 const assertCoverage = require('./coverage-utils');
@@ -90,6 +91,16 @@ global.itFailsFirefox = (...args) => {
     return xit(...args);
   else
     return it(...args);
+};
+
+global.itFailsWindowsUntilDate = (date, ...args) => {
+  const today = new Date();
+  if (os.platform() === 'win32' && today < date) {
+    // we are within the deferred time so skip the test
+    return xit(...args);
+  }
+
+  return it(...args);
 };
 
 global.describeFailsFirefox = (...args) => {

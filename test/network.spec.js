@@ -15,6 +15,7 @@
  */
 
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const utils = require('./utils');
 const expect = require('expect');
@@ -189,7 +190,8 @@ describe('network', function() {
       const { page, server } = getTestState();
 
       const response = await page.goto(server.PREFIX + '/simple.json');
-      expect(await response.text()).toBe('{"foo": "bar"}\n');
+      const responseText = (await response.text()).trimEnd();
+      expect(responseText).toBe('{"foo": "bar"}');
     });
     it('should return uncompressed text', async() => {
       const { page, server } = getTestState();
@@ -197,7 +199,8 @@ describe('network', function() {
       server.enableGzip('/simple.json');
       const response = await page.goto(server.PREFIX + '/simple.json');
       expect(response.headers()['content-encoding']).toBe('gzip');
-      expect(await response.text()).toBe('{"foo": "bar"}\n');
+      const responseText = (await response.text()).trimEnd();
+      expect(responseText).toBe('{"foo": "bar"}');
     });
     it('should throw when requesting body of redirected response', async() => {
       const { page, server } = getTestState();
