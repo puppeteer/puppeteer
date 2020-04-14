@@ -1,34 +1,18 @@
 module.exports = {
     "root": true,
-
     "env": {
         "node": true,
         "es6": true
     },
 
-    "parserOptions": {
-        "ecmaVersion": 9
-    },
+    "parser": "@typescript-eslint/parser",
 
     "plugins": [
-        "mocha"
+        "mocha",
+        "@typescript-eslint"
     ],
 
-    /**
-     * ESLint rules
-     *
-     * All available rules: http://eslint.org/docs/rules/
-     *
-     * Rules take the following form:
-     *   "rule-name", [severity, { opts }]
-     * Severity: 2 == error, 1 == warning, 0 == off.
-     */
     "rules": {
-        /**
-         * Enforced rules
-         */
-
-
         // syntax preferences
         "quotes": [2, "single", {
             "avoidEscape": true,
@@ -115,5 +99,15 @@ module.exports = {
 
         // ensure we don't have any it.only or describe.only in prod
         "mocha/no-exclusive-tests": "error"
-    }
+    },
+    "overrides": [
+        {
+            // apply TypeScript linting to the TS files in src/
+            "files": ["src/*.ts"],
+            "extends": [
+                'plugin:@typescript-eslint/eslint-recommended',
+                'plugin:@typescript-eslint/recommended',
+            ]
+        }
+    ]
 };
