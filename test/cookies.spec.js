@@ -41,13 +41,14 @@ describe('Cookie specs', () => {
         size: 16,
         httpOnly: false,
         secure: false,
-        session: true
+        session: true,
+        priority: 'Medium',
       }]);
     });
     it('should properly report httpOnly cookie', async() => {
       const {page, server} = getTestState();
       server.setRoute('/empty.html', (req, res) => {
-        res.setHeader('Set-Cookie', ';HttpOnly; Path=/');
+        res.setHeader('Set-Cookie', 'a=b; HttpOnly; Path=/');
         res.end();
       });
       await page.goto(server.EMPTY_PAGE);
@@ -58,7 +59,7 @@ describe('Cookie specs', () => {
     it('should properly report "Strict" sameSite cookie', async() => {
       const {page, server} = getTestState();
       server.setRoute('/empty.html', (req, res) => {
-        res.setHeader('Set-Cookie', ';SameSite=Strict');
+        res.setHeader('Set-Cookie', 'a=b; SameSite=Strict');
         res.end();
       });
       await page.goto(server.EMPTY_PAGE);
@@ -69,7 +70,7 @@ describe('Cookie specs', () => {
     it('should properly report "Lax" sameSite cookie', async() => {
       const {page, server} = getTestState();
       server.setRoute('/empty.html', (req, res) => {
-        res.setHeader('Set-Cookie', ';SameSite=Lax');
+        res.setHeader('Set-Cookie', 'a=b; SameSite=Lax');
         res.end();
       });
       await page.goto(server.EMPTY_PAGE);
@@ -96,7 +97,8 @@ describe('Cookie specs', () => {
           size: 12,
           httpOnly: false,
           secure: false,
-          session: true
+          session: true,
+          priority: 'Medium',
         },
         {
           name: 'username',
@@ -107,7 +109,8 @@ describe('Cookie specs', () => {
           size: 16,
           httpOnly: false,
           secure: false,
-          session: true
+          session: true,
+          priority: 'Medium',
         },
       ]);
     });
@@ -137,7 +140,8 @@ describe('Cookie specs', () => {
         size: 11,
         httpOnly: false,
         secure: true,
-        session: true
+        session: true,
+        priority: 'Medium',
       }, {
         name: 'doggo',
         value: 'woofs',
@@ -147,7 +151,8 @@ describe('Cookie specs', () => {
         size: 10,
         httpOnly: false,
         secure: true,
-        session: true
+        session: true,
+        priority: 'Medium',
       }]);
     });
   });
@@ -233,7 +238,8 @@ describe('Cookie specs', () => {
         size: 14,
         httpOnly: false,
         secure: false,
-        session: true
+        session: true,
+        priority: 'Medium',
       }]);
     });
     itFailsFirefox('should set a cookie with a path', async() => {
@@ -254,7 +260,8 @@ describe('Cookie specs', () => {
         size: 14,
         httpOnly: false,
         secure: false,
-        session: true
+        session: true,
+        priority: 'Medium',
       }]);
       expect(await page.evaluate('document.cookie')).toBe('gridcookie=GRID');
       await page.goto(server.EMPTY_PAGE);
@@ -350,7 +357,8 @@ describe('Cookie specs', () => {
         size: 18,
         httpOnly: false,
         secure: true,
-        session: true
+        session: true,
+        priority: 'Medium',
       }]);
     });
     itFailsFirefox('should set cookies from a frame', async() => {
@@ -380,7 +388,8 @@ describe('Cookie specs', () => {
         size: 20,
         httpOnly: false,
         secure: false,
-        session: true
+        session: true,
+        priority: 'Medium',
       }]);
 
       expect(await page.cookies(server.CROSS_PROCESS_PREFIX)).toEqual([{
@@ -392,7 +401,8 @@ describe('Cookie specs', () => {
         size: 15,
         httpOnly: false,
         secure: false,
-        session: true
+        session: true,
+        priority: 'Medium',
       }]);
     });
   });
