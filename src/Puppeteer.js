@@ -23,11 +23,14 @@ module.exports = class {
    * @param {string} projectRoot
    * @param {string} preferredRevision
    * @param {boolean} isPuppeteerCore
+   * @param {string} productName
    */
-  constructor(projectRoot, preferredRevision, isPuppeteerCore) {
+  constructor(projectRoot, preferredRevision, isPuppeteerCore, productName) {
     this._projectRoot = projectRoot;
     this._preferredRevision = preferredRevision;
     this._isPuppeteerCore = isPuppeteerCore;
+    // track changes to Launcher configuration via options or environment variables
+    this.__productName = productName;
   }
 
   /**
@@ -35,7 +38,8 @@ module.exports = class {
    * @return {!Promise<!Puppeteer.Browser>}
    */
   launch(options = {}) {
-    this._productName = options.product;
+    if (options.product)
+      this._productName = options.product;
     return this._launcher.launch(options);
   }
 
@@ -44,7 +48,8 @@ module.exports = class {
    * @return {!Promise<!Puppeteer.Browser>}
    */
   connect(options) {
-    this._productName = options.product;
+    if (options.product)
+      this._productName = options.product;
     return this._launcher.connect(options);
   }
 
@@ -52,7 +57,8 @@ module.exports = class {
    * @param {string} name
    */
   set _productName(name) {
-    this._changedProduct = this.__productName !== name;
+    if (this.__productName !== name)
+      this._changedProduct = true;
     this.__productName = name;
   }
 
