@@ -35,7 +35,8 @@ describe('DefaultBrowserContext', function() {
       size: 16,
       httpOnly: false,
       secure: false,
-      session: true
+      session: true,
+      priority: 'Medium',
     }]);
   });
   itFailsFirefox('page.setCookie() should work', async() => {
@@ -56,7 +57,8 @@ describe('DefaultBrowserContext', function() {
       size: 16,
       httpOnly: false,
       secure: false,
-      session: true
+      session: true,
+      priority: 'Medium',
     }]);
   });
   itFailsFirefox('page.deleteCookie() should work', async() => {
@@ -82,7 +84,8 @@ describe('DefaultBrowserContext', function() {
       size: 8,
       httpOnly: false,
       secure: false,
-      session: true
+      session: true,
+      priority: 'Medium',
     }]);
   });
 });
