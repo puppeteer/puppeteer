@@ -375,9 +375,18 @@ class Page extends EventEmitter {
    * @return {!Promise<!Array<Network.Cookie>>}
    */
   async cookies(...urls) {
-    return (await this._client.send('Network.getCookies', {
+    const originalCookies = (await this._client.send('Network.getCookies', {
       urls: urls.length ? urls : [this.url()]
     })).cookies;
+
+    const unsupportedCookieAttributes = ['priority'];
+    const filterUnsupportedAttributes = (cookie) => {
+      for (const attr of unsupportedCookieAttributes) {
+        delete cookie[attr];
+      }
+      return cookie;
+    }
+    return originalCookies.map(filterUnsupportedAttributes);
   }
 
   /**
