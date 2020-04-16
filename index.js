@@ -29,10 +29,14 @@ Page.prototype.emulateMedia = Page.prototype.emulateMediaType;
 // If node does not support async await, use the compiled version.
 const Puppeteer = require('./lib/Puppeteer');
 const packageJson = require('./package.json');
-const preferredRevision = packageJson.puppeteer.chromium_revision;
+let preferredRevision = packageJson.puppeteer.chromium_revision;
 const isPuppeteerCore = packageJson.name === 'puppeteer-core';
+// puppeteer-core ignores environment variables
+const product = isPuppeteerCore ? undefined : process.env.PUPPETEER_PRODUCT || process.env.npm_config_puppeteer_product || process.env.npm_package_config_puppeteer_product;
+if (!isPuppeteerCore && product === 'firefox')
+  preferredRevision = packageJson.puppeteer.firefox_revision;
 
-const puppeteer = new Puppeteer(__dirname, preferredRevision, isPuppeteerCore);
+const puppeteer = new Puppeteer(__dirname, preferredRevision, isPuppeteerCore, product);
 
 // The introspection in `Helper.installAsyncStackHooks` references `Puppeteer._launcher`
 // before the Puppeteer ctor is called, such that an invalid Launcher is selected at import,

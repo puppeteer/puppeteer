@@ -411,14 +411,7 @@ class FirefoxLauncher {
       firefoxArguments.push(temporaryUserDataDir);
     }
 
-    // replace 'latest' placeholder with actual downloaded revision
-    if (this._preferredRevision === 'latest') {
-      const browserFetcher = new BrowserFetcher(this._projectRoot, {product: this.product});
-      const localRevisions = await browserFetcher.localRevisions();
-      if (localRevisions[0])
-        this._preferredRevision = localRevisions[0];
-    }
-
+    await this._updateRevision();
     let firefoxExecutable = executablePath;
     if (!executablePath) {
       const {missingText, executablePath} = resolveExecutablePath(this);
@@ -478,6 +471,16 @@ class FirefoxLauncher {
    */
   executablePath() {
     return resolveExecutablePath(this).executablePath;
+  }
+
+  async _updateRevision() {
+    // replace 'latest' placeholder with actual downloaded revision
+    if (this._preferredRevision === 'latest') {
+      const browserFetcher = new BrowserFetcher(this._projectRoot, { product: this.product });
+      const localRevisions = await browserFetcher.localRevisions();
+      if (localRevisions[0])
+        this._preferredRevision = localRevisions[0];
+    }
   }
 
   /**

@@ -353,6 +353,35 @@ describe('Launcher specs', function() {
         await browser.close();
       });
     });
+    describe('Puppeteer.launch', function() {
+      let productName;
+
+      before(async() => {
+        const {puppeteer} = getTestState();
+        productName = puppeteer._productName;
+      });
+
+      after(async() => {
+        const {puppeteer} = getTestState();
+        puppeteer._lazyLauncher = undefined;
+        puppeteer._productName = productName;
+      });
+
+      it('should be able to launch different products', async() => {
+        const {puppeteer} = getTestState();
+
+        const products = ['firefox', 'chrome'];
+        for (const product of products) {
+          const browser = await puppeteer.launch({product});
+          const userAgent = await browser.userAgent();
+          await browser.close();
+          if (product === 'chrome')
+            expect(userAgent).toContain('Chrome');
+          else
+            expect(userAgent).toContain('Firefox');
+        }
+      });
+    });
     describe('Puppeteer.connect', function() {
       it('should be able to connect multiple times to the same browser', async() => {
         const { puppeteer, defaultBrowserOptions} = getTestState();
