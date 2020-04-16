@@ -15,7 +15,6 @@
  */
 
 const {helper, assert, debugError} = require('./helper');
-const path = require('path');
 
 function createJSHandle(context, remoteObject) {
   const frame = context.frame();
@@ -312,11 +311,28 @@ class ElementHandle extends JSHandle {
    * @param {!Array<string>} filePaths
    */
   async uploadFile(...filePaths) {
+    // This import is only needed for `uploadFile`, so keep it scoped here to avoid paying
+    // the cost unnecessarily.
+    const path = require('path');
     const files = filePaths.map(filePath => path.resolve(filePath));
     const { objectId } = this._remoteObject;
     const { node } = await this._client.send('DOM.describeNode', { objectId });
     const { backendNodeId } = node;
-    await this._client.send('DOM.setFileInputFiles', { objectId, files, backendNodeId });
+
+    // The zero-length array is a special case, it seems that DOM.setFileInputFiles does
+    // not actually update the files in that case, so the solution is to eval the element
+    // value to an empty string directly.
+    if (files.length === 0)
+      await this.evaluate(element => element.value = '');
+    else
+      await this._client.send('DOM.setFileInputFiles', { objectId, files, backendNodeId });
+
+    // Dispatch events because it should behave akin to a user action.
+    await this.evaluate(element => {
+      element.dispatchEvent(new Event('input', { bubbles: true }));
+      element.dispatchEvent(new Event('change', { bubbles: true }));
+      return element.files.length;
+    });
   }
 
   async tap() {
