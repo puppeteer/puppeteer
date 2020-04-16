@@ -380,12 +380,11 @@ class Page extends EventEmitter {
     })).cookies;
 
     const unsupportedCookieAttributes = ['priority'];
-    const filterUnsupportedAttributes = (cookie) => {
-      for (const attr of unsupportedCookieAttributes) {
+    const filterUnsupportedAttributes = cookie => {
+      for (const attr of unsupportedCookieAttributes)
         delete cookie[attr];
-      }
       return cookie;
-    }
+    };
     return originalCookies.map(filterUnsupportedAttributes);
   }
 
