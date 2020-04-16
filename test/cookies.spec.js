@@ -42,7 +42,6 @@ describe('Cookie specs', () => {
         httpOnly: false,
         secure: false,
         session: true,
-        priority: 'Medium',
       }]);
     });
     it('should properly report httpOnly cookie', async() => {
@@ -98,7 +97,6 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: false,
           session: true,
-          priority: 'Medium',
         },
         {
           name: 'username',
@@ -110,7 +108,6 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: false,
           session: true,
-          priority: 'Medium',
         },
       ]);
     });
@@ -141,7 +138,6 @@ describe('Cookie specs', () => {
         httpOnly: false,
         secure: true,
         session: true,
-        priority: 'Medium',
       }, {
         name: 'doggo',
         value: 'woofs',
@@ -152,7 +148,6 @@ describe('Cookie specs', () => {
         httpOnly: false,
         secure: true,
         session: true,
-        priority: 'Medium',
       }]);
     });
   });
@@ -239,7 +234,6 @@ describe('Cookie specs', () => {
         httpOnly: false,
         secure: false,
         session: true,
-        priority: 'Medium',
       }]);
     });
     itFailsFirefox('should set a cookie with a path', async() => {
@@ -261,7 +255,6 @@ describe('Cookie specs', () => {
         httpOnly: false,
         secure: false,
         session: true,
-        priority: 'Medium',
       }]);
       expect(await page.evaluate('document.cookie')).toBe('gridcookie=GRID');
       await page.goto(server.EMPTY_PAGE);
@@ -358,7 +351,6 @@ describe('Cookie specs', () => {
         httpOnly: false,
         secure: true,
         session: true,
-        priority: 'Medium',
       }]);
     });
     itFailsFirefox('should set cookies from a frame', async() => {
@@ -389,7 +381,6 @@ describe('Cookie specs', () => {
         httpOnly: false,
         secure: false,
         session: true,
-        priority: 'Medium',
       }]);
 
       expect(await page.cookies(server.CROSS_PROCESS_PREFIX)).toEqual([{
@@ -402,7 +393,6 @@ describe('Cookie specs', () => {
         httpOnly: false,
         secure: false,
         session: true,
-        priority: 'Medium',
       }]);
     });
   });
