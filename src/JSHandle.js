@@ -313,36 +313,29 @@ class ElementHandle extends JSHandle {
   async uploadFile(...filePaths) {
     const isMultiple = await this.evaluate(element => element.multiple);
     assert(filePaths.length <= 1 || isMultiple, 'Multiple file uploads only work with <input type=file multiple>');
-    // These imports are only needed for `uploadFile`, so keep them
-    // scoped here to avoid paying the cost unnecessarily.
-    const path = require('path');
-    const mime = require('mime-types');
-    const fs = require('fs');
-    const readFileAsync = helper.promisify(fs.readFile);
 
-    const promises = filePaths.map(filePath => readFileAsync(filePath));
-    const files = [];
-    for (let i = 0; i < filePaths.length; i++) {
-      const buffer = await promises[i];
-      const filePath = path.basename(filePaths[i]);
-      const file = {
-        name: filePath,
-        content: buffer.toString('base64'),
-        mimeType: mime.lookup(filePath),
-      };
-      files.push(file);
+    // This import is only needed for `uploadFile`, so keep it scoped here to avoid paying
+    // the cost unnecessarily.
+    const path = require('path');
+    const files = filePaths.map(filePath => path.resolve(filePath));
+    const { objectId } = this._remoteObject;
+    const { node } = await this._client.send('DOM.describeNode', { objectId });
+    const { backendNodeId } = node;
+
+    // The zero-length array is a special case, it seems that DOM.setFileInputFiles does
+    // not actually update the files in that case, so the solution is to eval the element
+    // value to a new FileList directly.
+    if (files.length === 0) {
+      await this.evaluate(element => {
+        element.files = new DataTransfer().files;
+
+        // Dispatch events for this case because it should behave akin to a user action.
+        element.dispatchEvent(new Event('input', { bubbles: true }));
+        element.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    } else {
+      await this._client.send('DOM.setFileInputFiles', { objectId, files, backendNodeId });
     }
-    await this.evaluateHandle(async(element, files) => {
-      const dt = new DataTransfer();
-      for (const item of files) {
-        const response = await fetch(`data:${item.mimeType};base64,${item.content}`);
-        const file = new File([await response.blob()], item.name);
-        dt.items.add(file);
-      }
-      element.files = dt.files;
-      element.dispatchEvent(new Event('input', { bubbles: true }));
-      element.dispatchEvent(new Event('change', { bubbles: true }));
-    }, files);
   }
 
   async tap() {
