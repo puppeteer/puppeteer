@@ -30,6 +30,11 @@ const {Worker: PuppeteerWorker} = require('./Worker');
 const {createJSHandle} = require('./JSHandle');
 const {Accessibility} = require('./Accessibility');
 const {TimeoutSettings} = require('./TimeoutSettings');
+
+// This import is used as a TypeDef, but ESLint's rule doesn't
+// understand that unfortunately.
+// eslint-disable-next-line no-unused-vars
+const {TaskQueue} = require('./TaskQueue');
 const writeFileAsync = helper.promisify(fs.writeFile);
 
 class Page extends EventEmitter {
@@ -38,7 +43,7 @@ class Page extends EventEmitter {
    * @param {!Puppeteer.Target} target
    * @param {boolean} ignoreHTTPSErrors
    * @param {?Puppeteer.Viewport} defaultViewport
-   * @param {!Puppeteer.TaskQueue} screenshotTaskQueue
+   * @param {!TaskQueue} screenshotTaskQueue
    * @return {!Promise<!Page>}
    */
   static async create(client, target, ignoreHTTPSErrors, defaultViewport, screenshotTaskQueue) {
@@ -53,7 +58,7 @@ class Page extends EventEmitter {
    * @param {!Puppeteer.CDPSession} client
    * @param {!Puppeteer.Target} target
    * @param {boolean} ignoreHTTPSErrors
-   * @param {!Puppeteer.TaskQueue} screenshotTaskQueue
+   * @param {!TaskQueue} screenshotTaskQueue
    */
   constructor(client, target, ignoreHTTPSErrors, screenshotTaskQueue) {
     super();

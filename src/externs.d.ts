@@ -2,7 +2,6 @@ import { Connection as RealConnection, CDPSession as RealCDPSession } from './Co
 import { Browser as RealBrowser, BrowserContext as RealBrowserContext} from './Browser.js';
 import {Target as RealTarget} from './Target.js';
 import {Page as RealPage} from './Page.js';
-import {TaskQueue as RealTaskQueue} from './TaskQueue.js';
 import {Mouse as RealMouse, Keyboard as RealKeyboard, Touchscreen as RealTouchscreen}  from './Input.js';
 import {Frame as RealFrame, FrameManager as RealFrameManager}  from './FrameManager.js';
 import {JSHandle as RealJSHandle, ElementHandle as RealElementHandle}  from './JSHandle.js';
@@ -21,7 +20,6 @@ declare global {
     export class Mouse extends RealMouse {}
     export class Keyboard extends RealKeyboard {}
     export class Touchscreen extends RealTouchscreen {}
-    export class TaskQueue extends RealTaskQueue {}
     export class Browser extends RealBrowser {}
     export class BrowserContext extends RealBrowserContext {}
     export class Target extends RealTarget {}
