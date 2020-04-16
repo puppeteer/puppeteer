@@ -49,8 +49,13 @@ async function run() {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   const checkPublicAPI = require('./check_public_api');
+  const tsSources = await Source.readdir(path.join(PROJECT_DIR, 'src'), 'ts');
+
+  const tsSourcesNoDefinitions = tsSources.filter(source => !source.filePath().endsWith('.d.ts'));
+
   const jsSources = await Source.readdir(path.join(PROJECT_DIR, 'lib'));
-  messages.push(...await checkPublicAPI(page, mdSources, jsSources));
+  const allSrcCode = [...jsSources, ...tsSourcesNoDefinitions];
+  messages.push(...await checkPublicAPI(page, mdSources, allSrcCode));
 
   await browser.close();
 
