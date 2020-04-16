@@ -311,6 +311,9 @@ class ElementHandle extends JSHandle {
    * @param {!Array<string>} filePaths
    */
   async uploadFile(...filePaths) {
+    const isMultiple = await this.evaluate(element => element.multiple);
+    assert(filePaths.length <= 1 || isMultiple, 'Multiple file uploads only work with <input type=file multiple>');
+
     // This import is only needed for `uploadFile`, so keep it scoped here to avoid paying
     // the cost unnecessarily.
     const path = require('path');
@@ -322,17 +325,17 @@ class ElementHandle extends JSHandle {
     // The zero-length array is a special case, it seems that DOM.setFileInputFiles does
     // not actually update the files in that case, so the solution is to eval the element
     // value to an empty string directly.
-    if (files.length === 0)
-      await this.evaluate(element => element.value = '');
-    else
-      await this._client.send('DOM.setFileInputFiles', { objectId, files, backendNodeId });
+    if (files.length === 0) {
+      await this.evaluate(element => {
+        element.value = '';
 
-    // Dispatch events because it should behave akin to a user action.
-    await this.evaluate(element => {
-      element.dispatchEvent(new Event('input', { bubbles: true }));
-      element.dispatchEvent(new Event('change', { bubbles: true }));
-      return element.files.length;
-    });
+        // Dispatch events for this case because it should behave akin to a user action.
+        element.dispatchEvent(new Event('input', { bubbles: true }));
+        element.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    } else {
+      await this._client.send('DOM.setFileInputFiles', { objectId, files, backendNodeId });
+    }
   }
 
   async tap() {
