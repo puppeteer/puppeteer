@@ -271,22 +271,16 @@ Releasing to npm consists of the following phases:
 
 ## Updating npm dist tags
 
-For both `puppeteer` and `puppeteer-core` we maintain the following npm tags:
-
-- `chrome-*` tags, e.g. `chrome-75` and so on. These tags match the Puppeteer version that corresponds to the `chrome-*` release.
-- `chrome-stable` tag. This tag points to the Puppeteer version that works with the current Chrome stable release.
+For both `puppeteer` and `puppeteer-core` we maintain `chrome-*` npm dist tags, e.g. `chrome-75` and so on. These tags match the Puppeteer version that corresponds to the `chrome-*` release.
 
 These tags are updated on every Puppeteer release.
-
-> **NOTE**: due to Chrome's rolling release, we take [omahaproxy's linux stable version](https://omahaproxy.appspot.com/) as *stable*.
 
 Managing tags 101:
 
 ```bash
-# list tags
+# List tags
 $ npm dist-tag ls puppeteer
-# Removing a tag
-$ npm dist-tag rm puppeteer-core chrome-stable
-# Adding a tag
-$ npm dist-tag add puppeteer-core@1.13.0 chrome-stable
+# Add tags
+$ npm dist-tag add puppeteer@3.0.0 chrome-81
+$ npm dist-tag add puppeteer-core@3.0.0 chrome-81
 ```
