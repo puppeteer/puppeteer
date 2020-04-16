@@ -324,10 +324,10 @@ class ElementHandle extends JSHandle {
 
     // The zero-length array is a special case, it seems that DOM.setFileInputFiles does
     // not actually update the files in that case, so the solution is to eval the element
-    // value to an empty string directly.
+    // value to a new FileList directly.
     if (files.length === 0) {
       await this.evaluate(element => {
-        element.value = '';
+        element.files = new DataTransfer().files;
 
         // Dispatch events for this case because it should behave akin to a user action.
         element.dispatchEvent(new Event('input', { bubbles: true }));
