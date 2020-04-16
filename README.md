@@ -301,7 +301,7 @@ See [Contributing](https://github.com/puppeteer/puppeteer/blob/master/CONTRIBUTI
 Historically, Puppeteer supported Firefox indirectly through puppeteer-firefox, which relied on a custom, patched version of Firefox. This approach was also known as “Juggler”.
 After discussions with Mozilla, we collectively concluded that relying on custom patches was infeasible.
 Since then, we have been collaborating with Mozilla on supporting Puppeteer on “stock” Firefox.
-From Puppeteer v2.1.0 onwards, as an experimental feature, you can specify [`puppeteer.launch({product: 'firefox'})`](https://github.com/puppeteer/puppeteer/blob/v3.0.0/docs/api.md#puppeteerlaunchoptions) to run your Puppeteer scripts in Firefox Nightly, without any additional custom patches.
+From Puppeteer v2.1.0 onwards, as an experimental feature, you can specify [`puppeteer.launch({product: 'firefox'})`](https://github.com/puppeteer/puppeteer/blob/v2.1.0/docs/api.md#puppeteerlaunchoptions) to run your Puppeteer scripts in Firefox Nightly, without any additional custom patches.
 
 We will continue collaborating with other browser vendors to bring Puppeteer support to browsers such as Safari.
 This effort includes exploration of a standard for executing cross-browser commands (instead of relying on the non-standard DevTools Protocol used by Chrome).
