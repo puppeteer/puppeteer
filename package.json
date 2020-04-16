@@ -30,6 +30,12 @@
     "unit-bundle": "mocha --config mocha-config/browser-bundle-tests.js",
     "update-protocol-d-ts": "node utils/protocol-types-generator"
   },
+  "files": [
+    "lib/",
+    "Errors.js",
+    "DeviceDescriptors.js",
+    "index.js"
+  ],
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "dependencies": {

@@ -1,0 +1,51 @@
+PATH                       SIZE     %   
+lib/TaskQueue.js           277 B    0%  
+Errors.js                  660 B    0%  
+DeviceDescriptors.js       671 B    0%  
+lib/Errors.js              893 B    0%  
+lib/TimeoutSettings.js     1.52 kB  0%  
+lib/api.js                 1.84 kB  0%  
+lib/Dialog.js              1.93 kB  0%  
+lib/EmulationManager.js    1.96 kB  0%  
+lib/WebSocketTransport.js  1.99 kB  0%  
+index.js                   2.02 kB  0%  
+lib/Tracing.js             2.4 kB   0%  
+lib/PipeTransport.js       2.52 kB  0%  
+lib/Multimap.js            2.74 kB  0%  
+lib/Events.js              2.83 kB  0%  
+lib/externs.d.ts           2.88 kB  0%  
+package.json               2.98 kB  0%  
+lib/Worker.js              3 kB     0%  
+lib/Puppeteer.js           4.06 kB  0%  
+lib/Target.js              5.26 kB  1%  
+lib/LifecycleWatcher.js    6.61 kB  1%  
+lib/Connection.js          8 kB     1%  
+lib/ExecutionContext.js    8.88 kB  1%  
+lib/Input.js               9.13 kB  1%  
+lib/helper.js              9.89 kB  1%  
+lib/Coverage.js            11 kB    1%  
+LICENSE                    11.3 kB  1%  
+lib/Browser.js             12.4 kB  1%  
+lib/Accessibility.js       14.6 kB  2%  
+lib/BrowserFetcher.js      16.1 kB  2%  
+lib/USKeyboardLayout.js    18.9 kB  2%  
+lib/JSHandle.js            19.6 kB  2%  
+README.md                  21.6 kB  2%  
+lib/DOMWorld.js            22.4 kB  2%  
+lib/FrameManager.js        23.1 kB  3%  
+lib/NetworkManager.js      25.3 kB  3%  
+lib/DeviceDescriptors.js   30.7 kB  3%  
+lib/Launcher.js            35.1 kB  4%  
+lib/Page.js                47 kB    5%  
+lib/protocol.d.ts          523 kB   57% 
+                                        
+DIR                        SIZE     %   
+lib/                       877 kB   96% 
+.                          917 kB   100%
+
+PKGFILES SUMMARY
+Size on Disk with Dependencies  ~720 MB
+Size with Dependencies          ~668 MB
+Publishable Size                ~917 kB
+Number of Directories           2      
+Number of Files                 39     
