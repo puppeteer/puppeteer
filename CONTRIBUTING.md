@@ -171,7 +171,7 @@ npm run unit -- --verbose
 npm run unit -- --break-on-failure
 ```
 
-- To run a specific test, substitute the `it` with `it.only`: '*focus it*'):
+- To run a specific test, substitute the `it` with `it.only`:
 
 ```js
   ...
