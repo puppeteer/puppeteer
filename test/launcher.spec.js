@@ -381,7 +381,7 @@ describe('Launcher specs', function() {
        * this so we can get Windows CI stable and then dig into this
        * properly with help from the Mozilla folks.
        */
-      itFailsWindowsUntilDate(new Date(2020, 5, 1), 'should be able to launch Firefox', async() => {
+      itFailsWindowsUntilDate(new Date('2020-06-01'), 'should be able to launch Firefox', async() => {
         const {puppeteer} = getTestState();
         const browser = await puppeteer.launch({product: 'firefox'});
         const userAgent = await browser.userAgent();
