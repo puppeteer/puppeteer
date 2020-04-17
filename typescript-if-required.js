@@ -56,6 +56,4 @@ async function compileTypeScriptIfRequired() {
 if (require.main === module)
   compileTypeScriptIfRequired();
 
-
 module.exports = compileTypeScriptIfRequired;
-
