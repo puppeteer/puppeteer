@@ -17,6 +17,10 @@
 const {Events} = require('./Events');
 const {Page} = require('./Page');
 const {Worker: PuppeteerWorker} = require('./Worker');
+// This import is used as a TypeDef, but ESLint's rule doesn't
+// understand that unfortunately.
+// eslint-disable-next-line no-unused-vars
+const {TaskQueue} = require('./TaskQueue');
 
 class Target {
   /**
@@ -25,7 +29,7 @@ class Target {
    * @param {!function():!Promise<!Puppeteer.CDPSession>} sessionFactory
    * @param {boolean} ignoreHTTPSErrors
    * @param {?Puppeteer.Viewport} defaultViewport
-   * @param {!Puppeteer.TaskQueue} screenshotTaskQueue
+   * @param {!TaskQueue} screenshotTaskQueue
    */
   constructor(targetInfo, browserContext, sessionFactory, ignoreHTTPSErrors, defaultViewport, screenshotTaskQueue) {
     this._targetInfo = targetInfo;
