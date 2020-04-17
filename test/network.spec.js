@@ -15,7 +15,6 @@
  */
 
 const fs = require('fs');
-const os = require('os');
 const path = require('path');
 const utils = require('./utils');
 const expect = require('expect');
