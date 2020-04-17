@@ -341,7 +341,8 @@ RUN apk add --no-cache \
 ...
 
 # Tell Puppeteer to skip installing Chrome. We'll be using the installed package.
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Puppeteer v1.19.0 works with Chromium 77.
 RUN yarn add puppeteer@1.19.0
@@ -356,14 +357,6 @@ RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
 USER pptruser
 
 ...
-```
-
-And when launching Chrome, be sure to use the `chromium-browser` executable:
-
-```js
-const browser = await puppeteer.launch({
-  executablePath: '/usr/bin/chromium-browser'
-});
 ```
 
 #### Tips
