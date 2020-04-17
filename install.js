@@ -14,45 +14,6 @@
  * limitations under the License.
  */
 
-const fs = require('fs');
-const path = require('path');
-const child_process = require('child_process');
-const {promisify} = require('util');
-
-const fsAccess = promisify(fs.access);
-const exec = promisify(child_process.exec);
-
-const fileExists = async filePath => fsAccess(filePath).then(() => true).catch(() => false);
-
-/*
- * Now Puppeteer is built with TypeScript, we need to ensure that
- * locally we have the generated output before trying to install.
- *
- * For users installing puppeteer this is fine, they will have the
- * generated lib/ directory as we ship it when we publish to npm.
- *
- * However, if you're cloning the repo to contribute, you won't have the
- * generated lib/ directory so this script checks if we need to run
- * TypeScript first to ensure the output exists and is in the right
- * place.
- */
-async function compileTypeScript() {
-  return exec('npm run tsc').catch(err => {
-    console.error('Error running TypeScript', err);
-    process.exit(1);
-  });
-}
-
-async function ensureLibDirectoryExists() {
-  const libPath = path.join(__dirname, 'lib');
-  const libExists = await fileExists(libPath);
-  if (libExists) return;
-
-  logPolitely('Compiling TypeScript before install...');
-  await compileTypeScript();
-}
-
-
 /**
  * This file is part of public API.
  *
@@ -62,13 +23,16 @@ async function ensureLibDirectoryExists() {
  * still possible to install a supported browser using this script when
  * necessary.
  */
+
+const compileTypeScriptIfRequired = require('./typescript-if-required');
+
 const supportedProducts = {
   'chrome': 'Chromium',
   'firefox': 'Firefox Nightly'
 };
 
 async function download() {
-  await ensureLibDirectoryExists();
+  await compileTypeScriptIfRequired();
 
   const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host || process.env.npm_package_config_puppeteer_download_host;
   const puppeteer = require('./index');
