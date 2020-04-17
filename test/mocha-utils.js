@@ -94,8 +94,7 @@ global.itFailsFirefox = (...args) => {
 };
 
 global.itFailsWindowsUntilDate = (date, ...args) => {
-  const today = new Date();
-  if (os.platform() === 'win32' && today < date) {
+  if (os.platform() === 'win32' && Date.now() < date) {
     // we are within the deferred time so skip the test
     return xit(...args);
   }
