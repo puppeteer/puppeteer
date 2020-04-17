@@ -171,12 +171,11 @@ npm run unit -- --verbose
 npm run unit -- --break-on-failure
 ```
 
-- To run a specific test, substitute the `it` with `fit` (mnemonic rule: '*focus it*'):
+- To run a specific test, substitute the `it` with `it.only`:
 
 ```js
   ...
-  // Using "fit" to run specific test
-  fit('should work', async function({server, page}) {
+  it.only('should work', async function({server, page}) {
     const response = await page.goto(server.EMPTY_PAGE);
     expect(response.ok).toBe(true);
   });
@@ -203,25 +202,6 @@ HEADLESS=false npm run unit
 
 ```bash
 BINARY=<path-to-executable> npm run unit
-```
-
-- To run tests in slow-mode:
-
-```bash
-HEADLESS=false SLOW_MO=500 npm run unit
-```
-
-- To run tests with additional Launcher options:
-
-```bash
-EXTRA_LAUNCH_OPTIONS='{"args": ["--user-data-dir=some/path"], "handleSIGINT": true}' npm run unit
-```
-
-
-- To debug a test, "focus" a test first and then run:
-
-```bash
-node --inspect-brk test/test.js
 ```
 
 ## Public API Coverage
