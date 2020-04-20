@@ -19,6 +19,7 @@ import debug = require('debug');
 const debugError = debug('puppeteer:error');
 import fs = require('fs');
 import promisify = require('./promisify');
+import {CDPSession} from './Connection';
 
 const {TimeoutError} = Errors;
 
@@ -71,7 +72,7 @@ function valueFromRemoteObject(remoteObject: Protocol.Runtime.RemoteObject): unk
   return remoteObject.value;
 }
 
-async function releaseObject(client: Puppeteer.CDPSession, remoteObject: Protocol.Runtime.RemoteObject): Promise<void> {
+async function releaseObject(client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject): Promise<void> {
   if (!remoteObject.objectId)
     return;
   await client.send('Runtime.releaseObject', {objectId: remoteObject.objectId}).catch(error => {
@@ -185,7 +186,7 @@ async function waitWithTimeout<T extends any>(promise: Promise<T>, taskName: str
   }
 }
 
-async function readProtocolStream(client: Puppeteer.CDPSession, handle: string, path?: string): Promise<Buffer> {
+async function readProtocolStream(client: CDPSession, handle: string, path?: string): Promise<Buffer> {
   let eof = false;
   let file;
   if (path)

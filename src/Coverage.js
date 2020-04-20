@@ -15,6 +15,9 @@
  */
 
 const {helper, debugError, assert} = require('./helper');
+// Used as a TypeDef
+// eslint-disable-next-line no-unused-vars
+const {CDPSession} = require('./Connection');
 
 const {EVALUATION_SCRIPT_URL} = require('./ExecutionContext');
 
@@ -27,7 +30,7 @@ const {EVALUATION_SCRIPT_URL} = require('./ExecutionContext');
 
 class Coverage {
   /**
-   * @param {!Puppeteer.CDPSession} client
+   * @param {!CDPSession} client
    */
   constructor(client) {
     this._jsCoverage = new JSCoverage(client);
@@ -67,7 +70,7 @@ module.exports = {Coverage};
 
 class JSCoverage {
   /**
-   * @param {!Puppeteer.CDPSession} client
+   * @param {!CDPSession} client
    */
   constructor(client) {
     this._client = client;
@@ -166,7 +169,7 @@ class JSCoverage {
 
 class CSSCoverage {
   /**
-   * @param {!Puppeteer.CDPSession} client
+   * @param {!CDPSession} client
    */
   constructor(client) {
     this._client = client;

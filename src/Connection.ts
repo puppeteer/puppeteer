@@ -13,38 +13,51 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const {assert} = require('./helper');
-const {Events} = require('./Events');
-const debugProtocol = require('debug')('puppeteer:protocol');
-const EventEmitter = require('events');
+import helper = require('./helper');
+const {assert} = helper;
 
-class Connection extends EventEmitter {
+import EventsModule = require('./Events');
+const {Events} = EventsModule;
+
+import debug = require('debug');
+const debugProtocol = debug('puppeteer:protocol');
+
+import EventEmitter = require('events');
+
+interface ConnectionCallback {
+    resolve: Function;
+    reject: Function;
+    error: Error;
+    method: string;
+
+}
+
+export class Connection extends EventEmitter {
+  _url: string;
+  _transport: Puppeteer.ConnectionTransport;
+  _delay: number;
+  _lastId = 0;
+  _sessions: Map<string, CDPSession> = new Map();
+  _closed = false;
+
+  _callbacks: Map<number, ConnectionCallback> = new Map();
+
   /**
    * @param {string} url
    * @param {!Puppeteer.ConnectionTransport} transport
    * @param {number=} delay
    */
-  constructor(url, transport, delay = 0) {
+  constructor(url: string, transport: Puppeteer.ConnectionTransport, delay = 0) {
     super();
     this._url = url;
-    this._lastId = 0;
-    /** @type {!Map<number, {resolve: function, reject: function, error: !Error, method: string}>}*/
-    this._callbacks = new Map();
     this._delay = delay;
 
     this._transport = transport;
     this._transport.onmessage = this._onMessage.bind(this);
     this._transport.onclose = this._onClose.bind(this);
-    /** @type {!Map<string, !CDPSession>}*/
-    this._sessions = new Map();
-    this._closed = false;
   }
 
-  /**
-   * @param {!CDPSession} session
-   * @return {!Connection}
-   */
-  static fromSession(session) {
+  static fromSession(session: CDPSession): Connection {
     return session._connection;
   }
 
@@ -52,34 +65,22 @@ class Connection extends EventEmitter {
    * @param {string} sessionId
    * @return {?CDPSession}
    */
-  session(sessionId) {
+  session(sessionId: string): CDPSession | null {
     return this._sessions.get(sessionId) || null;
   }
 
-  /**
-   * @return {string}
-   */
-  url() {
+  url(): string {
     return this._url;
   }
 
-  /**
-   * @param {string} method
-   * @param {!Object=} params
-   * @return {!Promise<?Object>}
-   */
-  send(method, params = {}) {
+  send<ReturnType extends {}>(method: string, params = {}): Promise<ReturnType> {
     const id = this._rawSend({method, params});
     return new Promise((resolve, reject) => {
       this._callbacks.set(id, {resolve, reject, error: new Error(), method});
     });
   }
 
-  /**
-   * @param {*} message
-   * @return {number}
-   */
-  _rawSend(message) {
+  _rawSend(message: {}): number {
     const id = ++this._lastId;
     message = JSON.stringify(Object.assign({}, message, {id}));
     debugProtocol('SEND ► ' + message);
@@ -87,10 +88,7 @@ class Connection extends EventEmitter {
     return id;
   }
 
-  /**
-   * @param {string} message
-   */
-  async _onMessage(message) {
+  async _onMessage(message: string): Promise<void> {
     if (this._delay)
       await new Promise(f => setTimeout(f, this._delay));
     debugProtocol('◀ RECV ' + message);
@@ -125,7 +123,7 @@ class Connection extends EventEmitter {
     }
   }
 
-  _onClose() {
+  _onClose(): void {
     if (this._closed)
       return;
     this._closed = true;
@@ -140,7 +138,7 @@ class Connection extends EventEmitter {
     this.emit(Events.Connection.Disconnected);
   }
 
-  dispose() {
+  dispose(): void {
     this._onClose();
     this._transport.close();
   }
@@ -149,33 +147,34 @@ class Connection extends EventEmitter {
    * @param {Protocol.Target.TargetInfo} targetInfo
    * @return {!Promise<!CDPSession>}
    */
-  async createSession(targetInfo) {
-    const {sessionId} = await this.send('Target.attachToTarget', {targetId: targetInfo.targetId, flatten: true});
+  async createSession(targetInfo: Protocol.Target.TargetInfo): Promise<CDPSession> {
+    const {sessionId} = await this.send<Protocol.Target.attachedToTargetPayload>('Target.attachToTarget', {targetId: targetInfo.targetId, flatten: true});
     return this._sessions.get(sessionId);
   }
 }
 
-class CDPSession extends EventEmitter {
-  /**
-   * @param {!Connection} connection
-   * @param {string} targetType
-   * @param {string} sessionId
-   */
-  constructor(connection, targetType, sessionId) {
+interface CDPSessionOnMessageObject {
+    id?: number;
+    method: string;
+    params: {};
+    error: {message: string; data: any};
+    result?: any;
+
+}
+export class CDPSession extends EventEmitter {
+  _connection: Connection;
+  _sessionId: string;
+  _targetType: string;
+  _callbacks: Map<number, ConnectionCallback> = new Map();
+
+  constructor(connection: Connection, targetType: string, sessionId: string) {
     super();
-    /** @type {!Map<number, {resolve: function, reject: function, error: !Error, method: string}>}*/
-    this._callbacks = new Map();
     this._connection = connection;
     this._targetType = targetType;
     this._sessionId = sessionId;
   }
 
-  /**
-   * @param {string} method
-   * @param {!Object=} params
-   * @return {!Promise<?Object>}
-   */
-  send(method, params = {}) {
+  send<T extends keyof Protocol.CommandParameters>(method: T, params?: Protocol.CommandParameters[T]): Promise<Protocol.CommandReturnValues[T]> {
     if (!this._connection)
       return Promise.reject(new Error(`Protocol error (${method}): Session closed. Most likely the ${this._targetType} has been closed.`));
     const id = this._connection._rawSend({sessionId: this._sessionId, method, params});
@@ -184,10 +183,7 @@ class CDPSession extends EventEmitter {
     });
   }
 
-  /**
-   * @param {{id?: number, method: string, params: Object, error: {message: string, data: any}, result?: *}} object
-   */
-  _onMessage(object) {
+  _onMessage(object: CDPSessionOnMessageObject): void {
     if (object.id && this._callbacks.has(object.id)) {
       const callback = this._callbacks.get(object.id);
       this._callbacks.delete(object.id);
@@ -201,13 +197,13 @@ class CDPSession extends EventEmitter {
     }
   }
 
-  async detach() {
+  async detach(): Promise<void> {
     if (!this._connection)
       throw new Error(`Session already detached. Most likely the ${this._targetType} has been closed.`);
     await this._connection.send('Target.detachFromTarget',  {sessionId: this._sessionId});
   }
 
-  _onClosed() {
+  _onClosed(): void {
     for (const callback of this._callbacks.values())
       callback.reject(rewriteError(callback.error, `Protocol error (${callback.method}): Target closed.`));
     this._callbacks.clear();
@@ -222,7 +218,7 @@ class CDPSession extends EventEmitter {
  * @param {{error: {message: string, data: any}}} object
  * @return {!Error}
  */
-function createProtocolError(error, method, object) {
+function createProtocolError(error: Error, method: string, object: { error: { message: string; data: any}}): Error {
   let message = `Protocol error (${method}): ${object.error.message}`;
   if ('data' in object.error)
     message += ` ${object.error.data}`;
@@ -234,9 +230,7 @@ function createProtocolError(error, method, object) {
  * @param {string} message
  * @return {!Error}
  */
-function rewriteError(error, message) {
+function rewriteError(error: Error, message: string): Error {
   error.message = message;
   return error;
 }
-
-module.exports = {Connection, CDPSession};

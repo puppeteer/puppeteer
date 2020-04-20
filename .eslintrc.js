@@ -112,7 +112,8 @@ module.exports = {
                 "@typescript-eslint/no-unused-vars": 2,
                 "semi": 0,
                 "@typescript-eslint/semi": 2,
-                "@typescript-eslint/no-empty-function": 0
+                "@typescript-eslint/no-empty-function": 0,
+                "@typescript-eslint/no-use-before-define": 0
             }
         }
     ]

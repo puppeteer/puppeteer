@@ -24,12 +24,15 @@ const {NetworkManager} = require('./NetworkManager');
 // Used as a TypeDef
 // eslint-disable-next-line no-unused-vars
 const {TimeoutSettings} = require('./TimeoutSettings');
+// Used as a TypeDef
+// eslint-disable-next-line no-unused-vars
+const {CDPSession} = require('./Connection');
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
 class FrameManager extends EventEmitter {
   /**
-   * @param {!Puppeteer.CDPSession} client
+   * @param {!CDPSession} client
    * @param {!Puppeteer.Page} page
    * @param {boolean} ignoreHTTPSErrors
    * @param {!TimeoutSettings} timeoutSettings
@@ -112,7 +115,7 @@ class FrameManager extends EventEmitter {
     return watcher.navigationResponse();
 
     /**
-     * @param {!Puppeteer.CDPSession} client
+     * @param {!CDPSession} client
      * @param {string} url
      * @param {string} referrer
      * @param {string} frameId
@@ -376,7 +379,7 @@ class FrameManager extends EventEmitter {
 class Frame {
   /**
    * @param {!FrameManager} frameManager
-   * @param {!Puppeteer.CDPSession} client
+   * @param {!CDPSession} client
    * @param {?Frame} parentFrame
    * @param {string} frameId
    */

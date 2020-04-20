@@ -17,10 +17,13 @@ const EventEmitter = require('events');
 const {debugError} = require('./helper');
 const {ExecutionContext} = require('./ExecutionContext');
 const {JSHandle} = require('./JSHandle');
+// Used as a TypeDef
+// eslint-disable-next-line no-unused-vars
+const {CDPSession} = require('./Connection');
 
 class Worker extends EventEmitter {
   /**
-   * @param {Puppeteer.CDPSession} client
+   * @param {CDPSession} client
    * @param {string} url
    * @param {function(string, !Array<!JSHandle>, Protocol.Runtime.StackTrace=):void} consoleAPICalled
    * @param {function(!Protocol.Runtime.ExceptionDetails):void} exceptionThrown

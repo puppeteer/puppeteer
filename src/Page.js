@@ -18,7 +18,9 @@ const fs = require('fs');
 const EventEmitter = require('events');
 const mime = require('mime');
 const {Events} = require('./Events');
-const {Connection} = require('./Connection');
+// CDPSession is used only as a typedef
+// eslint-disable-next-line no-unused-vars
+const {Connection, CDPSession} = require('./Connection');
 const {Dialog} = require('./Dialog');
 const {EmulationManager} = require('./EmulationManager');
 const {FrameManager} = require('./FrameManager');
@@ -39,7 +41,7 @@ const writeFileAsync = helper.promisify(fs.writeFile);
 
 class Page extends EventEmitter {
   /**
-   * @param {!Puppeteer.CDPSession} client
+   * @param {!CDPSession} client
    * @param {!Puppeteer.Target} target
    * @param {boolean} ignoreHTTPSErrors
    * @param {?Puppeteer.Viewport} defaultViewport
@@ -55,7 +57,7 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {!Puppeteer.CDPSession} client
+   * @param {!CDPSession} client
    * @param {!Puppeteer.Target} target
    * @param {boolean} ignoreHTTPSErrors
    * @param {!TaskQueue} screenshotTaskQueue
@@ -1361,7 +1363,7 @@ class ConsoleMessage {
 
 class FileChooser {
   /**
-   * @param {Puppeteer.CDPSession} client
+   * @param {CDPSession} client
    * @param {Puppeteer.ElementHandle} element
    * @param {!Protocol.Page.fileChooserOpenedPayload} event
    */

@@ -16,10 +16,13 @@
 const EventEmitter = require('events');
 const {helper, assert, debugError} = require('./helper');
 const {Events} = require('./Events');
+// CDPSession is used only as a typedef
+// eslint-disable-next-line no-unused-vars
+const {CDPSession} = require('./Connection');
 
 class NetworkManager extends EventEmitter {
   /**
-   * @param {!Puppeteer.CDPSession} client
+   * @param {!CDPSession} client
    * @param {!Puppeteer.FrameManager} frameManager
    */
   constructor(client, ignoreHTTPSErrors, frameManager) {
@@ -312,7 +315,7 @@ class NetworkManager extends EventEmitter {
 
 class Request {
   /**
-   * @param {!Puppeteer.CDPSession} client
+   * @param {!CDPSession} client
    * @param {?Puppeteer.Frame} frame
    * @param {string} interceptionId
    * @param {boolean} allowInterception
@@ -524,7 +527,7 @@ const errorReasons = {
 
 class Response {
   /**
-   * @param {!Puppeteer.CDPSession} client
+   * @param {!CDPSession} client
    * @param {!Request} request
    * @param {!Protocol.Network.Response} responsePayload
    */

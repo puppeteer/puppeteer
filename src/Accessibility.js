@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+// Used as a TypeDef
+// eslint-disable-next-line no-unused-vars
+const {CDPSession} = require('./Connection');
+
 /**
  * @typedef {Object} SerializedAXNode
  * @property {string} role
@@ -53,7 +57,7 @@
 
 class Accessibility {
   /**
-   * @param {!Puppeteer.CDPSession} client
+   * @param {!CDPSession} client
    */
   constructor(client) {
     this._client = client;

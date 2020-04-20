@@ -249,6 +249,41 @@ function compareDocumentations(actual, expected) {
 
   /**
    * @param {string} source
+   * @param {!string} actualName
+   * @param {!string} expectedName
+   */
+  function namingMisMatchInTypeIsExpected(source, actualName, expectedName) {
+    /* The DocLint tooling doesn't deal well with generics in TypeScript
+    * source files. We could fix this but the longterm plan is to
+    * auto-generate documentation from TS. So instead we document here
+    * the methods that use generics that DocLint trips up on and if it
+    * finds a mismatch that matches one of the cases below it doesn't
+    * error. This still means we're protected from accidental changes, as
+    * if the mismatch doesn't exactly match what's described below
+    * DocLint will fail.
+    */
+    const expectedNamingMismatches = new Map([
+      ['Method CDPSession.send() method', {
+        actualName: 'string',
+        expectedName: 'T'
+      }],
+      ['Method CDPSession.send() params', {
+        actualName: 'Object',
+        expectedName: 'CommandParameters[T]'
+      }],
+    ]);
+
+    const expectedForSource = expectedNamingMismatches.get(source);
+    if (!expectedForSource) return false;
+
+    const namingMismatchIsExpected = expectedForSource.actualName === actualName && expectedForSource.expectedName === expectedName;
+
+    return namingMismatchIsExpected;
+  }
+
+
+  /**
+   * @param {string} source
    * @param {!Documentation.Type} actual
    * @param {!Documentation.Type} expected
    */
@@ -260,8 +295,12 @@ function compareDocumentations(actual, expected) {
     const actualName = actual.name.replace(/[\? ]/g, '');
     // TypeScript likes to add some spaces
     const expectedName = expected.name.replace(/\ /g, '');
-    if (expectedName !== actualName)
-      errors.push(`${source} ${actualName} != ${expectedName}`);
+    if (expectedName !== actualName) {
+      const namingMismatchIsExpected = namingMisMatchInTypeIsExpected(source, actualName, expectedName);
+
+      if (!namingMismatchIsExpected)
+        errors.push(`${source} ${actualName} != ${expectedName}`);
+    }
     const actualPropertiesMap = new Map(actual.properties.map(property => [property.name, property.type]));
     const expectedPropertiesMap = new Map(expected.properties.map(property => [property.name, property.type]));
     const propertiesDiff = diff(Array.from(actualPropertiesMap.keys()).sort(), Array.from(expectedPropertiesMap.keys()).sort());

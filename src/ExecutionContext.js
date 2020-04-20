@@ -16,13 +16,16 @@
 
 const {helper, assert} = require('./helper');
 const {createJSHandle, JSHandle} = require('./JSHandle');
+// Used as a TypeDef
+// eslint-disable-next-line no-unused-vars
+const {CDPSession} = require('./Connection');
 
 const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
 
 class ExecutionContext {
   /**
-   * @param {!Puppeteer.CDPSession} client
+   * @param {!CDPSession} client
    * @param {!Protocol.Runtime.ExecutionContextDescription} contextPayload
    * @param {?Puppeteer.DOMWorld} world
    */
