@@ -177,7 +177,17 @@ export class CDPSession extends EventEmitter {
   send<T extends keyof Protocol.CommandParameters>(method: T, params?: Protocol.CommandParameters[T]): Promise<Protocol.CommandReturnValues[T]> {
     if (!this._connection)
       return Promise.reject(new Error(`Protocol error (${method}): Session closed. Most likely the ${this._targetType} has been closed.`));
-    const id = this._connection._rawSend({sessionId: this._sessionId, method, params});
+
+    const id = this._connection._rawSend({
+      sessionId: this._sessionId,
+      method,
+      /* TODO(jacktfranklin@): once this Firefox bug is solved
+       * we no longer need the `|| {}` check
+       * https://bugzilla.mozilla.org/show_bug.cgi?id=1631570
+       */
+      params: params || {}
+    });
+
     return new Promise((resolve, reject) => {
       this._callbacks.set(id, {resolve, reject, error: new Error(), method});
     });
