@@ -15,8 +15,8 @@
  */
 
 /* These types exist here until we migrate over to ESM where we can
- *import / export them properly from modules - TS doesn't support
- *exposing interfaces in CommonJS land.
+ * import / export them properly from modules - TS doesn't support
+ * exposing interfaces in CommonJS land.
  */
 interface PuppeteerEventListener {
   emitter: NodeJS.EventEmitter;
