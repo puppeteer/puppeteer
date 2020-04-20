@@ -21,6 +21,9 @@ const {ExecutionContext, EVALUATION_SCRIPT_URL} = require('./ExecutionContext');
 const {LifecycleWatcher} = require('./LifecycleWatcher');
 const {DOMWorld} = require('./DOMWorld');
 const {NetworkManager} = require('./NetworkManager');
+// Used as a TypeDef
+// eslint-disable-next-line no-unused-vars
+const {TimeoutSettings} = require('./TimeoutSettings');
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
@@ -29,7 +32,7 @@ class FrameManager extends EventEmitter {
    * @param {!Puppeteer.CDPSession} client
    * @param {!Puppeteer.Page} page
    * @param {boolean} ignoreHTTPSErrors
-   * @param {!Puppeteer.TimeoutSettings} timeoutSettings
+   * @param {!TimeoutSettings} timeoutSettings
    */
   constructor(client, page, ignoreHTTPSErrors, timeoutSettings) {
     super();

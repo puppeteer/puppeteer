@@ -18,6 +18,11 @@ const fs = require('fs');
 const {helper, assert} = require('./helper');
 const {LifecycleWatcher} = require('./LifecycleWatcher');
 const {TimeoutError} = require('./Errors');
+
+// Used as a TypeDef
+// eslint-disable-next-line no-unused-vars
+const {TimeoutSettings} = require('./TimeoutSettings');
+
 const readFileAsync = helper.promisify(fs.readFile);
 
 /**
@@ -27,7 +32,7 @@ class DOMWorld {
   /**
    * @param {!Puppeteer.FrameManager} frameManager
    * @param {!Puppeteer.Frame} frame
-   * @param {!Puppeteer.TimeoutSettings} timeoutSettings
+   * @param {!TimeoutSettings} timeoutSettings
    */
   constructor(frameManager, frame, timeoutSettings) {
     this._frameManager = frameManager;

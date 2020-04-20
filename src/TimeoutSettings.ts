@@ -17,29 +17,26 @@
 const DEFAULT_TIMEOUT = 30000;
 
 class TimeoutSettings {
+  _defaultTimeout: number | null;
+  _defaultNavigationTimeout: number | null;
+
   constructor() {
     this._defaultTimeout = null;
     this._defaultNavigationTimeout = null;
   }
 
-  /**
-   * @param {number} timeout
-   */
-  setDefaultTimeout(timeout) {
+  setDefaultTimeout(timeout: number): void {
     this._defaultTimeout = timeout;
   }
 
   /**
    * @param {number} timeout
    */
-  setDefaultNavigationTimeout(timeout) {
+  setDefaultNavigationTimeout(timeout: number): void {
     this._defaultNavigationTimeout = timeout;
   }
 
-  /**
-   * @return {number}
-   */
-  navigationTimeout() {
+  navigationTimeout(): number {
     if (this._defaultNavigationTimeout !== null)
       return this._defaultNavigationTimeout;
     if (this._defaultTimeout !== null)
@@ -47,11 +44,11 @@ class TimeoutSettings {
     return DEFAULT_TIMEOUT;
   }
 
-  timeout() {
+  timeout(): number {
     if (this._defaultTimeout !== null)
       return this._defaultTimeout;
     return DEFAULT_TIMEOUT;
   }
 }
 
-module.exports = {TimeoutSettings};
+export = {TimeoutSettings};
