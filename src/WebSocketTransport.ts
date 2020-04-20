@@ -13,17 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const NodeWebSocket = require('ws');
+import * as NodeWebSocket from 'ws';
 
-/**
- * @implements {!Puppeteer.ConnectionTransport}
- */
-class WebSocketTransport {
-  /**
-   * @param {string} url
-   * @return {!Promise<!WebSocketTransport>}
-   */
-  static create(url) {
+export class WebSocketTransport implements Puppeteer.ConnectionTransport {
+  static create(url: string): Promise<WebSocketTransport> {
     return new Promise((resolve, reject) => {
       const ws = new NodeWebSocket(url, [], {
         perMessageDeflate: false,
@@ -35,16 +28,17 @@ class WebSocketTransport {
     });
   }
 
-  /**
-   * @param {!NodeWebSocket} ws
-   */
-  constructor(ws) {
+  _ws: NodeWebSocket;
+  onmessage?: (message: string) => void;
+  onclose?: () => void;
+
+  constructor(ws: NodeWebSocket) {
     this._ws = ws;
     this._ws.addEventListener('message', event => {
       if (this.onmessage)
         this.onmessage.call(null, event.data);
     });
-    this._ws.addEventListener('close', event => {
+    this._ws.addEventListener('close', () => {
       if (this.onclose)
         this.onclose.call(null);
     });
@@ -54,16 +48,12 @@ class WebSocketTransport {
     this.onclose = null;
   }
 
-  /**
-   * @param {string} message
-   */
-  send(message) {
+  send(message): void {
     this._ws.send(message);
   }
 
-  close() {
+  close(): void {
     this._ws.close();
   }
 }
 
-module.exports = WebSocketTransport;
