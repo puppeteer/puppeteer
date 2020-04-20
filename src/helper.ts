@@ -103,7 +103,7 @@ function installAsyncStackHooks(classType: AnyClass): void {
 }
 
 
-function addEventListener(emitter: NodeJS.EventEmitter, eventName: string|symbol, handler: (...args: any[]) => void): { emitter: NodeJS.EventEmitter; eventName: string|symbol; handler: (...args: any[]) => void} {
+function addEventListener(emitter: NodeJS.EventEmitter, eventName: string|symbol, handler: (...args: any[]) => void): PuppeteerEventListener {
   emitter.on(eventName, handler);
   return { emitter, eventName, handler };
 }

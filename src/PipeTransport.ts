@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const {helper, debugError} = require('./helper');
+import helperUtils = require('./helper');
+const {helper, debugError} = helperUtils;
 
-/**
- * @implements {!Puppeteer.ConnectionTransport}
- */
-class PipeTransport {
-  /**
-   * @param {!NodeJS.WritableStream} pipeWrite
-   * @param {!NodeJS.ReadableStream} pipeRead
-   */
-  constructor(pipeWrite, pipeRead) {
+class PipeTransport implements Puppeteer.ConnectionTransport {
+  _pipeWrite: NodeJS.WritableStream;
+  _pendingMessage: string;
+  _eventListeners: PuppeteerEventListener[];
+
+  onclose?: () => void;
+  onmessage?: () => void;
+
+  constructor(pipeWrite: NodeJS.WritableStream, pipeRead: NodeJS.ReadableStream) {
     this._pipeWrite = pipeWrite;
     this._pendingMessage = '';
     this._eventListeners = [
@@ -39,18 +40,12 @@ class PipeTransport {
     this.onclose = null;
   }
 
-  /**
-   * @param {string} message
-   */
-  send(message) {
+  send(message: string): void {
     this._pipeWrite.write(message);
     this._pipeWrite.write('\0');
   }
 
-  /**
-   * @param {!Buffer} buffer
-   */
-  _dispatch(buffer) {
+  _dispatch(buffer: Buffer): void {
     let end = buffer.indexOf('\0');
     if (end === -1) {
       this._pendingMessage += buffer.toString();
@@ -71,10 +66,10 @@ class PipeTransport {
     this._pendingMessage = buffer.toString(undefined, start);
   }
 
-  close() {
+  close(): void {
     this._pipeWrite = null;
     helper.removeEventListeners(this._eventListeners);
   }
 }
 
-module.exports = PipeTransport;
+export = {PipeTransport};
