@@ -21,6 +21,9 @@ const {TimeoutError} = require('./Errors');
 // Used as a TypeDef
 // eslint-disable-next-line no-unused-vars
 const {JSHandle, ElementHandle} = require('./JSHandle');
+// Used as a TypeDef
+// eslint-disable-next-line no-unused-vars
+const {ExecutionContext} = require('./ExecutionContext');
 
 // Used as a TypeDef
 // eslint-disable-next-line no-unused-vars
@@ -44,7 +47,7 @@ class DOMWorld {
 
     /** @type {?Promise<!ElementHandle>} */
     this._documentPromise = null;
-    /** @type {!Promise<!Puppeteer.ExecutionContext>} */
+    /** @type {!Promise<!ExecutionContext>} */
     this._contextPromise;
     this._contextResolveCallback = null;
     this._setContext(null);
@@ -62,7 +65,7 @@ class DOMWorld {
   }
 
   /**
-   * @param {?Puppeteer.ExecutionContext} context
+   * @param {?ExecutionContext} context
    */
   _setContext(context) {
     if (context) {
@@ -92,7 +95,7 @@ class DOMWorld {
   }
 
   /**
-   * @return {!Promise<!Puppeteer.ExecutionContext>}
+   * @return {!Promise<!ExecutionContext>}
    */
   executionContext() {
     if (this._detached)

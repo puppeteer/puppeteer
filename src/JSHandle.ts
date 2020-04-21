@@ -1,4 +1,4 @@
-/**
+**
  * Copyright 2019 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
  */
 
 import {helper, assert, debugError} from './helper';
+import {ExecutionContext} from './ExecutionContext';
 import {CDPSession} from './Connection';
 
 interface BoxModel {
@@ -26,7 +27,7 @@ interface BoxModel {
   height: number;
 }
 
-export function createJSHandle(context: Puppeteer.ExecutionContext, remoteObject: Protocol.Runtime.RemoteObject): JSHandle {
+export function createJSHandle(context: ExecutionContext, remoteObject: Protocol.Runtime.RemoteObject): JSHandle {
   const frame = context.frame();
   if (remoteObject.subtype === 'node' && frame) {
     const frameManager = frame._frameManager;
@@ -36,31 +37,31 @@ export function createJSHandle(context: Puppeteer.ExecutionContext, remoteObject
 }
 
 export class JSHandle {
-  _context: Puppeteer.ExecutionContext;
+  _context: ExecutionContext;
   _client: CDPSession;
   _remoteObject: Protocol.Runtime.RemoteObject;
   _disposed = false;
 
-  constructor(context: Puppeteer.ExecutionContext, client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject) {
+  constructor(context: ExecutionContext, client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject) {
     this._context = context;
     this._client = client;
     this._remoteObject = remoteObject;
   }
 
-  executionContext(): Puppeteer.ExecutionContext {
+  executionContext(): ExecutionContext {
     return this._context;
   }
 
-  async evaluate<T extends any>(pageFunction: Function | string, ...args: any[]): Promise<T | undefined> {
-    return await this.executionContext().evaluate(pageFunction, this, ...args);
+  async evaluate<ReturnType extends any>(pageFunction: Function | string, ...args: unknown[]): Promise<ReturnType> {
+    return await this.executionContext().evaluate<ReturnType>(pageFunction, this, ...args);
   }
 
-  async evaluateHandle(pageFunction: Function | string, ...args: any[]): Promise<JSHandle> {
+  async evaluateHandle(pageFunction: Function | string, ...args: unknown[]): Promise<JSHandle> {
     return await this.executionContext().evaluateHandle(pageFunction, this, ...args);
   }
 
   async getProperty(propertyName: string): Promise<JSHandle | undefined> {
-    const objectHandle = await this.evaluateHandle((object, propertyName) => {
+    const objectHandle = await this.evaluateHandle((object: HTMLElement, propertyName: string) => {
       const result = {__proto__: null};
       result[propertyName] = object[propertyName];
       return result;
@@ -123,13 +124,13 @@ export class ElementHandle extends JSHandle {
   _page: Puppeteer.Page;
   _frameManager: Puppeteer.FrameManager;
   /**
-   * @param {!Puppeteer.ExecutionContext} context
+   * @param {!ExecutionContext} context
    * @param {!CDPSession} client
    * @param {!Protocol.Runtime.RemoteObject} remoteObject
    * @param {!Puppeteer.Page} page
    * @param {!Puppeteer.FrameManager} frameManager
    */
-  constructor(context: Puppeteer.ExecutionContext, client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject, page: Puppeteer.Page, frameManager: Puppeteer.FrameManager) {
+  constructor(context: ExecutionContext, client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject, page: Puppeteer.Page, frameManager: Puppeteer.FrameManager) {
     super(context, client, remoteObject);
     this._client = client;
     this._remoteObject = remoteObject;
@@ -151,13 +152,16 @@ export class ElementHandle extends JSHandle {
   }
 
   async _scrollIntoViewIfNeeded(): Promise<void> {
-    const error = await this.evaluate<string | false>(async(element, pageJavascriptEnabled) => {
+    const error = await this.evaluate<Promise<string | false>>(async(element: HTMLElement, pageJavascriptEnabled: boolean) => {
       if (!element.isConnected)
         return 'Node is detached from document';
       if (element.nodeType !== Node.ELEMENT_NODE)
         return 'Node is not of type HTMLElement';
       // force-scroll if page's javascript is disabled.
       if (!pageJavascriptEnabled) {
+        // Chrome still supports behavior: instant but it's not in the spec so TS shouts
+        // We don't want to make this breaking change in Puppeteer yet so we'll ignore the line.
+        // @ts-ignore
         element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
         return false;
       }
@@ -169,6 +173,9 @@ export class ElementHandle extends JSHandle {
         observer.observe(element);
       });
       if (visibleRatio !== 1.0)
+        // Chrome still supports behavior: instant but it's not in the spec so TS shouts
+        // We don't want to make this breaking change in Puppeteer yet so we'll ignore the line.
+        // @ts-ignore
         element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
       return false;
     }, this._page._javascriptEnabled);
@@ -275,7 +282,7 @@ export class ElementHandle extends JSHandle {
   }
 
   async uploadFile(...filePaths: string[]): Promise<void> {
-    const isMultiple = await this.evaluate(element => element.multiple);
+    const isMultiple = await this.evaluate<boolean>((element: HTMLInputElement) => element.multiple);
     assert(filePaths.length <= 1 || isMultiple, 'Multiple file uploads only work with <input type=file multiple>');
 
     // This import is only needed for `uploadFile`, so keep it scoped here to avoid paying
@@ -291,7 +298,7 @@ export class ElementHandle extends JSHandle {
     // not actually update the files in that case, so the solution is to eval the element
     // value to a new FileList directly.
     if (files.length === 0) {
-      await this.evaluate(element => {
+      await this.evaluate((element: HTMLInputElement) => {
         element.files = new DataTransfer().files;
 
         // Dispatch events for this case because it should behave akin to a user action.
@@ -431,25 +438,22 @@ export class ElementHandle extends JSHandle {
     return result;
   }
 
-  async $eval<T extends any>(selector: string, pageFunction: Function|string, ...args: any[]): Promise<T | undefined> {
+  async $eval<ReturnType extends any>(selector: string, pageFunction: Function|string, ...args: unknown[]): Promise<ReturnType> {
     const elementHandle = await this.$(selector);
     if (!elementHandle)
       throw new Error(`Error: failed to find element matching selector "${selector}"`);
-    const result = await elementHandle.evaluate(pageFunction, ...args);
+    const result = await elementHandle.evaluate<ReturnType>(pageFunction, ...args);
     await elementHandle.dispose();
     return result;
   }
 
-  // TODO(jacktfranklin@): consider the types here
-  // we might want $$eval<SelectorType> which returns Promise<SelectorType[]>?
-  // Once ExecutionContext.evaluate is properly typed we can improve this a bunch
-  async $$eval<T>(selector: string, pageFunction: Function | string, ...args: any[]): Promise<T | undefined> {
+  async $$eval<ReturnType extends any>(selector: string, pageFunction: Function | string, ...args: unknown[]): Promise<ReturnType> {
     const arrayHandle = await this.evaluateHandle(
         (element, selector) => Array.from(element.querySelectorAll(selector)),
         selector
     );
 
-    const result = await arrayHandle.evaluate(pageFunction, ...args);
+    const result = await arrayHandle.evaluate<ReturnType>(pageFunction, ...args);
     await arrayHandle.dispose();
     return result;
   }
@@ -478,8 +482,8 @@ export class ElementHandle extends JSHandle {
     return result;
   }
 
-  isIntersectingViewport(): Promise<boolean> {
-    return this.evaluate(async element => {
+  async isIntersectingViewport(): Promise<boolean> {
+    return await this.evaluate<Promise<boolean>>(async element => {
       const visibleRatio = await new Promise(resolve => {
         const observer = new IntersectionObserver(entries => {
           resolve(entries[0].intersectionRatio);
