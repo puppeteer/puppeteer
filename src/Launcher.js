@@ -30,7 +30,6 @@ const debugLauncher = require('debug')(`puppeteer:launcher`);
 const {TimeoutError} = require('./Errors');
 const {WebSocketTransport} = require('./WebSocketTransport');
 const {PipeTransport} = require('./PipeTransport');
-
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
 const removeFolderAsync = helper.promisify(removeFolder);
 const writeFileAsync = helper.promisify(fs.writeFile);
@@ -106,7 +105,7 @@ class BrowserRunner {
     });
     this._listeners = [ helper.addEventListener(process, 'exit', this.kill.bind(this)) ];
     if (handleSIGINT)
-      this._listeners.push(helper.addEventListener(process, 'SIGINT', () => { this.kill(); process.exit(130); }));
+      this._listeners.push(helper.addEventListener(process, 'SIGINT', this.kill.bind(this)));
     if (handleSIGTERM)
       this._listeners.push(helper.addEventListener(process, 'SIGTERM', this.close.bind(this)));
     if (handleSIGHUP)
