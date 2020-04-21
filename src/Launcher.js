@@ -28,7 +28,7 @@ const fs = require('fs');
 const {helper, assert, debugError} = require('./helper');
 const debugLauncher = require('debug')(`puppeteer:launcher`);
 const {TimeoutError} = require('./Errors');
-const WebSocketTransport = require('./WebSocketTransport');
+const {WebSocketTransport} = require('./WebSocketTransport');
 const {PipeTransport} = require('./PipeTransport');
 
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
