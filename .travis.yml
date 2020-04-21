@@ -23,7 +23,7 @@ jobs:
       script:
         - ls .local-chromium .local-firefox
         - npm run tsc
-        - npm run unit
+        - travis_retry npm run unit
     - node_js: "10.19.0"
       dist: trusty
       env:
