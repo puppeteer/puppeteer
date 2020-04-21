@@ -152,7 +152,7 @@ function checkSources(sources) {
    */
   function serializeType(type, circular = []) {
     let typeName = checker.typeToString(type);
-    if (typeName === 'any' || typeName === '{ [x: string]: string; }')
+    if (typeName === 'any' || typeName === '{ [x: string]: string; }' || typeName === '{}')
       typeName = 'Object';
     const nextCircular = [typeName].concat(circular);
 

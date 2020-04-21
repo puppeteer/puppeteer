@@ -17,6 +17,9 @@
 // Used as a TypeDef
 // eslint-disable-next-line no-unused-vars
 const {CDPSession} = require('./Connection');
+// Used as a TypeDef
+// eslint-disable-next-line no-unused-vars
+const {ElementHandle} = require('./JSHandle');
 
 /**
  * @typedef {Object} SerializedAXNode
@@ -64,7 +67,7 @@ class Accessibility {
   }
 
   /**
-   * @param {{interestingOnly?: boolean, root?: ?Puppeteer.ElementHandle}=} options
+   * @param {{interestingOnly?: boolean, root?: ?ElementHandle}=} options
    * @return {!Promise<!SerializedAXNode>}
    */
   async snapshot(options = {}) {
