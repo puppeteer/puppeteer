@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import helperUtils = require('./helper');
-const {helper, debugError} = helperUtils;
+import {helper,debugError, PuppeteerEventListener} from './helper';
 
 class PipeTransport implements Puppeteer.ConnectionTransport {
   _pipeWrite: NodeJS.WritableStream;
