@@ -169,7 +169,7 @@ class BrowserRunner {
       this.connection = new Connection(browserWSEndpoint, transport, slowMo);
     } else {
       // stdio was assigned during start(), and the 'pipe' option there adds the 4th and 5th items to stdio array
-      const { 3: pipeWrite, 4: pipeRead } = /** @type {!Array<any>} */ (this.proc.stdio);
+      const {3: pipeWrite, 4: pipeRead} = /** @type {!Array<any>} */ (this.proc.stdio);
       const transport = new PipeTransport(/** @type {!NodeJS.WritableStream} */ pipeWrite, /** @type {!NodeJS.ReadableStream} */ pipeRead);
       this.connection = new Connection('', transport, slowMo);
     }
@@ -476,7 +476,7 @@ class FirefoxLauncher {
   async _updateRevision() {
     // replace 'latest' placeholder with actual downloaded revision
     if (this._preferredRevision === 'latest') {
-      const browserFetcher = new BrowserFetcher(this._projectRoot, { product: this.product });
+      const browserFetcher = new BrowserFetcher(this._projectRoot, {product: this.product});
       const localRevisions = await browserFetcher.localRevisions();
       if (localRevisions[0])
         this._preferredRevision = localRevisions[0];
@@ -743,7 +743,7 @@ class FirefoxLauncher {
  */
 function waitForWSEndpoint(browserProcess, timeout, preferredRevision) {
   return new Promise((resolve, reject) => {
-    const rl = readline.createInterface({ input: browserProcess.stderr });
+    const rl = readline.createInterface({input: browserProcess.stderr});
     let stderr = '';
     const listeners = [
       helper.addEventListener(rl, 'line', onLine),
@@ -802,7 +802,7 @@ function getWSEndpoint(browserURL) {
 
   const endpointURL = URL.resolve(browserURL, '/json/version');
   const protocol = endpointURL.startsWith('https') ? https : http;
-  const requestOptions = Object.assign(URL.parse(endpointURL), { method: 'GET' });
+  const requestOptions = Object.assign(URL.parse(endpointURL), {method: 'GET'});
   const request = protocol.request(requestOptions, res => {
     let data = '';
     if (res.statusCode !== 200) {
@@ -836,7 +836,7 @@ function resolveExecutablePath(launcher) {
     const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || process.env.npm_config_puppeteer_executable_path || process.env.npm_package_config_puppeteer_executable_path;
     if (executablePath) {
       const missingText = !fs.existsSync(executablePath) ? 'Tried to use PUPPETEER_EXECUTABLE_PATH env variable to launch browser but did not find any executable at: ' + executablePath : null;
-      return { executablePath, missingText };
+      return {executablePath, missingText};
     }
   }
   const browserFetcher = new BrowserFetcher(launcher._projectRoot, {product: launcher.product});

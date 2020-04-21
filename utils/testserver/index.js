@@ -147,7 +147,7 @@ class TestServer {
    */
   setRedirect(from, to) {
     this.setRoute(from, (req, res) => {
-      res.writeHead(302, { location: to });
+      res.writeHead(302, {location: to});
       res.end();
     });
   }
@@ -199,7 +199,7 @@ class TestServer {
       const auth = this._auths.get(pathName);
       const credentials = Buffer.from((request.headers.authorization || '').split(' ')[1] || '', 'base64').toString();
       if (credentials !== `${auth.username}:${auth.password}`) {
-        response.writeHead(401, { 'WWW-Authenticate': 'Basic realm="Secure Area"' });
+        response.writeHead(401, {'WWW-Authenticate': 'Basic realm="Secure Area"'});
         response.end('HTTP Error 401 Unauthorized: Access is denied');
         return;
       }

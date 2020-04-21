@@ -33,6 +33,7 @@ module.exports = {
         }],
         "brace-style": [2, "1tbs", {"allowSingleLine": true}],
         "curly": [2, "multi-or-nest", "consistent"],
+        "object-curly-spacing": [2, "never"],
         "new-parens": 2,
         "func-call-spacing": 2,
         "arrow-parens": [2, "as-needed"],

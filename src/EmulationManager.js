@@ -38,11 +38,11 @@ class EmulationManager {
     const height = viewport.height;
     const deviceScaleFactor = viewport.deviceScaleFactor || 1;
     /** @type {Protocol.Emulation.ScreenOrientation} */
-    const screenOrientation = viewport.isLandscape ? { angle: 90, type: 'landscapePrimary' } : { angle: 0, type: 'portraitPrimary' };
+    const screenOrientation = viewport.isLandscape ? {angle: 90, type: 'landscapePrimary'} : {angle: 0, type: 'portraitPrimary'};
     const hasTouch = viewport.hasTouch || false;
 
     await Promise.all([
-      this._client.send('Emulation.setDeviceMetricsOverride', { mobile, width, height, deviceScaleFactor, screenOrientation }),
+      this._client.send('Emulation.setDeviceMetricsOverride', {mobile, width, height, deviceScaleFactor, screenOrientation}),
       this._client.send('Emulation.setTouchEmulationEnabled', {
         enabled: hasTouch
       })

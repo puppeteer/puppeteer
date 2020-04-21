@@ -112,7 +112,7 @@ export interface PuppeteerEventListener {
 
 function addEventListener(emitter: NodeJS.EventEmitter, eventName: string|symbol, handler: (...args: any[]) => void): PuppeteerEventListener {
   emitter.on(eventName, handler);
-  return { emitter, eventName, handler };
+  return {emitter, eventName, handler};
 }
 
 function removeEventListeners(listeners: Array<{emitter: NodeJS.EventEmitter; eventName: string|symbol; handler: (...args: any[]) => void}>): void {

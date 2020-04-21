@@ -184,7 +184,7 @@ class Page extends EventEmitter {
    * @param {!{longitude: number, latitude: number, accuracy: (number|undefined)}} options
    */
   async setGeolocation(options) {
-    const { longitude, latitude, accuracy = 0} = options;
+    const {longitude, latitude, accuracy = 0} = options;
     if (longitude < -180 || longitude > 180)
       throw new Error(`Invalid longitude "${longitude}": precondition -180 <= LONGITUDE <= 180 failed.`);
     if (latitude < -90 || latitude > 90)
@@ -424,7 +424,7 @@ class Page extends EventEmitter {
     });
     await this.deleteCookie(...items);
     if (items.length)
-      await this._client.send('Network.setCookies', { cookies: items });
+      await this._client.send('Network.setCookies', {cookies: items});
   }
 
   /**
@@ -579,7 +579,7 @@ class Page extends EventEmitter {
       else
         expression = helper.evaluationString(deliverErrorValue, name, seq, error);
     }
-    this._client.send('Runtime.evaluate', { expression, contextId: event.executionContextId }).catch(debugError);
+    this._client.send('Runtime.evaluate', {expression, contextId: event.executionContextId}).catch(debugError);
 
     /**
      * @param {string} name
@@ -806,14 +806,14 @@ class Page extends EventEmitter {
     if (this._javascriptEnabled === enabled)
       return;
     this._javascriptEnabled = enabled;
-    await this._client.send('Emulation.setScriptExecutionDisabled', { value: !enabled });
+    await this._client.send('Emulation.setScriptExecutionDisabled', {value: !enabled});
   }
 
   /**
    * @param {boolean} enabled
    */
   async setBypassCSP(enabled) {
-    await this._client.send('Page.setBypassCSP', { enabled });
+    await this._client.send('Page.setBypassCSP', {enabled});
   }
 
   /**
@@ -885,7 +885,7 @@ class Page extends EventEmitter {
    */
   async evaluateOnNewDocument(pageFunction, ...args) {
     const source = helper.evaluationString(pageFunction, ...args);
-    await this._client.send('Page.addScriptToEvaluateOnNewDocument', { source });
+    await this._client.send('Page.addScriptToEvaluateOnNewDocument', {source});
   }
 
   /**
@@ -951,20 +951,20 @@ class Page extends EventEmitter {
       const height = Math.ceil(metrics.contentSize.height);
 
       // Overwrite clip for full page at all times.
-      clip = { x: 0, y: 0, width, height, scale: 1 };
+      clip = {x: 0, y: 0, width, height, scale: 1};
       const {
         isMobile = false,
         deviceScaleFactor = 1,
         isLandscape = false
       } = this._viewport || {};
       /** @type {!Protocol.Emulation.ScreenOrientation} */
-      const screenOrientation = isLandscape ? { angle: 90, type: 'landscapePrimary' } : { angle: 0, type: 'portraitPrimary' };
-      await this._client.send('Emulation.setDeviceMetricsOverride', { mobile: isMobile, width, height, deviceScaleFactor, screenOrientation });
+      const screenOrientation = isLandscape ? {angle: 90, type: 'landscapePrimary'} : {angle: 0, type: 'portraitPrimary'};
+      await this._client.send('Emulation.setDeviceMetricsOverride', {mobile: isMobile, width, height, deviceScaleFactor, screenOrientation});
     }
     const shouldSetDefaultBackground = options.omitBackground && format === 'png';
     if (shouldSetDefaultBackground)
-      await this._client.send('Emulation.setDefaultBackgroundColorOverride', { color: { r: 0, g: 0, b: 0, a: 0 } });
-    const result = await this._client.send('Page.captureScreenshot', { format, quality: options.quality, clip });
+      await this._client.send('Emulation.setDefaultBackgroundColorOverride', {color: {r: 0, g: 0, b: 0, a: 0}});
+    const result = await this._client.send('Page.captureScreenshot', {format, quality: options.quality, clip});
     if (shouldSetDefaultBackground)
       await this._client.send('Emulation.setDefaultBackgroundColorOverride');
 
@@ -1056,7 +1056,7 @@ class Page extends EventEmitter {
     if (runBeforeUnload) {
       await this._client.send('Page.close');
     } else {
-      await this._client._connection.send('Target.closeTarget', { targetId: this._target._targetId });
+      await this._client._connection.send('Target.closeTarget', {targetId: this._target._targetId});
       await this._target._isClosedPromise;
     }
   }
@@ -1235,13 +1235,13 @@ Page.PaperFormats = {
   legal: {width: 8.5, height: 14},
   tabloid: {width: 11, height: 17},
   ledger: {width: 17, height: 11},
-  a0: {width: 33.1, height: 46.8 },
-  a1: {width: 23.4, height: 33.1 },
-  a2: {width: 16.54, height: 23.4 },
-  a3: {width: 11.7, height: 16.54 },
-  a4: {width: 8.27, height: 11.7 },
-  a5: {width: 5.83, height: 8.27 },
-  a6: {width: 4.13, height: 5.83 },
+  a0: {width: 33.1, height: 46.8},
+  a1: {width: 23.4, height: 33.1},
+  a2: {width: 16.54, height: 23.4},
+  a3: {width: 11.7, height: 16.54},
+  a4: {width: 8.27, height: 11.7},
+  a5: {width: 5.83, height: 8.27},
+  a6: {width: 4.13, height: 5.83},
 };
 
 const unitToPixels = {

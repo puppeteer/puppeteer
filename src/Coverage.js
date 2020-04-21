@@ -273,8 +273,8 @@ class CSSCoverage {
 function convertToDisjointRanges(nestedRanges) {
   const points = [];
   for (const range of nestedRanges) {
-    points.push({ offset: range.startOffset, type: 0, range });
-    points.push({ offset: range.endOffset, type: 1, range });
+    points.push({offset: range.startOffset, type: 0, range});
+    points.push({offset: range.endOffset, type: 1, range});
   }
   // Sort points to form a valid parenthesis sequence.
   points.sort((a, b) => {

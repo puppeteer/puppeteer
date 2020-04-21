@@ -93,7 +93,7 @@ describeChromeOnly('headful tests', function() {
          */
         new Date('2020-06-01'),
         'headless should be able to read cookies written by headful', async() => {
-          const { server, puppeteer } = getTestState();
+          const {server, puppeteer} = getTestState();
 
           const userDataDir = await mkdtempAsync(TMP_FOLDER);
           // Write a cookie in headful chrome
@@ -114,7 +114,7 @@ describeChromeOnly('headful tests', function() {
         });
     // TODO: Support OOOPIF. @see https://github.com/puppeteer/puppeteer/issues/2548
     xit('OOPIF: should report google.com frame', async() => {
-      const { server } = getTestState();
+      const {server} = getTestState();
 
       // https://google.com is isolated by default in Chromium embedder.
       const browser = await puppeteer.launch(headfulOptions);
@@ -137,7 +137,7 @@ describeChromeOnly('headful tests', function() {
       await browser.close();
     });
     it('should close browser with beforeunload page', async() => {
-      const { server, puppeteer } = getTestState();
+      const {server, puppeteer} = getTestState();
 
       const browser = await puppeteer.launch(headfulOptions);
       const page = await browser.newPage();

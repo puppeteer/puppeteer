@@ -26,7 +26,7 @@ describe('network', function() {
 
   describe('Page.Events.Request', function() {
     it('should fire for navigation requests', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const requests = [];
       page.on('request', request => !utils.isFavicon(request) && requests.push(request));
@@ -34,7 +34,7 @@ describe('network', function() {
       expect(requests.length).toBe(1);
     });
     itFailsFirefox('should fire for iframes', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const requests = [];
       page.on('request', request => !utils.isFavicon(request) && requests.push(request));
@@ -43,7 +43,7 @@ describe('network', function() {
       expect(requests.length).toBe(2);
     });
     it('should fire for fetches', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const requests = [];
       page.on('request', request => !utils.isFavicon(request) && requests.push(request));
@@ -55,7 +55,7 @@ describe('network', function() {
 
   describe('Request.frame', function() {
     it('should work for main frame navigation request', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const requests = [];
       page.on('request', request => !utils.isFavicon(request) && requests.push(request));
@@ -64,7 +64,7 @@ describe('network', function() {
       expect(requests[0].frame()).toBe(page.mainFrame());
     });
     itFailsFirefox('should work for subframe navigation request', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       const requests = [];
@@ -74,7 +74,7 @@ describe('network', function() {
       expect(requests[0].frame()).toBe(page.frames()[1]);
     });
     it('should work for fetch requests', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       let requests = [];
@@ -88,7 +88,7 @@ describe('network', function() {
 
   describeFailsFirefox('Request.headers', function() {
     it('should work', async() => {
-      const { page, server, isChrome } = getTestState();
+      const {page, server, isChrome} = getTestState();
 
       const response = await page.goto(server.EMPTY_PAGE);
       if (isChrome)
@@ -100,7 +100,7 @@ describe('network', function() {
 
   describeFailsFirefox('Response.headers', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       server.setRoute('/empty.html', (req, res) => {
         res.setHeader('foo', 'bar');
@@ -113,14 +113,14 @@ describe('network', function() {
 
   describeFailsFirefox('Response.fromCache', function() {
     it('should return |false| for non-cached content', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.fromCache()).toBe(false);
     });
 
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const responses = new Map();
       page.on('response', r => !utils.isFavicon(r.request()) && responses.set(r.url().split('/').pop(), r));
@@ -139,14 +139,14 @@ describe('network', function() {
 
   describeFailsFirefox('Response.fromServiceWorker', function() {
     it('should return |false| for non-service-worker content', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.fromServiceWorker()).toBe(false);
     });
 
     it('Response.fromServiceWorker', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const responses = new Map();
       page.on('response', r => responses.set(r.url().split('/').pop(), r));
@@ -166,18 +166,18 @@ describe('network', function() {
 
   describeFailsFirefox('Request.postData', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       server.setRoute('/post', (req, res) => res.end());
       let request = null;
       page.on('request', r => request = r);
-      await page.evaluate(() => fetch('./post', { method: 'POST', body: JSON.stringify({foo: 'bar'})}));
+      await page.evaluate(() => fetch('./post', {method: 'POST', body: JSON.stringify({foo: 'bar'})}));
       expect(request).toBeTruthy();
       expect(request.postData()).toBe('{"foo":"bar"}');
     });
     it('should be |undefined| when there is no post data', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.request().postData()).toBe(undefined);
@@ -186,14 +186,14 @@ describe('network', function() {
 
   describeFailsFirefox('Response.text', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const response = await page.goto(server.PREFIX + '/simple.json');
       const responseText = (await response.text()).trimEnd();
       expect(responseText).toBe('{"foo": "bar"}');
     });
     it('should return uncompressed text', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       server.enableGzip('/simple.json');
       const response = await page.goto(server.PREFIX + '/simple.json');
@@ -202,7 +202,7 @@ describe('network', function() {
       expect(responseText).toBe('{"foo": "bar"}');
     });
     it('should throw when requesting body of redirected response', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       server.setRedirect('/foo.html', '/empty.html');
       const response = await page.goto(server.PREFIX + '/foo.html');
@@ -215,7 +215,7 @@ describe('network', function() {
       expect(error.message).toContain('Response body is unavailable for redirect responses');
     });
     it('should wait until response completes', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       // Setup server to trap request.
@@ -233,7 +233,7 @@ describe('network', function() {
       // send request and wait for server response
       const [pageResponse] = await Promise.all([
         page.waitForResponse(r => !utils.isFavicon(r.request())),
-        page.evaluate(() => fetch('./get', { method: 'GET'})),
+        page.evaluate(() => fetch('./get', {method: 'GET'})),
         server.waitForRequest('/get'),
       ]);
 
@@ -253,7 +253,7 @@ describe('network', function() {
 
   describeFailsFirefox('Response.json', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const response = await page.goto(server.PREFIX + '/simple.json');
       expect(await response.json()).toEqual({foo: 'bar'});
@@ -262,7 +262,7 @@ describe('network', function() {
 
   describeFailsFirefox('Response.buffer', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const response = await page.goto(server.PREFIX + '/pptr.png');
       const imageBuffer = fs.readFileSync(path.join(__dirname, 'assets', 'pptr.png'));
@@ -270,7 +270,7 @@ describe('network', function() {
       expect(responseBuffer.equals(imageBuffer)).toBe(true);
     });
     it('should work with compression', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       server.enableGzip('/pptr.png');
       const response = await page.goto(server.PREFIX + '/pptr.png');
@@ -282,7 +282,7 @@ describe('network', function() {
 
   describeFailsFirefox('Response.statusText', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       server.setRoute('/cool', (req, res) => {
         res.writeHead(200, 'cool!');
@@ -295,7 +295,7 @@ describe('network', function() {
 
   describeFailsFirefox('Network Events', function() {
     it('Page.Events.Request', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const requests = [];
       page.on('request', request => requests.push(request));
@@ -309,7 +309,7 @@ describe('network', function() {
       expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
     });
     it('Page.Events.Response', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const responses = [];
       page.on('response', response => responses.push(response));
@@ -326,7 +326,7 @@ describe('network', function() {
     });
 
     it('Page.Events.RequestFailed', async() => {
-      const { page, server, isChrome } = getTestState();
+      const {page, server, isChrome} = getTestState();
 
       await page.setRequestInterception(true);
       page.on('request', request => {
@@ -349,7 +349,7 @@ describe('network', function() {
       expect(failedRequests[0].frame()).toBeTruthy();
     });
     it('Page.Events.RequestFinished', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const requests = [];
       page.on('requestfinished', request => requests.push(request));
@@ -361,7 +361,7 @@ describe('network', function() {
       expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
     });
     it('should fire events in proper order', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const events = [];
       page.on('request', request => events.push('request'));
@@ -371,7 +371,7 @@ describe('network', function() {
       expect(events).toEqual(['request', 'response', 'requestfinished']);
     });
     it('should support redirects', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const events = [];
       page.on('request', request => events.push(`${request.method()} ${request.url()}`));
@@ -400,7 +400,7 @@ describe('network', function() {
 
   describe('Request.isNavigationRequest', () => {
     itFailsFirefox('should work', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const requests = new Map();
       page.on('request', request => requests.set(request.url().split('/').pop(), request));
@@ -413,7 +413,7 @@ describe('network', function() {
       expect(requests.get('style.css').isNavigationRequest()).toBe(false);
     });
     itFailsFirefox('should work with request interception', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const requests = new Map();
       page.on('request', request => {
@@ -430,7 +430,7 @@ describe('network', function() {
       expect(requests.get('style.css').isNavigationRequest()).toBe(false);
     });
     it('should work when navigating to image', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       const requests = [];
       page.on('request', request => requests.push(request));
@@ -441,7 +441,7 @@ describe('network', function() {
 
   describeFailsFirefox('Page.setExtraHTTPHeaders', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.setExtraHTTPHeaders({
         foo: 'bar'
@@ -453,11 +453,11 @@ describe('network', function() {
       expect(request.headers['foo']).toBe('bar');
     });
     it('should throw for non-string header values', async() => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       let error = null;
       try {
-        await page.setExtraHTTPHeaders({ 'foo': 1 });
+        await page.setExtraHTTPHeaders({'foo': 1});
       } catch (e) {
         error = e;
       }
@@ -467,7 +467,7 @@ describe('network', function() {
 
   describeFailsFirefox('Page.authenticate', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       server.setAuth('/empty.html', 'user', 'pass');
       let response = await page.goto(server.EMPTY_PAGE);
@@ -480,7 +480,7 @@ describe('network', function() {
       expect(response.status()).toBe(200);
     });
     it('should fail if wrong credentials', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       // Use unique user/password since Chrome caches credentials per origin.
       server.setAuth('/empty.html', 'user2', 'pass2');
@@ -492,7 +492,7 @@ describe('network', function() {
       expect(response.status()).toBe(401);
     });
     it('should allow disable authentication', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       // Use unique user/password since Chrome caches credentials per origin.
       server.setAuth('/empty.html', 'user3', 'pass3');

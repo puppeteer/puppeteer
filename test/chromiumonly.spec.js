@@ -106,7 +106,7 @@ describeChromeOnly('Chromium-Specific Page Tests', function() {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
   it('Page.setRequestInterception should work with intervention headers', async() => {
-    const { server, page } = getTestState();
+    const {server, page} = getTestState();
 
     server.setRoute('/intervention', (req, res) => res.end(`
         <script>

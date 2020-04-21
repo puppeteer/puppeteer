@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const { helper, assert } = require('./helper');
+const {helper, assert} = require('./helper');
 const {Target} = require('./Target');
 const EventEmitter = require('events');
 const {TaskQueue} = require('./TaskQueue');

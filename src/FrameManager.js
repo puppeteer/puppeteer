@@ -70,7 +70,7 @@ class FrameManager extends EventEmitter {
     const {frameTree} = /** @type Protocol.Page.getFrameTreeReturnValue*/ (result[1]);
     this._handleFrameTree(frameTree);
     await Promise.all([
-      this._client.send('Page.setLifecycleEventsEnabled', { enabled: true }),
+      this._client.send('Page.setLifecycleEventsEnabled', {enabled: true}),
       this._client.send('Runtime.enable', {}).then(() => this._ensureIsolatedWorld(UTILITY_WORLD_NAME)),
       this._networkManager.initialize(),
     ]);

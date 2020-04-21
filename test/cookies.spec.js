@@ -153,7 +153,7 @@ describe('Cookie specs', () => {
   });
   describe('Page.setCookie', function() {
     itFailsFirefox('should work', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
@@ -163,7 +163,7 @@ describe('Cookie specs', () => {
       expect(await page.evaluate(() => document.cookie)).toEqual('password=123456');
     });
     itFailsFirefox('should isolate cookies in browser contexts', async() => {
-      const { page, server, browser } = getTestState();
+      const {page, server, browser} = getTestState();
 
       const anotherContext = await browser.createIncognitoBrowserContext();
       const anotherPage = await anotherContext.newPage();
@@ -185,7 +185,7 @@ describe('Cookie specs', () => {
       await anotherContext.close();
     });
     itFailsFirefox('should set multiple cookies', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
@@ -204,7 +204,7 @@ describe('Cookie specs', () => {
       ]);
     });
     itFailsFirefox('should have |expires| set to |-1| for session cookies', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
@@ -216,7 +216,7 @@ describe('Cookie specs', () => {
       expect(cookies[0].expires).toBe(-1);
     });
     itFailsFirefox('should set cookie with reasonable defaults', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
@@ -237,7 +237,7 @@ describe('Cookie specs', () => {
       }]);
     });
     itFailsFirefox('should set a cookie with a path', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/grid.html');
       await page.setCookie({
@@ -264,7 +264,7 @@ describe('Cookie specs', () => {
       expect(await page.evaluate('document.cookie')).toBe('gridcookie=GRID');
     });
     it('should not set a cookie on a blank page', async() => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.goto('about:blank');
       let error = null;
@@ -276,7 +276,7 @@ describe('Cookie specs', () => {
       expect(error.message).toContain('At least one of the url and domain needs to be specified');
     });
     it('should not set a cookie with blank page URL', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       let error = null;
       await page.goto(server.EMPTY_PAGE);
@@ -293,7 +293,7 @@ describe('Cookie specs', () => {
       );
     });
     it('should not set a cookie on a data URL page', async() => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       let error = null;
       await page.goto('data:,Hello%2C%20World!');
@@ -305,7 +305,7 @@ describe('Cookie specs', () => {
       expect(error.message).toContain('At least one of the url and domain needs to be specified');
     });
     itFailsFirefox('should default to setting secure cookie for HTTPS websites', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       const SECURE_URL = 'https://example.com';
@@ -318,7 +318,7 @@ describe('Cookie specs', () => {
       expect(cookie.secure).toBe(true);
     });
     itFailsFirefox('should be able to set unsecure cookie for HTTP website', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       const HTTP_URL = 'http://example.com';
@@ -331,7 +331,7 @@ describe('Cookie specs', () => {
       expect(cookie.secure).toBe(false);
     });
     itFailsFirefox('should set a cookie on a different domain', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({
@@ -354,7 +354,7 @@ describe('Cookie specs', () => {
       }]);
     });
     itFailsFirefox('should set cookies from a frame', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/grid.html');
       await page.setCookie({name: 'localhost-cookie', value: 'best'});
@@ -399,7 +399,7 @@ describe('Cookie specs', () => {
 
   describe('Page.deleteCookie', function() {
     itFailsFirefox('should work', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
       await page.setCookie({

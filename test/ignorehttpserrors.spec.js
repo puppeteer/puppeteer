@@ -50,7 +50,7 @@ describeFailsFirefox('ignoreHTTPSErrors', function() {
 
   describe('Response.securityDetails', function() {
     it('should work', async() => {
-      const { httpsServer } = getTestState();
+      const {httpsServer} = getTestState();
 
       const [serverRequest, response] = await Promise.all([
         httpsServer.waitForRequest('/empty.html'),
@@ -65,13 +65,13 @@ describeFailsFirefox('ignoreHTTPSErrors', function() {
       expect(securityDetails.validTo()).toBe(33086084863);
     });
     it('should be |null| for non-secure requests', async() => {
-      const { server } = getTestState();
+      const {server} = getTestState();
 
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.securityDetails()).toBe(null);
     });
     it('Network redirects should report SecurityDetails', async() => {
-      const { httpsServer } = getTestState();
+      const {httpsServer} = getTestState();
 
       httpsServer.setRedirect('/plzredirect', '/empty.html');
       const responses =  [];
@@ -89,7 +89,7 @@ describeFailsFirefox('ignoreHTTPSErrors', function() {
   });
 
   it('should work', async() => {
-    const { httpsServer } = getTestState();
+    const {httpsServer} = getTestState();
 
     let error = null;
     const response = await page.goto(httpsServer.EMPTY_PAGE).catch(e => error = e);
@@ -97,7 +97,7 @@ describeFailsFirefox('ignoreHTTPSErrors', function() {
     expect(response.ok()).toBe(true);
   });
   it('should work with request interception', async() => {
-    const { httpsServer } = getTestState();
+    const {httpsServer} = getTestState();
 
     await page.setRequestInterception(true);
     page.on('request', request => request.continue());
@@ -105,7 +105,7 @@ describeFailsFirefox('ignoreHTTPSErrors', function() {
     expect(response.status()).toBe(200);
   });
   it('should work with mixed content', async() => {
-    const { server, httpsServer } = getTestState();
+    const {server, httpsServer} = getTestState();
 
     httpsServer.setRoute('/mixedcontent.html', (req, res) => {
       res.end(`<iframe src=${server.EMPTY_PAGE}></iframe>`);
