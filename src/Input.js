@@ -43,7 +43,7 @@ class Keyboard {
    * @param {string} key
    * @param {{text?: string}=} options
    */
-  async down(key, options = { text: undefined }) {
+  async down(key, options = {text: undefined}) {
     const description = this._keyDescriptionForString(key);
 
     const autoRepeat = this._pressedKeys.has(description.code);
@@ -312,4 +312,4 @@ class Touchscreen {
   }
 }
 
-module.exports = { Keyboard, Mouse, Touchscreen};
+module.exports = {Keyboard, Mouse, Touchscreen};

@@ -24,7 +24,7 @@ describe('Target', function() {
   setupTestPageAndContextHooks();
 
   it('Browser.targets should return all of the targets', async() => {
-    const { browser } = getTestState();
+    const {browser} = getTestState();
 
     // The pages will be the testing page and the original newtab page
     const targets = browser.targets();
@@ -33,7 +33,7 @@ describe('Target', function() {
     expect(targets.some(target => target.type() === 'browser')).toBeTruthy();
   });
   it('Browser.pages should return all of the pages', async() => {
-    const { page, context } = getTestState();
+    const {page, context} = getTestState();
 
     // The pages will be the testing page
     const allPages = await context.pages();
@@ -42,14 +42,14 @@ describe('Target', function() {
     expect(allPages[0]).not.toBe(allPages[1]);
   });
   it('should contain browser target', async() => {
-    const { browser } = getTestState();
+    const {browser} = getTestState();
 
     const targets = browser.targets();
     const browserTarget = targets.find(target => target.type() === 'browser');
     expect(browserTarget).toBeTruthy();
   });
   it('should be able to use the default page in the browser', async() => {
-    const { page, browser } = getTestState();
+    const {page, browser} = getTestState();
 
     // The pages will be the testing page and the original newtab page
     const allPages = await browser.pages();
@@ -58,7 +58,7 @@ describe('Target', function() {
     expect(await originalPage.$('body')).toBeTruthy();
   });
   itFailsFirefox('should report when a new page is created and closed', async() => {
-    const { page, server, context } = getTestState();
+    const {page, server, context} = getTestState();
 
     const [otherPage] = await Promise.all([
       context.waitForTarget(target => target.url() === server.CROSS_PROCESS_PREFIX + '/empty.html').then(target => target.page()),
@@ -81,7 +81,7 @@ describe('Target', function() {
     expect(allPages).not.toContain(otherPage);
   });
   itFailsFirefox('should report when a service worker is created and destroyed', async() => {
-    const { page, server, context } = getTestState();
+    const {page, server, context} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     const createdTarget = new Promise(fulfill => context.once('targetcreated', target => fulfill(target)));
@@ -96,7 +96,7 @@ describe('Target', function() {
     expect(await destroyedTarget).toBe(await createdTarget);
   });
   itFailsFirefox('should create a worker from a service worker', async() => {
-    const { page, server, context } = getTestState();
+    const {page, server, context} = getTestState();
 
     await page.goto(server.PREFIX + '/serviceworkers/empty/sw.html');
 
@@ -105,7 +105,7 @@ describe('Target', function() {
     expect(await worker.evaluate(() => self.toString())).toBe('[object ServiceWorkerGlobalScope]');
   });
   itFailsFirefox('should create a worker from a shared worker', async() => {
-    const { page, server, context } = getTestState();
+    const {page, server, context} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     await page.evaluate(() => {
@@ -116,7 +116,7 @@ describe('Target', function() {
     expect(await worker.evaluate(() => self.toString())).toBe('[object SharedWorkerGlobalScope]');
   });
   itFailsFirefox('should report when a target url changes', async() => {
-    const { page, server, context } = getTestState();
+    const {page, server, context} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     let changedTarget = new Promise(fulfill => context.once('targetchanged', target => fulfill(target)));
@@ -128,7 +128,7 @@ describe('Target', function() {
     expect((await changedTarget).url()).toBe(server.EMPTY_PAGE);
   });
   itFailsFirefox('should not report uninitialized pages', async() => {
-    const { context } = getTestState();
+    const {context} = getTestState();
 
     let targetChanged = false;
     const listener = () => targetChanged = true;
@@ -149,7 +149,7 @@ describe('Target', function() {
     context.removeListener('targetchanged', listener);
   });
   itFailsFirefox('should not crash while redirecting if original request was missed', async() => {
-    const { page, server, context } = getTestState();
+    const {page, server, context} = getTestState();
 
     let serverResponse = null;
     server.setRoute('/one-style.css', (req, res) => serverResponse = res);
@@ -162,7 +162,7 @@ describe('Target', function() {
     const target = await context.waitForTarget(target => target.url().includes('one-style.html'));
     const newPage = await target.page();
     // Issue a redirect.
-    serverResponse.writeHead(302, { location: '/injectedstyle.css' });
+    serverResponse.writeHead(302, {location: '/injectedstyle.css'});
     serverResponse.end();
     // Wait for the new page to load.
     await waitEvent(newPage, 'load');
@@ -170,7 +170,7 @@ describe('Target', function() {
     await newPage.close();
   });
   itFailsFirefox('should have an opener', async() => {
-    const { page, server, context } = getTestState();
+    const {page, server, context} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     const [createdTarget] = await Promise.all([
@@ -184,7 +184,7 @@ describe('Target', function() {
 
   describe('Browser.waitForTarget', () => {
     itFailsFirefox('should wait for a target', async() => {
-      const { browser, server } = getTestState();
+      const {browser, server} = getTestState();
 
       let resolved = false;
       const targetPromise = browser.waitForTarget(target => target.url() === server.EMPTY_PAGE);
@@ -197,7 +197,7 @@ describe('Target', function() {
       await page.close();
     });
     it('should timeout waiting for a non-existent target', async() => {
-      const { browser, server, puppeteer } = getTestState();
+      const {browser, server, puppeteer} = getTestState();
 
       let error = null;
       await browser.waitForTarget(target => target.url() === server.EMPTY_PAGE, {

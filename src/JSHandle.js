@@ -304,8 +304,8 @@ class ElementHandle extends JSHandle {
         if (option.selected && !element.multiple)
           break;
       }
-      element.dispatchEvent(new Event('input', { bubbles: true }));
-      element.dispatchEvent(new Event('change', { bubbles: true }));
+      element.dispatchEvent(new Event('input', {bubbles: true}));
+      element.dispatchEvent(new Event('change', {bubbles: true}));
       return options.filter(option => option.selected).map(option => option.value);
     }, values);
   }
@@ -321,9 +321,9 @@ class ElementHandle extends JSHandle {
     // the cost unnecessarily.
     const path = require('path');
     const files = filePaths.map(filePath => path.resolve(filePath));
-    const { objectId } = this._remoteObject;
-    const { node } = await this._client.send('DOM.describeNode', { objectId });
-    const { backendNodeId } = node;
+    const {objectId} = this._remoteObject;
+    const {node} = await this._client.send('DOM.describeNode', {objectId});
+    const {backendNodeId} = node;
 
     // The zero-length array is a special case, it seems that DOM.setFileInputFiles does
     // not actually update the files in that case, so the solution is to eval the element
@@ -333,11 +333,11 @@ class ElementHandle extends JSHandle {
         element.files = new DataTransfer().files;
 
         // Dispatch events for this case because it should behave akin to a user action.
-        element.dispatchEvent(new Event('input', { bubbles: true }));
-        element.dispatchEvent(new Event('change', { bubbles: true }));
+        element.dispatchEvent(new Event('input', {bubbles: true}));
+        element.dispatchEvent(new Event('change', {bubbles: true}));
       });
     } else {
-      await this._client.send('DOM.setFileInputFiles', { objectId, files, backendNodeId });
+      await this._client.send('DOM.setFileInputFiles', {objectId, files, backendNodeId});
     }
   }
 
@@ -437,7 +437,7 @@ class ElementHandle extends JSHandle {
     assert(boundingBox.width !== 0, 'Node has 0 width.');
     assert(boundingBox.height !== 0, 'Node has 0 height.');
 
-    const { layoutViewport: { pageX, pageY } } = await this._client.send('Page.getLayoutMetrics');
+    const {layoutViewport: {pageX, pageY}} = await this._client.send('Page.getLayoutMetrics');
 
     const clip = Object.assign({}, boundingBox);
     clip.x += pageX;

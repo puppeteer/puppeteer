@@ -37,7 +37,7 @@ async function download() {
   const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host || process.env.npm_package_config_puppeteer_download_host;
   const puppeteer = require('./index');
   const product = process.env.PUPPETEER_PRODUCT || process.env.npm_config_puppeteer_product || process.env.npm_package_config_puppeteer_product || 'chrome';
-  const browserFetcher = puppeteer.createBrowserFetcher({ product, host: downloadHost });
+  const browserFetcher = puppeteer.createBrowserFetcher({product, host: downloadHost});
   const revision = await getRevision();
   await fetchBinary(revision);
 

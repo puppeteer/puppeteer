@@ -31,7 +31,7 @@ describe('Mouse', function() {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
   it('should click the document', async() => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     await page.evaluate(() => {
       window.clickPromise = new Promise(resolve => {
@@ -57,7 +57,7 @@ describe('Mouse', function() {
     expect(event.button).toBe(0);
   });
   itFailsFirefox('should resize the textarea', async() => {
-    const { page, server } = getTestState();
+    const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     const {x, y, width, height} = await page.evaluate(dimensions);
@@ -71,7 +71,7 @@ describe('Mouse', function() {
     expect(newDimensions.height).toBe(Math.round(height + 104));
   });
   itFailsFirefox('should select the text with mouse', async() => {
-    const { page, server } = getTestState();
+    const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     await page.focus('textarea');
@@ -91,7 +91,7 @@ describe('Mouse', function() {
     })).toBe(text);
   });
   itFailsFirefox('should trigger hover state', async() => {
-    const { page, server } = getTestState();
+    const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.hover('#button-6');
@@ -102,7 +102,7 @@ describe('Mouse', function() {
     expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-91');
   });
   itFailsFirefox('should trigger hover state with removed window.Node', async() => {
-    const { page, server } = getTestState();
+    const {page, server} = getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.evaluate(() => delete window.Node);
@@ -110,7 +110,7 @@ describe('Mouse', function() {
     expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-6');
   });
   it('should set modifier keys on click', async() => {
-    const { page, server, isFirefox } = getTestState();
+    const {page, server, isFirefox} = getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.evaluate(() => document.querySelector('#button-3').addEventListener('mousedown', e => window.lastEvent = e, true));
@@ -132,7 +132,7 @@ describe('Mouse', function() {
     }
   });
   itFailsFirefox('should tween mouse movement', async() => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     await page.mouse.move(100, 100);
     await page.evaluate(() => {
@@ -152,7 +152,7 @@ describe('Mouse', function() {
   });
   // @see https://crbug.com/929806
   itFailsFirefox('should work with mobile viewports and cross process navigations', async() => {
-    const { page, server } = getTestState();
+    const {page, server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     await page.setViewport({width: 360, height: 640, isMobile: true});

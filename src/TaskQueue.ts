@@ -33,4 +33,4 @@ class TaskQueue {
   }
 }
 
-export = { TaskQueue };
+export = {TaskQueue};

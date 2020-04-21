@@ -132,7 +132,7 @@ class Target {
    * @return {?Puppeteer.Target}
    */
   opener() {
-    const { openerId } = this._targetInfo;
+    const {openerId} = this._targetInfo;
     if (!openerId)
       return null;
     return this.browser()._targets.get(openerId);

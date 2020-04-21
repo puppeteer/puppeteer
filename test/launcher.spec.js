@@ -30,7 +30,7 @@ describe('Launcher specs', function() {
   describe('Puppeteer', function() {
     describe('BrowserFetcher', function() {
       it('should download and extract chrome linux binary', async() => {
-        const { server, puppeteer} = getTestState();
+        const {server, puppeteer} = getTestState();
 
         const downloadsFolder = await mkdtempAsync(TMP_FOLDER);
         const browserFetcher = puppeteer.createBrowserFetcher({
@@ -62,7 +62,7 @@ describe('Launcher specs', function() {
         await rmAsync(downloadsFolder);
       });
       it('should download and extract firefox linux binary', async() => {
-        const { server , puppeteer} = getTestState();
+        const {server , puppeteer} = getTestState();
 
         const downloadsFolder = await mkdtempAsync(TMP_FOLDER);
         const browserFetcher = puppeteer.createBrowserFetcher({
@@ -97,7 +97,7 @@ describe('Launcher specs', function() {
 
     describe('Browser.disconnect', function() {
       it('should reject navigation when browser closes', async() => {
-        const { server, puppeteer, defaultBrowserOptions} = getTestState();
+        const {server, puppeteer, defaultBrowserOptions} = getTestState();
         server.setRoute('/one-style.css', () => {});
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const remote = await puppeteer.connect({browserWSEndpoint: browser.wsEndpoint()});
@@ -110,7 +110,7 @@ describe('Launcher specs', function() {
         await browser.close();
       });
       it('should reject waitForSelector when browser closes', async() => {
-        const { server, puppeteer, defaultBrowserOptions} = getTestState();
+        const {server, puppeteer, defaultBrowserOptions} = getTestState();
 
         server.setRoute('/empty.html', () => {});
         const browser = await puppeteer.launch(defaultBrowserOptions);
@@ -125,7 +125,7 @@ describe('Launcher specs', function() {
     });
     describe('Browser.close', function() {
       it('should terminate network waiters', async() => {
-        const { server, puppeteer, defaultBrowserOptions } = getTestState();
+        const {server, puppeteer, defaultBrowserOptions} = getTestState();
 
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const remote = await puppeteer.connect({browserWSEndpoint: browser.wsEndpoint()});
@@ -155,7 +155,7 @@ describe('Launcher specs', function() {
         expect(error.message).toContain('Protocol error');
       });
       it('should reject if executable path is invalid', async() => {
-        const { defaultBrowserOptions, puppeteer} = getTestState();
+        const {defaultBrowserOptions, puppeteer} = getTestState();
 
         let waitError = null;
         const options = Object.assign({}, defaultBrowserOptions, {executablePath: 'random-invalid-path'});
@@ -163,7 +163,7 @@ describe('Launcher specs', function() {
         expect(waitError.message).toContain('Failed to launch');
       });
       it('userDataDir option', async() => {
-        const { defaultBrowserOptions, puppeteer} = getTestState();
+        const {defaultBrowserOptions, puppeteer} = getTestState();
 
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
@@ -177,7 +177,7 @@ describe('Launcher specs', function() {
         await rmAsync(userDataDir).catch(e => {});
       });
       it('userDataDir argument', async() => {
-        const { isChrome, puppeteer, defaultBrowserOptions} = getTestState();
+        const {isChrome, puppeteer, defaultBrowserOptions} = getTestState();
 
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({}, defaultBrowserOptions);
@@ -201,7 +201,7 @@ describe('Launcher specs', function() {
         await rmAsync(userDataDir).catch(e => {});
       });
       it('userDataDir option should restore state', async() => {
-        const { server, puppeteer, defaultBrowserOptions} = getTestState();
+        const {server, puppeteer, defaultBrowserOptions} = getTestState();
 
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
@@ -221,7 +221,7 @@ describe('Launcher specs', function() {
       });
       // This mysteriously fails on Windows on AppVeyor. See https://github.com/puppeteer/puppeteer/issues/4111
       xit('userDataDir option should restore cookies', async() => {
-        const { server , puppeteer} = getTestState();
+        const {server , puppeteer} = getTestState();
 
         const userDataDir = await mkdtempAsync(TMP_FOLDER);
         const options = Object.assign({userDataDir}, defaultBrowserOptions);
@@ -300,7 +300,7 @@ describe('Launcher specs', function() {
         await browser.close();
       });
       itFailsFirefox('should have custom URL when launching browser', async() => {
-        const { server, puppeteer, defaultBrowserOptions} = getTestState();
+        const {server, puppeteer, defaultBrowserOptions} = getTestState();
 
         const options = Object.assign({}, defaultBrowserOptions);
         options.args = [server.EMPTY_PAGE].concat(options.args || []);
@@ -338,7 +338,7 @@ describe('Launcher specs', function() {
         await browser.close();
       });
       itFailsFirefox('should take fullPage screenshots when defaultViewport is null', async() => {
-        const { server, puppeteer, defaultBrowserOptions} = getTestState();
+        const {server, puppeteer, defaultBrowserOptions} = getTestState();
 
         const options = Object.assign({}, defaultBrowserOptions, {
           defaultViewport: null
@@ -392,7 +392,7 @@ describe('Launcher specs', function() {
 
     describe('Puppeteer.connect', function() {
       it('should be able to connect multiple times to the same browser', async() => {
-        const { puppeteer, defaultBrowserOptions} = getTestState();
+        const {puppeteer, defaultBrowserOptions} = getTestState();
 
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const otherBrowser = await puppeteer.connect({
@@ -407,7 +407,7 @@ describe('Launcher specs', function() {
         await originalBrowser.close();
       });
       it('should be able to close remote browser', async() => {
-        const { defaultBrowserOptions, puppeteer} = getTestState();
+        const {defaultBrowserOptions, puppeteer} = getTestState();
 
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const remoteBrowser = await puppeteer.connect({
@@ -419,7 +419,7 @@ describe('Launcher specs', function() {
         ]);
       });
       itFailsFirefox('should support ignoreHTTPSErrors option', async() => {
-        const { httpsServer, puppeteer, defaultBrowserOptions} = getTestState();
+        const {httpsServer, puppeteer, defaultBrowserOptions} = getTestState();
 
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const browserWSEndpoint = originalBrowser.wsEndpoint();
@@ -440,7 +440,7 @@ describe('Launcher specs', function() {
         await browser.close();
       });
       itFailsFirefox('should be able to reconnect to a disconnected browser', async() => {
-        const { server , puppeteer, defaultBrowserOptions} = getTestState();
+        const {server , puppeteer, defaultBrowserOptions} = getTestState();
 
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const browserWSEndpoint = originalBrowser.wsEndpoint();
@@ -463,10 +463,10 @@ describe('Launcher specs', function() {
       });
       // @see https://github.com/puppeteer/puppeteer/issues/4197#issuecomment-481793410
       itFailsFirefox('should be able to connect to the same page simultaneously', async() => {
-        const { puppeteer } = getTestState();
+        const {puppeteer} = getTestState();
 
         const browserOne = await puppeteer.launch();
-        const browserTwo = await puppeteer.connect({ browserWSEndpoint: browserOne.wsEndpoint() });
+        const browserTwo = await puppeteer.connect({browserWSEndpoint: browserOne.wsEndpoint()});
         const [page1, page2] = await Promise.all([
           new Promise(x => browserOne.once('targetcreated', target => x(target.page()))),
           browserTwo.newPage(),
@@ -479,7 +479,7 @@ describe('Launcher specs', function() {
     });
     describe('Puppeteer.executablePath', function() {
       itFailsFirefox('should work', async() => {
-        const { puppeteer } = getTestState();
+        const {puppeteer} = getTestState();
 
         const executablePath = puppeteer.executablePath();
         expect(fs.existsSync(executablePath)).toBe(true);
@@ -503,7 +503,7 @@ describe('Launcher specs', function() {
 
   describe('Browser target events', function() {
     itFailsFirefox('should work', async() => {
-      const { server , puppeteer, defaultBrowserOptions} = getTestState();
+      const {server , puppeteer, defaultBrowserOptions} = getTestState();
 
       const browser = await puppeteer.launch(defaultBrowserOptions);
       const events = [];

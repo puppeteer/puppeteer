@@ -22,7 +22,7 @@ describe('Browser specs', function() {
 
   describe('Browser.version', function() {
     it('should return whether we are in headless', async() => {
-      const { browser, isHeadless } = getTestState();
+      const {browser, isHeadless} = getTestState();
 
       const version = await browser.version();
       expect(version.length).toBeGreaterThan(0);
@@ -32,7 +32,7 @@ describe('Browser specs', function() {
 
   describe('Browser.userAgent', function() {
     it('should include WebKit', async() => {
-      const { browser, isChrome } = getTestState();
+      const {browser, isChrome} = getTestState();
 
       const userAgent = await browser.userAgent();
       expect(userAgent.length).toBeGreaterThan(0);
@@ -45,7 +45,7 @@ describe('Browser specs', function() {
 
   describe('Browser.target', function() {
     it('should return browser target', async() => {
-      const { browser } = getTestState();
+      const {browser} = getTestState();
 
       const target = browser.target();
       expect(target.type()).toBe('browser');
@@ -54,13 +54,13 @@ describe('Browser specs', function() {
 
   describe('Browser.process', function() {
     it('should return child_process instance', async() => {
-      const { browser } = getTestState();
+      const {browser} = getTestState();
 
       const process = await browser.process();
       expect(process.pid).toBeGreaterThan(0);
     });
     it('should not return child_process for remote browser', async() => {
-      const { browser, puppeteer } = getTestState();
+      const {browser, puppeteer} = getTestState();
 
       const browserWSEndpoint = browser.wsEndpoint();
       const remoteBrowser = await puppeteer.connect({browserWSEndpoint});
@@ -71,7 +71,7 @@ describe('Browser specs', function() {
 
   describe('Browser.isConnected', () => {
     it('should set the browser connected state', async() => {
-      const { browser, puppeteer } = getTestState();
+      const {browser, puppeteer} = getTestState();
 
       const browserWSEndpoint = browser.wsEndpoint();
       const newBrowser = await puppeteer.connect({browserWSEndpoint});

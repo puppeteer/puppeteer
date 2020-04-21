@@ -120,7 +120,7 @@ class ExecutionContext {
         err.message += ' Are you passing a nested JSHandle?';
       throw err;
     }
-    const { exceptionDetails, result: remoteObject } = await callFunctionOnPromise.catch(rewriteError);
+    const {exceptionDetails, result: remoteObject} = await callFunctionOnPromise.catch(rewriteError);
     if (exceptionDetails)
       throw new Error('Evaluation failed: ' + helper.getExceptionMessage(exceptionDetails));
     return returnByValue ? helper.valueFromRemoteObject(remoteObject) : createJSHandle(this, remoteObject);
@@ -132,15 +132,15 @@ class ExecutionContext {
      */
     function convertArgument(arg) {
       if (typeof arg === 'bigint') // eslint-disable-line valid-typeof
-        return { unserializableValue: `${arg.toString()}n` };
+        return {unserializableValue: `${arg.toString()}n`};
       if (Object.is(arg, -0))
-        return { unserializableValue: '-0' };
+        return {unserializableValue: '-0'};
       if (Object.is(arg, Infinity))
-        return { unserializableValue: 'Infinity' };
+        return {unserializableValue: 'Infinity'};
       if (Object.is(arg, -Infinity))
-        return { unserializableValue: '-Infinity' };
+        return {unserializableValue: '-Infinity'};
       if (Object.is(arg, NaN))
-        return { unserializableValue: 'NaN' };
+        return {unserializableValue: 'NaN'};
       const objectHandle = arg && (arg instanceof JSHandle) ? arg : null;
       if (objectHandle) {
         if (objectHandle._context !== this)
@@ -148,12 +148,12 @@ class ExecutionContext {
         if (objectHandle._disposed)
           throw new Error('JSHandle is disposed!');
         if (objectHandle._remoteObject.unserializableValue)
-          return { unserializableValue: objectHandle._remoteObject.unserializableValue };
+          return {unserializableValue: objectHandle._remoteObject.unserializableValue};
         if (!objectHandle._remoteObject.objectId)
-          return { value: objectHandle._remoteObject.value };
-        return { objectId: objectHandle._remoteObject.objectId };
+          return {value: objectHandle._remoteObject.value};
+        return {objectId: objectHandle._remoteObject.objectId};
       }
-      return { value: arg };
+      return {value: arg};
     }
 
     /**

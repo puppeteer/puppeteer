@@ -297,6 +297,6 @@ module.exports = async function(page, sources) {
     errors.push(...outline.errors);
   }
   const documentation = new Documentation(classes);
-  return { documentation, errors };
+  return {documentation, errors};
 };
 

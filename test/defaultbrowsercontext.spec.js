@@ -20,7 +20,7 @@ describe('DefaultBrowserContext', function() {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
   itFailsFirefox('page.cookies() should work', async() => {
-    const { page, server } = getTestState();
+    const {page, server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     await page.evaluate(() => {
@@ -39,7 +39,7 @@ describe('DefaultBrowserContext', function() {
     }]);
   });
   itFailsFirefox('page.setCookie() should work', async() => {
-    const { page, server } = getTestState();
+    const {page, server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     await page.setCookie({
@@ -60,7 +60,7 @@ describe('DefaultBrowserContext', function() {
     }]);
   });
   itFailsFirefox('page.deleteCookie() should work', async() => {
-    const { page, server } = getTestState();
+    const {page, server} = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     await page.setCookie({

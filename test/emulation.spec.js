@@ -32,14 +32,14 @@ describe('Emulation', () => {
   describe('Page.viewport', function() {
 
     it('should get the proper viewport size', async() => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       expect(page.viewport()).toEqual({width: 800, height: 600});
       await page.setViewport({width: 123, height: 456});
       expect(page.viewport()).toEqual({width: 123, height: 456});
     });
     it('should support mobile emulation', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/mobile.html');
       expect(await page.evaluate(() => window.innerWidth)).toBe(800);
@@ -49,7 +49,7 @@ describe('Emulation', () => {
       expect(await page.evaluate(() => window.innerWidth)).toBe(400);
     });
     itFailsFirefox('should support touch emulation', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/mobile.html');
       expect(await page.evaluate(() => 'ontouchstart' in window)).toBe(false);
@@ -73,7 +73,7 @@ describe('Emulation', () => {
       }
     });
     itFailsFirefox('should be detectable by Modernizr', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/detect-touch.html');
       expect(await page.evaluate(() => document.body.textContent.trim())).toBe('NO');
@@ -82,14 +82,14 @@ describe('Emulation', () => {
       expect(await page.evaluate(() => document.body.textContent.trim())).toBe('YES');
     });
     itFailsFirefox('should detect touch when applying viewport with touches', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
-      await page.setViewport({ width: 800, height: 600, hasTouch: true });
+      await page.setViewport({width: 800, height: 600, hasTouch: true});
       await page.addScriptTag({url: server.PREFIX + '/modernizr.js'});
       expect(await page.evaluate(() => Modernizr.touchevents)).toBe(true);
     });
     itFailsFirefox('should support landscape emulation', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/mobile.html');
       expect(await page.evaluate(() => screen.orientation.type)).toBe('portrait-primary');
@@ -102,7 +102,7 @@ describe('Emulation', () => {
 
   describe('Page.emulate', function() {
     it('should work', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.goto(server.PREFIX + '/mobile.html');
       await page.emulate(iPhone);
@@ -110,7 +110,7 @@ describe('Emulation', () => {
       expect(await page.evaluate(() => navigator.userAgent)).toContain('iPhone');
     });
     it('should support clicking', async() => {
-      const { page, server } = getTestState();
+      const {page, server} = getTestState();
 
       await page.emulate(iPhone);
       await page.goto(server.PREFIX + '/input/button.html');
@@ -133,7 +133,7 @@ describe('Emulation', () => {
      * tests, and vice-versa.
      */
     itFailsFirefox('should work', async() => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(true);
       expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
@@ -145,7 +145,7 @@ describe('Emulation', () => {
       expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
     });
     it('should throw in case of bad argument', async() => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       let error = null;
       await page.emulateMedia('bad').catch(e => error = e);
@@ -158,7 +158,7 @@ describe('Emulation', () => {
      * too (and see the big comment for why we have these duplicated).
      */
     itFailsFirefox('should work', async() => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(true);
       expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
@@ -170,7 +170,7 @@ describe('Emulation', () => {
       expect(await page.evaluate(() => matchMedia('print').matches)).toBe(false);
     });
     it('should throw in case of bad argument', async() => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       let error = null;
       await page.emulateMediaType('bad').catch(e => error = e);
@@ -180,28 +180,28 @@ describe('Emulation', () => {
 
   describe('Page.emulateMediaFeatures', function() {
     itFailsFirefox('should work', async() => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       await page.emulateMediaFeatures([
-        { name: 'prefers-reduced-motion', value: 'reduce' },
+        {name: 'prefers-reduced-motion', value: 'reduce'},
       ]);
       expect(await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(true);
       expect(await page.evaluate(() => matchMedia('(prefers-reduced-motion: no-preference)').matches)).toBe(false);
       await page.emulateMediaFeatures([
-        { name: 'prefers-color-scheme', value: 'light' },
+        {name: 'prefers-color-scheme', value: 'light'},
       ]);
       expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches)).toBe(true);
       expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches)).toBe(false);
       expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches)).toBe(false);
       await page.emulateMediaFeatures([
-        { name: 'prefers-color-scheme', value: 'dark' },
+        {name: 'prefers-color-scheme', value: 'dark'},
       ]);
       expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches)).toBe(true);
       expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches)).toBe(false);
       expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches)).toBe(false);
       await page.emulateMediaFeatures([
-        { name: 'prefers-reduced-motion', value: 'reduce' },
-        { name: 'prefers-color-scheme', value: 'light' },
+        {name: 'prefers-reduced-motion', value: 'reduce'},
+        {name: 'prefers-color-scheme', value: 'light'},
       ]);
       expect(await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches)).toBe(true);
       expect(await page.evaluate(() => matchMedia('(prefers-reduced-motion: no-preference)').matches)).toBe(false);
@@ -210,17 +210,17 @@ describe('Emulation', () => {
       expect(await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches)).toBe(false);
     });
     it('should throw in case of bad argument', async() => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       let error = null;
-      await page.emulateMediaFeatures([{ name: 'bad', value: '' }]).catch(e => error = e);
+      await page.emulateMediaFeatures([{name: 'bad', value: ''}]).catch(e => error = e);
       expect(error.message).toBe('Unsupported media feature: bad');
     });
   });
 
   describeFailsFirefox('Page.emulateTimezone', function() {
     it('should work', async() => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       page.evaluate(() => {
         globalThis.date = new Date(1479579154987);
@@ -239,7 +239,7 @@ describe('Emulation', () => {
     });
 
     it('should throw for invalid timezone IDs', async() => {
-      const { page } = getTestState();
+      const {page} = getTestState();
 
       let error = null;
       await page.emulateTimezone('Foo/Bar').catch(e => error = e);

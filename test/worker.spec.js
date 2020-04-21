@@ -23,7 +23,7 @@ describeFailsFirefox('Workers', function() {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
   it('Page.workers', async() => {
-    const { page, server } = getTestState();
+    const {page, server} = getTestState();
 
     await Promise.all([
       new Promise(x => page.once('workercreated', x)),
@@ -37,7 +37,7 @@ describeFailsFirefox('Workers', function() {
     expect(page.workers().length).toBe(0);
   });
   it('should emit created and destroyed events', async() => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     const workerCreatedPromise = new Promise(x => page.once('workercreated', x));
     const workerObj = await page.evaluateHandle(() => new Worker('data:text/javascript,1'));
@@ -50,7 +50,7 @@ describeFailsFirefox('Workers', function() {
     expect(error.message).toContain('Most likely the worker has been closed.');
   });
   it('should report console logs', async() => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     const [message] = await Promise.all([
       waitEvent(page, 'console'),
@@ -64,7 +64,7 @@ describeFailsFirefox('Workers', function() {
     });
   });
   it('should have JSHandles for console logs', async() => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     const logPromise = new Promise(x => page.on('console', x));
     await page.evaluate(() => new Worker(`data:text/javascript,console.log(1,2,3,this)`));
@@ -74,7 +74,7 @@ describeFailsFirefox('Workers', function() {
     expect(await (await log.args()[3].getProperty('origin')).jsonValue()).toBe('null');
   });
   it('should have an execution context', async() => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     const workerCreatedPromise = new Promise(x => page.once('workercreated', x));
     await page.evaluate(() => new Worker(`data:text/javascript,console.log(1)`));
@@ -82,7 +82,7 @@ describeFailsFirefox('Workers', function() {
     expect(await (await worker.executionContext()).evaluate('1+1')).toBe(2);
   });
   it('should report errors', async() => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     const errorPromise = new Promise(x => page.on('pageerror', x));
     await page.evaluate(() => new Worker(`data:text/javascript, throw new Error('this is my error');`));

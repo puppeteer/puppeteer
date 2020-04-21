@@ -324,7 +324,7 @@ function diff(actual, expected) {
   const N = actual.length;
   const M = expected.length;
   if (N === 0 && M === 0)
-    return { extra: [], missing: [], equal: []};
+    return {extra: [], missing: [], equal: []};
   if (N === 0)
     return {extra: [], missing: expected.slice(), equal: []};
   if (M === 0)

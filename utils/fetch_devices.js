@@ -54,7 +54,7 @@ devices and save to the <outputPath>.
 `;
 
 const argv = require('minimist')(process.argv.slice(2), {
-  alias: { u: 'url', h: 'help' },
+  alias: {u: 'url', h: 'help'},
 });
 
 if (argv.help) {

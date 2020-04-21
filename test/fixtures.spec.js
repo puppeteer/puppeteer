@@ -21,7 +21,7 @@ const path = require('path');
 
 describe('Fixtures', function() {
   itFailsFirefox('dumpio option should work with pipe option ', async() => {
-    const { defaultBrowserOptions, puppeteerPath } = getTestState();
+    const {defaultBrowserOptions, puppeteerPath} = getTestState();
 
     let dumpioData = '';
     const {spawn} = require('child_process');
@@ -33,7 +33,7 @@ describe('Fixtures', function() {
     expect(dumpioData).toContain('message from dumpio');
   });
   it('should dump browser process stderr', async() => {
-    const { defaultBrowserOptions, puppeteerPath} = getTestState();
+    const {defaultBrowserOptions, puppeteerPath} = getTestState();
 
     let dumpioData = '';
     const {spawn} = require('child_process');
@@ -45,7 +45,7 @@ describe('Fixtures', function() {
     expect(dumpioData).toContain('DevTools listening on ws://');
   });
   it('should close the browser when the node process closes', async() => {
-    const {  defaultBrowserOptions, puppeteerPath, puppeteer} = getTestState();
+    const {defaultBrowserOptions, puppeteerPath, puppeteer} = getTestState();
 
     const {spawn, execSync} = require('child_process');
     const options = Object.assign({}, defaultBrowserOptions, {
@@ -61,7 +61,7 @@ describe('Fixtures', function() {
       if (output.indexOf('\n'))
         wsEndPointCallback(output.substring(0, output.indexOf('\n')));
     });
-    const browser = await puppeteer.connect({ browserWSEndpoint: await wsEndPointPromise });
+    const browser = await puppeteer.connect({browserWSEndpoint: await wsEndPointPromise});
     const promises = [
       new Promise(resolve => browser.once('disconnected', resolve)),
       new Promise(resolve => res.on('close', resolve))

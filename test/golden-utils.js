@@ -38,7 +38,7 @@ const GoldenComparators = {
  */
 function compareImages(actualBuffer, expectedBuffer, mimeType) {
   if (!actualBuffer || !(actualBuffer instanceof Buffer))
-    return { errorMessage: 'Actual result should be Buffer.' };
+    return {errorMessage: 'Actual result should be Buffer.'};
 
   const actual = mimeType === 'image/png' ? PNG.sync.read(actualBuffer) : jpeg.decode(actualBuffer);
   const expected = mimeType === 'image/png' ? PNG.sync.read(expectedBuffer) : jpeg.decode(expectedBuffer);
@@ -49,7 +49,7 @@ function compareImages(actualBuffer, expectedBuffer, mimeType) {
   }
   const diff = new PNG({width: expected.width, height: expected.height});
   const count = pixelmatch(expected.data, actual.data, diff.data, expected.width, expected.height, {threshold: 0.1});
-  return count > 0 ? { diff: PNG.sync.write(diff) } : null;
+  return count > 0 ? {diff: PNG.sync.write(diff)} : null;
 }
 
 /**
@@ -59,7 +59,7 @@ function compareImages(actualBuffer, expectedBuffer, mimeType) {
  */
 function compareText(actual, expectedBuffer) {
   if (typeof actual !== 'string')
-    return { errorMessage: 'Actual result should be string' };
+    return {errorMessage: 'Actual result should be string'};
   const expected = expectedBuffer.toString('utf-8');
   if (expected === actual)
     return null;
@@ -107,7 +107,7 @@ function compare(goldenPath, outputPath, actual, goldenName) {
   }
   const result = comparator(actual, expected, mimeType);
   if (!result)
-    return { pass: true };
+    return {pass: true};
   ensureOutputDir();
   if (goldenPath === outputPath) {
     fs.writeFileSync(addSuffix(actualPath, '-actual'), actual);

@@ -45,7 +45,7 @@ describeChromeOnly('Tracing', function() {
     }
   });
   it('should output a trace', async() => {
-    const { server} = getTestState();
+    const {server} = getTestState();
 
     await page.tracing.start({screenshots: true, path: outputFile});
     await page.goto(server.PREFIX + '/grid.html');
@@ -70,7 +70,7 @@ describeChromeOnly('Tracing', function() {
     await page.tracing.stop();
   });
   it('should return a buffer', async() => {
-    const { server } = getTestState();
+    const {server} = getTestState();
 
     await page.tracing.start({screenshots: true, path: outputFile});
     await page.goto(server.PREFIX + '/grid.html');
@@ -79,7 +79,7 @@ describeChromeOnly('Tracing', function() {
     expect(trace.toString()).toEqual(buf.toString());
   });
   it('should work without options', async() => {
-    const { server } = getTestState();
+    const {server} = getTestState();
 
     await page.tracing.start();
     await page.goto(server.PREFIX + '/grid.html');
@@ -88,7 +88,7 @@ describeChromeOnly('Tracing', function() {
   });
 
   it('should return null in case of Buffer error', async() => {
-    const { server } = getTestState();
+    const {server} = getTestState();
 
     await page.tracing.start({screenshots: true});
     await page.goto(server.PREFIX + '/grid.html');
@@ -102,7 +102,7 @@ describeChromeOnly('Tracing', function() {
   });
 
   it('should support a buffer without a path', async() => {
-    const { server } = getTestState();
+    const {server} = getTestState();
 
     await page.tracing.start({screenshots: true});
     await page.goto(server.PREFIX + '/grid.html');

@@ -20,7 +20,7 @@ describe('Page.Events.Dialog', function() {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
   it('should fire', async() => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     page.on('dialog', dialog => {
       expect(dialog.type()).toBe('alert');
@@ -31,7 +31,7 @@ describe('Page.Events.Dialog', function() {
     await page.evaluate(() => alert('yo'));
   });
   itFailsFirefox('should allow accepting prompts', async() => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     page.on('dialog', dialog => {
       expect(dialog.type()).toBe('prompt');
@@ -43,7 +43,7 @@ describe('Page.Events.Dialog', function() {
     expect(result).toBe('answer!');
   });
   it('should dismiss the prompt', async() => {
-    const { page } = getTestState();
+    const {page} = getTestState();
 
     page.on('dialog', dialog => {
       dialog.dismiss();

@@ -82,7 +82,7 @@ class NetworkManager extends EventEmitter {
       assert(helper.isString(value), `Expected value of header "${key}" to be String, but "${typeof value}" is found.`);
       this._extraHTTPHeaders[key.toLowerCase()] = value;
     }
-    await this._client.send('Network.setExtraHTTPHeaders', { headers: this._extraHTTPHeaders });
+    await this._client.send('Network.setExtraHTTPHeaders', {headers: this._extraHTTPHeaders});
   }
 
   /**
@@ -112,7 +112,7 @@ class NetworkManager extends EventEmitter {
    * @param {string} userAgent
    */
   async setUserAgent(userAgent) {
-    await this._client.send('Network.setUserAgentOverride', { userAgent });
+    await this._client.send('Network.setUserAgentOverride', {userAgent});
   }
 
   /**
@@ -192,7 +192,7 @@ class NetworkManager extends EventEmitter {
     const {username, password} = this._credentials || {username: undefined, password: undefined};
     this._client.send('Fetch.continueWithAuth', {
       requestId: event.requestId,
-      authChallengeResponse: { response, username, password },
+      authChallengeResponse: {response, username, password},
     }).catch(debugError);
   }
 
