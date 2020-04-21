@@ -29,7 +29,9 @@ const Tracing = require('./Tracing');
 const {helper, debugError, assert} = require('./helper');
 const {Coverage} = require('./Coverage');
 const {Worker: PuppeteerWorker} = require('./Worker');
-const {createJSHandle} = require('./JSHandle');
+// Import used as typedef
+// eslint-disable-next-line no-unused-vars
+const {createJSHandle, JSHandle, ElementHandle} = require('./JSHandle');
 const {Accessibility} = require('./Accessibility');
 const {TimeoutSettings} = require('./TimeoutSettings');
 
@@ -316,7 +318,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {string} selector
-   * @return {!Promise<?Puppeteer.ElementHandle>}
+   * @return {!Promise<?ElementHandle>}
    */
   async $(selector) {
     return this.mainFrame().$(selector);
@@ -325,7 +327,7 @@ class Page extends EventEmitter {
   /**
    * @param {Function|string} pageFunction
    * @param {!Array<*>} args
-   * @return {!Promise<!Puppeteer.JSHandle>}
+   * @return {!Promise<!JSHandle>}
    */
   async evaluateHandle(pageFunction, ...args) {
     const context = await this.mainFrame().executionContext();
@@ -333,8 +335,8 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {!Puppeteer.JSHandle} prototypeHandle
-   * @return {!Promise<!Puppeteer.JSHandle>}
+   * @param {!JSHandle} prototypeHandle
+   * @return {!Promise<!JSHandle>}
    */
   async queryObjects(prototypeHandle) {
     const context = await this.mainFrame().executionContext();
@@ -363,7 +365,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {string} selector
-   * @return {!Promise<!Array<!Puppeteer.ElementHandle>>}
+   * @return {!Promise<!Array<!ElementHandle>>}
    */
   async $$(selector) {
     return this.mainFrame().$$(selector);
@@ -371,7 +373,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {string} expression
-   * @return {!Promise<!Array<!Puppeteer.ElementHandle>>}
+   * @return {!Promise<!Array<!ElementHandle>>}
    */
   async $x(expression) {
     return this.mainFrame().$x(expression);
@@ -429,7 +431,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {!{url?: string, path?: string, content?: string, type?: string}} options
-   * @return {!Promise<!Puppeteer.ElementHandle>}
+   * @return {!Promise<!ElementHandle>}
    */
   async addScriptTag(options) {
     return this.mainFrame().addScriptTag(options);
@@ -437,7 +439,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {!{url?: string, path?: string, content?: string}} options
-   * @return {!Promise<!Puppeteer.ElementHandle>}
+   * @return {!Promise<!ElementHandle>}
    */
   async addStyleTag(options) {
     return this.mainFrame().addStyleTag(options);
@@ -617,7 +619,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {string} type
-   * @param {!Array<!Puppeteer.JSHandle>} args
+   * @param {!Array<!JSHandle>} args
    * @param {Protocol.Runtime.StackTrace=} stackTrace
    */
   _addConsoleMessage(type, args, stackTrace) {
@@ -1126,7 +1128,7 @@ class Page extends EventEmitter {
    * @param {(string|number|Function)} selectorOrFunctionOrTimeout
    * @param {!{visible?: boolean, hidden?: boolean, timeout?: number, polling?: string|number}=} options
    * @param {!Array<*>} args
-   * @return {!Promise<!Puppeteer.JSHandle>}
+   * @return {!Promise<!JSHandle>}
    */
   waitFor(selectorOrFunctionOrTimeout, options = {}, ...args) {
     return this.mainFrame().waitFor(selectorOrFunctionOrTimeout, options, ...args);
@@ -1135,7 +1137,7 @@ class Page extends EventEmitter {
   /**
    * @param {string} selector
    * @param {!{visible?: boolean, hidden?: boolean, timeout?: number}=} options
-   * @return {!Promise<?Puppeteer.ElementHandle>}
+   * @return {!Promise<?ElementHandle>}
    */
   waitForSelector(selector, options = {}) {
     return this.mainFrame().waitForSelector(selector, options);
@@ -1144,7 +1146,7 @@ class Page extends EventEmitter {
   /**
    * @param {string} xpath
    * @param {!{visible?: boolean, hidden?: boolean, timeout?: number}=} options
-   * @return {!Promise<?Puppeteer.ElementHandle>}
+   * @return {!Promise<?ElementHandle>}
    */
   waitForXPath(xpath, options = {}) {
     return this.mainFrame().waitForXPath(xpath, options);
@@ -1154,7 +1156,7 @@ class Page extends EventEmitter {
    * @param {Function} pageFunction
    * @param {!{polling?: string|number, timeout?: number}=} options
    * @param {!Array<*>} args
-   * @return {!Promise<!Puppeteer.JSHandle>}
+   * @return {!Promise<!JSHandle>}
    */
   waitForFunction(pageFunction, options = {}, ...args) {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);
@@ -1322,7 +1324,7 @@ class ConsoleMessage {
   /**
    * @param {string} type
    * @param {string} text
-   * @param {!Array<!Puppeteer.JSHandle>} args
+   * @param {!Array<!JSHandle>} args
    * @param {ConsoleMessage.Location} location
    */
   constructor(type, text, args, location = {}) {
@@ -1347,7 +1349,7 @@ class ConsoleMessage {
   }
 
   /**
-   * @return {!Array<!Puppeteer.JSHandle>}
+   * @return {!Array<!JSHandle>}
    */
   args() {
     return this._args;
@@ -1364,7 +1366,7 @@ class ConsoleMessage {
 class FileChooser {
   /**
    * @param {CDPSession} client
-   * @param {Puppeteer.ElementHandle} element
+   * @param {ElementHandle} element
    * @param {!Protocol.Page.fileChooserOpenedPayload} event
    */
   constructor(client, element, event) {

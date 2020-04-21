@@ -18,6 +18,9 @@ const fs = require('fs');
 const {helper, assert} = require('./helper');
 const {LifecycleWatcher} = require('./LifecycleWatcher');
 const {TimeoutError} = require('./Errors');
+// Used as a TypeDef
+// eslint-disable-next-line no-unused-vars
+const {JSHandle, ElementHandle} = require('./JSHandle');
 
 // Used as a TypeDef
 // eslint-disable-next-line no-unused-vars
@@ -39,7 +42,7 @@ class DOMWorld {
     this._frame = frame;
     this._timeoutSettings = timeoutSettings;
 
-    /** @type {?Promise<!Puppeteer.ElementHandle>} */
+    /** @type {?Promise<!ElementHandle>} */
     this._documentPromise = null;
     /** @type {!Promise<!Puppeteer.ExecutionContext>} */
     this._contextPromise;
@@ -100,7 +103,7 @@ class DOMWorld {
   /**
    * @param {Function|string} pageFunction
    * @param {!Array<*>} args
-   * @return {!Promise<!Puppeteer.JSHandle>}
+   * @return {!Promise<!JSHandle>}
    */
   async evaluateHandle(pageFunction, ...args) {
     const context = await this.executionContext();
@@ -119,7 +122,7 @@ class DOMWorld {
 
   /**
    * @param {string} selector
-   * @return {!Promise<?Puppeteer.ElementHandle>}
+   * @return {!Promise<?ElementHandle>}
    */
   async $(selector) {
     const document = await this._document();
@@ -128,7 +131,7 @@ class DOMWorld {
   }
 
   /**
-   * @return {!Promise<!Puppeteer.ElementHandle>}
+   * @return {!Promise<!ElementHandle>}
    */
   async _document() {
     if (this._documentPromise)
@@ -142,7 +145,7 @@ class DOMWorld {
 
   /**
    * @param {string} expression
-   * @return {!Promise<!Array<!Puppeteer.ElementHandle>>}
+   * @return {!Promise<!Array<!ElementHandle>>}
    */
   async $x(expression) {
     const document = await this._document();
@@ -175,7 +178,7 @@ class DOMWorld {
 
   /**
    * @param {string} selector
-   * @return {!Promise<!Array<!Puppeteer.ElementHandle>>}
+   * @return {!Promise<!Array<!ElementHandle>>}
    */
   async $$(selector) {
     const document = await this._document();
@@ -225,7 +228,7 @@ class DOMWorld {
 
   /**
    * @param {!{url?: string, path?: string, content?: string, type?: string}} options
-   * @return {!Promise<!Puppeteer.ElementHandle>}
+   * @return {!Promise<!ElementHandle>}
    */
   async addScriptTag(options) {
     const {
@@ -296,7 +299,7 @@ class DOMWorld {
 
   /**
    * @param {!{url?: string, path?: string, content?: string}} options
-   * @return {!Promise<!Puppeteer.ElementHandle>}
+   * @return {!Promise<!ElementHandle>}
    */
   async addStyleTag(options) {
     const {
@@ -431,7 +434,7 @@ class DOMWorld {
   /**
    * @param {string} selector
    * @param {!{visible?: boolean, hidden?: boolean, timeout?: number}=} options
-   * @return {!Promise<?Puppeteer.ElementHandle>}
+   * @return {!Promise<?ElementHandle>}
    */
   waitForSelector(selector, options) {
     return this._waitForSelectorOrXPath(selector, false, options);
@@ -440,7 +443,7 @@ class DOMWorld {
   /**
    * @param {string} xpath
    * @param {!{visible?: boolean, hidden?: boolean, timeout?: number}=} options
-   * @return {!Promise<?Puppeteer.ElementHandle>}
+   * @return {!Promise<?ElementHandle>}
    */
   waitForXPath(xpath, options) {
     return this._waitForSelectorOrXPath(xpath, true, options);
@@ -449,7 +452,7 @@ class DOMWorld {
   /**
    * @param {Function|string} pageFunction
    * @param {!{polling?: string|number, timeout?: number}=} options
-   * @return {!Promise<!Puppeteer.JSHandle>}
+   * @return {!Promise<!JSHandle>}
    */
   waitForFunction(pageFunction, options = {}, ...args) {
     const {
@@ -470,7 +473,7 @@ class DOMWorld {
    * @param {string} selectorOrXPath
    * @param {boolean} isXPath
    * @param {!{visible?: boolean, hidden?: boolean, timeout?: number}=} options
-   * @return {!Promise<?Puppeteer.ElementHandle>}
+   * @return {!Promise<?ElementHandle>}
    */
   async _waitForSelectorOrXPath(selectorOrXPath, isXPath, options = {}) {
     const {
@@ -568,7 +571,7 @@ class WaitTask {
 
   async rerun() {
     const runCount = ++this._runCount;
-    /** @type {?Puppeteer.JSHandle} */
+    /** @type {?JSHandle} */
     let success = null;
     let error = null;
     try {

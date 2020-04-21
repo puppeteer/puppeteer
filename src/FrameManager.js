@@ -27,6 +27,9 @@ const {TimeoutSettings} = require('./TimeoutSettings');
 // Used as a TypeDef
 // eslint-disable-next-line no-unused-vars
 const {CDPSession} = require('./Connection');
+// Used as a TypeDef
+// eslint-disable-next-line no-unused-vars
+const {JSHandle, ElementHandle} = require('./JSHandle');
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
@@ -432,7 +435,7 @@ class Frame {
   /**
    * @param {Function|string} pageFunction
    * @param {!Array<*>} args
-   * @return {!Promise<!Puppeteer.JSHandle>}
+   * @return {!Promise<!JSHandle>}
    */
   async evaluateHandle(pageFunction, ...args) {
     return this._mainWorld.evaluateHandle(pageFunction, ...args);
@@ -449,7 +452,7 @@ class Frame {
 
   /**
    * @param {string} selector
-   * @return {!Promise<?Puppeteer.ElementHandle>}
+   * @return {!Promise<?ElementHandle>}
    */
   async $(selector) {
     return this._mainWorld.$(selector);
@@ -457,7 +460,7 @@ class Frame {
 
   /**
    * @param {string} expression
-   * @return {!Promise<!Array<!Puppeteer.ElementHandle>>}
+   * @return {!Promise<!Array<!ElementHandle>>}
    */
   async $x(expression) {
     return this._mainWorld.$x(expression);
@@ -485,7 +488,7 @@ class Frame {
 
   /**
    * @param {string} selector
-   * @return {!Promise<!Array<!Puppeteer.ElementHandle>>}
+   * @return {!Promise<!Array<!ElementHandle>>}
    */
   async $$(selector) {
     return this._mainWorld.$$(selector);
@@ -543,7 +546,7 @@ class Frame {
 
   /**
    * @param {!{url?: string, path?: string, content?: string, type?: string}} options
-   * @return {!Promise<!Puppeteer.ElementHandle>}
+   * @return {!Promise<!ElementHandle>}
    */
   async addScriptTag(options) {
     return this._mainWorld.addScriptTag(options);
@@ -551,7 +554,7 @@ class Frame {
 
   /**
    * @param {!{url?: string, path?: string, content?: string}} options
-   * @return {!Promise<!Puppeteer.ElementHandle>}
+   * @return {!Promise<!ElementHandle>}
    */
   async addStyleTag(options) {
     return this._mainWorld.addStyleTag(options);
@@ -608,7 +611,7 @@ class Frame {
    * @param {(string|number|Function)} selectorOrFunctionOrTimeout
    * @param {!Object=} options
    * @param {!Array<*>} args
-   * @return {!Promise<?Puppeteer.JSHandle>}
+   * @return {!Promise<?JSHandle>}
    */
   waitFor(selectorOrFunctionOrTimeout, options = {}, ...args) {
     const xPathPattern = '//';
@@ -629,7 +632,7 @@ class Frame {
   /**
    * @param {string} selector
    * @param {!{visible?: boolean, hidden?: boolean, timeout?: number}=} options
-   * @return {!Promise<?Puppeteer.ElementHandle>}
+   * @return {!Promise<?ElementHandle>}
    */
   async waitForSelector(selector, options) {
     const handle = await this._secondaryWorld.waitForSelector(selector, options);
@@ -644,7 +647,7 @@ class Frame {
   /**
    * @param {string} xpath
    * @param {!{visible?: boolean, hidden?: boolean, timeout?: number}=} options
-   * @return {!Promise<?Puppeteer.ElementHandle>}
+   * @return {!Promise<?ElementHandle>}
    */
   async waitForXPath(xpath, options) {
     const handle = await this._secondaryWorld.waitForXPath(xpath, options);
@@ -659,7 +662,7 @@ class Frame {
   /**
    * @param {Function|string} pageFunction
    * @param {!{polling?: string|number, timeout?: number}=} options
-   * @return {!Promise<!Puppeteer.JSHandle>}
+   * @return {!Promise<!JSHandle>}
    */
   waitForFunction(pageFunction, options = {}, ...args) {
     return this._mainWorld.waitForFunction(pageFunction, options, ...args);

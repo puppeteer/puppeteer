@@ -15,10 +15,12 @@
  */
 
 const {helper, assert} = require('./helper');
-const {createJSHandle, JSHandle} = require('./JSHandle');
 // Used as a TypeDef
 // eslint-disable-next-line no-unused-vars
 const {CDPSession} = require('./Connection');
+// Used as a TypeDef
+// eslint-disable-next-line no-unused-vars
+const {createJSHandle, JSHandle, ElementHandle} = require('./JSHandle');
 
 const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
@@ -187,19 +189,19 @@ class ExecutionContext {
 
   /**
    * @param {Protocol.DOM.BackendNodeId} backendNodeId
-   * @return {Promise<Puppeteer.ElementHandle>}
+   * @return {Promise<ElementHandle>}
    */
   async _adoptBackendNodeId(backendNodeId) {
     const {object} = await this._client.send('DOM.resolveNode', {
       backendNodeId: backendNodeId,
       executionContextId: this._contextId,
     });
-    return /** @type {Puppeteer.ElementHandle}*/(createJSHandle(this, object));
+    return /** @type {ElementHandle}*/(createJSHandle(this, object));
   }
 
   /**
-   * @param {Puppeteer.ElementHandle} elementHandle
-   * @return {Promise<Puppeteer.ElementHandle>}
+   * @param {ElementHandle} elementHandle
+   * @return {Promise<ElementHandle>}
    */
   async _adoptElementHandle(elementHandle) {
     assert(elementHandle.executionContext() !== this, 'Cannot adopt handle that already belongs to this execution context');
