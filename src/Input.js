@@ -16,6 +16,9 @@
 
 const {assert} = require('./helper');
 const keyDefinitions = require('./USKeyboardLayout');
+// CDPSession is used only as a typedef
+// eslint-disable-next-line no-unused-vars
+const {CDPSession} = require('./Connection');
 
 /**
  * @typedef {Object} KeyDescription
@@ -28,7 +31,7 @@ const keyDefinitions = require('./USKeyboardLayout');
 
 class Keyboard {
   /**
-   * @param {!Puppeteer.CDPSession} client
+   * @param {!CDPSession} client
    */
   constructor(client) {
     this._client = client;
@@ -183,7 +186,7 @@ class Keyboard {
 
 class Mouse {
   /**
-   * @param {Puppeteer.CDPSession} client
+   * @param {CDPSession} client
    * @param {!Keyboard} keyboard
    */
   constructor(client, keyboard) {
@@ -274,7 +277,7 @@ class Mouse {
 
 class Touchscreen {
   /**
-   * @param {Puppeteer.CDPSession} client
+   * @param {CDPSession} client
    * @param {Keyboard} keyboard
    */
   constructor(client, keyboard) {

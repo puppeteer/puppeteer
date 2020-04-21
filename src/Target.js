@@ -17,6 +17,9 @@
 const {Events} = require('./Events');
 const {Page} = require('./Page');
 const {Worker: PuppeteerWorker} = require('./Worker');
+// CDPSession is used only as a typedef
+// eslint-disable-next-line no-unused-vars
+const {CDPSession} = require('./Connection');
 // This import is used as a TypeDef, but ESLint's rule doesn't
 // understand that unfortunately.
 // eslint-disable-next-line no-unused-vars
@@ -26,7 +29,7 @@ class Target {
   /**
    * @param {!Protocol.Target.TargetInfo} targetInfo
    * @param {!Puppeteer.BrowserContext} browserContext
-   * @param {!function():!Promise<!Puppeteer.CDPSession>} sessionFactory
+   * @param {!function():!Promise<!CDPSession>} sessionFactory
    * @param {boolean} ignoreHTTPSErrors
    * @param {?Puppeteer.Viewport} defaultViewport
    * @param {!TaskQueue} screenshotTaskQueue
@@ -63,7 +66,7 @@ class Target {
   }
 
   /**
-   * @return {!Promise<!Puppeteer.CDPSession>}
+   * @return {!Promise<!CDPSession>}
    */
   createCDPSession() {
     return this._sessionFactory();

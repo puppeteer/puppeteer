@@ -15,6 +15,9 @@
  */
 
 const {helper, assert, debugError} = require('./helper');
+// CDPSession is used only as a typedef
+// eslint-disable-next-line no-unused-vars
+const {CDPSession} = require('./Connection');
 
 function createJSHandle(context, remoteObject) {
   const frame = context.frame();
@@ -28,7 +31,7 @@ function createJSHandle(context, remoteObject) {
 class JSHandle {
   /**
    * @param {!Puppeteer.ExecutionContext} context
-   * @param {!Puppeteer.CDPSession} client
+   * @param {!CDPSession} client
    * @param {!Protocol.Runtime.RemoteObject} remoteObject
    */
   constructor(context, client, remoteObject) {
@@ -142,7 +145,7 @@ class JSHandle {
 class ElementHandle extends JSHandle {
   /**
    * @param {!Puppeteer.ExecutionContext} context
-   * @param {!Puppeteer.CDPSession} client
+   * @param {!CDPSession} client
    * @param {!Protocol.Runtime.RemoteObject} remoteObject
    * @param {!Puppeteer.Page} page
    * @param {!Puppeteer.FrameManager} frameManager

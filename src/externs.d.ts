@@ -1,4 +1,3 @@
-import { Connection as RealConnection, CDPSession as RealCDPSession } from './Connection.js';
 import { Browser as RealBrowser, BrowserContext as RealBrowserContext} from './Browser.js';
 import {Target as RealTarget} from './Target.js';
 import {Page as RealPage} from './Page.js';
@@ -11,11 +10,6 @@ import { NetworkManager as RealNetworkManager, Request as RealRequest, Response 
 import * as child_process from 'child_process';
 declare global {
   module Puppeteer {
-    export class Connection extends RealConnection {}
-    export class CDPSession extends RealCDPSession {
-      on<T extends keyof Protocol.Events>(event: T, listener: (arg: Protocol.Events[T]) => void): this;
-      send<T extends keyof Protocol.CommandParameters>(message: T, parameters?: Protocol.CommandParameters[T]): Promise<Protocol.CommandReturnValues[T]>;
-    }
     export class Mouse extends RealMouse {}
     export class Keyboard extends RealKeyboard {}
     export class Touchscreen extends RealTouchscreen {}

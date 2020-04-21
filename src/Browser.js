@@ -19,10 +19,13 @@ const {Target} = require('./Target');
 const EventEmitter = require('events');
 const {TaskQueue} = require('./TaskQueue');
 const {Events} = require('./Events');
+// Used as a TypeDef
+// eslint-disable-next-line no-unused-vars
+const {Connection} = require('./Connection');
 
 class Browser extends EventEmitter {
   /**
-   * @param {!Puppeteer.Connection} connection
+   * @param {!Connection} connection
    * @param {!Array<string>} contextIds
    * @param {boolean} ignoreHTTPSErrors
    * @param {?Puppeteer.Viewport} defaultViewport
@@ -36,7 +39,7 @@ class Browser extends EventEmitter {
   }
 
   /**
-   * @param {!Puppeteer.Connection} connection
+   * @param {!Connection} connection
    * @param {!Array<string>} contextIds
    * @param {boolean} ignoreHTTPSErrors
    * @param {?Puppeteer.Viewport} defaultViewport
@@ -277,7 +280,7 @@ class Browser extends EventEmitter {
 
 class BrowserContext extends EventEmitter {
   /**
-   * @param {!Puppeteer.Connection} connection
+   * @param {!Connection} connection
    * @param {!Browser} browser
    * @param {?string} contextId
    */

@@ -15,6 +15,7 @@
  */
 
 import helpers = require('./helper');
+import {CDPSession} from './Connection';
 
 const {assert} = helpers;
 
@@ -28,13 +29,13 @@ enum DialogType {
 class Dialog {
   static Type = DialogType;
 
-  private _client: Puppeteer.CDPSession;
+  private _client: CDPSession;
   private _type: DialogType;
   private _message: string;
   private _defaultValue: string;
   private _handled = false;
 
-  constructor(client: Puppeteer.CDPSession, type: DialogType, message: string, defaultValue = '') {
+  constructor(client: CDPSession, type: DialogType, message: string, defaultValue = '') {
     this._client = client;
     this._type = type;
     this._message = message;

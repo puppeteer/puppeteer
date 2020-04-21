@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 const {helper, assert} = require('./helper');
+// Used as a TypeDef
+// eslint-disable-next-line no-unused-vars
+const {CDPSession} = require('./Connection');
 
 class Tracing {
   /**
-   * @param {!Puppeteer.CDPSession} client
+   * @param {!CDPSession} client
    */
   constructor(client) {
     this._client = client;
