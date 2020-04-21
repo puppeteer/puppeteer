@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import helper = require('./helper');
-const {assert} = helper;
+import {assert} from './helper';
 
 import EventsModule = require('./Events');
 const {Events} = EventsModule;

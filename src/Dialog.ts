@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import helpers = require('./helper');
+import {assert} from './helper';
 import {CDPSession} from './Connection';
-
-const {assert} = helpers;
 
 enum DialogType {
   Alert = 'alert',

@@ -16,7 +16,6 @@
 import Errors = require('./Errors');
 
 import debug = require('debug');
-const debugError = debug('puppeteer:error');
 import fs = require('fs');
 import promisify = require('./promisify');
 import {CDPSession} from './Connection';
@@ -27,7 +26,9 @@ const openAsync = promisify(fs.open);
 const writeAsync = promisify(fs.write);
 const closeAsync = promisify(fs.close);
 
-function assert(value: unknown, message?: string): void {
+export const debugError = debug('puppeteer:error');
+
+export function assert(value: unknown, message?: string): void {
   if (!value)
     throw new Error(message);
 }
@@ -103,6 +104,11 @@ function installAsyncStackHooks(classType: AnyClass): void {
   }
 }
 
+export interface PuppeteerEventListener {
+  emitter: NodeJS.EventEmitter;
+  eventName: string | symbol;
+  handler: (...args: any[]) => void;
+}
 
 function addEventListener(emitter: NodeJS.EventEmitter, eventName: string|symbol, handler: (...args: any[]) => void): PuppeteerEventListener {
   emitter.on(eventName, handler);
@@ -212,22 +218,18 @@ async function readProtocolStream(client: CDPSession, handle: string, path?: str
 }
 
 
-export = {
-  helper: {
-    promisify,
-    evaluationString,
-    readProtocolStream,
-    waitWithTimeout,
-    waitForEvent,
-    isString,
-    isNumber,
-    addEventListener,
-    removeEventListeners,
-    valueFromRemoteObject,
-    installAsyncStackHooks,
-    getExceptionMessage,
-    releaseObject,
-  },
-  assert,
-  debugError
+export const helper = {
+  promisify,
+  evaluationString,
+  readProtocolStream,
+  waitWithTimeout,
+  waitForEvent,
+  isString,
+  isNumber,
+  addEventListener,
+  removeEventListeners,
+  valueFromRemoteObject,
+  installAsyncStackHooks,
+  getExceptionMessage,
+  releaseObject,
 };
