@@ -358,11 +358,6 @@ export class ElementHandle extends JSHandle {
     };
   }
 
-  /**
-   *
-   * @param {!Object=} options
-   * @returns {!Promise<string|!Buffer>}
-   */
   async screenshot(options = {}): Promise<string|Buffer> {
     let needsViewportReset = false;
 
