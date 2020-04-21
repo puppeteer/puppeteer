@@ -15,10 +15,10 @@
  */
 
 const {assert} = require('./helper');
-const keyDefinitions = require('./USKeyboardLayout');
 // CDPSession is used only as a typedef
 // eslint-disable-next-line no-unused-vars
 const {CDPSession} = require('./Connection');
+const {keyDefinitions} = require('./USKeyboardLayout');
 
 /**
  * @typedef {Object} KeyDescription
