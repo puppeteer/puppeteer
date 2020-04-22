@@ -7,7 +7,7 @@ addons:
       # This is required to run new chrome on old trusty
       - libnss3
       # Needed for realpath which we use in npm run test-install
-      - coreutils
+      - realpath
 notifications:
   email: false
 cache:
