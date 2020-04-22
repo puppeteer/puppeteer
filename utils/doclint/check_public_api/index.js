@@ -325,7 +325,7 @@ function compareDocumentations(actual, expected) {
 
 
     /* If we got a naming mismatch and it was expected, don't check the properties
-     * as they will likely be considered "wrong" by DocLint too
+     * as they will likely be considered "wrong" by DocLint too.
      */
     if (namingMismatchIsExpected) return;
     const actualPropertiesMap = new Map(actual.properties.map(property => [property.name, property.type]));
