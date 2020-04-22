@@ -13,6 +13,17 @@ cache:
     - node_modules
 jobs:
   include:
+    - os: "osx"
+      node_js: "10.19.0"
+      env:
+        - CHROMIUM=true
+      before_install:
+        # populate .local-firefox for launcher tests
+        - PUPPETEER_PRODUCT=firefox npm install
+      script:
+        - ls .local-chromium .local-firefox
+        - npm run tsc
+        - npm run unit
     - os: "windows"
       node_js: "10.19.0"
       env:
