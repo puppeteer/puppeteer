@@ -114,7 +114,9 @@ module.exports = {
                 "semi": 0,
                 "@typescript-eslint/semi": 2,
                 "@typescript-eslint/no-empty-function": 0,
-                "@typescript-eslint/no-use-before-define": 0
+                "@typescript-eslint/no-use-before-define": 0,
+                // We know it's bad and use it very sparingly but it's needed :(
+                "@typescript-eslint/ban-ts-ignore": 0
             }
         }
     ]
