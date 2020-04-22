@@ -7,6 +7,7 @@
   * [[recommended] Enable user namespace cloning](#recommended-enable-user-namespace-cloning)
   * [[alternative] Setup setuid sandbox](#alternative-setup-setuid-sandbox)
 - [Running Puppeteer on Travis CI](#running-puppeteer-on-travis-ci)
+- [Running Puppeteer on Github Actions](#running-puppeteer-on-github-actions)
 - [Running Puppeteer on CircleCI](#running-puppeteer-on-circleci)
 - [Running Puppeteer in Docker](#running-puppeteer-in-docker)
   * [Running on Alpine](#running-on-alpine)
@@ -214,6 +215,41 @@ before_install:
   # Launch XVFB
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
+```
+
+## Running Puppeteer on Github Actions
+
+Right now Github Actions little bit verbose, because it's not support anchors in .yml and doesn't have allow_fails mode.
+But with it you can check every build in every fork and it's much more convenient for open source.
+Also Github Actions can ignore some paths in repo. Here basic example for end-to-end testing.
+
+```yml
+name: CI
+on: [ push, pull_request ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+      - name: Install node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '10.x'
+      - name: Restore cache
+        uses: actions/cache@v1
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-ci-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-ci-${{ env.cache-name }}-
+      - name: Install packages
+        run: npm ci && sudo apt-get install xvfb
+
+      - name: === E2E Testing ===
+        run: xvfb-run --auto-servernum npm run test
 ```
 
 ## Running Puppeteer on CircleCI
