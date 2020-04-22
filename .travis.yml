@@ -1,62 +1,46 @@
 language: node_js
-os: linux
-dist: trusty
-addons:
-  apt:
-    packages:
-      # This is required to run new chrome on old trusty
-      - libnss3
-      # Needed for realpath which we use in npm run test-install
-      - realpath
-notifications:
-  email: false
-cache:
-  directories:
-    - node_modules
+services: xvfb
+
 jobs:
   include:
+
     - os: "osx"
       node_js: "10.19.0"
       env:
         - CHROMIUM=true
       before_install:
-        # populate .local-firefox for launcher tests
         - PUPPETEER_PRODUCT=firefox npm install
       script:
         - ls .local-chromium .local-firefox
         - npm run tsc
         - npm run unit
+
     - os: "windows"
       node_js: "10.19.0"
       env:
         - CHROMIUM=true
       before_install:
-        # populate .local-firefox for launcher tests
         - PUPPETEER_PRODUCT=firefox npm install
       script:
         - ls .local-chromium .local-firefox
         - npm run tsc
         - travis_retry npm run unit
+
     - node_js: "10.19.0"
-      dist: trusty
       env:
         - CHROMIUM=true
       before_install:
-        - "export DISPLAY=:99.0"
-        - "sh -e /etc/init.d/xvfb start"
-        # populate .local-firefox for launcher tests
         - PUPPETEER_PRODUCT=firefox npm install
       script:
         - npm run test-install
         - travis/chromium.sh
     - node_js: "10.19.0"
-      dist: trusty
       env:
         - FIREFOX=true
       before_install:
-        - "export DISPLAY=:99.0"
-        - "sh -e /etc/init.d/xvfb start"
-        # install step will add .local-chromium for launcher tests
         - PUPPETEER_PRODUCT=firefox npm install
       script:
-        -  "npm run funit"
+        - npm run funit
+
+notifications:
+  email: false
