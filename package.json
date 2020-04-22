@@ -36,7 +36,8 @@
     "lib/",
     "Errors.js",
     "DeviceDescriptors.js",
-    "index.js"
+    "index.js",
+    "install.js"
   ],
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
