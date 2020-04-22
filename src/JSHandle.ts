@@ -17,6 +17,7 @@
 import {helper, assert, debugError} from './helper';
 import {ExecutionContext} from './ExecutionContext';
 import {CDPSession} from './Connection';
+import {KeyInput} from './USKeyboardLayout';
 
 interface BoxModel {
   content: Array<{x: number; y: number}>;
@@ -326,7 +327,7 @@ export class ElementHandle extends JSHandle {
     await this._page.keyboard.type(text, options);
   }
 
-  async press(key: string, options?: {delay?: number; text?: string}): Promise<void> {
+  async press(key: KeyInput, options?: {delay?: number; text?: string}): Promise<void> {
     await this.focus();
     await this._page.keyboard.press(key, options);
   }

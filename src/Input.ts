@@ -14,36 +14,22 @@
  * limitations under the License.
  */
 
-const {assert} = require('./helper');
-// CDPSession is used only as a typedef
-// eslint-disable-next-line no-unused-vars
-const {CDPSession} = require('./Connection');
-const {keyDefinitions} = require('./USKeyboardLayout');
+import {assert} from './helper';
+import {CDPSession} from './Connection';
+import {keyDefinitions, KeyDefinition, KeyInput} from './USKeyboardLayout';
 
-/**
- * @typedef {Object} KeyDescription
- * @property {number} keyCode
- * @property {string} key
- * @property {string} text
- * @property {string} code
- * @property {number} location
- */
+type KeyDescription = Required<Pick<KeyDefinition, 'keyCode' | 'key' | 'text' | 'code' | 'location'>>;
 
-class Keyboard {
-  /**
-   * @param {!CDPSession} client
-   */
-  constructor(client) {
+export class Keyboard {
+  _client: CDPSession;
+  _modifiers = 0;
+  _pressedKeys = new Set<string>();
+
+  constructor(client: CDPSession) {
     this._client = client;
-    this._modifiers = 0;
-    this._pressedKeys = new Set();
   }
 
-  /**
-   * @param {string} key
-   * @param {{text?: string}=} options
-   */
-  async down(key, options = {text: undefined}) {
+  async down(key: KeyInput, options: { text?: string } = {text: undefined}): Promise<void> {
     const description = this._keyDescriptionForString(key);
 
     const autoRepeat = this._pressedKeys.has(description.code);
@@ -65,11 +51,7 @@ class Keyboard {
     });
   }
 
-  /**
-   * @param {string} key
-   * @return {number}
-   */
-  _modifierBit(key) {
+  private _modifierBit(key: string): number {
     if (key === 'Alt')
       return 1;
     if (key === 'Control')
@@ -81,11 +63,7 @@ class Keyboard {
     return 0;
   }
 
-  /**
-   * @param {string} keyString
-   * @return {KeyDescription}
-   */
-  _keyDescriptionForString(keyString) {
+  private _keyDescriptionForString(keyString: KeyInput): KeyDescription {
     const shift = this._modifiers & 8;
     const description = {
       key: '',
@@ -129,10 +107,7 @@ class Keyboard {
     return description;
   }
 
-  /**
-   * @param {string} key
-   */
-  async up(key) {
+  async up(key: KeyInput): Promise<void> {
     const description = this._keyDescriptionForString(key);
 
     this._modifiers &= ~this._modifierBit(description.key);
@@ -147,21 +122,18 @@ class Keyboard {
     });
   }
 
-  /**
-   * @param {string} char
-   */
-  async sendCharacter(char) {
+  async sendCharacter(char: string): Promise<void> {
     await this._client.send('Input.insertText', {text: char});
   }
 
-  /**
-   * @param {string} text
-   * @param {{delay: (number|undefined)}=} options
-   */
-  async type(text, options) {
+  private charIsKey(char: string): char is KeyInput {
+    return !!keyDefinitions[char];
+  }
+
+  async type(text: string, options: {delay?: number}): Promise<void> {
     const delay = (options && options.delay) || null;
     for (const char of text) {
-      if (keyDefinitions[char]) {
+      if (this.charIsKey(char)) {
         await this.press(char, {delay});
       } else {
         if (delay)
@@ -171,11 +143,7 @@ class Keyboard {
     }
   }
 
-  /**
-   * @param {string} key
-   * @param {!{delay?: number, text?: string}=} options
-   */
-  async press(key, options = {}) {
+  async press(key: KeyInput, options: {delay?: number; text?: string} = {}): Promise<void> {
     const {delay = null} = options;
     await this.down(key, options);
     if (delay)
@@ -184,26 +152,30 @@ class Keyboard {
   }
 }
 
-class Mouse {
+type MouseButton = 'none' | 'left' | 'right' | 'middle';
+type MouseButtonInput = Exclude<MouseButton, 'none'>;
+
+interface MouseOptions {
+  button?: MouseButtonInput;
+  clickCount?: number;
+}
+
+export class Mouse {
+  _client: CDPSession;
+  _keyboard: Keyboard;
+  _x = 0;
+  _y = 0;
+  _button: MouseButton = 'none';
   /**
    * @param {CDPSession} client
    * @param {!Keyboard} keyboard
    */
-  constructor(client, keyboard) {
+  constructor(client: CDPSession, keyboard: Keyboard) {
     this._client = client;
     this._keyboard = keyboard;
-    this._x = 0;
-    this._y = 0;
-    /** @type {'none'|'left'|'right'|'middle'} */
-    this._button = 'none';
   }
 
-  /**
-   * @param {number} x
-   * @param {number} y
-   * @param {!{steps?: number}=} options
-   */
-  async move(x, y, options = {}) {
+  async move(x: number, y: number, options: {steps?: number} = {}): Promise<void> {
     const {steps = 1} = options;
     const fromX = this._x, fromY = this._y;
     this._x = x;
@@ -219,12 +191,7 @@ class Mouse {
     }
   }
 
-  /**
-   * @param {number} x
-   * @param {number} y
-   * @param {!{delay?: number, button?: "left"|"right"|"middle", clickCount?: number}=} options
-   */
-  async click(x, y, options = {}) {
+  async click(x: number, y: number, options: MouseOptions & {delay?: number} = {}): Promise<void> {
     const {delay = null} = options;
     if (delay !== null) {
       await Promise.all([
@@ -242,10 +209,7 @@ class Mouse {
     }
   }
 
-  /**
-   * @param {!{button?: "left"|"right"|"middle", clickCount?: number}=} options
-   */
-  async down(options = {}) {
+  async down(options: MouseOptions = {}): Promise<void> {
     const {button = 'left', clickCount = 1} = options;
     this._button = button;
     await this._client.send('Input.dispatchMouseEvent', {
@@ -261,7 +225,7 @@ class Mouse {
   /**
    * @param {!{button?: "left"|"right"|"middle", clickCount?: number}=} options
    */
-  async up(options = {}) {
+  async up(options: MouseOptions = {}): Promise<void> {
     const {button = 'left', clickCount = 1} = options;
     this._button = 'none';
     await this._client.send('Input.dispatchMouseEvent', {
@@ -275,12 +239,11 @@ class Mouse {
   }
 }
 
-class Touchscreen {
-  /**
-   * @param {CDPSession} client
-   * @param {Keyboard} keyboard
-   */
-  constructor(client, keyboard) {
+export class Touchscreen {
+  _client: CDPSession;
+  _keyboard: Keyboard;
+
+  constructor(client: CDPSession, keyboard: Keyboard) {
     this._client = client;
     this._keyboard = keyboard;
   }
@@ -289,7 +252,7 @@ class Touchscreen {
    * @param {number} x
    * @param {number} y
    */
-  async tap(x, y) {
+  async tap(x: number, y: number): Promise<void> {
     // Touches appear to be lost during the first frame after navigation.
     // This waits a frame before sending the tap.
     // @see https://crbug.com/613219
@@ -311,5 +274,3 @@ class Touchscreen {
     });
   }
 }
-
-module.exports = {Keyboard, Mouse, Touchscreen};
