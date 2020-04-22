@@ -52,7 +52,7 @@ function getExceptionMessage(exceptionDetails: Protocol.Runtime.ExceptionDetails
   return message;
 }
 
-function valueFromRemoteObject(remoteObject: Protocol.Runtime.RemoteObject): unknown {
+function valueFromRemoteObject(remoteObject: Protocol.Runtime.RemoteObject): any {
   assert(!remoteObject.objectId, 'Cannot extract value when objectId is given');
   if (remoteObject.unserializableValue) {
     if (remoteObject.type === 'bigint' && typeof BigInt !== 'undefined')

@@ -14,67 +14,44 @@
  * limitations under the License.
  */
 
-const {helper, assert} = require('./helper');
-// Used as a TypeDef
-// eslint-disable-next-line no-unused-vars
-const {CDPSession} = require('./Connection');
-// Used as a TypeDef
-// eslint-disable-next-line no-unused-vars
-const {createJSHandle, JSHandle, ElementHandle} = require('./JSHandle');
+import {helper, assert} from './helper';
+import {createJSHandle, JSHandle, ElementHandle} from './JSHandle';
+import {CDPSession} from './Connection';
 
-const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
+export const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
 
-class ExecutionContext {
-  /**
-   * @param {!CDPSession} client
-   * @param {!Protocol.Runtime.ExecutionContextDescription} contextPayload
-   * @param {?Puppeteer.DOMWorld} world
-   */
-  constructor(client, contextPayload, world) {
+export class ExecutionContext {
+  _client: CDPSession;
+  _world: Puppeteer.DOMWorld;
+  _contextId: number;
+
+  constructor(client: CDPSession, contextPayload: Protocol.Runtime.ExecutionContextDescription, world: Puppeteer.DOMWorld) {
     this._client = client;
     this._world = world;
     this._contextId = contextPayload.id;
   }
 
-  /**
-   * @return {?Puppeteer.Frame}
-   */
-  frame() {
+  frame(): Puppeteer.Frame | null {
     return this._world ? this._world.frame() : null;
   }
 
-  /**
-   * @param {Function|string} pageFunction
-   * @param {...*} args
-   * @return {!Promise<*>}
-   */
-  async evaluate(pageFunction, ...args) {
-    return await this._evaluateInternal(true /* returnByValue */, pageFunction, ...args);
+  async evaluate<ReturnType extends any>(pageFunction: Function | string, ...args: unknown[]): Promise<ReturnType> {
+    return await this._evaluateInternal<ReturnType>(true, pageFunction, ...args);
   }
 
-  /**
-   * @param {Function|string} pageFunction
-   * @param {...*} args
-   * @return {!Promise<!JSHandle>}
-   */
-  async evaluateHandle(pageFunction, ...args) {
-    return this._evaluateInternal(false /* returnByValue */, pageFunction, ...args);
+  async evaluateHandle(pageFunction: Function | string, ...args: unknown[]): Promise<JSHandle> {
+    return this._evaluateInternal<JSHandle>(false, pageFunction, ...args);
   }
 
-  /**
-   * @param {boolean} returnByValue
-   * @param {Function|string} pageFunction
-   * @param {...*} args
-   * @return {!Promise<*>}
-   */
-  async _evaluateInternal(returnByValue, pageFunction, ...args) {
+  private async _evaluateInternal<ReturnType>(returnByValue, pageFunction: Function | string, ...args: unknown[]): Promise<ReturnType> {
     const suffix = `//# sourceURL=${EVALUATION_SCRIPT_URL}`;
 
     if (helper.isString(pageFunction)) {
       const contextId = this._contextId;
-      const expression = /** @type {string} */ (pageFunction);
+      const expression = pageFunction;
       const expressionWithSourceUrl = SOURCE_URL_REGEX.test(expression) ? expression : expression + '\n' + suffix;
+
       const {exceptionDetails, result: remoteObject} = await this._client.send('Runtime.evaluate', {
         expression: expressionWithSourceUrl,
         contextId,
@@ -82,8 +59,10 @@ class ExecutionContext {
         awaitPromise: true,
         userGesture: true
       }).catch(rewriteError);
+
       if (exceptionDetails)
         throw new Error('Evaluation failed: ' + helper.getExceptionMessage(exceptionDetails));
+
       return returnByValue ? helper.valueFromRemoteObject(remoteObject) : createJSHandle(this, remoteObject);
     }
 
@@ -132,7 +111,7 @@ class ExecutionContext {
      * @return {*}
      * @this {ExecutionContext}
      */
-    function convertArgument(arg) {
+    function convertArgument(this: ExecutionContext, arg: unknown): unknown {
       if (typeof arg === 'bigint') // eslint-disable-line valid-typeof
         return {unserializableValue: `${arg.toString()}n`};
       if (Object.is(arg, -0))
@@ -158,11 +137,7 @@ class ExecutionContext {
       return {value: arg};
     }
 
-    /**
-     * @param {!Error} error
-     * @return {!Protocol.Runtime.evaluateReturnValue}
-     */
-    function rewriteError(error) {
+    function rewriteError(error: Error): Protocol.Runtime.evaluateReturnValue {
       if (error.message.includes('Object reference chain is too long'))
         return {result: {type: 'undefined'}};
       if (error.message.includes('Object couldn\'t be returned by value'))
@@ -174,11 +149,7 @@ class ExecutionContext {
     }
   }
 
-  /**
-   * @param {!JSHandle} prototypeHandle
-   * @return {!Promise<!JSHandle>}
-   */
-  async queryObjects(prototypeHandle) {
+  async queryObjects(prototypeHandle: JSHandle): Promise<JSHandle> {
     assert(!prototypeHandle._disposed, 'Prototype JSHandle is disposed!');
     assert(prototypeHandle._remoteObject.objectId, 'Prototype JSHandle must not be referencing primitive value');
     const response = await this._client.send('Runtime.queryObjects', {
@@ -187,23 +158,15 @@ class ExecutionContext {
     return createJSHandle(this, response.objects);
   }
 
-  /**
-   * @param {Protocol.DOM.BackendNodeId} backendNodeId
-   * @return {Promise<ElementHandle>}
-   */
-  async _adoptBackendNodeId(backendNodeId) {
+  async _adoptBackendNodeId(backendNodeId: Protocol.DOM.BackendNodeId): Promise<ElementHandle> {
     const {object} = await this._client.send('DOM.resolveNode', {
       backendNodeId: backendNodeId,
       executionContextId: this._contextId,
     });
-    return /** @type {ElementHandle}*/(createJSHandle(this, object));
+    return createJSHandle(this, object) as ElementHandle;
   }
 
-  /**
-   * @param {ElementHandle} elementHandle
-   * @return {Promise<ElementHandle>}
-   */
-  async _adoptElementHandle(elementHandle) {
+  async _adoptElementHandle(elementHandle: ElementHandle): Promise<ElementHandle> {
     assert(elementHandle.executionContext() !== this, 'Cannot adopt handle that already belongs to this execution context');
     assert(this._world, 'Cannot adopt handle without DOMWorld');
     const nodeInfo = await this._client.send('DOM.describeNode', {
@@ -212,5 +175,3 @@ class ExecutionContext {
     return this._adoptBackendNodeId(nodeInfo.node.backendNodeId);
   }
 }
-
-module.exports = {ExecutionContext, EVALUATION_SCRIPT_URL};

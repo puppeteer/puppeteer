@@ -4,7 +4,6 @@ import {Page as RealPage} from './Page.js';
 import {Mouse as RealMouse, Keyboard as RealKeyboard, Touchscreen as RealTouchscreen}  from './Input.js';
 import {Frame as RealFrame, FrameManager as RealFrameManager}  from './FrameManager.js';
 import {DOMWorld as RealDOMWorld}  from './DOMWorld.js';
-import {ExecutionContext as RealExecutionContext}  from './ExecutionContext.js';
 import { NetworkManager as RealNetworkManager, Request as RealRequest, Response as RealResponse } from './NetworkManager.js';
 import * as child_process from 'child_process';
 declare global {
@@ -19,7 +18,6 @@ declare global {
     export class FrameManager extends RealFrameManager {}
     export class NetworkManager extends RealNetworkManager {}
     export class DOMWorld extends RealDOMWorld {}
-    export class ExecutionContext extends RealExecutionContext {}
     export class Page extends RealPage { }
     export class Response extends RealResponse { }
     export class Request extends RealRequest { }
