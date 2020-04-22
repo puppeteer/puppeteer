@@ -6,6 +6,8 @@ addons:
     packages:
       # This is required to run new chrome on old trusty
       - libnss3
+      # Needed for realpath which we use in npm run test-install
+      - realpath
 notifications:
   email: false
 cache:
@@ -33,7 +35,9 @@ jobs:
         - "sh -e /etc/init.d/xvfb start"
         # populate .local-firefox for launcher tests
         - PUPPETEER_PRODUCT=firefox npm install
-      script: ./travis/chromium.sh
+      script:
+        - npm run test-install
+        - travis/chromium.sh
     - node_js: "10.19.0"
       dist: trusty
       env:

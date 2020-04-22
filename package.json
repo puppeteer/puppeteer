@@ -30,14 +30,16 @@
     "bundle": "npm run tsc && npx browserify -r ./index.js:puppeteer -o utils/browser/puppeteer-web.js",
     "test-types": "node utils/doclint/generate_types && tsc --version && tsc -p utils/doclint/generate_types/test/",
     "unit-bundle": "mocha --config mocha-config/browser-bundle-tests.js",
-    "update-protocol-d-ts": "node utils/protocol-types-generator"
+    "update-protocol-d-ts": "node utils/protocol-types-generator",
+    "test-install": "scripts/test-install.sh"
   },
   "files": [
     "lib/",
     "Errors.js",
     "DeviceDescriptors.js",
     "index.js",
-    "install.js"
+    "install.js",
+    "typescript-if-required.js"
   ],
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
