@@ -1,4 +1,4 @@
-**
+/**
  * Copyright 2019 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -172,11 +172,12 @@ export class ElementHandle extends JSHandle {
         });
         observer.observe(element);
       });
-      if (visibleRatio !== 1.0)
+      if (visibleRatio !== 1.0) {
         // Chrome still supports behavior: instant but it's not in the spec so TS shouts
         // We don't want to make this breaking change in Puppeteer yet so we'll ignore the line.
         // @ts-ignore
         element.scrollIntoView({block: 'center', inline: 'center', behavior: 'instant'});
+      }
       return false;
     }, this._page._javascriptEnabled);
 
