@@ -185,6 +185,15 @@ function checkSources(sources) {
   }
 
   /**
+   * @param {!ts.Symbol} symbol
+   * @return {boolean}
+   */
+  function symbolHasPrivateModifier(symbol) {
+    const modifiers = symbol.valueDeclaration.modifiers || [];
+    return modifiers.some(modifier => modifier.kind === ts.SyntaxKind.PrivateKeyword);
+  }
+
+  /**
    * @param {string} className
    * @param {!ts.Symbol} symbol
    * @return {}
@@ -194,8 +203,14 @@ function checkSources(sources) {
     const members = classEvents.get(className) || [];
 
     for (const [name, member] of symbol.members || []) {
-      if (name.startsWith('_'))
+
+      /* Before TypeScript we denoted private methods with an underscore
+       * but in TypeScript we use the private keyword
+       * hence we check for either here.
+       */
+      if (name.startsWith('_') || symbolHasPrivateModifier(member))
         continue;
+
       const memberType = checker.getTypeOfSymbolAtLocation(member, member.valueDeclaration);
       const signature = memberType.getCallSignatures()[0];
       if (signature)

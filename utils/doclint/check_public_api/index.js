@@ -271,6 +271,30 @@ function compareDocumentations(actual, expected) {
         actualName: 'Object',
         expectedName: 'CommandParameters[T]'
       }],
+      ['Method ElementHandle.press() key', {
+        actualName: 'string',
+        expectedName: 'KeyInput'
+      }],
+      ['Method Keyboard.down() key', {
+        actualName: 'string',
+        expectedName: 'KeyInput'
+      }],
+      ['Method Keyboard.press() key', {
+        actualName: 'string',
+        expectedName: 'KeyInput'
+      }],
+      ['Method Keyboard.up() key', {
+        actualName: 'string',
+        expectedName: 'KeyInput'
+      }],
+      ['Method Mouse.down() options', {
+        actualName: 'Object',
+        expectedName: 'MouseOptions'
+      }],
+      ['Method Mouse.up() options', {
+        actualName: 'Object',
+        expectedName: 'MouseOptions'
+      }],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);
@@ -295,12 +319,15 @@ function compareDocumentations(actual, expected) {
     const actualName = actual.name.replace(/[\? ]/g, '');
     // TypeScript likes to add some spaces
     const expectedName = expected.name.replace(/\ /g, '');
-    if (expectedName !== actualName) {
-      const namingMismatchIsExpected = namingMisMatchInTypeIsExpected(source, actualName, expectedName);
+    const namingMismatchIsExpected = namingMisMatchInTypeIsExpected(source, actualName, expectedName);
+    if (expectedName !== actualName && !namingMismatchIsExpected)
+      errors.push(`${source} ${actualName} != ${expectedName}`);
 
-      if (!namingMismatchIsExpected)
-        errors.push(`${source} ${actualName} != ${expectedName}`);
-    }
+
+    /* If we got a naming mismatch and it was expected, don't check the properties
+     * as they will likely be considered "wrong" by DocLint too.
+     */
+    if (namingMismatchIsExpected) return;
     const actualPropertiesMap = new Map(actual.properties.map(property => [property.name, property.type]));
     const expectedPropertiesMap = new Map(expected.properties.map(property => [property.name, property.type]));
     const propertiesDiff = diff(Array.from(actualPropertiesMap.keys()).sort(), Array.from(expectedPropertiesMap.keys()).sort());
