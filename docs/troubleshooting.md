@@ -187,33 +187,20 @@ export CHROME_DEVEL_SANDBOX=/usr/local/sbin/chrome-devel-sandbox
 > 👋 We run our tests for Puppeteer on Travis CI - see our [`.travis.yml`](https://github.com/puppeteer/puppeteer/blob/master/.travis.yml) for reference.
 
 Tips-n-tricks:
-- The `libnss3` package must be installed in order to run Chromium on Ubuntu Trusty
-- [user namespace cloning](http://man7.org/linux/man-pages/man7/user_namespaces.7.html) should be enabled to support
-  proper sandboxing
-- [xvfb](https://en.wikipedia.org/wiki/Xvfb) should be launched in order to run Chromium in non-headless mode (e.g. to test Chrome Extensions)
+- [xvfb](https://en.wikipedia.org/wiki/Xvfb) service should be launched in order to run Chromium in non-headless mode
+- Runs on Xenial Linux on Travis by default
+- Runs `npm install` by default
+- `node_modules` is cached by default
 
-To sum up, your `.travis.yml` might look like this:
+`.travis.yml` might look like this:
 
 ```yml
 language: node_js
-dist: trusty
-addons:
-  apt:
-    packages:
-      # This is required to run new chrome on old trusty
-      - libnss3
-notifications:
-  email: false
-cache:
-  directories:
-    - node_modules
-# allow headful tests
-before_install:
-  # Enable user namespace cloning
-  - "sysctl kernel.unprivileged_userns_clone=1"
-  # Launch XVFB
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
+node_js: node
+services: xvfb
+
+script:
+  - npm run test
 ```
 
 ## Running Puppeteer on CircleCI
