@@ -34,7 +34,7 @@ describeChromeOnly('headful tests', function() {
   /* These tests fire up an actual browser so let's
    * allow a higher timeout
    */
-  this.timeout(10 * 1000);
+  this.timeout(20 * 1000);
 
   let headfulOptions;
   let headlessOptions;

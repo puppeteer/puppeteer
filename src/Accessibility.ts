@@ -16,61 +16,49 @@
 
 // Used as a TypeDef
 // eslint-disable-next-line no-unused-vars
-const {CDPSession} = require('./Connection');
+import {CDPSession} from './Connection';
 // Used as a TypeDef
 // eslint-disable-next-line no-unused-vars
-const {ElementHandle} = require('./JSHandle');
+import {ElementHandle} from './JSHandle';
 
-/**
- * @typedef {Object} SerializedAXNode
- * @property {string} role
- *
- * @property {string=} name
- * @property {string|number=} value
- * @property {string=} description
- *
- * @property {string=} keyshortcuts
- * @property {string=} roledescription
- * @property {string=} valuetext
- *
- * @property {boolean=} disabled
- * @property {boolean=} expanded
- * @property {boolean=} focused
- * @property {boolean=} modal
- * @property {boolean=} multiline
- * @property {boolean=} multiselectable
- * @property {boolean=} readonly
- * @property {boolean=} required
- * @property {boolean=} selected
- *
- * @property {boolean|"mixed"=} checked
- * @property {boolean|"mixed"=} pressed
- *
- * @property {number=} level
- * @property {number=} valuemin
- * @property {number=} valuemax
- *
- * @property {string=} autocomplete
- * @property {string=} haspopup
- * @property {string=} invalid
- * @property {string=} orientation
- *
- * @property {Array<SerializedAXNode>=} children
- */
 
-class Accessibility {
-  /**
-   * @param {!CDPSession} client
-   */
-  constructor(client) {
+interface SerializedAXNode {
+  role: string;
+  name?: string;
+  value?: string|number;
+  description?: string;
+  keyshortcuts?: string;
+  roledescription?: string;
+  valuetext?: string;
+  disabled?: boolean;
+  expanded?: boolean;
+  focused?: boolean;
+  modal?: boolean;
+  multiline?: boolean;
+  multiselectable?: boolean;
+  readonly?: boolean;
+  required?: boolean;
+  selected?: boolean;
+  checked?: boolean|'mixed';
+  pressed?: boolean|'mixed';
+  level?: number;
+  valuemin?: number;
+  valuemax?: number;
+  autocomplete?: string;
+  haspopup?: string;
+  invalid?: string;
+  orientation?: string;
+  children?: Array<SerializedAXNode>;
+}
+
+export class Accessibility {
+  _client: CDPSession;
+
+  constructor(client: CDPSession) {
     this._client = client;
   }
 
-  /**
-   * @param {{interestingOnly?: boolean, root?: ?ElementHandle}=} options
-   * @return {!Promise<!SerializedAXNode>}
-   */
-  async snapshot(options = {}) {
+  async snapshot(options: {interestingOnly?: boolean; root?: ElementHandle} = {}): Promise<SerializedAXNode> {
     const {
       interestingOnly = true,
       root = null,
@@ -91,8 +79,7 @@ class Accessibility {
     if (!interestingOnly)
       return serializeTree(needle)[0];
 
-    /** @type {!Set<!AXNode>} */
-    const interestingNodes = new Set();
+    const interestingNodes = new Set<AXNode>();
     collectInterestingNodes(interestingNodes, defaultRoot, false);
     if (!interestingNodes.has(needle))
       return null;
@@ -105,7 +92,7 @@ class Accessibility {
  * @param {!AXNode} node
  * @param {boolean} insideControl
  */
-function collectInterestingNodes(collection, node, insideControl) {
+function collectInterestingNodes(collection: Set<AXNode>, node: AXNode, insideControl: boolean): void {
   if (node.isInteresting(insideControl))
     collection.add(node);
   if (node.isLeafNode())
@@ -115,14 +102,8 @@ function collectInterestingNodes(collection, node, insideControl) {
     collectInterestingNodes(collection, child, insideControl);
 }
 
-/**
- * @param {!AXNode} node
- * @param {!Set<!AXNode>=} whitelistedNodes
- * @return {!Array<!SerializedAXNode>}
- */
-function serializeTree(node, whitelistedNodes) {
-  /** @type {!Array<!SerializedAXNode>} */
-  const children = [];
+function serializeTree(node: AXNode, whitelistedNodes?: Set<AXNode>): SerializedAXNode[] {
+  const children: SerializedAXNode[] = [];
   for (const child of node._children)
     children.push(...serializeTree(child, whitelistedNodes));
 
@@ -137,23 +118,21 @@ function serializeTree(node, whitelistedNodes) {
 
 
 class AXNode {
-  /**
-   * @param {!Protocol.Accessibility.AXNode} payload
-   */
-  constructor(payload) {
+  _payload: Protocol.Accessibility.AXNode;
+  _children: AXNode[] = [];
+  _richlyEditable = false;
+  _editable = false;
+  _focusable = false;
+  _expanded = false;
+  _hidden = false;
+  _name: string;
+  _role: string;
+  _cachedHasFocusableChild?: boolean;
+
+  constructor(payload: Protocol.Accessibility.AXNode) {
     this._payload = payload;
-
-    /** @type {!Array<!AXNode>} */
-    this._children = [];
-
-    this._richlyEditable = false;
-    this._editable = false;
-    this._focusable = false;
-    this._expanded = false;
-    this._hidden = false;
     this._name = this._payload.name ? this._payload.name.value : '';
     this._role = this._payload.role ? this._payload.role.value : 'Unknown';
-    this._cachedHasFocusableChild;
 
     for (const property of this._payload.properties || []) {
       if (property.name === 'editable') {
@@ -169,10 +148,7 @@ class AXNode {
     }
   }
 
-  /**
-   * @return {boolean}
-   */
-  _isPlainTextField() {
+  _isPlainTextField(): boolean {
     if (this._richlyEditable)
       return false;
     if (this._editable)
@@ -180,19 +156,13 @@ class AXNode {
     return this._role === 'textbox' || this._role === 'ComboBox' || this._role === 'searchbox';
   }
 
-  /**
-   * @return {boolean}
-   */
-  _isTextOnlyObject() {
+  _isTextOnlyObject(): boolean {
     const role = this._role;
     return (role === 'LineBreak' || role === 'text' ||
             role === 'InlineTextBox');
   }
 
-  /**
-   * @return {boolean}
-   */
-  _hasFocusableChild() {
+  _hasFocusableChild(): boolean {
     if (this._cachedHasFocusableChild === undefined) {
       this._cachedHasFocusableChild = false;
       for (const child of this._children) {
@@ -205,11 +175,7 @@ class AXNode {
     return this._cachedHasFocusableChild;
   }
 
-  /**
-   * @param {function(AXNode):boolean} predicate
-   * @return {?AXNode}
-   */
-  find(predicate) {
+  find(predicate: (x: AXNode) => boolean): AXNode | null {
     if (predicate(this))
       return this;
     for (const child of this._children) {
@@ -220,10 +186,7 @@ class AXNode {
     return null;
   }
 
-  /**
-   * @return {boolean}
-   */
-  isLeafNode() {
+  isLeafNode(): boolean {
     if (!this._children.length)
       return true;
 
@@ -262,10 +225,7 @@ class AXNode {
     return false;
   }
 
-  /**
-   * @return {boolean}
-   */
-  isControl() {
+  isControl(): boolean {
     switch (this._role) {
       case 'button':
       case 'checkbox':
@@ -297,7 +257,7 @@ class AXNode {
    * @param {boolean} insideControl
    * @return {boolean}
    */
-  isInteresting(insideControl) {
+  isInteresting(insideControl: boolean): boolean {
     const role = this._role;
     if (role === 'Ignored' || this._hidden)
       return false;
@@ -316,12 +276,8 @@ class AXNode {
     return this.isLeafNode() && !!this._name;
   }
 
-  /**
-   * @return {!SerializedAXNode}
-   */
-  serialize() {
-    /** @type {!Map<string, number|string|boolean>} */
-    const properties = new Map();
+  serialize(): SerializedAXNode {
+    const properties = new Map<string, number|string|boolean>();
     for (const property of this._payload.properties || [])
       properties.set(property.name.toLowerCase(), property.value.value);
     if (this._payload.name)
@@ -331,15 +287,13 @@ class AXNode {
     if (this._payload.description)
       properties.set('description', this._payload.description.value);
 
-    /** @type {SerializedAXNode} */
-    const node = {
+    const node: SerializedAXNode = {
       role: this._role
     };
 
-    /** @enum {'name'|'value'|'description'|'keyshortcuts'|'roledescription'|'valuetext'} */
-    let UserStringProperties; // eslint-disable-line no-unused-vars
-    /** @type {!Array<UserStringProperties>} */
-    const userStringProperties = [
+    type UserStringProperty = 'name'|'value'|'description'|'keyshortcuts'|'roledescription'|'valuetext';
+
+    const userStringProperties: UserStringProperty[] = [
       'name',
       'value',
       'description',
@@ -347,10 +301,7 @@ class AXNode {
       'roledescription',
       'valuetext',
     ];
-    /**
-     * @param {UserStringProperties} key
-     */
-    const getUserStringPropertyValue = key => /** @type string */(properties.get(key));
+    const getUserStringPropertyValue = (key: UserStringProperty): string => properties.get(key) as string;
 
     for (const userStringProperty of userStringProperties) {
       if (!properties.has(userStringProperty))
@@ -359,10 +310,8 @@ class AXNode {
       node[userStringProperty] = getUserStringPropertyValue(userStringProperty);
     }
 
-    /** @enum {'disabled'|'expanded'|'focused'|'modal'|'multiline'|'multiselectable'|'readonly'|'required'|'selected'} */
-    let BooleanProperties; // eslint-disable-line no-unused-vars
-    /** @type {!Array<BooleanProperties>} */
-    const booleanProperties = [
+    type BooleanProperty = 'disabled'|'expanded'|'focused'|'modal'|'multiline'|'multiselectable'|'readonly'|'required'|'selected';
+    const booleanProperties: BooleanProperty[] = [
       'disabled',
       'expanded',
       'focused',
@@ -373,10 +322,7 @@ class AXNode {
       'required',
       'selected',
     ];
-    /**
-     * @param {BooleanProperties} key
-     */
-    const getBooleanPropertyValue = key => /** @type boolean */(properties.get(key));
+    const getBooleanPropertyValue = (key: BooleanProperty): boolean => properties.get(key) as boolean;
 
     for (const booleanProperty of booleanProperties) {
       // WebArea's treat focus differently than other nodes. They report whether their frame  has focus,
@@ -389,10 +335,8 @@ class AXNode {
       node[booleanProperty] = getBooleanPropertyValue(booleanProperty);
     }
 
-    /** @enum {'checked'|'pressed'} */
-    let TristateProperties; // eslint-disable-line no-unused-vars
-    /** @type {!Array<TristateProperties>} */
-    const tristateProperties = [
+    type TristateProperty = 'checked'|'pressed';
+    const tristateProperties: TristateProperty[] = [
       'checked',
       'pressed',
     ];
@@ -404,18 +348,13 @@ class AXNode {
     }
 
 
-    /** @enum {'level'|'valuemax'|'valuemin'} */
-    let NumericalProperties; // eslint-disable-line no-unused-vars
-    /** @type {!Array<NumericalProperties>} */
-    const numericalProperties = [
+    type NumbericalProperty = 'level'|'valuemax'|'valuemin';
+    const numericalProperties: NumbericalProperty[] = [
       'level',
       'valuemax',
       'valuemin',
     ];
-    /**
-     * @param {NumericalProperties} key
-     */
-    const getNumericalPropertyValue = key => /** @type number */(properties.get(key));
+    const getNumericalPropertyValue = (key: NumbericalProperty): number => properties.get(key) as number;
     for (const numericalProperty of numericalProperties) {
       if (!properties.has(numericalProperty))
         continue;
@@ -423,19 +362,14 @@ class AXNode {
     }
 
 
-    /** @enum {'autocomplete'|'haspopup'|'invalid'|'orientation'} */
-    let TokenProperties; // eslint-disable-line no-unused-vars
-    /** @type {!Array<TokenProperties>} */
-    const tokenProperties = [
+    type TokenProperty = 'autocomplete'|'haspopup'|'invalid'|'orientation';
+    const tokenProperties: TokenProperty[] = [
       'autocomplete',
       'haspopup',
       'invalid',
       'orientation',
     ];
-    /**
-     * @param {TokenProperties} key
-     */
-    const getTokenPropertyValue = key => /** @type string */(properties.get(key));
+    const getTokenPropertyValue = (key: TokenProperty): string => properties.get(key) as string;
     for (const tokenProperty of tokenProperties) {
       const value = getTokenPropertyValue(tokenProperty);
       if (!value || value === 'false')
@@ -445,11 +379,7 @@ class AXNode {
     return node;
   }
 
-  /**
-   * @param {!Array<!Protocol.Accessibility.AXNode>} payloads
-   * @return {!AXNode}
-   */
-  static createTree(payloads) {
+  static createTree(payloads: Protocol.Accessibility.AXNode[]): AXNode {
     /** @type {!Map<string, !AXNode>} */
     const nodeById = new Map();
     for (const payload of payloads)
@@ -461,5 +391,3 @@ class AXNode {
     return nodeById.values().next().value;
   }
 }
-
-module.exports = {Accessibility};
