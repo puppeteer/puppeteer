@@ -15,15 +15,11 @@
  */
 
 class CustomError extends Error {
-  constructor(message) {
+  constructor(message: string) {
     super(message);
     this.name = this.constructor.name;
     Error.captureStackTrace(this, this.constructor);
   }
 }
 
-class TimeoutError extends CustomError {}
-
-module.exports = {
-  TimeoutError,
-};
+export class TimeoutError extends CustomError {}
