@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const Events = {
+export const Events = {
   Page: {
     Close: 'close',
     Console: 'console',
@@ -75,6 +75,4 @@ const Events = {
   CDPSession: {
     Disconnected: Symbol('Events.CDPSession.Disconnected'),
   },
-};
-
-module.exports = {Events};
+} as const;
