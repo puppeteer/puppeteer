@@ -13,25 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const {helper, assert} = require('./helper');
-// Used as a TypeDef
-// eslint-disable-next-line no-unused-vars
-const {CDPSession} = require('./Connection');
+import {helper, assert} from './helper';
+import {CDPSession} from './Connection';
 
-class Tracing {
-  /**
-   * @param {!CDPSession} client
-   */
-  constructor(client) {
+interface TracingOptions {
+  path?: string;
+  screenshots?: boolean;
+  categories?: string[];
+}
+
+export class Tracing {
+  _client: CDPSession;
+  _recording = false;
+  _path =  '';
+
+  constructor(client: CDPSession) {
     this._client = client;
-    this._recording = false;
-    this._path = '';
   }
 
-  /**
-   * @param {!{path?: string, screenshots?: boolean, categories?: !Array<string>}} options
-   */
-  async start(options = {}) {
+  async start(options: TracingOptions = {}): Promise<void> {
     assert(!this._recording, 'Cannot start recording trace while already recording trace.');
 
     const defaultCategories = [
@@ -57,12 +57,9 @@ class Tracing {
     });
   }
 
-  /**
-   * @return {!Promise<!Buffer>}
-   */
-  async stop() {
-    let fulfill;
-    const contentPromise = new Promise(x => fulfill = x);
+  async stop(): Promise<Buffer> {
+    let fulfill: (value: Buffer) => void;
+    const contentPromise = new Promise<Buffer>(x => fulfill = x);
     this._client.once('Tracing.tracingComplete', event => {
       helper.readProtocolStream(this._client, event.stream, this._path).then(fulfill);
     });
@@ -71,5 +68,3 @@ class Tracing {
     return contentPromise;
   }
 }
-
-module.exports = Tracing;

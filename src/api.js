@@ -38,6 +38,6 @@ module.exports = {
   Target: require('./Target').Target,
   TimeoutError: require('./Errors').TimeoutError,
   Touchscreen: require('./Input').Touchscreen,
-  Tracing: require('./Tracing'),
+  Tracing: require('./Tracing').Tracing,
   Worker: require('./Worker').Worker,
 };

@@ -295,6 +295,10 @@ function compareDocumentations(actual, expected) {
         actualName: 'Object',
         expectedName: 'MouseOptions'
       }],
+      ['Method Tracing.start() options', {
+        actualName: 'Object',
+        expectedName: 'TracingOptions'
+      }],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);
