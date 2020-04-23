@@ -18,6 +18,12 @@ declare global {
     export class Response extends RealResponse { }
     export class Request extends RealRequest { }
 
+
+    /* TODO(jacktfranklin@): once DOMWorld, Page, and FrameManager are in TS
+     * we can remove this and instead use the type defined in LifeCycleWatcher
+     */
+    export type PuppeteerLifeCycleEvent = 'load' | 'domcontentloaded' | 'networkidle0' | 'networkidle2';
+
     export interface ConnectionTransport {
       send(string);
       close();

@@ -89,7 +89,7 @@ class FrameManager extends EventEmitter {
   /**
    * @param {!Puppeteer.Frame} frame
    * @param {string} url
-   * @param {!{referer?: string, timeout?: number, waitUntil?: string|!Array<string>}=} options
+   * @param {!{referer?: string, timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
    * @return {!Promise<?Puppeteer.Response>}
    */
   async navigateFrame(frame, url, options = {}) {
@@ -137,7 +137,7 @@ class FrameManager extends EventEmitter {
 
   /**
    * @param {!Puppeteer.Frame} frame
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}=} options
+   * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
    * @return {!Promise<?Puppeteer.Response>}
    */
   async waitForFrameNavigation(frame, options = {}) {
@@ -410,7 +410,7 @@ class Frame {
 
   /**
    * @param {string} url
-   * @param {!{referer?: string, timeout?: number, waitUntil?: string|!Array<string>}=} options
+   * @param {!{referer?: string, timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
    * @return {!Promise<?Puppeteer.Response>}
    */
   async goto(url, options) {
@@ -418,7 +418,7 @@ class Frame {
   }
 
   /**
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}=} options
+   * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
    * @return {!Promise<?Puppeteer.Response>}
    */
   async waitForNavigation(options) {
@@ -503,7 +503,7 @@ class Frame {
 
   /**
    * @param {string} html
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}=} options
+   * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
    */
   async setContent(html, options = {}) {
     return this._secondaryWorld.setContent(html, options);

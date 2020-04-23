@@ -80,8 +80,25 @@ function classToString(classDesc) {
  * @param {import('./check_public_api/Documentation').Type} type
  */
 function typeToString(type, ...namespace) {
+
+  /* A hack to special case TypeScript types that this type generator
+   * does not understand / parse correctly.
+   * Because the goal is to generate these types from the TypeScript
+   * source, this parser won't be around for much longer so investing in
+   * improving the parser's ability is not worth it.
+   */
+  const specialCaseTypeMaps = new Map([
+    ['"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array',
+      '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<string>']
+  ]);
+
+
   if (!type)
     return 'void';
+
+  if (specialCaseTypeMaps.has(type.name))
+    return specialCaseTypeMaps.get(type.name);
+
   let typeString = stringifyType(parseType(type.name));
   for (let i = 0; i < type.properties.length; i++)
     typeString = typeString.replace('arg' + i, type.properties[i].name);

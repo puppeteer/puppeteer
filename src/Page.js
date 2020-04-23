@@ -675,7 +675,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {string} html
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}=} options
+   * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
    */
   async setContent(html, options) {
     await this._frameManager.mainFrame().setContent(html, options);
@@ -683,7 +683,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {string} url
-   * @param {!{referer?: string, timeout?: number, waitUntil?: string|!Array<string>}=} options
+   * @param {!{referer?: string, timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
    * @return {!Promise<?Puppeteer.Response>}
    */
   async goto(url, options) {
@@ -691,7 +691,7 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}=} options
+   * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
    * @return {!Promise<?Puppeteer.Response>}
    */
   async reload(options) {
@@ -705,7 +705,7 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}=} options
+   * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
    * @return {!Promise<?Puppeteer.Response>}
    */
   async waitForNavigation(options = {}) {
@@ -755,7 +755,7 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}=} options
+   * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
    * @return {!Promise<?Puppeteer.Response>}
    */
   async goBack(options) {
@@ -763,7 +763,7 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}=} options
+   * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
    * @return {!Promise<?Puppeteer.Response>}
    */
   async goForward(options) {
@@ -771,7 +771,7 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}=} options
+   * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
    * @return {!Promise<?Puppeteer.Response>}
    */
   async _go(delta, options) {
