@@ -339,19 +339,21 @@ async function extractZip(zipPath: string, folderPath: string): Promise<void> {
    * If the user is on Node < 14 we maintain the behaviour we had before
    * this patch.
    */
-  if (nodeVersion === 'v14.0.0') {
-    await new Promise((resolve, reject) => {
-      let extractedResolved = false;
-      setTimeout(async() => {
-        await extract(zipPath, {dir: folderPath});
-        extractedResolved = true;
-      }, 10);
+  if (nodeVersion.startsWith('v14.')) {
+    let timeoutReject;
+    const timeoutPromise = new Promise((resolve, reject) => { timeoutReject = reject; });
 
-      if (extractedResolved)
-        resolve();
-      else
-        reject(`Puppeteer currently does not work on Node v14 due to an upstream bug. Please see: https://github.com/puppeteer/puppeteer/issues/5719 for details.`);
-    });
+    const timeoutToken = setTimeout(() => {
+      const error = new Error(`Puppeteer currently does not work on Node v14 due to an upstream bug. Please see: https://github.com/puppeteer/puppeteer/issues/5719 for details.`);
+      timeoutReject(error);
+    }, 10 * 1000);
+
+    await Promise.race([
+      extract(zipPath, {dir: folderPath}),
+      timeoutPromise
+    ]);
+
+    clearTimeout(timeoutToken);
   } else {
     try {
       await extract(zipPath, {dir: folderPath});
