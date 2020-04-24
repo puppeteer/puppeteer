@@ -291,7 +291,24 @@ export class ElementHandle extends JSHandle {
     // the cost unnecessarily.
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const path = require('path');
-    const files = filePaths.map(filePath => path.resolve(filePath));
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const fs = require('fs');
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const {promisify} = require('util');
+    const access = promisify(fs.access);
+
+    // Locate all files and confirm that they exist.
+    const files = await Promise.all(filePaths.map(async filePath => {
+      const resolvedPath: string = path.resolve(filePath);
+      try {
+        await access(resolvedPath);
+      } catch (e) {
+        if (e.code === 'ENOENT')
+          throw new Error(`${filePath} does not exist`);
+      }
+
+      return resolvedPath;
+    }));
     const {objectId} = this._remoteObject;
     const {node} = await this._client.send('DOM.describeNode', {objectId});
     const {backendNodeId} = node;
