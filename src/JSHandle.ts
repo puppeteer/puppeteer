@@ -301,10 +301,10 @@ export class ElementHandle extends JSHandle {
     const files = await Promise.all(filePaths.map(async filePath => {
       const resolvedPath: string = path.resolve(filePath);
       try {
-        await access(resolvedPath);
-      } catch (e) {
-        if (e.code === 'ENOENT')
-          throw new Error(`${filePath} does not exist`);
+        await access(resolvedPath, fs.constants.R_OK);
+      } catch (error) {
+        if (error.code === 'ENOENT')
+          throw new Error(`${filePath} does not exist or is not readable`);
       }
 
       return resolvedPath;
