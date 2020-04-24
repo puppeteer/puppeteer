@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 const Launcher = require('./Launcher');
-const BrowserFetcher = require('./BrowserFetcher');
+const {BrowserFetcher} = require('./BrowserFetcher');
 const Errors = require('./Errors');
 const DeviceDescriptors = require('./DeviceDescriptors');
 
@@ -126,12 +126,22 @@ module.exports = class {
     return this._launcher.defaultArgs(options);
   }
 
+  /** TODO(jacktfranklin@): Once this file is TS we can type this
+  * using the BrowserFectcherOptions interface.
+  */
+
   /**
-   * @param {!BrowserFetcher.Options=} options
+  * @typedef {Object} BrowserFetcherOptions
+  * @property {('linux'|'mac'|'win32'|'win64')=} platform
+  * @property {('chrome'|'firefox')=} product
+  * @property {string=} path
+  * @property {string=} host
+  */
+  /**
+   * @param {!BrowserFetcherOptions} options
    * @return {!BrowserFetcher}
    */
   createBrowserFetcher(options) {
     return new BrowserFetcher(this._projectRoot, options);
   }
 };
-
