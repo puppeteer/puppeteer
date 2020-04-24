@@ -3,6 +3,4 @@
 npm run lint &&
 npm run coverage &&
 npm run test-doclint &&
-npm run test-types &&
-npm run bundle &&
-npm run unit-bundle
+npm run test-types

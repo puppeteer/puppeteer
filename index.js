@@ -18,7 +18,6 @@ const {helper} = require('./lib/helper');
 const api = require('./lib/api');
 const {Page} = require('./lib/Page');
 for (const className in api) {
-  // Puppeteer-web excludes certain classes from bundle, e.g. BrowserFetcher.
   if (typeof api[className] === 'function')
     helper.installAsyncStackHooks(api[className]);
 }
@@ -26,7 +25,6 @@ for (const className in api) {
 // Expose alias for deprecated method.
 Page.prototype.emulateMedia = Page.prototype.emulateMediaType;
 
-// If node does not support async await, use the compiled version.
 const Puppeteer = require('./lib/Puppeteer');
 const packageJson = require('./package.json');
 let preferredRevision = packageJson.puppeteer.chromium_revision;
