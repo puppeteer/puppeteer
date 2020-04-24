@@ -184,6 +184,18 @@ describe('input tests', function() {
       ]).catch(e => error = e);
       expect(error).not.toBe(null);
     });
+    it('should fail for non-existent files', async() => {
+      const {page} = getTestState();
+
+      await page.setContent(`<input type=file>`);
+      const [chooser] = await Promise.all([
+        page.waitForFileChooser(),
+        page.click('input'),
+      ]);
+      let error = null;
+      await chooser.accept(['file-does-not-exist.txt']).catch(e => error = e);
+      expect(error).not.toBe(null);
+    });
     it('should fail when accepting file chooser twice', async() => {
       const {page} = getTestState();
 
