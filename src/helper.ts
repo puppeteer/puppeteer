@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Errors = require('./Errors');
-
-import debug = require('debug');
-import fs = require('fs');
-import promisify = require('./promisify');
+import {TimeoutError} from './Errors';
+import * as debug from 'debug';
+import * as fs from 'fs';
 import {CDPSession} from './Connection';
-
-const {TimeoutError} = Errors;
+import {promisify} from 'util';
 
 const openAsync = promisify(fs.open);
 const writeAsync = promisify(fs.write);
