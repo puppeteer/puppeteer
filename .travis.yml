@@ -18,7 +18,6 @@ jobs:
     - os: "windows"
       name: 'Unit tests: Windows/Chromium'
       node_js: "10.19.0"
-      node_js: "10.19.0"
       env:
         - CHROMIUM=true
       before_install:
