@@ -333,7 +333,7 @@ async function extractZip(zipPath: string, folderPath: string): Promise<void> {
    * line.
    *
    * The issue seems to be in streams never resolving so we wrap the
-   * call in a timeout and give it 100ms to resolve before deciding on
+   * call in a timeout and give it 10s to resolve before deciding on
    * an error.
    *
    * If the user is on Node < 14 we maintain the behaviour we had before
