@@ -3,9 +3,8 @@ services: xvfb
 
 jobs:
   include:
-
-    # Runs unit tests on OSX + Chromium
     - os: "osx"
+      name: 'Unit tests: OSX/Chromium'
       node_js: "10.19.0"
       env:
         - CHROMIUM=true
@@ -16,8 +15,9 @@ jobs:
         - npm run tsc
         - npm run unit
 
-    # Runs unit tests on Windows + Chromium
     - os: "windows"
+      name: 'Unit tests: Windows/Chromium'
+      node_js: "10.19.0"
       node_js: "10.19.0"
       env:
         - CHROMIUM=true
@@ -30,6 +30,7 @@ jobs:
 
     # Runs unit tests on Linux + Chromium
     - node_js: "10.19.0"
+      name: 'Unit tests: Linux/Chromium'
       env:
         - CHROMIUM=true
       before_install:
@@ -40,6 +41,7 @@ jobs:
 
     # This bot runs all the extra checks that aren't the main Puppeteer unit tests
     - node_js: "10.19.0"
+      name: 'Extra tests: Linux/Chromium'
       env:
         -CHROMIUM=true
       script:
@@ -50,6 +52,7 @@ jobs:
 
     # Runs unit tests on Linux + Firefox
     - node_js: "10.19.0"
+      name: 'Unit tests: Linux/Firefox'
       env:
         - FIREFOX=true
       before_install:
