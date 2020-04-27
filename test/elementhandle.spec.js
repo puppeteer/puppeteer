@@ -248,4 +248,25 @@ describe('ElementHandle specs', function() {
       }
     });
   });
+
+  describe('Custom queries', function() {
+    it('should register and unregister', async() => {
+      const {page, puppeteer} = getTestState();
+      await page.setContent('<div id="not-foo"></div><div id="foo"></div>');
+
+      // Register.
+      puppeteer.registerCustomQueryFunction('get-by-id', (element, selector) => document.querySelector(`[id="${selector}"]`));
+      const element = await page.$('get-by-id/foo');
+      expect(await page.evaluate(element => element.id, element)).toBe('foo');
+
+      // Unregister.
+      puppeteer.unregisterCustomQueryFunction('get-by-id');
+      try {
+        await page.$('get-by-id/foo');
+        expect.fail('Custom query function not set - throw expected');
+      } catch (e) {
+        expect(e).toStrictEqual(new Error('$ query set to use "get-by-id", but no query function of that name was found'));
+      }
+    });
+  });
 });
