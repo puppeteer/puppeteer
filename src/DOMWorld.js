@@ -129,8 +129,8 @@ class DOMWorld {
    */
   async $(selector) {
     const document = await this._document();
-    if (selector.startsWith('xpath:')) {
-      const handles = await document.$x(selector);
+    if (selector && selector.startsWith('xpath:')) {
+      const handles = await document.$x(selector.substring(6));
       return handles && handles.length > 0 ? handles[0] : null;
     }
     return await document.$(selector);
