@@ -4,7 +4,7 @@ services: xvfb
 jobs:
   include:
     - os: "osx"
-      name: 'Unit tests: OSX/Chromium'
+      name: 'Unit tests: macOS/Chromium'
       node_js: "10.19.0"
       env:
         - CHROMIUM=true
