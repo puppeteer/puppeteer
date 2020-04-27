@@ -35,7 +35,6 @@ jobs:
       before_install:
         - PUPPETEER_PRODUCT=firefox npm install
       script:
-        - npm run test-install
         - npm run coverage
 
     # This bot runs all the extra checks that aren't the main Puppeteer unit tests
