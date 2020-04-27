@@ -129,8 +129,11 @@ class DOMWorld {
    */
   async $(selector) {
     const document = await this._document();
-    const value = await document.$(selector);
-    return value;
+    if (selector.startsWith('xpath:')) {
+      const handles = await document.$x(selector);
+      return handles && handles.length > 0 ? handles[0] : null;
+    }
+    return await document.$(selector);
   }
 
   /**
