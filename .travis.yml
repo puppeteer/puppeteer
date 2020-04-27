@@ -42,7 +42,7 @@ jobs:
     - node_js: "10.19.0"
       name: 'Extra tests: Linux/Chromium'
       env:
-        -CHROMIUM=true
+        - CHROMIUM=true
       script:
         - npm run test-install
         - npm run lint
