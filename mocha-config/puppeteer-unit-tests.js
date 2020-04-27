@@ -14,18 +14,11 @@
  * limitations under the License.
  */
 
-const os = require('os');
 const base = require('./base');
-
-const longerTimeoutRequired = process.env.PUPPETEER_PRODUCT === 'firefox' || os.platform() === 'win32';
-
-const timeout = longerTimeoutRequired ? 25 * 1000 : 10 * 1000;
-
-console.log('Mocha config: Timeout set to', timeout / 1000, 'seconds');
 
 module.exports = {
   ...base,
   file: ['./test/mocha-utils.js'],
   spec: 'test/*.spec.js',
-  timeout,
+  timeout: 25 * 1000,
 };
