@@ -4,6 +4,7 @@ services: xvfb
 jobs:
   include:
 
+    # Runs unit tests on OSX + Chromium
     - os: "osx"
       node_js: "10.19.0"
       env:
@@ -15,6 +16,7 @@ jobs:
         - npm run tsc
         - npm run unit
 
+    # Runs unit tests on Windows + Chromium
     - os: "windows"
       node_js: "10.19.0"
       env:
@@ -26,6 +28,7 @@ jobs:
         - npm run tsc
         - travis_retry npm run unit
 
+    # Runs unit tests on Linux + Chromium
     - node_js: "10.19.0"
       env:
         - CHROMIUM=true
@@ -33,7 +36,19 @@ jobs:
         - PUPPETEER_PRODUCT=firefox npm install
       script:
         - npm run test-install
-        - travis/chromium.sh
+        - npm run coverage
+
+    # This bot runs all the extra checks that aren't the main Puppeteer unit tests
+    - node_js: "10.19.0"
+      env:
+        -CHROMIUM=true
+      script:
+        - npm run test-install
+        - npm run lint
+        - npm run test-doclint
+        - npm run test-types
+
+    # Runs unit tests on Linux + Firefox
     - node_js: "10.19.0"
       env:
         - FIREFOX=true
