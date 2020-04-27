@@ -205,7 +205,7 @@ class DOMWorld {
 
   /**
    * @param {string} html
-   * @param {!{timeout?: number, waitUntil?: string|!Array<string>}=} options
+   * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
    */
   async setContent(html, options = {}) {
     const {
