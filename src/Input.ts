@@ -153,7 +153,7 @@ export class Keyboard {
 }
 
 type MouseButton = 'none' | 'left' | 'right' | 'middle';
-type MouseButtonInput = Exclude<MouseButton, 'none'>;
+export type MouseButtonInput = Exclude<MouseButton, 'none'>;
 
 interface MouseOptions {
   button?: MouseButtonInput;

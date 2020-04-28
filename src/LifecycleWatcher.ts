@@ -18,7 +18,7 @@ import {helper, assert, PuppeteerEventListener} from './helper';
 import {Events} from './Events';
 import {TimeoutError} from './Errors';
 
-type PuppeteerLifeCycleEvent = 'load' | 'domcontentloaded' | 'networkidle0' | 'networkidle2';
+export type PuppeteerLifeCycleEvent = 'load' | 'domcontentloaded' | 'networkidle0' | 'networkidle2';
 type ProtocolLifeCycleEvent = 'load' | 'DOMContentLoaded' | 'networkIdle' | 'networkAlmostIdle';
 
 const puppeteerToProtocolLifecycle = new Map<PuppeteerLifeCycleEvent, ProtocolLifeCycleEvent>([
