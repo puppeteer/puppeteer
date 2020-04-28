@@ -26,6 +26,10 @@ export function registerCustomQueryFunction(name: string, queryFunction: Functio
   if (_customQueryFunctions.get(name))
     throw new Error(`A custom query function named "${name}" already exists`);
 
+  const isValidName = /^[a-zA-Z]+$/.test(name);
+  if (!isValidName)
+    throw new Error(`Custom query function names may only contain [a-zA-Z]`);
+
   _customQueryFunctions.set(name, queryFunction as QueryFunction);
 }
 

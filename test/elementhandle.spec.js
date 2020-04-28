@@ -268,6 +268,14 @@ describe('ElementHandle specs', function() {
         expect(error).toStrictEqual(new Error('$ query set to use "get-by-id", but no query function of that name was found'));
       }
     });
+    it('should throw with invalid query names', () => {
+      try {
+        puppeteer.registerCustomQueryFunction('1/2/3', (element, selector) => {});
+        expect.fail('Custom query function name was invalid - throw expected');
+      } catch (error) {
+        expect(error).toStrictEqual(new Error('Custom query function names may only contain [a-zA-Z]'));
+      }
+    });
     it('should work for multiple elements', async() => {
       const {page, puppeteer} = getTestState();
       await page.setContent('<div id="not-foo"></div><div class="foo">Foo1</div><div class="foo baz">Foo2</div>');
