@@ -120,7 +120,10 @@ module.exports = {
                 "@typescript-eslint/no-empty-function": 0,
                 "@typescript-eslint/no-use-before-define": 0,
                 // We know it's bad and use it very sparingly but it's needed :(
-                "@typescript-eslint/ban-ts-ignore": 0
+                "@typescript-eslint/ban-ts-ignore": 0,
+                "@typescript-eslint/array-type": [2, {
+                    "default": "array-simple"
+                }]
             }
         }
     ]

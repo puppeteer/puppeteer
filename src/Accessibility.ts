@@ -48,7 +48,7 @@ interface SerializedAXNode {
   haspopup?: string;
   invalid?: string;
   orientation?: string;
-  children?: Array<SerializedAXNode>;
+  children?: SerializedAXNode[];
 }
 
 export class Accessibility {
