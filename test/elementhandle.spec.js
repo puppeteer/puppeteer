@@ -264,9 +264,28 @@ describe('ElementHandle specs', function() {
       try {
         await page.$('get-by-id/foo');
         expect.fail('Custom query function not set - throw expected');
-      } catch (e) {
-        expect(e).toStrictEqual(new Error('$ query set to use "get-by-id", but no query function of that name was found'));
+      } catch (error) {
+        expect(error).toStrictEqual(new Error('$ query set to use "get-by-id", but no query function of that name was found'));
       }
+    });
+    it('should work for multiple elements', async() => {
+      const {page, puppeteer} = getTestState();
+      await page.setContent('<div id="not-foo"></div><div class="foo">Foo1</div><div class="foo baz">Foo2</div>');
+      puppeteer.registerCustomQueryFunction('get-by-class', (element, selector) => document.querySelectorAll(`.${selector}`));
+      const elements = await page.$$('get-by-class/foo');
+      const classNames = await Promise.all(elements.map(async element => await page.evaluate(element => element.className, element)));
+      puppeteer.unregisterCustomQueryFunction('get-by-class');
+
+      expect(classNames).toStrictEqual(['foo', 'foo baz']);
+    });
+    it('should eval correctly', async() => {
+      const {page, puppeteer} = getTestState();
+      await page.setContent('<div id="not-foo"></div><div class="foo">Foo1</div><div class="foo baz">Foo2</div>');
+      puppeteer.registerCustomQueryFunction('get-by-class', (element, selector) => document.querySelectorAll(`.${selector}`));
+      const elements = await page.$$eval('get-by-class/foo', divs => divs.length);
+      puppeteer.unregisterCustomQueryFunction('get-by-class');
+
+      expect(elements).toBe(2);
     });
   });
 });

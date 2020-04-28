@@ -429,10 +429,19 @@ export class ElementHandle extends JSHandle {
     return imageData;
   }
 
+  _getQueryFunctionNameAndSelector(originalSelector: string): {name: string; updatedSelector: string} {
+    const index = originalSelector.indexOf(SEARCH_SEPARATOR);
+    const name = originalSelector.slice(0, index);
+    const updatedSelector = originalSelector.slice(index + SEARCH_SEPARATOR.length);
+    return {
+      name, updatedSelector
+    };
+  }
+
   async $(selector: string): Promise<ElementHandle | null> {
     let handler = (element: Element, selector: string): ElementHandle => element.querySelector(selector) as unknown as ElementHandle;
     if (selector.indexOf(SEARCH_SEPARATOR) !== -1) {
-      const [name, updatedSelector] = selector.split(SEARCH_SEPARATOR);
+      const {name, updatedSelector} = this._getQueryFunctionNameAndSelector(selector);
       const queryFunction = customQueryFunctions().get(name);
       if (!queryFunction)
         throw new Error(`$ query set to use "${name}", but no query function of that name was found`);
@@ -458,7 +467,7 @@ export class ElementHandle extends JSHandle {
   async $$(selector: string): Promise<ElementHandle[]> {
     let handler = (element: Element, selector: string): ElementHandle[] => element.querySelectorAll(selector) as unknown as ElementHandle[];
     if (selector.indexOf(SEARCH_SEPARATOR) !== -1) {
-      const [name, updatedSelector] = selector.split(SEARCH_SEPARATOR);
+      const {name, updatedSelector} = this._getQueryFunctionNameAndSelector(selector);
       const queryFunction = customQueryFunctions().get(name);
       if (!queryFunction)
         throw new Error(`$$ query set to use "${name}", but no query function of that name was found`);
@@ -489,10 +498,18 @@ export class ElementHandle extends JSHandle {
   }
 
   async $$eval<ReturnType extends any>(selector: string, pageFunction: Function | string, ...args: unknown[]): Promise<ReturnType> {
-    const arrayHandle = await this.evaluateHandle(
-        (element, selector) => Array.from(element.querySelectorAll(selector)),
-        selector
-    );
+    let handler = (element: Element, selector: string): JSHandle => Array.from(element.querySelectorAll(selector)) as unknown as JSHandle;
+    if (selector.indexOf(SEARCH_SEPARATOR) !== -1) {
+      const {name, updatedSelector} = this._getQueryFunctionNameAndSelector(selector);
+      const queryFunction = customQueryFunctions().get(name);
+      if (!queryFunction)
+        throw new Error(`$$ query set to use "${name}", but no query function of that name was found`);
+
+      handler = queryFunction as typeof handler;
+      selector = updatedSelector;
+    }
+
+    const arrayHandle = await this.evaluateHandle(handler, selector);
 
     const result = await arrayHandle.evaluate<ReturnType>(pageFunction, ...args);
     await arrayHandle.dispose();
