@@ -1,7 +1,8 @@
 // @ts-check
 const path = require('path');
 const puppeteer = require('../..');
-module.exports = puppeteer.launch({
+
+const fetchAndGenerateProtocolDefinitions = () => puppeteer.launch({
   pipe: false,
   executablePath: process.env.BINARY,
 }).then(async browser => {
@@ -72,11 +73,46 @@ declare global {
 
 export default Protocol;
 `;
-  const outputPath = path.join(__dirname, '..', '..', 'src', 'protocol.d.ts');
-  require('fs').writeFileSync(outputPath, output);
-  console.log(`Wrote protocol.d.ts for ${version} to ${path.relative(process.cwd(), outputPath)}`);
-  console.log(`You should commit the changes.`);
+
+  return {output, version};
 });
+
+const protocolOutputPath = path.join(__dirname, '..', '..', 'src', 'protocol.d.ts');
+const relativeProtocolOutputPath = path.relative(process.cwd(), protocolOutputPath);
+
+const writeOutputToDisk = ({output, version}) => {
+  require('fs').writeFileSync(protocolOutputPath, output);
+  console.log(`Wrote protocol.d.ts for ${version} to ${relativeProtocolOutputPath}`);
+  console.log(`You should commit the changes.`);
+};
+
+const cli = async() => {
+  const scriptToRun = process.argv[2];
+
+  if (scriptToRun === 'update') {
+    writeOutputToDisk(await fetchAndGenerateProtocolDefinitions());
+  } else if (scriptToRun === 'compare') {
+    const {output} = await fetchAndGenerateProtocolDefinitions();
+    const outputOnDisk = require('fs').readFileSync(protocolOutputPath, {encoding: 'utf8'});
+    if (output === outputOnDisk) {
+      console.log(`Success: ${relativeProtocolOutputPath} is up to date.`);
+    } else {
+      console.log(`Error: ${relativeProtocolOutputPath} is out of date.`);
+      console.log('You should run `npm run update-protocol-d-ts` and commit the changes.');
+      process.exit(1);
+    }
+
+  } else {
+    console.log(`Unknown protocol script ${scriptToRun}.`);
+    console.log(`Valid scripts are:
+    - update: fetch and update ${relativeProtocolOutputPath}
+    - compare: check ${relativeProtocolOutputPath} is up to date with the latest CDP.
+    `);
+    process.exit(1);
+  }
+};
+
+cli();
 
 /**
  * @typedef {Object} Property
