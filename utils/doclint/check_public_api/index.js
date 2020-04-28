@@ -335,6 +335,10 @@ function compareDocumentations(actual, expected) {
         actualName: '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array',
         expectedName: '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleEvent>'
       }],
+      ['Method BrowserContext.overridePermissions() permissions', {
+        actualName: 'Array<string>',
+        expectedName: 'Array<PermissionType>'
+      }],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);

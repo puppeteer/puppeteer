@@ -64,7 +64,7 @@ describeChromeOnly('OOPIF', function() {
 
 
 /**
- * @param {!Puppeteer.BrowserContext} context
+ * @param {!BrowserContext} context
  */
 function oopifs(context) {
   return context.targets().filter(target => target._targetInfo.type === 'iframe');

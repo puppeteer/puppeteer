@@ -72,7 +72,7 @@ export class Connection extends EventEmitter {
     return this._url;
   }
 
-  send<ReturnType extends {}>(method: string, params = {}): Promise<ReturnType> {
+  send<T extends keyof Protocol.CommandParameters>(method: T, params?: Protocol.CommandParameters[T]): Promise<Protocol.CommandReturnValues[T]> {
     const id = this._rawSend({method, params});
     return new Promise((resolve, reject) => {
       this._callbacks.set(id, {resolve, reject, error: new Error(), method});
@@ -147,7 +147,7 @@ export class Connection extends EventEmitter {
    * @return {!Promise<!CDPSession>}
    */
   async createSession(targetInfo: Protocol.Target.TargetInfo): Promise<CDPSession> {
-    const {sessionId} = await this.send<Protocol.Target.attachedToTargetPayload>('Target.attachToTarget', {targetId: targetInfo.targetId, flatten: true});
+    const {sessionId} = await this.send('Target.attachToTarget', {targetId: targetInfo.targetId, flatten: true});
     return this._sessions.get(sessionId);
   }
 }

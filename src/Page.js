@@ -31,6 +31,9 @@ const {Coverage} = require('./Coverage');
 const {Worker: PuppeteerWorker} = require('./Worker');
 // Import used as typedef
 // eslint-disable-next-line no-unused-vars
+const {Browser, BrowserContext} = require('./Browser');
+// Import used as typedef
+// eslint-disable-next-line no-unused-vars
 const {createJSHandle, JSHandle, ElementHandle} = require('./JSHandle');
 const {Accessibility} = require('./Accessibility');
 const {TimeoutSettings} = require('./TimeoutSettings');
@@ -204,14 +207,14 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @return {!Puppeteer.Browser}
+   * @return {!Browser}
    */
   browser() {
     return this._target.browser();
   }
 
   /**
-   * @return {!Puppeteer.BrowserContext}
+   * @return {!BrowserContext}
    */
   browserContext() {
     return this._target.browserContext();

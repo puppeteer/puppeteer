@@ -19,7 +19,7 @@
  * to make this into TaskQueue<T> and let the caller tell us what types
  * the promise in the queue should return.
  */
-class TaskQueue {
+export class TaskQueue {
   _chain: Promise<void | any>;
 
   constructor() {
@@ -32,5 +32,3 @@ class TaskQueue {
     return result;
   }
 }
-
-export = {TaskQueue};

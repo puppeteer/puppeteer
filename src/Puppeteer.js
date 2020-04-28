@@ -17,6 +17,9 @@ const Launcher = require('./Launcher');
 const {BrowserFetcher} = require('./BrowserFetcher');
 const Errors = require('./Errors');
 const DeviceDescriptors = require('./DeviceDescriptors');
+// Import used as typedef
+// eslint-disable-next-line no-unused-vars
+const {Browser} = require('./Browser');
 
 module.exports = class {
   /**
@@ -35,7 +38,7 @@ module.exports = class {
 
   /**
    * @param {!(Launcher.LaunchOptions & Launcher.ChromeArgOptions & Launcher.BrowserOptions & {product?: string, extraPrefsFirefox?: !object})=} options
-   * @return {!Promise<!Puppeteer.Browser>}
+   * @return {!Promise<!Browser>}
    */
   launch(options = {}) {
     if (options.product)
@@ -45,7 +48,7 @@ module.exports = class {
 
   /**
    * @param {!(Launcher.BrowserOptions & {browserWSEndpoint?: string, browserURL?: string, transport?: !Puppeteer.ConnectionTransport}) & {product?: string}=} options
-   * @return {!Promise<!Puppeteer.Browser>}
+   * @return {!Promise<!Browser>}
    */
   connect(options) {
     if (options.product)
