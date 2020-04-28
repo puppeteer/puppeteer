@@ -16,7 +16,7 @@
 
 const DEFAULT_TIMEOUT = 30000;
 
-class TimeoutSettings {
+export class TimeoutSettings {
   _defaultTimeout: number | null;
   _defaultNavigationTimeout: number | null;
 
@@ -50,5 +50,3 @@ class TimeoutSettings {
     return DEFAULT_TIMEOUT;
   }
 }
-
-export = {TimeoutSettings};
