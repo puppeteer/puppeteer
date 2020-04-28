@@ -77,7 +77,7 @@ describe('input tests', function() {
       const {page, puppeteer} = getTestState();
 
       let error = null;
-      await page.waitForFileChooser({timeout: 1}).catch(e => error = e);
+      await page.waitForFileChooser({timeout: 1}).catch(error_ => error = error_);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should respect default timeout when there is no custom timeout', async() => {
@@ -85,7 +85,7 @@ describe('input tests', function() {
 
       page.setDefaultTimeout(1);
       let error = null;
-      await page.waitForFileChooser().catch(e => error = e);
+      await page.waitForFileChooser().catch(error_ => error = error_);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should prioritize exact timeout over default timeout', async() => {
@@ -93,7 +93,7 @@ describe('input tests', function() {
 
       page.setDefaultTimeout(0);
       let error = null;
-      await page.waitForFileChooser({timeout: 1}).catch(e => error = e);
+      await page.waitForFileChooser({timeout: 1}).catch(error_ => error = error_);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should work with no timeout', async() => {
@@ -181,7 +181,7 @@ describe('input tests', function() {
       await chooser.accept([
         path.relative(process.cwd(), __dirname + '/assets/file-to-upload.txt'),
         path.relative(process.cwd(), __dirname + '/assets/pptr.png'),
-      ]).catch(e => error = e);
+      ]).catch(error_ => error = error_);
       expect(error).not.toBe(null);
     });
     it('should fail for non-existent files', async() => {
@@ -193,7 +193,7 @@ describe('input tests', function() {
         page.click('input'),
       ]);
       let error = null;
-      await chooser.accept(['file-does-not-exist.txt']).catch(e => error = e);
+      await chooser.accept(['file-does-not-exist.txt']).catch(error_ => error = error_);
       expect(error).not.toBe(null);
     });
     it('should fail when accepting file chooser twice', async() => {
@@ -206,7 +206,7 @@ describe('input tests', function() {
       ]);
       await fileChooser.accept([]);
       let error = null;
-      await fileChooser.accept([]).catch(e => error = e);
+      await fileChooser.accept([]).catch(error_ => error = error_);
       expect(error.message).toBe('Cannot accept FileChooser which is already handled!');
     });
   });
@@ -240,7 +240,7 @@ describe('input tests', function() {
       ]);
       await fileChooser.cancel();
       let error = null;
-      await fileChooser.cancel().catch(e => error = e);
+      await fileChooser.cancel().catch(error_ => error = error_);
       expect(error.message).toBe('Cannot cancel FileChooser which is already handled!');
     });
   });

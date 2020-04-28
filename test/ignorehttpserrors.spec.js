@@ -92,7 +92,7 @@ describeFailsFirefox('ignoreHTTPSErrors', function() {
     const {httpsServer} = getTestState();
 
     let error = null;
-    const response = await page.goto(httpsServer.EMPTY_PAGE).catch(e => error = e);
+    const response = await page.goto(httpsServer.EMPTY_PAGE).catch(error_ => error = error_);
     expect(error).toBe(null);
     expect(response.ok()).toBe(true);
   });

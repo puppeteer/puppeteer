@@ -257,7 +257,7 @@ describe('Screenshots', function() {
 
       await page.setContent('<div style="width: 50px; height: 0"></div>');
       const div = await page.$('div');
-      const error = await div.screenshot().catch(e => e);
+      const error = await div.screenshot().catch(error_ => error_);
       expect(error.message).toBe('Node has 0 height.');
     });
     itFailsFirefox('should work for an element with fractional dimensions', async() => {

@@ -26,7 +26,7 @@ describe('BrowserContext', function() {
     const defaultContext = browser.browserContexts()[0];
     expect(defaultContext.isIncognito()).toBe(false);
     let error = null;
-    await defaultContext.close().catch(e => error = e);
+    await defaultContext.close().catch(error_ => error = error_);
     expect(browser.defaultBrowserContext()).toBe(defaultContext);
     expect(error.message).toContain('cannot be closed');
   });
@@ -104,7 +104,7 @@ describe('BrowserContext', function() {
     const {browser, server, puppeteer} = getTestState();
 
     const context = await browser.createIncognitoBrowserContext();
-    const error = await context.waitForTarget(target => target.url() === server.EMPTY_PAGE, {timeout: 1}).catch(e => e);
+    const error = await context.waitForTarget(target => target.url() === server.EMPTY_PAGE, {timeout: 1}).catch(error_ => error_);
     expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     await context.close();
   });

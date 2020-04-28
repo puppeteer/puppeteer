@@ -179,9 +179,9 @@ class Page extends EventEmitter {
     let callback;
     const promise = new Promise(x => callback = x);
     this._fileChooserInterceptors.add(callback);
-    return helper.waitWithTimeout(promise, 'waiting for file chooser', timeout).catch(e => {
+    return helper.waitWithTimeout(promise, 'waiting for file chooser', timeout).catch(error => {
       this._fileChooserInterceptors.delete(callback);
-      throw e;
+      throw error;
     });
   }
 
@@ -851,10 +851,10 @@ class Page extends EventEmitter {
   async emulateTimezone(timezoneId) {
     try {
       await this._client.send('Emulation.setTimezoneOverride', {timezoneId: timezoneId || ''});
-    } catch (exception) {
-      if (exception.message.includes('Invalid timezone'))
+    } catch (error) {
+      if (error.message.includes('Invalid timezone'))
         throw new Error(`Invalid timezone ID: ${timezoneId}`);
-      throw exception;
+      throw error;
     }
   }
 

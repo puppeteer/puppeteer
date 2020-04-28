@@ -50,7 +50,7 @@ describe('JSHandle', function() {
       await page.evaluateHandle(
           opts => opts.elem.querySelector('p'),
           {elem: aHandle}
-      ).catch(e => error = e);
+      ).catch(error_ => error = error_);
       expect(error.message).toContain('Are you passing a nested JSHandle?');
     });
     it('should accept object handle to unserializable value', async() => {
@@ -113,7 +113,7 @@ describe('JSHandle', function() {
 
       const windowHandle = await page.evaluateHandle('window');
       let error = null;
-      await windowHandle.jsonValue().catch(e => error = e);
+      await windowHandle.jsonValue().catch(error_ => error = error_);
       if (isChrome)
         expect(error.message).toContain('Object reference chain is too long');
       else

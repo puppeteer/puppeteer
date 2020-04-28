@@ -69,7 +69,7 @@ describe('Page.click', function() {
     await Promise.all([
       newPage.close(),
       newPage.mouse.click(1, 2),
-    ]).catch(e => {});
+    ]).catch(error => {});
   });
   it('should click the button after navigation ', async() => {
     const {page, server} = getTestState();
@@ -197,7 +197,7 @@ describe('Page.click', function() {
 
     await page.goto(server.PREFIX + '/input/button.html');
     let error = null;
-    await page.click('button.does-not-exist').catch(e => error = e);
+    await page.click('button.does-not-exist').catch(error_ => error = error_);
     expect(error.message).toBe('No node found for selector: button.does-not-exist');
   });
   // @see https://github.com/puppeteer/puppeteer/issues/161

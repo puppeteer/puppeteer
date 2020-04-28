@@ -148,7 +148,7 @@ describe('Emulation', () => {
       const {page} = getTestState();
 
       let error = null;
-      await page.emulateMedia('bad').catch(e => error = e);
+      await page.emulateMedia('bad').catch(error_ => error = error_);
       expect(error.message).toBe('Unsupported media type: bad');
     });
   });
@@ -173,7 +173,7 @@ describe('Emulation', () => {
       const {page} = getTestState();
 
       let error = null;
-      await page.emulateMediaType('bad').catch(e => error = e);
+      await page.emulateMediaType('bad').catch(error_ => error = error_);
       expect(error.message).toBe('Unsupported media type: bad');
     });
   });
@@ -213,7 +213,7 @@ describe('Emulation', () => {
       const {page} = getTestState();
 
       let error = null;
-      await page.emulateMediaFeatures([{name: 'bad', value: ''}]).catch(e => error = e);
+      await page.emulateMediaFeatures([{name: 'bad', value: ''}]).catch(error_ => error = error_);
       expect(error.message).toBe('Unsupported media feature: bad');
     });
   });
@@ -242,9 +242,9 @@ describe('Emulation', () => {
       const {page} = getTestState();
 
       let error = null;
-      await page.emulateTimezone('Foo/Bar').catch(e => error = e);
+      await page.emulateTimezone('Foo/Bar').catch(error_ => error = error_);
       expect(error.message).toBe('Invalid timezone ID: Foo/Bar');
-      await page.emulateTimezone('Baz/Qux').catch(e => error = e);
+      await page.emulateTimezone('Baz/Qux').catch(error_ => error = error_);
       expect(error.message).toBe('Invalid timezone ID: Baz/Qux');
     });
   });

@@ -46,7 +46,7 @@ describe('querySelector', function() {
       const {page} = getTestState();
 
       let error = null;
-      await page.$eval('section', e => e.id).catch(e => error = e);
+      await page.$eval('section', e => e.id).catch(error_ => error = error_);
       expect(error.message).toContain('failed to find element matching selector "section"');
     });
   });

@@ -105,9 +105,9 @@ class JSCoverage {
       const response = await this._client.send('Debugger.getScriptSource', {scriptId: event.scriptId});
       this._scriptURLs.set(event.scriptId, event.url);
       this._scriptSources.set(event.scriptId, response.scriptSource);
-    } catch (e) {
+    } catch (error) {
       // This might happen if the page has already navigated away.
-      debugError(e);
+      debugError(error);
     }
   }
 
@@ -196,9 +196,9 @@ class CSSCoverage {
       const response = await this._client.send('CSS.getStyleSheetText', {styleSheetId: header.styleSheetId});
       this._stylesheetURLs.set(header.styleSheetId, header.sourceURL);
       this._stylesheetSources.set(header.styleSheetId, response.text);
-    } catch (e) {
+    } catch (error) {
       // This might happen if the page has already navigated away.
-      debugError(e);
+      debugError(error);
     }
   }
 

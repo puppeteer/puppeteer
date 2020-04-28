@@ -579,8 +579,8 @@ class WaitTask {
     let error = null;
     try {
       success = await (await this._domWorld.executionContext()).evaluateHandle(waitForPredicatePageFunction, this._predicateBody, this._polling, this._timeout, ...this._args);
-    } catch (e) {
-      error = e;
+    } catch (error_) {
+      error = error_;
     }
 
     if (this._terminated || runCount !== this._runCount) {
@@ -592,7 +592,7 @@ class WaitTask {
     // Ignore timeouts in pageScript - we track timeouts ourselves.
     // If the frame's execution context has already changed, `frame.evaluate` will
     // throw an error - ignore this predicate run altogether.
-    if (!error && await this._domWorld.evaluate(s => !s, success).catch(e => true)) {
+    if (!error && await this._domWorld.evaluate(s => !s, success).catch(error_ => true)) {
       await success.dispose();
       return;
     }

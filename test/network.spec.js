@@ -211,7 +211,7 @@ describe('network', function() {
       const redirected = redirectChain[0].response();
       expect(redirected.status()).toBe(302);
       let error = null;
-      await redirected.text().catch(e => error = e);
+      await redirected.text().catch(error_ => error = error_);
       expect(error.message).toContain('Response body is unavailable for redirect responses');
     });
     it('should wait until response completes', async() => {
@@ -458,8 +458,8 @@ describe('network', function() {
       let error = null;
       try {
         await page.setExtraHTTPHeaders({'foo': 1});
-      } catch (e) {
-        error = e;
+      } catch (error_) {
+        error = error_;
       }
       expect(error.message).toBe('Expected value of header "foo" to be String, but "number" is found.');
     });

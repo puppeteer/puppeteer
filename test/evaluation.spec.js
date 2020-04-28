@@ -115,7 +115,7 @@ describe('Evaluation specs', function() {
       await page.evaluate(() => {
         location.reload();
         return new Promise(() => {});
-      }).catch(e => error = e);
+      }).catch(error_ => error = error_);
       expect(error.message).toContain('Protocol error');
     });
     it('should await promise', async() => {
@@ -150,7 +150,7 @@ describe('Evaluation specs', function() {
       const {page} = getTestState();
 
       let error = null;
-      await page.evaluate(() => not_existing_object.property).catch(e => error = e);
+      await page.evaluate(() => not_existing_object.property).catch(error_ => error = error_);
       expect(error).toBeTruthy();
       expect(error.message).toContain('not_existing_object');
     });
@@ -158,7 +158,7 @@ describe('Evaluation specs', function() {
       const {page} = getTestState();
 
       let error = null;
-      await page.evaluate(() => { throw 'qwerty'; }).catch(e => error = e);
+      await page.evaluate(() => { throw 'qwerty'; }).catch(error_ => error = error_);
       expect(error).toBeTruthy();
       expect(error.message).toContain('qwerty');
     });
@@ -166,7 +166,7 @@ describe('Evaluation specs', function() {
       const {page} = getTestState();
 
       let error = null;
-      await page.evaluate(() => { throw 100500; }).catch(e => error = e);
+      await page.evaluate(() => { throw 100500; }).catch(error_ => error = error_);
       expect(error).toBeTruthy();
       expect(error.message).toContain('100500');
     });
@@ -239,10 +239,10 @@ describe('Evaluation specs', function() {
       const {page} = getTestState();
 
       const windowHandle = await page.evaluateHandle(() => window);
-      const errorText = await windowHandle.jsonValue().catch(e => e.message);
+      const errorText = await windowHandle.jsonValue().catch(error_ => error_.message);
       const error = await page.evaluate(errorText => {
         throw new Error(errorText);
-      }, errorText).catch(e => e);
+      }, errorText).catch(error_ => error_);
       expect(error.message).toContain(errorText);
     });
     it('should accept a string', async() => {
@@ -279,7 +279,7 @@ describe('Evaluation specs', function() {
       expect(element).toBeTruthy();
       await element.dispose();
       let error = null;
-      await page.evaluate(e => e.textContent, element).catch(e => error = e);
+      await page.evaluate(e => e.textContent, element).catch(error_ => error = error_);
       expect(error.message).toContain('JSHandle is disposed');
     });
     itFailsFirefox('should throw if elementHandles are from other frames', async() => {
@@ -288,7 +288,7 @@ describe('Evaluation specs', function() {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const bodyHandle = await page.frames()[1].$('body');
       let error = null;
-      await page.evaluate(body => body.innerHTML, bodyHandle).catch(e => error = e);
+      await page.evaluate(body => body.innerHTML, bodyHandle).catch(error_ => error = error_);
       expect(error).toBeTruthy();
       expect(error.message).toContain('JSHandles can be evaluated only in the context they were created');
     });
@@ -311,7 +311,7 @@ describe('Evaluation specs', function() {
         page.waitForNavigation(),
         executionContext.evaluate(() => window.location.reload())
       ]);
-      const error = await executionContext.evaluate(() => null).catch(e => e);
+      const error = await executionContext.evaluate(() => null).catch(error_ => error_);
       expect(error.message).toContain('navigation');
     });
     itFailsFirefox('should not throw an error when evaluation does a navigation', async() => {
@@ -336,7 +336,7 @@ describe('Evaluation specs', function() {
       let error = null;
       await page.evaluate(() => new Promise(() => {
         throw new Error('Error in promise');
-      })).catch(e => error = e);
+      })).catch(error_ => error = error_);
       expect(error.message).toContain('Error in promise');
     });
   });
@@ -362,7 +362,7 @@ describe('Evaluation specs', function() {
       expect(await page.evaluate(() => window.injected)).toBe(123);
 
       // Make sure CSP works.
-      await page.addScriptTag({content: 'window.e = 10;'}).catch(e => void e);
+      await page.addScriptTag({content: 'window.e = 10;'}).catch(error => void error);
       expect(await page.evaluate(() => window.e)).toBe(undefined);
     });
   });

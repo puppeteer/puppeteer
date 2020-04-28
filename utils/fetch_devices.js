@@ -80,8 +80,8 @@ async function main(url) {
   let json = null;
   try {
     json = JSON.parse(text);
-  } catch (e) {
-    console.error(`FAILED: error parsing response - ${e.message}`);
+  } catch (error) {
+    console.error(`FAILED: error parsing response - ${error.message}`);
     return;
   }
   const devicePayloads = json.extensions.filter(extension => extension.type === 'emulated-device').map(extension => extension.device);

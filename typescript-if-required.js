@@ -37,8 +37,8 @@ const fileExists = async filePath => fsAccess(filePath).then(() => true).catch((
  * place.
  */
 async function compileTypeScript() {
-  return exec('npm run tsc').catch(err => {
-    console.error('Error running TypeScript', err);
+  return exec('npm run tsc').catch(error => {
+    console.error('Error running TypeScript', error);
     process.exit(1);
   });
 }

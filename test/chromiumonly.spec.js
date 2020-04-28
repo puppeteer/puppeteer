@@ -46,7 +46,7 @@ describeChromeOnly('Chromium-Specific Launcher tests', function() {
       const browserURL = 'http://127.0.0.1:21222';
 
       let error = null;
-      await puppeteer.connect({browserURL, browserWSEndpoint: originalBrowser.wsEndpoint()}).catch(e => error = e);
+      await puppeteer.connect({browserURL, browserWSEndpoint: originalBrowser.wsEndpoint()}).catch(error_ => error = error_);
       expect(error.message).toContain('Exactly one of browserWSEndpoint, browserURL or transport');
 
       originalBrowser.close();
@@ -60,7 +60,7 @@ describeChromeOnly('Chromium-Specific Launcher tests', function() {
       const browserURL = 'http://127.0.0.1:32333';
 
       let error = null;
-      await puppeteer.connect({browserURL}).catch(e => error = e);
+      await puppeteer.connect({browserURL}).catch(error_ => error = error_);
       expect(error.message).toContain('Failed to fetch browser webSocket url from');
       originalBrowser.close();
     });

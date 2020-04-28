@@ -102,7 +102,7 @@ describe('Launcher specs', function() {
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const remote = await puppeteer.connect({browserWSEndpoint: browser.wsEndpoint()});
         const page = await remote.newPage();
-        const navigationPromise = page.goto(server.PREFIX + '/one-style.html', {timeout: 60000}).catch(e => e);
+        const navigationPromise = page.goto(server.PREFIX + '/one-style.html', {timeout: 60000}).catch(error_ => error_);
         await server.waitForRequest('/one-style.css');
         remote.disconnect();
         const error = await navigationPromise;
@@ -116,7 +116,7 @@ describe('Launcher specs', function() {
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const remote = await puppeteer.connect({browserWSEndpoint: browser.wsEndpoint()});
         const page = await remote.newPage();
-        const watchdog = page.waitForSelector('div', {timeout: 60000}).catch(e => e);
+        const watchdog = page.waitForSelector('div', {timeout: 60000}).catch(error_ => error_);
         remote.disconnect();
         const error = await watchdog;
         expect(error.message).toContain('Protocol error');
@@ -131,8 +131,8 @@ describe('Launcher specs', function() {
         const remote = await puppeteer.connect({browserWSEndpoint: browser.wsEndpoint()});
         const newPage = await remote.newPage();
         const results = await Promise.all([
-          newPage.waitForRequest(server.EMPTY_PAGE).catch(e => e),
-          newPage.waitForResponse(server.EMPTY_PAGE).catch(e => e),
+          newPage.waitForRequest(server.EMPTY_PAGE).catch(error => error),
+          newPage.waitForResponse(server.EMPTY_PAGE).catch(error => error),
           browser.close()
         ]);
         for (let i = 0; i < 2; i++) {
@@ -149,7 +149,7 @@ describe('Launcher specs', function() {
         const browser = await puppeteer.launch(defaultBrowserOptions);
         const page = await browser.newPage();
         let error = null;
-        const neverResolves = page.evaluate(() => new Promise(r => {})).catch(e => error = e);
+        const neverResolves = page.evaluate(() => new Promise(r => {})).catch(error_ => error = error_);
         await browser.close();
         await neverResolves;
         expect(error.message).toContain('Protocol error');
@@ -159,7 +159,7 @@ describe('Launcher specs', function() {
 
         let waitError = null;
         const options = Object.assign({}, defaultBrowserOptions, {executablePath: 'random-invalid-path'});
-        await puppeteer.launch(options).catch(e => waitError = e);
+        await puppeteer.launch(options).catch(error => waitError = error);
         expect(waitError.message).toContain('Failed to launch');
       });
       it('userDataDir option', async() => {
@@ -174,7 +174,7 @@ describe('Launcher specs', function() {
         await browser.close();
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-        await rmAsync(userDataDir).catch(e => {});
+        await rmAsync(userDataDir).catch(error => {});
       });
       it('userDataDir argument', async() => {
         const {isChrome, puppeteer, defaultBrowserOptions} = getTestState();
@@ -198,7 +198,7 @@ describe('Launcher specs', function() {
         await browser.close();
         expect(fs.readdirSync(userDataDir).length).toBeGreaterThan(0);
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-        await rmAsync(userDataDir).catch(e => {});
+        await rmAsync(userDataDir).catch(error => {});
       });
       it('userDataDir option should restore state', async() => {
         const {server, puppeteer, defaultBrowserOptions} = getTestState();
@@ -217,7 +217,7 @@ describe('Launcher specs', function() {
         expect(await page2.evaluate(() => localStorage.hey)).toBe('hello');
         await browser2.close();
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-        await rmAsync(userDataDir).catch(e => {});
+        await rmAsync(userDataDir).catch(error => {});
       });
       // This mysteriously fails on Windows on AppVeyor. See https://github.com/puppeteer/puppeteer/issues/4111
       xit('userDataDir option should restore cookies', async() => {
@@ -237,7 +237,7 @@ describe('Launcher specs', function() {
         expect(await page2.evaluate(() => document.cookie)).toBe('doSomethingOnlyOnce=true');
         await browser2.close();
         // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-        await rmAsync(userDataDir).catch(e => {});
+        await rmAsync(userDataDir).catch(error => {});
       });
       it('should return the default arguments', async() => {
         const {isChrome, isFirefox, puppeteer} = getTestState();
@@ -429,7 +429,7 @@ describe('Launcher specs', function() {
         let error = null;
         const [serverRequest, response] = await Promise.all([
           httpsServer.waitForRequest('/empty.html'),
-          page.goto(httpsServer.EMPTY_PAGE).catch(e => error = e)
+          page.goto(httpsServer.EMPTY_PAGE).catch(error_ => error = error_)
         ]);
         expect(error).toBe(null);
         expect(response.ok()).toBe(true);

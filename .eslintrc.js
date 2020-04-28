@@ -9,7 +9,8 @@ module.exports = {
 
     "plugins": [
         "mocha",
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "unicorn"
     ],
 
     "rules": {
@@ -99,7 +100,10 @@ module.exports = {
         }],
 
         // ensure we don't have any it.only or describe.only in prod
-        "mocha/no-exclusive-tests": "error"
+        "mocha/no-exclusive-tests": "error",
+
+        // enforce the variable in a catch block is named error
+        "unicorn/catch-error-name": "error"
     },
     "overrides": [
         {

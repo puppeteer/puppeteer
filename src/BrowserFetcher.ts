@@ -429,7 +429,7 @@ function installDMG(dmgPath: string, folderPath: string): Promise<void> {
     });
   }
 
-  return new Promise<void>(mountAndCopy).catch(err => { console.error(err); }).finally(unmount);
+  return new Promise<void>(mountAndCopy).catch(error => { console.error(error); }).finally(unmount);
 }
 
 function httpRequest(url: string, method: string, response: (x: http.IncomingMessage) => void): http.ClientRequest {

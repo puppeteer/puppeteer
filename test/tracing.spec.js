@@ -64,7 +64,7 @@ describeChromeOnly('Tracing', function() {
     await page.tracing.start({path: outputFile});
     const newPage = await browser.newPage();
     let error = null;
-    await newPage.tracing.start({path: outputFile}).catch(e => error = e);
+    await newPage.tracing.start({path: outputFile}).catch(error_ => error = error_);
     await newPage.close();
     expect(error).toBeTruthy();
     await page.tracing.stop();

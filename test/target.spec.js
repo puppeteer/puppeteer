@@ -202,7 +202,7 @@ describe('Target', function() {
       let error = null;
       await browser.waitForTarget(target => target.url() === server.EMPTY_PAGE, {
         timeout: 1
-      }).catch(e => error = e);
+      }).catch(error_ => error = error_);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
   });
