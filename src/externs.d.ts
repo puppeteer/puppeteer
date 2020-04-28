@@ -1,7 +1,6 @@
 import {Target as RealTarget} from './Target.js';
 import {Page as RealPage} from './Page.js';
 import {Frame as RealFrame, FrameManager as RealFrameManager}  from './FrameManager.js';
-import {DOMWorld as RealDOMWorld}  from './DOMWorld.js';
 import { NetworkManager as RealNetworkManager, Request as RealRequest, Response as RealResponse } from './NetworkManager.js';
 import * as child_process from 'child_process';
 declare global {
@@ -10,7 +9,6 @@ declare global {
     export class Frame extends RealFrame {}
     export class FrameManager extends RealFrameManager {}
     export class NetworkManager extends RealNetworkManager {}
-    export class DOMWorld extends RealDOMWorld {}
     export class Page extends RealPage { }
     export class Response extends RealResponse { }
     export class Request extends RealRequest { }

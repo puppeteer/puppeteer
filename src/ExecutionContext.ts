@@ -17,16 +17,17 @@
 import {helper, assert} from './helper';
 import {createJSHandle, JSHandle, ElementHandle} from './JSHandle';
 import {CDPSession} from './Connection';
+import {DOMWorld} from './DOMWorld';
 
 export const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
 
 export class ExecutionContext {
   _client: CDPSession;
-  _world: Puppeteer.DOMWorld;
+  _world: DOMWorld;
   _contextId: number;
 
-  constructor(client: CDPSession, contextPayload: Protocol.Runtime.ExecutionContextDescription, world: Puppeteer.DOMWorld) {
+  constructor(client: CDPSession, contextPayload: Protocol.Runtime.ExecutionContextDescription, world: DOMWorld) {
     this._client = client;
     this._world = world;
     this._contextId = contextPayload.id;
