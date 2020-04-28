@@ -24,11 +24,14 @@ const {CDPSession} = require('./Connection');
 // understand that unfortunately.
 // eslint-disable-next-line no-unused-vars
 const {TaskQueue} = require('./TaskQueue');
+// Import used as typedef
+// eslint-disable-next-line no-unused-vars
+const {Browser, BrowserContext} = require('./Browser');
 
 class Target {
   /**
    * @param {!Protocol.Target.TargetInfo} targetInfo
-   * @param {!Puppeteer.BrowserContext} browserContext
+   * @param {!BrowserContext} browserContext
    * @param {!function():!Promise<!CDPSession>} sessionFactory
    * @param {boolean} ignoreHTTPSErrors
    * @param {?Puppeteer.Viewport} defaultViewport
@@ -115,14 +118,14 @@ class Target {
   }
 
   /**
-   * @return {!Puppeteer.Browser}
+   * @return {!Browser}
    */
   browser() {
     return this._browserContext.browser();
   }
 
   /**
-   * @return {!Puppeteer.BrowserContext}
+   * @return {!BrowserContext}
    */
   browserContext() {
     return this._browserContext;
