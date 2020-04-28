@@ -30,7 +30,7 @@ describe('Page', function() {
       const newPage = await context.newPage();
       let error = null;
       await Promise.all([
-        newPage.evaluate(() => new Promise(r => {})).catch(e => error = e),
+        newPage.evaluate(() => new Promise(r => {})).catch(error_ => error = error_),
         newPage.close(),
       ]);
       expect(error.message).toContain('Protocol error');
@@ -85,8 +85,8 @@ describe('Page', function() {
 
       const newPage = await context.newPage();
       const results = await Promise.all([
-        newPage.waitForRequest(server.EMPTY_PAGE).catch(e => e),
-        newPage.waitForResponse(server.EMPTY_PAGE).catch(e => e),
+        newPage.waitForRequest(server.EMPTY_PAGE).catch(error => error),
+        newPage.waitForResponse(server.EMPTY_PAGE).catch(error => error),
         newPage.close()
       ]);
       for (let i = 0; i < 2; i++) {
@@ -117,7 +117,7 @@ describe('Page', function() {
         res.end();
       });
       let error = null;
-      await page.goto(server.EMPTY_PAGE).catch(e => error = e);
+      await page.goto(server.EMPTY_PAGE).catch(error_ => error = error_);
       expect(error).not.toBe(null);
       expect(error.stack).toContain(__filename);
     });
@@ -129,7 +129,7 @@ describe('Page', function() {
 
       let error = null;
       page.on('error', err => error = err);
-      page.goto('chrome://crash').catch(e => {});
+      page.goto('chrome://crash').catch(error_ => {});
       await waitEvent(page, 'error');
       expect(error.message).toBe('Page crashed!');
     });
@@ -217,7 +217,7 @@ describe('Page', function() {
 
       await page.goto(server.EMPTY_PAGE);
       let error = null;
-      await context.overridePermissions(server.EMPTY_PAGE, ['foo']).catch(e => error = e);
+      await context.overridePermissions(server.EMPTY_PAGE, ['foo']).catch(error_ => error = error_);
       expect(error.message).toBe('Unknown permission: foo');
     });
     itFailsFirefox('should grant permission when listed', async() => {
@@ -301,8 +301,8 @@ describe('Page', function() {
       let error = null;
       try {
         await page.setGeolocation({longitude: 200, latitude: 10});
-      } catch (e) {
-        error = e;
+      } catch (error_) {
+        error = error_;
       }
       expect(error.message).toContain('Invalid longitude "200"');
     });
@@ -314,7 +314,7 @@ describe('Page', function() {
 
       await page.setOfflineMode(true);
       let error = null;
-      await page.goto(server.EMPTY_PAGE).catch(e => error = e);
+      await page.goto(server.EMPTY_PAGE).catch(error_ => error = error_);
       expect(error).toBeTruthy();
       await page.setOfflineMode(false);
       const response = await page.reload();
@@ -361,7 +361,7 @@ describe('Page', function() {
       const prototypeHandle = await page.evaluateHandle(() => HTMLBodyElement.prototype);
       await prototypeHandle.dispose();
       let error = null;
-      await page.queryObjects(prototypeHandle).catch(e => error = e);
+      await page.queryObjects(prototypeHandle).catch(error_ => error = error_);
       expect(error.message).toBe('Prototype JSHandle is disposed!');
     });
     it('should fail primitive values as prototypes', async() => {
@@ -369,7 +369,7 @@ describe('Page', function() {
 
       const prototypeHandle = await page.evaluateHandle(() => 42);
       let error = null;
-      await page.queryObjects(prototypeHandle).catch(e => error = e);
+      await page.queryObjects(prototypeHandle).catch(error_ => error = error_);
       expect(error.message).toBe('Prototype JSHandle must not be referencing primitive value');
     });
   });
@@ -435,7 +435,7 @@ describe('Page', function() {
       await page.goto('about:blank');
       const [message] = await Promise.all([
         waitEvent(page, 'console'),
-        page.evaluate(async url => fetch(url).catch(e => {}), server.EMPTY_PAGE)
+        page.evaluate(async url => fetch(url).catch(error => {}), server.EMPTY_PAGE)
       ]);
       expect(message.text()).toContain('Access-Control-Allow-Origin');
       if (isChrome)
@@ -582,7 +582,7 @@ describe('Page', function() {
       const {page, puppeteer} = getTestState();
 
       let error = null;
-      await page.waitForRequest(() => false, {timeout: 1}).catch(e => error = e);
+      await page.waitForRequest(() => false, {timeout: 1}).catch(error_ => error = error_);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should respect default timeout', async() => {
@@ -590,7 +590,7 @@ describe('Page', function() {
 
       let error = null;
       page.setDefaultTimeout(1);
-      await page.waitForRequest(() => false).catch(e => error = e);
+      await page.waitForRequest(() => false).catch(error_ => error = error_);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should work with no timeout', async() => {
@@ -628,7 +628,7 @@ describe('Page', function() {
       const {page, puppeteer} = getTestState();
 
       let error = null;
-      await page.waitForResponse(() => false, {timeout: 1}).catch(e => error = e);
+      await page.waitForResponse(() => false, {timeout: 1}).catch(error_ => error = error_);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should respect default timeout', async() => {
@@ -636,7 +636,7 @@ describe('Page', function() {
 
       let error = null;
       page.setDefaultTimeout(1);
-      await page.waitForResponse(() => false).catch(e => error = e);
+      await page.waitForResponse(() => false).catch(error_ => error = error_);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     itFailsFirefox('should work with predicate', async() => {
@@ -690,8 +690,8 @@ describe('Page', function() {
       const {message, stack} = await page.evaluate(async() => {
         try {
           await woof();
-        } catch (e) {
-          return {message: e.message, stack: e.stack};
+        } catch (error) {
+          return {message: error.message, stack: error.stack};
         }
       });
       expect(message).toBe('WOOF WOOF');
@@ -706,8 +706,8 @@ describe('Page', function() {
       const thrown = await page.evaluate(async() => {
         try {
           await woof();
-        } catch (e) {
-          return e;
+        } catch (error) {
+          return error;
         }
       });
       expect(thrown).toBe(null);
@@ -867,7 +867,7 @@ describe('Page', function() {
       // stall for image
       server.setRoute(imgPath, (req, res) => {});
       let error = null;
-      await page.setContent(`<img src="${server.PREFIX + imgPath}"></img>`, {timeout: 1}).catch(e => error = e);
+      await page.setContent(`<img src="${server.PREFIX + imgPath}"></img>`, {timeout: 1}).catch(error_ => error = error_);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should respect default navigation timeout', async() => {
@@ -878,7 +878,7 @@ describe('Page', function() {
       // stall for image
       server.setRoute(imgPath, (req, res) => {});
       let error = null;
-      await page.setContent(`<img src="${server.PREFIX + imgPath}"></img>`).catch(e => error = e);
+      await page.setContent(`<img src="${server.PREFIX + imgPath}"></img>`).catch(error_ => error = error_);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
     it('should await resources to load', async() => {
@@ -932,7 +932,7 @@ describe('Page', function() {
 
       // Make sure CSP prohibits addScriptTag.
       await page.goto(server.PREFIX + '/csp.html');
-      await page.addScriptTag({content: 'window.__injected = 42;'}).catch(e => void e);
+      await page.addScriptTag({content: 'window.__injected = 42;'}).catch(error => void error);
       expect(await page.evaluate(() => window.__injected)).toBe(undefined);
 
       // By-pass CSP and try one more time.
@@ -948,7 +948,7 @@ describe('Page', function() {
       // Make sure CSP prohibits addScriptTag.
       server.setCSP('/empty.html', 'default-src "self"');
       await page.goto(server.EMPTY_PAGE);
-      await page.addScriptTag({content: 'window.__injected = 42;'}).catch(e => void e);
+      await page.addScriptTag({content: 'window.__injected = 42;'}).catch(error => void error);
       expect(await page.evaluate(() => window.__injected)).toBe(undefined);
 
       // By-pass CSP and try one more time.
@@ -977,7 +977,7 @@ describe('Page', function() {
       {
         // Make sure CSP prohibits addScriptTag in an iframe.
         const frame = await utils.attachFrame(page, 'frame1', server.PREFIX + '/csp.html');
-        await frame.addScriptTag({content: 'window.__injected = 42;'}).catch(e => void e);
+        await frame.addScriptTag({content: 'window.__injected = 42;'}).catch(error => void error);
         expect(await frame.evaluate(() => window.__injected)).toBe(undefined);
       }
 
@@ -987,7 +987,7 @@ describe('Page', function() {
 
       {
         const frame = await utils.attachFrame(page, 'frame1', server.PREFIX + '/csp.html');
-        await frame.addScriptTag({content: 'window.__injected = 42;'}).catch(e => void e);
+        await frame.addScriptTag({content: 'window.__injected = 42;'}).catch(error => void error);
         expect(await frame.evaluate(() => window.__injected)).toBe(42);
       }
     });
@@ -1000,8 +1000,8 @@ describe('Page', function() {
       let error = null;
       try {
         await page.addScriptTag('/injectedfile.js');
-      } catch (e) {
-        error = e;
+      } catch (error_) {
+        error = error_;
       }
       expect(error.message).toBe('Provide an object with a `url`, `path` or `content` property');
     });
@@ -1048,8 +1048,8 @@ describe('Page', function() {
       let error = null;
       try {
         await page.addScriptTag({url: '/nonexistfile.js'});
-      } catch (e) {
-        error = e;
+      } catch (error_) {
+        error = error_;
       }
       expect(error.message).toBe('Loading script from /nonexistfile.js failed');
     });
@@ -1087,7 +1087,7 @@ describe('Page', function() {
 
       await page.goto(server.PREFIX + '/csp.html');
       let error = null;
-      await page.addScriptTag({content: 'window.__injected = 35;'}).catch(e => error = e);
+      await page.addScriptTag({content: 'window.__injected = 35;'}).catch(error_ => error = error_);
       expect(error).toBeTruthy();
     });
 
@@ -1096,7 +1096,7 @@ describe('Page', function() {
 
       await page.goto(server.PREFIX + '/csp.html');
       let error = null;
-      await page.addScriptTag({url: server.CROSS_PROCESS_PREFIX + '/injectedfile.js'}).catch(e => error = e);
+      await page.addScriptTag({url: server.CROSS_PROCESS_PREFIX + '/injectedfile.js'}).catch(error_ => error = error_);
       expect(error).toBeTruthy();
     });
   });
@@ -1108,8 +1108,8 @@ describe('Page', function() {
       let error = null;
       try {
         await page.addStyleTag('/injectedstyle.css');
-      } catch (e) {
-        error = e;
+      } catch (error_) {
+        error = error_;
       }
       expect(error.message).toBe('Provide an object with a `url`, `path` or `content` property');
     });
@@ -1130,8 +1130,8 @@ describe('Page', function() {
       let error = null;
       try {
         await page.addStyleTag({url: '/nonexistfile.js'});
-      } catch (e) {
-        error = e;
+      } catch (error_) {
+        error = error_;
       }
       expect(error.message).toBe('Loading style from /nonexistfile.js failed');
     });
@@ -1169,7 +1169,7 @@ describe('Page', function() {
 
       await page.goto(server.PREFIX + '/csp.html');
       let error = null;
-      await page.addStyleTag({content: 'body { background-color: green; }'}).catch(e => error = e);
+      await page.addStyleTag({content: 'body { background-color: green; }'}).catch(error_ => error = error_);
       expect(error).toBeTruthy();
     });
 
@@ -1178,7 +1178,7 @@ describe('Page', function() {
 
       await page.goto(server.PREFIX + '/csp.html');
       let error = null;
-      await page.addStyleTag({url: server.CROSS_PROCESS_PREFIX + '/injectedstyle.css'}).catch(e => error = e);
+      await page.addStyleTag({url: server.CROSS_PROCESS_PREFIX + '/injectedstyle.css'}).catch(error_ => error = error_);
       expect(error).toBeTruthy();
     });
   });
@@ -1200,7 +1200,7 @@ describe('Page', function() {
       await page.setJavaScriptEnabled(false);
       await page.goto('data:text/html, <script>var something = "forbidden"</script>');
       let error = null;
-      await page.evaluate('something').catch(e => error = e);
+      await page.evaluate('something').catch(error_ => error = error_);
       expect(error.message).toContain('something is not defined');
 
       await page.setJavaScriptEnabled(true);
@@ -1317,7 +1317,7 @@ describe('Page', function() {
 
       let error = null;
       await page.goto(server.PREFIX + '/input/select.html');
-      await page.select('body', '').catch(e => error = e);
+      await page.select('body', '').catch(error_ => error = error_);
       expect(error.message).toContain('Element is not a <select> element.');
     });
     it('should return [] on no matched values', async() => {
@@ -1373,8 +1373,8 @@ describe('Page', function() {
       let error = null;
       try {
         await page.select('select', 12);
-      } catch (e) {
-        error = e;
+      } catch (error_) {
+        error = error_;
       }
       expect(error.message).toContain('Values must be strings');
     });

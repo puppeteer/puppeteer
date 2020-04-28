@@ -202,7 +202,7 @@ describe('request interception', function() {
       });
       let failedRequest = null;
       page.on('requestfailed', request => failedRequest = request);
-      await page.goto(server.EMPTY_PAGE).catch(e => {});
+      await page.goto(server.EMPTY_PAGE).catch(error => {});
       expect(failedRequest).toBeTruthy();
       expect(failedRequest.failure().errorText).toBe('net::ERR_INTERNET_DISCONNECTED');
     });
@@ -226,7 +226,7 @@ describe('request interception', function() {
       await page.setRequestInterception(true);
       page.on('request', request => request.abort());
       let error = null;
-      await page.goto(server.EMPTY_PAGE).catch(e => error = e);
+      await page.goto(server.EMPTY_PAGE).catch(error_ => error = error_);
       expect(error).toBeTruthy();
       if (isChrome)
         expect(error.message).toContain('net::ERR_FAILED');
@@ -305,8 +305,8 @@ describe('request interception', function() {
       const result = await page.evaluate(async() => {
         try {
           await fetch('/non-existing.json');
-        } catch (e) {
-          return e.message;
+        } catch (error) {
+          return error.message;
         }
       });
       if (isChrome)
@@ -333,9 +333,9 @@ describe('request interception', function() {
         spinner = !spinner;
       });
       const results = await page.evaluate(() => Promise.all([
-        fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
-        fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
-        fetch('/zzz').then(response => response.text()).catch(e => 'FAILED'),
+        fetch('/zzz').then(response => response.text()).catch(error => 'FAILED'),
+        fetch('/zzz').then(response => response.text()).catch(error => 'FAILED'),
+        fetch('/zzz').then(response => response.text()).catch(error => 'FAILED'),
       ]));
       expect(results).toEqual(['11', 'FAILED', '22']);
     });
@@ -433,7 +433,7 @@ describe('request interception', function() {
       // Delete frame to cause request to be canceled.
       await page.$eval('iframe', frame => frame.remove());
       let error = null;
-      await request.continue().catch(e => error = e);
+      await request.continue().catch(error_ => error = error_);
       expect(error).toBe(null);
     });
     it('should throw if interception is not enabled', async() => {
@@ -443,8 +443,8 @@ describe('request interception', function() {
       page.on('request', async request => {
         try {
           await request.continue();
-        } catch (e) {
-          error = e;
+        } catch (error_) {
+          error = error_;
         }
       });
       await page.goto(server.EMPTY_PAGE);

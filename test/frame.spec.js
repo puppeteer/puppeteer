@@ -69,7 +69,7 @@ describe('Frame specs', function() {
       const frame1 = await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       await utils.detachFrame(page, 'frame1');
       let error = null;
-      await frame1.evaluate(() => 7 * 8).catch(e => error = e);
+      await frame1.evaluate(() => 7 * 8).catch(error_ => error = error_);
       expect(error.message).toContain('Execution Context is not available in detached frame');
     });
   });

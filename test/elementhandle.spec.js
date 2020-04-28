@@ -183,7 +183,7 @@ describe('ElementHandle specs', function() {
       await page.goto(server.PREFIX + '/input/button.html');
       const buttonTextNode = await page.evaluateHandle(() => document.querySelector('button').firstChild);
       let error = null;
-      await buttonTextNode.click().catch(err => error = err);
+      await buttonTextNode.click().catch(error_ => error = error_);
       expect(error.message).toBe('Node is not of type HTMLElement');
     });
     it('should throw for detached nodes', async() => {
@@ -193,7 +193,7 @@ describe('ElementHandle specs', function() {
       const button = await page.$('button');
       await page.evaluate(button => button.remove(), button);
       let error = null;
-      await button.click().catch(err => error = err);
+      await button.click().catch(error_ => error = error_);
       expect(error.message).toBe('Node is detached from document');
     });
     it('should throw for hidden nodes', async() => {
@@ -202,7 +202,7 @@ describe('ElementHandle specs', function() {
       await page.goto(server.PREFIX + '/input/button.html');
       const button = await page.$('button');
       await page.evaluate(button => button.style.display = 'none', button);
-      const error = await button.click().catch(err => err);
+      const error = await button.click().catch(error_ => error_);
       expect(error.message).toBe('Node is either not visible or not an HTMLElement');
     });
     it('should throw for recursively hidden nodes', async() => {
@@ -211,7 +211,7 @@ describe('ElementHandle specs', function() {
       await page.goto(server.PREFIX + '/input/button.html');
       const button = await page.$('button');
       await page.evaluate(button => button.parentElement.style.display = 'none', button);
-      const error = await button.click().catch(err => err);
+      const error = await button.click().catch(error_ => error_);
       expect(error.message).toBe('Node is either not visible or not an HTMLElement');
     });
     itFailsFirefox('should throw for <br> elements', async() => {
@@ -219,7 +219,7 @@ describe('ElementHandle specs', function() {
 
       await page.setContent('hello<br>goodbye');
       const br = await page.$('br');
-      const error = await br.click().catch(err => err);
+      const error = await br.click().catch(error_ => error_);
       expect(error.message).toBe('Node is either not visible or not an HTMLElement');
     });
   });

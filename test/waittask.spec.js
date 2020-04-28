@@ -51,7 +51,7 @@ describe('waittask specs', function() {
 
       await page.setContent(`<div>some text</div>`);
       let error = null;
-      await page.waitFor('/html/body/div').catch(e => error = e);
+      await page.waitFor('/html/body/div').catch(error_ => error = error_);
       expect(error).toBeTruthy();
     });
     it('should timeout', async() => {
@@ -82,7 +82,7 @@ describe('waittask specs', function() {
       const {page} = getTestState();
 
       let error = null;
-      await page.waitFor({foo: 'bar'}).catch(e => error = e);
+      await page.waitFor({foo: 'bar'}).catch(error_ => error = error_);
       expect(error.message).toContain('Unsupported target type');
     });
     it('should wait for predicate with arguments', async() => {
@@ -149,7 +149,7 @@ describe('waittask specs', function() {
       await page.goto(server.EMPTY_PAGE);
       let error = null;
       await Promise.all([
-        page.waitForFunction(() => window.__FOO === 'hit', {polling: 'raf'}).catch(e => error = e),
+        page.waitForFunction(() => window.__FOO === 'hit', {polling: 'raf'}).catch(error_ => error = error_),
         page.evaluate(() => window.__FOO = 'hit')
       ]);
       expect(error).toBe(null);
@@ -160,8 +160,8 @@ describe('waittask specs', function() {
       let error = null;
       try {
         await page.waitForFunction(() => !!document.body, {polling: 'unknown'});
-      } catch (e) {
-        error = e;
+      } catch (error_) {
+        error = error_;
       }
       expect(error).toBeTruthy();
       expect(error.message).toContain('polling');
@@ -172,8 +172,8 @@ describe('waittask specs', function() {
       let error = null;
       try {
         await page.waitForFunction(() => !!document.body, {polling: -10});
-      } catch (e) {
-        error = e;
+      } catch (error_) {
+        error = error_;
       }
       expect(error).toBeTruthy();
       expect(error.message).toContain('Cannot poll with non-positive interval');
@@ -203,7 +203,7 @@ describe('waittask specs', function() {
       const {page, puppeteer} = getTestState();
 
       let error = null;
-      await page.waitForFunction('false', {timeout: 10}).catch(e => error = e);
+      await page.waitForFunction('false', {timeout: 10}).catch(error_ => error = error_);
       expect(error).toBeTruthy();
       expect(error.message).toContain('waiting for function failed: timeout');
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
@@ -213,7 +213,7 @@ describe('waittask specs', function() {
 
       page.setDefaultTimeout(1);
       let error = null;
-      await page.waitForFunction('false').catch(e => error = e);
+      await page.waitForFunction('false').catch(error_ => error = error_);
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
       expect(error.message).toContain('waiting for function failed: timeout');
     });
@@ -334,7 +334,7 @@ describe('waittask specs', function() {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const frame = page.frames()[1];
       let waitError = null;
-      const waitPromise = frame.waitForSelector('.box').catch(e => waitError = e);
+      const waitPromise = frame.waitForSelector('.box').catch(error => waitError = error);
       await utils.detachFrame(page, 'frame1');
       await waitPromise;
       expect(waitError).toBeTruthy();
@@ -425,7 +425,7 @@ describe('waittask specs', function() {
       const {page, puppeteer} = getTestState();
 
       let error = null;
-      await page.waitForSelector('div', {timeout: 10}).catch(e => error = e);
+      await page.waitForSelector('div', {timeout: 10}).catch(error_ => error = error_);
       expect(error).toBeTruthy();
       expect(error.message).toContain('waiting for selector "div" failed: timeout');
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
@@ -435,7 +435,7 @@ describe('waittask specs', function() {
 
       await page.setContent(`<div></div>`);
       let error = null;
-      await page.waitForSelector('div', {hidden: true, timeout: 10}).catch(e => error = e);
+      await page.waitForSelector('div', {hidden: true, timeout: 10}).catch(error_ => error = error_);
       expect(error).toBeTruthy();
       expect(error.message).toContain('waiting for selector "div" to be hidden failed: timeout');
     });
@@ -461,7 +461,7 @@ describe('waittask specs', function() {
       const {page} = getTestState();
 
       let error;
-      await page.waitForSelector('.zombo', {timeout: 10}).catch(e => error = e);
+      await page.waitForSelector('.zombo', {timeout: 10}).catch(error_ => error = error_);
       expect(error.stack).toContain('waittask.spec.js');
     });
   });
@@ -480,7 +480,7 @@ describe('waittask specs', function() {
       const {page, puppeteer} = getTestState();
 
       let error = null;
-      await page.waitForXPath('//div', {timeout: 10}).catch(e => error = e);
+      await page.waitForXPath('//div', {timeout: 10}).catch(error_ => error = error_);
       expect(error).toBeTruthy();
       expect(error.message).toContain('waiting for XPath "//div" failed: timeout');
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
@@ -504,7 +504,7 @@ describe('waittask specs', function() {
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
       const frame = page.frames()[1];
       let waitError = null;
-      const waitPromise = frame.waitForXPath('//*[@class="box"]').catch(e => waitError = e);
+      const waitPromise = frame.waitForXPath('//*[@class="box"]').catch(error => waitError = error);
       await utils.detachFrame(page, 'frame1');
       await waitPromise;
       expect(waitError).toBeTruthy();

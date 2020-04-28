@@ -72,8 +72,8 @@ describeChromeOnly('Target.createCDPSession', function() {
     let error = null;
     try {
       await client.send('Runtime.evaluate', {expression: '3 + 1', returnByValue: true});
-    } catch (e) {
-      error = e;
+    } catch (error_) {
+      error = error_;
     }
     expect(error.message).toContain('Session closed.');
   });

@@ -233,13 +233,13 @@ describe('Keyboard', function() {
   it('should throw on unknown keys', async() => {
     const {page} = getTestState();
 
-    let error = await page.keyboard.press('NotARealKey').catch(e => e);
+    let error = await page.keyboard.press('NotARealKey').catch(error_ => error_);
     expect(error.message).toBe('Unknown key: "NotARealKey"');
 
-    error = await page.keyboard.press('ё').catch(e => e);
+    error = await page.keyboard.press('ё').catch(error_ => error_);
     expect(error && error.message).toBe('Unknown key: "ё"');
 
-    error = await page.keyboard.press('😊').catch(e => e);
+    error = await page.keyboard.press('😊').catch(error_ => error_);
     expect(error && error.message).toBe('Unknown key: "😊"');
   });
   itFailsFirefox('should type emoji', async() => {

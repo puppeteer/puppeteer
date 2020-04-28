@@ -98,7 +98,7 @@ class BrowserRunner {
         if (this._tempDirectory) {
           removeFolderAsync(this._tempDirectory)
               .then(() => fulfill())
-              .catch(err => console.error(err));
+              .catch(error => console.error(error));
         } else {
           fulfill();
         }
@@ -819,9 +819,9 @@ function getWSEndpoint(browserURL) {
   request.on('error', reject);
   request.end();
 
-  return promise.catch(e => {
-    e.message = `Failed to fetch browser webSocket url from ${endpointURL}: ` + e.message;
-    throw e;
+  return promise.catch(error => {
+    error.message = `Failed to fetch browser webSocket url from ${endpointURL}: ` + error.message;
+    throw error;
   });
 }
 

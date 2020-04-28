@@ -109,7 +109,7 @@ describeChromeOnly('headful tests', function() {
           const cookie = await headlessPage.evaluate(() => document.cookie);
           await headlessBrowser.close();
           // This might throw. See https://github.com/puppeteer/puppeteer/issues/2778
-          await rmAsync(userDataDir).catch(e => {});
+          await rmAsync(userDataDir).catch(error => {});
           expect(cookie).toBe('foo=true');
         });
     // TODO: Support OOOPIF. @see https://github.com/puppeteer/puppeteer/issues/2548

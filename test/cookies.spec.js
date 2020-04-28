@@ -270,8 +270,8 @@ describe('Cookie specs', () => {
       let error = null;
       try {
         await page.setCookie({name: 'example-cookie', value: 'best'});
-      } catch (e) {
-        error = e;
+      } catch (error_) {
+        error = error_;
       }
       expect(error.message).toContain('At least one of the url and domain needs to be specified');
     });
@@ -285,8 +285,8 @@ describe('Cookie specs', () => {
             {name: 'example-cookie', value: 'best'},
             {url: 'about:blank', name: 'example-cookie-blank', value: 'best'}
         );
-      } catch (e) {
-        error = e;
+      } catch (error_) {
+        error = error_;
       }
       expect(error.message).toEqual(
           `Blank page can not have cookie "example-cookie-blank"`
@@ -299,8 +299,8 @@ describe('Cookie specs', () => {
       await page.goto('data:,Hello%2C%20World!');
       try {
         await page.setCookie({name: 'example-cookie', value: 'best'});
-      } catch (e) {
-        error = e;
+      } catch (error_) {
+        error = error_;
       }
       expect(error.message).toContain('At least one of the url and domain needs to be specified');
     });

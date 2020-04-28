@@ -75,7 +75,7 @@ describe('navigation', function() {
         res.end();
       });
       let error = null;
-      await page.goto(server.EMPTY_PAGE).catch(e => error = e);
+      await page.goto(server.EMPTY_PAGE).catch(error_ => error = error_);
       expect(error).not.toBe(null);
       if (isChrome)
         expect(error.message).toContain('net::ERR_ABORTED');
@@ -114,7 +114,7 @@ describe('navigation', function() {
       const {page, isChrome} = getTestState();
 
       let error = null;
-      await page.goto('asdfasdf').catch(e => error = e);
+      await page.goto('asdfasdf').catch(error_ => error = error_);
       if (isChrome)
         expect(error.message).toContain('Cannot navigate to invalid URL');
       else
@@ -129,7 +129,7 @@ describe('navigation', function() {
       page.on('requestfinished', request => expect(request).toBeTruthy());
       page.on('requestfailed', request => expect(request).toBeTruthy());
       let error = null;
-      await page.goto(httpsServer.EMPTY_PAGE).catch(e => error = e);
+      await page.goto(httpsServer.EMPTY_PAGE).catch(error_ => error = error_);
       if (isChrome)
         expect(error.message).toContain('net::ERR_CERT_AUTHORITY_INVALID');
       else
@@ -141,7 +141,7 @@ describe('navigation', function() {
       server.setRedirect('/redirect/1.html', '/redirect/2.html');
       server.setRedirect('/redirect/2.html', '/empty.html');
       let error = null;
-      await page.goto(httpsServer.PREFIX + '/redirect/1.html').catch(e => error = e);
+      await page.goto(httpsServer.PREFIX + '/redirect/1.html').catch(error_ => error = error_);
       if (isChrome)
         expect(error.message).toContain('net::ERR_CERT_AUTHORITY_INVALID');
       else
@@ -151,14 +151,14 @@ describe('navigation', function() {
       const {page, server} = getTestState();
 
       let error = null;
-      await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle'}).catch(err => error = err);
+      await page.goto(server.EMPTY_PAGE, {waitUntil: 'networkidle'}).catch(error_ => error = error_);
       expect(error.message).toContain('"networkidle" option is no longer supported');
     });
     itFailsFirefox('should fail when main resources failed to load', async() => {
       const {page, isChrome} = getTestState();
 
       let error = null;
-      await page.goto('http://localhost:44123/non-existing-url').catch(e => error = e);
+      await page.goto('http://localhost:44123/non-existing-url').catch(error_ => error = error_);
       if (isChrome)
         expect(error.message).toContain('net::ERR_CONNECTION_REFUSED');
       else
@@ -170,7 +170,7 @@ describe('navigation', function() {
       // Hang for request to the empty.html
       server.setRoute('/empty.html', (req, res) => { });
       let error = null;
-      await page.goto(server.PREFIX + '/empty.html', {timeout: 1}).catch(e => error = e);
+      await page.goto(server.PREFIX + '/empty.html', {timeout: 1}).catch(error_ => error = error_);
       expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
@@ -181,7 +181,7 @@ describe('navigation', function() {
       server.setRoute('/empty.html', (req, res) => { });
       let error = null;
       page.setDefaultNavigationTimeout(1);
-      await page.goto(server.PREFIX + '/empty.html').catch(e => error = e);
+      await page.goto(server.PREFIX + '/empty.html').catch(error_ => error = error_);
       expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
@@ -192,7 +192,7 @@ describe('navigation', function() {
       server.setRoute('/empty.html', (req, res) => { });
       let error = null;
       page.setDefaultTimeout(1);
-      await page.goto(server.PREFIX + '/empty.html').catch(e => error = e);
+      await page.goto(server.PREFIX + '/empty.html').catch(error_ => error = error_);
       expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
@@ -204,7 +204,7 @@ describe('navigation', function() {
       let error = null;
       page.setDefaultTimeout(0);
       page.setDefaultNavigationTimeout(1);
-      await page.goto(server.PREFIX + '/empty.html').catch(e => error = e);
+      await page.goto(server.PREFIX + '/empty.html').catch(error_ => error = error_);
       expect(error.message).toContain('Navigation timeout of 1 ms exceeded');
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
@@ -214,7 +214,7 @@ describe('navigation', function() {
       let error = null;
       let loaded = false;
       page.once('load', () => loaded = true);
-      await page.goto(server.PREFIX + '/grid.html', {timeout: 0, waitUntil: ['load']}).catch(e => error = e);
+      await page.goto(server.PREFIX + '/grid.html', {timeout: 0, waitUntil: ['load']}).catch(error_ => error = error_);
       expect(error).toBe(null);
       expect(loaded).toBe(true);
     });
@@ -324,7 +324,7 @@ describe('navigation', function() {
       const warningHandler = w => warning = w;
       process.on('warning', warningHandler);
       for (let i = 0; i < 20; ++i)
-        await page.goto('asdf').catch(e => {/* swallow navigation error */});
+        await page.goto('asdf').catch(error => {/* swallow navigation error */});
       process.removeListener('warning', warningHandler);
       expect(warning).toBe(null);
     });
@@ -378,8 +378,8 @@ describe('navigation', function() {
       let error = null;
       try {
         await page.goto(url);
-      } catch (e) {
-        error = e;
+      } catch (error_) {
+        error = error_;
       }
       expect(error.message).toContain(url);
     });
@@ -581,7 +581,7 @@ describe('navigation', function() {
       await page.goto(server.PREFIX + '/frames/one-frame.html');
 
       server.setRoute('/empty.html', () => {});
-      const navigationPromise = page.frames()[1].goto(server.EMPTY_PAGE).catch(e => e);
+      const navigationPromise = page.frames()[1].goto(server.EMPTY_PAGE).catch(error_ => error_);
       await server.waitForRequest('/empty.html');
 
       await page.$eval('iframe', frame => frame.remove());
@@ -642,7 +642,7 @@ describe('navigation', function() {
 
       server.setRoute('/empty.html', () => {});
       let error = null;
-      const navigationPromise = frame.waitForNavigation().catch(e => error = e);
+      const navigationPromise = frame.waitForNavigation().catch(error_ => error = error_);
       await Promise.all([
         server.waitForRequest('/empty.html'),
         frame.evaluate(() => window.location = '/empty.html')
