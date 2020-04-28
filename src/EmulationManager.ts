@@ -13,32 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {CDPSession} from './Connection';
 
-// Used as a TypeDef
-// eslint-disable-next-line no-unused-vars
-const {CDPSession} = require('./Connection');
+export class EmulationManager {
+  _client: CDPSession;
+  _emulatingMobile = false;
+  _hasTouch = false;
 
-class EmulationManager {
-  /**
-   * @param {!CDPSession} client
-   */
-  constructor(client) {
+  constructor(client: CDPSession) {
     this._client = client;
-    this._emulatingMobile = false;
-    this._hasTouch = false;
   }
 
-  /**
-   * @param {!Puppeteer.Viewport} viewport
-   * @return {Promise<boolean>}
-   */
-  async emulateViewport(viewport) {
+  async emulateViewport(viewport: Puppeteer.Viewport): Promise<boolean> {
     const mobile = viewport.isMobile || false;
     const width = viewport.width;
     const height = viewport.height;
     const deviceScaleFactor = viewport.deviceScaleFactor || 1;
-    /** @type {Protocol.Emulation.ScreenOrientation} */
-    const screenOrientation = viewport.isLandscape ? {angle: 90, type: 'landscapePrimary'} : {angle: 0, type: 'portraitPrimary'};
+    const screenOrientation: Protocol.Emulation.ScreenOrientation = viewport.isLandscape ? {angle: 90, type: 'landscapePrimary'} : {angle: 0, type: 'portraitPrimary'};
     const hasTouch = viewport.hasTouch || false;
 
     await Promise.all([
@@ -54,5 +45,3 @@ class EmulationManager {
     return reloadNeeded;
   }
 }
-
-module.exports = {EmulationManager};
