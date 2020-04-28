@@ -797,7 +797,7 @@ events afterwards if enabled and recording.
              */
             windowState?: WindowState;
         }
-        export type PermissionType = "accessibilityEvents"|"audioCapture"|"backgroundSync"|"backgroundFetch"|"clipboardRead"|"clipboardWrite"|"durableStorage"|"flash"|"geolocation"|"midi"|"midiSysex"|"nfc"|"notifications"|"paymentHandler"|"periodicBackgroundSync"|"protectedMediaIdentifier"|"sensors"|"videoCapture"|"idleDetection"|"wakeLockScreen"|"wakeLockSystem";
+        export type PermissionType = "accessibilityEvents"|"audioCapture"|"backgroundSync"|"backgroundFetch"|"clipboardReadWrite"|"clipboardSanitizedWrite"|"durableStorage"|"flash"|"geolocation"|"midi"|"midiSysex"|"nfc"|"notifications"|"paymentHandler"|"periodicBackgroundSync"|"protectedMediaIdentifier"|"sensors"|"videoCapture"|"idleDetection"|"wakeLockScreen"|"wakeLockSystem";
         export type PermissionSetting = "granted"|"denied"|"prompt";
         /**
          * Definition of PermissionDescriptor defined in the Permissions API:
@@ -822,6 +822,10 @@ Note that userVisibleOnly = true is the only currently supported type.
              * For "wake-lock" permission, must specify type as either "screen" or "system".
              */
             type?: string;
+            /**
+             * For "clipboard" permission, may specify allowWithoutSanitization.
+             */
+            allowWithoutSanitization?: boolean;
         }
         /**
          * Chrome histogram bucket.
@@ -1904,6 +1908,10 @@ instrumentation)
         }
         export type takeCoverageDeltaReturnValue = {
             coverage: RuleUsage[];
+            /**
+             * Monotonically increasing time, in seconds.
+             */
+            timestamp: number;
         }
     }
     
@@ -2195,7 +2203,7 @@ front-end.
         /**
          * Pseudo element type.
          */
-        export type PseudoType = "first-line"|"first-letter"|"before"|"after"|"backdrop"|"selection"|"first-line-inherited"|"scrollbar"|"scrollbar-thumb"|"scrollbar-button"|"scrollbar-track"|"scrollbar-track-piece"|"scrollbar-corner"|"resizer"|"input-list-button";
+        export type PseudoType = "first-line"|"first-letter"|"before"|"after"|"marker"|"backdrop"|"selection"|"first-line-inherited"|"scrollbar"|"scrollbar-thumb"|"scrollbar-button"|"scrollbar-track"|"scrollbar-track-piece"|"scrollbar-corner"|"resizer"|"input-list-button";
         /**
          * Shadow root type.
          */
@@ -5091,6 +5099,7 @@ the top of the viewport and Y increases as it proceeds towards the bottom of the
             id?: number;
         }
         export type GestureSourceType = "default"|"touch"|"mouse";
+        export type MouseButton = "none"|"left"|"middle"|"right"|"back"|"forward";
         /**
          * UTC time in seconds, counted from January 1, 1970.
          */
@@ -5206,7 +5215,7 @@ the top of the viewport and Y increases as it proceeds towards the bottom of the
             /**
              * Mouse button (default: "none").
              */
-            button?: "none"|"left"|"middle"|"right"|"back"|"forward";
+            button?: MouseButton;
             /**
              * A number indicating which buttons are pressed on the mouse when a mouse event is triggered.
 Left=1, Right=2, Middle=4, Back=8, Forward=16, None=0.
@@ -5275,9 +5284,9 @@ one by one.
              */
             y: number;
             /**
-             * Mouse button.
+             * Mouse button. Only "none", "left", "right" are supported.
              */
-            button: "none"|"left"|"middle"|"right";
+            button: MouseButton;
             /**
              * Time at which the event occurred (default: current time).
              */
@@ -5631,6 +5640,10 @@ transform/scrolling purposes only.
              * A list of strings specifying reasons for the given layer to become composited.
              */
             compositingReasons: string[];
+            /**
+             * A list of strings specifying reason IDs for the given layer to become composited.
+             */
+            compositingReasonIds: string[];
         }
         /**
          * Disables compositing tree inspection.
@@ -6060,6 +6073,11 @@ file, data and other requests and responses, their headers, bodies, timing, etc.
 https://tools.ietf.org/html/draft-west-first-party-cookies
          */
         export type CookieSameSite = "Strict"|"Lax"|"None";
+        /**
+         * Represents the cookie's 'Priority' status:
+https://tools.ietf.org/html/draft-west-cookie-priority-00
+         */
+        export type CookiePriority = "Low"|"Medium"|"High";
         /**
          * Timing information for the request.
          */
@@ -6510,6 +6528,10 @@ module) (0-based).
              * Cookie SameSite type.
              */
             sameSite?: CookieSameSite;
+            /**
+             * Cookie Priority
+             */
+            priority: CookiePriority;
         }
         /**
          * Types of reasons why a cookie may not be stored from a response.
@@ -6593,6 +6615,10 @@ default domain and path values of the created cookie.
              * Cookie expiration date, session cookie if not set
              */
             expires?: TimeSinceEpoch;
+            /**
+             * Cookie Priority.
+             */
+            priority?: CookiePriority;
         }
         /**
          * Authorization challenge for HTTP status code 401 or 407.
@@ -7600,6 +7626,10 @@ default domain and path values of the created cookie.
              * Cookie expiration date, session cookie if not set
              */
             expires?: TimeSinceEpoch;
+            /**
+             * Cookie Priority type.
+             */
+            priority?: CookiePriority;
         }
         export type setCookieReturnValue = {
             /**
@@ -8227,6 +8257,15 @@ Backend then generates 'inspectNodeRequested' event upon element selection.
             column: number;
         }
         /**
+         * Parsed app manifest properties.
+         */
+        export interface AppManifestParsedProperties {
+            /**
+             * Computed scope value
+             */
+            scope: string;
+        }
+        /**
          * Layout viewport position and dimensions.
          */
         export interface LayoutViewport {
@@ -8355,7 +8394,30 @@ Backend then generates 'inspectNodeRequested' event upon element selection.
              */
             fixed?: number;
         }
-        export type ClientNavigationReason = "formSubmissionGet"|"formSubmissionPost"|"httpHeaderRefresh"|"scriptInitiated"|"metaTagRefresh"|"pageBlockInterstitial"|"reload";
+        export type ClientNavigationReason = "formSubmissionGet"|"formSubmissionPost"|"httpHeaderRefresh"|"scriptInitiated"|"metaTagRefresh"|"pageBlockInterstitial"|"reload"|"anchorClick";
+        export interface InstallabilityErrorArgument {
+            /**
+             * Argument name (e.g. name:'minimum-icon-size-in-pixels').
+             */
+            name: string;
+            /**
+             * Argument value (e.g. value:'64').
+             */
+            value: string;
+        }
+        /**
+         * The installability error
+         */
+        export interface InstallabilityError {
+            /**
+             * The error id (e.g. 'manifest-missing-suitable-icon').
+             */
+            errorId: string;
+            /**
+             * The list of error arguments (e.g. {name:'minimum-icon-size-in-pixels', value:'64'}).
+             */
+            errorArguments: InstallabilityErrorArgument[];
+        }
         
         export type domContentEventFiredPayload = {
             timestamp: Network.MonotonicTime;
@@ -8456,7 +8518,7 @@ guaranteed to start.
             /**
              * The reason for the navigation.
              */
-            reason: "formSubmissionGet"|"formSubmissionPost"|"httpHeaderRefresh"|"scriptInitiated"|"metaTagRefresh"|"pageBlockInterstitial"|"reload";
+            reason: ClientNavigationReason;
             /**
              * The destination URL for the scheduled navigation.
              */
@@ -8800,11 +8862,21 @@ option, use with caution.
              * Manifest content.
              */
             data?: string;
+            /**
+             * Parsed manifest properties
+             */
+            parsed?: AppManifestParsedProperties;
         }
         export type getInstallabilityErrorsParameters = {
         }
         export type getInstallabilityErrorsReturnValue = {
             errors: string[];
+            installabilityErrors: InstallabilityError[];
+        }
+        export type getManifestIconsParameters = {
+        }
+        export type getManifestIconsReturnValue = {
+            primaryIcon?: binary;
         }
         /**
          * Returns all browser cookies. Depending on the backend support, will return detailed cookie
@@ -11656,7 +11728,7 @@ The default is true.
         /**
          * Break out events into different types
          */
-        export type PlayerEventType = "playbackEvent"|"systemEvent"|"messageEvent";
+        export type PlayerEventType = "errorEvent"|"triggeredEvent"|"messageEvent";
         export interface PlayerEvent {
             type: PlayerEventType;
             /**
@@ -12770,6 +12842,7 @@ default value is 32768 bytes.
 when the tracking is stopped.
              */
             reportProgress?: boolean;
+            treatGlobalObjectsAsRoots?: boolean;
         }
         export type stopTrackingHeapObjectsReturnValue = {
         }
@@ -12778,6 +12851,10 @@ when the tracking is stopped.
              * If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken.
              */
             reportProgress?: boolean;
+            /**
+             * If true, a raw snapshot without artifical roots will be generated
+             */
+            treatGlobalObjectsAsRoots?: boolean;
         }
         export type takeHeapSnapshotReturnValue = {
         }
@@ -12983,6 +13060,26 @@ profile startTime.
              */
             title?: string;
         }
+        /**
+         * Reports coverage delta since the last poll (either from an event like this, or from
+`takePreciseCoverage` for the current isolate. May only be sent if precise code
+coverage has been started. This event can be trigged by the embedder to, for example,
+trigger collection of coverage data immediatelly at a certain point in time.
+         */
+        export type preciseCoverageDeltaUpdatePayload = {
+            /**
+             * Monotonically increasing time (in seconds) when the coverage update was taken in the backend.
+             */
+            timestamp: number;
+            /**
+             * Identifier for distinguishing coverage events.
+             */
+            occassion: string;
+            /**
+             * Coverage data for the current isolate.
+             */
+            result: ScriptCoverage[];
+        }
         
         export type disableParameters = {
         }
@@ -13035,6 +13132,10 @@ counters.
             detailed?: boolean;
         }
         export type startPreciseCoverageReturnValue = {
+            /**
+             * Monotonically increasing time (in seconds) when the coverage update was taken in the backend.
+             */
+            timestamp: number;
         }
         /**
          * Enable type profile.
@@ -13077,6 +13178,10 @@ coverage needs to have started.
              * Coverage data for the current isolate.
              */
             result: ScriptCoverage[];
+            /**
+             * Monotonically increasing time (in seconds) when the coverage update was taken in the backend.
+             */
+            timestamp: number;
         }
         /**
          * Collect type profile.
@@ -13323,7 +13428,17 @@ object.
             /**
              * The value associated with the private property.
              */
-            value: RemoteObject;
+            value?: RemoteObject;
+            /**
+             * A function which serves as a getter for the private property,
+or `undefined` if there is no getter (accessor descriptors only).
+             */
+            get?: RemoteObject;
+            /**
+             * A function which serves as a setter for the private property,
+or `undefined` if there is no setter (accessor descriptors only).
+             */
+            set?: RemoteObject;
         }
         /**
          * Represents function call argument. Either remote object id `objectId`, primitive `value`,
@@ -14198,6 +14313,7 @@ unsubscribes current runtime agent from Runtime.bindingCalled notifications.
       "HeapProfiler.resetProfiles": HeapProfiler.resetProfilesPayload;
       "Profiler.consoleProfileFinished": Profiler.consoleProfileFinishedPayload;
       "Profiler.consoleProfileStarted": Profiler.consoleProfileStartedPayload;
+      "Profiler.preciseCoverageDeltaUpdate": Profiler.preciseCoverageDeltaUpdatePayload;
       "Runtime.bindingCalled": Runtime.bindingCalledPayload;
       "Runtime.consoleAPICalled": Runtime.consoleAPICalledPayload;
       "Runtime.exceptionRevoked": Runtime.exceptionRevokedPayload;
@@ -14477,6 +14593,7 @@ unsubscribes current runtime agent from Runtime.bindingCalled notifications.
       "Page.enable": Page.enableParameters;
       "Page.getAppManifest": Page.getAppManifestParameters;
       "Page.getInstallabilityErrors": Page.getInstallabilityErrorsParameters;
+      "Page.getManifestIcons": Page.getManifestIconsParameters;
       "Page.getCookies": Page.getCookiesParameters;
       "Page.getFrameTree": Page.getFrameTreeParameters;
       "Page.getLayoutMetrics": Page.getLayoutMetricsParameters;
@@ -14949,6 +15066,7 @@ unsubscribes current runtime agent from Runtime.bindingCalled notifications.
       "Page.enable": Page.enableReturnValue;
       "Page.getAppManifest": Page.getAppManifestReturnValue;
       "Page.getInstallabilityErrors": Page.getInstallabilityErrorsReturnValue;
+      "Page.getManifestIcons": Page.getManifestIconsReturnValue;
       "Page.getCookies": Page.getCookiesReturnValue;
       "Page.getFrameTree": Page.getFrameTreeReturnValue;
       "Page.getLayoutMetrics": Page.getLayoutMetricsReturnValue;
