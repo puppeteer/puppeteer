@@ -98,7 +98,7 @@ const cli = async() => {
       console.log(`Success: ${relativeProtocolOutputPath} is up to date.`);
     } else {
       console.log(`Error: ${relativeProtocolOutputPath} is out of date.`);
-      console.log('You should run \`npm run update-protocol-d-ts\` and commit the changes.');
+      console.log('You should run `npm run update-protocol-d-ts` and commit the changes.');
       process.exit(1);
     }
 
