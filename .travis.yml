@@ -43,6 +43,7 @@ jobs:
       env:
         - CHROMIUM=true
       script:
+        - npm run compare-protocol-d-ts
         - npm run test-install
         - npm run lint
         - npm run test-doclint
