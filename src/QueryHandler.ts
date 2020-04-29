@@ -24,11 +24,11 @@ const _customQueryHandlers = new Map<string, QueryHandler>();
 
 export function registerCustomQueryHandler(name: string, handler: QueryHandler): void {
   if (_customQueryHandlers.get(name))
-    throw new Error(`A custom query function named "${name}" already exists`);
+    throw new Error(`A custom query handler named "${name}" already exists`);
 
   const isValidName = /^[a-zA-Z]+$/.test(name);
   if (!isValidName)
-    throw new Error(`Custom query function names may only contain [a-zA-Z]`);
+    throw new Error(`Custom query handler names may only contain [a-zA-Z]`);
 
   _customQueryHandlers.set(name, handler as QueryHandler);
 }

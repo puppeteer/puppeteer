@@ -263,18 +263,18 @@ describe('ElementHandle specs', function() {
       puppeteer.__experimental_unregisterCustomQueryHandler('getbyid');
       try {
         await page.$('getbyid/foo');
-        expect.fail('Custom query function not set - throw expected');
+        expect.fail('Custom query handler not set - throw expected');
       } catch (error) {
-        expect(error).toStrictEqual(new Error('$ query set to use "getbyid", but no query function of that name was found'));
+        expect(error).toStrictEqual(new Error('$ query set to use "getbyid", but no query handler of that name was found'));
       }
     });
     it('should throw with invalid query names', () => {
       try {
         const {puppeteer} = getTestState();
         puppeteer.__experimental_registerCustomQueryHandler('1/2/3', (element, selector) => {});
-        expect.fail('Custom query function name was invalid - throw expected');
+        expect.fail('Custom query handler name was invalid - throw expected');
       } catch (error) {
-        expect(error).toStrictEqual(new Error('Custom query function names may only contain [a-zA-Z]'));
+        expect(error).toStrictEqual(new Error('Custom query handler names may only contain [a-zA-Z]'));
       }
     });
     it('should work for multiple elements', async() => {
