@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import {ElementHandle, JSHandle} from './JSHandle';
-
 export interface QueryHandler {
   (element: Element | Document, selector: string): Element | Element[] | NodeListOf<Element>;
 }
