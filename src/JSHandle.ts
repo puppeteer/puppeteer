@@ -21,8 +21,6 @@ import {KeyInput} from './USKeyboardLayout';
 import {FrameManager, Frame} from './FrameManager';
 import {getQueryHandlerAndSelector} from './QueryHandler';
 
-const SEARCH_SEPARATOR = '/';
-
 interface BoxModel {
   content: Array<{x: number; y: number}>;
   padding: Array<{x: number; y: number}>;
