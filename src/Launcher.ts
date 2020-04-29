@@ -375,9 +375,6 @@ class ChromeLauncher implements ProductLauncher {
 
 }
 
-/**
- * @implements {!Puppeteer.ProductLauncher}
- */
 class FirefoxLauncher implements ProductLauncher {
   _projectRoot: string;
   _preferredRevision: string;
@@ -738,7 +735,7 @@ class FirefoxLauncher implements ProductLauncher {
 }
 
 
-function waitForWSEndpoint(browserProcess: Puppeteer.ChildProcess, timeout: number, preferredRevision: string): Promise<string> {
+function waitForWSEndpoint(browserProcess: childProcess.ChildProcess, timeout: number, preferredRevision: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const rl = readline.createInterface({input: browserProcess.stderr});
     let stderr = '';

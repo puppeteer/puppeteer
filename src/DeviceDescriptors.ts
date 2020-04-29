@@ -882,7 +882,7 @@ const devices: Device[] = [
   }
 ];
 
-type DevicesMap = {
+export type DevicesMap = {
   [name: string]: Device;
 };
 
@@ -891,5 +891,4 @@ const devicesMap: DevicesMap = {};
 for (const device of devices)
   devicesMap[device.name] = device;
 
-
-export = devicesMap;
+export {devicesMap};

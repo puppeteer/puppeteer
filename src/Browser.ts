@@ -20,18 +20,19 @@ import * as EventEmitter from 'events';
 import {TaskQueue} from './TaskQueue';
 import {Events} from './Events';
 import {Connection} from './Connection';
+import {ChildProcess} from 'child_process';
 
 type BrowserCloseCallback = () => Promise<void> | void;
 
 export class Browser extends EventEmitter {
-  static async create(connection: Connection, contextIds: string[], ignoreHTTPSErrors: boolean, defaultViewport?: Puppeteer.Viewport, process?: Puppeteer.ChildProcess, closeCallback?: BrowserCloseCallback): Promise<Browser> {
+  static async create(connection: Connection, contextIds: string[], ignoreHTTPSErrors: boolean, defaultViewport?: Puppeteer.Viewport, process?: ChildProcess, closeCallback?: BrowserCloseCallback): Promise<Browser> {
     const browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewport, process, closeCallback);
     await connection.send('Target.setDiscoverTargets', {discover: true});
     return browser;
   }
    _ignoreHTTPSErrors: boolean;
    _defaultViewport?: Puppeteer.Viewport;
-   _process?: Puppeteer.ChildProcess;
+   _process?: ChildProcess;
    _screenshotTaskQueue = new TaskQueue();
    _connection: Connection;
    _closeCallback: BrowserCloseCallback;
@@ -40,7 +41,7 @@ export class Browser extends EventEmitter {
    // TODO: once Target is in TypeScript we can type this properly.
    _targets: Map<string, Target>;
 
-   constructor(connection: Connection, contextIds: string[], ignoreHTTPSErrors: boolean, defaultViewport?: Puppeteer.Viewport, process?: Puppeteer.ChildProcess, closeCallback?: BrowserCloseCallback) {
+   constructor(connection: Connection, contextIds: string[], ignoreHTTPSErrors: boolean, defaultViewport?: Puppeteer.Viewport, process?: ChildProcess, closeCallback?: BrowserCloseCallback) {
      super();
      this._ignoreHTTPSErrors = ignoreHTTPSErrors;
      this._defaultViewport = defaultViewport;
@@ -61,7 +62,7 @@ export class Browser extends EventEmitter {
      this._connection.on('Target.targetInfoChanged', this._targetInfoChanged.bind(this));
    }
 
-   process(): Puppeteer.ChildProcess | null {
+   process(): ChildProcess | null {
      return this._process;
    }
 

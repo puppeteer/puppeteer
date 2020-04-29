@@ -99,10 +99,6 @@ function existsAsync(filePath: string): Promise<boolean> {
   });
 }
 
-/**
- * @typedef {Object} BrowserFetcher.Options
- */
-
 export interface BrowserFetcherOptions {
   platform?: Platform;
   product?: string;
