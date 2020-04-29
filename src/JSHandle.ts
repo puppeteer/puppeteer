@@ -19,7 +19,7 @@ import {ExecutionContext} from './ExecutionContext';
 import {CDPSession} from './Connection';
 import {KeyInput} from './USKeyboardLayout';
 import {FrameManager, Frame} from './FrameManager';
-import {customQueryHandlers, QueryHandler} from './QueryHandler';
+import {getQueryHandlerAndSelector} from './QueryHandler';
 
 const SEARCH_SEPARATOR = '/';
 
@@ -429,27 +429,9 @@ export class ElementHandle extends JSHandle {
     return imageData;
   }
 
-  _getQueryHandlerAndSelector(selector: string, defaultQueryHandler: QueryHandler):
-      { updatedSelector: string; queryHandler: QueryHandler} {
-    if (selector.indexOf(SEARCH_SEPARATOR) === -1)
-      return {updatedSelector: selector, queryHandler: defaultQueryHandler};
-
-    const index = selector.indexOf(SEARCH_SEPARATOR);
-    const name = selector.slice(0, index);
-    const updatedSelector = selector.slice(index + SEARCH_SEPARATOR.length);
-    const queryHandler = customQueryHandlers().get(name);
-    if (!queryHandler)
-      throw new Error('Query set to use "QUERY_HANDLER_NAME", but no query handler of that name was found'.replace('QUERY_HANDLER_NAME', name));
-
-    return {
-      updatedSelector,
-      queryHandler
-    };
-  }
-
   async $(selector: string): Promise<ElementHandle | null> {
-    const defaultHandler = (element: Element, selector: string): ElementHandle => element.querySelector(selector) as unknown as ElementHandle;
-    const {updatedSelector, queryHandler} = this._getQueryHandlerAndSelector(selector, defaultHandler);
+    const defaultHandler = (element: Element, selector: string) => element.querySelector(selector);
+    const {updatedSelector, queryHandler} = getQueryHandlerAndSelector(selector, defaultHandler);
 
     const handle = await this.evaluateHandle(queryHandler, updatedSelector);
     const element = handle.asElement();
@@ -464,8 +446,8 @@ export class ElementHandle extends JSHandle {
    * @return {!Promise<!Array<!ElementHandle>>}
    */
   async $$(selector: string): Promise<ElementHandle[]> {
-    const defaultHandler = (element: Element, selector: string): ElementHandle[] => element.querySelectorAll(selector) as unknown as ElementHandle[];
-    const {updatedSelector, queryHandler} = this._getQueryHandlerAndSelector(selector, defaultHandler);
+    const defaultHandler = (element: Element, selector: string) => element.querySelectorAll(selector);
+    const {updatedSelector, queryHandler} = getQueryHandlerAndSelector(selector, defaultHandler);
 
     const arrayHandle = await this.evaluateHandle(queryHandler, updatedSelector);
     const properties = await arrayHandle.getProperties();
@@ -489,8 +471,8 @@ export class ElementHandle extends JSHandle {
   }
 
   async $$eval<ReturnType extends any>(selector: string, pageFunction: Function | string, ...args: unknown[]): Promise<ReturnType> {
-    const defaultHandler = (element: Element, selector: string): JSHandle => Array.from(element.querySelectorAll(selector)) as unknown as JSHandle;
-    const {updatedSelector, queryHandler} = this._getQueryHandlerAndSelector(selector, defaultHandler);
+    const defaultHandler = (element: Element, selector: string) => Array.from(element.querySelectorAll(selector));
+    const {updatedSelector, queryHandler} = getQueryHandlerAndSelector(selector, defaultHandler);
 
     const arrayHandle = await this.evaluateHandle(queryHandler, updatedSelector);
     const result = await arrayHandle.evaluate<ReturnType>(pageFunction, ...args);

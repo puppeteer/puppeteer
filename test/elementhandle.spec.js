@@ -250,6 +250,10 @@ describe('ElementHandle specs', function() {
   });
 
   describe('Custom queries', function() {
+    this.afterEach(() => {
+      const {puppeteer} = getTestState();
+      puppeteer.__experimental_clearQueryHandlers();
+    })
     it('should register and unregister', async() => {
       const {page, puppeteer} = getTestState();
       await page.setContent('<div id="not-foo"></div><div id="foo"></div>');
@@ -283,7 +287,6 @@ describe('ElementHandle specs', function() {
       puppeteer.__experimental_registerCustomQueryHandler('getByClass', (element, selector) => document.querySelectorAll(`.${selector}`));
       const elements = await page.$$('getByClass/foo');
       const classNames = await Promise.all(elements.map(async element => await page.evaluate(element => element.className, element)));
-      puppeteer.__experimental_unregisterCustomQueryHandler('getByClass');
 
       expect(classNames).toStrictEqual(['foo', 'foo baz']);
     });
@@ -292,9 +295,30 @@ describe('ElementHandle specs', function() {
       await page.setContent('<div id="not-foo"></div><div class="foo">Foo1</div><div class="foo baz">Foo2</div>');
       puppeteer.__experimental_registerCustomQueryHandler('getByClass', (element, selector) => document.querySelectorAll(`.${selector}`));
       const elements = await page.$$eval('getByClass/foo', divs => divs.length);
-      puppeteer.__experimental_unregisterCustomQueryHandler('getByClass');
 
       expect(elements).toBe(2);
+    });
+    it('should wait correctly with waitForSelector', async() => {
+      const {page, puppeteer} = getTestState();
+      puppeteer.__experimental_registerCustomQueryHandler('getByClass', (element, selector) => element.querySelector(`.${selector}`));
+      const waitFor = page.waitForSelector('getByClass/foo');
+
+      // Set the page content after the waitFor has been started.
+      await page.setContent('<div id="not-foo"></div><div class="foo">Foo1</div>');
+      const element = await waitFor;
+
+      expect(element).toBeDefined();
+    });
+    it('should wait correctly with waitFor', async() => {
+      const {page, puppeteer} = getTestState();
+      puppeteer.__experimental_registerCustomQueryHandler('getByClass', (element, selector) => element.querySelector(`.${selector}`));
+      const waitFor = page.waitFor('getByClass/foo');
+
+      // Set the page content after the waitFor has been started.
+      await page.setContent('<div id="not-foo"></div><div class="foo">Foo1</div>');
+      const element = await waitFor;
+
+      expect(element).toBeDefined();
     });
   });
 });

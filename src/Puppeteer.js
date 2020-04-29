@@ -167,4 +167,8 @@ module.exports = class {
   __experimental_customQueryHandlers() {
     return QueryHandler.customQueryHandlers();
   }
+
+  __experimental_clearQueryHandlers() {
+    QueryHandler.clearQueryHandlers();
+  }
 };

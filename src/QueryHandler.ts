@@ -17,7 +17,7 @@
 import {ElementHandle, JSHandle} from './JSHandle';
 
 export interface QueryHandler {
-  (element: Element, selector: string): (ElementHandle | null) | ElementHandle[] | JSHandle;
+  (element: Element | Document, selector: string): Element | Element[] | NodeListOf<Element>;
 }
 
 const _customQueryHandlers = new Map<string, QueryHandler>();
@@ -44,8 +44,33 @@ export function customQueryHandlers(): Map<string, QueryHandler> {
   return _customQueryHandlers;
 }
 
+export function clearQueryHandlers(): void {
+  _customQueryHandlers.clear();
+}
+
+export function getQueryHandlerAndSelector(selector: string, defaultQueryHandler: QueryHandler):
+    { updatedSelector: string; queryHandler: QueryHandler} {
+  const hasCustomQueryHandler = /^[a-zA-Z]+\//.test(selector);
+  if (!hasCustomQueryHandler)
+    return {updatedSelector: selector, queryHandler: defaultQueryHandler};
+
+  const index = selector.indexOf('/');
+  const name = selector.slice(0, index);
+  const updatedSelector = selector.slice(index + 1);
+  const queryHandler = customQueryHandlers().get(name);
+  if (!queryHandler)
+    throw new Error('Query set to use "QUERY_HANDLER_NAME", but no query handler of that name was found'.replace('QUERY_HANDLER_NAME', name));
+
+  return {
+    updatedSelector,
+    queryHandler
+  };
+}
+
 module.exports = {
   registerCustomQueryHandler,
   unregisterCustomQueryHandler,
-  customQueryHandlers
+  customQueryHandlers,
+  getQueryHandlerAndSelector,
+  clearQueryHandlers
 };
