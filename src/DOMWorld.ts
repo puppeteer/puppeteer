@@ -369,7 +369,7 @@ export class DOMWorld {
       polling = 'raf',
       timeout = this._timeoutSettings.timeout(),
     } = options;
-    return new WaitTask(this, pageFunction, '', 'function', polling, timeout, ...args).promise;
+    return new WaitTask(this, pageFunction, undefined, 'function', polling, timeout, ...args).promise;
   }
 
   async title(): Promise<string> {
@@ -436,7 +436,7 @@ class WaitTask {
   _timeoutTimer?: NodeJS.Timeout;
   _terminated = false;
 
-  constructor(domWorld: DOMWorld, predicateBody: Function | string, predicateQueryHandlerBody: Function | string = '', title: string, polling: string | number, timeout: number, ...args: unknown[]) {
+  constructor(domWorld: DOMWorld, predicateBody: Function | string, predicateQueryHandlerBody: Function | string | undefined, title: string, polling: string | number, timeout: number, ...args: unknown[]) {
     if (helper.isString(polling))
       assert(polling === 'raf' || polling === 'mutation', 'Unknown polling option: ' + polling);
     else if (helper.isNumber(polling))
