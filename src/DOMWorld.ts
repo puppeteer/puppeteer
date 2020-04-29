@@ -453,7 +453,7 @@ class WaitTask {
     this._domWorld = domWorld;
     this._polling = polling;
     this._timeout = timeout;
-    this._predicateBody = helper.isString(predicateBody) ? 'return (' + predicateBody + ')' : wrapper;
+    this._predicateBody = getPredicateBody(predicateBody, predicateQueryHandlerBody);
     this._args = args;
     this._runCount = 0;
     domWorld._waitTasks.add(this);
