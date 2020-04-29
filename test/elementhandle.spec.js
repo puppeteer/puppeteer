@@ -255,17 +255,17 @@ describe('ElementHandle specs', function() {
       await page.setContent('<div id="not-foo"></div><div id="foo"></div>');
 
       // Register.
-      puppeteer.__experimental_registerCustomQueryHandler('getbyid', (element, selector) => document.querySelector(`[id="${selector}"]`));
-      const element = await page.$('getbyid/foo');
+      puppeteer.__experimental_registerCustomQueryHandler('getById', (element, selector) => document.querySelector(`[id="${selector}"]`));
+      const element = await page.$('getById/foo');
       expect(await page.evaluate(element => element.id, element)).toBe('foo');
 
       // Unregister.
-      puppeteer.__experimental_unregisterCustomQueryHandler('getbyid');
+      puppeteer.__experimental_unregisterCustomQueryHandler('getById');
       try {
-        await page.$('getbyid/foo');
+        await page.$('getById/foo');
         expect.fail('Custom query handler not set - throw expected');
       } catch (error) {
-        expect(error).toStrictEqual(new Error('$ query set to use "getbyid", but no query handler of that name was found'));
+        expect(error).toStrictEqual(new Error('$ query set to use "getById", but no query handler of that name was found'));
       }
     });
     it('should throw with invalid query names', () => {
@@ -280,19 +280,19 @@ describe('ElementHandle specs', function() {
     it('should work for multiple elements', async() => {
       const {page, puppeteer} = getTestState();
       await page.setContent('<div id="not-foo"></div><div class="foo">Foo1</div><div class="foo baz">Foo2</div>');
-      puppeteer.__experimental_registerCustomQueryHandler('getbyclass', (element, selector) => document.querySelectorAll(`.${selector}`));
-      const elements = await page.$$('getbyclass/foo');
+      puppeteer.__experimental_registerCustomQueryHandler('getByClass', (element, selector) => document.querySelectorAll(`.${selector}`));
+      const elements = await page.$$('getByClass/foo');
       const classNames = await Promise.all(elements.map(async element => await page.evaluate(element => element.className, element)));
-      puppeteer.__experimental_unregisterCustomQueryHandler('getbyclass');
+      puppeteer.__experimental_unregisterCustomQueryHandler('getByClass');
 
       expect(classNames).toStrictEqual(['foo', 'foo baz']);
     });
     it('should eval correctly', async() => {
       const {page, puppeteer} = getTestState();
       await page.setContent('<div id="not-foo"></div><div class="foo">Foo1</div><div class="foo baz">Foo2</div>');
-      puppeteer.__experimental_registerCustomQueryHandler('getbyclass', (element, selector) => document.querySelectorAll(`.${selector}`));
-      const elements = await page.$$eval('getbyclass/foo', divs => divs.length);
-      puppeteer.__experimental_unregisterCustomQueryHandler('getbyclass');
+      puppeteer.__experimental_registerCustomQueryHandler('getByClass', (element, selector) => document.querySelectorAll(`.${selector}`));
+      const elements = await page.$$eval('getByClass/foo', divs => divs.length);
+      puppeteer.__experimental_unregisterCustomQueryHandler('getByClass');
 
       expect(elements).toBe(2);
     });
