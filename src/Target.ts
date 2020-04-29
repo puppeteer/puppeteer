@@ -14,30 +14,30 @@
  * limitations under the License.
  */
 
-const {Events} = require('./Events');
-const {Page} = require('./Page');
-const {Worker: PuppeteerWorker} = require('./Worker');
-// CDPSession is used only as a typedef
-// eslint-disable-next-line no-unused-vars
-const {CDPSession} = require('./Connection');
-// This import is used as a TypeDef, but ESLint's rule doesn't
-// understand that unfortunately.
-// eslint-disable-next-line no-unused-vars
-const {TaskQueue} = require('./TaskQueue');
-// Import used as typedef
-// eslint-disable-next-line no-unused-vars
-const {Browser, BrowserContext} = require('./Browser');
+import {Events} from './Events';
+import {Page} from './Page';
+import {Worker as PuppeteerWorker} from './Worker';
+import {CDPSession} from './Connection';
+import {TaskQueue} from './TaskQueue';
+import {Browser, BrowserContext} from './Browser';
 
-class Target {
-  /**
-   * @param {!Protocol.Target.TargetInfo} targetInfo
-   * @param {!BrowserContext} browserContext
-   * @param {!function():!Promise<!CDPSession>} sessionFactory
-   * @param {boolean} ignoreHTTPSErrors
-   * @param {?Puppeteer.Viewport} defaultViewport
-   * @param {!TaskQueue} screenshotTaskQueue
-   */
-  constructor(targetInfo, browserContext, sessionFactory, ignoreHTTPSErrors, defaultViewport, screenshotTaskQueue) {
+export class Target {
+  _targetInfo: Protocol.Target.TargetInfo;
+  _browserContext: BrowserContext;
+  _targetId: string;
+  _sessionFactory: () => Promise<CDPSession>;
+  _ignoreHTTPSErrors: boolean;
+  _defaultViewport?: Puppeteer.Viewport;
+  _screenshotTaskQueue: TaskQueue;
+  _pagePromise?: Promise<Puppeteer.Page>;
+  _workerPromise?: Promise<PuppeteerWorker>;
+  _initializedPromise: Promise<boolean>;
+  _initializedCallback: (x: boolean) => void;
+  _isClosedPromise: Promise<boolean>;
+  _closedCallback: () => void;
+  _isInitialized: boolean;
+
+  constructor(targetInfo: Protocol.Target.TargetInfo, browserContext: BrowserContext, sessionFactory: () => Promise<CDPSession>, ignoreHTTPSErrors: boolean, defaultViewport: Puppeteer.Viewport | null, screenshotTaskQueue: TaskQueue) {
     this._targetInfo = targetInfo;
     this._browserContext = browserContext;
     this._targetId = targetInfo.targetId;
@@ -49,7 +49,7 @@ class Target {
     this._pagePromise = null;
     /** @type {?Promise<!PuppeteerWorker>} */
     this._workerPromise = null;
-    this._initializedPromise = new Promise(fulfill => this._initializedCallback = fulfill).then(async success => {
+    this._initializedPromise = new Promise<boolean>(fulfill => this._initializedCallback = fulfill).then(async success => {
       if (!success)
         return false;
       const opener = this.opener();
@@ -62,23 +62,17 @@ class Target {
       openerPage.emit(Events.Page.Popup, popupPage);
       return true;
     });
-    this._isClosedPromise = new Promise(fulfill => this._closedCallback = fulfill);
+    this._isClosedPromise = new Promise<boolean>(fulfill => this._closedCallback = fulfill);
     this._isInitialized = this._targetInfo.type !== 'page' || this._targetInfo.url !== '';
     if (this._isInitialized)
       this._initializedCallback(true);
   }
 
-  /**
-   * @return {!Promise<!CDPSession>}
-   */
-  createCDPSession() {
+  createCDPSession(): Promise<CDPSession> {
     return this._sessionFactory();
   }
 
-  /**
-   * @return {!Promise<?Page>}
-   */
-  async page() {
+  async page(): Promise<Puppeteer.Page | null> {
     if ((this._targetInfo.type === 'page' || this._targetInfo.type === 'background_page') && !this._pagePromise) {
       this._pagePromise = this._sessionFactory()
           .then(client => Page.create(client, this, this._ignoreHTTPSErrors, this._defaultViewport, this._screenshotTaskQueue));
@@ -86,10 +80,7 @@ class Target {
     return this._pagePromise;
   }
 
-  /**
-   * @return {!Promise<?PuppeteerWorker>}
-   */
-  async worker() {
+  async worker(): Promise<PuppeteerWorker | null> {
     if (this._targetInfo.type !== 'service_worker' && this._targetInfo.type !== 'shared_worker')
       return null;
     if (!this._workerPromise) {
@@ -100,51 +91,33 @@ class Target {
     return this._workerPromise;
   }
 
-  /**
-   * @return {string}
-   */
-  url() {
+  url(): string {
     return this._targetInfo.url;
   }
 
-  /**
-   * @return {"page"|"background_page"|"service_worker"|"shared_worker"|"other"|"browser"}
-   */
-  type() {
+  type(): 'page'|'background_page'|'service_worker'|'shared_worker'|'other'|'browser'{
     const type = this._targetInfo.type;
     if (type === 'page' || type === 'background_page' || type === 'service_worker' || type === 'shared_worker' || type === 'browser')
       return type;
     return 'other';
   }
 
-  /**
-   * @return {!Browser}
-   */
-  browser() {
+  browser(): Browser {
     return this._browserContext.browser();
   }
 
-  /**
-   * @return {!BrowserContext}
-   */
-  browserContext() {
+  browserContext(): BrowserContext {
     return this._browserContext;
   }
 
-  /**
-   * @return {?Puppeteer.Target}
-   */
-  opener() {
+  opener(): Target | null {
     const {openerId} = this._targetInfo;
     if (!openerId)
       return null;
     return this.browser()._targets.get(openerId);
   }
 
-  /**
-   * @param {!Protocol.Target.TargetInfo} targetInfo
-   */
-  _targetInfoChanged(targetInfo) {
+  _targetInfoChanged(targetInfo: Protocol.Target.TargetInfo): void {
     this._targetInfo = targetInfo;
 
     if (!this._isInitialized && (this._targetInfo.type !== 'page' || this._targetInfo.url !== '')) {
@@ -154,5 +127,3 @@ class Target {
     }
   }
 }
-
-module.exports = {Target};

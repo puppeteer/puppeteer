@@ -23,12 +23,6 @@ import {Connection} from './Connection';
 
 type BrowserCloseCallback = () => Promise<void> | void;
 
-/* TODO(jacktfranklin): once Target is migrated to TS
- * we can import + use its type here. But right now Target
- * is implemented in JS so we can't import the type and have to use
- * Puppeteer.Target
- */
-
 export class Browser extends EventEmitter {
   static async create(connection: Connection, contextIds: string[], ignoreHTTPSErrors: boolean, defaultViewport?: Puppeteer.Viewport, process?: Puppeteer.ChildProcess, closeCallback?: BrowserCloseCallback): Promise<Browser> {
     const browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewport, process, closeCallback);
@@ -44,7 +38,7 @@ export class Browser extends EventEmitter {
    _defaultContext: BrowserContext;
    _contexts: Map<string, BrowserContext>;
    // TODO: once Target is in TypeScript we can type this properly.
-   _targets: Map<string, Puppeteer.Target>;
+   _targets: Map<string, Target>;
 
    constructor(connection: Connection, contextIds: string[], ignoreHTTPSErrors: boolean, defaultViewport?: Puppeteer.Viewport, process?: Puppeteer.ChildProcess, closeCallback?: BrowserCloseCallback) {
      super();
@@ -154,11 +148,11 @@ export class Browser extends EventEmitter {
      return page;
    }
 
-   targets(): Puppeteer.Target[] {
+   targets(): Target[] {
      return Array.from(this._targets.values()).filter(target => target._isInitialized);
    }
 
-   target(): Puppeteer.Target {
+   target(): Target {
      return this.targets().find(target => target.type() === 'browser');
    }
 
@@ -167,7 +161,7 @@ export class Browser extends EventEmitter {
    * @param {{timeout?: number}=} options
    * @return {!Promise<!Target>}
    */
-   async waitForTarget(predicate: (x: Puppeteer.Target) => boolean, options: { timeout?: number} = {}): Promise<Puppeteer.Target> {
+   async waitForTarget(predicate: (x: Target) => boolean, options: { timeout?: number} = {}): Promise<Target> {
      const {
        timeout = 30000
      } = options;
@@ -175,19 +169,19 @@ export class Browser extends EventEmitter {
      if (existingTarget)
        return existingTarget;
      let resolve;
-     const targetPromise = new Promise<Puppeteer.Target>(x => resolve = x);
+     const targetPromise = new Promise<Target>(x => resolve = x);
      this.on(Events.Browser.TargetCreated, check);
      this.on(Events.Browser.TargetChanged, check);
      try {
        if (!timeout)
          return await targetPromise;
-       return await helper.waitWithTimeout<Puppeteer.Target>(targetPromise, 'target', timeout);
+       return await helper.waitWithTimeout<Target>(targetPromise, 'target', timeout);
      } finally {
        this.removeListener(Events.Browser.TargetCreated, check);
        this.removeListener(Events.Browser.TargetChanged, check);
      }
 
-     function check(target: Puppeteer.Target): void  {
+     function check(target: Target): void  {
        if (predicate(target))
          resolve(target);
      }
@@ -242,11 +236,11 @@ export class BrowserContext extends EventEmitter {
     this._id = contextId;
   }
 
-  targets(): Puppeteer.Target[] {
+  targets(): Target[] {
     return this._browser.targets().filter(target => target.browserContext() === this);
   }
 
-  waitForTarget(predicate: (x: Puppeteer.Target) => boolean, options: { timeout?: number}): Promise<Puppeteer.Target> {
+  waitForTarget(predicate: (x: Target) => boolean, options: { timeout?: number}): Promise<Target> {
     return this._browser.waitForTarget(target => target.browserContext() === this && predicate(target), options);
   }
 
