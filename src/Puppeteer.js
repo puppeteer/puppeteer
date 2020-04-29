@@ -35,7 +35,6 @@ module.exports = class {
     this._isPuppeteerCore = isPuppeteerCore;
     // track changes to Launcher configuration via options or environment variables
     this.__productName = productName;
-    this._customQueryFunctions = new Map();
   }
 
   /**
