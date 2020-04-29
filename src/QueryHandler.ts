@@ -57,7 +57,7 @@ export function getQueryHandlerAndSelector(selector: string, defaultQueryHandler
   const updatedSelector = selector.slice(index + 1);
   const queryHandler = customQueryHandlers().get(name);
   if (!queryHandler)
-    throw new Error('Query set to use "QUERY_HANDLER_NAME", but no query handler of that name was found'.replace('QUERY_HANDLER_NAME', name));
+    throw new Error(`Query set to use "${name}", but no query handler of that name was found`);
 
   return {
     updatedSelector,
