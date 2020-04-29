@@ -265,7 +265,7 @@ describe('ElementHandle specs', function() {
         await page.$('getById/foo');
         expect.fail('Custom query handler not set - throw expected');
       } catch (error) {
-        expect(error).toStrictEqual(new Error('$ query set to use "getById", but no query handler of that name was found'));
+        expect(error).toStrictEqual(new Error('Query set to use "getById", but no query handler of that name was found'));
       }
     });
     it('should throw with invalid query names', () => {
