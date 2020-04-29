@@ -17,6 +17,7 @@
 import {helper, assert, PuppeteerEventListener} from './helper';
 import {Events} from './Events';
 import {TimeoutError} from './Errors';
+import {FrameManager, Frame} from './FrameManager';
 
 export type PuppeteerLifeCycleEvent = 'load' | 'domcontentloaded' | 'networkidle0' | 'networkidle2';
 type ProtocolLifeCycleEvent = 'load' | 'DOMContentLoaded' | 'networkIdle' | 'networkAlmostIdle';
@@ -31,8 +32,8 @@ const puppeteerToProtocolLifecycle = new Map<PuppeteerLifeCycleEvent, ProtocolLi
 
 export class LifecycleWatcher {
   _expectedLifecycle: ProtocolLifeCycleEvent[];
-  _frameManager: Puppeteer.FrameManager;
-  _frame: Puppeteer.Frame;
+  _frameManager: FrameManager;
+  _frame: Frame;
   _timeout: number;
   _navigationRequest?: Puppeteer.Request;
   _eventListeners: PuppeteerEventListener[];
@@ -56,7 +57,7 @@ export class LifecycleWatcher {
   _maximumTimer?: NodeJS.Timeout;
   _hasSameDocumentNavigation?: boolean;
 
-  constructor(frameManager: Puppeteer.FrameManager, frame: Puppeteer.Frame, waitUntil: PuppeteerLifeCycleEvent|PuppeteerLifeCycleEvent[], timeout: number) {
+  constructor(frameManager: FrameManager, frame: Frame, waitUntil: PuppeteerLifeCycleEvent|PuppeteerLifeCycleEvent[], timeout: number) {
     if (Array.isArray(waitUntil))
       waitUntil = waitUntil.slice();
     else if (typeof waitUntil === 'string')
@@ -106,7 +107,7 @@ export class LifecycleWatcher {
     this._navigationRequest = request;
   }
 
-  _onFrameDetached(frame: Puppeteer.Frame): void {
+  _onFrameDetached(frame: Frame): void {
     if (this._frame === frame) {
       this._terminationCallback.call(null, new Error('Navigating frame was detached'));
       return;
@@ -146,7 +147,7 @@ export class LifecycleWatcher {
         .then(() => new TimeoutError(errorMessage));
   }
 
-  _navigatedWithinDocument(frame: Puppeteer.Frame): void {
+  _navigatedWithinDocument(frame: Frame): void {
     if (frame !== this._frame)
       return;
     this._hasSameDocumentNavigation = true;
@@ -166,11 +167,11 @@ export class LifecycleWatcher {
       this._newDocumentNavigationCompleteCallback();
 
     /**
-     * @param {!Puppeteer.Frame} frame
+     * @param {!Frame} frame
      * @param {!Array<string>} expectedLifecycle
      * @return {boolean}
      */
-    function checkLifecycle(frame: Puppeteer.Frame, expectedLifecycle: ProtocolLifeCycleEvent[]): boolean {
+    function checkLifecycle(frame: Frame, expectedLifecycle: ProtocolLifeCycleEvent[]): boolean {
       for (const event of expectedLifecycle) {
         if (!frame._lifecycleEvents.has(event))
           return false;

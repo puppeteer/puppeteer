@@ -19,11 +19,14 @@ const {Events} = require('./Events');
 // CDPSession is used only as a typedef
 // eslint-disable-next-line no-unused-vars
 const {CDPSession} = require('./Connection');
+// used only as a typedef
+// eslint-disable-next-line no-unused-vars
+const {Frame, FrameManager} = require('./FrameManager');
 
 class NetworkManager extends EventEmitter {
   /**
    * @param {!CDPSession} client
-   * @param {!Puppeteer.FrameManager} frameManager
+   * @param {!FrameManager} frameManager
    */
   constructor(client, ignoreHTTPSErrors, frameManager) {
     super();
@@ -316,7 +319,7 @@ class NetworkManager extends EventEmitter {
 class Request {
   /**
    * @param {!CDPSession} client
-   * @param {?Puppeteer.Frame} frame
+   * @param {?Frame} frame
    * @param {string} interceptionId
    * @param {boolean} allowInterception
    * @param {!Protocol.Network.requestWillBeSentPayload} event
@@ -388,7 +391,7 @@ class Request {
   }
 
   /**
-   * @return {?Puppeteer.Frame}
+   * @return {?Frame}
    */
   frame() {
     return this._frame;
@@ -659,7 +662,7 @@ class Response {
   }
 
   /**
-   * @return {?Puppeteer.Frame}
+   * @return {?Frame}
    */
   frame() {
     return this._request.frame();

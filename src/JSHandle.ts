@@ -18,6 +18,7 @@ import {helper, assert, debugError} from './helper';
 import {ExecutionContext} from './ExecutionContext';
 import {CDPSession} from './Connection';
 import {KeyInput} from './USKeyboardLayout';
+import {FrameManager, Frame} from './FrameManager';
 
 interface BoxModel {
   content: Array<{x: number; y: number}>;
@@ -123,15 +124,15 @@ export class JSHandle {
 
 export class ElementHandle extends JSHandle {
   _page: Puppeteer.Page;
-  _frameManager: Puppeteer.FrameManager;
+  _frameManager: FrameManager;
   /**
    * @param {!ExecutionContext} context
    * @param {!CDPSession} client
    * @param {!Protocol.Runtime.RemoteObject} remoteObject
    * @param {!Puppeteer.Page} page
-   * @param {!Puppeteer.FrameManager} frameManager
+   * @param {!FrameManager} frameManager
    */
-  constructor(context: ExecutionContext, client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject, page: Puppeteer.Page, frameManager: Puppeteer.FrameManager) {
+  constructor(context: ExecutionContext, client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject, page: Puppeteer.Page, frameManager: FrameManager) {
     super(context, client, remoteObject);
     this._client = client;
     this._remoteObject = remoteObject;
@@ -143,7 +144,7 @@ export class ElementHandle extends JSHandle {
     return this;
   }
 
-  async contentFrame(): Promise<Puppeteer.Frame | null> {
+  async contentFrame(): Promise<Frame | null> {
     const nodeInfo = await this._client.send('DOM.describeNode', {
       objectId: this._remoteObject.objectId
     });

@@ -22,18 +22,19 @@ import {JSHandle, ElementHandle} from './JSHandle';
 import {ExecutionContext} from './ExecutionContext';
 import {TimeoutSettings} from './TimeoutSettings';
 import {MouseButtonInput} from './Input';
+import {FrameManager, Frame} from './FrameManager';
 
 const readFileAsync = helper.promisify(fs.readFile);
 
-interface WaitForSelectorOptions {
+export interface WaitForSelectorOptions {
   visible?: boolean;
   hidden?: boolean;
   timeout?: number;
 }
 
 export class DOMWorld {
-  _frameManager: Puppeteer.FrameManager;
-  _frame: Puppeteer.Frame;
+  _frameManager: FrameManager;
+  _frame: Frame;
   _timeoutSettings: TimeoutSettings;
   _documentPromise?: Promise<ElementHandle> = null;
   _contextPromise?: Promise<ExecutionContext> = null;
@@ -43,14 +44,14 @@ export class DOMWorld {
   _detached = false;
   _waitTasks = new Set<WaitTask>();
 
-  constructor(frameManager: Puppeteer.FrameManager, frame: Puppeteer.Frame, timeoutSettings: TimeoutSettings) {
+  constructor(frameManager: FrameManager, frame: Frame, timeoutSettings: TimeoutSettings) {
     this._frameManager = frameManager;
     this._frame = frame;
     this._timeoutSettings = timeoutSettings;
     this._setContext(null);
   }
 
-  frame(): Puppeteer.Frame {
+  frame(): Frame {
     return this._frame;
   }
 

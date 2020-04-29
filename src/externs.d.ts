@@ -1,13 +1,10 @@
 import {Target as RealTarget} from './Target.js';
 import {Page as RealPage} from './Page.js';
-import {Frame as RealFrame, FrameManager as RealFrameManager}  from './FrameManager.js';
 import { NetworkManager as RealNetworkManager, Request as RealRequest, Response as RealResponse } from './NetworkManager.js';
 import * as child_process from 'child_process';
 declare global {
   module Puppeteer {
     export class Target extends RealTarget {}
-    export class Frame extends RealFrame {}
-    export class FrameManager extends RealFrameManager {}
     export class NetworkManager extends RealNetworkManager {}
     export class Page extends RealPage { }
     export class Response extends RealResponse { }

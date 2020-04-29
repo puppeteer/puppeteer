@@ -23,7 +23,9 @@ const {Events} = require('./Events');
 const {Connection, CDPSession} = require('./Connection');
 const {Dialog} = require('./Dialog');
 const {EmulationManager} = require('./EmulationManager');
-const {FrameManager} = require('./FrameManager');
+// Import used as typedef
+// eslint-disable-next-line no-unused-vars
+const {Frame, FrameManager} = require('./FrameManager');
 const {Keyboard, Mouse, Touchscreen} = require('./Input');
 const {Tracing} = require('./Tracing');
 const {helper, debugError, assert} = require('./helper');
@@ -236,7 +238,7 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @return {!Puppeteer.Frame}
+   * @return {!Frame}
    */
   mainFrame() {
     return this._frameManager.mainFrame();
@@ -278,7 +280,7 @@ class Page extends EventEmitter {
   }
 
   /**
-   * @return {!Array<Puppeteer.Frame>}
+   * @return {!Array<Frame>}
    */
   frames() {
     return this._frameManager.frames();
