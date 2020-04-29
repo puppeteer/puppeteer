@@ -45,7 +45,7 @@ const utils = module.exports = {
    * @param {!Page} page
    * @param {string} frameId
    * @param {string} url
-   * @return {!Puppeteer.Frame}
+   * @return {!Frame}
    */
   attachFrame: async function(page, frameId, url) {
     const handle = await page.evaluateHandle(attachFrame, frameId, url);

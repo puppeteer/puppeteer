@@ -18,6 +18,7 @@ import {helper, assert} from './helper';
 import {createJSHandle, JSHandle, ElementHandle} from './JSHandle';
 import {CDPSession} from './Connection';
 import {DOMWorld} from './DOMWorld';
+import {Frame} from './FrameManager';
 
 export const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
@@ -33,7 +34,7 @@ export class ExecutionContext {
     this._contextId = contextPayload.id;
   }
 
-  frame(): Puppeteer.Frame | null {
+  frame(): Frame | null {
     return this._world ? this._world.frame() : null;
   }
 

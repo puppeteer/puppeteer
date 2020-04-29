@@ -299,6 +299,14 @@ function compareDocumentations(actual, expected) {
         actualName: 'Object',
         expectedName: 'TracingOptions'
       }],
+      ['Method Frame.waitForSelector() options', {
+        actualName: 'Object',
+        expectedName: 'WaitForSelectorOptions'
+      }],
+      ['Method Frame.waitForXPath() options', {
+        actualName: 'Object',
+        expectedName: 'WaitForSelectorOptions'
+      }],
       ['Method Frame.goto() options.waitUntil', {
         actualName: '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array',
         expectedName: '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleEvent>'
