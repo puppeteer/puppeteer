@@ -255,12 +255,12 @@ describe('ElementHandle specs', function() {
       await page.setContent('<div id="not-foo"></div><div id="foo"></div>');
 
       // Register.
-      puppeteer.registerCustomQueryFunction('get-by-id', (element, selector) => document.querySelector(`[id="${selector}"]`));
+      puppeteer.__experimental_registerCustomQueryHandler('get-by-id', (element, selector) => document.querySelector(`[id="${selector}"]`));
       const element = await page.$('get-by-id/foo');
       expect(await page.evaluate(element => element.id, element)).toBe('foo');
 
       // Unregister.
-      puppeteer.unregisterCustomQueryFunction('get-by-id');
+      puppeteer.__experimental_unregisterCustomQueryHandler('get-by-id');
       try {
         await page.$('get-by-id/foo');
         expect.fail('Custom query function not set - throw expected');
@@ -270,28 +270,29 @@ describe('ElementHandle specs', function() {
     });
     it('should throw with invalid query names', () => {
       try {
-        puppeteer.registerCustomQueryFunction('1/2/3', (element, selector) => {});
+        const {puppeteer} = getTestState();
+        puppeteer.__experimental_registerCustomQueryHandler('1/2/3', (element, selector) => {});
         expect.fail('Custom query function name was invalid - throw expected');
       } catch (error) {
-        expect(error).toStrictEqual(new Error('Custom query function names may only contain [a-zA-Z]'));
+        expect(error).toStrictEqual(new Error('Custom query function names may only contain a-z, A-Z, and -'));
       }
     });
     it('should work for multiple elements', async() => {
       const {page, puppeteer} = getTestState();
       await page.setContent('<div id="not-foo"></div><div class="foo">Foo1</div><div class="foo baz">Foo2</div>');
-      puppeteer.registerCustomQueryFunction('get-by-class', (element, selector) => document.querySelectorAll(`.${selector}`));
+      puppeteer.__experimental_registerCustomQueryHandler('get-by-class', (element, selector) => document.querySelectorAll(`.${selector}`));
       const elements = await page.$$('get-by-class/foo');
       const classNames = await Promise.all(elements.map(async element => await page.evaluate(element => element.className, element)));
-      puppeteer.unregisterCustomQueryFunction('get-by-class');
+      puppeteer.__experimental_unregisterCustomQueryHandler('get-by-class');
 
       expect(classNames).toStrictEqual(['foo', 'foo baz']);
     });
     it('should eval correctly', async() => {
       const {page, puppeteer} = getTestState();
       await page.setContent('<div id="not-foo"></div><div class="foo">Foo1</div><div class="foo baz">Foo2</div>');
-      puppeteer.registerCustomQueryFunction('get-by-class', (element, selector) => document.querySelectorAll(`.${selector}`));
+      puppeteer.__experimental_registerCustomQueryHandler('get-by-class', (element, selector) => document.querySelectorAll(`.${selector}`));
       const elements = await page.$$eval('get-by-class/foo', divs => divs.length);
-      puppeteer.unregisterCustomQueryFunction('get-by-class');
+      puppeteer.__experimental_unregisterCustomQueryHandler('get-by-class');
 
       expect(elements).toBe(2);
     });

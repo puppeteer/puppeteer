@@ -19,7 +19,7 @@ import {ExecutionContext} from './ExecutionContext';
 import {CDPSession} from './Connection';
 import {KeyInput} from './USKeyboardLayout';
 import {FrameManager, Frame} from './FrameManager';
-import {customQueryFunctions} from './QueryFunction';
+import {customQueryHandlers} from './QueryHandler';
 
 const SEARCH_SEPARATOR = '/';
 
@@ -442,7 +442,7 @@ export class ElementHandle extends JSHandle {
     let handler = (element: Element, selector: string): ElementHandle => element.querySelector(selector) as unknown as ElementHandle;
     if (selector.indexOf(SEARCH_SEPARATOR) !== -1) {
       const {name, updatedSelector} = this._getQueryFunctionNameAndSelector(selector);
-      const queryFunction = customQueryFunctions().get(name);
+      const queryFunction = customQueryHandlers().get(name);
       if (!queryFunction)
         throw new Error(`$ query set to use "${name}", but no query function of that name was found`);
 
@@ -468,7 +468,7 @@ export class ElementHandle extends JSHandle {
     let handler = (element: Element, selector: string): ElementHandle[] => element.querySelectorAll(selector) as unknown as ElementHandle[];
     if (selector.indexOf(SEARCH_SEPARATOR) !== -1) {
       const {name, updatedSelector} = this._getQueryFunctionNameAndSelector(selector);
-      const queryFunction = customQueryFunctions().get(name);
+      const queryFunction = customQueryHandlers().get(name);
       if (!queryFunction)
         throw new Error(`$$ query set to use "${name}", but no query function of that name was found`);
 
@@ -501,7 +501,7 @@ export class ElementHandle extends JSHandle {
     let handler = (element: Element, selector: string): JSHandle => Array.from(element.querySelectorAll(selector)) as unknown as JSHandle;
     if (selector.indexOf(SEARCH_SEPARATOR) !== -1) {
       const {name, updatedSelector} = this._getQueryFunctionNameAndSelector(selector);
-      const queryFunction = customQueryFunctions().get(name);
+      const queryFunction = customQueryHandlers().get(name);
       if (!queryFunction)
         throw new Error(`$$ query set to use "${name}", but no query function of that name was found`);
 

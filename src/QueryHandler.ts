@@ -16,36 +16,36 @@
 
 import {ElementHandle} from './JSHandle';
 
-export interface QueryFunction {
+export interface QueryHandler {
   (element: Element, selector: string): (ElementHandle | null) | ElementHandle[];
 }
 
-const _customQueryFunctions = new Map<string, QueryFunction>();
+const _customQueryHandlers = new Map<string, QueryHandler>();
 
-export function registerCustomQueryFunction(name: string, queryFunction: Function): void {
-  if (_customQueryFunctions.get(name))
+export function registerCustomQueryHandler(name: string, queryFunction: Function): void {
+  if (_customQueryHandlers.get(name))
     throw new Error(`A custom query function named "${name}" already exists`);
 
-  const isValidName = /^[a-zA-Z]+$/.test(name);
+  const isValidName = /^[a-zA-Z\-]+$/.test(name);
   if (!isValidName)
-    throw new Error(`Custom query function names may only contain [a-zA-Z]`);
+    throw new Error(`Custom query function names may only contain a-z, A-Z, and -`);
 
-  _customQueryFunctions.set(name, queryFunction as QueryFunction);
+  _customQueryHandlers.set(name, queryFunction as QueryHandler);
 }
 
 /**
  * @param {string} name
  */
-export function unregisterCustomQueryFunction(name: string): void {
-  _customQueryFunctions.delete(name);
+export function unregisterCustomQueryHandler(name: string): void {
+  _customQueryHandlers.delete(name);
 }
 
-export function customQueryFunctions(): Map<string, QueryFunction> {
-  return _customQueryFunctions;
+export function customQueryHandlers(): Map<string, QueryHandler> {
+  return _customQueryHandlers;
 }
 
 module.exports = {
-  registerCustomQueryFunction,
-  unregisterCustomQueryFunction,
-  customQueryFunctions
+  registerCustomQueryHandler,
+  unregisterCustomQueryHandler,
+  customQueryHandlers
 };
