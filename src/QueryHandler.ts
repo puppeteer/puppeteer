@@ -22,7 +22,7 @@ export interface QueryHandler {
 
 const _customQueryHandlers = new Map<string, QueryHandler>();
 
-export function registerCustomQueryHandler(name: string, queryFunction: Function): void {
+export function registerCustomQueryHandler(name: string, handler: QueryHandler): void {
   if (_customQueryHandlers.get(name))
     throw new Error(`A custom query function named "${name}" already exists`);
 
@@ -30,7 +30,7 @@ export function registerCustomQueryHandler(name: string, queryFunction: Function
   if (!isValidName)
     throw new Error(`Custom query function names may only contain [a-zA-Z]`);
 
-  _customQueryHandlers.set(name, queryFunction as QueryHandler);
+  _customQueryHandlers.set(name, handler as QueryHandler);
 }
 
 /**
