@@ -40,6 +40,9 @@ const {Target} = require('./Target');
 // Import used as typedef
 // eslint-disable-next-line no-unused-vars
 const {createJSHandle, JSHandle, ElementHandle} = require('./JSHandle');
+// Import used as typedef
+// eslint-disable-next-line no-unused-vars
+const {Request: PuppeteerRequest, Response: PuppeteerResponse} = require('./NetworkManager');
 const {Accessibility} = require('./Accessibility');
 const {TimeoutSettings} = require('./TimeoutSettings');
 
@@ -692,7 +695,7 @@ class Page extends EventEmitter {
   /**
    * @param {string} url
    * @param {!{referer?: string, timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
-   * @return {!Promise<?Puppeteer.Response>}
+   * @return {!Promise<?PuppeteerResponse>}
    */
   async goto(url, options) {
     return await this._frameManager.mainFrame().goto(url, options);
@@ -700,7 +703,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
-   * @return {!Promise<?Puppeteer.Response>}
+   * @return {!Promise<?PuppeteerResponse>}
    */
   async reload(options) {
     const result = await Promise.all([
@@ -708,13 +711,13 @@ class Page extends EventEmitter {
       this._client.send('Page.reload')
     ]);
 
-    const response = /** @type Puppeteer.Response */ (result[0]);
+    const response = /** @type PuppeteerResponse */ (result[0]);
     return response;
   }
 
   /**
    * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
-   * @return {!Promise<?Puppeteer.Response>}
+   * @return {!Promise<?PuppeteerResponse>}
    */
   async waitForNavigation(options = {}) {
     return await this._frameManager.mainFrame().waitForNavigation(options);
@@ -729,7 +732,7 @@ class Page extends EventEmitter {
   /**
    * @param {(string|Function)} urlOrPredicate
    * @param {!{timeout?: number}=} options
-   * @return {!Promise<!Puppeteer.Request>}
+   * @return {!Promise<!PuppeteerRequest>}
    */
   async waitForRequest(urlOrPredicate, options = {}) {
     const {
@@ -747,7 +750,7 @@ class Page extends EventEmitter {
   /**
    * @param {(string|Function)} urlOrPredicate
    * @param {!{timeout?: number}=} options
-   * @return {!Promise<!Puppeteer.Response>}
+   * @return {!Promise<!PuppeteerResponse>}
    */
   async waitForResponse(urlOrPredicate, options = {}) {
     const {
@@ -764,7 +767,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
-   * @return {!Promise<?Puppeteer.Response>}
+   * @return {!Promise<?PuppeteerResponse>}
    */
   async goBack(options) {
     return this._go(-1, options);
@@ -772,7 +775,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
-   * @return {!Promise<?Puppeteer.Response>}
+   * @return {!Promise<?PuppeteerResponse>}
    */
   async goForward(options) {
     return this._go(+1, options);
@@ -780,7 +783,7 @@ class Page extends EventEmitter {
 
   /**
    * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
-   * @return {!Promise<?Puppeteer.Response>}
+   * @return {!Promise<?PuppeteerResponse>}
    */
   async _go(delta, options) {
     const history = await this._client.send('Page.getNavigationHistory');
@@ -791,7 +794,7 @@ class Page extends EventEmitter {
       this.waitForNavigation(options),
       this._client.send('Page.navigateToHistoryEntry', {entryId: entry.id}),
     ]);
-    const response = /** @type Puppeteer.Response */ (result[0]);
+    const response = /** @type PuppeteerResponse */ (result[0]);
     return response;
   }
 

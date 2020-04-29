@@ -1,12 +1,8 @@
 import {Page as RealPage} from './Page.js';
-import { NetworkManager as RealNetworkManager, Request as RealRequest, Response as RealResponse } from './NetworkManager.js';
 import * as child_process from 'child_process';
 declare global {
   module Puppeteer {
-    export class NetworkManager extends RealNetworkManager {}
     export class Page extends RealPage { }
-    export class Response extends RealResponse { }
-    export class Request extends RealRequest { }
 
 
     /* TODO(jacktfranklin@): once DOMWorld, Page, and FrameManager are in TS
