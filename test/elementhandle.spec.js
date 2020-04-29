@@ -253,7 +253,7 @@ describe('ElementHandle specs', function() {
     this.afterEach(() => {
       const {puppeteer} = getTestState();
       puppeteer.__experimental_clearQueryHandlers();
-    })
+    });
     it('should register and unregister', async() => {
       const {page, puppeteer} = getTestState();
       await page.setContent('<div id="not-foo"></div><div id="foo"></div>');

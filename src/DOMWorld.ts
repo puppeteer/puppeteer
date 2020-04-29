@@ -384,7 +384,7 @@ export class DOMWorld {
     } = options;
     const polling = waitForVisible || waitForHidden ? 'raf' : 'mutation';
     const title = `${isXPath ? 'XPath' : 'selector'} "${selectorOrXPath}"${waitForHidden ? ' to be hidden' : ''}`;
-    const { updatedSelector, queryHandler} = getQueryHandlerAndSelector(selectorOrXPath, (element, selector) => document.querySelector(selector));
+    const {updatedSelector, queryHandler} = getQueryHandlerAndSelector(selectorOrXPath, (element, selector) => document.querySelector(selector));
     const waitTask = new WaitTask(this, predicate, queryHandler, title, polling, timeout, updatedSelector, isXPath, waitForVisible, waitForHidden);
     const handle = await waitTask.promise;
     if (!handle.asElement()) {
@@ -444,11 +444,18 @@ class WaitTask {
     else
       throw new Error('Unknown polling options: ' + polling);
 
-    const wrapper =`
-    return (function wrapper(args) {
-      ${ predicateQueryHandlerBody ? `const predicateQueryHandler = ${predicateQueryHandlerBody};` : ''}
-      return (${predicateBody})(...args);
-    })(args)`;
+    function getPredicateBody(predicateBody: Function | string, predicateQueryHandlerBody: Function | string) {
+      if (helper.isString(predicateBody))
+        return `return (${predicateBody});`;
+      if (predicateQueryHandlerBody) {
+        return `
+          return (function wrapper(args) {
+            const predicateQueryHandler = ${predicateQueryHandlerBody};
+            return (${predicateBody})(...args);
+          })(args);`;
+      }
+      return `return (${predicateBody})(...args);`;
+    }
 
     this._domWorld = domWorld;
     this._polling = polling;

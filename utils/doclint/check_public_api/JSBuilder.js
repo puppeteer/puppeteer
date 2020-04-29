@@ -189,8 +189,8 @@ function checkSources(sources) {
    * @return {boolean}
    */
   function symbolHasPrivateModifier(symbol) {
-    const modifiers = symbol.valueDeclaration.modifiers || [];
-    return modifiers.some(modifier => modifier.kind === ts.SyntaxKind.PrivateKeyword);
+    const modifiers = symbol.valueDeclaration ? symbol.valueDeclaration.modifiers || [] : [];
+    return modifiers.some(modifier => modifier.kind && modifier.kind === ts.SyntaxKind.PrivateKeyword);
   }
 
   /**
