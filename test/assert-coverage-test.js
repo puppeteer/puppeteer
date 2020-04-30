@@ -14,7 +14,7 @@ describe('API coverage test', () => {
     }
     if (missingMethods.length) {
       console.error('\nCoverage check failed: not all API methods called. See above output for list of missing methods.');
-      console.error(Array.from(missingMethods).join('\n'));
+      console.error(missingMethods.join('\n'));
     }
 
     // We know this will fail because we checked above
