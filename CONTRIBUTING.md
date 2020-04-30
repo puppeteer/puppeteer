@@ -63,15 +63,26 @@ information on using pull requests.
 
 ## Code Style
 
-- Coding style is fully defined in [.eslintrc](https://github.com/puppeteer/puppeteer/blob/master/.eslintrc.js)
-- Code should be annotated with [closure annotations](https://github.com/google/closure-compiler/wiki/Annotating-JavaScript-for-the-Closure-Compiler).
-- Comments should be generally avoided. If the code would not be understood without comments, consider re-writing the code to make it self-explanatory.
+- Coding style is fully defined in [`.eslintrc`](https://github.com/puppeteer/puppeteer/blob/master/.eslintrc.js).
+- We are migrating the Puppeteer codebase to TypeScript which is why you'll find both JS and TS files in `src/`.
+- If you're working in a JS file, code should be annotated with [closure annotations](https://github.com/google/closure-compiler/wiki/Annotating-JavaScript-for-the-Closure-Compiler).
+- If you're working in a TS file, you should explicitly type all variables and return types. You'll get ESLint warnings if you don't so if you're not sure use them as guidelines, and feel free to ask us for help!
 
-To run code linter, use:
+To run ESLint, use:
 
 ```bash
-npm run lint
+npm run eslint
 ```
+
+You can check your code (both JS & TS) type-checks by running:
+
+```bash
+npm run tsc
+```
+
+## TypeScript guidelines
+
+- Try to avoid the use of `any` when possible. Consider `unknown` as a better alternative. You are able to use `any` if needbe, but it will generate an ESLint warning.
 
 ## API guidelines
 
@@ -145,7 +156,7 @@ A barrier for introducing new installation dependencies is especially high:
 
 - Every feature should be accompanied by a test.
 - Every public api event/method should be accompanied by a test.
-- Tests should be *hermetic*. Tests should not depend on external services.
+- Tests should not depend on external services.
 - Tests should work on all three platforms: Mac, Linux and Win. This is especially important for screenshot tests.
 
 Puppeteer tests are located in the test directory ([`test`](https://github.com/puppeteer/puppeteer/blob/master/test/) and are written using Mocha. See [`test/README.md`](https://github.com/puppeteer/puppeteer/blob/master/test/) for more details.
@@ -156,19 +167,6 @@ Despite being named 'unit', these are integration tests, making sure public API 
 
 ```bash
 npm run unit
-```
-
-- To run tests in parallel, use `-j` flag:
-
-```bash
-npm run unit -- -j 4
-```
-
-- To run tests in "verbose" mode or to stop testrunner on first failure:
-
-```bash
-npm run unit -- --verbose
-npm run unit -- --break-on-failure
 ```
 
 - To run a specific test, substitute the `it` with `it.only`:
@@ -196,6 +194,13 @@ npm run unit -- --break-on-failure
 
 ```bash
 HEADLESS=false npm run unit
+```
+
+- To run Firefox tests, firstly ensure you have Firefox installed locally (you only need to do this once, not on every test run) and then you can run the tests:
+
+```bash
+PUPPETEER_PRODUCT=firefox node install.js
+PUPPETEER_PRODUCT=firefox npm run unit
 ```
 
 - To run tests with custom browser executable:
