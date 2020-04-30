@@ -13,7 +13,7 @@ jobs:
       script:
         - ls .local-chromium .local-firefox
         - npm run tsc
-        - npm run unit
+        - travis_retry npm run unit
 
     - os: "windows"
       name: 'Unit tests: Windows/Chromium'
@@ -35,7 +35,7 @@ jobs:
       before_install:
         - PUPPETEER_PRODUCT=firefox npm install
       script:
-        - npm run coverage
+        - travis_retry npm run coverage
 
     # This bot runs all the extra checks that aren't the main Puppeteer unit tests
     - node_js: "10.19.0"
@@ -57,7 +57,7 @@ jobs:
       before_install:
         - PUPPETEER_PRODUCT=firefox npm install
       script:
-        - npm run funit
+        - travis_retry npm run funit
 
 notifications:
   email: false
