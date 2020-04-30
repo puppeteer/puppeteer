@@ -4,6 +4,7 @@
   * [Getting Code](#getting-code)
   * [Code reviews](#code-reviews)
   * [Code Style](#code-style)
+  * [TypeScript guidelines](#typescript-guidelines)
   * [API guidelines](#api-guidelines)
   * [Commit Messages](#commit-messages)
   * [Writing Documentation](#writing-documentation)
