@@ -20,7 +20,7 @@ import {Events} from './Events';
 import {ExecutionContext, EVALUATION_SCRIPT_URL} from './ExecutionContext';
 import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher';
 import {DOMWorld, WaitForSelectorOptions} from './DOMWorld';
-import {NetworkManager} from './NetworkManager';
+import {NetworkManager, Response} from './NetworkManager';
 import {TimeoutSettings} from './TimeoutSettings';
 import {CDPSession} from './Connection';
 import {JSHandle, ElementHandle} from './JSHandle';
@@ -31,7 +31,7 @@ const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 export class FrameManager extends EventEmitter {
   _client: CDPSession;
   _page: Puppeteer.Page;
-  _networkManager: Puppeteer.NetworkManager;
+  _networkManager: NetworkManager;
   _timeoutSettings: TimeoutSettings;
   _frames = new Map<string, Frame>();
   _contextIdToContext = new Map<number, ExecutionContext>();
@@ -70,11 +70,11 @@ export class FrameManager extends EventEmitter {
     ]);
   }
 
-  networkManager(): Puppeteer.NetworkManager {
+  networkManager(): NetworkManager {
     return this._networkManager;
   }
 
-  async navigateFrame(frame: Frame, url: string, options: {referer?: string; timeout?: number; waitUntil?: PuppeteerLifeCycleEvent|PuppeteerLifeCycleEvent[]} = {}): Promise<Puppeteer.Response | null> {
+  async navigateFrame(frame: Frame, url: string, options: {referer?: string; timeout?: number; waitUntil?: PuppeteerLifeCycleEvent|PuppeteerLifeCycleEvent[]} = {}): Promise<Response | null> {
     assertNoLegacyNavigationOptions(options);
     const {
       referer = this._networkManager.extraHTTPHeaders()['referer'],
@@ -110,7 +110,7 @@ export class FrameManager extends EventEmitter {
     }
   }
 
-  async waitForFrameNavigation(frame: Frame, options: {timeout?: number; waitUntil?: PuppeteerLifeCycleEvent|PuppeteerLifeCycleEvent[]} = {}): Promise<Puppeteer.Response | null> {
+  async waitForFrameNavigation(frame: Frame, options: {timeout?: number; waitUntil?: PuppeteerLifeCycleEvent|PuppeteerLifeCycleEvent[]} = {}): Promise<Response | null> {
     assertNoLegacyNavigationOptions(options);
     const {
       waitUntil = ['load'],
@@ -333,11 +333,11 @@ export class Frame {
       this._parentFrame._childFrames.add(this);
   }
 
-  async goto(url: string, options: {referer?: string; timeout?: number; waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[]}): Promise<Puppeteer.Response | null> {
+  async goto(url: string, options: {referer?: string; timeout?: number; waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[]}): Promise<Response | null> {
     return await this._frameManager.navigateFrame(this, url, options);
   }
 
-  async waitForNavigation(options: {timeout?: number; waitUntil?: PuppeteerLifeCycleEvent|PuppeteerLifeCycleEvent[]}): Promise<Puppeteer.Response | null> {
+  async waitForNavigation(options: {timeout?: number; waitUntil?: PuppeteerLifeCycleEvent|PuppeteerLifeCycleEvent[]}): Promise<Response | null> {
     return await this._frameManager.waitForFrameNavigation(this, options);
   }
 

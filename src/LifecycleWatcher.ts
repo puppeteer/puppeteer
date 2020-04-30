@@ -18,6 +18,7 @@ import {helper, assert, PuppeteerEventListener} from './helper';
 import {Events} from './Events';
 import {TimeoutError} from './Errors';
 import {FrameManager, Frame} from './FrameManager';
+import {Request, Response} from './NetworkManager';
 
 export type PuppeteerLifeCycleEvent = 'load' | 'domcontentloaded' | 'networkidle0' | 'networkidle2';
 type ProtocolLifeCycleEvent = 'load' | 'DOMContentLoaded' | 'networkIdle' | 'networkAlmostIdle';
@@ -35,7 +36,7 @@ export class LifecycleWatcher {
   _frameManager: FrameManager;
   _frame: Frame;
   _timeout: number;
-  _navigationRequest?: Puppeteer.Request;
+  _navigationRequest?: Request;
   _eventListeners: PuppeteerEventListener[];
   _initialLoaderId: string;
 
@@ -72,7 +73,6 @@ export class LifecycleWatcher {
     this._frame = frame;
     this._initialLoaderId = frame._loaderId;
     this._timeout = timeout;
-    /** @type {?Puppeteer.Request} */
     this._navigationRequest = null;
     this._eventListeners = [
       helper.addEventListener(frameManager._client, Events.CDPSession.Disconnected, () => this._terminate(new Error('Navigation failed because browser has disconnected!'))),
@@ -101,7 +101,7 @@ export class LifecycleWatcher {
     this._checkLifecycleComplete();
   }
 
-  _onRequest(request: Puppeteer.Request): void {
+  _onRequest(request: Request): void {
     if (request.frame() !== this._frame || !request.isNavigationRequest())
       return;
     this._navigationRequest = request;
@@ -115,7 +115,7 @@ export class LifecycleWatcher {
     this._checkLifecycleComplete();
   }
 
-  navigationResponse(): Puppeteer.Response | null {
+  navigationResponse(): Response | null {
     return this._navigationRequest ? this._navigationRequest.response() : null;
   }
 
