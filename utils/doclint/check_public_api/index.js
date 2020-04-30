@@ -307,6 +307,10 @@ function compareDocumentations(actual, expected) {
         actualName: 'Object',
         expectedName: 'WaitForSelectorOptions'
       }],
+      ['Method Request.abort() errorCode', {
+        actualName: 'string',
+        expectedName: 'ErrorCode'
+      }],
       ['Method Frame.goto() options.waitUntil', {
         actualName: '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array',
         expectedName: '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleEvent>'
