@@ -802,7 +802,7 @@ describe('Page', function() {
   });
 
   describe('Page.setUserAgent', function() {
-    it('should work', async() => {
+    itFailsFirefox('should work', async() => {
       const {page, server} = getTestState();
 
       expect(await page.evaluate(() => navigator.userAgent)).toContain('Mozilla');
