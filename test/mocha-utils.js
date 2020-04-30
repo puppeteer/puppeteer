@@ -117,6 +117,11 @@ global.describeChromeOnly = (...args) => {
 if (process.env.COVERAGE)
   assertCoverage();
 
+console.log(
+    `Running unit tests with:
+  -> product: ${product}
+  -> binary: ${path.relative(process.cwd(), puppeteer.executablePath())}`);
+
 exports.setupTestBrowserHooks = () => {
   before(async() => {
     const browser = await puppeteer.launch(defaultBrowserOptions);
