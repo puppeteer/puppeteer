@@ -28,7 +28,6 @@
 
 const path = require('path');
 const fs = require('fs');
-const expect = require('expect');
 
 /**
  * @param {Map<string, boolean>} apiCoverage
