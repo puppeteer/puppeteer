@@ -20,5 +20,7 @@ module.exports = {
   ...base,
   file: ['./test/mocha-utils.js'],
   spec: 'test/*.spec.js',
+  // retry twice more, so we run each test up to 3 times if needed.
+  retries: 2,
   timeout: 25 * 1000,
 };
