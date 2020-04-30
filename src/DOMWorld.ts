@@ -23,6 +23,11 @@ import {ExecutionContext} from './ExecutionContext';
 import {TimeoutSettings} from './TimeoutSettings';
 import {MouseButtonInput} from './Input';
 import {FrameManager, Frame} from './FrameManager';
+import {getQueryHandlerAndSelector, QueryHandler} from './QueryHandler';
+
+// This predicateQueryHandler is declared here so that TypeScript knows about it
+// when it is used in the predicate function below.
+declare const predicateQueryHandler: QueryHandler;
 
 const readFileAsync = helper.promisify(fs.readFile);
 
@@ -364,7 +369,7 @@ export class DOMWorld {
       polling = 'raf',
       timeout = this._timeoutSettings.timeout(),
     } = options;
-    return new WaitTask(this, pageFunction, 'function', polling, timeout, ...args).promise;
+    return new WaitTask(this, pageFunction, undefined, 'function', polling, timeout, ...args).promise;
   }
 
   async title(): Promise<string> {
@@ -379,7 +384,8 @@ export class DOMWorld {
     } = options;
     const polling = waitForVisible || waitForHidden ? 'raf' : 'mutation';
     const title = `${isXPath ? 'XPath' : 'selector'} "${selectorOrXPath}"${waitForHidden ? ' to be hidden' : ''}`;
-    const waitTask = new WaitTask(this, predicate, title, polling, timeout, selectorOrXPath, isXPath, waitForVisible, waitForHidden);
+    const {updatedSelector, queryHandler} = getQueryHandlerAndSelector(selectorOrXPath, (element, selector) => document.querySelector(selector));
+    const waitTask = new WaitTask(this, predicate, queryHandler, title, polling, timeout, updatedSelector, isXPath, waitForVisible, waitForHidden);
     const handle = await waitTask.promise;
     if (!handle.asElement()) {
       await handle.dispose();
@@ -397,7 +403,7 @@ export class DOMWorld {
     function predicate(selectorOrXPath: string, isXPath: boolean, waitForVisible: boolean, waitForHidden: boolean): Node | null | boolean {
       const node = isXPath
         ? document.evaluate(selectorOrXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
-        : document.querySelector(selectorOrXPath);
+        : predicateQueryHandler ? predicateQueryHandler(document, selectorOrXPath) as Element : document.querySelector(selectorOrXPath);
       if (!node)
         return waitForHidden;
       if (!waitForVisible && !waitForHidden)
@@ -430,7 +436,7 @@ class WaitTask {
   _timeoutTimer?: NodeJS.Timeout;
   _terminated = false;
 
-  constructor(domWorld: DOMWorld, predicateBody: Function | string, title: string, polling: string | number, timeout: number, ...args: unknown[]) {
+  constructor(domWorld: DOMWorld, predicateBody: Function | string, predicateQueryHandlerBody: Function | string | undefined, title: string, polling: string | number, timeout: number, ...args: unknown[]) {
     if (helper.isString(polling))
       assert(polling === 'raf' || polling === 'mutation', 'Unknown polling option: ' + polling);
     else if (helper.isNumber(polling))
@@ -438,10 +444,23 @@ class WaitTask {
     else
       throw new Error('Unknown polling options: ' + polling);
 
+    function getPredicateBody(predicateBody: Function | string, predicateQueryHandlerBody: Function | string) {
+      if (helper.isString(predicateBody))
+        return `return (${predicateBody});`;
+      if (predicateQueryHandlerBody) {
+        return `
+          return (function wrapper(args) {
+            const predicateQueryHandler = ${predicateQueryHandlerBody};
+            return (${predicateBody})(...args);
+          })(args);`;
+      }
+      return `return (${predicateBody})(...args);`;
+    }
+
     this._domWorld = domWorld;
     this._polling = polling;
     this._timeout = timeout;
-    this._predicateBody = helper.isString(predicateBody) ? 'return (' + predicateBody + ')' : 'return (' + predicateBody + ')(...args)';
+    this._predicateBody = getPredicateBody(predicateBody, predicateQueryHandlerBody);
     this._args = args;
     this._runCount = 0;
     domWorld._waitTasks.add(this);

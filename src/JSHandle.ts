@@ -19,6 +19,7 @@ import {ExecutionContext} from './ExecutionContext';
 import {CDPSession} from './Connection';
 import {KeyInput} from './USKeyboardLayout';
 import {FrameManager, Frame} from './FrameManager';
+import {getQueryHandlerAndSelector} from './QueryHandler';
 
 interface BoxModel {
   content: Array<{x: number; y: number}>;
@@ -427,10 +428,10 @@ export class ElementHandle extends JSHandle {
   }
 
   async $(selector: string): Promise<ElementHandle | null> {
-    const handle = await this.evaluateHandle(
-        (element, selector) => element.querySelector(selector),
-        selector
-    );
+    const defaultHandler = (element: Element, selector: string) => element.querySelector(selector);
+    const {updatedSelector, queryHandler} = getQueryHandlerAndSelector(selector, defaultHandler);
+
+    const handle = await this.evaluateHandle(queryHandler, updatedSelector);
     const element = handle.asElement();
     if (element)
       return element;
@@ -443,10 +444,10 @@ export class ElementHandle extends JSHandle {
    * @return {!Promise<!Array<!ElementHandle>>}
    */
   async $$(selector: string): Promise<ElementHandle[]> {
-    const arrayHandle = await this.evaluateHandle(
-        (element, selector) => element.querySelectorAll(selector),
-        selector
-    );
+    const defaultHandler = (element: Element, selector: string) => element.querySelectorAll(selector);
+    const {updatedSelector, queryHandler} = getQueryHandlerAndSelector(selector, defaultHandler);
+
+    const arrayHandle = await this.evaluateHandle(queryHandler, updatedSelector);
     const properties = await arrayHandle.getProperties();
     await arrayHandle.dispose();
     const result = [];
@@ -468,11 +469,10 @@ export class ElementHandle extends JSHandle {
   }
 
   async $$eval<ReturnType extends any>(selector: string, pageFunction: Function | string, ...args: unknown[]): Promise<ReturnType> {
-    const arrayHandle = await this.evaluateHandle(
-        (element, selector) => Array.from(element.querySelectorAll(selector)),
-        selector
-    );
+    const defaultHandler = (element: Element, selector: string) => Array.from(element.querySelectorAll(selector));
+    const {updatedSelector, queryHandler} = getQueryHandlerAndSelector(selector, defaultHandler);
 
+    const arrayHandle = await this.evaluateHandle(queryHandler, updatedSelector);
     const result = await arrayHandle.evaluate<ReturnType>(pageFunction, ...args);
     await arrayHandle.dispose();
     return result;

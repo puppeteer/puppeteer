@@ -20,6 +20,7 @@ const DeviceDescriptors = require('./DeviceDescriptors');
 // Import used as typedef
 // eslint-disable-next-line no-unused-vars
 const {Browser} = require('./Browser');
+const QueryHandler = require('./QueryHandler');
 
 module.exports = class {
   /**
@@ -146,5 +147,28 @@ module.exports = class {
    */
   createBrowserFetcher(options) {
     return new BrowserFetcher(this._projectRoot, options);
+  }
+
+  /**
+   * @param {string} name
+   * @param {!Function} queryHandler
+   */
+  __experimental_registerCustomQueryHandler(name, queryHandler) {
+    QueryHandler.registerCustomQueryHandler(name, queryHandler);
+  }
+
+  /**
+   * @param {string} name
+   */
+  __experimental_unregisterCustomQueryHandler(name) {
+    QueryHandler.unregisterCustomQueryHandler(name);
+  }
+
+  __experimental_customQueryHandlers() {
+    return QueryHandler.customQueryHandlers();
+  }
+
+  __experimental_clearQueryHandlers() {
+    QueryHandler.clearQueryHandlers();
   }
 };
