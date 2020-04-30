@@ -63,7 +63,7 @@ information on using pull requests.
 
 ## Code Style
 
-- Coding style is fully defined in [.eslintrc](https://github.com/puppeteer/puppeteer/blob/master/.eslintrc.js).
+- Coding style is fully defined in [`.eslintrc`](https://github.com/puppeteer/puppeteer/blob/master/.eslintrc.js).
 - We are migrating the Puppeteer codebase to TypeScript which is why you'll find both JS and TS files in `src/`.
 - If you're working in a JS file, code should be annotated with [closure annotations](https://github.com/google/closure-compiler/wiki/Annotating-JavaScript-for-the-Closure-Compiler).
 - If you're working in a TS file, you should explicitly type all variables and return types. You'll get ESLint warnings if you don't so if you're not sure use them as guidelines, and feel free to ask us for help!
