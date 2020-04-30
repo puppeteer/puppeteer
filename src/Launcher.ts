@@ -13,49 +13,83 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const os = require('os');
-const path = require('path');
-const http = require('http');
-const https = require('https');
-const URL = require('url');
-const removeFolder = require('rimraf');
-const childProcess = require('child_process');
-const {BrowserFetcher} = require('./BrowserFetcher');
-const {Connection} = require('./Connection');
-const {Browser} = require('./Browser');
-const readline = require('readline');
-const fs = require('fs');
-const {helper, assert, debugError} = require('./helper');
-const debugLauncher = require('debug')(`puppeteer:launcher`);
-const {TimeoutError} = require('./Errors');
-const {WebSocketTransport} = require('./WebSocketTransport');
-const {PipeTransport} = require('./PipeTransport');
+import * as os from 'os';
+import * as path from 'path';
+import * as http from 'http';
+import * as https from 'https';
+import * as URL from 'url';
+import * as fs from 'fs';
+import * as readline from 'readline';
+import * as debug from 'debug';
+
+import * as removeFolder from 'rimraf';
+import * as childProcess from 'child_process';
+
+import {BrowserFetcher} from './BrowserFetcher';
+import {Connection} from './Connection';
+import {Browser} from './Browser';
+import {helper, assert, debugError} from './helper';
+import {TimeoutError} from './Errors';
+import {WebSocketTransport} from './WebSocketTransport';
+import {PipeTransport} from './PipeTransport';
 
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
 const removeFolderAsync = helper.promisify(removeFolder);
 const writeFileAsync = helper.promisify(fs.writeFile);
+const debugLauncher = debug('puppeteer:launcher');
+
+export interface ProductLauncher {
+  launch(object);
+  connect(object);
+  executablePath: () => string;
+  defaultArgs(object);
+  product: string;
+}
+
+export interface ChromeArgOptions {
+ headless?: boolean;
+ args?: string[];
+ userDataDir?: string;
+ devtools?: boolean;
+}
+
+export interface LaunchOptions {
+ executablePath?: string;
+ ignoreDefaultArgs?: boolean|string[];
+ handleSIGINT?: boolean;
+ handleSIGTERM?: boolean;
+ handleSIGHUP?: boolean;
+ timeout?: number;
+ dumpio?: boolean;
+ env?: Record<string, string | undefined>;
+ pipe?: boolean;
+}
+
+export interface BrowserOptions {
+  ignoreHTTPSErrors?: boolean;
+  defaultViewport?: Puppeteer.Viewport;
+  slowMo?: number;
+}
 
 class BrowserRunner {
+  _executablePath: string;
+  _processArguments: string[];
+  _tempDirectory?: string;
 
-  /**
-   * @param {string} executablePath
-   * @param {!Array<string>} processArguments
-   * @param {string=} tempDirectory
-   */
-  constructor(executablePath, processArguments, tempDirectory) {
+  proc = null;
+  connection = null;
+
+  _closed = true;
+  _listeners = [];
+  _processClosing: Promise<void>;
+
+  constructor(executablePath: string, processArguments: string[], tempDirectory?: string) {
     this._executablePath = executablePath;
     this._processArguments = processArguments;
     this._tempDirectory = tempDirectory;
-    this.proc = null;
-    this.connection = null;
-    this._closed = true;
-    this._listeners = [];
   }
 
-  /**
-   * @param {!(Launcher.LaunchOptions)=} options
-   */
-  start(options = {}) {
+  start(options: LaunchOptions = {}): void {
     const {
       handleSIGINT,
       handleSIGTERM,
@@ -64,8 +98,7 @@ class BrowserRunner {
       env,
       pipe
     } = options;
-    /** @type {!Array<"ignore"|"pipe">} */
-    let stdio = ['pipe', 'pipe', 'pipe'];
+    let stdio: Array<'ignore'|'pipe'> = ['pipe', 'pipe', 'pipe'];
     if (pipe) {
       if (dumpio)
         stdio = ['ignore', 'pipe', 'pipe', 'pipe', 'pipe'];
@@ -91,7 +124,7 @@ class BrowserRunner {
       this.proc.stdout.pipe(process.stdout);
     }
     this._closed = false;
-    this._processClosing = new Promise((fulfill, reject) => {
+    this._processClosing = new Promise(fulfill => {
       this.proc.once('exit', () => {
         this._closed = true;
         // Cleanup as processes exit.
@@ -113,10 +146,7 @@ class BrowserRunner {
       this._listeners.push(helper.addEventListener(process, 'SIGHUP', this.close.bind(this)));
   }
 
-  /**
-   * @return {Promise}
-   */
-  close() {
+  close(): Promise<void> {
     if (this._closed)
       return Promise.resolve();
     helper.removeEventListeners(this._listeners);
@@ -132,8 +162,7 @@ class BrowserRunner {
     return this._processClosing;
   }
 
-  // This function has to be sync to be used as 'exit' event handler.
-  kill() {
+  kill(): void {
     helper.removeEventListeners(this._listeners);
     if (this.proc && this.proc.pid && !this.proc.killed && !this._closed) {
       try {
@@ -156,7 +185,12 @@ class BrowserRunner {
    *
    * @return {!Promise<!Connection>}
    */
-  async setupConnection(options) {
+  async setupConnection(options: {
+    usePipe?: boolean;
+    timeout: number;
+    slowMo: number;
+    preferredRevision: string;
+  }): Promise<Connection> {
     const {
       usePipe,
       timeout,
@@ -169,34 +203,26 @@ class BrowserRunner {
       this.connection = new Connection(browserWSEndpoint, transport, slowMo);
     } else {
       // stdio was assigned during start(), and the 'pipe' option there adds the 4th and 5th items to stdio array
-      const {3: pipeWrite, 4: pipeRead} = /** @type {!Array<any>} */ (this.proc.stdio);
-      const transport = new PipeTransport(/** @type {!NodeJS.WritableStream} */ pipeWrite, /** @type {!NodeJS.ReadableStream} */ pipeRead);
+      const {3: pipeWrite, 4: pipeRead} = this.proc.stdio;
+      const transport = new PipeTransport(pipeWrite as NodeJS.WritableStream, pipeRead as NodeJS.ReadableStream);
       this.connection = new Connection('', transport, slowMo);
     }
     return this.connection;
   }
 }
 
-/**
- * @implements {!Puppeteer.ProductLauncher}
- */
-class ChromeLauncher {
-  /**
-   * @param {string} projectRoot
-   * @param {string} preferredRevision
-   * @param {boolean} isPuppeteerCore
-   */
-  constructor(projectRoot, preferredRevision, isPuppeteerCore) {
+class ChromeLauncher implements ProductLauncher {
+  _projectRoot: string;
+  _preferredRevision: string;
+  _isPuppeteerCore: boolean;
+
+  constructor(projectRoot: string, preferredRevision: string, isPuppeteerCore: boolean) {
     this._projectRoot = projectRoot;
     this._preferredRevision = preferredRevision;
     this._isPuppeteerCore = isPuppeteerCore;
   }
 
-  /**
-   * @param {!(Launcher.LaunchOptions & Launcher.ChromeArgOptions & Launcher.BrowserOptions)=} options
-   * @return {!Promise<!Browser>}
-   */
-  async launch(options = {}) {
+  async launch(options: LaunchOptions & ChromeArgOptions & BrowserOptions = {}): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
@@ -258,7 +284,7 @@ class ChromeLauncher {
    * @param {!Launcher.ChromeArgOptions=} options
    * @return {!Array<string>}
    */
-  defaultArgs(options = {}) {
+  defaultArgs(options: ChromeArgOptions = {}): string[] {
     const chromeArguments = [
       '--disable-background-networking',
       '--enable-features=NetworkService,NetworkServiceInProcess',
@@ -307,25 +333,19 @@ class ChromeLauncher {
     return chromeArguments;
   }
 
-  /**
-   * @return {string}
-   */
-  executablePath() {
+  executablePath(): string {
     return resolveExecutablePath(this).executablePath;
   }
 
-  /**
-  * @return {string}
-  */
-  get product() {
+  get product(): string {
     return 'chrome';
   }
 
-  /**
-   * @param {!(Launcher.BrowserOptions & {browserWSEndpoint?: string, browserURL?: string, transport?: !Puppeteer.ConnectionTransport})} options
-   * @return {!Promise<!Browser>}
-   */
-  async connect(options) {
+  async connect(options: BrowserOptions & {
+    browserWSEndpoint?: string;
+    browserURL?: string;
+    transport?: Puppeteer.ConnectionTransport;
+  }): Promise<Browser> {
     const {
       browserWSEndpoint,
       browserURL,
@@ -358,23 +378,20 @@ class ChromeLauncher {
 /**
  * @implements {!Puppeteer.ProductLauncher}
  */
-class FirefoxLauncher {
-  /**
-   * @param {string} projectRoot
-   * @param {string} preferredRevision
-   * @param {boolean} isPuppeteerCore
-   */
-  constructor(projectRoot, preferredRevision, isPuppeteerCore) {
+class FirefoxLauncher implements ProductLauncher {
+  _projectRoot: string;
+  _preferredRevision: string;
+  _isPuppeteerCore: boolean;
+
+  constructor(projectRoot: string, preferredRevision: string, isPuppeteerCore: boolean) {
     this._projectRoot = projectRoot;
     this._preferredRevision = preferredRevision;
     this._isPuppeteerCore = isPuppeteerCore;
   }
 
-  /**
-   * @param {!(Launcher.LaunchOptions & Launcher.ChromeArgOptions & Launcher.BrowserOptions & {extraPrefsFirefox?: !object})=} options
-   * @return {!Promise<!Browser>}
-   */
-  async launch(options = {}) {
+  async launch(options: LaunchOptions & ChromeArgOptions & BrowserOptions & {
+    extraPrefsFirefox?: {[x: string]: unknown};
+  } = {}): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
@@ -434,11 +451,11 @@ class FirefoxLauncher {
     }
   }
 
-  /**
-   * @param {!(Launcher.BrowserOptions & {browserWSEndpoint?: string, browserURL?: string, transport?: !Puppeteer.ConnectionTransport})} options
-   * @return {!Promise<!Browser>}
-   */
-  async connect(options) {
+  async connect(options: BrowserOptions & {
+    browserWSEndpoint?: string;
+    browserURL?: string;
+    transport?: Puppeteer.ConnectionTransport;
+  }): Promise<Browser> {
     const {
       browserWSEndpoint,
       browserURL,
@@ -466,14 +483,11 @@ class FirefoxLauncher {
     return Browser.create(connection, browserContextIds, ignoreHTTPSErrors, defaultViewport, null, () => connection.send('Browser.close').catch(debugError));
   }
 
-  /**
-   * @return {string}
-   */
-  executablePath() {
+  executablePath(): string {
     return resolveExecutablePath(this).executablePath;
   }
 
-  async _updateRevision() {
+  async _updateRevision(): Promise<void> {
     // replace 'latest' placeholder with actual downloaded revision
     if (this._preferredRevision === 'latest') {
       const browserFetcher = new BrowserFetcher(this._projectRoot, {product: this.product});
@@ -483,18 +497,11 @@ class FirefoxLauncher {
     }
   }
 
-  /**
-   * @return {string}
-   */
-  get product() {
+  get product(): string {
     return 'firefox';
   }
 
-  /**
-   * @param {!Launcher.ChromeArgOptions=} options
-   * @return {!Array<string>}
-   */
-  defaultArgs(options = {}) {
+  defaultArgs(options: ChromeArgOptions = {}): string[] {
     const firefoxArguments = [
       '--no-remote',
       '--foreground',
@@ -519,11 +526,7 @@ class FirefoxLauncher {
     return firefoxArguments;
   }
 
-  /**
-   * @param {!Object=} extraPrefs
-   * @return {!Promise<string>}
-   */
-  async _createProfile(extraPrefs) {
+  async _createProfile(extraPrefs: { [x: string]: unknown}): Promise<string> {
     const profilePath = await mkdtempAsync(path.join(os.tmpdir(), 'puppeteer_dev_firefox_profile-'));
     const prefsJS = [];
     const userJS = [];
@@ -735,13 +738,7 @@ class FirefoxLauncher {
 }
 
 
-/**
- * @param {!Puppeteer.ChildProcess} browserProcess
- * @param {number} timeout
- * @param {string} preferredRevision
- * @return {!Promise<string>}
- */
-function waitForWSEndpoint(browserProcess, timeout, preferredRevision) {
+function waitForWSEndpoint(browserProcess: Puppeteer.ChildProcess, timeout: number, preferredRevision: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const rl = readline.createInterface({input: browserProcess.stderr});
     let stderr = '';
@@ -756,7 +753,7 @@ function waitForWSEndpoint(browserProcess, timeout, preferredRevision) {
     /**
      * @param {!Error=} error
      */
-    function onClose(error) {
+    function onClose(error?: Error): void {
       cleanup();
       reject(new Error([
         'Failed to launch the browser process!' + (error ? ' ' + error.message : ''),
@@ -767,15 +764,12 @@ function waitForWSEndpoint(browserProcess, timeout, preferredRevision) {
       ].join('\n')));
     }
 
-    function onTimeout() {
+    function onTimeout(): void {
       cleanup();
       reject(new TimeoutError(`Timed out after ${timeout} ms while trying to connect to the browser! Only Chrome at revision r${preferredRevision} is guaranteed to work.`));
     }
 
-    /**
-     * @param {string} line
-     */
-    function onLine(line) {
+    function onLine(line: string): void {
       stderr += line + '\n';
       const match = line.match(/^DevTools listening on (ws:\/\/.*)$/);
       if (!match)
@@ -784,7 +778,7 @@ function waitForWSEndpoint(browserProcess, timeout, preferredRevision) {
       resolve(match[1]);
     }
 
-    function cleanup() {
+    function cleanup(): void {
       if (timeoutId)
         clearTimeout(timeoutId);
       helper.removeEventListeners(listeners);
@@ -792,13 +786,9 @@ function waitForWSEndpoint(browserProcess, timeout, preferredRevision) {
   });
 }
 
-/**
- * @param {string} browserURL
- * @return {!Promise<string>}
- */
-function getWSEndpoint(browserURL) {
+function getWSEndpoint(browserURL: string): Promise<string> {
   let resolve, reject;
-  const promise = new Promise((res, rej) => { resolve = res; reject = rej; });
+  const promise = new Promise<string>((res, rej) => { resolve = res; reject = rej; });
 
   const endpointURL = URL.resolve(browserURL, '/json/version');
   const protocol = endpointURL.startsWith('https') ? https : http;
@@ -825,12 +815,7 @@ function getWSEndpoint(browserURL) {
   });
 }
 
-/**
- * @param {ChromeLauncher|FirefoxLauncher} launcher
- *
- * @return {{executablePath: string, missingText: ?string}}
- */
-function resolveExecutablePath(launcher) {
+function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {executablePath: string; missingText?: string} {
   // puppeteer-core doesn't take into account PUPPETEER_* env variables.
   if (!launcher._isPuppeteerCore) {
     const executablePath = process.env.PUPPETEER_EXECUTABLE_PATH || process.env.npm_config_puppeteer_executable_path || process.env.npm_package_config_puppeteer_executable_path;
@@ -853,14 +838,7 @@ function resolveExecutablePath(launcher) {
   return {executablePath: revisionInfo.executablePath, missingText};
 }
 
-/**
- * @param {string} projectRoot
- * @param {string} preferredRevision
- * @param {boolean} isPuppeteerCore
- * @param {string=} product
- * @return {!Puppeteer.ProductLauncher}
- */
-function Launcher(projectRoot, preferredRevision, isPuppeteerCore, product) {
+function Launcher(projectRoot: string, preferredRevision: string, isPuppeteerCore: boolean, product?: string): ProductLauncher {
   // puppeteer-core doesn't take into account PUPPETEER_* env variables.
   if (!product && !isPuppeteerCore)
     product = process.env.PUPPETEER_PRODUCT || process.env.npm_config_puppeteer_product || process.env.npm_package_config_puppeteer_product;
@@ -873,34 +851,4 @@ function Launcher(projectRoot, preferredRevision, isPuppeteerCore, product) {
   }
 }
 
-
-/**
- * @typedef {Object} Launcher.ChromeArgOptions
- * @property {boolean=} headless
- * @property {Array<string>=} args
- * @property {string=} userDataDir
- * @property {boolean=} devtools
- */
-
-/**
- * @typedef {Object} Launcher.LaunchOptions
- * @property {string=} executablePath
- * @property {boolean|Array<string>=} ignoreDefaultArgs
- * @property {boolean=} handleSIGINT
- * @property {boolean=} handleSIGTERM
- * @property {boolean=} handleSIGHUP
- * @property {number=} timeout
- * @property {boolean=} dumpio
- * @property {!Object<string, string | undefined>=} env
- * @property {boolean=} pipe
- */
-
-/**
- * @typedef {Object} Launcher.BrowserOptions
- * @property {boolean=} ignoreHTTPSErrors
- * @property {(?Puppeteer.Viewport)=} defaultViewport
- * @property {number=} slowMo
- */
-
-
-module.exports = Launcher;
+export default Launcher;

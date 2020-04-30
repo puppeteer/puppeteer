@@ -15,7 +15,7 @@
  */
 import {helper, debugError, PuppeteerEventListener} from './helper';
 
-class PipeTransport implements Puppeteer.ConnectionTransport {
+export class PipeTransport implements Puppeteer.ConnectionTransport {
   _pipeWrite: NodeJS.WritableStream;
   _pendingMessage: string;
   _eventListeners: PuppeteerEventListener[];
@@ -70,5 +70,3 @@ class PipeTransport implements Puppeteer.ConnectionTransport {
     helper.removeEventListeners(this._eventListeners);
   }
 }
-
-export = {PipeTransport};

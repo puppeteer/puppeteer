@@ -323,6 +323,10 @@ function compareDocumentations(actual, expected) {
         actualName: '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array',
         expectedName: '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleEvent>'
       }],
+      ['Method Puppeteer.defaultArgs() options', {
+        actualName: 'Object',
+        expectedName: 'ChromeArgOptions'
+      }],
       ['Method Page.goBack() options.waitUntil', {
         actualName: '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array',
         expectedName: '"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleEvent>'
