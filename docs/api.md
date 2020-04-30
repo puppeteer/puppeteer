@@ -1321,7 +1321,7 @@ const iPhone = puppeteer.devices['iPhone 6'];
 })();
 ```
 
-List of all available devices is available in the source code: [DeviceDescriptors.js](https://github.com/puppeteer/puppeteer/blob/master/lib/DeviceDescriptors.js).
+List of all available devices is available in the source code: [src/DeviceDescriptors.ts](https://github.com/puppeteer/puppeteer/blob/master/src/DeviceDescriptors.ts).
 
 #### page.emulateMedia(type)
 - `type` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables CSS media emulation.
