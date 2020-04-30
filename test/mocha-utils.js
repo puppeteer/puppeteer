@@ -20,7 +20,7 @@ const fs = require('fs');
 const os = require('os');
 const puppeteer = require('../');
 const utils = require('./utils');
-const assertCoverage = require('./coverage-utils');
+const {trackCoverage} = require('./coverage-utils');
 
 const setupServer = async() => {
   const assetsPath = path.join(__dirname, 'assets');
@@ -115,7 +115,7 @@ global.describeChromeOnly = (...args) => {
 };
 
 if (process.env.COVERAGE)
-  assertCoverage();
+  trackCoverage();
 
 console.log(
     `Running unit tests with:
