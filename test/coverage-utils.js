@@ -26,6 +26,9 @@
  * We run this when COVERAGE=1.
  */
 
+const path = require('path');
+const fs = require('fs');
+
 /**
  * @param {Map<string, boolean>} apiCoverage
  * @param {Object} events
@@ -59,9 +62,37 @@ function traceAPICoverage(apiCoverage, events, className, classType) {
   }
 }
 
-module.exports = function() {
+const coverageLocation = path.join(__dirname, 'coverage.json');
+
+const clearOldCoverage = () => {
+  try {
+    fs.unlinkSync(coverageLocation);
+  } catch (error) {
+    // do nothing, the file didn't exist
+  }
+};
+const writeCoverage = coverage => {
+  fs.writeFileSync(coverageLocation, JSON.stringify([...coverage.entries()]));
+};
+
+const getCoverageResults = () => {
+  let contents;
+  try {
+    contents = fs.readFileSync(coverageLocation, {encoding: 'utf8'});
+  } catch (error) {
+    console.error('Warning: coverage file does not exist or is not readable.');
+  }
+
+  const coverageMap = new Map(JSON.parse(contents));
+  return coverageMap;
+};
+
+const trackCoverage = () => {
+  clearOldCoverage();
   const coverageMap = new Map();
+
   before(() => {
+
     const api = require('../lib/api');
     const events = require('../lib/Events');
     for (const [className, classType] of Object.entries(api))
@@ -69,16 +100,11 @@ module.exports = function() {
   });
 
   after(() => {
-    const missingMethods = [];
-    for (const method of coverageMap.keys()) {
-      if (!coverageMap.get(method))
-        missingMethods.push(method);
-    }
-    if (missingMethods.length) {
-      console.error('\nCoverage check failed: not all API methods called. See above ouptut for list of missing methods.');
-      console.error(Array.from(missingMethods).join('\n'));
-      process.exit(1);
-    }
-    console.log('\nAll Puppeteer API methods were called. Coverage test passed.\n');
+    writeCoverage(coverageMap);
   });
+};
+
+module.exports = {
+  trackCoverage,
+  getCoverageResults
 };

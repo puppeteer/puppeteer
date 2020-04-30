@@ -13,7 +13,8 @@
   },
   "scripts": {
     "unit": "mocha --config mocha-config/puppeteer-unit-tests.js",
-    "coverage": "cross-env COVERAGE=1 npm run unit",
+    "unit-with-coverage": "cross-env COVERAGE=1 npm run unit",
+    "assert-unit-coverage": "cross-env COVERAGE=1 mocha --config mocha-config/coverage-tests.js",
     "funit": "PUPPETEER_PRODUCT=firefox npm run unit",
     "debug-unit": "node --inspect-brk test/test.js",
     "test-doclint": "mocha --config mocha-config/doclint-tests.js",

@@ -29,13 +29,14 @@ jobs:
 
     # Runs unit tests on Linux + Chromium
     - node_js: "10.19.0"
-      name: 'Unit tests: Linux/Chromium'
+      name: 'Unit tests [with coverage]: Linux/Chromium'
       env:
         - CHROMIUM=true
       before_install:
         - PUPPETEER_PRODUCT=firefox npm install
       script:
-        - travis_retry npm run coverage
+        - travis_retry npm run unit-with-coverage
+        - npm run assert-unit-coverage
 
     # This bot runs all the extra checks that aren't the main Puppeteer unit tests
     - node_js: "10.19.0"
