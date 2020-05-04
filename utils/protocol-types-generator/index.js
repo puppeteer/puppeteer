@@ -77,7 +77,7 @@ export default Protocol;
   return {output, version};
 });
 
-const protocolOutputPath = path.join(__dirname, '..', '..', 'src', 'protocol.d.ts');
+const protocolOutputPath = path.join(__dirname, '../../src/protocol.d.ts');
 const relativeProtocolOutputPath = path.relative(process.cwd(), protocolOutputPath);
 
 const writeOutputToDisk = ({output, version}) => {
