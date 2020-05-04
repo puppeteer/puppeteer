@@ -198,28 +198,28 @@ Puppeteer creates its own browser user profile which it **cleans up on every run
    displaying. Instead of launching in headless mode, launch a full version of
    the browser using  `headless: false`:
 
-```js
-const browser = await puppeteer.launch({headless: false});
-```
+    ```js
+    const browser = await puppeteer.launch({headless: false});
+    ```
 
 2. Slow it down - the `slowMo` option slows down Puppeteer operations by the
    specified amount of milliseconds. It's another way to help see what's going on.
 
-```js
-const browser = await puppeteer.launch({
-  headless: false,
-  slowMo: 250 // slow down by 250ms
-});
-```
+    ```js
+    const browser = await puppeteer.launch({
+      headless: false,
+      slowMo: 250 // slow down by 250ms
+    });
+    ```
 
 3. Capture console output - You can listen for the `console` event.
    This is also handy when debugging code in `page.evaluate()`:
 
-```js
-page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+    ```js
+    page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
-await page.evaluate(() => console.log(`url is ${location.href}`));
-```
+    await page.evaluate(() => console.log(`url is ${location.href}`));
+    ```
 
 4. Use debugger in application code browser
 
@@ -229,9 +229,9 @@ await page.evaluate(() => console.log(`url is ${location.href}`));
 
     - Use `{devtools: true}` when launching Puppeteer:
 
-```js
-const browser = await puppeteer.launch({devtools: true});
-```
+      ```js
+      const browser = await puppeteer.launch({devtools: true});
+      ```
 
     - Change default test timeout:
 
@@ -243,9 +243,9 @@ const browser = await puppeteer.launch({devtools: true});
 
     - Add an evaluate statement with `debugger` inside / add  `debugger` to an existing evaluate statement:
 
-```js
-await page.evaluate(() => {debugger;});
-```
+      ```js
+      await page.evaluate(() => {debugger;});
+      ```
 
        The test will now stop executing in the above evaluate statement, and chromium will stop in debug mode.
 
@@ -258,10 +258,11 @@ await page.evaluate(() => {debugger;});
     you want to try something out, you have to add it to your test file.
 
     - Add `debugger;` to your test, eg:
-```js
-debugger;
-await page.click('a[target=_blank]');
-```
+
+      ```js
+      debugger;
+      await page.click('a[target=_blank]');
+      ```
 
     - Set `headless` to `false`
     - Run `node --inspect-brk`, eg `node --inspect-brk node_modules/.bin/jest tests`
