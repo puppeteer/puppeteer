@@ -146,7 +146,7 @@ export class Page extends EventEmitter {
   _pageBindings = new Map<string, Function>();
   _coverage: Coverage;
   _javascriptEnabled = true;
-  _viewport?: Puppeteer.Viewport;
+  _viewport: Puppeteer.Viewport | null;
   _screenshotTaskQueue: TaskQueue;
   _workers = new Map<string, PuppeteerWorker>();
   // TODO: improve this typedef - it's a function that takes a file chooser or something?
@@ -167,6 +167,7 @@ export class Page extends EventEmitter {
     this._tracing = new Tracing(client);
     this._coverage = new Coverage(client);
     this._screenshotTaskQueue = screenshotTaskQueue;
+    this._viewport = null;
 
     client.on('Target.attachedToTarget', event => {
       if (event.targetInfo.type !== 'worker') {
