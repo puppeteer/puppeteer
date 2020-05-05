@@ -31,7 +31,7 @@ module.exports = {
   Keyboard: require('./Input').Keyboard,
   Mouse: require('./Input').Mouse,
   Page: require('./Page').Page,
-  Puppeteer: require('./Puppeteer'),
+  Puppeteer: require('./Puppeteer').Puppeteer,
   Request: require('./NetworkManager').Request,
   Response: require('./NetworkManager').Response,
   SecurityDetails: require('./NetworkManager').SecurityDetails,

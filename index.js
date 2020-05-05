@@ -25,7 +25,7 @@ for (const className in api) {
 // Expose alias for deprecated method.
 Page.prototype.emulateMedia = Page.prototype.emulateMediaType;
 
-const Puppeteer = require('./lib/Puppeteer');
+const {Puppeteer} = require('./lib/Puppeteer');
 const packageJson = require('./package.json');
 let preferredRevision = packageJson.puppeteer.chromium_revision;
 const isPuppeteerCore = packageJson.name === 'puppeteer-core';

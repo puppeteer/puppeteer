@@ -496,8 +496,8 @@ describe('Launcher specs', function() {
     });
     it('should require top-level DeviceDescriptors', async() => {
       const {puppeteer, puppeteerPath} = getTestState();
-      const Devices = require(path.join(puppeteerPath, '/DeviceDescriptors'));
-      expect(Devices['iPhone 6']).toBe(puppeteer.devices['iPhone 6']);
+      const {devicesMap} = require(path.join(puppeteerPath, '/DeviceDescriptors'));
+      expect(devicesMap['iPhone 6']).toBe(puppeteer.devices['iPhone 6']);
     });
   });
 

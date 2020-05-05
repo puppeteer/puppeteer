@@ -355,6 +355,10 @@ function compareDocumentations(actual, expected) {
         actualName: 'Array<string>',
         expectedName: 'Array<PermissionType>'
       }],
+      ['Method Puppeteer.createBrowserFetcher() options', {
+        actualName: 'Object',
+        expectedName: 'BrowserFetcherOptions'
+      }],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);
