@@ -20,6 +20,7 @@ import {Worker as PuppeteerWorker} from './Worker';
 import {CDPSession} from './Connection';
 import {TaskQueue} from './TaskQueue';
 import {Browser, BrowserContext} from './Browser';
+import type {Viewport} from './Viewport';
 
 export class Target {
   _targetInfo: Protocol.Target.TargetInfo;
@@ -27,7 +28,7 @@ export class Target {
   _targetId: string;
   _sessionFactory: () => Promise<CDPSession>;
   _ignoreHTTPSErrors: boolean;
-  _defaultViewport?: Puppeteer.Viewport;
+  _defaultViewport?: Viewport;
   _screenshotTaskQueue: TaskQueue;
   _pagePromise?: Promise<Page>;
   _workerPromise?: Promise<PuppeteerWorker>;
@@ -37,7 +38,7 @@ export class Target {
   _closedCallback: () => void;
   _isInitialized: boolean;
 
-  constructor(targetInfo: Protocol.Target.TargetInfo, browserContext: BrowserContext, sessionFactory: () => Promise<CDPSession>, ignoreHTTPSErrors: boolean, defaultViewport: Puppeteer.Viewport | null, screenshotTaskQueue: TaskQueue) {
+  constructor(targetInfo: Protocol.Target.TargetInfo, browserContext: BrowserContext, sessionFactory: () => Promise<CDPSession>, ignoreHTTPSErrors: boolean, defaultViewport: Viewport | null, screenshotTaskQueue: TaskQueue) {
     this._targetInfo = targetInfo;
     this._browserContext = browserContext;
     this._targetId = targetInfo.targetId;

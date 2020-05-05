@@ -30,8 +30,10 @@ import {Connection} from './Connection';
 import {Browser} from './Browser';
 import {helper, assert, debugError} from './helper';
 import {TimeoutError} from './Errors';
+import type {ConnectionTransport} from './ConnectionTransport';
 import {WebSocketTransport} from './WebSocketTransport';
 import {PipeTransport} from './PipeTransport';
+import type {Viewport} from './Viewport';
 
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
 const removeFolderAsync = helper.promisify(removeFolder);
@@ -67,7 +69,7 @@ export interface LaunchOptions {
 
 export interface BrowserOptions {
   ignoreHTTPSErrors?: boolean;
-  defaultViewport?: Puppeteer.Viewport;
+  defaultViewport?: Viewport;
   slowMo?: number;
 }
 
@@ -344,7 +346,7 @@ class ChromeLauncher implements ProductLauncher {
   async connect(options: BrowserOptions & {
     browserWSEndpoint?: string;
     browserURL?: string;
-    transport?: Puppeteer.ConnectionTransport;
+    transport?: ConnectionTransport;
   }): Promise<Browser> {
     const {
       browserWSEndpoint,
@@ -451,7 +453,7 @@ class FirefoxLauncher implements ProductLauncher {
   async connect(options: BrowserOptions & {
     browserWSEndpoint?: string;
     browserURL?: string;
-    transport?: Puppeteer.ConnectionTransport;
+    transport?: ConnectionTransport;
   }): Promise<Browser> {
     const {
       browserWSEndpoint,

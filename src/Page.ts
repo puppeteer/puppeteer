@@ -30,6 +30,7 @@ import {Worker as PuppeteerWorker} from './Worker';
 import {Browser, BrowserContext} from './Browser';
 import {Target} from './Target';
 import {createJSHandle, JSHandle, ElementHandle} from './JSHandle';
+import type {Viewport} from './Viewport';
 import {Request as PuppeteerRequest, Response as PuppeteerResponse, Credentials} from './NetworkManager';
 import {Accessibility} from './Accessibility';
 import {TimeoutSettings} from './TimeoutSettings';
@@ -124,7 +125,7 @@ const paperFormats: Record<string, PaperFormat> = {
 } as const;
 
 export class Page extends EventEmitter {
-  static async create(client: CDPSession, target: Target, ignoreHTTPSErrors: boolean, defaultViewport: Puppeteer.Viewport | null, screenshotTaskQueue: TaskQueue): Promise<Page> {
+  static async create(client: CDPSession, target: Target, ignoreHTTPSErrors: boolean, defaultViewport: Viewport | null, screenshotTaskQueue: TaskQueue): Promise<Page> {
     const page = new Page(client, target, ignoreHTTPSErrors, screenshotTaskQueue);
     await page._initialize();
     if (defaultViewport)
@@ -146,7 +147,7 @@ export class Page extends EventEmitter {
   _pageBindings = new Map<string, Function>();
   _coverage: Coverage;
   _javascriptEnabled = true;
-  _viewport: Puppeteer.Viewport | null;
+  _viewport: Viewport | null;
   _screenshotTaskQueue: TaskQueue;
   _workers = new Map<string, PuppeteerWorker>();
   // TODO: improve this typedef - it's a function that takes a file chooser or something?
@@ -666,7 +667,7 @@ export class Page extends EventEmitter {
     await this._client.send('Page.bringToFront');
   }
 
-  async emulate(options: {viewport: Puppeteer.Viewport; userAgent: string}): Promise<void> {
+  async emulate(options: {viewport: Viewport; userAgent: string}): Promise<void> {
     await Promise.all([
       this.setViewport(options.viewport),
       this.setUserAgent(options.userAgent)
@@ -712,14 +713,14 @@ export class Page extends EventEmitter {
     }
   }
 
-  async setViewport(viewport: Puppeteer.Viewport): Promise<void> {
+  async setViewport(viewport: Viewport): Promise<void> {
     const needsReload = await this._emulationManager.emulateViewport(viewport);
     this._viewport = viewport;
     if (needsReload)
       await this.reload();
   }
 
-  viewport(): Puppeteer.Viewport | null {
+  viewport(): Viewport | null {
     return this._viewport;
   }
 

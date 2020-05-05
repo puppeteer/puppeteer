@@ -26,7 +26,7 @@
     "eslint": "([ \"$CI\" = true ] && eslint --ext js --ext ts --quiet -f codeframe . || eslint --ext js --ext ts .)",
     "lint": "npm run eslint && npm run tsc && npm run doc",
     "doc": "node utils/doclint/cli.js",
-    "tsc": "tsc --version && tsc -p . && cp src/protocol.d.ts lib/ && cp src/externs.d.ts lib/",
+    "tsc": "tsc --version && tsc -p . && cp src/protocol.d.ts lib/",
     "apply-next-version": "node utils/apply_next_version.js",
     "test-types": "node utils/doclint/generate_types && tsc --version && tsc -p utils/doclint/generate_types/test/",
     "update-protocol-d-ts": "node utils/protocol-types-generator update",
