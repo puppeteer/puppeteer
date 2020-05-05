@@ -367,6 +367,22 @@ function compareDocumentations(actual, expected) {
         actualName: 'Array<Object>',
         expectedName: 'Array<MediaFeature>'
       }],
+      ['Method Page.emulate() options', {
+        actualName: 'Object',
+        expectedName: 'Viewport'
+      }],
+      ['Method Page.setViewport() options', {
+        actualName: 'Object',
+        expectedName: 'Viewport'
+      }],
+      ['Method Page.connect() options.defaultViewport', {
+        actualName: 'Object',
+        expectedName: 'Viewport'
+      }],
+      ['Method Page.launch() options.defaultViewport', {
+        actualName: 'Object',
+        expectedName: 'Viewport'
+      }],
       ['Method Page.goBack() options', {
         actualName: 'Object',
         expectedName: 'WaitForOptions'
