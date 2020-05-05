@@ -1337,32 +1337,32 @@ List of all available devices is available in the source code: [src/DeviceDescri
 
 ```js
 await page.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'dark' }]);
-await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches));
+await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches);
 // → true
-await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches));
+await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches);
 // → false
-await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches));
+await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches);
 // → false
 
 await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
-await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches));
+await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
 // → true
-await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches));
+await page.evaluate(() => matchMedia('(prefers-reduced-motion: no-preference)').matches);
 // → false
 
 await page.emulateMediaFeatures([
   { name: 'prefers-color-scheme', value: 'dark' },
   { name: 'prefers-reduced-motion', value: 'reduce' },
 ]);
-await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches));
+await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches);
 // → true
-await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches));
+await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches);
 // → false
-await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches));
+await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches);
 // → false
-await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches));
+await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
 // → true
-await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches));
+await page.evaluate(() => matchMedia('(prefers-reduced-motion: no-preference)').matches);
 // → false
 ```
 
@@ -1371,22 +1371,22 @@ await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').ma
 - returns: <[Promise]>
 
 ```js
-await page.evaluate(() => matchMedia('screen').matches));
+await page.evaluate(() => matchMedia('screen').matches);
 // → true
-await page.evaluate(() => matchMedia('print').matches));
-// → true
+await page.evaluate(() => matchMedia('print').matches);
+// → false
 
 await page.emulateMediaType('print');
-await page.evaluate(() => matchMedia('screen').matches));
+await page.evaluate(() => matchMedia('screen').matches);
 // → false
-await page.evaluate(() => matchMedia('print').matches));
+await page.evaluate(() => matchMedia('print').matches);
 // → true
 
 await page.emulateMediaType(null);
-await page.evaluate(() => matchMedia('screen').matches));
+await page.evaluate(() => matchMedia('screen').matches);
 // → true
-await page.evaluate(() => matchMedia('print').matches));
-// → true
+await page.evaluate(() => matchMedia('print').matches);
+// → false
 ```
 
 #### page.emulateTimezone(timezoneId)
