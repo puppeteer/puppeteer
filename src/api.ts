@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+/* This file is used in two places:
+ * 1) the coverage-utils use it to gain a list of all methods we check for test coverage on
+ * 2) index.js uses it to iterate through all methods and call helper.installAsyncStackHooks on
+ */
 module.exports = {
   Accessibility: require('./Accessibility').Accessibility,
   Browser: require('./Browser').Browser,
