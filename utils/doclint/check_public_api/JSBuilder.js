@@ -204,6 +204,7 @@ function checkSources(sources) {
 
     for (const [name, member] of symbol.members || []) {
 
+
       /* Before TypeScript we denoted private methods with an underscore
        * but in TypeScript we use the private keyword
        * hence we check for either here.

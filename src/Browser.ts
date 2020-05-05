@@ -20,6 +20,7 @@ import * as EventEmitter from 'events';
 import {TaskQueue} from './TaskQueue';
 import {Events} from './Events';
 import {Connection} from './Connection';
+import {Page} from './Page';
 import {ChildProcess} from 'child_process';
 
 type BrowserCloseCallback = () => Promise<void> | void;
@@ -137,11 +138,11 @@ export class Browser extends EventEmitter {
      return this._connection.url();
    }
 
-   async newPage(): Promise<Puppeteer.Page> {
+   async newPage(): Promise<Page> {
      return this._defaultContext.newPage();
    }
 
-   async _createPageInContext(contextId?: string): Promise<Puppeteer.Page> {
+   async _createPageInContext(contextId?: string): Promise<Page> {
      const {targetId} = await this._connection.send('Target.createTarget', {url: 'about:blank', browserContextId: contextId || undefined});
      const target = await this._targets.get(targetId);
      assert(await target._initializedPromise, 'Failed to create target for page');
@@ -188,10 +189,7 @@ export class Browser extends EventEmitter {
      }
    }
 
-   /**
-   * @return {!Promise<!Array<!Puppeteer.Page>>}
-   */
-   async pages(): Promise<Puppeteer.Page[]> {
+   async pages(): Promise<Page[]> {
      const contextPages = await Promise.all(this.browserContexts().map(context => context.pages()));
      // Flatten array.
      return contextPages.reduce((acc, x) => acc.concat(x), []);
@@ -245,7 +243,7 @@ export class BrowserContext extends EventEmitter {
     return this._browser.waitForTarget(target => target.browserContext() === this && predicate(target), options);
   }
 
-  async pages(): Promise<Puppeteer.Page[]> {
+  async pages(): Promise<Page[]> {
     const pages = await Promise.all(
         this.targets()
             .filter(target => target.type() === 'page')
@@ -292,7 +290,7 @@ export class BrowserContext extends EventEmitter {
     await this._connection.send('Browser.resetPermissions', {browserContextId: this._id || undefined});
   }
 
-  newPage(): Promise<Puppeteer.Page> {
+  newPage(): Promise<Page> {
     return this._browser._createPageInContext(this._id);
   }
 

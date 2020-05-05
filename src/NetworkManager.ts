@@ -19,7 +19,7 @@ import {Events} from './Events';
 import {CDPSession} from './Connection';
 import {FrameManager, Frame} from './FrameManager';
 
-interface Credentials {
+export interface Credentials {
   username: string;
   password: string;
 }

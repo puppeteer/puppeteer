@@ -359,6 +359,46 @@ function compareDocumentations(actual, expected) {
         actualName: 'Object',
         expectedName: 'BrowserFetcherOptions'
       }],
+      ['Method Page.authenticate() credentials', {
+        actualName: 'Object',
+        expectedName: 'Credentials'
+      }],
+      ['Method Page.emulateMediaFeatures() features', {
+        actualName: 'Array<Object>',
+        expectedName: 'Array<MediaFeature>'
+      }],
+      ['Method Page.goBack() options', {
+        actualName: 'Object',
+        expectedName: 'WaitForOptions'
+      }],
+      ['Method Page.goForward() options', {
+        actualName: 'Object',
+        expectedName: 'WaitForOptions'
+      }],
+      ['Method Page.reload() options', {
+        actualName: 'Object',
+        expectedName: 'WaitForOptions'
+      }],
+      ['Method Page.waitForNavigation() options', {
+        actualName: 'Object',
+        expectedName: 'WaitForOptions'
+      }],
+      ['Method Page.pdf() options', {
+        actualName: 'Object',
+        expectedName: 'PDFOptions'
+      }],
+      ['Method Page.screenshot() options', {
+        actualName: 'Object',
+        expectedName: 'ScreenshotOptions'
+      }],
+      ['Method Page.setContent() options', {
+        actualName: 'Object',
+        expectedName: 'WaitForOptions'
+      }],
+      ['Method Page.setCookie() ...cookies', {
+        actualName: '...Object',
+        expectedName: '...CookieParam'
+      }],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);

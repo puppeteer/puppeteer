@@ -17,14 +17,17 @@
 import {assert} from './helper';
 import {CDPSession} from './Connection';
 
-enum DialogType {
+/* TODO(jacktfranklin): protocol.d.ts defines this
+ * so let's ditch this and avoid the duplication
+ */
+export enum DialogType {
   Alert = 'alert',
   BeforeUnload = 'beforeunload',
   Confirm = 'confirm',
   Prompt = 'prompt'
 }
 
-class Dialog {
+export class Dialog {
   static Type = DialogType;
 
   private _client: CDPSession;
@@ -69,5 +72,3 @@ class Dialog {
     });
   }
 }
-
-export = {Dialog};

@@ -16,6 +16,7 @@
 
 import {helper, assert, debugError} from './helper';
 import {ExecutionContext} from './ExecutionContext';
+import {Page} from './Page';
 import {CDPSession} from './Connection';
 import {KeyInput} from './USKeyboardLayout';
 import {FrameManager, Frame} from './FrameManager';
@@ -124,7 +125,7 @@ export class JSHandle {
 }
 
 export class ElementHandle extends JSHandle {
-  _page: Puppeteer.Page;
+  _page: Page;
   _frameManager: FrameManager;
   /**
    * @param {!ExecutionContext} context
@@ -133,7 +134,7 @@ export class ElementHandle extends JSHandle {
    * @param {!Puppeteer.Page} page
    * @param {!FrameManager} frameManager
    */
-  constructor(context: ExecutionContext, client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject, page: Puppeteer.Page, frameManager: FrameManager) {
+  constructor(context: ExecutionContext, client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject, page: Page, frameManager: FrameManager) {
     super(context, client, remoteObject);
     this._client = client;
     this._remoteObject = remoteObject;
