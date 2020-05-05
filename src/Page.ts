@@ -14,54 +14,117 @@
  * limitations under the License.
  */
 
-const fs = require('fs');
-const EventEmitter = require('events');
-const mime = require('mime');
-const {Events} = require('./Events');
-// CDPSession is used only as a typedef
-// eslint-disable-next-line no-unused-vars
-const {Connection, CDPSession} = require('./Connection');
-const {Dialog} = require('./Dialog');
-const {EmulationManager} = require('./EmulationManager');
-// Import used as typedef
-// eslint-disable-next-line no-unused-vars
-const {Frame, FrameManager} = require('./FrameManager');
-const {Keyboard, Mouse, Touchscreen} = require('./Input');
-const {Tracing} = require('./Tracing');
-const {helper, debugError, assert} = require('./helper');
-const {Coverage} = require('./Coverage');
-const {Worker: PuppeteerWorker} = require('./Worker');
-// Import used as typedef
-// eslint-disable-next-line no-unused-vars
-const {Browser, BrowserContext} = require('./Browser');
-// Import used as typedef
-// eslint-disable-next-line no-unused-vars
-const {Target} = require('./Target');
-// Import used as typedef
-// eslint-disable-next-line no-unused-vars
-const {createJSHandle, JSHandle, ElementHandle} = require('./JSHandle');
-// Import used as typedef
-// eslint-disable-next-line no-unused-vars
-const {Request: PuppeteerRequest, Response: PuppeteerResponse} = require('./NetworkManager');
-const {Accessibility} = require('./Accessibility');
-const {TimeoutSettings} = require('./TimeoutSettings');
+import * as fs from 'fs';
+import * as EventEmitter from 'events';
+import * as mime from 'mime';
+import {Events} from './Events';
+import {Connection, CDPSession} from './Connection';
+import {Dialog} from './Dialog';
+import {EmulationManager} from './EmulationManager';
+import {Frame, FrameManager} from './FrameManager';
+import {Keyboard, Mouse, Touchscreen, MouseButtonInput} from './Input';
+import {Tracing} from './Tracing';
+import {helper, debugError, assert} from './helper';
+import {Coverage} from './Coverage';
+import {Worker as PuppeteerWorker} from './Worker';
+import {Browser, BrowserContext} from './Browser';
+import {Target} from './Target';
+import {createJSHandle, JSHandle, ElementHandle} from './JSHandle';
+import {Request as PuppeteerRequest, Response as PuppeteerResponse, Credentials} from './NetworkManager';
+import {Accessibility} from './Accessibility';
+import {TimeoutSettings} from './TimeoutSettings';
+import {PuppeteerLifeCycleEvent} from './LifecycleWatcher';
+import {TaskQueue} from './TaskQueue';
 
-// This import is used as a TypeDef, but ESLint's rule doesn't
-// understand that unfortunately.
-// eslint-disable-next-line no-unused-vars
-const {TaskQueue} = require('./TaskQueue');
 const writeFileAsync = helper.promisify(fs.writeFile);
 
-class Page extends EventEmitter {
-  /**
-   * @param {!CDPSession} client
-   * @param {!Target} target
-   * @param {boolean} ignoreHTTPSErrors
-   * @param {?Puppeteer.Viewport} defaultViewport
-   * @param {!TaskQueue} screenshotTaskQueue
-   * @return {!Promise<!Page>}
-   */
-  static async create(client, target, ignoreHTTPSErrors, defaultViewport, screenshotTaskQueue) {
+interface Metrics {
+ Timestamp?: number;
+ Documents?: number;
+ Frames?: number;
+ JSEventListeners?: number;
+ Nodes?: number;
+ LayoutCount?: number;
+ RecalcStyleCount?: number;
+ LayoutDuration?: number;
+ RecalcStyleDuration?: number;
+ ScriptDuration?: number;
+ TaskDuration?: number;
+ JSHeapUsedSize?: number;
+ JSHeapTotalSize?: number;
+}
+
+interface WaitForOptions {
+  timeout?: number;
+  waitUntil?: PuppeteerLifeCycleEvent|PuppeteerLifeCycleEvent[];
+}
+
+interface MediaFeature {
+  name: string;
+  value: string;
+}
+
+interface ScreenshotClip {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+interface ScreenshotOptions {
+  type?: 'png' | 'jpeg';
+  path?: string;
+  fullPage?: boolean;
+  clip?: ScreenshotClip;
+  quality?: number;
+  omitBackground?: boolean;
+  encoding?: string;
+}
+
+interface PDFMargin {
+  top?: string|number;
+  bottom?: string|number;
+  left?: string|number;
+  right?: string|number;
+}
+
+interface PDFOptions {
+  scale?: number;
+  displayHeaderFooter?: boolean;
+  headerTemplate?: string;
+  footerTemplate?: string;
+  printBackground?: boolean;
+  landscape?: boolean;
+  pageRanges?: string;
+  format?: string;
+  width?: string|number;
+  height?: string|number;
+  preferCSSPageSize?: boolean;
+  margin?: PDFMargin;
+  path?: string;
+}
+
+interface PaperFormat {
+  width: number;
+  height: number;
+}
+
+const paperFormats: Record<string, PaperFormat> = {
+  letter: {width: 8.5, height: 11},
+  legal: {width: 8.5, height: 14},
+  tabloid: {width: 11, height: 17},
+  ledger: {width: 17, height: 11},
+  a0: {width: 33.1, height: 46.8},
+  a1: {width: 23.4, height: 33.1},
+  a2: {width: 16.54, height: 23.4},
+  a3: {width: 11.7, height: 16.54},
+  a4: {width: 8.27, height: 11.7},
+  a5: {width: 5.83, height: 8.27},
+  a6: {width: 4.13, height: 5.83},
+} as const;
+
+export class Page extends EventEmitter {
+  static async create(client: CDPSession, target: Target, ignoreHTTPSErrors: boolean, defaultViewport: Puppeteer.Viewport | null, screenshotTaskQueue: TaskQueue): Promise<Page> {
     const page = new Page(client, target, ignoreHTTPSErrors, screenshotTaskQueue);
     await page._initialize();
     if (defaultViewport)
@@ -69,37 +132,43 @@ class Page extends EventEmitter {
     return page;
   }
 
-  /**
-   * @param {!CDPSession} client
-   * @param {!Target} target
-   * @param {boolean} ignoreHTTPSErrors
-   * @param {!TaskQueue} screenshotTaskQueue
-   */
-  constructor(client, target, ignoreHTTPSErrors, screenshotTaskQueue) {
+  _closed = false;
+  _client: CDPSession;
+  _target: Target;
+  _keyboard: Keyboard;
+  _mouse: Mouse;
+  _timeoutSettings = new TimeoutSettings();
+  _touchscreen: Touchscreen;
+  _accessibility: Accessibility;
+  _frameManager: FrameManager;
+  _emulationManager: EmulationManager;
+  _tracing: Tracing;
+  _pageBindings = new Map<string, Function>();
+  _coverage: Coverage;
+  _javascriptEnabled = true;
+  _viewport: Puppeteer.Viewport | null;
+  _screenshotTaskQueue: TaskQueue;
+  _workers = new Map<string, PuppeteerWorker>();
+  // TODO: improve this typedef - it's a function that takes a file chooser or something?
+  _fileChooserInterceptors = new Set<Function>();
+
+  _disconnectPromise?: Promise<Error>;
+
+  constructor(client: CDPSession, target: Target, ignoreHTTPSErrors: boolean, screenshotTaskQueue: TaskQueue) {
     super();
-    this._closed = false;
     this._client = client;
     this._target = target;
     this._keyboard = new Keyboard(client);
     this._mouse = new Mouse(client, this._keyboard);
-    this._timeoutSettings = new TimeoutSettings();
     this._touchscreen = new Touchscreen(client, this._keyboard);
     this._accessibility = new Accessibility(client);
-    /** @type {!FrameManager} */
     this._frameManager = new FrameManager(client, this, ignoreHTTPSErrors, this._timeoutSettings);
     this._emulationManager = new EmulationManager(client);
     this._tracing = new Tracing(client);
-    /** @type {!Map<string, Function>} */
-    this._pageBindings = new Map();
     this._coverage = new Coverage(client);
-    this._javascriptEnabled = true;
-    /** @type {?Puppeteer.Viewport} */
+    this._screenshotTaskQueue = screenshotTaskQueue;
     this._viewport = null;
 
-    this._screenshotTaskQueue = screenshotTaskQueue;
-
-    /** @type {!Map<string, PuppeteerWorker>} */
-    this._workers = new Map();
     client.on('Target.attachedToTarget', event => {
       if (event.targetInfo.type !== 'worker') {
         // If we don't detach from service workers, they will never die.
@@ -132,13 +201,13 @@ class Page extends EventEmitter {
     networkManager.on(Events.NetworkManager.RequestFinished, event => this.emit(Events.Page.RequestFinished, event));
     this._fileChooserInterceptors = new Set();
 
-    client.on('Page.domContentEventFired', event => this.emit(Events.Page.DOMContentLoaded));
-    client.on('Page.loadEventFired', event => this.emit(Events.Page.Load));
+    client.on('Page.domContentEventFired', () => this.emit(Events.Page.DOMContentLoaded));
+    client.on('Page.loadEventFired', () => this.emit(Events.Page.Load));
     client.on('Runtime.consoleAPICalled', event => this._onConsoleAPI(event));
     client.on('Runtime.bindingCalled', event => this._onBindingCalled(event));
     client.on('Page.javascriptDialogOpening', event => this._onDialog(event));
     client.on('Runtime.exceptionThrown', exception => this._handleException(exception.exceptionDetails));
-    client.on('Inspector.targetCrashed', event => this._onTargetCrashed());
+    client.on('Inspector.targetCrashed', () => this._onTargetCrashed());
     client.on('Performance.metrics', event => this._emitMetrics(event));
     client.on('Log.entryAdded', event => this._onLogEntryAdded(event));
     client.on('Page.fileChooserOpened', event => this._onFileChooser(event));
@@ -148,7 +217,7 @@ class Page extends EventEmitter {
     });
   }
 
-  async _initialize() {
+  async _initialize(): Promise<void> {
     await Promise.all([
       this._frameManager.initialize(),
       this._client.send('Target.setAutoAttach', {autoAttach: true, waitForDebuggerOnStart: false, flatten: true}),
@@ -157,10 +226,7 @@ class Page extends EventEmitter {
     ]);
   }
 
-  /**
-   * @param {!Protocol.Page.fileChooserOpenedPayload} event
-   */
-  async _onFileChooser(event) {
+  async _onFileChooser(event: Protocol.Page.fileChooserOpenedPayload): Promise<void> {
     if (!this._fileChooserInterceptors.size)
       return;
     const frame = this._frameManager.frame(event.frameId);
@@ -173,11 +239,7 @@ class Page extends EventEmitter {
       interceptor.call(null, fileChooser);
   }
 
-  /**
-   * @param {!{timeout?: number}=} options
-   * @return !Promise<!FileChooser>}
-   */
-  async waitForFileChooser(options = {}) {
+  async waitForFileChooser(options: {timeout?: number} = {}): Promise<FileChooser> {
     if (!this._fileChooserInterceptors.size)
       await this._client.send('Page.setInterceptFileChooserDialog', {enabled: true});
 
@@ -185,18 +247,15 @@ class Page extends EventEmitter {
       timeout = this._timeoutSettings.timeout(),
     } = options;
     let callback;
-    const promise = new Promise(x => callback = x);
+    const promise = new Promise<FileChooser>(x => callback = x);
     this._fileChooserInterceptors.add(callback);
-    return helper.waitWithTimeout(promise, 'waiting for file chooser', timeout).catch(error => {
+    return helper.waitWithTimeout<FileChooser>(promise, 'waiting for file chooser', timeout).catch(error => {
       this._fileChooserInterceptors.delete(callback);
       throw error;
     });
   }
 
-  /**
-   * @param {!{longitude: number, latitude: number, accuracy: (number|undefined)}} options
-   */
-  async setGeolocation(options) {
+  async setGeolocation(options: {longitude: number; latitude: number; accuracy?: number}): Promise<void> {
     const {longitude, latitude, accuracy = 0} = options;
     if (longitude < -180 || longitude > 180)
       throw new Error(`Invalid longitude "${longitude}": precondition -180 <= LONGITUDE <= 180 failed.`);
@@ -207,35 +266,23 @@ class Page extends EventEmitter {
     await this._client.send('Emulation.setGeolocationOverride', {longitude, latitude, accuracy});
   }
 
-  /**
-   * @return {!Target}
-   */
-  target() {
+  target(): Target {
     return this._target;
   }
 
-  /**
-   * @return {!Browser}
-   */
-  browser() {
+  browser(): Browser {
     return this._target.browser();
   }
 
-  /**
-   * @return {!BrowserContext}
-   */
-  browserContext() {
+  browserContext(): BrowserContext {
     return this._target.browserContext();
   }
 
-  _onTargetCrashed() {
+  _onTargetCrashed(): void {
     this.emit('error', new Error('Page crashed!'));
   }
 
-  /**
-   * @param {!Protocol.Log.entryAddedPayload} event
-   */
-  _onLogEntryAdded(event) {
+  _onLogEntryAdded(event: Protocol.Log.entryAddedPayload): void {
     const {level, text, args, source, url, lineNumber} = event.entry;
     if (args)
       args.map(arg => helper.releaseObject(this._client, arg));
@@ -243,164 +290,91 @@ class Page extends EventEmitter {
       this.emit(Events.Page.Console, new ConsoleMessage(level, text, [], {url, lineNumber}));
   }
 
-  /**
-   * @return {!Frame}
-   */
-  mainFrame() {
+  mainFrame(): Frame {
     return this._frameManager.mainFrame();
   }
 
-  /**
-   * @return {!Keyboard}
-   */
-  get keyboard() {
+  get keyboard(): Keyboard {
     return this._keyboard;
   }
 
-  /**
-   * @return {!Touchscreen}
-   */
-  get touchscreen() {
+  get touchscreen(): Touchscreen {
     return this._touchscreen;
   }
 
-  /**
-   * @return {!Coverage}
-   */
-  get coverage() {
+  get coverage(): Coverage {
     return this._coverage;
   }
 
-  /**
-   * @return {!Tracing}
-   */
-  get tracing() {
+  get tracing(): Tracing {
     return this._tracing;
   }
 
-  /**
-   * @return {!Accessibility}
-   */
-  get accessibility() {
+  get accessibility(): Accessibility {
     return this._accessibility;
   }
 
-  /**
-   * @return {!Array<Frame>}
-   */
-  frames() {
+  frames(): Frame[] {
     return this._frameManager.frames();
   }
 
-  /**
-   * @return {!Array<!PuppeteerWorker>}
-   */
-  workers() {
+  workers(): PuppeteerWorker[] {
     return Array.from(this._workers.values());
   }
 
-  /**
-   * @param {boolean} value
-   */
-  async setRequestInterception(value) {
+  async setRequestInterception(value: boolean): Promise<void> {
     return this._frameManager.networkManager().setRequestInterception(value);
   }
 
-  /**
-   * @param {boolean} enabled
-   */
-  setOfflineMode(enabled) {
+  setOfflineMode(enabled: boolean): Promise<void> {
     return this._frameManager.networkManager().setOfflineMode(enabled);
   }
 
-  /**
-   * @param {number} timeout
-   */
-  setDefaultNavigationTimeout(timeout) {
+  setDefaultNavigationTimeout(timeout: number): void {
     this._timeoutSettings.setDefaultNavigationTimeout(timeout);
   }
 
-  /**
-   * @param {number} timeout
-   */
-  setDefaultTimeout(timeout) {
+  setDefaultTimeout(timeout: number): void {
     this._timeoutSettings.setDefaultTimeout(timeout);
   }
 
-  /**
-   * @param {string} selector
-   * @return {!Promise<?ElementHandle>}
-   */
-  async $(selector) {
+  async $(selector: string): Promise<ElementHandle | null> {
     return this.mainFrame().$(selector);
   }
 
-  /**
-   * @param {Function|string} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<!JSHandle>}
-   */
-  async evaluateHandle(pageFunction, ...args) {
+  async evaluateHandle(pageFunction: Function | string, ...args: unknown[]): Promise<JSHandle> {
     const context = await this.mainFrame().executionContext();
     return context.evaluateHandle(pageFunction, ...args);
   }
 
-  /**
-   * @param {!JSHandle} prototypeHandle
-   * @return {!Promise<!JSHandle>}
-   */
-  async queryObjects(prototypeHandle) {
+  async queryObjects(prototypeHandle: JSHandle): Promise<JSHandle> {
     const context = await this.mainFrame().executionContext();
     return context.queryObjects(prototypeHandle);
   }
 
-  /**
-   * @param {string} selector
-   * @param {Function|string} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<(!Object|undefined)>}
-   */
-  async $eval(selector, pageFunction, ...args) {
-    return this.mainFrame().$eval(selector, pageFunction, ...args);
+  async $eval<ReturnType extends any>(selector: string, pageFunction: Function | string, ...args: unknown[]): Promise<ReturnType> {
+    return this.mainFrame().$eval<ReturnType>(selector, pageFunction, ...args);
   }
 
-  /**
-   * @param {string} selector
-   * @param {Function|string} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<(!Object|undefined)>}
-   */
-  async $$eval(selector, pageFunction, ...args) {
-    return this.mainFrame().$$eval(selector, pageFunction, ...args);
+  async $$eval<ReturnType extends any>(selector: string, pageFunction: Function | string, ...args: unknown[]): Promise<ReturnType> {
+    return this.mainFrame().$$eval<ReturnType>(selector, pageFunction, ...args);
   }
 
-  /**
-   * @param {string} selector
-   * @return {!Promise<!Array<!ElementHandle>>}
-   */
-  async $$(selector) {
+  async $$(selector: string): Promise<ElementHandle[]> {
     return this.mainFrame().$$(selector);
   }
 
-  /**
-   * @param {string} expression
-   * @return {!Promise<!Array<!ElementHandle>>}
-   */
-  async $x(expression) {
+  async $x(expression: string): Promise<ElementHandle[]> {
     return this.mainFrame().$x(expression);
   }
 
-  /**
-   * @param {!Array<string>} urls
-   * @return {!Promise<!Array<Network.Cookie>>}
-   */
-  async cookies(...urls) {
+  async cookies(...urls: string[]): Promise<Protocol.Network.Cookie[]> {
     const originalCookies = (await this._client.send('Network.getCookies', {
       urls: urls.length ? urls : [this.url()]
     })).cookies;
 
     const unsupportedCookieAttributes = ['priority'];
-    const filterUnsupportedAttributes = cookie => {
+    const filterUnsupportedAttributes = (cookie: Protocol.Network.Cookie): Protocol.Network.Cookie => {
       for (const attr of unsupportedCookieAttributes)
         delete cookie[attr];
       return cookie;
@@ -408,10 +382,7 @@ class Page extends EventEmitter {
     return originalCookies.map(filterUnsupportedAttributes);
   }
 
-  /**
-   * @param {Array<Protocol.Network.deleteCookiesParameters>} cookies
-   */
-  async deleteCookie(...cookies) {
+  async deleteCookie(...cookies: Protocol.Network.deleteCookiesParameters[]): Promise<void> {
     const pageURL = this.url();
     for (const cookie of cookies) {
       const item = Object.assign({}, cookie);
@@ -421,10 +392,7 @@ class Page extends EventEmitter {
     }
   }
 
-  /**
-   * @param {Array<Network.CookieParam>} cookies
-   */
-  async setCookie(...cookies) {
+  async setCookie(...cookies: Protocol.Network.CookieParam[]): Promise<void> {
     const pageURL = this.url();
     const startsWithHTTP = pageURL.startsWith('http');
     const items = cookies.map(cookie => {
@@ -440,27 +408,15 @@ class Page extends EventEmitter {
       await this._client.send('Network.setCookies', {cookies: items});
   }
 
-  /**
-   * @param {!{url?: string, path?: string, content?: string, type?: string}} options
-   * @return {!Promise<!ElementHandle>}
-   */
-  async addScriptTag(options) {
+  async addScriptTag(options: {url?: string; path?: string; content?: string; type?: string}): Promise<ElementHandle> {
     return this.mainFrame().addScriptTag(options);
   }
 
-  /**
-   * @param {!{url?: string, path?: string, content?: string}} options
-   * @return {!Promise<!ElementHandle>}
-   */
-  async addStyleTag(options) {
+  async addStyleTag(options: {url?: string; path?: string; content?: string}): Promise<ElementHandle> {
     return this.mainFrame().addStyleTag(options);
   }
 
-  /**
-   * @param {string} name
-   * @param {Function} puppeteerFunction
-   */
-  async exposeFunction(name, puppeteerFunction) {
+  async exposeFunction(name: string, puppeteerFunction: Function): Promise<void> {
     if (this._pageBindings.has(name))
       throw new Error(`Failed to add page binding with name ${name}: window['${name}'] already exists!`);
     this._pageBindings.set(name, puppeteerFunction);
@@ -470,11 +426,14 @@ class Page extends EventEmitter {
     await this._client.send('Page.addScriptToEvaluateOnNewDocument', {source: expression});
     await Promise.all(this.frames().map(frame => frame.evaluate(expression).catch(debugError)));
 
-    function addPageBinding(bindingName) {
-      const win = /** @type * */ (window);
-      const binding = /** @type function(string):* */ (win[bindingName]);
+    function addPageBinding(bindingName): void {
+      /* Cast window to any here as we're about to add properties to it
+       * via win[bindingName] which TypeScript doesn't like.
+       */
+      const win = window as any;
+      const binding = win[bindingName];
 
-      win[bindingName] = (...args) => {
+      win[bindingName] = (...args: unknown[]): Promise<unknown> => {
         const me = window[bindingName];
         let callbacks = me['callbacks'];
         if (!callbacks) {
@@ -490,50 +449,31 @@ class Page extends EventEmitter {
     }
   }
 
-  /**
-   * @param {?{username: string, password: string}} credentials
-   */
-  async authenticate(credentials) {
+  async authenticate(credentials: Credentials): Promise<void> {
     return this._frameManager.networkManager().authenticate(credentials);
   }
 
-  /**
-   * @param {!Object<string, string>} headers
-   */
-  async setExtraHTTPHeaders(headers) {
+  async setExtraHTTPHeaders(headers: Record<string, string>): Promise<void> {
     return this._frameManager.networkManager().setExtraHTTPHeaders(headers);
   }
 
-  /**
-   * @param {string} userAgent
-   */
-  async setUserAgent(userAgent) {
+  async setUserAgent(userAgent: string): Promise<void> {
     return this._frameManager.networkManager().setUserAgent(userAgent);
   }
 
-  /**
-   * @return {!Promise<!Metrics>}
-   */
-  async metrics() {
+  async metrics(): Promise<Metrics> {
     const response = await this._client.send('Performance.getMetrics');
     return this._buildMetricsObject(response.metrics);
   }
 
-  /**
-   * @param {!Protocol.Performance.metricsPayload} event
-   */
-  _emitMetrics(event) {
+  _emitMetrics(event: Protocol.Performance.metricsPayload): void {
     this.emit(Events.Page.Metrics, {
       title: event.title,
       metrics: this._buildMetricsObject(event.metrics)
     });
   }
 
-  /**
-   * @param {?Array<!Protocol.Performance.Metric>} metrics
-   * @return {!Metrics}
-   */
-  _buildMetricsObject(metrics) {
+  _buildMetricsObject(metrics?: Protocol.Performance.Metric[]): Metrics {
     const result = {};
     for (const metric of metrics || []) {
       if (supportedMetrics.has(metric.name))
@@ -542,20 +482,14 @@ class Page extends EventEmitter {
     return result;
   }
 
-  /**
-   * @param {!Protocol.Runtime.ExceptionDetails} exceptionDetails
-   */
-  _handleException(exceptionDetails) {
+  _handleException(exceptionDetails: Protocol.Runtime.ExceptionDetails): void {
     const message = helper.getExceptionMessage(exceptionDetails);
     const err = new Error(message);
     err.stack = ''; // Don't report clientside error with a node stack attached
     this.emit(Events.Page.PageError, err);
   }
 
-  /**
-   * @param {!Protocol.Runtime.consoleAPICalledPayload} event
-   */
-  async _onConsoleAPI(event) {
+  async _onConsoleAPI(event: Protocol.Runtime.consoleAPICalledPayload): Promise<void> {
     if (event.executionContextId === 0) {
       // DevTools protocol stores the last 1000 console messages. These
       // messages are always reported even for removed execution contexts. In
@@ -577,10 +511,7 @@ class Page extends EventEmitter {
     this._addConsoleMessage(event.type, values, event.stackTrace);
   }
 
-  /**
-   * @param {!Protocol.Runtime.bindingCalledPayload} event
-   */
-  async _onBindingCalled(event) {
+  async _onBindingCalled(event: Protocol.Runtime.bindingCalledPayload): Promise<void> {
     const {name, seq, args} = JSON.parse(event.payload);
     let expression = null;
     try {
@@ -594,46 +525,25 @@ class Page extends EventEmitter {
     }
     this._client.send('Runtime.evaluate', {expression, contextId: event.executionContextId}).catch(debugError);
 
-    /**
-     * @param {string} name
-     * @param {number} seq
-     * @param {*} result
-     */
-    function deliverResult(name, seq, result) {
+    function deliverResult(name: string, seq: number, result: unknown): void {
       window[name]['callbacks'].get(seq).resolve(result);
       window[name]['callbacks'].delete(seq);
     }
 
-    /**
-     * @param {string} name
-     * @param {number} seq
-     * @param {string} message
-     * @param {string} stack
-     */
-    function deliverError(name, seq, message, stack) {
+    function deliverError(name: string, seq: number, message: string, stack: string): void {
       const error = new Error(message);
       error.stack = stack;
       window[name]['callbacks'].get(seq).reject(error);
       window[name]['callbacks'].delete(seq);
     }
 
-    /**
-     * @param {string} name
-     * @param {number} seq
-     * @param {*} value
-     */
-    function deliverErrorValue(name, seq, value) {
+    function deliverErrorValue(name: string, seq: number, value: unknown): void {
       window[name]['callbacks'].get(seq).reject(value);
       window[name]['callbacks'].delete(seq);
     }
   }
 
-  /**
-   * @param {string} type
-   * @param {!Array<!JSHandle>} args
-   * @param {Protocol.Runtime.StackTrace=} stackTrace
-   */
-  _addConsoleMessage(type, args, stackTrace) {
+  _addConsoleMessage(type: string, args: JSHandle[], stackTrace?: Protocol.Runtime.StackTrace): void {
     if (!this.listenerCount(Events.Page.Console)) {
       args.forEach(arg => arg.dispose());
       return;
@@ -655,7 +565,7 @@ class Page extends EventEmitter {
     this.emit(Events.Page.Console, message);
   }
 
-  _onDialog(event) {
+  _onDialog(event: Protocol.Page.javascriptDialogOpeningPayload): void {
     let dialogType = null;
     if (event.type === 'alert')
       dialogType = Dialog.Type.Alert;
@@ -666,75 +576,47 @@ class Page extends EventEmitter {
     else if (event.type === 'beforeunload')
       dialogType = Dialog.Type.BeforeUnload;
     assert(dialogType, 'Unknown javascript dialog type: ' + event.type);
+
     const dialog = new Dialog(this._client, dialogType, event.message, event.defaultPrompt);
     this.emit(Events.Page.Dialog, dialog);
   }
 
-  /**
-   * @return {!string}
-   */
-  url() {
+  url(): string {
     return this.mainFrame().url();
   }
 
-  /**
-   * @return {!Promise<string>}
-   */
-  async content() {
+  async content(): Promise<string> {
     return await this._frameManager.mainFrame().content();
   }
 
-  /**
-   * @param {string} html
-   * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
-   */
-  async setContent(html, options) {
+  async setContent(html: string, options: WaitForOptions): Promise<void> {
     await this._frameManager.mainFrame().setContent(html, options);
   }
 
-  /**
-   * @param {string} url
-   * @param {!{referer?: string, timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
-   * @return {!Promise<?PuppeteerResponse>}
-   */
-  async goto(url, options) {
+  async goto(url: string, options: WaitForOptions & { referer?: string }): Promise<PuppeteerResponse> {
     return await this._frameManager.mainFrame().goto(url, options);
   }
 
-  /**
-   * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
-   * @return {!Promise<?PuppeteerResponse>}
-   */
-  async reload(options) {
-    const result = await Promise.all([
+  async reload(options?: WaitForOptions): Promise<PuppeteerResponse | null> {
+    const result = await Promise.all<PuppeteerResponse, Protocol.Page.reloadReturnValue>([
       this.waitForNavigation(options),
       this._client.send('Page.reload')
     ]);
 
-    const response = /** @type PuppeteerResponse */ (result[0]);
-    return response;
+    return result[0];
   }
 
-  /**
-   * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
-   * @return {!Promise<?PuppeteerResponse>}
-   */
-  async waitForNavigation(options = {}) {
+  async waitForNavigation(options: WaitForOptions = {}): Promise<PuppeteerResponse | null> {
     return await this._frameManager.mainFrame().waitForNavigation(options);
   }
 
-  _sessionClosePromise() {
+  _sessionClosePromise(): Promise<Error> {
     if (!this._disconnectPromise)
       this._disconnectPromise = new Promise(fulfill => this._client.once(Events.CDPSession.Disconnected, () => fulfill(new Error('Target closed'))));
     return this._disconnectPromise;
   }
 
-  /**
-   * @param {(string|Function)} urlOrPredicate
-   * @param {!{timeout?: number}=} options
-   * @return {!Promise<!PuppeteerRequest>}
-   */
-  async waitForRequest(urlOrPredicate, options = {}) {
+  async waitForRequest(urlOrPredicate: string | Function, options: {timeout?: number} = {}): Promise<PuppeteerRequest> {
     const {
       timeout = this._timeoutSettings.timeout(),
     } = options;
@@ -747,12 +629,7 @@ class Page extends EventEmitter {
     }, timeout, this._sessionClosePromise());
   }
 
-  /**
-   * @param {(string|Function)} urlOrPredicate
-   * @param {!{timeout?: number}=} options
-   * @return {!Promise<!PuppeteerResponse>}
-   */
-  async waitForResponse(urlOrPredicate, options = {}) {
+  async waitForResponse(urlOrPredicate: string | Function, options: {timeout?: number} = {}): Promise<PuppeteerResponse> {
     const {
       timeout = this._timeoutSettings.timeout(),
     } = options;
@@ -765,82 +642,54 @@ class Page extends EventEmitter {
     }, timeout, this._sessionClosePromise());
   }
 
-  /**
-   * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
-   * @return {!Promise<?PuppeteerResponse>}
-   */
-  async goBack(options) {
+  async goBack(options: WaitForOptions): Promise<PuppeteerResponse | null> {
     return this._go(-1, options);
   }
 
-  /**
-   * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
-   * @return {!Promise<?PuppeteerResponse>}
-   */
-  async goForward(options) {
+  async goForward(options: WaitForOptions): Promise<PuppeteerResponse | null> {
     return this._go(+1, options);
   }
 
-  /**
-   * @param {!{timeout?: number, waitUntil?: !Puppeteer.PuppeteerLifeCycleEvent|!Array<!Puppeteer.PuppeteerLifeCycleEvent>}=} options
-   * @return {!Promise<?PuppeteerResponse>}
-   */
-  async _go(delta, options) {
+  async _go(delta: number, options: WaitForOptions): Promise<PuppeteerResponse | null> {
     const history = await this._client.send('Page.getNavigationHistory');
     const entry = history.entries[history.currentIndex + delta];
     if (!entry)
       return null;
-    const result = await Promise.all([
+    const result = await Promise.all<PuppeteerResponse, Protocol.Page.navigateToHistoryEntryReturnValue>([
       this.waitForNavigation(options),
       this._client.send('Page.navigateToHistoryEntry', {entryId: entry.id}),
     ]);
-    const response = /** @type PuppeteerResponse */ (result[0]);
-    return response;
+    return result[0];
   }
 
-  async bringToFront() {
+  async bringToFront(): Promise<void> {
     await this._client.send('Page.bringToFront');
   }
 
-  /**
-   * @param {!{viewport: !Puppeteer.Viewport, userAgent: string}} options
-   */
-  async emulate(options) {
+  async emulate(options: {viewport: Puppeteer.Viewport; userAgent: string}): Promise<void> {
     await Promise.all([
       this.setViewport(options.viewport),
       this.setUserAgent(options.userAgent)
     ]);
   }
 
-  /**
-   * @param {boolean} enabled
-   */
-  async setJavaScriptEnabled(enabled) {
+  async setJavaScriptEnabled(enabled: boolean): Promise<void> {
     if (this._javascriptEnabled === enabled)
       return;
     this._javascriptEnabled = enabled;
     await this._client.send('Emulation.setScriptExecutionDisabled', {value: !enabled});
   }
 
-  /**
-   * @param {boolean} enabled
-   */
-  async setBypassCSP(enabled) {
+  async setBypassCSP(enabled: boolean): Promise<void> {
     await this._client.send('Page.setBypassCSP', {enabled});
   }
 
-  /**
-   * @param {?string} type
-   */
-  async emulateMediaType(type) {
+  async emulateMediaType(type?: string): Promise<void> {
     assert(type === 'screen' || type === 'print' || type === null, 'Unsupported media type: ' + type);
     await this._client.send('Emulation.setEmulatedMedia', {media: type || ''});
   }
 
-  /**
-   * @param {?Array<MediaFeature>} features
-   */
-  async emulateMediaFeatures(features) {
+  async emulateMediaFeatures(features?: MediaFeature[]): Promise<void> {
     if (features === null)
       await this._client.send('Emulation.setEmulatedMedia', {features: null});
     if (Array.isArray(features)) {
@@ -853,10 +702,7 @@ class Page extends EventEmitter {
     }
   }
 
-  /**
-   * @param {?string} timezoneId
-   */
-  async emulateTimezone(timezoneId) {
+  async emulateTimezone(timezoneId?: string): Promise<void> {
     try {
       await this._client.send('Emulation.setTimezoneOverride', {timezoneId: timezoneId || ''});
     } catch (error) {
@@ -866,53 +712,31 @@ class Page extends EventEmitter {
     }
   }
 
-  /**
-   * @param {!Puppeteer.Viewport} viewport
-   */
-  async setViewport(viewport) {
+  async setViewport(viewport: Puppeteer.Viewport): Promise<void> {
     const needsReload = await this._emulationManager.emulateViewport(viewport);
     this._viewport = viewport;
     if (needsReload)
       await this.reload();
   }
 
-  /**
-   * @return {?Puppeteer.Viewport}
-   */
-  viewport() {
+  viewport(): Puppeteer.Viewport | null {
     return this._viewport;
   }
 
-  /**
-   * @param {Function|string} pageFunction
-   * @param {!Array<*>} args
-   * @return {!Promise<*>}
-   */
-  async evaluate(pageFunction, ...args) {
-    return this._frameManager.mainFrame().evaluate(pageFunction, ...args);
+  async evaluate<ReturnType extends any>(pageFunction: Function | string, ...args: unknown[]): Promise<ReturnType> {
+    return this._frameManager.mainFrame().evaluate<ReturnType>(pageFunction, ...args);
   }
 
-  /**
-   * @param {Function|string} pageFunction
-   * @param {!Array<*>} args
-   */
-  async evaluateOnNewDocument(pageFunction, ...args) {
+  async evaluateOnNewDocument(pageFunction: Function | string, ...args: unknown[]): Promise<void> {
     const source = helper.evaluationString(pageFunction, ...args);
     await this._client.send('Page.addScriptToEvaluateOnNewDocument', {source});
   }
 
-  /**
-   * @param {boolean} enabled
-   */
-  async setCacheEnabled(enabled = true) {
+  async setCacheEnabled(enabled = true): Promise<void> {
     await this._frameManager.networkManager().setCacheEnabled(enabled);
   }
 
-  /**
-   * @param {!ScreenshotOptions=} options
-   * @return {!Promise<!Buffer|!String>}
-   */
-  async screenshot(options = {}) {
+  async screenshot(options: ScreenshotOptions = {}): Promise<Buffer | string> {
     let screenshotType = null;
     // options.type takes precedence over inferring the type from options.path
     // because it may be a 0-length file with no extension created beforehand (i.e. as a temp file).
@@ -949,12 +773,7 @@ class Page extends EventEmitter {
     return this._screenshotTaskQueue.postTask(this._screenshotTask.bind(this, screenshotType, options));
   }
 
-  /**
-   * @param {"png"|"jpeg"} format
-   * @param {!ScreenshotOptions=} options
-   * @return {!Promise<!Buffer|!String>}
-   */
-  async _screenshotTask(format, options) {
+  async _screenshotTask(format: 'png' | 'jpeg', options?: ScreenshotOptions): Promise<Buffer | string> {
     await this._client.send('Target.activateTarget', {targetId: this._target._targetId});
     let clip = options.clip ? processClip(options.clip) : undefined;
 
@@ -970,8 +789,7 @@ class Page extends EventEmitter {
         deviceScaleFactor = 1,
         isLandscape = false
       } = this._viewport || {};
-      /** @type {!Protocol.Emulation.ScreenOrientation} */
-      const screenOrientation = isLandscape ? {angle: 90, type: 'landscapePrimary'} : {angle: 0, type: 'portraitPrimary'};
+      const screenOrientation: Protocol.Emulation.ScreenOrientation = isLandscape ? {angle: 90, type: 'landscapePrimary'} : {angle: 0, type: 'portraitPrimary'};
       await this._client.send('Emulation.setDeviceMetricsOverride', {mobile: isMobile, width, height, deviceScaleFactor, screenOrientation});
     }
     const shouldSetDefaultBackground = options.omitBackground && format === 'png';
@@ -989,7 +807,7 @@ class Page extends EventEmitter {
       await writeFileAsync(options.path, buffer);
     return buffer;
 
-    function processClip(clip) {
+    function processClip(clip: ScreenshotClip): ScreenshotClip & { scale: number } {
       const x = Math.round(clip.x);
       const y = Math.round(clip.y);
       const width = Math.round(clip.width + clip.x - x);
@@ -998,11 +816,7 @@ class Page extends EventEmitter {
     }
   }
 
-  /**
-   * @param {!PDFOptions=} options
-   * @return {!Promise<!Buffer>}
-   */
-  async pdf(options = {}) {
+  async pdf(options: PDFOptions = {}): Promise<Buffer> {
     const {
       scale = 1,
       displayHeaderFooter = false,
@@ -1019,7 +833,7 @@ class Page extends EventEmitter {
     let paperWidth = 8.5;
     let paperHeight = 11;
     if (options.format) {
-      const format = Page.PaperFormats[options.format.toLowerCase()];
+      const format = paperFormats[options.format.toLowerCase()];
       assert(format, 'Unknown paper format: ' + options.format);
       paperWidth = format.width;
       paperHeight = format.height;
@@ -1053,17 +867,11 @@ class Page extends EventEmitter {
     return await helper.readProtocolStream(this._client, result.stream, path);
   }
 
-  /**
-   * @return {!Promise<string>}
-   */
-  async title() {
+  async title(): Promise<string> {
     return this.mainFrame().title();
   }
 
-  /**
-   * @param {!{runBeforeUnload: (boolean|undefined)}=} options
-   */
-  async close(options = {runBeforeUnload: undefined}) {
+  async close(options: {runBeforeUnload?: boolean} = {runBeforeUnload: undefined}): Promise<void> {
     assert(!!this._client._connection, 'Protocol error: Connection closed. Most likely the page has been closed.');
     const runBeforeUnload = !!options.runBeforeUnload;
     if (runBeforeUnload) {
@@ -1074,159 +882,76 @@ class Page extends EventEmitter {
     }
   }
 
-  /**
-   * @return {boolean}
-   */
-  isClosed() {
+  isClosed(): boolean {
     return this._closed;
   }
 
-  /**
-   * @return {!Mouse}
-   */
-  get mouse() {
+  get mouse(): Mouse {
     return this._mouse;
   }
 
-  /**
-   * @param {string} selector
-   * @param {!{delay?: number, button?: "left"|"right"|"middle", clickCount?: number}=} options
-   */
-  click(selector, options = {}) {
+  click(selector: string, options: {
+    delay?: number;
+    button?: MouseButtonInput;
+    clickCount?: number;
+  } = {}): Promise<void> {
     return this.mainFrame().click(selector, options);
   }
 
-  /**
-   * @param {string} selector
-   */
-  focus(selector) {
+  focus(selector: string): Promise<void> {
     return this.mainFrame().focus(selector);
   }
 
-  /**
-   * @param {string} selector
-   */
-  hover(selector) {
+  hover(selector: string): Promise<void> {
     return this.mainFrame().hover(selector);
   }
 
-  /**
-   * @param {string} selector
-   * @param {!Array<string>} values
-   * @return {!Promise<!Array<string>>}
-   */
-  select(selector, ...values) {
+  select(selector: string, ...values: string[]): Promise<string[]> {
     return this.mainFrame().select(selector, ...values);
   }
 
-  /**
-   * @param {string} selector
-   */
-  tap(selector) {
+  tap(selector: string): Promise<void> {
     return this.mainFrame().tap(selector);
   }
 
-  /**
-   * @param {string} selector
-   * @param {string} text
-   * @param {{delay: (number|undefined)}=} options
-   */
-  type(selector, text, options) {
+  type(selector: string, text: string, options?: {delay: number}): Promise<void> {
     return this.mainFrame().type(selector, text, options);
   }
 
-  /**
-   * @param {(string|number|Function)} selectorOrFunctionOrTimeout
-   * @param {!{visible?: boolean, hidden?: boolean, timeout?: number, polling?: string|number}=} options
-   * @param {!Array<*>} args
-   * @return {!Promise<!JSHandle>}
-   */
-  waitFor(selectorOrFunctionOrTimeout, options = {}, ...args) {
+  waitFor(selectorOrFunctionOrTimeout: string | number | Function, options: {
+    visible?: boolean;
+    hidden?: boolean;
+    timeout?: number;
+    polling?: string|number;
+  } = {}, ...args: unknown[]): Promise<JSHandle> {
     return this.mainFrame().waitFor(selectorOrFunctionOrTimeout, options, ...args);
   }
 
-  /**
-   * @param {string} selector
-   * @param {!{visible?: boolean, hidden?: boolean, timeout?: number}=} options
-   * @return {!Promise<?ElementHandle>}
-   */
-  waitForSelector(selector, options = {}) {
+  waitForSelector(selector: string, options: {
+    visible?: boolean;
+    hidden?: boolean;
+    timeout?: number;
+  } = {}): Promise<ElementHandle | null> {
     return this.mainFrame().waitForSelector(selector, options);
   }
 
-  /**
-   * @param {string} xpath
-   * @param {!{visible?: boolean, hidden?: boolean, timeout?: number}=} options
-   * @return {!Promise<?ElementHandle>}
-   */
-  waitForXPath(xpath, options = {}) {
+  waitForXPath(xpath: string, options: {
+    visible?: boolean;
+    hidden?: boolean;
+    timeout?: number;
+  } = {}): Promise<ElementHandle | null> {
     return this.mainFrame().waitForXPath(xpath, options);
   }
 
-  /**
-   * @param {Function} pageFunction
-   * @param {!{polling?: string|number, timeout?: number}=} options
-   * @param {!Array<*>} args
-   * @return {!Promise<!JSHandle>}
-   */
-  waitForFunction(pageFunction, options = {}, ...args) {
+  waitForFunction(pageFunction: Function, options: {
+    timeout?: number;
+    polling?: string|number;
+  } = {}, ...args: unknown[]): Promise<JSHandle> {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);
   }
 }
 
-/**
- * @typedef {Object} PDFOptions
- * @property {number=} scale
- * @property {boolean=} displayHeaderFooter
- * @property {string=} headerTemplate
- * @property {string=} footerTemplate
- * @property {boolean=} printBackground
- * @property {boolean=} landscape
- * @property {string=} pageRanges
- * @property {string=} format
- * @property {string|number=} width
- * @property {string|number=} height
- * @property {boolean=} preferCSSPageSize
- * @property {!{top?: string|number, bottom?: string|number, left?: string|number, right?: string|number}=} margin
- * @property {string=} path
- */
-
-/**
- * @typedef {Object} Metrics
- * @property {number=} Timestamp
- * @property {number=} Documents
- * @property {number=} Frames
- * @property {number=} JSEventListeners
- * @property {number=} Nodes
- * @property {number=} LayoutCount
- * @property {number=} RecalcStyleCount
- * @property {number=} LayoutDuration
- * @property {number=} RecalcStyleDuration
- * @property {number=} ScriptDuration
- * @property {number=} TaskDuration
- * @property {number=} JSHeapUsedSize
- * @property {number=} JSHeapTotalSize
- */
-
-/**
- * @typedef {Object} ScreenshotOptions
- * @property {string=} type
- * @property {string=} path
- * @property {boolean=} fullPage
- * @property {{x: number, y: number, width: number, height: number}=} clip
- * @property {number=} quality
- * @property {boolean=} omitBackground
- * @property {string=} encoding
- */
-
-/**
- * @typedef {Object} MediaFeature
- * @property {string} name
- * @property {string} value
- */
-
-/** @type {!Set<string>} */
-const supportedMetrics = new Set([
+const supportedMetrics = new Set<string>([
   'Timestamp',
   'Documents',
   'Frames',
@@ -1242,20 +967,6 @@ const supportedMetrics = new Set([
   'JSHeapTotalSize',
 ]);
 
-/** @enum {!{width: number, height: number}} */
-Page.PaperFormats = {
-  letter: {width: 8.5, height: 11},
-  legal: {width: 8.5, height: 14},
-  tabloid: {width: 11, height: 17},
-  ledger: {width: 17, height: 11},
-  a0: {width: 33.1, height: 46.8},
-  a1: {width: 23.4, height: 33.1},
-  a2: {width: 16.54, height: 23.4},
-  a3: {width: 11.7, height: 16.54},
-  a4: {width: 8.27, height: 11.7},
-  a5: {width: 5.83, height: 8.27},
-  a6: {width: 4.13, height: 5.83},
-};
 
 const unitToPixels = {
   'px': 1,
@@ -1264,11 +975,7 @@ const unitToPixels = {
   'mm': 3.78
 };
 
-/**
- * @param {(string|number|undefined)} parameter
- * @return {(number|undefined)}
- */
-function convertPrintParameterToInches(parameter) {
+function convertPrintParameterToInches(parameter?: string|number): number | undefined {
   if (typeof parameter === 'undefined')
     return undefined;
   let pixels;
@@ -1296,121 +1003,66 @@ function convertPrintParameterToInches(parameter) {
   return pixels / 96;
 }
 
-/**
- * @typedef {Object} Network.Cookie
- * @property {string} name
- * @property {string} value
- * @property {string} domain
- * @property {string} path
- * @property {number} expires
- * @property {number} size
- * @property {boolean} httpOnly
- * @property {boolean} secure
- * @property {boolean} session
- * @property {("Strict"|"Lax"|"Extended"|"None")=} sameSite
- */
+interface ConsoleMessageLocation {
+  url?: string;
+  lineNumber?: number;
+  columnNumber?: number;
+}
 
+export class ConsoleMessage {
+  _type: string;
+  _text: string;
+  _args: JSHandle[];
+  _location: ConsoleMessageLocation;
 
-/**
- * @typedef {Object} Network.CookieParam
- * @property {string} name
- * @property {string} value
- * @property {string=} url
- * @property {string=} domain
- * @property {string=} path
- * @property {number=} expires
- * @property {boolean=} httpOnly
- * @property {boolean=} secure
- * @property {("Strict"|"Lax")=} sameSite
- */
-
-/**
- * @typedef {Object} ConsoleMessage.Location
- * @property {string=} url
- * @property {number=} lineNumber
- * @property {number=} columnNumber
- */
-
-class ConsoleMessage {
-  /**
-   * @param {string} type
-   * @param {string} text
-   * @param {!Array<!JSHandle>} args
-   * @param {ConsoleMessage.Location} location
-   */
-  constructor(type, text, args, location = {}) {
+  constructor(type: string, text: string, args: JSHandle[], location: ConsoleMessageLocation = {}) {
     this._type = type;
     this._text = text;
     this._args = args;
     this._location = location;
   }
 
-  /**
-   * @return {string}
-   */
-  type() {
+  type(): string {
     return this._type;
   }
 
-  /**
-   * @return {string}
-   */
-  text() {
+  text(): string {
     return this._text;
   }
 
-  /**
-   * @return {!Array<!JSHandle>}
-   */
-  args() {
+  args(): JSHandle[] {
     return this._args;
   }
 
-  /**
-   * @return {Object}
-   */
-  location() {
+  location(): ConsoleMessageLocation {
     return this._location;
   }
 }
 
-class FileChooser {
-  /**
-   * @param {CDPSession} client
-   * @param {ElementHandle} element
-   * @param {!Protocol.Page.fileChooserOpenedPayload} event
-   */
-  constructor(client, element, event) {
+export class FileChooser {
+  _client: CDPSession;
+  _element: ElementHandle;
+  _multiple: boolean;
+  _handled = false;
+
+  constructor(client: CDPSession, element: ElementHandle, event: Protocol.Page.fileChooserOpenedPayload) {
     this._client = client;
     this._element = element;
     this._multiple = event.mode !== 'selectSingle';
-    this._handled = false;
   }
 
-  /**
-   * @return {boolean}
-   */
-  isMultiple() {
+  isMultiple(): boolean {
     return this._multiple;
   }
 
-  /**
-   * @param {!Array<string>} filePaths
-   * @return {!Promise}
-   */
-  async accept(filePaths) {
+  async accept(filePaths: string[]): Promise<void> {
     assert(!this._handled, 'Cannot accept FileChooser which is already handled!');
     this._handled = true;
     await this._element.uploadFile(...filePaths);
   }
 
-  /**
-   * @return {!Promise}
-   */
-  async cancel() {
+  async cancel(): Promise<void> {
     assert(!this._handled, 'Cannot cancel FileChooser which is already handled!');
     this._handled = true;
   }
 }
-
-module.exports = {Page, ConsoleMessage, FileChooser};

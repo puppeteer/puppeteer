@@ -29,7 +29,7 @@ export class Target {
   _ignoreHTTPSErrors: boolean;
   _defaultViewport?: Puppeteer.Viewport;
   _screenshotTaskQueue: TaskQueue;
-  _pagePromise?: Promise<Puppeteer.Page>;
+  _pagePromise?: Promise<Page>;
   _workerPromise?: Promise<PuppeteerWorker>;
   _initializedPromise: Promise<boolean>;
   _initializedCallback: (x: boolean) => void;
@@ -72,7 +72,7 @@ export class Target {
     return this._sessionFactory();
   }
 
-  async page(): Promise<Puppeteer.Page | null> {
+  async page(): Promise<Page | null> {
     if ((this._targetInfo.type === 'page' || this._targetInfo.type === 'background_page') && !this._pagePromise) {
       this._pagePromise = this._sessionFactory()
           .then(client => Page.create(client, this, this._ignoreHTTPSErrors, this._defaultViewport, this._screenshotTaskQueue));

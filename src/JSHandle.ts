@@ -16,6 +16,7 @@
 
 import {helper, assert, debugError} from './helper';
 import {ExecutionContext} from './ExecutionContext';
+import {Page} from './Page';
 import {CDPSession} from './Connection';
 import {KeyInput} from './USKeyboardLayout';
 import {FrameManager, Frame} from './FrameManager';
@@ -124,16 +125,9 @@ export class JSHandle {
 }
 
 export class ElementHandle extends JSHandle {
-  _page: Puppeteer.Page;
+  _page: Page;
   _frameManager: FrameManager;
-  /**
-   * @param {!ExecutionContext} context
-   * @param {!CDPSession} client
-   * @param {!Protocol.Runtime.RemoteObject} remoteObject
-   * @param {!Puppeteer.Page} page
-   * @param {!FrameManager} frameManager
-   */
-  constructor(context: ExecutionContext, client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject, page: Puppeteer.Page, frameManager: FrameManager) {
+  constructor(context: ExecutionContext, client: CDPSession, remoteObject: Protocol.Runtime.RemoteObject, page: Page, frameManager: FrameManager) {
     super(context, client, remoteObject);
     this._client = client;
     this._remoteObject = remoteObject;
@@ -231,12 +225,6 @@ export class ElementHandle extends JSHandle {
     ];
   }
 
-  /**
-   * @param {!Array<{x: number, y: number}>} quad
-   * @param {number} width
-   * @param {number} height
-   * @return {!Array<{x: number, y: number}>}
-   */
   _intersectQuadWithViewport(quad: Array<{x: number; y: number}>, width: number, height: number): Array<{x: number; y: number}> {
     return quad.map(point => ({
       x: Math.min(Math.max(point.x, 0), width),
@@ -256,10 +244,6 @@ export class ElementHandle extends JSHandle {
     await this._page.mouse.click(x, y, options);
   }
 
-  /**
-   * @param {!Array<string>} values
-   * @return {!Promise<!Array<string>>}
-   */
   async select(...values: string[]): Promise<string[]> {
     for (const value of values)
       assert(helper.isString(value), 'Values must be strings. Found value "' + value + '" of type "' + (typeof value) + '"');
@@ -439,10 +423,6 @@ export class ElementHandle extends JSHandle {
     return null;
   }
 
-  /**
-   * @param {string} selector
-   * @return {!Promise<!Array<!ElementHandle>>}
-   */
   async $$(selector: string): Promise<ElementHandle[]> {
     const defaultHandler = (element: Element, selector: string) => element.querySelectorAll(selector);
     const {updatedSelector, queryHandler} = getQueryHandlerAndSelector(selector, defaultHandler);

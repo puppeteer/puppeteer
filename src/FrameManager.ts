@@ -25,12 +25,13 @@ import {TimeoutSettings} from './TimeoutSettings';
 import {CDPSession} from './Connection';
 import {JSHandle, ElementHandle} from './JSHandle';
 import {MouseButtonInput} from './Input';
+import {Page} from './Page';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
 export class FrameManager extends EventEmitter {
   _client: CDPSession;
-  _page: Puppeteer.Page;
+  _page: Page;
   _networkManager: NetworkManager;
   _timeoutSettings: TimeoutSettings;
   _frames = new Map<string, Frame>();
@@ -38,7 +39,7 @@ export class FrameManager extends EventEmitter {
   _isolatedWorlds = new Set<string>();
   _mainFrame: Frame;
 
-  constructor(client: CDPSession, page: Puppeteer.Page, ignoreHTTPSErrors: boolean, timeoutSettings: TimeoutSettings) {
+  constructor(client: CDPSession, page: Page, ignoreHTTPSErrors: boolean, timeoutSettings: TimeoutSettings) {
     super();
     this._client = client;
     this._page = page;
@@ -155,7 +156,7 @@ export class FrameManager extends EventEmitter {
       this._handleFrameTree(child);
   }
 
-  page(): Puppeteer.Page {
+  page(): Page {
     return this._page;
   }
 
