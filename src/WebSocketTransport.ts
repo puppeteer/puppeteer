@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import * as NodeWebSocket from 'ws';
+import type {ConnectionTransport} from './ConnectionTransport';
 
-export class WebSocketTransport implements Puppeteer.ConnectionTransport {
+export class WebSocketTransport implements ConnectionTransport {
   static create(url: string): Promise<WebSocketTransport> {
     return new Promise((resolve, reject) => {
       const ws = new NodeWebSocket(url, [], {

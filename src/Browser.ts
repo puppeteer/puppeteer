@@ -22,17 +22,18 @@ import {Events} from './Events';
 import {Connection} from './Connection';
 import {Page} from './Page';
 import {ChildProcess} from 'child_process';
+import type {Viewport} from './PuppeteerViewport';
 
 type BrowserCloseCallback = () => Promise<void> | void;
 
 export class Browser extends EventEmitter {
-  static async create(connection: Connection, contextIds: string[], ignoreHTTPSErrors: boolean, defaultViewport?: Puppeteer.Viewport, process?: ChildProcess, closeCallback?: BrowserCloseCallback): Promise<Browser> {
+  static async create(connection: Connection, contextIds: string[], ignoreHTTPSErrors: boolean, defaultViewport?: Viewport, process?: ChildProcess, closeCallback?: BrowserCloseCallback): Promise<Browser> {
     const browser = new Browser(connection, contextIds, ignoreHTTPSErrors, defaultViewport, process, closeCallback);
     await connection.send('Target.setDiscoverTargets', {discover: true});
     return browser;
   }
    _ignoreHTTPSErrors: boolean;
-   _defaultViewport?: Puppeteer.Viewport;
+   _defaultViewport?: Viewport;
    _process?: ChildProcess;
    _screenshotTaskQueue = new TaskQueue();
    _connection: Connection;
@@ -42,7 +43,7 @@ export class Browser extends EventEmitter {
    // TODO: once Target is in TypeScript we can type this properly.
    _targets: Map<string, Target>;
 
-   constructor(connection: Connection, contextIds: string[], ignoreHTTPSErrors: boolean, defaultViewport?: Puppeteer.Viewport, process?: ChildProcess, closeCallback?: BrowserCloseCallback) {
+   constructor(connection: Connection, contextIds: string[], ignoreHTTPSErrors: boolean, defaultViewport?: Viewport, process?: ChildProcess, closeCallback?: BrowserCloseCallback) {
      super();
      this._ignoreHTTPSErrors = ignoreHTTPSErrors;
      this._defaultViewport = defaultViewport;

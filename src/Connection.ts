@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 import {assert} from './helper';
-
-import EventsModule = require('./Events');
-const {Events} = EventsModule;
-
-import debug = require('debug');
+import {Events} from './Events';
+import * as debug from 'debug';
 const debugProtocol = debug('puppeteer:protocol');
 
-import EventEmitter = require('events');
+import type {ConnectionTransport} from './ConnectionTransport';
+import * as EventEmitter from 'events';
 
 interface ConnectionCallback {
     resolve: Function;
@@ -33,7 +31,7 @@ interface ConnectionCallback {
 
 export class Connection extends EventEmitter {
   _url: string;
-  _transport: Puppeteer.ConnectionTransport;
+  _transport: ConnectionTransport;
   _delay: number;
   _lastId = 0;
   _sessions: Map<string, CDPSession> = new Map();
@@ -41,12 +39,7 @@ export class Connection extends EventEmitter {
 
   _callbacks: Map<number, ConnectionCallback> = new Map();
 
-  /**
-   * @param {string} url
-   * @param {!Puppeteer.ConnectionTransport} transport
-   * @param {number=} delay
-   */
-  constructor(url: string, transport: Puppeteer.ConnectionTransport, delay = 0) {
+  constructor(url: string, transport: ConnectionTransport, delay = 0) {
     super();
     this._url = url;
     this._delay = delay;

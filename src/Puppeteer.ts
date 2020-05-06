@@ -17,6 +17,7 @@ import Launcher from './Launcher';
 import type {LaunchOptions, ChromeArgOptions, BrowserOptions, ProductLauncher} from './Launcher';
 import {BrowserFetcher, BrowserFetcherOptions} from './BrowserFetcher';
 import {puppeteerErrors, PuppeteerErrors} from './Errors';
+import type {ConnectionTransport} from './ConnectionTransport';
 
 import {devicesMap} from './DeviceDescriptors';
 import type {DevicesMap} from './/DeviceDescriptors';
@@ -48,7 +49,7 @@ export class Puppeteer {
   connect(options: BrowserOptions & {
     browserWSEndpoint?: string;
     browserURL?: string;
-    transport?: Puppeteer.ConnectionTransport;
+    transport?: ConnectionTransport;
     product?: string;
   }): Promise<Browser> {
     if (options.product)

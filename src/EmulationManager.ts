@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {CDPSession} from './Connection';
+import type {Viewport} from './PuppeteerViewport';
 
 export class EmulationManager {
   _client: CDPSession;
@@ -24,7 +25,7 @@ export class EmulationManager {
     this._client = client;
   }
 
-  async emulateViewport(viewport: Puppeteer.Viewport): Promise<boolean> {
+  async emulateViewport(viewport: Viewport): Promise<boolean> {
     const mobile = viewport.isMobile || false;
     const width = viewport.width;
     const height = viewport.height;
