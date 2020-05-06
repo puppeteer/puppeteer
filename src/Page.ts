@@ -30,7 +30,7 @@ import {Worker as PuppeteerWorker} from './Worker';
 import {Browser, BrowserContext} from './Browser';
 import {Target} from './Target';
 import {createJSHandle, JSHandle, ElementHandle} from './JSHandle';
-import type {Viewport} from './Viewport';
+import type {Viewport} from './PuppeteerViewport';
 import {Request as PuppeteerRequest, Response as PuppeteerResponse, Credentials} from './NetworkManager';
 import {Accessibility} from './Accessibility';
 import {TimeoutSettings} from './TimeoutSettings';

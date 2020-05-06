@@ -20,7 +20,7 @@ import {Worker as PuppeteerWorker} from './Worker';
 import {CDPSession} from './Connection';
 import {TaskQueue} from './TaskQueue';
 import {Browser, BrowserContext} from './Browser';
-import type {Viewport} from './Viewport';
+import type {Viewport} from './PuppeteerViewport';
 
 export class Target {
   _targetInfo: Protocol.Target.TargetInfo;

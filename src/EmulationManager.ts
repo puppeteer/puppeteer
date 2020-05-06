@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {CDPSession} from './Connection';
-import type {Viewport} from './Viewport';
+import type {Viewport} from './PuppeteerViewport';
 
 export class EmulationManager {
   _client: CDPSession;

@@ -33,7 +33,7 @@ import {TimeoutError} from './Errors';
 import type {ConnectionTransport} from './ConnectionTransport';
 import {WebSocketTransport} from './WebSocketTransport';
 import {PipeTransport} from './PipeTransport';
-import type {Viewport} from './Viewport';
+import type {Viewport} from './PuppeteerViewport';
 
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
 const removeFolderAsync = helper.promisify(removeFolder);

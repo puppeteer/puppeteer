@@ -22,7 +22,7 @@ import {Events} from './Events';
 import {Connection} from './Connection';
 import {Page} from './Page';
 import {ChildProcess} from 'child_process';
-import type {Viewport} from './Viewport';
+import type {Viewport} from './PuppeteerViewport';
 
 type BrowserCloseCallback = () => Promise<void> | void;
 
