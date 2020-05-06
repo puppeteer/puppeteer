@@ -367,15 +367,27 @@ function compareDocumentations(actual, expected) {
         actualName: 'Array<Object>',
         expectedName: 'Array<MediaFeature>'
       }],
-      ['Method Page.emulate() options', {
+      ['Method Page.emulate() options.viewport', {
         actualName: 'Object',
         expectedName: 'Viewport'
       }],
-      ['Method Page.setViewport() options', {
+      ['Method Page.setViewport() options.viewport', {
+        actualName: 'Object',
+        expectedName: 'Viewport'
+      }],
+      ['Method Page.setViewport() viewport', {
         actualName: 'Object',
         expectedName: 'Viewport'
       }],
       ['Method Page.connect() options.defaultViewport', {
+        actualName: 'Object',
+        expectedName: 'Viewport'
+      }],
+      ['Method Puppeteer.connect() options.defaultViewport', {
+        actualName: 'Object',
+        expectedName: 'Viewport'
+      }],
+      ['Method Puppeteer.launch() options.defaultViewport', {
         actualName: 'Object',
         expectedName: 'Viewport'
       }],
