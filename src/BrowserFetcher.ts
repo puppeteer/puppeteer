@@ -22,7 +22,7 @@ import * as childProcess from 'child_process';
 import * as https from 'https';
 import * as http from 'http';
 
-import * as extract from 'extract-zip';
+import * as extractZip from 'extract-zip';
 import * as debug from 'debug';
 import * as removeRecursive from 'rimraf';
 import * as URL from 'url';
@@ -307,56 +307,13 @@ function downloadFile(url: string, destinationPath: string, progressCallback: (x
 function install(archivePath: string, folderPath: string): Promise<unknown> {
   debugFetcher(`Installing ${archivePath} to ${folderPath}`);
   if (archivePath.endsWith('.zip'))
-    return extractZip(archivePath, folderPath);
+    return extractZip(archivePath, {dir: folderPath});
   else if (archivePath.endsWith('.tar.bz2'))
     return extractTar(archivePath, folderPath);
   else if (archivePath.endsWith('.dmg'))
     return mkdirAsync(folderPath).then(() => installDMG(archivePath, folderPath));
   else
     throw new Error(`Unsupported archive format: ${archivePath}`);
-}
-
-async function extractZip(zipPath: string, folderPath: string): Promise<void> {
-  const nodeVersion = process.version;
-
-  /* There is currently a bug with extract-zip and Node v14.0.0 that
-   * causes extractZip to silently fail:
-   * https://github.com/puppeteer/puppeteer/issues/5719
-   *
-   * Rather than silenty fail if the user is on Node 14 we instead
-   * detect that and throw an error directing the user to that bug. The
-   * rejection message below is surfaced to the user in the command
-   * line.
-   *
-   * The issue seems to be in streams never resolving so we wrap the
-   * call in a timeout and give it 10s to resolve before deciding on
-   * an error.
-   *
-   * If the user is on Node < 14 we maintain the behaviour we had before
-   * this patch.
-   */
-  if (nodeVersion.startsWith('v14.')) {
-    let timeoutReject;
-    const timeoutPromise = new Promise((resolve, reject) => { timeoutReject = reject; });
-
-    const timeoutToken = setTimeout(() => {
-      const error = new Error(`Puppeteer currently does not work on Node v14 due to an upstream bug. Please see: https://github.com/puppeteer/puppeteer/issues/5719 for details.`);
-      timeoutReject(error);
-    }, 10 * 1000);
-
-    await Promise.race([
-      extract(zipPath, {dir: folderPath}),
-      timeoutPromise
-    ]);
-
-    clearTimeout(timeoutToken);
-  } else {
-    try {
-      await extract(zipPath, {dir: folderPath});
-    } catch (error) {
-      return error;
-    }
-  }
 }
 
 /**
