@@ -59,6 +59,7 @@
     "@types/debug": "0.0.31",
     "@types/mime": "^2.0.0",
     "@types/node": "^10.17.14",
+    "@types/proxy-from-env": "^1.0.1",
     "@types/rimraf": "^2.0.2",
     "@types/tar-fs": "^1.16.2",
     "@types/ws": "^7.2.4",
