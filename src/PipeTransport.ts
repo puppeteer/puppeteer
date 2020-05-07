@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {helper, debugError, PuppeteerEventListener} from './helper';
-import type {ConnectionTransport} from './ConnectionTransport';
+import { helper, debugError, PuppeteerEventListener } from './helper';
+import type { ConnectionTransport } from './ConnectionTransport';
 
 export class PipeTransport implements ConnectionTransport {
   _pipeWrite: NodeJS.WritableStream;
@@ -24,14 +24,18 @@ export class PipeTransport implements ConnectionTransport {
   onclose?: () => void;
   onmessage?: () => void;
 
-  constructor(pipeWrite: NodeJS.WritableStream, pipeRead: NodeJS.ReadableStream) {
+  constructor(
+    pipeWrite: NodeJS.WritableStream,
+    pipeRead: NodeJS.ReadableStream
+  ) {
     this._pipeWrite = pipeWrite;
     this._pendingMessage = '';
     this._eventListeners = [
-      helper.addEventListener(pipeRead, 'data', buffer => this._dispatch(buffer)),
+      helper.addEventListener(pipeRead, 'data', (buffer) =>
+        this._dispatch(buffer)
+      ),
       helper.addEventListener(pipeRead, 'close', () => {
-        if (this.onclose)
-          this.onclose.call(null);
+        if (this.onclose) this.onclose.call(null);
       }),
       helper.addEventListener(pipeRead, 'error', debugError),
       helper.addEventListener(pipeWrite, 'error', debugError),
@@ -52,8 +56,7 @@ export class PipeTransport implements ConnectionTransport {
       return;
     }
     const message = this._pendingMessage + buffer.toString(undefined, 0, end);
-    if (this.onmessage)
-      this.onmessage.call(null, message);
+    if (this.onmessage) this.onmessage.call(null, message);
 
     let start = end + 1;
     end = buffer.indexOf('\0', start);

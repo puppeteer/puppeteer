@@ -14,75 +14,90 @@
  * limitations under the License.
  */
 const expect = require('expect');
-const {getTestState,setupTestBrowserHooks, setupTestPageAndContextHooks} = require('./mocha-utils');
+const {
+  getTestState,
+  setupTestBrowserHooks,
+  setupTestPageAndContextHooks,
+} = require('./mocha-utils');
 
-describe('DefaultBrowserContext', function() {
+describe('DefaultBrowserContext', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
-  itFailsFirefox('page.cookies() should work', async() => {
-    const {page, server} = getTestState();
+  itFailsFirefox('page.cookies() should work', async () => {
+    const { page, server } = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     await page.evaluate(() => {
       document.cookie = 'username=John Doe';
     });
-    expect(await page.cookies()).toEqual([{
-      name: 'username',
-      value: 'John Doe',
-      domain: 'localhost',
-      path: '/',
-      expires: -1,
-      size: 16,
-      httpOnly: false,
-      secure: false,
-      session: true,
-    }]);
+    expect(await page.cookies()).toEqual([
+      {
+        name: 'username',
+        value: 'John Doe',
+        domain: 'localhost',
+        path: '/',
+        expires: -1,
+        size: 16,
+        httpOnly: false,
+        secure: false,
+        session: true,
+      },
+    ]);
   });
-  itFailsFirefox('page.setCookie() should work', async() => {
-    const {page, server} = getTestState();
+  itFailsFirefox('page.setCookie() should work', async () => {
+    const { page, server } = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
     await page.setCookie({
       name: 'username',
-      value: 'John Doe'
-    });
-    expect(await page.evaluate(() => document.cookie)).toBe('username=John Doe');
-    expect(await page.cookies()).toEqual([{
-      name: 'username',
       value: 'John Doe',
-      domain: 'localhost',
-      path: '/',
-      expires: -1,
-      size: 16,
-      httpOnly: false,
-      secure: false,
-      session: true,
-    }]);
+    });
+    expect(await page.evaluate(() => document.cookie)).toBe(
+      'username=John Doe'
+    );
+    expect(await page.cookies()).toEqual([
+      {
+        name: 'username',
+        value: 'John Doe',
+        domain: 'localhost',
+        path: '/',
+        expires: -1,
+        size: 16,
+        httpOnly: false,
+        secure: false,
+        session: true,
+      },
+    ]);
   });
-  itFailsFirefox('page.deleteCookie() should work', async() => {
-    const {page, server} = getTestState();
+  itFailsFirefox('page.deleteCookie() should work', async () => {
+    const { page, server } = getTestState();
 
     await page.goto(server.EMPTY_PAGE);
-    await page.setCookie({
-      name: 'cookie1',
-      value: '1'
-    }, {
-      name: 'cookie2',
-      value: '2'
-    });
+    await page.setCookie(
+      {
+        name: 'cookie1',
+        value: '1',
+      },
+      {
+        name: 'cookie2',
+        value: '2',
+      }
+    );
     expect(await page.evaluate('document.cookie')).toBe('cookie1=1; cookie2=2');
-    await page.deleteCookie({name: 'cookie2'});
+    await page.deleteCookie({ name: 'cookie2' });
     expect(await page.evaluate('document.cookie')).toBe('cookie1=1');
-    expect(await page.cookies()).toEqual([{
-      name: 'cookie1',
-      value: '1',
-      domain: 'localhost',
-      path: '/',
-      expires: -1,
-      size: 8,
-      httpOnly: false,
-      secure: false,
-      session: true,
-    }]);
+    expect(await page.cookies()).toEqual([
+      {
+        name: 'cookie1',
+        value: '1',
+        domain: 'localhost',
+        path: '/',
+        expires: -1,
+        size: 8,
+        httpOnly: false,
+        secure: false,
+        session: true,
+      },
+    ]);
   });
 });

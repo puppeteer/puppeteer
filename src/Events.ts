@@ -42,7 +42,7 @@ export const Events = {
     TargetCreated: 'targetcreated',
     TargetDestroyed: 'targetdestroyed',
     TargetChanged: 'targetchanged',
-    Disconnected: 'disconnected'
+    Disconnected: 'disconnected',
   },
 
   BrowserContext: {
@@ -63,9 +63,15 @@ export const Events = {
     FrameNavigated: Symbol('Events.FrameManager.FrameNavigated'),
     FrameDetached: Symbol('Events.FrameManager.FrameDetached'),
     LifecycleEvent: Symbol('Events.FrameManager.LifecycleEvent'),
-    FrameNavigatedWithinDocument: Symbol('Events.FrameManager.FrameNavigatedWithinDocument'),
-    ExecutionContextCreated: Symbol('Events.FrameManager.ExecutionContextCreated'),
-    ExecutionContextDestroyed: Symbol('Events.FrameManager.ExecutionContextDestroyed'),
+    FrameNavigatedWithinDocument: Symbol(
+      'Events.FrameManager.FrameNavigatedWithinDocument'
+    ),
+    ExecutionContextCreated: Symbol(
+      'Events.FrameManager.ExecutionContextCreated'
+    ),
+    ExecutionContextDestroyed: Symbol(
+      'Events.FrameManager.ExecutionContextDestroyed'
+    ),
   },
 
   Connection: {

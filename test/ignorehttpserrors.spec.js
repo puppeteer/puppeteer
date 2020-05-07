@@ -15,9 +15,9 @@
  */
 
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const { getTestState } = require('./mocha-utils');
 
-describeFailsFirefox('ignoreHTTPSErrors', function() {
+describeFailsFirefox('ignoreHTTPSErrors', function () {
   /* Note that this test creates its own browser rather than use
    * the one provided by the test set-up as we need one
    * with ignoreHTTPSErrors set to true
@@ -26,35 +26,38 @@ describeFailsFirefox('ignoreHTTPSErrors', function() {
   let context;
   let page;
 
-  before(async() => {
-    const {defaultBrowserOptions, puppeteer} = getTestState();
-    const options = Object.assign({ignoreHTTPSErrors: true}, defaultBrowserOptions);
+  before(async () => {
+    const { defaultBrowserOptions, puppeteer } = getTestState();
+    const options = Object.assign(
+      { ignoreHTTPSErrors: true },
+      defaultBrowserOptions
+    );
     browser = await puppeteer.launch(options);
   });
 
-  after(async() => {
+  after(async () => {
     await browser.close();
     browser = null;
   });
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     context = await browser.createIncognitoBrowserContext();
     page = await context.newPage();
   });
 
-  afterEach(async() => {
+  afterEach(async () => {
     await context.close();
     context = null;
     page = null;
   });
 
-  describe('Response.securityDetails', function() {
-    it('should work', async() => {
-      const {httpsServer} = getTestState();
+  describe('Response.securityDetails', function () {
+    it('should work', async () => {
+      const { httpsServer } = getTestState();
 
       const [serverRequest, response] = await Promise.all([
         httpsServer.waitForRequest('/empty.html'),
-        page.goto(httpsServer.EMPTY_PAGE)
+        page.goto(httpsServer.EMPTY_PAGE),
       ]);
       const securityDetails = response.securityDetails();
       expect(securityDetails.issuer()).toBe('puppeteer-tests');
@@ -64,21 +67,21 @@ describeFailsFirefox('ignoreHTTPSErrors', function() {
       expect(securityDetails.validFrom()).toBe(1550084863);
       expect(securityDetails.validTo()).toBe(33086084863);
     });
-    it('should be |null| for non-secure requests', async() => {
-      const {server} = getTestState();
+    it('should be |null| for non-secure requests', async () => {
+      const { server } = getTestState();
 
       const response = await page.goto(server.EMPTY_PAGE);
       expect(response.securityDetails()).toBe(null);
     });
-    it('Network redirects should report SecurityDetails', async() => {
-      const {httpsServer} = getTestState();
+    it('Network redirects should report SecurityDetails', async () => {
+      const { httpsServer } = getTestState();
 
       httpsServer.setRedirect('/plzredirect', '/empty.html');
-      const responses =  [];
-      page.on('response', response => responses.push(response));
-      const [serverRequest, ] = await Promise.all([
+      const responses = [];
+      page.on('response', (response) => responses.push(response));
+      const [serverRequest] = await Promise.all([
         httpsServer.waitForRequest('/plzredirect'),
-        page.goto(httpsServer.PREFIX + '/plzredirect')
+        page.goto(httpsServer.PREFIX + '/plzredirect'),
       ]);
       expect(responses.length).toBe(2);
       expect(responses[0].status()).toBe(302);
@@ -88,29 +91,33 @@ describeFailsFirefox('ignoreHTTPSErrors', function() {
     });
   });
 
-  it('should work', async() => {
-    const {httpsServer} = getTestState();
+  it('should work', async () => {
+    const { httpsServer } = getTestState();
 
     let error = null;
-    const response = await page.goto(httpsServer.EMPTY_PAGE).catch(error_ => error = error_);
+    const response = await page
+      .goto(httpsServer.EMPTY_PAGE)
+      .catch((error_) => (error = error_));
     expect(error).toBe(null);
     expect(response.ok()).toBe(true);
   });
-  it('should work with request interception', async() => {
-    const {httpsServer} = getTestState();
+  it('should work with request interception', async () => {
+    const { httpsServer } = getTestState();
 
     await page.setRequestInterception(true);
-    page.on('request', request => request.continue());
+    page.on('request', (request) => request.continue());
     const response = await page.goto(httpsServer.EMPTY_PAGE);
     expect(response.status()).toBe(200);
   });
-  it('should work with mixed content', async() => {
-    const {server, httpsServer} = getTestState();
+  it('should work with mixed content', async () => {
+    const { server, httpsServer } = getTestState();
 
     httpsServer.setRoute('/mixedcontent.html', (req, res) => {
       res.end(`<iframe src=${server.EMPTY_PAGE}></iframe>`);
     });
-    await page.goto(httpsServer.PREFIX + '/mixedcontent.html', {waitUntil: 'load'});
+    await page.goto(httpsServer.PREFIX + '/mixedcontent.html', {
+      waitUntil: 'load',
+    });
     expect(page.frames().length).toBe(2);
     // Make sure blocked iframe has functional execution context
     // @see https://github.com/puppeteer/puppeteer/issues/2709

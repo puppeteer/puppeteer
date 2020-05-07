@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {EventEmitter} from 'events';
-import {debugError} from './helper';
-import {ExecutionContext} from './ExecutionContext';
-import {JSHandle} from './JSHandle';
-import {CDPSession} from './Connection';
+import { EventEmitter } from 'events';
+import { debugError } from './helper';
+import { ExecutionContext } from './ExecutionContext';
+import { JSHandle } from './JSHandle';
+import { CDPSession } from './Connection';
 
-type ConsoleAPICalledCallback = (eventType: string, handles: JSHandle[], trace: Protocol.Runtime.StackTrace) => void;
-type ExceptionThrownCallback = (details: Protocol.Runtime.ExceptionDetails) => void;
+type ConsoleAPICalledCallback = (
+  eventType: string,
+  handles: JSHandle[],
+  trace: Protocol.Runtime.StackTrace
+) => void;
+type ExceptionThrownCallback = (
+  details: Protocol.Runtime.ExceptionDetails
+) => void;
 type JSHandleFactory = (obj: Protocol.Runtime.RemoteObject) => JSHandle;
 
 export class Worker extends EventEmitter {
@@ -29,24 +35,44 @@ export class Worker extends EventEmitter {
   _executionContextPromise: Promise<ExecutionContext>;
   _executionContextCallback: (value: ExecutionContext) => void;
 
-  constructor(client: CDPSession, url: string, consoleAPICalled: ConsoleAPICalledCallback, exceptionThrown: ExceptionThrownCallback) {
+  constructor(
+    client: CDPSession,
+    url: string,
+    consoleAPICalled: ConsoleAPICalledCallback,
+    exceptionThrown: ExceptionThrownCallback
+  ) {
     super();
     this._client = client;
     this._url = url;
-    this._executionContextPromise = new Promise<ExecutionContext>(x => this._executionContextCallback = x);
+    this._executionContextPromise = new Promise<ExecutionContext>(
+      (x) => (this._executionContextCallback = x)
+    );
 
     let jsHandleFactory: JSHandleFactory;
-    this._client.once('Runtime.executionContextCreated', async event => {
+    this._client.once('Runtime.executionContextCreated', async (event) => {
       // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-      jsHandleFactory = remoteObject => new JSHandle(executionContext, client, remoteObject);
-      const executionContext = new ExecutionContext(client, event.context, null);
+      jsHandleFactory = (remoteObject) =>
+        new JSHandle(executionContext, client, remoteObject);
+      const executionContext = new ExecutionContext(
+        client,
+        event.context,
+        null
+      );
       this._executionContextCallback(executionContext);
     });
 
     // This might fail if the target is closed before we recieve all execution contexts.
     this._client.send('Runtime.enable', {}).catch(debugError);
-    this._client.on('Runtime.consoleAPICalled', event => consoleAPICalled(event.type, event.args.map(jsHandleFactory), event.stackTrace));
-    this._client.on('Runtime.exceptionThrown', exception => exceptionThrown(exception.exceptionDetails));
+    this._client.on('Runtime.consoleAPICalled', (event) =>
+      consoleAPICalled(
+        event.type,
+        event.args.map(jsHandleFactory),
+        event.stackTrace
+      )
+    );
+    this._client.on('Runtime.exceptionThrown', (exception) =>
+      exceptionThrown(exception.exceptionDetails)
+    );
   }
 
   url(): string {
@@ -57,11 +83,23 @@ export class Worker extends EventEmitter {
     return this._executionContextPromise;
   }
 
-  async evaluate<ReturnType extends any>(pageFunction: Function|string, ...args: any[]): Promise<ReturnType> {
-    return (await this._executionContextPromise).evaluate<ReturnType>(pageFunction, ...args);
+  async evaluate<ReturnType extends any>(
+    pageFunction: Function | string,
+    ...args: any[]
+  ): Promise<ReturnType> {
+    return (await this._executionContextPromise).evaluate<ReturnType>(
+      pageFunction,
+      ...args
+    );
   }
 
-  async evaluateHandle(pageFunction: Function|string, ...args: any[]): Promise<JSHandle> {
-    return (await this._executionContextPromise).evaluateHandle(pageFunction, ...args);
+  async evaluateHandle(
+    pageFunction: Function | string,
+    ...args: any[]
+  ): Promise<JSHandle> {
+    return (await this._executionContextPromise).evaluateHandle(
+      pageFunction,
+      ...args
+    );
   }
 }

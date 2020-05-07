@@ -25,7 +25,7 @@ const firefoxOptions = {
   dumpio: true,
 };
 
-(async() => {
+(async () => {
   const browser = await puppeteer.launch(firefoxOptions);
 
   const page = await browser.newPage();
@@ -35,9 +35,9 @@ const firefoxOptions = {
 
   // Extract articles from the page.
   const resultsSelector = '.storylink';
-  const links = await page.evaluate(resultsSelector => {
+  const links = await page.evaluate((resultsSelector) => {
     const anchors = Array.from(document.querySelectorAll(resultsSelector));
-    return anchors.map(anchor => {
+    return anchors.map((anchor) => {
       const title = anchor.textContent.trim();
       return `${title} - ${anchor.href}`;
     });

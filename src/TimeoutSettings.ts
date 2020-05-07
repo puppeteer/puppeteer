@@ -39,14 +39,12 @@ export class TimeoutSettings {
   navigationTimeout(): number {
     if (this._defaultNavigationTimeout !== null)
       return this._defaultNavigationTimeout;
-    if (this._defaultTimeout !== null)
-      return this._defaultTimeout;
+    if (this._defaultTimeout !== null) return this._defaultTimeout;
     return DEFAULT_TIMEOUT;
   }
 
   timeout(): number {
-    if (this._defaultTimeout !== null)
-      return this._defaultTimeout;
+    if (this._defaultTimeout !== null) return this._defaultTimeout;
     return DEFAULT_TIMEOUT;
   }
 }

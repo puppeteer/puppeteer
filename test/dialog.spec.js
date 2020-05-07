@@ -14,15 +14,19 @@
  * limitations under the License.
  */
 const expect = require('expect');
-const {getTestState,setupTestPageAndContextHooks, setupTestBrowserHooks} = require('./mocha-utils');
+const {
+  getTestState,
+  setupTestPageAndContextHooks,
+  setupTestBrowserHooks,
+} = require('./mocha-utils');
 
-describe('Page.Events.Dialog', function() {
+describe('Page.Events.Dialog', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
-  it('should fire', async() => {
-    const {page} = getTestState();
+  it('should fire', async () => {
+    const { page } = getTestState();
 
-    page.on('dialog', dialog => {
+    page.on('dialog', (dialog) => {
       expect(dialog.type()).toBe('alert');
       expect(dialog.defaultValue()).toBe('');
       expect(dialog.message()).toBe('yo');
@@ -30,10 +34,10 @@ describe('Page.Events.Dialog', function() {
     });
     await page.evaluate(() => alert('yo'));
   });
-  itFailsFirefox('should allow accepting prompts', async() => {
-    const {page} = getTestState();
+  itFailsFirefox('should allow accepting prompts', async () => {
+    const { page } = getTestState();
 
-    page.on('dialog', dialog => {
+    page.on('dialog', (dialog) => {
       expect(dialog.type()).toBe('prompt');
       expect(dialog.defaultValue()).toBe('yes.');
       expect(dialog.message()).toBe('question?');
@@ -42,10 +46,10 @@ describe('Page.Events.Dialog', function() {
     const result = await page.evaluate(() => prompt('question?', 'yes.'));
     expect(result).toBe('answer!');
   });
-  it('should dismiss the prompt', async() => {
-    const {page} = getTestState();
+  it('should dismiss the prompt', async () => {
+    const { page } = getTestState();
 
-    page.on('dialog', dialog => {
+    page.on('dialog', (dialog) => {
       dialog.dismiss();
     });
     const result = await page.evaluate(() => prompt('question?'));

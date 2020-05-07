@@ -15,61 +15,75 @@
  */
 
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const { getTestState } = require('./mocha-utils');
 
 const path = require('path');
 
-describe('Fixtures', function() {
-  itFailsFirefox('dumpio option should work with pipe option ', async() => {
-    const {defaultBrowserOptions, puppeteerPath} = getTestState();
+describe('Fixtures', function () {
+  itFailsFirefox('dumpio option should work with pipe option ', async () => {
+    const { defaultBrowserOptions, puppeteerPath } = getTestState();
 
     let dumpioData = '';
-    const {spawn} = require('child_process');
-    const options = Object.assign({}, defaultBrowserOptions, {pipe: true, dumpio: true});
-    const res = spawn('node',
-        [path.join(__dirname, 'fixtures', 'dumpio.js'), puppeteerPath, JSON.stringify(options)]);
-    res.stderr.on('data', data => dumpioData += data.toString('utf8'));
-    await new Promise(resolve => res.on('close', resolve));
+    const { spawn } = require('child_process');
+    const options = Object.assign({}, defaultBrowserOptions, {
+      pipe: true,
+      dumpio: true,
+    });
+    const res = spawn('node', [
+      path.join(__dirname, 'fixtures', 'dumpio.js'),
+      puppeteerPath,
+      JSON.stringify(options),
+    ]);
+    res.stderr.on('data', (data) => (dumpioData += data.toString('utf8')));
+    await new Promise((resolve) => res.on('close', resolve));
     expect(dumpioData).toContain('message from dumpio');
   });
-  it('should dump browser process stderr', async() => {
-    const {defaultBrowserOptions, puppeteerPath} = getTestState();
+  it('should dump browser process stderr', async () => {
+    const { defaultBrowserOptions, puppeteerPath } = getTestState();
 
     let dumpioData = '';
-    const {spawn} = require('child_process');
-    const options = Object.assign({}, defaultBrowserOptions, {dumpio: true});
-    const res = spawn('node',
-        [path.join(__dirname, 'fixtures', 'dumpio.js'), puppeteerPath, JSON.stringify(options)]);
-    res.stderr.on('data', data => dumpioData += data.toString('utf8'));
-    await new Promise(resolve => res.on('close', resolve));
+    const { spawn } = require('child_process');
+    const options = Object.assign({}, defaultBrowserOptions, { dumpio: true });
+    const res = spawn('node', [
+      path.join(__dirname, 'fixtures', 'dumpio.js'),
+      puppeteerPath,
+      JSON.stringify(options),
+    ]);
+    res.stderr.on('data', (data) => (dumpioData += data.toString('utf8')));
+    await new Promise((resolve) => res.on('close', resolve));
     expect(dumpioData).toContain('DevTools listening on ws://');
   });
-  it('should close the browser when the node process closes', async() => {
-    const {defaultBrowserOptions, puppeteerPath, puppeteer} = getTestState();
+  it('should close the browser when the node process closes', async () => {
+    const { defaultBrowserOptions, puppeteerPath, puppeteer } = getTestState();
 
-    const {spawn, execSync} = require('child_process');
+    const { spawn, execSync } = require('child_process');
     const options = Object.assign({}, defaultBrowserOptions, {
       // Disable DUMPIO to cleanly read stdout.
       dumpio: false,
     });
-    const res = spawn('node', [path.join(__dirname, 'fixtures', 'closeme.js'), puppeteerPath, JSON.stringify(options)]);
+    const res = spawn('node', [
+      path.join(__dirname, 'fixtures', 'closeme.js'),
+      puppeteerPath,
+      JSON.stringify(options),
+    ]);
     let wsEndPointCallback;
-    const wsEndPointPromise = new Promise(x => wsEndPointCallback = x);
+    const wsEndPointPromise = new Promise((x) => (wsEndPointCallback = x));
     let output = '';
-    res.stdout.on('data', data => {
+    res.stdout.on('data', (data) => {
       output += data;
       if (output.indexOf('\n'))
         wsEndPointCallback(output.substring(0, output.indexOf('\n')));
     });
-    const browser = await puppeteer.connect({browserWSEndpoint: await wsEndPointPromise});
+    const browser = await puppeteer.connect({
+      browserWSEndpoint: await wsEndPointPromise,
+    });
     const promises = [
-      new Promise(resolve => browser.once('disconnected', resolve)),
-      new Promise(resolve => res.on('close', resolve))
+      new Promise((resolve) => browser.once('disconnected', resolve)),
+      new Promise((resolve) => res.on('close', resolve)),
     ];
     if (process.platform === 'win32')
       execSync(`taskkill /pid ${res.pid} /T /F`);
-    else
-      process.kill(res.pid);
+    else process.kill(res.pid);
     await Promise.all(promises);
   });
 });

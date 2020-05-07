@@ -15,57 +15,60 @@
  */
 
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const { getTestState } = require('./mocha-utils');
 
-describeChromeOnly('OOPIF', function() {
+describeChromeOnly('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */
   let browser;
   let context;
   let page;
 
-  before(async() => {
-    const {puppeteer, defaultBrowserOptions} = getTestState();
-    browser = await puppeteer.launch(Object.assign({}, defaultBrowserOptions, {
-      args: (defaultBrowserOptions.args || []).concat(['--site-per-process']),
-    }));
+  before(async () => {
+    const { puppeteer, defaultBrowserOptions } = getTestState();
+    browser = await puppeteer.launch(
+      Object.assign({}, defaultBrowserOptions, {
+        args: (defaultBrowserOptions.args || []).concat(['--site-per-process']),
+      })
+    );
   });
 
-  beforeEach(async() => {
+  beforeEach(async () => {
     context = await browser.createIncognitoBrowserContext();
     page = await context.newPage();
   });
 
-  afterEach(async() => {
+  afterEach(async () => {
     await context.close();
     page = null;
     context = null;
   });
 
-  after(async() => {
+  after(async () => {
     await browser.close();
     browser = null;
   });
-  xit('should report oopif frames', async() => {
-    const {server} = getTestState();
+  xit('should report oopif frames', async () => {
+    const { server } = getTestState();
 
     await page.goto(server.PREFIX + '/dynamic-oopif.html');
     expect(oopifs(context).length).toBe(1);
     expect(page.frames().length).toBe(2);
   });
-  it('should load oopif iframes with subresources and request interception', async() => {
-    const {server} = getTestState();
+  it('should load oopif iframes with subresources and request interception', async () => {
+    const { server } = getTestState();
 
     await page.setRequestInterception(true);
-    page.on('request', request => request.continue());
+    page.on('request', (request) => request.continue());
     await page.goto(server.PREFIX + '/dynamic-oopif.html');
     expect(oopifs(context).length).toBe(1);
   });
 });
 
-
 /**
  * @param {!BrowserContext} context
  */
 function oopifs(context) {
-  return context.targets().filter(target => target._targetInfo.type === 'iframe');
+  return context
+    .targets()
+    .filter((target) => target._targetInfo.type === 'iframe');
 }

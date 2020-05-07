@@ -15,15 +15,15 @@
  */
 
 import * as fs from 'fs';
-import {helper, assert} from './helper';
-import {LifecycleWatcher, PuppeteerLifeCycleEvent} from './LifecycleWatcher';
-import {TimeoutError} from './Errors';
-import {JSHandle, ElementHandle} from './JSHandle';
-import {ExecutionContext} from './ExecutionContext';
-import {TimeoutSettings} from './TimeoutSettings';
-import {MouseButtonInput} from './Input';
-import {FrameManager, Frame} from './FrameManager';
-import {getQueryHandlerAndSelector, QueryHandler} from './QueryHandler';
+import { helper, assert } from './helper';
+import { LifecycleWatcher, PuppeteerLifeCycleEvent } from './LifecycleWatcher';
+import { TimeoutError } from './Errors';
+import { JSHandle, ElementHandle } from './JSHandle';
+import { ExecutionContext } from './ExecutionContext';
+import { TimeoutSettings } from './TimeoutSettings';
+import { MouseButtonInput } from './Input';
+import { FrameManager, Frame } from './FrameManager';
+import { getQueryHandlerAndSelector, QueryHandler } from './QueryHandler';
 
 // This predicateQueryHandler is declared here so that TypeScript knows about it
 // when it is used in the predicate function below.
@@ -49,7 +49,11 @@ export class DOMWorld {
   _detached = false;
   _waitTasks = new Set<WaitTask>();
 
-  constructor(frameManager: FrameManager, frame: Frame, timeoutSettings: TimeoutSettings) {
+  constructor(
+    frameManager: FrameManager,
+    frame: Frame,
+    timeoutSettings: TimeoutSettings
+  ) {
     this._frameManager = frameManager;
     this._frame = frame;
     this._timeoutSettings = timeoutSettings;
@@ -67,11 +71,10 @@ export class DOMWorld {
     if (context) {
       this._contextResolveCallback.call(null, context);
       this._contextResolveCallback = null;
-      for (const waitTask of this._waitTasks)
-        waitTask.rerun();
+      for (const waitTask of this._waitTasks) waitTask.rerun();
     } else {
       this._documentPromise = null;
-      this._contextPromise = new Promise(fulfill => {
+      this._contextPromise = new Promise((fulfill) => {
         this._contextResolveCallback = fulfill;
       });
     }
@@ -84,7 +87,9 @@ export class DOMWorld {
   _detach(): void {
     this._detached = true;
     for (const waitTask of this._waitTasks)
-      waitTask.terminate(new Error('waitForFunction failed: frame got detached.'));
+      waitTask.terminate(
+        new Error('waitForFunction failed: frame got detached.')
+      );
   }
 
   /**
@@ -92,7 +97,9 @@ export class DOMWorld {
    */
   executionContext(): Promise<ExecutionContext> {
     if (this._detached)
-      throw new Error(`Execution Context is not available in detached frame "${this._frame.url()}" (are you trying to evaluate?)`);
+      throw new Error(
+        `Execution Context is not available in detached frame "${this._frame.url()}" (are you trying to evaluate?)`
+      );
     return this._contextPromise;
   }
 
@@ -101,7 +108,10 @@ export class DOMWorld {
    * @param {!Array<*>} args
    * @return {!Promise<!JSHandle>}
    */
-  async evaluateHandle(pageFunction: Function | string, ...args: unknown[]): Promise<JSHandle> {
+  async evaluateHandle(
+    pageFunction: Function | string,
+    ...args: unknown[]
+  ): Promise<JSHandle> {
     const context = await this.executionContext();
     return context.evaluateHandle(pageFunction, ...args);
   }
@@ -111,7 +121,10 @@ export class DOMWorld {
    * @param {!Array<*>} args
    * @return {!Promise<*>}
    */
-  async evaluate<ReturnType extends any>(pageFunction: Function | string, ...args: unknown[]): Promise<ReturnType> {
+  async evaluate<ReturnType extends any>(
+    pageFunction: Function | string,
+    ...args: unknown[]
+  ): Promise<ReturnType> {
     const context = await this.executionContext();
     return context.evaluate<ReturnType>(pageFunction, ...args);
   }
@@ -127,9 +140,8 @@ export class DOMWorld {
   }
 
   async _document(): Promise<ElementHandle> {
-    if (this._documentPromise)
-      return this._documentPromise;
-    this._documentPromise = this.executionContext().then(async context => {
+    if (this._documentPromise) return this._documentPromise;
+    this._documentPromise = this.executionContext().then(async (context) => {
       const document = await context.evaluateHandle('document');
       return document.asElement();
     });
@@ -142,14 +154,26 @@ export class DOMWorld {
     return value;
   }
 
-  async $eval<ReturnType extends any>(selector: string, pageFunction: Function | string, ...args: unknown[]): Promise<ReturnType> {
+  async $eval<ReturnType extends any>(
+    selector: string,
+    pageFunction: Function | string,
+    ...args: unknown[]
+  ): Promise<ReturnType> {
     const document = await this._document();
     return document.$eval<ReturnType>(selector, pageFunction, ...args);
   }
 
-  async $$eval<ReturnType extends any>(selector: string, pageFunction: Function | string, ...args: unknown[]): Promise<ReturnType> {
+  async $$eval<ReturnType extends any>(
+    selector: string,
+    pageFunction: Function | string,
+    ...args: unknown[]
+  ): Promise<ReturnType> {
     const document = await this._document();
-    const value = await document.$$eval<ReturnType>(selector, pageFunction, ...args);
+    const value = await document.$$eval<ReturnType>(
+      selector,
+      pageFunction,
+      ...args
+    );
     return value;
   }
 
@@ -174,43 +198,55 @@ export class DOMWorld {
     });
   }
 
-  async setContent(html: string, options: {timeout?: number; waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[]} = {}): Promise<void> {
+  async setContent(
+    html: string,
+    options: {
+      timeout?: number;
+      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
+    } = {}
+  ): Promise<void> {
     const {
       waitUntil = ['load'],
       timeout = this._timeoutSettings.navigationTimeout(),
     } = options;
     // We rely upon the fact that document.open() will reset frame lifecycle with "init"
     // lifecycle event. @see https://crrev.com/608658
-    await this.evaluate(html => {
+    await this.evaluate((html) => {
       document.open();
       document.write(html);
       document.close();
     }, html);
-    const watcher = new LifecycleWatcher(this._frameManager, this._frame, waitUntil, timeout);
+    const watcher = new LifecycleWatcher(
+      this._frameManager,
+      this._frame,
+      waitUntil,
+      timeout
+    );
     const error = await Promise.race([
       watcher.timeoutOrTerminationPromise(),
       watcher.lifecyclePromise(),
     ]);
     watcher.dispose();
-    if (error)
-      throw error;
+    if (error) throw error;
   }
 
   /**
    * @param {!{url?: string, path?: string, content?: string, type?: string}} options
    * @return {!Promise<!ElementHandle>}
    */
-  async addScriptTag(options: {url?: string; path?: string; content?: string; type?: string}): Promise<ElementHandle> {
-    const {
-      url = null,
-      path = null,
-      content = null,
-      type = ''
-    } = options;
+  async addScriptTag(options: {
+    url?: string;
+    path?: string;
+    content?: string;
+    type?: string;
+  }): Promise<ElementHandle> {
+    const { url = null, path = null, content = null, type = '' } = options;
     if (url !== null) {
       try {
         const context = await this.executionContext();
-        return (await context.evaluateHandle(addScriptUrl, url, type)).asElement();
+        return (
+          await context.evaluateHandle(addScriptUrl, url, type)
+        ).asElement();
       } catch (error) {
         throw new Error(`Loading script from ${url} failed`);
       }
@@ -220,21 +256,29 @@ export class DOMWorld {
       let contents = await readFileAsync(path, 'utf8');
       contents += '//# sourceURL=' + path.replace(/\n/g, '');
       const context = await this.executionContext();
-      return (await context.evaluateHandle(addScriptContent, contents, type)).asElement();
+      return (
+        await context.evaluateHandle(addScriptContent, contents, type)
+      ).asElement();
     }
 
     if (content !== null) {
       const context = await this.executionContext();
-      return (await context.evaluateHandle(addScriptContent, content, type)).asElement();
+      return (
+        await context.evaluateHandle(addScriptContent, content, type)
+      ).asElement();
     }
 
-    throw new Error('Provide an object with a `url`, `path` or `content` property');
+    throw new Error(
+      'Provide an object with a `url`, `path` or `content` property'
+    );
 
-    async function addScriptUrl(url: string, type: string): Promise<HTMLElement> {
+    async function addScriptUrl(
+      url: string,
+      type: string
+    ): Promise<HTMLElement> {
       const script = document.createElement('script');
       script.src = url;
-      if (type)
-        script.type = type;
+      if (type) script.type = type;
       const promise = new Promise((res, rej) => {
         script.onload = res;
         script.onerror = rej;
@@ -244,25 +288,27 @@ export class DOMWorld {
       return script;
     }
 
-    function addScriptContent(content: string, type = 'text/javascript'): HTMLElement {
+    function addScriptContent(
+      content: string,
+      type = 'text/javascript'
+    ): HTMLElement {
       const script = document.createElement('script');
       script.type = type;
       script.text = content;
       let error = null;
-      script.onerror = e => error = e;
+      script.onerror = (e) => (error = e);
       document.head.appendChild(script);
-      if (error)
-        throw error;
+      if (error) throw error;
       return script;
     }
   }
 
-  async addStyleTag(options: {url?: string; path?: string; content?: string}): Promise<ElementHandle> {
-    const {
-      url = null,
-      path = null,
-      content = null
-    } = options;
+  async addStyleTag(options: {
+    url?: string;
+    path?: string;
+    content?: string;
+  }): Promise<ElementHandle> {
+    const { url = null, path = null, content = null } = options;
     if (url !== null) {
       try {
         const context = await this.executionContext();
@@ -276,15 +322,21 @@ export class DOMWorld {
       let contents = await readFileAsync(path, 'utf8');
       contents += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
       const context = await this.executionContext();
-      return (await context.evaluateHandle(addStyleContent, contents)).asElement();
+      return (
+        await context.evaluateHandle(addStyleContent, contents)
+      ).asElement();
     }
 
     if (content !== null) {
       const context = await this.executionContext();
-      return (await context.evaluateHandle(addStyleContent, content)).asElement();
+      return (
+        await context.evaluateHandle(addStyleContent, content)
+      ).asElement();
     }
 
-    throw new Error('Provide an object with a `url`, `path` or `content` property');
+    throw new Error(
+      'Provide an object with a `url`, `path` or `content` property'
+    );
 
     async function addStyleUrl(url: string): Promise<HTMLElement> {
       const link = document.createElement('link');
@@ -313,7 +365,10 @@ export class DOMWorld {
     }
   }
 
-  async click(selector: string, options: {delay?: number; button?: MouseButtonInput; clickCount?: number}): Promise<void> {
+  async click(
+    selector: string,
+    options: { delay?: number; button?: MouseButtonInput; clickCount?: number }
+  ): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
     await handle.click(options);
@@ -349,43 +404,87 @@ export class DOMWorld {
     await handle.dispose();
   }
 
-  async type(selector: string, text: string, options?: {delay: number}): Promise<void> {
+  async type(
+    selector: string,
+    text: string,
+    options?: { delay: number }
+  ): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);
     await handle.type(text, options);
     await handle.dispose();
   }
 
-  waitForSelector(selector: string, options: WaitForSelectorOptions): Promise<ElementHandle | null> {
+  waitForSelector(
+    selector: string,
+    options: WaitForSelectorOptions
+  ): Promise<ElementHandle | null> {
     return this._waitForSelectorOrXPath(selector, false, options);
   }
 
-  waitForXPath(xpath: string, options: WaitForSelectorOptions): Promise<ElementHandle | null> {
+  waitForXPath(
+    xpath: string,
+    options: WaitForSelectorOptions
+  ): Promise<ElementHandle | null> {
     return this._waitForSelectorOrXPath(xpath, true, options);
   }
 
-  waitForFunction(pageFunction: Function | string, options: {polling?: string | number; timeout?: number} = {}, ...args: unknown[]): Promise<JSHandle> {
+  waitForFunction(
+    pageFunction: Function | string,
+    options: { polling?: string | number; timeout?: number } = {},
+    ...args: unknown[]
+  ): Promise<JSHandle> {
     const {
       polling = 'raf',
       timeout = this._timeoutSettings.timeout(),
     } = options;
-    return new WaitTask(this, pageFunction, undefined, 'function', polling, timeout, ...args).promise;
+    return new WaitTask(
+      this,
+      pageFunction,
+      undefined,
+      'function',
+      polling,
+      timeout,
+      ...args
+    ).promise;
   }
 
   async title(): Promise<string> {
     return this.evaluate(() => document.title);
   }
 
-  private async _waitForSelectorOrXPath(selectorOrXPath: string, isXPath: boolean, options: WaitForSelectorOptions = {}): Promise<ElementHandle | null> {
+  private async _waitForSelectorOrXPath(
+    selectorOrXPath: string,
+    isXPath: boolean,
+    options: WaitForSelectorOptions = {}
+  ): Promise<ElementHandle | null> {
     const {
       visible: waitForVisible = false,
       hidden: waitForHidden = false,
       timeout = this._timeoutSettings.timeout(),
     } = options;
     const polling = waitForVisible || waitForHidden ? 'raf' : 'mutation';
-    const title = `${isXPath ? 'XPath' : 'selector'} "${selectorOrXPath}"${waitForHidden ? ' to be hidden' : ''}`;
-    const {updatedSelector, queryHandler} = getQueryHandlerAndSelector(selectorOrXPath, (element, selector) => document.querySelector(selector));
-    const waitTask = new WaitTask(this, predicate, queryHandler, title, polling, timeout, updatedSelector, isXPath, waitForVisible, waitForHidden);
+    const title = `${isXPath ? 'XPath' : 'selector'} "${selectorOrXPath}"${
+      waitForHidden ? ' to be hidden' : ''
+    }`;
+    const {
+      updatedSelector,
+      queryHandler,
+    } = getQueryHandlerAndSelector(selectorOrXPath, (element, selector) =>
+      document.querySelector(selector)
+    );
+    const waitTask = new WaitTask(
+      this,
+      predicate,
+      queryHandler,
+      title,
+      polling,
+      timeout,
+      updatedSelector,
+      isXPath,
+      waitForVisible,
+      waitForHidden
+    );
     const handle = await waitTask.promise;
     if (!handle.asElement()) {
       await handle.dispose();
@@ -400,19 +499,35 @@ export class DOMWorld {
      * @param {boolean} waitForHidden
      * @return {?Node|boolean}
      */
-    function predicate(selectorOrXPath: string, isXPath: boolean, waitForVisible: boolean, waitForHidden: boolean): Node | null | boolean {
+    function predicate(
+      selectorOrXPath: string,
+      isXPath: boolean,
+      waitForVisible: boolean,
+      waitForHidden: boolean
+    ): Node | null | boolean {
       const node = isXPath
-        ? document.evaluate(selectorOrXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue
-        : predicateQueryHandler ? predicateQueryHandler(document, selectorOrXPath) as Element : document.querySelector(selectorOrXPath);
-      if (!node)
-        return waitForHidden;
-      if (!waitForVisible && !waitForHidden)
-        return node;
-      const element = (node.nodeType === Node.TEXT_NODE ? node.parentElement : node as Element);
+        ? document.evaluate(
+            selectorOrXPath,
+            document,
+            null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE,
+            null
+          ).singleNodeValue
+        : predicateQueryHandler
+        ? (predicateQueryHandler(document, selectorOrXPath) as Element)
+        : document.querySelector(selectorOrXPath);
+      if (!node) return waitForHidden;
+      if (!waitForVisible && !waitForHidden) return node;
+      const element =
+        node.nodeType === Node.TEXT_NODE
+          ? node.parentElement
+          : (node as Element);
 
       const style = window.getComputedStyle(element);
-      const isVisible = style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
-      const success = (waitForVisible === isVisible || waitForHidden === !isVisible);
+      const isVisible =
+        style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
+      const success =
+        waitForVisible === isVisible || waitForHidden === !isVisible;
       return success ? node : null;
 
       function hasVisibleBoundingBox(): boolean {
@@ -436,17 +551,29 @@ class WaitTask {
   _timeoutTimer?: NodeJS.Timeout;
   _terminated = false;
 
-  constructor(domWorld: DOMWorld, predicateBody: Function | string, predicateQueryHandlerBody: Function | string | undefined, title: string, polling: string | number, timeout: number, ...args: unknown[]) {
+  constructor(
+    domWorld: DOMWorld,
+    predicateBody: Function | string,
+    predicateQueryHandlerBody: Function | string | undefined,
+    title: string,
+    polling: string | number,
+    timeout: number,
+    ...args: unknown[]
+  ) {
     if (helper.isString(polling))
-      assert(polling === 'raf' || polling === 'mutation', 'Unknown polling option: ' + polling);
+      assert(
+        polling === 'raf' || polling === 'mutation',
+        'Unknown polling option: ' + polling
+      );
     else if (helper.isNumber(polling))
       assert(polling > 0, 'Cannot poll with non-positive interval: ' + polling);
-    else
-      throw new Error('Unknown polling options: ' + polling);
+    else throw new Error('Unknown polling options: ' + polling);
 
-    function getPredicateBody(predicateBody: Function | string, predicateQueryHandlerBody: Function | string) {
-      if (helper.isString(predicateBody))
-        return `return (${predicateBody});`;
+    function getPredicateBody(
+      predicateBody: Function | string,
+      predicateQueryHandlerBody: Function | string
+    ) {
+      if (helper.isString(predicateBody)) return `return (${predicateBody});`;
       if (predicateQueryHandlerBody) {
         return `
           return (function wrapper(args) {
@@ -460,7 +587,10 @@ class WaitTask {
     this._domWorld = domWorld;
     this._polling = polling;
     this._timeout = timeout;
-    this._predicateBody = getPredicateBody(predicateBody, predicateQueryHandlerBody);
+    this._predicateBody = getPredicateBody(
+      predicateBody,
+      predicateQueryHandlerBody
+    );
     this._args = args;
     this._runCount = 0;
     domWorld._waitTasks.add(this);
@@ -471,8 +601,13 @@ class WaitTask {
     // Since page navigation requires us to re-install the pageScript, we should track
     // timeout on our end.
     if (timeout) {
-      const timeoutError = new TimeoutError(`waiting for ${title} failed: timeout ${timeout}ms exceeded`);
-      this._timeoutTimer = setTimeout(() => this.terminate(timeoutError), timeout);
+      const timeoutError = new TimeoutError(
+        `waiting for ${title} failed: timeout ${timeout}ms exceeded`
+      );
+      this._timeoutTimer = setTimeout(
+        () => this.terminate(timeoutError),
+        timeout
+      );
     }
     this.rerun();
   }
@@ -489,21 +624,29 @@ class WaitTask {
     let success = null;
     let error = null;
     try {
-      success = await (await this._domWorld.executionContext()).evaluateHandle(waitForPredicatePageFunction, this._predicateBody, this._polling, this._timeout, ...this._args);
+      success = await (await this._domWorld.executionContext()).evaluateHandle(
+        waitForPredicatePageFunction,
+        this._predicateBody,
+        this._polling,
+        this._timeout,
+        ...this._args
+      );
     } catch (error_) {
       error = error_;
     }
 
     if (this._terminated || runCount !== this._runCount) {
-      if (success)
-        await success.dispose();
+      if (success) await success.dispose();
       return;
     }
 
     // Ignore timeouts in pageScript - we track timeouts ourselves.
     // If the frame's execution context has already changed, `frame.evaluate` will
     // throw an error - ignore this predicate run altogether.
-    if (!error && await this._domWorld.evaluate(s => !s, success).catch(() => true)) {
+    if (
+      !error &&
+      (await this._domWorld.evaluate((s) => !s, success).catch(() => true))
+    ) {
       await success.dispose();
       return;
     }
@@ -515,13 +658,14 @@ class WaitTask {
 
     // We could have tried to evaluate in a context which was already
     // destroyed.
-    if (error && error.message.includes('Cannot find context with specified id'))
+    if (
+      error &&
+      error.message.includes('Cannot find context with specified id')
+    )
       return;
 
-    if (error)
-      this._reject(error);
-    else
-      this._resolve(success);
+    if (error) this._reject(error);
+    else this._resolve(success);
 
     this._cleanup();
   }
@@ -532,28 +676,28 @@ class WaitTask {
   }
 }
 
-async function waitForPredicatePageFunction(predicateBody: string, polling: string, timeout: number, ...args: unknown[]): Promise<unknown> {
+async function waitForPredicatePageFunction(
+  predicateBody: string,
+  polling: string,
+  timeout: number,
+  ...args: unknown[]
+): Promise<unknown> {
   const predicate = new Function('...args', predicateBody);
   let timedOut = false;
-  if (timeout)
-    setTimeout(() => timedOut = true, timeout);
-  if (polling === 'raf')
-    return await pollRaf();
-  if (polling === 'mutation')
-    return await pollMutation();
-  if (typeof polling === 'number')
-    return await pollInterval(polling);
+  if (timeout) setTimeout(() => (timedOut = true), timeout);
+  if (polling === 'raf') return await pollRaf();
+  if (polling === 'mutation') return await pollMutation();
+  if (typeof polling === 'number') return await pollInterval(polling);
 
   /**
    * @return {!Promise<*>}
    */
   function pollMutation(): Promise<unknown> {
     const success = predicate(...args);
-    if (success)
-      return Promise.resolve(success);
+    if (success) return Promise.resolve(success);
 
     let fulfill;
-    const result = new Promise(x => fulfill = x);
+    const result = new Promise((x) => (fulfill = x));
     const observer = new MutationObserver(() => {
       if (timedOut) {
         observer.disconnect();
@@ -568,14 +712,14 @@ async function waitForPredicatePageFunction(predicateBody: string, polling: stri
     observer.observe(document, {
       childList: true,
       subtree: true,
-      attributes: true
+      attributes: true,
     });
     return result;
   }
 
   function pollRaf(): Promise<unknown> {
     let fulfill;
-    const result = new Promise(x => fulfill = x);
+    const result = new Promise((x) => (fulfill = x));
     onRaf();
     return result;
 
@@ -585,16 +729,14 @@ async function waitForPredicatePageFunction(predicateBody: string, polling: stri
         return;
       }
       const success = predicate(...args);
-      if (success)
-        fulfill(success);
-      else
-        requestAnimationFrame(onRaf);
+      if (success) fulfill(success);
+      else requestAnimationFrame(onRaf);
     }
   }
 
   function pollInterval(pollInterval: number): Promise<unknown> {
     let fulfill;
-    const result = new Promise(x => fulfill = x);
+    const result = new Promise((x) => (fulfill = x));
     onTimeout();
     return result;
 
@@ -604,10 +746,8 @@ async function waitForPredicatePageFunction(predicateBody: string, polling: stri
         return;
       }
       const success = predicate(...args);
-      if (success)
-        fulfill(success);
-      else
-        setTimeout(onTimeout, pollInterval);
+      if (success) fulfill(success);
+      else setTimeout(onTimeout, pollInterval);
     }
   }
 }

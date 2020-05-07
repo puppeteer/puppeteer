@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {assert} from './helper';
-import {CDPSession} from './Connection';
+import { assert } from './helper';
+import { CDPSession } from './Connection';
 
 /* TODO(jacktfranklin): protocol.d.ts defines this
  * so let's ditch this and avoid the duplication
@@ -24,7 +24,7 @@ export enum DialogType {
   Alert = 'alert',
   BeforeUnload = 'beforeunload',
   Confirm = 'confirm',
-  Prompt = 'prompt'
+  Prompt = 'prompt',
 }
 
 export class Dialog {
@@ -36,7 +36,12 @@ export class Dialog {
   private _defaultValue: string;
   private _handled = false;
 
-  constructor(client: CDPSession, type: DialogType, message: string, defaultValue = '') {
+  constructor(
+    client: CDPSession,
+    type: DialogType,
+    message: string,
+    defaultValue = ''
+  ) {
     this._client = client;
     this._type = type;
     this._message = message;
@@ -60,7 +65,7 @@ export class Dialog {
     this._handled = true;
     await this._client.send('Page.handleJavaScriptDialog', {
       accept: true,
-      promptText: promptText
+      promptText: promptText,
     });
   }
 
@@ -68,7 +73,7 @@ export class Dialog {
     assert(!this._handled, 'Cannot dismiss dialog which is already handled!');
     this._handled = true;
     await this._client.send('Page.handleJavaScriptDialog', {
-      accept: false
+      accept: false,
     });
   }
 }

@@ -39,10 +39,15 @@ function traceAPICoverage(apiCoverage, events, className, classType) {
   className = className.substring(0, 1).toLowerCase() + className.substring(1);
   for (const methodName of Reflect.ownKeys(classType.prototype)) {
     const method = Reflect.get(classType.prototype, methodName);
-    if (methodName === 'constructor' || typeof methodName !== 'string' || methodName.startsWith('_') || typeof method !== 'function')
+    if (
+      methodName === 'constructor' ||
+      typeof methodName !== 'string' ||
+      methodName.startsWith('_') ||
+      typeof method !== 'function'
+    )
       continue;
     apiCoverage.set(`${className}.${methodName}`, false);
-    Reflect.set(classType.prototype, methodName, function(...args) {
+    Reflect.set(classType.prototype, methodName, function (...args) {
       apiCoverage.set(`${className}.${methodName}`, true);
       return method.call(this, ...args);
     });
@@ -54,7 +59,7 @@ function traceAPICoverage(apiCoverage, events, className, classType) {
         apiCoverage.set(`${className}.emit(${JSON.stringify(event)})`, false);
     }
     const method = Reflect.get(classType.prototype, 'emit');
-    Reflect.set(classType.prototype, 'emit', function(event, ...args) {
+    Reflect.set(classType.prototype, 'emit', function (event, ...args) {
       if (typeof event !== 'symbol' && this.listenerCount(event))
         apiCoverage.set(`${className}.emit(${JSON.stringify(event)})`, true);
       return method.call(this, event, ...args);
@@ -71,14 +76,14 @@ const clearOldCoverage = () => {
     // do nothing, the file didn't exist
   }
 };
-const writeCoverage = coverage => {
+const writeCoverage = (coverage) => {
   fs.writeFileSync(coverageLocation, JSON.stringify([...coverage.entries()]));
 };
 
 const getCoverageResults = () => {
   let contents;
   try {
-    contents = fs.readFileSync(coverageLocation, {encoding: 'utf8'});
+    contents = fs.readFileSync(coverageLocation, { encoding: 'utf8' });
   } catch (error) {
     console.error('Warning: coverage file does not exist or is not readable.');
   }
@@ -92,7 +97,6 @@ const trackCoverage = () => {
   const coverageMap = new Map();
 
   before(() => {
-
     const api = require('../lib/api');
     const events = require('../lib/Events');
     for (const [className, classType] of Object.entries(api))
@@ -106,5 +110,5 @@ const trackCoverage = () => {
 
 module.exports = {
   trackCoverage,
-  getCoverageResults
+  getCoverageResults,
 };

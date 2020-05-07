@@ -15,7 +15,11 @@
  */
 const os = require('os');
 const expect = require('expect');
-const {getTestState,setupTestBrowserHooks,setupTestPageAndContextHooks} = require('./mocha-utils');
+const {
+  getTestState,
+  setupTestBrowserHooks,
+  setupTestPageAndContextHooks,
+} = require('./mocha-utils');
 
 function dimensions() {
   const rect = document.querySelector('textarea').getBoundingClientRect();
@@ -23,26 +27,26 @@ function dimensions() {
     x: rect.left,
     y: rect.top,
     width: rect.width,
-    height: rect.height
+    height: rect.height,
   };
 }
 
-describe('Mouse', function() {
+describe('Mouse', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
-  it('should click the document', async() => {
-    const {page} = getTestState();
+  it('should click the document', async () => {
+    const { page } = getTestState();
 
     await page.evaluate(() => {
-      window.clickPromise = new Promise(resolve => {
-        document.addEventListener('click', event => {
+      window.clickPromise = new Promise((resolve) => {
+        document.addEventListener('click', (event) => {
           resolve({
             type: event.type,
             detail: event.detail,
             clientX: event.clientX,
             clientY: event.clientY,
             isTrusted: event.isTrusted,
-            button: event.button
+            button: event.button,
           });
         });
       });
@@ -56,11 +60,11 @@ describe('Mouse', function() {
     expect(event.isTrusted).toBe(true);
     expect(event.button).toBe(0);
   });
-  itFailsFirefox('should resize the textarea', async() => {
-    const {page, server} = getTestState();
+  itFailsFirefox('should resize the textarea', async () => {
+    const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
-    const {x, y, width, height} = await page.evaluate(dimensions);
+    const { x, y, width, height } = await page.evaluate(dimensions);
     const mouse = page.mouse;
     await mouse.move(x + width - 4, y + height - 4);
     await mouse.down();
@@ -70,101 +74,138 @@ describe('Mouse', function() {
     expect(newDimensions.width).toBe(Math.round(width + 104));
     expect(newDimensions.height).toBe(Math.round(height + 104));
   });
-  itFailsFirefox('should select the text with mouse', async() => {
-    const {page, server} = getTestState();
+  itFailsFirefox('should select the text with mouse', async () => {
+    const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     await page.focus('textarea');
-    const text = 'This is the text that we are going to try to select. Let\'s see how it goes.';
+    const text =
+      "This is the text that we are going to try to select. Let's see how it goes.";
     await page.keyboard.type(text);
     // Firefox needs an extra frame here after typing or it will fail to set the scrollTop
     await page.evaluate(() => new Promise(requestAnimationFrame));
-    await page.evaluate(() => document.querySelector('textarea').scrollTop = 0);
-    const {x, y} = await page.evaluate(dimensions);
-    await page.mouse.move(x + 2,y + 2);
+    await page.evaluate(
+      () => (document.querySelector('textarea').scrollTop = 0)
+    );
+    const { x, y } = await page.evaluate(dimensions);
+    await page.mouse.move(x + 2, y + 2);
     await page.mouse.down();
-    await page.mouse.move(100,100);
+    await page.mouse.move(100, 100);
     await page.mouse.up();
-    expect(await page.evaluate(() => {
-      const textarea = document.querySelector('textarea');
-      return textarea.value.substring(textarea.selectionStart, textarea.selectionEnd);
-    })).toBe(text);
+    expect(
+      await page.evaluate(() => {
+        const textarea = document.querySelector('textarea');
+        return textarea.value.substring(
+          textarea.selectionStart,
+          textarea.selectionEnd
+        );
+      })
+    ).toBe(text);
   });
-  itFailsFirefox('should trigger hover state', async() => {
-    const {page, server} = getTestState();
+  itFailsFirefox('should trigger hover state', async () => {
+    const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
     await page.hover('#button-6');
-    expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-6');
+    expect(
+      await page.evaluate(() => document.querySelector('button:hover').id)
+    ).toBe('button-6');
     await page.hover('#button-2');
-    expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-2');
+    expect(
+      await page.evaluate(() => document.querySelector('button:hover').id)
+    ).toBe('button-2');
     await page.hover('#button-91');
-    expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-91');
+    expect(
+      await page.evaluate(() => document.querySelector('button:hover').id)
+    ).toBe('button-91');
   });
-  itFailsFirefox('should trigger hover state with removed window.Node', async() => {
-    const {page, server} = getTestState();
+  itFailsFirefox(
+    'should trigger hover state with removed window.Node',
+    async () => {
+      const { page, server } = getTestState();
+
+      await page.goto(server.PREFIX + '/input/scrollable.html');
+      await page.evaluate(() => delete window.Node);
+      await page.hover('#button-6');
+      expect(
+        await page.evaluate(() => document.querySelector('button:hover').id)
+      ).toBe('button-6');
+    }
+  );
+  it('should set modifier keys on click', async () => {
+    const { page, server, isFirefox } = getTestState();
 
     await page.goto(server.PREFIX + '/input/scrollable.html');
-    await page.evaluate(() => delete window.Node);
-    await page.hover('#button-6');
-    expect(await page.evaluate(() => document.querySelector('button:hover').id)).toBe('button-6');
-  });
-  it('should set modifier keys on click', async() => {
-    const {page, server, isFirefox} = getTestState();
-
-    await page.goto(server.PREFIX + '/input/scrollable.html');
-    await page.evaluate(() => document.querySelector('#button-3').addEventListener('mousedown', e => window.lastEvent = e, true));
-    const modifiers = {'Shift': 'shiftKey', 'Control': 'ctrlKey', 'Alt': 'altKey', 'Meta': 'metaKey'};
+    await page.evaluate(() =>
+      document
+        .querySelector('#button-3')
+        .addEventListener('mousedown', (e) => (window.lastEvent = e), true)
+    );
+    const modifiers = {
+      Shift: 'shiftKey',
+      Control: 'ctrlKey',
+      Alt: 'altKey',
+      Meta: 'metaKey',
+    };
     // In Firefox, the Meta modifier only exists on Mac
-    if (isFirefox && os.platform() !== 'darwin')
-      delete modifiers['Meta'];
+    if (isFirefox && os.platform() !== 'darwin') delete modifiers['Meta'];
     for (const modifier in modifiers) {
       await page.keyboard.down(modifier);
       await page.click('#button-3');
-      if (!(await page.evaluate(mod => window.lastEvent[mod], modifiers[modifier])))
+      if (
+        !(await page.evaluate(
+          (mod) => window.lastEvent[mod],
+          modifiers[modifier]
+        ))
+      )
         throw new Error(modifiers[modifier] + ' should be true');
       await page.keyboard.up(modifier);
     }
     await page.click('#button-3');
     for (const modifier in modifiers) {
-      if ((await page.evaluate(mod => window.lastEvent[mod], modifiers[modifier])))
+      if (
+        await page.evaluate((mod) => window.lastEvent[mod], modifiers[modifier])
+      )
         throw new Error(modifiers[modifier] + ' should be false');
     }
   });
-  itFailsFirefox('should tween mouse movement', async() => {
-    const {page} = getTestState();
+  itFailsFirefox('should tween mouse movement', async () => {
+    const { page } = getTestState();
 
     await page.mouse.move(100, 100);
     await page.evaluate(() => {
       window.result = [];
-      document.addEventListener('mousemove', event => {
+      document.addEventListener('mousemove', (event) => {
         window.result.push([event.clientX, event.clientY]);
       });
     });
-    await page.mouse.move(200, 300, {steps: 5});
+    await page.mouse.move(200, 300, { steps: 5 });
     expect(await page.evaluate('result')).toEqual([
       [120, 140],
       [140, 180],
       [160, 220],
       [180, 260],
-      [200, 300]
+      [200, 300],
     ]);
   });
   // @see https://crbug.com/929806
-  itFailsFirefox('should work with mobile viewports and cross process navigations', async() => {
-    const {page, server} = getTestState();
+  itFailsFirefox(
+    'should work with mobile viewports and cross process navigations',
+    async () => {
+      const { page, server } = getTestState();
 
-    await page.goto(server.EMPTY_PAGE);
-    await page.setViewport({width: 360, height: 640, isMobile: true});
-    await page.goto(server.CROSS_PROCESS_PREFIX + '/mobile.html');
-    await page.evaluate(() => {
-      document.addEventListener('click', event => {
-        window.result = {x: event.clientX, y: event.clientY};
+      await page.goto(server.EMPTY_PAGE);
+      await page.setViewport({ width: 360, height: 640, isMobile: true });
+      await page.goto(server.CROSS_PROCESS_PREFIX + '/mobile.html');
+      await page.evaluate(() => {
+        document.addEventListener('click', (event) => {
+          window.result = { x: event.clientX, y: event.clientY };
+        });
       });
-    });
 
-    await page.mouse.click(30, 40);
+      await page.mouse.click(30, 40);
 
-    expect(await page.evaluate('result')).toEqual({x: 30, y: 40});
-  });
+      expect(await page.evaluate('result')).toEqual({ x: 30, y: 40 });
+    }
+  );
 });

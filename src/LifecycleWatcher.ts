@@ -14,22 +14,32 @@
  * limitations under the License.
  */
 
-import {helper, assert, PuppeteerEventListener} from './helper';
-import {Events} from './Events';
-import {TimeoutError} from './Errors';
-import {FrameManager, Frame} from './FrameManager';
-import {Request, Response} from './NetworkManager';
+import { helper, assert, PuppeteerEventListener } from './helper';
+import { Events } from './Events';
+import { TimeoutError } from './Errors';
+import { FrameManager, Frame } from './FrameManager';
+import { Request, Response } from './NetworkManager';
 
-export type PuppeteerLifeCycleEvent = 'load' | 'domcontentloaded' | 'networkidle0' | 'networkidle2';
-type ProtocolLifeCycleEvent = 'load' | 'DOMContentLoaded' | 'networkIdle' | 'networkAlmostIdle';
+export type PuppeteerLifeCycleEvent =
+  | 'load'
+  | 'domcontentloaded'
+  | 'networkidle0'
+  | 'networkidle2';
+type ProtocolLifeCycleEvent =
+  | 'load'
+  | 'DOMContentLoaded'
+  | 'networkIdle'
+  | 'networkAlmostIdle';
 
-const puppeteerToProtocolLifecycle = new Map<PuppeteerLifeCycleEvent, ProtocolLifeCycleEvent>([
+const puppeteerToProtocolLifecycle = new Map<
+  PuppeteerLifeCycleEvent,
+  ProtocolLifeCycleEvent
+>([
   ['load', 'load'],
   ['domcontentloaded', 'DOMContentLoaded'],
   ['networkidle0', 'networkIdle'],
   ['networkidle2', 'networkAlmostIdle'],
 ]);
-
 
 export class LifecycleWatcher {
   _expectedLifecycle: ProtocolLifeCycleEvent[];
@@ -39,7 +49,6 @@ export class LifecycleWatcher {
   _navigationRequest?: Request;
   _eventListeners: PuppeteerEventListener[];
   _initialLoaderId: string;
-
 
   _sameDocumentNavigationPromise: Promise<Error | null>;
   _sameDocumentNavigationCompleteCallback: (x?: Error) => void;
@@ -58,12 +67,15 @@ export class LifecycleWatcher {
   _maximumTimer?: NodeJS.Timeout;
   _hasSameDocumentNavigation?: boolean;
 
-  constructor(frameManager: FrameManager, frame: Frame, waitUntil: PuppeteerLifeCycleEvent|PuppeteerLifeCycleEvent[], timeout: number) {
-    if (Array.isArray(waitUntil))
-      waitUntil = waitUntil.slice();
-    else if (typeof waitUntil === 'string')
-      waitUntil = [waitUntil];
-    this._expectedLifecycle = waitUntil.map(value => {
+  constructor(
+    frameManager: FrameManager,
+    frame: Frame,
+    waitUntil: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[],
+    timeout: number
+  ) {
+    if (Array.isArray(waitUntil)) waitUntil = waitUntil.slice();
+    else if (typeof waitUntil === 'string') waitUntil = [waitUntil];
+    this._expectedLifecycle = waitUntil.map((value) => {
       const protocolEvent = puppeteerToProtocolLifecycle.get(value);
       assert(protocolEvent, 'Unknown value for options.waitUntil: ' + value);
       return protocolEvent;
@@ -75,27 +87,52 @@ export class LifecycleWatcher {
     this._timeout = timeout;
     this._navigationRequest = null;
     this._eventListeners = [
-      helper.addEventListener(frameManager._client, Events.CDPSession.Disconnected, () => this._terminate(new Error('Navigation failed because browser has disconnected!'))),
-      helper.addEventListener(this._frameManager, Events.FrameManager.LifecycleEvent, this._checkLifecycleComplete.bind(this)),
-      helper.addEventListener(this._frameManager, Events.FrameManager.FrameNavigatedWithinDocument, this._navigatedWithinDocument.bind(this)),
-      helper.addEventListener(this._frameManager, Events.FrameManager.FrameDetached, this._onFrameDetached.bind(this)),
-      helper.addEventListener(this._frameManager.networkManager(), Events.NetworkManager.Request, this._onRequest.bind(this)),
+      helper.addEventListener(
+        frameManager._client,
+        Events.CDPSession.Disconnected,
+        () =>
+          this._terminate(
+            new Error('Navigation failed because browser has disconnected!')
+          )
+      ),
+      helper.addEventListener(
+        this._frameManager,
+        Events.FrameManager.LifecycleEvent,
+        this._checkLifecycleComplete.bind(this)
+      ),
+      helper.addEventListener(
+        this._frameManager,
+        Events.FrameManager.FrameNavigatedWithinDocument,
+        this._navigatedWithinDocument.bind(this)
+      ),
+      helper.addEventListener(
+        this._frameManager,
+        Events.FrameManager.FrameDetached,
+        this._onFrameDetached.bind(this)
+      ),
+      helper.addEventListener(
+        this._frameManager.networkManager(),
+        Events.NetworkManager.Request,
+        this._onRequest.bind(this)
+      ),
     ];
 
-    this._sameDocumentNavigationPromise = new Promise<Error | null>(fulfill => {
-      this._sameDocumentNavigationCompleteCallback = fulfill;
-    });
+    this._sameDocumentNavigationPromise = new Promise<Error | null>(
+      (fulfill) => {
+        this._sameDocumentNavigationCompleteCallback = fulfill;
+      }
+    );
 
-    this._lifecyclePromise = new Promise(fulfill => {
+    this._lifecyclePromise = new Promise((fulfill) => {
       this._lifecycleCallback = fulfill;
     });
 
-    this._newDocumentNavigationPromise = new Promise(fulfill => {
+    this._newDocumentNavigationPromise = new Promise((fulfill) => {
       this._newDocumentNavigationCompleteCallback = fulfill;
     });
 
     this._timeoutPromise = this._createTimeoutPromise();
-    this._terminationPromise = new Promise(fulfill => {
+    this._terminationPromise = new Promise((fulfill) => {
       this._terminationCallback = fulfill;
     });
     this._checkLifecycleComplete();
@@ -109,7 +146,10 @@ export class LifecycleWatcher {
 
   _onFrameDetached(frame: Frame): void {
     if (this._frame === frame) {
-      this._terminationCallback.call(null, new Error('Navigating frame was detached'));
+      this._terminationCallback.call(
+        null,
+        new Error('Navigating frame was detached')
+      );
       return;
     }
     this._checkLifecycleComplete();
@@ -140,26 +180,28 @@ export class LifecycleWatcher {
   }
 
   _createTimeoutPromise(): Promise<TimeoutError | null> {
-    if (!this._timeout)
-      return new Promise(() => {});
-    const errorMessage = 'Navigation timeout of ' + this._timeout + ' ms exceeded';
-    return new Promise(fulfill => this._maximumTimer = setTimeout(fulfill, this._timeout))
-        .then(() => new TimeoutError(errorMessage));
+    if (!this._timeout) return new Promise(() => {});
+    const errorMessage =
+      'Navigation timeout of ' + this._timeout + ' ms exceeded';
+    return new Promise(
+      (fulfill) => (this._maximumTimer = setTimeout(fulfill, this._timeout))
+    ).then(() => new TimeoutError(errorMessage));
   }
 
   _navigatedWithinDocument(frame: Frame): void {
-    if (frame !== this._frame)
-      return;
+    if (frame !== this._frame) return;
     this._hasSameDocumentNavigation = true;
     this._checkLifecycleComplete();
   }
 
   _checkLifecycleComplete(): void {
     // We expect navigation to commit.
-    if (!checkLifecycle(this._frame, this._expectedLifecycle))
-      return;
+    if (!checkLifecycle(this._frame, this._expectedLifecycle)) return;
     this._lifecycleCallback();
-    if (this._frame._loaderId === this._initialLoaderId && !this._hasSameDocumentNavigation)
+    if (
+      this._frame._loaderId === this._initialLoaderId &&
+      !this._hasSameDocumentNavigation
+    )
       return;
     if (this._hasSameDocumentNavigation)
       this._sameDocumentNavigationCompleteCallback();
@@ -171,14 +213,15 @@ export class LifecycleWatcher {
      * @param {!Array<string>} expectedLifecycle
      * @return {boolean}
      */
-    function checkLifecycle(frame: Frame, expectedLifecycle: ProtocolLifeCycleEvent[]): boolean {
+    function checkLifecycle(
+      frame: Frame,
+      expectedLifecycle: ProtocolLifeCycleEvent[]
+    ): boolean {
       for (const event of expectedLifecycle) {
-        if (!frame._lifecycleEvents.has(event))
-          return false;
+        if (!frame._lifecycleEvents.has(event)) return false;
       }
       for (const child of frame.childFrames()) {
-        if (!checkLifecycle(child, expectedLifecycle))
-          return false;
+        if (!checkLifecycle(child, expectedLifecycle)) return false;
       }
       return true;
     }

@@ -17,9 +17,9 @@
 const fs = require('fs');
 const path = require('path');
 const expect = require('expect');
-const {getTestState} = require('./mocha-utils');
+const { getTestState } = require('./mocha-utils');
 
-describeChromeOnly('Tracing', function() {
+describeChromeOnly('Tracing', function () {
   let outputFile;
   let browser;
   let page;
@@ -28,14 +28,14 @@ describeChromeOnly('Tracing', function() {
    * individual test, which isn't the default behaviour of getTestState()
    */
 
-  beforeEach(async() => {
-    const {defaultBrowserOptions, puppeteer} = getTestState();
+  beforeEach(async () => {
+    const { defaultBrowserOptions, puppeteer } = getTestState();
     browser = await puppeteer.launch(defaultBrowserOptions);
     page = await browser.newPage();
     outputFile = path.join(__dirname, 'assets', 'trace.json');
   });
 
-  afterEach(async() => {
+  afterEach(async () => {
     await browser.close();
     browser = null;
     page = null;
@@ -44,42 +44,49 @@ describeChromeOnly('Tracing', function() {
       outputFile = null;
     }
   });
-  it('should output a trace', async() => {
-    const {server} = getTestState();
+  it('should output a trace', async () => {
+    const { server } = getTestState();
 
-    await page.tracing.start({screenshots: true, path: outputFile});
+    await page.tracing.start({ screenshots: true, path: outputFile });
     await page.goto(server.PREFIX + '/grid.html');
     await page.tracing.stop();
     expect(fs.existsSync(outputFile)).toBe(true);
   });
 
-  it('should run with custom categories if provided', async() => {
-    await page.tracing.start({path: outputFile, categories: ['disabled-by-default-v8.cpu_profiler.hires']});
+  it('should run with custom categories if provided', async () => {
+    await page.tracing.start({
+      path: outputFile,
+      categories: ['disabled-by-default-v8.cpu_profiler.hires'],
+    });
     await page.tracing.stop();
 
     const traceJson = JSON.parse(fs.readFileSync(outputFile));
-    expect(traceJson.metadata['trace-config']).toContain('disabled-by-default-v8.cpu_profiler.hires');
+    expect(traceJson.metadata['trace-config']).toContain(
+      'disabled-by-default-v8.cpu_profiler.hires'
+    );
   });
-  it('should throw if tracing on two pages', async() => {
-    await page.tracing.start({path: outputFile});
+  it('should throw if tracing on two pages', async () => {
+    await page.tracing.start({ path: outputFile });
     const newPage = await browser.newPage();
     let error = null;
-    await newPage.tracing.start({path: outputFile}).catch(error_ => error = error_);
+    await newPage.tracing
+      .start({ path: outputFile })
+      .catch((error_) => (error = error_));
     await newPage.close();
     expect(error).toBeTruthy();
     await page.tracing.stop();
   });
-  it('should return a buffer', async() => {
-    const {server} = getTestState();
+  it('should return a buffer', async () => {
+    const { server } = getTestState();
 
-    await page.tracing.start({screenshots: true, path: outputFile});
+    await page.tracing.start({ screenshots: true, path: outputFile });
     await page.goto(server.PREFIX + '/grid.html');
     const trace = await page.tracing.stop();
     const buf = fs.readFileSync(outputFile);
     expect(trace.toString()).toEqual(buf.toString());
   });
-  it('should work without options', async() => {
-    const {server} = getTestState();
+  it('should work without options', async () => {
+    const { server } = getTestState();
 
     await page.tracing.start();
     await page.goto(server.PREFIX + '/grid.html');
@@ -87,13 +94,13 @@ describeChromeOnly('Tracing', function() {
     expect(trace).toBeTruthy();
   });
 
-  it('should return null in case of Buffer error', async() => {
-    const {server} = getTestState();
+  it('should return null in case of Buffer error', async () => {
+    const { server } = getTestState();
 
-    await page.tracing.start({screenshots: true});
+    await page.tracing.start({ screenshots: true });
     await page.goto(server.PREFIX + '/grid.html');
     const oldBufferConcat = Buffer.concat;
-    Buffer.concat = bufs => {
+    Buffer.concat = (bufs) => {
       throw 'error';
     };
     const trace = await page.tracing.stop();
@@ -101,10 +108,10 @@ describeChromeOnly('Tracing', function() {
     Buffer.concat = oldBufferConcat;
   });
 
-  it('should support a buffer without a path', async() => {
-    const {server} = getTestState();
+  it('should support a buffer without a path', async () => {
+    const { server } = getTestState();
 
-    await page.tracing.start({screenshots: true});
+    await page.tracing.start({ screenshots: true });
     await page.goto(server.PREFIX + '/grid.html');
     const trace = await page.tracing.stop();
     expect(trace.toString()).toContain('screenshot');

@@ -1,5 +1,5 @@
-const {describe, it} = require('mocha');
-const {getCoverageResults} = require('./coverage-utils');
+const { describe, it } = require('mocha');
+const { getCoverageResults } = require('./coverage-utils');
 const expect = require('expect');
 
 describe('API coverage test', () => {
@@ -9,11 +9,12 @@ describe('API coverage test', () => {
     const coverageMap = getCoverageResults();
     const missingMethods = [];
     for (const method of coverageMap.keys()) {
-      if (!coverageMap.get(method))
-        missingMethods.push(method);
+      if (!coverageMap.get(method)) missingMethods.push(method);
     }
     if (missingMethods.length) {
-      console.error('\nCoverage check failed: not all API methods called. See above output for list of missing methods.');
+      console.error(
+        '\nCoverage check failed: not all API methods called. See above output for list of missing methods.'
+      );
       console.error(missingMethods.join('\n'));
     }
 

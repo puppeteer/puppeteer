@@ -63,8 +63,7 @@ class Source {
    * @return {boolean}
    */
   setText(text) {
-    if (text === this._text)
-      return false;
+    if (text === this._text) return false;
     this._hasUpdatedText = true;
     this._text = text;
     return true;
@@ -94,7 +93,7 @@ class Source {
    */
   static async readFile(filePath) {
     filePath = path.resolve(filePath);
-    const text = await readFileAsync(filePath, {encoding: 'utf8'});
+    const text = await readFileAsync(filePath, { encoding: 'utf8' });
     return new Source(filePath, text);
   }
 
@@ -105,9 +104,10 @@ class Source {
    */
   static async readdir(dirPath, extension = '') {
     const fileNames = await readdirAsync(dirPath);
-    const filePaths = fileNames.filter(fileName => fileName.endsWith(extension)).map(fileName => path.join(dirPath, fileName));
-    return Promise.all(filePaths.map(filePath => Source.readFile(filePath)));
+    const filePaths = fileNames
+      .filter((fileName) => fileName.endsWith(extension))
+      .map((fileName) => path.join(dirPath, fileName));
+    return Promise.all(filePaths.map((filePath) => Source.readFile(filePath)));
   }
 }
 module.exports = Source;
-

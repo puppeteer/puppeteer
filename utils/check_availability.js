@@ -20,26 +20,28 @@ const puppeteer = require('..');
 const https = require('https');
 const SUPPORTER_PLATFORMS = ['linux', 'mac', 'win32', 'win64'];
 
-const fetchers = SUPPORTER_PLATFORMS.map(platform => puppeteer.createBrowserFetcher({platform}));
+const fetchers = SUPPORTER_PLATFORMS.map((platform) =>
+  puppeteer.createBrowserFetcher({ platform })
+);
 
 const colors = {
   reset: '\x1b[0m',
   red: '\x1b[31m',
   green: '\x1b[32m',
-  yellow: '\x1b[33m'
+  yellow: '\x1b[33m',
 };
 
 class Table {
   /**
-     * @param {!Array<number>} columnWidths
-     */
+   * @param {!Array<number>} columnWidths
+   */
   constructor(columnWidths) {
     this.widths = columnWidths;
   }
 
   /**
-     * @param {!Array<string>} values
-     */
+   * @param {!Array<string>} values
+   */
   drawRow(values) {
     assert(values.length === this.widths.length);
     let row = '';
@@ -64,15 +66,29 @@ Running command without arguments will check against omahaproxy revisions.`);
 
 const fromRevision = parseInt(process.argv[2], 10);
 const toRevision = parseInt(process.argv[3], 10);
-checkRangeAvailability(fromRevision, toRevision, false /* stopWhenAllAvailable */);
+checkRangeAvailability(
+  fromRevision,
+  toRevision,
+  false /* stopWhenAllAvailable */
+);
 
 async function checkOmahaProxyAvailability() {
-  const lastchanged = (await Promise.all([
-    fetch('https://storage.googleapis.com/chromium-browser-snapshots/Mac/LAST_CHANGE'),
-    fetch('https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/LAST_CHANGE'),
-    fetch('https://storage.googleapis.com/chromium-browser-snapshots/Win/LAST_CHANGE'),
-    fetch('https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/LAST_CHANGE'),
-  ])).map(s => parseInt(s, 10));
+  const lastchanged = (
+    await Promise.all([
+      fetch(
+        'https://storage.googleapis.com/chromium-browser-snapshots/Mac/LAST_CHANGE'
+      ),
+      fetch(
+        'https://storage.googleapis.com/chromium-browser-snapshots/Linux_x64/LAST_CHANGE'
+      ),
+      fetch(
+        'https://storage.googleapis.com/chromium-browser-snapshots/Win/LAST_CHANGE'
+      ),
+      fetch(
+        'https://storage.googleapis.com/chromium-browser-snapshots/Win_x64/LAST_CHANGE'
+      ),
+    ])
+  ).map((s) => parseInt(s, 10));
   const from = Math.max(...lastchanged);
   checkRangeAvailability(from, 0, true /* stopWhenAllAvailable */);
 }
@@ -82,14 +98,21 @@ async function checkOmahaProxyAvailability() {
  * @param {number} toRevision
  * @param {boolean} stopWhenAllAvailable
  */
-async function checkRangeAvailability(fromRevision, toRevision, stopWhenAllAvailable) {
+async function checkRangeAvailability(
+  fromRevision,
+  toRevision,
+  stopWhenAllAvailable
+) {
   const table = new Table([10, 7, 7, 7, 7]);
   table.drawRow([''].concat(SUPPORTER_PLATFORMS));
   const inc = fromRevision < toRevision ? 1 : -1;
   for (let revision = fromRevision; revision !== toRevision; revision += inc) {
-    const allAvailable = await checkAndDrawRevisionAvailability(table, '', revision);
-    if (allAvailable && stopWhenAllAvailable)
-      break;
+    const allAvailable = await checkAndDrawRevisionAvailability(
+      table,
+      '',
+      revision
+    );
+    if (allAvailable && stopWhenAllAvailable) break;
   }
 }
 
@@ -100,10 +123,14 @@ async function checkRangeAvailability(fromRevision, toRevision, stopWhenAllAvail
  * @return {boolean}
  */
 async function checkAndDrawRevisionAvailability(table, name, revision) {
-  const promises = fetchers.map(fetcher => fetcher.canDownload(revision));
+  const promises = fetchers.map((fetcher) => fetcher.canDownload(revision));
   const availability = await Promise.all(promises);
-  const allAvailable = availability.every(e => !!e);
-  const values = [name + ' ' + (allAvailable ? colors.green + revision + colors.reset : revision)];
+  const allAvailable = availability.every((e) => !!e);
+  const values = [
+    name +
+      ' ' +
+      (allAvailable ? colors.green + revision + colors.reset : revision),
+  ];
   for (let i = 0; i < availability.length; ++i) {
     const decoration = availability[i] ? '+' : '-';
     const color = availability[i] ? colors.green : colors.red;
@@ -119,23 +146,25 @@ async function checkAndDrawRevisionAvailability(table, name, revision) {
  */
 function fetch(url) {
   let resolve;
-  const promise = new Promise(x => resolve = x);
-  https.get(url, response => {
-    if (response.statusCode !== 200) {
+  const promise = new Promise((x) => (resolve = x));
+  https
+    .get(url, (response) => {
+      if (response.statusCode !== 200) {
+        resolve(null);
+        return;
+      }
+      let body = '';
+      response.on('data', function (chunk) {
+        body += chunk;
+      });
+      response.on('end', function () {
+        resolve(body);
+      });
+    })
+    .on('error', function (e) {
+      console.error('Error fetching json: ' + e);
       resolve(null);
-      return;
-    }
-    let body = '';
-    response.on('data', function(chunk){
-      body += chunk;
     });
-    response.on('end', function(){
-      resolve(body);
-    });
-  }).on('error', function(e){
-    console.error('Error fetching json: ' + e);
-    resolve(null);
-  });
   return promise;
 }
 
@@ -166,8 +195,7 @@ function filterOutColors(text) {
  */
 function padCenter(text, length) {
   const printableCharacters = filterOutColors(text);
-  if (printableCharacters.length >= length)
-    return text;
+  if (printableCharacters.length >= length) return text;
   const left = Math.floor((length - printableCharacters.length) / 2);
   const right = Math.ceil((length - printableCharacters.length) / 2);
   return spaceString(left) + text + spaceString(right);

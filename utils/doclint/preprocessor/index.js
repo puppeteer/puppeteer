@@ -16,10 +16,12 @@
 
 const Message = require('../Message');
 
-module.exports.ensureReleasedAPILinks = function(sources, version) {
+module.exports.ensureReleasedAPILinks = function (sources, version) {
   // Release version is everything that doesn't include "-".
-  const apiLinkRegex = /https:\/\/github.com\/puppeteer\/puppeteer\/blob\/v[^/]*\/docs\/api.md/ig;
-  const lastReleasedAPI = `https://github.com/puppeteer/puppeteer/blob/v${version.split('-')[0]}/docs/api.md`;
+  const apiLinkRegex = /https:\/\/github.com\/puppeteer\/puppeteer\/blob\/v[^/]*\/docs\/api.md/gi;
+  const lastReleasedAPI = `https://github.com/puppeteer/puppeteer/blob/v${
+    version.split('-')[0]
+  }/docs/api.md`;
 
   const messages = [];
   for (const source of sources) {
@@ -31,7 +33,7 @@ module.exports.ensureReleasedAPILinks = function(sources, version) {
   return messages;
 };
 
-module.exports.runCommands = function(sources, version) {
+module.exports.runCommands = function (sources, version) {
   // Release version is everything that doesn't include "-".
   const isReleaseVersion = !version.includes('-');
 
@@ -39,22 +41,25 @@ module.exports.runCommands = function(sources, version) {
   const commands = [];
   for (const source of sources) {
     const text = source.text();
-    const commandStartRegex = /<!--\s*gen:([a-z-]+)\s*-->/ig;
-    const commandEndRegex = /<!--\s*gen:stop\s*-->/ig;
+    const commandStartRegex = /<!--\s*gen:([a-z-]+)\s*-->/gi;
+    const commandEndRegex = /<!--\s*gen:stop\s*-->/gi;
     let start;
 
-    while (start = commandStartRegex.exec(text)) { // eslint-disable-line no-cond-assign
+    while ((start = commandStartRegex.exec(text))) {
+      // eslint-disable-line no-cond-assign
       commandEndRegex.lastIndex = commandStartRegex.lastIndex;
       const end = commandEndRegex.exec(text);
       if (!end) {
-        messages.push(Message.error(`Failed to find 'gen:stop' for command ${start[0]}`));
+        messages.push(
+          Message.error(`Failed to find 'gen:stop' for command ${start[0]}`)
+        );
         return messages;
       }
       const name = start[1];
       const from = commandStartRegex.lastIndex;
       const to = end.index;
       const originalText = text.substring(from, to);
-      commands.push({name, from, to, originalText, source});
+      commands.push({ name, from, to, originalText, source });
       commandStartRegex.lastIndex = commandEndRegex.lastIndex;
     }
   }
@@ -69,11 +74,12 @@ module.exports.runCommands = function(sources, version) {
     else if (command.name === 'empty-if-release')
       newText = isReleaseVersion ? '' : command.originalText;
     else if (command.name === 'toc')
-      newText = generateTableOfContents(command.source.text().substring(command.to));
+      newText = generateTableOfContents(
+        command.source.text().substring(command.to)
+      );
     if (newText === null)
       messages.push(Message.error(`Unknown command 'gen:${command.name}'`));
-    else if (applyCommand(command, newText))
-      changedSources.add(command.source);
+    else if (applyCommand(command, newText)) changedSources.add(command.source);
   }
   for (const source of changedSources)
     messages.push(Message.warning(`GEN: updated ${source.projectPath()}`));
@@ -87,7 +93,8 @@ module.exports.runCommands = function(sources, version) {
  */
 function applyCommand(command, editText) {
   const text = command.source.text();
-  const newText = text.substring(0, command.from) + editText + text.substring(command.to);
+  const newText =
+    text.substring(0, command.from) + editText + text.substring(command.to);
   return command.source.setText(newText);
 }
 
@@ -101,31 +108,39 @@ function generateTableOfContents(mdText) {
       insideCodeBlock = !insideCodeBlock;
       continue;
     }
-    if (!insideCodeBlock && line.startsWith('#'))
-      titles.push(line);
+    if (!insideCodeBlock && line.startsWith('#')) titles.push(line);
   }
   const tocEntries = [];
   for (const title of titles) {
     const [, nesting, name] = title.match(/^(#+)\s+(.*)$/);
     const delinkifiedName = name.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
-    const id = delinkifiedName.trim().toLowerCase().replace(/\s/g, '-').replace(/[^-0-9a-zа-яё]/ig, '');
+    const id = delinkifiedName
+      .trim()
+      .toLowerCase()
+      .replace(/\s/g, '-')
+      .replace(/[^-0-9a-zа-яё]/gi, '');
     let dedupId = id;
     let counter = 0;
-    while (ids.has(dedupId))
-      dedupId = id + '-' + (++counter);
+    while (ids.has(dedupId)) dedupId = id + '-' + ++counter;
     ids.add(dedupId);
     tocEntries.push({
       level: nesting.length,
       name: delinkifiedName,
-      id: dedupId
+      id: dedupId,
     });
   }
 
-  const minLevel = Math.min(...tocEntries.map(entry => entry.level));
-  tocEntries.forEach(entry => entry.level -= minLevel);
-  return '\n' + tocEntries.map(entry => {
-    const prefix = entry.level % 2 === 0 ? '-' : '*';
-    const padding = '  '.repeat(entry.level);
-    return `${padding}${prefix} [${entry.name}](#${entry.id})`;
-  }).join('\n') + '\n';
+  const minLevel = Math.min(...tocEntries.map((entry) => entry.level));
+  tocEntries.forEach((entry) => (entry.level -= minLevel));
+  return (
+    '\n' +
+    tocEntries
+      .map((entry) => {
+        const prefix = entry.level % 2 === 0 ? '-' : '*';
+        const padding = '  '.repeat(entry.level);
+        return `${padding}${prefix} [${entry.name}](#${entry.id})`;
+      })
+      .join('\n') +
+    '\n'
+  );
 }

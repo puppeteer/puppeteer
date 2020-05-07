@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 import Launcher from './Launcher';
-import type {LaunchOptions, ChromeArgOptions, BrowserOptions, ProductLauncher} from './Launcher';
-import {BrowserFetcher, BrowserFetcherOptions} from './BrowserFetcher';
-import {puppeteerErrors, PuppeteerErrors} from './Errors';
-import type {ConnectionTransport} from './ConnectionTransport';
+import type {
+  LaunchOptions,
+  ChromeArgOptions,
+  BrowserOptions,
+  ProductLauncher,
+} from './Launcher';
+import { BrowserFetcher, BrowserFetcherOptions } from './BrowserFetcher';
+import { puppeteerErrors, PuppeteerErrors } from './Errors';
+import type { ConnectionTransport } from './ConnectionTransport';
 
-import {devicesMap} from './DeviceDescriptors';
-import type {DevicesMap} from './/DeviceDescriptors';
-import {Browser} from './Browser';
+import { devicesMap } from './DeviceDescriptors';
+import type { DevicesMap } from './/DeviceDescriptors';
+import { Browser } from './Browser';
 import * as QueryHandler from './QueryHandler';
 
 export class Puppeteer {
@@ -32,7 +37,12 @@ export class Puppeteer {
   __productName: string;
   _lazyLauncher: ProductLauncher;
 
-  constructor(projectRoot: string, preferredRevision: string, isPuppeteerCore: boolean, productName: string) {
+  constructor(
+    projectRoot: string,
+    preferredRevision: string,
+    isPuppeteerCore: boolean,
+    productName: string
+  ) {
     this._projectRoot = projectRoot;
     this._preferredRevision = preferredRevision;
     this._isPuppeteerCore = isPuppeteerCore;
@@ -40,26 +50,29 @@ export class Puppeteer {
     this.__productName = productName;
   }
 
-  launch(options: LaunchOptions & ChromeArgOptions & BrowserOptions & {product?: string; extraPrefsFirefox?: {}} = {}): Promise<Browser> {
-    if (options.product)
-      this._productName = options.product;
+  launch(
+    options: LaunchOptions &
+      ChromeArgOptions &
+      BrowserOptions & { product?: string; extraPrefsFirefox?: {} } = {}
+  ): Promise<Browser> {
+    if (options.product) this._productName = options.product;
     return this._launcher.launch(options);
   }
 
-  connect(options: BrowserOptions & {
-    browserWSEndpoint?: string;
-    browserURL?: string;
-    transport?: ConnectionTransport;
-    product?: string;
-  }): Promise<Browser> {
-    if (options.product)
-      this._productName = options.product;
+  connect(
+    options: BrowserOptions & {
+      browserWSEndpoint?: string;
+      browserURL?: string;
+      transport?: ConnectionTransport;
+      product?: string;
+    }
+  ): Promise<Browser> {
+    if (options.product) this._productName = options.product;
     return this._launcher.connect(options);
   }
 
   set _productName(name: string) {
-    if (this.__productName !== name)
-      this._changedProduct = true;
+    if (this.__productName !== name) this._changedProduct = true;
     this.__productName = name;
   }
 
@@ -72,7 +85,11 @@ export class Puppeteer {
   }
 
   get _launcher(): ProductLauncher {
-    if (!this._lazyLauncher || this._lazyLauncher.product !== this._productName || this._changedProduct) {
+    if (
+      !this._lazyLauncher ||
+      this._lazyLauncher.product !== this._productName ||
+      this._changedProduct
+    ) {
       // @ts-ignore
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const packageJson = require('../package.json');
@@ -85,7 +102,12 @@ export class Puppeteer {
           this._preferredRevision = packageJson.puppeteer.chromium_revision;
       }
       this._changedProduct = false;
-      this._lazyLauncher = Launcher(this._projectRoot, this._preferredRevision, this._isPuppeteerCore, this._productName);
+      this._lazyLauncher = Launcher(
+        this._projectRoot,
+        this._preferredRevision,
+        this._isPuppeteerCore,
+        this._productName
+      );
     }
     return this._lazyLauncher;
   }
@@ -111,7 +133,10 @@ export class Puppeteer {
   }
 
   // eslint-disable-next-line @typescript-eslint/camelcase
-  __experimental_registerCustomQueryHandler(name: string, queryHandler: QueryHandler.QueryHandler): void {
+  __experimental_registerCustomQueryHandler(
+    name: string,
+    queryHandler: QueryHandler.QueryHandler
+  ): void {
     QueryHandler.registerCustomQueryHandler(name, queryHandler);
   }
 
