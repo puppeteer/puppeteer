@@ -59,7 +59,7 @@ This script checks availability of prebuilt Chromium snapshots.
 Usage: node check_availability.js [<options>] [<browser version(s)>]
 
 options
-    -f          full mode checks availability of all the platforms
+    -f          full mode checks availability of all the platforms, default mode
     -r          roll mode checks for the most recent Chromium roll candidate
     -h          show this help
 
@@ -78,12 +78,6 @@ Examples
     node check_availability.js
 `;
 
-/** @enum {symbol} */
-const Mode = {
-  Full: Symbol('Full'),
-  Roll: Symbol('Roll'),
-};
-
 function main() {
   const args = process.argv.slice(2);
 
@@ -97,14 +91,12 @@ function main() {
     return;
   }
 
-  let mode = Mode.Full;
   if (args[0].startsWith('-')) {
     const option = args[0].substring(1);
     switch (option) {
       case 'f':
         break;
       case 'r':
-        mode = Mode.Roll;
         checkRollCandidate();
         return;
       default:
@@ -119,7 +111,6 @@ function main() {
     checkRangeAvailability({
       fromRevision: revision,
       toRevision: revision,
-      mode,
       stopWhenAllAvailable: false,
     });
   } else {
@@ -128,7 +119,6 @@ function main() {
     checkRangeAvailability({
       fromRevision,
       toRevision,
-      mode,
       stopWhenAllAvailable: false,
     });
   }
@@ -155,7 +145,6 @@ async function checkOmahaProxyAvailability() {
   checkRangeAvailability({
     fromRevision: from,
     toRevision: 0,
-    mode: Mode.Full,
     stopWhenAllAvailable: false,
   });
 }
