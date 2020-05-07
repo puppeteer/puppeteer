@@ -24,6 +24,7 @@
     "dev-install": "npm run tsc && node install.js",
     "install": "node install.js",
     "eslint": "([ \"$CI\" = true ] && eslint --ext js --ext ts --quiet -f codeframe . || eslint --ext js --ext ts .)",
+    "eslint-fix": "eslint --ext js --ext ts --fix .",
     "lint": "npm run eslint && npm run tsc && npm run doc",
     "doc": "node utils/doclint/cli.js",
     "tsc": "tsc --version && tsc -p . && cp src/protocol.d.ts lib/",
