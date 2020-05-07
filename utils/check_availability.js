@@ -16,12 +16,14 @@
  */
 
 const assert = require('assert');
-const puppeteer = require('..');
 const https = require('https');
-const SUPPORTER_PLATFORMS = ['linux', 'mac', 'win32', 'win64'];
 
-const fetchers = SUPPORTER_PLATFORMS.map((platform) =>
-  puppeteer.createBrowserFetcher({ platform })
+const packageJSON = require('../package.json');
+const BrowserFetcher = require('../lib/BrowserFetcher').BrowserFetcher;
+
+const SUPPORTER_PLATFORMS = ['linux', 'mac', 'win32', 'win64'];
+const fetchers = SUPPORTER_PLATFORMS.map(
+  (platform) => new BrowserFetcher('', { platform })
 );
 
 const colors = {
@@ -51,29 +53,89 @@ class Table {
   }
 }
 
-if (process.argv.length === 2) {
-  checkOmahaProxyAvailability();
-  return;
-}
-if (process.argv.length !== 4) {
-  console.log(`
-  Usage: node check_revisions.js [fromRevision] [toRevision]
+const helpMessage = `
+This script checks availability of prebuilt Chromium snapshots.
 
-This script checks availability of different prebuild chromium revisions.
-Running command without arguments will check against omahaproxy revisions.`);
-  return;
-}
+Usage: node check_availability.js [<options>] [<browser version(s)>]
 
-const fromRevision = parseInt(process.argv[2], 10);
-const toRevision = parseInt(process.argv[3], 10);
-checkRangeAvailability(
-  fromRevision,
-  toRevision,
-  false /* stopWhenAllAvailable */
-);
+options
+    -f          full mode checks availability of all the platforms
+    -r          roll mode checks for the most recent Chromium roll candidate
+    -h          show this help
+
+browser version(s)
+    <revision>  single revision number means checking for this specific revision
+    <from> <to> checks all the revisions within a given range, inclusively
+
+Examples
+  To check Chromium availability of a certain revision
+    node check_availability.js [revision]
+
+  To find a Chromium roll candidate for current Stable Linux version
+    node check_availability.js -r
+
+  To check Chromium availability from the latest revision in a descending order
+    node check_availability.js
+`;
+
+/** @enum {symbol} */
+const Mode = {
+  Full: Symbol('Full'),
+  Roll: Symbol('Roll'),
+};
+
+function main() {
+  const args = process.argv.slice(2);
+
+  if (args.length > 3) {
+    console.log(helpMessage);
+    return;
+  }
+
+  if (args.length === 0) {
+    checkOmahaProxyAvailability();
+    return;
+  }
+
+  let mode = Mode.Full;
+  if (args[0].startsWith('-')) {
+    const option = args[0].substring(1);
+    switch (option) {
+      case 'f':
+        break;
+      case 'r':
+        mode = Mode.Roll;
+        checkRollCandidate();
+        return;
+      default:
+        console.log(helpMessage);
+        return;
+    }
+    args.splice(0, 1); // remove options arg since we are done with options
+  }
+
+  if (args.length === 1) {
+    const revision = parseInt(args[0], 10);
+    checkRangeAvailability({
+      fromRevision: revision,
+      toRevision: revision,
+      mode,
+      stopWhenAllAvailable: false,
+    });
+  } else {
+    const fromRevision = parseInt(args[0], 10);
+    const toRevision = parseInt(args[1], 10);
+    checkRangeAvailability({
+      fromRevision,
+      toRevision,
+      mode,
+      stopWhenAllAvailable: false,
+    });
+  }
+}
 
 async function checkOmahaProxyAvailability() {
-  const lastchanged = (
+  const latestRevisions = (
     await Promise.all([
       fetch(
         'https://storage.googleapis.com/chromium-browser-snapshots/Mac/LAST_CHANGE'
@@ -89,24 +151,56 @@ async function checkOmahaProxyAvailability() {
       ),
     ])
   ).map((s) => parseInt(s, 10));
-  const from = Math.max(...lastchanged);
-  checkRangeAvailability(from, 0, true /* stopWhenAllAvailable */);
+  const from = Math.max(...latestRevisions);
+  checkRangeAvailability({
+    fromRevision: from,
+    toRevision: 0,
+    mode: Mode.Full,
+    stopWhenAllAvailable: false,
+  });
+}
+
+async function checkRollCandidate() {
+  const omahaResponse = await fetch(
+    'https://omahaproxy.appspot.com/all.json?channel=stable&os=linux'
+  );
+  const stableLinuxInfo = JSON.parse(omahaResponse)[0];
+  if (!stableLinuxInfo) {
+    console.error('no stable linux information available from omahaproxy');
+    return;
+  }
+
+  const stableLinuxRevision = parseInt(
+    stableLinuxInfo.versions[0].branch_base_position,
+    10
+  );
+  const currentRevision = parseInt(packageJSON.puppeteer.chromium_revision, 10);
+
+  checkRangeAvailability({
+    fromRevision: stableLinuxRevision,
+    toRevision: currentRevision,
+    stopWhenAllAvailable: true,
+  });
 }
 
 /**
- * @param {number} fromRevision
- * @param {number} toRevision
- * @param {boolean} stopWhenAllAvailable
+ * @param {*} options
  */
-async function checkRangeAvailability(
+async function checkRangeAvailability({
   fromRevision,
   toRevision,
-  stopWhenAllAvailable
-) {
+  stopWhenAllAvailable,
+}) {
   const table = new Table([10, 7, 7, 7, 7]);
   table.drawRow([''].concat(SUPPORTER_PLATFORMS));
+
   const inc = fromRevision < toRevision ? 1 : -1;
-  for (let revision = fromRevision; revision !== toRevision; revision += inc) {
+  const revisionToStop = toRevision + inc; // +inc so the range is fully inclusive
+  for (
+    let revision = fromRevision;
+    revision !== revisionToStop;
+    revision += inc
+  ) {
     const allAvailable = await checkAndDrawRevisionAvailability(
       table,
       '',
@@ -200,3 +294,5 @@ function padCenter(text, length) {
   const right = Math.ceil((length - printableCharacters.length) / 2);
   return spaceString(left) + text + spaceString(right);
 }
+
+main();
