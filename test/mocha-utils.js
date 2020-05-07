@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-const {TestServer} = require('../utils/testserver/index');
+const { TestServer } = require('../utils/testserver/index');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const puppeteer = require('../');
 const utils = require('./utils');
-const {trackCoverage} = require('./coverage-utils');
+const { trackCoverage } = require('./coverage-utils');
 
-const setupServer = async() => {
+const setupServer = async () => {
   const assetsPath = path.join(__dirname, 'assets');
   const cachedPath = path.join(__dirname, 'assets', 'cached');
 
@@ -42,14 +42,16 @@ const setupServer = async() => {
   httpsServer.CROSS_PROCESS_PREFIX = `https://127.0.0.1:${httpsPort}`;
   httpsServer.EMPTY_PAGE = `https://localhost:${httpsPort}/empty.html`;
 
-  return {server, httpsServer};
+  return { server, httpsServer };
 };
 
 exports.getTestState = () => state;
 
-const product = process.env.PRODUCT || process.env.PUPPETEER_PRODUCT || 'Chromium';
+const product =
+  process.env.PRODUCT || process.env.PUPPETEER_PRODUCT || 'Chromium';
 
-const isHeadless = (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
+const isHeadless =
+  (process.env.HEADLESS || 'true').trim().toLowerCase() === 'true';
 const isFirefox = product === 'firefox';
 const isChrome = product === 'Chromium';
 const defaultBrowserOptions = {
@@ -60,25 +62,26 @@ const defaultBrowserOptions = {
   dumpio: !!process.env.DUMPIO,
 };
 
-(async() => {
+(async () => {
   if (defaultBrowserOptions.executablePath) {
-    console.warn(`WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`);
+    console.warn(
+      `WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`
+    );
   } else {
-    if (product === 'firefox')
-      await puppeteer._launcher._updateRevision();
+    if (product === 'firefox') await puppeteer._launcher._updateRevision();
     const executablePath = puppeteer.executablePath();
     if (!fs.existsSync(executablePath))
-      throw new Error(`Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`);
+      throw new Error(
+        `Browser is not downloaded at ${executablePath}. Run 'npm install' and try to re-run tests`
+      );
   }
 })();
-
 
 const setupGoldenAssertions = () => {
   const suffix = product.toLowerCase();
   const GOLDEN_DIR = path.join(__dirname, 'golden-' + suffix);
   const OUTPUT_DIR = path.join(__dirname, 'output-' + suffix);
-  if (fs.existsSync(OUTPUT_DIR))
-    rm(OUTPUT_DIR);
+  if (fs.existsSync(OUTPUT_DIR)) rm(OUTPUT_DIR);
   utils.extendExpectWithToBeGolden(GOLDEN_DIR, OUTPUT_DIR);
 };
 
@@ -87,10 +90,8 @@ setupGoldenAssertions();
 const state = {};
 
 global.itFailsFirefox = (...args) => {
-  if (isFirefox)
-    return xit(...args);
-  else
-    return it(...args);
+  if (isFirefox) return xit(...args);
+  else return it(...args);
 };
 
 global.itFailsWindowsUntilDate = (date, ...args) => {
@@ -103,53 +104,49 @@ global.itFailsWindowsUntilDate = (date, ...args) => {
 };
 
 global.describeFailsFirefox = (...args) => {
-  if (isFirefox)
-    return xdescribe(...args);
-  else
-    return describe(...args);
+  if (isFirefox) return xdescribe(...args);
+  else return describe(...args);
 };
 
 global.describeChromeOnly = (...args) => {
-  if (isChrome)
-    return describe(...args);
+  if (isChrome) return describe(...args);
 };
 
-if (process.env.COVERAGE)
-  trackCoverage();
+if (process.env.COVERAGE) trackCoverage();
 
 console.log(
-    `Running unit tests with:
+  `Running unit tests with:
   -> product: ${product}
-  -> binary: ${path.relative(process.cwd(), puppeteer.executablePath())}`);
+  -> binary: ${path.relative(process.cwd(), puppeteer.executablePath())}`
+);
 
 exports.setupTestBrowserHooks = () => {
-  before(async() => {
+  before(async () => {
     const browser = await puppeteer.launch(defaultBrowserOptions);
     state.browser = browser;
   });
 
-  after(async() => {
+  after(async () => {
     await state.browser.close();
     state.browser = null;
   });
 };
 
 exports.setupTestPageAndContextHooks = () => {
-  beforeEach(async() => {
+  beforeEach(async () => {
     state.context = await state.browser.createIncognitoBrowserContext();
     state.page = await state.context.newPage();
   });
 
-  afterEach(async() => {
+  afterEach(async () => {
     await state.context.close();
     state.context = null;
     state.page = null;
   });
 };
 
-
-before(async() => {
-  const {server, httpsServer} = await setupServer();
+before(async () => {
+  const { server, httpsServer } = await setupServer();
 
   state.puppeteer = puppeteer;
   state.defaultBrowserOptions = defaultBrowserOptions;
@@ -161,12 +158,12 @@ before(async() => {
   state.puppeteerPath = path.resolve(path.join(__dirname, '..'));
 });
 
-beforeEach(async() => {
+beforeEach(async () => {
   state.server.reset();
   state.httpsServer.reset();
 });
 
-after(async() => {
+after(async () => {
   await state.server.stop();
   state.server = null;
   await state.httpsServer.stop();

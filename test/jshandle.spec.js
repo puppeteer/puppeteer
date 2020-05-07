@@ -15,126 +15,134 @@
  */
 
 const expect = require('expect');
-const {getTestState,setupTestBrowserHooks,setupTestPageAndContextHooks} = require('./mocha-utils');
+const {
+  getTestState,
+  setupTestBrowserHooks,
+  setupTestPageAndContextHooks,
+} = require('./mocha-utils');
 
-describe('JSHandle', function() {
+describe('JSHandle', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
 
-  describe('Page.evaluateHandle', function() {
-    it('should work', async() => {
-      const {page} = getTestState();
+  describe('Page.evaluateHandle', function () {
+    it('should work', async () => {
+      const { page } = getTestState();
 
       const windowHandle = await page.evaluateHandle(() => window);
       expect(windowHandle).toBeTruthy();
     });
-    it('should accept object handle as an argument', async() => {
-      const {page} = getTestState();
+    it('should accept object handle as an argument', async () => {
+      const { page } = getTestState();
 
       const navigatorHandle = await page.evaluateHandle(() => navigator);
-      const text = await page.evaluate(e => e.userAgent, navigatorHandle);
+      const text = await page.evaluate((e) => e.userAgent, navigatorHandle);
       expect(text).toContain('Mozilla');
     });
-    it('should accept object handle to primitive types', async() => {
-      const {page} = getTestState();
+    it('should accept object handle to primitive types', async () => {
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => 5);
-      const isFive = await page.evaluate(e => Object.is(e, 5), aHandle);
+      const isFive = await page.evaluate((e) => Object.is(e, 5), aHandle);
       expect(isFive).toBeTruthy();
     });
-    it('should warn on nested object handles', async() => {
-      const {page} = getTestState();
+    it('should warn on nested object handles', async () => {
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => document.body);
       let error = null;
-      await page.evaluateHandle(
-          opts => opts.elem.querySelector('p'),
-          {elem: aHandle}
-      ).catch(error_ => error = error_);
+      await page
+        .evaluateHandle((opts) => opts.elem.querySelector('p'), {
+          elem: aHandle,
+        })
+        .catch((error_) => (error = error_));
       expect(error.message).toContain('Are you passing a nested JSHandle?');
     });
-    it('should accept object handle to unserializable value', async() => {
-      const {page} = getTestState();
+    it('should accept object handle to unserializable value', async () => {
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => Infinity);
-      expect(await page.evaluate(e => Object.is(e, Infinity), aHandle)).toBe(true);
+      expect(await page.evaluate((e) => Object.is(e, Infinity), aHandle)).toBe(
+        true
+      );
     });
-    it('should use the same JS wrappers', async() => {
-      const {page} = getTestState();
+    it('should use the same JS wrappers', async () => {
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         window.FOO = 123;
         return window;
       });
-      expect(await page.evaluate(e => e.FOO, aHandle)).toBe(123);
+      expect(await page.evaluate((e) => e.FOO, aHandle)).toBe(123);
     });
-    it('should work with primitives', async() => {
-      const {page} = getTestState();
+    it('should work with primitives', async () => {
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         window.FOO = 123;
         return window;
       });
-      expect(await page.evaluate(e => e.FOO, aHandle)).toBe(123);
+      expect(await page.evaluate((e) => e.FOO, aHandle)).toBe(123);
     });
   });
 
-  describe('JSHandle.getProperty', function() {
-    it('should work', async() => {
-      const {page} = getTestState();
+  describe('JSHandle.getProperty', function () {
+    it('should work', async () => {
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => ({
         one: 1,
         two: 2,
-        three: 3
+        three: 3,
       }));
       const twoHandle = await aHandle.getProperty('two');
       expect(await twoHandle.jsonValue()).toEqual(2);
     });
   });
 
-  describe('JSHandle.jsonValue', function() {
-    it('should work', async() => {
-      const {page} = getTestState();
+  describe('JSHandle.jsonValue', function () {
+    it('should work', async () => {
+      const { page } = getTestState();
 
-      const aHandle = await page.evaluateHandle(() => ({foo: 'bar'}));
+      const aHandle = await page.evaluateHandle(() => ({ foo: 'bar' }));
       const json = await aHandle.jsonValue();
-      expect(json).toEqual({foo: 'bar'});
+      expect(json).toEqual({ foo: 'bar' });
     });
-    itFailsFirefox('should not work with dates', async() => {
-      const {page} = getTestState();
+    itFailsFirefox('should not work with dates', async () => {
+      const { page } = getTestState();
 
-      const dateHandle = await page.evaluateHandle(() => new Date('2017-09-26T00:00:00.000Z'));
+      const dateHandle = await page.evaluateHandle(
+        () => new Date('2017-09-26T00:00:00.000Z')
+      );
       const json = await dateHandle.jsonValue();
       expect(json).toEqual({});
     });
-    it('should throw for circular objects', async() => {
-      const {page, isChrome} = getTestState();
+    it('should throw for circular objects', async () => {
+      const { page, isChrome } = getTestState();
 
       const windowHandle = await page.evaluateHandle('window');
       let error = null;
-      await windowHandle.jsonValue().catch(error_ => error = error_);
+      await windowHandle.jsonValue().catch((error_) => (error = error_));
       if (isChrome)
         expect(error.message).toContain('Object reference chain is too long');
-      else
-        expect(error.message).toContain('Object is not serializable');
+      else expect(error.message).toContain('Object is not serializable');
     });
   });
 
-  describe('JSHandle.getProperties', function() {
-    it('should work', async() => {
-      const {page} = getTestState();
+  describe('JSHandle.getProperties', function () {
+    it('should work', async () => {
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => ({
-        foo: 'bar'
+        foo: 'bar',
       }));
       const properties = await aHandle.getProperties();
       const foo = properties.get('foo');
       expect(foo).toBeTruthy();
       expect(await foo.jsonValue()).toBe('bar');
     });
-    it('should return even non-own properties', async() => {
-      const {page} = getTestState();
+    it('should return even non-own properties', async () => {
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => {
         class A {
@@ -156,77 +164,120 @@ describe('JSHandle', function() {
     });
   });
 
-  describe('JSHandle.asElement', function() {
-    it('should work', async() => {
-      const {page} = getTestState();
+  describe('JSHandle.asElement', function () {
+    it('should work', async () => {
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => document.body);
       const element = aHandle.asElement();
       expect(element).toBeTruthy();
     });
-    it('should return null for non-elements', async() => {
-      const {page} = getTestState();
+    it('should return null for non-elements', async () => {
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => 2);
       const element = aHandle.asElement();
       expect(element).toBeFalsy();
     });
-    itFailsFirefox('should return ElementHandle for TextNodes', async() => {
-      const {page} = getTestState();
+    itFailsFirefox('should return ElementHandle for TextNodes', async () => {
+      const { page } = getTestState();
 
       await page.setContent('<div>ee!</div>');
-      const aHandle = await page.evaluateHandle(() => document.querySelector('div').firstChild);
+      const aHandle = await page.evaluateHandle(
+        () => document.querySelector('div').firstChild
+      );
       const element = aHandle.asElement();
       expect(element).toBeTruthy();
-      expect(await page.evaluate(e => e.nodeType === HTMLElement.TEXT_NODE, element));
+      expect(
+        await page.evaluate(
+          (e) => e.nodeType === HTMLElement.TEXT_NODE,
+          element
+        )
+      );
     });
-    itFailsFirefox('should work with nullified Node', async() => {
-      const {page} = getTestState();
+    itFailsFirefox('should work with nullified Node', async () => {
+      const { page } = getTestState();
 
       await page.setContent('<section>test</section>');
       await page.evaluate(() => delete Node);
-      const handle = await page.evaluateHandle(() => document.querySelector('section'));
+      const handle = await page.evaluateHandle(() =>
+        document.querySelector('section')
+      );
       const element = handle.asElement();
       expect(element).not.toBe(null);
     });
   });
 
-  describe('JSHandle.toString', function() {
-    it('should work for primitives', async() => {
-      const {page} = getTestState();
+  describe('JSHandle.toString', function () {
+    it('should work for primitives', async () => {
+      const { page } = getTestState();
 
       const numberHandle = await page.evaluateHandle(() => 2);
       expect(numberHandle.toString()).toBe('JSHandle:2');
       const stringHandle = await page.evaluateHandle(() => 'a');
       expect(stringHandle.toString()).toBe('JSHandle:a');
     });
-    it('should work for complicated objects', async() => {
-      const {page} = getTestState();
+    it('should work for complicated objects', async () => {
+      const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => window);
       expect(aHandle.toString()).toBe('JSHandle@object');
     });
-    it('should work with different subtypes', async() => {
-      const {page} = getTestState();
+    it('should work with different subtypes', async () => {
+      const { page } = getTestState();
 
-      expect((await page.evaluateHandle('(function(){})')).toString()).toBe('JSHandle@function');
+      expect((await page.evaluateHandle('(function(){})')).toString()).toBe(
+        'JSHandle@function'
+      );
       expect((await page.evaluateHandle('12')).toString()).toBe('JSHandle:12');
-      expect((await page.evaluateHandle('true')).toString()).toBe('JSHandle:true');
-      expect((await page.evaluateHandle('undefined')).toString()).toBe('JSHandle:undefined');
-      expect((await page.evaluateHandle('"foo"')).toString()).toBe('JSHandle:foo');
-      expect((await page.evaluateHandle('Symbol()')).toString()).toBe('JSHandle@symbol');
-      expect((await page.evaluateHandle('new Map()')).toString()).toBe('JSHandle@map');
-      expect((await page.evaluateHandle('new Set()')).toString()).toBe('JSHandle@set');
-      expect((await page.evaluateHandle('[]')).toString()).toBe('JSHandle@array');
-      expect((await page.evaluateHandle('null')).toString()).toBe('JSHandle:null');
-      expect((await page.evaluateHandle('/foo/')).toString()).toBe('JSHandle@regexp');
-      expect((await page.evaluateHandle('document.body')).toString()).toBe('JSHandle@node');
-      expect((await page.evaluateHandle('new Date()')).toString()).toBe('JSHandle@date');
-      expect((await page.evaluateHandle('new WeakMap()')).toString()).toBe('JSHandle@weakmap');
-      expect((await page.evaluateHandle('new WeakSet()')).toString()).toBe('JSHandle@weakset');
-      expect((await page.evaluateHandle('new Error()')).toString()).toBe('JSHandle@error');
-      expect((await page.evaluateHandle('new Int32Array()')).toString()).toBe('JSHandle@typedarray');
-      expect((await page.evaluateHandle('new Proxy({}, {})')).toString()).toBe('JSHandle@proxy');
+      expect((await page.evaluateHandle('true')).toString()).toBe(
+        'JSHandle:true'
+      );
+      expect((await page.evaluateHandle('undefined')).toString()).toBe(
+        'JSHandle:undefined'
+      );
+      expect((await page.evaluateHandle('"foo"')).toString()).toBe(
+        'JSHandle:foo'
+      );
+      expect((await page.evaluateHandle('Symbol()')).toString()).toBe(
+        'JSHandle@symbol'
+      );
+      expect((await page.evaluateHandle('new Map()')).toString()).toBe(
+        'JSHandle@map'
+      );
+      expect((await page.evaluateHandle('new Set()')).toString()).toBe(
+        'JSHandle@set'
+      );
+      expect((await page.evaluateHandle('[]')).toString()).toBe(
+        'JSHandle@array'
+      );
+      expect((await page.evaluateHandle('null')).toString()).toBe(
+        'JSHandle:null'
+      );
+      expect((await page.evaluateHandle('/foo/')).toString()).toBe(
+        'JSHandle@regexp'
+      );
+      expect((await page.evaluateHandle('document.body')).toString()).toBe(
+        'JSHandle@node'
+      );
+      expect((await page.evaluateHandle('new Date()')).toString()).toBe(
+        'JSHandle@date'
+      );
+      expect((await page.evaluateHandle('new WeakMap()')).toString()).toBe(
+        'JSHandle@weakmap'
+      );
+      expect((await page.evaluateHandle('new WeakSet()')).toString()).toBe(
+        'JSHandle@weakset'
+      );
+      expect((await page.evaluateHandle('new Error()')).toString()).toBe(
+        'JSHandle@error'
+      );
+      expect((await page.evaluateHandle('new Int32Array()')).toString()).toBe(
+        'JSHandle@typedarray'
+      );
+      expect((await page.evaluateHandle('new Proxy({}, {})')).toString()).toBe(
+        'JSHandle@proxy'
+      );
     });
   });
 });

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import * as NodeWebSocket from 'ws';
-import type {ConnectionTransport} from './ConnectionTransport';
+import type { ConnectionTransport } from './ConnectionTransport';
 
 export class WebSocketTransport implements ConnectionTransport {
   static create(url: string): Promise<WebSocketTransport> {
@@ -35,13 +35,11 @@ export class WebSocketTransport implements ConnectionTransport {
 
   constructor(ws: NodeWebSocket) {
     this._ws = ws;
-    this._ws.addEventListener('message', event => {
-      if (this.onmessage)
-        this.onmessage.call(null, event.data);
+    this._ws.addEventListener('message', (event) => {
+      if (this.onmessage) this.onmessage.call(null, event.data);
     });
     this._ws.addEventListener('close', () => {
-      if (this.onclose)
-        this.onclose.call(null);
+      if (this.onclose) this.onclose.call(null);
     });
     // Silently ignore all errors - we don't know what to do with them.
     this._ws.addEventListener('error', () => {});
@@ -57,4 +55,3 @@ export class WebSocketTransport implements ConnectionTransport {
     this._ws.close();
   }
 }
-

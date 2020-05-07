@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import {Events} from './Events';
-import {Page} from './Page';
-import {Worker as PuppeteerWorker} from './Worker';
-import {CDPSession} from './Connection';
-import {TaskQueue} from './TaskQueue';
-import {Browser, BrowserContext} from './Browser';
-import type {Viewport} from './PuppeteerViewport';
+import { Events } from './Events';
+import { Page } from './Page';
+import { Worker as PuppeteerWorker } from './Worker';
+import { CDPSession } from './Connection';
+import { TaskQueue } from './TaskQueue';
+import { Browser, BrowserContext } from './Browser';
+import type { Viewport } from './PuppeteerViewport';
 
 export class Target {
   _targetInfo: Protocol.Target.TargetInfo;
@@ -38,7 +38,14 @@ export class Target {
   _closedCallback: () => void;
   _isInitialized: boolean;
 
-  constructor(targetInfo: Protocol.Target.TargetInfo, browserContext: BrowserContext, sessionFactory: () => Promise<CDPSession>, ignoreHTTPSErrors: boolean, defaultViewport: Viewport | null, screenshotTaskQueue: TaskQueue) {
+  constructor(
+    targetInfo: Protocol.Target.TargetInfo,
+    browserContext: BrowserContext,
+    sessionFactory: () => Promise<CDPSession>,
+    ignoreHTTPSErrors: boolean,
+    defaultViewport: Viewport | null,
+    screenshotTaskQueue: TaskQueue
+  ) {
     this._targetInfo = targetInfo;
     this._browserContext = browserContext;
     this._targetId = targetInfo.targetId;
@@ -50,23 +57,25 @@ export class Target {
     this._pagePromise = null;
     /** @type {?Promise<!PuppeteerWorker>} */
     this._workerPromise = null;
-    this._initializedPromise = new Promise<boolean>(fulfill => this._initializedCallback = fulfill).then(async success => {
-      if (!success)
-        return false;
+    this._initializedPromise = new Promise<boolean>(
+      (fulfill) => (this._initializedCallback = fulfill)
+    ).then(async (success) => {
+      if (!success) return false;
       const opener = this.opener();
       if (!opener || !opener._pagePromise || this.type() !== 'page')
         return true;
       const openerPage = await opener._pagePromise;
-      if (!openerPage.listenerCount(Events.Page.Popup))
-        return true;
+      if (!openerPage.listenerCount(Events.Page.Popup)) return true;
       const popupPage = await this.page();
       openerPage.emit(Events.Page.Popup, popupPage);
       return true;
     });
-    this._isClosedPromise = new Promise<boolean>(fulfill => this._closedCallback = fulfill);
-    this._isInitialized = this._targetInfo.type !== 'page' || this._targetInfo.url !== '';
-    if (this._isInitialized)
-      this._initializedCallback(true);
+    this._isClosedPromise = new Promise<boolean>(
+      (fulfill) => (this._closedCallback = fulfill)
+    );
+    this._isInitialized =
+      this._targetInfo.type !== 'page' || this._targetInfo.url !== '';
+    if (this._isInitialized) this._initializedCallback(true);
   }
 
   createCDPSession(): Promise<CDPSession> {
@@ -74,20 +83,41 @@ export class Target {
   }
 
   async page(): Promise<Page | null> {
-    if ((this._targetInfo.type === 'page' || this._targetInfo.type === 'background_page') && !this._pagePromise) {
-      this._pagePromise = this._sessionFactory()
-          .then(client => Page.create(client, this, this._ignoreHTTPSErrors, this._defaultViewport, this._screenshotTaskQueue));
+    if (
+      (this._targetInfo.type === 'page' ||
+        this._targetInfo.type === 'background_page') &&
+      !this._pagePromise
+    ) {
+      this._pagePromise = this._sessionFactory().then((client) =>
+        Page.create(
+          client,
+          this,
+          this._ignoreHTTPSErrors,
+          this._defaultViewport,
+          this._screenshotTaskQueue
+        )
+      );
     }
     return this._pagePromise;
   }
 
   async worker(): Promise<PuppeteerWorker | null> {
-    if (this._targetInfo.type !== 'service_worker' && this._targetInfo.type !== 'shared_worker')
+    if (
+      this._targetInfo.type !== 'service_worker' &&
+      this._targetInfo.type !== 'shared_worker'
+    )
       return null;
     if (!this._workerPromise) {
       // TODO(einbinder): Make workers send their console logs.
-      this._workerPromise = this._sessionFactory()
-          .then(client => new PuppeteerWorker(client, this._targetInfo.url, () => {} /* consoleAPICalled */, () => {} /* exceptionThrown */));
+      this._workerPromise = this._sessionFactory().then(
+        (client) =>
+          new PuppeteerWorker(
+            client,
+            this._targetInfo.url,
+            () => {} /* consoleAPICalled */,
+            () => {} /* exceptionThrown */
+          )
+      );
     }
     return this._workerPromise;
   }
@@ -96,9 +126,21 @@ export class Target {
     return this._targetInfo.url;
   }
 
-  type(): 'page'|'background_page'|'service_worker'|'shared_worker'|'other'|'browser'{
+  type():
+    | 'page'
+    | 'background_page'
+    | 'service_worker'
+    | 'shared_worker'
+    | 'other'
+    | 'browser' {
     const type = this._targetInfo.type;
-    if (type === 'page' || type === 'background_page' || type === 'service_worker' || type === 'shared_worker' || type === 'browser')
+    if (
+      type === 'page' ||
+      type === 'background_page' ||
+      type === 'service_worker' ||
+      type === 'shared_worker' ||
+      type === 'browser'
+    )
       return type;
     return 'other';
   }
@@ -112,16 +154,18 @@ export class Target {
   }
 
   opener(): Target | null {
-    const {openerId} = this._targetInfo;
-    if (!openerId)
-      return null;
+    const { openerId } = this._targetInfo;
+    if (!openerId) return null;
     return this.browser()._targets.get(openerId);
   }
 
   _targetInfoChanged(targetInfo: Protocol.Target.TargetInfo): void {
     this._targetInfo = targetInfo;
 
-    if (!this._isInitialized && (this._targetInfo.type !== 'page' || this._targetInfo.url !== '')) {
+    if (
+      !this._isInitialized &&
+      (this._targetInfo.type !== 'page' || this._targetInfo.url !== '')
+    ) {
       this._isInitialized = true;
       this._initializedCallback(true);
       return;

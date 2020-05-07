@@ -17,12 +17,15 @@
 const child_process = require('child_process');
 const path = require('path');
 const fs = require('fs');
-const {promisify} = require('util');
+const { promisify } = require('util');
 
 const exec = promisify(child_process.exec);
 const fsAccess = promisify(fs.access);
 
-const fileExists = async filePath => fsAccess(filePath).then(() => true).catch(() => false);
+const fileExists = async (filePath) =>
+  fsAccess(filePath)
+    .then(() => true)
+    .catch(() => false);
 /*
 
  * Now Puppeteer is built with TypeScript, we need to ensure that
@@ -37,7 +40,7 @@ const fileExists = async filePath => fsAccess(filePath).then(() => true).catch((
  * place.
  */
 async function compileTypeScript() {
-  return exec('npm run tsc').catch(error => {
+  return exec('npm run tsc').catch((error) => {
     console.error('Error running TypeScript', error);
     process.exit(1);
   });
@@ -53,7 +56,6 @@ async function compileTypeScriptIfRequired() {
 }
 
 // It's being run as node typescript-if-required.js, not require('..')
-if (require.main === module)
-  compileTypeScriptIfRequired();
+if (require.main === module) compileTypeScriptIfRequired();
 
 module.exports = compileTypeScriptIfRequired;

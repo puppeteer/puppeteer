@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import * as EventEmitter from 'events';
-import {helper, assert, debugError} from './helper';
-import {Events} from './Events';
-import {CDPSession} from './Connection';
-import {FrameManager, Frame} from './FrameManager';
+import { helper, assert, debugError } from './helper';
+import { Events } from './Events';
+import { CDPSession } from './Connection';
+import { FrameManager, Frame } from './FrameManager';
 
 export interface Credentials {
   username: string;
@@ -29,7 +29,10 @@ export class NetworkManager extends EventEmitter {
   _ignoreHTTPSErrors: boolean;
   _frameManager: FrameManager;
   _requestIdToRequest = new Map<string, Request>();
-  _requestIdToRequestWillBeSentEvent = new Map<string, Protocol.Network.requestWillBeSentPayload>();
+  _requestIdToRequestWillBeSentEvent = new Map<
+    string,
+    Protocol.Network.requestWillBeSentPayload
+  >();
   _extraHTTPHeaders: Record<string, string> = {};
   _offline = false;
   _credentials?: Credentials = null;
@@ -39,7 +42,11 @@ export class NetworkManager extends EventEmitter {
   _userCacheDisabled = false;
   _requestIdToInterceptionId = new Map<string, string>();
 
-  constructor(client: CDPSession, ignoreHTTPSErrors: boolean, frameManager: FrameManager) {
+  constructor(
+    client: CDPSession,
+    ignoreHTTPSErrors: boolean,
+    frameManager: FrameManager
+  ) {
     super();
     this._client = client;
     this._ignoreHTTPSErrors = ignoreHTTPSErrors;
@@ -47,17 +54,31 @@ export class NetworkManager extends EventEmitter {
 
     this._client.on('Fetch.requestPaused', this._onRequestPaused.bind(this));
     this._client.on('Fetch.authRequired', this._onAuthRequired.bind(this));
-    this._client.on('Network.requestWillBeSent', this._onRequestWillBeSent.bind(this));
-    this._client.on('Network.requestServedFromCache', this._onRequestServedFromCache.bind(this));
-    this._client.on('Network.responseReceived', this._onResponseReceived.bind(this));
-    this._client.on('Network.loadingFinished', this._onLoadingFinished.bind(this));
+    this._client.on(
+      'Network.requestWillBeSent',
+      this._onRequestWillBeSent.bind(this)
+    );
+    this._client.on(
+      'Network.requestServedFromCache',
+      this._onRequestServedFromCache.bind(this)
+    );
+    this._client.on(
+      'Network.responseReceived',
+      this._onResponseReceived.bind(this)
+    );
+    this._client.on(
+      'Network.loadingFinished',
+      this._onLoadingFinished.bind(this)
+    );
     this._client.on('Network.loadingFailed', this._onLoadingFailed.bind(this));
   }
 
   async initialize(): Promise<void> {
     await this._client.send('Network.enable');
     if (this._ignoreHTTPSErrors)
-      await this._client.send('Security.setIgnoreCertificateErrors', {ignore: true});
+      await this._client.send('Security.setIgnoreCertificateErrors', {
+        ignore: true,
+      });
   }
 
   async authenticate(credentials?: Credentials): Promise<void> {
@@ -65,14 +86,21 @@ export class NetworkManager extends EventEmitter {
     await this._updateProtocolRequestInterception();
   }
 
-  async setExtraHTTPHeaders(extraHTTPHeaders: Record<string, string>): Promise<void> {
+  async setExtraHTTPHeaders(
+    extraHTTPHeaders: Record<string, string>
+  ): Promise<void> {
     this._extraHTTPHeaders = {};
     for (const key of Object.keys(extraHTTPHeaders)) {
       const value = extraHTTPHeaders[key];
-      assert(helper.isString(value), `Expected value of header "${key}" to be String, but "${typeof value}" is found.`);
+      assert(
+        helper.isString(value),
+        `Expected value of header "${key}" to be String, but "${typeof value}" is found.`
+      );
       this._extraHTTPHeaders[key.toLowerCase()] = value;
     }
-    await this._client.send('Network.setExtraHTTPHeaders', {headers: this._extraHTTPHeaders});
+    await this._client.send('Network.setExtraHTTPHeaders', {
+      headers: this._extraHTTPHeaders,
+    });
   }
 
   extraHTTPHeaders(): Record<string, string> {
@@ -80,20 +108,19 @@ export class NetworkManager extends EventEmitter {
   }
 
   async setOfflineMode(value: boolean): Promise<void> {
-    if (this._offline === value)
-      return;
+    if (this._offline === value) return;
     this._offline = value;
     await this._client.send('Network.emulateNetworkConditions', {
       offline: this._offline,
       // values of 0 remove any active throttling. crbug.com/456324#c9
       latency: 0,
       downloadThroughput: -1,
-      uploadThroughput: -1
+      uploadThroughput: -1,
     });
   }
 
   async setUserAgent(userAgent: string): Promise<void> {
-    await this._client.send('Network.setUserAgentOverride', {userAgent});
+    await this._client.send('Network.setUserAgentOverride', { userAgent });
   }
 
   async setCacheEnabled(enabled: boolean): Promise<void> {
@@ -108,34 +135,37 @@ export class NetworkManager extends EventEmitter {
 
   async _updateProtocolRequestInterception(): Promise<void> {
     const enabled = this._userRequestInterceptionEnabled || !!this._credentials;
-    if (enabled === this._protocolRequestInterceptionEnabled)
-      return;
+    if (enabled === this._protocolRequestInterceptionEnabled) return;
     this._protocolRequestInterceptionEnabled = enabled;
     if (enabled) {
       await Promise.all([
         this._updateProtocolCacheDisabled(),
         this._client.send('Fetch.enable', {
           handleAuthRequests: true,
-          patterns: [{urlPattern: '*'}],
+          patterns: [{ urlPattern: '*' }],
         }),
       ]);
     } else {
       await Promise.all([
         this._updateProtocolCacheDisabled(),
-        this._client.send('Fetch.disable')
+        this._client.send('Fetch.disable'),
       ]);
     }
   }
 
   async _updateProtocolCacheDisabled(): Promise<void> {
     await this._client.send('Network.setCacheDisabled', {
-      cacheDisabled: this._userCacheDisabled || this._protocolRequestInterceptionEnabled
+      cacheDisabled:
+        this._userCacheDisabled || this._protocolRequestInterceptionEnabled,
     });
   }
 
   _onRequestWillBeSent(event: Protocol.Network.requestWillBeSentPayload): void {
     // Request interception doesn't happen for data URLs with Network Service.
-    if (this._protocolRequestInterceptionEnabled && !event.request.url.startsWith('data:')) {
+    if (
+      this._protocolRequestInterceptionEnabled &&
+      !event.request.url.startsWith('data:')
+    ) {
       const requestId = event.requestId;
       const interceptionId = this._requestIdToInterceptionId.get(requestId);
       if (interceptionId) {
@@ -154,9 +184,9 @@ export class NetworkManager extends EventEmitter {
    */
   _onAuthRequired(event: Protocol.Fetch.authRequiredPayload): void {
     /* TODO(jacktfranklin): This is defined in protocol.d.ts but not
-    * in an easily referrable way - we should look at exposing it.
-    */
-    type AuthResponse = 'Default'|'CancelAuth'|'ProvideCredentials';
+     * in an easily referrable way - we should look at exposing it.
+     */
+    type AuthResponse = 'Default' | 'CancelAuth' | 'ProvideCredentials';
     let response: AuthResponse = 'Default';
     if (this._attemptedAuthentications.has(event.requestId)) {
       response = 'CancelAuth';
@@ -164,24 +194,36 @@ export class NetworkManager extends EventEmitter {
       response = 'ProvideCredentials';
       this._attemptedAuthentications.add(event.requestId);
     }
-    const {username, password} = this._credentials || {username: undefined, password: undefined};
-    this._client.send('Fetch.continueWithAuth', {
-      requestId: event.requestId,
-      authChallengeResponse: {response, username, password},
-    }).catch(debugError);
+    const { username, password } = this._credentials || {
+      username: undefined,
+      password: undefined,
+    };
+    this._client
+      .send('Fetch.continueWithAuth', {
+        requestId: event.requestId,
+        authChallengeResponse: { response, username, password },
+      })
+      .catch(debugError);
   }
 
   _onRequestPaused(event: Protocol.Fetch.requestPausedPayload): void {
-    if (!this._userRequestInterceptionEnabled && this._protocolRequestInterceptionEnabled) {
-      this._client.send('Fetch.continueRequest', {
-        requestId: event.requestId
-      }).catch(debugError);
+    if (
+      !this._userRequestInterceptionEnabled &&
+      this._protocolRequestInterceptionEnabled
+    ) {
+      this._client
+        .send('Fetch.continueRequest', {
+          requestId: event.requestId,
+        })
+        .catch(debugError);
     }
 
     const requestId = event.networkId;
     const interceptionId = event.requestId;
     if (requestId && this._requestIdToRequestWillBeSentEvent.has(requestId)) {
-      const requestWillBeSentEvent = this._requestIdToRequestWillBeSentEvent.get(requestId);
+      const requestWillBeSentEvent = this._requestIdToRequestWillBeSentEvent.get(
+        requestId
+      );
       this._onRequest(requestWillBeSentEvent, interceptionId);
       this._requestIdToRequestWillBeSentEvent.delete(requestId);
     } else {
@@ -189,7 +231,10 @@ export class NetworkManager extends EventEmitter {
     }
   }
 
-  _onRequest(event: Protocol.Network.requestWillBeSentPayload, interceptionId?: string): void {
+  _onRequest(
+    event: Protocol.Network.requestWillBeSentPayload,
+    interceptionId?: string
+  ): void {
     let redirectChain = [];
     if (event.redirectResponse) {
       const request = this._requestIdToRequest.get(event.requestId);
@@ -199,23 +244,39 @@ export class NetworkManager extends EventEmitter {
         redirectChain = request._redirectChain;
       }
     }
-    const frame = event.frameId ? this._frameManager.frame(event.frameId) : null;
-    const request = new Request(this._client, frame, interceptionId, this._userRequestInterceptionEnabled, event, redirectChain);
+    const frame = event.frameId
+      ? this._frameManager.frame(event.frameId)
+      : null;
+    const request = new Request(
+      this._client,
+      frame,
+      interceptionId,
+      this._userRequestInterceptionEnabled,
+      event,
+      redirectChain
+    );
     this._requestIdToRequest.set(event.requestId, request);
     this.emit(Events.NetworkManager.Request, request);
   }
 
-  _onRequestServedFromCache(event: Protocol.Network.requestServedFromCachePayload): void {
+  _onRequestServedFromCache(
+    event: Protocol.Network.requestServedFromCachePayload
+  ): void {
     const request = this._requestIdToRequest.get(event.requestId);
-    if (request)
-      request._fromMemoryCache = true;
+    if (request) request._fromMemoryCache = true;
   }
 
-  _handleRequestRedirect(request: Request, responsePayload: Protocol.Network.Response): void {
+  _handleRequestRedirect(
+    request: Request,
+    responsePayload: Protocol.Network.Response
+  ): void {
     const response = new Response(this._client, request, responsePayload);
     request._response = response;
     request._redirectChain.push(request);
-    response._bodyLoadedPromiseFulfill.call(null, new Error('Response body is unavailable for redirect responses'));
+    response._bodyLoadedPromiseFulfill.call(
+      null,
+      new Error('Response body is unavailable for redirect responses')
+    );
     this._requestIdToRequest.delete(request._requestId);
     this._attemptedAuthentications.delete(request._interceptionId);
     this.emit(Events.NetworkManager.Response, response);
@@ -225,8 +286,7 @@ export class NetworkManager extends EventEmitter {
   _onResponseReceived(event: Protocol.Network.responseReceivedPayload): void {
     const request = this._requestIdToRequest.get(event.requestId);
     // FileUpload sends a response without a matching request.
-    if (!request)
-      return;
+    if (!request) return;
     const response = new Response(this._client, request, event.response);
     request._response = response;
     this.emit(Events.NetworkManager.Response, response);
@@ -236,8 +296,7 @@ export class NetworkManager extends EventEmitter {
     const request = this._requestIdToRequest.get(event.requestId);
     // For certain requestIds we never receive requestWillBeSent event.
     // @see https://crbug.com/750469
-    if (!request)
-      return;
+    if (!request) return;
 
     // Under certain conditions we never get the Network.responseReceived
     // event from protocol. @see https://crbug.com/883475
@@ -252,12 +311,10 @@ export class NetworkManager extends EventEmitter {
     const request = this._requestIdToRequest.get(event.requestId);
     // For certain requestIds we never receive requestWillBeSent event.
     // @see https://crbug.com/750469
-    if (!request)
-      return;
+    if (!request) return;
     request._failureText = event.errorText;
     const response = request.response();
-    if (response)
-      response._bodyLoadedPromiseFulfill.call(null);
+    if (response) response._bodyLoadedPromiseFulfill.call(null);
     this._requestIdToRequest.delete(request._requestId);
     this._attemptedAuthentications.delete(request._interceptionId);
     this.emit(Events.NetworkManager.RequestFailed, request);
@@ -282,12 +339,20 @@ export class Request {
   _frame: Frame;
 
   _redirectChain: Request[];
-  _fromMemoryCache =  false;
+  _fromMemoryCache = false;
 
-  constructor(client: CDPSession, frame: Frame, interceptionId: string, allowInterception: boolean, event: Protocol.Network.requestWillBeSentPayload, redirectChain: Request[]) {
+  constructor(
+    client: CDPSession,
+    frame: Frame,
+    interceptionId: string,
+    allowInterception: boolean,
+    event: Protocol.Network.requestWillBeSentPayload,
+    redirectChain: Request[]
+  ) {
     this._client = client;
     this._requestId = event.requestId;
-    this._isNavigationRequest = event.requestId === event.loaderId && event.type === 'Document';
+    this._isNavigationRequest =
+      event.requestId === event.loaderId && event.type === 'Document';
     this._interceptionId = interceptionId;
     this._allowInterception = allowInterception;
     this._url = event.request.url;
@@ -340,54 +405,58 @@ export class Request {
   /**
    * @return {?{errorText: string}}
    */
-  failure(): {errorText: string} | null {
-    if (!this._failureText)
-      return null;
+  failure(): { errorText: string } | null {
+    if (!this._failureText) return null;
     return {
-      errorText: this._failureText
+      errorText: this._failureText,
     };
   }
 
-  async continue(overrides: {url?: string; method?: string; postData?: string; headers?: Record<string, string>} = {}): Promise<void> {
+  async continue(
+    overrides: {
+      url?: string;
+      method?: string;
+      postData?: string;
+      headers?: Record<string, string>;
+    } = {}
+  ): Promise<void> {
     // Request interception is not supported for data: urls.
-    if (this._url.startsWith('data:'))
-      return;
+    if (this._url.startsWith('data:')) return;
     assert(this._allowInterception, 'Request Interception is not enabled!');
     assert(!this._interceptionHandled, 'Request is already handled!');
-    const {
-      url,
-      method,
-      postData,
-      headers
-    } = overrides;
+    const { url, method, postData, headers } = overrides;
     this._interceptionHandled = true;
-    await this._client.send('Fetch.continueRequest', {
-      requestId: this._interceptionId,
-      url,
-      method,
-      postData,
-      headers: headers ? headersArray(headers) : undefined,
-    }).catch(error => {
-      // In certain cases, protocol will return error if the request was already canceled
-      // or the page was closed. We should tolerate these errors.
-      debugError(error);
-    });
+    await this._client
+      .send('Fetch.continueRequest', {
+        requestId: this._interceptionId,
+        url,
+        method,
+        postData,
+        headers: headers ? headersArray(headers) : undefined,
+      })
+      .catch((error) => {
+        // In certain cases, protocol will return error if the request was already canceled
+        // or the page was closed. We should tolerate these errors.
+        debugError(error);
+      });
   }
 
   async respond(response: {
     status: number;
     headers: Record<string, string>;
     contentType: string;
-    body: string|Buffer;
+    body: string | Buffer;
   }): Promise<void> {
     // Mocking responses for dataURL requests is not currently supported.
-    if (this._url.startsWith('data:'))
-      return;
+    if (this._url.startsWith('data:')) return;
     assert(this._allowInterception, 'Request Interception is not enabled!');
     assert(!this._interceptionHandled, 'Request is already handled!');
     this._interceptionHandled = true;
 
-    const responseBody: Buffer | null = response.body && helper.isString(response.body) ? Buffer.from(response.body) : response.body as Buffer || null;
+    const responseBody: Buffer | null =
+      response.body && helper.isString(response.body)
+        ? Buffer.from(response.body)
+        : (response.body as Buffer) || null;
 
     const responseHeaders: Record<string, string> = {};
     if (response.headers) {
@@ -397,63 +466,82 @@ export class Request {
     if (response.contentType)
       responseHeaders['content-type'] = response.contentType;
     if (responseBody && !('content-length' in responseHeaders))
-      responseHeaders['content-length'] = String(Buffer.byteLength(responseBody));
+      responseHeaders['content-length'] = String(
+        Buffer.byteLength(responseBody)
+      );
 
-    await this._client.send('Fetch.fulfillRequest', {
-      requestId: this._interceptionId,
-      responseCode: response.status || 200,
-      responsePhrase: STATUS_TEXTS[response.status || 200],
-      responseHeaders: headersArray(responseHeaders),
-      body: responseBody ? responseBody.toString('base64') : undefined,
-    }).catch(error => {
-      // In certain cases, protocol will return error if the request was already canceled
-      // or the page was closed. We should tolerate these errors.
-      debugError(error);
-    });
+    await this._client
+      .send('Fetch.fulfillRequest', {
+        requestId: this._interceptionId,
+        responseCode: response.status || 200,
+        responsePhrase: STATUS_TEXTS[response.status || 200],
+        responseHeaders: headersArray(responseHeaders),
+        body: responseBody ? responseBody.toString('base64') : undefined,
+      })
+      .catch((error) => {
+        // In certain cases, protocol will return error if the request was already canceled
+        // or the page was closed. We should tolerate these errors.
+        debugError(error);
+      });
   }
 
   async abort(errorCode: ErrorCode = 'failed'): Promise<void> {
     // Request interception is not supported for data: urls.
-    if (this._url.startsWith('data:'))
-      return;
+    if (this._url.startsWith('data:')) return;
     const errorReason = errorReasons[errorCode];
     assert(errorReason, 'Unknown error code: ' + errorCode);
     assert(this._allowInterception, 'Request Interception is not enabled!');
     assert(!this._interceptionHandled, 'Request is already handled!');
     this._interceptionHandled = true;
-    await this._client.send('Fetch.failRequest', {
-      requestId: this._interceptionId,
-      errorReason
-    }).catch(error => {
-      // In certain cases, protocol will return error if the request was already canceled
-      // or the page was closed. We should tolerate these errors.
-      debugError(error);
-    });
+    await this._client
+      .send('Fetch.failRequest', {
+        requestId: this._interceptionId,
+        errorReason,
+      })
+      .catch((error) => {
+        // In certain cases, protocol will return error if the request was already canceled
+        // or the page was closed. We should tolerate these errors.
+        debugError(error);
+      });
   }
 }
 
-type ErrorCode = 'aborted' | 'accessdenied' | 'addressunreachable' | 'blockedbyclient' | 'blockedbyresponse' | 'connectionaborted' | 'connectionclosed' | 'connectionfailed' | 'connectionrefused' | 'connectionreset' | 'internetdisconnected' | 'namenotresolved' | 'timedout' | 'failed';
+type ErrorCode =
+  | 'aborted'
+  | 'accessdenied'
+  | 'addressunreachable'
+  | 'blockedbyclient'
+  | 'blockedbyresponse'
+  | 'connectionaborted'
+  | 'connectionclosed'
+  | 'connectionfailed'
+  | 'connectionrefused'
+  | 'connectionreset'
+  | 'internetdisconnected'
+  | 'namenotresolved'
+  | 'timedout'
+  | 'failed';
 
 const errorReasons: Record<ErrorCode, Protocol.Network.ErrorReason> = {
-  'aborted': 'Aborted',
-  'accessdenied': 'AccessDenied',
-  'addressunreachable': 'AddressUnreachable',
-  'blockedbyclient': 'BlockedByClient',
-  'blockedbyresponse': 'BlockedByResponse',
-  'connectionaborted': 'ConnectionAborted',
-  'connectionclosed': 'ConnectionClosed',
-  'connectionfailed': 'ConnectionFailed',
-  'connectionrefused': 'ConnectionRefused',
-  'connectionreset': 'ConnectionReset',
-  'internetdisconnected': 'InternetDisconnected',
-  'namenotresolved': 'NameNotResolved',
-  'timedout': 'TimedOut',
-  'failed': 'Failed',
+  aborted: 'Aborted',
+  accessdenied: 'AccessDenied',
+  addressunreachable: 'AddressUnreachable',
+  blockedbyclient: 'BlockedByClient',
+  blockedbyresponse: 'BlockedByResponse',
+  connectionaborted: 'ConnectionAborted',
+  connectionclosed: 'ConnectionClosed',
+  connectionfailed: 'ConnectionFailed',
+  connectionrefused: 'ConnectionRefused',
+  connectionreset: 'ConnectionReset',
+  internetdisconnected: 'InternetDisconnected',
+  namenotresolved: 'NameNotResolved',
+  timedout: 'TimedOut',
+  failed: 'Failed',
 } as const;
 
 interface RemoteAddress {
-    ip: string;
-    port: number;
+  ip: string;
+  port: number;
 }
 
 export class Response {
@@ -471,11 +559,15 @@ export class Response {
   _headers: Record<string, string> = {};
   _securityDetails: SecurityDetails | null;
 
-  constructor(client: CDPSession, request: Request, responsePayload: Protocol.Network.Response) {
+  constructor(
+    client: CDPSession,
+    request: Request,
+    responsePayload: Protocol.Network.Response
+  ) {
     this._client = client;
     this._request = request;
 
-    this._bodyLoadedPromise = new Promise(fulfill => {
+    this._bodyLoadedPromise = new Promise((fulfill) => {
       this._bodyLoadedPromiseFulfill = fulfill;
     });
 
@@ -490,7 +582,9 @@ export class Response {
     this._fromServiceWorker = !!responsePayload.fromServiceWorker;
     for (const key of Object.keys(responsePayload.headers))
       this._headers[key.toLowerCase()] = responsePayload.headers[key];
-    this._securityDetails = responsePayload.securityDetails ? new SecurityDetails(responsePayload.securityDetails) : null;
+    this._securityDetails = responsePayload.securityDetails
+      ? new SecurityDetails(responsePayload.securityDetails)
+      : null;
   }
 
   remoteAddress(): RemoteAddress {
@@ -523,13 +617,15 @@ export class Response {
 
   buffer(): Promise<Buffer> {
     if (!this._contentPromise) {
-      this._contentPromise = this._bodyLoadedPromise.then(async error => {
-        if (error)
-          throw error;
+      this._contentPromise = this._bodyLoadedPromise.then(async (error) => {
+        if (error) throw error;
         const response = await this._client.send('Network.getResponseBody', {
-          requestId: this._request._requestId
+          requestId: this._request._requestId,
         });
-        return Buffer.from(response.body, response.base64Encoded ? 'base64' : 'utf8');
+        return Buffer.from(
+          response.body,
+          response.base64Encoded ? 'base64' : 'utf8'
+        );
       });
     }
     return this._contentPromise;
@@ -598,11 +694,13 @@ export class SecurityDetails {
   }
 }
 
-function headersArray(headers: Record<string, string>): Array<{name: string; value: string}> {
+function headersArray(
+  headers: Record<string, string>
+): Array<{ name: string; value: string }> {
   const result = [];
   for (const name in headers) {
     if (!Object.is(headers[name], undefined))
-      result.push({name, value: headers[name] + ''});
+      result.push({ name, value: headers[name] + '' });
   }
   return result;
 }
@@ -650,7 +748,7 @@ const STATUS_TEXTS = {
   '415': 'Unsupported Media Type',
   '416': 'Range Not Satisfiable',
   '417': 'Expectation Failed',
-  '418': 'I\'m a teapot',
+  '418': "I'm a teapot",
   '421': 'Misdirected Request',
   '422': 'Unprocessable Entity',
   '423': 'Locked',

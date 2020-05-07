@@ -37,37 +37,44 @@ async function run() {
 
   // Documentation checks.
   const readme = await Source.readFile(path.join(PROJECT_DIR, 'README.md'));
-  const contributing = await Source.readFile(path.join(PROJECT_DIR, 'CONTRIBUTING.md'));
+  const contributing = await Source.readFile(
+    path.join(PROJECT_DIR, 'CONTRIBUTING.md')
+  );
   const api = await Source.readFile(path.join(PROJECT_DIR, 'docs', 'api.md'));
-  const troubleshooting = await Source.readFile(path.join(PROJECT_DIR, 'docs', 'troubleshooting.md'));
+  const troubleshooting = await Source.readFile(
+    path.join(PROJECT_DIR, 'docs', 'troubleshooting.md')
+  );
   const mdSources = [readme, api, troubleshooting, contributing];
 
   const preprocessor = require('./preprocessor');
-  messages.push(...await preprocessor.runCommands(mdSources, VERSION));
-  messages.push(...await preprocessor.ensureReleasedAPILinks([readme], VERSION));
+  messages.push(...(await preprocessor.runCommands(mdSources, VERSION)));
+  messages.push(
+    ...(await preprocessor.ensureReleasedAPILinks([readme], VERSION))
+  );
 
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   const checkPublicAPI = require('./check_public_api');
   const tsSources = await Source.readdir(path.join(PROJECT_DIR, 'src'), 'ts');
 
-  const tsSourcesNoDefinitions = tsSources.filter(source => !source.filePath().endsWith('.d.ts'));
+  const tsSourcesNoDefinitions = tsSources.filter(
+    (source) => !source.filePath().endsWith('.d.ts')
+  );
 
   const jsSources = await Source.readdir(path.join(PROJECT_DIR, 'lib'));
   const allSrcCode = [...jsSources, ...tsSourcesNoDefinitions];
-  messages.push(...await checkPublicAPI(page, mdSources, allSrcCode));
+  messages.push(...(await checkPublicAPI(page, mdSources, allSrcCode)));
 
   await browser.close();
 
   for (const source of mdSources) {
-    if (!source.hasUpdatedText())
-      continue;
+    if (!source.hasUpdatedText()) continue;
     await source.save();
     changedFiles = true;
   }
 
   // Report results.
-  const errors = messages.filter(message => message.type === 'error');
+  const errors = messages.filter((message) => message.type === 'error');
   if (errors.length) {
     console.log('DocLint Failures:');
     for (let i = 0; i < errors.length; ++i) {
@@ -76,7 +83,7 @@ async function run() {
       console.log(`  ${i + 1}) ${RED_COLOR}${error}${RESET_COLOR}`);
     }
   }
-  const warnings = messages.filter(message => message.type === 'warning');
+  const warnings = messages.filter((message) => message.type === 'warning');
   if (warnings.length) {
     console.log('DocLint Warnings:');
     for (let i = 0; i < warnings.length; ++i) {
@@ -94,7 +101,9 @@ async function run() {
   console.log(`${errors.length} failures, ${warnings.length} warnings.`);
 
   if (!clearExit && !process.env.TRAVIS)
-    console.log('\nIs your lib/ directory up to date? You might need to `npm run tsc`.\n');
+    console.log(
+      '\nIs your lib/ directory up to date? You might need to `npm run tsc`.\n'
+    );
 
   const runningTime = Date.now() - startTime;
   console.log(`DocLint Finished in ${runningTime / 1000} seconds`);

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import {helper, debugError, assert, PuppeteerEventListener} from './helper';
-import {CDPSession} from './Connection';
+import { helper, debugError, assert, PuppeteerEventListener } from './helper';
+import { CDPSession } from './Connection';
 
-import {EVALUATION_SCRIPT_URL} from './ExecutionContext';
+import { EVALUATION_SCRIPT_URL } from './ExecutionContext';
 
 interface CoverageEntry {
   url: string;
   text: string;
-  ranges: Array<{start: number; end: number}>;
+  ranges: Array<{ start: number; end: number }>;
 }
 
 export class Coverage {
@@ -34,7 +34,10 @@ export class Coverage {
     this._cssCoverage = new CSSCoverage(client);
   }
 
-  async startJSCoverage(options: {resetOnNavigation?: boolean; reportAnonymousScripts?: boolean}): Promise<void> {
+  async startJSCoverage(options: {
+    resetOnNavigation?: boolean;
+    reportAnonymousScripts?: boolean;
+  }): Promise<void> {
     return await this._jsCoverage.start(options);
   }
 
@@ -42,7 +45,9 @@ export class Coverage {
     return await this._jsCoverage.stop();
   }
 
-  async startCSSCoverage(options: {resetOnNavigation?: boolean}): Promise<void> {
+  async startCSSCoverage(options: {
+    resetOnNavigation?: boolean;
+  }): Promise<void> {
     return await this._cssCoverage.start(options);
   }
 
@@ -64,11 +69,16 @@ class JSCoverage {
     this._client = client;
   }
 
-  async start(options: {resetOnNavigation?: boolean; reportAnonymousScripts?: boolean} = {}): Promise<void> {
+  async start(
+    options: {
+      resetOnNavigation?: boolean;
+      reportAnonymousScripts?: boolean;
+    } = {}
+  ): Promise<void> {
     assert(!this._enabled, 'JSCoverage is already enabled');
     const {
       resetOnNavigation = true,
-      reportAnonymousScripts = false
+      reportAnonymousScripts = false,
     } = options;
     this._resetOnNavigation = resetOnNavigation;
     this._reportAnonymousScripts = reportAnonymousScripts;
@@ -76,33 +86,45 @@ class JSCoverage {
     this._scriptURLs.clear();
     this._scriptSources.clear();
     this._eventListeners = [
-      helper.addEventListener(this._client, 'Debugger.scriptParsed', this._onScriptParsed.bind(this)),
-      helper.addEventListener(this._client, 'Runtime.executionContextsCleared', this._onExecutionContextsCleared.bind(this)),
+      helper.addEventListener(
+        this._client,
+        'Debugger.scriptParsed',
+        this._onScriptParsed.bind(this)
+      ),
+      helper.addEventListener(
+        this._client,
+        'Runtime.executionContextsCleared',
+        this._onExecutionContextsCleared.bind(this)
+      ),
     ];
     await Promise.all([
       this._client.send('Profiler.enable'),
-      this._client.send('Profiler.startPreciseCoverage', {callCount: false, detailed: true}),
+      this._client.send('Profiler.startPreciseCoverage', {
+        callCount: false,
+        detailed: true,
+      }),
       this._client.send('Debugger.enable'),
-      this._client.send('Debugger.setSkipAllPauses', {skip: true})
+      this._client.send('Debugger.setSkipAllPauses', { skip: true }),
     ]);
   }
 
   _onExecutionContextsCleared(): void {
-    if (!this._resetOnNavigation)
-      return;
+    if (!this._resetOnNavigation) return;
     this._scriptURLs.clear();
     this._scriptSources.clear();
   }
 
-  async _onScriptParsed(event: Protocol.Debugger.scriptParsedPayload): Promise<void> {
+  async _onScriptParsed(
+    event: Protocol.Debugger.scriptParsedPayload
+  ): Promise<void> {
     // Ignore puppeteer-injected scripts
-    if (event.url === EVALUATION_SCRIPT_URL)
-      return;
+    if (event.url === EVALUATION_SCRIPT_URL) return;
     // Ignore other anonymous scripts unless the reportAnonymousScripts option is true.
-    if (!event.url && !this._reportAnonymousScripts)
-      return;
+    if (!event.url && !this._reportAnonymousScripts) return;
     try {
-      const response = await this._client.send('Debugger.getScriptSource', {scriptId: event.scriptId});
+      const response = await this._client.send('Debugger.getScriptSource', {
+        scriptId: event.scriptId,
+      });
       this._scriptURLs.set(event.scriptId, event.url);
       this._scriptSources.set(event.scriptId, response.scriptSource);
     } catch (error) {
@@ -137,13 +159,11 @@ class JSCoverage {
       if (!url && this._reportAnonymousScripts)
         url = 'debugger://VM' + entry.scriptId;
       const text = this._scriptSources.get(entry.scriptId);
-      if (text === undefined || url === undefined)
-        continue;
+      if (text === undefined || url === undefined) continue;
       const flattenRanges = [];
-      for (const func of entry.functions)
-        flattenRanges.push(...func.ranges);
+      for (const func of entry.functions) flattenRanges.push(...func.ranges);
       const ranges = convertToDisjointRanges(flattenRanges);
-      coverage.push({url, ranges, text});
+      coverage.push({ url, ranges, text });
     }
     return coverage;
   }
@@ -162,16 +182,24 @@ class CSSCoverage {
     this._client = client;
   }
 
-  async start(options: {resetOnNavigation?: boolean} = {}): Promise<void> {
+  async start(options: { resetOnNavigation?: boolean } = {}): Promise<void> {
     assert(!this._enabled, 'CSSCoverage is already enabled');
-    const {resetOnNavigation = true} = options;
+    const { resetOnNavigation = true } = options;
     this._resetOnNavigation = resetOnNavigation;
     this._enabled = true;
     this._stylesheetURLs.clear();
     this._stylesheetSources.clear();
     this._eventListeners = [
-      helper.addEventListener(this._client, 'CSS.styleSheetAdded', this._onStyleSheet.bind(this)),
-      helper.addEventListener(this._client, 'Runtime.executionContextsCleared', this._onExecutionContextsCleared.bind(this)),
+      helper.addEventListener(
+        this._client,
+        'CSS.styleSheetAdded',
+        this._onStyleSheet.bind(this)
+      ),
+      helper.addEventListener(
+        this._client,
+        'Runtime.executionContextsCleared',
+        this._onExecutionContextsCleared.bind(this)
+      ),
     ];
     await Promise.all([
       this._client.send('DOM.enable'),
@@ -181,19 +209,21 @@ class CSSCoverage {
   }
 
   _onExecutionContextsCleared(): void {
-    if (!this._resetOnNavigation)
-      return;
+    if (!this._resetOnNavigation) return;
     this._stylesheetURLs.clear();
     this._stylesheetSources.clear();
   }
 
-  async _onStyleSheet(event: Protocol.CSS.styleSheetAddedPayload): Promise<void> {
+  async _onStyleSheet(
+    event: Protocol.CSS.styleSheetAddedPayload
+  ): Promise<void> {
     const header = event.header;
     // Ignore anonymous scripts
-    if (!header.sourceURL)
-      return;
+    if (!header.sourceURL) return;
     try {
-      const response = await this._client.send('CSS.getStyleSheetText', {styleSheetId: header.styleSheetId});
+      const response = await this._client.send('CSS.getStyleSheetText', {
+        styleSheetId: header.styleSheetId,
+      });
       this._stylesheetURLs.set(header.styleSheetId, header.sourceURL);
       this._stylesheetSources.set(header.styleSheetId, response.text);
     } catch (error) {
@@ -205,7 +235,9 @@ class CSSCoverage {
   async stop(): Promise<CoverageEntry[]> {
     assert(this._enabled, 'CSSCoverage is not enabled');
     this._enabled = false;
-    const ruleTrackingResponse = await this._client.send('CSS.stopRuleUsageTracking');
+    const ruleTrackingResponse = await this._client.send(
+      'CSS.stopRuleUsageTracking'
+    );
     await Promise.all([
       this._client.send('CSS.disable'),
       this._client.send('DOM.disable'),
@@ -231,33 +263,34 @@ class CSSCoverage {
     for (const styleSheetId of this._stylesheetURLs.keys()) {
       const url = this._stylesheetURLs.get(styleSheetId);
       const text = this._stylesheetSources.get(styleSheetId);
-      const ranges = convertToDisjointRanges(styleSheetIdToCoverage.get(styleSheetId) || []);
-      coverage.push({url, ranges, text});
+      const ranges = convertToDisjointRanges(
+        styleSheetIdToCoverage.get(styleSheetId) || []
+      );
+      coverage.push({ url, ranges, text });
     }
 
     return coverage;
   }
 }
 
-function convertToDisjointRanges(nestedRanges: Array<{startOffset: number; endOffset: number; count: number}>): Array<{start: number; end: number}> {
+function convertToDisjointRanges(
+  nestedRanges: Array<{ startOffset: number; endOffset: number; count: number }>
+): Array<{ start: number; end: number }> {
   const points = [];
   for (const range of nestedRanges) {
-    points.push({offset: range.startOffset, type: 0, range});
-    points.push({offset: range.endOffset, type: 1, range});
+    points.push({ offset: range.startOffset, type: 0, range });
+    points.push({ offset: range.endOffset, type: 1, range });
   }
   // Sort points to form a valid parenthesis sequence.
   points.sort((a, b) => {
     // Sort with increasing offsets.
-    if (a.offset !== b.offset)
-      return a.offset - b.offset;
+    if (a.offset !== b.offset) return a.offset - b.offset;
     // All "end" points should go before "start" points.
-    if (a.type !== b.type)
-      return b.type - a.type;
+    if (a.type !== b.type) return b.type - a.type;
     const aLength = a.range.endOffset - a.range.startOffset;
     const bLength = b.range.endOffset - b.range.startOffset;
     // For two "start" points, the one with longer range goes first.
-    if (a.type === 0)
-      return bLength - aLength;
+    if (a.type === 0) return bLength - aLength;
     // For two "end" points, the one with shorter range goes first.
     return aLength - bLength;
   });
@@ -267,20 +300,20 @@ function convertToDisjointRanges(nestedRanges: Array<{startOffset: number; endOf
   let lastOffset = 0;
   // Run scanning line to intersect all ranges.
   for (const point of points) {
-    if (hitCountStack.length && lastOffset < point.offset && hitCountStack[hitCountStack.length - 1] > 0) {
+    if (
+      hitCountStack.length &&
+      lastOffset < point.offset &&
+      hitCountStack[hitCountStack.length - 1] > 0
+    ) {
       const lastResult = results.length ? results[results.length - 1] : null;
       if (lastResult && lastResult.end === lastOffset)
         lastResult.end = point.offset;
-      else
-        results.push({start: lastOffset, end: point.offset});
+      else results.push({ start: lastOffset, end: point.offset });
     }
     lastOffset = point.offset;
-    if (point.type === 0)
-      hitCountStack.push(point.range.count);
-    else
-      hitCountStack.pop();
+    if (point.type === 0) hitCountStack.push(point.range.count);
+    else hitCountStack.pop();
   }
   // Filter out empty ranges.
-  return results.filter(range => range.end - range.start > 1);
+  return results.filter((range) => range.end - range.start > 1);
 }
-

@@ -67,7 +67,9 @@
     "commonmark": "^0.28.1",
     "cross-env": "^5.0.5",
     "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-mocha": "^6.3.0",
+    "eslint-plugin-prettier": "^3.1.3",
     "eslint-plugin-unicorn": "^19.0.1",
     "esprima": "^4.0.0",
     "expect": "^25.2.7",
@@ -77,6 +79,7 @@
     "ncp": "^2.0.0",
     "pixelmatch": "^4.0.2",
     "pngjs": "^5.0.0",
+    "prettier": "^2.0.5",
     "text-diff": "^1.0.1",
     "typescript": "3.8.3"
   },

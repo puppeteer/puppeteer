@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {CDPSession} from './Connection';
-import type {Viewport} from './PuppeteerViewport';
+import { CDPSession } from './Connection';
+import type { Viewport } from './PuppeteerViewport';
 
 export class EmulationManager {
   _client: CDPSession;
@@ -30,17 +30,26 @@ export class EmulationManager {
     const width = viewport.width;
     const height = viewport.height;
     const deviceScaleFactor = viewport.deviceScaleFactor || 1;
-    const screenOrientation: Protocol.Emulation.ScreenOrientation = viewport.isLandscape ? {angle: 90, type: 'landscapePrimary'} : {angle: 0, type: 'portraitPrimary'};
+    const screenOrientation: Protocol.Emulation.ScreenOrientation = viewport.isLandscape
+      ? { angle: 90, type: 'landscapePrimary' }
+      : { angle: 0, type: 'portraitPrimary' };
     const hasTouch = viewport.hasTouch || false;
 
     await Promise.all([
-      this._client.send('Emulation.setDeviceMetricsOverride', {mobile, width, height, deviceScaleFactor, screenOrientation}),
+      this._client.send('Emulation.setDeviceMetricsOverride', {
+        mobile,
+        width,
+        height,
+        deviceScaleFactor,
+        screenOrientation,
+      }),
       this._client.send('Emulation.setTouchEmulationEnabled', {
-        enabled: hasTouch
-      })
+        enabled: hasTouch,
+      }),
     ]);
 
-    const reloadNeeded = this._emulatingMobile !== mobile || this._hasTouch !== hasTouch;
+    const reloadNeeded =
+      this._emulatingMobile !== mobile || this._hasTouch !== hasTouch;
     this._emulatingMobile = mobile;
     this._hasTouch = hasTouch;
     return reloadNeeded;

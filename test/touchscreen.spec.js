@@ -15,27 +15,34 @@
  */
 
 const expect = require('expect');
-const {getTestState,setupTestBrowserHooks,setupTestPageAndContextHooks} = require('./mocha-utils');
+const {
+  getTestState,
+  setupTestBrowserHooks,
+  setupTestPageAndContextHooks,
+} = require('./mocha-utils');
 
-describeFailsFirefox('Touchscreen', function() {
+describeFailsFirefox('Touchscreen', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
 
-  it('should tap the button', async() => {
-    const {puppeteer, page, server} = getTestState();
+  it('should tap the button', async () => {
+    const { puppeteer, page, server } = getTestState();
     const iPhone = puppeteer.devices['iPhone 6'];
     await page.emulate(iPhone);
     await page.goto(server.PREFIX + '/input/button.html');
     await page.tap('button');
     expect(await page.evaluate(() => result)).toBe('Clicked');
   });
-  it('should report touches', async() => {
-    const {puppeteer, page, server} = getTestState();
+  it('should report touches', async () => {
+    const { puppeteer, page, server } = getTestState();
     const iPhone = puppeteer.devices['iPhone 6'];
     await page.emulate(iPhone);
     await page.goto(server.PREFIX + '/input/touches.html');
     const button = await page.$('button');
     await button.tap();
-    expect(await page.evaluate(() => getResult())).toEqual(['Touchstart: 0', 'Touchend: 0']);
+    expect(await page.evaluate(() => getResult())).toEqual([
+      'Touchstart: 0',
+      'Touchend: 0',
+    ]);
   });
 });

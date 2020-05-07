@@ -15,12 +15,18 @@
  */
 
 export interface QueryHandler {
-  (element: Element | Document, selector: string): Element | Element[] | NodeListOf<Element>;
+  (element: Element | Document, selector: string):
+    | Element
+    | Element[]
+    | NodeListOf<Element>;
 }
 
 const _customQueryHandlers = new Map<string, QueryHandler>();
 
-export function registerCustomQueryHandler(name: string, handler: Function): void {
+export function registerCustomQueryHandler(
+  name: string,
+  handler: Function
+): void {
   if (_customQueryHandlers.get(name))
     throw new Error(`A custom query handler named "${name}" already exists`);
 
@@ -46,22 +52,26 @@ export function clearQueryHandlers(): void {
   _customQueryHandlers.clear();
 }
 
-export function getQueryHandlerAndSelector(selector: string, defaultQueryHandler: QueryHandler):
-    { updatedSelector: string; queryHandler: QueryHandler} {
+export function getQueryHandlerAndSelector(
+  selector: string,
+  defaultQueryHandler: QueryHandler
+): { updatedSelector: string; queryHandler: QueryHandler } {
   const hasCustomQueryHandler = /^[a-zA-Z]+\//.test(selector);
   if (!hasCustomQueryHandler)
-    return {updatedSelector: selector, queryHandler: defaultQueryHandler};
+    return { updatedSelector: selector, queryHandler: defaultQueryHandler };
 
   const index = selector.indexOf('/');
   const name = selector.slice(0, index);
   const updatedSelector = selector.slice(index + 1);
   const queryHandler = customQueryHandlers().get(name);
   if (!queryHandler)
-    throw new Error(`Query set to use "${name}", but no query handler of that name was found`);
+    throw new Error(
+      `Query set to use "${name}", but no query handler of that name was found`
+    );
 
   return {
     updatedSelector,
-    queryHandler
+    queryHandler,
   };
 }
 
@@ -70,5 +80,5 @@ module.exports = {
   unregisterCustomQueryHandler,
   customQueryHandlers,
   getQueryHandlerAndSelector,
-  clearQueryHandlers
+  clearQueryHandlers,
 };
