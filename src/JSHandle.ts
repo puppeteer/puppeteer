@@ -454,7 +454,7 @@ export class ElementHandle extends JSHandle {
     };
   }
 
-  async screenshot(options = {}): Promise<string | Buffer> {
+  async screenshot(options = {}): Promise<string | Buffer | void> {
     let needsViewportReset = false;
 
     let boundingBox = await this.boundingBox();

@@ -39,7 +39,6 @@ import {
 import { Accessibility } from './Accessibility';
 import { TimeoutSettings } from './TimeoutSettings';
 import { PuppeteerLifeCycleEvent } from './LifecycleWatcher';
-import { TaskQueue } from './TaskQueue';
 
 const writeFileAsync = helper.promisify(fs.writeFile);
 
@@ -128,20 +127,30 @@ const paperFormats: Record<string, PaperFormat> = {
   a6: { width: 4.13, height: 5.83 },
 } as const;
 
+class ScreenshotTaskQueue {
+  _chain: Promise<Buffer | string | void>;
+
+  constructor() {
+    this._chain = Promise.resolve<Buffer | string | void>(undefined);
+  }
+
+  public postTask(
+    task: () => Promise<Buffer | string>
+  ): Promise<Buffer | string | void> {
+    const result = this._chain.then(task);
+    this._chain = result.catch(() => {});
+    return result;
+  }
+}
+
 export class Page extends EventEmitter {
   static async create(
     client: CDPSession,
     target: Target,
     ignoreHTTPSErrors: boolean,
-    defaultViewport: Viewport | null,
-    screenshotTaskQueue: TaskQueue
+    defaultViewport: Viewport | null
   ): Promise<Page> {
-    const page = new Page(
-      client,
-      target,
-      ignoreHTTPSErrors,
-      screenshotTaskQueue
-    );
+    const page = new Page(client, target, ignoreHTTPSErrors);
     await page._initialize();
     if (defaultViewport) await page.setViewport(defaultViewport);
     return page;
@@ -162,19 +171,14 @@ export class Page extends EventEmitter {
   _coverage: Coverage;
   _javascriptEnabled = true;
   _viewport: Viewport | null;
-  _screenshotTaskQueue: TaskQueue;
+  _screenshotTaskQueue: ScreenshotTaskQueue;
   _workers = new Map<string, PuppeteerWorker>();
   // TODO: improve this typedef - it's a function that takes a file chooser or something?
   _fileChooserInterceptors = new Set<Function>();
 
   _disconnectPromise?: Promise<Error>;
 
-  constructor(
-    client: CDPSession,
-    target: Target,
-    ignoreHTTPSErrors: boolean,
-    screenshotTaskQueue: TaskQueue
-  ) {
+  constructor(client: CDPSession, target: Target, ignoreHTTPSErrors: boolean) {
     super();
     this._client = client;
     this._target = target;
@@ -191,7 +195,7 @@ export class Page extends EventEmitter {
     this._emulationManager = new EmulationManager(client);
     this._tracing = new Tracing(client);
     this._coverage = new Coverage(client);
-    this._screenshotTaskQueue = screenshotTaskQueue;
+    this._screenshotTaskQueue = new ScreenshotTaskQueue();
     this._viewport = null;
 
     client.on('Target.attachedToTarget', (event) => {
@@ -948,7 +952,9 @@ export class Page extends EventEmitter {
     await this._frameManager.networkManager().setCacheEnabled(enabled);
   }
 
-  async screenshot(options: ScreenshotOptions = {}): Promise<Buffer | string> {
+  async screenshot(
+    options: ScreenshotOptions = {}
+  ): Promise<Buffer | string | void> {
     let screenshotType = null;
     // options.type takes precedence over inferring the type from options.path
     // because it may be a 0-length file with no extension created beforehand (i.e. as a temp file).
@@ -1023,8 +1029,8 @@ export class Page extends EventEmitter {
         'Expected options.clip.height not to be 0.'
       );
     }
-    return this._screenshotTaskQueue.postTask(
-      this._screenshotTask.bind(this, screenshotType, options)
+    return this._screenshotTaskQueue.postTask(() =>
+      this._screenshotTask(screenshotType, options)
     );
   }
 
