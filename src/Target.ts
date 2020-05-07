@@ -18,7 +18,6 @@ import { Events } from './Events';
 import { Page } from './Page';
 import { Worker as PuppeteerWorker } from './Worker';
 import { CDPSession } from './Connection';
-import { TaskQueue } from './TaskQueue';
 import { Browser, BrowserContext } from './Browser';
 import type { Viewport } from './PuppeteerViewport';
 
@@ -29,7 +28,6 @@ export class Target {
   _sessionFactory: () => Promise<CDPSession>;
   _ignoreHTTPSErrors: boolean;
   _defaultViewport?: Viewport;
-  _screenshotTaskQueue: TaskQueue;
   _pagePromise?: Promise<Page>;
   _workerPromise?: Promise<PuppeteerWorker>;
   _initializedPromise: Promise<boolean>;
@@ -43,8 +41,7 @@ export class Target {
     browserContext: BrowserContext,
     sessionFactory: () => Promise<CDPSession>,
     ignoreHTTPSErrors: boolean,
-    defaultViewport: Viewport | null,
-    screenshotTaskQueue: TaskQueue
+    defaultViewport: Viewport | null
   ) {
     this._targetInfo = targetInfo;
     this._browserContext = browserContext;
@@ -52,7 +49,6 @@ export class Target {
     this._sessionFactory = sessionFactory;
     this._ignoreHTTPSErrors = ignoreHTTPSErrors;
     this._defaultViewport = defaultViewport;
-    this._screenshotTaskQueue = screenshotTaskQueue;
     /** @type {?Promise<!Puppeteer.Page>} */
     this._pagePromise = null;
     /** @type {?Promise<!PuppeteerWorker>} */
@@ -93,8 +89,7 @@ export class Target {
           client,
           this,
           this._ignoreHTTPSErrors,
-          this._defaultViewport,
-          this._screenshotTaskQueue
+          this._defaultViewport
         )
       );
     }

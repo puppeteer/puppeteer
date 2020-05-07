@@ -17,7 +17,6 @@
 import { helper, assert } from './helper';
 import { Target } from './Target';
 import * as EventEmitter from 'events';
-import { TaskQueue } from './TaskQueue';
 import { Events } from './Events';
 import { Connection } from './Connection';
 import { Page } from './Page';
@@ -49,7 +48,6 @@ export class Browser extends EventEmitter {
   _ignoreHTTPSErrors: boolean;
   _defaultViewport?: Viewport;
   _process?: ChildProcess;
-  _screenshotTaskQueue = new TaskQueue();
   _connection: Connection;
   _closeCallback: BrowserCloseCallback;
   _defaultContext: BrowserContext;
@@ -69,7 +67,6 @@ export class Browser extends EventEmitter {
     this._ignoreHTTPSErrors = ignoreHTTPSErrors;
     this._defaultViewport = defaultViewport;
     this._process = process;
-    this._screenshotTaskQueue = new TaskQueue();
     this._connection = connection;
     this._closeCallback = closeCallback || function (): void {};
 
@@ -147,7 +144,6 @@ export class Browser extends EventEmitter {
       () => this._connection.createSession(targetInfo),
       this._ignoreHTTPSErrors,
       this._defaultViewport,
-      this._screenshotTaskQueue
     );
     assert(
       !this._targets.has(event.targetInfo.targetId),
