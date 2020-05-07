@@ -189,12 +189,12 @@ export class ElementHandle extends JSHandle {
           return 'Node is not of type HTMLElement';
         // force-scroll if page's javascript is disabled.
         if (!pageJavascriptEnabled) {
-          // Chrome still supports behavior: instant but it's not in the spec so TS shouts
-          // We don't want to make this breaking change in Puppeteer yet so we'll ignore the line.
-          // @ts-ignore
           element.scrollIntoView({
             block: 'center',
             inline: 'center',
+            // Chrome still supports behavior: instant but it's not in the spec so TS shouts
+            // We don't want to make this breaking change in Puppeteer yet so we'll ignore the line.
+            // @ts-ignore
             behavior: 'instant',
           });
           return false;
@@ -207,12 +207,12 @@ export class ElementHandle extends JSHandle {
           observer.observe(element);
         });
         if (visibleRatio !== 1.0) {
-          // Chrome still supports behavior: instant but it's not in the spec so TS shouts
-          // We don't want to make this breaking change in Puppeteer yet so we'll ignore the line.
-          // @ts-ignore
           element.scrollIntoView({
             block: 'center',
             inline: 'center',
+            // Chrome still supports behavior: instant but it's not in the spec so TS shouts
+            // We don't want to make this breaking change in Puppeteer yet so we'll ignore the line.
+            // @ts-ignore
             behavior: 'instant',
           });
         }
