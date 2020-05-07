@@ -143,7 +143,7 @@ export class Browser extends EventEmitter {
       context,
       () => this._connection.createSession(targetInfo),
       this._ignoreHTTPSErrors,
-      this._defaultViewport,
+      this._defaultViewport
     );
     assert(
       !this._targets.has(event.targetInfo.targetId),
