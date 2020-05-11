@@ -18,6 +18,7 @@ const { TestServer } = require('../utils/testserver/index');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
+const sinon = require('sinon');
 const puppeteer = require('../');
 const utils = require('./utils');
 const { trackCoverage } = require('./coverage-utils');
@@ -168,4 +169,8 @@ after(async () => {
   state.server = null;
   await state.httpsServer.stop();
   state.httpsServer = null;
+});
+
+afterEach(() => {
+  sinon.restore();
 });
