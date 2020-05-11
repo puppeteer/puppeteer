@@ -451,7 +451,6 @@ describe('Launcher specs', function () {
         const browser = await puppeteer.launch({ product: 'SO_NOT_A_PRODUCT' });
         const userAgent = await browser.userAgent();
         await browser.close();
-        consoleStub.resetBehavior();
         expect(userAgent).toContain('Chrome');
         expect(consoleStub.callCount).toEqual(1);
         expect(consoleStub.firstCall.args).toEqual([
