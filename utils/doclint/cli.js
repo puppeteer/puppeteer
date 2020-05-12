@@ -55,7 +55,14 @@ async function run() {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   const checkPublicAPI = require('./check_public_api');
-  const tsSources = await Source.readdir(path.join(PROJECT_DIR, 'src'), 'ts');
+  const tsSources = [
+    /* Source.readdir doesn't deal with nested directories well.
+     * Rather than invest time here when we're going to remove this Doc tooling soon
+     * we'll just list the directories manually.
+     */
+    ...(await Source.readdir(path.join(PROJECT_DIR, 'src'), 'ts')),
+    ...(await Source.readdir(path.join(PROJECT_DIR, 'src', 'launcher'), 'ts')),
+  ];
 
   const tsSourcesNoDefinitions = tsSources.filter(
     (source) => !source.filePath().endsWith('.d.ts')
