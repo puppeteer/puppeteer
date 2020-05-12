@@ -43,6 +43,12 @@ Despite being named 'unit', these are integration tests, making sure public API 
 npm run unit
 ```
 
+- __Important__: don't forget to first run TypeScript if you're testing local changes:
+
+```bash
+npm run tsc && npm run unit
+```
+
 - To run a specific test, substitute the `it` with `it.only`:
 
 ```js
