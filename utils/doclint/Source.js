@@ -106,7 +106,11 @@ class Source {
     const fileNames = await readdirAsync(dirPath);
     const filePaths = fileNames
       .filter((fileName) => fileName.endsWith(extension))
-      .map((fileName) => path.join(dirPath, fileName));
+      .map((fileName) => path.join(dirPath, fileName))
+      .filter((filePath) => {
+        const stats = fs.lstatSync(filePath);
+        return stats.isDirectory() === false;
+      });
     return Promise.all(filePaths.map((filePath) => Source.readFile(filePath)));
   }
 }

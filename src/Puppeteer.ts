@@ -18,8 +18,8 @@ import type {
   LaunchOptions,
   ChromeArgOptions,
   BrowserOptions,
-  ProductLauncher,
-} from './Launcher';
+} from './launcher/LaunchOptions';
+import type { ProductLauncher } from './Launcher';
 import { BrowserFetcher, BrowserFetcherOptions } from './BrowserFetcher';
 import { puppeteerErrors, PuppeteerErrors } from './Errors';
 import type { ConnectionTransport } from './ConnectionTransport';
