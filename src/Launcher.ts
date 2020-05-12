@@ -1027,6 +1027,15 @@ function Launcher(
       );
     case 'chrome':
     default:
+      if (typeof product !== 'undefined' && product !== 'chrome') {
+        /* The user gave us an incorrect product name
+         * we'll default to launching Chrome, but log to the console
+         * to let the user know (they've probably typoed).
+         */
+        console.warn(
+          `Warning: unknown product name ${product}. Falling back to chrome.`
+        );
+      }
       return new ChromeLauncher(
         projectRoot,
         preferredRevision,

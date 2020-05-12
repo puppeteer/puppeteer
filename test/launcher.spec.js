@@ -16,6 +16,7 @@
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
+const sinon = require('sinon');
 const { helper } = require('../lib/helper');
 const rmAsync = helper.promisify(require('rimraf'));
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
@@ -442,6 +443,19 @@ describe('Launcher specs', function () {
         const userAgent = await browser.userAgent();
         await browser.close();
         expect(userAgent).toContain('Chrome');
+      });
+
+      it('falls back to launching chrome if there is an unknown product but logs a warning', async () => {
+        const { puppeteer } = getTestState();
+        const consoleStub = sinon.stub(console, 'warn');
+        const browser = await puppeteer.launch({ product: 'SO_NOT_A_PRODUCT' });
+        const userAgent = await browser.userAgent();
+        await browser.close();
+        expect(userAgent).toContain('Chrome');
+        expect(consoleStub.callCount).toEqual(1);
+        expect(consoleStub.firstCall.args).toEqual([
+          'Warning: unknown product name SO_NOT_A_PRODUCT. Falling back to chrome.',
+        ]);
       });
 
       /* We think there's a bug in the FF Windows launcher, or some
