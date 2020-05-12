@@ -64,9 +64,9 @@ describeFailsFirefox('ignoreHTTPSErrors', function () {
       const protocol = serverRequest.socket.getProtocol().replace('v', ' ');
       expect(securityDetails.protocol()).toBe(protocol);
       expect(securityDetails.subjectName()).toBe('puppeteer-tests');
-      expect(securityDetails.validFrom()).toBe(1550084863);
-      expect(securityDetails.validTo()).toBe(33086084863);
-      expect(securityDetails.sanList()).toEqual([]);
+      expect(securityDetails.validFrom()).toBe(1589283259);
+      expect(securityDetails.validTo()).toBe(1904643259);
+      expect(securityDetails.subjectAlternativeNames()).toEqual(['www.puppeteer-tests.tld', 'www.puppeteer-tests-1.tld']);
     });
     it('should be |null| for non-secure requests', async () => {
       const { server } = getTestState();
