@@ -714,7 +714,7 @@ class SecurityDetails {
   /**
    * @return {!Array<string>}
    */
-  sanList() {
+  subjectAlternativeNames() {
     return this._sanList;
   }
 }
