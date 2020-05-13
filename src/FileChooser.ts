@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-import { CDPSession } from './Connection';
 import { ElementHandle } from './JSHandle';
 import { assert } from './helper';
 
 export class FileChooser {
-  _client: CDPSession;
-  _element: ElementHandle;
-  _multiple: boolean;
-  _handled = false;
+  private _element: ElementHandle;
+  private _multiple: boolean;
+  private _handled = false;
 
   constructor(
-    client: CDPSession,
     element: ElementHandle,
     event: Protocol.Page.fileChooserOpenedPayload
   ) {
-    this._client = client;
     this._element = element;
     this._multiple = event.mode !== 'selectSingle';
   }

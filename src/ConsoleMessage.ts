@@ -23,10 +23,10 @@ interface ConsoleMessageLocation {
 }
 
 export class ConsoleMessage {
-  _type: string;
-  _text: string;
-  _args: JSHandle[];
-  _location: ConsoleMessageLocation;
+  private _type: string;
+  private _text: string;
+  private _args: JSHandle[];
+  private _location: ConsoleMessageLocation;
 
   constructor(
     type: string,

@@ -294,7 +294,7 @@ export class Page extends EventEmitter {
     const element = await context._adoptBackendNodeId(event.backendNodeId);
     const interceptors = Array.from(this._fileChooserInterceptors);
     this._fileChooserInterceptors.clear();
-    const fileChooser = new FileChooser(this._client, element, event);
+    const fileChooser = new FileChooser(element, event);
     for (const interceptor of interceptors) interceptor.call(null, fileChooser);
   }
 
