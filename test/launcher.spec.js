@@ -89,7 +89,7 @@ describe('Launcher specs', function () {
             server.serveFile(
               req,
               res,
-              `/firefox-${expectedVersion}.0a1.en-US.linux-x86_64.tar.bz2`
+              `/firefox-${expectedVersion}.en-US.linux-x86_64.tar.bz2`
             );
           }
         );

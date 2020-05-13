@@ -40,10 +40,10 @@ const downloadURLs = {
     win64: '%s/chromium-browser-snapshots/Win_x64/%d/%s.zip',
   },
   firefox: {
-    linux: '%s/firefox-%s.0a1.en-US.%s-x86_64.tar.bz2',
-    mac: '%s/firefox-%s.0a1.en-US.%s.dmg',
-    win32: '%s/firefox-%s.0a1.en-US.%s.zip',
-    win64: '%s/firefox-%s.0a1.en-US.%s.zip',
+    linux: '%s/firefox-%s.en-US.%s-x86_64.tar.bz2',
+    mac: '%s/firefox-%s.en-US.%s.dmg',
+    win32: '%s/firefox-%s.en-US.%s.zip',
+    win64: '%s/firefox-%s.en-US.%s.zip',
   },
 } as const;
 
