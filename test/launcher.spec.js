@@ -81,7 +81,7 @@ describe('Launcher specs', function () {
           host: server.PREFIX,
           product: 'firefox',
         });
-        const expectedVersion = '75';
+        const expectedVersion = '75.0a1';
         let revisionInfo = browserFetcher.revisionInfo(expectedVersion);
         server.setRoute(
           revisionInfo.url.substring(server.PREFIX.length),
