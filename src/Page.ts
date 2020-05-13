@@ -31,11 +31,9 @@ import { Browser, BrowserContext } from './Browser';
 import { Target } from './Target';
 import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
 import type { Viewport } from './PuppeteerViewport';
-import {
-  Request as PuppeteerRequest,
-  Response as PuppeteerResponse,
-  Credentials,
-} from './NetworkManager';
+import { Credentials } from './NetworkManager';
+import { Request as PuppeteerRequest } from './Request';
+import { Response as PuppeteerResponse } from './Response';
 import { Accessibility } from './Accessibility';
 import { TimeoutSettings } from './TimeoutSettings';
 import { PuppeteerLifeCycleEvent } from './LifecycleWatcher';

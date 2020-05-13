@@ -20,12 +20,13 @@ import { Events } from './Events';
 import { ExecutionContext, EVALUATION_SCRIPT_URL } from './ExecutionContext';
 import { LifecycleWatcher, PuppeteerLifeCycleEvent } from './LifecycleWatcher';
 import { DOMWorld, WaitForSelectorOptions } from './DOMWorld';
-import { NetworkManager, Response } from './NetworkManager';
+import { NetworkManager } from './NetworkManager';
 import { TimeoutSettings } from './TimeoutSettings';
 import { CDPSession } from './Connection';
 import { JSHandle, ElementHandle } from './JSHandle';
 import { MouseButtonInput } from './Input';
 import { Page } from './Page';
+import { Response } from './Response';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
