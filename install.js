@@ -26,6 +26,8 @@
 
 const compileTypeScriptIfRequired = require('./typescript-if-required');
 
+const firefoxVersions =
+  'https://product-details.mozilla.org/1.0/firefox_versions.json';
 const supportedProducts = {
   chrome: 'Chromium',
   firefox: 'Firefox Nightly',
@@ -160,27 +162,22 @@ async function download() {
       let data = '';
       logPolitely(`Requesting latest Firefox Nightly version from ${host}`);
       https
-        .get(host + '/', (r) => {
+        .get(firefoxVersions, (r) => {
           if (r.statusCode >= 400)
             return reject(new Error(`Got status code ${r.statusCode}`));
           r.on('data', (chunk) => {
             data += chunk;
           });
-          r.on('end', parseVersion);
+          r.on('end', () => {
+            try {
+              const versions = JSON.parse(data);
+              return resolve(versions.FIREFOX_NIGHTLY);
+            } catch {
+              return reject(new Error('Firefox version not found'));
+            }
+          });
         })
         .on('error', reject);
-
-      function parseVersion() {
-        const regex = /firefox\-(?<version>\d\d)\..*/gm;
-        let result = 0;
-        let match;
-        while ((match = regex.exec(data)) !== null) {
-          const version = parseInt(match.groups.version, 10);
-          if (version > result) result = version;
-        }
-        if (result) resolve(result.toString());
-        else reject(new Error('Firefox version not found'));
-      }
     });
     return promise;
   }

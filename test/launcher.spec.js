@@ -81,7 +81,7 @@ describe('Launcher specs', function () {
           host: server.PREFIX,
           product: 'firefox',
         });
-        const expectedVersion = '75';
+        const expectedVersion = '75.0a1';
         let revisionInfo = browserFetcher.revisionInfo(expectedVersion);
         server.setRoute(
           revisionInfo.url.substring(server.PREFIX.length),
@@ -89,7 +89,7 @@ describe('Launcher specs', function () {
             server.serveFile(
               req,
               res,
-              `/firefox-${expectedVersion}.0a1.en-US.linux-x86_64.tar.bz2`
+              `/firefox-${expectedVersion}.en-US.linux-x86_64.tar.bz2`
             );
           }
         );
