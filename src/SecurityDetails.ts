@@ -15,11 +15,11 @@
  */
 
 export class SecurityDetails {
-  _subjectName: string;
-  _issuer: string;
-  _validFrom: number;
-  _validTo: number;
-  _protocol: string;
+  private _subjectName: string;
+  private _issuer: string;
+  private _validFrom: number;
+  private _validTo: number;
+  private _protocol: string;
 
   constructor(securityPayload: Protocol.Network.SecurityDetails) {
     this._subjectName = securityPayload.subjectName;
