@@ -38,7 +38,7 @@ module.exports = {
   Puppeteer: require('./Puppeteer').Puppeteer,
   Request: require('./NetworkManager').Request,
   Response: require('./NetworkManager').Response,
-  SecurityDetails: require('./NetworkManager').SecurityDetails,
+  SecurityDetails: require('./SecurityDetails').SecurityDetails,
   Target: require('./Target').Target,
   TimeoutError: require('./Errors').TimeoutError,
   Touchscreen: require('./Input').Touchscreen,
