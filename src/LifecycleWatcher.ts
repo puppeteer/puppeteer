@@ -19,17 +19,7 @@ import { Events } from './Events';
 import { TimeoutError } from './Errors';
 import { FrameManager, Frame } from './FrameManager';
 import { Request, Response } from './NetworkManager';
-
-export type PuppeteerLifeCycleEvent =
-  | 'load'
-  | 'domcontentloaded'
-  | 'networkidle0'
-  | 'networkidle2';
-type ProtocolLifeCycleEvent =
-  | 'load'
-  | 'DOMContentLoaded'
-  | 'networkIdle'
-  | 'networkAlmostIdle';
+import { PuppeteerLifeCycleEvent, ProtocolLifeCycleEvent } from './types'
 
 const puppeteerToProtocolLifecycle = new Map<
   PuppeteerLifeCycleEvent,
