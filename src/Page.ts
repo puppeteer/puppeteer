@@ -38,6 +38,8 @@ import {
 } from './NetworkManager';
 import { Accessibility } from './Accessibility';
 import { TimeoutSettings } from './TimeoutSettings';
+import { FileChooser } from './FileChooser';
+import { ConsoleMessage } from './ConsoleMessage';
 import { PuppeteerLifeCycleEvent } from './LifecycleWatcher';
 
 const writeFileAsync = helper.promisify(fs.writeFile);
@@ -292,7 +294,7 @@ export class Page extends EventEmitter {
     const element = await context._adoptBackendNodeId(event.backendNodeId);
     const interceptors = Array.from(this._fileChooserInterceptors);
     this._fileChooserInterceptors.clear();
-    const fileChooser = new FileChooser(this._client, element, event);
+    const fileChooser = new FileChooser(element, event);
     for (const interceptor of interceptors) interceptor.call(null, fileChooser);
   }
 
@@ -1318,83 +1320,4 @@ function convertPrintParameterToInches(
     );
   }
   return pixels / 96;
-}
-
-interface ConsoleMessageLocation {
-  url?: string;
-  lineNumber?: number;
-  columnNumber?: number;
-}
-
-export class ConsoleMessage {
-  _type: string;
-  _text: string;
-  _args: JSHandle[];
-  _location: ConsoleMessageLocation;
-
-  constructor(
-    type: string,
-    text: string,
-    args: JSHandle[],
-    location: ConsoleMessageLocation = {}
-  ) {
-    this._type = type;
-    this._text = text;
-    this._args = args;
-    this._location = location;
-  }
-
-  type(): string {
-    return this._type;
-  }
-
-  text(): string {
-    return this._text;
-  }
-
-  args(): JSHandle[] {
-    return this._args;
-  }
-
-  location(): ConsoleMessageLocation {
-    return this._location;
-  }
-}
-
-export class FileChooser {
-  _client: CDPSession;
-  _element: ElementHandle;
-  _multiple: boolean;
-  _handled = false;
-
-  constructor(
-    client: CDPSession,
-    element: ElementHandle,
-    event: Protocol.Page.fileChooserOpenedPayload
-  ) {
-    this._client = client;
-    this._element = element;
-    this._multiple = event.mode !== 'selectSingle';
-  }
-
-  isMultiple(): boolean {
-    return this._multiple;
-  }
-
-  async accept(filePaths: string[]): Promise<void> {
-    assert(
-      !this._handled,
-      'Cannot accept FileChooser which is already handled!'
-    );
-    this._handled = true;
-    await this._element.uploadFile(...filePaths);
-  }
-
-  async cancel(): Promise<void> {
-    assert(
-      !this._handled,
-      'Cannot cancel FileChooser which is already handled!'
-    );
-    this._handled = true;
-  }
 }
