@@ -56,13 +56,13 @@ describeChromeOnly('Tracing', function () {
   it('should run with custom categories if provided', async () => {
     await page.tracing.start({
       path: outputFile,
-      categories: ['disabled-by-default-v8.cpu_profiler.hires'],
+      categories: ['disabled-by-default-devtools.timeline.frame'],
     });
     await page.tracing.stop();
 
     const traceJson = JSON.parse(fs.readFileSync(outputFile));
     expect(traceJson.metadata['trace-config']).toContain(
-      'disabled-by-default-v8.cpu_profiler.hires'
+      'disabled-by-default-devtools.timeline.frame'
     );
   });
   it('should throw if tracing on two pages', async () => {
