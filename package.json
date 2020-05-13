@@ -84,7 +84,7 @@
     "prettier": "^2.0.5",
     "sinon": "^9.0.2",
     "text-diff": "^1.0.1",
-    "typescript": "3.8.3"
+    "typescript": "3.9.2"
   },
   "browser": {
     "./lib/BrowserFetcher.js": false,
