@@ -18,7 +18,8 @@ import { helper, assert, PuppeteerEventListener } from './helper';
 import { Events } from './Events';
 import { TimeoutError } from './Errors';
 import { FrameManager, Frame } from './FrameManager';
-import { Request, Response } from './NetworkManager';
+import { Request } from './Request';
+import { Response } from './Response';
 
 export type PuppeteerLifeCycleEvent =
   | 'load'
