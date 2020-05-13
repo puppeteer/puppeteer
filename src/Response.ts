@@ -16,7 +16,7 @@
 import { CDPSession } from './Connection';
 import { Frame } from './FrameManager';
 import { Request } from './Request';
-import { SecurityDetails } from './NetworkManager';
+import { SecurityDetails } from './SecurityDetails';
 
 interface RemoteAddress {
   ip: string;
@@ -28,7 +28,7 @@ export class Response {
   private _request: Request;
   private _contentPromise: Promise<Buffer> | null = null;
   private _bodyLoadedPromise: Promise<Error | void>;
-  private _bodyLoadedPromiseFulfill: (x: Error | void) => void;
+  private _bodyLoadedPromiseFulfill: (err: Error | void) => void;
   private _remoteAddress: RemoteAddress;
   private _status: number;
   private _statusText: string;

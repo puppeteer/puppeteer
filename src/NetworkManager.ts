@@ -17,10 +17,9 @@ import * as EventEmitter from 'events';
 import { helper, assert, debugError } from './helper';
 import { Events } from './Events';
 import { CDPSession } from './Connection';
-import { FrameManager, Frame } from './FrameManager';
+import { FrameManager } from './FrameManager';
 import { Request } from './Request';
 import { Response } from './Response';
-import { SecurityDetails } from './SecurityDetails';
 
 export interface Credentials {
   username: string;
