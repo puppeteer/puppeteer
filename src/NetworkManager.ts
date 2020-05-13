@@ -18,6 +18,7 @@ import { helper, assert, debugError } from './helper';
 import { Events } from './Events';
 import { CDPSession } from './Connection';
 import { FrameManager, Frame } from './FrameManager';
+import { SecurityDetails } from './SecurityDetails';
 
 export interface Credentials {
   username: string;
@@ -655,42 +656,6 @@ export class Response {
 
   frame(): Frame | null {
     return this._request.frame();
-  }
-}
-
-export class SecurityDetails {
-  _subjectName: string;
-  _issuer: string;
-  _validFrom: number;
-  _validTo: number;
-  _protocol: string;
-
-  constructor(securityPayload: Protocol.Network.SecurityDetails) {
-    this._subjectName = securityPayload.subjectName;
-    this._issuer = securityPayload.issuer;
-    this._validFrom = securityPayload.validFrom;
-    this._validTo = securityPayload.validTo;
-    this._protocol = securityPayload.protocol;
-  }
-
-  subjectName(): string {
-    return this._subjectName;
-  }
-
-  issuer(): string {
-    return this._issuer;
-  }
-
-  validFrom(): number {
-    return this._validFrom;
-  }
-
-  validTo(): number {
-    return this._validTo;
-  }
-
-  protocol(): string {
-    return this._protocol;
   }
 }
 
