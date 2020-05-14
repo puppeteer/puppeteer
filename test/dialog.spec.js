@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 const expect = require('expect');
+const sinon = require('sinon');
+
 const {
   getTestState,
   setupTestPageAndContextHooks,
@@ -34,16 +36,23 @@ describe('Page.Events.Dialog', function () {
     });
     await page.evaluate(() => alert('yo'));
   });
+
   itFailsFirefox('should allow accepting prompts', async () => {
     const { page } = getTestState();
 
-    page.on('dialog', (dialog) => {
-      expect(dialog.type()).toBe('prompt');
-      expect(dialog.defaultValue()).toBe('yes.');
-      expect(dialog.message()).toBe('question?');
+    const onDialog = sinon.stub().callsFake((dialog) => {
       dialog.accept('answer!');
     });
+    page.on('dialog', onDialog);
+
     const result = await page.evaluate(() => prompt('question?', 'yes.'));
+
+    expect(onDialog.callCount).toEqual(1);
+    const dialog = onDialog.firstCall.args[0];
+    expect(dialog.type()).toBe('prompt');
+    expect(dialog.defaultValue()).toBe('yes.');
+    expect(dialog.message()).toBe('question?');
+
     expect(result).toBe('answer!');
   });
   it('should dismiss the prompt', async () => {
