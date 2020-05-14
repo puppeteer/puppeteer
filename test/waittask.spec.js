@@ -138,6 +138,22 @@ describe('waittask specs', function () {
       await watchdog;
       expect(Date.now() - startTime).not.toBeLessThan(polling / 2);
     });
+    it('should poll on interval async', async () => {
+      const { page } = getTestState();
+      let success = false;
+      const startTime = Date.now();
+      const polling = 100;
+      const watchdog = page
+        .waitForFunction(async () => window.__FOO === 'hit', { polling })
+        .then(() => (success = true));
+      await page.evaluate(async () => (window.__FOO = 'hit'));
+      expect(success).toBe(false);
+      await page.evaluate(async () =>
+        document.body.appendChild(document.createElement('div'))
+      );
+      await watchdog;
+      expect(Date.now() - startTime).not.toBeLessThan(polling / 2);
+    });
     it('should poll on mutation', async () => {
       const { page } = getTestState();
 
@@ -152,6 +168,22 @@ describe('waittask specs', function () {
       );
       await watchdog;
     });
+    it('should poll on mutation async', async () => {
+      const { page } = getTestState();
+
+      let success = false;
+      const watchdog = page
+        .waitForFunction(async () => window.__FOO === 'hit', {
+          polling: 'mutation',
+        })
+        .then(() => (success = true));
+      await page.evaluate(async () => (window.__FOO = 'hit'));
+      expect(success).toBe(false);
+      await page.evaluate(async () =>
+        document.body.appendChild(document.createElement('div'))
+      );
+      await watchdog;
+    });
     it('should poll on raf', async () => {
       const { page } = getTestState();
 
@@ -159,6 +191,18 @@ describe('waittask specs', function () {
         polling: 'raf',
       });
       await page.evaluate(() => (window.__FOO = 'hit'));
+      await watchdog;
+    });
+    it('should poll on raf async', async () => {
+      const { page } = getTestState();
+
+      const watchdog = page.waitForFunction(
+        async () => window.__FOO === 'hit',
+        {
+          polling: 'raf',
+        }
+      );
+      await page.evaluate(async () => (window.__FOO = 'hit'));
       await watchdog;
     });
     itFailsFirefox('should work with strict CSP policy', async () => {

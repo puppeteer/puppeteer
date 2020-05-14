@@ -692,18 +692,18 @@ async function waitForPredicatePageFunction(
   /**
    * @return {!Promise<*>}
    */
-  function pollMutation(): Promise<unknown> {
-    const success = predicate(...args);
+  async function pollMutation(): Promise<unknown> {
+    const success = await predicate(...args);
     if (success) return Promise.resolve(success);
 
     let fulfill;
     const result = new Promise((x) => (fulfill = x));
-    const observer = new MutationObserver(() => {
+    const observer = new MutationObserver(async () => {
       if (timedOut) {
         observer.disconnect();
         fulfill();
       }
-      const success = predicate(...args);
+      const success = await predicate(...args);
       if (success) {
         observer.disconnect();
         fulfill(success);
@@ -717,35 +717,35 @@ async function waitForPredicatePageFunction(
     return result;
   }
 
-  function pollRaf(): Promise<unknown> {
+  async function pollRaf(): Promise<unknown> {
     let fulfill;
     const result = new Promise((x) => (fulfill = x));
-    onRaf();
+    await onRaf();
     return result;
 
-    function onRaf(): void {
+    async function onRaf(): Promise<unknown> {
       if (timedOut) {
         fulfill();
         return;
       }
-      const success = predicate(...args);
+      const success = await predicate(...args);
       if (success) fulfill(success);
       else requestAnimationFrame(onRaf);
     }
   }
 
-  function pollInterval(pollInterval: number): Promise<unknown> {
+  async function pollInterval(pollInterval: number): Promise<unknown> {
     let fulfill;
     const result = new Promise((x) => (fulfill = x));
-    onTimeout();
+    await onTimeout();
     return result;
 
-    function onTimeout(): void {
+    async function onTimeout(): Promise<unknown> {
       if (timedOut) {
         fulfill();
         return;
       }
-      const success = predicate(...args);
+      const success = await predicate(...args);
       if (success) fulfill(success);
       else setTimeout(onTimeout, pollInterval);
     }
