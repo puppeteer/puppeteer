@@ -896,7 +896,7 @@ describe('Page', function () {
   });
 
   describe('Page.setUserAgent', function () {
-    itFailsFirefox('should work', async () => {
+    it('should work', async () => {
       const { page, server } = getTestState();
 
       expect(await page.evaluate(() => navigator.userAgent)).toContain(
