@@ -2070,7 +2070,7 @@ await fileChooser.accept(['/tmp/myfile.pdf']);
 
 
 #### page.waitForFunction(pageFunction[, options[, ...args]])
-- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
+- `pageFunction` <[function]|[AsyncFunction]|[string]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
   - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values:
     - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
