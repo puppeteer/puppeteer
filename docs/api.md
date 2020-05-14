@@ -2070,7 +2070,7 @@ await fileChooser.accept(['/tmp/myfile.pdf']);
 
 
 #### page.waitForFunction(pageFunction[, options[, ...args]])
-- `pageFunction` <[function]|[AsyncFunction]|[string]> Function to be evaluated in browser context
+- `pageFunction` <[function]|[string]> Function to be evaluated in browser context
 - `options` <[Object]> Optional waiting parameters
   - `polling` <[string]|[number]> An interval at which the `pageFunction` is executed, defaults to `raf`. If `polling` is a number, then it is treated as an interval in milliseconds at which the function would be executed. If `polling` is a string, then it can be one of the following values:
     - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame` callback. This is the tightest polling mode which is suitable to observe styling changes.
@@ -2097,7 +2097,7 @@ To pass arguments from node.js to the predicate of `page.waitForFunction` functi
 
 ```js
 const selector = '.foo';
-await page.waitForFunction(selector => !!document.querySelector(selector), {}, selector);
+await page.waitForFunction(async selector => !!document.querySelector(selector), {}, selector);
 ```
 
 Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args).
