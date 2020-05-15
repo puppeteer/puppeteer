@@ -741,6 +741,7 @@ function getWSEndpoint(browserURL: string): Promise<string> {
 function resolveExecutablePath(
   launcher: ChromeLauncher | FirefoxLauncher
 ): { executablePath: string; missingText?: string } {
+  let downloadPath: string;
   // puppeteer-core doesn't take into account PUPPETEER_* env variables.
   if (!launcher._isPuppeteerCore) {
     const executablePath =
@@ -754,9 +755,14 @@ function resolveExecutablePath(
         : null;
       return { executablePath, missingText };
     }
+    downloadPath =
+      process.env.PUPPETEER_DOWNLOAD_PATH ||
+      process.env.npm_config_puppeteer_download_path ||
+      process.env.npm_package_config_puppeteer_download_path;
   }
   const browserFetcher = new BrowserFetcher(launcher._projectRoot, {
     product: launcher.product,
+    path: downloadPath,
   });
   if (!launcher._isPuppeteerCore && launcher.product === 'chrome') {
     const revision = process.env['PUPPETEER_CHROMIUM_REVISION'];

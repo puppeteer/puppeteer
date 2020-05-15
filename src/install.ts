@@ -38,9 +38,14 @@ export async function downloadBrowser() {
     process.env.npm_config_puppeteer_product ||
     process.env.npm_package_config_puppeteer_product ||
     'chrome';
+  const downloadPath =
+    process.env.PUPPETEER_DOWNLOAD_PATH ||
+    process.env.npm_config_puppeteer_download_path ||
+    process.env.npm_package_config_puppeteer_download_path;
   const browserFetcher = puppeteer.createBrowserFetcher({
     product,
     host: downloadHost,
+    path: downloadPath,
   });
   const revision = await getRevision();
   await fetchBinary(revision);
