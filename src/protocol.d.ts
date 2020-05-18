@@ -624,7 +624,63 @@ associated with some application cache.
      * Audits domain allows investigation of page violations and possible improvements.
      */
     export module Audits {
+        /**
+         * Information about a cookie that is affected by an inspector issue.
+         */
+        export interface AffectedCookie {
+            /**
+             * The following three properties uniquely identify a cookie
+             */
+            name: string;
+            path: string;
+            domain: string;
+            /**
+             * Optionally identifies the site-for-cookies, which may be used by the
+front-end as additional context.
+             */
+            siteForCookies?: string;
+        }
+        export type SameSiteCookieExclusionReason = "ExcludeSameSiteUnspecifiedTreatedAsLax"|"ExcludeSameSiteNoneInsecure";
+        export type SameSiteCookieWarningReason = "WarnSameSiteUnspecifiedCrossSiteContext"|"WarnSameSiteNoneInsecure"|"WarnSameSiteUnspecifiedLaxAllowUnsafe"|"WarnSameSiteCrossSchemeSecureUrlMethodUnsafe"|"WarnSameSiteCrossSchemeSecureUrlLax"|"WarnSameSiteCrossSchemeSecureUrlStrict"|"WarnSameSiteCrossSchemeInsecureUrlMethodUnsafe"|"WarnSameSiteCrossSchemeInsecureUrlLax"|"WarnSameSiteCrossSchemeInsecureUrlStrict";
+        /**
+         * This information is currently necessary, as the front-end has a difficult
+time finding a specific cookie. With this, we can convey specific error
+information without the cookie.
+         */
+        export interface SameSiteCookieIssueDetails {
+            cookieWarningReasons: SameSiteCookieWarningReason[];
+            cookieExclusionReasons: SameSiteCookieExclusionReason[];
+        }
+        export interface AffectedResources {
+            cookies?: AffectedCookie[];
+        }
+        /**
+         * A unique identifier for the type of issue. Each type may use one of the
+optional fields in InspectorIssueDetails to convey more specific
+information about the kind of issue, and AffectedResources to identify
+resources that are affected by this issue.
+         */
+        export type InspectorIssueCode = "SameSiteCookieIssue";
+        /**
+         * This struct holds a list of optional fields with additional information
+pertaining to the kind of issue. This is useful if there is a number of
+very similar issues that only differ in details.
+         */
+        export interface InspectorIssueDetails {
+            sameSiteCookieIssueDetails?: SameSiteCookieIssueDetails;
+        }
+        /**
+         * An inspector issue reported from the back-end.
+         */
+        export interface InspectorIssue {
+            code: InspectorIssueCode;
+            details: InspectorIssueDetails;
+            resources: AffectedResources;
+        }
         
+        export type issueAddedPayload = {
+            issue: InspectorIssue;
+        }
         
         /**
          * Returns the response body and size if it were re-encoded with the specified settings. Only
@@ -661,6 +717,21 @@ applies to images.
              * Size after re-encoding.
              */
             encodedSize: number;
+        }
+        /**
+         * Disables issues domain, prevents further issues from being reported to the client.
+         */
+        export type disableParameters = {
+        }
+        export type disableReturnValue = {
+        }
+        /**
+         * Enables issues domain, sends the issues collected so far to the client by means of the
+`issueAdded` event.
+         */
+        export type enableParameters = {
+        }
+        export type enableReturnValue = {
         }
     }
     
@@ -872,9 +943,9 @@ Note that userVisibleOnly = true is the only currently supported type.
          */
         export type setPermissionParameters = {
             /**
-             * Origin the permission applies to.
+             * Origin the permission applies to, all origins if not specified.
              */
-            origin: string;
+            origin?: string;
             /**
              * Descriptor of permission to override.
              */
@@ -894,7 +965,10 @@ Note that userVisibleOnly = true is the only currently supported type.
          * Grant specific permissions to the given origin and reject all others.
          */
         export type grantPermissionsParameters = {
-            origin: string;
+            /**
+             * Origin the permission applies to, all origins if not specified.
+             */
+            origin?: string;
             permissions: PermissionType[];
             /**
              * BrowserContext to override permissions. When omitted, default browser context is used.
@@ -913,6 +987,28 @@ Note that userVisibleOnly = true is the only currently supported type.
             browserContextId?: BrowserContextID;
         }
         export type resetPermissionsReturnValue = {
+        }
+        /**
+         * Set the behavior when downloading a file.
+         */
+        export type setDownloadBehaviorParameters = {
+            /**
+             * Whether to allow all or deny all download requests, or use default Chrome behavior if
+available (otherwise deny). |allowAndName| allows download and names files according to
+their dowmload guids.
+             */
+            behavior: "deny"|"allow"|"allowAndName"|"default";
+            /**
+             * BrowserContext to set download behavior. When omitted, default browser context is used.
+             */
+            browserContextId?: BrowserContextID;
+            /**
+             * The default path to save downloaded files to. This is requred if behavior is set to 'allow'
+or 'allowAndName'.
+             */
+            downloadPath?: string;
+        }
+        export type setDownloadBehaviorReturnValue = {
         }
         /**
          * Close browser gracefully.
@@ -2677,6 +2773,32 @@ entire subtree or provide an integer larger than 0.
              * Node description.
              */
             node: Node;
+        }
+        /**
+         * Scrolls the specified rect of the given node into view if not already visible.
+Note: exactly one between nodeId, backendNodeId and objectId should be passed
+to identify the node.
+         */
+        export type scrollIntoViewIfNeededParameters = {
+            /**
+             * Identifier of the node.
+             */
+            nodeId?: NodeId;
+            /**
+             * Identifier of the backend node.
+             */
+            backendNodeId?: BackendNodeId;
+            /**
+             * JavaScript object id of the node wrapper.
+             */
+            objectId?: Runtime.RemoteObjectId;
+            /**
+             * The rect to be scrolled into view, relative to the node's border box, in CSS pixels.
+When omitted, center of the node will be used, similar to Element.scrollIntoView.
+             */
+            rect?: Rect;
+        }
+        export type scrollIntoViewIfNeededReturnValue = {
         }
         /**
          * Disables DOM agent for the given page.
@@ -4446,6 +4568,17 @@ change is not observed by the page, e.g. viewport-relative elements do not chang
         export type setEmulatedMediaReturnValue = {
         }
         /**
+         * Emulates the given vision deficiency.
+         */
+        export type setEmulatedVisionDeficiencyParameters = {
+            /**
+             * Vision deficiency to emulate.
+             */
+            type: "none"|"achromatopsia"|"blurredVision"|"deuteranopia"|"protanopia"|"tritanopia";
+        }
+        export type setEmulatedVisionDeficiencyReturnValue = {
+        }
+        /**
          * Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position
 unavailable.
          */
@@ -4544,6 +4677,18 @@ Note any previous deferred policy change is superseded.
              * Absolute timestamp at which virtual time was first enabled (up time in milliseconds).
              */
             virtualTimeTicksBase: number;
+        }
+        /**
+         * Overrides default host system locale with the specified one.
+         */
+        export type setLocaleOverrideParameters = {
+            /**
+             * ICU style C locale (e.g. "en_US"). If not specified or empty, disables the override and
+restores default host system locale.
+             */
+            locale?: string;
+        }
+        export type setLocaleOverrideReturnValue = {
         }
         /**
          * Overrides default host system timezone with the specified one.
@@ -6298,7 +6443,7 @@ milliseconds relatively to this requestTime.
         /**
          * The reason why request was blocked.
          */
-        export type BlockedReason = "other"|"csp"|"mixed-content"|"origin"|"inspector"|"subresource-filter"|"content-type"|"collapsed-by-client";
+        export type BlockedReason = "other"|"csp"|"mixed-content"|"origin"|"inspector"|"subresource-filter"|"content-type"|"collapsed-by-client"|"coep-frame-resource-needs-coep-header"|"coop-sandboxed-iframe-cannot-navigate-to-coop-page"|"corp-not-same-origin"|"corp-not-same-origin-after-defaulted-to-same-origin-by-coep"|"corp-not-same-site";
         /**
          * HTTP response data.
          */
@@ -8418,6 +8563,10 @@ Backend then generates 'inspectNodeRequested' event upon element selection.
              */
             errorArguments: InstallabilityErrorArgument[];
         }
+        /**
+         * The referring-policy used for the navigation.
+         */
+        export type ReferrerPolicy = "noReferrer"|"noReferrerWhenDowngrade"|"origin"|"originWhenCrossOrigin"|"sameOrigin"|"strictOrigin"|"strictOriginWhenCrossOrigin"|"unsafeUrl";
         
         export type domContentEventFiredPayload = {
             timestamp: Network.MonotonicTime;
@@ -8551,9 +8700,34 @@ guaranteed to start.
              */
             frameId: FrameId;
             /**
+             * Global unique identifier of the download.
+             */
+            guid: string;
+            /**
              * URL of the resource being downloaded.
              */
             url: string;
+        }
+        /**
+         * Fired when download makes progress. Last call has |done| == true.
+         */
+        export type downloadProgressPayload = {
+            /**
+             * Global unique identifier of the download.
+             */
+            guid: string;
+            /**
+             * Total expected bytes to download.
+             */
+            totalBytes: number;
+            /**
+             * Total bytes received.
+             */
+            receivedBytes: number;
+            /**
+             * Download status.
+             */
+            state: "inProgress"|"completed"|"canceled";
         }
         /**
          * Fired when interstitial page was hidden
@@ -8870,7 +9044,6 @@ option, use with caution.
         export type getInstallabilityErrorsParameters = {
         }
         export type getInstallabilityErrorsReturnValue = {
-            errors: string[];
             installabilityErrors: InstallabilityError[];
         }
         export type getManifestIconsParameters = {
@@ -9012,6 +9185,10 @@ dialog.
              * Frame id to navigate, if not specified navigates the top frame.
              */
             frameId?: FrameId;
+            /**
+             * Referrer-policy used for the navigation.
+             */
+            referrerPolicy?: ReferrerPolicy;
         }
         export type navigateReturnValue = {
             /**
@@ -9570,6 +9747,10 @@ Instead, a protocol event `Page.fileChooserOpened` is emitted.
          * Enable collecting and reporting metrics.
          */
         export type enableParameters = {
+            /**
+             * Time domain to use for collecting and reporting duration metrics.
+             */
+            timeDomain?: "timeTicks"|"threadTicks";
         }
         export type enableReturnValue = {
         }
@@ -10614,6 +10795,10 @@ The object has the follwing API:
 one.
          */
         export type createBrowserContextParameters = {
+            /**
+             * If specified, disposes this context when debugging session disconnects.
+             */
+            disposeOnDetach?: boolean;
         }
         export type createBrowserContextReturnValue = {
             /**
@@ -10756,10 +10941,6 @@ We plan to make this the default, deprecate non-flattened mode,
 and eventually retire it. See crbug.com/991325.
              */
             flatten?: boolean;
-            /**
-             * Auto-attach to the targets created via window.open from current target.
-             */
-            windowOpen?: boolean;
         }
         export type setAutoAttachReturnValue = {
         }
@@ -11261,7 +11442,7 @@ If absent, a standard phrase matching responseCode is used.
              */
             postData?: string;
             /**
-             * If set, overrides the request headrts.
+             * If set, overrides the request headers.
              */
             headers?: HeaderEntry[];
         }
@@ -11930,7 +12111,7 @@ breakpoints, stepping through execution, exploring stack traces, etc.
             /**
              * Scope type.
              */
-            type: "global"|"local"|"with"|"closure"|"catch"|"block"|"script"|"eval"|"module";
+            type: "global"|"local"|"with"|"closure"|"catch"|"block"|"script"|"eval"|"module"|"wasm-expression-stack";
             /**
              * Object representing the scope. For `global` and `with` scopes it represents the actual
 object; for the rest of the scopes, it is artificial transient object enumerating scope
@@ -11975,6 +12156,10 @@ variables as its properties.
             columnNumber?: number;
             type?: "debuggerStatement"|"call"|"return";
         }
+        /**
+         * Enum of possible script languages.
+         */
+        export type ScriptLanguage = "JavaScript"|"WebAssembly";
         
         /**
          * Fired when breakpoint is resolved to an actual script and location.
@@ -12086,6 +12271,14 @@ variables as its properties.
              * JavaScript top stack frame of where the script parsed event was triggered if available.
              */
             stackTrace?: Runtime.StackTrace;
+            /**
+             * If the scriptLanguage is WebAssembly, the code section offset in the module.
+             */
+            codeOffset?: number;
+            /**
+             * The language of the script.
+             */
+            scriptLanguage?: Debugger.ScriptLanguage;
         }
         /**
          * Fired when virtual machine parses script. This event is also fired for all known and uncollected
@@ -12152,6 +12345,14 @@ scripts upon enabling debugger.
              * JavaScript top stack frame of where the script parsed event was triggered if available.
              */
             stackTrace?: Runtime.StackTrace;
+            /**
+             * If the scriptLanguage is WebAssembly, the code section offset in the module.
+             */
+            codeOffset?: number;
+            /**
+             * The language of the script.
+             */
+            scriptLanguage?: Debugger.ScriptLanguage;
         }
         
         /**
@@ -12362,6 +12563,14 @@ of scripts is used as end of range.
          * Resumes JavaScript execution.
          */
         export type resumeParameters = {
+            /**
+             * Set to true to terminate execution upon resuming execution. In contrast
+to Runtime.terminateExecution, this will allows to execute further
+JavaScript (i.e. via evaluation) until execution of the paused code
+is actually resumed, at which point termination is triggered.
+If execution is currently not paused, this parameter has no effect.
+             */
+            terminateOnResume?: boolean;
         }
         export type resumeReturnValue = {
         }
@@ -13130,6 +13339,10 @@ counters.
              * Collect block-based coverage.
              */
             detailed?: boolean;
+            /**
+             * Allow the backend to send updates on its own initiative
+             */
+            allowTriggeredUpdates?: boolean;
         }
         export type startPreciseCoverageReturnValue = {
             /**
@@ -13249,11 +13462,11 @@ other objects in their object group.
             /**
              * Object type.
              */
-            type: "object"|"function"|"undefined"|"string"|"number"|"boolean"|"symbol"|"bigint";
+            type: "object"|"function"|"undefined"|"string"|"number"|"boolean"|"symbol"|"bigint"|"wasm";
             /**
-             * Object subtype hint. Specified for `object` type values only.
+             * Object subtype hint. Specified for `object` or `wasm` type values only.
              */
-            subtype?: "array"|"null"|"node"|"regexp"|"date"|"map"|"set"|"weakmap"|"weakset"|"iterator"|"generator"|"error"|"proxy"|"promise"|"typedarray"|"arraybuffer"|"dataview";
+            subtype?: "array"|"null"|"node"|"regexp"|"date"|"map"|"set"|"weakmap"|"weakset"|"iterator"|"generator"|"error"|"proxy"|"promise"|"typedarray"|"arraybuffer"|"dataview"|"i32"|"i64"|"f32"|"f64"|"v128";
             /**
              * Object class (constructor) name. Specified for `object` type values only.
              */
@@ -13893,7 +14106,9 @@ This implies `disableBreaks` below.
              */
             disableBreaks?: boolean;
             /**
-             * Reserved flag for future REPL mode support. Setting this flag has currently no effect.
+             * Setting this flag to true enables `let` re-declaration and top-level `await`.
+Note that `let` variables can only be re-declared if they originate from
+`replMode` themselves.
              */
             replMode?: boolean;
         }
@@ -14178,6 +14393,7 @@ unsubscribes current runtime agent from Runtime.bindingCalled notifications.
       "Animation.animationStarted": Animation.animationStartedPayload;
       "ApplicationCache.applicationCacheStatusUpdated": ApplicationCache.applicationCacheStatusUpdatedPayload;
       "ApplicationCache.networkStateUpdated": ApplicationCache.networkStateUpdatedPayload;
+      "Audits.issueAdded": Audits.issueAddedPayload;
       "BackgroundService.recordingStateChanged": BackgroundService.recordingStateChangedPayload;
       "BackgroundService.backgroundServiceEventReceived": BackgroundService.backgroundServiceEventReceivedPayload;
       "CSS.fontsUpdated": CSS.fontsUpdatedPayload;
@@ -14249,6 +14465,7 @@ unsubscribes current runtime agent from Runtime.bindingCalled notifications.
       "Page.frameStartedLoading": Page.frameStartedLoadingPayload;
       "Page.frameStoppedLoading": Page.frameStoppedLoadingPayload;
       "Page.downloadWillBegin": Page.downloadWillBeginPayload;
+      "Page.downloadProgress": Page.downloadProgressPayload;
       "Page.interstitialHidden": Page.interstitialHiddenPayload;
       "Page.interstitialShown": Page.interstitialShownPayload;
       "Page.javascriptDialogClosed": Page.javascriptDialogClosedPayload;
@@ -14343,6 +14560,8 @@ unsubscribes current runtime agent from Runtime.bindingCalled notifications.
       "ApplicationCache.getFramesWithManifests": ApplicationCache.getFramesWithManifestsParameters;
       "ApplicationCache.getManifestForFrame": ApplicationCache.getManifestForFrameParameters;
       "Audits.getEncodedResponse": Audits.getEncodedResponseParameters;
+      "Audits.disable": Audits.disableParameters;
+      "Audits.enable": Audits.enableParameters;
       "BackgroundService.startObserving": BackgroundService.startObservingParameters;
       "BackgroundService.stopObserving": BackgroundService.stopObservingParameters;
       "BackgroundService.setRecording": BackgroundService.setRecordingParameters;
@@ -14350,6 +14569,7 @@ unsubscribes current runtime agent from Runtime.bindingCalled notifications.
       "Browser.setPermission": Browser.setPermissionParameters;
       "Browser.grantPermissions": Browser.grantPermissionsParameters;
       "Browser.resetPermissions": Browser.resetPermissionsParameters;
+      "Browser.setDownloadBehavior": Browser.setDownloadBehaviorParameters;
       "Browser.close": Browser.closeParameters;
       "Browser.crash": Browser.crashParameters;
       "Browser.crashGpuProcess": Browser.crashGpuProcessParameters;
@@ -14396,6 +14616,7 @@ unsubscribes current runtime agent from Runtime.bindingCalled notifications.
       "DOM.collectClassNamesFromSubtree": DOM.collectClassNamesFromSubtreeParameters;
       "DOM.copyTo": DOM.copyToParameters;
       "DOM.describeNode": DOM.describeNodeParameters;
+      "DOM.scrollIntoViewIfNeeded": DOM.scrollIntoViewIfNeededParameters;
       "DOM.disable": DOM.disableParameters;
       "DOM.discardSearchResults": DOM.discardSearchResultsParameters;
       "DOM.enable": DOM.enableParameters;
@@ -14474,12 +14695,14 @@ unsubscribes current runtime agent from Runtime.bindingCalled notifications.
       "Emulation.setDocumentCookieDisabled": Emulation.setDocumentCookieDisabledParameters;
       "Emulation.setEmitTouchEventsForMouse": Emulation.setEmitTouchEventsForMouseParameters;
       "Emulation.setEmulatedMedia": Emulation.setEmulatedMediaParameters;
+      "Emulation.setEmulatedVisionDeficiency": Emulation.setEmulatedVisionDeficiencyParameters;
       "Emulation.setGeolocationOverride": Emulation.setGeolocationOverrideParameters;
       "Emulation.setNavigatorOverrides": Emulation.setNavigatorOverridesParameters;
       "Emulation.setPageScaleFactor": Emulation.setPageScaleFactorParameters;
       "Emulation.setScriptExecutionDisabled": Emulation.setScriptExecutionDisabledParameters;
       "Emulation.setTouchEmulationEnabled": Emulation.setTouchEmulationEnabledParameters;
       "Emulation.setVirtualTimePolicy": Emulation.setVirtualTimePolicyParameters;
+      "Emulation.setLocaleOverride": Emulation.setLocaleOverrideParameters;
       "Emulation.setTimezoneOverride": Emulation.setTimezoneOverrideParameters;
       "Emulation.setVisibleSize": Emulation.setVisibleSizeParameters;
       "Emulation.setUserAgentOverride": Emulation.setUserAgentOverrideParameters;
@@ -14816,6 +15039,8 @@ unsubscribes current runtime agent from Runtime.bindingCalled notifications.
       "ApplicationCache.getFramesWithManifests": ApplicationCache.getFramesWithManifestsReturnValue;
       "ApplicationCache.getManifestForFrame": ApplicationCache.getManifestForFrameReturnValue;
       "Audits.getEncodedResponse": Audits.getEncodedResponseReturnValue;
+      "Audits.disable": Audits.disableReturnValue;
+      "Audits.enable": Audits.enableReturnValue;
       "BackgroundService.startObserving": BackgroundService.startObservingReturnValue;
       "BackgroundService.stopObserving": BackgroundService.stopObservingReturnValue;
       "BackgroundService.setRecording": BackgroundService.setRecordingReturnValue;
@@ -14823,6 +15048,7 @@ unsubscribes current runtime agent from Runtime.bindingCalled notifications.
       "Browser.setPermission": Browser.setPermissionReturnValue;
       "Browser.grantPermissions": Browser.grantPermissionsReturnValue;
       "Browser.resetPermissions": Browser.resetPermissionsReturnValue;
+      "Browser.setDownloadBehavior": Browser.setDownloadBehaviorReturnValue;
       "Browser.close": Browser.closeReturnValue;
       "Browser.crash": Browser.crashReturnValue;
       "Browser.crashGpuProcess": Browser.crashGpuProcessReturnValue;
@@ -14869,6 +15095,7 @@ unsubscribes current runtime agent from Runtime.bindingCalled notifications.
       "DOM.collectClassNamesFromSubtree": DOM.collectClassNamesFromSubtreeReturnValue;
       "DOM.copyTo": DOM.copyToReturnValue;
       "DOM.describeNode": DOM.describeNodeReturnValue;
+      "DOM.scrollIntoViewIfNeeded": DOM.scrollIntoViewIfNeededReturnValue;
       "DOM.disable": DOM.disableReturnValue;
       "DOM.discardSearchResults": DOM.discardSearchResultsReturnValue;
       "DOM.enable": DOM.enableReturnValue;
@@ -14947,12 +15174,14 @@ unsubscribes current runtime agent from Runtime.bindingCalled notifications.
       "Emulation.setDocumentCookieDisabled": Emulation.setDocumentCookieDisabledReturnValue;
       "Emulation.setEmitTouchEventsForMouse": Emulation.setEmitTouchEventsForMouseReturnValue;
       "Emulation.setEmulatedMedia": Emulation.setEmulatedMediaReturnValue;
+      "Emulation.setEmulatedVisionDeficiency": Emulation.setEmulatedVisionDeficiencyReturnValue;
       "Emulation.setGeolocationOverride": Emulation.setGeolocationOverrideReturnValue;
       "Emulation.setNavigatorOverrides": Emulation.setNavigatorOverridesReturnValue;
       "Emulation.setPageScaleFactor": Emulation.setPageScaleFactorReturnValue;
       "Emulation.setScriptExecutionDisabled": Emulation.setScriptExecutionDisabledReturnValue;
       "Emulation.setTouchEmulationEnabled": Emulation.setTouchEmulationEnabledReturnValue;
       "Emulation.setVirtualTimePolicy": Emulation.setVirtualTimePolicyReturnValue;
+      "Emulation.setLocaleOverride": Emulation.setLocaleOverrideReturnValue;
       "Emulation.setTimezoneOverride": Emulation.setTimezoneOverrideReturnValue;
       "Emulation.setVisibleSize": Emulation.setVisibleSizeReturnValue;
       "Emulation.setUserAgentOverride": Emulation.setUserAgentOverrideReturnValue;

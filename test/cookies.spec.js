@@ -411,9 +411,7 @@ describe('Cookie specs', () => {
       expect(await page.evaluate('document.cookie')).toBe(
         'localhost-cookie=best'
       );
-      expect(await page.frames()[1].evaluate('document.cookie')).toBe(
-        '127-cookie=worst'
-      );
+      expect(await page.frames()[1].evaluate('document.cookie')).toBe('');
 
       expect(await page.cookies()).toEqual([
         {
@@ -443,6 +441,63 @@ describe('Cookie specs', () => {
         },
       ]);
     });
+    itFailsFirefox(
+      'should set secure same-site cookies from a frame',
+      async () => {
+        const {
+          httpsServer,
+          puppeteer,
+          defaultBrowserOptions,
+        } = getTestState();
+
+        const browser = await puppeteer.launch({
+          ...defaultBrowserOptions,
+          ignoreHTTPSErrors: true,
+        });
+
+        const page = await browser.newPage();
+
+        try {
+          await page.goto(httpsServer.PREFIX + '/grid.html');
+          await page.evaluate((src) => {
+            let fulfill;
+            const promise = new Promise((x) => (fulfill = x));
+            const iframe = document.createElement('iframe');
+            document.body.appendChild(iframe);
+            iframe.onload = fulfill;
+            iframe.src = src;
+            return promise;
+          }, httpsServer.CROSS_PROCESS_PREFIX);
+          await page.setCookie({
+            name: '127-same-site-cookie',
+            value: 'best',
+            url: httpsServer.CROSS_PROCESS_PREFIX,
+            sameSite: 'None',
+          });
+
+          expect(await page.frames()[1].evaluate('document.cookie')).toBe(
+            '127-same-site-cookie=best'
+          );
+          expect(await page.cookies(httpsServer.CROSS_PROCESS_PREFIX)).toEqual([
+            {
+              name: '127-same-site-cookie',
+              value: 'best',
+              domain: '127.0.0.1',
+              path: '/',
+              expires: -1,
+              size: 24,
+              httpOnly: false,
+              sameSite: 'None',
+              secure: true,
+              session: true,
+            },
+          ]);
+        } finally {
+          await page.close();
+          await browser.close();
+        }
+      }
+    );
   });
 
   describe('Page.deleteCookie', function () {
