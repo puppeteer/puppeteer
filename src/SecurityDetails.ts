@@ -20,6 +20,7 @@ export class SecurityDetails {
   private _validFrom: number;
   private _validTo: number;
   private _protocol: string;
+  private _sanList: string[];
 
   constructor(securityPayload: Protocol.Network.SecurityDetails) {
     this._subjectName = securityPayload.subjectName;
@@ -27,6 +28,7 @@ export class SecurityDetails {
     this._validFrom = securityPayload.validFrom;
     this._validTo = securityPayload.validTo;
     this._protocol = securityPayload.protocol;
+    this._sanList = securityPayload.sanList;
   }
 
   subjectName(): string {
@@ -47,5 +49,9 @@ export class SecurityDetails {
 
   protocol(): string {
     return this._protocol;
+  }
+
+  subjectAlternativeNames(): string[] {
+    return this._sanList;
   }
 }
