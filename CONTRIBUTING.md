@@ -233,7 +233,7 @@ Releasing to npm consists of the following phases:
 1. Source Code: mark a release.
     1. Bump `package.json` version following the SEMVER rules.
     2. Run `npm run doc` to update the docs accordingly.
-    3. Update the “Releases per Chromium Version” list in [`docs/api.md`](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md) to include the new version.
+    3. Update the “Releases per Chromium Version” list in [`docs/api.md`](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md) to include the new version. Note: only do this when the Chrome revision is different from the previous release.
     4. Send a PR titled `'chore: mark version vXXX.YYY.ZZZ'` ([example](https://github.com/puppeteer/puppeteer/pull/5078)).
     5. Make sure the PR passes **all checks**.
         - **WHY**: there are linters in place that help to avoid unnecessary errors, e.g. [like this](https://github.com/puppeteer/puppeteer/pull/2446)
