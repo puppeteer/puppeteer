@@ -412,7 +412,7 @@ describe('Cookie specs', () => {
         'localhost-cookie=best'
       );
       expect(await page.frames()[1].evaluate('document.cookie')).toBe(
-        '127-cookie=worst'
+        ''
       );
 
       expect(await page.cookies()).toEqual([
