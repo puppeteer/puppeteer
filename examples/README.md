@@ -32,6 +32,7 @@ More complex and use case driven examples can be found at [github.com/GoogleChro
 - [jest-puppeteer](https://github.com/smooth-code/jest-puppeteer) - (almost) Zero configuration tool for setting up and running Jest and Puppeteer easily. Also includes an assertion library for Puppeteer.
 - [puppeteer-har](https://github.com/Everettss/puppeteer-har) - Generate HAR file with puppeteer.
 - [puppetry](https://puppetry.app/) - A desktop app to build Puppeteer/Jest driven tests without coding.
+- [cucumber-puppeteer-example](https://github.com/mlampedx/cucumber-puppeteer-example) - Example repository demonstrating how to use Puppeeteer and Cucumber for integration testing.
 
 ## Services
 - [Checkly](https://checklyhq.com) - Monitoring SaaS that uses Puppeteer to check availability and correctness of web pages and apps.
