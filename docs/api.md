@@ -2098,6 +2098,22 @@ const selector = '.foo';
 await page.waitForFunction(selector => !!document.querySelector(selector), {}, selector);
 ```
 
+The predicate of `page.waitForFunction` can be asynchronous too:
+
+```js
+const username = 'github-username';
+await page.waitForFunction(async username => {
+  const githubResponse = await fetch(`https://api.github.com/users/${username}`);
+  const githubUser = await githubResponse.json();
+  // show the avatar
+  const img = document.createElement('img');
+  img.src = githubUser.avatar_url;
+  // wait 3 seconds
+  await new Promise((resolve, reject) => setTimeout(resolve, 3000));
+  img.remove();
+}, {}, username);
+```
+
 Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args).
 
 #### page.waitForNavigation([options])
