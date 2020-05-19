@@ -2105,10 +2105,10 @@ The predicate of `page.waitForFunction` can be asynchronous too:
 ```js
 const username = 'github-username';
 await page.waitForFunction(async username => {
-  let githubResponse = await fetch(`https://api.github.com/users/${username}`);
-  let githubUser = await githubResponse.json();
+  const githubResponse = await fetch(`https://api.github.com/users/${username}`);
+  const githubUser = await githubResponse.json();
   // show the avatar
-  let img = document.createElement('img');
+  const img = document.createElement('img');
   img.src = githubUser.avatar_url;
   // wait 3 seconds
   await new Promise((resolve, reject) => setTimeout(resolve, 3000));
