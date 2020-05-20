@@ -147,7 +147,7 @@ describe('navigation', function () {
       else expect(error.message).toContain('Invalid url');
     });
 
-    /* If you are running this on Mac OSX that's pre Catalina this will fail locally.
+    /* If you are running this on pre-Catalina versions of macOS this will fail locally.
      * See https://support.google.com/chrome/thread/18125056?hl=en for details.
      */
     itFailsFirefox('should fail when navigating to bad SSL', async () => {
