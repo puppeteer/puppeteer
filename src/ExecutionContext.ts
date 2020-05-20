@@ -19,6 +19,7 @@ import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
 import { CDPSession } from './Connection';
 import { DOMWorld } from './DOMWorld';
 import { Frame } from './FrameManager';
+import Protocol from './protocol';
 
 export const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;

@@ -17,6 +17,7 @@ import { CDPSession } from './Connection';
 import { Frame } from './FrameManager';
 import { Response } from './Response';
 import { helper, assert, debugError } from './helper';
+import Protocol from './protocol';
 
 export class Request {
   _requestId: string;

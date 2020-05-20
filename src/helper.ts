@@ -18,6 +18,7 @@ import * as debug from 'debug';
 import * as fs from 'fs';
 import { CDPSession } from './Connection';
 import { promisify } from 'util';
+import Protocol from './protocol';
 
 const openAsync = promisify(fs.open);
 const writeAsync = promisify(fs.write);

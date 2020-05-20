@@ -17,6 +17,7 @@ import { CDPSession } from './Connection';
 import { Frame } from './FrameManager';
 import { Request } from './Request';
 import { SecurityDetails } from './SecurityDetails';
+import Protocol from './protocol';
 
 interface RemoteAddress {
   ip: string;

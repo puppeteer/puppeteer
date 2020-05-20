@@ -15,6 +15,7 @@
  */
 import { CDPSession } from './Connection';
 import type { Viewport } from './PuppeteerViewport';
+import Protocol from './protocol';
 
 export class EmulationManager {
   _client: CDPSession;

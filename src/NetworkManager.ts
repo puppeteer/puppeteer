@@ -15,6 +15,7 @@
  */
 import * as EventEmitter from 'events';
 import { helper, assert, debugError } from './helper';
+import Protocol from './protocol';
 import { Events } from './Events';
 import { CDPSession } from './Connection';
 import { FrameManager } from './FrameManager';

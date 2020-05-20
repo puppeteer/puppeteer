@@ -21,6 +21,7 @@ import { CDPSession } from './Connection';
 import { KeyInput } from './USKeyboardLayout';
 import { FrameManager, Frame } from './FrameManager';
 import { getQueryHandlerAndSelector } from './QueryHandler';
+import Protocol from './protocol';
 
 interface BoxModel {
   content: Array<{ x: number; y: number }>;

@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-// Used as a TypeDef
-// eslint-disable-next-line no-unused-vars
 import { CDPSession } from './Connection';
-// Used as a TypeDef
-// eslint-disable-next-line no-unused-vars
 import { ElementHandle } from './JSHandle';
+import Protocol from './protocol';
 
 interface SerializedAXNode {
   role: string;
