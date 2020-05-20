@@ -26,6 +26,19 @@
 
 const compileTypeScriptIfRequired = require('./typescript-if-required');
 
+const checkNodeVersionSupported = () => {
+  const minRequiredVersion = require('./package.json').engines.node;
+  const semver = require('semver');
+
+  if (!semver.satisfies(process.version, minRequiredVersion)) {
+    console.error(`Error: Node version ${process.version} is not supported.`);
+    console.error(
+      `You must be running at least ${minRequiredVersion} to use Puppeteer.`
+    );
+    process.exit(1);
+  }
+};
+
 const firefoxVersions =
   'https://product-details.mozilla.org/1.0/firefox_versions.json';
 const supportedProducts = {
@@ -172,7 +185,7 @@ async function download() {
             try {
               const versions = JSON.parse(data);
               return resolve(versions.FIREFOX_NIGHTLY);
-            } catch {
+            } catch (_error) {
               return reject(new Error('Firefox version not found'));
             }
           });
@@ -239,4 +252,5 @@ if (
   return;
 }
 
+checkNodeVersionSupported();
 download();
