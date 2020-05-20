@@ -167,9 +167,10 @@ describe('navigation', function () {
       expect(requestEvent.firstCall.args[0]).toBeTruthy();
       expect(requestFailedEvent.firstCall.args[0]).toBeTruthy();
 
-      if (isChrome)
+      if (isChrome) {
+        console.log('got to here', error.message);
         expect(error.message).toContain('net::ERR_CERT_AUTHORITY_INVALID');
-      else expect(error.message).toContain('SSL_ERROR_UNKNOWN');
+      } else expect(error.message).toContain('SSL_ERROR_UNKNOWN');
     });
     itFailsFirefox(
       'should fail when navigating to bad SSL after redirects',
