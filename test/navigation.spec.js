@@ -146,6 +146,10 @@ describe('navigation', function () {
         expect(error.message).toContain('Cannot navigate to invalid URL');
       else expect(error.message).toContain('Invalid url');
     });
+
+    /* If you are running this on Mac OSX that's pre Catalina this will fail locally.
+     * See https://support.google.com/chrome/thread/18125056?hl=en for details.
+     */
     itFailsFirefox('should fail when navigating to bad SSL', async () => {
       const { page, httpsServer, isChrome } = getTestState();
 
@@ -158,8 +162,7 @@ describe('navigation', function () {
       await page
         .goto(httpsServer.EMPTY_PAGE)
         .catch((error_) => (error = error_));
-      if (isChrome)
-        expect(error.message).toContain('net::ERR_CERT_AUTHORITY_INVALID');
+      if (isChrome) expect(error.message).toContain('net::ERR_CERT_INVALID');
       else expect(error.message).toContain('SSL_ERROR_UNKNOWN');
     });
     itFailsFirefox(
@@ -173,8 +176,7 @@ describe('navigation', function () {
         await page
           .goto(httpsServer.PREFIX + '/redirect/1.html')
           .catch((error_) => (error = error_));
-        if (isChrome)
-          expect(error.message).toContain('net::ERR_CERT_AUTHORITY_INVALID');
+        if (isChrome) expect(error.message).toContain('net::ERR_CERT_INVALID');
         else expect(error.message).toContain('SSL_ERROR_UNKNOWN');
       }
     );

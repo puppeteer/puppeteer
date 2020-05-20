@@ -6,6 +6,7 @@ jobs:
     - os: "osx"
       name: 'Unit tests: macOS/Chromium'
       node_js: "10.19.0"
+      osx_image: xcode11.4
       env:
         - CHROMIUM=true
       before_install:
