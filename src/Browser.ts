@@ -16,7 +16,7 @@
 
 import { helper, assert } from './helper';
 import { Target } from './Target';
-import * as EventEmitter from 'events';
+import { EventEmitter } from './EventEmitter';
 import { Events } from './Events';
 import Protocol from './protocol';
 import { Connection } from './Connection';
