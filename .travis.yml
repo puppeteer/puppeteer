@@ -12,6 +12,8 @@ jobs:
         - PUPPETEER_PRODUCT=firefox npm install
       script:
         - ls .local-chromium .local-firefox
+        - md5 utils/testserver/key.pem
+        - md5 utils/testserver/cert.pem
         - npm run tsc
         - travis_retry npm run unit
 
