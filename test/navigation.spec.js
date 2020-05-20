@@ -22,6 +22,8 @@ const {
   setupTestPageAndContextHooks,
 } = require('./mocha-utils');
 
+const sinon = require('sinon');
+
 describe('navigation', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
@@ -146,18 +148,25 @@ describe('navigation', function () {
         expect(error.message).toContain('Cannot navigate to invalid URL');
       else expect(error.message).toContain('Invalid url');
     });
-    itFailsFirefox('should fail when navigating to bad SSL', async () => {
+    it.only('should fail when navigating to bad SSL', async () => {
       const { page, httpsServer, isChrome } = getTestState();
 
+      const requestEvent = sinon.stub();
+      const requestFailedEvent = sinon.stub();
+      page.on('request', requestEvent);
+      page.on('requestfailed', requestFailedEvent);
+
+      const error = await page
+        .goto(httpsServer.EMPTY_PAGE)
+        .catch((error) => error);
+
+      expect(requestEvent.callCount).toEqual(1);
+      expect(requestFailedEvent.callCount).toEqual(1);
       // Make sure that network events do not emit 'undefined'.
       // @see https://crbug.com/750469
-      page.on('request', (request) => expect(request).toBeTruthy());
-      page.on('requestfinished', (request) => expect(request).toBeTruthy());
-      page.on('requestfailed', (request) => expect(request).toBeTruthy());
-      let error = null;
-      await page
-        .goto(httpsServer.EMPTY_PAGE)
-        .catch((error_) => (error = error_));
+      expect(requestEvent.firstCall.args[0]).toBeTruthy();
+      expect(requestFailedEvent.firstCall.args[0]).toBeTruthy();
+
       if (isChrome)
         expect(error.message).toContain('net::ERR_CERT_AUTHORITY_INVALID');
       else expect(error.message).toContain('SSL_ERROR_UNKNOWN');
