@@ -37,6 +37,12 @@ const fs = require('fs');
  */
 function traceAPICoverage(apiCoverage, events, className, classType) {
   className = className.substring(0, 1).toLowerCase() + className.substring(1);
+  if (!classType || !classType.prototype) {
+    console.error(
+      `Coverage error: could not find class for ${className}. Is src/api.ts up to date?`
+    );
+    process.exit(1);
+  }
   for (const methodName of Reflect.ownKeys(classType.prototype)) {
     const method = Reflect.get(classType.prototype, methodName);
     if (
