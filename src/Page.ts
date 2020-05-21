@@ -39,6 +39,7 @@ import { TimeoutSettings } from './TimeoutSettings';
 import { FileChooser } from './FileChooser';
 import { ConsoleMessage } from './ConsoleMessage';
 import { PuppeteerLifeCycleEvent } from './LifecycleWatcher';
+import Protocol from './protocol';
 
 const writeFileAsync = helper.promisify(fs.writeFile);
 

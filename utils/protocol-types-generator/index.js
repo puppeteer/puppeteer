@@ -1,6 +1,7 @@
 // @ts-check
 const path = require('path');
 const puppeteer = require('../..');
+const { execSync } = require('child_process');
 
 const fetchAndGenerateProtocolDefinitions = () =>
   puppeteer
@@ -21,51 +22,51 @@ const fetchAndGenerateProtocolDefinitions = () =>
       await browser.close();
       const output = `// This is generated from /utils/protocol-types-generator/index.js
   type binary = string;
-declare global {
-  module Protocol {${json.domains
-    .map(
-      (domain) => `${
-        domain.description
-          ? `
+
+declare module Protocol {${json.domains
+        .map(
+          (domain) => `${
+            domain.description
+              ? `
     /**
      * ${domain.description}
      */`
-          : ''
-      }
+              : ''
+          }
     export module ${domain.domain} {${(domain.types || [])
-        .map(
-          (type) =>
-            `${
-              type.description
-                ? `
+            .map(
+              (type) =>
+                `${
+                  type.description
+                    ? `
         /**
          * ${type.description}
          */`
-                : ''
-            }${
-              type.properties
-                ? `
+                    : ''
+                }${
+                  type.properties
+                    ? `
         export interface ${type.id} {${(type.properties || [])
-                    .map(
-                      (property) => `${
-                        property.description
-                          ? `
+                        .map(
+                          (property) => `${
+                            property.description
+                              ? `
             /**
              * ${property.description}
              */`
-                          : ''
-                      }
+                              : ''
+                          }
             ${property.name}${property.optional ? '?' : ''}: ${typeOfProperty(
-                        property
-                      )};`
-                    )
-                    .join(``)}
+                            property
+                          )};`
+                        )
+                        .join(``)}
         }`
-                : `
+                    : `
         export type ${type.id} = ${typeOfProperty(type)};`
-            }`
-        )
-        .join('')}
+                }`
+            )
+            .join('')}
         ${(domain.events || [])
           .map(
             (event) =>
@@ -146,8 +147,8 @@ declare global {
           .join('')}
     }
     `
-    )
-    .join('')}
+        )
+        .join('')}
     export interface Events {${json.domains
       .map((domain) =>
         (domain.events || [])
@@ -182,7 +183,6 @@ declare global {
       .join('')}
     }
   }
-}
 
 export default Protocol;
 `;
@@ -204,8 +204,13 @@ const writeOutputToDisk = ({ output, version }) => {
   console.log(`You should commit the changes.`);
 };
 
+const lastCommitMessage = () => {
+  return execSync('git log --no-merges -n 1', { encoding: 'utf8' });
+};
+
 const cli = async () => {
   const scriptToRun = process.argv[2];
+  const changeExpected = lastCommitMessage().includes('EXPECTED_PROTOCOL_DIFF');
 
   if (scriptToRun === 'update') {
     writeOutputToDisk(await fetchAndGenerateProtocolDefinitions());
@@ -216,6 +221,12 @@ const cli = async () => {
     });
     if (output === outputOnDisk) {
       console.log(`Success: ${relativeProtocolOutputPath} is up to date.`);
+    } else if (changeExpected) {
+      console.log(`Warning: ${relativeProtocolOutputPath} is out of date`);
+
+      console.log(
+        '  continuing because EXPECTED_PROTOCOL_DIFF was found in the last commit message.'
+      );
     } else {
       console.log(`Error: ${relativeProtocolOutputPath} is out of date.`);
       console.log(
