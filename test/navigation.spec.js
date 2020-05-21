@@ -21,6 +21,7 @@ const {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
 } = require('./mocha-utils');
+const os = require('os');
 
 describe('navigation', function () {
   setupTestBrowserHooks();
@@ -146,6 +147,17 @@ describe('navigation', function () {
         expect(error.message).toContain('Cannot navigate to invalid URL');
       else expect(error.message).toContain('Invalid url');
     });
+
+    /* If you are running this on pre-Catalina versions of macOS this will fail locally.
+    /* Mac OSX Catalina outputs a different message than other platforms.
+     * See https://support.google.com/chrome/thread/18125056?hl=en for details.
+     * If you're running pre-Catalina Mac OSX this test will fail locally.
+     */
+    const EXPECTED_SSL_CERT_MESSAGE =
+      os.platform() === 'darwin'
+        ? 'net::ERR_CERT_INVALID'
+        : 'net::ERR_CERT_AUTHORITY_INVALID';
+
     itFailsFirefox('should fail when navigating to bad SSL', async () => {
       const { page, httpsServer, isChrome } = getTestState();
 
@@ -158,8 +170,7 @@ describe('navigation', function () {
       await page
         .goto(httpsServer.EMPTY_PAGE)
         .catch((error_) => (error = error_));
-      if (isChrome)
-        expect(error.message).toContain('net::ERR_CERT_AUTHORITY_INVALID');
+      if (isChrome) expect(error.message).toContain(EXPECTED_SSL_CERT_MESSAGE);
       else expect(error.message).toContain('SSL_ERROR_UNKNOWN');
     });
     itFailsFirefox(
@@ -174,7 +185,7 @@ describe('navigation', function () {
           .goto(httpsServer.PREFIX + '/redirect/1.html')
           .catch((error_) => (error = error_));
         if (isChrome)
-          expect(error.message).toContain('net::ERR_CERT_AUTHORITY_INVALID');
+          expect(error.message).toContain(EXPECTED_SSL_CERT_MESSAGE);
         else expect(error.message).toContain('SSL_ERROR_UNKNOWN');
       }
     );
