@@ -156,7 +156,7 @@ describe('navigation', function () {
     const EXPECTED_SSL_CERT_MESSAGE =
       os.platform() === 'darwin'
         ? 'net::ERR_CERT_INVALID'
-        : 'net::ER_CERT_AUTHORITY_INVALID';
+        : 'net::ERR_CERT_AUTHORITY_INVALID';
 
     itFailsFirefox('should fail when navigating to bad SSL', async () => {
       const { page, httpsServer, isChrome } = getTestState();
