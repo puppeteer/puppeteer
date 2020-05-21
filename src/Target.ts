@@ -81,7 +81,8 @@ export class Target {
   async page(): Promise<Page | null> {
     if (
       (this._targetInfo.type === 'page' ||
-        this._targetInfo.type === 'background_page') &&
+        this._targetInfo.type === 'background_page' ||
+        this._targetInfo.type === 'webview') &&
       !this._pagePromise
     ) {
       this._pagePromise = this._sessionFactory().then((client) =>
@@ -127,14 +128,16 @@ export class Target {
     | 'service_worker'
     | 'shared_worker'
     | 'other'
-    | 'browser' {
+    | 'browser'
+    | 'webview' {
     const type = this._targetInfo.type;
     if (
       type === 'page' ||
       type === 'background_page' ||
       type === 'service_worker' ||
       type === 'shared_worker' ||
-      type === 'browser'
+      type === 'browser' ||
+      type === 'webview'
     )
       return type;
     return 'other';
