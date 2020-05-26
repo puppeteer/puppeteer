@@ -604,6 +604,13 @@ function compareDocumentations(actual, expected) {
           expectedName: '...CookieParam',
         },
       ],
+      [
+        'Method Page.emulateVisionDeficiency() type',
+        {
+          actualName: 'string',
+          expectedName: 'VisionDeficiency',
+        },
+      ],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);
