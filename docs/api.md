@@ -119,6 +119,7 @@
   * [page.emulateMediaFeatures(features)](#pageemulatemediafeaturesfeatures)
   * [page.emulateMediaType(type)](#pageemulatemediatypetype)
   * [page.emulateTimezone(timezoneId)](#pageemulatetimezonetimezoneid)
+  * [page.emulateVisionDeficiency(type)](#pageemulatevisiondeficiencytype)
   * [page.evaluate(pageFunction[, ...args])](#pageevaluatepagefunction-args)
   * [page.evaluateHandle(pageFunction[, ...args])](#pageevaluatehandlepagefunction-args)
   * [page.evaluateOnNewDocument(pageFunction[, ...args])](#pageevaluateonnewdocumentpagefunction-args)
@@ -1392,6 +1393,31 @@ await page.evaluate(() => matchMedia('print').matches);
 #### page.emulateTimezone(timezoneId)
 - `timezoneId` <?[string]> Changes the timezone of the page. See [ICU’s `metaZones.txt`](https://cs.chromium.org/chromium/src/third_party/icu/source/data/misc/metaZones.txt?rcl=faee8bc70570192d82d2978a71e2a615788597d1) for a list of supported timezone IDs. Passing `null` disables timezone emulation.
 - returns: <[Promise]>
+
+#### page.emulateVisionDeficiency(type)
+- `type` <?[string]> Simulates the given vision deficiency on the page. Supported vision deficiency types are `'achromatopsia'`, `'blurredVision'`, `'deuteranopia'`, `'protanopia'`, `'tritanopia'`, and `'none'`.
+- returns: <[Promise]>
+
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto('https://v8.dev/blog/10-years');
+
+  await page.emulateVisionDeficiency('achromatopsia');
+  await page.screenshot({ path: 'achromatopsia.png' });
+
+  await page.emulateVisionDeficiency('deuteranopia');
+  await page.screenshot({ path: 'deuteranopia.png' });
+
+  await page.emulateVisionDeficiency('blurredVision');
+  await page.screenshot({ path: 'blurred-vision.png' });
+
+  await browser.close();
+})();
+```
 
 #### page.evaluate(pageFunction[, ...args])
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context

@@ -920,6 +920,36 @@ export class Page extends EventEmitter {
     }
   }
 
+  async emulateVisionDeficiency(
+    type?:
+      | 'none'
+      | 'achromatopsia'
+      | 'blurredVision'
+      | 'deuteranopia'
+      | 'protanopia'
+      | 'tritanopia'
+  ): Promise<void> {
+    const visionDeficiencies = new Set([
+      'none',
+      'achromatopsia',
+      'blurredVision',
+      'deuteranopia',
+      'protanopia',
+      'tritanopia',
+    ]);
+    try {
+      assert(
+        !type || visionDeficiencies.has(type),
+        `Unsupported vision deficiency: ${type}`
+      );
+      await this._client.send('Emulation.setEmulatedVisionDeficiency', {
+        type: type || 'none',
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async setViewport(viewport: Viewport): Promise<void> {
     const needsReload = await this._emulationManager.emulateViewport(viewport);
     this._viewport = viewport;
