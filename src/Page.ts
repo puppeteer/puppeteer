@@ -128,6 +128,15 @@ const paperFormats: Record<string, PaperFormat> = {
   a6: { width: 4.13, height: 5.83 },
 } as const;
 
+enum VisionDeficiency {
+  none = 'none',
+  achromatopsia = 'achromatopsia',
+  blurredVision = 'blurredVision',
+  deuteranopia = 'deuteranopia',
+  protanopia = 'protanopia',
+  tritanopia = 'tritanopia',
+}
+
 class ScreenshotTaskQueue {
   _chain: Promise<Buffer | string | void>;
 
@@ -916,6 +925,21 @@ export class Page extends EventEmitter {
     } catch (error) {
       if (error.message.includes('Invalid timezone'))
         throw new Error(`Invalid timezone ID: ${timezoneId}`);
+      throw error;
+    }
+  }
+
+  async emulateVisionDeficiency(type?: VisionDeficiency): Promise<void> {
+    const visionDeficiencies = new Set(Object.keys(VisionDeficiency));
+    try {
+      assert(
+        !type || visionDeficiencies.has(type),
+        `Unsupported vision deficiency: ${type}`
+      );
+      await this._client.send('Emulation.setEmulatedVisionDeficiency', {
+        type: type || 'none',
+      });
+    } catch (error) {
       throw error;
     }
   }
