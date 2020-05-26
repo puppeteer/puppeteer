@@ -21,6 +21,8 @@ const os = require('os');
 const sinon = require('sinon');
 const puppeteer = require('../');
 const utils = require('./utils');
+const rimraf = require('rimraf');
+
 const { trackCoverage } = require('./coverage-utils');
 
 const setupServer = async () => {
@@ -82,7 +84,7 @@ const setupGoldenAssertions = () => {
   const suffix = product.toLowerCase();
   const GOLDEN_DIR = path.join(__dirname, 'golden-' + suffix);
   const OUTPUT_DIR = path.join(__dirname, 'output-' + suffix);
-  if (fs.existsSync(OUTPUT_DIR)) rm(OUTPUT_DIR);
+  if (fs.existsSync(OUTPUT_DIR)) rimraf.sync(OUTPUT_DIR);
   utils.extendExpectWithToBeGolden(GOLDEN_DIR, OUTPUT_DIR);
 };
 
