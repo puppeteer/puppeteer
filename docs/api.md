@@ -1395,7 +1395,7 @@ await page.evaluate(() => matchMedia('print').matches);
 - returns: <[Promise]>
 
 #### page.emulateVisionDeficiency(type)
-- `type` <?[string]> Simulates the given vision deficiency on the page. Supported vision deficiency types are `'achromatopsia'`, `'blurredVision'`, `'deuteranopia'`, `'protanopia'`, `'tritanopia'`, and `'none'`.
+- `type` <?[string]> Simulates the given vision deficiency on the page. Supported vision deficiency types are `'achromatopsia'`, `'deuteranopia'`, `'protanopia'`, `'tritanopia'`, `'blurredVision'`, and `'none'`.
 - returns: <[Promise]>
 
 ```js

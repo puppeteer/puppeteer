@@ -128,6 +128,15 @@ const paperFormats: Record<string, PaperFormat> = {
   a6: { width: 4.13, height: 5.83 },
 } as const;
 
+enum VisionDeficiency {
+  none = 'none',
+  achromatopsia = 'achromatopsia',
+  blurredVision = 'blurredVision',
+  deuteranopia = 'deuteranopia',
+  protanopia = 'protanopia',
+  tritanopia = 'tritanopia',
+}
+
 class ScreenshotTaskQueue {
   _chain: Promise<Buffer | string | void>;
 
@@ -920,23 +929,8 @@ export class Page extends EventEmitter {
     }
   }
 
-  async emulateVisionDeficiency(
-    type?:
-      | 'none'
-      | 'achromatopsia'
-      | 'blurredVision'
-      | 'deuteranopia'
-      | 'protanopia'
-      | 'tritanopia'
-  ): Promise<void> {
-    const visionDeficiencies = new Set([
-      'none',
-      'achromatopsia',
-      'blurredVision',
-      'deuteranopia',
-      'protanopia',
-      'tritanopia',
-    ]);
+  async emulateVisionDeficiency(type?: VisionDeficiency): Promise<void> {
+    const visionDeficiencies = new Set(Object.keys(VisionDeficiency));
     try {
       assert(
         !type || visionDeficiencies.has(type),
