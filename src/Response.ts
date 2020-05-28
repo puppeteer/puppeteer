@@ -15,7 +15,7 @@
  */
 import { CDPSession } from './Connection';
 import { Frame } from './FrameManager';
-import { Request } from './Request';
+import { HTTPRequest } from './HTTPRequest';
 import { SecurityDetails } from './SecurityDetails';
 import Protocol from './protocol';
 
@@ -26,7 +26,7 @@ interface RemoteAddress {
 
 export class Response {
   private _client: CDPSession;
-  private _request: Request;
+  private _request: HTTPRequest;
   private _contentPromise: Promise<Buffer> | null = null;
   private _bodyLoadedPromise: Promise<Error | void>;
   private _bodyLoadedPromiseFulfill: (err: Error | void) => void;
@@ -41,7 +41,7 @@ export class Response {
 
   constructor(
     client: CDPSession,
-    request: Request,
+    request: HTTPRequest,
     responsePayload: Protocol.Network.Response
   ) {
     this._client = client;
@@ -125,7 +125,7 @@ export class Response {
     return JSON.parse(content);
   }
 
-  request(): Request {
+  request(): HTTPRequest {
     return this._request;
   }
 

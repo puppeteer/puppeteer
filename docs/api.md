@@ -281,20 +281,20 @@
   * [elementHandle.toString()](#elementhandletostring)
   * [elementHandle.type(text[, options])](#elementhandletypetext-options)
   * [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
-- [class: Request](#class-request)
-  * [request.abort([errorCode])](#requestaborterrorcode)
-  * [request.continue([overrides])](#requestcontinueoverrides)
-  * [request.failure()](#requestfailure)
-  * [request.frame()](#requestframe)
-  * [request.headers()](#requestheaders)
-  * [request.isNavigationRequest()](#requestisnavigationrequest)
-  * [request.method()](#requestmethod)
-  * [request.postData()](#requestpostdata)
-  * [request.redirectChain()](#requestredirectchain)
-  * [request.resourceType()](#requestresourcetype)
-  * [request.respond(response)](#requestrespondresponse)
-  * [request.response()](#requestresponse)
-  * [request.url()](#requesturl)
+- [class: HTTPRequest](#class-httprequest)
+  * [httpRequest.abort([errorCode])](#httprequestaborterrorcode)
+  * [httpRequest.continue([overrides])](#httprequestcontinueoverrides)
+  * [httpRequest.failure()](#httprequestfailure)
+  * [httpRequest.frame()](#httprequestframe)
+  * [httpRequest.headers()](#httprequestheaders)
+  * [httpRequest.isNavigationRequest()](#httprequestisnavigationrequest)
+  * [httpRequest.method()](#httprequestmethod)
+  * [httpRequest.postData()](#httprequestpostdata)
+  * [httpRequest.redirectChain()](#httprequestredirectchain)
+  * [httpRequest.resourceType()](#httprequestresourcetype)
+  * [httpRequest.respond(response)](#httprequestrespondresponse)
+  * [httpRequest.response()](#httprequestresponse)
+  * [httpRequest.url()](#httprequesturl)
 - [class: Response](#class-response)
   * [response.buffer()](#responsebuffer)
   * [response.frame()](#responseframe)
@@ -3543,7 +3543,7 @@ await elementHandle.press('Enter');
 
 This method expects `elementHandle` to point to an [input element](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input).
 
-### class: Request
+### class: HTTPRequest
 
 Whenever the page sends a request, such as for a network resource, the following events are emitted by puppeteer's page:
 - [`'request'`](#event-request) emitted when the request is issued by the page.
@@ -3556,7 +3556,7 @@ If request fails at some point, then instead of `'requestfinished'` event (and p
 
 If request gets a 'redirect' response, the request is successfully finished with the 'requestfinished' event, and a new request is  issued to a redirected url.
 
-#### request.abort([errorCode])
+#### httpRequest.abort([errorCode])
 - `errorCode` <[string]> Optional error code. Defaults to `failed`, could be
   one of the following:
   - `aborted` - An operation was aborted (due to user action)
@@ -3579,7 +3579,7 @@ If request gets a 'redirect' response, the request is successfully finished with
 Aborts request. To use this, request interception should be enabled with `page.setRequestInterception`.
 Exception is immediately thrown if the request interception is not enabled.
 
-#### request.continue([overrides])
+#### httpRequest.continue([overrides])
 - `overrides` <[Object]> Optional request overwrites, which can be one of the following:
   - `url` <[string]> If set, the request url will be changed. This is not a redirect. The request will be silently forwarded to the new url. For example, the address bar will show the original url.
   - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`)
@@ -3602,7 +3602,7 @@ page.on('request', request => {
 });
 ```
 
-#### request.failure()
+#### httpRequest.failure()
 - returns: <?[Object]> Object describing request failure, if any
   - `errorText` <[string]> Human-readable error message, e.g. `'net::ERR_FAILED'`.
 
@@ -3617,24 +3617,24 @@ page.on('requestfailed', request => {
 });
 ```
 
-#### request.frame()
+#### httpRequest.frame()
 - returns: <?[Frame]> A [Frame] that initiated this request, or `null` if navigating to error pages.
 
-#### request.headers()
+#### httpRequest.headers()
 - returns: <[Object]> An object with HTTP headers associated with the request. All header names are lower-case.
 
-#### request.isNavigationRequest()
+#### httpRequest.isNavigationRequest()
 - returns: <[boolean]>
 
 Whether this request is driving frame's navigation.
 
-#### request.method()
+#### httpRequest.method()
 - returns: <[string]> Request's method (GET, POST, etc.)
 
-#### request.postData()
+#### httpRequest.postData()
 - returns: <[string]> Request's post body, if any.
 
-#### request.redirectChain()
+#### httpRequest.redirectChain()
 - returns: <[Array]<[Request]>>
 
 A `redirectChain` is a chain of requests initiated to fetch a resource.
@@ -3661,13 +3661,13 @@ const chain = response.request().redirectChain();
 console.log(chain.length); // 0
 ```
 
-#### request.resourceType()
+#### httpRequest.resourceType()
 - returns: <[string]>
 
 Contains the request's resource type as it was perceived by the rendering engine.
 ResourceType will be one of the following: `document`, `stylesheet`, `image`, `media`, `font`, `script`, `texttrack`, `xhr`, `fetch`, `eventsource`, `websocket`, `manifest`, `other`.
 
-#### request.respond(response)
+#### httpRequest.respond(response)
 - `response` <[Object]> Response that will fulfill this request
   - `status` <[number]> Response status code, defaults to `200`.
   - `headers` <[Object]> Optional response headers. Header values will be converted to a string.
@@ -3695,10 +3695,10 @@ page.on('request', request => {
 > **NOTE** Mocking responses for dataURL requests is not supported.
 > Calling `request.respond` for a dataURL request is a noop.
 
-#### request.response()
+#### httpRequest.response()
 - returns: <?[Response]> A matching [Response] object, or `null` if the response has not been received yet.
 
-#### request.url()
+#### httpRequest.url()
 - returns: <[string]> URL of the request.
 
 ### class: Response

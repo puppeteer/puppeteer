@@ -18,7 +18,7 @@ import { helper, assert, PuppeteerEventListener } from './helper';
 import { Events } from './Events';
 import { TimeoutError } from './Errors';
 import { FrameManager, Frame } from './FrameManager';
-import { Request } from './Request';
+import { HTTPRequest } from './HTTPRequest';
 import { Response } from './Response';
 
 export type PuppeteerLifeCycleEvent =
@@ -47,7 +47,7 @@ export class LifecycleWatcher {
   _frameManager: FrameManager;
   _frame: Frame;
   _timeout: number;
-  _navigationRequest?: Request;
+  _navigationRequest?: HTTPRequest;
   _eventListeners: PuppeteerEventListener[];
   _initialLoaderId: string;
 
@@ -139,7 +139,7 @@ export class LifecycleWatcher {
     this._checkLifecycleComplete();
   }
 
-  _onRequest(request: Request): void {
+  _onRequest(request: HTTPRequest): void {
     if (request.frame() !== this._frame || !request.isNavigationRequest())
       return;
     this._navigationRequest = request;
