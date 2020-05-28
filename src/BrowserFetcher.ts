@@ -232,16 +232,16 @@ export class BrowserFetcher {
     if (os.arch() === 'arm64') {
       await handleArm64();
       return;
-    } else {
-      try {
-        await downloadFile(url, archivePath, progressCallback);
-        await install(archivePath, outputPath);
-      } finally {
-        if (await existsAsync(archivePath)) await unlinkAsync(archivePath);
-      }
-      const revisionInfo = this.revisionInfo(revision);
-      if (revisionInfo) await chmodAsync(revisionInfo.executablePath, 0o755);
-      return revisionInfo;
+    }
+    try {
+      await downloadFile(url, archivePath, progressCallback);
+      await install(archivePath, outputPath);
+    } finally {
+      if (await existsAsync(archivePath)) await unlinkAsync(archivePath);
+    }
+    const revisionInfo = this.revisionInfo(revision);
+    if (revisionInfo) await chmodAsync(revisionInfo.executablePath, 0o755);
+    return revisionInfo;
     }
   }
 
