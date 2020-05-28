@@ -19,7 +19,7 @@ import * as debug from 'debug';
 const debugProtocol = debug('puppeteer:protocol');
 
 import Protocol from './protocol';
-import type { ConnectionTransport } from './ConnectionTransport';
+import { ConnectionTransport } from './ConnectionTransport';
 import * as EventEmitter from 'events';
 
 interface ConnectionCallback {

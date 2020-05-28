@@ -41,6 +41,10 @@ const product = isPuppeteerCore
 if (!isPuppeteerCore && product === 'firefox')
   preferredRevision = packageJson.puppeteer.firefox_revision;
 
+/**
+ * The main export for Puppeteer
+ * @public
+ */
 const puppeteer = new Puppeteer(
   __dirname,
   preferredRevision,
@@ -52,5 +56,7 @@ const puppeteer = new Puppeteer(
 // before the Puppeteer ctor is called, such that an invalid Launcher is selected at import,
 // so we reset it.
 puppeteer._lazyLauncher = undefined;
+
+export { Puppeteer };
 
 export default puppeteer;
