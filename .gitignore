@@ -13,6 +13,5 @@ package-lock.json
 yarn.lock
 /node6
 /utils/browser/puppeteer-web.js
-/index.d.ts
 /lib
 test/coverage.json
