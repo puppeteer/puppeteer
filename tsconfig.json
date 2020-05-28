@@ -6,7 +6,7 @@
     "target": "ESNext",
     "moduleResolution": "node",
     "module": "CommonJS",
-    "esModuleInterop":true
+    "esModuleInterop": true
   },
   "include": [
     "src"

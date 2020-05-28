@@ -5,7 +5,7 @@ export interface CommonEventEmitter {
   off(event: EventType, handler: Handler): void;
   /* To maintain parity with the built in NodeJS event emitter which uses removeListener
    * rather than `off`.
-   * if you're implementing new code you should use off
+   * If you're implementing new code you should use `off`.
    */
   removeListener(event: EventType, handler: Handler): void;
   emit(event: EventType, eventData?: any): void;
