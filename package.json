@@ -29,7 +29,6 @@
     "doc": "node utils/doclint/cli.js",
     "tsc": "tsc --version && tsc -p . && cp src/protocol.d.ts lib/",
     "apply-next-version": "node utils/apply_next_version.js",
-    "test-types": "node utils/doclint/generate_types && tsc --version && tsc -p utils/doclint/generate_types/test/",
     "update-protocol-d-ts": "node utils/protocol-types-generator update",
     "compare-protocol-d-ts": "node utils/protocol-types-generator compare",
     "test-install": "scripts/test-install.sh"
