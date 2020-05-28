@@ -31,7 +31,8 @@
     "apply-next-version": "node utils/apply_next_version.js",
     "update-protocol-d-ts": "node utils/protocol-types-generator update",
     "compare-protocol-d-ts": "node utils/protocol-types-generator compare",
-    "test-install": "scripts/test-install.sh"
+    "test-install": "scripts/test-install.sh",
+    "generate-docs": "npm run tsc && api-extractor run --local --verbose && api-documenter markdown -i temp -o new-docs"
   },
   "files": [
     "lib/",
@@ -56,6 +57,8 @@
     "ws": "^7.2.3"
   },
   "devDependencies": {
+    "@microsoft/api-documenter": "^7.8.8",
+    "@microsoft/api-extractor": "^7.8.8",
     "@types/debug": "0.0.31",
     "@types/mime": "^2.0.0",
     "@types/node": "^10.17.14",
