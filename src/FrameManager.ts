@@ -26,7 +26,7 @@ import { CDPSession } from './Connection';
 import { JSHandle, ElementHandle } from './JSHandle';
 import { MouseButtonInput } from './Input';
 import { Page } from './Page';
-import { Response } from './Response';
+import { HTTPResponse } from './HTTPResponse';
 import Protocol from './protocol';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
@@ -113,7 +113,7 @@ export class FrameManager extends EventEmitter {
       timeout?: number;
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     } = {}
-  ): Promise<Response | null> {
+  ): Promise<HTTPResponse | null> {
     assertNoLegacyNavigationOptions(options);
     const {
       referer = this._networkManager.extraHTTPHeaders()['referer'],
@@ -167,7 +167,7 @@ export class FrameManager extends EventEmitter {
       timeout?: number;
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     } = {}
-  ): Promise<Response | null> {
+  ): Promise<HTTPResponse | null> {
     assertNoLegacyNavigationOptions(options);
     const {
       waitUntil = ['load'],
@@ -412,14 +412,14 @@ export class Frame {
       timeout?: number;
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     }
-  ): Promise<Response | null> {
+  ): Promise<HTTPResponse | null> {
     return await this._frameManager.navigateFrame(this, url, options);
   }
 
   async waitForNavigation(options: {
     timeout?: number;
     waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-  }): Promise<Response | null> {
+  }): Promise<HTTPResponse | null> {
     return await this._frameManager.waitForFrameNavigation(this, options);
   }
 

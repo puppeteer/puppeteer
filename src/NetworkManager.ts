@@ -20,7 +20,7 @@ import { Events } from './Events';
 import { CDPSession } from './Connection';
 import { FrameManager } from './FrameManager';
 import { HTTPRequest } from './HTTPRequest';
-import { Response } from './Response';
+import { HTTPResponse } from './HTTPResponse';
 
 export interface Credentials {
   username: string;
@@ -273,7 +273,7 @@ export class NetworkManager extends EventEmitter {
     request: HTTPRequest,
     responsePayload: Protocol.Network.Response
   ): void {
-    const response = new Response(this._client, request, responsePayload);
+    const response = new HTTPResponse(this._client, request, responsePayload);
     request._response = response;
     request._redirectChain.push(request);
     response._resolveBody(
@@ -289,7 +289,7 @@ export class NetworkManager extends EventEmitter {
     const request = this._requestIdToRequest.get(event.requestId);
     // FileUpload sends a response without a matching request.
     if (!request) return;
-    const response = new Response(this._client, request, event.response);
+    const response = new HTTPResponse(this._client, request, event.response);
     request._response = response;
     this.emit(Events.NetworkManager.Response, response);
   }

@@ -19,7 +19,7 @@ import { Events } from './Events';
 import { TimeoutError } from './Errors';
 import { FrameManager, Frame } from './FrameManager';
 import { HTTPRequest } from './HTTPRequest';
-import { Response } from './Response';
+import { HTTPResponse } from './HTTPResponse';
 
 export type PuppeteerLifeCycleEvent =
   | 'load'
@@ -156,7 +156,7 @@ export class LifecycleWatcher {
     this._checkLifecycleComplete();
   }
 
-  navigationResponse(): Response | null {
+  navigationResponse(): HTTPResponse | null {
     return this._navigationRequest ? this._navigationRequest.response() : null;
   }
 
