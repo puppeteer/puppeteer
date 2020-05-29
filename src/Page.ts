@@ -26,7 +26,7 @@ import { Keyboard, Mouse, Touchscreen, MouseButtonInput } from './Input';
 import { Tracing } from './Tracing';
 import { helper, debugError, assert } from './helper';
 import { Coverage } from './Coverage';
-import { Worker as PuppeteerWorker } from './Worker';
+import { WebWorker } from './WebWorker';
 import { Browser, BrowserContext } from './Browser';
 import { Target } from './Target';
 import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
@@ -182,7 +182,7 @@ export class Page extends EventEmitter {
   _javascriptEnabled = true;
   _viewport: Viewport | null;
   _screenshotTaskQueue: ScreenshotTaskQueue;
-  _workers = new Map<string, PuppeteerWorker>();
+  _workers = new Map<string, WebWorker>();
   // TODO: improve this typedef - it's a function that takes a file chooser or something?
   _fileChooserInterceptors = new Set<Function>();
 
@@ -219,7 +219,7 @@ export class Page extends EventEmitter {
         return;
       }
       const session = Connection.fromSession(client).session(event.sessionId);
-      const worker = new PuppeteerWorker(
+      const worker = new WebWorker(
         session,
         event.targetInfo.url,
         this._addConsoleMessage.bind(this),
@@ -409,7 +409,7 @@ export class Page extends EventEmitter {
     return this._frameManager.frames();
   }
 
-  workers(): PuppeteerWorker[] {
+  workers(): WebWorker[] {
     return Array.from(this._workers.values());
   }
 

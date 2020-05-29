@@ -44,5 +44,5 @@ module.exports = {
   TimeoutError: require('./Errors').TimeoutError,
   Touchscreen: require('./Input').Touchscreen,
   Tracing: require('./Tracing').Tracing,
-  Worker: require('./Worker').Worker,
+  WebWorker: require('./WebWorker').WebWorker,
 };
