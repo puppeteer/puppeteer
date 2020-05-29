@@ -33,7 +33,7 @@ import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
 import type { Viewport } from './PuppeteerViewport';
 import { Credentials } from './NetworkManager';
 import { HTTPRequest } from './HTTPRequest';
-import { Response as PuppeteerResponse } from './Response';
+import { HTTPResponse } from './HTTPResponse';
 import { Accessibility } from './Accessibility';
 import { TimeoutSettings } from './TimeoutSettings';
 import { FileChooser } from './FileChooser';
@@ -769,13 +769,13 @@ export class Page extends EventEmitter {
   async goto(
     url: string,
     options: WaitForOptions & { referer?: string }
-  ): Promise<PuppeteerResponse> {
+  ): Promise<HTTPResponse> {
     return await this._frameManager.mainFrame().goto(url, options);
   }
 
-  async reload(options?: WaitForOptions): Promise<PuppeteerResponse | null> {
+  async reload(options?: WaitForOptions): Promise<HTTPResponse | null> {
     const result = await Promise.all<
-      PuppeteerResponse,
+      HTTPResponse,
       Protocol.Page.reloadReturnValue
     >([this.waitForNavigation(options), this._client.send('Page.reload')]);
 
@@ -784,7 +784,7 @@ export class Page extends EventEmitter {
 
   async waitForNavigation(
     options: WaitForOptions = {}
-  ): Promise<PuppeteerResponse | null> {
+  ): Promise<HTTPResponse | null> {
     return await this._frameManager.mainFrame().waitForNavigation(options);
   }
 
@@ -821,7 +821,7 @@ export class Page extends EventEmitter {
   async waitForResponse(
     urlOrPredicate: string | Function,
     options: { timeout?: number } = {}
-  ): Promise<PuppeteerResponse> {
+  ): Promise<HTTPResponse> {
     const { timeout = this._timeoutSettings.timeout() } = options;
     return helper.waitForEvent(
       this._frameManager.networkManager(),
@@ -838,23 +838,23 @@ export class Page extends EventEmitter {
     );
   }
 
-  async goBack(options: WaitForOptions): Promise<PuppeteerResponse | null> {
+  async goBack(options: WaitForOptions): Promise<HTTPResponse | null> {
     return this._go(-1, options);
   }
 
-  async goForward(options: WaitForOptions): Promise<PuppeteerResponse | null> {
+  async goForward(options: WaitForOptions): Promise<HTTPResponse | null> {
     return this._go(+1, options);
   }
 
   async _go(
     delta: number,
     options: WaitForOptions
-  ): Promise<PuppeteerResponse | null> {
+  ): Promise<HTTPResponse | null> {
     const history = await this._client.send('Page.getNavigationHistory');
     const entry = history.entries[history.currentIndex + delta];
     if (!entry) return null;
     const result = await Promise.all<
-      PuppeteerResponse,
+      HTTPResponse,
       Protocol.Page.navigateToHistoryEntryReturnValue
     >([
       this.waitForNavigation(options),

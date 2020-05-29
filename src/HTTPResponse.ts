@@ -24,7 +24,7 @@ interface RemoteAddress {
   port: number;
 }
 
-export class Response {
+export class HTTPResponse {
   private _client: CDPSession;
   private _request: HTTPRequest;
   private _contentPromise: Promise<Buffer> | null = null;

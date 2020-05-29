@@ -295,21 +295,21 @@
   * [httpRequest.respond(response)](#httprequestrespondresponse)
   * [httpRequest.response()](#httprequestresponse)
   * [httpRequest.url()](#httprequesturl)
-- [class: Response](#class-response)
-  * [response.buffer()](#responsebuffer)
-  * [response.frame()](#responseframe)
-  * [response.fromCache()](#responsefromcache)
-  * [response.fromServiceWorker()](#responsefromserviceworker)
-  * [response.headers()](#responseheaders)
-  * [response.json()](#responsejson)
-  * [response.ok()](#responseok)
-  * [response.remoteAddress()](#responseremoteaddress)
-  * [response.request()](#responserequest)
-  * [response.securityDetails()](#responsesecuritydetails)
-  * [response.status()](#responsestatus)
-  * [response.statusText()](#responsestatustext)
-  * [response.text()](#responsetext)
-  * [response.url()](#responseurl)
+- [class: HTTPResponse](#class-httpresponse)
+  * [httpResponse.buffer()](#httpresponsebuffer)
+  * [httpResponse.frame()](#httpresponseframe)
+  * [httpResponse.fromCache()](#httpresponsefromcache)
+  * [httpResponse.fromServiceWorker()](#httpresponsefromserviceworker)
+  * [httpResponse.headers()](#httpresponseheaders)
+  * [httpResponse.json()](#httpresponsejson)
+  * [httpResponse.ok()](#httpresponseok)
+  * [httpResponse.remoteAddress()](#httpresponseremoteaddress)
+  * [httpResponse.request()](#httpresponserequest)
+  * [httpResponse.securityDetails()](#httpresponsesecuritydetails)
+  * [httpResponse.status()](#httpresponsestatus)
+  * [httpResponse.statusText()](#httpresponsestatustext)
+  * [httpResponse.text()](#httpresponsetext)
+  * [httpResponse.url()](#httpresponseurl)
 - [class: SecurityDetails](#class-securitydetails)
   * [securityDetails.issuer()](#securitydetailsissuer)
   * [securityDetails.protocol()](#securitydetailsprotocol)
@@ -3708,64 +3708,64 @@ page.on('request', request => {
 #### httpRequest.url()
 - returns: <[string]> URL of the request.
 
-### class: Response
+### class: HTTPResponse
 
 [Response] class represents responses which are received by page.
 
-#### response.buffer()
+#### httpResponse.buffer()
 - returns: <Promise<[Buffer]>> Promise which resolves to a buffer with response body.
 
-#### response.frame()
+#### httpResponse.frame()
 - returns: <?[Frame]> A [Frame] that initiated this response, or `null` if navigating to error pages.
 
-#### response.fromCache()
+#### httpResponse.fromCache()
 - returns: <[boolean]>
 
 True if the response was served from either the browser's disk cache or memory cache.
 
-#### response.fromServiceWorker()
+#### httpResponse.fromServiceWorker()
 - returns: <[boolean]>
 
 True if the response was served by a service worker.
 
-#### response.headers()
+#### httpResponse.headers()
 - returns: <[Object]> An object with HTTP headers associated with the response. All header names are lower-case.
 
-#### response.json()
+#### httpResponse.json()
 - returns: <Promise<[Object]>> Promise which resolves to a JSON representation of response body.
 
 This method will throw if the response body is not parsable via `JSON.parse`.
 
-#### response.ok()
+#### httpResponse.ok()
 - returns: <[boolean]>
 
 Contains a boolean stating whether the response was successful (status in the range 200-299) or not.
 
-#### response.remoteAddress()
+#### httpResponse.remoteAddress()
 - returns: <[Object]>
   - `ip` <[string]> the IP address of the remote server
   - `port` <[number]> the port used to connect to the remote server
 
-#### response.request()
+#### httpResponse.request()
 - returns: <[Request]> A matching [Request] object.
 
-#### response.securityDetails()
+#### httpResponse.securityDetails()
 - returns: <?[SecurityDetails]> Security details if the response was received over the secure connection, or `null` otherwise.
 
-#### response.status()
+#### httpResponse.status()
 - returns: <[number]>
 
 Contains the status code of the response (e.g., 200 for a success).
 
-#### response.statusText()
+#### httpResponse.statusText()
 - returns: <[string]>
 
 Contains the status text of the response (e.g. usually an "OK" for a success).
 
-#### response.text()
+#### httpResponse.text()
 - returns: <[Promise]<[string]>> Promise which resolves to a text representation of response body.
 
-#### response.url()
+#### httpResponse.url()
 - returns: <[string]>
 
 Contains the URL of the response.

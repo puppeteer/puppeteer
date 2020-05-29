@@ -38,7 +38,7 @@ module.exports = {
   Page: require('./Page').Page,
   Puppeteer: require('./Puppeteer').Puppeteer,
   HTTPRequest: require('./HTTPRequest').HTTPRequest,
-  Response: require('./Response').Response,
+  HTTPResponse: require('./HTTPResponse').HTTPResponse,
   SecurityDetails: require('./SecurityDetails').SecurityDetails,
   Target: require('./Target').Target,
   TimeoutError: require('./Errors').TimeoutError,

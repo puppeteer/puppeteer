@@ -15,7 +15,7 @@
  */
 import { CDPSession } from './Connection';
 import { Frame } from './FrameManager';
-import { Response } from './Response';
+import { HTTPResponse } from './HTTPResponse';
 import { helper, assert, debugError } from './helper';
 import Protocol from './protocol';
 
@@ -23,7 +23,7 @@ export class HTTPRequest {
   _requestId: string;
   _interceptionId: string;
   _failureText = null;
-  _response: Response | null = null;
+  _response: HTTPResponse | null = null;
 
   _fromMemoryCache = false;
   _redirectChain: HTTPRequest[];
@@ -85,7 +85,7 @@ export class HTTPRequest {
     return this._headers;
   }
 
-  response(): Response | null {
+  response(): HTTPResponse | null {
     return this._response;
   }
 
