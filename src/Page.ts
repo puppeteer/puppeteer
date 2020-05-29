@@ -15,7 +15,7 @@
  */
 
 import * as fs from 'fs';
-import * as EventEmitter from 'events';
+import { EventEmitter } from './EventEmitter';
 import * as mime from 'mime';
 import { Events } from './Events';
 import { Connection, CDPSession } from './Connection';

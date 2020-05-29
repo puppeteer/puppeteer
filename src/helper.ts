@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 import { TimeoutError } from './Errors';
-import * as debug from 'debug';
+import debug from 'debug';
 import * as fs from 'fs';
 import { CDPSession } from './Connection';
 import { promisify } from 'util';
 import Protocol from './protocol';
+import type { CommonEventEmitter } from './EventEmitter';
 
 const openAsync = promisify(fs.open);
 const writeAsync = promisify(fs.write);
@@ -131,13 +132,13 @@ function installAsyncStackHooks(classType: AnyClass): void {
 }
 
 export interface PuppeteerEventListener {
-  emitter: NodeJS.EventEmitter;
+  emitter: CommonEventEmitter;
   eventName: string | symbol;
   handler: (...args: any[]) => void;
 }
 
 function addEventListener(
-  emitter: NodeJS.EventEmitter,
+  emitter: CommonEventEmitter,
   eventName: string | symbol,
   handler: (...args: any[]) => void
 ): PuppeteerEventListener {
@@ -147,7 +148,7 @@ function addEventListener(
 
 function removeEventListeners(
   listeners: Array<{
-    emitter: NodeJS.EventEmitter;
+    emitter: CommonEventEmitter;
     eventName: string | symbol;
     handler: (...args: any[]) => void;
   }>
@@ -166,7 +167,7 @@ function isNumber(obj: unknown): obj is number {
 }
 
 async function waitForEvent<T extends any>(
-  emitter: NodeJS.EventEmitter,
+  emitter: CommonEventEmitter,
   eventName: string | symbol,
   predicate: (event: T) => boolean,
   timeout: number,
