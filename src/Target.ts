@@ -16,7 +16,7 @@
 
 import { Events } from './Events';
 import { Page } from './Page';
-import { Worker as PuppeteerWorker } from './Worker';
+import { WebWorker } from './WebWorker';
 import { CDPSession } from './Connection';
 import { Browser, BrowserContext } from './Browser';
 import type { Viewport } from './PuppeteerViewport';
@@ -30,7 +30,7 @@ export class Target {
   _ignoreHTTPSErrors: boolean;
   _defaultViewport?: Viewport;
   _pagePromise?: Promise<Page>;
-  _workerPromise?: Promise<PuppeteerWorker>;
+  _workerPromise?: Promise<WebWorker>;
   _initializedPromise: Promise<boolean>;
   _initializedCallback: (x: boolean) => void;
   _isClosedPromise: Promise<boolean>;
@@ -52,7 +52,7 @@ export class Target {
     this._defaultViewport = defaultViewport;
     /** @type {?Promise<!Puppeteer.Page>} */
     this._pagePromise = null;
-    /** @type {?Promise<!PuppeteerWorker>} */
+    /** @type {?Promise<!WebWorker>} */
     this._workerPromise = null;
     this._initializedPromise = new Promise<boolean>(
       (fulfill) => (this._initializedCallback = fulfill)
@@ -98,7 +98,7 @@ export class Target {
     return this._pagePromise;
   }
 
-  async worker(): Promise<PuppeteerWorker | null> {
+  async worker(): Promise<WebWorker | null> {
     if (
       this._targetInfo.type !== 'service_worker' &&
       this._targetInfo.type !== 'shared_worker'
@@ -108,7 +108,7 @@ export class Target {
       // TODO(einbinder): Make workers send their console logs.
       this._workerPromise = this._sessionFactory().then(
         (client) =>
-          new PuppeteerWorker(
+          new WebWorker(
             client,
             this._targetInfo.url,
             () => {} /* consoleAPICalled */,

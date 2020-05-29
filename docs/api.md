@@ -170,11 +170,11 @@
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [page.waitForXPath(xpath[, options])](#pagewaitforxpathxpath-options)
   * [page.workers()](#pageworkers)
-- [class: Worker](#class-worker)
-  * [worker.evaluate(pageFunction[, ...args])](#workerevaluatepagefunction-args)
-  * [worker.evaluateHandle(pageFunction[, ...args])](#workerevaluatehandlepagefunction-args)
-  * [worker.executionContext()](#workerexecutioncontext)
-  * [worker.url()](#workerurl)
+- [class: WebWorker](#class-webworker)
+  * [webWorker.evaluate(pageFunction[, ...args])](#webworkerevaluatepagefunction-args)
+  * [webWorker.evaluateHandle(pageFunction[, ...args])](#webworkerevaluatehandlepagefunction-args)
+  * [webWorker.executionContext()](#webworkerexecutioncontext)
+  * [webWorker.url()](#webworkerurl)
 - [class: Accessibility](#class-accessibility)
   * [accessibility.snapshot([options])](#accessibilitysnapshotoptions)
 - [class: Keyboard](#class-keyboard)
@@ -2265,9 +2265,9 @@ This method returns all of the dedicated [WebWorkers](https://developer.mozilla.
 
 > **NOTE** This does not contain ServiceWorkers
 
-### class: Worker
+### class: WebWorker
 
-The Worker class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
+The WebWorker class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
 The events `workercreated` and `workerdestroyed` are emitted on the page object to signal the worker lifecycle.
 
 ```js
@@ -2279,7 +2279,7 @@ for (const worker of page.workers())
   console.log('  ' + worker.url());
 ```
 
-#### worker.evaluate(pageFunction[, ...args])
+#### webWorker.evaluate(pageFunction[, ...args])
 - `pageFunction` <[function]|[string]> Function to be evaluated in the worker context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[Serializable]>> Promise which resolves to the return value of `pageFunction`
@@ -2290,7 +2290,7 @@ If the function passed to the `worker.evaluate` returns a non-[Serializable] val
 
 Shortcut for [(await worker.executionContext()).evaluate(pageFunction, ...args)](#executioncontextevaluatepagefunction-args).
 
-#### worker.evaluateHandle(pageFunction[, ...args])
+#### webWorker.evaluateHandle(pageFunction[, ...args])
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
 - returns: <[Promise]<[JSHandle]>> Promise which resolves to the return value of `pageFunction` as in-page object (JSHandle)
@@ -2301,10 +2301,10 @@ If the function passed to the `worker.evaluateHandle` returns a [Promise], then 
 
 Shortcut for [(await worker.executionContext()).evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args).
 
-#### worker.executionContext()
+#### webWorker.executionContext()
 - returns: <[Promise]<[ExecutionContext]>>
 
-#### worker.url()
+#### webWorker.url()
 - returns: <[string]>
 
 ### class: Accessibility
@@ -3830,7 +3830,7 @@ Identifies what kind of target this is. Can be `"page"`, [`"background_page"`](h
 - returns: <[string]>
 
 #### target.worker()
-- returns: <[Promise]<?[Worker]>>
+- returns: <[Promise]<?[WebWorker]>>
 
 If the target is not of type `"service_worker"` or `"shared_worker"`, returns `null`.
 
@@ -4011,7 +4011,7 @@ This method is identical to `off` and maintained for compatibility with Node's E
 [UIEvent.detail]: https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail "UIEvent.detail"
 [USKeyboardLayout]: ../src/USKeyboardLayout.ts "USKeyboardLayout"
 [UnixTime]: https://en.wikipedia.org/wiki/Unix_time "Unix Time"
-[Worker]: #class-worker "Worker"
+[WebWorker]: #class-worker "Worker"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
 [function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function "Function"
 [iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols "Iterator"

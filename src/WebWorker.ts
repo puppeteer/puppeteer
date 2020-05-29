@@ -30,7 +30,7 @@ type ExceptionThrownCallback = (
 ) => void;
 type JSHandleFactory = (obj: Protocol.Runtime.RemoteObject) => JSHandle;
 
-export class Worker extends EventEmitter {
+export class WebWorker extends EventEmitter {
   _client: CDPSession;
   _url: string;
   _executionContextPromise: Promise<ExecutionContext>;

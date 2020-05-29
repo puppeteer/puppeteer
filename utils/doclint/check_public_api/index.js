@@ -200,7 +200,7 @@ const expectedNotFoundMethods = new Map([
     new Set(['emit', 'listenerCount', 'off', 'on', 'once', 'removeListener']),
   ],
   [
-    'Worker',
+    'WebWorker',
     new Set(['emit', 'listenerCount', 'off', 'on', 'once', 'removeListener']),
   ],
 ]);
