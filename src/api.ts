@@ -36,7 +36,7 @@ module.exports = {
   Mouse: require('./Input').Mouse,
   Page: require('./Page').Page,
   Puppeteer: require('./Puppeteer').Puppeteer,
-  Request: require('./Request').Request,
+  HTTPRequest: require('./HTTPRequest').HTTPRequest,
   Response: require('./Response').Response,
   SecurityDetails: require('./SecurityDetails').SecurityDetails,
   Target: require('./Target').Target,

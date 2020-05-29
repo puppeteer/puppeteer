@@ -32,7 +32,7 @@ import { Target } from './Target';
 import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
 import type { Viewport } from './PuppeteerViewport';
 import { Credentials } from './NetworkManager';
-import { Request as PuppeteerRequest } from './Request';
+import { HTTPRequest } from './HTTPRequest';
 import { Response as PuppeteerResponse } from './Response';
 import { Accessibility } from './Accessibility';
 import { TimeoutSettings } from './TimeoutSettings';
@@ -801,7 +801,7 @@ export class Page extends EventEmitter {
   async waitForRequest(
     urlOrPredicate: string | Function,
     options: { timeout?: number } = {}
-  ): Promise<PuppeteerRequest> {
+  ): Promise<HTTPRequest> {
     const { timeout = this._timeoutSettings.timeout() } = options;
     return helper.waitForEvent(
       this._frameManager.networkManager(),

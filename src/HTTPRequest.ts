@@ -19,14 +19,14 @@ import { Response } from './Response';
 import { helper, assert, debugError } from './helper';
 import Protocol from './protocol';
 
-export class Request {
+export class HTTPRequest {
   _requestId: string;
   _interceptionId: string;
   _failureText = null;
   _response: Response | null = null;
 
   _fromMemoryCache = false;
-  _redirectChain: Request[];
+  _redirectChain: HTTPRequest[];
 
   private _client: CDPSession;
   private _isNavigationRequest: boolean;
@@ -46,7 +46,7 @@ export class Request {
     interceptionId: string,
     allowInterception: boolean,
     event: Protocol.Network.requestWillBeSentPayload,
-    redirectChain: Request[]
+    redirectChain: HTTPRequest[]
   ) {
     this._client = client;
     this._requestId = event.requestId;
@@ -97,7 +97,7 @@ export class Request {
     return this._isNavigationRequest;
   }
 
-  redirectChain(): Request[] {
+  redirectChain(): HTTPRequest[] {
     return this._redirectChain.slice();
   }
 

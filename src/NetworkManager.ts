@@ -19,7 +19,7 @@ import Protocol from './protocol';
 import { Events } from './Events';
 import { CDPSession } from './Connection';
 import { FrameManager } from './FrameManager';
-import { Request } from './Request';
+import { HTTPRequest } from './HTTPRequest';
 import { Response } from './Response';
 
 export interface Credentials {
@@ -31,7 +31,7 @@ export class NetworkManager extends EventEmitter {
   _client: CDPSession;
   _ignoreHTTPSErrors: boolean;
   _frameManager: FrameManager;
-  _requestIdToRequest = new Map<string, Request>();
+  _requestIdToRequest = new Map<string, HTTPRequest>();
   _requestIdToRequestWillBeSentEvent = new Map<
     string,
     Protocol.Network.requestWillBeSentPayload
@@ -250,7 +250,7 @@ export class NetworkManager extends EventEmitter {
     const frame = event.frameId
       ? this._frameManager.frame(event.frameId)
       : null;
-    const request = new Request(
+    const request = new HTTPRequest(
       this._client,
       frame,
       interceptionId,
@@ -270,7 +270,7 @@ export class NetworkManager extends EventEmitter {
   }
 
   _handleRequestRedirect(
-    request: Request,
+    request: HTTPRequest,
     responsePayload: Protocol.Network.Response
   ): void {
     const response = new Response(this._client, request, responsePayload);

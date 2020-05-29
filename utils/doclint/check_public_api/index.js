@@ -377,7 +377,7 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
-        'Method Request.abort() errorCode',
+        'Method HTTPRequest.abort() errorCode',
         {
           actualName: 'string',
           expectedName: 'ErrorCode',
