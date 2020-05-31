@@ -24,11 +24,14 @@ If your test needs a Puppeteer page and context, you can use the `setupTestPageA
 
 The best place to look is an existing test to see how they use the helpers.
 
-## Skipping tests for Firefox
+## Skipping tests in specific conditions
 
 Tests that are not expected to pass in Firefox can be skipped. You can skip an individual test by using `itFailsFirefox` rather than `it`. Similarly you can skip a describe block with `describeFailsFirefox`.
 
-There is also `describeChromeOnly` which will only execute the test if running in Chromium. Note that this is different from `describeFailsFirefox`: the goal is to get any `FailsFirefox` calls passing in Firefox, whereas `describeChromeOnly` should be used to test behaviour that will only ever apply in Chromium.
+There is also `describeChromeOnly` and `itChromeOnly` which will only execute the test if running in Chromium. Note that this is different from `describeFailsFirefox`: the goal is to get any `FailsFirefox` calls passing in Firefox, whereas `describeChromeOnly` should be used to test behaviour that will only ever apply in Chromium.
+
+There are also tests that assume a normal install flow, with browser binaries ending up in `.local-<browser>`, for example. Such tests are skipped with
+`itOnlyRegularInstall` which checks `BINARY` and `PUPPETEER_ALT_INSTALL` environment variables.
 
 [Mocha]: https://mochajs.org/
 [Expect]: https://www.npmjs.com/package/expect
