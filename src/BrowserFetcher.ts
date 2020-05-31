@@ -415,9 +415,6 @@ function extractTar(tarPath: string, folderPath: string): Promise<unknown> {
     tarStream.on('error', reject);
     tarStream.on('finish', fulfill);
     const readStream = fs.createReadStream(tarPath);
-    readStream.on('data', () => {
-      process.stdout.write('\rExtracting...');
-    });
     readStream.pipe(bzip()).pipe(tarStream);
   });
 }
