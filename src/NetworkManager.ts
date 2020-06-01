@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EventEmitter } from './EventEmitter';
+import * as EventEmitter from 'events';
 import { helper, assert, debugError } from './helper';
 import Protocol from './protocol';
 import { Events } from './Events';

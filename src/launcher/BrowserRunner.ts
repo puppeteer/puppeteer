@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import debug from 'debug';
+import * as debug from 'debug';
 
-import removeFolder from 'rimraf';
+import * as removeFolder from 'rimraf';
 import * as childProcess from 'child_process';
 import { helper, assert, debugError } from '../helper';
 import type { LaunchOptions } from './LaunchOptions';

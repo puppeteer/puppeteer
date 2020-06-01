@@ -15,12 +15,12 @@
  */
 import { assert } from './helper';
 import { Events } from './Events';
-import debug from 'debug';
+import * as debug from 'debug';
 const debugProtocol = debug('puppeteer:protocol');
 
 import Protocol from './protocol';
 import type { ConnectionTransport } from './ConnectionTransport';
-import { EventEmitter } from './EventEmitter';
+import * as EventEmitter from 'events';
 
 interface ConnectionCallback {
   resolve: Function;

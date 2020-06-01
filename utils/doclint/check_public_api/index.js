@@ -180,31 +180,6 @@ const expectedNonExistingMethods = new Map([
   ['Page', new Set(['emulateMedia'])],
 ]);
 
-/* Methods that are defined in code but are not documented */
-const expectedNotFoundMethods = new Map([
-  /* all the methods from our EventEmitter that we don't document for each subclass */
-  [
-    'Browser',
-    new Set(['emit', 'listenerCount', 'off', 'on', 'once', 'removeListener']),
-  ],
-  [
-    'BrowserContext',
-    new Set(['emit', 'listenerCount', 'off', 'on', 'once', 'removeListener']),
-  ],
-  [
-    'CDPSession',
-    new Set(['emit', 'listenerCount', 'off', 'on', 'once', 'removeListener']),
-  ],
-  [
-    'Page',
-    new Set(['emit', 'listenerCount', 'off', 'on', 'once', 'removeListener']),
-  ],
-  [
-    'WebWorker',
-    new Set(['emit', 'listenerCount', 'off', 'on', 'once', 'removeListener']),
-  ],
-]);
-
 /**
  * @param {!Documentation} actual
  * @param {!Documentation} expected
@@ -230,24 +205,14 @@ function compareDocumentations(actual, expected) {
     const methodDiff = diff(actualMethods, expectedMethods);
 
     for (const methodName of methodDiff.extra) {
-      const nonExistingMethodsForClass = expectedNonExistingMethods.get(
-        className
-      );
-      if (
-        nonExistingMethodsForClass &&
-        nonExistingMethodsForClass.has(methodName)
-      )
+      const missingMethodsForClass = expectedNonExistingMethods.get(className);
+      if (missingMethodsForClass && missingMethodsForClass.has(methodName))
         continue;
 
       errors.push(`Non-existing method found: ${className}.${methodName}()`);
     }
-
-    for (const methodName of methodDiff.missing) {
-      const missingMethodsForClass = expectedNotFoundMethods.get(className);
-      if (missingMethodsForClass && missingMethodsForClass.has(methodName))
-        continue;
+    for (const methodName of methodDiff.missing)
       errors.push(`Method not found: ${className}.${methodName}()`);
-    }
 
     for (const methodName of methodDiff.equal) {
       const actualMethod = actualClass.methods.get(methodName);
@@ -645,48 +610,6 @@ function compareDocumentations(actual, expected) {
         {
           actualName: 'string',
           expectedName: 'VisionDeficiency',
-        },
-      ],
-      [
-        'Method EventEmitter.emit() event',
-        {
-          actualName: 'string|symbol',
-          expectedName: 'Object',
-        },
-      ],
-      [
-        'Method EventEmitter.listenerCount() event',
-        {
-          actualName: 'string|symbol',
-          expectedName: 'Object',
-        },
-      ],
-      [
-        'Method EventEmitter.off() event',
-        {
-          actualName: 'string|symbol',
-          expectedName: 'Object',
-        },
-      ],
-      [
-        'Method EventEmitter.on() event',
-        {
-          actualName: 'string|symbol',
-          expectedName: 'Object',
-        },
-      ],
-      [
-        'Method EventEmitter.once() event',
-        {
-          actualName: 'string|symbol',
-          expectedName: 'Object',
-        },
-      ],
-      [
-        'Method EventEmitter.removeListener() event',
-        {
-          actualName: 'string|symbol',
-          expectedName: 'Object',
         },
       ],
     ]);
