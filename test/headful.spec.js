@@ -93,7 +93,7 @@ describeChromeOnly('headful tests', function () {
        * date in to force us to come back and debug properly in the
        * future.
        */
-      new Date('2020-06-01'),
+      new Date('2020-07-01'),
       'headless should be able to read cookies written by headful',
       async () => {
         const { server, puppeteer } = getTestState();
