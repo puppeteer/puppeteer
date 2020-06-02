@@ -29,7 +29,6 @@ module.exports = {
   Dialog: require('./Dialog').Dialog,
   ElementHandle: require('./JSHandle').ElementHandle,
   ExecutionContext: require('./ExecutionContext').ExecutionContext,
-  EventEmitter: require('./EventEmitter').EventEmitter,
   FileChooser: require('./FileChooser').FileChooser,
   Frame: require('./FrameManager').Frame,
   JSHandle: require('./JSHandle').JSHandle,

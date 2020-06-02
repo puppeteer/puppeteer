@@ -335,13 +335,6 @@
   * [coverage.stopCSSCoverage()](#coveragestopcsscoverage)
   * [coverage.stopJSCoverage()](#coveragestopjscoverage)
 - [class: TimeoutError](#class-timeouterror)
-- [class: EventEmitter](#class-eventemitter)
-  * [eventEmitter.emit(event, [eventData])](#eventemitteremitevent-eventdata)
-  * [eventEmitter.listenerCount(event)](#eventemitterlistenercountevent)
-  * [eventEmitter.off(event, handler)](#eventemitteroffevent-handler)
-  * [eventEmitter.on(event, handler)](#eventemitteronevent-handler)
-  * [eventEmitter.once(event, handler)](#eventemitteronceevent-handler)
-  * [eventEmitter.removeListener(event, handler)](#eventemitterremovelistenerevent-handler)
 <!-- GEN:stop -->
 
 ### Overview
@@ -3942,35 +3935,6 @@ reported.
 
 TimeoutError is emitted whenever certain operations are terminated due to timeout, e.g. [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options) or [puppeteer.launch([options])](#puppeteerlaunchoptions).
 
-### class: EventEmitter
-
-A small EventEmitter class backed by [Mitt](https://github.com/developit/mitt/).
-
-#### eventEmitter.emit(event, [eventData])
-- `event` <[string]|[symbol]> the event to trigger.
-- `eventData` <[Object]> additional data to send with the event.
-
-#### eventEmitter.listenerCount(event)
-- `event` <[string]|[symbol]> the event to check for listeners.
-- returns: <[number]> the number of listeners for the given event.
-
-#### eventEmitter.off(event, handler)
-- `event` <[string]|[symbol]> the event to remove the handler from.
-- `handler` <[Function]> the event listener that will be removed.
-
-#### eventEmitter.on(event, handler)
-- `event` <[string]|[symbol]> the event to add the handler to.
-- `handler` <[Function]> the event listener that will be added.
-
-#### eventEmitter.once(event, handler)
-- `event` <[string]|[symbol]> the event to add the handler to.
-- `handler` <[Function]> the event listener that will be added.
-
-#### eventEmitter.removeListener(event, handler)
-- `event` <[string]|[symbol]> the event to remove the handler from.
-- `handler` <[Function]> the event listener that will be removed.
-
-This method is identical to `off` and maintained for compatibility with Node's EventEmitter. We recommend using `off` by default.
 
 
 [AXNode]: #accessibilitysnapshotoptions "AXNode"
@@ -4020,5 +3984,4 @@ This method is identical to `off` and maintained for compatibility with Node's E
 [selector]: https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors "selector"
 [stream.Readable]: https://nodejs.org/api/stream.html#stream_class_stream_readable "stream.Readable"
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
-[symbol]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Symbol_type "Symbol"
 [xpath]: https://developer.mozilla.org/en-US/docs/Web/XPath "xpath"

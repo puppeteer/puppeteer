@@ -22,11 +22,11 @@ import * as childProcess from 'child_process';
 import * as https from 'https';
 import * as http from 'http';
 
-import extractZip from 'extract-zip';
-import debug from 'debug';
-import removeRecursive from 'rimraf';
+import * as extractZip from 'extract-zip';
+import * as debug from 'debug';
+import * as removeRecursive from 'rimraf';
 import * as URL from 'url';
-import ProxyAgent from 'https-proxy-agent';
+import * as ProxyAgent from 'https-proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
 
 import { helper, assert } from './helper';

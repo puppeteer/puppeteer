@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EventEmitter } from './EventEmitter';
+import * as EventEmitter from 'events';
 import { helper, assert, debugError } from './helper';
 import { Events } from './Events';
 import { ExecutionContext, EVALUATION_SCRIPT_URL } from './ExecutionContext';
