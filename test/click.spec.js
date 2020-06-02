@@ -32,7 +32,7 @@ describe('Page.click', function () {
     await page.click('button');
     expect(await page.evaluate(() => result)).toBe('Clicked');
   });
-  itFailsFirefox('should click svg', async () => {
+  it('should click svg', async () => {
     const { page } = getTestState();
 
     await page.setContent(`
@@ -55,12 +55,10 @@ describe('Page.click', function () {
     }
   );
   // @see https://github.com/puppeteer/puppeteer/issues/4281
-  itFailsFirefox(
-    'should click on a span with an inline element inside',
-    async () => {
-      const { page } = getTestState();
+  it('should click on a span with an inline element inside', async () => {
+    const { page } = getTestState();
 
-      await page.setContent(`
+    await page.setContent(`
         <style>
         span::before {
           content: 'q';
@@ -68,10 +66,9 @@ describe('Page.click', function () {
         </style>
         <span onclick='javascript:window.CLICKED=42'></span>
       `);
-      await page.click('span');
-      expect(await page.evaluate(() => window.CLICKED)).toBe(42);
-    }
-  );
+    await page.click('span');
+    expect(await page.evaluate(() => window.CLICKED)).toBe(42);
+  });
   it('should not throw UnhandledPromiseRejection when page closes', async () => {
     const { page } = getTestState();
 
@@ -98,12 +95,10 @@ describe('Page.click', function () {
     await Promise.all([page.click('a'), page.waitForNavigation()]);
     expect(page.url()).toBe(server.PREFIX + '/wrappedlink.html#clicked');
   });
-  itFailsFirefox(
-    'should click when one of inline box children is outside of viewport',
-    async () => {
-      const { page } = getTestState();
+  it('should click when one of inline box children is outside of viewport', async () => {
+    const { page } = getTestState();
 
-      await page.setContent(`
+    await page.setContent(`
         <style>
         i {
           position: absolute;
@@ -112,10 +107,9 @@ describe('Page.click', function () {
         </style>
         <span onclick='javascript:window.CLICKED = 42;'><i>woof</i><b>doggo</b></span>
       `);
-      await page.click('span');
-      expect(await page.evaluate(() => window.CLICKED)).toBe(42);
-    }
-  );
+    await page.click('span');
+    expect(await page.evaluate(() => window.CLICKED)).toBe(42);
+  });
   it('should select the text by triple clicking', async () => {
     const { page, server } = getTestState();
 
@@ -244,7 +238,7 @@ describe('Page.click', function () {
       )
     ).toBe('clicked');
   });
-  itFailsFirefox('should double click the button', async () => {
+  it('should double click the button', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/button.html');
@@ -290,7 +284,7 @@ describe('Page.click', function () {
     ).toBe('context menu');
   });
   // @see https://github.com/puppeteer/puppeteer/issues/206
-  itFailsFirefox('should click links which cause navigation', async () => {
+  it('should click links which cause navigation', async () => {
     const { page, server } = getTestState();
 
     await page.setContent(`<a href="${server.EMPTY_PAGE}">empty.html</a>`);

@@ -20,7 +20,7 @@ const utils = require('./utils');
 
 describe('BrowserContext', function () {
   setupTestBrowserHooks();
-  itFailsFirefox('should have default context', async () => {
+  it('should have default context', async () => {
     const { browser } = getTestState();
     expect(browser.browserContexts().length).toEqual(1);
     const defaultContext = browser.browserContexts()[0];
@@ -30,7 +30,7 @@ describe('BrowserContext', function () {
     expect(browser.defaultBrowserContext()).toBe(defaultContext);
     expect(error.message).toContain('cannot be closed');
   });
-  itFailsFirefox('should create new incognito context', async () => {
+  it('should create new incognito context', async () => {
     const { browser } = getTestState();
 
     expect(browser.browserContexts().length).toBe(1);
@@ -41,22 +41,19 @@ describe('BrowserContext', function () {
     await context.close();
     expect(browser.browserContexts().length).toBe(1);
   });
-  itFailsFirefox(
-    'should close all belonging targets once closing context',
-    async () => {
-      const { browser } = getTestState();
+  it('should close all belonging targets once closing context', async () => {
+    const { browser } = getTestState();
 
-      expect((await browser.pages()).length).toBe(1);
+    expect((await browser.pages()).length).toBe(1);
 
-      const context = await browser.createIncognitoBrowserContext();
-      await context.newPage();
-      expect((await browser.pages()).length).toBe(2);
-      expect((await context.pages()).length).toBe(1);
+    const context = await browser.createIncognitoBrowserContext();
+    await context.newPage();
+    expect((await browser.pages()).length).toBe(2);
+    expect((await context.pages()).length).toBe(1);
 
-      await context.close();
-      expect((await browser.pages()).length).toBe(1);
-    }
-  );
+    await context.close();
+    expect((await browser.pages()).length).toBe(1);
+  });
   itFailsFirefox('window.open should use parent tab context', async () => {
     const { browser, server } = getTestState();
 

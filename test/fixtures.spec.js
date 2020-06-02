@@ -20,7 +20,7 @@ const { getTestState } = require('./mocha-utils');
 const path = require('path');
 
 describe('Fixtures', function () {
-  itFailsFirefox('dumpio option should work with pipe option ', async () => {
+  itChromeOnly('dumpio option should work with pipe option ', async () => {
     const { defaultBrowserOptions, puppeteerPath } = getTestState();
 
     let dumpioData = '';

@@ -40,7 +40,7 @@ describe('network', function () {
       await page.goto(server.EMPTY_PAGE);
       expect(requests.length).toBe(1);
     });
-    itFailsFirefox('should fire for iframes', async () => {
+    it('should fire for iframes', async () => {
       const { page, server } = getTestState();
 
       const requests = [];
@@ -110,7 +110,7 @@ describe('network', function () {
     });
   });
 
-  describeFailsFirefox('Request.headers', function () {
+  describe('Request.headers', function () {
     it('should work', async () => {
       const { page, server, isChrome } = getTestState();
 
@@ -122,7 +122,7 @@ describe('network', function () {
     });
   });
 
-  describeFailsFirefox('Response.headers', function () {
+  describe('Response.headers', function () {
     it('should work', async () => {
       const { page, server } = getTestState();
 
@@ -325,7 +325,7 @@ describe('network', function () {
     });
   });
 
-  describeFailsFirefox('Response.statusText', function () {
+  describe('Response.statusText', function () {
     it('should work', async () => {
       const { page, server } = getTestState();
 

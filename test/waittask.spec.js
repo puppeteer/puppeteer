@@ -27,7 +27,7 @@ describe('waittask specs', function () {
   setupTestPageAndContextHooks();
 
   describe('Page.waitFor', function () {
-    itFailsFirefox('should wait for selector', async () => {
+    it('should wait for selector', async () => {
       const { page, server } = getTestState();
 
       let found = false;
@@ -39,7 +39,7 @@ describe('waittask specs', function () {
       expect(found).toBe(true);
     });
 
-    itFailsFirefox('should wait for an xpath', async () => {
+    it('should wait for an xpath', async () => {
       const { page, server } = getTestState();
 
       let found = false;
@@ -50,19 +50,14 @@ describe('waittask specs', function () {
       await waitFor;
       expect(found).toBe(true);
     });
-    itFailsFirefox(
-      'should not allow you to select an element with single slash xpath',
-      async () => {
-        const { page } = getTestState();
+    it('should not allow you to select an element with single slash xpath', async () => {
+      const { page } = getTestState();
 
-        await page.setContent(`<div>some text</div>`);
-        let error = null;
-        await page
-          .waitFor('/html/body/div')
-          .catch((error_) => (error = error_));
-        expect(error).toBeTruthy();
-      }
-    );
+      await page.setContent(`<div>some text</div>`);
+      let error = null;
+      await page.waitFor('/html/body/div').catch((error_) => (error = error_));
+      expect(error).toBeTruthy();
+    });
     it('should timeout', async () => {
       const { page } = getTestState();
 
@@ -255,7 +250,7 @@ describe('waittask specs', function () {
 
       expect(await page.waitForFunction(() => window)).toBeTruthy();
     });
-    itFailsFirefox('should accept ElementHandle arguments', async () => {
+    it('should accept ElementHandle arguments', async () => {
       const { page } = getTestState();
 
       await page.setContent('<div></div>');
@@ -330,7 +325,7 @@ describe('waittask specs', function () {
     });
   });
 
-  describeFailsFirefox('Frame.waitForSelector', function () {
+  describe('Frame.waitForSelector', function () {
     const addElement = (tag) =>
       document.body.appendChild(document.createElement(tag));
 
@@ -344,7 +339,7 @@ describe('waittask specs', function () {
       await frame.waitForSelector('div');
     });
 
-    it('should work with removed MutationObserver', async () => {
+    itFailsFirefox('should work with removed MutationObserver', async () => {
       const { page } = getTestState();
 
       await page.evaluate(() => delete window.MutationObserver);
@@ -385,20 +380,23 @@ describe('waittask specs', function () {
       await watchdog;
     });
 
-    it('Page.waitForSelector is shortcut for main frame', async () => {
-      const { page, server } = getTestState();
+    itFailsFirefox(
+      'Page.waitForSelector is shortcut for main frame',
+      async () => {
+        const { page, server } = getTestState();
 
-      await page.goto(server.EMPTY_PAGE);
-      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
-      const otherFrame = page.frames()[1];
-      const watchdog = page.waitForSelector('div');
-      await otherFrame.evaluate(addElement, 'div');
-      await page.evaluate(addElement, 'div');
-      const eHandle = await watchdog;
-      expect(eHandle.executionContext().frame()).toBe(page.mainFrame());
-    });
+        await page.goto(server.EMPTY_PAGE);
+        await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+        const otherFrame = page.frames()[1];
+        const watchdog = page.waitForSelector('div');
+        await otherFrame.evaluate(addElement, 'div');
+        await page.evaluate(addElement, 'div');
+        const eHandle = await watchdog;
+        expect(eHandle.executionContext().frame()).toBe(page.mainFrame());
+      }
+    );
 
-    it('should run in specified frame', async () => {
+    itFailsFirefox('should run in specified frame', async () => {
       const { page, server } = getTestState();
 
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -412,7 +410,7 @@ describe('waittask specs', function () {
       expect(eHandle.executionContext().frame()).toBe(frame2);
     });
 
-    it('should throw when frame is detached', async () => {
+    itFailsFirefox('should throw when frame is detached', async () => {
       const { page, server } = getTestState();
 
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -580,7 +578,7 @@ describe('waittask specs', function () {
       );
       expect(await waitForSelector).toBe(true);
     });
-    itFailsFirefox('should return the element handle', async () => {
+    it('should return the element handle', async () => {
       const { page } = getTestState();
 
       const waitForSelector = page.waitForSelector('.zombo');
@@ -600,7 +598,7 @@ describe('waittask specs', function () {
     });
   });
 
-  describeFailsFirefox('Frame.waitForXPath', function () {
+  describe('Frame.waitForXPath', function () {
     const addElement = (tag) =>
       document.body.appendChild(document.createElement(tag));
 
@@ -628,7 +626,7 @@ describe('waittask specs', function () {
       );
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
-    it('should run in specified frame', async () => {
+    itFailsFirefox('should run in specified frame', async () => {
       const { page, server } = getTestState();
 
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
@@ -641,7 +639,7 @@ describe('waittask specs', function () {
       const eHandle = await waitForXPathPromise;
       expect(eHandle.executionContext().frame()).toBe(frame2);
     });
-    it('should throw when frame is detached', async () => {
+    itFailsFirefox('should throw when frame is detached', async () => {
       const { page, server } = getTestState();
 
       await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);

@@ -125,7 +125,7 @@ describe('Keyboard', function () {
       await page.evaluate(() => document.querySelector('textarea').value)
     ).toBe('嗨a');
   });
-  itFailsFirefox('should report shiftKey', async () => {
+  it('should report shiftKey', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/keyboard.html');

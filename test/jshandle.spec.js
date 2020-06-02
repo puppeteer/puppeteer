@@ -179,7 +179,7 @@ describe('JSHandle', function () {
       const element = aHandle.asElement();
       expect(element).toBeFalsy();
     });
-    itFailsFirefox('should return ElementHandle for TextNodes', async () => {
+    it('should return ElementHandle for TextNodes', async () => {
       const { page } = getTestState();
 
       await page.setContent('<div>ee!</div>');
@@ -195,7 +195,7 @@ describe('JSHandle', function () {
         )
       );
     });
-    itFailsFirefox('should work with nullified Node', async () => {
+    it('should work with nullified Node', async () => {
       const { page } = getTestState();
 
       await page.setContent('<section>test</section>');

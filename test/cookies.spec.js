@@ -220,21 +220,18 @@ describe('Cookie specs', () => {
         })
       ).toEqual(['foo=bar', 'password=123456']);
     });
-    itFailsFirefox(
-      'should have |expires| set to |-1| for session cookies',
-      async () => {
-        const { page, server } = getTestState();
+    it('should have |expires| set to |-1| for session cookies', async () => {
+      const { page, server } = getTestState();
 
-        await page.goto(server.EMPTY_PAGE);
-        await page.setCookie({
-          name: 'password',
-          value: '123456',
-        });
-        const cookies = await page.cookies();
-        expect(cookies[0].session).toBe(true);
-        expect(cookies[0].expires).toBe(-1);
-      }
-    );
+      await page.goto(server.EMPTY_PAGE);
+      await page.setCookie({
+        name: 'password',
+        value: '123456',
+      });
+      const cookies = await page.cookies();
+      expect(cookies[0].session).toBe(true);
+      expect(cookies[0].expires).toBe(-1);
+    });
     itFailsFirefox('should set cookie with reasonable defaults', async () => {
       const { page, server } = getTestState();
 
@@ -348,22 +345,19 @@ describe('Cookie specs', () => {
         expect(cookie.secure).toBe(true);
       }
     );
-    itFailsFirefox(
-      'should be able to set unsecure cookie for HTTP website',
-      async () => {
-        const { page, server } = getTestState();
+    it('should be able to set unsecure cookie for HTTP website', async () => {
+      const { page, server } = getTestState();
 
-        await page.goto(server.EMPTY_PAGE);
-        const HTTP_URL = 'http://example.com';
-        await page.setCookie({
-          url: HTTP_URL,
-          name: 'foo',
-          value: 'bar',
-        });
-        const [cookie] = await page.cookies(HTTP_URL);
-        expect(cookie.secure).toBe(false);
-      }
-    );
+      await page.goto(server.EMPTY_PAGE);
+      const HTTP_URL = 'http://example.com';
+      await page.setCookie({
+        url: HTTP_URL,
+        name: 'foo',
+        value: 'bar',
+      });
+      const [cookie] = await page.cookies(HTTP_URL);
+      expect(cookie.secure).toBe(false);
+    });
     itFailsFirefox('should set a cookie on a different domain', async () => {
       const { page, server } = getTestState();
 

@@ -233,7 +233,7 @@ describe('ElementHandle specs', function () {
         'Node is either not visible or not an HTMLElement'
       );
     });
-    itFailsFirefox('should throw for <br> elements', async () => {
+    it('should throw for <br> elements', async () => {
       const { page } = getTestState();
 
       await page.setContent('hello<br>goodbye');
