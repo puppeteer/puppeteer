@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-waitForNavigation(options?: WaitForOptions): Promise<PuppeteerResponse | null>;
+waitForNavigation(options?: WaitForOptions): Promise<HTTPResponse | null>;
 ```
 
 ## Parameters
@@ -18,5 +18,5 @@ waitForNavigation(options?: WaitForOptions): Promise<PuppeteerResponse | null>;
 
 <b>Returns:</b>
 
-Promise&lt;PuppeteerResponse \| null&gt;
+Promise&lt;[HTTPResponse](./puppeteer.httpresponse.md) \| null&gt;
 

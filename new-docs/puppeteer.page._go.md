@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-_go(delta: number, options: WaitForOptions): Promise<PuppeteerResponse | null>;
+_go(delta: number, options: WaitForOptions): Promise<HTTPResponse | null>;
 ```
 
 ## Parameters
@@ -19,5 +19,5 @@ _go(delta: number, options: WaitForOptions): Promise<PuppeteerResponse | null>;
 
 <b>Returns:</b>
 
-Promise&lt;PuppeteerResponse \| null&gt;
+Promise&lt;[HTTPResponse](./puppeteer.httpresponse.md) \| null&gt;
 

@@ -13,11 +13,11 @@ export * from './JSHandle';
 export * from './Input';
 export * from './Page';
 export * from './Puppeteer';
-export * from './Request';
-export * from './Response';
+export * from './HTTPRequest';
+export * from './HTTPResponse';
 export * from './SecurityDetails';
 export * from './Target';
 export * from './Errors';
 export * from './Tracing';
-export * from './Worker';
+export * from './WebWorker';
 

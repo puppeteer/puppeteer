@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-goBack(options: WaitForOptions): Promise<PuppeteerResponse | null>;
+goBack(options: WaitForOptions): Promise<HTTPResponse | null>;
 ```
 
 ## Parameters
@@ -18,5 +18,5 @@ goBack(options: WaitForOptions): Promise<PuppeteerResponse | null>;
 
 <b>Returns:</b>
 
-Promise&lt;PuppeteerResponse \| null&gt;
+Promise&lt;[HTTPResponse](./puppeteer.httpresponse.md) \| null&gt;
 

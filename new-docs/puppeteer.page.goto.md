@@ -9,7 +9,7 @@
 ```typescript
 goto(url: string, options: WaitForOptions & {
         referer?: string;
-    }): Promise<PuppeteerResponse>;
+    }): Promise<HTTPResponse>;
 ```
 
 ## Parameters
@@ -21,5 +21,5 @@ goto(url: string, options: WaitForOptions & {
 
 <b>Returns:</b>
 
-Promise&lt;PuppeteerResponse&gt;
+Promise&lt;[HTTPResponse](./puppeteer.httpresponse.md)<!-- -->&gt;
 

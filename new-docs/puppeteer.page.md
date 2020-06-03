@@ -38,7 +38,7 @@ export declare class Page extends EventEmitter
 |  [\_touchscreen](./puppeteer.page._touchscreen.md) |  | [Touchscreen](./puppeteer.touchscreen.md) |  |
 |  [\_tracing](./puppeteer.page._tracing.md) |  | [Tracing](./puppeteer.tracing.md) |  |
 |  [\_viewport](./puppeteer.page._viewport.md) |  | Viewport \| null |  |
-|  [\_workers](./puppeteer.page._workers.md) |  | Map&lt;string, PuppeteerWorker&gt; |  |
+|  [\_workers](./puppeteer.page._workers.md) |  | Map&lt;string, [WebWorker](./puppeteer.webworker.md)<!-- -->&gt; |  |
 |  [accessibility](./puppeteer.page.accessibility.md) |  | [Accessibility](./puppeteer.accessibility.md) |  |
 |  [coverage](./puppeteer.page.coverage.md) |  | [Coverage](./puppeteer.coverage.md) |  |
 |  [keyboard](./puppeteer.page.keyboard.md) |  | [Keyboard](./puppeteer.keyboard.md) |  |

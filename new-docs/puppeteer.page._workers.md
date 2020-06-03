@@ -7,5 +7,5 @@
 <b>Signature:</b>
 
 ```typescript
-_workers: Map<string, PuppeteerWorker>;
+_workers: Map<string, WebWorker>;
 ```

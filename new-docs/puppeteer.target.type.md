@@ -7,9 +7,9 @@
 <b>Signature:</b>
 
 ```typescript
-type(): 'page' | 'background_page' | 'service_worker' | 'shared_worker' | 'other' | 'browser';
+type(): 'page' | 'background_page' | 'service_worker' | 'shared_worker' | 'other' | 'browser' | 'webview';
 ```
 <b>Returns:</b>
 
-'page' \| 'background\_page' \| 'service\_worker' \| 'shared\_worker' \| 'other' \| 'browser'
+'page' \| 'background\_page' \| 'service\_worker' \| 'shared\_worker' \| 'other' \| 'browser' \| 'webview'
 

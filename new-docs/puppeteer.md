@@ -22,19 +22,19 @@
 |  [FileChooser](./puppeteer.filechooser.md) |  |
 |  [Frame](./puppeteer.frame.md) |  |
 |  [FrameManager](./puppeteer.framemanager.md) |  |
+|  [HTTPRequest](./puppeteer.httprequest.md) |  |
+|  [HTTPResponse](./puppeteer.httpresponse.md) |  |
 |  [JSHandle](./puppeteer.jshandle.md) |  |
 |  [Keyboard](./puppeteer.keyboard.md) |  |
 |  [Mouse](./puppeteer.mouse.md) |  |
 |  [Page](./puppeteer.page.md) |  |
 |  [Puppeteer](./puppeteer.puppeteer.md) | The main Puppeteer class |
-|  [Request\_2](./puppeteer.request_2.md) |  |
-|  [Response\_2](./puppeteer.response_2.md) |  |
 |  [SecurityDetails](./puppeteer.securitydetails.md) |  |
 |  [Target](./puppeteer.target.md) |  |
 |  [TimeoutError](./puppeteer.timeouterror.md) |  |
 |  [Touchscreen](./puppeteer.touchscreen.md) |  |
 |  [Tracing](./puppeteer.tracing.md) |  |
-|  [Worker\_2](./puppeteer.worker_2.md) |  |
+|  [WebWorker](./puppeteer.webworker.md) |  |
 
 ## Enumerations
 

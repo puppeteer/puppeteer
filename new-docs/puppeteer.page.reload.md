@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-reload(options?: WaitForOptions): Promise<PuppeteerResponse | null>;
+reload(options?: WaitForOptions): Promise<HTTPResponse | null>;
 ```
 
 ## Parameters
@@ -18,5 +18,5 @@ reload(options?: WaitForOptions): Promise<PuppeteerResponse | null>;
 
 <b>Returns:</b>
 
-Promise&lt;PuppeteerResponse \| null&gt;
+Promise&lt;[HTTPResponse](./puppeteer.httpresponse.md) \| null&gt;
 

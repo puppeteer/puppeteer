@@ -7,5 +7,5 @@
 <b>Signature:</b>
 
 ```typescript
-_workerPromise?: Promise<PuppeteerWorker>;
+_workerPromise?: Promise<WebWorker>;
 ```

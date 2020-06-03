@@ -7,9 +7,9 @@
 <b>Signature:</b>
 
 ```typescript
-workers(): PuppeteerWorker[];
+workers(): WebWorker[];
 ```
 <b>Returns:</b>
 
-PuppeteerWorker\[\]
+[WebWorker](./puppeteer.webworker.md)<!-- -->\[\]
 

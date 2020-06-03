@@ -9,7 +9,7 @@
 ```typescript
 waitForResponse(urlOrPredicate: string | Function, options?: {
         timeout?: number;
-    }): Promise<PuppeteerResponse>;
+    }): Promise<HTTPResponse>;
 ```
 
 ## Parameters
@@ -21,5 +21,5 @@ waitForResponse(urlOrPredicate: string | Function, options?: {
 
 <b>Returns:</b>
 
-Promise&lt;PuppeteerResponse&gt;
+Promise&lt;[HTTPResponse](./puppeteer.httpresponse.md)<!-- -->&gt;
 

@@ -10,7 +10,7 @@
 waitForNavigation(options: {
         timeout?: number;
         waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    }): Promise<Response | null>;
+    }): Promise<HTTPResponse | null>;
 ```
 
 ## Parameters
@@ -21,5 +21,5 @@ waitForNavigation(options: {
 
 <b>Returns:</b>
 
-Promise&lt;Response \| null&gt;
+Promise&lt;[HTTPResponse](./puppeteer.httpresponse.md) \| null&gt;
 

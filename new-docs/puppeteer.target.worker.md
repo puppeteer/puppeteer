@@ -7,9 +7,9 @@
 <b>Signature:</b>
 
 ```typescript
-worker(): Promise<PuppeteerWorker | null>;
+worker(): Promise<WebWorker | null>;
 ```
 <b>Returns:</b>
 
-Promise&lt;PuppeteerWorker \| null&gt;
+Promise&lt;[WebWorker](./puppeteer.webworker.md) \| null&gt;
 

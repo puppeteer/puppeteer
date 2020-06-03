@@ -32,7 +32,7 @@ export declare class Target
 |  [\_sessionFactory](./puppeteer.target._sessionfactory.md) |  | () =&gt; Promise&lt;[CDPSession](./puppeteer.cdpsession.md)<!-- -->&gt; |  |
 |  [\_targetId](./puppeteer.target._targetid.md) |  | string |  |
 |  [\_targetInfo](./puppeteer.target._targetinfo.md) |  | Protocol.Target.TargetInfo |  |
-|  [\_workerPromise](./puppeteer.target._workerpromise.md) |  | Promise&lt;PuppeteerWorker&gt; |  |
+|  [\_workerPromise](./puppeteer.target._workerpromise.md) |  | Promise&lt;[WebWorker](./puppeteer.webworker.md)<!-- -->&gt; |  |
 
 ## Methods
 
