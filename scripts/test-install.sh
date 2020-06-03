@@ -12,4 +12,11 @@ cd "$(mktemp -d)"
 # 3. Requiring Puppeteer from Node works.
 npm install --loglevel silent "${tarball}"
 node --eval="require('puppeteer')"
+
+# Again for Firefox
+TMPDIR="$(mktemp -d)"
+cd $TMPDIR
+PUPPETEER_PRODUCT=firefox npm install --loglevel silent "${tarball}"
+node --eval="require('puppeteer')"
 rm "${tarball}"
+ls $TMPDIR/node_modules/puppeteer/.local-firefox/linux-79.0a1/firefox/firefox
