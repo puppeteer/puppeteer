@@ -172,7 +172,7 @@ async function download() {
             try {
               const versions = JSON.parse(data);
               return resolve(versions.FIREFOX_NIGHTLY);
-            } catch {
+            } catch (e) {
               return reject(new Error('Firefox version not found'));
             }
           });
