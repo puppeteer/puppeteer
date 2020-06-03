@@ -17,7 +17,6 @@
 const { helper } = require('./lib/helper');
 const api = require('./lib/api');
 const { Page } = require('./lib/Page');
-
 for (const className in api) {
   if (typeof api[className] === 'function')
     helper.installAsyncStackHooks(api[className]);

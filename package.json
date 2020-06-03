@@ -35,7 +35,7 @@
     "generate-docs": "npm run tsc && api-extractor run --local --verbose && api-documenter markdown -i temp -o new-docs"
   },
   "files": [
-    "lib/!(*.d.ts)",
+    "lib/",
     "Errors.js",
     "DeviceDescriptors.js",
     "index.js",
