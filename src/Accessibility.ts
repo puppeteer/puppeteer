@@ -18,32 +18,74 @@ import { CDPSession } from './Connection';
 import { ElementHandle } from './JSHandle';
 import Protocol from './protocol';
 
-interface SerializedAXNode {
+/**
+ * Represents a Node and the properties of it that are relevant to Accessibility.
+ */
+export interface SerializedAXNode {
+  /**
+   * The {@link https://www.w3.org/TR/wai-aria/#usage_intro | role} of the node.
+   */
   role: string;
+  /**
+   * A human readable name for the node.
+   */
   name?: string;
+  /**
+   * The current value of the node.
+   */
   value?: string | number;
+  /**
+   * An additional human readable description of the node.
+   */
   description?: string;
+  /**
+   * Any keyboard shortcuts associated with this node.
+   */
   keyshortcuts?: string;
+  /**
+   * A human readable alternative to the role.
+   */
   roledescription?: string;
+  /**
+   * A description of the current value.
+   */
   valuetext?: string;
   disabled?: boolean;
   expanded?: boolean;
   focused?: boolean;
   modal?: boolean;
   multiline?: boolean;
+  /**
+   * Whether more than one child can be selected.
+   */
   multiselectable?: boolean;
   readonly?: boolean;
   required?: boolean;
   selected?: boolean;
+  /**
+   * Whether the checkbox is checked, or in a {@link https://www.w3.org/TR/wai-aria-practices/examples/checkbox/checkbox-2/checkbox-2.html | mixed state}.
+   */
   checked?: boolean | 'mixed';
+  /**
+   * Whether the node is checked or in a mixed state.
+   */
   pressed?: boolean | 'mixed';
+  /**
+   * The level of a heading.
+   */
   level?: number;
   valuemin?: number;
   valuemax?: number;
   autocomplete?: string;
   haspopup?: string;
+  /**
+   * Whether and in what way this node's value is invalid.
+   */
   invalid?: string;
   orientation?: string;
+  /**
+   * Children of this node, if there are any.
+   */
   children?: SerializedAXNode[];
 }
 
