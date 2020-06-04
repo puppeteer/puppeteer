@@ -47,6 +47,24 @@ interface SerializedAXNode {
   children?: SerializedAXNode[];
 }
 
+/**
+ * The Accessibility class provides methods for inspecting Chromium's
+ * accessibility tree. The accessibility tree is used by assistive technology
+ * such as {@link https://en.wikipedia.org/wiki/Screen_reader | screen readers} or
+ * {@link https://en.wikipedia.org/wiki/Switch_access | switches}.
+ *
+ * Accessibility is a very platform-specific thing. On different platforms,
+ * there are different screen readers that might have wildly different output.
+ *
+ * Blink - Chrome's rendering engine - has a concept of "accessibility tree",
+ * which is then translated into different platform-specific APIs. Accessibility
+ * namespace gives users access to the Blink Accessibility Tree.
+ *
+ * Most of the accessibility tree gets filtered out when converting from Blink
+ * AX Tree to Platform-specific AX-Tree or by assistive technologies themselves.
+ * By default, Puppeteer tries to approximate this filtering, exposing only
+ * the "interesting" nodes of the tree.
+ */
 export class Accessibility {
   private _client: CDPSession;
 
@@ -54,8 +72,53 @@ export class Accessibility {
     this._client = client;
   }
 
+  /**
+   * Captures the current state of the accessibility tree.
+   * The returned object represents the root accessible node of the page.
+   *
+   * @remarks
+   *
+   * > **NOTE** The Chromium accessibility tree contains nodes that go unused on most platforms and by
+   * most screen readers. Puppeteer will discard them as well for an easier to process tree,
+   * unless `interestingOnly` is set to `false`.
+   *
+   * @example
+   * An example of dumping the entire accessibility tree:
+   * ```js
+   * const snapshot = await page.accessibility.snapshot();
+   * console.log(snapshot);
+   * ```
+   *
+   * @example
+   * An example of logging the focused node's name:
+   * ```js
+   * const snapshot = await page.accessibility.snapshot();
+   * const node = findFocusedNode(snapshot);
+   * console.log(node && node.name);
+   *
+   * function findFocusedNode(node) {
+   *   if (node.focused)
+   *     return node;
+   *   for (const child of node.children || []) {
+   *     const foundNode = findFocusedNode(child);
+   *     return foundNode;
+   *   }
+   *   return null;
+   * }
+   * ```
+   *
+   * @param options -
+   * * `interestingOnly`: Prune uninteresting nodes from the tree. Defaults to `true`.
+   * * `root`: The root DOM element for the snapshot. Defaults to the whole page.
+   *
+   * @returns An AXNode object represeting the snapshot.
+   *
+   */
   public async snapshot(
-    options: { interestingOnly?: boolean; root?: ElementHandle } = {}
+    options: {
+      interestingOnly?: boolean;
+      root?: ElementHandle;
+    } = {}
   ): Promise<SerializedAXNode> {
     const { interestingOnly = true, root = null } = options;
     const { nodes } = await this._client.send('Accessibility.getFullAXTree');
