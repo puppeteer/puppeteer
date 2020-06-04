@@ -112,6 +112,8 @@ export interface SnapshotOptions {
  * such as {@link https://en.wikipedia.org/wiki/Screen_reader | screen readers} or
  * {@link https://en.wikipedia.org/wiki/Switch_access | switches}.
  *
+ * @remarks
+ *
  * Accessibility is a very platform-specific thing. On different platforms,
  * there are different screen readers that might have wildly different output.
  *
