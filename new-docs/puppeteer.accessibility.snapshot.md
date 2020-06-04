@@ -16,7 +16,7 @@ snapshot(options?: SnapshotOptions): Promise<SerializedAXNode>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | [SnapshotOptions](./puppeteer.snapshotoptions.md) | \* <code>interestingOnly</code>: Prune uninteresting nodes from the tree. Defaults to <code>true</code>. \* <code>root</code>: The root DOM element for the snapshot. Defaults to the whole page. |
+|  options | [SnapshotOptions](./puppeteer.snapshotoptions.md) |  |
 
 <b>Returns:</b>
 

@@ -171,10 +171,6 @@ export class Accessibility {
    * }
    * ```
    *
-   * @param options -
-   * * `interestingOnly`: Prune uninteresting nodes from the tree. Defaults to `true`.
-   * * `root`: The root DOM element for the snapshot. Defaults to the whole page.
-   *
    * @returns An AXNode object represeting the snapshot.
    *
    */
