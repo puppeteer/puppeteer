@@ -5,7 +5,9 @@
     "outDir": "./lib",
     "target": "ESNext",
     "moduleResolution": "node",
-    "module": "CommonJS"
+    "module": "CommonJS",
+    "declaration": true,
+    "declarationMap": true
   },
   "include": [
     "src"

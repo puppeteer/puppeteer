@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import * as NodeWebSocket from 'ws';
-import type { ConnectionTransport } from './ConnectionTransport';
+import { ConnectionTransport } from './ConnectionTransport';
 
 export class WebSocketTransport implements ConnectionTransport {
   static create(url: string): Promise<WebSocketTransport> {

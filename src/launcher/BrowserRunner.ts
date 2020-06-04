@@ -19,7 +19,7 @@ import * as debug from 'debug';
 import * as removeFolder from 'rimraf';
 import * as childProcess from 'child_process';
 import { helper, assert, debugError } from '../helper';
-import type { LaunchOptions } from './LaunchOptions';
+import { LaunchOptions } from './LaunchOptions';
 import { Connection } from '../Connection';
 import { WebSocketTransport } from '../WebSocketTransport';
 import { PipeTransport } from '../PipeTransport';

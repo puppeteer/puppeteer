@@ -24,14 +24,14 @@ import { BrowserFetcher } from './BrowserFetcher';
 import { Connection } from './Connection';
 import { Browser } from './Browser';
 import { helper, assert, debugError } from './helper';
-import type { ConnectionTransport } from './ConnectionTransport';
+import { ConnectionTransport } from './ConnectionTransport';
 import { WebSocketTransport } from './WebSocketTransport';
 import { BrowserRunner } from './launcher/BrowserRunner';
 
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
 const writeFileAsync = helper.promisify(fs.writeFile);
 
-import type {
+import {
   ChromeArgOptions,
   LaunchOptions,
   BrowserOptions,

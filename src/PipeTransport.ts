@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { helper, debugError, PuppeteerEventListener } from './helper';
-import type { ConnectionTransport } from './ConnectionTransport';
+import { ConnectionTransport } from './ConnectionTransport';
 
 export class PipeTransport implements ConnectionTransport {
   _pipeWrite: NodeJS.WritableStream;

@@ -14,21 +14,31 @@
  * limitations under the License.
  */
 import Launcher from './Launcher';
-import type {
+import {
   LaunchOptions,
   ChromeArgOptions,
   BrowserOptions,
 } from './launcher/LaunchOptions';
-import type { ProductLauncher } from './Launcher';
+import { ProductLauncher } from './Launcher';
 import { BrowserFetcher, BrowserFetcherOptions } from './BrowserFetcher';
 import { puppeteerErrors, PuppeteerErrors } from './Errors';
-import type { ConnectionTransport } from './ConnectionTransport';
+import { ConnectionTransport } from './ConnectionTransport';
 
 import { devicesMap } from './DeviceDescriptors';
-import type { DevicesMap } from './/DeviceDescriptors';
+import { DevicesMap } from './/DeviceDescriptors';
 import { Browser } from './Browser';
-import * as QueryHandler from './QueryHandler';
+import {
+  registerCustomQueryHandler,
+  unregisterCustomQueryHandler,
+  customQueryHandlers,
+  clearQueryHandlers,
+  QueryHandler,
+} from './QueryHandler';
 
+/**
+ * The main Puppeteer class
+ * @public
+ */
 export class Puppeteer {
   _projectRoot: string;
   _preferredRevision: string;
@@ -135,23 +145,23 @@ export class Puppeteer {
   // eslint-disable-next-line @typescript-eslint/camelcase
   __experimental_registerCustomQueryHandler(
     name: string,
-    queryHandler: QueryHandler.QueryHandler
+    queryHandler: QueryHandler
   ): void {
-    QueryHandler.registerCustomQueryHandler(name, queryHandler);
+    registerCustomQueryHandler(name, queryHandler);
   }
 
   // eslint-disable-next-line @typescript-eslint/camelcase
   __experimental_unregisterCustomQueryHandler(name: string): void {
-    QueryHandler.unregisterCustomQueryHandler(name);
+    unregisterCustomQueryHandler(name);
   }
 
   // eslint-disable-next-line @typescript-eslint/camelcase
-  __experimental_customQueryHandlers(): Map<string, QueryHandler.QueryHandler> {
-    return QueryHandler.customQueryHandlers();
+  __experimental_customQueryHandlers(): Map<string, QueryHandler> {
+    return customQueryHandlers();
   }
 
   // eslint-disable-next-line @typescript-eslint/camelcase
   __experimental_clearQueryHandlers(): void {
-    QueryHandler.clearQueryHandlers();
+    clearQueryHandlers();
   }
 }

@@ -30,7 +30,7 @@ import { WebWorker } from './WebWorker';
 import { Browser, BrowserContext } from './Browser';
 import { Target } from './Target';
 import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
-import type { Viewport } from './PuppeteerViewport';
+import { Viewport } from './PuppeteerViewport';
 import { Credentials } from './NetworkManager';
 import { HTTPRequest } from './HTTPRequest';
 import { HTTPResponse } from './HTTPResponse';

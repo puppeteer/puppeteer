@@ -74,11 +74,3 @@ export function getQueryHandlerAndSelector(
     queryHandler,
   };
 }
-
-module.exports = {
-  registerCustomQueryHandler,
-  unregisterCustomQueryHandler,
-  customQueryHandlers,
-  getQueryHandlerAndSelector,
-  clearQueryHandlers,
-};
