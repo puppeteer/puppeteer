@@ -20,6 +20,7 @@ import Protocol from './protocol';
 
 /**
  * Represents a Node and the properties of it that are relevant to Accessibility.
+ * @public
  */
 export interface SerializedAXNode {
   /**
@@ -89,6 +90,9 @@ export interface SerializedAXNode {
   children?: SerializedAXNode[];
 }
 
+/**
+ * @public
+ */
 export interface SnapshotOptions {
   /**
    * Prune unintersting nodes from the tree.
@@ -119,10 +123,15 @@ export interface SnapshotOptions {
  * AX Tree to Platform-specific AX-Tree or by assistive technologies themselves.
  * By default, Puppeteer tries to approximate this filtering, exposing only
  * the "interesting" nodes of the tree.
+ *
+ * @public
  */
 export class Accessibility {
   private _client: CDPSession;
 
+  /**
+   * @internal
+   */
   constructor(client: CDPSession) {
     this._client = client;
   }
@@ -133,7 +142,7 @@ export class Accessibility {
    *
    * @remarks
    *
-   * > **NOTE** The Chromium accessibility tree contains nodes that go unused on most platforms and by
+   * **NOTE** The Chromium accessibility tree contains nodes that go unused on most platforms and by
    * most screen readers. Puppeteer will discard them as well for an easier to process tree,
    * unless `interestingOnly` is set to `false`.
    *
