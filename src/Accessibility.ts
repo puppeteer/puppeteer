@@ -89,6 +89,19 @@ export interface SerializedAXNode {
   children?: SerializedAXNode[];
 }
 
+export interface SnapshotOptions {
+  /**
+   * Prune unintersting nodes from the tree.
+   * @defaultValue true
+   */
+  interestingOnly?: boolean;
+  /**
+   * Prune unintersting nodes from the tree.
+   * @defaultValue The root node of the entire page.
+   */
+  root?: ElementHandle;
+}
+
 /**
  * The Accessibility class provides methods for inspecting Chromium's
  * accessibility tree. The accessibility tree is used by assistive technology
@@ -157,10 +170,7 @@ export class Accessibility {
    *
    */
   public async snapshot(
-    options: {
-      interestingOnly?: boolean;
-      root?: ElementHandle;
-    } = {}
+    options: SnapshotOptions = {}
   ): Promise<SerializedAXNode> {
     const { interestingOnly = true, root = null } = options;
     const { nodes } = await this._client.send('Accessibility.getFullAXTree');
