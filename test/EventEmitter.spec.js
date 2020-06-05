@@ -2,7 +2,7 @@ const { EventEmitter } = require('../lib/EventEmitter');
 const sinon = require('sinon');
 const expect = require('expect');
 
-describe.only('EventEmitter', () => {
+describe('EventEmitter', () => {
   let emitter;
 
   beforeEach(() => {
