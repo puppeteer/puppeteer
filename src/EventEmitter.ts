@@ -9,35 +9,28 @@ export interface CommonEventEmitter {
    */
   addListener(event: EventType, handler: Handler): CommonEventEmitter;
   removeListener(event: EventType, handler: Handler): CommonEventEmitter;
-  emit(event: EventType, eventData?: any): void;
-  once(event: EventType, handler: Handler): void;
+  emit(event: EventType, eventData?: any): boolean;
+  once(event: EventType, handler: Handler): CommonEventEmitter;
   listenerCount(event: string): number;
+
+  removeAllListeners(event?: EventType): CommonEventEmitter;
 }
 
 export class EventEmitter implements CommonEventEmitter {
   private emitter: Emitter;
-  private listenerCounts = new Map<EventType, number>();
+  private eventsMap = new Map<EventType, Handler[]>();
 
   constructor() {
-    this.emitter = mitt(new Map());
+    this.emitter = mitt(this.eventsMap);
   }
 
   on(event: EventType, handler: Handler): EventEmitter {
     this.emitter.on(event, handler);
-    const existingCounts = this.listenerCounts.get(event);
-    if (existingCounts) {
-      this.listenerCounts.set(event, existingCounts + 1);
-    } else {
-      this.listenerCounts.set(event, 1);
-    }
     return this;
   }
 
   off(event: EventType, handler: Handler): EventEmitter {
     this.emitter.off(event, handler);
-
-    const existingCounts = this.listenerCounts.get(event);
-    this.listenerCounts.set(event, existingCounts - 1);
     return this;
   }
 
@@ -51,20 +44,34 @@ export class EventEmitter implements CommonEventEmitter {
     return this;
   }
 
-  emit(event: EventType, eventData?: any): void {
+  emit(event: EventType, eventData?: any): boolean {
     this.emitter.emit(event, eventData);
+    return this.eventListenersCount(event) > 0;
   }
 
-  once(event: EventType, handler: Handler): void {
+  once(event: EventType, handler: Handler): EventEmitter {
     const onceHandler: Handler = (eventData) => {
       handler(eventData);
       this.off(event, onceHandler);
     };
 
-    this.on(event, onceHandler);
+    return this.on(event, onceHandler);
   }
 
   listenerCount(event: EventType): number {
-    return this.listenerCounts.get(event) || 0;
+    return this.eventListenersCount(event);
+  }
+
+  removeAllListeners(event?: EventType): EventEmitter {
+    if (event) {
+      this.eventsMap.delete(event);
+    } else {
+      this.eventsMap.clear();
+    }
+    return this;
+  }
+
+  private eventListenersCount(event: EventType): number {
+    return this.eventsMap.has(event) ? this.eventsMap.get(event).length : 0;
   }
 }
