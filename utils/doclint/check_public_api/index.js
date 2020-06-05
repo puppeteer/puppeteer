@@ -612,6 +612,13 @@ function compareDocumentations(actual, expected) {
           expectedName: 'VisionDeficiency',
         },
       ],
+      [
+        'Method Accessibility.snapshot() options',
+        {
+          actualName: 'Object',
+          expectedName: 'SnapshotOptions',
+        },
+      ],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);
