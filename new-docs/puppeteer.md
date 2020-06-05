@@ -8,7 +8,7 @@
 
 |  Class | Description |
 |  --- | --- |
-|  [Accessibility](./puppeteer.accessibility.md) |  |
+|  [Accessibility](./puppeteer.accessibility.md) | The Accessibility class provides methods for inspecting Chromium's accessibility tree. The accessibility tree is used by assistive technology such as [screen readers](https://en.wikipedia.org/wiki/Screen_reader) or [switches](https://en.wikipedia.org/wiki/Switch_access)<!-- -->. |
 |  [Browser](./puppeteer.browser.md) |  |
 |  [BrowserContext](./puppeteer.browsercontext.md) |  |
 |  [BrowserFetcher](./puppeteer.browserfetcher.md) |  |
@@ -53,6 +53,8 @@
 |  Interface | Description |
 |  --- | --- |
 |  [BrowserFetcherOptions](./puppeteer.browserfetcheroptions.md) |  |
+|  [SerializedAXNode](./puppeteer.serializedaxnode.md) | Represents a Node and the properties of it that are relevant to Accessibility. |
+|  [SnapshotOptions](./puppeteer.snapshotoptions.md) |  |
 
 ## Variables
 

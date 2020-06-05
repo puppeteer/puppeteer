@@ -4,22 +4,58 @@
 
 ## Accessibility.snapshot() method
 
+Captures the current state of the accessibility tree. The returned object represents the root accessible node of the page.
+
 <b>Signature:</b>
 
 ```typescript
-snapshot(options?: {
-        interestingOnly?: boolean;
-        root?: ElementHandle;
-    }): Promise<SerializedAXNode>;
+snapshot(options?: SnapshotOptions): Promise<SerializedAXNode>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | { interestingOnly?: boolean; root?: [ElementHandle](./puppeteer.elementhandle.md)<!-- -->; } |  |
+|  options | [SnapshotOptions](./puppeteer.snapshotoptions.md) |  |
 
 <b>Returns:</b>
 
-Promise&lt;SerializedAXNode&gt;
+Promise&lt;[SerializedAXNode](./puppeteer.serializedaxnode.md)<!-- -->&gt;
+
+An AXNode object represeting the snapshot.
+
+## Remarks
+
+\*\*NOTE\*\* The Chromium accessibility tree contains nodes that go unused on most platforms and by most screen readers. Puppeteer will discard them as well for an easier to process tree, unless `interestingOnly` is set to `false`<!-- -->.
+
+## Example 1
+
+An example of dumping the entire accessibility tree:
+
+```js
+const snapshot = await page.accessibility.snapshot();
+console.log(snapshot);
+
+```
+
+## Example 2
+
+An example of logging the focused node's name:
+
+```js
+const snapshot = await page.accessibility.snapshot();
+const node = findFocusedNode(snapshot);
+console.log(node && node.name);
+
+function findFocusedNode(node) {
+  if (node.focused)
+    return node;
+  for (const child of node.children || []) {
+    const foundNode = findFocusedNode(child);
+    return foundNode;
+  }
+  return null;
+}
+
+```
 
