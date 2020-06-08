@@ -16,7 +16,7 @@
 |  [Connection](./puppeteer.connection.md) |  |
 |  [ConsoleMessage](./puppeteer.consolemessage.md) |  |
 |  [Coverage](./puppeteer.coverage.md) |  |
-|  [Dialog](./puppeteer.dialog.md) | Dialog instances are dispatched by <code>Page</code> via the <code>dialog</code> event. |
+|  [Dialog](./puppeteer.dialog.md) | Dialog instances are dispatched by the [Page](./puppeteer.page.md) via the <code>dialog</code> event. |
 |  [ElementHandle](./puppeteer.elementhandle.md) |  |
 |  [ExecutionContext](./puppeteer.executioncontext.md) |  |
 |  [FileChooser](./puppeteer.filechooser.md) |  |

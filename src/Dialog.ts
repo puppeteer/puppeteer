@@ -19,7 +19,7 @@ import { CDPSession } from './Connection';
 import Protocol from './protocol';
 
 /**
- * Dialog instances are dispatched by `Page` via the `dialog` event.
+ * Dialog instances are dispatched by the {@link Page} via the `dialog` event.
  *
  * @remarks
  *

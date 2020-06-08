@@ -13,5 +13,5 @@ message(): string;
 
 string
 
-the message displayed in the dialog.
+The message displayed in the dialog.
 

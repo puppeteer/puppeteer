@@ -13,5 +13,5 @@ dismiss(): Promise<void>;
 
 Promise&lt;void&gt;
 
-a promise which will resolve once the dialog has been dismissed
+A promise which will resolve once the dialog has been dismissed
 

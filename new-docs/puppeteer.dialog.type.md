@@ -13,5 +13,5 @@ type(): Protocol.Page.DialogType;
 
 Protocol.Page.DialogType
 
-the type of the dialog.
+The type of the dialog.
 

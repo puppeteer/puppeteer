@@ -4,7 +4,7 @@
 
 ## Dialog class
 
-Dialog instances are dispatched by `Page` via the `dialog` event.
+Dialog instances are dispatched by the [Page](./puppeteer.page.md) via the `dialog` event.
 
 <b>Signature:</b>
 

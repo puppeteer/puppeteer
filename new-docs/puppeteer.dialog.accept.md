@@ -20,5 +20,5 @@ accept(promptText?: string): Promise<void>;
 
 Promise&lt;void&gt;
 
-a promise that resolves when the dialog has been accepted.
+A promise that resolves when the dialog has been accepted.
 
