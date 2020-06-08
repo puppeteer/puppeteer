@@ -14,9 +14,11 @@ accept(promptText?: string): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  promptText | string |  |
+|  promptText | string | optional text that will be entered in the dialog prompt. Has no effect if the dialog's type is not <code>prompt</code>. |
 
 <b>Returns:</b>
 
 Promise&lt;void&gt;
+
+a promise that resolves when the dialog has been accepted.
 
