@@ -16,29 +16,27 @@
 
 import { assert } from './helper';
 import { CDPSession } from './Connection';
+import Protocol from './protocol';
 
-/* TODO(jacktfranklin): protocol.d.ts defines this
- * so let's ditch this and avoid the duplication
- */
-export enum DialogType {
-  Alert = 'alert',
-  BeforeUnload = 'beforeunload',
-  Confirm = 'confirm',
-  Prompt = 'prompt',
-}
+export const DialogType: Record<string, Protocol.Page.DialogType> = {
+  Alert: 'alert',
+  BeforeUnload: 'beforeunload',
+  Confirm: 'confirm',
+  Prompt: 'prompt',
+};
 
 export class Dialog {
   static Type = DialogType;
 
   private _client: CDPSession;
-  private _type: DialogType;
+  private _type: Protocol.Page.DialogType;
   private _message: string;
   private _defaultValue: string;
   private _handled = false;
 
   constructor(
     client: CDPSession,
-    type: DialogType,
+    type: Protocol.Page.DialogType,
     message: string,
     defaultValue = ''
   ) {
@@ -48,7 +46,7 @@ export class Dialog {
     this._defaultValue = defaultValue;
   }
 
-  type(): DialogType {
+  type(): Protocol.Page.DialogType {
     return this._type;
   }
 
