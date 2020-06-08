@@ -337,11 +337,13 @@
   * [coverage.stopJSCoverage()](#coveragestopjscoverage)
 - [class: TimeoutError](#class-timeouterror)
 - [class: EventEmitter](#class-eventemitter)
+  * [eventEmitter.addListener(event, handler)](#eventemitteraddlistenerevent-handler)
   * [eventEmitter.emit(event, [eventData])](#eventemitteremitevent-eventdata)
   * [eventEmitter.listenerCount(event)](#eventemitterlistenercountevent)
   * [eventEmitter.off(event, handler)](#eventemitteroffevent-handler)
   * [eventEmitter.on(event, handler)](#eventemitteronevent-handler)
   * [eventEmitter.once(event, handler)](#eventemitteronceevent-handler)
+  * [eventEmitter.removeAllListeners([event])](#eventemitterremovealllistenersevent)
   * [eventEmitter.removeListener(event, handler)](#eventemitterremovelistenerevent-handler)
 <!-- GEN:stop -->
 
@@ -3986,9 +3988,17 @@ TimeoutError is emitted whenever certain operations are terminated due to timeou
 
 A small EventEmitter class backed by [Mitt](https://github.com/developit/mitt/).
 
+#### eventEmitter.addListener(event, handler)
+- `event` <[string]|[symbol]> the event to remove the handler from.
+- `handler` <[Function]> the event listener that will be added.
+- returns: `this` so you can chain method calls
+
+This method is identical to `on` and maintained for compatibility with Node's EventEmitter. We recommend using `on` by default.
+
 #### eventEmitter.emit(event, [eventData])
 - `event` <[string]|[symbol]> the event to trigger.
 - `eventData` <[Object]> additional data to send with the event.
+- returns: `boolean`; `true` if there are any listeners for the event, `false` if there are none.
 
 #### eventEmitter.listenerCount(event)
 - `event` <[string]|[symbol]> the event to check for listeners.
@@ -3997,21 +4007,28 @@ A small EventEmitter class backed by [Mitt](https://github.com/developit/mitt/).
 #### eventEmitter.off(event, handler)
 - `event` <[string]|[symbol]> the event to remove the handler from.
 - `handler` <[Function]> the event listener that will be removed.
+- returns: `this` so you can chain method calls
 
 #### eventEmitter.on(event, handler)
 - `event` <[string]|[symbol]> the event to add the handler to.
 - `handler` <[Function]> the event listener that will be added.
+- returns: `this` so you can chain method calls
 
 #### eventEmitter.once(event, handler)
 - `event` <[string]|[symbol]> the event to add the handler to.
 - `handler` <[Function]> the event listener that will be added.
+- returns: `this` so you can chain method calls
+
+#### eventEmitter.removeAllListeners([event])
+- `event` <[string]|[symbol]> optional argument to remove all listeners for the given event. If it's not given this method will remove all listeners for all events.
+- returns: `this` so you can chain method calls
 
 #### eventEmitter.removeListener(event, handler)
 - `event` <[string]|[symbol]> the event to remove the handler from.
 - `handler` <[Function]> the event listener that will be removed.
+- returns: `this` so you can chain method calls
 
 This method is identical to `off` and maintained for compatibility with Node's EventEmitter. We recommend using `off` by default.
-
 
 [AXNode]: #accessibilitysnapshotoptions "AXNode"
 [Accessibility]: #class-accessibility "Accessibility"

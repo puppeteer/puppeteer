@@ -180,29 +180,25 @@ const expectedNonExistingMethods = new Map([
   ['Page', new Set(['emulateMedia'])],
 ]);
 
+// All the methods from our EventEmitter that we don't document for each subclass.
+const EVENT_LISTENER_METHODS = new Set([
+  'emit',
+  'listenerCount',
+  'off',
+  'on',
+  'once',
+  'removeListener',
+  'addListener',
+  'removeAllListeners',
+]);
+
 /* Methods that are defined in code but are not documented */
 const expectedNotFoundMethods = new Map([
-  /* all the methods from our EventEmitter that we don't document for each subclass */
-  [
-    'Browser',
-    new Set(['emit', 'listenerCount', 'off', 'on', 'once', 'removeListener']),
-  ],
-  [
-    'BrowserContext',
-    new Set(['emit', 'listenerCount', 'off', 'on', 'once', 'removeListener']),
-  ],
-  [
-    'CDPSession',
-    new Set(['emit', 'listenerCount', 'off', 'on', 'once', 'removeListener']),
-  ],
-  [
-    'Page',
-    new Set(['emit', 'listenerCount', 'off', 'on', 'once', 'removeListener']),
-  ],
-  [
-    'WebWorker',
-    new Set(['emit', 'listenerCount', 'off', 'on', 'once', 'removeListener']),
-  ],
+  ['Browser', EVENT_LISTENER_METHODS],
+  ['BrowserContext', EVENT_LISTENER_METHODS],
+  ['CDPSession', EVENT_LISTENER_METHODS],
+  ['Page', EVENT_LISTENER_METHODS],
+  ['WebWorker', EVENT_LISTENER_METHODS],
 ]);
 
 /**
@@ -691,6 +687,20 @@ function compareDocumentations(actual, expected) {
       ],
       [
         'Method EventEmitter.removeListener() event',
+        {
+          actualName: 'string|symbol',
+          expectedName: 'Object',
+        },
+      ],
+      [
+        'Method EventEmitter.addListener() event',
+        {
+          actualName: 'string|symbol',
+          expectedName: 'Object',
+        },
+      ],
+      [
+        'Method EventEmitter.removeAllListeners() event',
         {
           actualName: 'string|symbol',
           expectedName: 'Object',
