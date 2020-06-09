@@ -249,11 +249,6 @@ describe('Emulation', () => {
           () => matchMedia('(prefers-color-scheme: dark)').matches
         )
       ).toBe(false);
-      expect(
-        await page.evaluate(
-          () => matchMedia('(prefers-color-scheme: no-preference)').matches
-        )
-      ).toBe(false);
       await page.emulateMediaFeatures([
         { name: 'prefers-color-scheme', value: 'dark' },
       ]);
@@ -265,11 +260,6 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(
           () => matchMedia('(prefers-color-scheme: light)').matches
-        )
-      ).toBe(false);
-      expect(
-        await page.evaluate(
-          () => matchMedia('(prefers-color-scheme: no-preference)').matches
         )
       ).toBe(false);
       await page.emulateMediaFeatures([
@@ -294,11 +284,6 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(
           () => matchMedia('(prefers-color-scheme: dark)').matches
-        )
-      ).toBe(false);
-      expect(
-        await page.evaluate(
-          () => matchMedia('(prefers-color-scheme: no-preference)').matches
         )
       ).toBe(false);
     });
