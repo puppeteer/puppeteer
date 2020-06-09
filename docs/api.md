@@ -1342,8 +1342,6 @@ await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches);
 // → true
 await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches);
 // → false
-await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches);
-// → false
 
 await page.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]);
 await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -1358,8 +1356,6 @@ await page.emulateMediaFeatures([
 await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches);
 // → true
 await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches);
-// → false
-await page.evaluate(() => matchMedia('(prefers-color-scheme: no-preference)').matches);
 // → false
 await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
 // → true
