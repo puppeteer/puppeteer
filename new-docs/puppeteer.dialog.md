@@ -4,23 +4,36 @@
 
 ## Dialog class
 
+Dialog instances are dispatched by the [Page](./puppeteer.page.md) via the `dialog` event.
+
 <b>Signature:</b>
 
 ```typescript
 export declare class Dialog 
 ```
 
-## Constructors
+## Remarks
 
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(client, type, message, defaultValue)](./puppeteer.dialog._constructor_.md) |  | Constructs a new instance of the <code>Dialog</code> class |
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Dialog` class.
 
-## Properties
+## Example
 
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [Type](./puppeteer.dialog.type.md) | <code>static</code> | typeof [DialogType](./puppeteer.dialogtype.md) |  |
+
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  page.on('dialog', async dialog => {
+    console.log(dialog.message());
+    await dialog.dismiss();
+    await browser.close();
+  });
+  page.evaluate(() => alert('1'));
+})();
+
+```
 
 ## Methods
 

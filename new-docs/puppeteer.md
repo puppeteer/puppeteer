@@ -16,7 +16,7 @@
 |  [Connection](./puppeteer.connection.md) |  |
 |  [ConsoleMessage](./puppeteer.consolemessage.md) |  |
 |  [Coverage](./puppeteer.coverage.md) |  |
-|  [Dialog](./puppeteer.dialog.md) |  |
+|  [Dialog](./puppeteer.dialog.md) | Dialog instances are dispatched by the [Page](./puppeteer.page.md) via the <code>dialog</code> event. |
 |  [ElementHandle](./puppeteer.elementhandle.md) |  |
 |  [ExecutionContext](./puppeteer.executioncontext.md) |  |
 |  [FileChooser](./puppeteer.filechooser.md) |  |
@@ -35,12 +35,6 @@
 |  [Touchscreen](./puppeteer.touchscreen.md) |  |
 |  [Tracing](./puppeteer.tracing.md) |  |
 |  [WebWorker](./puppeteer.webworker.md) |  |
-
-## Enumerations
-
-|  Enumeration | Description |
-|  --- | --- |
-|  [DialogType](./puppeteer.dialogtype.md) |  |
 
 ## Functions
 

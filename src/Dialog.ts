@@ -16,29 +16,42 @@
 
 import { assert } from './helper';
 import { CDPSession } from './Connection';
+import Protocol from './protocol';
 
-/* TODO(jacktfranklin): protocol.d.ts defines this
- * so let's ditch this and avoid the duplication
+/**
+ * Dialog instances are dispatched by the {@link Page} via the `dialog` event.
+ *
+ * @remarks
+ *
+ * @example
+ * ```js
+ * const puppeteer = require('puppeteer');
+ *
+ * (async () => {
+ *   const browser = await puppeteer.launch();
+ *   const page = await browser.newPage();
+ *   page.on('dialog', async dialog => {
+ *     console.log(dialog.message());
+ *     await dialog.dismiss();
+ *     await browser.close();
+ *   });
+ *   page.evaluate(() => alert('1'));
+ * })();
+ * ```
  */
-export enum DialogType {
-  Alert = 'alert',
-  BeforeUnload = 'beforeunload',
-  Confirm = 'confirm',
-  Prompt = 'prompt',
-}
-
 export class Dialog {
-  static Type = DialogType;
-
   private _client: CDPSession;
-  private _type: DialogType;
+  private _type: Protocol.Page.DialogType;
   private _message: string;
   private _defaultValue: string;
   private _handled = false;
 
+  /**
+   * @internal
+   */
   constructor(
     client: CDPSession,
-    type: DialogType,
+    type: Protocol.Page.DialogType,
     message: string,
     defaultValue = ''
   ) {
@@ -48,18 +61,31 @@ export class Dialog {
     this._defaultValue = defaultValue;
   }
 
-  type(): DialogType {
+  /**
+   * @returns The type of the dialog.
+   */
+  type(): Protocol.Page.DialogType {
     return this._type;
   }
 
+  /**
+   * @returns The message displayed in the dialog.
+   */
   message(): string {
     return this._message;
   }
 
+  /**
+   * @returns The default value of the prompt, or an empty string if the dialog is not a `prompt`.
+   */
   defaultValue(): string {
     return this._defaultValue;
   }
 
+  /**
+   * @param promptText - optional text that will be entered in the dialog prompt. Has no effect if the dialog's type is not `prompt`.
+   * @returns A promise that resolves when the dialog has been accepted.
+   */
   async accept(promptText?: string): Promise<void> {
     assert(!this._handled, 'Cannot accept dialog which is already handled!');
     this._handled = true;
@@ -69,6 +95,9 @@ export class Dialog {
     });
   }
 
+  /**
+   * @returns A promise which will resolve once the dialog has been dismissed
+   */
   async dismiss(): Promise<void> {
     assert(!this._handled, 'Cannot dismiss dialog which is already handled!');
     this._handled = true;

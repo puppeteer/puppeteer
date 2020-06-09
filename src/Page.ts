@@ -738,11 +738,16 @@ export class Page extends EventEmitter {
 
   _onDialog(event: Protocol.Page.javascriptDialogOpeningPayload): void {
     let dialogType = null;
-    if (event.type === 'alert') dialogType = Dialog.Type.Alert;
-    else if (event.type === 'confirm') dialogType = Dialog.Type.Confirm;
-    else if (event.type === 'prompt') dialogType = Dialog.Type.Prompt;
-    else if (event.type === 'beforeunload')
-      dialogType = Dialog.Type.BeforeUnload;
+    const validDialogTypes = new Set<Protocol.Page.DialogType>([
+      'alert',
+      'confirm',
+      'prompt',
+      'beforeunload',
+    ]);
+
+    if (validDialogTypes.has(event.type)) {
+      dialogType = event.type as Protocol.Page.DialogType;
+    }
     assert(dialogType, 'Unknown javascript dialog type: ' + event.type);
 
     const dialog = new Dialog(
