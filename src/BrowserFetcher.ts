@@ -101,6 +101,16 @@ function downloadURL(
   return url;
 }
 
+function handleArm64() {
+  fs.stat('/usr/bin/chromium-browser', function (err, stats) {
+    if (stats === undefined) {
+      console.error(`The chromium binary is not available for arm64: `);
+      console.error(`If you are on Ubuntu, you can install with: `);
+      console.error(`\n apt-get install chromium-browser\n`);
+      throw new Error();
+    }
+  });
+}
 const readdirAsync = helper.promisify(fs.readdir.bind(fs));
 const mkdirAsync = helper.promisify(fs.mkdir.bind(fs));
 const unlinkAsync = helper.promisify(fs.unlink.bind(fs));
@@ -219,6 +229,10 @@ export class BrowserFetcher {
     if (await existsAsync(outputPath)) return this.revisionInfo(revision);
     if (!(await existsAsync(this._downloadsFolder)))
       await mkdirAsync(this._downloadsFolder);
+    if (os.arch() === 'arm64') {
+      handleArm64();
+      return;
+    }
     try {
       await downloadFile(url, archivePath, progressCallback);
       await install(archivePath, outputPath);
