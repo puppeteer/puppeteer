@@ -67,6 +67,7 @@ jobs:
         - npm run test-install
         - npm run lint
         - npm run test-doclint
+        - npm run ensure-new-docs-up-to-date
 
     # Runs unit tests on Linux + Firefox
     - node_js: "10.19.0"
