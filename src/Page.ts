@@ -166,27 +166,27 @@ export class Page extends EventEmitter {
     return page;
   }
 
-  _closed = false;
-  _client: CDPSession;
-  _target: Target;
-  _keyboard: Keyboard;
-  _mouse: Mouse;
-  _timeoutSettings = new TimeoutSettings();
-  _touchscreen: Touchscreen;
-  _accessibility: Accessibility;
-  _frameManager: FrameManager;
-  _emulationManager: EmulationManager;
-  _tracing: Tracing;
-  _pageBindings = new Map<string, Function>();
-  _coverage: Coverage;
-  _javascriptEnabled = true;
-  _viewport: Viewport | null;
-  _screenshotTaskQueue: ScreenshotTaskQueue;
-  _workers = new Map<string, WebWorker>();
+  private _closed = false;
+  private _client: CDPSession;
+  private _target: Target;
+  private _keyboard: Keyboard;
+  private _mouse: Mouse;
+  private _timeoutSettings = new TimeoutSettings();
+  private _touchscreen: Touchscreen;
+  private _accessibility: Accessibility;
+  private _frameManager: FrameManager;
+  private _emulationManager: EmulationManager;
+  private _tracing: Tracing;
+  private _pageBindings = new Map<string, Function>();
+  private _coverage: Coverage;
+  private _javascriptEnabled = true;
+  private _viewport: Viewport | null;
+  private _screenshotTaskQueue: ScreenshotTaskQueue;
+  private _workers = new Map<string, WebWorker>();
   // TODO: improve this typedef - it's a function that takes a file chooser or something?
-  _fileChooserInterceptors = new Set<Function>();
+  private _fileChooserInterceptors = new Set<Function>();
 
-  _disconnectPromise?: Promise<Error>;
+  private _disconnectPromise?: Promise<Error>;
 
   constructor(client: CDPSession, target: Target, ignoreHTTPSErrors: boolean) {
     super();
@@ -280,7 +280,7 @@ export class Page extends EventEmitter {
     });
   }
 
-  async _initialize(): Promise<void> {
+  private async _initialize(): Promise<void> {
     await Promise.all([
       this._frameManager.initialize(),
       this._client.send('Target.setAutoAttach', {
@@ -293,7 +293,7 @@ export class Page extends EventEmitter {
     ]);
   }
 
-  async _onFileChooser(
+  private async _onFileChooser(
     event: Protocol.Page.fileChooserOpenedPayload
   ): Promise<void> {
     if (!this._fileChooserInterceptors.size) return;
@@ -304,6 +304,10 @@ export class Page extends EventEmitter {
     this._fileChooserInterceptors.clear();
     const fileChooser = new FileChooser(element, event);
     for (const interceptor of interceptors) interceptor.call(null, fileChooser);
+  }
+
+  public isJavaScriptEnabled(): boolean {
+    return this._javascriptEnabled;
   }
 
   async waitForFileChooser(
@@ -597,14 +601,16 @@ export class Page extends EventEmitter {
     return this._buildMetricsObject(response.metrics);
   }
 
-  _emitMetrics(event: Protocol.Performance.metricsPayload): void {
+  private _emitMetrics(event: Protocol.Performance.metricsPayload): void {
     this.emit(Events.Page.Metrics, {
       title: event.title,
       metrics: this._buildMetricsObject(event.metrics),
     });
   }
 
-  _buildMetricsObject(metrics?: Protocol.Performance.Metric[]): Metrics {
+  private _buildMetricsObject(
+    metrics?: Protocol.Performance.Metric[]
+  ): Metrics {
     const result = {};
     for (const metric of metrics || []) {
       if (supportedMetrics.has(metric.name)) result[metric.name] = metric.value;
@@ -612,14 +618,16 @@ export class Page extends EventEmitter {
     return result;
   }
 
-  _handleException(exceptionDetails: Protocol.Runtime.ExceptionDetails): void {
+  private _handleException(
+    exceptionDetails: Protocol.Runtime.ExceptionDetails
+  ): void {
     const message = helper.getExceptionMessage(exceptionDetails);
     const err = new Error(message);
     err.stack = ''; // Don't report clientside error with a node stack attached
     this.emit(Events.Page.PageError, err);
   }
 
-  async _onConsoleAPI(
+  private async _onConsoleAPI(
     event: Protocol.Runtime.consoleAPICalledPayload
   ): Promise<void> {
     if (event.executionContextId === 0) {
@@ -645,7 +653,7 @@ export class Page extends EventEmitter {
     this._addConsoleMessage(event.type, values, event.stackTrace);
   }
 
-  async _onBindingCalled(
+  private async _onBindingCalled(
     event: Protocol.Runtime.bindingCalledPayload
   ): Promise<void> {
     const { name, seq, args } = JSON.parse(event.payload);
@@ -704,7 +712,7 @@ export class Page extends EventEmitter {
     }
   }
 
-  _addConsoleMessage(
+  private _addConsoleMessage(
     type: string,
     args: JSHandle[],
     stackTrace?: Protocol.Runtime.StackTrace
@@ -736,7 +744,7 @@ export class Page extends EventEmitter {
     this.emit(Events.Page.Console, message);
   }
 
-  _onDialog(event: Protocol.Page.javascriptDialogOpeningPayload): void {
+  private _onDialog(event: Protocol.Page.javascriptDialogOpeningPayload): void {
     let dialogType = null;
     const validDialogTypes = new Set<Protocol.Page.DialogType>([
       'alert',
@@ -793,7 +801,7 @@ export class Page extends EventEmitter {
     return await this._frameManager.mainFrame().waitForNavigation(options);
   }
 
-  _sessionClosePromise(): Promise<Error> {
+  private _sessionClosePromise(): Promise<Error> {
     if (!this._disconnectPromise)
       this._disconnectPromise = new Promise((fulfill) =>
         this._client.once(Events.CDPSession.Disconnected, () =>

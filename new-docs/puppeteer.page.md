@@ -20,25 +20,6 @@ export declare class Page extends EventEmitter
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [\_accessibility](./puppeteer.page._accessibility.md) |  | [Accessibility](./puppeteer.accessibility.md) |  |
-|  [\_client](./puppeteer.page._client.md) |  | [CDPSession](./puppeteer.cdpsession.md) |  |
-|  [\_closed](./puppeteer.page._closed.md) |  | boolean |  |
-|  [\_coverage](./puppeteer.page._coverage.md) |  | [Coverage](./puppeteer.coverage.md) |  |
-|  [\_disconnectPromise](./puppeteer.page._disconnectpromise.md) |  | Promise&lt;Error&gt; |  |
-|  [\_emulationManager](./puppeteer.page._emulationmanager.md) |  | EmulationManager |  |
-|  [\_fileChooserInterceptors](./puppeteer.page._filechooserinterceptors.md) |  | Set&lt;Function&gt; |  |
-|  [\_frameManager](./puppeteer.page._framemanager.md) |  | [FrameManager](./puppeteer.framemanager.md) |  |
-|  [\_javascriptEnabled](./puppeteer.page._javascriptenabled.md) |  | boolean |  |
-|  [\_keyboard](./puppeteer.page._keyboard.md) |  | [Keyboard](./puppeteer.keyboard.md) |  |
-|  [\_mouse](./puppeteer.page._mouse.md) |  | [Mouse](./puppeteer.mouse.md) |  |
-|  [\_pageBindings](./puppeteer.page._pagebindings.md) |  | Map&lt;string, Function&gt; |  |
-|  [\_screenshotTaskQueue](./puppeteer.page._screenshottaskqueue.md) |  | ScreenshotTaskQueue |  |
-|  [\_target](./puppeteer.page._target.md) |  | [Target](./puppeteer.target.md) |  |
-|  [\_timeoutSettings](./puppeteer.page._timeoutsettings.md) |  | TimeoutSettings |  |
-|  [\_touchscreen](./puppeteer.page._touchscreen.md) |  | [Touchscreen](./puppeteer.touchscreen.md) |  |
-|  [\_tracing](./puppeteer.page._tracing.md) |  | [Tracing](./puppeteer.tracing.md) |  |
-|  [\_viewport](./puppeteer.page._viewport.md) |  | Viewport \| null |  |
-|  [\_workers](./puppeteer.page._workers.md) |  | Map&lt;string, [WebWorker](./puppeteer.webworker.md)<!-- -->&gt; |  |
 |  [accessibility](./puppeteer.page.accessibility.md) |  | [Accessibility](./puppeteer.accessibility.md) |  |
 |  [coverage](./puppeteer.page.coverage.md) |  | [Coverage](./puppeteer.coverage.md) |  |
 |  [keyboard](./puppeteer.page.keyboard.md) |  | [Keyboard](./puppeteer.keyboard.md) |  |
@@ -50,20 +31,10 @@ export declare class Page extends EventEmitter
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [\_addConsoleMessage(type, args, stackTrace)](./puppeteer.page._addconsolemessage.md) |  |  |
-|  [\_buildMetricsObject(metrics)](./puppeteer.page._buildmetricsobject.md) |  |  |
-|  [\_emitMetrics(event)](./puppeteer.page._emitmetrics.md) |  |  |
 |  [\_go(delta, options)](./puppeteer.page._go.md) |  |  |
-|  [\_handleException(exceptionDetails)](./puppeteer.page._handleexception.md) |  |  |
-|  [\_initialize()](./puppeteer.page._initialize.md) |  |  |
-|  [\_onBindingCalled(event)](./puppeteer.page._onbindingcalled.md) |  |  |
-|  [\_onConsoleAPI(event)](./puppeteer.page._onconsoleapi.md) |  |  |
-|  [\_onDialog(event)](./puppeteer.page._ondialog.md) |  |  |
-|  [\_onFileChooser(event)](./puppeteer.page._onfilechooser.md) |  |  |
 |  [\_onLogEntryAdded(event)](./puppeteer.page._onlogentryadded.md) |  |  |
 |  [\_onTargetCrashed()](./puppeteer.page._ontargetcrashed.md) |  |  |
 |  [\_screenshotTask(format, options)](./puppeteer.page._screenshottask.md) |  |  |
-|  [\_sessionClosePromise()](./puppeteer.page._sessionclosepromise.md) |  |  |
 |  [$(selector)](./puppeteer.page._.md) |  |  |
 |  [$$(selector)](./puppeteer.page.__.md) |  |  |
 |  [$$eval(selector, pageFunction, args)](./puppeteer.page.__eval.md) |  |  |
@@ -97,6 +68,7 @@ export declare class Page extends EventEmitter
 |  [goto(url, options)](./puppeteer.page.goto.md) |  |  |
 |  [hover(selector)](./puppeteer.page.hover.md) |  |  |
 |  [isClosed()](./puppeteer.page.isclosed.md) |  |  |
+|  [isJavaScriptEnabled()](./puppeteer.page.isjavascriptenabled.md) |  |  |
 |  [mainFrame()](./puppeteer.page.mainframe.md) |  |  |
 |  [metrics()](./puppeteer.page.metrics.md) |  |  |
 |  [pdf(options)](./puppeteer.page.pdf.md) |  |  |

@@ -219,7 +219,7 @@ export class ElementHandle extends JSHandle {
         }
         return false;
       },
-      this._page._javascriptEnabled
+      this._page.isJavaScriptEnabled()
     );
 
     if (error) throw new Error(error);

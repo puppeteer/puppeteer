@@ -131,6 +131,7 @@
   * [page.goto(url[, options])](#pagegotourl-options)
   * [page.hover(selector)](#pagehoverselector)
   * [page.isClosed()](#pageisclosed)
+  * [page.isJavaScriptEnabled()](#pageisjavascriptenabled)
   * [page.keyboard](#pagekeyboard)
   * [page.mainFrame()](#pagemainframe)
   * [page.metrics()](#pagemetrics)
@@ -1642,6 +1643,12 @@ Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
 - returns: <[boolean]>
 
 Indicates that the page has been closed.
+
+#### page.isJavaScriptEnabled()
+
+- returns: <[boolean]>
+
+Returns `true` if the page has JavaScript enabled, `false` otherwise.
 
 #### page.keyboard
 
