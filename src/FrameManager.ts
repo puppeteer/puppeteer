@@ -360,6 +360,80 @@ export class FrameManager extends EventEmitter {
   }
 }
 
+/**
+ * At every point of time, page exposes its current frame tree via the [page.mainFrame()](#pagemainframe) and [frame.childFrames()](#framechildframes) methods.
+ *
+ * [Frame] object's lifecycle is controlled by three events, dispatched on the page object:
+ * - ['frameattached'](#event-frameattached) - fired when the frame gets attached to the page. A Frame can be attached to the page only once.
+ * - ['framenavigated'](#event-framenavigated) - fired when the frame commits navigation to a different URL.
+ * - ['framedetached'](#event-framedetached) - fired when the frame gets detached from the page.  A Frame can be detached from the page only once.
+ *
+ * @example
+ * An example of dumping frame tree:
+ *
+ * ```js
+ * const puppeteer = require('puppeteer');
+ *
+ * (async () => {
+ *   const browser = await puppeteer.launch();
+ *   const page = await browser.newPage();
+ *   await page.goto('https://www.google.com/chrome/browser/canary.html');
+ *   dumpFrameTree(page.mainFrame(), '');
+ *   await browser.close();
+ *
+ *   function dumpFrameTree(frame, indent) {
+ *     console.log(indent + frame.url());
+ *     for (const child of frame.childFrames()) {
+ *       dumpFrameTree(child, indent + '  ');
+ *     }
+ *   }
+ * })();
+ * ```
+ *
+ * @example
+ * An example of getting text from an iframe element:
+ *
+ * ```js
+ *   const frame = page.frames().find(frame => frame.name() === 'myframe');
+ *   const text = await frame.$eval('.selector', element => element.textContent);
+ *   console.log(text);
+ * ``` 
+ *
+ * @example
+ * An example of dumping frame tree:
+ *
+ * ```js
+ * const puppeteer = require('puppeteer');
+ *
+ * (async () => {
+ *   const browser = await puppeteer.launch();
+ *   const page = await browser.newPage();
+ *   await page.goto('https://www.google.com/chrome/browser/canary.html');
+ *   dumpFrameTree(page.mainFrame(), '');
+ *   await browser.close();
+ *
+ *   function dumpFrameTree(frame, indent) {
+ *     console.log(indent + frame.url());
+ *     for (const child of frame.childFrames()) {
+ *       dumpFrameTree(child, indent + '  ');
+ *     }
+ *   }
+ * })();
+ * ```
+ *
+ * @example
+ * An example of getting text from an iframe element:
+ *
+ * ```js
+ *   const frame = page.frames().find(frame => frame.name() === 'myframe');
+ *   const text = await frame.$eval('.selector', element => element.textContent);
+ *   console.log(text);
+ * ```
+ *
+ * @public 
+ *
+ */
+
 export class Frame {
   _frameManager: FrameManager;
   _client: CDPSession;
@@ -441,6 +515,13 @@ export class Frame {
     return this._mainWorld.evaluate<ReturnType>(pageFunction, ...args);
   }
 
+  /**
+   * Queries the frame for the CSS selector. If there's no such element within the frame, the method resolves to `null`.
+   * 
+   * @param selector - A CSS selector to query the frame for.
+   * 
+   * @returns A promise that resolves to an ElementHandle object which points to the frame element.
+   */
   async $(selector: string): Promise<ElementHandle | null> {
     return this._mainWorld.$(selector);
   }
