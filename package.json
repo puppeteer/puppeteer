@@ -34,7 +34,7 @@
     "compare-protocol-d-ts": "node utils/protocol-types-generator compare",
     "test-install": "scripts/test-install.sh",
     "generate-docs": "npm run tsc && api-extractor run --local --verbose && api-documenter markdown -i temp -o new-docs",
-    "ensure-new-docs-up-to-date": "npm run generate-docs && exit (git status --porcelain | head -255 | wc -l)"
+    "ensure-new-docs-up-to-date": "npm run generate-docs && exit `git status --porcelain | head -255 | wc -l`"
   },
   "files": [
     "lib/",
