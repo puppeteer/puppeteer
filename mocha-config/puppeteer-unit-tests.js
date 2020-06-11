@@ -18,7 +18,7 @@ const base = require('./base');
 
 module.exports = {
   ...base,
-  file: ['./test/mocha-utils.js'],
+  require: ['./test/mocha-utils.js'],
   spec: 'test/*.spec.js',
   // retry twice more, so we run each test up to 3 times if needed.
   retries: 2,

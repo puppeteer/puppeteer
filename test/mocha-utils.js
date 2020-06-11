@@ -176,31 +176,33 @@ exports.setupTestPageAndContextHooks = () => {
   });
 };
 
-before(async () => {
-  const { server, httpsServer } = await setupServer();
+exports.mochaHooks = {
+  beforeAll: async () => {
+    const { server, httpsServer } = await setupServer();
 
-  state.puppeteer = puppeteer;
-  state.defaultBrowserOptions = defaultBrowserOptions;
-  state.server = server;
-  state.httpsServer = httpsServer;
-  state.isFirefox = isFirefox;
-  state.isChrome = isChrome;
-  state.isHeadless = isHeadless;
-  state.puppeteerPath = path.resolve(path.join(__dirname, '..'));
-});
+    state.puppeteer = puppeteer;
+    state.defaultBrowserOptions = defaultBrowserOptions;
+    state.server = server;
+    state.httpsServer = httpsServer;
+    state.isFirefox = isFirefox;
+    state.isChrome = isChrome;
+    state.isHeadless = isHeadless;
+    state.puppeteerPath = path.resolve(path.join(__dirname, '..'));
+  },
 
-beforeEach(async () => {
-  state.server.reset();
-  state.httpsServer.reset();
-});
+  beforeEach: async () => {
+    state.server.reset();
+    state.httpsServer.reset();
+  },
 
-after(async () => {
-  await state.server.stop();
-  state.server = null;
-  await state.httpsServer.stop();
-  state.httpsServer = null;
-});
+  afterAll: async () => {
+    await state.server.stop();
+    state.server = null;
+    await state.httpsServer.stop();
+    state.httpsServer = null;
+  },
 
-afterEach(() => {
-  sinon.restore();
-});
+  afterEach: () => {
+    sinon.restore();
+  },
+};
