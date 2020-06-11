@@ -140,7 +140,14 @@ global.describeChromeOnly = (...args) => {
   if (isChrome) return describe(...args);
 };
 
-if (process.env.COVERAGE) trackCoverage();
+let coverageHooks = {
+  beforeAll: () => {},
+  afterAll: () => {},
+};
+
+if (process.env.COVERAGE) {
+  coverageHooks = trackCoverage();
+}
 
 console.log(
   `Running unit tests with:
@@ -177,30 +184,36 @@ exports.setupTestPageAndContextHooks = () => {
 };
 
 exports.mochaHooks = {
-  beforeAll: async () => {
-    const { server, httpsServer } = await setupServer();
+  beforeAll: [
+    async () => {
+      const { server, httpsServer } = await setupServer();
 
-    state.puppeteer = puppeteer;
-    state.defaultBrowserOptions = defaultBrowserOptions;
-    state.server = server;
-    state.httpsServer = httpsServer;
-    state.isFirefox = isFirefox;
-    state.isChrome = isChrome;
-    state.isHeadless = isHeadless;
-    state.puppeteerPath = path.resolve(path.join(__dirname, '..'));
-  },
+      state.puppeteer = puppeteer;
+      state.defaultBrowserOptions = defaultBrowserOptions;
+      state.server = server;
+      state.httpsServer = httpsServer;
+      state.isFirefox = isFirefox;
+      state.isChrome = isChrome;
+      state.isHeadless = isHeadless;
+      state.puppeteerPath = path.resolve(path.join(__dirname, '..'));
+    },
+    coverageHooks.beforeAll,
+  ],
 
   beforeEach: async () => {
     state.server.reset();
     state.httpsServer.reset();
   },
 
-  afterAll: async () => {
-    await state.server.stop();
-    state.server = null;
-    await state.httpsServer.stop();
-    state.httpsServer = null;
-  },
+  afterAll: [
+    async () => {
+      await state.server.stop();
+      state.server = null;
+      await state.httpsServer.stop();
+      state.httpsServer = null;
+    },
+    coverageHooks.afterAll,
+  ],
 
   afterEach: () => {
     sinon.restore();
