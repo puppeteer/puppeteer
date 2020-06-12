@@ -185,7 +185,6 @@
   * [keyboard.type(text[, options])](#keyboardtypetext-options)
   * [keyboard.up(key)](#keyboardupkey)
 - [class: Mouse](#class-mouse)
-  * [Selecting text and moving the mouse](#selecting-text-and-moving-the-mouse)
   * [mouse.click(x, y[, options])](#mouseclickx-y-options)
   * [mouse.down([options])](#mousedownoptions)
   * [mouse.move(x, y[, options])](#mousemovex-y-options)
