@@ -23,7 +23,7 @@ const {
 describe('querySelector', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
-  describeFailsFirefox('Page.$eval', function () {
+  describe('Page.$eval', function () {
     it('should work', async () => {
       const { page } = getTestState();
 
@@ -67,7 +67,7 @@ describe('querySelector', function () {
     });
   });
 
-  describeFailsFirefox('Page.$$eval', function () {
+  describe('Page.$$eval', function () {
     it('should work', async () => {
       const { page } = getTestState();
 
@@ -79,7 +79,7 @@ describe('querySelector', function () {
     });
   });
 
-  describeFailsFirefox('Page.$', function () {
+  describe('Page.$', function () {
     it('should query existing element', async () => {
       const { page } = getTestState();
 
@@ -96,7 +96,7 @@ describe('querySelector', function () {
   });
 
   describe('Page.$$', function () {
-    itFailsFirefox('should query existing elements', async () => {
+    it('should query existing elements', async () => {
       const { page } = getTestState();
 
       await page.setContent('<div>A</div><br/><div>B</div>');
@@ -116,7 +116,7 @@ describe('querySelector', function () {
     });
   });
 
-  describeFailsFirefox('Path.$x', function () {
+  describe('Path.$x', function () {
     it('should query existing element', async () => {
       const { page } = getTestState();
 
@@ -155,7 +155,7 @@ describe('querySelector', function () {
       expect(content).toBe('A');
     });
 
-    itFailsFirefox('should return null for non-existing element', async () => {
+    it('should return null for non-existing element', async () => {
       const { page } = getTestState();
 
       await page.setContent(
@@ -166,7 +166,7 @@ describe('querySelector', function () {
       expect(second).toBe(null);
     });
   });
-  describeFailsFirefox('ElementHandle.$eval', function () {
+  describe('ElementHandle.$eval', function () {
     it('should work', async () => {
       const { page } = getTestState();
 
@@ -204,7 +204,7 @@ describe('querySelector', function () {
       );
     });
   });
-  describeFailsFirefox('ElementHandle.$$eval', function () {
+  describe('ElementHandle.$$eval', function () {
     it('should work', async () => {
       const { page } = getTestState();
 
@@ -246,7 +246,7 @@ describe('querySelector', function () {
     });
   });
 
-  describeFailsFirefox('ElementHandle.$$', function () {
+  describe('ElementHandle.$$', function () {
     it('should query existing elements', async () => {
       const { page } = getTestState();
 
@@ -289,7 +289,7 @@ describe('querySelector', function () {
       expect(content).toBe('A');
     });
 
-    itFailsFirefox('should return null for non-existing element', async () => {
+    it('should return null for non-existing element', async () => {
       const { page } = getTestState();
 
       await page.setContent(

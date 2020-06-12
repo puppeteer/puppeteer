@@ -35,31 +35,31 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate(() => 7 * 3);
       expect(result).toBe(21);
     });
-    (bigint ? itFailsFirefox : xit)('should transfer BigInt', async () => {
+    (bigint ? it : xit)('should transfer BigInt', async () => {
       const { page } = getTestState();
 
       const result = await page.evaluate((a) => a, BigInt(42));
       expect(result).toBe(BigInt(42));
     });
-    itFailsFirefox('should transfer NaN', async () => {
+    it('should transfer NaN', async () => {
       const { page } = getTestState();
 
       const result = await page.evaluate((a) => a, NaN);
       expect(Object.is(result, NaN)).toBe(true);
     });
-    itFailsFirefox('should transfer -0', async () => {
+    it('should transfer -0', async () => {
       const { page } = getTestState();
 
       const result = await page.evaluate((a) => a, -0);
       expect(Object.is(result, -0)).toBe(true);
     });
-    itFailsFirefox('should transfer Infinity', async () => {
+    it('should transfer Infinity', async () => {
       const { page } = getTestState();
 
       const result = await page.evaluate((a) => a, Infinity);
       expect(Object.is(result, Infinity)).toBe(true);
     });
-    itFailsFirefox('should transfer -Infinity', async () => {
+    it('should transfer -Infinity', async () => {
       const { page } = getTestState();
 
       const result = await page.evaluate((a) => a, -Infinity);
@@ -202,31 +202,31 @@ describe('Evaluation specs', function () {
       expect(result).not.toBe(object);
       expect(result).toEqual(object);
     });
-    (bigint ? itFailsFirefox : xit)('should return BigInt', async () => {
+    (bigint ? it : xit)('should return BigInt', async () => {
       const { page } = getTestState();
 
       const result = await page.evaluate(() => BigInt(42));
       expect(result).toBe(BigInt(42));
     });
-    itFailsFirefox('should return NaN', async () => {
+    it('should return NaN', async () => {
       const { page } = getTestState();
 
       const result = await page.evaluate(() => NaN);
       expect(Object.is(result, NaN)).toBe(true);
     });
-    itFailsFirefox('should return -0', async () => {
+    it('should return -0', async () => {
       const { page } = getTestState();
 
       const result = await page.evaluate(() => -0);
       expect(Object.is(result, -0)).toBe(true);
     });
-    itFailsFirefox('should return Infinity', async () => {
+    it('should return Infinity', async () => {
       const { page } = getTestState();
 
       const result = await page.evaluate(() => Infinity);
       expect(Object.is(result, Infinity)).toBe(true);
     });
-    itFailsFirefox('should return -Infinity', async () => {
+    it('should return -Infinity', async () => {
       const { page } = getTestState();
 
       const result = await page.evaluate(() => -Infinity);
@@ -298,7 +298,7 @@ describe('Evaluation specs', function () {
       const result = await page.evaluate('2 + 5;\n// do some math!');
       expect(result).toBe(7);
     });
-    itFailsFirefox('should accept element handle as an argument', async () => {
+    it('should accept element handle as an argument', async () => {
       const { page } = getTestState();
 
       await page.setContent('<section>42</section>');
@@ -306,22 +306,19 @@ describe('Evaluation specs', function () {
       const text = await page.evaluate((e) => e.textContent, element);
       expect(text).toBe('42');
     });
-    itFailsFirefox(
-      'should throw if underlying element was disposed',
-      async () => {
-        const { page } = getTestState();
+    it('should throw if underlying element was disposed', async () => {
+      const { page } = getTestState();
 
-        await page.setContent('<section>39</section>');
-        const element = await page.$('section');
-        expect(element).toBeTruthy();
-        await element.dispose();
-        let error = null;
-        await page
-          .evaluate((e) => e.textContent, element)
-          .catch((error_) => (error = error_));
-        expect(error.message).toContain('JSHandle is disposed');
-      }
-    );
+      await page.setContent('<section>39</section>');
+      const element = await page.$('section');
+      expect(element).toBeTruthy();
+      await element.dispose();
+      let error = null;
+      await page
+        .evaluate((e) => e.textContent, element)
+        .catch((error_) => (error = error_));
+      expect(error.message).toContain('JSHandle is disposed');
+    });
     itFailsFirefox(
       'should throw if elementHandles are from other frames',
       async () => {
@@ -376,17 +373,14 @@ describe('Evaluation specs', function () {
         expect(result).toEqual([42]);
       }
     );
-    itFailsFirefox(
-      'should transfer 100Mb of data from page to node.js',
-      async function () {
-        const { page } = getTestState();
+    it('should transfer 100Mb of data from page to node.js', async function () {
+      const { page } = getTestState();
 
-        const a = await page.evaluate(() =>
-          Array(100 * 1024 * 1024 + 1).join('a')
-        );
-        expect(a.length).toBe(100 * 1024 * 1024);
-      }
-    );
+      const a = await page.evaluate(() =>
+        Array(100 * 1024 * 1024 + 1).join('a')
+      );
+      expect(a.length).toBe(100 * 1024 * 1024);
+    });
     it('should throw error with detailed information on exception inside promise ', async () => {
       const { page } = getTestState();
 

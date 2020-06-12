@@ -127,7 +127,7 @@ describe('Emulation', () => {
         'iPhone'
       );
     });
-    it('should support clicking', async () => {
+    itFailsFirefox('should support clicking', async () => {
       const { page, server } = getTestState();
 
       await page.emulate(iPhone);

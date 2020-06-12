@@ -17,7 +17,7 @@
 const expect = require('expect');
 const { getTestState } = require('./mocha-utils');
 
-describeFailsFirefox('ignoreHTTPSErrors', function () {
+describe('ignoreHTTPSErrors', function () {
   /* Note that this test creates its own browser rather than use
    * the one provided by the test set-up as we need one
    * with ignoreHTTPSErrors set to true
@@ -51,7 +51,7 @@ describeFailsFirefox('ignoreHTTPSErrors', function () {
     page = null;
   });
 
-  describe('Response.securityDetails', function () {
+  describeFailsFirefox('Response.securityDetails', function () {
     it('should work', async () => {
       const { httpsServer } = getTestState();
 
@@ -105,7 +105,7 @@ describeFailsFirefox('ignoreHTTPSErrors', function () {
     expect(error).toBe(null);
     expect(response.ok()).toBe(true);
   });
-  it('should work with request interception', async () => {
+  itFailsFirefox('should work with request interception', async () => {
     const { httpsServer } = getTestState();
 
     await page.setRequestInterception(true);
@@ -113,7 +113,7 @@ describeFailsFirefox('ignoreHTTPSErrors', function () {
     const response = await page.goto(httpsServer.EMPTY_PAGE);
     expect(response.status()).toBe(200);
   });
-  it('should work with mixed content', async () => {
+  itFailsFirefox('should work with mixed content', async () => {
     const { server, httpsServer } = getTestState();
 
     httpsServer.setRoute('/mixedcontent.html', (req, res) => {

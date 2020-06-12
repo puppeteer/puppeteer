@@ -28,6 +28,8 @@ const expect = require('expect');
 const { getTestState } = require('./mocha-utils');
 
 describe('Launcher specs', function () {
+  if (getTestState().isFirefox) this.timeout(30 * 1000);
+
   describe('Puppeteer', function () {
     describe('BrowserFetcher', function () {
       it('should download and extract chrome linux binary', async () => {
@@ -327,7 +329,7 @@ describe('Launcher specs', function () {
         if (isChrome) expect(puppeteer.product).toBe('chrome');
         else if (isFirefox) expect(puppeteer.product).toBe('firefox');
       });
-      itFailsFirefox('should work with no default arguments', async () => {
+      it('should work with no default arguments', async () => {
         const { defaultBrowserOptions, puppeteer } = getTestState();
         const options = Object.assign({}, defaultBrowserOptions);
         options.ignoreDefaultArgs = true;
@@ -337,25 +339,22 @@ describe('Launcher specs', function () {
         await page.close();
         await browser.close();
       });
-      itFailsFirefox(
-        'should filter out ignored default arguments',
-        async () => {
-          const { defaultBrowserOptions, puppeteer } = getTestState();
-          // Make sure we launch with `--enable-automation` by default.
-          const defaultArgs = puppeteer.defaultArgs();
-          const browser = await puppeteer.launch(
-            Object.assign({}, defaultBrowserOptions, {
-              // Ignore first and third default argument.
-              ignoreDefaultArgs: [defaultArgs[0], defaultArgs[2]],
-            })
-          );
-          const spawnargs = browser.process().spawnargs;
-          expect(spawnargs.indexOf(defaultArgs[0])).toBe(-1);
-          expect(spawnargs.indexOf(defaultArgs[1])).not.toBe(-1);
-          expect(spawnargs.indexOf(defaultArgs[2])).toBe(-1);
-          await browser.close();
-        }
-      );
+      it('should filter out ignored default arguments', async () => {
+        const { defaultBrowserOptions, puppeteer } = getTestState();
+        // Make sure we launch with `--enable-automation` by default.
+        const defaultArgs = puppeteer.defaultArgs();
+        const browser = await puppeteer.launch(
+          Object.assign({}, defaultBrowserOptions, {
+            // Ignore first and third default argument.
+            ignoreDefaultArgs: [defaultArgs[0], defaultArgs[2]],
+          })
+        );
+        const spawnargs = browser.process().spawnargs;
+        expect(spawnargs.indexOf(defaultArgs[0])).toBe(-1);
+        expect(spawnargs.indexOf(defaultArgs[1])).not.toBe(-1);
+        expect(spawnargs.indexOf(defaultArgs[2])).toBe(-1);
+        await browser.close();
+      });
       it('should have default URL when launching browser', async function () {
         const { defaultBrowserOptions, puppeteer } = getTestState();
         const browser = await puppeteer.launch(defaultBrowserOptions);
@@ -403,24 +402,21 @@ describe('Launcher specs', function () {
         expect(page.viewport()).toBe(null);
         await browser.close();
       });
-      itFailsFirefox(
-        'should take fullPage screenshots when defaultViewport is null',
-        async () => {
-          const { server, puppeteer, defaultBrowserOptions } = getTestState();
+      it('should take fullPage screenshots when defaultViewport is null', async () => {
+        const { server, puppeteer, defaultBrowserOptions } = getTestState();
 
-          const options = Object.assign({}, defaultBrowserOptions, {
-            defaultViewport: null,
-          });
-          const browser = await puppeteer.launch(options);
-          const page = await browser.newPage();
-          await page.goto(server.PREFIX + '/grid.html');
-          const screenshot = await page.screenshot({
-            fullPage: true,
-          });
-          expect(screenshot).toBeInstanceOf(Buffer);
-          await browser.close();
-        }
-      );
+        const options = Object.assign({}, defaultBrowserOptions, {
+          defaultViewport: null,
+        });
+        const browser = await puppeteer.launch(options);
+        const page = await browser.newPage();
+        await page.goto(server.PREFIX + '/grid.html');
+        const screenshot = await page.screenshot({
+          fullPage: true,
+        });
+        expect(screenshot).toBeInstanceOf(Buffer);
+        await browser.close();
+      });
     });
 
     describe('Puppeteer.launch', function () {
@@ -437,7 +433,7 @@ describe('Launcher specs', function () {
         puppeteer._productName = productName;
       });
 
-      it('should be able to launch Chrome', async () => {
+      itOnlyRegularInstall('should be able to launch Chrome', async () => {
         const { puppeteer } = getTestState();
         const browser = await puppeteer.launch({ product: 'chrome' });
         const userAgent = await browser.userAgent();
@@ -507,7 +503,7 @@ describe('Launcher specs', function () {
           remoteBrowser.close(),
         ]);
       });
-      itFailsFirefox('should support ignoreHTTPSErrors option', async () => {
+      it('should support ignoreHTTPSErrors option', async () => {
         const {
           httpsServer,
           puppeteer,
@@ -586,7 +582,7 @@ describe('Launcher specs', function () {
       );
     });
     describe('Puppeteer.executablePath', function () {
-      itFailsFirefox('should work', async () => {
+      itOnlyRegularInstall('should work', async () => {
         const { puppeteer } = getTestState();
 
         const executablePath = puppeteer.executablePath();

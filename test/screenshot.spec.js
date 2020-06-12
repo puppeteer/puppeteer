@@ -177,7 +177,7 @@ describe('Screenshots', function () {
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
     });
-    itFailsFirefox('should take into account padding and border', async () => {
+    it('should take into account padding and border', async () => {
       const { page } = getTestState();
 
       await page.setViewport({ width: 500, height: 500 });
@@ -196,14 +196,12 @@ describe('Screenshots', function () {
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
     });
-    itFailsFirefox(
-      'should capture full element when larger than viewport',
-      async () => {
-        const { page } = getTestState();
+    it('should capture full element when larger than viewport', async () => {
+      const { page } = getTestState();
 
-        await page.setViewport({ width: 500, height: 500 });
+      await page.setViewport({ width: 500, height: 500 });
 
-        await page.setContent(`
+      await page.setContent(`
         something above
         <style>
         div.to-screenshot {
@@ -218,21 +216,20 @@ describe('Screenshots', function () {
         </style>
         <div class="to-screenshot"></div>
       `);
-        const elementHandle = await page.$('div.to-screenshot');
-        const screenshot = await elementHandle.screenshot();
-        expect(screenshot).toBeGolden(
-          'screenshot-element-larger-than-viewport.png'
-        );
+      const elementHandle = await page.$('div.to-screenshot');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden(
+        'screenshot-element-larger-than-viewport.png'
+      );
 
-        expect(
-          await page.evaluate(() => ({
-            w: window.innerWidth,
-            h: window.innerHeight,
-          }))
-        ).toEqual({ w: 500, h: 500 });
-      }
-    );
-    itFailsFirefox('should scroll element into view', async () => {
+      expect(
+        await page.evaluate(() => ({
+          w: window.innerWidth,
+          h: window.innerHeight,
+        }))
+      ).toEqual({ w: 500, h: 500 });
+    });
+    it('should scroll element into view', async () => {
       const { page } = getTestState();
 
       await page.setViewport({ width: 500, height: 500 });
@@ -287,30 +284,24 @@ describe('Screenshots', function () {
         'Node is either not visible or not an HTMLElement'
       );
     });
-    itFailsFirefox(
-      'should not hang with zero width/height element',
-      async () => {
-        const { page } = getTestState();
+    it('should not hang with zero width/height element', async () => {
+      const { page } = getTestState();
 
-        await page.setContent('<div style="width: 50px; height: 0"></div>');
-        const div = await page.$('div');
-        const error = await div.screenshot().catch((error_) => error_);
-        expect(error.message).toBe('Node has 0 height.');
-      }
-    );
-    itFailsFirefox(
-      'should work for an element with fractional dimensions',
-      async () => {
-        const { page } = getTestState();
+      await page.setContent('<div style="width: 50px; height: 0"></div>');
+      const div = await page.$('div');
+      const error = await div.screenshot().catch((error_) => error_);
+      expect(error.message).toBe('Node has 0 height.');
+    });
+    it('should work for an element with fractional dimensions', async () => {
+      const { page } = getTestState();
 
-        await page.setContent(
-          '<div style="width:48.51px;height:19.8px;border:1px solid black;"></div>'
-        );
-        const elementHandle = await page.$('div');
-        const screenshot = await elementHandle.screenshot();
-        expect(screenshot).toBeGolden('screenshot-element-fractional.png');
-      }
-    );
+      await page.setContent(
+        '<div style="width:48.51px;height:19.8px;border:1px solid black;"></div>'
+      );
+      const elementHandle = await page.$('div');
+      const screenshot = await elementHandle.screenshot();
+      expect(screenshot).toBeGolden('screenshot-element-fractional.png');
+    });
     itFailsFirefox('should work for an element with an offset', async () => {
       const { page } = getTestState();
 
