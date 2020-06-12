@@ -2488,8 +2488,6 @@ await page.mouse.move(0, 0);
 await page.mouse.up();
 ```
 
-#### Selecting text and moving the mouse
-
 Note that the mouse events trigger synthetic `MouseEvent`s.
 This means that it does not fully replicate the functionality of what a normal user would be able to do with their mouse.
 
