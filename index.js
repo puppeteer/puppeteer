@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const { initialisePuppeteer } = require('./lib/index');
+const { initializePuppeteer } = require('./lib/index');
 
 const puppeteer = initialisePuppeteer({
   packageJson: require('./package.json'),
