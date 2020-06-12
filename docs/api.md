@@ -185,6 +185,7 @@
   * [keyboard.type(text[, options])](#keyboardtypetext-options)
   * [keyboard.up(key)](#keyboardupkey)
 - [class: Mouse](#class-mouse)
+  * [Selecting text and moving the mouse](#selecting-text-and-moving-the-mouse)
   * [mouse.click(x, y[, options])](#mouseclickx-y-options)
   * [mouse.down([options])](#mousedownoptions)
   * [mouse.move(x, y[, options])](#mousemovex-y-options)
@@ -2485,6 +2486,45 @@ await page.mouse.move(100, 100);
 await page.mouse.move(100, 0);
 await page.mouse.move(0, 0);
 await page.mouse.up();
+```
+
+#### Selecting text and moving the mouse
+
+Note that the mouse events trigger synthetic `MouseEvent`s.
+This means that it does not fully replicate the functionality of what a normal user would be able to do with their mouse.
+
+For example, dragging and selecting text is not possible using `page.mouse`.
+Instead, you can use the [`DocumentOrShadowRoot.getSelection()`](https://developer.mozilla.org/en-US/docs/Web/API/DocumentOrShadowRoot/getSelection) functionality implemented in the platform.
+
+For example, if you want to select all content between nodes:
+```js
+await page.evaluate((from, to) => {
+  const selection = from.getRootNode().getSelection();
+  const range = document.createRange();
+  range.setStartBefore(from);
+  range.setEndAfter(to);
+  selection.removeAllRanges();
+  selection.addRange(range);
+}, fromJSHandle, toJSHandle);
+```
+
+If you then would want to copy-paste your selection, you can use the clipboard api:
+
+```js
+// The clipboard api does not allow you to copy, unless the tab is focused.
+await page.bringToFront();
+await page.evaluate(() => {
+  // Copy the selected content to the clipboard
+  document.execCommand('copy');
+  // Obtain the content of the clipboard as a string
+  return navigator.clipboard.readText();
+});
+```
+
+Note that if you want access to the clipboard API, you have to give it permission to do so:
+
+```js
+await browser.defaultBrowserContext().overridePermissions('<your origin>', ['clipboard-read', 'clipboard-write']);
 ```
 
 #### mouse.click(x, y[, options])
