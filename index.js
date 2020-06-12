@@ -16,7 +16,7 @@
 
 const { initializePuppeteer } = require('./lib/index');
 
-const puppeteer = initialisePuppeteer({
+const puppeteer = initializePuppeteer({
   packageJson: require('./package.json'),
   rootDirectory: __dirname,
 });

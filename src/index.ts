@@ -34,7 +34,7 @@ interface InitOptions {
   rootDirectory: string;
 }
 
-export const initialisePuppeteer = (options: InitOptions): Puppeteer => {
+export const initializePuppeteer = (options: InitOptions): Puppeteer => {
   const { packageJson, rootDirectory } = options;
 
   for (const className in api) {
