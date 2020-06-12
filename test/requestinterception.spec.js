@@ -693,7 +693,7 @@ describe('request interception', function () {
 
 /**
  * @param {string} path
- * @return {string}
+ * @returns {string}
  */
 function pathToFileURL(path) {
   let pathName = path.replace(/\\/g, '/');

@@ -14,9 +14,11 @@ _getFolderPath(revision: string): string;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  revision | string |  {<!-- -->string<!-- -->} |
+|  revision | string |  |
 
 <b>Returns:</b>
 
 string
+
+{<!-- -->string<!-- -->}
 

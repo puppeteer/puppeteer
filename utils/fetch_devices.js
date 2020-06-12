@@ -123,7 +123,7 @@ async function main(url) {
  * @param {string} deviceName
  * @param {*} descriptor
  * @param {boolean} landscape
- * @return {!Object}
+ * @returns {!Object}
  */
 function createDevice(chromeVersion, deviceName, descriptor, landscape) {
   const devicePayload = loadFromJSONV1(descriptor);
@@ -148,7 +148,7 @@ function createDevice(chromeVersion, deviceName, descriptor, landscape) {
 
 /**
  * @param {*} json
- * @return {?Object}
+ * @returns {?Object}
  */
 function loadFromJSONV1(json) {
   /**
@@ -156,7 +156,7 @@ function loadFromJSONV1(json) {
    * @param {string} key
    * @param {string} type
    * @param {*=} defaultValue
-   * @return {*}
+   * @returns {*}
    */
   function parseValue(object, key, type, defaultValue) {
     if (
@@ -184,7 +184,7 @@ function loadFromJSONV1(json) {
   /**
    * @param {*} object
    * @param {string} key
-   * @return {number}
+   * @returns {number}
    */
   function parseIntValue(object, key) {
     const value = /** @type {number} */ (parseValue(object, key, 'number'));
@@ -195,7 +195,7 @@ function loadFromJSONV1(json) {
 
   /**
    * @param {*} json
-   * @return {!{width: number, height: number}}
+   * @returns {!{width: number, height: number}}
    */
   function parseOrientation(json) {
     const result = {};
@@ -259,7 +259,7 @@ function loadFromJSONV1(json) {
 
 /**
  * @param {url}
- * @return {!Promise}
+ * @returns {!Promise}
  */
 function httpGET(url) {
   let fulfill, reject;

@@ -154,7 +154,7 @@ class ChromeLauncher implements ProductLauncher {
 
   /**
    * @param {!Launcher.ChromeArgOptions=} options
-   * @return {!Array<string>}
+   * @returns {!Array<string>}
    */
   defaultArgs(options: ChromeArgOptions = {}): string[] {
     const chromeArguments = [

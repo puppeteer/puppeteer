@@ -437,7 +437,7 @@ export class ElementHandle extends JSHandle {
   }
 
   /**
-   * @return {!Promise<?BoxModel>}
+   * @returns {!Promise<?BoxModel>}
    */
   async boxModel(): Promise<BoxModel | null> {
     const result = await this._getBoxModel();

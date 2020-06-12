@@ -102,7 +102,7 @@ export class HTTPRequest {
   }
 
   /**
-   * @return {?{errorText: string}}
+   * @returns {?{errorText: string}}
    */
   failure(): { errorText: string } | null {
     if (!this._failureText) return null;

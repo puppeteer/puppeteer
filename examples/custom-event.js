@@ -30,7 +30,7 @@ const puppeteer = require('puppeteer');
   /**
    * Attach an event listener to page to capture a custom event on page load/navigation.
    * @param {string} type Event name.
-   * @return {!Promise}
+   * @returns {!Promise}
    */
   function listenFor(type) {
     return page.evaluateOnNewDocument((type) => {

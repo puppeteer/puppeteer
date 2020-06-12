@@ -224,7 +224,7 @@ export class Browser extends EventEmitter {
   /**
    * @param {function(!Target):boolean} predicate
    * @param {{timeout?: number}=} options
-   * @return {!Promise<!Target>}
+   * @returns {!Promise<!Target>}
    */
   async waitForTarget(
     predicate: (x: Target) => boolean,

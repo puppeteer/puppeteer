@@ -15,9 +15,11 @@ download(revision: string, progressCallback: (x: number, y: number) => void): Pr
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  revision | string |  |
-|  progressCallback | (x: number, y: number) =&gt; void |  {<!-- -->!Promise<!-- -->&lt;<!-- -->!BrowserFetcher.RevisionInfo<!-- -->&gt;<!-- -->} |
+|  progressCallback | (x: number, y: number) =&gt; void |  |
 
 <b>Returns:</b>
 
 Promise&lt;BrowserFetcherRevisionInfo&gt;
+
+{<!-- -->!Promise<!-- -->&lt;<!-- -->!BrowserFetcher.RevisionInfo<!-- -->&gt;<!-- -->}
 

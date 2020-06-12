@@ -84,7 +84,7 @@ function archiveName(
  * @param {string} platform
  * @param {string} host
  * @param {string} revision
- * @return {string}
+ * @returns {string}
  */
 function downloadURL(
   product: Product,
@@ -211,7 +211,7 @@ export class BrowserFetcher {
   /**
    * @param {string} revision
    * @param {?function(number, number):void} progressCallback
-   * @return {!Promise<!BrowserFetcher.RevisionInfo>}
+   * @returns {!Promise<!BrowserFetcher.RevisionInfo>}
    */
   async download(
     revision: string,
@@ -332,7 +332,7 @@ export class BrowserFetcher {
 
   /**
    * @param {string} revision
-   * @return {string}
+   * @returns {string}
    */
   _getFolderPath(revision: string): string {
     return path.join(this._downloadsFolder, this._platform + '-' + revision);
@@ -355,7 +355,7 @@ function parseFolderPath(
  * @param {string} url
  * @param {string} destinationPath
  * @param {?function(number, number):void} progressCallback
- * @return {!Promise}
+ * @returns {!Promise}
  */
 function downloadFile(
   url: string,
@@ -417,7 +417,7 @@ function install(archivePath: string, folderPath: string): Promise<unknown> {
 /**
  * @param {string} tarPath
  * @param {string} folderPath
- * @return {!Promise<?Error>}
+ * @returns {!Promise<?Error>}
  */
 function extractTar(tarPath: string, folderPath: string): Promise<unknown> {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -441,7 +441,7 @@ function extractTar(tarPath: string, folderPath: string): Promise<unknown> {
  *
  * @param {string} dmgPath
  * @param {string} folderPath
- * @return {!Promise<?Error>}
+ * @returns {!Promise<?Error>}
  */
 function installDMG(dmgPath: string, folderPath: string): Promise<void> {
   let mountPath;
