@@ -183,7 +183,7 @@ class ScreenshotTaskQueue {
  * })();
  * ```
  *
- * The Page class emits various events which are documented in the {@link PageEmittedEvents} enum.
+ * The Page class extends from Puppeteer's {@link EventEmitter } class and will emit various events which are documented in the {@link PageEmittedEvents} enum.
  *
  * @example
  * This example logs a message for a single page `load` event:
