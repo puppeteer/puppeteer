@@ -32,6 +32,7 @@ export * from './Coverage';
 export * from './Dialog';
 export * from './JSHandle';
 export * from './ExecutionContext';
+export * from './EventEmitter';
 export * from './FileChooser';
 export * from './FrameManager';
 export * from './JSHandle';

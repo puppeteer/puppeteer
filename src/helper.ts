@@ -19,7 +19,7 @@ import * as fs from 'fs';
 import { CDPSession } from './Connection';
 import { promisify } from 'util';
 import Protocol from './protocol';
-import type { CommonEventEmitter } from './EventEmitter';
+import { CommonEventEmitter } from './EventEmitter';
 
 const openAsync = promisify(fs.open);
 const writeAsync = promisify(fs.write);
