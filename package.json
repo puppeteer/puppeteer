@@ -18,7 +18,7 @@
     "funit": "PUPPETEER_PRODUCT=firefox npm run unit",
     "debug-unit": "node --inspect-brk test/test.js",
     "test-doclint": "mocha --config mocha-config/doclint-tests.js",
-    "test": "npm run tsc && npm run lint --silent && npm run coverage && npm run test-doclint && npm run test-types",
+    "test": "npm run tsc && npm run lint --silent && npm run unit-with-coverage && npm run test-doclint && npm run test-types",
     "prepare": "node typescript-if-required.js",
     "prepublishOnly": "npm run tsc",
     "dev-install": "npm run tsc && node install.js",
