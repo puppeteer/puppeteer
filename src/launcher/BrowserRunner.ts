@@ -51,7 +51,7 @@ export class BrowserRunner {
     this._tempDirectory = tempDirectory;
   }
 
-  start(options: LaunchOptions = {}): void {
+  start(options: LaunchOptions): void {
     const {
       handleSIGINT,
       handleSIGTERM,
@@ -140,10 +140,12 @@ export class BrowserRunner {
       try {
         if (process.platform === 'win32')
           childProcess.execSync(`taskkill /pid ${this.proc.pid} /T /F`);
-        else process.kill(-this.proc.pid, 'SIGKILL');
+        else this.proc.kill('SIGKILL');
       } catch (error) {
         // the process might have already stopped
       }
+    } else {
+      throw new Error('Unable to kill process');
     }
     // Attempt to remove temporary profile directory to avoid littering.
     try {

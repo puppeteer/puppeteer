@@ -71,7 +71,7 @@ try {
 
 const defaultBrowserOptions = Object.assign(
   {
-    handleSIGINT: false,
+    handleSIGINT: true,
     executablePath: process.env.BINARY,
     slowMo: false,
     headless: isHeadless,
