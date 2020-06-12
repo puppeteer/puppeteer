@@ -666,7 +666,7 @@ The method initiates a GET request to download the revision from the host.
 
 ### class: Browser
 
-* extends: [EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter)
+* extends: [EventEmitter](#class-eventemitter)
 
 A Browser is created when Puppeteer connects to a Chromium instance, either through [`puppeteer.launch`](#puppeteerlaunchoptions) or [`puppeteer.connect`](#puppeteerconnectoptions).
 
@@ -828,7 +828,7 @@ You can find the `webSocketDebuggerUrl` from `http://${host}:${port}/json/versio
 
 ### class: BrowserContext
 
-* extends: [EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter)
+* extends: [EventEmitter](#class-eventemitter)
 
 BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has
 a single BrowserContext used by default. The method `browser.newPage()` creates a page in the default browser context.
@@ -958,7 +958,7 @@ const newWindowTarget = await browserContext.waitForTarget(target => target.url(
 
 ### class: Page
 
-* extends: [EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter)
+* extends: [EventEmitter](#class-eventemitter)
 
 Page provides methods to interact with a single tab or [extension background page](https://developer.chrome.com/extensions/background_pages) in Chromium. One [Browser] instance might have multiple [Page] instances.
 
@@ -975,14 +975,16 @@ const puppeteer = require('puppeteer');
 })();
 ```
 
-The Page class emits various events (described below) which can be handled using any of Node's native [`EventEmitter`](https://nodejs.org/api/events.html#events_class_eventemitter) methods, such as `on`, `once` or `removeListener`.
+The Page class emits various events (described below) which can be handled using
+any of the [`EventEmitter`](#class-eventemitter) methods, such as `on`, `once`
+or `off`.
 
 This example logs a message for a single page `load` event:
 ```js
 page.once('load', () => console.log('Page loaded!'));
 ```
 
-To unsubscribe from events use the `removeListener` method:
+To unsubscribe from events use the `off` method:
 
 ```js
 function logRequest(interceptedRequest) {
@@ -990,7 +992,7 @@ function logRequest(interceptedRequest) {
 }
 page.on('request', logRequest);
 // Sometime later...
-page.removeListener('request', logRequest);
+page.off('request', logRequest);
 ```
 
 #### event: 'close'
@@ -3878,7 +3880,7 @@ If the target is not of type `"service_worker"` or `"shared_worker"`, returns `n
 
 ### class: CDPSession
 
-* extends: [EventEmitter](https://nodejs.org/api/events.html#events_class_eventemitter)
+* extends: [EventEmitter](#class-eventemitter)
 
 The `CDPSession` instances are used to talk raw Chrome Devtools Protocol:
 - protocol methods can be called with `session.send` method.
