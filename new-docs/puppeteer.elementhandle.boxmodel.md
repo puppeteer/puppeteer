@@ -4,8 +4,6 @@
 
 ## ElementHandle.boxModel() method
 
- {<!-- -->!Promise<!-- -->&lt;<!-- -->?BoxModel<!-- -->&gt;<!-- -->}
-
 <b>Signature:</b>
 
 ```typescript
@@ -14,4 +12,6 @@ boxModel(): Promise<BoxModel | null>;
 <b>Returns:</b>
 
 Promise&lt;BoxModel \| null&gt;
+
+{<!-- -->!Promise<!-- -->&lt;<!-- -->?BoxModel<!-- -->&gt;<!-- -->}
 

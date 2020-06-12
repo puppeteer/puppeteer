@@ -89,7 +89,7 @@ module.exports.runCommands = function (sources, version) {
 /**
  * @param {{name: string, from: number, to: number, source: !Source}} command
  * @param {string} editText
- * @return {boolean}
+ * @returns {boolean}
  */
 function applyCommand(command, editText) {
   const text = command.source.text();

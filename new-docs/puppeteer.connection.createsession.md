@@ -14,9 +14,11 @@ createSession(targetInfo: Protocol.Target.TargetInfo): Promise<CDPSession>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  targetInfo | Protocol.Target.TargetInfo |  {<!-- -->!Promise<!-- -->&lt;<!-- -->!CDPSession<!-- -->&gt;<!-- -->} |
+|  targetInfo | Protocol.Target.TargetInfo |  |
 
 <b>Returns:</b>
 
 Promise&lt;[CDPSession](./puppeteer.cdpsession.md)<!-- -->&gt;
+
+{<!-- -->!Promise<!-- -->&lt;<!-- -->!CDPSession<!-- -->&gt;<!-- -->}
 

@@ -149,7 +149,7 @@ export class ExecutionContext {
 
     /**
      * @param {*} arg
-     * @return {*}
+     * @returns {*}
      * @this {ExecutionContext}
      */
     function convertArgument(this: ExecutionContext, arg: unknown): unknown {

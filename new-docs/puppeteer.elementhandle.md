@@ -39,7 +39,7 @@ export declare class ElementHandle extends JSHandle
 |  [$x(expression)](./puppeteer.elementhandle._x.md) |  |  |
 |  [asElement()](./puppeteer.elementhandle.aselement.md) |  |  |
 |  [boundingBox()](./puppeteer.elementhandle.boundingbox.md) |  |  |
-|  [boxModel()](./puppeteer.elementhandle.boxmodel.md) |  |  {<!-- -->!Promise<!-- -->&lt;<!-- -->?BoxModel<!-- -->&gt;<!-- -->} |
+|  [boxModel()](./puppeteer.elementhandle.boxmodel.md) |  |  |
 |  [click(options)](./puppeteer.elementhandle.click.md) |  |  |
 |  [contentFrame()](./puppeteer.elementhandle.contentframe.md) |  |  |
 |  [focus()](./puppeteer.elementhandle.focus.md) |  |  |

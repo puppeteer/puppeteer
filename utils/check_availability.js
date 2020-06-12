@@ -203,7 +203,7 @@ async function checkRangeAvailability({
  * @param {!Table} table
  * @param {string} name
  * @param {number} revision
- * @return {boolean}
+ * @returns {boolean}
  */
 async function checkAndDrawRevisionAvailability(table, name, revision) {
   const promises = fetchers.map((fetcher) => fetcher.canDownload(revision));
@@ -225,7 +225,7 @@ async function checkAndDrawRevisionAvailability(table, name, revision) {
 
 /**
  * @param {string} url
- * @return {!Promise<?string>}
+ * @returns {!Promise<?string>}
  */
 function fetch(url) {
   let resolve;
@@ -253,7 +253,7 @@ function fetch(url) {
 
 /**
  * @param {number} size
- * @return {string}
+ * @returns {string}
  */
 function spaceString(size) {
   return new Array(size).fill(' ').join('');
@@ -261,7 +261,7 @@ function spaceString(size) {
 
 /**
  * @param {string} text
- * @return {string}
+ * @returns {string}
  */
 function filterOutColors(text) {
   for (const colorName in colors) {
@@ -274,7 +274,7 @@ function filterOutColors(text) {
 /**
  * @param {string} text
  * @param {number} length
- * @return {string}
+ * @returns {string}
  */
 function padCenter(text, length) {
   const printableCharacters = filterOutColors(text);

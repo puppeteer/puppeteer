@@ -68,7 +68,7 @@ function checkSources(sources) {
   /**
    * @param {!Array<!Documentation.Class>} classes
    * @param {!Map<string, string>} inheritance
-   * @return {!Array<!Documentation.Class>}
+   * @returns {!Array<!Documentation.Class>}
    */
   function recreateClassesWithInheritance(classes, inheritance) {
     const classesByName = new Map(classes.map((cls) => [cls.name, cls]));
@@ -155,7 +155,7 @@ function checkSources(sources) {
 
   /**
    * @param {!ts.Type} type
-   * @return {!Documentation.Type}
+   * @returns {!Documentation.Type}
    */
   function serializeType(type, circular = []) {
     let typeName = checker.typeToString(type);
@@ -207,7 +207,7 @@ function checkSources(sources) {
 
   /**
    * @param {!ts.Symbol} symbol
-   * @return {boolean}
+   * @returns {boolean}
    */
   function symbolHasPrivateModifier(symbol) {
     const modifiers =
@@ -220,7 +220,7 @@ function checkSources(sources) {
   /**
    * @param {string} className
    * @param {!ts.Symbol} symbol
-   * @return {}
+   * @returns {}
    */
   function serializeClass(className, symbol, node) {
     /** @type {!Array<!Documentation.Member>} */

@@ -212,7 +212,7 @@ export class LifecycleWatcher {
     /**
      * @param {!Frame} frame
      * @param {!Array<string>} expectedLifecycle
-     * @return {boolean}
+     * @returns {boolean}
      */
     function checkLifecycle(
       frame: Frame,

@@ -42,7 +42,7 @@ const utils = (module.exports = {
   },
 
   /**
-   * @return {string}
+   * @returns {string}
    */
   projectRoot: function () {
     return PROJECT_ROOT;
@@ -52,7 +52,7 @@ const utils = (module.exports = {
    * @param {!Page} page
    * @param {string} frameId
    * @param {string} url
-   * @return {!Frame}
+   * @returns {!Frame}
    */
   attachFrame: async function (page, frameId, url) {
     const handle = await page.evaluateHandle(attachFrame, frameId, url);
@@ -103,7 +103,7 @@ const utils = (module.exports = {
   /**
    * @param {!Frame} frame
    * @param {string=} indentation
-   * @return {Array<string>}
+   * @returns {Array<string>}
    */
   dumpFrames: function (frame, indentation) {
     indentation = indentation || '';
@@ -118,7 +118,7 @@ const utils = (module.exports = {
   /**
    * @param {!EventEmitter} emitter
    * @param {string} eventName
-   * @return {!Promise<!Object>}
+   * @returns {!Promise<!Object>}
    */
   waitEvent: function (emitter, eventName, predicate = () => true) {
     return new Promise((fulfill) => {

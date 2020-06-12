@@ -17,9 +17,11 @@ waitForTarget(predicate: (x: Target) => boolean, options?: {
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  predicate | (x: [Target](./puppeteer.target.md)<!-- -->) =&gt; boolean |  |
-|  options | { timeout?: number; } |  {<!-- -->!Promise<!-- -->&lt;<!-- -->!Target<!-- -->&gt;<!-- -->} |
+|  options | { timeout?: number; } |  |
 
 <b>Returns:</b>
 
 Promise&lt;[Target](./puppeteer.target.md)<!-- -->&gt;
+
+{<!-- -->!Promise<!-- -->&lt;<!-- -->!Target<!-- -->&gt;<!-- -->}
 

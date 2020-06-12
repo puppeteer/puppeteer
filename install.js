@@ -97,7 +97,7 @@ async function download() {
 
     /**
      * @param {!Array<string>}
-     * @return {!Promise}
+     * @returns {!Promise}
      */
     function onSuccess(localRevisions) {
       if (os.arch() !== 'arm64') {

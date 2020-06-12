@@ -14,9 +14,11 @@ session(sessionId: string): CDPSession | null;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  sessionId | string |  {<!-- -->?CDPSession<!-- -->} |
+|  sessionId | string |  |
 
 <b>Returns:</b>
 
 [CDPSession](./puppeteer.cdpsession.md) \| null
+
+{<!-- -->?CDPSession<!-- -->}
 

@@ -4,8 +4,6 @@
 
 ## HTTPRequest.failure() method
 
- {<!-- -->?<!-- -->{<!-- -->errorText: string<!-- -->}<!-- -->}
-
 <b>Signature:</b>
 
 ```typescript
@@ -16,4 +14,6 @@ failure(): {
 <b>Returns:</b>
 
 { errorText: string; } \| null
+
+{<!-- -->?<!-- -->{<!-- -->errorText: string<!-- -->}<!-- -->}
 

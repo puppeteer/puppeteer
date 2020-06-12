@@ -29,7 +29,7 @@ class TestServer {
   /**
    * @param {string} dirPath
    * @param {number} port
-   * @return {!TestServer}
+   * @returns {!TestServer}
    */
   static async create(dirPath, port) {
     const server = new TestServer(dirPath, port);
@@ -40,7 +40,7 @@ class TestServer {
   /**
    * @param {string} dirPath
    * @param {number} port
-   * @return {!TestServer}
+   * @returns {!TestServer}
    */
   static async createHTTPS(dirPath, port) {
     const server = new TestServer(dirPath, port, {
@@ -151,7 +151,7 @@ class TestServer {
 
   /**
    * @param {string} path
-   * @return {!Promise<!IncomingMessage>}
+   * @returns {!Promise<!IncomingMessage>}
    */
   waitForRequest(path) {
     let promise = this._requestSubscribers.get(path);

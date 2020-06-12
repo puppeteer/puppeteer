@@ -30,7 +30,7 @@ const EXCLUDE_PROPERTIES = new Set([
 /**
  * @param {!Page} page
  * @param {!Array<!Source>} mdSources
- * @return {!Promise<!Array<!Message>>}
+ * @returns {!Promise<!Array<!Message>>}
  */
 module.exports = async function lint(page, mdSources, jsSources) {
   const mdResult = await mdBuilder(page, mdSources);
@@ -57,7 +57,7 @@ module.exports = async function lint(page, mdSources, jsSources) {
 
 /**
  * @param {!Documentation} doc
- * @return {!Array<string>}
+ * @returns {!Array<string>}
  */
 function checkSorting(doc) {
   const errors = [];
@@ -122,7 +122,7 @@ function checkSorting(doc) {
 /**
  * @param {!Array<!Source>} jsSources
  * @param {!Documentation} jsDocumentation
- * @return {!Documentation}
+ * @returns {!Documentation}
  */
 function filterJSDocumentation(jsSources, jsDocumentation) {
   const apijs = jsSources.find((source) => source.name() === 'api.js');
@@ -142,7 +142,7 @@ function filterJSDocumentation(jsSources, jsDocumentation) {
 
 /**
  * @param {!Documentation} doc
- * @return {!Array<string>}
+ * @returns {!Array<string>}
  */
 function checkDuplicates(doc) {
   const errors = [];
@@ -183,7 +183,7 @@ const expectedNonExistingMethods = new Map([
 /**
  * @param {!Documentation} actual
  * @param {!Documentation} expected
- * @return {!Array<string>}
+ * @returns {!Array<string>}
  */
 function compareDocumentations(actual, expected) {
   const errors = [];
@@ -684,7 +684,7 @@ function compareDocumentations(actual, expected) {
 /**
  * @param {!Array<string>} actual
  * @param {!Array<string>} expected
- * @return {{extra: !Array<string>, missing: !Array<string>, equal: !Array<string>}}
+ * @returns {{extra: !Array<string>, missing: !Array<string>, equal: !Array<string>}}
  */
 function diff(actual, expected) {
   const N = actual.length;

@@ -33,7 +33,7 @@ export declare class HTTPRequest
 |  --- | --- | --- |
 |  [abort(errorCode)](./puppeteer.httprequest.abort.md) |  |  |
 |  [continue(overrides)](./puppeteer.httprequest.continue.md) |  |  |
-|  [failure()](./puppeteer.httprequest.failure.md) |  |  {<!-- -->?<!-- -->{<!-- -->errorText: string<!-- -->}<!-- -->} |
+|  [failure()](./puppeteer.httprequest.failure.md) |  |  |
 |  [frame()](./puppeteer.httprequest.frame.md) |  |  |
 |  [headers()](./puppeteer.httprequest.headers.md) |  |  |
 |  [isNavigationRequest()](./puppeteer.httprequest.isnavigationrequest.md) |  |  |
