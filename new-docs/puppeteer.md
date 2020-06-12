@@ -27,7 +27,7 @@
 |  [JSHandle](./puppeteer.jshandle.md) |  |
 |  [Keyboard](./puppeteer.keyboard.md) |  |
 |  [Mouse](./puppeteer.mouse.md) |  |
-|  [Page](./puppeteer.page.md) |  |
+|  [Page](./puppeteer.page.md) | Page provides methods to interact with a single tab or \[extension background page\](https://developer.chrome.com/extensions/background\_pages) in Chromium. One \[Browser\] instance might have multiple \[Page\] instances. |
 |  [Puppeteer](./puppeteer.puppeteer.md) | The main Puppeteer class |
 |  [SecurityDetails](./puppeteer.securitydetails.md) |  |
 |  [Target](./puppeteer.target.md) |  |
@@ -35,6 +35,12 @@
 |  [Touchscreen](./puppeteer.touchscreen.md) |  |
 |  [Tracing](./puppeteer.tracing.md) |  |
 |  [WebWorker](./puppeteer.webworker.md) |  |
+
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [PageEmittedEvents](./puppeteer.pageemittedevents.md) | All the events that a page instance may emit. |
 
 ## Functions
 

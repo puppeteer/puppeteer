@@ -4,17 +4,55 @@
 
 ## Page class
 
+Page provides methods to interact with a single tab or \[extension background page\](https://developer.chrome.com/extensions/background\_pages) in Chromium. One \[Browser\] instance might have multiple \[Page\] instances.
+
 <b>Signature:</b>
 
 ```typescript
 export declare class Page extends EventEmitter 
 ```
 
-## Constructors
+## Remarks
 
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(client, target, ignoreHTTPSErrors)](./puppeteer.page._constructor_.md) |  | Constructs a new instance of the <code>Page</code> class |
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Page` class.
+
+## Example 1
+
+This example creates a page, navigates it to a URL, and then \* saves a screenshot:
+
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.goto('https://example.com');
+  await page.screenshot({path: 'screenshot.png'});
+  await browser.close();
+})();
+
+```
+The Page class emits various events which are documented in the [PageEmittedEvents](./puppeteer.pageemittedevents.md) enum.
+
+## Example 2
+
+This example logs a message for a single page `load` event:
+
+```js
+page.once('load', () => console.log('Page loaded!'));
+
+```
+To unsubscribe from events use the `off` method:
+
+```js
+function logRequest(interceptedRequest) {
+  console.log('A request was made:', interceptedRequest.url());
+}
+page.on('request', logRequest);
+// Sometime later...
+page.off('request', logRequest);
+
+```
 
 ## Properties
 
@@ -31,10 +69,6 @@ export declare class Page extends EventEmitter
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [\_go(delta, options)](./puppeteer.page._go.md) |  |  |
-|  [\_onLogEntryAdded(event)](./puppeteer.page._onlogentryadded.md) |  |  |
-|  [\_onTargetCrashed()](./puppeteer.page._ontargetcrashed.md) |  |  |
-|  [\_screenshotTask(format, options)](./puppeteer.page._screenshottask.md) |  |  |
 |  [$(selector)](./puppeteer.page._.md) |  |  |
 |  [$$(selector)](./puppeteer.page.__.md) |  |  |
 |  [$$eval(selector, pageFunction, args)](./puppeteer.page.__eval.md) |  |  |
@@ -50,7 +84,6 @@ export declare class Page extends EventEmitter
 |  [close(options)](./puppeteer.page.close.md) |  |  |
 |  [content()](./puppeteer.page.content.md) |  |  |
 |  [cookies(urls)](./puppeteer.page.cookies.md) |  |  |
-|  [create(client, target, ignoreHTTPSErrors, defaultViewport)](./puppeteer.page.create.md) | <code>static</code> |  |
 |  [deleteCookie(cookies)](./puppeteer.page.deletecookie.md) |  |  |
 |  [emulate(options)](./puppeteer.page.emulate.md) |  |  |
 |  [emulateMediaFeatures(features)](./puppeteer.page.emulatemediafeatures.md) |  |  |
