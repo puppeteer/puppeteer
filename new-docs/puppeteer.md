@@ -54,7 +54,6 @@
 |  Interface | Description |
 |  --- | --- |
 |  [BrowserFetcherOptions](./puppeteer.browserfetcheroptions.md) |  |
-|  [CommonEventEmitter](./puppeteer.commoneventemitter.md) |  |
 |  [SerializedAXNode](./puppeteer.serializedaxnode.md) | Represents a Node and the properties of it that are relevant to Accessibility. |
 |  [SnapshotOptions](./puppeteer.snapshotoptions.md) |  |
 

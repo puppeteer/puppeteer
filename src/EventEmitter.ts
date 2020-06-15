@@ -1,5 +1,8 @@
 import mitt, { Emitter, EventType, Handler } from 'mitt';
 
+/**
+ * @internal
+ */
 export interface CommonEventEmitter {
   on(event: EventType, handler: Handler): CommonEventEmitter;
   off(event: EventType, handler: Handler): CommonEventEmitter;
