@@ -136,21 +136,22 @@ export class BrowserRunner {
 
   kill(): void {
     helper.removeEventListeners(this._listeners);
-    if (this.proc && this.proc.pid && !this.proc.killed && !this._closed) {
-      try {
-        if (process.platform === 'win32')
-          childProcess.execSync(`taskkill /pid ${this.proc.pid} /T /F`);
-        else this.proc.kill('SIGKILL');
-      } catch (error) {
-        // the process might have already stopped
-      }
-    } else {
-      throw new Error('Unable to kill process');
-    }
     // Attempt to remove temporary profile directory to avoid littering.
     try {
       removeFolder.sync(this._tempDirectory);
     } catch (error) {}
+
+    if (this.proc && this.proc.pid && !this.proc.killed && !this._closed) {
+      try {
+        this.proc.kill('SIGKILL');
+      } catch (error) {
+        throw new Error(`Puppeteer was unable to kill the process which ran the browser binary.
+This means that, on future Puppeteer launches, Puppeteer might not be able to launch the browser.
+Please check your open processes and ensure that the browser processes that Puppeteer launched have been killed.
+If you think this is a bug, please report it on the Puppeteer issue tracker.
+Error cause: ${error.stack}`);
+      }
+    }
   }
 
   async setupConnection(options: {
