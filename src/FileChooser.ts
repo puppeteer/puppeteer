@@ -16,7 +16,7 @@
 
 import { ElementHandle } from './JSHandle';
 import Protocol from './protocol';
-import { assert } from './helper';
+import { assert } from './assert';
 
 export class FileChooser {
   private _element: ElementHandle;

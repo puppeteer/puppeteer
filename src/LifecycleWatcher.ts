@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { helper, assert, PuppeteerEventListener } from './helper';
+import { assert } from './assert';
+import { helper, PuppeteerEventListener } from './helper';
 import { Events } from './Events';
 import { TimeoutError } from './Errors';
 import { FrameManager, Frame } from './FrameManager';

@@ -15,7 +15,8 @@
  */
 
 import * as fs from 'fs';
-import { helper, assert } from './helper';
+import { assert } from './assert';
+import { helper } from './helper';
 import { LifecycleWatcher, PuppeteerLifeCycleEvent } from './LifecycleWatcher';
 import { TimeoutError } from './Errors';
 import { JSHandle, ElementHandle } from './JSHandle';

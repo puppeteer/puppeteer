@@ -20,16 +20,13 @@ import { CDPSession } from './Connection';
 import { promisify } from 'util';
 import Protocol from './protocol';
 import { CommonEventEmitter } from './EventEmitter';
+import { assert } from './assert';
 
 const openAsync = promisify(fs.open);
 const writeAsync = promisify(fs.write);
 const closeAsync = promisify(fs.close);
 
 export const debugError = debug('puppeteer:error');
-
-export function assert(value: unknown, message?: string): void {
-  if (!value) throw new Error(message);
-}
 
 interface AnyClass {
   prototype: object;

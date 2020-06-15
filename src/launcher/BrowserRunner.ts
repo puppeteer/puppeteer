@@ -18,7 +18,8 @@ import debug from 'debug';
 
 import removeFolder from 'rimraf';
 import * as childProcess from 'child_process';
-import { helper, assert, debugError } from '../helper';
+import { assert } from '../assert';
+import { helper, debugError } from '../helper';
 import { LaunchOptions } from './LaunchOptions';
 import { Connection } from '../Connection';
 import { WebSocketTransport } from '../WebSocketTransport';

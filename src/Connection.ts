@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { assert } from './helper';
+import { assert } from './assert';
 import { Events } from './Events';
 import debug from 'debug';
 const debugProtocolSend = debug('puppeteer:protocol:SEND ►');

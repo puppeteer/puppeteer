@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { helper, assert } from './helper';
+import { assert } from './assert';
+import { helper } from './helper';
 import { Target } from './Target';
 import { EventEmitter } from './EventEmitter';
 import { Events } from './Events';

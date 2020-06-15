@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { helper, debugError, assert, PuppeteerEventListener } from './helper';
+import { assert } from './assert';
+import { helper, debugError, PuppeteerEventListener } from './helper';
 import Protocol from './protocol';
 import { CDPSession } from './Connection';
 
