@@ -151,9 +151,7 @@ export class BrowserRunner {
     // `proc.kill` would error, as the `pid` to-be-killed can not be found.
     if (this.proc && this.proc.pid && !this.proc.killed) {
       try {
-        if (!this.proc.kill('SIGKILL')) {
-          throw new Error(PROCESS_ERROR_EXPLANATION);
-        }
+        this.proc.kill('SIGKILL');
       } catch (error) {
         throw new Error(`${PROCESS_ERROR_EXPLANATION}
 Error cause: ${error.stack}`);
