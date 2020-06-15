@@ -32,7 +32,7 @@ const puppeteer = require('puppeteer');
 })();
 
 ```
-The Page class emits various events which are documented in the [PageEmittedEvents](./puppeteer.pageemittedevents.md) enum.
+The Page class extends from Puppeteer's [EventEmitter](./puppeteer.eventemitter.md) class and will emit various events which are documented in the [PageEmittedEvents](./puppeteer.pageemittedevents.md) enum.
 
 ## Example 2
 

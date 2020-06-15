@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as NodeWebSocket from 'ws';
 import { ConnectionTransport } from './ConnectionTransport';
+import NodeWebSocket from 'ws';
 
 export class WebSocketTransport implements ConnectionTransport {
   static create(url: string): Promise<WebSocketTransport> {

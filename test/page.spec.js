@@ -18,6 +18,7 @@ const path = require('path');
 const utils = require('./utils');
 const { waitEvent } = utils;
 const expect = require('expect');
+const sinon = require('sinon');
 const {
   getTestState,
   setupTestBrowserHooks,
@@ -127,6 +128,29 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE).catch((error_) => (error = error_));
       expect(error).not.toBe(null);
       expect(error.stack).toContain(__filename);
+    });
+  });
+
+  // This test fails on Firefox on CI consistently but cannot be replicated
+  // locally. Skipping for now to unblock the Mitt release and given FF support
+  // isn't fully done yet but raising an issue to ask the FF folks to have a
+  // look at this.
+  describeFailsFirefox('removing and adding event handlers', () => {
+    it('should correctly fire event handlers as they are added and then removed', async () => {
+      const { page, server } = getTestState();
+
+      const handler = sinon.spy();
+      page.on('response', handler);
+      await page.goto(server.EMPTY_PAGE);
+      expect(handler.callCount).toBe(1);
+      page.off('response', handler);
+      await page.goto(server.EMPTY_PAGE);
+      // Still one because we removed the handler.
+      expect(handler.callCount).toBe(1);
+      page.on('response', handler);
+      await page.goto(server.EMPTY_PAGE);
+      // Two now because we added the handler back.
+      expect(handler.callCount).toBe(2);
     });
   });
 
