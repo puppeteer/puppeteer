@@ -135,7 +135,7 @@ describe('Page', function () {
   // locally. Skipping for now to unblock the Mitt release and given FF support
   // isn't fully done yet but raising an issue to ask the FF folks to have a
   // look at this.
-  describe('removing and adding event handlers', () => {
+  describeFailsFirefox('removing and adding event handlers', () => {
     it('should correctly fire event handlers as they are added and then removed', async () => {
       const { page, server } = getTestState();
 
