@@ -221,7 +221,7 @@ function waitForWSEndpoint(
               (error ? ' ' + error.message : ''),
             stderr,
             '',
-            'TROUBLESHOOTING: https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md',
+            'TROUBLESHOOTING: https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md',
             '',
           ].join('\n')
         )
