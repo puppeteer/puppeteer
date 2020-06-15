@@ -153,7 +153,9 @@ export class BrowserRunner {
       try {
         this.proc.kill('SIGKILL');
       } catch (error) {
-        throw new Error(`${PROCESS_ERROR_EXPLANATION}\nError cause: ${error.stack}`);
+        throw new Error(
+          `${PROCESS_ERROR_EXPLANATION}\nError cause: ${error.stack}`
+        );
       }
     }
     // Cleanup this listener last, as that makes sure the full callback runs. If we
