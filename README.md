@@ -1,12 +1,12 @@
 # Puppeteer
 
 <!-- [START badges] -->
-[![Build status](https://img.shields.io/travis/com/puppeteer/puppeteer/master.svg)](https://travis-ci.com/puppeteer/puppeteer) [![npm puppeteer package](https://img.shields.io/npm/v/puppeteer.svg)](https://npmjs.org/package/puppeteer) [![Issue resolution status](https://isitmaintained.com/badge/resolution/puppeteer/puppeteer.svg)](https://github.com/puppeteer/puppeteer/issues)
+[![Build status](https://img.shields.io/travis/com/puppeteer/puppeteer/main.svg)](https://travis-ci.com/puppeteer/puppeteer) [![npm puppeteer package](https://img.shields.io/npm/v/puppeteer.svg)](https://npmjs.org/package/puppeteer) [![Issue resolution status](https://isitmaintained.com/badge/resolution/puppeteer/puppeteer.svg)](https://github.com/puppeteer/puppeteer/issues)
 <!-- [END badges] -->
 
 <img src="https://user-images.githubusercontent.com/10379601/29446482-04f7036a-841f-11e7-9872-91d1fc2ea683.png" height="200" align="right">
 
-###### [API](https://github.com/puppeteer/puppeteer/blob/v4.0.0/docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/puppeteer/puppeteer/blob/master/CONTRIBUTING.md) | [Troubleshooting](https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md)
+###### [API](https://github.com/puppeteer/puppeteer/blob/v4.0.0/docs/api.md) | [FAQ](#faq) | [Contributing](https://github.com/puppeteer/puppeteer/blob/main/CONTRIBUTING.md) | [Troubleshooting](https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md)
 
 > Puppeteer is a Node library which provides a high-level API to control Chrome or Chromium over the [DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/). Puppeteer runs [headless](https://developers.google.com/web/updates/2017/04/headless-chrome) by default, but can be configured to run full (non-headless) Chrome or Chromium.
 
@@ -53,7 +53,7 @@ npm i puppeteer-core
 `puppeteer-core` is intended to be a lightweight version of Puppeteer for launching an existing browser installation or for connecting to a remote one. Be sure that the version of puppeteer-core you install is compatible with the
 browser you intend to connect to.
 
-See [puppeteer vs puppeteer-core](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#puppeteer-vs-puppeteer-core).
+See [puppeteer vs puppeteer-core](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#puppeteer-vs-puppeteer-core).
 
 ### Usage
 
@@ -186,7 +186,7 @@ Puppeteer creates its own browser user profile which it **cleans up on every run
 ## Resources
 
 - [API Documentation](https://github.com/puppeteer/puppeteer/blob/v4.0.0/docs/api.md)
-- [Examples](https://github.com/puppeteer/puppeteer/tree/master/examples/)
+- [Examples](https://github.com/puppeteer/puppeteer/tree/main/examples/)
 - [Community list of Puppeteer resources](https://github.com/transitive-bullshit/awesome-puppeteer)
 
 
@@ -297,7 +297,7 @@ Puppeteer creates its own browser user profile which it **cleans up on every run
 
 ## Contributing to Puppeteer
 
-Check out [contributing guide](https://github.com/puppeteer/puppeteer/blob/master/CONTRIBUTING.md) to get an overview of Puppeteer development.
+Check out [contributing guide](https://github.com/puppeteer/puppeteer/blob/main/CONTRIBUTING.md) to get an overview of Puppeteer development.
 
 <!-- [START faq] -->
 
@@ -306,7 +306,7 @@ Check out [contributing guide](https://github.com/puppeteer/puppeteer/blob/maste
 #### Q: Who maintains Puppeteer?
 
 The Chrome DevTools team maintains the library, but we'd love your help and expertise on the project!
-See [Contributing](https://github.com/puppeteer/puppeteer/blob/master/CONTRIBUTING.md).
+See [Contributing](https://github.com/puppeteer/puppeteer/blob/main/CONTRIBUTING.md).
 
 #### Q: What is the status of cross-browser support?
 
@@ -364,12 +364,12 @@ npm install puppeteer-core@chrome-71
 
 #### Q: Which Chromium version does Puppeteer use?
 
-Look for `chromium_revision` in [package.json](https://github.com/puppeteer/puppeteer/blob/master/package.json). To find the corresponding Chromium commit and version number, search for the revision prefixed by an `r` in [OmahaProxy](https://omahaproxy.appspot.com/)'s "Find Releases" section.
+Look for `chromium_revision` in [package.json](https://github.com/puppeteer/puppeteer/blob/main/package.json). To find the corresponding Chromium commit and version number, search for the revision prefixed by an `r` in [OmahaProxy](https://omahaproxy.appspot.com/)'s "Find Releases" section.
 
 
 #### Q: Which Firefox version does Puppeteer use?
 
-Since Firefox support is experimental, Puppeteer downloads the latest [Firefox Nightly](https://wiki.mozilla.org/Nightly) when the `PUPPETEER_PRODUCT` environment variable is set to `firefox`. That's also why the value of `firefox_revision` in [package.json](https://github.com/puppeteer/puppeteer/blob/master/package.json) is `latest` -- Puppeteer isn't tied to a particular Firefox version.
+Since Firefox support is experimental, Puppeteer downloads the latest [Firefox Nightly](https://wiki.mozilla.org/Nightly) when the `PUPPETEER_PRODUCT` environment variable is set to `firefox`. That's also why the value of `firefox_revision` in [package.json](https://github.com/puppeteer/puppeteer/blob/main/package.json) is `latest` -- Puppeteer isn't tied to a particular Firefox version.
 
 To fetch Firefox Nightly as part of Puppeteer installation:
 
@@ -412,7 +412,7 @@ You may find that Puppeteer does not behave as expected when controlling pages t
 * Since Puppeteer (in all configurations) controls a desktop version of Chromium/Chrome, features that are only supported by the mobile version of Chrome are not supported. This means that Puppeteer [does not support HTTP Live Streaming (HLS)](https://caniuse.com/#feat=http-live-streaming).
 
 #### Q: I am having trouble installing / running Puppeteer in my test environment. Where should I look for help?
-We have a [troubleshooting](https://github.com/puppeteer/puppeteer/blob/master/docs/troubleshooting.md) guide for various operating systems that lists the required dependencies.
+We have a [troubleshooting](https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md) guide for various operating systems that lists the required dependencies.
 
 #### Q: How do I try/test a prerelease version of Puppeteer?
 

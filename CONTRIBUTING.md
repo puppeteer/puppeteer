@@ -64,7 +64,7 @@ information on using pull requests.
 
 ## Code Style
 
-- Coding style is fully defined in [`.eslintrc`](https://github.com/puppeteer/puppeteer/blob/master/.eslintrc.js) and we automatically format our code with [Prettier](https://prettier.io).
+- Coding style is fully defined in [`.eslintrc`](https://github.com/puppeteer/puppeteer/blob/main/.eslintrc.js) and we automatically format our code with [Prettier](https://prettier.io).
 - It's recommended to set-up Prettier into your editor, or you can run `npm run eslint-fix` to automatically format any files.
 - If you're working in a JS file, code should be annotated with [closure annotations](https://github.com/google/closure-compiler/wiki/Annotating-JavaScript-for-the-Closure-Compiler).
 - If you're working in a TS file, you should explicitly type all variables and return types. You'll get ESLint warnings if you don't so if you're not sure use them as guidelines, and feel free to ask us for help!
@@ -136,7 +136,7 @@ To deliver to a different location, use "deliver" option:
 
 ## Writing Documentation
 
-All public API should have a descriptive entry in [`docs/api.md`](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md). There's a [documentation linter](https://github.com/puppeteer/puppeteer/tree/master/utils/doclint) which makes sure documentation is aligned with the codebase.
+All public API should have a descriptive entry in [`docs/api.md`](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md). There's a [documentation linter](https://github.com/puppeteer/puppeteer/tree/main/utils/doclint) which makes sure documentation is aligned with the codebase.
 
 To run the documentation linter, use:
 
@@ -160,7 +160,7 @@ A barrier for introducing new installation dependencies is especially high:
 - Tests should not depend on external services.
 - Tests should work on all three platforms: Mac, Linux and Win. This is especially important for screenshot tests.
 
-Puppeteer tests are located in the test directory ([`test`](https://github.com/puppeteer/puppeteer/blob/master/test/) and are written using Mocha. See [`test/README.md`](https://github.com/puppeteer/puppeteer/blob/master/test/) for more details.
+Puppeteer tests are located in the test directory ([`test`](https://github.com/puppeteer/puppeteer/blob/main/test/) and are written using Mocha. See [`test/README.md`](https://github.com/puppeteer/puppeteer/blob/main/test/) for more details.
 
 Despite being named 'unit', these are integration tests, making sure public API methods and events work as expected.
 
@@ -233,7 +233,7 @@ Releasing to npm consists of the following phases:
 1. Source Code: mark a release.
     1. Bump `package.json` version following the SEMVER rules.
     2. Run `npm run doc` to update the docs accordingly.
-    3. Update the “Releases per Chromium Version” list in [`docs/api.md`](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md) to include the new version. Note: only do this when the Chrome revision is different from the previous release.
+    3. Update the “Releases per Chromium Version” list in [`docs/api.md`](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md) to include the new version. Note: only do this when the Chrome revision is different from the previous release.
     4. Send a PR titled `'chore: mark version vXXX.YYY.ZZZ'` ([example](https://github.com/puppeteer/puppeteer/pull/5078)).
     5. Make sure the PR passes **all checks**.
         - **WHY**: there are linters in place that help to avoid unnecessary errors, e.g. [like this](https://github.com/puppeteer/puppeteer/pull/2446)

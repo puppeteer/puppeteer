@@ -50,17 +50,17 @@ describe('doclint preprocessor specs', function () {
       [API](https://github.com/puppeteer/puppeteer/blob/v1.3.0/docs/api.md#class-page)
     `);
     });
-    it('should keep master links intact', function () {
+    it('should keep main branch links intact', function () {
       const source = new Source(
         'doc.md',
         `
-      [API](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#class-page)
+      [API](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#class-page)
     `
       );
       const messages = ensureReleasedAPILinks([source], '1.3.0');
       expect(messages.length).toBe(0);
       expect(source.text()).toBe(`
-      [API](https://github.com/puppeteer/puppeteer/blob/master/docs/api.md#class-page)
+      [API](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md#class-page)
     `);
     });
   });
