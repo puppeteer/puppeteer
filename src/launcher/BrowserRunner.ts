@@ -28,6 +28,10 @@ import { TimeoutError } from '../Errors';
 
 const removeFolderAsync = helper.promisify(removeFolder);
 const debugLauncher = debug('puppeteer:launcher');
+const PROCESS_ERROR_EXPLANATION = `Puppeteer was unable to kill the process which ran the browser binary.
+This means that, on future Puppeteer launches, Puppeteer might not be able to launch the browser.
+Please check your open processes and ensure that the browser processes that Puppeteer launched have been killed.
+If you think this is a bug, please report it on the Puppeteer issue tracker.`;
 
 export class BrowserRunner {
   private _executablePath: string;
@@ -51,7 +55,7 @@ export class BrowserRunner {
     this._tempDirectory = tempDirectory;
   }
 
-  start(options: LaunchOptions = {}): void {
+  start(options: LaunchOptions): void {
     const {
       handleSIGINT,
       handleSIGTERM,
@@ -121,7 +125,6 @@ export class BrowserRunner {
 
   close(): Promise<void> {
     if (this._closed) return Promise.resolve();
-    helper.removeEventListeners(this._listeners);
     if (this._tempDirectory) {
       this.kill();
     } else if (this.connection) {
@@ -131,24 +134,33 @@ export class BrowserRunner {
         this.kill();
       });
     }
+    // Cleanup this listener last, as that makes sure the full callback runs. If we
+    // perform this earlier, then the previous function calls would not happen.
+    helper.removeEventListeners(this._listeners);
     return this._processClosing;
   }
 
   kill(): void {
-    helper.removeEventListeners(this._listeners);
-    if (this.proc && this.proc.pid && !this.proc.killed && !this._closed) {
-      try {
-        if (process.platform === 'win32')
-          childProcess.execSync(`taskkill /pid ${this.proc.pid} /T /F`);
-        else process.kill(-this.proc.pid, 'SIGKILL');
-      } catch (error) {
-        // the process might have already stopped
-      }
-    }
     // Attempt to remove temporary profile directory to avoid littering.
     try {
       removeFolder.sync(this._tempDirectory);
     } catch (error) {}
+
+    // If the process failed to launch (for example if the browser executable path
+    // is invalid), then the process does not get a pid assigned. A call to
+    // `proc.kill` would error, as the `pid` to-be-killed can not be found.
+    if (this.proc && this.proc.pid && !this.proc.killed) {
+      try {
+        this.proc.kill('SIGKILL');
+      } catch (error) {
+        throw new Error(
+          `${PROCESS_ERROR_EXPLANATION}\nError cause: ${error.stack}`
+        );
+      }
+    }
+    // Cleanup this listener last, as that makes sure the full callback runs. If we
+    // perform this earlier, then the previous function calls would not happen.
+    helper.removeEventListeners(this._listeners);
   }
 
   async setupConnection(options: {
