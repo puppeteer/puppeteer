@@ -16,7 +16,8 @@
 import { assert } from './helper';
 import { Events } from './Events';
 import * as debug from 'debug';
-const debugProtocol = debug('puppeteer:protocol');
+const debugProtocolSend = debug('puppeteer:protocol:SEND ►');
+const debugProtocolReceive = debug('puppeteer:protocol:RECV ◀');
 
 import Protocol from './protocol';
 import { ConnectionTransport } from './ConnectionTransport';
@@ -78,14 +79,14 @@ export class Connection extends EventEmitter {
   _rawSend(message: {}): number {
     const id = ++this._lastId;
     message = JSON.stringify(Object.assign({}, message, { id }));
-    debugProtocol('SEND ► ' + message);
+    debugProtocolSend(message);
     this._transport.send(message);
     return id;
   }
 
   async _onMessage(message: string): Promise<void> {
     if (this._delay) await new Promise((f) => setTimeout(f, this._delay));
-    debugProtocol('◀ RECV ' + message);
+    debugProtocolReceive(message);
     const object = JSON.parse(message);
     if (object.method === 'Target.attachedToTarget') {
       const sessionId = object.params.sessionId;
