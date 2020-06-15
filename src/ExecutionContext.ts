@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { helper, assert } from './helper';
+import { assert } from './assert';
+import { helper } from './helper';
 import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
 import { CDPSession } from './Connection';
 import { DOMWorld } from './DOMWorld';

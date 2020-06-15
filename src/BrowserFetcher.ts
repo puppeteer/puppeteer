@@ -28,8 +28,8 @@ import removeRecursive from 'rimraf';
 import * as URL from 'url';
 import ProxyAgent from 'https-proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
-
-import { helper, assert } from './helper';
+import { assert } from './assert';
+import { helper } from './helper';
 const debugFetcher = debug(`puppeteer:fetcher`);
 
 const downloadURLs = {

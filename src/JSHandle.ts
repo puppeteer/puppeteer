@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { helper, assert, debugError } from './helper';
+import { assert } from './assert';
+import { helper, debugError } from './helper';
 import { ExecutionContext } from './ExecutionContext';
 import { Page } from './Page';
 import { CDPSession } from './Connection';

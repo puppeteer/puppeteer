@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { EventEmitter } from './EventEmitter';
-import { helper, assert, debugError } from './helper';
+import { assert } from './assert';
+import { helper, debugError } from './helper';
 import Protocol from './protocol';
 import { Events } from './Events';
 import { CDPSession } from './Connection';

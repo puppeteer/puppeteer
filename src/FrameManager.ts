@@ -15,7 +15,8 @@
  */
 
 import { EventEmitter } from './EventEmitter';
-import { helper, assert, debugError } from './helper';
+import { assert } from './assert';
+import { helper, debugError } from './helper';
 import { Events } from './Events';
 import { ExecutionContext, EVALUATION_SCRIPT_URL } from './ExecutionContext';
 import { LifecycleWatcher, PuppeteerLifeCycleEvent } from './LifecycleWatcher';

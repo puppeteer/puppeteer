@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { assert } from './helper';
+import { assert } from './assert';
 import { CDPSession } from './Connection';
 import { keyDefinitions, KeyDefinition, KeyInput } from './USKeyboardLayout';
 
