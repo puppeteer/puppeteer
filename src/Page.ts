@@ -15,7 +15,7 @@
  */
 
 import * as fs from 'fs';
-import * as EventEmitter from 'events';
+import { EventEmitter } from './EventEmitter';
 import * as mime from 'mime';
 import { Events } from './Events';
 import { Connection, CDPSession } from './Connection';
@@ -183,7 +183,7 @@ class ScreenshotTaskQueue {
  * })();
  * ```
  *
- * The Page class emits various events which are documented in the {@link PageEmittedEvents} enum.
+ * The Page class extends from Puppeteer's {@link EventEmitter } class and will emit various events which are documented in the {@link PageEmittedEvents} enum.
  *
  * @example
  * This example logs a message for a single page `load` event:

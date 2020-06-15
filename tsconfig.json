@@ -7,7 +7,8 @@
     "moduleResolution": "node",
     "module": "CommonJS",
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "esModuleInterop": true
   },
   "include": [
     "src"
