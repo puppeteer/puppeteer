@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import debug from 'debug';
+import { debug } from '../Debug';
 
 import removeFolder from 'rimraf';
 import * as childProcess from 'child_process';
