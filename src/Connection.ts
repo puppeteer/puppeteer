@@ -15,7 +15,7 @@
  */
 import { assert } from './assert';
 import { Events } from './Events';
-import debug from 'debug';
+import { debug } from './Debug';
 const debugProtocolSend = debug('puppeteer:protocol:SEND ►');
 const debugProtocolReceive = debug('puppeteer:protocol:RECV ◀');
 
