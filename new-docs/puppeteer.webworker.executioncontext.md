@@ -4,6 +4,8 @@
 
 ## WebWorker.executionContext() method
 
+Returns the ExecutionContext the WebWorker runs in
+
 <b>Signature:</b>
 
 ```typescript
@@ -12,4 +14,6 @@ executionContext(): Promise<ExecutionContext>;
 <b>Returns:</b>
 
 Promise&lt;[ExecutionContext](./puppeteer.executioncontext.md)<!-- -->&gt;
+
+The ExecutionContext the web worker runs in.
 
