@@ -34,7 +34,8 @@
     "compare-protocol-d-ts": "node utils/protocol-types-generator compare",
     "test-install": "scripts/test-install.sh",
     "generate-docs": "npm run tsc && api-extractor run --local --verbose && api-documenter markdown -i temp -o new-docs",
-    "ensure-new-docs-up-to-date": "npm run generate-docs && exit `git status --porcelain | head -255 | wc -l`"
+    "ensure-new-docs-up-to-date": "npm run generate-docs && exit `git status --porcelain | head -255 | wc -l`",
+    "generate-dependency-graph": "echo 'Requires graphviz installed locally!' && depcruise --max-depth 3 --output-type dot src/index.ts | dot -T png > dependency-chart.png"
   },
   "files": [
     "lib/",
@@ -73,6 +74,7 @@
     "@typescript-eslint/parser": "^2.28.0",
     "commonmark": "^0.28.1",
     "cross-env": "^5.0.5",
+    "dependency-cruiser": "^9.7.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-mocha": "^6.3.0",
