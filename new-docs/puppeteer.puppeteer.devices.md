@@ -9,3 +9,26 @@
 ```typescript
 get devices(): DevicesMap;
 ```
+
+## Remarks
+
+
+## Example
+
+
+```js
+const puppeteer = require('puppeteer');
+const iPhone = puppeteer.devices['iPhone 6'];
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.emulate(iPhone);
+  await page.goto('https://www.google.com');
+  // other actions...
+  await browser.close();
+})();
+
+```
+\*\*NOTE\*\* The old way (Puppeteer versions &lt;<!-- -->= v1.14.0) devices can be obtained with `require('puppeteer/DeviceDescriptors')`<!-- -->.
+

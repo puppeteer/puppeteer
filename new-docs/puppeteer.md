@@ -29,7 +29,7 @@
 |  [Keyboard](./puppeteer.keyboard.md) |  |
 |  [Mouse](./puppeteer.mouse.md) |  |
 |  [Page](./puppeteer.page.md) | Page provides methods to interact with a single tab or \[extension background page\](https://developer.chrome.com/extensions/background\_pages) in Chromium. One \[Browser\] instance might have multiple \[Page\] instances. |
-|  [Puppeteer](./puppeteer.puppeteer.md) | The main Puppeteer class Puppeteer module provides a method to launch a Chromium instance. |
+|  [Puppeteer](./puppeteer.puppeteer.md) | The main Puppeteer class Puppeteer module provides a method to launch a browser instance. |
 |  [SecurityDetails](./puppeteer.securitydetails.md) |  |
 |  [Target](./puppeteer.target.md) |  |
 |  [TimeoutError](./puppeteer.timeouterror.md) |  |

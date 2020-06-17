@@ -4,7 +4,7 @@
 
 ## Puppeteer class
 
-The main Puppeteer class Puppeteer module provides a method to launch a Chromium instance.
+The main Puppeteer class Puppeteer module provides a method to launch a browser instance.
 
 <b>Signature:</b>
 
@@ -40,10 +40,8 @@ const puppeteer = require('puppeteer');
 |  [\_\_productName](./puppeteer.puppeteer.__productname.md) |  | string |  |
 |  [\_changedProduct](./puppeteer.puppeteer._changedproduct.md) |  | boolean |  |
 |  [\_isPuppeteerCore](./puppeteer.puppeteer._ispuppeteercore.md) |  | boolean |  |
-|  [\_launcher](./puppeteer.puppeteer._launcher.md) |  | ProductLauncher |  |
 |  [\_lazyLauncher](./puppeteer.puppeteer._lazylauncher.md) |  | ProductLauncher |  |
 |  [\_preferredRevision](./puppeteer.puppeteer._preferredrevision.md) |  | string |  |
-|  [\_productName](./puppeteer.puppeteer._productname.md) |  | string |  |
 |  [\_projectRoot](./puppeteer.puppeteer._projectroot.md) |  | string |  |
 |  [devices](./puppeteer.puppeteer.devices.md) |  | DevicesMap |  |
 |  [errors](./puppeteer.puppeteer.errors.md) |  | [PuppeteerErrors](./puppeteer.puppeteererrors.md) |  |
@@ -53,10 +51,6 @@ const puppeteer = require('puppeteer');
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [\_\_experimental\_clearQueryHandlers()](./puppeteer.puppeteer.__experimental_clearqueryhandlers.md) |  |  |
-|  [\_\_experimental\_customQueryHandlers()](./puppeteer.puppeteer.__experimental_customqueryhandlers.md) |  |  |
-|  [\_\_experimental\_registerCustomQueryHandler(name, queryHandler)](./puppeteer.puppeteer.__experimental_registercustomqueryhandler.md) |  |  |
-|  [\_\_experimental\_unregisterCustomQueryHandler(name)](./puppeteer.puppeteer.__experimental_unregistercustomqueryhandler.md) |  |  |
 |  [connect(options)](./puppeteer.puppeteer.connect.md) |  | This method attaches Puppeteer to an existing browser instance. |
 |  [createBrowserFetcher(options)](./puppeteer.puppeteer.createbrowserfetcher.md) |  |  |
 |  [defaultArgs(options)](./puppeteer.puppeteer.defaultargs.md) |  |  |

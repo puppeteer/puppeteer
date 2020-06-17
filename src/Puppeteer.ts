@@ -37,7 +37,7 @@ import {
 
 /**
  * The main Puppeteer class
- * Puppeteer module provides a method to launch a Chromium instance.
+ * Puppeteer module provides a method to launch a browser instance.
  * 
  * @remarks
  * 

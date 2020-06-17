@@ -31,7 +31,4 @@ Promise which resolves to browser instance.
 
 ## Remarks
 
-Options can have the following fields:
-
-- x `browserWSEndpoint` a browser websocket endpoint to connect to. - g `browserURL` a browser url to connect to, in format `http://${host}:${port}`<!-- -->. Use interchangeably with `browserWSEndpoint` to let Puppeteer fetch it from \[metadata endpoint\](https://chromedevtools.github.io/devtools-protocol/\#how-do-i-access-the-browser-target). - d `ignoreHTTPSErrors` Whether to ignore HTTPS errors during navigation. Defaults to `false`<!-- -->. - f `defaultViewport` Sets a consistent viewport for each page. Defaults to an 800x600 viewport. `null` disables the default viewport. - `width` page width in pixels. - `height` page height in pixels. - `deviceScaleFactor` Specify device scale factor (can be thought of as dpr). Defaults to `1`<!-- -->. - `isMobile` Whether the `meta viewport` tag is taken into account. Defaults to `false`<!-- -->. - `hasTouch` Specifies if viewport supports touch events. Defaults to `false` - `isLandscape` Specifies if viewport is in landscape mode. Defaults to `false`<!-- -->. - `slowMo` Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on. - `transport` \*\*Experimental\*\* Specify a custom transport object for Puppeteer to use. - `product` Possible values are: `chrome`<!-- -->, `firefox`<!-- -->. Defaults to `chrome`<!-- -->.
 
