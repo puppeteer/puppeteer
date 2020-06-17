@@ -16,3 +16,4 @@ yarn.lock
 /lib
 test/coverage.json
 temp/
+dependency-chart.png
