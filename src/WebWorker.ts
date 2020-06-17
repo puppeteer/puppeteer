@@ -32,9 +32,9 @@ type JSHandleFactory = (obj: Protocol.Runtime.RemoteObject) => JSHandle;
 
 /**
  * The WebWorker class represents a {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | WebWorker}.
- * The events `workercreated` and `workerdestroyed` are emitted on the page object to signal the worker lifecycle.
  *
  * @remarks
+ * The events `workercreated` and `workerdestroyed` are emitted on the page object to signal the worker lifecycle.
  *
  * @example
  * ```js
