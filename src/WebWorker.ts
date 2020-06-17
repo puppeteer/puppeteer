@@ -31,8 +31,10 @@ type ExceptionThrownCallback = (
 type JSHandleFactory = (obj: Protocol.Runtime.RemoteObject) => JSHandle;
 
 /**
- * The WebWorker class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API).
+ * The WebWorker class represents a {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | WebWorker}.
  * The events `workercreated` and `workerdestroyed` are emitted on the page object to signal the worker lifecycle.
+ *
+ * @remarks
  *
  * @example
  * ```js
@@ -44,7 +46,7 @@ type JSHandleFactory = (obj: Protocol.Runtime.RemoteObject) => JSHandle;
  *   console.log('  ' + worker.url());
  * }
  * ```
- * 
+ *
  * @public
  */
 export class WebWorker extends EventEmitter {
@@ -54,7 +56,7 @@ export class WebWorker extends EventEmitter {
   _executionContextCallback: (value: ExecutionContext) => void;
 
   /**
-   * 
+   *
    * @internal
    */
   constructor(
@@ -98,7 +100,6 @@ export class WebWorker extends EventEmitter {
   }
 
   /**
-   * Returns the URL for the script this web worker is running.
    * @returns The URL of this web worker.
    */
   url(): string {
