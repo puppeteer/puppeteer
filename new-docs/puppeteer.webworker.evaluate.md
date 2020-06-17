@@ -4,6 +4,8 @@
 
 ## WebWorker.evaluate() method
 
+If the function passed to the `worker.evaluate` returns a Promise, then `worker.evaluate` would wait for the promise to resolve and return its value. If the function passed to the `worker.evaluate` returns a non-serializable value, then `worker.evaluate` resolves to `undefined`<!-- -->. DevTools Protocol also supports transferring some additional values that are not serializable by `JSON`<!-- -->: `-0`<!-- -->, `NaN`<!-- -->, `Infinity`<!-- -->, `-Infinity`<!-- -->, and bigint literals. Shortcut for `await worker.executionContext()).evaluate(pageFunction, ...args)`<!-- -->.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,10 +16,12 @@ evaluate<ReturnType extends any>(pageFunction: Function | string, ...args: any[]
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  pageFunction | Function \| string |  |
-|  args | any\[\] |  |
+|  pageFunction | Function \| string | Function to be evaluated in the worker context. |
+|  args | any\[\] | Arguments to pass to <code>pageFunction</code>. |
 
 <b>Returns:</b>
 
 Promise&lt;ReturnType&gt;
+
+Promise which resolves to the return value of `pageFunction`<!-- -->.
 
