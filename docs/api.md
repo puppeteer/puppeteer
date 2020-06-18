@@ -514,8 +514,6 @@ const iPhone = puppeteer.devices['iPhone 6'];
 })();
 ```
 
-> **NOTE** The old way (Puppeteer versions <= v1.14.0) devices can be obtained with `require('puppeteer/DeviceDescriptors')`.
-
 #### puppeteer.errors
 - returns: <[Object]>
   - `TimeoutError` <[function]> A class of [TimeoutError].

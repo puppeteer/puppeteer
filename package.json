@@ -39,8 +39,6 @@
   },
   "files": [
     "lib/",
-    "Errors.js",
-    "DeviceDescriptors.js",
     "index.js",
     "install.js",
     "typescript-if-required.js"

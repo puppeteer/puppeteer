@@ -592,22 +592,6 @@ describe('Launcher specs', function () {
     });
   });
 
-  describe('Top-level requires', function () {
-    it('should require top-level Errors', async () => {
-      const { puppeteer, puppeteerPath } = getTestState();
-      const Errors = require(path.join(puppeteerPath, '/Errors'));
-      expect(Errors.TimeoutError).toBe(puppeteer.errors.TimeoutError);
-    });
-    it('should require top-level DeviceDescriptors', async () => {
-      const { puppeteer, puppeteerPath } = getTestState();
-      const { devicesMap } = require(path.join(
-        puppeteerPath,
-        '/DeviceDescriptors'
-      ));
-      expect(devicesMap['iPhone 6']).toBe(puppeteer.devices['iPhone 6']);
-    });
-  });
-
   describe('Browser target events', function () {
     itFailsFirefox('should work', async () => {
       const { server, puppeteer, defaultBrowserOptions } = getTestState();
