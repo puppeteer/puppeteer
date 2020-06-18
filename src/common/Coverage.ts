@@ -16,7 +16,7 @@
 
 import { assert } from './assert';
 import { helper, debugError, PuppeteerEventListener } from './helper';
-import Protocol from './protocol';
+import Protocol from '../protocol';
 import { CDPSession } from './Connection';
 
 import { EVALUATION_SCRIPT_URL } from './ExecutionContext';

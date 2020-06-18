@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Protocol from './protocol';
+import Protocol from '../protocol';
 
 export class SecurityDetails {
   private _subjectName: string;

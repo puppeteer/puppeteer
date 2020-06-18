@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { debug } from '../Debug';
+import { debug } from '../common/Debug';
 
 import removeFolder from 'rimraf';
 import * as childProcess from 'child_process';
-import { assert } from '../assert';
-import { helper, debugError } from '../helper';
+import { assert } from '../common/assert';
+import { helper, debugError } from '../common/helper';
 import { LaunchOptions } from './LaunchOptions';
-import { Connection } from '../Connection';
-import { WebSocketTransport } from '../WebSocketTransport';
+import { Connection } from '../common/Connection';
+import { WebSocketTransport } from '../common/WebSocketTransport';
 import { PipeTransport } from './PipeTransport';
 import * as readline from 'readline';
-import { TimeoutError } from '../Errors';
+import { TimeoutError } from '../common/Errors';
 
 const removeFolderAsync = helper.promisify(removeFolder);
 const debugLauncher = debug('puppeteer:launcher');

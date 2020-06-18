@@ -19,7 +19,7 @@ import { helper } from './helper';
 import { Target } from './Target';
 import { EventEmitter } from './EventEmitter';
 import { Events } from './Events';
-import Protocol from './protocol';
+import Protocol from '../protocol';
 import { Connection } from './Connection';
 import { Page } from './Page';
 import { ChildProcess } from 'child_process';

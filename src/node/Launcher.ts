@@ -21,12 +21,12 @@ import * as URL from 'url';
 import * as fs from 'fs';
 
 import { BrowserFetcher } from './BrowserFetcher';
-import { Connection } from '../Connection';
-import { Browser } from '../Browser';
-import { assert } from '../assert';
-import { helper, debugError } from '../helper';
-import { ConnectionTransport } from '../ConnectionTransport';
-import { WebSocketTransport } from '../WebSocketTransport';
+import { Connection } from '../common/Connection';
+import { Browser } from '../common/Browser';
+import { assert } from '../common/assert';
+import { helper, debugError } from '../common/helper';
+import { ConnectionTransport } from '../common/ConnectionTransport';
+import { WebSocketTransport } from '../common/WebSocketTransport';
 import { BrowserRunner } from './BrowserRunner';
 
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
