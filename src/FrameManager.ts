@@ -412,7 +412,7 @@ export class Frame {
       referer?: string;
       timeout?: number;
       waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-    }
+    } = {}
   ): Promise<HTTPResponse | null> {
     return await this._frameManager.navigateFrame(this, url, options);
   }

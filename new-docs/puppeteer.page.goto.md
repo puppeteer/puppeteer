@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-goto(url: string, options: WaitForOptions & {
+goto(url: string, options?: WaitForOptions & {
         referer?: string;
     }): Promise<HTTPResponse>;
 ```

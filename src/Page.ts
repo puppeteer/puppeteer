@@ -838,7 +838,7 @@ export class Page extends EventEmitter {
 
   async goto(
     url: string,
-    options: WaitForOptions & { referer?: string }
+    options: WaitForOptions & { referer?: string } = {}
   ): Promise<HTTPResponse> {
     return await this._frameManager.mainFrame().goto(url, options);
   }
