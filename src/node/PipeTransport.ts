@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { helper, debugError, PuppeteerEventListener } from './helper';
-import { ConnectionTransport } from './ConnectionTransport';
+import { helper, debugError, PuppeteerEventListener } from '../helper';
+import { ConnectionTransport } from '../ConnectionTransport';
 
 export class PipeTransport implements ConnectionTransport {
   _pipeWrite: NodeJS.WritableStream;

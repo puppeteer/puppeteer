@@ -23,7 +23,7 @@ import { helper, debugError } from '../helper';
 import { LaunchOptions } from './LaunchOptions';
 import { Connection } from '../Connection';
 import { WebSocketTransport } from '../WebSocketTransport';
-import { PipeTransport } from '../PipeTransport';
+import { PipeTransport } from './PipeTransport';
 import * as readline from 'readline';
 import { TimeoutError } from '../Errors';
 
