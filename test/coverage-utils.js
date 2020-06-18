@@ -102,16 +102,17 @@ const trackCoverage = () => {
   clearOldCoverage();
   const coverageMap = new Map();
 
-  before(() => {
-    const api = require('../lib/api');
-    const events = require('../lib/common/Events');
-    for (const [className, classType] of Object.entries(api))
-      traceAPICoverage(coverageMap, events, className, classType);
-  });
-
-  after(() => {
-    writeCoverage(coverageMap);
-  });
+  return {
+    beforeAll: () => {
+      const api = require('../lib/api');
+      const events = require('../lib/common/Events');
+      for (const [className, classType] of Object.entries(api))
+        traceAPICoverage(coverageMap, events, className, classType);
+    },
+    afterAll: () => {
+      writeCoverage(coverageMap);
+    },
+  };
 };
 
 module.exports = {
