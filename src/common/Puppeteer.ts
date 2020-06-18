@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Launcher from './node/Launcher';
+import Launcher from '../node/Launcher';
 import {
   LaunchOptions,
   ChromeArgOptions,
   BrowserOptions,
-} from './node/LaunchOptions';
-import { ProductLauncher } from './node/Launcher';
-import { BrowserFetcher, BrowserFetcherOptions } from './node/BrowserFetcher';
+} from '../node/LaunchOptions';
+import { ProductLauncher } from '../node/Launcher';
+import { BrowserFetcher, BrowserFetcherOptions } from '../node/BrowserFetcher';
 import { puppeteerErrors, PuppeteerErrors } from './Errors';
 import { ConnectionTransport } from './ConnectionTransport';
 
 import { devicesMap } from './DeviceDescriptors';
-import { DevicesMap } from './/DeviceDescriptors';
+import { DevicesMap } from './DeviceDescriptors';
 import { Browser } from './Browser';
 import {
   registerCustomQueryHandler,
@@ -102,7 +102,7 @@ export class Puppeteer {
     ) {
       // @ts-ignore
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const packageJson = require('../package.json');
+      const packageJson = require('../../package.json');
       switch (this._productName) {
         case 'firefox':
           this._preferredRevision = packageJson.puppeteer.firefox_revision;

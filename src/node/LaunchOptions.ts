@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Viewport } from '../PuppeteerViewport';
+import { Viewport } from '../common/PuppeteerViewport';
 
 export interface ChromeArgOptions {
   headless?: boolean;

@@ -18,7 +18,7 @@ import { Frame } from './FrameManager';
 import { HTTPResponse } from './HTTPResponse';
 import { assert } from './assert';
 import { helper, debugError } from './helper';
-import Protocol from './protocol';
+import Protocol from '../protocol';
 
 export class HTTPRequest {
   _requestId: string;

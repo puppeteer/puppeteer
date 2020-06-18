@@ -19,9 +19,9 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const api = require('./api');
 
-import { helper } from './helper';
-import { Page } from './Page';
-import { Puppeteer } from './Puppeteer';
+import { helper } from './common/helper';
+import { Page } from './common/Page';
+import { Puppeteer } from './common/Puppeteer';
 
 interface InitOptions {
   packageJson: {

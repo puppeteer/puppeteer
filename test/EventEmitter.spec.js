@@ -1,4 +1,4 @@
-const { EventEmitter } = require('../lib/EventEmitter');
+const { EventEmitter } = require('../lib/common/EventEmitter');
 const sinon = require('sinon');
 const expect = require('expect');
 

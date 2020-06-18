@@ -28,7 +28,7 @@ import { JSHandle, ElementHandle } from './JSHandle';
 import { MouseButtonInput } from './Input';
 import { Page } from './Page';
 import { HTTPResponse } from './HTTPResponse';
-import Protocol from './protocol';
+import Protocol from '../protocol';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 

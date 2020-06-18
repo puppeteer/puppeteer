@@ -18,7 +18,7 @@ import { debugError } from './helper';
 import { ExecutionContext } from './ExecutionContext';
 import { JSHandle } from './JSHandle';
 import { CDPSession } from './Connection';
-import Protocol from './protocol';
+import Protocol from '../protocol';
 
 type ConsoleAPICalledCallback = (
   eventType: string,
