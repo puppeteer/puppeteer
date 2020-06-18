@@ -30,5 +30,4 @@ const iPhone = puppeteer.devices['iPhone 6'];
 })();
 
 ```
-\*\*NOTE\*\* The old way (Puppeteer versions &lt;<!-- -->= v1.14.0) devices can be obtained with `require('puppeteer/DeviceDescriptors')`<!-- -->.
 

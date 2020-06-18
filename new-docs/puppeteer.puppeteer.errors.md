@@ -30,5 +30,4 @@ try {
 }
 
 ```
-\*\*NOTE\*\* The old way (Puppeteer versions &lt;<!-- -->= v1.14.0) errors can be obtained with `require('puppeteer/Errors')`<!-- -->.
 

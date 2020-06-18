@@ -38,9 +38,9 @@ import {
 /**
  * The main Puppeteer class
  * Puppeteer module provides a method to launch a browser instance.
- * 
+ *
  * @remarks
- * 
+ *
  * @example
  * The following is a typical example of using Puppeteer to drive automation:
  * ```js
@@ -214,9 +214,8 @@ export class Puppeteer {
    *   await browser.close();
    * })();
    * ```
-   * **NOTE** The old way (Puppeteer versions <= v1.14.0) devices can be obtained with `require('puppeteer/DeviceDescriptors')`.
    *
-   * @returns a list of devices to be used with `page.emulate(options)`. Actual list of devices can be found in {@link https://github.com/puppeteer/puppeteer/blob/main/src/DeviceDescriptors.ts | src/DeviceDescriptors.js}.
+   * @returns a list of devices to be used with `page.emulate(options)`. Actual list of devices can be found in {@link https://github.com/puppeteer/puppeteer/blob/main/src/DeviceDescriptors.ts | src/DeviceDescriptors.ts}.
    */
   get devices(): DevicesMap {
     return devicesMap;
@@ -239,8 +238,6 @@ export class Puppeteer {
    *   }
    * }
    * ```
-   *
-   * **NOTE** The old way (Puppeteer versions <= v1.14.0) errors can be obtained with `require('puppeteer/Errors')`.
    */
   get errors(): PuppeteerErrors {
     return puppeteerErrors;
