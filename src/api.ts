@@ -22,7 +22,7 @@ module.exports = {
   Accessibility: require('./Accessibility').Accessibility,
   Browser: require('./Browser').Browser,
   BrowserContext: require('./Browser').BrowserContext,
-  BrowserFetcher: require('./BrowserFetcher').BrowserFetcher,
+  BrowserFetcher: require('./node/BrowserFetcher').BrowserFetcher,
   CDPSession: require('./Connection').CDPSession,
   ConsoleMessage: require('./ConsoleMessage').ConsoleMessage,
   Coverage: require('./Coverage').Coverage,

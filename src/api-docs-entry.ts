@@ -25,7 +25,7 @@
  */
 export * from './Accessibility';
 export * from './Browser';
-export * from './BrowserFetcher';
+export * from './node/BrowserFetcher';
 export * from './Connection';
 export * from './ConsoleMessage';
 export * from './Coverage';

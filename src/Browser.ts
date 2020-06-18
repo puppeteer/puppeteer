@@ -54,7 +54,6 @@ export class Browser extends EventEmitter {
   _closeCallback: BrowserCloseCallback;
   _defaultContext: BrowserContext;
   _contexts: Map<string, BrowserContext>;
-  // TODO: once Target is in TypeScript we can type this properly.
   _targets: Map<string, Target>;
 
   constructor(

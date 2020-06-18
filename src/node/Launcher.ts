@@ -21,13 +21,13 @@ import * as URL from 'url';
 import * as fs from 'fs';
 
 import { BrowserFetcher } from './BrowserFetcher';
-import { Connection } from './Connection';
-import { Browser } from './Browser';
-import { assert } from './assert';
-import { helper, debugError } from './helper';
-import { ConnectionTransport } from './ConnectionTransport';
-import { WebSocketTransport } from './WebSocketTransport';
-import { BrowserRunner } from './launcher/BrowserRunner';
+import { Connection } from '../Connection';
+import { Browser } from '../Browser';
+import { assert } from '../assert';
+import { helper, debugError } from '../helper';
+import { ConnectionTransport } from '../ConnectionTransport';
+import { WebSocketTransport } from '../WebSocketTransport';
+import { BrowserRunner } from './BrowserRunner';
 
 const mkdtempAsync = helper.promisify(fs.mkdtemp);
 const writeFileAsync = helper.promisify(fs.writeFile);
@@ -36,7 +36,7 @@ import {
   ChromeArgOptions,
   LaunchOptions,
   BrowserOptions,
-} from './launcher/LaunchOptions';
+} from './LaunchOptions';
 
 export interface ProductLauncher {
   launch(object);

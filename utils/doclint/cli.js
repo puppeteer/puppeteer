@@ -61,7 +61,7 @@ async function run() {
      * we'll just list the directories manually.
      */
     ...(await Source.readdir(path.join(PROJECT_DIR, 'src'), 'ts')),
-    ...(await Source.readdir(path.join(PROJECT_DIR, 'src', 'launcher'), 'ts')),
+    ...(await Source.readdir(path.join(PROJECT_DIR, 'src', 'node'), 'ts')),
   ];
 
   const tsSourcesNoDefinitions = tsSources.filter(

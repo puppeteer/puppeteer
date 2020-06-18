@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Launcher from './Launcher';
+import Launcher from './node/Launcher';
 import {
   LaunchOptions,
   ChromeArgOptions,
   BrowserOptions,
-} from './launcher/LaunchOptions';
-import { ProductLauncher } from './Launcher';
-import { BrowserFetcher, BrowserFetcherOptions } from './BrowserFetcher';
+} from './node/LaunchOptions';
+import { ProductLauncher } from './node/Launcher';
+import { BrowserFetcher, BrowserFetcherOptions } from './node/BrowserFetcher';
 import { puppeteerErrors, PuppeteerErrors } from './Errors';
 import { ConnectionTransport } from './ConnectionTransport';
 
