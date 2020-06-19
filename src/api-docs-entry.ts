@@ -15,13 +15,15 @@
  */
 
 /*
- * This file re-exports any APIs that we want to have documentation generated for.
- * It is used by API Extractor to determine what parts of the system to document.
+ * This file re-exports any APIs that we want to have documentation generated
+ * for. It is used by API Extractor to determine what parts of the system to
+ * document.
  *
- * We also have src/api.ts. This is used in `index.js` and by the legacy DocLint system.
- * src/api-docs-entry.ts is ONLY used by API Extractor.
+ * We also have src/api.ts. This is used in `index.js` and by the legacy DocLint
+ * system. src/api-docs-entry.ts is ONLY used by API Extractor.
  *
- * Once we have migrated to API Extractor and removed DocLint we can remove the duplication and use this file.
+ * Once we have migrated to API Extractor and removed DocLint we can remove the
+ * duplication and use this file.
  */
 export * from './common/Accessibility';
 export * from './common/Browser';

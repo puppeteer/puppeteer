@@ -194,8 +194,9 @@ export class ElementHandle extends JSHandle {
           element.scrollIntoView({
             block: 'center',
             inline: 'center',
-            // Chrome still supports behavior: instant but it's not in the spec so TS shouts
-            // We don't want to make this breaking change in Puppeteer yet so we'll ignore the line.
+            // Chrome still supports behavior: instant but it's not in the spec
+            // so TS shouts We don't want to make this breaking change in
+            // Puppeteer yet so we'll ignore the line.
             // @ts-ignore
             behavior: 'instant',
           });
@@ -212,8 +213,9 @@ export class ElementHandle extends JSHandle {
           element.scrollIntoView({
             block: 'center',
             inline: 'center',
-            // Chrome still supports behavior: instant but it's not in the spec so TS shouts
-            // We don't want to make this breaking change in Puppeteer yet so we'll ignore the line.
+            // Chrome still supports behavior: instant but it's not in the spec
+            // so TS shouts We don't want to make this breaking change in
+            // Puppeteer yet so we'll ignore the line.
             // @ts-ignore
             behavior: 'instant',
           });

@@ -19,8 +19,9 @@ const isNodeEnv = typeof document === 'undefined';
 /**
  * A debug function that can be used in any environment.
  *
- * If used in Node, it falls back to the {@link https://www.npmjs.com/package/debug | debug module}.
- * In the browser it uses `console.log`.
+ * If used in Node, it falls back to the
+ * {@link https://www.npmjs.com/package/debug | debug module}. In the browser it
+ * uses `console.log`.
  *
  * @param prefix - this will be prefixed to each log.
  * @returns a function that can be called to log to that debug channel.

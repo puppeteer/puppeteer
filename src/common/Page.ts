@@ -143,7 +143,9 @@ enum VisionDeficiency {
  */
 export const enum PageEmittedEvents {
   /**
-   * Emitted when a dedicated {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | WebWorker} is spawned by the page.
+   * Emitted when a dedicated
+   * {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | WebWorker}
+   * is spawned by the page.
    * @eventProperty
    */
   WorkerCreated = 'workercreated',
@@ -166,7 +168,9 @@ class ScreenshotTaskQueue {
 }
 
 /**
- * Page provides methods to interact with a single tab or [extension background page](https://developer.chrome.com/extensions/background_pages) in Chromium. One [Browser] instance might have multiple [Page] instances.
+ * Page provides methods to interact with a single tab or [extension background
+ * page](https://developer.chrome.com/extensions/background_pages) in Chromium.
+ * One [Browser] instance might have multiple [Page] instances.
  *
  * @remarks
  *
@@ -184,7 +188,8 @@ class ScreenshotTaskQueue {
  * })();
  * ```
  *
- * The Page class extends from Puppeteer's {@link EventEmitter } class and will emit various events which are documented in the {@link PageEmittedEvents} enum.
+ * The Page class extends from Puppeteer's {@link EventEmitter } class and will
+ * emit various events which are documented in the {@link PageEmittedEvents} enum.
  *
  * @example
  * This example logs a message for a single page `load` event:
@@ -1052,7 +1057,8 @@ export class Page extends EventEmitter {
   ): Promise<Buffer | string | void> {
     let screenshotType = null;
     // options.type takes precedence over inferring the type from options.path
-    // because it may be a 0-length file with no extension created beforehand (i.e. as a temp file).
+    // because it may be a 0-length file with no extension created beforehand
+    // (i.e. as a temp file).
     if (options.type) {
       assert(
         options.type === 'png' || options.type === 'jpeg',
