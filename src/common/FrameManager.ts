@@ -417,10 +417,12 @@ export class Frame {
     return await this._frameManager.navigateFrame(this, url, options);
   }
 
-  async waitForNavigation(options: {
-    timeout?: number;
-    waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
-  }): Promise<HTTPResponse | null> {
+  async waitForNavigation(
+    options: {
+      timeout?: number;
+      waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
+    } = {}
+  ): Promise<HTTPResponse | null> {
     return await this._frameManager.waitForFrameNavigation(this, options);
   }
 
@@ -523,7 +525,11 @@ export class Frame {
 
   async click(
     selector: string,
-    options: { delay?: number; button?: MouseButtonInput; clickCount?: number }
+    options: {
+      delay?: number;
+      button?: MouseButtonInput;
+      clickCount?: number;
+    } = {}
   ): Promise<void> {
     return this._secondaryWorld.click(selector, options);
   }
@@ -584,7 +590,7 @@ export class Frame {
 
   async waitForSelector(
     selector: string,
-    options: WaitForSelectorOptions
+    options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle | null> {
     const handle = await this._secondaryWorld.waitForSelector(
       selector,
@@ -599,7 +605,7 @@ export class Frame {
 
   async waitForXPath(
     xpath: string,
-    options: WaitForSelectorOptions
+    options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle | null> {
     const handle = await this._secondaryWorld.waitForXPath(xpath, options);
     if (!handle) return null;

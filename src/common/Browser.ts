@@ -310,7 +310,7 @@ export class BrowserContext extends EventEmitter {
 
   waitForTarget(
     predicate: (x: Target) => boolean,
-    options: { timeout?: number }
+    options: { timeout?: number } = {}
   ): Promise<Target> {
     return this._browser.waitForTarget(
       (target) => target.browserContext() === this && predicate(target),
