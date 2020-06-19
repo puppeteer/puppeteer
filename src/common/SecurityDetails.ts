@@ -16,6 +16,12 @@
 
 import Protocol from '../protocol';
 
+/**
+ * The SecurityDetails class represents the security details of a
+ * response that was received over a secure connection.
+ *
+ * @public
+ */
 export class SecurityDetails {
   private _subjectName: string;
   private _issuer: string;
@@ -24,6 +30,9 @@ export class SecurityDetails {
   private _protocol: string;
   private _sanList: string[];
 
+  /**
+   * @internal
+   */
   constructor(securityPayload: Protocol.Network.SecurityDetails) {
     this._subjectName = securityPayload.subjectName;
     this._issuer = securityPayload.issuer;
@@ -33,26 +42,46 @@ export class SecurityDetails {
     this._sanList = securityPayload.sanList;
   }
 
-  subjectName(): string {
-    return this._subjectName;
-  }
-
+  /**
+   * @returns The name of the issuer of the certificate.
+   */
   issuer(): string {
     return this._issuer;
   }
 
+  /**
+   * @returns {@link https://en.wikipedia.org/wiki/Unix_time | Unix timestamp}
+   * marking the start of the certificate's validity.
+   */
   validFrom(): number {
     return this._validFrom;
   }
 
+  /**
+   * @returns {@link https://en.wikipedia.org/wiki/Unix_time | Unix timestamp}
+   * marking the end of the certificate's validity.
+   */
   validTo(): number {
     return this._validTo;
   }
 
+  /**
+   * @returns The security protocol being used, e.g. "TLS 1.2".
+   */
   protocol(): string {
     return this._protocol;
   }
 
+  /**
+   * @returns The name of the subject to which the certificate was issued.
+   */
+  subjectName(): string {
+    return this._subjectName;
+  }
+
+  /**
+   * @returns The list of {@link https://en.wikipedia.org/wiki/Subject_Alternative_Name | subject alternative names (SANs)} of the certificate.
+   */
   subjectAlternativeNames(): string[] {
     return this._sanList;
   }
