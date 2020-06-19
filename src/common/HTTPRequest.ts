@@ -135,8 +135,9 @@ export class HTTPRequest {
         headers: headers ? headersArray(headers) : undefined,
       })
       .catch((error) => {
-        // In certain cases, protocol will return error if the request was already canceled
-        // or the page was closed. We should tolerate these errors.
+        // In certain cases, protocol will return error if the request was
+        // already canceled or the page was closed. We should tolerate these
+        // errors.
         debugError(error);
       });
   }
@@ -179,8 +180,9 @@ export class HTTPRequest {
         body: responseBody ? responseBody.toString('base64') : undefined,
       })
       .catch((error) => {
-        // In certain cases, protocol will return error if the request was already canceled
-        // or the page was closed. We should tolerate these errors.
+        // In certain cases, protocol will return error if the request was
+        // already canceled or the page was closed. We should tolerate these
+        // errors.
         debugError(error);
       });
   }
@@ -199,8 +201,9 @@ export class HTTPRequest {
         errorReason,
       })
       .catch((error) => {
-        // In certain cases, protocol will return error if the request was already canceled
-        // or the page was closed. We should tolerate these errors.
+        // In certain cases, protocol will return error if the request was
+        // already canceled or the page was closed. We should tolerate these
+        // errors.
         debugError(error);
       });
   }
@@ -250,7 +253,9 @@ function headersArray(
   return result;
 }
 
-// List taken from https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml with extra 306 and 418 codes.
+// List taken from
+// https://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+// with extra 306 and 418 codes.
 const STATUS_TEXTS = {
   '100': 'Continue',
   '101': 'Switching Protocols',

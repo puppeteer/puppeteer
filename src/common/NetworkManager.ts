@@ -242,7 +242,8 @@ export class NetworkManager extends EventEmitter {
     let redirectChain = [];
     if (event.redirectResponse) {
       const request = this._requestIdToRequest.get(event.requestId);
-      // If we connect late to the target, we could have missed the requestWillBeSent event.
+      // If we connect late to the target, we could have missed the
+      // requestWillBeSent event.
       if (request) {
         this._handleRequestRedirect(request, event.redirectResponse);
         redirectChain = request._redirectChain;

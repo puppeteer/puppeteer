@@ -64,7 +64,8 @@ export interface SerializedAXNode {
   required?: boolean;
   selected?: boolean;
   /**
-   * Whether the checkbox is checked, or in a {@link https://www.w3.org/TR/wai-aria-practices/examples/checkbox/checkbox-2/checkbox-2.html | mixed state}.
+   * Whether the checkbox is checked, or in a
+   * {@link https://www.w3.org/TR/wai-aria-practices/examples/checkbox/checkbox-2/checkbox-2.html | mixed state}.
    */
   checked?: boolean | 'mixed';
   /**
@@ -144,9 +145,10 @@ export class Accessibility {
    *
    * @remarks
    *
-   * **NOTE** The Chromium accessibility tree contains nodes that go unused on most platforms and by
-   * most screen readers. Puppeteer will discard them as well for an easier to process tree,
-   * unless `interestingOnly` is set to `false`.
+   * **NOTE** The Chromium accessibility tree contains nodes that go unused on
+   * most platforms and by most screen readers. Puppeteer will discard them as
+   * well for an easier to process tree, unless `interestingOnly` is set to
+   * `false`.
    *
    * @example
    * An example of dumping the entire accessibility tree:
@@ -436,8 +438,9 @@ class AXNode {
       properties.get(key) as boolean;
 
     for (const booleanProperty of booleanProperties) {
-      // WebArea's treat focus differently than other nodes. They report whether their frame  has focus,
-      // not whether focus is specifically on the root node.
+      // WebArea's treat focus differently than other nodes. They report whether
+      // their frame  has focus, not whether focus is specifically on the root
+      // node.
       if (booleanProperty === 'focused' && this._role === 'WebArea') continue;
       const value = getBooleanPropertyValue(booleanProperty);
       if (!value) continue;

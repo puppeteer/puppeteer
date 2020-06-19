@@ -78,9 +78,10 @@ export class BrowserRunner {
       this._executablePath,
       this._processArguments,
       {
-        // On non-windows platforms, `detached: true` makes child process a leader of a new
-        // process group, making it possible to kill child process tree with `.kill(-pid)` command.
-        // @see https://nodejs.org/api/child_process.html#child_process_options_detached
+        // On non-windows platforms, `detached: true` makes child process a
+        // leader of a new process group, making it possible to kill child
+        // process tree with `.kill(-pid)` command. @see
+        // https://nodejs.org/api/child_process.html#child_process_options_detached
         detached: process.platform !== 'win32',
         env,
         stdio,
@@ -180,7 +181,8 @@ export class BrowserRunner {
       const transport = await WebSocketTransport.create(browserWSEndpoint);
       this.connection = new Connection(browserWSEndpoint, transport, slowMo);
     } else {
-      // stdio was assigned during start(), and the 'pipe' option there adds the 4th and 5th items to stdio array
+      // stdio was assigned during start(), and the 'pipe' option there adds the
+      // 4th and 5th items to stdio array
       const { 3: pipeWrite, 4: pipeRead } = this.proc.stdio;
       const transport = new PipeTransport(
         pipeWrite as NodeJS.WritableStream,

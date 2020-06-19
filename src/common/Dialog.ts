@@ -76,14 +76,17 @@ export class Dialog {
   }
 
   /**
-   * @returns The default value of the prompt, or an empty string if the dialog is not a `prompt`.
+   * @returns The default value of the prompt, or an empty string if the dialog
+   * is not a `prompt`.
    */
   defaultValue(): string {
     return this._defaultValue;
   }
 
   /**
-   * @param promptText - optional text that will be entered in the dialog prompt. Has no effect if the dialog's type is not `prompt`.
+   * @param promptText - optional text that will be entered in the dialog
+   * prompt. Has no effect if the dialog's type is not `prompt`.
+   *
    * @returns A promise that resolves when the dialog has been accepted.
    */
   async accept(promptText?: string): Promise<void> {

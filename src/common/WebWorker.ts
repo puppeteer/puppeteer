@@ -31,10 +31,12 @@ type ExceptionThrownCallback = (
 type JSHandleFactory = (obj: Protocol.Runtime.RemoteObject) => JSHandle;
 
 /**
- * The WebWorker class represents a {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | WebWorker}.
+ * The WebWorker class represents a
+ * {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | WebWorker}.
  *
  * @remarks
- * The events `workercreated` and `workerdestroyed` are emitted on the page object to signal the worker lifecycle.
+ * The events `workercreated` and `workerdestroyed` are emitted on the page
+ * object to signal the worker lifecycle.
  *
  * @example
  * ```js
@@ -115,9 +117,14 @@ export class WebWorker extends EventEmitter {
   }
 
   /**
-   * If the function passed to the `worker.evaluate` returns a Promise, then `worker.evaluate` would wait for the promise to resolve and return its value.
-   * If the function passed to the `worker.evaluate` returns a non-serializable value, then `worker.evaluate` resolves to `undefined`. DevTools Protocol also supports transferring some additional values that are not serializable by `JSON`: `-0`, `NaN`, `Infinity`, `-Infinity`, and bigint literals.
-   * Shortcut for `await worker.executionContext()).evaluate(pageFunction, ...args)`.
+   * If the function passed to the `worker.evaluate` returns a Promise, then
+   * `worker.evaluate` would wait for the promise to resolve and return its
+   * value. If the function passed to the `worker.evaluate` returns a
+   * non-serializable value, then `worker.evaluate` resolves to `undefined`.
+   * DevTools Protocol also supports transferring some additional values that
+   * are not serializable by `JSON`: `-0`, `NaN`, `Infinity`, `-Infinity`, and
+   * bigint literals. Shortcut for `await
+   * worker.executionContext()).evaluate(pageFunction, ...args)`.
    *
    * @param pageFunction - Function to be evaluated in the worker context.
    * @param args - Arguments to pass to `pageFunction`.
@@ -134,9 +141,13 @@ export class WebWorker extends EventEmitter {
   }
 
   /**
-   * The only difference between `worker.evaluate` and `worker.evaluateHandle` is that `worker.evaluateHandle` returns in-page object (JSHandle).
-   * If the function passed to the `worker.evaluateHandle` returns a [Promise], then `worker.evaluateHandle` would wait for the promise to resolve and return its value.
-   * Shortcut for [(await worker.executionContext()).evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args).
+   * The only difference between `worker.evaluate` and `worker.evaluateHandle`
+   * is that `worker.evaluateHandle` returns in-page object (JSHandle). If the
+   * function passed to the `worker.evaluateHandle` returns a [Promise], then
+   * `worker.evaluateHandle` would wait for the promise to resolve and return
+   * its value. Shortcut for
+   * `await worker.executionContext()).evaluateHandle(pageFunction, * ...args)`
+   *
    * @param pageFunction - Function to be evaluated in the page context.
    * @param args - Arguments to pass to `pageFunction`.
    * @returns Promise which resolves to the return value of `pageFunction`.
