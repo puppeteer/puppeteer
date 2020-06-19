@@ -22,7 +22,7 @@ snapshot(options?: SnapshotOptions): Promise<SerializedAXNode>;
 
 Promise&lt;[SerializedAXNode](./puppeteer.serializedaxnode.md)<!-- -->&gt;
 
-An AXNode object represeting the snapshot.
+An AXNode object representing the snapshot.
 
 ## Remarks
 

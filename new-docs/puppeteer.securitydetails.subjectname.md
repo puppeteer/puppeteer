@@ -13,3 +13,5 @@ subjectName(): string;
 
 string
 
+The name of the subject to which the certificate was issued.
+

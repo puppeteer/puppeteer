@@ -13,3 +13,5 @@ protocol(): string;
 
 string
 
+The security protocol being used, e.g. "TLS 1.2".
+

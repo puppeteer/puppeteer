@@ -4,17 +4,17 @@
 
 ## SecurityDetails class
 
+The SecurityDetails class represents the security details of a response that was received over a secure connection.
+
 <b>Signature:</b>
 
 ```typescript
 export declare class SecurityDetails 
 ```
 
-## Constructors
+## Remarks
 
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(securityPayload)](./puppeteer.securitydetails._constructor_.md) |  | Constructs a new instance of the <code>SecurityDetails</code> class |
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `SecurityDetails` class.
 
 ## Methods
 
