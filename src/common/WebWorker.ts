@@ -146,7 +146,7 @@ export class WebWorker extends EventEmitter {
    * function passed to the `worker.evaluateHandle` returns a [Promise], then
    * `worker.evaluateHandle` would wait for the promise to resolve and return
    * its value. Shortcut for
-   * `await worker.executionContext()).evaluateHandle(pageFunction, * ...args)`
+   * `await worker.executionContext()).evaluateHandle(pageFunction, ...args)`
    *
    * @param pageFunction - Function to be evaluated in the page context.
    * @param args - Arguments to pass to `pageFunction`.

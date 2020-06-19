@@ -64,9 +64,9 @@ export const initializePuppeteer = (options: InitOptions): Puppeteer => {
     product
   );
 
-  // The introspection in `Helper.installAsyncStackHooks` references `Puppeteer._launcher`
-  // before the Puppeteer ctor is called, such that an invalid Launcher is selected at import,
-  // so we reset it.
+  // The introspection in `Helper.installAsyncStackHooks` references
+  // `Puppeteer._launcher` before the Puppeteer ctor is called, such that an
+  // invalid Launcher is selected at import, so we reset it.
   puppeteer._lazyLauncher = undefined;
   return puppeteer;
 };
