@@ -4,6 +4,8 @@
 
 ## Target.browser() method
 
+Get the browser the target belongs to.
+
 <b>Signature:</b>
 
 ```typescript
