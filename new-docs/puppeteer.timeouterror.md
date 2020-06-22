@@ -9,7 +9,7 @@ TimeoutError is emitted whenever certain operations are terminated due to timeou
 <b>Signature:</b>
 
 ```typescript
-export declare class TimeoutError extends CustomError
+export declare class TimeoutError extends CustomError 
 ```
 <b>Extends:</b> CustomError
 
