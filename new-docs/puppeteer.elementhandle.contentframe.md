@@ -4,6 +4,8 @@
 
 ## ElementHandle.contentFrame() method
 
+Resolves to the content frame for element handles referencing iframe nodes, or null otherwise
+
 <b>Signature:</b>
 
 ```typescript

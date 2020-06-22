@@ -4,6 +4,8 @@
 
 ## JSHandle.dispose() method
 
+The method stops referencing the element handle.
+
 <b>Signature:</b>
 
 ```typescript
