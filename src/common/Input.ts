@@ -22,15 +22,81 @@ type KeyDescription = Required<
   Pick<KeyDefinition, 'keyCode' | 'key' | 'text' | 'code' | 'location'>
 >;
 
+/**
+ * Keyboard provides an api for managing a virtual keyboard.
+ * The high level api is {@link Keyboard."type"},
+ * which takes raw characters and generates proper keydown, keypress/input,
+ * and keyup events on your page.
+ *
+ * @remarks
+ * For finer control, you can use {@link Keyboard.down},
+ * {@link Keyboard.up}, and {@link Keyboard.sendCharacter}
+ * to manually fire events as if they were generated from a real keyboard.
+ *
+ * On MacOS, keyboard shortcuts like `⌘ A` -> Select All do not work.
+ * See {@link https://github.com/puppeteer/puppeteer/issues/1313 | #1313}.
+ *
+ * @example
+ * An example of holding down `Shift` in order to select and delete some text:
+ * ```js
+ * await page.keyboard.type('Hello World!');
+ * await page.keyboard.press('ArrowLeft');
+ *
+ * await page.keyboard.down('Shift');
+ * for (let i = 0; i < ' World'.length; i++)
+ *   await page.keyboard.press('ArrowLeft');
+ * await page.keyboard.up('Shift');
+ *
+ * await page.keyboard.press('Backspace');
+ * // Result text will end up saying 'Hello!'
+ * ```
+ *
+ * @example
+ * An example of pressing `A`
+ * ```js
+ * await page.keyboard.down('Shift');
+ * await page.keyboard.press('KeyA');
+ * await page.keyboard.up('Shift');
+ * ```
+ *
+ * @public
+ */
 export class Keyboard {
-  _client: CDPSession;
+  private _client: CDPSession;
+  /** @internal */
   _modifiers = 0;
-  _pressedKeys = new Set<string>();
+  private _pressedKeys = new Set<string>();
 
+  /** @internal */
   constructor(client: CDPSession) {
     this._client = client;
   }
 
+  /**
+   * Dispatches a `keydown` event.
+   *
+   * @remarks
+   * If `key` is a single character and no modifier keys besides `Shift`
+   * are being held down, a `keypress`/`input` event will also generated.
+   * The `text` option can be specified to force an input event to be generated.
+   * If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`,
+   * subsequent key presses will be sent with that modifier active.
+   * To release the modifier key, use {@link Keyboard.up}.
+   *
+   * After the key is pressed once, subsequent calls to
+   * {@link Keyboard.down} will have
+   * {@link https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/repeat | repeat}
+   * set to true. To release the key, use {@link Keyboard.up}.
+   *
+   * Modifier keys DO influence {@link Keyboard.down}.
+   * Holding down `Shift` will type the text in upper case.
+   *
+   * @param key - Name of key to press, such as `ArrowLeft`.
+   * See {@link KeyInput} for a list of all key names.
+   *
+   * @param options - An object of options. Accepts text which, if specified,
+   * generates an input event with this text.
+   */
   async down(
     key: KeyInput,
     options: { text?: string } = { text: undefined }
@@ -99,6 +165,13 @@ export class Keyboard {
     return description;
   }
 
+  /**
+   * Dispatches a `keyup` event.
+   *
+   * @param key - Name of key to release, such as `ArrowLeft`.
+   * See {@link KeyInput | KeyInput}
+   * for a list of all key names.
+   */
   async up(key: KeyInput): Promise<void> {
     const description = this._keyDescriptionForString(key);
 
@@ -114,6 +187,21 @@ export class Keyboard {
     });
   }
 
+  /**
+   * Dispatches a `keypress` and `input` event.
+   * This does not send a `keydown` or `keyup` event.
+   *
+   * @remarks
+   * Modifier keys DO NOT effect {@link Keyboard.sendCharacter | Keyboard.sendCharacter}.
+   * Holding down `Shift` will not type the text in upper case.
+   *
+   * @example
+   * ```js
+   * page.keyboard.sendCharacter('嗨');
+   * ```
+   *
+   * @param char - Character to send into the page.
+   */
   async sendCharacter(char: string): Promise<void> {
     await this._client.send('Input.insertText', { text: char });
   }
@@ -122,8 +210,30 @@ export class Keyboard {
     return !!keyDefinitions[char];
   }
 
+  /**
+   * Sends a `keydown`, `keypress`/`input`,
+   * and `keyup` event for each character in the text.
+   *
+   * @remarks
+   * To press a special key, like `Control` or `ArrowDown`,
+   * use {@link Keyboard.press}.
+   *
+   * Modifier keys DO NOT effect `keyboard.type`.
+   * Holding down `Shift` will not type the text in upper case.
+   *
+   * @example
+   * ```js
+   * await page.keyboard.type('Hello'); // Types instantly
+   * await page.keyboard.type('World', {delay: 100}); // Types slower, like a user
+   * ```
+   *
+   * @param text - A text to type into a focused element.
+   * @param options - An object of options. Accepts delay which,
+   * if specified, is the time to wait between `keydown` and `keyup` in milliseconds.
+   * Defaults to 0.
+   */
   async type(text: string, options: { delay?: number } = {}): Promise<void> {
-    const delay = (options && options.delay) || null;
+    const delay = options.delay || null;
     for (const char of text) {
       if (this.charIsKey(char)) {
         await this.press(char, { delay });
@@ -134,6 +244,26 @@ export class Keyboard {
     }
   }
 
+  /**
+   * Shortcut for {@link Keyboard.down}
+   * and {@link Keyboard.up}.
+   *
+   * @remarks
+   * If `key` is a single character and no modifier keys besides `Shift`
+   * are being held down, a `keypress`/`input` event will also generated.
+   * The `text` option can be specified to force an input event to be generated.
+   *
+   * Modifier keys DO effect {@link Keyboard.press}.
+   * Holding down `Shift` will type the text in upper case.
+   *
+   * @param key - Name of key to press, such as `ArrowLeft`.
+   * See {@link KeyInput} for a list of all key names.
+   *
+   * @param options - An object of options. Accepts text which, if specified,
+   * generates an input event with this text. Accepts delay which,
+   * if specified, is the time to wait between `keydown` and `keyup` in milliseconds.
+   * Defaults to 0.
+   */
   async press(
     key: KeyInput,
     options: { delay?: number; text?: string } = {}
