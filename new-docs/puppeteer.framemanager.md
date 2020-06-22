@@ -9,6 +9,7 @@
 ```typescript
 export declare class FrameManager extends EventEmitter 
 ```
+<b>Extends:</b> [EventEmitter](./puppeteer.eventemitter.md)
 
 ## Constructors
 
