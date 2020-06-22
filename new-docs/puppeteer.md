@@ -14,7 +14,7 @@
 |  [BrowserFetcher](./puppeteer.browserfetcher.md) |  |
 |  [CDPSession](./puppeteer.cdpsession.md) | The <code>CDPSession</code> instances are used to talk raw Chrome Devtools Protocol. |
 |  [Connection](./puppeteer.connection.md) |  |
-|  [ConsoleMessage](./puppeteer.consolemessage.md) |  |
+|  [ConsoleMessage](./puppeteer.consolemessage.md) | ConsoleMessage objects are dispatched by page via the 'console' event. |
 |  [Coverage](./puppeteer.coverage.md) |  |
 |  [Dialog](./puppeteer.dialog.md) | Dialog instances are dispatched by the [Page](./puppeteer.page.md) via the <code>dialog</code> event. |
 |  [ElementHandle](./puppeteer.elementhandle.md) |  |
@@ -54,6 +54,7 @@
 |  Interface | Description |
 |  --- | --- |
 |  [BrowserFetcherOptions](./puppeteer.browserfetcheroptions.md) |  |
+|  [ConsoleMessageLocation](./puppeteer.consolemessagelocation.md) |  |
 |  [SerializedAXNode](./puppeteer.serializedaxnode.md) | Represents a Node and the properties of it that are relevant to Accessibility. |
 |  [SnapshotOptions](./puppeteer.snapshotoptions.md) |  |
 
@@ -68,6 +69,7 @@
 
 |  Type Alias | Description |
 |  --- | --- |
+|  [ConsoleMessageType](./puppeteer.consolemessagetype.md) | The supported types for console messages. |
 |  [MouseButtonInput](./puppeteer.mousebuttoninput.md) |  |
 |  [PuppeteerErrors](./puppeteer.puppeteererrors.md) |  |
 

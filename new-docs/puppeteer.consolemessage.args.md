@@ -13,3 +13,5 @@ args(): JSHandle[];
 
 [JSHandle](./puppeteer.jshandle.md)<!-- -->\[\]
 
+An array of arguments passed to the console.
+

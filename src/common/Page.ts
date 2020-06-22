@@ -38,7 +38,7 @@ import { HTTPResponse } from './HTTPResponse';
 import { Accessibility } from './Accessibility';
 import { TimeoutSettings } from './TimeoutSettings';
 import { FileChooser } from './FileChooser';
-import { ConsoleMessage } from './ConsoleMessage';
+import { ConsoleMessage, ConsoleMessageType } from './ConsoleMessage';
 import { PuppeteerLifeCycleEvent } from './LifecycleWatcher';
 import Protocol from '../protocol';
 
@@ -775,7 +775,7 @@ export class Page extends EventEmitter {
   }
 
   private _addConsoleMessage(
-    type: string,
+    type: ConsoleMessageType,
     args: JSHandle[],
     stackTrace?: Protocol.Runtime.StackTrace
   ): void {

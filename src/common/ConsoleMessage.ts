@@ -16,20 +16,55 @@
 
 import { JSHandle } from './JSHandle';
 
-interface ConsoleMessageLocation {
+/**
+ * @public
+ */
+export interface ConsoleMessageLocation {
+  /**
+   * URL of the resource if known or `undefined` otherwise.
+   */
   url?: string;
+
+  /**
+   * 0-based line number in the resource if known or `undefined` otherwise.
+   */
   lineNumber?: number;
+
+  /**
+   * 0-based column number in the resource if known or `undefined` otherwise.
+   */
   columnNumber?: number;
 }
 
+// Prettier seems to struggle with the ConsoleMessageType declaration
+// so it is switched off just for that block.
+/* eslint-disable prettier/prettier */
+
+/**
+ * The supported types for console messages.
+ */
+export type ConsoleMessageType = 'log' | 'debug' | 'info' | 'error' | 'warning' |
+    'dir' | 'dirxml' | 'table' | 'trace' | 'clear' | 'startGroup' |
+    'startGroupCollapsed' | 'endGroup' | 'assert' | 'profile' |
+    'profileEnd' | 'count' | 'timeEnd' | 'verbose';
+
+/* eslint-enable prettier/prettier */
+
+/**
+ * ConsoleMessage objects are dispatched by page via the 'console' event.
+ * @public
+ */
 export class ConsoleMessage {
-  private _type: string;
+  private _type: ConsoleMessageType;
   private _text: string;
   private _args: JSHandle[];
   private _location: ConsoleMessageLocation;
 
+  /**
+   * @public
+   */
   constructor(
-    type: string,
+    type: ConsoleMessageType,
     text: string,
     args: JSHandle[],
     location: ConsoleMessageLocation = {}
@@ -40,18 +75,30 @@ export class ConsoleMessage {
     this._location = location;
   }
 
-  type(): string {
+  /**
+   * @returns The type of the console message.
+   */
+  type(): ConsoleMessageType {
     return this._type;
   }
 
+  /**
+   * @returns The text of the console message.
+   */
   text(): string {
     return this._text;
   }
 
+  /**
+   * @returns An array of arguments passed to the console.
+   */
   args(): JSHandle[] {
     return this._args;
   }
 
+  /**
+   * @returns The location of the console message.
+   */
   location(): ConsoleMessageLocation {
     return this._location;
   }

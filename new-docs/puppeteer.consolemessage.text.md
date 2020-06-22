@@ -13,3 +13,5 @@ text(): string;
 
 string
 
+The text of the console message.
+

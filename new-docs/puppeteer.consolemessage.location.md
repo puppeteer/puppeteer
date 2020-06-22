@@ -11,5 +11,7 @@ location(): ConsoleMessageLocation;
 ```
 <b>Returns:</b>
 
-ConsoleMessageLocation
+[ConsoleMessageLocation](./puppeteer.consolemessagelocation.md)
+
+The location of the console message.
 

@@ -4,6 +4,8 @@
 
 ## ConsoleMessage class
 
+ConsoleMessage objects are dispatched by page via the 'console' event.
+
 <b>Signature:</b>
 
 ```typescript
