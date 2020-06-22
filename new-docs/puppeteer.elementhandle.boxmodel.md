@@ -4,6 +4,8 @@
 
 ## ElementHandle.boxModel() method
 
+This method returns boxes of the element, or `null` if the element is not visible.
+
 <b>Signature:</b>
 
 ```typescript
@@ -11,7 +13,9 @@ boxModel(): Promise<BoxModel | null>;
 ```
 <b>Returns:</b>
 
-Promise&lt;BoxModel \| null&gt;
+Promise&lt;[BoxModel](./puppeteer.boxmodel.md) \| null&gt;
 
-{<!-- -->!Promise<!-- -->&lt;<!-- -->?BoxModel<!-- -->&gt;<!-- -->}
+## Remarks
+
+Boxes are represented as an array of points; Each Point is an object `{x, y}`<!-- -->. Box points are sorted clock-wise.
 

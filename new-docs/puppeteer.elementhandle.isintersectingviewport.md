@@ -4,6 +4,8 @@
 
 ## ElementHandle.isIntersectingViewport() method
 
+Resolves to true if the element is visible in the current viewport.
+
 <b>Signature:</b>
 
 ```typescript

@@ -4,6 +4,7 @@
 
 ## JSHandle class
 
+
 <b>Signature:</b>
 
 ```typescript
@@ -30,12 +31,12 @@ export declare class JSHandle
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
 |  [asElement()](./puppeteer.jshandle.aselement.md) |  |  |
-|  [dispose()](./puppeteer.jshandle.dispose.md) |  |  |
-|  [evaluate(pageFunction, args)](./puppeteer.jshandle.evaluate.md) |  |  |
-|  [evaluateHandle(pageFunction, args)](./puppeteer.jshandle.evaluatehandle.md) |  |  |
+|  [dispose()](./puppeteer.jshandle.dispose.md) |  | The method stops referencing the element handle. |
+|  [evaluate(pageFunction, args)](./puppeteer.jshandle.evaluate.md) |  | This method passes this handle as the first argument to <code>pageFunction</code>. If <code>pageFunction</code> returns a \[Promise\], then <code>handle.evaluate</code> would wait for the promise to resolve and return its value. |
+|  [evaluateHandle(pageFunction, args)](./puppeteer.jshandle.evaluatehandle.md) |  | This method passes this handle as the first argument to <code>pageFunction</code>. |
 |  [executionContext()](./puppeteer.jshandle.executioncontext.md) |  |  |
-|  [getProperties()](./puppeteer.jshandle.getproperties.md) |  |  |
+|  [getProperties()](./puppeteer.jshandle.getproperties.md) |  | The method returns a map with property names as keys and JSHandle instances for the property values. |
 |  [getProperty(propertyName)](./puppeteer.jshandle.getproperty.md) |  |  |
-|  [jsonValue()](./puppeteer.jshandle.jsonvalue.md) |  |  |
+|  [jsonValue()](./puppeteer.jshandle.jsonvalue.md) |  | Returns a JSON representation of the object. |
 |  [toString()](./puppeteer.jshandle.tostring.md) |  |  |
 

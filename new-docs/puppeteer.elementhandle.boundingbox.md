@@ -4,17 +4,14 @@
 
 ## ElementHandle.boundingBox() method
 
+This method returns the bounding box of the element (relative to the main frame), or `null` if the element is not visible.
+
 <b>Signature:</b>
 
 ```typescript
-boundingBox(): Promise<{
-        x: number;
-        y: number;
-        width: number;
-        height: number;
-    }>;
+boundingBox(): Promise<BoundingBox | null>;
 ```
 <b>Returns:</b>
 
-Promise&lt;{ x: number; y: number; width: number; height: number; }&gt;
+Promise&lt;[BoundingBox](./puppeteer.boundingbox.md) \| null&gt;
 

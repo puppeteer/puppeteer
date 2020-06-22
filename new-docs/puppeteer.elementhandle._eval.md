@@ -4,6 +4,10 @@
 
 ## ElementHandle.$eval() method
 
+This method runs `document.querySelector` within the element and passes it as the first argument to `pageFunction`<!-- -->. If there's no element matching `selector`<!-- -->, the method throws an error.
+
+If `pageFunction` returns a \[Promise\], then `frame.$eval` would wait for the promise to resolve and return its value.
+
 <b>Signature:</b>
 
 ```typescript
@@ -21,4 +25,14 @@ $eval<ReturnType extends any>(selector: string, pageFunction: Function | string,
 <b>Returns:</b>
 
 Promise&lt;ReturnType&gt;
+
+## Example
+
+
+```js
+const tweetHandle = await page.$('.tweet');
+expect(await tweetHandle.$eval('.like', node => node.innerText)).toBe('100');
+expect(await tweetHandle.$eval('.retweets', node => node.innerText)).toBe('10');
+
+```
 

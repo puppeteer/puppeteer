@@ -14,7 +14,7 @@ up(key: KeyInput): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  key | KeyInput |  |
+|  key | [KeyInput](./puppeteer.keyinput.md) |  |
 
 <b>Returns:</b>
 
