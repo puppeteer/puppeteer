@@ -31,27 +31,27 @@ export class Target {
   private _defaultViewport?: Viewport;
   private _pagePromise?: Promise<Page>;
   private _workerPromise?: Promise<WebWorker>;
-   /**
+  /**
    * @internal
    */
   _initializedPromise: Promise<boolean>;
-   /**
+  /**
    * @internal
    */
   _initializedCallback: (x: boolean) => void;
-   /**
+  /**
    * @internal
    */
   _isClosedPromise: Promise<boolean>;
-   /**
+  /**
    * @internal
    */
   _closedCallback: () => void;
-   /**
+  /**
    * @internal
    */
   _isInitialized: boolean;
-   /**
+  /**
    * @internal
    */
   _targetId: string;
@@ -181,7 +181,6 @@ export class Target {
       return type;
     return 'other';
   }
-
 
   /**
    * Get the browser the target belongs to.
