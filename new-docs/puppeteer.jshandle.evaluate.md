@@ -4,7 +4,7 @@
 
 ## JSHandle.evaluate() method
 
-This method passes this handle as the first argument to `pageFunction`<!-- -->. If `pageFunction` returns a \[Promise\], then `handle.evaluate` would wait for the promise to resolve and return its value.
+This method passes this handle as the first argument to `pageFunction`<!-- -->. If `pageFunction` returns a Promise, then `handle.evaluate` would wait for the promise to resolve and return its value.
 
 <b>Signature:</b>
 

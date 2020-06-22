@@ -6,7 +6,7 @@
 
 This method runs `document.querySelectorAll` within the element and passes it as the first argument to `pageFunction`<!-- -->. If there's no element matching `selector`<!-- -->, the method throws an error.
 
-If `pageFunction` returns a \[Promise\], then `frame.$$eval` would wait for the promise to resolve and return its value.
+If `pageFunction` returns a Promise, then `frame.$$eval` would wait for the promise to resolve and return its value.
 
 <b>Signature:</b>
 

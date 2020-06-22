@@ -27,7 +27,7 @@ Promise&lt;[JSHandle](./puppeteer.jshandle.md)<!-- -->&gt;
 
 The only difference between `evaluateHandle.evaluate` and `evaluateHandle.evaluateHandle` is that `executionContext.evaluateHandle` returns in-page object (JSHandle).
 
-If the function passed to the `evaluateHandle.evaluateHandle` returns a \[Promise\], then `evaluateHandle.evaluateHandle` would wait for the promise to resolve and return its value.
+If the function passed to the `evaluateHandle.evaluateHandle` returns a Promise, then `evaluateHandle.evaluateHandle` would wait for the promise to resolve and return its value.
 
 See [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) for more details.
 

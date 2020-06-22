@@ -104,7 +104,7 @@ export class JSHandle {
 
   /**
    * This method passes this handle as the first argument to `pageFunction`.
-   * If `pageFunction` returns a [Promise], then `handle.evaluate` would wait
+   * If `pageFunction` returns a Promise, then `handle.evaluate` would wait
    * for the promise to resolve and return its value.
    *
    * @example
@@ -133,7 +133,7 @@ export class JSHandle {
    * `evaluateHandle.evaluateHandle` is that `executionContext.evaluateHandle`
    * returns in-page object (JSHandle).
    *
-   * If the function passed to the `evaluateHandle.evaluateHandle` returns a [Promise],
+   * If the function passed to the `evaluateHandle.evaluateHandle` returns a Promise,
    * then `evaluateHandle.evaluateHandle` would wait for the promise to resolve and
    * return its value.
    *
@@ -760,7 +760,7 @@ export class ElementHandle extends JSHandle {
    * the first argument to `pageFunction`. If there's no element matching `selector`,
    * the method throws an error.
    *
-   * If `pageFunction` returns a [Promise], then `frame.$eval` would wait for the promise
+   * If `pageFunction` returns a Promise, then `frame.$eval` would wait for the promise
    * to resolve and return its value.
    *
    * @example
@@ -793,7 +793,7 @@ export class ElementHandle extends JSHandle {
    * the first argument to `pageFunction`. If there's no element matching `selector`,
    * the method throws an error.
    *
-   * If `pageFunction` returns a [Promise], then `frame.$$eval` would wait for the
+   * If `pageFunction` returns a Promise, then `frame.$$eval` would wait for the
    * promise to resolve and return its value.
    *
    * @example
