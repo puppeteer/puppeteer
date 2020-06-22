@@ -26,7 +26,7 @@
 |  [HTTPRequest](./puppeteer.httprequest.md) |  |
 |  [HTTPResponse](./puppeteer.httpresponse.md) |  |
 |  [JSHandle](./puppeteer.jshandle.md) |  |
-|  [Keyboard](./puppeteer.keyboard.md) |  |
+|  [Keyboard](./puppeteer.keyboard.md) | Keyboard provides an api for managing a virtual keyboard. The high level api is , which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page. |
 |  [Mouse](./puppeteer.mouse.md) |  |
 |  [Page](./puppeteer.page.md) | Page provides methods to interact with a single tab or \[extension background page\](https://developer.chrome.com/extensions/background\_pages) in Chromium. One \[Browser\] instance might have multiple \[Page\] instances. |
 |  [Puppeteer](./puppeteer.puppeteer.md) | The main Puppeteer class |
