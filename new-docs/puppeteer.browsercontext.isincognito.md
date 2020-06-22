@@ -4,6 +4,8 @@
 
 ## BrowserContext.isIncognito() method
 
+Returns whether BrowserContext is incognito. The default browser context is the only non-incognito browser context.
+
 <b>Signature:</b>
 
 ```typescript
@@ -12,4 +14,8 @@ isIncognito(): boolean;
 <b>Returns:</b>
 
 boolean
+
+## Remarks
+
+The default browser context cannot be closed.
 

@@ -4,6 +4,8 @@
 
 ## BrowserContext.browser() method
 
+The browser this browser context belongs to.
+
 <b>Signature:</b>
 
 ```typescript

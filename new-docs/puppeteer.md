@@ -10,7 +10,7 @@
 |  --- | --- |
 |  [Accessibility](./puppeteer.accessibility.md) | The Accessibility class provides methods for inspecting Chromium's accessibility tree. The accessibility tree is used by assistive technology such as [screen readers](https://en.wikipedia.org/wiki/Screen_reader) or [switches](https://en.wikipedia.org/wiki/Switch_access)<!-- -->. |
 |  [Browser](./puppeteer.browser.md) |  |
-|  [BrowserContext](./puppeteer.browsercontext.md) |  |
+|  [BrowserContext](./puppeteer.browsercontext.md) | BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has a single BrowserContext used by default. The method [Browser.newPage](./puppeteer.browser.newpage.md) creates a page in the default browser context. |
 |  [BrowserFetcher](./puppeteer.browserfetcher.md) |  |
 |  [CDPSession](./puppeteer.cdpsession.md) |  |
 |  [Connection](./puppeteer.connection.md) |  |
