@@ -173,7 +173,8 @@ interface CDPSessionOnMessageObject {
  *
  * @remarks
  *
- * Protocol methods can be called with {@link CDPSession.send} method and protocol events can be subscribed to with `CDPSession.on` method.
+ * Protocol methods can be called with {@link CDPSession.send} method and protocol
+ * events can be subscribed to with `CDPSession.on` method.
  *
  * Useful links: {@link https://chromedevtools.github.io/devtools-protocol/ | DevTools Protocol Viewer}
  * and {@link https://github.com/aslushnikov/getting-started-with-cdp/blob/master/README.md | Getting Started with DevTools Protocol}.
@@ -256,8 +257,8 @@ export class CDPSession extends EventEmitter {
   }
 
   /**
-   * Detaches the cdpSession from the target. Once detached, the cdpSession object won't emit any events and can't be used
-   * to send messages.
+   * Detaches the cdpSession from the target. Once detached, the cdpSession object
+   * won't emit any events and can't be used to send messages.
    */
   async detach(): Promise<void> {
     if (!this._connection)
