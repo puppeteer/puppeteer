@@ -4,6 +4,8 @@
 
 ## Browser.isConnected() method
 
+Indicates that the browser is connected.
+
 <b>Signature:</b>
 
 ```typescript

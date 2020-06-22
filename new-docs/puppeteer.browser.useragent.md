@@ -4,6 +4,8 @@
 
 ## Browser.userAgent() method
 
+The browser's original user agent. Pages can override the browser user agent with [Page.setUserAgent()](./puppeteer.page.setuseragent.md)<!-- -->.
+
 <b>Signature:</b>
 
 ```typescript
