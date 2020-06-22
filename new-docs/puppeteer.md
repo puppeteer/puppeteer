@@ -9,10 +9,10 @@
 |  Class | Description |
 |  --- | --- |
 |  [Accessibility](./puppeteer.accessibility.md) | The Accessibility class provides methods for inspecting Chromium's accessibility tree. The accessibility tree is used by assistive technology such as [screen readers](https://en.wikipedia.org/wiki/Screen_reader) or [switches](https://en.wikipedia.org/wiki/Switch_access)<!-- -->. |
-|  [Browser](./puppeteer.browser.md) |  |
+|  [Browser](./puppeteer.browser.md) | A Browser is created when Puppeteer connects to a Chromium instance, either through [Puppeteer.launch()](./puppeteer.puppeteer.launch.md) or [Puppeteer.connect()](./puppeteer.puppeteer.connect.md)<!-- -->. |
 |  [BrowserContext](./puppeteer.browsercontext.md) |  |
 |  [BrowserFetcher](./puppeteer.browserfetcher.md) |  |
-|  [CDPSession](./puppeteer.cdpsession.md) |  |
+|  [CDPSession](./puppeteer.cdpsession.md) | The <code>CDPSession</code> instances are used to talk raw Chrome Devtools Protocol. |
 |  [Connection](./puppeteer.connection.md) |  |
 |  [ConsoleMessage](./puppeteer.consolemessage.md) |  |
 |  [Coverage](./puppeteer.coverage.md) |  |
@@ -32,7 +32,7 @@
 |  [Puppeteer](./puppeteer.puppeteer.md) | The main Puppeteer class |
 |  [SecurityDetails](./puppeteer.securitydetails.md) | The SecurityDetails class represents the security details of a response that was received over a secure connection. |
 |  [Target](./puppeteer.target.md) |  |
-|  [TimeoutError](./puppeteer.timeouterror.md) |  |
+|  [TimeoutError](./puppeteer.timeouterror.md) | TimeoutError is emitted whenever certain operations are terminated due to timeout. |
 |  [Touchscreen](./puppeteer.touchscreen.md) |  |
 |  [Tracing](./puppeteer.tracing.md) |  |
 |  [WebWorker](./puppeteer.webworker.md) | The WebWorker class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)<!-- -->. |
@@ -56,6 +56,7 @@
 |  [BrowserFetcherOptions](./puppeteer.browserfetcheroptions.md) |  |
 |  [SerializedAXNode](./puppeteer.serializedaxnode.md) | Represents a Node and the properties of it that are relevant to Accessibility. |
 |  [SnapshotOptions](./puppeteer.snapshotoptions.md) |  |
+|  [WaitForTargetOptions](./puppeteer.waitfortargetoptions.md) |  |
 
 ## Variables
 

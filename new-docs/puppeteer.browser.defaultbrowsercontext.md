@@ -4,6 +4,8 @@
 
 ## Browser.defaultBrowserContext() method
 
+Returns the default browser context. The default browser context cannot be closed.
+
 <b>Signature:</b>
 
 ```typescript
