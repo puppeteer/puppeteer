@@ -12,7 +12,7 @@
 |  [Browser](./puppeteer.browser.md) |  |
 |  [BrowserContext](./puppeteer.browsercontext.md) |  |
 |  [BrowserFetcher](./puppeteer.browserfetcher.md) |  |
-|  [CDPSession](./puppeteer.cdpsession.md) |  |
+|  [CDPSession](./puppeteer.cdpsession.md) | The <code>CDPSession</code> instances are used to talk raw Chrome Devtools Protocol. |
 |  [Connection](./puppeteer.connection.md) |  |
 |  [ConsoleMessage](./puppeteer.consolemessage.md) |  |
 |  [Coverage](./puppeteer.coverage.md) |  |
