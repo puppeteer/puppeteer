@@ -22,6 +22,16 @@ class CustomError extends Error {
   }
 }
 
+/**
+ * TimeoutError is emitted whenever certain operations are terminated due to timeout.
+ *
+ * @remarks
+ *
+ * Example operations are {@link Page.waitForSelector | page.waitForSelector}
+ * or {@link Puppeteer.launch | puppeteer.launch}.
+ *
+ * @public
+ */
 export class TimeoutError extends CustomError {}
 
 export type PuppeteerErrors = Record<string, typeof CustomError>;

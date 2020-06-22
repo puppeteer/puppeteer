@@ -32,7 +32,7 @@
 |  [Puppeteer](./puppeteer.puppeteer.md) | The main Puppeteer class |
 |  [SecurityDetails](./puppeteer.securitydetails.md) | The SecurityDetails class represents the security details of a response that was received over a secure connection. |
 |  [Target](./puppeteer.target.md) |  |
-|  [TimeoutError](./puppeteer.timeouterror.md) |  |
+|  [TimeoutError](./puppeteer.timeouterror.md) | TimeoutError is emitted whenever certain operations are terminated due to timeout. |
 |  [Touchscreen](./puppeteer.touchscreen.md) |  |
 |  [Tracing](./puppeteer.tracing.md) |  |
 |  [WebWorker](./puppeteer.webworker.md) | The WebWorker class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)<!-- -->. |
