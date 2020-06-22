@@ -9,6 +9,7 @@
 ```typescript
 export declare class CDPSession extends EventEmitter 
 ```
+<b>Extends:</b> [EventEmitter](./puppeteer.eventemitter.md)
 
 ## Constructors
 

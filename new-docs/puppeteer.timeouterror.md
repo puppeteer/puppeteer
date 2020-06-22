@@ -9,3 +9,5 @@
 ```typescript
 export declare class TimeoutError extends CustomError 
 ```
+<b>Extends:</b> CustomError
+

@@ -9,6 +9,7 @@
 ```typescript
 export declare class Browser extends EventEmitter 
 ```
+<b>Extends:</b> [EventEmitter](./puppeteer.eventemitter.md)
 
 ## Constructors
 
