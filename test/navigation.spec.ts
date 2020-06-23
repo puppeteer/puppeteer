@@ -72,7 +72,11 @@ describe('navigation', function () {
         res.statusCode = 204;
         res.end();
       });
-      await page.goto(server.PREFIX + '/frames/one-frame.html');
+      let error = null;
+      await page
+        .goto(server.PREFIX + '/frames/one-frame.html')
+        .catch((error_) => (error = error_));
+      expect(error).toBe(null);
     });
     itFailsFirefox('should fail when server returns 204', async () => {
       const { page, server, isChrome } = getTestState();
