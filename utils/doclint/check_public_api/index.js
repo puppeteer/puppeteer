@@ -665,6 +665,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Browser.waitForTarget() options',
+        {
+          actualName: 'Object',
+          expectedName: 'WaitForTargetOptions',
+        },
+      ],
+      [
         'Method EventEmitter.emit() event',
         {
           actualName: 'string|symbol',

@@ -9,7 +9,7 @@
 |  Class | Description |
 |  --- | --- |
 |  [Accessibility](./puppeteer.accessibility.md) | The Accessibility class provides methods for inspecting Chromium's accessibility tree. The accessibility tree is used by assistive technology such as [screen readers](https://en.wikipedia.org/wiki/Screen_reader) or [switches](https://en.wikipedia.org/wiki/Switch_access)<!-- -->. |
-|  [Browser](./puppeteer.browser.md) |  |
+|  [Browser](./puppeteer.browser.md) | A Browser is created when Puppeteer connects to a Chromium instance, either through [Puppeteer.launch()](./puppeteer.puppeteer.launch.md) or [Puppeteer.connect()](./puppeteer.puppeteer.connect.md)<!-- -->. |
 |  [BrowserContext](./puppeteer.browsercontext.md) |  |
 |  [BrowserFetcher](./puppeteer.browserfetcher.md) |  |
 |  [CDPSession](./puppeteer.cdpsession.md) | The <code>CDPSession</code> instances are used to talk raw Chrome Devtools Protocol. |
@@ -56,6 +56,7 @@
 |  [PressOptions](./puppeteer.pressoptions.md) |  |
 |  [SerializedAXNode](./puppeteer.serializedaxnode.md) | Represents a Node and the properties of it that are relevant to Accessibility. |
 |  [SnapshotOptions](./puppeteer.snapshotoptions.md) |  |
+|  [WaitForTargetOptions](./puppeteer.waitfortargetoptions.md) |  |
 
 ## Variables
 
