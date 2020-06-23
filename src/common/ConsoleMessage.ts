@@ -36,19 +36,29 @@ export interface ConsoleMessageLocation {
   columnNumber?: number;
 }
 
-// Prettier seems to struggle with the ConsoleMessageType declaration
-// so it is switched off just for that block.
-/* eslint-disable prettier/prettier */
-
 /**
  * The supported types for console messages.
  */
-export type ConsoleMessageType = 'log' | 'debug' | 'info' | 'error' | 'warning' |
-    'dir' | 'dirxml' | 'table' | 'trace' | 'clear' | 'startGroup' |
-    'startGroupCollapsed' | 'endGroup' | 'assert' | 'profile' |
-    'profileEnd' | 'count' | 'timeEnd' | 'verbose';
-
-/* eslint-enable prettier/prettier */
+export type ConsoleMessageType =
+  | 'log'
+  | 'debug'
+  | 'info'
+  | 'error'
+  | 'warning'
+  | 'dir'
+  | 'dirxml'
+  | 'table'
+  | 'trace'
+  | 'clear'
+  | 'startGroup'
+  | 'startGroupCollapsed'
+  | 'endGroup'
+  | 'assert'
+  | 'profile'
+  | 'profileEnd'
+  | 'count'
+  | 'timeEnd'
+  | 'verbose';
 
 /**
  * ConsoleMessage objects are dispatched by page via the 'console' event.
