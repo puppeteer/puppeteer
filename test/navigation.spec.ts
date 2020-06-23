@@ -65,7 +65,7 @@ describe('navigation', function () {
       const response = await page.goto(server.PREFIX + '/historyapi.html');
       expect(response.status()).toBe(200);
     });
-    it('should work with subframes return 204', async () => {
+    itFailsFirefox('should work with subframes return 204', async () => {
       const { page, server } = getTestState();
 
       server.setRoute('/frames/frame.html', (req, res) => {
