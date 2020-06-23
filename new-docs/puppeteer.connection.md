@@ -9,7 +9,6 @@
 ```typescript
 export declare class Connection extends EventEmitter 
 ```
-<b>Extends:</b> [EventEmitter](./puppeteer.eventemitter.md)
 
 ## Constructors
 

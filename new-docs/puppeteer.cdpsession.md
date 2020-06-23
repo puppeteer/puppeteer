@@ -11,7 +11,6 @@ The `CDPSession` instances are used to talk raw Chrome Devtools Protocol.
 ```typescript
 export declare class CDPSession extends EventEmitter 
 ```
-<b>Extends:</b> [EventEmitter](./puppeteer.eventemitter.md)
 
 ## Remarks
 

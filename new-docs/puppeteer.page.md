@@ -11,7 +11,6 @@ Page provides methods to interact with a single tab or \[extension background pa
 ```typescript
 export declare class Page extends EventEmitter 
 ```
-<b>Extends:</b> [EventEmitter](./puppeteer.eventemitter.md)
 
 ## Remarks
 

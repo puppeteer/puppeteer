@@ -11,7 +11,6 @@ BrowserContexts provide a way to operate multiple independent browser sessions. 
 ```typescript
 export declare class BrowserContext extends EventEmitter 
 ```
-<b>Extends:</b> [EventEmitter](./puppeteer.eventemitter.md)
 
 ## Remarks
 
