@@ -16,7 +16,7 @@ down(key: KeyInput, options?: {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  key | KeyInput |  |
+|  key | [KeyInput](./puppeteer.keyinput.md) |  |
 |  options | { text?: string; } |  |
 
 <b>Returns:</b>

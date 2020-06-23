@@ -498,7 +498,7 @@ The default flags that Chromium will be launched with.
 - returns: <[Object]>
 
 Returns a list of devices to be used with [`page.emulate(options)`](#pageemulateoptions). Actual list of
-devices can be found in [src/DeviceDescriptors.js](https://github.com/puppeteer/puppeteer/blob/main/src/DeviceDescriptors.ts).
+devices can be found in [src/common/DeviceDescriptors.js](https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts).
 
 ```js
 const puppeteer = require('puppeteer');
@@ -1332,7 +1332,7 @@ const iPhone = puppeteer.devices['iPhone 6'];
 })();
 ```
 
-List of all available devices is available in the source code: [src/DeviceDescriptors.ts](https://github.com/puppeteer/puppeteer/blob/main/src/DeviceDescriptors.ts).
+List of all available devices is available in the source code: [src/common/DeviceDescriptors.ts](https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts).
 
 #### page.emulateMedia(type)
 - `type` <?[string]> Changes the CSS media type of the page. The only allowed values are `'screen'`, `'print'` and `null`. Passing `null` disables CSS media emulation.

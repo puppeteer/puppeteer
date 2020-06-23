@@ -31,4 +31,4 @@ const puppeteer = initializePuppeteer({
  * And therefore consuming via require('puppeteer') would break / require the user
  * to access require('puppeteer').default;
  */
-module.exports = puppeteer;
+export = puppeteer;

@@ -346,6 +346,20 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method ElementHandle.click() options',
+        {
+          actualName: 'Object',
+          expectedName: 'ClickOptions',
+        },
+      ],
+      [
+        'Method ElementHandle.press() options',
+        {
+          actualName: 'Object',
+          expectedName: 'PressOptions',
+        },
+      ],
+      [
         'Method ElementHandle.press() key',
         {
           actualName: 'string',
@@ -648,6 +662,13 @@ function compareDocumentations(actual, expected) {
         {
           actualName: 'Object',
           expectedName: 'SnapshotOptions',
+        },
+      ],
+      [
+        'Method Browser.waitForTarget() options',
+        {
+          actualName: 'Object',
+          expectedName: 'WaitForTargetOptions',
         },
       ],
       [

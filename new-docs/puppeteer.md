@@ -9,15 +9,15 @@
 |  Class | Description |
 |  --- | --- |
 |  [Accessibility](./puppeteer.accessibility.md) | The Accessibility class provides methods for inspecting Chromium's accessibility tree. The accessibility tree is used by assistive technology such as [screen readers](https://en.wikipedia.org/wiki/Screen_reader) or [switches](https://en.wikipedia.org/wiki/Switch_access)<!-- -->. |
-|  [Browser](./puppeteer.browser.md) |  |
+|  [Browser](./puppeteer.browser.md) | A Browser is created when Puppeteer connects to a Chromium instance, either through [Puppeteer.launch()](./puppeteer.puppeteer.launch.md) or [Puppeteer.connect()](./puppeteer.puppeteer.connect.md)<!-- -->. |
 |  [BrowserContext](./puppeteer.browsercontext.md) | BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has a single BrowserContext used by default. The method [Browser.newPage](./puppeteer.browser.newpage.md) creates a page in the default browser context. |
 |  [BrowserFetcher](./puppeteer.browserfetcher.md) |  |
-|  [CDPSession](./puppeteer.cdpsession.md) |  |
+|  [CDPSession](./puppeteer.cdpsession.md) | The <code>CDPSession</code> instances are used to talk raw Chrome Devtools Protocol. |
 |  [Connection](./puppeteer.connection.md) |  |
-|  [ConsoleMessage](./puppeteer.consolemessage.md) |  |
+|  [ConsoleMessage](./puppeteer.consolemessage.md) | ConsoleMessage objects are dispatched by page via the 'console' event. |
 |  [Coverage](./puppeteer.coverage.md) |  |
 |  [Dialog](./puppeteer.dialog.md) | Dialog instances are dispatched by the [Page](./puppeteer.page.md) via the <code>dialog</code> event. |
-|  [ElementHandle](./puppeteer.elementhandle.md) |  |
+|  [ElementHandle](./puppeteer.elementhandle.md) | ElementHandle represents an in-page DOM element. |
 |  [EventEmitter](./puppeteer.eventemitter.md) | The EventEmitter class that many Puppeteer classes extend. |
 |  [ExecutionContext](./puppeteer.executioncontext.md) |  |
 |  [FileChooser](./puppeteer.filechooser.md) |  |
@@ -43,31 +43,35 @@
 |  --- | --- |
 |  [PageEmittedEvents](./puppeteer.pageemittedevents.md) | All the events that a page instance may emit. |
 
-## Functions
-
-|  Function | Description |
-|  --- | --- |
-|  [createJSHandle(context, remoteObject)](./puppeteer.createjshandle.md) |  |
-
 ## Interfaces
 
 |  Interface | Description |
 |  --- | --- |
+|  [BoundingBox](./puppeteer.boundingbox.md) |  |
+|  [BoxModel](./puppeteer.boxmodel.md) |  |
 |  [BrowserFetcherOptions](./puppeteer.browserfetcheroptions.md) |  |
+|  [ClickOptions](./puppeteer.clickoptions.md) |  |
+|  [ConsoleMessageLocation](./puppeteer.consolemessagelocation.md) |  |
+|  [KeyDefinition](./puppeteer.keydefinition.md) | Copyright 2017 Google Inc. All rights reserved.<!-- -->Licensed under the Apache License, Version 2.0 (the 'License'); you may not use this file except in compliance with the License. You may obtain a copy of the License at<!-- -->http://www.apache.org/licenses/LICENSE-2.0<!-- -->Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. |
+|  [PressOptions](./puppeteer.pressoptions.md) |  |
 |  [SerializedAXNode](./puppeteer.serializedaxnode.md) | Represents a Node and the properties of it that are relevant to Accessibility. |
 |  [SnapshotOptions](./puppeteer.snapshotoptions.md) |  |
+|  [WaitForTargetOptions](./puppeteer.waitfortargetoptions.md) |  |
 
 ## Variables
 
 |  Variable | Description |
 |  --- | --- |
 |  [EVALUATION\_SCRIPT\_URL](./puppeteer.evaluation_script_url.md) |  |
+|  [keyDefinitions](./puppeteer.keydefinitions.md) |  |
 |  [puppeteerErrors](./puppeteer.puppeteererrors.md) |  |
 
 ## Type Aliases
 
 |  Type Alias | Description |
 |  --- | --- |
+|  [ConsoleMessageType](./puppeteer.consolemessagetype.md) | The supported types for console messages. |
+|  [KeyInput](./puppeteer.keyinput.md) |  |
 |  [MouseButtonInput](./puppeteer.mousebuttoninput.md) |  |
 |  [PuppeteerErrors](./puppeteer.puppeteererrors.md) |  |
 

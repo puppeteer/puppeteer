@@ -17,7 +17,7 @@ press(key: KeyInput, options?: {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  key | KeyInput |  |
+|  key | [KeyInput](./puppeteer.keyinput.md) |  |
 |  options | { delay?: number; text?: string; } |  |
 
 <b>Returns:</b>

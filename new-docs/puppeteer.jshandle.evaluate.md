@@ -4,6 +4,8 @@
 
 ## JSHandle.evaluate() method
 
+This method passes this handle as the first argument to `pageFunction`<!-- -->. If `pageFunction` returns a Promise, then `handle.evaluate` would wait for the promise to resolve and return its value.
+
 <b>Signature:</b>
 
 ```typescript
@@ -20,4 +22,13 @@ evaluate<ReturnType extends any>(pageFunction: Function | string, ...args: unkno
 <b>Returns:</b>
 
 Promise&lt;ReturnType&gt;
+
+## Example
+
+
+```js
+const tweetHandle = await page.$('.tweet .retweets');
+expect(await tweetHandle.evaluate(node => node.innerText)).toBe('10');
+
+```
 
