@@ -12,7 +12,7 @@
     "firefox_revision": "latest"
   },
   "scripts": {
-    "unit": "mocha --config mocha-config/puppeteer-unit-tests.js",
+    "unit": "tsc --version && mocha --config mocha-config/puppeteer-unit-tests.js",
     "unit-with-coverage": "cross-env COVERAGE=1 npm run unit",
     "assert-unit-coverage": "cross-env COVERAGE=1 mocha --config mocha-config/coverage-tests.js",
     "funit": "PUPPETEER_PRODUCT=firefox npm run unit",
