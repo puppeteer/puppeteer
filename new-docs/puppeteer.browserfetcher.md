@@ -14,7 +14,7 @@ export declare class BrowserFetcher
 
 ## Remarks
 
-BrowserFetcher operates on revision strings that specify a precise version of Chromium, e.g. `"533271"`<!-- -->. Revision strings can be obtained from \[omahaproxy.appspot.com\](http://omahaproxy.appspot.com/). In the Firefox case, BrowserFetcher downloads Firefox Nightly and operates on version numbers such as `"75"`<!-- -->.
+BrowserFetcher operates on revision strings that specify a precise version of Chromium, e.g. `"533271"`<!-- -->. Revision strings can be obtained from [omahaproxy.appspot.com](http://omahaproxy.appspot.com/)<!-- -->. In the Firefox case, BrowserFetcher downloads Firefox Nightly and operates on version numbers such as `"75"`<!-- -->.
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `BrowserFetcher` class.
 

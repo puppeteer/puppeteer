@@ -13,5 +13,5 @@ platform(): string;
 
 string
 
-One of `mac`<!-- -->, `linux`<!-- -->, `win32` or `win64`<!-- -->.
+Returns the current `Platform`<!-- -->.
 

@@ -13,5 +13,5 @@ product(): string;
 
 string
 
-One of `chrome` or `firefox`<!-- -->.
+Returns the current `Product`<!-- -->.
 

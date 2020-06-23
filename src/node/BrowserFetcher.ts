@@ -59,7 +59,13 @@ const browserConfig = {
   },
 } as const;
 
+/**
+ * Supported platforms.
+ */
 type Platform = 'linux' | 'mac' | 'win32' | 'win64';
+/**
+ * Supported products.
+ */
 type Product = 'chrome' | 'firefox';
 
 function archiveName(
@@ -140,7 +146,7 @@ interface BrowserFetcherRevisionInfo {
  * BrowserFetcher can download and manage different versions of Chromium and Firefox.
  *
  * @remarks
- * BrowserFetcher operates on revision strings that specify a precise version of Chromium, e.g. `"533271"`. Revision strings can be obtained from [omahaproxy.appspot.com](http://omahaproxy.appspot.com/).
+ * BrowserFetcher operates on revision strings that specify a precise version of Chromium, e.g. `"533271"`. Revision strings can be obtained from {@link http://omahaproxy.appspot.com/ | omahaproxy.appspot.com}.
  * In the Firefox case, BrowserFetcher downloads Firefox Nightly and
  * operates on version numbers such as `"75"`.
  *
@@ -202,14 +208,14 @@ export class BrowserFetcher {
   }
 
   /**
-   * @returns One of `mac`, `linux`, `win32` or `win64`.
+   * @returns Returns the current `Platform`.
    */
   platform(): string {
     return this._platform;
   }
 
   /**
-   * @returns One of `chrome` or `firefox`.
+   * @returns Returns the current `Product`.
    */
   product(): string {
     return this._product;
@@ -226,7 +232,7 @@ export class BrowserFetcher {
    * Initiates a HEAD request to check if the revision is available.
    * @remarks
    * This method is affected by the current `product`.
-   * @param revision The revision to check availability for.
+   * @param revision - The revision to check availability for.
    * @returns A promise that resolves to `true` if the revision could be downloaded
    * from the host.
    */
@@ -252,8 +258,8 @@ export class BrowserFetcher {
    * Initiates a GET request to download the revision from the host.
    * @remarks
    * This method is affected by the current `product`.
-   * @param revision The revision to download.
-   * @param progressCallback A function that will be called with two arguments:
+   * @param revision - The revision to download.
+   * @param progressCallback - A function that will be called with two arguments:
    * How many bytes have been downloaded and the total number of bytes of the download.
    * @returns A promise with revision information when the revision is downloaded
    * and extracted.
@@ -307,7 +313,7 @@ export class BrowserFetcher {
   /**
    * @remarks
    * This method is affected by the current `product`.
-   * @param revision A revision to remove for the current `product`.
+   * @param revision - A revision to remove for the current `product`.
    * @returns A promise that resolves when the revision has been removes or
    * throws if the revision has not been downloaded.
    */
@@ -321,7 +327,7 @@ export class BrowserFetcher {
   }
 
   /**
-   * @param revision The revision to get info for.
+   * @param revision - The revision to get info for.
    * @returns The revision info for the given revision.
    */
   revisionInfo(revision: string): BrowserFetcherRevisionInfo {
@@ -413,10 +419,7 @@ function parseFolderPath(
 }
 
 /**
- * @param {string} url
- * @param {string} destinationPath
- * @param {?function(number, number):void} progressCallback
- * @returns {!Promise}
+ * @internal
  */
 function downloadFile(
   url: string,
@@ -476,9 +479,7 @@ function install(archivePath: string, folderPath: string): Promise<unknown> {
 }
 
 /**
- * @param {string} tarPath
- * @param {string} folderPath
- * @returns {!Promise<?Error>}
+ * @internal
  */
 function extractTar(tarPath: string, folderPath: string): Promise<unknown> {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -495,11 +496,7 @@ function extractTar(tarPath: string, folderPath: string): Promise<unknown> {
 }
 
 /**
- * Install *.app directory from dmg file
- *
- * @param {string} dmgPath
- * @param {string} folderPath
- * @returns {!Promise<?Error>}
+ * @internal
  */
 function installDMG(dmgPath: string, folderPath: string): Promise<void> {
   let mountPath;

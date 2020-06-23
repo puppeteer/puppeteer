@@ -11,6 +11,7 @@ TimeoutError is emitted whenever certain operations are terminated due to timeou
 ```typescript
 export declare class TimeoutError extends CustomError 
 ```
+<b>Extends:</b> CustomError
 
 ## Remarks
 
