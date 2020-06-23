@@ -24,7 +24,7 @@
 |  [Frame](./puppeteer.frame.md) |  |
 |  [FrameManager](./puppeteer.framemanager.md) |  |
 |  [HTTPRequest](./puppeteer.httprequest.md) |  |
-|  [HTTPResponse](./puppeteer.httpresponse.md) | The HTTPResponse class represents responses which are received by page. |
+|  [HTTPResponse](./puppeteer.httpresponse.md) | The HTTPResponse class represents responses which are received by the [Page](./puppeteer.page.md) class. |
 |  [JSHandle](./puppeteer.jshandle.md) |  |
 |  [Keyboard](./puppeteer.keyboard.md) |  |
 |  [Mouse](./puppeteer.mouse.md) |  |

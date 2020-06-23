@@ -4,7 +4,7 @@
 
 ## HTTPResponse class
 
-The HTTPResponse class represents responses which are received by page.
+The HTTPResponse class represents responses which are received by the [Page](./puppeteer.page.md) class.
 
 <b>Signature:</b>
 
