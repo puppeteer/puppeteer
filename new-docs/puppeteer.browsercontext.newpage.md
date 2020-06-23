@@ -4,6 +4,8 @@
 
 ## BrowserContext.newPage() method
 
+Creates a new page in the browser context.
+
 <b>Signature:</b>
 
 ```typescript

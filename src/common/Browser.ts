@@ -451,11 +451,41 @@ export class Browser extends EventEmitter {
   }
 }
 
+/**
+ * BrowserContexts provide a way to operate multiple independent browser sessions.
+ * When a browser is launched, it has a single BrowserContext used by default.
+ * The method {@link Browser.newPage | Browser.newPage} creates a page
+ * in the default browser context.
+ *
+ * @remarks
+ *
+ * If a page opens another page, e.g. with a `window.open` call,
+ * the popup will belong to the parent page's browser context.
+ *
+ * Puppeteer allows creation of "incognito" browser contexts with
+ * {@link Browser.createIncognitoBrowserContext | Browser.createIncognitoBrowserContext}
+ * method. "Incognito" browser contexts don't write any browsing data to disk.
+ *
+ * @example
+ * ```js
+ * // Create a new incognito browser context
+ * const context = await browser.createIncognitoBrowserContext();
+ * // Create a new page inside context.
+ * const page = await context.newPage();
+ * // ... do stuff with page ...
+ * await page.goto('https://example.com');
+ * // Dispose context once it's no longer needed.
+ * await context.close();
+ * ```
+ */
 export class BrowserContext extends EventEmitter {
-  _connection: Connection;
-  _browser: Browser;
-  _id?: string;
+  private _connection: Connection;
+  private _browser: Browser;
+  private _id?: string;
 
+  /**
+   * @internal
+   */
   constructor(connection: Connection, browser: Browser, contextId?: string) {
     super();
     this._connection = connection;
@@ -463,12 +493,32 @@ export class BrowserContext extends EventEmitter {
     this._id = contextId;
   }
 
+  /**
+   * An array of all active targets inside the browser context.
+   */
   targets(): Target[] {
     return this._browser
       .targets()
       .filter((target) => target.browserContext() === this);
   }
 
+  /**
+   * This searches for a target in this specific browser context.
+   *
+   * @example
+   * An example of finding a target for a page opened via `window.open`:
+   * ```js
+   * await page.evaluate(() => window.open('https://www.example.com/'));
+   * const newWindowTarget = await browserContext.waitForTarget(target => target.url() === 'https://www.example.com/');
+   * ```
+   *
+   * @param predicate - A function to be run for every target
+   * @param options - An object of options. Accepts a timout,
+   * which is the maximum wait time in milliseconds.
+   * Pass `0` to disable the timeout. Defaults to 30 seconds.
+   * @returns Promise which resolves to the first target found
+   * that matches the `predicate` function.
+   */
   waitForTarget(
     predicate: (x: Target) => boolean,
     options: { timeout?: number } = {}
@@ -479,6 +529,13 @@ export class BrowserContext extends EventEmitter {
     );
   }
 
+  /**
+   * An array of all pages inside the browser context.
+   *
+   * @returns Promise which resolves to an array of all open pages.
+   * Non visible pages, such as `"background_page"`, will not be listed here.
+   * You can find them using {@link Target.page | the target page}.
+   */
   async pages(): Promise<Page[]> {
     const pages = await Promise.all(
       this.targets()
@@ -488,10 +545,28 @@ export class BrowserContext extends EventEmitter {
     return pages.filter((page) => !!page);
   }
 
+  /**
+   * Returns whether BrowserContext is incognito.
+   * The default browser context is the only non-incognito browser context.
+   *
+   * @remarks
+   * The default browser context cannot be closed.
+   */
   isIncognito(): boolean {
     return !!this._id;
   }
 
+  /**
+   * @example
+   * ```js
+   * const context = browser.defaultBrowserContext();
+   * await context.overridePermissions('https://html5demos.com', ['geolocation']);
+   * ```
+   *
+   * @param origin - The origin to grant permissions to, e.g. "https://example.com".
+   * @param permissions - An array of permissions to grant.
+   * All permissions that are not listed here will be automatically denied.
+   */
   async overridePermissions(
     origin: string,
     permissions: Protocol.Browser.PermissionType[]
@@ -532,20 +607,44 @@ export class BrowserContext extends EventEmitter {
     });
   }
 
+  /**
+   * Clears all permission overrides for the browser context.
+   *
+   * @example
+   * ```js
+   * const context = browser.defaultBrowserContext();
+   * context.overridePermissions('https://example.com', ['clipboard-read']);
+   * // do stuff ..
+   * context.clearPermissionOverrides();
+   * ```
+   */
   async clearPermissionOverrides(): Promise<void> {
     await this._connection.send('Browser.resetPermissions', {
       browserContextId: this._id || undefined,
     });
   }
 
+  /**
+   * Creates a new page in the browser context.
+   */
   newPage(): Promise<Page> {
     return this._browser._createPageInContext(this._id);
   }
 
+  /**
+   * The browser this browser context belongs to.
+   */
   browser(): Browser {
     return this._browser;
   }
 
+  /**
+   * Closes the browser context. All the targets that belong to the browser context
+   * will be closed.
+   *
+   * @remarks
+   * Only incognito browser contexts can be closed.
+   */
   async close(): Promise<void> {
     assert(this._id, 'Non-incognito profiles cannot be closed!');
     await this._browser._disposeContext(this._id);
