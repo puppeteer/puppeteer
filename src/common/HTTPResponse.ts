@@ -1,17 +1,17 @@
 /**
  * Copyright 2020 Google Inc. All rights reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
  *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
  */
 import { CDPSession } from './Connection';
 import { Frame } from './FrameManager';
@@ -19,11 +19,19 @@ import { HTTPRequest } from './HTTPRequest';
 import { SecurityDetails } from './SecurityDetails';
 import Protocol from '../protocol';
 
-interface RemoteAddress {
+/**
+ * @public
+ */
+export interface RemoteAddress {
   ip: string;
   port: number;
 }
 
+/**
+ * The HTTPResponse class represents responses which are received by page.
+ *
+ * @public
+ */
 export class HTTPResponse {
   private _client: CDPSession;
   private _request: HTTPRequest;
@@ -39,6 +47,9 @@ export class HTTPResponse {
   private _headers: Record<string, string> = {};
   private _securityDetails: SecurityDetails | null;
 
+  /**
+   * @internal
+   */
   constructor(
     client: CDPSession,
     request: HTTPRequest,
@@ -67,38 +78,70 @@ export class HTTPResponse {
       : null;
   }
 
+  /**
+   * @internal
+   */
   _resolveBody(err: Error | null): void {
     return this._bodyLoadedPromiseFulfill(err);
   }
 
+  /**
+   * @returns The IP address and port number used to connect to the remote
+   * server.
+   */
   remoteAddress(): RemoteAddress {
     return this._remoteAddress;
   }
 
+  /**
+   * @returns The URL of the response.
+   */
   url(): string {
     return this._url;
   }
 
+  /**
+   * @returns True if the response was successful (status in the range 200-299).
+   */
   ok(): boolean {
+    // TODO: document === 0 case?
     return this._status === 0 || (this._status >= 200 && this._status <= 299);
   }
 
+  /**
+   * @returns The status code of the response (e.g., 200 for a success).
+   */
   status(): number {
     return this._status;
   }
 
+  /**
+   * @returns  The status text of the response (e.g. usually an "OK" for a
+   * success).
+   */
   statusText(): string {
     return this._statusText;
   }
 
+  /**
+   * @returns An object with HTTP headers associated with the response. All
+   * header names are lower-case.
+   */
   headers(): Record<string, string> {
     return this._headers;
   }
 
+  /**
+   * @returns {@link SecurityDetails} if the response was received over the
+   * secure connection, or `null` otherwise.
+   */
   securityDetails(): SecurityDetails | null {
     return this._securityDetails;
   }
 
+  /**
+   * @returns Promise which resolves to a buffer with response body.
+   */
   buffer(): Promise<Buffer> {
     if (!this._contentPromise) {
       this._contentPromise = this._bodyLoadedPromise.then(async (error) => {
@@ -115,28 +158,54 @@ export class HTTPResponse {
     return this._contentPromise;
   }
 
+  /**
+   * @returns Promise which resolves to a text representation of response body.
+   */
   async text(): Promise<string> {
     const content = await this.buffer();
     return content.toString('utf8');
   }
 
+  /**
+   *
+   * @returns Promise which resolves to a JSON representation of response body.
+   *
+   * @remarks
+   *
+   * This method will throw if the response body is not parsable via
+   * `JSON.parse`.
+   */
   async json(): Promise<any> {
     const content = await this.text();
     return JSON.parse(content);
   }
 
+  /**
+   * @returns A matching {@link HTTPRequest} object.
+   */
   request(): HTTPRequest {
     return this._request;
   }
 
+  /**
+   * @returns True if the response was served from either the browser's disk
+   * cache or memory cache.
+   */
   fromCache(): boolean {
     return this._fromDiskCache || this._request._fromMemoryCache;
   }
 
+  /**
+   * @returns True if the response was served by a service worker.
+   */
   fromServiceWorker(): boolean {
     return this._fromServiceWorker;
   }
 
+  /**
+   * @returns A {@link Frame} that initiated this response, or `null` if
+   * navigating to error pages.
+   */
   frame(): Frame | null {
     return this._request.frame();
   }

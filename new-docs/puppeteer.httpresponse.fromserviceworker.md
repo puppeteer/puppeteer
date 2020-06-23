@@ -13,3 +13,5 @@ fromServiceWorker(): boolean;
 
 boolean
 
+True if the response was served by a service worker.
+

@@ -13,3 +13,5 @@ statusText(): string;
 
 string
 
+The status text of the response (e.g. usually an "OK" for a success).
+

@@ -13,3 +13,5 @@ ok(): boolean;
 
 boolean
 
+True if the response was successful (status in the range 200-299).
+

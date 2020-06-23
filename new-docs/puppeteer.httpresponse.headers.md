@@ -13,3 +13,5 @@ headers(): Record<string, string>;
 
 Record&lt;string, string&gt;
 
+An object with HTTP headers associated with the response. All header names are lower-case.
+
