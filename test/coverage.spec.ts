@@ -123,8 +123,6 @@ describe('Coverage specs', function () {
       const coverage = await page.coverage.stopJSCoverage();
       expect(
         JSON.stringify(coverage, null, 2).replace(/:\d{4}\//g, ':<PORT>/')
-        // TODO (@jackfranklin) extend the Expect typedefs to fix this
-        // @ts-expect-error toBeGolden matcher
       ).toBeGolden('jscoverage-involved.txt');
     });
     describe('resetOnNavigation', function () {
@@ -227,8 +225,6 @@ describe('Coverage specs', function () {
       const coverage = await page.coverage.stopCSSCoverage();
       expect(
         JSON.stringify(coverage, null, 2).replace(/:\d{4}\//g, ':<PORT>/')
-        // TODO (@jackfranklin) extend the Expect typedefs to fix this
-        // @ts-expect-error toBeGolden matcher
       ).toBeGolden('csscoverage-involved.txt');
     });
     it('should ignore injected stylesheets', async () => {
