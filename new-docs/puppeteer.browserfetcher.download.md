@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-download(revision: string, progressCallback: (x: number, y: number) => void): Promise<BrowserFetcherRevisionInfo>;
+download(revision: string, progressCallback?: (x: number, y: number) => void): Promise<BrowserFetcherRevisionInfo>;
 ```
 
 ## Parameters

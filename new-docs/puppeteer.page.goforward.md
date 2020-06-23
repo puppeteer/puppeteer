@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-goForward(options: WaitForOptions): Promise<HTTPResponse | null>;
+goForward(options?: WaitForOptions): Promise<HTTPResponse | null>;
 ```
 
 ## Parameters

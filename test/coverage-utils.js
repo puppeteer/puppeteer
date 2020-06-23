@@ -108,8 +108,8 @@ const trackCoverage = () => {
 
   return {
     beforeAll: () => {
-      const api = require('../lib/api');
-      const events = require('../lib/common/Events');
+      const api = require('../src/api');
+      const events = require('../src/common/Events');
       for (const [className, classType] of Object.entries(api))
         traceAPICoverage(coverageMap, events, className, classType);
     },

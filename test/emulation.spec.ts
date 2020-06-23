@@ -67,7 +67,7 @@ describe('Emulation', () => {
       function dispatchTouch() {
         let fulfill;
         const promise = new Promise((x) => (fulfill = x));
-        window.ontouchstart = function (e) {
+        window.ontouchstart = () => {
           fulfill('Received touch');
         };
         window.dispatchEvent(new Event('touchstart'));

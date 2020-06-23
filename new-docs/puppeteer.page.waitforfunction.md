@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-waitForFunction(pageFunction: Function, options?: {
+waitForFunction(pageFunction: Function | string, options?: {
         timeout?: number;
         polling?: string | number;
     }, ...args: unknown[]): Promise<JSHandle>;
@@ -17,7 +17,7 @@ waitForFunction(pageFunction: Function, options?: {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  pageFunction | Function |  |
+|  pageFunction | Function \| string |  |
 |  options | { timeout?: number; polling?: string \| number; } |  |
 |  args | unknown\[\] |  |
 

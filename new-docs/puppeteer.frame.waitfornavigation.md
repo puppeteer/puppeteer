@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-waitForNavigation(options: {
+waitForNavigation(options?: {
         timeout?: number;
         waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
     }): Promise<HTTPResponse | null>;

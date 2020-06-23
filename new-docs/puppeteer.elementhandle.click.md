@@ -9,7 +9,7 @@ This method scrolls element into view if needed, and then uses [Page.mouse](./pu
 <b>Signature:</b>
 
 ```typescript
-click(options: ClickOptions): Promise<void>;
+click(options?: ClickOptions): Promise<void>;
 ```
 
 ## Parameters

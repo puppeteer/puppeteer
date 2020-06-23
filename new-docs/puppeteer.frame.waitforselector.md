@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-waitForSelector(selector: string, options: WaitForSelectorOptions): Promise<ElementHandle | null>;
+waitForSelector(selector: string, options?: WaitForSelectorOptions): Promise<ElementHandle | null>;
 ```
 
 ## Parameters
