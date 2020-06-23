@@ -33,8 +33,6 @@ describe('Screenshots', function () {
       await page.setViewport({ width: 500, height: 500 });
       await page.goto(server.PREFIX + '/grid.html');
       const screenshot = await page.screenshot();
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
       expect(screenshot).toBeGolden('screenshot-sanity.png');
     });
     itFailsFirefox('should clip rect', async () => {
@@ -50,8 +48,6 @@ describe('Screenshots', function () {
           height: 100,
         },
       });
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
       expect(screenshot).toBeGolden('screenshot-clip-rect.png');
     });
     itFailsFirefox('should clip elements to the viewport', async () => {
@@ -67,8 +63,6 @@ describe('Screenshots', function () {
           height: 100,
         },
       });
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
       expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
     });
     it('should run in parallel', async () => {
@@ -90,8 +84,6 @@ describe('Screenshots', function () {
         );
       }
       const screenshots = await Promise.all(promises);
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
       expect(screenshots[1]).toBeGolden('grid-cell-1.png');
     });
     itFailsFirefox('should take fullPage screenshots', async () => {
@@ -102,8 +94,6 @@ describe('Screenshots', function () {
       const screenshot = await page.screenshot({
         fullPage: true,
       });
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
       expect(screenshot).toBeGolden('screenshot-grid-fullpage.png');
     });
     it('should run in parallel in multiple pages', async () => {
@@ -128,8 +118,6 @@ describe('Screenshots', function () {
         );
       const screenshots = await Promise.all(promises);
       for (let i = 0; i < N; ++i)
-        // TODO (@jackfranklin): toBeGolden type fix
-        // @ts-expect-error
         expect(screenshots[i]).toBeGolden(`grid-cell-${i}.png`);
       await Promise.all(pages.map((page) => page.close()));
     });
@@ -139,8 +127,6 @@ describe('Screenshots', function () {
       await page.setViewport({ width: 100, height: 100 });
       await page.goto(server.EMPTY_PAGE);
       const screenshot = await page.screenshot({ omitBackground: true });
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
       expect(screenshot).toBeGolden('transparent.png');
     });
     itFailsFirefox('should render white background on jpeg file', async () => {
@@ -152,8 +138,6 @@ describe('Screenshots', function () {
         omitBackground: true,
         type: 'jpeg',
       });
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
       expect(screenshot).toBeGolden('white.jpg');
     });
     it('should work with odd clip size on Retina displays', async () => {
@@ -167,8 +151,6 @@ describe('Screenshots', function () {
           height: 11,
         },
       });
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
       expect(screenshot).toBeGolden('screenshot-clip-odd-size.png');
     });
     itFailsFirefox('should return base64', async () => {
@@ -179,9 +161,11 @@ describe('Screenshots', function () {
       const screenshot = await page.screenshot({
         encoding: 'base64',
       });
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
-      expect(Buffer.from(screenshot, 'base64')).toBeGolden(
+      // TODO (@jackfranklin): improve the screenshot types.
+      // - if we pass encoding: 'base64', it returns a string
+      // - else it returns a buffer.
+      // If we can fix that we can avoid this "as string" here.
+      expect(Buffer.from(screenshot as string, 'base64')).toBeGolden(
         'screenshot-sanity.png'
       );
     });
@@ -196,8 +180,6 @@ describe('Screenshots', function () {
       await page.evaluate(() => window.scrollBy(50, 100));
       const elementHandle = await page.$('.box:nth-of-type(3)');
       const screenshot = await elementHandle.screenshot();
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
       expect(screenshot).toBeGolden('screenshot-element-bounding-box.png');
     });
     it('should take into account padding and border', async () => {
@@ -217,8 +199,6 @@ describe('Screenshots', function () {
       `);
       const elementHandle = await page.$('div');
       const screenshot = await elementHandle.screenshot();
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
       expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
     });
     it('should capture full element when larger than viewport', async () => {
@@ -243,8 +223,6 @@ describe('Screenshots', function () {
       `);
       const elementHandle = await page.$('div.to-screenshot');
       const screenshot = await elementHandle.screenshot();
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
       expect(screenshot).toBeGolden(
         'screenshot-element-larger-than-viewport.png'
       );
@@ -279,8 +257,6 @@ describe('Screenshots', function () {
       `);
       const elementHandle = await page.$('div.to-screenshot');
       const screenshot = await elementHandle.screenshot();
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
       expect(screenshot).toBeGolden(
         'screenshot-element-scrolled-into-view.png'
       );
@@ -298,8 +274,6 @@ describe('Screenshots', function () {
                                         transform: rotateZ(200deg);">&nbsp;</div>`);
       const elementHandle = await page.$('div');
       const screenshot = await elementHandle.screenshot();
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
       expect(screenshot).toBeGolden('screenshot-element-rotate.png');
     });
     itFailsFirefox('should fail to screenshot a detached element', async () => {
@@ -331,8 +305,6 @@ describe('Screenshots', function () {
       );
       const elementHandle = await page.$('div');
       const screenshot = await elementHandle.screenshot();
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
       expect(screenshot).toBeGolden('screenshot-element-fractional.png');
     });
     itFailsFirefox('should work for an element with an offset', async () => {
@@ -343,8 +315,6 @@ describe('Screenshots', function () {
       );
       const elementHandle = await page.$('div');
       const screenshot = await elementHandle.screenshot();
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
       expect(screenshot).toBeGolden('screenshot-element-fractional-offset.png');
     });
   });

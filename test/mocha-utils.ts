@@ -100,6 +100,12 @@ const defaultBrowserOptions = Object.assign(
   }
 })();
 
+declare module 'expect/build/types' {
+  interface Matchers<R> {
+    toBeGolden(x: string): R;
+  }
+}
+
 const setupGoldenAssertions = (): void => {
   const suffix = product.toLowerCase();
   const GOLDEN_DIR = path.join(__dirname, 'golden-' + suffix);
