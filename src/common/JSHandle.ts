@@ -430,7 +430,7 @@ export class ElementHandle extends JSHandle {
    * uses {@link Page.mouse} to click in the center of the element.
    * If the element is detached from DOM, the method throws an error.
    */
-  async click(options: ClickOptions): Promise<void> {
+  async click(options: ClickOptions = {}): Promise<void> {
     await this._scrollIntoViewIfNeeded();
     const { x, y } = await this._clickablePoint();
     await this._page.mouse.click(x, y, options);

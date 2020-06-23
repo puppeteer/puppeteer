@@ -44,7 +44,7 @@ import Protocol from '../protocol';
 
 const writeFileAsync = helper.promisify(fs.writeFile);
 
-interface Metrics {
+export interface Metrics {
   Timestamp?: number;
   Documents?: number;
   Frames?: number;
@@ -129,14 +129,13 @@ const paperFormats: Record<string, PaperFormat> = {
   a6: { width: 4.13, height: 5.83 },
 } as const;
 
-enum VisionDeficiency {
-  none = 'none',
-  achromatopsia = 'achromatopsia',
-  blurredVision = 'blurredVision',
-  deuteranopia = 'deuteranopia',
-  protanopia = 'protanopia',
-  tritanopia = 'tritanopia',
-}
+type VisionDeficiency =
+  | 'none'
+  | 'achromatopsia'
+  | 'blurredVision'
+  | 'deuteranopia'
+  | 'protanopia'
+  | 'tritanopia';
 
 /**
  * All the events that a page instance may emit.
@@ -837,7 +836,7 @@ export class Page extends EventEmitter {
     return await this._frameManager.mainFrame().content();
   }
 
-  async setContent(html: string, options: WaitForOptions): Promise<void> {
+  async setContent(html: string, options: WaitForOptions = {}): Promise<void> {
     await this._frameManager.mainFrame().setContent(html, options);
   }
 
@@ -913,11 +912,11 @@ export class Page extends EventEmitter {
     );
   }
 
-  async goBack(options: WaitForOptions): Promise<HTTPResponse | null> {
+  async goBack(options: WaitForOptions = {}): Promise<HTTPResponse | null> {
     return this._go(-1, options);
   }
 
-  async goForward(options: WaitForOptions): Promise<HTTPResponse | null> {
+  async goForward(options: WaitForOptions = {}): Promise<HTTPResponse | null> {
     return this._go(+1, options);
   }
 
@@ -1005,7 +1004,14 @@ export class Page extends EventEmitter {
   }
 
   async emulateVisionDeficiency(type?: VisionDeficiency): Promise<void> {
-    const visionDeficiencies = new Set(Object.keys(VisionDeficiency));
+    const visionDeficiencies = new Set([
+      'none',
+      'achromatopsia',
+      'blurredVision',
+      'deuteranopia',
+      'protanopia',
+      'tritanopia',
+    ]);
     try {
       assert(
         !type || visionDeficiencies.has(type),
@@ -1356,7 +1362,7 @@ export class Page extends EventEmitter {
   }
 
   waitForFunction(
-    pageFunction: Function,
+    pageFunction: Function | string,
     options: {
       timeout?: number;
       polling?: string | number;

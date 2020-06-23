@@ -63,7 +63,8 @@
     "@microsoft/api-extractor": "7.8.12",
     "@types/debug": "0.0.31",
     "@types/mime": "^2.0.0",
-    "@types/node": "^10.17.14",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^14.0.13",
     "@types/proxy-from-env": "^1.0.1",
     "@types/rimraf": "^2.0.2",
     "@types/tar-fs": "^1.16.2",
@@ -89,6 +90,7 @@
     "prettier": "^2.0.5",
     "sinon": "^9.0.2",
     "text-diff": "^1.0.1",
+    "ts-node": "^8.10.2",
     "typescript": "3.9.2"
   },
   "browser": {

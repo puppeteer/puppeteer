@@ -122,7 +122,7 @@ export class Keyboard {
     return !!keyDefinitions[char];
   }
 
-  async type(text: string, options: { delay?: number }): Promise<void> {
+  async type(text: string, options: { delay?: number } = {}): Promise<void> {
     const delay = (options && options.delay) || null;
     for (const char of text) {
       if (this.charIsKey(char)) {
