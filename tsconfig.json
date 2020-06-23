@@ -8,7 +8,8 @@
     "module": "CommonJS",
     "declaration": true,
     "declarationMap": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   },
   "include": [
     "src"

@@ -37,6 +37,22 @@ module.exports = {
         "func-call-spacing": 2,
         "prefer-const": 2,
 
+        "max-len": [2, {
+           /* this setting doesn't impact things as we use Prettier to format
+            * our code and hence dictate the line length.
+            * Prettier aims for 80 but sometimes makes the decision to go just
+            * over 80 chars as it decides that's better than wrapping. ESLint's
+            * rule defaults to 80 but therefore conflicts with Prettier. So we
+            * set it to something far higher than Prettier would allow to avoid
+            * it causing issues and conflicting with Prettier.
+            */
+            "code": 200,
+            "comments": 90,
+            "ignoreTemplateLiterals": true,
+            "ignoreUrls": true,
+            "ignoreStrings": true,
+            "ignoreRegExpLiterals": true
+        }],
         // anti-patterns
         "no-var": 2,
         "no-with": 2,
@@ -84,6 +100,11 @@ module.exports = {
                 "@typescript-eslint/semi": 2,
                 "@typescript-eslint/no-empty-function": 0,
                 "@typescript-eslint/no-use-before-define": 0,
+                // We have to use any on some types so the warning isn't valuable.
+                "@typescript-eslint/no-explicit-any": 0,
+                // We don't require explicit return types on basic functions or
+                // dummy functions in tests, for example
+                "@typescript-eslint/explicit-function-return-type": 0,
                 // We know it's bad and use it very sparingly but it's needed :(
                 "@typescript-eslint/ban-ts-ignore": 0,
                 "@typescript-eslint/array-type": [2, {

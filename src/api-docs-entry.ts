@@ -15,34 +15,36 @@
  */
 
 /*
- * This file re-exports any APIs that we want to have documentation generated for.
- * It is used by API Extractor to determine what parts of the system to document.
+ * This file re-exports any APIs that we want to have documentation generated
+ * for. It is used by API Extractor to determine what parts of the system to
+ * document.
  *
- * We also have src/api.ts. This is used in `index.js` and by the legacy DocLint system.
- * src/api-docs-entry.ts is ONLY used by API Extractor.
+ * We also have src/api.ts. This is used in `index.js` and by the legacy DocLint
+ * system. src/api-docs-entry.ts is ONLY used by API Extractor.
  *
- * Once we have migrated to API Extractor and removed DocLint we can remove the duplication and use this file.
+ * Once we have migrated to API Extractor and removed DocLint we can remove the
+ * duplication and use this file.
  */
-export * from './Accessibility';
-export * from './Browser';
-export * from './BrowserFetcher';
-export * from './Connection';
-export * from './ConsoleMessage';
-export * from './Coverage';
-export * from './Dialog';
-export * from './JSHandle';
-export * from './ExecutionContext';
-export * from './EventEmitter';
-export * from './FileChooser';
-export * from './FrameManager';
-export * from './JSHandle';
-export * from './Input';
-export * from './Page';
-export * from './Puppeteer';
-export * from './HTTPRequest';
-export * from './HTTPResponse';
-export * from './SecurityDetails';
-export * from './Target';
-export * from './Errors';
-export * from './Tracing';
-export * from './WebWorker';
+export * from './common/Accessibility';
+export * from './common/Browser';
+export * from './node/BrowserFetcher';
+export * from './common/Connection';
+export * from './common/ConsoleMessage';
+export * from './common/Coverage';
+export * from './common/Dialog';
+export * from './common/JSHandle';
+export * from './common/ExecutionContext';
+export * from './common/EventEmitter';
+export * from './common/FileChooser';
+export * from './common/FrameManager';
+export * from './common/Input';
+export * from './common/Page';
+export * from './common/Puppeteer';
+export * from './common/HTTPRequest';
+export * from './common/HTTPResponse';
+export * from './common/SecurityDetails';
+export * from './common/Target';
+export * from './common/Errors';
+export * from './common/Tracing';
+export * from './common/WebWorker';
+export * from './common/USKeyboardLayout';

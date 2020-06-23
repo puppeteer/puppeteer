@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-startJSCoverage(options: {
+startJSCoverage(options?: {
         resetOnNavigation?: boolean;
         reportAnonymousScripts?: boolean;
     }): Promise<void>;

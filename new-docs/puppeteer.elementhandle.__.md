@@ -4,6 +4,8 @@
 
 ## ElementHandle.$$() method
 
+The method runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolves to `[]`<!-- -->.
+
 <b>Signature:</b>
 
 ```typescript

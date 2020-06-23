@@ -61,14 +61,19 @@ async function run() {
      * we'll just list the directories manually.
      */
     ...(await Source.readdir(path.join(PROJECT_DIR, 'src'), 'ts')),
-    ...(await Source.readdir(path.join(PROJECT_DIR, 'src', 'launcher'), 'ts')),
+    ...(await Source.readdir(path.join(PROJECT_DIR, 'src', 'common'), 'ts')),
+    ...(await Source.readdir(path.join(PROJECT_DIR, 'src', 'node'), 'ts')),
   ];
 
   const tsSourcesNoDefinitions = tsSources.filter(
     (source) => !source.filePath().endsWith('.d.ts')
   );
 
-  const jsSources = await Source.readdir(path.join(PROJECT_DIR, 'lib'));
+  const jsSources = [
+    ...(await Source.readdir(path.join(PROJECT_DIR, 'lib'))),
+    ...(await Source.readdir(path.join(PROJECT_DIR, 'lib', 'common'))),
+    ...(await Source.readdir(path.join(PROJECT_DIR, 'lib', 'node'))),
+  ];
   const allSrcCode = [...jsSources, ...tsSourcesNoDefinitions];
   messages.push(...(await checkPublicAPI(page, mdSources, allSrcCode)));
 

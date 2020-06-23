@@ -10,41 +10,20 @@
 export declare class Target 
 ```
 
-## Constructors
+## Remarks
 
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(targetInfo, browserContext, sessionFactory, ignoreHTTPSErrors, defaultViewport)](./puppeteer.target._constructor_.md) |  | Constructs a new instance of the <code>Target</code> class |
-
-## Properties
-
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [\_browserContext](./puppeteer.target._browsercontext.md) |  | [BrowserContext](./puppeteer.browsercontext.md) |  |
-|  [\_closedCallback](./puppeteer.target._closedcallback.md) |  | () =&gt; void |  |
-|  [\_defaultViewport](./puppeteer.target._defaultviewport.md) |  | Viewport |  |
-|  [\_ignoreHTTPSErrors](./puppeteer.target._ignorehttpserrors.md) |  | boolean |  |
-|  [\_initializedCallback](./puppeteer.target._initializedcallback.md) |  | (x: boolean) =&gt; void |  |
-|  [\_initializedPromise](./puppeteer.target._initializedpromise.md) |  | Promise&lt;boolean&gt; |  |
-|  [\_isClosedPromise](./puppeteer.target._isclosedpromise.md) |  | Promise&lt;boolean&gt; |  |
-|  [\_isInitialized](./puppeteer.target._isinitialized.md) |  | boolean |  |
-|  [\_pagePromise](./puppeteer.target._pagepromise.md) |  | Promise&lt;[Page](./puppeteer.page.md)<!-- -->&gt; |  |
-|  [\_sessionFactory](./puppeteer.target._sessionfactory.md) |  | () =&gt; Promise&lt;[CDPSession](./puppeteer.cdpsession.md)<!-- -->&gt; |  |
-|  [\_targetId](./puppeteer.target._targetid.md) |  | string |  |
-|  [\_targetInfo](./puppeteer.target._targetinfo.md) |  | Protocol.Target.TargetInfo |  |
-|  [\_workerPromise](./puppeteer.target._workerpromise.md) |  | Promise&lt;[WebWorker](./puppeteer.webworker.md)<!-- -->&gt; |  |
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Target` class.
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [\_targetInfoChanged(targetInfo)](./puppeteer.target._targetinfochanged.md) |  |  |
-|  [browser()](./puppeteer.target.browser.md) |  |  |
+|  [browser()](./puppeteer.target.browser.md) |  | Get the browser the target belongs to. |
 |  [browserContext()](./puppeteer.target.browsercontext.md) |  |  |
-|  [createCDPSession()](./puppeteer.target.createcdpsession.md) |  |  |
-|  [opener()](./puppeteer.target.opener.md) |  |  |
-|  [page()](./puppeteer.target.page.md) |  |  |
-|  [type()](./puppeteer.target.type.md) |  |  |
+|  [createCDPSession()](./puppeteer.target.createcdpsession.md) |  | Creates a Chrome Devtools Protocol session attached to the target. |
+|  [opener()](./puppeteer.target.opener.md) |  | Get the target that opened this target. Top-level targets return <code>null</code>. |
+|  [page()](./puppeteer.target.page.md) |  | If the target is not of type <code>&quot;page&quot;</code> or <code>&quot;background_page&quot;</code>, returns <code>null</code>. |
+|  [type()](./puppeteer.target.type.md) |  | Identifies what kind of target this is. |
 |  [url()](./puppeteer.target.url.md) |  |  |
-|  [worker()](./puppeteer.target.worker.md) |  |  |
+|  [worker()](./puppeteer.target.worker.md) |  | If the target is not of type <code>&quot;service_worker&quot;</code> or <code>&quot;shared_worker&quot;</code>, returns <code>null</code>. |
 

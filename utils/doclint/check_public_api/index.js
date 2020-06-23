@@ -172,14 +172,6 @@ function checkDuplicates(doc) {
   return errors;
 }
 
-const expectedNonExistingMethods = new Map([
-  /* Expected to be missing as the method is deprecated
-   * and we alias it to Page.prototype.emulateMediaType in index.js
-   * which is not checked by DocLint
-   */
-  ['Page', new Set(['emulateMedia'])],
-]);
-
 // All the methods from our EventEmitter that we don't document for each subclass.
 const EVENT_LISTENER_METHODS = new Set([
   'emit',
@@ -226,15 +218,6 @@ function compareDocumentations(actual, expected) {
     const methodDiff = diff(actualMethods, expectedMethods);
 
     for (const methodName of methodDiff.extra) {
-      const nonExistingMethodsForClass = expectedNonExistingMethods.get(
-        className
-      );
-      if (
-        nonExistingMethodsForClass &&
-        nonExistingMethodsForClass.has(methodName)
-      )
-        continue;
-
       errors.push(`Non-existing method found: ${className}.${methodName}()`);
     }
 
@@ -343,6 +326,20 @@ function compareDocumentations(actual, expected) {
         {
           actualName: 'Object',
           expectedName: 'CommandParameters[T]',
+        },
+      ],
+      [
+        'Method ElementHandle.click() options',
+        {
+          actualName: 'Object',
+          expectedName: 'ClickOptions',
+        },
+      ],
+      [
+        'Method ElementHandle.press() options',
+        {
+          actualName: 'Object',
+          expectedName: 'PressOptions',
         },
       ],
       [
@@ -648,6 +645,13 @@ function compareDocumentations(actual, expected) {
         {
           actualName: 'Object',
           expectedName: 'SnapshotOptions',
+        },
+      ],
+      [
+        'Method Browser.waitForTarget() options',
+        {
+          actualName: 'Object',
+          expectedName: 'WaitForTargetOptions',
         },
       ],
       [

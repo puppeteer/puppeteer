@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-goto(url: string, options: {
+goto(url: string, options?: {
         referer?: string;
         timeout?: number;
         waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];

@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google Inc. All rights reserved.
+ * Copyright 2017 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,59 +14,21 @@
  * limitations under the License.
  */
 
-// api.ts has to use module.exports as it's also consumed by DocLint which runs
-// on Node.
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const api = require('./api');
+import { initializePuppeteer } from './initialize';
+import * as path from 'path';
 
-import { helper } from './helper';
-import { Page } from './Page';
-import { Puppeteer } from './Puppeteer';
+const puppeteer = initializePuppeteer({
+  packageJson: require(path.join(__dirname, '..', 'package.json')),
+  rootDirectory: path.join(__dirname, '..'),
+});
 
-interface InitOptions {
-  packageJson: {
-    puppeteer: {
-      chromium_revision: string;
-      firefox_revision: string;
-    };
-    name: string;
-  };
-  rootDirectory: string;
-}
-
-export const initializePuppeteer = (options: InitOptions): Puppeteer => {
-  const { packageJson, rootDirectory } = options;
-
-  for (const className in api) {
-    if (typeof api[className] === 'function')
-      helper.installAsyncStackHooks(api[className]);
-  }
-
-  // Expose alias for deprecated method.
-  // @ts-expect-error emulateMedia does not exist error
-  Page.prototype.emulateMedia = Page.prototype.emulateMediaType;
-
-  let preferredRevision = packageJson.puppeteer.chromium_revision;
-  const isPuppeteerCore = packageJson.name === 'puppeteer-core';
-  // puppeteer-core ignores environment variables
-  const product = isPuppeteerCore
-    ? undefined
-    : process.env.PUPPETEER_PRODUCT ||
-      process.env.npm_config_puppeteer_product ||
-      process.env.npm_package_config_puppeteer_product;
-  if (!isPuppeteerCore && product === 'firefox')
-    preferredRevision = packageJson.puppeteer.firefox_revision;
-
-  const puppeteer = new Puppeteer(
-    rootDirectory,
-    preferredRevision,
-    isPuppeteerCore,
-    product
-  );
-
-  // The introspection in `Helper.installAsyncStackHooks` references `Puppeteer._launcher`
-  // before the Puppeteer ctor is called, such that an invalid Launcher is selected at import,
-  // so we reset it.
-  puppeteer._lazyLauncher = undefined;
-  return puppeteer;
-};
+/*
+ * Has to be CJS here rather than ESM such that the output file ends with
+ * module.exports = puppeteer.
+ *
+ * If this was export default puppeteer the output would be:
+ * exports.default = puppeteer
+ * And therefore consuming via require('puppeteer') would break / require the user
+ * to access require('puppeteer').default;
+ */
+export = puppeteer;

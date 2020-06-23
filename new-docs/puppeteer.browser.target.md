@@ -4,6 +4,8 @@
 
 ## Browser.target() method
 
+The target associated with the browser.
+
 <b>Signature:</b>
 
 ```typescript

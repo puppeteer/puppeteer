@@ -4,6 +4,8 @@
 
 ## Browser.newPage() method
 
+Creates a [Page](./puppeteer.page.md) in the default browser context.
+
 <b>Signature:</b>
 
 ```typescript

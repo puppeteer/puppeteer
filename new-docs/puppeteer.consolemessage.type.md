@@ -7,9 +7,11 @@
 <b>Signature:</b>
 
 ```typescript
-type(): string;
+type(): ConsoleMessageType;
 ```
 <b>Returns:</b>
 
-string
+[ConsoleMessageType](./puppeteer.consolemessagetype.md)
+
+The type of the console message.
 

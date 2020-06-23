@@ -9,15 +9,15 @@ Constructs a new instance of the `ConsoleMessage` class
 <b>Signature:</b>
 
 ```typescript
-constructor(type: string, text: string, args: JSHandle[], location?: ConsoleMessageLocation);
+constructor(type: ConsoleMessageType, text: string, args: JSHandle[], location?: ConsoleMessageLocation);
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  type | string |  |
+|  type | [ConsoleMessageType](./puppeteer.consolemessagetype.md) |  |
 |  text | string |  |
 |  args | [JSHandle](./puppeteer.jshandle.md)<!-- -->\[\] |  |
-|  location | ConsoleMessageLocation |  |
+|  location | [ConsoleMessageLocation](./puppeteer.consolemessagelocation.md) |  |
 

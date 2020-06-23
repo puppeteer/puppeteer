@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-defaultArgs(options: ChromeArgOptions): string[];
+defaultArgs(options?: ChromeArgOptions): string[];
 ```
 
 ## Parameters

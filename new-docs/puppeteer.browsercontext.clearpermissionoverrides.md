@@ -4,6 +4,8 @@
 
 ## BrowserContext.clearPermissionOverrides() method
 
+Clears all permission overrides for the browser context.
+
 <b>Signature:</b>
 
 ```typescript
@@ -12,4 +14,15 @@ clearPermissionOverrides(): Promise<void>;
 <b>Returns:</b>
 
 Promise&lt;void&gt;
+
+## Example
+
+
+```js
+const context = browser.defaultBrowserContext();
+context.overridePermissions('https://example.com', ['clipboard-read']);
+// do stuff ..
+context.clearPermissionOverrides();
+
+```
 

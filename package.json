@@ -2,7 +2,7 @@
   "name": "puppeteer",
   "version": "4.0.0-post",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
-  "main": "index.js",
+  "main": "lib/index.js",
   "repository": "github:puppeteer/puppeteer",
   "engines": {
     "node": ">=10.18.1"
@@ -12,7 +12,7 @@
     "firefox_revision": "latest"
   },
   "scripts": {
-    "unit": "mocha --config mocha-config/puppeteer-unit-tests.js",
+    "unit": "tsc --version && mocha --config mocha-config/puppeteer-unit-tests.js",
     "unit-with-coverage": "cross-env COVERAGE=1 npm run unit",
     "assert-unit-coverage": "cross-env COVERAGE=1 mocha --config mocha-config/coverage-tests.js",
     "funit": "PUPPETEER_PRODUCT=firefox npm run unit",
@@ -34,12 +34,11 @@
     "compare-protocol-d-ts": "node utils/protocol-types-generator compare",
     "test-install": "scripts/test-install.sh",
     "generate-docs": "npm run tsc && api-extractor run --local --verbose && api-documenter markdown -i temp -o new-docs",
-    "ensure-new-docs-up-to-date": "npm run generate-docs && exit `git status --porcelain | head -255 | wc -l`"
+    "ensure-new-docs-up-to-date": "npm run generate-docs && exit `git status --porcelain | head -255 | wc -l`",
+    "generate-dependency-graph": "echo 'Requires graphviz installed locally!' && depcruise --exclude 'api.ts' --do-not-follow '^node_modules' --output-type dot src/index.ts | dot -T png > dependency-chart.png"
   },
   "files": [
     "lib/",
-    "Errors.js",
-    "DeviceDescriptors.js",
     "index.js",
     "install.js",
     "typescript-if-required.js"
@@ -60,11 +59,12 @@
     "ws": "^7.2.3"
   },
   "devDependencies": {
-    "@microsoft/api-documenter": "^7.8.8",
-    "@microsoft/api-extractor": "^7.8.8",
+    "@microsoft/api-documenter": "7.8.14",
+    "@microsoft/api-extractor": "7.8.12",
     "@types/debug": "0.0.31",
     "@types/mime": "^2.0.0",
-    "@types/node": "^10.17.14",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^14.0.13",
     "@types/proxy-from-env": "^1.0.1",
     "@types/rimraf": "^2.0.2",
     "@types/tar-fs": "^1.16.2",
@@ -73,6 +73,7 @@
     "@typescript-eslint/parser": "^2.28.0",
     "commonmark": "^0.28.1",
     "cross-env": "^5.0.5",
+    "dependency-cruiser": "^9.7.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-mocha": "^6.3.0",
@@ -82,14 +83,15 @@
     "expect": "^25.2.7",
     "jpeg-js": "^0.3.7",
     "minimist": "^1.2.0",
-    "mocha": "^7.1.1",
+    "mocha": "^8.0.1",
     "ncp": "^2.0.0",
     "pixelmatch": "^4.0.2",
     "pngjs": "^5.0.0",
     "prettier": "^2.0.5",
     "sinon": "^9.0.2",
     "text-diff": "^1.0.1",
-    "typescript": "3.9.2"
+    "ts-node": "^8.10.2",
+    "typescript": "3.9.5"
   },
   "browser": {
     "./lib/BrowserFetcher.js": false,

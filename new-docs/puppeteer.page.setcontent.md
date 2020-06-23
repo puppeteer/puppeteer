@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-setContent(html: string, options: WaitForOptions): Promise<void>;
+setContent(html: string, options?: WaitForOptions): Promise<void>;
 ```
 
 ## Parameters

@@ -11,5 +11,5 @@ metrics(): Promise<Metrics>;
 ```
 <b>Returns:</b>
 
-Promise&lt;Metrics&gt;
+Promise&lt;[Metrics](./puppeteer.metrics.md)<!-- -->&gt;
 

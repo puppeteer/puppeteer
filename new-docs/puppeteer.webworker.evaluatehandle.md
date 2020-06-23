@@ -4,6 +4,8 @@
 
 ## WebWorker.evaluateHandle() method
 
+The only difference between `worker.evaluate` and `worker.evaluateHandle` is that `worker.evaluateHandle` returns in-page object (JSHandle). If the function passed to the `worker.evaluateHandle` returns a \[Promise\], then `worker.evaluateHandle` would wait for the promise to resolve and return its value. Shortcut for `await worker.executionContext()).evaluateHandle(pageFunction, ...args)`
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,10 +16,12 @@ evaluateHandle(pageFunction: Function | string, ...args: any[]): Promise<JSHandl
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  pageFunction | Function \| string |  |
-|  args | any\[\] |  |
+|  pageFunction | Function \| string | Function to be evaluated in the page context. |
+|  args | any\[\] | Arguments to pass to <code>pageFunction</code>. |
 
 <b>Returns:</b>
 
 Promise&lt;[JSHandle](./puppeteer.jshandle.md)<!-- -->&gt;
+
+Promise which resolves to the return value of `pageFunction`<!-- -->.
 

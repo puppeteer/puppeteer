@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
+// TODO (@jackfranklin): convert this to TypeScript and enable type-checking
+// @ts-nocheck
+
 /* We want to ensure that all of Puppeteer's public API is tested via our unit
- * tests but we can't use a tool like Istanbul because the way it instruments code
- * unfortunately breaks in Puppeteer where some of that code is then being executed in a browser context.
+ * tests but we can't use a tool like Istanbul because the way it instruments
+ * code unfortunately breaks in Puppeteer where some of that code is then being
+ * executed in a browser context.
  *
  * So instead we maintain this coverage code which does the following:
  * * takes every public method that we expect to be tested
@@ -102,16 +106,17 @@ const trackCoverage = () => {
   clearOldCoverage();
   const coverageMap = new Map();
 
-  before(() => {
-    const api = require('../lib/api');
-    const events = require('../lib/Events');
-    for (const [className, classType] of Object.entries(api))
-      traceAPICoverage(coverageMap, events, className, classType);
-  });
-
-  after(() => {
-    writeCoverage(coverageMap);
-  });
+  return {
+    beforeAll: () => {
+      const api = require('../src/api');
+      const events = require('../src/common/Events');
+      for (const [className, classType] of Object.entries(api))
+        traceAPICoverage(coverageMap, events, className, classType);
+    },
+    afterAll: () => {
+      writeCoverage(coverageMap);
+    },
+  };
 };
 
 module.exports = {

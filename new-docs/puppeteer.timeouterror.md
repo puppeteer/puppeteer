@@ -4,8 +4,16 @@
 
 ## TimeoutError class
 
+TimeoutError is emitted whenever certain operations are terminated due to timeout.
+
 <b>Signature:</b>
 
 ```typescript
 export declare class TimeoutError extends CustomError 
 ```
+<b>Extends:</b> CustomError
+
+## Remarks
+
+Example operations are [page.waitForSelector](./puppeteer.page.waitforselector.md) or [puppeteer.launch](./puppeteer.puppeteer.launch.md)<!-- -->.
+
