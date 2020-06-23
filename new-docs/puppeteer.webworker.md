@@ -11,7 +11,6 @@ The WebWorker class represents a [WebWorker](https://developer.mozilla.org/en-US
 ```typescript
 export declare class WebWorker extends EventEmitter 
 ```
-<b>Extends:</b> [EventEmitter](./puppeteer.eventemitter.md)
 
 ## Remarks
 

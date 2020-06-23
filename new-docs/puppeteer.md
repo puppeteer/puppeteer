@@ -11,7 +11,7 @@
 |  [Accessibility](./puppeteer.accessibility.md) | The Accessibility class provides methods for inspecting Chromium's accessibility tree. The accessibility tree is used by assistive technology such as [screen readers](https://en.wikipedia.org/wiki/Screen_reader) or [switches](https://en.wikipedia.org/wiki/Switch_access)<!-- -->. |
 |  [Browser](./puppeteer.browser.md) |  |
 |  [BrowserContext](./puppeteer.browsercontext.md) |  |
-|  [BrowserFetcher](./puppeteer.browserfetcher.md) |  |
+|  [BrowserFetcher](./puppeteer.browserfetcher.md) | BrowserFetcher can download and manage different versions of Chromium and Firefox. |
 |  [CDPSession](./puppeteer.cdpsession.md) |  |
 |  [Connection](./puppeteer.connection.md) |  |
 |  [ConsoleMessage](./puppeteer.consolemessage.md) |  |

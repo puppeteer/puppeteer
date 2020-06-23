@@ -9,7 +9,6 @@
 ```typescript
 export declare class ElementHandle extends JSHandle 
 ```
-<b>Extends:</b> [JSHandle](./puppeteer.jshandle.md)
 
 ## Constructors
 

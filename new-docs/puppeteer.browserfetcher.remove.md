@@ -14,9 +14,15 @@ remove(revision: string): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  revision | string |  |
+|  revision | string | A revision to remove for the current <code>product</code>. |
 
 <b>Returns:</b>
 
 Promise&lt;void&gt;
+
+A promise that resolves when the revision has been removes or throws if the revision has not been downloaded.
+
+## Remarks
+
+This method is affected by the current `product`<!-- -->.
 

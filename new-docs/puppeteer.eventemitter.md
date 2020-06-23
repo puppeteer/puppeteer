@@ -11,7 +11,6 @@ The EventEmitter class that many Puppeteer classes extend.
 ```typescript
 export declare class EventEmitter implements CommonEventEmitter 
 ```
-<b>Implements:</b> CommonEventEmitter
 
 ## Remarks
 

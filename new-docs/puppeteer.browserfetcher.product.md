@@ -13,3 +13,5 @@ product(): string;
 
 string
 
+One of `chrome` or `firefox`<!-- -->.
+

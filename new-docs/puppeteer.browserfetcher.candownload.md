@@ -4,6 +4,8 @@
 
 ## BrowserFetcher.canDownload() method
 
+Initiates a HEAD request to check if the revision is available.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,9 +16,15 @@ canDownload(revision: string): Promise<boolean>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  revision | string |  |
+|  revision | string | The revision to check availability for. |
 
 <b>Returns:</b>
 
 Promise&lt;boolean&gt;
+
+A promise that resolves to `true` if the revision could be downloaded from the host.
+
+## Remarks
+
+This method is affected by the current `product`<!-- -->.
 

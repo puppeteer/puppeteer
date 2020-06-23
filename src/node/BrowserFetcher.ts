@@ -80,11 +80,7 @@ function archiveName(
 }
 
 /**
- * @param {string} product
- * @param {string} platform
- * @param {string} host
- * @param {string} revision
- * @returns {string}
+ * @internal
  */
 function downloadURL(
   product: Product,
@@ -101,7 +97,10 @@ function downloadURL(
   return url;
 }
 
-function handleArm64() {
+/**
+ * @internal
+ */
+function handleArm64(): void {
   fs.stat('/usr/bin/chromium-browser', function (err, stats) {
     if (stats === undefined) {
       console.error(`The chromium binary is not available for arm64: `);
@@ -138,6 +137,27 @@ interface BrowserFetcherRevisionInfo {
   product: string;
 }
 /**
+ * BrowserFetcher can download and manage different versions of Chromium and Firefox.
+ *
+ * @remarks
+ * BrowserFetcher operates on revision strings that specify a precise version of Chromium, e.g. `"533271"`. Revision strings can be obtained from [omahaproxy.appspot.com](http://omahaproxy.appspot.com/).
+ * In the Firefox case, BrowserFetcher downloads Firefox Nightly and
+ * operates on version numbers such as `"75"`.
+ *
+ * @example
+ * An example of using BrowserFetcher to download a specific version of Chromium
+ * and running Puppeteer against it:
+ *
+ * ```js
+ * const browserFetcher = puppeteer.createBrowserFetcher();
+ * const revisionInfo = await browserFetcher.download('533271');
+ * const browser = await puppeteer.launch({executablePath: revisionInfo.executablePath})
+ * ```
+ *
+ * **NOTE** BrowserFetcher is not designed to work concurrently with other
+ * instances of BrowserFetcher that share the same downloads directory.
+ *
+ * @public
  */
 
 export class BrowserFetcher {
@@ -146,6 +166,9 @@ export class BrowserFetcher {
   private _downloadHost: string;
   private _platform: Platform;
 
+  /**
+   * @internal
+   */
   constructor(projectRoot: string, options: BrowserFetcherOptions = {}) {
     this._product = (options.product || 'chrome').toLowerCase() as Product;
     assert(
@@ -178,18 +201,35 @@ export class BrowserFetcher {
     else assert(this._platform, 'Unsupported platform: ' + os.platform());
   }
 
+  /**
+   * @returns One of `mac`, `linux`, `win32` or `win64`.
+   */
   platform(): string {
     return this._platform;
   }
 
+  /**
+   * @returns One of `chrome` or `firefox`.
+   */
   product(): string {
     return this._product;
   }
 
+  /**
+   * @returns The download host being used.
+   */
   host(): string {
     return this._downloadHost;
   }
 
+  /**
+   * Initiates a HEAD request to check if the revision is available.
+   * @remarks
+   * This method is affected by the current `product`.
+   * @param revision The revision to check availability for.
+   * @returns A promise that resolves to `true` if the revision could be downloaded
+   * from the host.
+   */
   canDownload(revision: string): Promise<boolean> {
     const url = downloadURL(
       this._product,
@@ -209,9 +249,14 @@ export class BrowserFetcher {
   }
 
   /**
-   * @param {string} revision
-   * @param {?function(number, number):void} progressCallback
-   * @returns {!Promise<!BrowserFetcher.RevisionInfo>}
+   * Initiates a GET request to download the revision from the host.
+   * @remarks
+   * This method is affected by the current `product`.
+   * @param revision The revision to download.
+   * @param progressCallback A function that will be called with two arguments:
+   * How many bytes have been downloaded and the total number of bytes of the download.
+   * @returns A promise with revision information when the revision is downloaded
+   * and extracted.
    */
   async download(
     revision: string,
@@ -244,6 +289,12 @@ export class BrowserFetcher {
     return revisionInfo;
   }
 
+  /**
+   * @remarks
+   * This method is affected by the current `product`.
+   * @returns A promise with a list of all revision strings (for the current `product`)
+   * available locally on disk.
+   */
   async localRevisions(): Promise<string[]> {
     if (!(await existsAsync(this._downloadsFolder))) return [];
     const fileNames = await readdirAsync(this._downloadsFolder);
@@ -253,6 +304,13 @@ export class BrowserFetcher {
       .map((entry) => entry.revision);
   }
 
+  /**
+   * @remarks
+   * This method is affected by the current `product`.
+   * @param revision A revision to remove for the current `product`.
+   * @returns A promise that resolves when the revision has been removes or
+   * throws if the revision has not been downloaded.
+   */
   async remove(revision: string): Promise<void> {
     const folderPath = this._getFolderPath(revision);
     assert(
@@ -262,6 +320,10 @@ export class BrowserFetcher {
     await new Promise((fulfill) => removeRecursive(folderPath, fulfill));
   }
 
+  /**
+   * @param revision The revision to get info for.
+   * @returns The revision info for the given revision.
+   */
   revisionInfo(revision: string): BrowserFetcherRevisionInfo {
     const folderPath = this._getFolderPath(revision);
     let executablePath = '';
@@ -331,8 +393,7 @@ export class BrowserFetcher {
   }
 
   /**
-   * @param {string} revision
-   * @returns {string}
+   * @internal
    */
   _getFolderPath(revision: string): string {
     return path.join(this._downloadsFolder, this._platform + '-' + revision);
