@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-goBack(options: WaitForOptions): Promise<HTTPResponse | null>;
+goBack(options?: WaitForOptions): Promise<HTTPResponse | null>;
 ```
 
 ## Parameters

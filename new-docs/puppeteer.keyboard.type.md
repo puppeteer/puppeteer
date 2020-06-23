@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-type(text: string, options: {
+type(text: string, options?: {
         delay?: number;
     }): Promise<void>;
 ```
