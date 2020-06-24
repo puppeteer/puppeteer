@@ -14,9 +14,11 @@ createBrowserFetcher(options: BrowserFetcherOptions): BrowserFetcher;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | [BrowserFetcherOptions](./puppeteer.browserfetcheroptions.md) |  |
+|  options | [BrowserFetcherOptions](./puppeteer.browserfetcheroptions.md) | Set of configurable options to specify the settings of the BrowserFetcher. |
 
 <b>Returns:</b>
 
 [BrowserFetcher](./puppeteer.browserfetcher.md)
+
+A new BrowserFetcher instance.
 

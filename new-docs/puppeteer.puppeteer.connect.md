@@ -4,6 +4,8 @@
 
 ## Puppeteer.connect() method
 
+This method attaches Puppeteer to an existing browser instance.
+
 <b>Signature:</b>
 
 ```typescript
@@ -19,9 +21,14 @@ connect(options: BrowserOptions & {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | BrowserOptions &amp; { browserWSEndpoint?: string; browserURL?: string; transport?: ConnectionTransport; product?: string; } |  |
+|  options | BrowserOptions &amp; { browserWSEndpoint?: string; browserURL?: string; transport?: ConnectionTransport; product?: string; } | Set of configurable options to set on the browser. |
 
 <b>Returns:</b>
 
 Promise&lt;[Browser](./puppeteer.browser.md)<!-- -->&gt;
+
+Promise which resolves to browser instance.
+
+## Remarks
+
 
