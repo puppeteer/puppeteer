@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 /**
  * Copyright 2017 Google Inc. All rights reserved.
  *
@@ -26,6 +28,11 @@ const fulfillSymbol = Symbol('fullfil callback');
 const rejectSymbol = Symbol('reject callback');
 
 class TestServer {
+  PORT = undefined;
+  PREFIX = undefined;
+  CROSS_PROCESS_PREFIX = undefined;
+  EMPTY_PAGE = undefined;
+
   /**
    * @param {string} dirPath
    * @param {number} port

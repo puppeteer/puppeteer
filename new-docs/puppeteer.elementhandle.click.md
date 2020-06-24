@@ -4,21 +4,19 @@
 
 ## ElementHandle.click() method
 
+This method scrolls element into view if needed, and then uses [Page.mouse](./puppeteer.page.mouse.md) to click in the center of the element. If the element is detached from DOM, the method throws an error.
+
 <b>Signature:</b>
 
 ```typescript
-click(options: {
-        delay?: number;
-        button?: 'left' | 'right' | 'middle';
-        clickCount?: number;
-    }): Promise<void>;
+click(options?: ClickOptions): Promise<void>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | { delay?: number; button?: 'left' \| 'right' \| 'middle'; clickCount?: number; } |  |
+|  options | [ClickOptions](./puppeteer.clickoptions.md) |  |
 
 <b>Returns:</b>
 

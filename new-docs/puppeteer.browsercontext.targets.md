@@ -4,6 +4,8 @@
 
 ## BrowserContext.targets() method
 
+An array of all active targets inside the browser context.
+
 <b>Signature:</b>
 
 ```typescript

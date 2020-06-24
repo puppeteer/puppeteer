@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-waitForXPath(xpath: string, options: WaitForSelectorOptions): Promise<ElementHandle | null>;
+waitForXPath(xpath: string, options?: WaitForSelectorOptions): Promise<ElementHandle | null>;
 ```
 
 ## Parameters

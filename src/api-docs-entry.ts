@@ -47,3 +47,4 @@ export * from './common/Target';
 export * from './common/Errors';
 export * from './common/Tracing';
 export * from './common/WebWorker';
+export * from './common/USKeyboardLayout';

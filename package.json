@@ -12,7 +12,7 @@
     "firefox_revision": "latest"
   },
   "scripts": {
-    "unit": "mocha --config mocha-config/puppeteer-unit-tests.js",
+    "unit": "tsc --version && mocha --config mocha-config/puppeteer-unit-tests.js",
     "unit-with-coverage": "cross-env COVERAGE=1 npm run unit",
     "assert-unit-coverage": "cross-env COVERAGE=1 mocha --config mocha-config/coverage-tests.js",
     "funit": "PUPPETEER_PRODUCT=firefox npm run unit",
@@ -63,7 +63,8 @@
     "@microsoft/api-extractor": "7.8.12",
     "@types/debug": "0.0.31",
     "@types/mime": "^2.0.0",
-    "@types/node": "^10.17.14",
+    "@types/mocha": "^7.0.2",
+    "@types/node": "^14.0.13",
     "@types/proxy-from-env": "^1.0.1",
     "@types/rimraf": "^2.0.2",
     "@types/tar-fs": "^1.16.2",
@@ -89,7 +90,8 @@
     "prettier": "^2.0.5",
     "sinon": "^9.0.2",
     "text-diff": "^1.0.1",
-    "typescript": "3.9.2"
+    "ts-node": "^8.10.2",
+    "typescript": "3.9.5"
   },
   "browser": {
     "./lib/BrowserFetcher.js": false,

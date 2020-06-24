@@ -4,6 +4,8 @@
 
 ## ElementHandle.$x() method
 
+The method evaluates the XPath expression relative to the elementHandle. If there are no such elements, the method will resolve to an empty array.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,7 +16,7 @@ $x(expression: string): Promise<ElementHandle[]>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  expression | string |  |
+|  expression | string | Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate) |
 
 <b>Returns:</b>
 

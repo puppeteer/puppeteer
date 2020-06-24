@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-startCSSCoverage(options: {
+startCSSCoverage(options?: {
         resetOnNavigation?: boolean;
     }): Promise<void>;
 ```

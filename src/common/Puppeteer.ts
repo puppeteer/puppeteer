@@ -134,7 +134,7 @@ export class Puppeteer {
     return puppeteerErrors;
   }
 
-  defaultArgs(options: ChromeArgOptions): string[] {
+  defaultArgs(options: ChromeArgOptions = {}): string[] {
     return this._launcher.defaultArgs(options);
   }
 

@@ -23,20 +23,42 @@ import { Viewport } from './PuppeteerViewport';
 import Protocol from '../protocol';
 
 export class Target {
-  _targetInfo: Protocol.Target.TargetInfo;
-  _browserContext: BrowserContext;
-  _targetId: string;
-  _sessionFactory: () => Promise<CDPSession>;
-  _ignoreHTTPSErrors: boolean;
-  _defaultViewport?: Viewport;
-  _pagePromise?: Promise<Page>;
-  _workerPromise?: Promise<WebWorker>;
-  _initializedPromise: Promise<boolean>;
-  _initializedCallback: (x: boolean) => void;
-  _isClosedPromise: Promise<boolean>;
-  _closedCallback: () => void;
-  _isInitialized: boolean;
+  private _targetInfo: Protocol.Target.TargetInfo;
+  private _browserContext: BrowserContext;
 
+  private _sessionFactory: () => Promise<CDPSession>;
+  private _ignoreHTTPSErrors: boolean;
+  private _defaultViewport?: Viewport;
+  private _pagePromise?: Promise<Page>;
+  private _workerPromise?: Promise<WebWorker>;
+  /**
+   * @internal
+   */
+  _initializedPromise: Promise<boolean>;
+  /**
+   * @internal
+   */
+  _initializedCallback: (x: boolean) => void;
+  /**
+   * @internal
+   */
+  _isClosedPromise: Promise<boolean>;
+  /**
+   * @internal
+   */
+  _closedCallback: () => void;
+  /**
+   * @internal
+   */
+  _isInitialized: boolean;
+  /**
+   * @internal
+   */
+  _targetId: string;
+
+  /**
+   * @internal
+   */
   constructor(
     targetInfo: Protocol.Target.TargetInfo,
     browserContext: BrowserContext,
@@ -75,10 +97,16 @@ export class Target {
     if (this._isInitialized) this._initializedCallback(true);
   }
 
+  /**
+   * Creates a Chrome Devtools Protocol session attached to the target.
+   */
   createCDPSession(): Promise<CDPSession> {
     return this._sessionFactory();
   }
 
+  /**
+   * If the target is not of type `"page"` or `"background_page"`, returns `null`.
+   */
   async page(): Promise<Page | null> {
     if (
       (this._targetInfo.type === 'page' ||
@@ -98,6 +126,9 @@ export class Target {
     return this._pagePromise;
   }
 
+  /**
+   * If the target is not of type `"service_worker"` or `"shared_worker"`, returns `null`.
+   */
   async worker(): Promise<WebWorker | null> {
     if (
       this._targetInfo.type !== 'service_worker' &&
@@ -123,6 +154,13 @@ export class Target {
     return this._targetInfo.url;
   }
 
+  /**
+   * Identifies what kind of target this is.
+   *
+   * @remarks
+   *
+   * See {@link https://developer.chrome.com/extensions/background_pages | docs} for more info about background pages.
+   */
   type():
     | 'page'
     | 'background_page'
@@ -144,6 +182,9 @@ export class Target {
     return 'other';
   }
 
+  /**
+   * Get the browser the target belongs to.
+   */
   browser(): Browser {
     return this._browserContext.browser();
   }
@@ -152,12 +193,18 @@ export class Target {
     return this._browserContext;
   }
 
+  /**
+   * Get the target that opened this target. Top-level targets return `null`.
+   */
   opener(): Target | null {
     const { openerId } = this._targetInfo;
     if (!openerId) return null;
     return this.browser()._targets.get(openerId);
   }
 
+  /**
+   * @internal
+   */
   _targetInfoChanged(targetInfo: Protocol.Target.TargetInfo): void {
     this._targetInfo = targetInfo;
 

@@ -4,6 +4,8 @@
 
 ## Target.createCDPSession() method
 
+Creates a Chrome Devtools Protocol session attached to the target.
+
 <b>Signature:</b>
 
 ```typescript

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+// TODO (@jackfranklin): convert this to TypeScript and enable type-checking
+// @ts-nocheck
+
 /* We want to ensure that all of Puppeteer's public API is tested via our unit
  * tests but we can't use a tool like Istanbul because the way it instruments
  * code unfortunately breaks in Puppeteer where some of that code is then being
@@ -105,8 +108,8 @@ const trackCoverage = () => {
 
   return {
     beforeAll: () => {
-      const api = require('../lib/api');
-      const events = require('../lib/common/Events');
+      const api = require('../src/api');
+      const events = require('../src/common/Events');
       for (const [className, classType] of Object.entries(api))
         traceAPICoverage(coverageMap, events, className, classType);
     },

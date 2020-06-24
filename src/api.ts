@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// @ts-nocheck
 
 /* This file is used in two places:
  * 1) the coverage-utils use it to gain a list of all methods we check for test

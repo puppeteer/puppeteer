@@ -36,10 +36,12 @@ export class Coverage {
     this._cssCoverage = new CSSCoverage(client);
   }
 
-  async startJSCoverage(options: {
-    resetOnNavigation?: boolean;
-    reportAnonymousScripts?: boolean;
-  }): Promise<void> {
+  async startJSCoverage(
+    options: {
+      resetOnNavigation?: boolean;
+      reportAnonymousScripts?: boolean;
+    } = {}
+  ): Promise<void> {
     return await this._jsCoverage.start(options);
   }
 
@@ -47,9 +49,11 @@ export class Coverage {
     return await this._jsCoverage.stop();
   }
 
-  async startCSSCoverage(options: {
-    resetOnNavigation?: boolean;
-  }): Promise<void> {
+  async startCSSCoverage(
+    options: {
+      resetOnNavigation?: boolean;
+    } = {}
+  ): Promise<void> {
     return await this._cssCoverage.start(options);
   }
 

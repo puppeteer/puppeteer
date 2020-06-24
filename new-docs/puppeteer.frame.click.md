@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-click(selector: string, options: {
+click(selector: string, options?: {
         delay?: number;
         button?: MouseButtonInput;
         clickCount?: number;
