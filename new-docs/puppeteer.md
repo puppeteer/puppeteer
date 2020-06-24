@@ -29,7 +29,7 @@
 |  [Keyboard](./puppeteer.keyboard.md) |  |
 |  [Mouse](./puppeteer.mouse.md) | The Mouse class operates in main-frame CSS pixels relative to the top-left corner of the viewport. |
 |  [Page](./puppeteer.page.md) | Page provides methods to interact with a single tab or \[extension background page\](https://developer.chrome.com/extensions/background\_pages) in Chromium. One \[Browser\] instance might have multiple \[Page\] instances. |
-|  [Puppeteer](./puppeteer.puppeteer.md) | The main Puppeteer class |
+|  [Puppeteer](./puppeteer.puppeteer.md) | The main Puppeteer class Puppeteer module provides a method to launch a browser instance. |
 |  [SecurityDetails](./puppeteer.securitydetails.md) | The SecurityDetails class represents the security details of a response that was received over a secure connection. |
 |  [Target](./puppeteer.target.md) |  |
 |  [TimeoutError](./puppeteer.timeouterror.md) | TimeoutError is emitted whenever certain operations are terminated due to timeout. |

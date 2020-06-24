@@ -14,9 +14,11 @@ defaultArgs(options?: ChromeArgOptions): string[];
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | ChromeArgOptions |  |
+|  options | ChromeArgOptions | Set of configurable options to set on the browser. |
 
 <b>Returns:</b>
 
 string\[\]
+
+The default flags that Chromium will be launched with.
 
