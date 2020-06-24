@@ -4,6 +4,8 @@
 
 ## Mouse.down() method
 
+Dispatches a `mousedown` event.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,7 +16,7 @@ down(options?: MouseOptions): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | MouseOptions |  |
+|  options | MouseOptions | Optional <code>MouseOptions</code>. |
 
 <b>Returns:</b>
 
