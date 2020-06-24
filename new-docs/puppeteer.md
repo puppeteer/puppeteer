@@ -34,7 +34,7 @@
 |  [Target](./puppeteer.target.md) |  |
 |  [TimeoutError](./puppeteer.timeouterror.md) | TimeoutError is emitted whenever certain operations are terminated due to timeout. |
 |  [Touchscreen](./puppeteer.touchscreen.md) | The Touchscreen class exposes touchscreen events. |
-|  [Tracing](./puppeteer.tracing.md) |  |
+|  [Tracing](./puppeteer.tracing.md) | The Tracing class exposes the tracing audit interface. |
 |  [WebWorker](./puppeteer.webworker.md) | The WebWorker class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)<!-- -->. |
 
 ## Enumerations

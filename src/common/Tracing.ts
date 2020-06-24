@@ -23,15 +23,37 @@ interface TracingOptions {
   categories?: string[];
 }
 
+/**
+ * The Tracing class exposes the tracing audit interface.
+ * @remarks
+ * You can use `tracing.start` and `tracing.stop` to create a trace file
+ * which can be opened in Chrome DevTools or {@link https://chromedevtools.github.io/timeline-viewer/ | timeline viewer}.
+ *
+ * @example
+ * ```js
+ * await page.tracing.start({path: 'trace.json'});
+ * await page.goto('https://www.google.com');
+ * await page.tracing.stop();
+ * ```
+ */
 export class Tracing {
   _client: CDPSession;
   _recording = false;
   _path = '';
 
+  /**
+   * @internal
+   */
   constructor(client: CDPSession) {
     this._client = client;
   }
 
+  /**
+   * Starts a trace for the current page.
+   * @remarks
+   * Only one trace can be active at a time per browser.
+   * @param options - Optional `TracingOptions`.
+   */
   async start(options: TracingOptions = {}): Promise<void> {
     assert(
       !this._recording,
@@ -68,6 +90,10 @@ export class Tracing {
     });
   }
 
+  /**
+   * Stops a trace started with the `start` method.
+   * @returns Promise which resolves to buffer with trace data.
+   */
   async stop(): Promise<Buffer> {
     let fulfill: (value: Buffer) => void;
     const contentPromise = new Promise<Buffer>((x) => (fulfill = x));
