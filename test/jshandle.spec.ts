@@ -195,18 +195,6 @@ describe('JSHandle', function () {
         await page.evaluate((e) => e.nodeType === Node.TEXT_NODE, element)
       );
     });
-    it('should work with nullified Node', async () => {
-      const { page } = getTestState();
-
-      await page.setContent('<section>test</section>');
-      // TODO (@jackfranklin): this line doesn't do anything. What was intended here?
-      // await page.evaluate(() => delete Node);
-      const handle = await page.evaluateHandle(() =>
-        document.querySelector('section')
-      );
-      const element = handle.asElement();
-      expect(element).not.toBe(null);
-    });
   });
 
   describe('JSHandle.toString', function () {
