@@ -34,7 +34,7 @@ await page.mouse.up();
 ```
 \*\*Note\*\*: The mouse events trigger synthetic `MouseEvent`<!-- -->s. This means that it does not fully replicate the functionality of what a normal user would be able to do with their mouse.
 
-For example, dragging and selecting text is not possible using `page.mouse`<!-- -->. Instead, you can use the \[`DocumentOrShadowRoot.getSelection()`<!-- -->\](https://developer.mozilla.org/en-US/docs/Web/API/DocumentOrShadowRoot/getSelection) functionality implemented in the platform.
+For example, dragging and selecting text is not possible using `page.mouse`<!-- -->. Instead, you can use the [\`DocumentOrShadowRoot.getSelection()\`](https://developer.mozilla.org/en-US/docs/Web/API/DocumentOrShadowRoot/getSelection) functionality implemented in the platform.
 
 ## Example 2
 

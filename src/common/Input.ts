@@ -176,7 +176,7 @@ interface MouseOptions {
  * would be able to do with their mouse.
  *
  * For example, dragging and selecting text is not possible using `page.mouse`.
- * Instead, you can use the [`DocumentOrShadowRoot.getSelection()`](https://developer.mozilla.org/en-US/docs/Web/API/DocumentOrShadowRoot/getSelection) functionality implemented in the platform.
+ * Instead, you can use the {@link https://developer.mozilla.org/en-US/docs/Web/API/DocumentOrShadowRoot/getSelection | `DocumentOrShadowRoot.getSelection()`} functionality implemented in the platform.
  *
  * @example
  * For example, if you want to select all content between nodes:
