@@ -11,6 +11,7 @@ ElementHandle represents an in-page DOM element.
 ```typescript
 export declare class ElementHandle extends JSHandle 
 ```
+<b>Extends:</b> [JSHandle](./puppeteer.jshandle.md)
 
 ## Remarks
 

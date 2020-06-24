@@ -11,6 +11,7 @@ A Browser is created when Puppeteer connects to a Chromium instance, either thro
 ```typescript
 export declare class Browser extends EventEmitter 
 ```
+<b>Extends:</b> [EventEmitter](./puppeteer.eventemitter.md)
 
 ## Remarks
 
