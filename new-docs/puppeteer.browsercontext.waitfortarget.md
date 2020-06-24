@@ -9,7 +9,7 @@ This searches for a target in this specific browser context.
 <b>Signature:</b>
 
 ```typescript
-waitForTarget(predicate: (x: Target) => boolean, options: {
+waitForTarget(predicate: (x: Target) => boolean, options?: {
         timeout?: number;
     }): Promise<Target>;
 ```

@@ -4,6 +4,8 @@
 
 ## Mouse.click() method
 
+Shortcut for `mouse.move`<!-- -->, `mouse.down` and `mouse.up`<!-- -->.
+
 <b>Signature:</b>
 
 ```typescript
@@ -16,9 +18,9 @@ click(x: number, y: number, options?: MouseOptions & {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  x | number |  |
-|  y | number |  |
-|  options | MouseOptions &amp; { delay?: number; } |  |
+|  x | number | Horizontal position of the mouse. |
+|  y | number | Vertical position of the mouse. |
+|  options | MouseOptions &amp; { delay?: number; } | Optional <code>MouseOptions</code>. |
 
 <b>Returns:</b>
 
