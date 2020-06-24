@@ -11,7 +11,7 @@
 |  [Accessibility](./puppeteer.accessibility.md) | The Accessibility class provides methods for inspecting Chromium's accessibility tree. The accessibility tree is used by assistive technology such as [screen readers](https://en.wikipedia.org/wiki/Screen_reader) or [switches](https://en.wikipedia.org/wiki/Switch_access)<!-- -->. |
 |  [Browser](./puppeteer.browser.md) | A Browser is created when Puppeteer connects to a Chromium instance, either through [Puppeteer.launch()](./puppeteer.puppeteer.launch.md) or [Puppeteer.connect()](./puppeteer.puppeteer.connect.md)<!-- -->. |
 |  [BrowserContext](./puppeteer.browsercontext.md) | BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has a single BrowserContext used by default. The method [Browser.newPage](./puppeteer.browser.newpage.md) creates a page in the default browser context. |
-|  [BrowserFetcher](./puppeteer.browserfetcher.md) |  |
+|  [BrowserFetcher](./puppeteer.browserfetcher.md) | BrowserFetcher can download and manage different versions of Chromium and Firefox. |
 |  [CDPSession](./puppeteer.cdpsession.md) | The <code>CDPSession</code> instances are used to talk raw Chrome Devtools Protocol. |
 |  [Connection](./puppeteer.connection.md) |  |
 |  [ConsoleMessage](./puppeteer.consolemessage.md) | ConsoleMessage objects are dispatched by page via the 'console' event. |
@@ -33,7 +33,7 @@
 |  [SecurityDetails](./puppeteer.securitydetails.md) | The SecurityDetails class represents the security details of a response that was received over a secure connection. |
 |  [Target](./puppeteer.target.md) |  |
 |  [TimeoutError](./puppeteer.timeouterror.md) | TimeoutError is emitted whenever certain operations are terminated due to timeout. |
-|  [Touchscreen](./puppeteer.touchscreen.md) |  |
+|  [Touchscreen](./puppeteer.touchscreen.md) | The Touchscreen class exposes touchscreen events. |
 |  [Tracing](./puppeteer.tracing.md) | The Tracing class exposes the tracing audit interface. |
 |  [WebWorker](./puppeteer.webworker.md) | The WebWorker class represents a [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)<!-- -->. |
 

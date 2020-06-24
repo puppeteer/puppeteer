@@ -7,9 +7,11 @@
 <b>Signature:</b>
 
 ```typescript
-product(): string;
+product(): Product;
 ```
 <b>Returns:</b>
 
-string
+Product
+
+Returns the current `Product`<!-- -->.
 

@@ -13,3 +13,5 @@ host(): string;
 
 string
 
+The download host being used.
+

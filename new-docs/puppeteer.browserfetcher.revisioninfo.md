@@ -14,9 +14,11 @@ revisionInfo(revision: string): BrowserFetcherRevisionInfo;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  revision | string |  |
+|  revision | string | The revision to get info for. |
 
 <b>Returns:</b>
 
 BrowserFetcherRevisionInfo
+
+The revision info for the given revision.
 
