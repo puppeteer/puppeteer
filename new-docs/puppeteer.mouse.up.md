@@ -4,6 +4,8 @@
 
 ## Mouse.up() method
 
+Dispatches a `mouseup` event.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,7 +16,7 @@ up(options?: MouseOptions): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | MouseOptions |  |
+|  options | MouseOptions | Optional <code>MouseOptions</code>. |
 
 <b>Returns:</b>
 
