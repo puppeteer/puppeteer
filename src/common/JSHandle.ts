@@ -23,6 +23,11 @@ import { KeyInput } from './USKeyboardLayout';
 import { FrameManager, Frame } from './FrameManager';
 import { getQueryHandlerAndSelector } from './QueryHandler';
 import Protocol from '../protocol';
+import {
+  EvaluateFn,
+  SerializableOrJSHandle,
+  EvaluateFnReturnType,
+} from './EvalTypes';
 
 /**
  * @public
@@ -113,11 +118,12 @@ export class JSHandle {
    * expect(await tweetHandle.evaluate(node => node.innerText)).toBe('10');
    * ```
    */
-  async evaluate<ReturnType extends any>(
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<ReturnType> {
-    return await this.executionContext().evaluate<ReturnType>(
+
+  async evaluate<T extends EvaluateFn>(
+    pageFunction: T | string,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<EvaluateFnReturnType<T>> {
+    return await this.executionContext().evaluate<EvaluateFnReturnType<T>>(
       pageFunction,
       this,
       ...args
@@ -307,46 +313,48 @@ export class ElementHandle extends JSHandle {
   }
 
   private async _scrollIntoViewIfNeeded(): Promise<void> {
-    const error = await this.evaluate<Promise<string | false>>(
-      async (element: HTMLElement, pageJavascriptEnabled: boolean) => {
-        if (!element.isConnected) return 'Node is detached from document';
-        if (element.nodeType !== Node.ELEMENT_NODE)
-          return 'Node is not of type HTMLElement';
-        // force-scroll if page's javascript is disabled.
-        if (!pageJavascriptEnabled) {
-          element.scrollIntoView({
-            block: 'center',
-            inline: 'center',
-            // Chrome still supports behavior: instant but it's not in the spec
-            // so TS shouts We don't want to make this breaking change in
-            // Puppeteer yet so we'll ignore the line.
-            // @ts-ignore
-            behavior: 'instant',
-          });
-          return false;
-        }
-        const visibleRatio = await new Promise((resolve) => {
-          const observer = new IntersectionObserver((entries) => {
-            resolve(entries[0].intersectionRatio);
-            observer.disconnect();
-          });
-          observer.observe(element);
+    const error = await this.evaluate<
+      (
+        element: HTMLElement,
+        pageJavascriptEnabled: boolean
+      ) => Promise<string | false>
+    >(async (element, pageJavascriptEnabled) => {
+      if (!element.isConnected) return 'Node is detached from document';
+      if (element.nodeType !== Node.ELEMENT_NODE)
+        return 'Node is not of type HTMLElement';
+      // force-scroll if page's javascript is disabled.
+      if (!pageJavascriptEnabled) {
+        element.scrollIntoView({
+          block: 'center',
+          inline: 'center',
+          // Chrome still supports behavior: instant but it's not in the spec
+          // so TS shouts We don't want to make this breaking change in
+          // Puppeteer yet so we'll ignore the line.
+          // @ts-ignore
+          behavior: 'instant',
         });
-        if (visibleRatio !== 1.0) {
-          element.scrollIntoView({
-            block: 'center',
-            inline: 'center',
-            // Chrome still supports behavior: instant but it's not in the spec
-            // so TS shouts We don't want to make this breaking change in
-            // Puppeteer yet so we'll ignore the line.
-            // @ts-ignore
-            behavior: 'instant',
-          });
-        }
         return false;
-      },
-      this._page.isJavaScriptEnabled()
-    );
+      }
+      const visibleRatio = await new Promise((resolve) => {
+        const observer = new IntersectionObserver((entries) => {
+          resolve(entries[0].intersectionRatio);
+          observer.disconnect();
+        });
+        observer.observe(element);
+      });
+      if (visibleRatio !== 1.0) {
+        element.scrollIntoView({
+          block: 'center',
+          inline: 'center',
+          // Chrome still supports behavior: instant but it's not in the spec
+          // so TS shouts We don't want to make this breaking change in
+          // Puppeteer yet so we'll ignore the line.
+          // @ts-ignore
+          behavior: 'instant',
+        });
+      }
+      return false;
+    }, this._page.isJavaScriptEnabled());
 
     if (error) throw new Error(error);
   }
@@ -491,9 +499,9 @@ export class ElementHandle extends JSHandle {
    *    relative to the {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}
    */
   async uploadFile(...filePaths: string[]): Promise<void> {
-    const isMultiple = await this.evaluate<boolean>(
-      (element: HTMLInputElement) => element.multiple
-    );
+    const isMultiple = await this.evaluate<
+      (element: HTMLInputElement) => boolean
+    >((element) => element.multiple);
     assert(
       filePaths.length <= 1 || isMultiple,
       'Multiple file uploads only work with <input type=file multiple>'
@@ -772,15 +780,15 @@ export class ElementHandle extends JSHandle {
    */
   async $eval<ReturnType extends any>(
     selector: string,
-    pageFunction: Function | string,
-    ...args: unknown[]
+    pageFunction: EvaluateFn | string,
+    ...args: SerializableOrJSHandle[]
   ): Promise<ReturnType> {
     const elementHandle = await this.$(selector);
     if (!elementHandle)
       throw new Error(
         `Error: failed to find element matching selector "${selector}"`
       );
-    const result = await elementHandle.evaluate<ReturnType>(
+    const result = await elementHandle.evaluate<(...args: any[]) => ReturnType>(
       pageFunction,
       ...args
     );
@@ -813,8 +821,8 @@ export class ElementHandle extends JSHandle {
    */
   async $$eval<ReturnType extends any>(
     selector: string,
-    pageFunction: Function | string,
-    ...args: unknown[]
+    pageFunction: EvaluateFn | string,
+    ...args: SerializableOrJSHandle[]
   ): Promise<ReturnType> {
     const defaultHandler = (element: Element, selector: string) =>
       Array.from(element.querySelectorAll(selector));
@@ -827,7 +835,7 @@ export class ElementHandle extends JSHandle {
       queryHandler,
       updatedSelector
     );
-    const result = await arrayHandle.evaluate<ReturnType>(
+    const result = await arrayHandle.evaluate<(...args: any[]) => ReturnType>(
       pageFunction,
       ...args
     );
@@ -868,16 +876,18 @@ export class ElementHandle extends JSHandle {
    * Resolves to true if the element is visible in the current viewport.
    */
   async isIntersectingViewport(): Promise<boolean> {
-    return await this.evaluate<Promise<boolean>>(async (element) => {
-      const visibleRatio = await new Promise((resolve) => {
-        const observer = new IntersectionObserver((entries) => {
-          resolve(entries[0].intersectionRatio);
-          observer.disconnect();
+    return await this.evaluate<(element: Element) => Promise<boolean>>(
+      async (element) => {
+        const visibleRatio = await new Promise((resolve) => {
+          const observer = new IntersectionObserver((entries) => {
+            resolve(entries[0].intersectionRatio);
+            observer.disconnect();
+          });
+          observer.observe(element);
         });
-        observer.observe(element);
-      });
-      return visibleRatio > 0;
-    });
+        return visibleRatio > 0;
+      }
+    );
   }
 }
 
