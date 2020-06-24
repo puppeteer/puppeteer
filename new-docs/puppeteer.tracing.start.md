@@ -4,6 +4,8 @@
 
 ## Tracing.start() method
 
+Starts a trace for the current page.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,9 +16,13 @@ start(options?: TracingOptions): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | TracingOptions |  |
+|  options | TracingOptions | Optional <code>TracingOptions</code>. |
 
 <b>Returns:</b>
 
 Promise&lt;void&gt;
+
+## Remarks
+
+Only one trace can be active at a time per browser.
 

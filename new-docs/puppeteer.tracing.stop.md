@@ -4,6 +4,8 @@
 
 ## Tracing.stop() method
 
+Stops a trace started with the `start` method.
+
 <b>Signature:</b>
 
 ```typescript
@@ -12,4 +14,6 @@ stop(): Promise<Buffer>;
 <b>Returns:</b>
 
 Promise&lt;Buffer&gt;
+
+Promise which resolves to buffer with trace data.
 
