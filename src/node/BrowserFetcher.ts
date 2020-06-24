@@ -210,14 +210,14 @@ export class BrowserFetcher {
   /**
    * @returns Returns the current `Platform`.
    */
-  platform(): string {
+  platform(): Platform {
     return this._platform;
   }
 
   /**
    * @returns Returns the current `Product`.
    */
-  product(): string {
+  product(): Product {
     return this._product;
   }
 
