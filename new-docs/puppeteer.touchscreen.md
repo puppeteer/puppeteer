@@ -4,17 +4,17 @@
 
 ## Touchscreen class
 
+The Touchscreen class exposes touchscreen events.
+
 <b>Signature:</b>
 
 ```typescript
 export declare class Touchscreen 
 ```
 
-## Constructors
+## Remarks
 
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(client, keyboard)](./puppeteer.touchscreen._constructor_.md) |  | Constructs a new instance of the <code>Touchscreen</code> class |
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Touchscreen` class.
 
 ## Properties
 
@@ -27,5 +27,5 @@ export declare class Touchscreen
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [tap(x, y)](./puppeteer.touchscreen.tap.md) |  |  |
+|  [tap(x, y)](./puppeteer.touchscreen.tap.md) |  | Dispatches a <code>touchstart</code> and <code>touchend</code> event. |
 
