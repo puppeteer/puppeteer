@@ -4,17 +4,29 @@
 
 ## Tracing class
 
+The Tracing class exposes the tracing audit interface.
+
 <b>Signature:</b>
 
 ```typescript
 export declare class Tracing 
 ```
 
-## Constructors
+## Remarks
 
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(client)](./puppeteer.tracing._constructor_.md) |  | Constructs a new instance of the <code>Tracing</code> class |
+You can use `tracing.start` and `tracing.stop` to create a trace file which can be opened in Chrome DevTools or [timeline viewer](https://chromedevtools.github.io/timeline-viewer/)<!-- -->.
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Tracing` class.
+
+## Example
+
+
+```js
+await page.tracing.start({path: 'trace.json'});
+await page.goto('https://www.google.com');
+await page.tracing.stop();
+
+```
 
 ## Properties
 
@@ -28,6 +40,6 @@ export declare class Tracing
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [start(options)](./puppeteer.tracing.start.md) |  |  |
-|  [stop()](./puppeteer.tracing.stop.md) |  |  |
+|  [start(options)](./puppeteer.tracing.start.md) |  | Starts a trace for the current page. |
+|  [stop()](./puppeteer.tracing.stop.md) |  | Stops a trace started with the <code>start</code> method. |
 
