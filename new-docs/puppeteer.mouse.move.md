@@ -4,6 +4,8 @@
 
 ## Mouse.move() method
 
+Dispatches a `mousemove` event.
+
 <b>Signature:</b>
 
 ```typescript
@@ -16,9 +18,9 @@ move(x: number, y: number, options?: {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  x | number |  |
-|  y | number |  |
-|  options | { steps?: number; } |  |
+|  x | number | Horizontal position of the mouse. |
+|  y | number | Vertical position of the mouse. |
+|  options | { steps?: number; } | Optional object. If specified, the <code>steps</code> property sends intermediate <code>mousemove</code> events when set to <code>1</code> (default). |
 
 <b>Returns:</b>
 

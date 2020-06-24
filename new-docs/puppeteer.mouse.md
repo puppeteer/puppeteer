@@ -4,17 +4,74 @@
 
 ## Mouse class
 
+The Mouse class operates in main-frame CSS pixels relative to the top-left corner of the viewport.
+
 <b>Signature:</b>
 
 ```typescript
 export declare class Mouse 
 ```
 
-## Constructors
+## Remarks
 
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(client, keyboard)](./puppeteer.mouse._constructor_.md) |  | Constructs a new instance of the <code>Mouse</code> class |
+Every `page` object has its own Mouse, accessible with \[`page.mouse`<!-- -->\](\#pagemouse).
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Mouse` class.
+
+## Example 1
+
+
+```js
+// Using ‘page.mouse’ to trace a 100x100 square.
+await page.mouse.move(0, 0);
+await page.mouse.down();
+await page.mouse.move(0, 100);
+await page.mouse.move(100, 100);
+await page.mouse.move(100, 0);
+await page.mouse.move(0, 0);
+await page.mouse.up();
+
+```
+\*\*Note\*\*: The mouse events trigger synthetic `MouseEvent`<!-- -->s. This means that it does not fully replicate the functionality of what a normal user would be able to do with their mouse.
+
+For example, dragging and selecting text is not possible using `page.mouse`<!-- -->. Instead, you can use the [\`DocumentOrShadowRoot.getSelection()\`](https://developer.mozilla.org/en-US/docs/Web/API/DocumentOrShadowRoot/getSelection) functionality implemented in the platform.
+
+## Example 2
+
+For example, if you want to select all content between nodes:
+
+```js
+await page.evaluate((from, to) => {
+  const selection = from.getRootNode().getSelection();
+  const range = document.createRange();
+  range.setStartBefore(from);
+  range.setEndAfter(to);
+  selection.removeAllRanges();
+  selection.addRange(range);
+}, fromJSHandle, toJSHandle);
+
+```
+If you then would want to copy-paste your selection, you can use the clipboard api:
+
+```js
+// The clipboard api does not allow you to copy, unless the tab is focused.
+await page.bringToFront();
+await page.evaluate(() => {
+  // Copy the selected content to the clipboard
+  document.execCommand('copy');
+  // Obtain the content of the clipboard as a string
+  return navigator.clipboard.readText();
+});
+
+```
+\*\*Note\*\*: If you want access to the clipboard API, you have to give it permission to do so:
+
+```js
+await browser.defaultBrowserContext().overridePermissions(
+  '<your origin>', ['clipboard-read', 'clipboard-write']
+);
+
+```
 
 ## Properties
 
@@ -30,8 +87,8 @@ export declare class Mouse
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [click(x, y, options)](./puppeteer.mouse.click.md) |  |  |
-|  [down(options)](./puppeteer.mouse.down.md) |  |  |
-|  [move(x, y, options)](./puppeteer.mouse.move.md) |  |  |
-|  [up(options)](./puppeteer.mouse.up.md) |  |  |
+|  [click(x, y, options)](./puppeteer.mouse.click.md) |  | Shortcut for <code>mouse.move</code>, <code>mouse.down</code> and <code>mouse.up</code>. |
+|  [down(options)](./puppeteer.mouse.down.md) |  | Dispatches a <code>mousedown</code> event. |
+|  [move(x, y, options)](./puppeteer.mouse.move.md) |  | Dispatches a <code>mousemove</code> event. |
+|  [up(options)](./puppeteer.mouse.up.md) |  | Dispatches a <code>mouseup</code> event. |
 
