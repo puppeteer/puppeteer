@@ -19,7 +19,7 @@
 |  [Dialog](./puppeteer.dialog.md) | Dialog instances are dispatched by the [Page](./puppeteer.page.md) via the <code>dialog</code> event. |
 |  [ElementHandle](./puppeteer.elementhandle.md) | ElementHandle represents an in-page DOM element. |
 |  [EventEmitter](./puppeteer.eventemitter.md) | The EventEmitter class that many Puppeteer classes extend. |
-|  [ExecutionContext](./puppeteer.executioncontext.md) |  |
+|  [ExecutionContext](./puppeteer.executioncontext.md) | This class represents a context for JavaScript execution. A \[Page\] might have many execution contexts: - each [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) has "default" execution context that is always created after frame is attached to DOM. This context is returned by the  method. - [Extension](https://developer.chrome.com/extensions)<!-- -->'s content scripts create additional execution contexts.<!-- -->Besides pages, execution contexts can be found in [workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)<!-- -->. |
 |  [FileChooser](./puppeteer.filechooser.md) | File choosers let you react to the page requesting for a file. |
 |  [Frame](./puppeteer.frame.md) |  |
 |  [FrameManager](./puppeteer.framemanager.md) |  |
