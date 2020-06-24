@@ -4,6 +4,8 @@
 
 ## BrowserFetcher.download() method
 
+Initiates a GET request to download the revision from the host.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,12 +16,16 @@ download(revision: string, progressCallback?: (x: number, y: number) => void): P
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  revision | string |  |
-|  progressCallback | (x: number, y: number) =&gt; void |  |
+|  revision | string | The revision to download. |
+|  progressCallback | (x: number, y: number) =&gt; void | A function that will be called with two arguments: How many bytes have been downloaded and the total number of bytes of the download. |
 
 <b>Returns:</b>
 
 Promise&lt;BrowserFetcherRevisionInfo&gt;
 
-{<!-- -->!Promise<!-- -->&lt;<!-- -->!BrowserFetcher.RevisionInfo<!-- -->&gt;<!-- -->}
+A promise with revision information when the revision is downloaded and extracted.
+
+## Remarks
+
+This method is affected by the current `product`<!-- -->.
 

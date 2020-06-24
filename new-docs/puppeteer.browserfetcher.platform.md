@@ -7,9 +7,11 @@
 <b>Signature:</b>
 
 ```typescript
-platform(): string;
+platform(): Platform;
 ```
 <b>Returns:</b>
 
-string
+Platform
+
+Returns the current `Platform`<!-- -->.
 
