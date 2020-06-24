@@ -4,34 +4,26 @@
 
 ## ExecutionContext class
 
+This class represents a context for JavaScript execution. A \[Page\] might have many execution contexts: - each [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) has "default" execution context that is always created after frame is attached to DOM. This context is returned by the  method. - [Extension](https://developer.chrome.com/extensions)<!-- -->'s content scripts create additional execution contexts.
+
+Besides pages, execution contexts can be found in [workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)<!-- -->.
+
 <b>Signature:</b>
 
 ```typescript
 export declare class ExecutionContext 
 ```
 
-## Constructors
+## Remarks
 
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(client, contextPayload, world)](./puppeteer.executioncontext._constructor_.md) |  | Constructs a new instance of the <code>ExecutionContext</code> class |
-
-## Properties
-
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [\_client](./puppeteer.executioncontext._client.md) |  | [CDPSession](./puppeteer.cdpsession.md) |  |
-|  [\_contextId](./puppeteer.executioncontext._contextid.md) |  | number |  |
-|  [\_world](./puppeteer.executioncontext._world.md) |  | DOMWorld |  |
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ExecutionContext` class.
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [\_adoptBackendNodeId(backendNodeId)](./puppeteer.executioncontext._adoptbackendnodeid.md) |  |  |
-|  [\_adoptElementHandle(elementHandle)](./puppeteer.executioncontext._adoptelementhandle.md) |  |  |
 |  [evaluate(pageFunction, args)](./puppeteer.executioncontext.evaluate.md) |  |  |
 |  [evaluateHandle(pageFunction, args)](./puppeteer.executioncontext.evaluatehandle.md) |  |  |
 |  [frame()](./puppeteer.executioncontext.frame.md) |  |  |
-|  [queryObjects(prototypeHandle)](./puppeteer.executioncontext.queryobjects.md) |  |  |
+|  [queryObjects(prototypeHandle)](./puppeteer.executioncontext.queryobjects.md) |  | This method iterates the JavaScript heap and finds all the objects with the given prototype. |
 

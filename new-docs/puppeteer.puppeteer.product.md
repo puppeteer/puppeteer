@@ -9,3 +9,8 @@
 ```typescript
 get product(): string;
 ```
+
+## Remarks
+
+The product is set by the `PUPPETEER_PRODUCT` environment variable or the `product` option in `puppeteer.launch([options])` and defaults to `chrome`<!-- -->. Firefox support is experimental.
+
