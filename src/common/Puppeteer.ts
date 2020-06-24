@@ -23,6 +23,7 @@ import { ProductLauncher } from '../node/Launcher';
 import { BrowserFetcher, BrowserFetcherOptions } from '../node/BrowserFetcher';
 import { puppeteerErrors, PuppeteerErrors } from './Errors';
 import { ConnectionTransport } from './ConnectionTransport';
+import readPkgUp from 'read-pkg-up';
 
 import { devicesMap } from './DeviceDescriptors';
 import { DevicesMap } from './DeviceDescriptors';
@@ -172,9 +173,7 @@ export class Puppeteer {
       this._lazyLauncher.product !== this._productName ||
       this._changedProduct
     ) {
-      // @ts-ignore
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const packageJson = require('../../package.json');
+      const { packageJson } = readPkgUp.sync();
       switch (this._productName) {
         case 'firefox':
           this._preferredRevision = packageJson.puppeteer.firefox_revision;
