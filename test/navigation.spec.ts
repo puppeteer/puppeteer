@@ -65,14 +65,18 @@ describe('navigation', function () {
       const response = await page.goto(server.PREFIX + '/historyapi.html');
       expect(response.status()).toBe(200);
     });
-    it('should work with subframes return 204', async () => {
+    itFailsFirefox('should work with subframes return 204', async () => {
       const { page, server } = getTestState();
 
       server.setRoute('/frames/frame.html', (req, res) => {
         res.statusCode = 204;
         res.end();
       });
-      await page.goto(server.PREFIX + '/frames/one-frame.html');
+      let error = null;
+      await page
+        .goto(server.PREFIX + '/frames/one-frame.html')
+        .catch((error_) => (error = error_));
+      expect(error).toBe(null);
     });
     itFailsFirefox('should fail when server returns 204', async () => {
       const { page, server, isChrome } = getTestState();

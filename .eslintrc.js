@@ -100,6 +100,11 @@ module.exports = {
                 "@typescript-eslint/semi": 2,
                 "@typescript-eslint/no-empty-function": 0,
                 "@typescript-eslint/no-use-before-define": 0,
+                // We have to use any on some types so the warning isn't valuable.
+                "@typescript-eslint/no-explicit-any": 0,
+                // We don't require explicit return types on basic functions or
+                // dummy functions in tests, for example
+                "@typescript-eslint/explicit-function-return-type": 0,
                 // We know it's bad and use it very sparingly but it's needed :(
                 "@typescript-eslint/ban-ts-ignore": 0,
                 "@typescript-eslint/array-type": [2, {

@@ -666,8 +666,6 @@ describe('request interception', function () {
         return new Promise((fulfill) => (img.onload = fulfill));
       }, server.PREFIX);
       const img = await page.$('img');
-      // TODO (@jackfranklin): toBeGolden type fix
-      // @ts-expect-error
       expect(await img.screenshot()).toBeGolden('mock-binary-response.png');
     });
     it('should stringify intercepted request response headers', async () => {

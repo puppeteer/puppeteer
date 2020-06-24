@@ -20,7 +20,6 @@
 const api = require('./api');
 
 import { helper } from './common/helper';
-import { Page } from './common/Page';
 import { Puppeteer } from './common/Puppeteer';
 
 interface InitOptions {
@@ -41,10 +40,6 @@ export const initializePuppeteer = (options: InitOptions): Puppeteer => {
     if (typeof api[className] === 'function')
       helper.installAsyncStackHooks(api[className]);
   }
-
-  // Expose alias for deprecated method.
-  // @ts-expect-error emulateMedia does not exist error
-  Page.prototype.emulateMedia = Page.prototype.emulateMediaType;
 
   let preferredRevision = packageJson.puppeteer.chromium_revision;
   const isPuppeteerCore = packageJson.name === 'puppeteer-core';

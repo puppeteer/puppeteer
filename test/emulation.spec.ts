@@ -67,7 +67,7 @@ describe('Emulation', () => {
       function dispatchTouch() {
         let fulfill;
         const promise = new Promise((x) => (fulfill = x));
-        window.ontouchstart = function () {
+        window.ontouchstart = () => {
           fulfill('Received touch');
         };
         window.dispatchEvent(new Event('touchstart'));
@@ -146,55 +146,7 @@ describe('Emulation', () => {
     });
   });
 
-  describe('Page.emulateMedia [deprecated]', function () {
-    /* emulateMedia is deprecated in favour of emulateMediaType but we
-     * don't want to remove it from Puppeteer just yet. We can't check
-     * that emulateMedia === emulateMediaType because when running tests
-     * with COVERAGE=1 the methods get rewritten. So instead we
-     * duplicate the tests for emulateMediaType and ensure they pass
-     * when calling the deprecated emulateMedia method.
-     *
-     * If you update these tests, you should update emulateMediaType's
-     * tests, and vice-versa.
-     */
-    itFailsFirefox('should work', async () => {
-      const { page } = getTestState();
-
-      expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(
-        true
-      );
-      expect(await page.evaluate(() => matchMedia('print').matches)).toBe(
-        false
-      );
-      // @ts-expect-error this method is deprecated so we don't declare it
-      await page.emulateMedia('print');
-      expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(
-        false
-      );
-      expect(await page.evaluate(() => matchMedia('print').matches)).toBe(true);
-      // @ts-expect-error this method is deprecated so we don't declare it
-      await page.emulateMedia(null);
-      expect(await page.evaluate(() => matchMedia('screen').matches)).toBe(
-        true
-      );
-      expect(await page.evaluate(() => matchMedia('print').matches)).toBe(
-        false
-      );
-    });
-    it('should throw in case of bad argument', async () => {
-      const { page } = getTestState();
-
-      let error = null;
-      // @ts-expect-error this method is deprecated so we don't declare it
-      await page.emulateMedia('bad').catch((error_) => (error = error_));
-      expect(error.message).toBe('Unsupported media type: bad');
-    });
-  });
-
   describe('Page.emulateMediaType', function () {
-    /* NOTE! Updating these tests? Update the emulateMedia tests above
-     * too (and see the big comment for why we have these duplicated).
-     */
     itFailsFirefox('should work', async () => {
       const { page } = getTestState();
 
@@ -354,49 +306,42 @@ describe('Emulation', () => {
       {
         await page.emulateVisionDeficiency('none');
         const screenshot = await page.screenshot();
-        // @ts-expect-error TODO (@jackfranklin) toBeGolden needs declaring
         expect(screenshot).toBeGolden('screenshot-sanity.png');
       }
 
       {
         await page.emulateVisionDeficiency('achromatopsia');
         const screenshot = await page.screenshot();
-        // @ts-expect-error TODO (@jackfranklin) toBeGolden needs declaring
         expect(screenshot).toBeGolden('vision-deficiency-achromatopsia.png');
       }
 
       {
         await page.emulateVisionDeficiency('blurredVision');
         const screenshot = await page.screenshot();
-        // @ts-expect-error TODO (@jackfranklin) toBeGolden needs declaring
         expect(screenshot).toBeGolden('vision-deficiency-blurredVision.png');
       }
 
       {
         await page.emulateVisionDeficiency('deuteranopia');
         const screenshot = await page.screenshot();
-        // @ts-expect-error TODO (@jackfranklin) toBeGolden needs declaring
         expect(screenshot).toBeGolden('vision-deficiency-deuteranopia.png');
       }
 
       {
         await page.emulateVisionDeficiency('protanopia');
         const screenshot = await page.screenshot();
-        // @ts-expect-error TODO (@jackfranklin) toBeGolden needs declaring
         expect(screenshot).toBeGolden('vision-deficiency-protanopia.png');
       }
 
       {
         await page.emulateVisionDeficiency('tritanopia');
         const screenshot = await page.screenshot();
-        // @ts-expect-error TODO (@jackfranklin) toBeGolden needs declaring
         expect(screenshot).toBeGolden('vision-deficiency-tritanopia.png');
       }
 
       {
         await page.emulateVisionDeficiency('none');
         const screenshot = await page.screenshot();
-        // @ts-expect-error TODO (@jackfranklin) toBeGolden needs declaring
         expect(screenshot).toBeGolden('screenshot-sanity.png');
       }
     });
