@@ -4,6 +4,8 @@
 
 ## FileChooser.cancel() method
 
+Closes the file chooser without selecting any files.
+
 <b>Signature:</b>
 
 ```typescript

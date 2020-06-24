@@ -4,6 +4,8 @@
 
 ## FileChooser.accept() method
 
+Accept the file chooser request with given paths.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,7 +16,7 @@ accept(filePaths: string[]): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  filePaths | string\[\] |  |
+|  filePaths | string\[\] | If some of the <code>filePaths</code> are relative paths, then they are resolved relative to the [current working directory](https://nodejs.org/api/process.html#process_process_cwd)<!-- -->. |
 
 <b>Returns:</b>
 

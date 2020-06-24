@@ -20,7 +20,7 @@
 |  [ElementHandle](./puppeteer.elementhandle.md) | ElementHandle represents an in-page DOM element. |
 |  [EventEmitter](./puppeteer.eventemitter.md) | The EventEmitter class that many Puppeteer classes extend. |
 |  [ExecutionContext](./puppeteer.executioncontext.md) |  |
-|  [FileChooser](./puppeteer.filechooser.md) |  |
+|  [FileChooser](./puppeteer.filechooser.md) | File choosers let you react to the page requesting for a file. |
 |  [Frame](./puppeteer.frame.md) |  |
 |  [FrameManager](./puppeteer.framemanager.md) |  |
 |  [HTTPRequest](./puppeteer.httprequest.md) |  |
