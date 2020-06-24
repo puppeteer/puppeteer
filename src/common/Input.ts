@@ -238,18 +238,25 @@ export class Mouse {
   }
 }
 
+/**
+ * The Touchscreen class exposes touchscreen events.
+ */
 export class Touchscreen {
   _client: CDPSession;
   _keyboard: Keyboard;
 
+  /**
+   * @internal
+   */
   constructor(client: CDPSession, keyboard: Keyboard) {
     this._client = client;
     this._keyboard = keyboard;
   }
 
   /**
-   * @param {number} x
-   * @param {number} y
+   * Dispatches a `touchstart` and `touchend` event.
+   * @param x - Horizontal position of the tap.
+   * @param y - Vertical position of the tap.
    */
   async tap(x: number, y: number): Promise<void> {
     // Touches appear to be lost during the first frame after navigation.

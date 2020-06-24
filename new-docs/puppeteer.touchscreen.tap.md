@@ -4,6 +4,8 @@
 
 ## Touchscreen.tap() method
 
+Dispatches a `touchstart` and `touchend` event.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,8 +16,8 @@ tap(x: number, y: number): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  x | number |  |
-|  y | number |  |
+|  x | number | Horizontal position of the tap. |
+|  y | number | Vertical position of the tap. |
 
 <b>Returns:</b>
 
