@@ -4,7 +4,7 @@
 
 ## ElementHandle.$$() method
 
-The method runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolves to `[]`<!-- -->.
+Runs `element.querySelectorAll` within the page. If no elements match the selector, the return value resolves to `[]`<!-- -->.
 
 <b>Signature:</b>
 

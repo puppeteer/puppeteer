@@ -4,7 +4,6 @@
 
 ## BoxModel interface
 
-
 <b>Signature:</b>
 
 ```typescript

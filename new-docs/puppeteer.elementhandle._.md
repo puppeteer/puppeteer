@@ -4,7 +4,7 @@
 
 ## ElementHandle.$() method
 
-The method runs `element.querySelector` within the page. If no element matches the selector, the return value resolves to `null`<!-- -->.
+Runs `element.querySelector` within the page. If no element matches the selector, the return value resolves to `null`<!-- -->.
 
 <b>Signature:</b>
 
