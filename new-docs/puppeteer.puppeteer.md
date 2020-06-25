@@ -42,7 +42,6 @@ const puppeteer = require('puppeteer');
 |  [\_isPuppeteerCore](./puppeteer.puppeteer._ispuppeteercore.md) |  | boolean |  |
 |  [\_lazyLauncher](./puppeteer.puppeteer._lazylauncher.md) |  | ProductLauncher |  |
 |  [\_preferredRevision](./puppeteer.puppeteer._preferredrevision.md) |  | string |  |
-|  [\_projectRoot](./puppeteer.puppeteer._projectroot.md) |  | string |  |
 |  [devices](./puppeteer.puppeteer.devices.md) |  | DevicesMap |  |
 |  [errors](./puppeteer.puppeteer.errors.md) |  | [PuppeteerErrors](./puppeteer.puppeteererrors.md) |  |
 |  [product](./puppeteer.puppeteer.product.md) |  | string |  |

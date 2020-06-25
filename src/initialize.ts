@@ -21,28 +21,19 @@ const api = require('./api');
 
 import { helper } from './common/helper';
 import { Puppeteer } from './common/Puppeteer';
+import { PUPPETEER_REVISIONS } from './revisions';
+import pkgDir from 'pkg-dir';
 
-export interface InitOptions {
-  packageJson: {
-    puppeteer: {
-      chromium_revision: string;
-      firefox_revision: string;
-    };
-    name: string;
-  };
-  rootDirectory: string;
-}
-
-export const initializePuppeteer = (options: InitOptions): Puppeteer => {
-  const { packageJson, rootDirectory } = options;
+export const initializePuppeteer = (packageName: string): Puppeteer => {
+  const puppeteerRootDirectory = pkgDir.sync(__dirname);
 
   for (const className in api) {
     if (typeof api[className] === 'function')
       helper.installAsyncStackHooks(api[className]);
   }
 
-  let preferredRevision = packageJson.puppeteer.chromium_revision;
-  const isPuppeteerCore = packageJson.name === 'puppeteer-core';
+  let preferredRevision = PUPPETEER_REVISIONS.chromium;
+  const isPuppeteerCore = packageName === 'puppeteer-core';
   // puppeteer-core ignores environment variables
   const product = isPuppeteerCore
     ? undefined
@@ -50,10 +41,10 @@ export const initializePuppeteer = (options: InitOptions): Puppeteer => {
       process.env.npm_config_puppeteer_product ||
       process.env.npm_package_config_puppeteer_product;
   if (!isPuppeteerCore && product === 'firefox')
-    preferredRevision = packageJson.puppeteer.firefox_revision;
+    preferredRevision = PUPPETEER_REVISIONS.firefox;
 
   const puppeteer = new Puppeteer(
-    rootDirectory,
+    puppeteerRootDirectory,
     preferredRevision,
     isPuppeteerCore,
     product

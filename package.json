@@ -7,10 +7,6 @@
   "engines": {
     "node": ">=10.18.1"
   },
-  "puppeteer": {
-    "chromium_revision": "756035",
-    "firefox_revision": "latest"
-  },
   "scripts": {
     "unit": "tsc --version && mocha --config mocha-config/puppeteer-unit-tests.js",
     "unit-with-coverage": "cross-env COVERAGE=1 npm run unit",
@@ -41,10 +37,10 @@
   },
   "files": [
     "lib/",
-    "index.js",
     "install.js",
     "typescript-if-required.js",
-    "cjs-entry.js"
+    "cjs-entry.js",
+    "cjs-entry-core.js"
   ],
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
@@ -54,9 +50,9 @@
     "https-proxy-agent": "^4.0.0",
     "mime": "^2.0.3",
     "mitt": "^2.0.1",
+    "pkg-dir": "^4.2.0",
     "progress": "^2.0.1",
     "proxy-from-env": "^1.0.0",
-    "read-pkg-up": "^7.0.1",
     "rimraf": "^3.0.2",
     "tar-fs": "^2.0.0",
     "unbzip2-stream": "^1.3.3",
