@@ -15,6 +15,7 @@
  */
 import fs from 'fs';
 import path from 'path';
+import { Readable } from 'stream';
 import utils from './utils';
 const { waitEvent } = utils;
 import expect from 'expect';
@@ -1475,6 +1476,29 @@ describe('Page', function () {
 
       const outputFile = __dirname + '/assets/output.pdf';
       await page.pdf({ path: outputFile });
+      expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
+      fs.unlinkSync(outputFile);
+    });
+
+    it('can print to PDF into Readable stream and pipe to Writable file stream', async () => {
+      // Printing to pdf is currently only supported in headless
+      const { isHeadless, page } = getTestState();
+
+      if (!isHeadless) return;
+
+      const outputFile = __dirname + '/assets/outputStream.pdf';
+      const readStream = await page.pdf({ stream: true });
+      if (!(readStream instanceof Readable))
+        throw new Error('not valid readable stream');
+
+      const writeStream = fs.createWriteStream(outputFile);
+      const streamPromise = new Promise((resolve, reject) => {
+        writeStream.on('error', reject);
+        writeStream.on('close', resolve);
+      });
+      readStream.pipe(writeStream);
+
+      await streamPromise;
       expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
       fs.unlinkSync(outputFile);
     });

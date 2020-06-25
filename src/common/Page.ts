@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Readable } from 'stream';
 import * as fs from 'fs';
 import { promisify } from 'util';
 import { EventEmitter } from './EventEmitter';
@@ -110,6 +111,7 @@ interface PDFOptions {
   preferCSSPageSize?: boolean;
   margin?: PDFMargin;
   path?: string;
+  stream?: boolean;
 }
 
 interface PaperFormat {
@@ -1207,7 +1209,7 @@ export class Page extends EventEmitter {
     }
   }
 
-  async pdf(options: PDFOptions = {}): Promise<Buffer> {
+  async pdf(options: PDFOptions = {}): Promise<Buffer | Readable> {
     const {
       scale = 1,
       displayHeaderFooter = false,
@@ -1219,6 +1221,7 @@ export class Page extends EventEmitter {
       preferCSSPageSize = false,
       margin = {},
       path = null,
+      stream = false,
     } = options;
 
     let paperWidth = 8.5;
@@ -1256,7 +1259,12 @@ export class Page extends EventEmitter {
       pageRanges,
       preferCSSPageSize,
     });
-    return await helper.readProtocolStream(this._client, result.stream, path);
+    return await helper.readProtocolStream(
+      this._client,
+      result.stream,
+      path,
+      stream
+    );
   }
 
   async title(): Promise<string> {

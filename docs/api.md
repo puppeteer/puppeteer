@@ -1707,7 +1707,8 @@ Page is guaranteed to have a main frame which persists during navigations.
     - `bottom` <[string]|[number]> Bottom margin, accepts values labeled with units.
     - `left` <[string]|[number]> Left margin, accepts values labeled with units.
   - `preferCSSPageSize` <[boolean]> Give any CSS `@page` size declared in the page priority over what is declared in `width` and `height` or `format` options. Defaults to `false`, which will scale the content to fit the paper size.
-- returns: <[Promise]<[Buffer]>> Promise which resolves with PDF buffer.
+  - `stream` <[boolean]> If `true`, return a Readable stream instead of a Buffer of the PDF contents
+- returns: <[Promise]<[Buffer | Readable]>> Promise which resolves with PDF buffer, or Readable stream if `stream` is true.
 
 > **NOTE** Generating a pdf is currently only supported in Chrome headless.
 

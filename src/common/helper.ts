@@ -16,6 +16,7 @@
 import { TimeoutError } from './Errors';
 import { debug } from './Debug';
 import * as fs from 'fs';
+import { Readable } from 'stream';
 import { CDPSession } from './Connection';
 import { promisify } from 'util';
 import Protocol from '../protocol';
@@ -241,8 +242,12 @@ async function waitWithTimeout<T extends any>(
 async function readProtocolStream(
   client: CDPSession,
   handle: string,
-  path?: string
-): Promise<Buffer> {
+  path?: string,
+  returnStream?: boolean
+): Promise<Buffer | Readable> {
+  const readable = new Readable();
+  readable._read = () => {};
+
   let eof = false;
   let file;
   if (path) file = await openAsync(path, 'w');
@@ -254,12 +259,23 @@ async function readProtocolStream(
       response.data,
       response.base64Encoded ? 'base64' : undefined
     );
-    bufs.push(buf);
-    if (path) await writeAsync(file, buf);
+
+    if (returnStream) {
+      readable.push(buf);
+    } else {
+      bufs.push(buf);
+      if (path) await writeAsync(file, buf);
+    }
   }
   if (path) await closeAsync(file);
   await client.send('IO.close', { handle });
   let resultBuffer = null;
+
+  if (returnStream) {
+    readable.push(null);
+    return readable;
+  }
+
   try {
     resultBuffer = Buffer.concat(bufs);
   } finally {
