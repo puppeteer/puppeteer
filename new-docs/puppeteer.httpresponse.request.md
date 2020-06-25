@@ -13,3 +13,5 @@ request(): HTTPRequest;
 
 [HTTPRequest](./puppeteer.httprequest.md)
 
+A matching [HTTPRequest](./puppeteer.httprequest.md) object.
+

@@ -13,3 +13,5 @@ status(): number;
 
 number
 
+The status code of the response (e.g., 200 for a success).
+

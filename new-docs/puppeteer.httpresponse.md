@@ -4,23 +4,22 @@
 
 ## HTTPResponse class
 
+The HTTPResponse class represents responses which are received by the [Page](./puppeteer.page.md) class.
+
 <b>Signature:</b>
 
 ```typescript
 export declare class HTTPResponse 
 ```
 
-## Constructors
+## Remarks
 
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(client, request, responsePayload)](./puppeteer.httpresponse._constructor_.md) |  | Constructs a new instance of the <code>HTTPResponse</code> class |
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `HTTPResponse` class.
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [\_resolveBody(err)](./puppeteer.httpresponse._resolvebody.md) |  |  |
 |  [buffer()](./puppeteer.httpresponse.buffer.md) |  |  |
 |  [frame()](./puppeteer.httpresponse.frame.md) |  |  |
 |  [fromCache()](./puppeteer.httpresponse.fromcache.md) |  |  |
