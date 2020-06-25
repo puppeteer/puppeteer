@@ -25,6 +25,7 @@ import { MouseButtonInput } from './Input';
 import { FrameManager, Frame } from './FrameManager';
 import { getQueryHandlerAndSelector, QueryHandler } from './QueryHandler';
 import { EvaluateFn, SerializableOrJSHandle } from './EvalTypes';
+import { isNode } from '../environment';
 
 // This predicateQueryHandler is declared here so that TypeScript knows about it
 // when it is used in the predicate function below.
