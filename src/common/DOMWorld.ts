@@ -24,6 +24,7 @@ import { TimeoutSettings } from './TimeoutSettings';
 import { MouseButtonInput } from './Input';
 import { FrameManager, Frame } from './FrameManager';
 import { getQueryHandlerAndSelector, QueryHandler } from './QueryHandler';
+import { EvaluateFn, SerializableOrJSHandle } from './EvalTypes';
 import { isNode } from '../environment';
 
 // This predicateQueryHandler is declared here so that TypeScript knows about it
@@ -155,8 +156,8 @@ export class DOMWorld {
 
   async $eval<ReturnType extends any>(
     selector: string,
-    pageFunction: Function | string,
-    ...args: unknown[]
+    pageFunction: EvaluateFn | string,
+    ...args: SerializableOrJSHandle[]
   ): Promise<ReturnType> {
     const document = await this._document();
     return document.$eval<ReturnType>(selector, pageFunction, ...args);
@@ -164,8 +165,8 @@ export class DOMWorld {
 
   async $$eval<ReturnType extends any>(
     selector: string,
-    pageFunction: Function | string,
-    ...args: unknown[]
+    pageFunction: EvaluateFn | string,
+    ...args: SerializableOrJSHandle[]
   ): Promise<ReturnType> {
     const document = await this._document();
     const value = await document.$$eval<ReturnType>(

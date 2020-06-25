@@ -292,8 +292,24 @@ Puppeteer creates its own browser user profile which it **cleans up on every run
 
   - debug your test inside chromium like a boss!
 
-
 <!-- [END debugging] -->
+
+
+<!-- [START typescript] -->
+## Usage with TypeScript
+
+We have recently completed a migration to move the Puppeteer source code from JavaScript to TypeScript and we're currently working on shipping type definitions for TypeScript with Puppeteer's npm package.
+
+Until this work is complete we recommend installing the Puppeteer type definitions from the [DefinitelyTyped](https://definitelytyped.org/) repository:
+
+```bash
+npm install --save-dev @types/puppeteer
+```
+
+The types that you'll see appearing in the Puppeteer source code are based off the great work of those who have contributed to the `@types/puppeteer` package. We really appreciate the hard work those people put in to providing high quality TypeScript definitions for Puppeteer's users.
+
+<!-- [END typescript] -->
+
 
 ## Contributing to Puppeteer
 
