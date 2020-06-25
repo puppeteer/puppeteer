@@ -51,13 +51,6 @@ console.log(`Bytes used: ${usedBytes / totalBytes * 100}%`);
 |  --- | --- | --- |
 |  [(constructor)(client)](./puppeteer.coverage._constructor_.md) |  | Constructs a new instance of the <code>Coverage</code> class |
 
-## Properties
-
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [\_cssCoverage](./puppeteer.coverage._csscoverage.md) |  | CSSCoverage |  |
-|  [\_jsCoverage](./puppeteer.coverage._jscoverage.md) |  | JSCoverage |  |
-
 ## Methods
 
 |  Method | Modifiers | Description |

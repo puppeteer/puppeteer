@@ -7,17 +7,14 @@
 <b>Signature:</b>
 
 ```typescript
-startJSCoverage(options?: {
-        resetOnNavigation?: boolean;
-        reportAnonymousScripts?: boolean;
-    }): Promise<void>;
+startJSCoverage(options?: JSCoverageOptions): Promise<void>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | { resetOnNavigation?: boolean; reportAnonymousScripts?: boolean; } | Set of configurable options for coverage. |
+|  options | [JSCoverageOptions](./puppeteer.jscoverageoptions.md) |  |
 
 <b>Returns:</b>
 

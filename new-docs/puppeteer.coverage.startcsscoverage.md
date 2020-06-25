@@ -7,16 +7,14 @@
 <b>Signature:</b>
 
 ```typescript
-startCSSCoverage(options?: {
-        resetOnNavigation?: boolean;
-    }): Promise<void>;
+startCSSCoverage(options?: CSSCoverageOptions): Promise<void>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | { resetOnNavigation?: boolean; } | Set of configurable options for coverage. |
+|  options | [CSSCoverageOptions](./puppeteer.csscoverageoptions.md) |  |
 
 <b>Returns:</b>
 

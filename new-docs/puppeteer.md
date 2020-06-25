@@ -52,7 +52,13 @@
 |  [BrowserFetcherOptions](./puppeteer.browserfetcheroptions.md) |  |
 |  [ClickOptions](./puppeteer.clickoptions.md) |  |
 |  [ConsoleMessageLocation](./puppeteer.consolemessagelocation.md) |  |
+<<<<<<< HEAD
 |  [GeolocationOptions](./puppeteer.geolocationoptions.md) |  |
+=======
+|  [CoverageEntry](./puppeteer.coverageentry.md) | The CoverageEntry class represents one entry of the coverage report. |
+|  [CSSCoverageOptions](./puppeteer.csscoverageoptions.md) | Set of configurable options for CSS coverage. |
+|  [JSCoverageOptions](./puppeteer.jscoverageoptions.md) | Set of configurable options for JS coverage. |
+>>>>>>> 911f279... Address comments
 |  [JSONObject](./puppeteer.jsonobject.md) |  |
 |  [KeyDefinition](./puppeteer.keydefinition.md) | Copyright 2017 Google Inc. All rights reserved.<!-- -->Licensed under the Apache License, Version 2.0 (the 'License'); you may not use this file except in compliance with the License. You may obtain a copy of the License at<!-- -->http://www.apache.org/licenses/LICENSE-2.0<!-- -->Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. |
 |  [Metrics](./puppeteer.metrics.md) |  |

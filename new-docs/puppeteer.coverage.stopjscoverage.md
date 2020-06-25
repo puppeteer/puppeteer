@@ -11,7 +11,7 @@ stopJSCoverage(): Promise<CoverageEntry[]>;
 ```
 <b>Returns:</b>
 
-Promise&lt;CoverageEntry\[\]&gt;
+Promise&lt;[CoverageEntry](./puppeteer.coverageentry.md)<!-- -->\[\]&gt;
 
 Promise that resolves to the array of coverage reports for all scripts.
 
