@@ -14,7 +14,7 @@ startCSSCoverage(options?: CSSCoverageOptions): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | [CSSCoverageOptions](./puppeteer.csscoverageoptions.md) |  |
+|  options | [CSSCoverageOptions](./puppeteer.csscoverageoptions.md) | defaults to <code>{ resetOnNavigation : true }</code> |
 
 <b>Returns:</b>
 

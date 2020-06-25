@@ -14,7 +14,7 @@ startJSCoverage(options?: JSCoverageOptions): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | [JSCoverageOptions](./puppeteer.jscoverageoptions.md) |  |
+|  options | [JSCoverageOptions](./puppeteer.jscoverageoptions.md) | defaults to <code>{ resetOnNavigation : true, reportAnonymousScripts : false }</code> |
 
 <b>Returns:</b>
 
