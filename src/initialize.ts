@@ -22,7 +22,7 @@ const api = require('./api');
 import { helper } from './common/helper';
 import { Puppeteer } from './common/Puppeteer';
 
-interface InitOptions {
+export interface InitOptions {
   packageJson: {
     puppeteer: {
       chromium_revision: string;

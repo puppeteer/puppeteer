@@ -2,7 +2,7 @@
   "name": "puppeteer",
   "version": "4.0.0-post",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
-  "main": "lib/index.js",
+  "main": "./cjs-entry.js",
   "repository": "github:puppeteer/puppeteer",
   "engines": {
     "node": ">=10.18.1"
@@ -28,7 +28,9 @@
     "lint": "npm run eslint && npm run tsc && npm run doc",
     "doc": "node utils/doclint/cli.js",
     "clean-lib": "rm -rf lib",
-    "tsc": "npm run clean-lib && tsc --version && tsc -p . && cp src/protocol.d.ts lib/",
+    "tsc": "npm run clean-lib && tsc --version && npm run tsc-cjs && npm run tsc-esm",
+    "tsc-cjs": "tsc -p . && cp src/protocol.d.ts lib/cjs",
+    "tsc-esm": "tsc --build tsconfig-esm.json && cp src/protocol.d.ts lib/esm",
     "apply-next-version": "node utils/apply_next_version.js",
     "update-protocol-d-ts": "node utils/protocol-types-generator update",
     "compare-protocol-d-ts": "node utils/protocol-types-generator compare",
@@ -41,7 +43,8 @@
     "lib/",
     "index.js",
     "install.js",
-    "typescript-if-required.js"
+    "typescript-if-required.js",
+    "cjs-entry.js"
   ],
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
@@ -53,6 +56,7 @@
     "mitt": "^2.0.1",
     "progress": "^2.0.1",
     "proxy-from-env": "^1.0.0",
+    "read-pkg-up": "^7.0.1",
     "rimraf": "^3.0.2",
     "tar-fs": "^2.0.0",
     "unbzip2-stream": "^1.3.3",
