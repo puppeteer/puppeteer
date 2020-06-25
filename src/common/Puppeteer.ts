@@ -173,7 +173,7 @@ export class Puppeteer {
       this._lazyLauncher.product !== this._productName ||
       this._changedProduct
     ) {
-      const { packageJson } = readPkgUp.sync();
+      const { packageJson } = readPkgUp.sync({ cwd: __dirname });
       switch (this._productName) {
         case 'firefox':
           this._preferredRevision = packageJson.puppeteer.firefox_revision;

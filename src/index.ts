@@ -18,7 +18,9 @@ import { initializePuppeteer, InitOptions } from './initialize';
 import * as path from 'path';
 import readPkgUp from 'read-pkg-up';
 
-const packageJsonResult = readPkgUp.sync();
+const packageJsonResult = readPkgUp.sync({
+  cwd: __dirname,
+});
 const packageJson = packageJsonResult.packageJson as unknown;
 
 const rootDir = path.dirname(packageJsonResult.path);
