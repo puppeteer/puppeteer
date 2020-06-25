@@ -24,13 +24,14 @@ import { BrowserFetcher } from './BrowserFetcher';
 import { Connection } from '../common/Connection';
 import { Browser } from '../common/Browser';
 import { assert } from '../common/assert';
-import { helper, debugError } from '../common/helper';
+import { debugError } from '../common/helper';
 import { ConnectionTransport } from '../common/ConnectionTransport';
 import { WebSocketTransport } from '../common/WebSocketTransport';
 import { BrowserRunner } from './BrowserRunner';
+import { promisify } from 'util';
 
-const mkdtempAsync = helper.promisify(fs.mkdtemp);
-const writeFileAsync = helper.promisify(fs.writeFile);
+const mkdtempAsync = promisify(fs.mkdtemp);
+const writeFileAsync = promisify(fs.writeFile);
 
 import {
   ChromeArgOptions,

@@ -268,7 +268,6 @@ async function readProtocolStream(
 }
 
 export const helper = {
-  promisify,
   evaluationString,
   readProtocolStream,
   waitWithTimeout,

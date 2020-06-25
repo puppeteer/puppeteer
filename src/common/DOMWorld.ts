@@ -266,7 +266,9 @@ export class DOMWorld {
       }
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const fs = require('fs');
-      const readFileAsync = helper.promisify(fs.readFile);
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { promisify } = require('util');
+      const readFileAsync = promisify(fs.readFile);
       let contents = await readFileAsync(path, 'utf8');
       contents += '//# sourceURL=' + path.replace(/\n/g, '');
       const context = await this.executionContext();
@@ -351,7 +353,9 @@ export class DOMWorld {
       }
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const fs = require('fs');
-      const readFileAsync = helper.promisify(fs.readFile);
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
+      const { promisify } = require('util');
+      const readFileAsync = promisify(fs.readFile);
       let contents = await readFileAsync(path, 'utf8');
       contents += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
       const context = await this.executionContext();

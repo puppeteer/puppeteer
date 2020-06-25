@@ -26,8 +26,9 @@ import { WebSocketTransport } from '../common/WebSocketTransport';
 import { PipeTransport } from './PipeTransport';
 import * as readline from 'readline';
 import { TimeoutError } from '../common/Errors';
+import { promisify } from 'util';
 
-const removeFolderAsync = helper.promisify(removeFolder);
+const removeFolderAsync = promisify(removeFolder);
 const debugLauncher = debug('puppeteer:launcher');
 const PROCESS_ERROR_EXPLANATION = `Puppeteer was unable to kill the process which ran the browser binary.
 This means that, on future Puppeteer launches, Puppeteer might not be able to launch the browser.
