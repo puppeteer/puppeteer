@@ -17,7 +17,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import sinon from 'sinon';
-import { helper } from '../src/common/helper';
+import { promisify } from 'util';
 import {
   getTestState,
   itFailsFirefox,
@@ -29,10 +29,10 @@ import expect from 'expect';
 import rimraf from 'rimraf';
 import { Page } from '../src/common/Page';
 
-const rmAsync = helper.promisify(rimraf);
-const mkdtempAsync = helper.promisify(fs.mkdtemp);
-const readFileAsync = helper.promisify(fs.readFile);
-const statAsync = helper.promisify(fs.stat);
+const rmAsync = promisify(rimraf);
+const mkdtempAsync = promisify(fs.mkdtemp);
+const readFileAsync = promisify(fs.readFile);
+const statAsync = promisify(fs.stat);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
 
 describe('Launcher specs', function () {

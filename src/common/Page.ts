@@ -15,6 +15,7 @@
  */
 
 import * as fs from 'fs';
+import { promisify } from 'util';
 import { EventEmitter } from './EventEmitter';
 import * as mime from 'mime';
 import { Events } from './Events';
@@ -42,7 +43,7 @@ import { ConsoleMessage, ConsoleMessageType } from './ConsoleMessage';
 import { PuppeteerLifeCycleEvent } from './LifecycleWatcher';
 import Protocol from '../protocol';
 
-const writeFileAsync = helper.promisify(fs.writeFile);
+const writeFileAsync = promisify(fs.writeFile);
 
 export interface Metrics {
   Timestamp?: number;
