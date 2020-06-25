@@ -11,5 +11,7 @@ remoteAddress(): RemoteAddress;
 ```
 <b>Returns:</b>
 
-RemoteAddress
+[RemoteAddress](./puppeteer.remoteaddress.md)
+
+The IP address and port number used to connect to the remote server.
 

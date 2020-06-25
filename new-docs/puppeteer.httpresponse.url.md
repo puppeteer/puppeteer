@@ -13,3 +13,5 @@ url(): string;
 
 string
 
+The URL of the response.
+
