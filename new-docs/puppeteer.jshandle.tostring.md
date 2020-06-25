@@ -4,6 +4,8 @@
 
 ## JSHandle.toString() method
 
+Returns a string representation of the JSHandle.
+
 <b>Signature:</b>
 
 ```typescript
@@ -12,4 +14,8 @@ toString(): string;
 <b>Returns:</b>
 
 string
+
+## Remarks
+
+Useful during debugging.
 

@@ -4,6 +4,8 @@
 
 ## JSHandle.asElement() method
 
+Returns either `null` or the object handle itself, if the object handle is an instance of [ElementHandle](./puppeteer.elementhandle.md)<!-- -->.
+
 <b>Signature:</b>
 
 ```typescript

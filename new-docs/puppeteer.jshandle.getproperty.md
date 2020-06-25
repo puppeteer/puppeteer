@@ -4,6 +4,8 @@
 
 ## JSHandle.getProperty() method
 
+Fetches a single property from the referenced object.
+
 <b>Signature:</b>
 
 ```typescript

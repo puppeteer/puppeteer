@@ -4,7 +4,7 @@
 
 ## JSHandle.dispose() method
 
-The method stops referencing the element handle.
+Stops referencing the element handle, and resolves when the object handle is successfully disposed of.
 
 <b>Signature:</b>
 
