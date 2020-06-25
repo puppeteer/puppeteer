@@ -188,7 +188,7 @@ type VisionDeficiency =
 
 /**
  * All the events that a page instance may emit.
- * 
+ *
  * @public
  */
 export const enum PageEmittedEvents {
@@ -587,7 +587,8 @@ export class Page extends EventEmitter {
    *   const page = await browser.newPage();
    *   await page.setRequestInterception(true);
    *   page.on('request', interceptedRequest => {
-   *     if (interceptedRequest.url().endsWith('.png') || interceptedRequest.url().endsWith('.jpg'))
+   *     if (interceptedRequest.url().endsWith('.png') ||
+   *         interceptedRequest.url().endsWith('.jpg'))
    *       interceptedRequest.abort();
    *     else
    *       interceptedRequest.continue();
