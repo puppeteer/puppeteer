@@ -17,9 +17,15 @@ startJSCoverage(options?: {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | { resetOnNavigation?: boolean; reportAnonymousScripts?: boolean; } |  |
+|  options | { resetOnNavigation?: boolean; reportAnonymousScripts?: boolean; } | Set of configurable options for coverage. |
 
 <b>Returns:</b>
 
 Promise&lt;void&gt;
+
+Promise that resolves when coverage is started.
+
+## Remarks
+
+Anonymous scripts are ones that don't have an associated url. These are scripts that are dynamically created on the page using `eval` or `new Function`<!-- -->. If `reportAnonymousScripts` is set to `true`<!-- -->, anonymous scripts will have `__puppeteer_evaluation_script__` as their URL.
 

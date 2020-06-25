@@ -15,7 +15,7 @@
 |  [CDPSession](./puppeteer.cdpsession.md) | The <code>CDPSession</code> instances are used to talk raw Chrome Devtools Protocol. |
 |  [Connection](./puppeteer.connection.md) |  |
 |  [ConsoleMessage](./puppeteer.consolemessage.md) | ConsoleMessage objects are dispatched by page via the 'console' event. |
-|  [Coverage](./puppeteer.coverage.md) |  |
+|  [Coverage](./puppeteer.coverage.md) | The Coverage class provides methods to gathers information about parts of JavaScript and CSS that were used by the page. |
 |  [Dialog](./puppeteer.dialog.md) | Dialog instances are dispatched by the [Page](./puppeteer.page.md) via the <code>dialog</code> event. |
 |  [ElementHandle](./puppeteer.elementhandle.md) | ElementHandle represents an in-page DOM element. |
 |  [EventEmitter](./puppeteer.eventemitter.md) | The EventEmitter class that many Puppeteer classes extend. |

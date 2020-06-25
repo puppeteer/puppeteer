@@ -16,9 +16,11 @@ startCSSCoverage(options?: {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | { resetOnNavigation?: boolean; } |  |
+|  options | { resetOnNavigation?: boolean; } | Set of configurable options for coverage. |
 
 <b>Returns:</b>
 
 Promise&lt;void&gt;
+
+Promise that resolves when coverage is started.
 
