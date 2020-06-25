@@ -71,8 +71,9 @@ async function run() {
 
   const jsSources = [
     ...(await Source.readdir(path.join(PROJECT_DIR, 'lib'))),
-    ...(await Source.readdir(path.join(PROJECT_DIR, 'lib', 'common'))),
-    ...(await Source.readdir(path.join(PROJECT_DIR, 'lib', 'node'))),
+    ...(await Source.readdir(path.join(PROJECT_DIR, 'lib', 'cjs'))),
+    ...(await Source.readdir(path.join(PROJECT_DIR, 'lib', 'cjs', 'common'))),
+    ...(await Source.readdir(path.join(PROJECT_DIR, 'lib', 'cjs', 'node'))),
   ];
   const allSrcCode = [...jsSources, ...tsSourcesNoDefinitions];
   messages.push(...(await checkPublicAPI(page, mdSources, allSrcCode)));
