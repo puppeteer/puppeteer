@@ -4,33 +4,58 @@
 
 ## Keyboard class
 
+Keyboard provides an api for managing a virtual keyboard. The high level api is [Keyboard.type()](./puppeteer.keyboard.type.md)<!-- -->, which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
+
 <b>Signature:</b>
 
 ```typescript
 export declare class Keyboard 
 ```
 
-## Constructors
+## Remarks
 
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(client)](./puppeteer.keyboard._constructor_.md) |  | Constructs a new instance of the <code>Keyboard</code> class |
+For finer control, you can use [Keyboard.down()](./puppeteer.keyboard.down.md)<!-- -->, [Keyboard.up()](./puppeteer.keyboard.up.md)<!-- -->, and [Keyboard.sendCharacter()](./puppeteer.keyboard.sendcharacter.md) to manually fire events as if they were generated from a real keyboard.
 
-## Properties
+On MacOS, keyboard shortcuts like `⌘ A` -<!-- -->&gt; Select All do not work. See [\#1313](https://github.com/puppeteer/puppeteer/issues/1313)<!-- -->.
 
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [\_client](./puppeteer.keyboard._client.md) |  | [CDPSession](./puppeteer.cdpsession.md) |  |
-|  [\_modifiers](./puppeteer.keyboard._modifiers.md) |  | number |  |
-|  [\_pressedKeys](./puppeteer.keyboard._pressedkeys.md) |  | Set&lt;string&gt; |  |
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Keyboard` class.
+
+## Example 1
+
+An example of holding down `Shift` in order to select and delete some text:
+
+```js
+await page.keyboard.type('Hello World!');
+await page.keyboard.press('ArrowLeft');
+
+await page.keyboard.down('Shift');
+for (let i = 0; i < ' World'.length; i++)
+  await page.keyboard.press('ArrowLeft');
+await page.keyboard.up('Shift');
+
+await page.keyboard.press('Backspace');
+// Result text will end up saying 'Hello!'
+
+```
+
+## Example 2
+
+An example of pressing `A`
+
+```js
+await page.keyboard.down('Shift');
+await page.keyboard.press('KeyA');
+await page.keyboard.up('Shift');
+
+```
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [down(key, options)](./puppeteer.keyboard.down.md) |  |  |
-|  [press(key, options)](./puppeteer.keyboard.press.md) |  |  |
-|  [sendCharacter(char)](./puppeteer.keyboard.sendcharacter.md) |  |  |
-|  [type(text, options)](./puppeteer.keyboard.type.md) |  |  |
-|  [up(key)](./puppeteer.keyboard.up.md) |  |  |
+|  [down(key, options)](./puppeteer.keyboard.down.md) |  | Dispatches a <code>keydown</code> event. |
+|  [press(key, options)](./puppeteer.keyboard.press.md) |  | Shortcut for [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()](./puppeteer.keyboard.up.md)<!-- -->. |
+|  [sendCharacter(char)](./puppeteer.keyboard.sendcharacter.md) |  | Dispatches a <code>keypress</code> and <code>input</code> event. This does not send a <code>keydown</code> or <code>keyup</code> event. |
+|  [type(text, options)](./puppeteer.keyboard.type.md) |  | Sends a <code>keydown</code>, <code>keypress</code>/<code>input</code>, and <code>keyup</code> event for each character in the text. |
+|  [up(key)](./puppeteer.keyboard.up.md) |  | Dispatches a <code>keyup</code> event. |
 

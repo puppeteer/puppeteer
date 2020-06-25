@@ -4,6 +4,8 @@
 
 ## Keyboard.sendCharacter() method
 
+Dispatches a `keypress` and `input` event. This does not send a `keydown` or `keyup` event.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,9 +16,21 @@ sendCharacter(char: string): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  char | string |  |
+|  char | string | Character to send into the page. |
 
 <b>Returns:</b>
 
 Promise&lt;void&gt;
+
+## Remarks
+
+Modifier keys DO NOT effect [Keyboard.sendCharacter](./puppeteer.keyboard.sendcharacter.md)<!-- -->. Holding down `Shift` will not type the text in upper case.
+
+## Example
+
+
+```js
+page.keyboard.sendCharacter('嗨');
+
+```
 

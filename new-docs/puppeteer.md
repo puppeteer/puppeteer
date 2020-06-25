@@ -26,7 +26,7 @@
 |  [HTTPRequest](./puppeteer.httprequest.md) |  |
 |  [HTTPResponse](./puppeteer.httpresponse.md) | The HTTPResponse class represents responses which are received by the [Page](./puppeteer.page.md) class. |
 |  [JSHandle](./puppeteer.jshandle.md) |  |
-|  [Keyboard](./puppeteer.keyboard.md) |  |
+|  [Keyboard](./puppeteer.keyboard.md) | Keyboard provides an api for managing a virtual keyboard. The high level api is [Keyboard.type()](./puppeteer.keyboard.type.md)<!-- -->, which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page. |
 |  [Mouse](./puppeteer.mouse.md) | The Mouse class operates in main-frame CSS pixels relative to the top-left corner of the viewport. |
 |  [Page](./puppeteer.page.md) | Page provides methods to interact with a single tab or \[extension background page\](https://developer.chrome.com/extensions/background\_pages) in Chromium. One \[Browser\] instance might have multiple \[Page\] instances. |
 |  [Puppeteer](./puppeteer.puppeteer.md) | The main Puppeteer class Puppeteer module provides a method to launch a browser instance. |

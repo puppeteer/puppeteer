@@ -4,6 +4,8 @@
 
 ## Keyboard.up() method
 
+Dispatches a `keyup` event.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,7 +16,7 @@ up(key: KeyInput): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  key | [KeyInput](./puppeteer.keyinput.md) |  |
+|  key | [KeyInput](./puppeteer.keyinput.md) | Name of key to release, such as <code>ArrowLeft</code>. See [KeyInput](./puppeteer.keyinput.md) for a list of all key names. |
 
 <b>Returns:</b>
 
