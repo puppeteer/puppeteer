@@ -456,8 +456,9 @@ export class Page extends EventEmitter {
   /**
    * Sets the page's geolocation.
    *
-   * * @remarks Consider using {@link BrowserContext.overridePermissions} to
-   *   grant permissions for the page to read its geolocation.
+   * @remarks
+   * Consider using {@link BrowserContext.overridePermissions} to grant
+   * permissions for the page to read its geolocation.
    *
    * @example
    * ```js
