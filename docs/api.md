@@ -170,6 +170,8 @@
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
   * [page.waitForXPath(xpath[, options])](#pagewaitforxpathxpath-options)
   * [page.workers()](#pageworkers)
+  * [GeolocationOptions](#geolocationoptions)
+  * [WaitTimeoutOptions](#waittimeoutoptions)
 - [class: WebWorker](#class-webworker)
   * [webWorker.evaluate(pageFunction[, ...args])](#webworkerevaluatepagefunction-args)
   * [webWorker.evaluateHandle(pageFunction[, ...args])](#webworkerevaluatehandlepagefunction-args)
@@ -1900,10 +1902,7 @@ The extra HTTP headers will be sent with every request the page initiates.
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
 #### page.setGeolocation(options)
-- `options` <[Object]>
-  - `latitude` <[number]> Latitude between -90 and 90.
-  - `longitude` <[number]> Longitude between -180 and 180.
-  - `accuracy` <[number]> Optional non-negative accuracy value.
+- `options` <[GeolocationOptions](####GeolocationOptions)>
 - returns: <[Promise]>
 
 Sets the page's geolocation.
@@ -2077,8 +2076,7 @@ await page.waitFor(selector => !!document.querySelector(selector), {}, selector)
 Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])](#framewaitforselectororfunctionortimeout-options-args).
 
 #### page.waitForFileChooser([options])
-- `options` <[Object]> Optional waiting parameters
-  - `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout. The default value can be changed by using the [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout) method.
+- `options` <[WaitTimeoutOptions](####WaitTimeoutOptions)> Optional waiting parameters
 - returns: <[Promise]<[FileChooser]>> A promise that resolves after a page requests a file picker.
 
 > **NOTE** In non-headless Chromium, this method results in the native file picker dialog **not showing up** for the user.
@@ -2262,6 +2260,15 @@ Shortcut for [page.mainFrame().waitForXPath(xpath[, options])](#framewaitforxpat
 This method returns all of the dedicated [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) associated with the page.
 
 > **NOTE** This does not contain ServiceWorkers
+
+#### GeolocationOptions
+- `latitude` <[number]> Latitude between -90 and 90.
+- `longitude` <[number]> Longitude between -180 and 180.
+- `accuracy` <[number]> Optional non-negative accuracy value.
+
+#### WaitTimeoutOptions
+- `timeout` <[number]> Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout. The default value can be changed by using the [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout) method.
+
 
 ### class: WebWorker
 

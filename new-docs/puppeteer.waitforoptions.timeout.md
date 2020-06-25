@@ -4,7 +4,7 @@
 
 ## WaitForOptions.timeout property
 
-Maximum time in milliseconds for resources to load, defaults to 30 seconds, pass `0` to disable timeout.
+Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to disable the timeout.
 
 <b>Signature:</b>
 
@@ -14,5 +14,5 @@ timeout?: number;
 
 ## Remarks
 
-The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) or [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) methods.
+The default value can be changed by using the [Page.setDefaultTimeout()](./puppeteer.page.setdefaulttimeout.md) or [Page.setDefaultNavigationTimeout()](./puppeteer.page.setdefaultnavigationtimeout.md) methods.
 

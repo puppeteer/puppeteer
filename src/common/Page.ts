@@ -85,12 +85,13 @@ export interface WaitTimeoutOptions {
  */
 export interface WaitForOptions {
   /**
-   * Maximum time in milliseconds for resources to load, defaults to 30 seconds,
-   * pass `0` to disable timeout.
+   * Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to
+   * disable the timeout.
    *
    * @remarks
    * The default value can be changed by using the
-   * {@link Page.setDefaultTimeout} or {@link Page.setDefaultTimeout} methods.
+   * {@link Page.setDefaultTimeout} or {@link Page.setDefaultNavigationTimeout}
+   * methods.
    */
   timeout?: number;
   waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
