@@ -117,7 +117,7 @@ page.off('request', logRequest);
 |  [setDefaultNavigationTimeout(timeout)](./puppeteer.page.setdefaultnavigationtimeout.md) |  |  |
 |  [setDefaultTimeout(timeout)](./puppeteer.page.setdefaulttimeout.md) |  |  |
 |  [setExtraHTTPHeaders(headers)](./puppeteer.page.setextrahttpheaders.md) |  |  |
-|  [setGeolocation(options)](./puppeteer.page.setgeolocation.md) |  | Sets the page's geolocation.<!-- -->\* |
+|  [setGeolocation(options)](./puppeteer.page.setgeolocation.md) |  | Sets the page's geolocation. |
 |  [setJavaScriptEnabled(enabled)](./puppeteer.page.setjavascriptenabled.md) |  |  |
 |  [setOfflineMode(enabled)](./puppeteer.page.setofflinemode.md) |  |  |
 |  [setRequestInterception(value)](./puppeteer.page.setrequestinterception.md) |  |  |

@@ -6,8 +6,6 @@
 
 Sets the page's geolocation.
 
-\*
-
 <b>Signature:</b>
 
 ```typescript
