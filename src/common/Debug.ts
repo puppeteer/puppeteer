@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const isNodeEnv = typeof document === 'undefined';
+import { isNode } from '../environment';
 
 /**
  * A debug function that can be used in any environment.
@@ -35,7 +35,7 @@ const isNodeEnv = typeof document === 'undefined';
  * ```
  */
 export const debug = (prefix: string): ((...args: unknown[]) => void) => {
-  if (isNodeEnv) {
+  if (isNode) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     return require('debug')(prefix);
   }
