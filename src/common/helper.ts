@@ -245,14 +245,8 @@ async function readProtocolStream(
   path?: string,
   returnStream?: boolean
 ): Promise<Buffer | Readable> {
-  const readable = new Readable();
-  readable._read = () => {};
-
   let eof = false;
-  let file;
-  if (path) file = await openAsync(path, 'w');
-  const bufs = [];
-  while (!eof) {
+  const readIo: () => Promise<Buffer> = async function readIo() {
     const response = await client.send('IO.read', { handle });
     eof = response.eof;
     const buf = Buffer.from(
@@ -260,21 +254,33 @@ async function readProtocolStream(
       response.base64Encoded ? 'base64' : undefined
     );
     if (path) await writeAsync(file, buf);
+    return buf;
+  };
 
-    if (returnStream) {
+  let file;
+  if (path) file = await openAsync(path, 'w');
+
+  if (returnStream) {
+    const readable = new Readable();
+    readable._read = async () => {
+      const buf = await readIo();
       readable.push(buf);
-    } else {
-      bufs.push(buf);
-    }
+      if (eof) {
+        readable.push(null);
+      }
+    };
+    return readable;
   }
+
+  const bufs = [];
+  while (!eof) {
+    const buf = await readIo();
+    bufs.push(buf);
+  }
+
   if (path) await closeAsync(file);
   await client.send('IO.close', { handle });
   let resultBuffer = null;
-
-  if (returnStream) {
-    readable.push(null);
-    return readable;
-  }
 
   try {
     resultBuffer = Buffer.concat(bufs);
