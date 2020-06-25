@@ -9,19 +9,19 @@ This method passes this handle as the first argument to `pageFunction`<!-- -->. 
 <b>Signature:</b>
 
 ```typescript
-evaluate<ReturnType extends any>(pageFunction: Function | string, ...args: unknown[]): Promise<ReturnType>;
+evaluate<T extends EvaluateFn>(pageFunction: T | string, ...args: SerializableOrJSHandle[]): Promise<EvaluateFnReturnType<T>>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  pageFunction | Function \| string |  |
-|  args | unknown\[\] |  |
+|  pageFunction | T \| string |  |
+|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] |  |
 
 <b>Returns:</b>
 
-Promise&lt;ReturnType&gt;
+Promise&lt;[EvaluateFnReturnType](./puppeteer.evaluatefnreturntype.md)<!-- -->&lt;T&gt;&gt;
 
 ## Example
 

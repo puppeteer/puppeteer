@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-$$eval<ReturnType extends any>(selector: string, pageFunction: Function | string, ...args: unknown[]): Promise<ReturnType>;
+$$eval<ReturnType extends any>(selector: string, pageFunction: EvaluateFn | string, ...args: SerializableOrJSHandle[]): Promise<ReturnType>;
 ```
 
 ## Parameters
@@ -15,8 +15,8 @@ $$eval<ReturnType extends any>(selector: string, pageFunction: Function | string
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  selector | string |  |
-|  pageFunction | Function \| string |  |
-|  args | unknown\[\] |  |
+|  pageFunction | [EvaluateFn](./puppeteer.evaluatefn.md) \| string |  |
+|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] |  |
 
 <b>Returns:</b>
 

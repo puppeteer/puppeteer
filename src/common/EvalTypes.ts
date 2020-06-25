@@ -16,13 +16,22 @@
 
 import { JSHandle } from './JSHandle';
 
+/**
+ * @public
+ */
 export type EvaluateFn<T = any> = string | ((arg1: T, ...args: any[]) => any);
+/**
+ * @public
+ */
 export type EvaluateFnReturnType<T extends EvaluateFn> = T extends (
   ...args: any[]
 ) => infer R
   ? R
   : unknown;
 
+/**
+ * @public
+ */
 export type Serializable =
   | number
   | string
@@ -30,8 +39,20 @@ export type Serializable =
   | null
   | JSONArray
   | JSONObject;
+
+/**
+ * @public
+ */
 export type JSONArray = Serializable[];
+
+/**
+ * @public
+ */
 export interface JSONObject {
   [key: string]: Serializable;
 }
+
+/**
+ * @public
+ */
 export type SerializableOrJSHandle = Serializable | JSHandle;
