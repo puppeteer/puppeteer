@@ -259,12 +259,12 @@ async function readProtocolStream(
       response.data,
       response.base64Encoded ? 'base64' : undefined
     );
+    if (path) await writeAsync(file, buf);
 
     if (returnStream) {
       readable.push(buf);
     } else {
       bufs.push(buf);
-      if (path) await writeAsync(file, buf);
     }
   }
   if (path) await closeAsync(file);
