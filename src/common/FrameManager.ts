@@ -29,6 +29,7 @@ import { MouseButtonInput } from './Input';
 import { Page } from './Page';
 import { HTTPResponse } from './HTTPResponse';
 import Protocol from '../protocol';
+import { EvaluateFn, SerializableOrJSHandle } from './EvalTypes';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
@@ -454,16 +455,16 @@ export class Frame {
 
   async $eval<ReturnType extends any>(
     selector: string,
-    pageFunction: Function | string,
-    ...args: unknown[]
+    pageFunction: EvaluateFn | string,
+    ...args: SerializableOrJSHandle[]
   ): Promise<ReturnType> {
     return this._mainWorld.$eval<ReturnType>(selector, pageFunction, ...args);
   }
 
   async $$eval<ReturnType extends any>(
     selector: string,
-    pageFunction: Function | string,
-    ...args: unknown[]
+    pageFunction: EvaluateFn | string,
+    ...args: SerializableOrJSHandle[]
   ): Promise<ReturnType> {
     return this._mainWorld.$$eval<ReturnType>(selector, pageFunction, ...args);
   }
