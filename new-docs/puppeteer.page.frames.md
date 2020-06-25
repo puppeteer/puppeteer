@@ -13,3 +13,5 @@ frames(): Frame[];
 
 [Frame](./puppeteer.frame.md)<!-- -->\[\]
 
+An array of all frames attached to the page.
+

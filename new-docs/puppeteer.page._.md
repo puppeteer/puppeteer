@@ -4,6 +4,8 @@
 
 ## Page.$() method
 
+Runs `document.querySelector` within the page. If no element matches the selector, the return value resolves to `null`<!-- -->.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,9 +16,13 @@ $(selector: string): Promise<ElementHandle | null>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  selector | string |  |
+|  selector | string | A [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) to query page for. |
 
 <b>Returns:</b>
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md) \| null&gt;
+
+## Remarks
+
+Shortcut for [Page.mainFrame().$(selector)](./puppeteer.frame._.md)<!-- -->.
 

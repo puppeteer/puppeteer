@@ -13,3 +13,5 @@ mainFrame(): Frame;
 
 [Frame](./puppeteer.frame.md)
 
+The page's main frame.
+

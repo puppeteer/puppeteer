@@ -14,7 +14,7 @@ goBack(options?: WaitForOptions): Promise<HTTPResponse | null>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | WaitForOptions |  |
+|  options | [WaitForOptions](./puppeteer.waitforoptions.md) |  |
 
 <b>Returns:</b>
 

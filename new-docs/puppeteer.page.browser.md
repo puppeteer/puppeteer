@@ -13,3 +13,5 @@ browser(): Browser;
 
 [Browser](./puppeteer.browser.md)
 
+The browser this page belongs to.
+

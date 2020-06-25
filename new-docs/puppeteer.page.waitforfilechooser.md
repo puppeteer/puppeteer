@@ -7,18 +7,18 @@
 <b>Signature:</b>
 
 ```typescript
-waitForFileChooser(options?: {
-        timeout?: number;
-    }): Promise<FileChooser>;
+waitForFileChooser(options?: WaitTimeoutOptions): Promise<FileChooser>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | { timeout?: number; } |  |
+|  options | [WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md) | Optional waiting parameters |
 
 <b>Returns:</b>
 
 Promise&lt;[FileChooser](./puppeteer.filechooser.md)<!-- -->&gt;
+
+Resolves after a page requests a file picker.
 

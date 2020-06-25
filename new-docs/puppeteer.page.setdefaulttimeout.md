@@ -14,7 +14,7 @@ setDefaultTimeout(timeout: number): void;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  timeout | number |  |
+|  timeout | number | Maximum time in milliseconds. |
 
 <b>Returns:</b>
 

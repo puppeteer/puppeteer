@@ -70,7 +70,7 @@ page.off('request', logRequest);
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [$(selector)](./puppeteer.page._.md) |  |  |
+|  [$(selector)](./puppeteer.page._.md) |  | Runs <code>document.querySelector</code> within the page. If no element matches the selector, the return value resolves to <code>null</code>. |
 |  [$$(selector)](./puppeteer.page.__.md) |  |  |
 |  [$$eval(selector, pageFunction, args)](./puppeteer.page.__eval.md) |  |  |
 |  [$eval(selector, pageFunction, args)](./puppeteer.page._eval.md) |  |  |
@@ -117,7 +117,7 @@ page.off('request', logRequest);
 |  [setDefaultNavigationTimeout(timeout)](./puppeteer.page.setdefaultnavigationtimeout.md) |  |  |
 |  [setDefaultTimeout(timeout)](./puppeteer.page.setdefaulttimeout.md) |  |  |
 |  [setExtraHTTPHeaders(headers)](./puppeteer.page.setextrahttpheaders.md) |  |  |
-|  [setGeolocation(options)](./puppeteer.page.setgeolocation.md) |  |  |
+|  [setGeolocation(options)](./puppeteer.page.setgeolocation.md) |  | Sets the page's geolocation.<!-- -->\* |
 |  [setJavaScriptEnabled(enabled)](./puppeteer.page.setjavascriptenabled.md) |  |  |
 |  [setOfflineMode(enabled)](./puppeteer.page.setofflinemode.md) |  |  |
 |  [setRequestInterception(value)](./puppeteer.page.setrequestinterception.md) |  |  |
