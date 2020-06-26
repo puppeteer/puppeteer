@@ -17,7 +17,7 @@ goto(url: string, options?: WaitForOptions & {
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  url | string |  |
-|  options | WaitForOptions &amp; { referer?: string; } |  |
+|  options | [WaitForOptions](./puppeteer.waitforoptions.md) &amp; { referer?: string; } |  |
 
 <b>Returns:</b>
 

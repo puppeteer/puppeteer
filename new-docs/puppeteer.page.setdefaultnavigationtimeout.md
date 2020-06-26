@@ -14,7 +14,7 @@ setDefaultNavigationTimeout(timeout: number): void;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  timeout | number |  |
+|  timeout | number | Maximum navigation time in milliseconds. |
 
 <b>Returns:</b>
 

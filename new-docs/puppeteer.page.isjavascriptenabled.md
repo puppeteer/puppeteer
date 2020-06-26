@@ -13,3 +13,5 @@ isJavaScriptEnabled(): boolean;
 
 boolean
 
+`true` if the page has JavaScript enabled, `false` otherwise.
+

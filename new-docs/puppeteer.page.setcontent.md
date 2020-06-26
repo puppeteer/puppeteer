@@ -15,7 +15,7 @@ setContent(html: string, options?: WaitForOptions): Promise<void>;
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  html | string |  |
-|  options | WaitForOptions |  |
+|  options | [WaitForOptions](./puppeteer.waitforoptions.md) |  |
 
 <b>Returns:</b>
 

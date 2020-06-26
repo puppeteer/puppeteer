@@ -13,3 +13,5 @@ browserContext(): BrowserContext;
 
 [BrowserContext](./puppeteer.browsercontext.md)
 
+The browser context that the page belongs to
+

@@ -4,6 +4,7 @@
 
 ## Metrics interface
 
+
 <b>Signature:</b>
 
 ```typescript

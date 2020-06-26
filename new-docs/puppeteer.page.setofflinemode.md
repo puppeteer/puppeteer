@@ -14,7 +14,7 @@ setOfflineMode(enabled: boolean): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  enabled | boolean |  |
+|  enabled | boolean | When <code>true</code>, enables offline mode for the page. |
 
 <b>Returns:</b>
 

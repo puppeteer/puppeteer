@@ -46,6 +46,9 @@ import { EvaluateFn, SerializableOrJSHandle } from './EvalTypes';
 
 const writeFileAsync = promisify(fs.writeFile);
 
+/**
+ * @public
+ */
 export interface Metrics {
   Timestamp?: number;
   Documents?: number;
@@ -62,9 +65,54 @@ export interface Metrics {
   JSHeapTotalSize?: number;
 }
 
-interface WaitForOptions {
+/**
+ * @public
+ */
+export interface WaitTimeoutOptions {
+  /**
+   * Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to
+   * disable the timeout.
+   *
+   * @remarks
+   * The default value can be changed by using the
+   * {@link Page.setDefaultTimeout} method.
+   */
+  timeout?: number;
+}
+
+/**
+ * @public
+ */
+export interface WaitForOptions {
+  /**
+   * Maximum wait time in milliseconds, defaults to 30 seconds, pass `0` to
+   * disable the timeout.
+   *
+   * @remarks
+   * The default value can be changed by using the
+   * {@link Page.setDefaultTimeout} or {@link Page.setDefaultNavigationTimeout}
+   * methods.
+   */
   timeout?: number;
   waitUntil?: PuppeteerLifeCycleEvent | PuppeteerLifeCycleEvent[];
+}
+
+/**
+ * @public
+ */
+export interface GeolocationOptions {
+  /**
+   * Latitude between -90 and 90.
+   */
+  longitude: number;
+  /**
+   * Longitude between -180 and 180.
+   */
+  latitude: number;
+  /**
+   * Optional non-negative accuracy value.
+   */
+  accuracy?: number;
 }
 
 interface MediaFeature {
@@ -141,6 +189,8 @@ type VisionDeficiency =
 
 /**
  * All the events that a page instance may emit.
+ *
+ * @public
  */
 export const enum PageEmittedEvents {
   /**
@@ -243,7 +293,8 @@ export class Page extends EventEmitter {
   private _viewport: Viewport | null;
   private _screenshotTaskQueue: ScreenshotTaskQueue;
   private _workers = new Map<string, WebWorker>();
-  // TODO: improve this typedef - it's a function that takes a file chooser or something?
+  // TODO: improve this typedef - it's a function that takes a file chooser or
+  // something?
   private _fileChooserInterceptors = new Set<Function>();
 
   private _disconnectPromise?: Promise<Error>;
@@ -369,12 +420,19 @@ export class Page extends EventEmitter {
     for (const interceptor of interceptors) interceptor.call(null, fileChooser);
   }
 
+  /**
+   * @returns `true` if the page has JavaScript enabled, `false` otherwise.
+   */
   public isJavaScriptEnabled(): boolean {
     return this._javascriptEnabled;
   }
 
+  /**
+   * @param options - Optional waiting parameters
+   * @returns Resolves after a page requests a file picker.
+   */
   async waitForFileChooser(
-    options: { timeout?: number } = {}
+    options: WaitTimeoutOptions = {}
   ): Promise<FileChooser> {
     if (!this._fileChooserInterceptors.size)
       await this._client.send('Page.setInterceptFileChooserDialog', {
@@ -397,11 +455,19 @@ export class Page extends EventEmitter {
       });
   }
 
-  async setGeolocation(options: {
-    longitude: number;
-    latitude: number;
-    accuracy?: number;
-  }): Promise<void> {
+  /**
+   * Sets the page's geolocation.
+   *
+   * @remarks
+   * Consider using {@link BrowserContext.overridePermissions} to grant
+   * permissions for the page to read its geolocation.
+   *
+   * @example
+   * ```js
+   * await page.setGeolocation({latitude: 59.95, longitude: 30.31667});
+   * ```
+   */
+  async setGeolocation(options: GeolocationOptions): Promise<void> {
     const { longitude, latitude, accuracy = 0 } = options;
     if (longitude < -180 || longitude > 180)
       throw new Error(
@@ -422,14 +488,23 @@ export class Page extends EventEmitter {
     });
   }
 
+  /**
+   * @returns A target this page was created from.
+   */
   target(): Target {
     return this._target;
   }
 
+  /**
+   * @returns The browser this page belongs to.
+   */
   browser(): Browser {
     return this._target.browser();
   }
 
+  /**
+   * @returns The browser context that the page belongs to
+   */
   browserContext(): BrowserContext {
     return this._target.browserContext();
   }
@@ -448,6 +523,9 @@ export class Page extends EventEmitter {
       );
   }
 
+  /**
+   * @returns The page's main frame.
+   */
   mainFrame(): Frame {
     return this._frameManager.mainFrame();
   }
@@ -472,30 +550,91 @@ export class Page extends EventEmitter {
     return this._accessibility;
   }
 
+  /**
+   * @returns An array of all frames attached to the page.
+   */
   frames(): Frame[] {
     return this._frameManager.frames();
   }
 
+  /**
+   * @returns all of the dedicated
+   * {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | WebWorkers}
+   * associated with the page.
+   */
   workers(): WebWorker[] {
     return Array.from(this._workers.values());
   }
 
+  /**
+   * @param value - Whether to enable request interception.
+   *
+   * @remarks
+   * Activating request interception enables {@link HTTPRequest.abort},
+   * {@link HTTPRequest.continue} and {@link HTTPRequest.respond} methods.  This
+   * provides the capability to modify network requests that are made by a page.
+   *
+   * Once request interception is enabled, every request will stall unless it's
+   * continued, responded or aborted.
+   *
+   * **NOTE** Enabling request interception disables page caching.
+   *
+   * @example
+   * An example of a naïve request interceptor that aborts all image requests:
+   * ```js
+   * const puppeteer = require('puppeteer');
+   * (async () => {
+   *   const browser = await puppeteer.launch();
+   *   const page = await browser.newPage();
+   *   await page.setRequestInterception(true);
+   *   page.on('request', interceptedRequest => {
+   *     if (interceptedRequest.url().endsWith('.png') ||
+   *         interceptedRequest.url().endsWith('.jpg'))
+   *       interceptedRequest.abort();
+   *     else
+   *       interceptedRequest.continue();
+   *     });
+   *   await page.goto('https://example.com');
+   *   await browser.close();
+   * })();
+   * ```
+   */
   async setRequestInterception(value: boolean): Promise<void> {
     return this._frameManager.networkManager().setRequestInterception(value);
   }
 
+  /**
+   * @param enabled - When `true`, enables offline mode for the page.
+   */
   setOfflineMode(enabled: boolean): Promise<void> {
     return this._frameManager.networkManager().setOfflineMode(enabled);
   }
 
+  /**
+   * @param timeout - Maximum navigation time in milliseconds.
+   */
   setDefaultNavigationTimeout(timeout: number): void {
     this._timeoutSettings.setDefaultNavigationTimeout(timeout);
   }
 
+  /**
+   * @param timeout - Maximum time in milliseconds.
+   */
   setDefaultTimeout(timeout: number): void {
     this._timeoutSettings.setDefaultTimeout(timeout);
   }
 
+  /**
+   * Runs `document.querySelector` within the page. If no element matches the
+   * selector, the return value resolves to `null`.
+   *
+   * @remarks
+   * Shortcut for {@link Frame.$ | Page.mainFrame().$(selector) }.
+   *
+   * @param selector - A
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
+   * to query page for.
+   */
   async $(selector: string): Promise<ElementHandle | null> {
     return this.mainFrame().$(selector);
   }
