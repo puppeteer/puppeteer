@@ -24,7 +24,7 @@ import { EVALUATION_SCRIPT_URL } from './ExecutionContext';
 /**
  * The CoverageEntry class represents one entry of the coverage report.
  * @public
-*/
+ */
 export interface CoverageEntry {
   /**
    * The URL of the style sheet or script.
@@ -69,11 +69,11 @@ export interface CSSCoverageOptions {
 /**
  * The Coverage class provides methods to gathers information about parts of
  * JavaScript and CSS that were used by the page.
- *  
+ *
  * @remarks
  * To output coverage in a form consumable by {@link https://github.com/istanbuljs | Istanbul},
  * see {@link https://github.com/istanbuljs/puppeteer-to-istanbul | puppeteer-to-istanbul}.
- * 
+ *
  * @example
  * An example of using JavaScript and CSS coverage to get percentage of initially
  * executed code:
@@ -118,25 +118,27 @@ export class Coverage {
   }
 
   /**
-   * @param options - defaults to `{ resetOnNavigation : true, reportAnonymousScripts : false }`
+   * @param options - defaults to
+   * `{ resetOnNavigation : true, reportAnonymousScripts : false }`
    * @returns Promise that resolves when coverage is started.
-   * 
+   *
    * @remarks
-   * Anonymous scripts are ones that don't have an associated url.
-   * These are scripts that are dynamically created on the page using `eval` or `new Function`.
-   * If `reportAnonymousScripts` is set to `true`, anonymous scripts will have `__puppeteer_evaluation_script__` as their URL.
+   * Anonymous scripts are ones that don't have an associated url. These are
+   * scripts that are dynamically created on the page using `eval` or
+   * `new Function`. If `reportAnonymousScripts` is set to `true`, anonymous
+   * scripts will have `__puppeteer_evaluation_script__` as their URL.
    */
-  async startJSCoverage(
-    options: JSCoverageOptions = {}
-  ): Promise<void> {
+  async startJSCoverage(options: JSCoverageOptions = {}): Promise<void> {
     return await this._jsCoverage.start(options);
   }
 
   /**
-   * @returns Promise that resolves to the array of coverage reports for all scripts.
-   * 
+   * @returns Promise that resolves to the array of coverage reports for
+   * all scripts.
+   *
    * @remarks
-   * JavaScript Coverage doesn't include anonymous scripts by default. However, scripts with sourceURLs are reported.
+   * JavaScript Coverage doesn't include anonymous scripts by default.
+   * However, scripts with sourceURLs are reported.
    */
   async stopJSCoverage(): Promise<CoverageEntry[]> {
     return await this._jsCoverage.stop();
@@ -146,16 +148,16 @@ export class Coverage {
    * @param options - defaults to `{ resetOnNavigation : true }`
    * @returns Promise that resolves when coverage is started.
    */
-  async startCSSCoverage(
-    options: CSSCoverageOptions = {}
-  ): Promise<void> {
+  async startCSSCoverage(options: CSSCoverageOptions = {}): Promise<void> {
     return await this._cssCoverage.start(options);
   }
 
   /**
-   * @returns Promise that resolves to the array of coverage reports for all stylesheets.
+   * @returns Promise that resolves to the array of coverage reports
+   * for all stylesheets.
    * @remarks
-   * CSS Coverage doesn't include dynamically injected style tags without sourceURLs.
+   * CSS Coverage doesn't include dynamically injected style tags
+   * without sourceURLs.
    */
   async stopCSSCoverage(): Promise<CoverageEntry[]> {
     return await this._cssCoverage.stop();
