@@ -710,6 +710,20 @@ function compareDocumentations(actual, expected) {
           expectedName: 'Object',
         },
       ],
+      [
+        'Method Coverage.startCSSCoverage() options',
+        {
+          actualName: 'Object',
+          expectedName: 'CSSCoverageOptions',
+        },
+      ],
+      [
+        'Method Coverage.startJSCoverage() options',
+        {
+          actualName: 'Object',
+          expectedName: 'JSCoverageOptions',
+        },
+      ],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);
