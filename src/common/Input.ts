@@ -33,7 +33,7 @@ type KeyDescription = Required<
  * {@link Keyboard.up}, and {@link Keyboard.sendCharacter}
  * to manually fire events as if they were generated from a real keyboard.
  *
- * On MacOS, keyboard shortcuts like `⌘ A` -> Select All do not work.
+ * On MacOS, keyboard shortcuts like `⌘ A` -\> Select All do not work.
  * See {@link https://github.com/puppeteer/puppeteer/issues/1313 | #1313}.
  *
  * @example
@@ -275,11 +275,16 @@ export class Keyboard {
   }
 }
 
-type MouseButton = 'none' | 'left' | 'right' | 'middle';
-export type MouseButtonInput = Exclude<MouseButton, 'none'>;
+/**
+ * @public
+ */
+export type MouseButton = 'left' | 'right' | 'middle';
 
-interface MouseOptions {
-  button?: MouseButtonInput;
+/**
+ * @public
+ */
+export interface MouseOptions {
+  button?: MouseButton;
   clickCount?: number;
 }
 
@@ -341,11 +346,12 @@ interface MouseOptions {
  * @public
  */
 export class Mouse {
-  _client: CDPSession;
-  _keyboard: Keyboard;
-  _x = 0;
-  _y = 0;
-  _button: MouseButton = 'none';
+  private _client: CDPSession;
+  private _keyboard: Keyboard;
+  private _x = 0;
+  private _y = 0;
+  private _button: MouseButton | 'none' = 'none';
+
   /**
    * @internal
    */
@@ -444,10 +450,11 @@ export class Mouse {
 
 /**
  * The Touchscreen class exposes touchscreen events.
+ * @public
  */
 export class Touchscreen {
-  _client: CDPSession;
-  _keyboard: Keyboard;
+  private _client: CDPSession;
+  private _keyboard: Keyboard;
 
   /**
    * @internal

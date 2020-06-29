@@ -39,6 +39,10 @@ import {
   BrowserOptions,
 } from './LaunchOptions';
 
+/**
+ * Describes a launcher - a class that is able to create and launch a browser instance.
+ * @public
+ */
 export interface ProductLauncher {
   launch(object);
   connect(object);
@@ -47,6 +51,9 @@ export interface ProductLauncher {
   product: string;
 }
 
+/**
+ * @internal
+ */
 class ChromeLauncher implements ProductLauncher {
   _projectRoot: string;
   _preferredRevision: string;
@@ -267,6 +274,9 @@ class ChromeLauncher implements ProductLauncher {
   }
 }
 
+/**
+ * @internal
+ */
 class FirefoxLauncher implements ProductLauncher {
   _projectRoot: string;
   _preferredRevision: string;
@@ -766,7 +776,10 @@ function resolveExecutablePath(
   return { executablePath: revisionInfo.executablePath, missingText };
 }
 
-function Launcher(
+/**
+ * @internal
+ */
+export default function Launcher(
   projectRoot: string,
   preferredRevision: string,
   isPuppeteerCore: boolean,
@@ -803,5 +816,3 @@ function Launcher(
       );
   }
 }
-
-export default Launcher;

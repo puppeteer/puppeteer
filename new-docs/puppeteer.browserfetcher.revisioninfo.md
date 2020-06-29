@@ -18,7 +18,7 @@ revisionInfo(revision: string): BrowserFetcherRevisionInfo;
 
 <b>Returns:</b>
 
-BrowserFetcherRevisionInfo
+[BrowserFetcherRevisionInfo](./puppeteer.browserfetcherrevisioninfo.md)
 
 The revision info for the given revision.
 

@@ -62,12 +62,14 @@ const browserConfig = {
 
 /**
  * Supported platforms.
+ * @public
  */
-type Platform = 'linux' | 'mac' | 'win32' | 'win64';
+export type Platform = 'linux' | 'mac' | 'win32' | 'win64';
 /**
  * Supported products.
+ * @public
  */
-type Product = 'chrome' | 'firefox';
+export type Product = 'chrome' | 'firefox';
 
 function archiveName(
   product: Product,
@@ -128,6 +130,9 @@ function existsAsync(filePath: string): Promise<boolean> {
   });
 }
 
+/**
+ * @public
+ */
 export interface BrowserFetcherOptions {
   platform?: Platform;
   product?: string;
@@ -135,7 +140,10 @@ export interface BrowserFetcherOptions {
   host?: string;
 }
 
-interface BrowserFetcherRevisionInfo {
+/**
+ * @public
+ */
+export interface BrowserFetcherRevisionInfo {
   folderPath: string;
   executablePath: string;
   url: string;

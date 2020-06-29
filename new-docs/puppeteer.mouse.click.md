@@ -20,7 +20,7 @@ click(x: number, y: number, options?: MouseOptions & {
 |  --- | --- | --- |
 |  x | number | Horizontal position of the mouse. |
 |  y | number | Vertical position of the mouse. |
-|  options | MouseOptions &amp; { delay?: number; } | Optional <code>MouseOptions</code>. |
+|  options | [MouseOptions](./puppeteer.mouseoptions.md) &amp; { delay?: number; } | Optional <code>MouseOptions</code>. |
 
 <b>Returns:</b>
 

@@ -16,13 +16,6 @@ export declare class Touchscreen
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Touchscreen` class.
 
-## Properties
-
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [\_client](./puppeteer.touchscreen._client.md) |  | [CDPSession](./puppeteer.cdpsession.md) |  |
-|  [\_keyboard](./puppeteer.touchscreen._keyboard.md) |  | [Keyboard](./puppeteer.keyboard.md) |  |
-
 ## Methods
 
 |  Method | Modifiers | Description |

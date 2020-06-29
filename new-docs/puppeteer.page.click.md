@@ -9,7 +9,7 @@
 ```typescript
 click(selector: string, options?: {
         delay?: number;
-        button?: MouseButtonInput;
+        button?: MouseButton;
         clickCount?: number;
     }): Promise<void>;
 ```
@@ -19,7 +19,7 @@ click(selector: string, options?: {
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  selector | string |  |
-|  options | { delay?: number; button?: [MouseButtonInput](./puppeteer.mousebuttoninput.md)<!-- -->; clickCount?: number; } |  |
+|  options | { delay?: number; button?: [MouseButton](./puppeteer.mousebutton.md)<!-- -->; clickCount?: number; } |  |
 
 <b>Returns:</b>
 

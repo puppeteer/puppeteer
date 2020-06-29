@@ -11,7 +11,7 @@ product(): Product;
 ```
 <b>Returns:</b>
 
-Product
+[Product](./puppeteer.product.md)
 
 Returns the current `Product`<!-- -->.
 

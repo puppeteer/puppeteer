@@ -21,7 +21,7 @@ import { TimeoutError } from './Errors';
 import { JSHandle, ElementHandle } from './JSHandle';
 import { ExecutionContext } from './ExecutionContext';
 import { TimeoutSettings } from './TimeoutSettings';
-import { MouseButtonInput } from './Input';
+import { MouseButton } from './Input';
 import { FrameManager, Frame } from './FrameManager';
 import { getQueryHandlerAndSelector, QueryHandler } from './QueryHandler';
 import {
@@ -404,7 +404,7 @@ export class DOMWorld {
 
   async click(
     selector: string,
-    options: { delay?: number; button?: MouseButtonInput; clickCount?: number }
+    options: { delay?: number; button?: MouseButton; clickCount?: number }
   ): Promise<void> {
     const handle = await this.$(selector);
     assert(handle, 'No node found for selector: ' + selector);

@@ -21,7 +21,7 @@ download(revision: string, progressCallback?: (x: number, y: number) => void): P
 
 <b>Returns:</b>
 
-Promise&lt;BrowserFetcherRevisionInfo&gt;
+Promise&lt;[BrowserFetcherRevisionInfo](./puppeteer.browserfetcherrevisioninfo.md)<!-- -->&gt;
 
 A promise with revision information when the revision is downloaded and extracted.
 

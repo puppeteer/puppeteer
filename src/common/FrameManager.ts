@@ -25,7 +25,7 @@ import { NetworkManager } from './NetworkManager';
 import { TimeoutSettings } from './TimeoutSettings';
 import { CDPSession } from './Connection';
 import { JSHandle, ElementHandle } from './JSHandle';
-import { MouseButtonInput } from './Input';
+import { MouseButton } from './Input';
 import { Page } from './Page';
 import { HTTPResponse } from './HTTPResponse';
 import Protocol from '../protocol';
@@ -532,7 +532,7 @@ export class Frame {
     selector: string,
     options: {
       delay?: number;
-      button?: MouseButtonInput;
+      button?: MouseButton;
       clickCount?: number;
     } = {}
   ): Promise<void> {

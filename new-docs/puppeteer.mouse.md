@@ -73,16 +73,6 @@ await browser.defaultBrowserContext().overridePermissions(
 
 ```
 
-## Properties
-
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [\_button](./puppeteer.mouse._button.md) |  | MouseButton |  |
-|  [\_client](./puppeteer.mouse._client.md) |  | [CDPSession](./puppeteer.cdpsession.md) |  |
-|  [\_keyboard](./puppeteer.mouse._keyboard.md) |  | [Keyboard](./puppeteer.keyboard.md) |  |
-|  [\_x](./puppeteer.mouse._x.md) |  | number |  |
-|  [\_y](./puppeteer.mouse._y.md) |  | number |  |
-
 ## Methods
 
 |  Method | Modifiers | Description |

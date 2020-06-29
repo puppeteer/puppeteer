@@ -11,7 +11,7 @@ platform(): Platform;
 ```
 <b>Returns:</b>
 
-Platform
+[Platform](./puppeteer.platform.md)
 
 Returns the current `Platform`<!-- -->.
 

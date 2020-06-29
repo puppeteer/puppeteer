@@ -19,7 +19,7 @@ launch(options?: LaunchOptions & ChromeArgOptions & BrowserOptions & {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | LaunchOptions &amp; ChromeArgOptions &amp; BrowserOptions &amp; { product?: string; extraPrefsFirefox?: {}; } | Set of configurable options to set on the browser. |
+|  options | [LaunchOptions](./puppeteer.launchoptions.md) &amp; [ChromeArgOptions](./puppeteer.chromeargoptions.md) &amp; [BrowserOptions](./puppeteer.browseroptions.md) &amp; { product?: string; extraPrefsFirefox?: {}; } | Set of configurable options to set on the browser. |
 
 <b>Returns:</b>
 
