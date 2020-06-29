@@ -28,7 +28,6 @@ ls $TMPDIR/node_modules/puppeteer/.local-firefox/linux-79.0a1/firefox/firefox
 cd $ROOTDIR
 node ./utils/prepare_puppeteer_core.js
 npm pack
-git reset --hard
 tarball="$(realpath puppeteer-core-*.tgz)"
 TMPDIR="$(mktemp -d)"
 cd $TMPDIR
