@@ -17,8 +17,6 @@
 
 const assert = require('assert');
 const https = require('https');
-
-const packageJSON = require('../package.json');
 const BrowserFetcher = require('../lib/BrowserFetcher').BrowserFetcher;
 
 const SUPPORTER_PLATFORMS = ['linux', 'mac', 'win32', 'win64'];
@@ -163,7 +161,10 @@ async function checkRollCandidate() {
     stableLinuxInfo.versions[0].branch_base_position,
     10
   );
-  const currentRevision = parseInt(packageJSON.puppeteer.chromium_revision, 10);
+  const currentRevision = parseInt(
+    require('../lib/cjs/revisions').PUPPETEER_REVISIONS.chromium,
+    10
+  );
 
   checkRangeAvailability({
     fromRevision: stableLinuxRevision,
