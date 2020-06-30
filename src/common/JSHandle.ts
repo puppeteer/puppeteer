@@ -100,11 +100,26 @@ export function createJSHandle(
  * @public
  */
 export class JSHandle {
+  /**
+   * @internal
+   */
   _context: ExecutionContext;
+  /**
+   * @internal
+   */
   _client: CDPSession;
+  /**
+   * @internal
+   */
   _remoteObject: Protocol.Runtime.RemoteObject;
+  /**
+   * @internal
+   */
   _disposed = false;
 
+  /**
+   * @internal
+   */
   constructor(
     context: ExecutionContext,
     client: CDPSession,
