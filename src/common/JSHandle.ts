@@ -27,6 +27,7 @@ import {
   EvaluateFn,
   SerializableOrJSHandle,
   EvaluateFnReturnType,
+  EvaluateHandleFn,
 } from './EvalTypes';
 
 export interface BoxModel {
@@ -174,10 +175,10 @@ export class JSHandle {
    *
    * See {@link Page.evaluateHandle} for more details.
    */
-  async evaluateHandle(
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<JSHandle> {
+  async evaluateHandle<HandleType extends JSHandle | ElementHandle = JSHandle>(
+    pageFunction: EvaluateHandleFn,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<HandleType> {
     return await this.executionContext().evaluateHandle(
       pageFunction,
       this,
@@ -891,19 +892,22 @@ export class ElementHandle extends JSHandle {
    * @param expression - Expression to {@link https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate | evaluate}
    */
   async $x(expression: string): Promise<ElementHandle[]> {
-    const arrayHandle = await this.evaluateHandle((element, expression) => {
-      const document = element.ownerDocument || element;
-      const iterator = document.evaluate(
-        expression,
-        element,
-        null,
-        XPathResult.ORDERED_NODE_ITERATOR_TYPE
-      );
-      const array = [];
-      let item;
-      while ((item = iterator.iterateNext())) array.push(item);
-      return array;
-    }, expression);
+    const arrayHandle = await this.evaluateHandle(
+      (element: Document, expression: string) => {
+        const document = element.ownerDocument || element;
+        const iterator = document.evaluate(
+          expression,
+          element,
+          null,
+          XPathResult.ORDERED_NODE_ITERATOR_TYPE
+        );
+        const array = [];
+        let item;
+        while ((item = iterator.iterateNext())) array.push(item);
+        return array;
+      },
+      expression
+    );
     const properties = await arrayHandle.getProperties();
     await arrayHandle.dispose();
     const result = [];

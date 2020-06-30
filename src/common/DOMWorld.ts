@@ -24,7 +24,11 @@ import { TimeoutSettings } from './TimeoutSettings';
 import { MouseButtonInput } from './Input';
 import { FrameManager, Frame } from './FrameManager';
 import { getQueryHandlerAndSelector, QueryHandler } from './QueryHandler';
-import { EvaluateFn, SerializableOrJSHandle } from './EvalTypes';
+import {
+  EvaluateFn,
+  SerializableOrJSHandle,
+  EvaluateHandleFn,
+} from './EvalTypes';
 import { isNode } from '../environment';
 
 // This predicateQueryHandler is declared here so that TypeScript knows about it
@@ -103,15 +107,10 @@ export class DOMWorld {
     return this._contextPromise;
   }
 
-  /**
-   * @param {Function|string} pageFunction
-   * @param {!Array<*>} args
-   * @returns {!Promise<!JSHandle>}
-   */
-  async evaluateHandle(
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<JSHandle> {
+  async evaluateHandle<HandlerType extends JSHandle = JSHandle>(
+    pageFunction: EvaluateHandleFn,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<HandlerType> {
     const context = await this.executionContext();
     return context.evaluateHandle(pageFunction, ...args);
   }
@@ -470,7 +469,7 @@ export class DOMWorld {
   waitForFunction(
     pageFunction: Function | string,
     options: { polling?: string | number; timeout?: number } = {},
-    ...args: unknown[]
+    ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle> {
     const {
       polling = 'raf',
@@ -581,7 +580,7 @@ class WaitTask {
   _polling: string | number;
   _timeout: number;
   _predicateBody: string;
-  _args: unknown[];
+  _args: SerializableOrJSHandle[];
   _runCount = 0;
   promise: Promise<JSHandle>;
   _resolve: (x: JSHandle) => void;
@@ -596,7 +595,7 @@ class WaitTask {
     title: string,
     polling: string | number,
     timeout: number,
-    ...args: unknown[]
+    ...args: SerializableOrJSHandle[]
   ) {
     if (helper.isString(polling))
       assert(

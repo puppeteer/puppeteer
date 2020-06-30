@@ -182,17 +182,11 @@ describe('ElementHandle specs', function () {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/shadow.html');
-      const buttonHandle = await page.evaluateHandle(
+      const buttonHandle = await page.evaluateHandle<ElementHandle>(
         // @ts-expect-error button is expected to be in the page's scope.
         () => button
       );
-      // TODO (@jackfranklin): TS types are off here. evaluateHandle returns a
-      // JSHandle but that doesn't have a click() method. In this case it seems
-      // to return an ElementHandle. I'm not sure if the tests are wrong here
-      // and should use evaluate<ElementHandle> or if the type of evaluateHandle
-      // should change to enable the user to tell us they are expecting an
-      // ElementHandle rather than the default JSHandle.
-      await (buttonHandle as ElementHandle).click();
+      await buttonHandle.click();
       expect(
         await page.evaluate(
           // @ts-expect-error clicked is expected to be in the page's scope.

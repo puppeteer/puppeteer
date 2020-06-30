@@ -7,19 +7,19 @@
 <b>Signature:</b>
 
 ```typescript
-evaluateHandle(pageFunction: Function | string, ...args: unknown[]): Promise<JSHandle>;
+evaluateHandle<HandleType extends JSHandle | ElementHandle = JSHandle>(pageFunction: EvaluateHandleFn, ...args: SerializableOrJSHandle[]): Promise<HandleType>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  pageFunction | Function \| string | a function to be evaluated in the <code>executionContext</code> |
-|  args | unknown\[\] | argument to pass to the page function |
+|  pageFunction | [EvaluateHandleFn](./puppeteer.evaluatehandlefn.md) | a function to be evaluated in the <code>executionContext</code> |
+|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] | argument to pass to the page function |
 
 <b>Returns:</b>
 
-Promise&lt;[JSHandle](./puppeteer.jshandle.md)<!-- -->&gt;
+Promise&lt;HandleType&gt;
 
 A promise that resolves to the return value of the given function as an in-page object (a [JSHandle](./puppeteer.jshandle.md)<!-- -->).
 

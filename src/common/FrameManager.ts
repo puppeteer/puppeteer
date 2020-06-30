@@ -29,7 +29,11 @@ import { MouseButtonInput } from './Input';
 import { Page } from './Page';
 import { HTTPResponse } from './HTTPResponse';
 import Protocol from '../protocol';
-import { EvaluateFn, SerializableOrJSHandle } from './EvalTypes';
+import {
+  EvaluateFn,
+  SerializableOrJSHandle,
+  EvaluateHandleFn,
+} from './EvalTypes';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
@@ -431,11 +435,11 @@ export class Frame {
     return this._mainWorld.executionContext();
   }
 
-  async evaluateHandle(
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<JSHandle> {
-    return this._mainWorld.evaluateHandle(pageFunction, ...args);
+  async evaluateHandle<HandlerType extends JSHandle = JSHandle>(
+    pageFunction: EvaluateHandleFn,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<HandlerType> {
+    return this._mainWorld.evaluateHandle<HandlerType>(pageFunction, ...args);
   }
 
   async evaluate<ReturnType extends any>(
@@ -562,7 +566,7 @@ export class Frame {
   waitFor(
     selectorOrFunctionOrTimeout: string | number | Function,
     options: {} = {},
-    ...args: unknown[]
+    ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle | null> {
     const xPathPattern = '//';
 
@@ -619,7 +623,7 @@ export class Frame {
   waitForFunction(
     pageFunction: Function | string,
     options: { polling?: string | number; timeout?: number } = {},
-    ...args: unknown[]
+    ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle> {
     return this._mainWorld.waitForFunction(pageFunction, options, ...args);
   }

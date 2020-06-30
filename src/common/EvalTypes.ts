@@ -32,6 +32,11 @@ export type EvaluateFnReturnType<T extends EvaluateFn> = T extends (
 /**
  * @public
  */
+export type EvaluateHandleFn = string | ((...args: unknown[]) => unknown);
+
+/**
+ * @public
+ */
 export type Serializable =
   | number
   | string

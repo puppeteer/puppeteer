@@ -7,17 +7,17 @@
 <b>Signature:</b>
 
 ```typescript
-evaluateHandle(pageFunction: Function | string, ...args: unknown[]): Promise<JSHandle>;
+evaluateHandle<HandlerType extends JSHandle = JSHandle>(pageFunction: EvaluateHandleFn, ...args: SerializableOrJSHandle[]): Promise<HandlerType>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  pageFunction | Function \| string |  |
-|  args | unknown\[\] |  |
+|  pageFunction | [EvaluateHandleFn](./puppeteer.evaluatehandlefn.md) |  |
+|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] |  |
 
 <b>Returns:</b>
 
-Promise&lt;[JSHandle](./puppeteer.jshandle.md)<!-- -->&gt;
+Promise&lt;HandlerType&gt;
 

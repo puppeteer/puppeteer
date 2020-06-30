@@ -82,6 +82,7 @@
 |  [ConsoleMessageType](./puppeteer.consolemessagetype.md) | The supported types for console messages. |
 |  [EvaluateFn](./puppeteer.evaluatefn.md) |  |
 |  [EvaluateFnReturnType](./puppeteer.evaluatefnreturntype.md) |  |
+|  [EvaluateHandleFn](./puppeteer.evaluatehandlefn.md) |  |
 |  [JSONArray](./puppeteer.jsonarray.md) |  |
 |  [KeyInput](./puppeteer.keyinput.md) |  |
 |  [MouseButtonInput](./puppeteer.mousebuttoninput.md) |  |

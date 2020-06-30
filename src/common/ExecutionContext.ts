@@ -21,6 +21,7 @@ import { CDPSession } from './Connection';
 import { DOMWorld } from './DOMWorld';
 import { Frame } from './FrameManager';
 import Protocol from '../protocol';
+import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes';
 
 export const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
@@ -175,15 +176,15 @@ export class ExecutionContext {
    * @returns A promise that resolves to the return value of the given function
    * as an in-page object (a {@link JSHandle}).
    */
-  async evaluateHandle(
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<JSHandle> {
-    return this._evaluateInternal<JSHandle>(false, pageFunction, ...args);
+  async evaluateHandle<HandleType extends JSHandle | ElementHandle = JSHandle>(
+    pageFunction: EvaluateHandleFn,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<HandleType> {
+    return this._evaluateInternal<HandleType>(false, pageFunction, ...args);
   }
 
   private async _evaluateInternal<ReturnType>(
-    returnByValue,
+    returnByValue: boolean,
     pageFunction: Function | string,
     ...args: unknown[]
   ): Promise<ReturnType> {

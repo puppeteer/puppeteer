@@ -53,6 +53,7 @@ describe('JSHandle', function () {
       const aHandle = await page.evaluateHandle(() => document.body);
       let error = null;
       await page
+        // @ts-expect-error we are deliberately passing a bad type here (nested object)
         .evaluateHandle((opts) => opts.elem.querySelector('p'), {
           elem: aHandle,
         })

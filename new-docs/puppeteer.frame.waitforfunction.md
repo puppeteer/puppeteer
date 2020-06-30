@@ -10,7 +10,7 @@
 waitForFunction(pageFunction: Function | string, options?: {
         polling?: string | number;
         timeout?: number;
-    }, ...args: unknown[]): Promise<JSHandle>;
+    }, ...args: SerializableOrJSHandle[]): Promise<JSHandle>;
 ```
 
 ## Parameters
@@ -19,7 +19,7 @@ waitForFunction(pageFunction: Function | string, options?: {
 |  --- | --- | --- |
 |  pageFunction | Function \| string |  |
 |  options | { polling?: string \| number; timeout?: number; } |  |
-|  args | unknown\[\] |  |
+|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] |  |
 
 <b>Returns:</b>
 
