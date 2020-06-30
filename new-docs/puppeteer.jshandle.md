@@ -12,6 +12,10 @@ Represents an in-page JavaScript object. JSHandles can be created with the [page
 export declare class JSHandle 
 ```
 
+## Remarks
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `JSHandle` class.
+
 ## Example
 
 
@@ -22,21 +26,6 @@ const windowHandle = await page.evaluateHandle(() => window);
 JSHandle prevents the referenced JavaScript object from being garbage-collected unless the handle is [disposed](./puppeteer.jshandle.dispose.md)<!-- -->. JSHandles are auto- disposed when their origin frame gets navigated or the parent context gets destroyed.
 
 JSHandle instances can be used as arguments for [Page.$eval()](./puppeteer.page._eval.md)<!-- -->, [Page.evaluate()](./puppeteer.page.evaluate.md)<!-- -->, and [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md)<!-- -->.
-
-## Constructors
-
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(context, client, remoteObject)](./puppeteer.jshandle._constructor_.md) |  | Constructs a new instance of the <code>JSHandle</code> class |
-
-## Properties
-
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [\_client](./puppeteer.jshandle._client.md) |  | [CDPSession](./puppeteer.cdpsession.md) |  |
-|  [\_context](./puppeteer.jshandle._context.md) |  | [ExecutionContext](./puppeteer.executioncontext.md) |  |
-|  [\_disposed](./puppeteer.jshandle._disposed.md) |  | boolean |  |
-|  [\_remoteObject](./puppeteer.jshandle._remoteobject.md) |  | Protocol.Runtime.RemoteObject |  |
 
 ## Methods
 
