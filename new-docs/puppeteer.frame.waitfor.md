@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-waitFor(selectorOrFunctionOrTimeout: string | number | Function, options?: {}, ...args: unknown[]): Promise<JSHandle | null>;
+waitFor(selectorOrFunctionOrTimeout: string | number | Function, options?: {}, ...args: SerializableOrJSHandle[]): Promise<JSHandle | null>;
 ```
 
 ## Parameters
@@ -16,7 +16,7 @@ waitFor(selectorOrFunctionOrTimeout: string | number | Function, options?: {}, .
 |  --- | --- | --- |
 |  selectorOrFunctionOrTimeout | string \| number \| Function |  |
 |  options | {} |  |
-|  args | unknown\[\] |  |
+|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] |  |
 
 <b>Returns:</b>
 

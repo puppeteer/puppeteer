@@ -9,19 +9,19 @@ This method passes this handle as the first argument to `pageFunction`<!-- -->.
 <b>Signature:</b>
 
 ```typescript
-evaluateHandle(pageFunction: Function | string, ...args: unknown[]): Promise<JSHandle>;
+evaluateHandle<HandleType extends JSHandle | ElementHandle = JSHandle>(pageFunction: EvaluateHandleFn, ...args: SerializableOrJSHandle[]): Promise<HandleType>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  pageFunction | Function \| string |  |
-|  args | unknown\[\] |  |
+|  pageFunction | [EvaluateHandleFn](./puppeteer.evaluatehandlefn.md) |  |
+|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] |  |
 
 <b>Returns:</b>
 
-Promise&lt;[JSHandle](./puppeteer.jshandle.md)<!-- -->&gt;
+Promise&lt;HandleType&gt;
 
 ## Remarks
 

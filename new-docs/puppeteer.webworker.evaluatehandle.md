@@ -9,15 +9,15 @@ The only difference between `worker.evaluate` and `worker.evaluateHandle` is tha
 <b>Signature:</b>
 
 ```typescript
-evaluateHandle(pageFunction: Function | string, ...args: any[]): Promise<JSHandle>;
+evaluateHandle<HandlerType extends JSHandle = JSHandle>(pageFunction: EvaluateHandleFn, ...args: SerializableOrJSHandle[]): Promise<JSHandle>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  pageFunction | Function \| string | Function to be evaluated in the page context. |
-|  args | any\[\] | Arguments to pass to <code>pageFunction</code>. |
+|  pageFunction | [EvaluateHandleFn](./puppeteer.evaluatehandlefn.md) | Function to be evaluated in the page context. |
+|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] | Arguments to pass to <code>pageFunction</code>. |
 
 <b>Returns:</b>
 

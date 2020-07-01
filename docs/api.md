@@ -1456,7 +1456,7 @@ Shortcut for [page.mainFrame().evaluate(pageFunction, ...args)](#frameevaluatepa
 #### page.evaluateHandle(pageFunction[, ...args])
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[JSHandle]>> Promise which resolves to the return value of `pageFunction` as in-page object (JSHandle)
+- returns: <[Promise]<[JSHandle]|[ElementHandle]>> Promise which resolves to the return value of `pageFunction` as an in-page object.
 
 The only difference between `page.evaluate` and `page.evaluateHandle` is that `page.evaluateHandle` returns in-page object (JSHandle).
 
@@ -1473,6 +1473,14 @@ const aHandle = await page.evaluateHandle(() => document.body);
 const resultHandle = await page.evaluateHandle(body => body.innerHTML, aHandle);
 console.log(await resultHandle.jsonValue());
 await resultHandle.dispose();
+```
+
+This function will return a [JSHandle] by default, however if your `pageFunction` returns an HTML element you will get back an `ElementHandle`:
+
+```js
+const button = await page.evaluateHandle(() => document.querySelector('button'))
+// button is an ElementHandle, so you can call methods such as click:
+await button.click();
 ```
 
 Shortcut for [page.mainFrame().executionContext().evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args).
@@ -2298,11 +2306,13 @@ Shortcut for [(await worker.executionContext()).evaluate(pageFunction, ...args)]
 #### webWorker.evaluateHandle(pageFunction[, ...args])
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[JSHandle]>> Promise which resolves to the return value of `pageFunction` as in-page object (JSHandle)
+- returns: <[Promise]<[JSHandle]|[ElementHandle]>> Promise which resolves to the return value of `pageFunction` as an in-page object.
 
 The only difference between `worker.evaluate` and `worker.evaluateHandle` is that `worker.evaluateHandle` returns in-page object (JSHandle).
 
 If the function passed to the `worker.evaluateHandle` returns a [Promise], then `worker.evaluateHandle` would wait for the promise to resolve and return its value.
+
+If the function returns an element, the returned handle is an [ElementHandle].
 
 Shortcut for [(await worker.executionContext()).evaluateHandle(pageFunction, ...args)](#executioncontextevaluatehandlepagefunction-args).
 
@@ -2855,11 +2865,13 @@ await bodyHandle.dispose();
 #### frame.evaluateHandle(pageFunction[, ...args])
 - `pageFunction` <[function]|[string]> Function to be evaluated in the page context
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[JSHandle]>> Promise which resolves to the return value of `pageFunction` as in-page object (JSHandle)
+- returns: <[Promise]<[JSHandle]|[ElementHandle]>> Promise which resolves to the return value of `pageFunction` as an in-page object.
 
 The only difference between `frame.evaluate` and `frame.evaluateHandle` is that `frame.evaluateHandle` returns in-page object (JSHandle).
 
 If the function, passed to the `frame.evaluateHandle`, returns a [Promise], then `frame.evaluateHandle` would wait for the promise to resolve and return its value.
+
+If the function returns an element, the returned handle is an [ElementHandle].
 
 ```js
 const aWindowHandle = await frame.evaluateHandle(() => Promise.resolve(window));
@@ -3184,9 +3196,11 @@ console.log(result); // prints '3'.
 #### executionContext.evaluateHandle(pageFunction[, ...args])
 - `pageFunction` <[function]|[string]> Function to be evaluated in the `executionContext`
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[JSHandle]>> Promise which resolves to the return value of `pageFunction` as in-page object (JSHandle)
+- returns: <[Promise]<[JSHandle]|[ElementHandle]>> Promise which resolves to the return value of `pageFunction` as an in-page object.
 
 The only difference between `executionContext.evaluate` and `executionContext.evaluateHandle` is that `executionContext.evaluateHandle` returns in-page object (JSHandle).
+
+If the function returns an element, the returned handle is an [ElementHandle].
 
 If the function passed to the `executionContext.evaluateHandle` returns a [Promise], then `executionContext.evaluateHandle` would wait for the promise to resolve and return its value.
 
@@ -3277,11 +3291,13 @@ expect(await tweetHandle.evaluate(node => node.innerText)).toBe('10');
 #### jsHandle.evaluateHandle(pageFunction[, ...args])
 - `pageFunction` <[function]|[string]> Function to be evaluated
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[JSHandle]>> Promise which resolves to the return value of `pageFunction` as in-page object (JSHandle)
+- returns: <[Promise]<[JSHandle]|[ElementHandle]>> Promise which resolves to the return value of `pageFunction` as an in-page object.
 
 This method passes this handle as the first argument to `pageFunction`.
 
 The only difference between `jsHandle.evaluate` and `jsHandle.evaluateHandle` is that `executionContext.evaluateHandle` returns in-page object (JSHandle).
+
+If the function returns an element, the returned handle is an [ElementHandle].
 
 If the function passed to the `jsHandle.evaluateHandle` returns a [Promise], then `jsHandle.evaluateHandle` would wait for the promise to resolve and return its value.
 
@@ -3466,11 +3482,13 @@ expect(await tweetHandle.evaluate(node => node.innerText)).toBe('10');
 #### elementHandle.evaluateHandle(pageFunction[, ...args])
 - `pageFunction` <[function]|[string]> Function to be evaluated
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to `pageFunction`
-- returns: <[Promise]<[JSHandle]>> Promise which resolves to the return value of `pageFunction` as in-page object (JSHandle)
+- returns: <[Promise]<[JSHandle]|[ElementHandle]>> Promise which resolves to the return value of `pageFunction` as an in-page object.
 
 This method passes this handle as the first argument to `pageFunction`.
 
 The only difference between `evaluateHandle.evaluate` and `evaluateHandle.evaluateHandle` is that `executionContext.evaluateHandle` returns in-page object (JSHandle).
+
+If the function returns an element, the returned handle is an [ElementHandle].
 
 If the function passed to the `evaluateHandle.evaluateHandle` returns a [Promise], then `evaluateHandle.evaluateHandle` would wait for the promise to resolve and return its value.
 

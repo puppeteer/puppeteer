@@ -12,7 +12,7 @@ waitFor(selectorOrFunctionOrTimeout: string | number | Function, options?: {
         hidden?: boolean;
         timeout?: number;
         polling?: string | number;
-    }, ...args: unknown[]): Promise<JSHandle>;
+    }, ...args: SerializableOrJSHandle[]): Promise<JSHandle>;
 ```
 
 ## Parameters
@@ -21,7 +21,7 @@ waitFor(selectorOrFunctionOrTimeout: string | number | Function, options?: {
 |  --- | --- | --- |
 |  selectorOrFunctionOrTimeout | string \| number \| Function |  |
 |  options | { visible?: boolean; hidden?: boolean; timeout?: number; polling?: string \| number; } |  |
-|  args | unknown\[\] |  |
+|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] |  |
 
 <b>Returns:</b>
 

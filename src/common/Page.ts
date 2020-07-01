@@ -42,7 +42,11 @@ import { FileChooser } from './FileChooser';
 import { ConsoleMessage, ConsoleMessageType } from './ConsoleMessage';
 import { PuppeteerLifeCycleEvent } from './LifecycleWatcher';
 import Protocol from '../protocol';
-import { EvaluateFn, SerializableOrJSHandle } from './EvalTypes';
+import {
+  EvaluateFn,
+  SerializableOrJSHandle,
+  EvaluateHandleFn,
+} from './EvalTypes';
 
 const writeFileAsync = promisify(fs.writeFile);
 
@@ -639,12 +643,61 @@ export class Page extends EventEmitter {
     return this.mainFrame().$(selector);
   }
 
-  async evaluateHandle(
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<JSHandle> {
+  /**
+   * @remarks
+   *
+   * The only difference between {@link Page.evaluate | page.evaluate} and
+   * `page.evaluateHandle` is that `evaluateHandle` will return the value
+   * wrapped in an in-page object.
+   *
+   * If the function passed to `page.evaluteHandle` returns a Promise, the
+   * function will wait for the promise to resolve and return its value.
+   *
+   * You can pass a string instead of a function (although functions are
+   * recommended as they are easier to debug and use with TypeScript):
+   *
+   * @example
+   * ```
+   * const aHandle = await page.evaluateHandle('document')
+   * ```
+   *
+   * @example
+   * {@link JSHandle} instances can be passed as arguments to the `pageFunction`:
+   * ```
+   * const aHandle = await page.evaluateHandle(() => document.body);
+   * const resultHandle = await page.evaluateHandle(body => body.innerHTML, aHandle);
+   * console.log(await resultHandle.jsonValue());
+   * await resultHandle.dispose();
+   * ```
+   *
+   * Most of the time this function returns a {@link JSHandle},
+   * but if `pageFunction` returns a reference to an element,
+   * you instead get an {@link ElementHandle} back:
+   *
+   * @example
+   * ```
+   * const button = await page.evaluateHandle(() => document.querySelector('button'));
+   * // can call `click` because `button` is an `ElementHandle`
+   * await button.click();
+   * ```
+   *
+   * The TypeScript definitions assume that `evaluateHandle` returns
+   *  a `JSHandle`, but if you know it's going to return an
+   * `ElementHandle`, pass it as the generic argument:
+   *
+   * ```
+   * const button = await page.evaluateHandle<ElementHandle>(...);
+   * ```
+   *
+   * @param pageFunction - a function that is run within the page
+   * @param args - arguments to be passed to the pageFunction
+   */
+  async evaluateHandle<HandlerType extends JSHandle = JSHandle>(
+    pageFunction: EvaluateHandleFn,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<HandlerType> {
     const context = await this.mainFrame().executionContext();
-    return context.evaluateHandle(pageFunction, ...args);
+    return context.evaluateHandle<HandlerType>(pageFunction, ...args);
   }
 
   async queryObjects(prototypeHandle: JSHandle): Promise<JSHandle> {
@@ -1471,7 +1524,7 @@ export class Page extends EventEmitter {
       timeout?: number;
       polling?: string | number;
     } = {},
-    ...args: unknown[]
+    ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle> {
     return this.mainFrame().waitFor(
       selectorOrFunctionOrTimeout,
@@ -1508,7 +1561,7 @@ export class Page extends EventEmitter {
       timeout?: number;
       polling?: string | number;
     } = {},
-    ...args: unknown[]
+    ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle> {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);
   }
