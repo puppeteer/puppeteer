@@ -22,7 +22,7 @@ import expect from 'expect';
 import {
   getTestState,
   describeChromeOnly,
-  itFailsWindowsUntilDate,
+  itFailsWindows,
 } from './mocha-utils';
 import rimraf from 'rimraf';
 
@@ -91,15 +91,10 @@ describeChromeOnly('headful tests', function () {
       expect(pages).toEqual(['about:blank']);
       await browser.close();
     });
-    itFailsWindowsUntilDate(
-      /* We have deferred fixing this test on Windows in favour of
-       * getting all other Windows tests running on CI. Putting this
-       * date in to force us to come back and debug properly in the
-       * future.
-       */
-      new Date('2020-07-01'),
+    itFailsWindows(
       'headless should be able to read cookies written by headful',
       async () => {
+        /* Needs investigation into why but this fails consistently on Windows CI. */
         const { server, puppeteer } = getTestState();
 
         const userDataDir = await mkdtempAsync(TMP_FOLDER);

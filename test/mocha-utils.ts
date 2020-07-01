@@ -170,6 +170,13 @@ export const itFailsWindowsUntilDate = (
   return it(description, body);
 };
 
+export const itFailsWindows = (description: string, body: Mocha.Func) => {
+  if (os.platform() === 'win32') {
+    return xit(description, body);
+  }
+  return it(description, body);
+};
+
 export const describeFailsFirefox = (
   description: string,
   body: (this: Mocha.Suite) => void
