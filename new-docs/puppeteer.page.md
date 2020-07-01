@@ -73,7 +73,7 @@ page.off('request', logRequest);
 |  [$(selector)](./puppeteer.page._.md) |  | Runs <code>document.querySelector</code> within the page. If no element matches the selector, the return value resolves to <code>null</code>. |
 |  [$$(selector)](./puppeteer.page.__.md) |  |  |
 |  [$$eval(selector, pageFunction, args)](./puppeteer.page.__eval.md) |  |  |
-|  [$eval(selector, pageFunction, args)](./puppeteer.page._eval.md) |  |  |
+|  [$eval(selector, pageFunction, args)](./puppeteer.page._eval.md) |  | This method runs <code>document.querySelector</code> within the page and passes the result as the first argument to the <code>pageFunction</code>. |
 |  [$x(expression)](./puppeteer.page._x.md) |  |  |
 |  [addScriptTag(options)](./puppeteer.page.addscripttag.md) |  |  |
 |  [addStyleTag(options)](./puppeteer.page.addstyletag.md) |  |  |

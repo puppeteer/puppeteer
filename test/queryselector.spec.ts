@@ -49,7 +49,7 @@ describe('querySelector', function () {
       const divHandle = await page.$('div');
       const text = await page.$eval(
         'section',
-        (e, div) => e.textContent + div.textContent,
+        (e, div: HTMLElement) => e.textContent + div.textContent,
         divHandle
       );
       expect(text).toBe('hello world');
@@ -174,7 +174,10 @@ describe('querySelector', function () {
         '<html><body><div class="tweet"><div class="like">100</div><div class="retweets">10</div></div></body></html>'
       );
       const tweet = await page.$('.tweet');
-      const content = await tweet.$eval('.like', (node) => node.innerText);
+      const content = await tweet.$eval(
+        '.like',
+        (node: HTMLElement) => node.innerText
+      );
       expect(content).toBe('100');
     });
 
@@ -185,7 +188,10 @@ describe('querySelector', function () {
         '<div class="a">not-a-child-div</div><div id="myId"><div class="a">a-child-div</div></div>';
       await page.setContent(htmlContent);
       const elementHandle = await page.$('#myId');
-      const content = await elementHandle.$eval('.a', (node) => node.innerText);
+      const content = await elementHandle.$eval(
+        '.a',
+        (node: HTMLElement) => node.innerText
+      );
       expect(content).toBe('a-child-div');
     });
 
@@ -197,7 +203,7 @@ describe('querySelector', function () {
       await page.setContent(htmlContent);
       const elementHandle = await page.$('#myId');
       const errorMessage = await elementHandle
-        .$eval('.a', (node) => node.innerText)
+        .$eval('.a', (node: HTMLElement) => node.innerText)
         .catch((error) => error.message);
       expect(errorMessage).toBe(
         `Error: failed to find element matching selector ".a"`

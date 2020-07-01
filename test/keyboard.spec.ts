@@ -351,9 +351,12 @@ describe('Keyboard', function () {
 
     await page.goto(server.PREFIX + '/input/textarea.html');
     await page.type('textarea', '👹 Tokyo street Japan 🇯🇵');
-    expect(await page.$eval('textarea', (textarea) => textarea.value)).toBe(
-      '👹 Tokyo street Japan 🇯🇵'
-    );
+    expect(
+      await page.$eval(
+        'textarea',
+        (textarea: HTMLInputElement) => textarea.value
+      )
+    ).toBe('👹 Tokyo street Japan 🇯🇵');
   });
   itFailsFirefox('should type emoji into an iframe', async () => {
     const { page, server } = getTestState();
@@ -367,9 +370,12 @@ describe('Keyboard', function () {
     const frame = page.frames()[1];
     const textarea = await frame.$('textarea');
     await textarea.type('👹 Tokyo street Japan 🇯🇵');
-    expect(await frame.$eval('textarea', (textarea) => textarea.value)).toBe(
-      '👹 Tokyo street Japan 🇯🇵'
-    );
+    expect(
+      await frame.$eval(
+        'textarea',
+        (textarea: HTMLInputElement) => textarea.value
+      )
+    ).toBe('👹 Tokyo street Japan 🇯🇵');
   });
   itFailsFirefox('should press the meta key', async () => {
     const { page, isFirefox } = getTestState();

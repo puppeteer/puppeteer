@@ -25,6 +25,10 @@ const EXCLUDE_PROPERTIES = new Set([
   'Page.create',
   'JSHandle.toString',
   'TimeoutError.name',
+  /* This isn't an actual property, but a TypeScript generic.
+   * DocLint incorrectly parses it as a property.
+   */
+  'ElementHandle.ElementType',
 ]);
 
 /**
