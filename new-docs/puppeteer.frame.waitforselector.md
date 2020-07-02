@@ -15,7 +15,7 @@ waitForSelector(selector: string, options?: WaitForSelectorOptions): Promise<Ele
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  selector | string |  |
-|  options | WaitForSelectorOptions |  |
+|  options | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) |  |
 
 <b>Returns:</b>
 

@@ -23,11 +23,17 @@ import { FrameManager } from './FrameManager';
 import { HTTPRequest } from './HTTPRequest';
 import { HTTPResponse } from './HTTPResponse';
 
+/**
+ * @public
+ */
 export interface Credentials {
   username: string;
   password: string;
 }
 
+/**
+ * @internal
+ */
 export class NetworkManager extends EventEmitter {
   _client: CDPSession;
   _ignoreHTTPSErrors: boolean;
@@ -183,9 +189,6 @@ export class NetworkManager extends EventEmitter {
     this._onRequest(event, null);
   }
 
-  /**
-   * @param {!Protocol.Fetch.authRequiredPayload} event
-   */
   _onAuthRequired(event: Protocol.Fetch.authRequiredPayload): void {
     /* TODO(jacktfranklin): This is defined in protocol.d.ts but not
      * in an easily referrable way - we should look at exposing it.

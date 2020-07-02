@@ -36,12 +36,18 @@ import { isNode } from '../environment';
 // when it is used in the predicate function below.
 declare const predicateQueryHandler: QueryHandler;
 
+/**
+ * @public
+ */
 export interface WaitForSelectorOptions {
   visible?: boolean;
   hidden?: boolean;
   timeout?: number;
 }
 
+/**
+ * @internal
+ */
 export class DOMWorld {
   _frameManager: FrameManager;
   _frame: Frame;

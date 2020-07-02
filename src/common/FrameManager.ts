@@ -38,15 +38,18 @@ import {
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
+/**
+ * @internal
+ */
 export class FrameManager extends EventEmitter {
   _client: CDPSession;
-  _page: Page;
-  _networkManager: NetworkManager;
+  private _page: Page;
+  private _networkManager: NetworkManager;
   _timeoutSettings: TimeoutSettings;
-  _frames = new Map<string, Frame>();
-  _contextIdToContext = new Map<number, ExecutionContext>();
-  _isolatedWorlds = new Set<string>();
-  _mainFrame: Frame;
+  private _frames = new Map<string, Frame>();
+  private _contextIdToContext = new Map<number, ExecutionContext>();
+  private _isolatedWorlds = new Set<string>();
+  private _mainFrame: Frame;
 
   constructor(
     client: CDPSession,
@@ -234,7 +237,7 @@ export class FrameManager extends EventEmitter {
     if (this._frames.has(frameId)) return;
     assert(parentFrameId);
     const parentFrame = this._frames.get(parentFrameId);
-    const frame = new Frame(this, this._client, parentFrame, frameId);
+    const frame = new Frame(this, parentFrame, frameId);
     this._frames.set(frame._id, frame);
     this.emit(Events.FrameManager.FrameAttached, frame);
   }
@@ -263,7 +266,7 @@ export class FrameManager extends EventEmitter {
         frame._id = framePayload.id;
       } else {
         // Initial main frame navigation.
-        frame = new Frame(this, this._client, null, framePayload.id);
+        frame = new Frame(this, null, framePayload.id);
       }
       this._frames.set(framePayload.id, frame);
       this._mainFrame = frame;
@@ -335,17 +338,14 @@ export class FrameManager extends EventEmitter {
     this._contextIdToContext.set(contextPayload.id, context);
   }
 
-  /**
-   * @param {number} executionContextId
-   */
-  _onExecutionContextDestroyed(executionContextId: number): void {
+  private _onExecutionContextDestroyed(executionContextId: number): void {
     const context = this._contextIdToContext.get(executionContextId);
     if (!context) return;
     this._contextIdToContext.delete(executionContextId);
     if (context._world) context._world._setContext(null);
   }
 
-  _onExecutionContextsCleared(): void {
+  private _onExecutionContextsCleared(): void {
     for (const context of this._contextIdToContext.values()) {
       if (context._world) context._world._setContext(null);
     }
@@ -358,7 +358,7 @@ export class FrameManager extends EventEmitter {
     return context;
   }
 
-  _removeFramesRecursively(frame: Frame): void {
+  private _removeFramesRecursively(frame: Frame): void {
     for (const child of frame.childFrames())
       this._removeFramesRecursively(child);
     frame._detach();
@@ -367,30 +367,57 @@ export class FrameManager extends EventEmitter {
   }
 }
 
+/**
+ * @public
+ */
 export class Frame {
+  /**
+   * @internal
+   */
   _frameManager: FrameManager;
-  _client: CDPSession;
-  _parentFrame?: Frame;
+  private _parentFrame?: Frame;
+  /**
+   * @internal
+   */
   _id: string;
 
-  _url = '';
-  _detached = false;
+  private _url = '';
+  private _detached = false;
+  /**
+   * @internal
+   */
   _loaderId = '';
+  /**
+   * @internal
+   */
   _name?: string;
 
+  /**
+   * @internal
+   */
   _lifecycleEvents = new Set<string>();
+  /**
+   * @internal
+   */
   _mainWorld: DOMWorld;
+  /**
+   * @internal
+   */
   _secondaryWorld: DOMWorld;
+  /**
+   * @internal
+   */
   _childFrames: Set<Frame>;
 
+  /**
+   * @internal
+   */
   constructor(
     frameManager: FrameManager,
-    client: CDPSession,
     parentFrame: Frame | null,
     frameId: string
   ) {
     this._frameManager = frameManager;
-    this._client = client;
     this._parentFrame = parentFrame;
     this._url = '';
     this._id = frameId;
