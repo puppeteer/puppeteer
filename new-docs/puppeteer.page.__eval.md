@@ -9,7 +9,7 @@ This method runs `Array.from(document.querySelectorAll(selector))` within the pa
 <b>Signature:</b>
 
 ```typescript
-$$eval<ReturnType extends any>(selector: string, pageFunction: EvaluateFn | string, ...args: SerializableOrJSHandle[]): Promise<ReturnType>;
+$$eval<ReturnType>(selector: string, pageFunction: (elements: Element[], ...args: unknown[]) => ReturnType | Promise<ReturnType>, ...args: SerializableOrJSHandle[]): Promise<WrapElementHandle<ReturnType>>;
 ```
 
 ## Parameters
@@ -17,14 +17,14 @@ $$eval<ReturnType extends any>(selector: string, pageFunction: EvaluateFn | stri
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  selector | string | the [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) to query for |
-|  pageFunction | [EvaluateFn](./puppeteer.evaluatefn.md) \| string | the function to be evaluated in the page context. Will be passed the result of <code>Array.from(document.querySelectorAll(selector))</code> as its first argument. |
+|  pageFunction | (elements: Element\[\], ...args: unknown\[\]) =&gt; ReturnType \| Promise&lt;ReturnType&gt; | the function to be evaluated in the page context. Will be passed the result of <code>Array.from(document.querySelectorAll(selector))</code> as its first argument. |
 |  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] | any additional arguments to pass through to <code>pageFunction</code>. |
 
 <b>Returns:</b>
 
-Promise&lt;ReturnType&gt;
+Promise&lt;[WrapElementHandle](./puppeteer.wrapelementhandle.md)<!-- -->&lt;ReturnType&gt;&gt;
 
-The result of calling `pageFunction`<!-- -->.
+The result of calling `pageFunction`<!-- -->. If it returns an element it is wrapped in an [ElementHandle](./puppeteer.elementhandle.md)<!-- -->, else the raw value itself is returned.
 
 ## Remarks
 
@@ -33,17 +33,38 @@ If `pageFunction` returns a promise `$$eval` will wait for the promise to resolv
 ## Example 1
 
 
-```js
+```
+// get the amount of divs on the page
 const divCount = await page.$$eval('div', divs => divs.length);
 
+// get the text content of all the `.options` elements:
+const options = await page.$$eval('div > span.options', options => {
+  return options.map(option => option.textContent)
+});
+
 ```
+If you are using TypeScript, you may have to provide an explicit type to the first argument of the `pageFunction`<!-- -->. By default it is typed as `Element[]`<!-- -->, but you may need to provide a more specific sub-type:
 
 ## Example 2
 
 
-```js
-const options = await page.$$eval(
-  'div > span.options', options => options.map(option => option.textContent));
+```
+// if you don't provide HTMLInputElement here, TS will error
+// as `value` is not on `Element`
+await page.$$eval('input', (elements: HTMLInputElement[]) => ...);
+
+```
+The compiler should be able to infer the return type from the `pageFunction` you provide. If it is unable to, you can use the generic type to tell the compiler what return type you expect from `$$eval`<!-- -->:
+
+## Example 3
+
+
+```
+// The compiler can infer the return type in this case, but if it can't
+// or if you want to be more explicit, provide it as the generic type.
+const allInputValues = await page.$$eval<string[]>(
+ 'input', (elements: HTMLInputElement[]) => elements.map(e => e.textContent)
+);
 
 ```
 
