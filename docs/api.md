@@ -190,6 +190,7 @@
   * [mouse.down([options])](#mousedownoptions)
   * [mouse.move(x, y[, options])](#mousemovex-y-options)
   * [mouse.up([options])](#mouseupoptions)
+  * [mouse.wheel([options])](#mousewheeloptions)
 - [class: Touchscreen](#class-touchscreen)
   * [touchscreen.tap(x, y)](#touchscreentapx-y)
 - [class: Tracing](#class-tracing)
@@ -2578,6 +2579,14 @@ Dispatches a `mousemove` event.
 - returns: <[Promise]>
 
 Dispatches a `mouseup` event.
+
+#### mouse.wheel([options])
+- `options` <[Object]>
+  - `deltaX` X delta in CSS pixels for mouse wheel event (default: 0).
+  - `deltaY` Y delta in CSS pixels for mouse wheel event (default: 0).
+- returns: <[Promise]>
+
+Dispatches a `mousewheel` event.
 
 ### class: Touchscreen
 

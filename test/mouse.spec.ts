@@ -173,6 +173,33 @@ describe('Mouse', function () {
         throw new Error(modifiers[modifier] + ' should be false');
     }
   });
+  it('should send mouse wheel events', async () => {
+    const { page, server } = getTestState();
+
+    await page.goto(server.PREFIX + '/input/wheel.html');
+    const elem = await page.$('div');
+    const boundingBoxBefore = await elem.boundingBox();
+    expect(boundingBoxBefore).toEqual({
+      x: 342.5,
+      y: 242.5,
+      width: 115,
+      height: 115,
+    });
+
+    await page.mouse.move(
+      boundingBoxBefore.x + boundingBoxBefore.width / 2,
+      boundingBoxBefore.y + boundingBoxBefore.height / 2
+    );
+
+    await page.mouse.wheel({ deltaY: -100 });
+    const boundingBoxAfter = await elem.boundingBox();
+    expect(boundingBoxAfter).toEqual({
+      x: 342.5,
+      y: 242.5,
+      width: 230,
+      height: 230,
+    });
+  });
   itFailsFirefox('should tween mouse movement', async () => {
     const { page } = getTestState();
 
