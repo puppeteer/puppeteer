@@ -13,3 +13,5 @@ frame(): Frame | null;
 
 [Frame](./puppeteer.frame.md) \| null
 
+the frame that initiated the request.
+

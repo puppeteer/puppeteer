@@ -13,3 +13,5 @@ postData(): string | undefined;
 
 string \| undefined
 
+the request's post body, if any.
+

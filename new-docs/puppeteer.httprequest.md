@@ -4,44 +4,49 @@
 
 ## HTTPRequest class
 
+Represents an HTTP request sent by a page.
+
 <b>Signature:</b>
 
 ```typescript
 export declare class HTTPRequest 
 ```
 
-## Constructors
+## Remarks
 
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(client, frame, interceptionId, allowInterception, event, redirectChain)](./puppeteer.httprequest._constructor_.md) |  | Constructs a new instance of the <code>HTTPRequest</code> class |
+Whenever the page sends a request, such as for a network resource, the following events are emitted by Puppeteer's `page`<!-- -->:
 
-## Properties
+- `request`<!-- -->: emitted when the request is issued by the page. - `requestfinished` - emitted when the response body is downloaded and the request is complete.
 
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [\_failureText](./puppeteer.httprequest._failuretext.md) |  | any |  |
-|  [\_fromMemoryCache](./puppeteer.httprequest._frommemorycache.md) |  | boolean |  |
-|  [\_interceptionId](./puppeteer.httprequest._interceptionid.md) |  | string |  |
-|  [\_redirectChain](./puppeteer.httprequest._redirectchain.md) |  | [HTTPRequest](./puppeteer.httprequest.md)<!-- -->\[\] |  |
-|  [\_requestId](./puppeteer.httprequest._requestid.md) |  | string |  |
-|  [\_response](./puppeteer.httprequest._response.md) |  | [HTTPResponse](./puppeteer.httpresponse.md) \| null |  |
+If request fails at some point, then instead of `requestfinished` event the `requestfailed` event is emitted.
+
+All of these events provide an instance of `HTTPRequest` representing the request that occurred:
+
+```
+page.on('request', request => ...)
+
+```
+NOTE: HTTP Error responses, such as 404 or 503, are still successful responses from HTTP standpoint, so request will complete with `requestfinished` event.
+
+If request gets a 'redirect' response, the request is successfully finished with the `requestfinished` event, and a new request is issued to a redirected url.
+
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `HTTPRequest` class.
 
 ## Methods
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
-|  [abort(errorCode)](./puppeteer.httprequest.abort.md) |  |  |
-|  [continue(overrides)](./puppeteer.httprequest.continue.md) |  |  |
-|  [failure()](./puppeteer.httprequest.failure.md) |  |  |
+|  [abort(errorCode)](./puppeteer.httprequest.abort.md) |  | Aborts a request. |
+|  [continue(overrides)](./puppeteer.httprequest.continue.md) |  | Continues request with optional request overrides. |
+|  [failure()](./puppeteer.httprequest.failure.md) |  | Access information about the request's failure. |
 |  [frame()](./puppeteer.httprequest.frame.md) |  |  |
 |  [headers()](./puppeteer.httprequest.headers.md) |  |  |
 |  [isNavigationRequest()](./puppeteer.httprequest.isnavigationrequest.md) |  |  |
 |  [method()](./puppeteer.httprequest.method.md) |  |  |
 |  [postData()](./puppeteer.httprequest.postdata.md) |  |  |
 |  [redirectChain()](./puppeteer.httprequest.redirectchain.md) |  |  |
-|  [resourceType()](./puppeteer.httprequest.resourcetype.md) |  |  |
-|  [respond(response)](./puppeteer.httprequest.respond.md) |  |  |
+|  [resourceType()](./puppeteer.httprequest.resourcetype.md) |  | Contains the request's resource type as it was perceived by the rendering engine. |
+|  [respond(response)](./puppeteer.httprequest.respond.md) |  | Fulfills a request with the given response. |
 |  [response()](./puppeteer.httprequest.response.md) |  |  |
 |  [url()](./puppeteer.httprequest.url.md) |  |  |
 

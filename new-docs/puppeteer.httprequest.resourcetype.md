@@ -4,6 +4,8 @@
 
 ## HTTPRequest.resourceType() method
 
+Contains the request's resource type as it was perceived by the rendering engine.
+
 <b>Signature:</b>
 
 ```typescript
@@ -12,4 +14,9 @@ resourceType(): string;
 <b>Returns:</b>
 
 string
+
+one of the following: `document`<!-- -->, `stylesheet`<!-- -->, `image`<!-- -->, `media`<!-- -->, `font`<!-- -->, `script`<!-- -->, `texttrack`<!-- -->, `xhr`<!-- -->, `fetch`<!-- -->, `eventsource`<!-- -->, `websocket`<!-- -->, `manifest`<!-- -->, `other`<!-- -->.
+
+## Remarks
+
 

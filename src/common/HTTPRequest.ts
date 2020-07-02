@@ -20,13 +20,87 @@ import { assert } from './assert';
 import { helper, debugError } from './helper';
 import Protocol from '../protocol';
 
-export class HTTPRequest {
-  _requestId: string;
-  _interceptionId: string;
-  _failureText = null;
-  _response: HTTPResponse | null = null;
+/**
+ * @public
+ */
+export interface ContinueRequestOverrides {
+  /**
+   * If set, the request URL will change. This is not a redirect.
+   */
+  url?: string;
+  method?: string;
+  postData?: string;
+  headers?: Record<string, string>;
+}
 
+/**
+ * Required response data to fulfill a request with.
+ *
+ * @public
+ */
+export interface ResponseForRequest {
+  status: number;
+  headers: Record<string, string>;
+  contentType: string;
+  body: string | Buffer;
+}
+
+/**
+ *
+ * Represents an HTTP request sent by a page.
+ * @remarks
+ *
+ * Whenever the page sends a request, such as for a network resource, the
+ * following events are emitted by Puppeteer's `page`:
+ *
+ * - `request`:  emitted when the request is issued by the page.
+ * - `requestfinished` - emitted when the response body is downloaded and the
+ *   request is complete.
+ *
+ * If request fails at some point, then instead of `requestfinished` event the
+ * `requestfailed` event is emitted.
+ *
+ * All of these events provide an instance of `HTTPRequest` representing the
+ * request that occurred:
+ *
+ * ```
+ * page.on('request', request => ...)
+ * ```
+ *
+ * NOTE: HTTP Error responses, such as 404 or 503, are still successful
+ * responses from HTTP standpoint, so request will complete with
+ * `requestfinished` event.
+ *
+ * If request gets a 'redirect' response, the request is successfully finished
+ * with the `requestfinished` event, and a new request is issued to a
+ * redirected url.
+ *
+ * @public
+ */
+export class HTTPRequest {
+  /**
+   * @internal
+   */
+  _requestId: string;
+  /**
+   * @internal
+   */
+  _interceptionId: string;
+  /**
+   * @internal
+   */
+  _failureText = null;
+  /**
+   * @internal
+   */
+  _response: HTTPResponse | null = null;
+  /**
+   * @internal
+   */
   _fromMemoryCache = false;
+  /**
+   * @internal
+   */
   _redirectChain: HTTPRequest[];
 
   private _client: CDPSession;
@@ -41,6 +115,9 @@ export class HTTPRequest {
   private _headers: Record<string, string> = {};
   private _frame: Frame;
 
+  /**
+   * @internal
+   */
   constructor(
     client: CDPSession,
     frame: Frame,
@@ -66,44 +143,120 @@ export class HTTPRequest {
       this._headers[key.toLowerCase()] = event.request.headers[key];
   }
 
+  /**
+   * @returns the URL of the request
+   */
   url(): string {
     return this._url;
   }
 
+  /**
+   * Contains the request's resource type as it was perceived by the rendering
+   * engine.
+   * @remarks
+   * @returns one of the following: `document`, `stylesheet`, `image`, `media`,
+   * `font`, `script`, `texttrack`, `xhr`, `fetch`, `eventsource`, `websocket`,
+   * `manifest`, `other`.
+   */
   resourceType(): string {
+    // TODO (@jackfranklin): protocol.d.ts has a type for this, but all the
+    // string values are uppercase. The Puppeteer docs explicitly say the
+    // potential values are all lower case, and the constructor takes the event
+    // type and calls toLowerCase() on it, so we can't reuse the type from the
+    // protocol.d.ts. Why do we lower case?
     return this._resourceType;
   }
 
+  /**
+   * @returns the method used (`GET`, `POST`, etc.)
+   */
   method(): string {
     return this._method;
   }
 
+  /**
+   * @returns the request's post body, if any.
+   */
   postData(): string | undefined {
     return this._postData;
   }
 
+  /**
+   * @returns an object with HTTP headers associated with the request. All
+   * header names are lower-case.
+   */
   headers(): Record<string, string> {
     return this._headers;
   }
 
+  /**
+   * @returns the response for this request, if a response has been received.
+   */
   response(): HTTPResponse | null {
     return this._response;
   }
 
+  /**
+   * @returns the frame that initiated the request.
+   */
   frame(): Frame | null {
     return this._frame;
   }
 
+  /**
+   * @returns true if the request is the driver of the current frame's navigation.
+   */
   isNavigationRequest(): boolean {
     return this._isNavigationRequest;
   }
 
+  /**
+   * @remarks
+   *
+   * `redirectChain` is shared between all the requests of the same chain.
+   *
+   * For example, if the website `http://example.com` has a single redirect to
+   * `https://example.com`, then the chain will contain one request:
+   *
+   * ```js
+   * const response = await page.goto('http://example.com');
+   * const chain = response.request().redirectChain();
+   * console.log(chain.length); // 1
+   * console.log(chain[0].url()); // 'http://example.com'
+   * ```
+   *
+   * If the website `https://google.com` has no redirects, then the chain will be empty:
+   *
+   * ```js
+   * const response = await page.goto('https://google.com');
+   * const chain = response.request().redirectChain();
+   * console.log(chain.length); // 0
+   * ```
+   *
+   * @returns the chain of requests - if a server responds with at least a
+   * single redirect, this chain will contain all requests that were redirected.
+   */
   redirectChain(): HTTPRequest[] {
     return this._redirectChain.slice();
   }
 
   /**
-   * @returns {?{errorText: string}}
+   * Access information about the request's failure.
+   *
+   * @remarks
+   *
+   * Example of logging all failed requests:
+   *
+   * ```js
+   * page.on('requestfailed', request => {
+   *   console.log(request.url() + ' ' + request.failure().errorText);
+   * });
+   * ```
+   *
+   * @returns `null` unless the request failed. If the request fails this can
+   * return an object with `errorText` containing a human-readable error
+   * message, e.g. `net::ERR_FAILED`. It is not guaranteeded that there will be
+   * failure text if the request fails.
    */
   failure(): { errorText: string } | null {
     if (!this._failureText) return null;
@@ -112,14 +265,32 @@ export class HTTPRequest {
     };
   }
 
-  async continue(
-    overrides: {
-      url?: string;
-      method?: string;
-      postData?: string;
-      headers?: Record<string, string>;
-    } = {}
-  ): Promise<void> {
+  /**
+   * Continues request with optional request overrides.
+   *
+   * @remarks
+   *
+   * To use this, request
+   * interception should be enabled with {@link Page.setRequestInterception}.
+   *
+   * Exception is immediately thrown if the request interception is not enabled.
+   *
+   * @example
+   * ```js
+   * await page.setRequestInterception(true);
+   * page.on('request', request => {
+   *   // Override headers
+   *   const headers = Object.assign({}, request.headers(), {
+   *     foo: 'bar', // set "foo" header
+   *     origin: undefined, // remove "origin" header
+   *   });
+   *   request.continue({headers});
+   * });
+   * ```
+   *
+   * @param overrides - optional overrides to apply to the request.
+   */
+  async continue(overrides: ContinueRequestOverrides = {}): Promise<void> {
     // Request interception is not supported for data: urls.
     if (this._url.startsWith('data:')) return;
     assert(this._allowInterception, 'Request Interception is not enabled!');
@@ -142,12 +313,35 @@ export class HTTPRequest {
       });
   }
 
-  async respond(response: {
-    status: number;
-    headers: Record<string, string>;
-    contentType: string;
-    body: string | Buffer;
-  }): Promise<void> {
+  /**
+   * Fulfills a request with the given response.
+   *
+   * @remarks
+   *
+   * To use this, request
+   * interception should be enabled with {@link Page.setRequestInterception}.
+   *
+   * Exception is immediately thrown if the request interception is not enabled.
+   *
+   * @example
+   * An example of fulfilling all requests with 404 responses:
+   * ```js
+   * await page.setRequestInterception(true);
+   * page.on('request', request => {
+   *   request.respond({
+   *     status: 404,
+   *     contentType: 'text/plain',
+   *     body: 'Not Found!'
+   *   });
+   * });
+   * ```
+   *
+   * NOTE: Mocking responses for dataURL requests is not supported.
+   * Calling `request.respond` for a dataURL request is a noop.
+   *
+   * @param response - the response to fulfill the request with.
+   */
+  async respond(response: ResponseForRequest): Promise<void> {
     // Mocking responses for dataURL requests is not currently supported.
     if (this._url.startsWith('data:')) return;
     assert(this._allowInterception, 'Request Interception is not enabled!');
@@ -187,6 +381,16 @@ export class HTTPRequest {
       });
   }
 
+  /**
+   * Aborts a request.
+   *
+   * @remarks
+   * To use this, request interception should be enabled with
+   * {@link Page.setRequestInterception}. If it is not enabled, this method will
+   * throw an exception immediately.
+   *
+   * @param errorCode - optional error code to provide.
+   */
   async abort(errorCode: ErrorCode = 'failed'): Promise<void> {
     // Request interception is not supported for data: urls.
     if (this._url.startsWith('data:')) return;
@@ -209,7 +413,10 @@ export class HTTPRequest {
   }
 }
 
-type ErrorCode =
+/**
+ * @public
+ */
+export type ErrorCode =
   | 'aborted'
   | 'accessdenied'
   | 'addressunreachable'

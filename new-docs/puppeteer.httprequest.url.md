@@ -13,3 +13,5 @@ url(): string;
 
 string
 
+the URL of the request
+
