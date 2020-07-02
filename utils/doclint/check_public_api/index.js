@@ -389,6 +389,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Mouse.wheel() options',
+        {
+          actualName: 'Object',
+          expectedName: 'MouseWheelOptions',
+        },
+      ],
+      [
         'Method Tracing.start() options',
         {
           actualName: 'Object',

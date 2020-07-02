@@ -16,7 +16,7 @@ wheel(options?: MouseWheelOptions): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | MouseWheelOptions | Optional: <code>MouseWheelOptions</code>. |
+|  options | [MouseWheelOptions](./puppeteer.mousewheeloptions.md) | Optional: <code>MouseWheelOptions</code>. |
 
 <b>Returns:</b>
 
