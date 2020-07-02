@@ -179,9 +179,7 @@ describe('Mouse', function () {
     await page.goto(server.PREFIX + '/input/wheel.html');
     const elem = await page.$('div');
     const boundingBoxBefore = await elem.boundingBox();
-    expect(boundingBoxBefore).toEqual({
-      x: 342.5,
-      y: 242.5,
+    expect(boundingBoxBefore).toMatchObject({
       width: 115,
       height: 115,
     });
@@ -193,9 +191,7 @@ describe('Mouse', function () {
 
     await page.mouse.wheel({ deltaY: -100 });
     const boundingBoxAfter = await elem.boundingBox();
-    expect(boundingBoxAfter).toEqual({
-      x: 342.5,
-      y: 242.5,
+    expect(boundingBoxAfter).toMatchObject({
       width: 230,
       height: 230,
     });
