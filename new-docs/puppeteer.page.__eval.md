@@ -51,7 +51,9 @@ If you are using TypeScript, you may have to provide an explicit type to the fir
 ```
 // if you don't provide HTMLInputElement here, TS will error
 // as `value` is not on `Element`
-await page.$$eval('input', (elements: HTMLInputElement[]) => ...);
+await page.$$eval('input', (elements: HTMLInputElement[]) => {
+  return elements.map(e => e.value);
+});
 
 ```
 The compiler should be able to infer the return type from the `pageFunction` you provide. If it is unable to, you can use the generic type to tell the compiler what return type you expect from `$$eval`<!-- -->:

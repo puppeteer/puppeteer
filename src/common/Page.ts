@@ -815,7 +815,9 @@ export class Page extends EventEmitter {
    * ```
    * // if you don't provide HTMLInputElement here, TS will error
    * // as `value` is not on `Element`
-   * await page.$$eval('input', (elements: HTMLInputElement[]) => ...);
+   * await page.$$eval('input', (elements: HTMLInputElement[]) => {
+   *   return elements.map(e => e.value);
+   * });
    * ```
    *
    * The compiler should be able to infer the return type
