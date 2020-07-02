@@ -496,11 +496,14 @@ export class Frame {
     return this._mainWorld.$eval<ReturnType>(selector, pageFunction, ...args);
   }
 
-  async $$eval<ReturnType extends any>(
+  async $$eval<ReturnType>(
     selector: string,
-    pageFunction: EvaluateFn | string,
+    pageFunction: (
+      elements: Element[],
+      ...args: unknown[]
+    ) => ReturnType | Promise<ReturnType>,
     ...args: SerializableOrJSHandle[]
-  ): Promise<ReturnType> {
+  ): Promise<WrapElementHandle<ReturnType>> {
     return this._mainWorld.$$eval<ReturnType>(selector, pageFunction, ...args);
   }
 

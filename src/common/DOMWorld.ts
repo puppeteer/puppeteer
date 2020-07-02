@@ -172,11 +172,14 @@ export class DOMWorld {
     return document.$eval<ReturnType>(selector, pageFunction, ...args);
   }
 
-  async $$eval<ReturnType extends any>(
+  async $$eval<ReturnType>(
     selector: string,
-    pageFunction: EvaluateFn | string,
+    pageFunction: (
+      elements: Element[],
+      ...args: unknown[]
+    ) => ReturnType | Promise<ReturnType>,
     ...args: SerializableOrJSHandle[]
-  ): Promise<ReturnType> {
+  ): Promise<WrapElementHandle<ReturnType>> {
     const document = await this._document();
     const value = await document.$$eval<ReturnType>(
       selector,
