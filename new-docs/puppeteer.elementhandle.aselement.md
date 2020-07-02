@@ -7,9 +7,9 @@
 <b>Signature:</b>
 
 ```typescript
-asElement(): ElementHandle | null;
+asElement(): ElementHandle<ElementType> | null;
 ```
 <b>Returns:</b>
 
-[ElementHandle](./puppeteer.elementhandle.md) \| null
+[ElementHandle](./puppeteer.elementhandle.md)<!-- -->&lt;ElementType&gt; \| null
 

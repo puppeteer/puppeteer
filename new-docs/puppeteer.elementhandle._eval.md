@@ -11,7 +11,7 @@ If `pageFunction` returns a Promise, then `frame.$eval` would wait for the promi
 <b>Signature:</b>
 
 ```typescript
-$eval<ReturnType extends any>(selector: string, pageFunction: EvaluateFn | string, ...args: SerializableOrJSHandle[]): Promise<ReturnType>;
+$eval<ReturnType>(selector: string, pageFunction: (element: Element, ...args: unknown[]) => ReturnType | Promise<ReturnType>, ...args: SerializableOrJSHandle[]): Promise<WrapElementHandle<ReturnType>>;
 ```
 
 ## Parameters
@@ -19,12 +19,12 @@ $eval<ReturnType extends any>(selector: string, pageFunction: EvaluateFn | strin
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  selector | string |  |
-|  pageFunction | [EvaluateFn](./puppeteer.evaluatefn.md) \| string |  |
+|  pageFunction | (element: Element, ...args: unknown\[\]) =&gt; ReturnType \| Promise&lt;ReturnType&gt; |  |
 |  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] |  |
 
 <b>Returns:</b>
 
-Promise&lt;ReturnType&gt;
+Promise&lt;[WrapElementHandle](./puppeteer.wrapelementhandle.md)<!-- -->&lt;ReturnType&gt;&gt;
 
 ## Example
 

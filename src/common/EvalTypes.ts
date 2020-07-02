@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JSHandle } from './JSHandle';
+import { JSHandle, ElementHandle } from './JSHandle';
 
 /**
  * @public
@@ -61,3 +61,15 @@ export interface JSONObject {
  * @public
  */
 export type SerializableOrJSHandle = Serializable | JSHandle;
+
+/**
+ *  Wraps a DOM element into an ElementHandle instance
+ * @public
+ **/
+export type WrapElementHandle<X> = X extends Element ? ElementHandle<X> : X;
+
+/**
+ *  Unwraps a DOM element out of an ElementHandle instance
+ * @public
+ **/
+export type UnwrapElementHandle<X> = X extends ElementHandle<infer E> ? E : X;

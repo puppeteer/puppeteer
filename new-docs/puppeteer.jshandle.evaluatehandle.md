@@ -9,7 +9,7 @@ This method passes this handle as the first argument to `pageFunction`<!-- -->.
 <b>Signature:</b>
 
 ```typescript
-evaluateHandle<HandleType extends JSHandle | ElementHandle = JSHandle>(pageFunction: EvaluateHandleFn, ...args: SerializableOrJSHandle[]): Promise<HandleType>;
+evaluateHandle<HandleType extends JSHandle = JSHandle>(pageFunction: EvaluateHandleFn, ...args: SerializableOrJSHandle[]): Promise<HandleType>;
 ```
 
 ## Parameters

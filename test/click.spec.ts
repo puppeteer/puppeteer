@@ -322,7 +322,7 @@ describe('Page.click', function () {
       server.CROSS_PROCESS_PREFIX + '/input/button.html'
     );
     const frame = page.frames()[1];
-    await frame.$eval('button', (button) =>
+    await frame.$eval('button', (button: HTMLElement) =>
       button.style.setProperty('position', 'fixed')
     );
     await frame.click('button');

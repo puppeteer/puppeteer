@@ -211,7 +211,7 @@ describe('Page', function () {
       );
       const [popup] = await Promise.all([
         new Promise<Page>((x) => page.once('popup', x)),
-        page.$eval('a', (a) => a.click()),
+        page.$eval('a', (a: HTMLAnchorElement) => a.click()),
       ]);
       expect(await page.evaluate(() => !!window.opener)).toBe(false);
       expect(await popup.evaluate(() => !!window.opener)).toBe(false);
@@ -1616,7 +1616,7 @@ describe('Page', function () {
       await page.select('select', 'blue', 'black', 'magenta');
       await page.select('select');
       expect(
-        await page.$eval('select', (select) =>
+        await page.$eval('select', (select: HTMLSelectElement) =>
           Array.from(select.options).every(
             (option: HTMLOptionElement) => !option.selected
           )
@@ -1630,7 +1630,7 @@ describe('Page', function () {
       await page.select('select', 'blue', 'black', 'magenta');
       await page.select('select');
       expect(
-        await page.$eval('select', (select) =>
+        await page.$eval('select', (select: HTMLSelectElement) =>
           Array.from(select.options).every(
             (option: HTMLOptionElement) => !option.selected
           )

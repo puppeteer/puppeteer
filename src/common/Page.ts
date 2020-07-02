@@ -46,6 +46,7 @@ import {
   EvaluateFn,
   SerializableOrJSHandle,
   EvaluateHandleFn,
+  WrapElementHandle,
 } from './EvalTypes';
 
 const writeFileAsync = promisify(fs.writeFile);
@@ -705,11 +706,82 @@ export class Page extends EventEmitter {
     return context.queryObjects(prototypeHandle);
   }
 
-  async $eval<ReturnType extends any>(
+  /**
+   * This method runs `document.querySelector` within the page and passes the
+   * result as the first argument to the `pageFunction`.
+   *
+   * @remarks
+   *
+   * If no element is found matching `selector`, the method will throw an error.
+   *
+   * If `pageFunction` returns a promise `$eval` will wait for the promise to
+   * resolve and then return its value.
+   *
+   * @example
+   *
+   * ```
+   * const searchValue = await page.$eval('#search', el => el.value);
+   * const preloadHref = await page.$eval('link[rel=preload]', el => el.href);
+   * const html = await page.$eval('.main-container', el => el.outerHTML);
+   * ```
+   *
+   * If you are using TypeScript, you may have to provide an explicit type to the
+   * first argument of the `pageFunction`.
+   * By default it is typed as `Element`, but you may need to provide a more
+   * specific sub-type:
+   *
+   * @example
+   *
+   * ```
+   * // if you don't provide HTMLInputElement here, TS will error
+   * // as `value` is not on `Element`
+   * const searchValue = await page.$eval('#search', (el: HTMLInputElement) => el.value);
+   * ```
+   *
+   * The compiler should be able to infer the return type
+   * from the `pageFunction` you provide. If it is unable to, you can use the generic
+   * type to tell the compiler what return type you expect from `$eval`:
+   *
+   * @example
+   *
+   * ```
+   * // The compiler can infer the return type in this case, but if it can't
+   * // or if you want to be more explicit, provide it as the generic type.
+   * const searchValue = await page.$eval<string>(
+   *  '#search', (el: HTMLInputElement) => el.value
+   * );
+   * ```
+   *
+   * @param selector the
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
+   * to query for
+   * @param pageFunction the function to be evaluated in the page context. Will
+   * be passed the result of `document.querySelector(selector)` as its first
+   * argument.
+   * @param args any additional arguments to pass through to `pageFunction`.
+   *
+   * @returns The result of calling `pageFunction`. If it returns an element it
+   * is wrapped in an {@link ElementHandle}, else the raw value itself is
+   * returned.
+   */
+  async $eval<ReturnType>(
     selector: string,
-    pageFunction: EvaluateFn | string,
+    pageFunction: (
+      element: Element,
+      /* Unfortunately this has to be unknown[] because it's hard to get
+       * TypeScript to understand that the arguments will be left alone unless
+       * they are an ElementHandle, in which case they will be unwrapped.
+       * The nice thing about unknown vs any is that unknown will force the user
+       * to type the item before using it to avoid errors.
+       *
+       * TODO(@jackfranklin): We could fix this by using overloads like
+       * DefinitelyTyped does:
+       * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/puppeteer/index.d.ts#L114
+       */
+      ...args: unknown[]
+    ) => ReturnType | Promise<ReturnType>,
     ...args: SerializableOrJSHandle[]
-  ): Promise<ReturnType> {
+  ): Promise<WrapElementHandle<ReturnType>> {
     return this.mainFrame().$eval<ReturnType>(selector, pageFunction, ...args);
   }
 

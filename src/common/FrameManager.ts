@@ -33,6 +33,7 @@ import {
   EvaluateFn,
   SerializableOrJSHandle,
   EvaluateHandleFn,
+  WrapElementHandle,
 } from './EvalTypes';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
@@ -457,11 +458,14 @@ export class Frame {
     return this._mainWorld.$x(expression);
   }
 
-  async $eval<ReturnType extends any>(
+  async $eval<ReturnType>(
     selector: string,
-    pageFunction: EvaluateFn | string,
+    pageFunction: (
+      element: Element,
+      ...args: unknown[]
+    ) => ReturnType | Promise<ReturnType>,
     ...args: SerializableOrJSHandle[]
-  ): Promise<ReturnType> {
+  ): Promise<WrapElementHandle<ReturnType>> {
     return this._mainWorld.$eval<ReturnType>(selector, pageFunction, ...args);
   }
 

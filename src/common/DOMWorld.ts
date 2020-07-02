@@ -28,6 +28,7 @@ import {
   EvaluateFn,
   SerializableOrJSHandle,
   EvaluateHandleFn,
+  WrapElementHandle,
 } from './EvalTypes';
 import { isNode } from '../environment';
 
@@ -153,11 +154,14 @@ export class DOMWorld {
     return value;
   }
 
-  async $eval<ReturnType extends any>(
+  async $eval<ReturnType>(
     selector: string,
-    pageFunction: EvaluateFn | string,
+    pageFunction: (
+      element: Element,
+      ...args: unknown[]
+    ) => ReturnType | Promise<ReturnType>,
     ...args: SerializableOrJSHandle[]
-  ): Promise<ReturnType> {
+  ): Promise<WrapElementHandle<ReturnType>> {
     const document = await this._document();
     return document.$eval<ReturnType>(selector, pageFunction, ...args);
   }

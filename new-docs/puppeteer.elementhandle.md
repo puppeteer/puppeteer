@@ -9,7 +9,7 @@ ElementHandle represents an in-page DOM element.
 <b>Signature:</b>
 
 ```typescript
-export declare class ElementHandle extends JSHandle 
+export declare class ElementHandle<ElementType extends Element = Element> extends JSHandle 
 ```
 <b>Extends:</b> [JSHandle](./puppeteer.jshandle.md)
 
@@ -33,6 +33,8 @@ const puppeteer = require('puppeteer');
 ElementHandle prevents the DOM element from being garbage-collected unless the handle is [disposed](./puppeteer.jshandle.dispose.md)<!-- -->. ElementHandles are auto-disposed when their origin frame gets navigated.
 
 ElementHandle instances can be used as arguments in [Page.$eval()](./puppeteer.page._eval.md) and [Page.evaluate()](./puppeteer.page.evaluate.md) methods.
+
+If you're using TypeScript, ElementHandle takes a generic argument that denotes the type of element the handle is holding within. For example, if you have a handle to a `<select>` element, you can type it as `ElementHandle<HTMLSelectElement>` and you get some nicer type checks.
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `ElementHandle` class.
 

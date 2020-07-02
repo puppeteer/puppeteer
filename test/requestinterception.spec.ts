@@ -65,7 +65,7 @@ describe('request interception', function () {
         </form>
       `);
       await Promise.all([
-        page.$eval('form', (form) => form.submit()),
+        page.$eval('form', (form: HTMLFormElement) => form.submit()),
         page.waitForNavigation(),
       ]);
     });
@@ -454,7 +454,7 @@ describe('request interception', function () {
       page.on('request', async (r) => (request = r));
       page.$eval(
         'iframe',
-        (frame, url) => (frame.src = url),
+        (frame: HTMLIFrameElement, url: string) => (frame.src = url),
         server.EMPTY_PAGE
       ),
         // Wait for request interception.

@@ -28,6 +28,7 @@ import {
   SerializableOrJSHandle,
   EvaluateFnReturnType,
   EvaluateHandleFn,
+  WrapElementHandle,
 } from './EvalTypes';
 
 export interface BoxModel {
@@ -175,7 +176,7 @@ export class JSHandle {
    *
    * See {@link Page.evaluateHandle} for more details.
    */
-  async evaluateHandle<HandleType extends JSHandle | ElementHandle = JSHandle>(
+  async evaluateHandle<HandleType extends JSHandle = JSHandle>(
     pageFunction: EvaluateHandleFn,
     ...args: SerializableOrJSHandle[]
   ): Promise<HandleType> {
@@ -316,9 +317,16 @@ export class JSHandle {
  * ElementHandle instances can be used as arguments in {@link Page.$eval} and
  * {@link Page.evaluate} methods.
  *
+ * If you're using TypeScript, ElementHandle takes a generic argument that
+ * denotes the type of element the handle is holding within. For example, if you
+ * have a handle to a `<select>` element, you can type it as
+ * `ElementHandle<HTMLSelectElement>` and you get some nicer type checks.
+ *
  * @public
  */
-export class ElementHandle extends JSHandle {
+export class ElementHandle<
+  ElementType extends Element = Element
+> extends JSHandle {
   private _page: Page;
   private _frameManager: FrameManager;
 
@@ -339,7 +347,7 @@ export class ElementHandle extends JSHandle {
     this._frameManager = frameManager;
   }
 
-  asElement(): ElementHandle | null {
+  asElement(): ElementHandle<ElementType> | null {
     return this;
   }
 
@@ -358,7 +366,7 @@ export class ElementHandle extends JSHandle {
   private async _scrollIntoViewIfNeeded(): Promise<void> {
     const error = await this.evaluate<
       (
-        element: HTMLElement,
+        element: Element,
         pageJavascriptEnabled: boolean
       ) => Promise<string | false>
     >(async (element, pageJavascriptEnabled) => {
@@ -512,11 +520,9 @@ export class ElementHandle extends JSHandle {
           '"'
       );
 
-    /* TODO(jacktfranklin@): once ExecutionContext is TypeScript, and
-     * its evaluate function is properly typed with generics we can
-     * return here and remove the typecasting
-     */
-    return this.evaluate((element: HTMLSelectElement, values: string[]) => {
+    return this.evaluate<
+      (element: HTMLSelectElement, values: string[]) => string[]
+    >((element, values) => {
       if (element.nodeName.toLowerCase() !== 'select')
         throw new Error('Element is not a <select> element.');
 
@@ -582,7 +588,7 @@ export class ElementHandle extends JSHandle {
     // not actually update the files in that case, so the solution is to eval the element
     // value to a new FileList directly.
     if (files.length === 0) {
-      await this.evaluate((element: HTMLInputElement) => {
+      await this.evaluate<(element: HTMLInputElement) => void>((element) => {
         element.files = new DataTransfer().files;
 
         // Dispatch events for this case because it should behave akin to a user action.
@@ -821,22 +827,36 @@ export class ElementHandle extends JSHandle {
    * expect(await tweetHandle.$eval('.retweets', node => node.innerText)).toBe('10');
    * ```
    */
-  async $eval<ReturnType extends any>(
+  async $eval<ReturnType>(
     selector: string,
-    pageFunction: EvaluateFn | string,
+    pageFunction: (
+      element: Element,
+      ...args: unknown[]
+    ) => ReturnType | Promise<ReturnType>,
     ...args: SerializableOrJSHandle[]
-  ): Promise<ReturnType> {
+  ): Promise<WrapElementHandle<ReturnType>> {
     const elementHandle = await this.$(selector);
     if (!elementHandle)
       throw new Error(
         `Error: failed to find element matching selector "${selector}"`
       );
-    const result = await elementHandle.evaluate<(...args: any[]) => ReturnType>(
-      pageFunction,
-      ...args
-    );
+    const result = await elementHandle.evaluate<
+      (
+        element: Element,
+        ...args: SerializableOrJSHandle[]
+      ) => ReturnType | Promise<ReturnType>
+    >(pageFunction, ...args);
     await elementHandle.dispose();
-    return result;
+
+    /**
+     * This as is a little unfortunate but helps TS understand the behavour of
+     * `elementHandle.evaluate`. If evalute returns an element it will return an
+     * ElementHandle instance, rather than the plain object. All the
+     * WrapElementHandle type does is wrap ReturnType into
+     * ElementHandle<ReturnType> if it is an ElementHandle, or leave it alone as
+     * ReturnType if it isn't.
+     */
+    return result as WrapElementHandle<ReturnType>;
   }
 
   /**

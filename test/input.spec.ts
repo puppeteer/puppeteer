@@ -140,7 +140,7 @@ describe('input tests', function () {
       const [fileChooser1, fileChooser2] = await Promise.all([
         page.waitForFileChooser(),
         page.waitForFileChooser(),
-        page.$eval('input', (input) => input.click()),
+        page.$eval('input', (input: HTMLInputElement) => input.click()),
       ]);
       expect(fileChooser1 === fileChooser2).toBe(true);
     });
@@ -161,10 +161,18 @@ describe('input tests', function () {
         chooser.accept([FILE_TO_UPLOAD]),
         new Promise((x) => page.once('metrics', x)),
       ]);
-      expect(await page.$eval('input', (input) => input.files.length)).toBe(1);
-      expect(await page.$eval('input', (input) => input.files[0].name)).toBe(
-        'file-to-upload.txt'
-      );
+      expect(
+        await page.$eval(
+          'input',
+          (input: HTMLInputElement) => input.files.length
+        )
+      ).toBe(1);
+      expect(
+        await page.$eval(
+          'input',
+          (input: HTMLInputElement) => input.files[0].name
+        )
+      ).toBe('file-to-upload.txt');
     });
     it('should be able to read selected file', async () => {
       const { page } = getTestState();
@@ -174,7 +182,7 @@ describe('input tests', function () {
         .waitForFileChooser()
         .then((chooser) => chooser.accept([FILE_TO_UPLOAD]));
       expect(
-        await page.$eval('input', async (picker) => {
+        await page.$eval('input', async (picker: HTMLInputElement) => {
           picker.click();
           await new Promise((x) => (picker.oninput = x));
           const reader = new FileReader();
@@ -192,7 +200,7 @@ describe('input tests', function () {
         .waitForFileChooser()
         .then((chooser) => chooser.accept([FILE_TO_UPLOAD]));
       expect(
-        await page.$eval('input', async (picker) => {
+        await page.$eval('input', async (picker: HTMLInputElement) => {
           picker.click();
           await new Promise((x) => (picker.oninput = x));
           return picker.files.length;
@@ -200,7 +208,7 @@ describe('input tests', function () {
       ).toBe(1);
       page.waitForFileChooser().then((chooser) => chooser.accept([]));
       expect(
-        await page.$eval('input', async (picker) => {
+        await page.$eval('input', async (picker: HTMLInputElement) => {
           picker.click();
           await new Promise((x) => (picker.oninput = x));
           return picker.files.length;
@@ -247,7 +255,7 @@ describe('input tests', function () {
       await page.setContent(`<input type=file>`);
       const [fileChooser] = await Promise.all([
         page.waitForFileChooser(),
-        page.$eval('input', (input) => input.click()),
+        page.$eval('input', (input: HTMLInputElement) => input.click()),
       ]);
       await fileChooser.accept([]);
       let error = null;
@@ -268,13 +276,13 @@ describe('input tests', function () {
       await page.setContent(`<input type=file>`);
       const [fileChooser1] = await Promise.all([
         page.waitForFileChooser(),
-        page.$eval('input', (input) => input.click()),
+        page.$eval('input', (input: HTMLInputElement) => input.click()),
       ]);
       await fileChooser1.cancel();
       // If this resolves, than we successfully canceled file chooser.
       await Promise.all([
         page.waitForFileChooser(),
-        page.$eval('input', (input) => input.click()),
+        page.$eval('input', (input: HTMLInputElement) => input.click()),
       ]);
     });
     it('should fail when canceling file chooser twice', async () => {
@@ -283,7 +291,7 @@ describe('input tests', function () {
       await page.setContent(`<input type=file>`);
       const [fileChooser] = await Promise.all([
         page.waitForFileChooser(),
-        page.$eval('input', (input) => input.click()),
+        page.$eval('input', (input: HTMLInputElement) => input.click()),
       ]);
       await fileChooser.cancel();
       let error = null;
