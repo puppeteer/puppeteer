@@ -15,7 +15,7 @@ waitForXPath(xpath: string, options?: WaitForSelectorOptions): Promise<ElementHa
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  xpath | string |  |
-|  options | WaitForSelectorOptions |  |
+|  options | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) |  |
 
 <b>Returns:</b>
 

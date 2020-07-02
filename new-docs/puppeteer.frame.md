@@ -10,28 +10,9 @@
 export declare class Frame 
 ```
 
-## Constructors
+## Remarks
 
-|  Constructor | Modifiers | Description |
-|  --- | --- | --- |
-|  [(constructor)(frameManager, client, parentFrame, frameId)](./puppeteer.frame._constructor_.md) |  | Constructs a new instance of the <code>Frame</code> class |
-
-## Properties
-
-|  Property | Modifiers | Type | Description |
-|  --- | --- | --- | --- |
-|  [\_childFrames](./puppeteer.frame._childframes.md) |  | Set&lt;[Frame](./puppeteer.frame.md)<!-- -->&gt; |  |
-|  [\_client](./puppeteer.frame._client.md) |  | [CDPSession](./puppeteer.cdpsession.md) |  |
-|  [\_detached](./puppeteer.frame._detached.md) |  | boolean |  |
-|  [\_frameManager](./puppeteer.frame._framemanager.md) |  | [FrameManager](./puppeteer.framemanager.md) |  |
-|  [\_id](./puppeteer.frame._id.md) |  | string |  |
-|  [\_lifecycleEvents](./puppeteer.frame._lifecycleevents.md) |  | Set&lt;string&gt; |  |
-|  [\_loaderId](./puppeteer.frame._loaderid.md) |  | string |  |
-|  [\_mainWorld](./puppeteer.frame._mainworld.md) |  | DOMWorld |  |
-|  [\_name](./puppeteer.frame._name.md) |  | string |  |
-|  [\_parentFrame](./puppeteer.frame._parentframe.md) |  | [Frame](./puppeteer.frame.md) |  |
-|  [\_secondaryWorld](./puppeteer.frame._secondaryworld.md) |  | DOMWorld |  |
-|  [\_url](./puppeteer.frame._url.md) |  | string |  |
+The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Frame` class.
 
 ## Methods
 

@@ -14,7 +14,7 @@ authenticate(credentials: Credentials): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  credentials | Credentials |  |
+|  credentials | [Credentials](./puppeteer.credentials.md) |  |
 
 <b>Returns:</b>
 
