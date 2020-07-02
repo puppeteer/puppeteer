@@ -17,7 +17,10 @@ import { assert } from './assert';
 import { helper } from './helper';
 import { CDPSession } from './Connection';
 
-interface TracingOptions {
+/**
+ * @public
+ */
+export interface TracingOptions {
   path?: string;
   screenshots?: boolean;
   categories?: string[];
@@ -35,6 +38,8 @@ interface TracingOptions {
  * await page.goto('https://www.google.com');
  * await page.tracing.stop();
  * ```
+ *
+ * @public
  */
 export class Tracing {
   _client: CDPSession;

@@ -14,7 +14,7 @@ defaultArgs(options?: ChromeArgOptions): string[];
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | ChromeArgOptions | Set of configurable options to set on the browser. |
+|  options | [ChromeArgOptions](./puppeteer.chromeargoptions.md) | Set of configurable options to set on the browser. |
 
 <b>Returns:</b>
 

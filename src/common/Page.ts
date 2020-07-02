@@ -23,7 +23,7 @@ import { Connection, CDPSession } from './Connection';
 import { Dialog } from './Dialog';
 import { EmulationManager } from './EmulationManager';
 import { Frame, FrameManager } from './FrameManager';
-import { Keyboard, Mouse, Touchscreen, MouseButtonInput } from './Input';
+import { Keyboard, Mouse, Touchscreen, MouseButton } from './Input';
 import { Tracing } from './Tracing';
 import { assert } from './assert';
 import { helper, debugError } from './helper';
@@ -1557,7 +1557,7 @@ export class Page extends EventEmitter {
     selector: string,
     options: {
       delay?: number;
-      button?: MouseButtonInput;
+      button?: MouseButton;
       clickCount?: number;
     } = {}
   ): Promise<void> {

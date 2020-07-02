@@ -16,6 +16,11 @@
 
 import { Viewport } from '../common/PuppeteerViewport';
 
+/**
+ * Launcher options that only apply to Chrome.
+ *
+ * @public
+ */
 export interface ChromeArgOptions {
   headless?: boolean;
   args?: string[];
@@ -23,6 +28,10 @@ export interface ChromeArgOptions {
   devtools?: boolean;
 }
 
+/**
+ * Generic launch options that can be passed when launching any browser.
+ * @public
+ */
 export interface LaunchOptions {
   executablePath?: string;
   ignoreDefaultArgs?: boolean | string[];
@@ -35,6 +44,10 @@ export interface LaunchOptions {
   pipe?: boolean;
 }
 
+/**
+ * Generic browser options that can be passed when launching any browser.
+ * @public
+ */
 export interface BrowserOptions {
   ignoreHTTPSErrors?: boolean;
   defaultViewport?: Viewport;

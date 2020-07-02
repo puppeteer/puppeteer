@@ -22,6 +22,9 @@ import { Browser, BrowserContext } from './Browser';
 import { Viewport } from './PuppeteerViewport';
 import Protocol from '../protocol';
 
+/**
+ * @public
+ */
 export class Target {
   private _targetInfo: Protocol.Target.TargetInfo;
   private _browserContext: BrowserContext;

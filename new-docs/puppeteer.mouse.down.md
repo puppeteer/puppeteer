@@ -16,7 +16,7 @@ down(options?: MouseOptions): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | MouseOptions | Optional <code>MouseOptions</code>. |
+|  options | [MouseOptions](./puppeteer.mouseoptions.md) | Optional <code>MouseOptions</code>. |
 
 <b>Returns:</b>
 

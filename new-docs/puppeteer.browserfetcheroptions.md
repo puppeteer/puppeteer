@@ -4,6 +4,7 @@
 
 ## BrowserFetcherOptions interface
 
+
 <b>Signature:</b>
 
 ```typescript
@@ -16,6 +17,6 @@ export interface BrowserFetcherOptions
 |  --- | --- | --- |
 |  [host](./puppeteer.browserfetcheroptions.host.md) | string |  |
 |  [path](./puppeteer.browserfetcheroptions.path.md) | string |  |
-|  [platform](./puppeteer.browserfetcheroptions.platform.md) | Platform |  |
+|  [platform](./puppeteer.browserfetcheroptions.platform.md) | [Platform](./puppeteer.platform.md) |  |
 |  [product](./puppeteer.browserfetcheroptions.product.md) | string |  |
 

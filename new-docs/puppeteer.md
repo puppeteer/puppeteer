@@ -50,6 +50,9 @@
 |  [BoundingBox](./puppeteer.boundingbox.md) |  |
 |  [BoxModel](./puppeteer.boxmodel.md) |  |
 |  [BrowserFetcherOptions](./puppeteer.browserfetcheroptions.md) |  |
+|  [BrowserFetcherRevisionInfo](./puppeteer.browserfetcherrevisioninfo.md) |  |
+|  [BrowserOptions](./puppeteer.browseroptions.md) | Generic browser options that can be passed when launching any browser. |
+|  [ChromeArgOptions](./puppeteer.chromeargoptions.md) | Launcher options that only apply to Chrome. |
 |  [ClickOptions](./puppeteer.clickoptions.md) |  |
 |  [ConsoleMessageLocation](./puppeteer.consolemessagelocation.md) |  |
 |  [CoverageEntry](./puppeteer.coverageentry.md) | The CoverageEntry class represents one entry of the coverage report. |
@@ -57,12 +60,15 @@
 |  [GeolocationOptions](./puppeteer.geolocationoptions.md) |  |
 |  [JSCoverageOptions](./puppeteer.jscoverageoptions.md) | Set of configurable options for JS coverage. |
 |  [JSONObject](./puppeteer.jsonobject.md) |  |
-|  [KeyDefinition](./puppeteer.keydefinition.md) | Copyright 2017 Google Inc. All rights reserved.<!-- -->Licensed under the Apache License, Version 2.0 (the 'License'); you may not use this file except in compliance with the License. You may obtain a copy of the License at<!-- -->http://www.apache.org/licenses/LICENSE-2.0<!-- -->Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License. |
+|  [LaunchOptions](./puppeteer.launchoptions.md) | Generic launch options that can be passed when launching any browser. |
 |  [Metrics](./puppeteer.metrics.md) |  |
+|  [MouseOptions](./puppeteer.mouseoptions.md) |  |
 |  [PressOptions](./puppeteer.pressoptions.md) |  |
+|  [ProductLauncher](./puppeteer.productlauncher.md) | Describes a launcher - a class that is able to create and launch a browser instance. |
 |  [RemoteAddress](./puppeteer.remoteaddress.md) |  |
 |  [SerializedAXNode](./puppeteer.serializedaxnode.md) | Represents a Node and the properties of it that are relevant to Accessibility. |
 |  [SnapshotOptions](./puppeteer.snapshotoptions.md) |  |
+|  [TracingOptions](./puppeteer.tracingoptions.md) |  |
 |  [WaitForOptions](./puppeteer.waitforoptions.md) |  |
 |  [WaitForTargetOptions](./puppeteer.waitfortargetoptions.md) |  |
 |  [WaitTimeoutOptions](./puppeteer.waittimeoutoptions.md) |  |
@@ -71,8 +77,8 @@
 
 |  Variable | Description |
 |  --- | --- |
+|  [devicesMap](./puppeteer.devicesmap.md) |  |
 |  [EVALUATION\_SCRIPT\_URL](./puppeteer.evaluation_script_url.md) |  |
-|  [keyDefinitions](./puppeteer.keydefinitions.md) |  |
 |  [puppeteerErrors](./puppeteer.puppeteererrors.md) |  |
 
 ## Type Aliases
@@ -80,12 +86,15 @@
 |  Type Alias | Description |
 |  --- | --- |
 |  [ConsoleMessageType](./puppeteer.consolemessagetype.md) | The supported types for console messages. |
+|  [DevicesMap](./puppeteer.devicesmap.md) |  |
 |  [EvaluateFn](./puppeteer.evaluatefn.md) |  |
 |  [EvaluateFnReturnType](./puppeteer.evaluatefnreturntype.md) |  |
 |  [EvaluateHandleFn](./puppeteer.evaluatehandlefn.md) |  |
 |  [JSONArray](./puppeteer.jsonarray.md) |  |
-|  [KeyInput](./puppeteer.keyinput.md) |  |
-|  [MouseButtonInput](./puppeteer.mousebuttoninput.md) |  |
+|  [KeyInput](./puppeteer.keyinput.md) | All the valid keys that can be passed to functions that take user input, such as [keyboard.press](./puppeteer.keyboard.press.md) |
+|  [MouseButton](./puppeteer.mousebutton.md) |  |
+|  [Platform](./puppeteer.platform.md) | Supported platforms. |
+|  [Product](./puppeteer.product.md) | Supported products. |
 |  [PuppeteerErrors](./puppeteer.puppeteererrors.md) |  |
 |  [Serializable](./puppeteer.serializable.md) |  |
 |  [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md) |  |

@@ -23,8 +23,7 @@ import { ProductLauncher } from '../node/Launcher';
 import { BrowserFetcher, BrowserFetcherOptions } from '../node/BrowserFetcher';
 import { puppeteerErrors, PuppeteerErrors } from './Errors';
 import { ConnectionTransport } from './ConnectionTransport';
-import { devicesMap } from './DeviceDescriptors';
-import { DevicesMap } from './DeviceDescriptors';
+import { devicesMap, DevicesMap } from './DeviceDescriptors';
 import { Browser } from './Browser';
 import {
   registerCustomQueryHandler,
@@ -137,16 +136,14 @@ export class Puppeteer {
   /**
    * @internal
    */
+  get _productName(): string {
+    return this.__productName;
+  }
+
+  // don't need any TSDoc here - because the getter is internal the setter is too.
   set _productName(name: string) {
     if (this.__productName !== name) this._changedProduct = true;
     this.__productName = name;
-  }
-
-  /**
-   * @internal
-   */
-  get _productName(): string {
-    return this.__productName;
   }
 
   /**
@@ -254,7 +251,7 @@ export class Puppeteer {
 
   /**
    *
-   * @param options Set of configurable options to set on the browser.
+   * @param options - Set of configurable options to set on the browser.
    * @returns The default flags that Chromium will be launched with.
    */
   defaultArgs(options: ChromeArgOptions = {}): string[] {
@@ -263,7 +260,7 @@ export class Puppeteer {
 
   /**
    *
-   * @param options Set of configurable options to specify the settings
+   * @param options - Set of configurable options to specify the settings
    * of the BrowserFetcher.
    * @returns A new BrowserFetcher instance.
    */

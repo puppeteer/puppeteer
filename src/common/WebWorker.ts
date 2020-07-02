@@ -21,11 +21,18 @@ import { CDPSession } from './Connection';
 import Protocol from '../protocol';
 import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes';
 
+/**
+ * @internal
+ */
 type ConsoleAPICalledCallback = (
   eventType: string,
   handles: JSHandle[],
   trace: Protocol.Runtime.StackTrace
 ) => void;
+
+/**
+ * @internal
+ */
 type ExceptionThrownCallback = (
   details: Protocol.Runtime.ExceptionDetails
 ) => void;
@@ -124,8 +131,8 @@ export class WebWorker extends EventEmitter {
    * non-serializable value, then `worker.evaluate` resolves to `undefined`.
    * DevTools Protocol also supports transferring some additional values that
    * are not serializable by `JSON`: `-0`, `NaN`, `Infinity`, `-Infinity`, and
-   * bigint literals. Shortcut for `await
-   * worker.executionContext()).evaluate(pageFunction, ...args)`.
+   * bigint literals.
+   * Shortcut for `await worker.executionContext()).evaluate(pageFunction, ...args)`.
    *
    * @param pageFunction - Function to be evaluated in the worker context.
    * @param args - Arguments to pass to `pageFunction`.

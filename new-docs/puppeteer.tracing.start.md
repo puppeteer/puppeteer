@@ -16,7 +16,7 @@ start(options?: TracingOptions): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | TracingOptions | Optional <code>TracingOptions</code>. |
+|  options | [TracingOptions](./puppeteer.tracingoptions.md) | Optional <code>TracingOptions</code>. |
 
 <b>Returns:</b>
 

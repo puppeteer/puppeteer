@@ -728,6 +728,27 @@ function compareDocumentations(actual, expected) {
           expectedName: 'JSCoverageOptions',
         },
       ],
+      [
+        'Method Mouse.click() options.button',
+        {
+          actualName: '"left"|"right"|"middle"',
+          expectedName: 'MouseButton',
+        },
+      ],
+      [
+        'Method Frame.click() options.button',
+        {
+          actualName: '"left"|"right"|"middle"',
+          expectedName: 'MouseButton',
+        },
+      ],
+      [
+        'Method Page.click() options.button',
+        {
+          actualName: '"left"|"right"|"middle"',
+          expectedName: 'MouseButton',
+        },
+      ],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);

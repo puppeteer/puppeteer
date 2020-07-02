@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/**
+ * @internal
+ */
 export interface KeyDefinition {
   keyCode?: number;
   shiftKeyCode?: number;
@@ -25,6 +28,12 @@ export interface KeyDefinition {
   location?: number;
 }
 
+/**
+ * All the valid keys that can be passed to functions that take user input, such
+ * as {@link Keyboard.press | keyboard.press }
+ *
+ * @public
+ */
 export type KeyInput =
   | '0'
   | '1'
@@ -282,6 +291,9 @@ export type KeyInput =
   | 'VolumeDown'
   | 'VolumeUp';
 
+/**
+ * @internal
+ */
 export const keyDefinitions: Readonly<Record<KeyInput, KeyDefinition>> = {
   '0': { keyCode: 48, key: '0', code: 'Digit0' },
   '1': { keyCode: 49, key: '1', code: 'Digit1' },
