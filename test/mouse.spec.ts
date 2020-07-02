@@ -173,7 +173,7 @@ describe('Mouse', function () {
         throw new Error(modifiers[modifier] + ' should be false');
     }
   });
-  it('should send mouse wheel events', async () => {
+  itFailsFirefox('should send mouse wheel events', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/wheel.html');
