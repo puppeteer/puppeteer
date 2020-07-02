@@ -27,6 +27,7 @@
     "tsc": "npm run clean-lib && tsc --version && npm run tsc-cjs && npm run tsc-esm",
     "tsc-cjs": "tsc -p . && cp src/protocol.d.ts lib/cjs",
     "tsc-esm": "tsc --build tsconfig-esm.json && cp src/protocol.d.ts lib/esm",
+    "typecheck": "tsc -p . --noEmit",
     "apply-next-version": "node utils/apply_next_version.js",
     "update-protocol-d-ts": "node utils/protocol-types-generator update",
     "compare-protocol-d-ts": "node utils/protocol-types-generator compare",
