@@ -30,7 +30,6 @@ import { Page } from './Page';
 import { HTTPResponse } from './HTTPResponse';
 import Protocol from '../protocol';
 import {
-  EvaluateFn,
   SerializableOrJSHandle,
   EvaluateHandleFn,
   WrapElementHandle,

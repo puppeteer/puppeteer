@@ -25,7 +25,6 @@ import { MouseButton } from './Input';
 import { FrameManager, Frame } from './FrameManager';
 import { getQueryHandlerAndSelector, QueryHandler } from './QueryHandler';
 import {
-  EvaluateFn,
   SerializableOrJSHandle,
   EvaluateHandleFn,
   WrapElementHandle,
