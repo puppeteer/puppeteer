@@ -749,6 +749,20 @@ function compareDocumentations(actual, expected) {
           expectedName: 'MouseButton',
         },
       ],
+      [
+        'Method HTTPRequest.continue() overrides',
+        {
+          actualName: 'Object',
+          expectedName: 'ContinueRequestOverrides',
+        },
+      ],
+      [
+        'Method HTTPRequest.respond() response',
+        {
+          actualName: 'Object',
+          expectedName: 'ResponseForRequest',
+        },
+      ],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);
