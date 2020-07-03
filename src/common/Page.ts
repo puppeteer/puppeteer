@@ -43,7 +43,6 @@ import { ConsoleMessage, ConsoleMessageType } from './ConsoleMessage';
 import { PuppeteerLifeCycleEvent } from './LifecycleWatcher';
 import Protocol from '../protocol';
 import {
-  EvaluateFn,
   SerializableOrJSHandle,
   EvaluateHandleFn,
   WrapElementHandle,
@@ -795,31 +794,70 @@ export class Page extends EventEmitter {
    * resolve and then return its value.
    *
    * @example
-   * ```js
-   * const divCount = await page.$$eval('div', divs => divs.length);
+   *
    * ```
+   * // get the amount of divs on the page
+   * const divCount = await page.$$eval('div', divs => divs.length);
+   *
+   * // get the text content of all the `.options` elements:
+   * const options = await page.$$eval('div > span.options', options => {
+   *   return options.map(option => option.textContent)
+   * });
+   * ```
+   *
+   * If you are using TypeScript, you may have to provide an explicit type to the
+   * first argument of the `pageFunction`.
+   * By default it is typed as `Element[]`, but you may need to provide a more
+   * specific sub-type:
    *
    * @example
-   * ```js
-   * const options = await page.$$eval(
-   *   'div > span.options', options => options.map(option => option.textContent));
+   *
+   * ```
+   * // if you don't provide HTMLInputElement here, TS will error
+   * // as `value` is not on `Element`
+   * await page.$$eval('input', (elements: HTMLInputElement[]) => {
+   *   return elements.map(e => e.value);
+   * });
    * ```
    *
-   * @param selector - the
+   * The compiler should be able to infer the return type
+   * from the `pageFunction` you provide. If it is unable to, you can use the generic
+   * type to tell the compiler what return type you expect from `$$eval`:
+   *
+   * @example
+   *
+   * ```
+   * // The compiler can infer the return type in this case, but if it can't
+   * // or if you want to be more explicit, provide it as the generic type.
+   * const allInputValues = await page.$$eval<string[]>(
+   *  'input', (elements: HTMLInputElement[]) => elements.map(e => e.textContent)
+   * );
+   * ```
+   *
+   * @param selector the
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query for
-   * @param pageFunction - the function to be evaluated in the page context.
-   * Will be passed the result of
-   * `Array.from(document.querySelectorAll(selector))` as its first argument.
-   * @param args - any additional arguments to pass through to `pageFunction`.
+   * @param pageFunction the function to be evaluated in the page context. Will
+   * be passed the result of `Array.from(document.querySelectorAll(selector))`
+   * as its first argument.
+   * @param args any additional arguments to pass through to `pageFunction`.
    *
-   * @returns The result of calling `pageFunction`.
+   * @returns The result of calling `pageFunction`. If it returns an element it
+   * is wrapped in an {@link ElementHandle}, else the raw value itself is
+   * returned.
    */
-  async $$eval<ReturnType extends any>(
+  async $$eval<ReturnType>(
     selector: string,
-    pageFunction: EvaluateFn | string,
+    pageFunction: (
+      elements: Element[],
+      /* These have to be typed as unknown[] for the same reason as the $eval
+       * definition above, please see that comment for more details and the TODO
+       * that will improve things.
+       */
+      ...args: unknown[]
+    ) => ReturnType | Promise<ReturnType>,
     ...args: SerializableOrJSHandle[]
-  ): Promise<ReturnType> {
+  ): Promise<WrapElementHandle<ReturnType>> {
     return this.mainFrame().$$eval<ReturnType>(selector, pageFunction, ...args);
   }
 

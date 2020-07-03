@@ -882,11 +882,14 @@ export class ElementHandle<
    *  .toEqual(['Hello!', 'Hi!']);
    * ```
    */
-  async $$eval<ReturnType extends any>(
+  async $$eval<ReturnType>(
     selector: string,
-    pageFunction: EvaluateFn | string,
+    pageFunction: (
+      elements: Element[],
+      ...args: unknown[]
+    ) => ReturnType | Promise<ReturnType>,
     ...args: SerializableOrJSHandle[]
-  ): Promise<ReturnType> {
+  ): Promise<WrapElementHandle<ReturnType>> {
     const defaultHandler = (element: Element, selector: string) =>
       Array.from(element.querySelectorAll(selector));
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
@@ -898,12 +901,17 @@ export class ElementHandle<
       queryHandler,
       updatedSelector
     );
-    const result = await arrayHandle.evaluate<(...args: any[]) => ReturnType>(
-      pageFunction,
-      ...args
-    );
+    const result = await arrayHandle.evaluate<
+      (
+        elements: Element[],
+        ...args: unknown[]
+      ) => ReturnType | Promise<ReturnType>
+    >(pageFunction, ...args);
     await arrayHandle.dispose();
-    return result;
+    /* This as exists for the same reason as the `as` in $eval above.
+     * See the comment there for a ful explanation.
+     */
+    return result as WrapElementHandle<ReturnType>;
   }
 
   /**
