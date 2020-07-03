@@ -15,7 +15,7 @@
  */
 
 import { Events } from './Events';
-import { Page } from './Page';
+import { Page, PageEmittedEvents } from './Page';
 import { WebWorker } from './WebWorker';
 import { CDPSession } from './Connection';
 import { Browser, BrowserContext } from './Browser';
@@ -87,9 +87,9 @@ export class Target {
       if (!opener || !opener._pagePromise || this.type() !== 'page')
         return true;
       const openerPage = await opener._pagePromise;
-      if (!openerPage.listenerCount(Events.Page.Popup)) return true;
+      if (!openerPage.listenerCount(PageEmittedEvents.Popup)) return true;
       const popupPage = await this.page();
-      openerPage.emit(Events.Page.Popup, popupPage);
+      openerPage.emit(PageEmittedEvents.Popup, popupPage);
       return true;
     });
     this._isClosedPromise = new Promise<boolean>(
