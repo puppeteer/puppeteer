@@ -21,6 +21,9 @@ failure(): {
 
 ## Remarks
 
+
+## Example
+
 Example of logging all failed requests:
 
 ```js

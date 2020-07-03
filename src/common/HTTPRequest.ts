@@ -245,6 +245,8 @@ export class HTTPRequest {
    *
    * @remarks
    *
+   * @example
+   *
    * Example of logging all failed requests:
    *
    * ```js
