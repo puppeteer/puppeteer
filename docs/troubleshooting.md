@@ -132,7 +132,7 @@ yum update nss -y
 
 ## Setting Up Chrome Linux Sandbox
 
-In order to protect the host environment from untrusted web content, Chrome uses [multiple layers of sandboxing](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_sandboxing.md). For this to work properly,
+In order to protect the host environment from untrusted web content, Chrome uses [multiple layers of sandboxing](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/sandboxing.md). For this to work properly,
 the host should be configured first. If there's no good sandbox for Chrome to use, it will crash
 with the error `No usable sandbox!`.
 
