@@ -4,6 +4,8 @@
 
 ## Page.$$eval() method
 
+This method runs `Array.from(document.querySelectorAll(selector))` within the page and passes the result as the first argument to the `pageFunction`<!-- -->.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,11 +16,33 @@ $$eval<ReturnType extends any>(selector: string, pageFunction: EvaluateFn | stri
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  selector | string |  |
-|  pageFunction | [EvaluateFn](./puppeteer.evaluatefn.md) \| string |  |
-|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] |  |
+|  selector | string | the [selector](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors) to query for |
+|  pageFunction | [EvaluateFn](./puppeteer.evaluatefn.md) \| string | the function to be evaluated in the page context. Will be passed the result of <code>Array.from(document.querySelectorAll(selector))</code> as its first argument. |
+|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] | any additional arguments to pass through to <code>pageFunction</code>. |
 
 <b>Returns:</b>
 
 Promise&lt;ReturnType&gt;
+
+The result of calling `pageFunction`<!-- -->.
+
+## Remarks
+
+If `pageFunction` returns a promise `$$eval` will wait for the promise to resolve and then return its value.
+
+## Example 1
+
+
+```js
+const divCount = await page.$$eval('div', divs => divs.length);
+
+```
+
+## Example 2
+
+
+```js
+const options = await page.$$eval('div > span.options', options => options.map(option => option.textContent));
+
+```
 

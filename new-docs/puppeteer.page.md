@@ -72,7 +72,7 @@ page.off('request', logRequest);
 |  --- | --- | --- |
 |  [$(selector)](./puppeteer.page._.md) |  | Runs <code>document.querySelector</code> within the page. If no element matches the selector, the return value resolves to <code>null</code>. |
 |  [$$(selector)](./puppeteer.page.__.md) |  |  |
-|  [$$eval(selector, pageFunction, args)](./puppeteer.page.__eval.md) |  |  |
+|  [$$eval(selector, pageFunction, args)](./puppeteer.page.__eval.md) |  | This method runs <code>Array.from(document.querySelectorAll(selector))</code> within the page and passes the result as the first argument to the <code>pageFunction</code>. |
 |  [$eval(selector, pageFunction, args)](./puppeteer.page._eval.md) |  | This method runs <code>document.querySelector</code> within the page and passes the result as the first argument to the <code>pageFunction</code>. |
 |  [$x(expression)](./puppeteer.page._x.md) |  |  |
 |  [addScriptTag(options)](./puppeteer.page.addscripttag.md) |  |  |
@@ -84,7 +84,7 @@ page.off('request', logRequest);
 |  [click(selector, options)](./puppeteer.page.click.md) |  |  |
 |  [close(options)](./puppeteer.page.close.md) |  |  |
 |  [content()](./puppeteer.page.content.md) |  |  |
-|  [cookies(urls)](./puppeteer.page.cookies.md) |  |  |
+|  [cookies(urls)](./puppeteer.page.cookies.md) |  | If no URLs are specified, this method returns cookies for the current page URL. If URLs are specified, only cookies for those URLs are returned. |
 |  [deleteCookie(cookies)](./puppeteer.page.deletecookie.md) |  |  |
 |  [emulate(options)](./puppeteer.page.emulate.md) |  |  |
 |  [emulateMediaFeatures(features)](./puppeteer.page.emulatemediafeatures.md) |  |  |

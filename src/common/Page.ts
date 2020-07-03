@@ -752,13 +752,13 @@ export class Page extends EventEmitter {
    * );
    * ```
    *
-   * @param selector the
+   * @param selector - the
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query for
-   * @param pageFunction the function to be evaluated in the page context. Will
-   * be passed the result of `document.querySelector(selector)` as its first
-   * argument.
-   * @param args any additional arguments to pass through to `pageFunction`.
+   * @param pageFunction - the function to be evaluated in the page context.
+   * Will be passed the result of `document.querySelector(selector)` as its
+   * first argument.
+   * @param args - any additional arguments to pass through to `pageFunction`.
    *
    * @returns The result of calling `pageFunction`. If it returns an element it
    * is wrapped in an {@link ElementHandle}, else the raw value itself is
@@ -785,6 +785,35 @@ export class Page extends EventEmitter {
     return this.mainFrame().$eval<ReturnType>(selector, pageFunction, ...args);
   }
 
+  /**
+   * This method runs `Array.from(document.querySelectorAll(selector))` within
+   * the page and passes the result as the first argument to the `pageFunction`.
+   *
+   * @remarks
+   *
+   * If `pageFunction` returns a promise `$$eval` will wait for the promise to
+   * resolve and then return its value.
+   *
+   * @example
+   * ```js
+   * const divCount = await page.$$eval('div', divs => divs.length);
+   * ```
+   *
+   * @example
+   * ```js
+   * const options = await page.$$eval('div > span.options', options => options.map(option => option.textContent));
+   * ```
+   *
+   * @param selector - the
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
+   * to query for
+   * @param pageFunction - the function to be evaluated in the page context.
+   * Will be passed the result of
+   * `Array.from(document.querySelectorAll(selector))` as its first argument.
+   * @param args - any additional arguments to pass through to `pageFunction`.
+   *
+   * @returns The result of calling `pageFunction`.
+   */
   async $$eval<ReturnType extends any>(
     selector: string,
     pageFunction: EvaluateFn | string,
@@ -801,6 +830,10 @@ export class Page extends EventEmitter {
     return this.mainFrame().$x(expression);
   }
 
+  /**
+   * If no URLs are specified, this method returns cookies for the current page
+   * URL. If URLs are specified, only cookies for those URLs are returned.
+   */
   async cookies(...urls: string[]): Promise<Protocol.Network.Cookie[]> {
     const originalCookies = (
       await this._client.send('Network.getCookies', {
