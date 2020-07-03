@@ -42,7 +42,8 @@ const divCount = await page.$$eval('div', divs => divs.length);
 
 
 ```js
-const options = await page.$$eval('div > span.options', options => options.map(option => option.textContent));
+const options = await page.$$eval(
+  'div > span.options', options => options.map(option => option.textContent));
 
 ```
 

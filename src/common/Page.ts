@@ -801,7 +801,8 @@ export class Page extends EventEmitter {
    *
    * @example
    * ```js
-   * const options = await page.$$eval('div > span.options', options => options.map(option => option.textContent));
+   * const options = await page.$$eval(
+   *   'div > span.options', options => options.map(option => option.textContent));
    * ```
    *
    * @param selector - the
