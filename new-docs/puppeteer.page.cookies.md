@@ -4,6 +4,8 @@
 
 ## Page.cookies() method
 
+If no URLs are specified, this method returns cookies for the current page URL. If URLs are specified, only cookies for those URLs are returned.
+
 <b>Signature:</b>
 
 ```typescript
