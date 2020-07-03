@@ -4,24 +4,43 @@
 
 ## HTTPRequest.continue() method
 
+Continues request with optional request overrides.
+
 <b>Signature:</b>
 
 ```typescript
-continue(overrides?: {
-        url?: string;
-        method?: string;
-        postData?: string;
-        headers?: Record<string, string>;
-    }): Promise<void>;
+continue(overrides?: ContinueRequestOverrides): Promise<void>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  overrides | { url?: string; method?: string; postData?: string; headers?: Record&lt;string, string&gt;; } |  |
+|  overrides | [ContinueRequestOverrides](./puppeteer.continuerequestoverrides.md) | optional overrides to apply to the request. |
 
 <b>Returns:</b>
 
 Promise&lt;void&gt;
+
+## Remarks
+
+To use this, request interception should be enabled with [Page.setRequestInterception()](./puppeteer.page.setrequestinterception.md)<!-- -->.
+
+Exception is immediately thrown if the request interception is not enabled.
+
+## Example
+
+
+```js
+await page.setRequestInterception(true);
+page.on('request', request => {
+  // Override headers
+  const headers = Object.assign({}, request.headers(), {
+    foo: 'bar', // set "foo" header
+    origin: undefined, // remove "origin" header
+  });
+  request.continue({headers});
+});
+
+```
 

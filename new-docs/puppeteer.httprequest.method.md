@@ -13,3 +13,5 @@ method(): string;
 
 string
 
+the method used (`GET`<!-- -->, `POST`<!-- -->, etc.)
+

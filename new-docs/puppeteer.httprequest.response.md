@@ -13,3 +13,5 @@ response(): HTTPResponse | null;
 
 [HTTPResponse](./puppeteer.httpresponse.md) \| null
 
+the response for this request, if a response has been received.
+

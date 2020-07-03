@@ -22,7 +22,7 @@
 |  [ExecutionContext](./puppeteer.executioncontext.md) | This class represents a context for JavaScript execution. A \[Page\] might have many execution contexts: - each [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) has "default" execution context that is always created after frame is attached to DOM. This context is returned by the  method. - [Extension](https://developer.chrome.com/extensions)<!-- -->'s content scripts create additional execution contexts.<!-- -->Besides pages, execution contexts can be found in [workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)<!-- -->. |
 |  [FileChooser](./puppeteer.filechooser.md) | File choosers let you react to the page requesting for a file. |
 |  [Frame](./puppeteer.frame.md) |  |
-|  [HTTPRequest](./puppeteer.httprequest.md) |  |
+|  [HTTPRequest](./puppeteer.httprequest.md) | Represents an HTTP request sent by a page. |
 |  [HTTPResponse](./puppeteer.httpresponse.md) | The HTTPResponse class represents responses which are received by the [Page](./puppeteer.page.md) class. |
 |  [JSHandle](./puppeteer.jshandle.md) | Represents an in-page JavaScript object. JSHandles can be created with the [page.evaluateHandle](./puppeteer.page.evaluatehandle.md) method. |
 |  [Keyboard](./puppeteer.keyboard.md) | Keyboard provides an api for managing a virtual keyboard. The high level api is [Keyboard.type()](./puppeteer.keyboard.type.md)<!-- -->, which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page. |
@@ -54,6 +54,7 @@
 |  [ChromeArgOptions](./puppeteer.chromeargoptions.md) | Launcher options that only apply to Chrome. |
 |  [ClickOptions](./puppeteer.clickoptions.md) |  |
 |  [ConsoleMessageLocation](./puppeteer.consolemessagelocation.md) |  |
+|  [ContinueRequestOverrides](./puppeteer.continuerequestoverrides.md) |  |
 |  [CoverageEntry](./puppeteer.coverageentry.md) | The CoverageEntry class represents one entry of the coverage report. |
 |  [Credentials](./puppeteer.credentials.md) |  |
 |  [CSSCoverageOptions](./puppeteer.csscoverageoptions.md) | Set of configurable options for CSS coverage. |
@@ -66,6 +67,7 @@
 |  [PressOptions](./puppeteer.pressoptions.md) |  |
 |  [ProductLauncher](./puppeteer.productlauncher.md) | Describes a launcher - a class that is able to create and launch a browser instance. |
 |  [RemoteAddress](./puppeteer.remoteaddress.md) |  |
+|  [ResponseForRequest](./puppeteer.responseforrequest.md) | Required response data to fulfill a request with. |
 |  [SerializedAXNode](./puppeteer.serializedaxnode.md) | Represents a Node and the properties of it that are relevant to Accessibility. |
 |  [SnapshotOptions](./puppeteer.snapshotoptions.md) |  |
 |  [TracingOptions](./puppeteer.tracingoptions.md) |  |
@@ -88,6 +90,7 @@
 |  --- | --- |
 |  [ConsoleMessageType](./puppeteer.consolemessagetype.md) | The supported types for console messages. |
 |  [DevicesMap](./puppeteer.devicesmap.md) |  |
+|  [ErrorCode](./puppeteer.errorcode.md) |  |
 |  [EvaluateFn](./puppeteer.evaluatefn.md) |  |
 |  [EvaluateFnReturnType](./puppeteer.evaluatefnreturntype.md) |  |
 |  [EvaluateHandleFn](./puppeteer.evaluatehandlefn.md) |  |

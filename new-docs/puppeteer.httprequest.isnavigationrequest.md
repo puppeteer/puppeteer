@@ -13,3 +13,5 @@ isNavigationRequest(): boolean;
 
 boolean
 
+true if the request is the driver of the current frame's navigation.
+

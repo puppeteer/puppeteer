@@ -4,6 +4,8 @@
 
 ## HTTPRequest.abort() method
 
+Aborts a request.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,9 +16,13 @@ abort(errorCode?: ErrorCode): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  errorCode | ErrorCode |  |
+|  errorCode | [ErrorCode](./puppeteer.errorcode.md) | optional error code to provide. |
 
 <b>Returns:</b>
 
 Promise&lt;void&gt;
+
+## Remarks
+
+To use this, request interception should be enabled with [Page.setRequestInterception()](./puppeteer.page.setrequestinterception.md)<!-- -->. If it is not enabled, this method will throw an exception immediately.
 
