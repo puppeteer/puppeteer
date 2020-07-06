@@ -15,6 +15,8 @@ export declare class Browser extends EventEmitter
 
 ## Remarks
 
+The Browser class extends from Puppeteer's [EventEmitter](./puppeteer.eventemitter.md) class and will emit various events which are documented in the [BrowserEmittedEvents](./puppeteer.browseremittedevents.md) enum.
+
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Browser` class.
 
 ## Example 1
