@@ -19,7 +19,7 @@ goto(url: string, options?: {
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  url | string |  |
-|  options | { referer?: string; timeout?: number; waitUntil?: PuppeteerLifeCycleEvent \| PuppeteerLifeCycleEvent\[\]; } |  |
+|  options | { referer?: string; timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)<!-- -->\[\]; } |  |
 
 <b>Returns:</b>
 
