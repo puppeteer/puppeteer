@@ -4,7 +4,7 @@
 
 ## Page class
 
-Page provides methods to interact with a single tab or \[extension background page\](https://developer.chrome.com/extensions/background\_pages) in Chromium. One \[Browser\] instance might have multiple \[Page\] instances.
+Page provides methods to interact with a single tab or [extension background page](https://developer.chrome.com/extensions/background_pages) in Chromium.
 
 <b>Signature:</b>
 
@@ -14,6 +14,8 @@ export declare class Page extends EventEmitter
 <b>Extends:</b> [EventEmitter](./puppeteer.eventemitter.md)
 
 ## Remarks
+
+One Browser instance might have multiple Page instances.
 
 The constructor for this class is marked as internal. Third-party code should not call the constructor directly or create subclasses that extend the `Page` class.
 

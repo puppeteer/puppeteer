@@ -197,13 +197,134 @@ type VisionDeficiency =
  * @public
  */
 export const enum PageEmittedEvents {
+  /** Emitted when the page closes. */
+  Close = 'close',
+  /**
+   * Emitted when JavaScript within the page calls one of console API methods,
+   * e.g. `console.log` or `console.dir`. Also emitted if the page throws an
+   * error or a warning.
+   *
+   * @remarks
+   *
+   * A `console` event provides a {@link ConsoleMessage} representing the
+   * console message that was logged.
+   *
+   * @example
+   * An example of handling `console` event:
+   * ```js
+   * page.on('console', msg => {
+   *   for (let i = 0; i < msg.args().length; ++i)
+   *    console.log(`${i}: ${msg.args()[i]}`);
+   *  });
+   *  page.evaluate(() => console.log('hello', 5, {foo: 'bar'}));
+   * ```
+   */
+  Console = 'console',
+  /**
+   * Emitted when a JavaScript dialog appears, such as `alert`, `prompt`,
+   * `confirm` or `beforeunload`. Puppeteer can respond to the dialog via
+   * {@link Dialog.accept} or {@link Dialog.dismiss}.
+   */
+  Dialog = 'dialog',
+  /**
+   * Emitted when the JavaScript
+   * {@link https://developer.mozilla.org/en-US/docs/Web/Events/DOMContentLoaded | DOMContentLoaded } event is dispatched.
+   */
+  DOMContentLoaded = 'domcontentloaded',
+  /**
+   * Emitted when the page crashes. Will contain an `Error`.
+   */
+  Error = 'error',
+  /** Emitted when a frame is attached. Will contain a {@link Frame}. */
+  FrameAttached = 'frameattached',
+  /** Emitted when a frame is detached. Will contain a {@link Frame}. */
+  FrameDetached = 'framedetached',
+  /** Emitted when a frame is navigated to a new URL. Will contain a {@link Frame}. */
+  FrameNavigated = 'framenavigated',
+  /**
+   * Emitted when the JavaScript
+   * {@link https://developer.mozilla.org/en-US/docs/Web/Events/load | load}
+   * event is dispatched.
+   */
+  Load = 'load',
+  /**
+   * Emitted when the JavaScript code makes a call to `console.timeStamp`. For
+   * the list of metrics see {@link Page.metrics | page.metrics}.
+   *
+   * @remarks
+   * Contains an object with two properties:
+   * - `title`: the title passed to `console.timeStamp`
+   * - `metrics`: objec containing metrics as key/value pairs. The values will
+   *   be `number`s.
+   */
+  Metrics = 'metrics',
+  /**
+   * Emitted when an uncaught exception happens within the page.
+   * Contains an `Error`.
+   */
+  PageError = 'pageerror',
+  /**
+   * Emitted when the page opens a new tab or window.
+   *
+   * Contains a {@link Page} corresponding to the popup window.
+   *
+   * @example
+   *
+   * ```js
+   * const [popup] = await Promise.all([
+   *   new Promise(resolve => page.once('popup', resolve)),
+   *   page.click('a[target=_blank]'),
+   * ]);
+   * ```
+   *
+   * ```js
+   * const [popup] = await Promise.all([
+   *   new Promise(resolve => page.once('popup', resolve)),
+   *   page.evaluate(() => window.open('https://example.com')),
+   * ]);
+   * ```
+   */
+  Popup = 'popup',
+  /**
+   * Emitted when a page issues a request and contains a {@link HTTPRequest}.
+   *
+   * @remarks
+   * The object is readonly. See {@Page.setRequestInterception} for intercepting
+   * and mutating requests.
+   */
+  Request = 'request',
+  /**
+   * Emitted when a request fails, for example by timing out.
+   *
+   * Contains a {@link HTTPRequest}.
+   *
+   * @remarks
+   *
+   * NOTE: HTTP Error responses, such as 404 or 503, are still successful
+   * responses from HTTP standpoint, so request will complete with
+   * `requestfinished` event and not with `requestfailed`.
+   */
+  RequestFailed = 'requestfailed',
+  /**
+   * Emitted when a request finishes successfully. Contains a {@link HTTPRequest}.
+   */
+  RequestFinished = 'requestfinished',
+  /**
+   * Emitted when a response is received. Contains a {@link HTTPResponse}.
+   */
+  Response = 'response',
   /**
    * Emitted when a dedicated
    * {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | WebWorker}
    * is spawned by the page.
-   * @eventProperty
    */
   WorkerCreated = 'workercreated',
+  /**
+   * Emitted when a dedicated
+   * {@link https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API | WebWorker}
+   * is destroyed by the page.
+   */
+  WorkerDestroyed = 'workerdestroyed',
 }
 
 class ScreenshotTaskQueue {
@@ -223,11 +344,12 @@ class ScreenshotTaskQueue {
 }
 
 /**
- * Page provides methods to interact with a single tab or [extension background
- * page](https://developer.chrome.com/extensions/background_pages) in Chromium.
- * One [Browser] instance might have multiple [Page] instances.
+ * Page provides methods to interact with a single tab or
+ * {@link https://developer.chrome.com/extensions/background_pages | extension background page} in Chromium.
  *
  * @remarks
+ *
+ * One Browser instance might have multiple Page instances.
  *
  * @example
  * This example creates a page, navigates it to a URL, and then * saves a screenshot:
@@ -243,7 +365,7 @@ class ScreenshotTaskQueue {
  * })();
  * ```
  *
- * The Page class extends from Puppeteer's {@link EventEmitter } class and will
+ * The Page class extends from Puppeteer's {@link EventEmitter} class and will
  * emit various events which are documented in the {@link PageEmittedEvents} enum.
  *
  * @example
@@ -349,39 +471,39 @@ export class Page extends EventEmitter {
     client.on('Target.detachedFromTarget', (event) => {
       const worker = this._workers.get(event.sessionId);
       if (!worker) return;
-      this.emit(Events.Page.WorkerDestroyed, worker);
+      this.emit(PageEmittedEvents.WorkerDestroyed, worker);
       this._workers.delete(event.sessionId);
     });
 
     this._frameManager.on(Events.FrameManager.FrameAttached, (event) =>
-      this.emit(Events.Page.FrameAttached, event)
+      this.emit(PageEmittedEvents.FrameAttached, event)
     );
     this._frameManager.on(Events.FrameManager.FrameDetached, (event) =>
-      this.emit(Events.Page.FrameDetached, event)
+      this.emit(PageEmittedEvents.FrameDetached, event)
     );
     this._frameManager.on(Events.FrameManager.FrameNavigated, (event) =>
-      this.emit(Events.Page.FrameNavigated, event)
+      this.emit(PageEmittedEvents.FrameNavigated, event)
     );
 
     const networkManager = this._frameManager.networkManager();
     networkManager.on(Events.NetworkManager.Request, (event) =>
-      this.emit(Events.Page.Request, event)
+      this.emit(PageEmittedEvents.Request, event)
     );
     networkManager.on(Events.NetworkManager.Response, (event) =>
-      this.emit(Events.Page.Response, event)
+      this.emit(PageEmittedEvents.Response, event)
     );
     networkManager.on(Events.NetworkManager.RequestFailed, (event) =>
-      this.emit(Events.Page.RequestFailed, event)
+      this.emit(PageEmittedEvents.RequestFailed, event)
     );
     networkManager.on(Events.NetworkManager.RequestFinished, (event) =>
-      this.emit(Events.Page.RequestFinished, event)
+      this.emit(PageEmittedEvents.RequestFinished, event)
     );
     this._fileChooserInterceptors = new Set();
 
     client.on('Page.domContentEventFired', () =>
-      this.emit(Events.Page.DOMContentLoaded)
+      this.emit(PageEmittedEvents.DOMContentLoaded)
     );
-    client.on('Page.loadEventFired', () => this.emit(Events.Page.Load));
+    client.on('Page.loadEventFired', () => this.emit(PageEmittedEvents.Load));
     client.on('Runtime.consoleAPICalled', (event) => this._onConsoleAPI(event));
     client.on('Runtime.bindingCalled', (event) => this._onBindingCalled(event));
     client.on('Page.javascriptDialogOpening', (event) => this._onDialog(event));
@@ -393,7 +515,7 @@ export class Page extends EventEmitter {
     client.on('Log.entryAdded', (event) => this._onLogEntryAdded(event));
     client.on('Page.fileChooserOpened', (event) => this._onFileChooser(event));
     this._target._isClosedPromise.then(() => {
-      this.emit(Events.Page.Close);
+      this.emit(PageEmittedEvents.Close);
       this._closed = true;
     });
   }
@@ -522,7 +644,7 @@ export class Page extends EventEmitter {
     if (args) args.map((arg) => helper.releaseObject(this._client, arg));
     if (source !== 'worker')
       this.emit(
-        Events.Page.Console,
+        PageEmittedEvents.Console,
         new ConsoleMessage(level, text, [], { url, lineNumber })
       );
   }
@@ -1001,7 +1123,7 @@ export class Page extends EventEmitter {
   }
 
   private _emitMetrics(event: Protocol.Performance.metricsPayload): void {
-    this.emit(Events.Page.Metrics, {
+    this.emit(PageEmittedEvents.Metrics, {
       title: event.title,
       metrics: this._buildMetricsObject(event.metrics),
     });
@@ -1023,7 +1145,7 @@ export class Page extends EventEmitter {
     const message = helper.getExceptionMessage(exceptionDetails);
     const err = new Error(message);
     err.stack = ''; // Don't report clientside error with a node stack attached
-    this.emit(Events.Page.PageError, err);
+    this.emit(PageEmittedEvents.PageError, err);
   }
 
   private async _onConsoleAPI(
@@ -1116,7 +1238,7 @@ export class Page extends EventEmitter {
     args: JSHandle[],
     stackTrace?: Protocol.Runtime.StackTrace
   ): void {
-    if (!this.listenerCount(Events.Page.Console)) {
+    if (!this.listenerCount(PageEmittedEvents.Console)) {
       args.forEach((arg) => arg.dispose());
       return;
     }
@@ -1140,7 +1262,7 @@ export class Page extends EventEmitter {
       args,
       location
     );
-    this.emit(Events.Page.Console, message);
+    this.emit(PageEmittedEvents.Console, message);
   }
 
   private _onDialog(event: Protocol.Page.javascriptDialogOpeningPayload): void {
@@ -1163,7 +1285,7 @@ export class Page extends EventEmitter {
       event.message,
       event.defaultPrompt
     );
-    this.emit(Events.Page.Dialog, dialog);
+    this.emit(PageEmittedEvents.Dialog, dialog);
   }
 
   url(): string {
