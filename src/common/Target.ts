@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Events } from './Events';
 import { Page, PageEmittedEvents } from './Page';
 import { WebWorker } from './WebWorker';
 import { CDPSession } from './Connection';
