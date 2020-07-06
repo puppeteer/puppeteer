@@ -43,6 +43,9 @@ const puppeteerToProtocolLifecycle = new Map<
   ['networkidle2', 'networkAlmostIdle'],
 ]);
 
+/**
+ * @internal
+ */
 export class LifecycleWatcher {
   _expectedLifecycle: ProtocolLifeCycleEvent[];
   _frameManager: FrameManager;

@@ -48,15 +48,18 @@ export interface WaitForSelectorOptions {
  * @internal
  */
 export class DOMWorld {
-  _frameManager: FrameManager;
-  _frame: Frame;
-  _timeoutSettings: TimeoutSettings;
-  _documentPromise?: Promise<ElementHandle> = null;
-  _contextPromise?: Promise<ExecutionContext> = null;
+  private _frameManager: FrameManager;
+  private _frame: Frame;
+  private _timeoutSettings: TimeoutSettings;
+  private _documentPromise?: Promise<ElementHandle> = null;
+  private _contextPromise?: Promise<ExecutionContext> = null;
 
-  _contextResolveCallback?: (x?: ExecutionContext) => void = null;
+  private _contextResolveCallback?: (x?: ExecutionContext) => void = null;
 
-  _detached = false;
+  private _detached = false;
+  /**
+   * internal
+   */
   _waitTasks = new Set<WaitTask>();
 
   constructor(
@@ -74,9 +77,6 @@ export class DOMWorld {
     return this._frame;
   }
 
-  /**
-   * @param {?ExecutionContext} context
-   */
   _setContext(context?: ExecutionContext): void {
     if (context) {
       this._contextResolveCallback.call(null, context);
@@ -102,9 +102,6 @@ export class DOMWorld {
       );
   }
 
-  /**
-   * @returns {!Promise<!ExecutionContext>}
-   */
   executionContext(): Promise<ExecutionContext> {
     if (this._detached)
       throw new Error(
@@ -121,11 +118,6 @@ export class DOMWorld {
     return context.evaluateHandle(pageFunction, ...args);
   }
 
-  /**
-   * @param {Function|string} pageFunction
-   * @param {!Array<*>} args
-   * @returns {!Promise<*>}
-   */
   async evaluate<ReturnType extends any>(
     pageFunction: Function | string,
     ...args: unknown[]
@@ -134,10 +126,6 @@ export class DOMWorld {
     return context.evaluate<ReturnType>(pageFunction, ...args);
   }
 
-  /**
-   * @param {string} selector
-   * @returns {!Promise<?ElementHandle>}
-   */
   async $(selector: string): Promise<ElementHandle | null> {
     const document = await this._document();
     const value = await document.$(selector);
@@ -188,10 +176,6 @@ export class DOMWorld {
     return value;
   }
 
-  /**
-   * @param {string} selector
-   * @returns {!Promise<!Array<!ElementHandle>>}
-   */
   async $$(selector: string): Promise<ElementHandle[]> {
     const document = await this._document();
     const value = await document.$$(selector);
@@ -249,8 +233,6 @@ export class DOMWorld {
    * You can pass a URL, filepath or string of contents. Note that when running Puppeteer
    * in a browser environment you cannot pass a filepath and should use either
    * `url` or `content`.
-   *
-   * @param options
    */
   async addScriptTag(options: {
     url?: string;
@@ -340,7 +322,6 @@ export class DOMWorld {
    * in a browser environment you cannot pass a filepath and should use either
    * `url` or `content`.
    *
-   * @param options
    */
   async addStyleTag(options: {
     url?: string;
@@ -541,13 +522,6 @@ export class DOMWorld {
     }
     return handle.asElement();
 
-    /**
-     * @param {string} selectorOrXPath
-     * @param {boolean} isXPath
-     * @param {boolean} waitForVisible
-     * @param {boolean} waitForHidden
-     * @returns {?Node|boolean}
-     */
     function predicate(
       selectorOrXPath: string,
       isXPath: boolean,

@@ -16,5 +16,5 @@ export interface WaitForOptions
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [timeout](./puppeteer.waitforoptions.timeout.md) | number | Maximum wait time in milliseconds, defaults to 30 seconds, pass <code>0</code> to disable the timeout. |
-|  [waitUntil](./puppeteer.waitforoptions.waituntil.md) | PuppeteerLifeCycleEvent \| PuppeteerLifeCycleEvent\[\] |  |
+|  [waitUntil](./puppeteer.waitforoptions.waituntil.md) | [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)<!-- -->\[\] |  |
 

@@ -54,3 +54,5 @@ export * from './common/NetworkManager';
 export * from './common/WebWorker';
 export * from './common/USKeyboardLayout';
 export * from './common/EvalTypes';
+export * from './common/TimeoutSettings';
+export * from './common/LifecycleWatcher';

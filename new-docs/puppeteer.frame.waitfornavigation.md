@@ -17,7 +17,7 @@ waitForNavigation(options?: {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | { timeout?: number; waitUntil?: PuppeteerLifeCycleEvent \| PuppeteerLifeCycleEvent\[\]; } |  |
+|  options | { timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)<!-- -->\[\]; } |  |
 
 <b>Returns:</b>
 

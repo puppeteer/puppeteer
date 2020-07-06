@@ -101,6 +101,7 @@
 |  [Platform](./puppeteer.platform.md) | Supported platforms. |
 |  [Product](./puppeteer.product.md) | Supported products. |
 |  [PuppeteerErrors](./puppeteer.puppeteererrors.md) |  |
+|  [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) |  |
 |  [Serializable](./puppeteer.serializable.md) |  |
 |  [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md) |  |
 |  [UnwrapElementHandle](./puppeteer.unwrapelementhandle.md) | Unwraps a DOM element out of an ElementHandle instance |
