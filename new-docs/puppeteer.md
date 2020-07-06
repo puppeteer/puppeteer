@@ -40,6 +40,7 @@
 
 |  Enumeration | Description |
 |  --- | --- |
+|  [BrowserEmittedEvents](./puppeteer.browseremittedevents.md) | All the events a [browser instance](./puppeteer.browser.md) may emit. |
 |  [PageEmittedEvents](./puppeteer.pageemittedevents.md) | All the events that a page instance may emit. |
 
 ## Interfaces
