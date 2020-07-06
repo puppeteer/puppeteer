@@ -81,4 +81,5 @@ await browser.defaultBrowserContext().overridePermissions(
 |  [down(options)](./puppeteer.mouse.down.md) |  | Dispatches a <code>mousedown</code> event. |
 |  [move(x, y, options)](./puppeteer.mouse.move.md) |  | Dispatches a <code>mousemove</code> event. |
 |  [up(options)](./puppeteer.mouse.up.md) |  | Dispatches a <code>mouseup</code> event. |
+|  [wheel(options)](./puppeteer.mouse.wheel.md) |  | Dispatches a <code>mousewheel</code> event. |
 

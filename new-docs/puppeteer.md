@@ -64,6 +64,7 @@
 |  [LaunchOptions](./puppeteer.launchoptions.md) | Generic launch options that can be passed when launching any browser. |
 |  [Metrics](./puppeteer.metrics.md) |  |
 |  [MouseOptions](./puppeteer.mouseoptions.md) |  |
+|  [MouseWheelOptions](./puppeteer.mousewheeloptions.md) |  |
 |  [PressOptions](./puppeteer.pressoptions.md) |  |
 |  [ProductLauncher](./puppeteer.productlauncher.md) | Describes a launcher - a class that is able to create and launch a browser instance. |
 |  [RemoteAddress](./puppeteer.remoteaddress.md) |  |

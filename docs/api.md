@@ -190,6 +190,7 @@
   * [mouse.down([options])](#mousedownoptions)
   * [mouse.move(x, y[, options])](#mousemovex-y-options)
   * [mouse.up([options])](#mouseupoptions)
+  * [mouse.wheel([options])](#mousewheeloptions)
 - [class: Touchscreen](#class-touchscreen)
   * [touchscreen.tap(x, y)](#touchscreentapx-y)
 - [class: Tracing](#class-tracing)
@@ -2578,6 +2579,28 @@ Dispatches a `mousemove` event.
 - returns: <[Promise]>
 
 Dispatches a `mouseup` event.
+
+#### mouse.wheel([options])
+- `options` <[Object]>
+  - `deltaX` X delta in CSS pixels for mouse wheel event (default: 0). Positive values emulate a scroll up and negative values a scroll down event.
+  - `deltaY` Y delta in CSS pixels for mouse wheel event (default: 0). Positive values emulate a scroll right and negative values a scroll left event.
+- returns: <[Promise]>
+
+Dispatches a `mousewheel` event.
+
+Examples:
+```js
+await page.goto('https://mdn.mozillademos.org/en-US/docs/Web/API/Element/wheel_event$samples/Scaling_an_element_via_the_wheel?revision=1587366');
+
+const elem = await page.$('div');
+const boundingBox = await elem.boundingBox();
+await page.mouse.move(
+  boundingBox.x + boundingBox.width / 2,
+  boundingBox.y + boundingBox.height / 2
+);
+
+await page.mouse.wheel({ deltaY: -100 })
+```
 
 ### class: Touchscreen
 
