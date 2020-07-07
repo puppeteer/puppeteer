@@ -31,7 +31,7 @@ import { Coverage } from './Coverage';
 import { WebWorker } from './WebWorker';
 import { Browser, BrowserContext } from './Browser';
 import { Target } from './Target';
-import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
+import { createHandle, JSHandle, ElementHandle } from './JSHandle';
 import { Viewport } from './PuppeteerViewport';
 import { Credentials } from './NetworkManager';
 import { HTTPRequest } from './HTTPRequest';
@@ -1170,7 +1170,7 @@ export class Page extends EventEmitter {
     const context = this._frameManager.executionContextById(
       event.executionContextId
     );
-    const values = event.args.map((arg) => createJSHandle(context, arg));
+    const values = event.args.map((arg) => createHandle(context, arg));
     this._addConsoleMessage(event.type, values, event.stackTrace);
   }
 

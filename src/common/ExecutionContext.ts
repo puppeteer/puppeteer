@@ -16,7 +16,7 @@
 
 import { assert } from './assert';
 import { helper } from './helper';
-import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
+import { createHandle, JSHandle, ElementHandle } from './JSHandle';
 import { CDPSession } from './Connection';
 import { DOMWorld } from './DOMWorld';
 import { Frame } from './FrameManager';
@@ -214,7 +214,7 @@ export class ExecutionContext {
 
       return returnByValue
         ? helper.valueFromRemoteObject(remoteObject)
-        : createJSHandle(this, remoteObject);
+        : createHandle(this, remoteObject);
     }
 
     if (typeof pageFunction !== 'function')
@@ -267,7 +267,7 @@ export class ExecutionContext {
       );
     return returnByValue
       ? helper.valueFromRemoteObject(remoteObject)
-      : createJSHandle(this, remoteObject);
+      : createHandle(this, remoteObject);
 
     /**
      * @param {*} arg
@@ -349,7 +349,7 @@ export class ExecutionContext {
     const response = await this._client.send('Runtime.queryObjects', {
       prototypeObjectId: prototypeHandle._remoteObject.objectId,
     });
-    return createJSHandle(this, response.objects);
+    return createHandle(this, response.objects);
   }
 
   /**
@@ -362,7 +362,7 @@ export class ExecutionContext {
       backendNodeId: backendNodeId,
       executionContextId: this._contextId,
     });
-    return createJSHandle(this, object) as ElementHandle;
+    return createHandle(this, object) as ElementHandle;
   }
 
   /**

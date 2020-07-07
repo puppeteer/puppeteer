@@ -64,8 +64,16 @@ export interface BoundingBox {
 
 /**
  * @internal
+ *
+ * Note that this function will return either a JSHandle or an ElementHandle. It
+ * will create an ElementHandle if the object it's got back is a node (e.g. a
+ * <div> element). This is used if the user returns a DOM node from
+ * `page.evaluate(...)`.
+ *
+ * If the user returns some value from `page.evaluate()`, it is wrapped in a
+ * JSHandle.
  */
-export function createJSHandle(
+export function createHandle(
   context: ExecutionContext,
   remoteObject: Protocol.Runtime.RemoteObject
 ): JSHandle {
@@ -229,7 +237,7 @@ export class JSHandle {
     const result = new Map<string, JSHandle>();
     for (const property of response.result) {
       if (!property.enumerable) continue;
-      result.set(property.name, createJSHandle(this._context, property.value));
+      result.set(property.name, createHandle(this._context, property.value));
     }
     return result;
   }
