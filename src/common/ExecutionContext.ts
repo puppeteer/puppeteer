@@ -20,7 +20,7 @@ import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
 import { CDPSession } from './Connection';
 import { DOMWorld } from './DOMWorld';
 import { Frame } from './FrameManager';
-import Protocol from '../protocol';
+import { Protocol } from 'devtools-protocol';
 import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes';
 
 export const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
@@ -301,7 +301,7 @@ export class ExecutionContext {
       return { value: arg };
     }
 
-    function rewriteError(error: Error): Protocol.Runtime.evaluateReturnValue {
+    function rewriteError(error: Error): Protocol.Runtime.EvaluateResponse {
       if (error.message.includes('Object reference chain is too long'))
         return { result: { type: 'undefined' } };
       if (error.message.includes("Object couldn't be returned by value"))

@@ -63,7 +63,6 @@ jobs:
       env:
         - CHROMIUM=true
       script:
-        - npm run compare-protocol-d-ts
         - npm run lint
         - npm run ensure-new-docs-up-to-date
 

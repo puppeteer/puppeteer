@@ -6,8 +6,6 @@ node6/*
 node6-test/*
 experimental/
 lib/
-src/externs.d.ts
-src/protocol.d.ts
 /index.d.ts
 # We ignore this file because it uses ES imports which we don't yet use
 # in the Puppeteer src, so it trips up the ESLint-TypeScript parser.

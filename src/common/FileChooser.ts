@@ -15,7 +15,7 @@
  */
 
 import { ElementHandle } from './JSHandle';
-import Protocol from '../protocol';
+import { Protocol } from 'devtools-protocol';
 import { assert } from './assert';
 
 /**
@@ -45,7 +45,7 @@ export class FileChooser {
    */
   constructor(
     element: ElementHandle,
-    event: Protocol.Page.fileChooserOpenedPayload
+    event: Protocol.Page.FileChooserOpenedEvent
   ) {
     this._element = element;
     this._multiple = event.mode !== 'selectSingle';

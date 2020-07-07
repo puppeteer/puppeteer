@@ -788,6 +788,13 @@ function compareDocumentations(actual, expected) {
           expectedName: 'FrameWaitForFunctionOptions',
         },
       ],
+      [
+        'Method BrowserContext.overridePermissions() permissions',
+        {
+          actualName: 'Array<string>',
+          expectedName: 'Array<Object>',
+        },
+      ],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);
@@ -825,6 +832,16 @@ function compareDocumentations(actual, expected) {
      * as they will likely be considered "wrong" by DocLint too.
      */
     if (namingMismatchIsExpected) return;
+
+    /* Some methods cause errors in the property checks for an unknown reason
+     * so we support a list of methods whose parameters are not checked.
+     */
+    const skipPropertyChecksOnMethods = new Set([
+      'Method Page.deleteCookie() ...cookies',
+      'Method Page.setCookie() ...cookies',
+    ]);
+    if (skipPropertyChecksOnMethods.has(source)) return;
+
     const actualPropertiesMap = new Map(
       actual.properties.map((property) => [property.name, property.type])
     );

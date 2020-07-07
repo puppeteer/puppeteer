@@ -40,7 +40,7 @@ import { TimeoutSettings } from './TimeoutSettings';
 import { FileChooser } from './FileChooser';
 import { ConsoleMessage, ConsoleMessageType } from './ConsoleMessage';
 import { PuppeteerLifeCycleEvent } from './LifecycleWatcher';
-import Protocol from '../protocol';
+import { Protocol } from 'devtools-protocol';
 import {
   SerializableOrJSHandle,
   EvaluateHandleFn,
@@ -527,13 +527,13 @@ export class Page extends EventEmitter {
         waitForDebuggerOnStart: false,
         flatten: true,
       }),
-      this._client.send('Performance.enable', {}),
-      this._client.send('Log.enable', {}),
+      this._client.send('Performance.enable'),
+      this._client.send('Log.enable'),
     ]);
   }
 
   private async _onFileChooser(
-    event: Protocol.Page.fileChooserOpenedPayload
+    event: Protocol.Page.FileChooserOpenedEvent
   ): Promise<void> {
     if (!this._fileChooserInterceptors.size) return;
     const frame = this._frameManager.frame(event.frameId);
@@ -638,7 +638,7 @@ export class Page extends EventEmitter {
     this.emit('error', new Error('Page crashed!'));
   }
 
-  private _onLogEntryAdded(event: Protocol.Log.entryAddedPayload): void {
+  private _onLogEntryAdded(event: Protocol.Log.EntryAddedEvent): void {
     const { level, text, args, source, url, lineNumber } = event.entry;
     if (args) args.map((arg) => helper.releaseObject(this._client, arg));
     if (source !== 'worker')
@@ -1012,7 +1012,7 @@ export class Page extends EventEmitter {
   }
 
   async deleteCookie(
-    ...cookies: Protocol.Network.deleteCookiesParameters[]
+    ...cookies: Protocol.Network.DeleteCookiesRequest[]
   ): Promise<void> {
     const pageURL = this.url();
     for (const cookie of cookies) {
@@ -1121,7 +1121,7 @@ export class Page extends EventEmitter {
     return this._buildMetricsObject(response.metrics);
   }
 
-  private _emitMetrics(event: Protocol.Performance.metricsPayload): void {
+  private _emitMetrics(event: Protocol.Performance.MetricsEvent): void {
     this.emit(PageEmittedEvents.Metrics, {
       title: event.title,
       metrics: this._buildMetricsObject(event.metrics),
@@ -1148,7 +1148,7 @@ export class Page extends EventEmitter {
   }
 
   private async _onConsoleAPI(
-    event: Protocol.Runtime.consoleAPICalledPayload
+    event: Protocol.Runtime.ConsoleAPICalledEvent
   ): Promise<void> {
     if (event.executionContextId === 0) {
       // DevTools protocol stores the last 1000 console messages. These
@@ -1174,7 +1174,7 @@ export class Page extends EventEmitter {
   }
 
   private async _onBindingCalled(
-    event: Protocol.Runtime.bindingCalledPayload
+    event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> {
     const { name, seq, args } = JSON.parse(event.payload);
     let expression = null;
@@ -1264,7 +1264,7 @@ export class Page extends EventEmitter {
     this.emit(PageEmittedEvents.Console, message);
   }
 
-  private _onDialog(event: Protocol.Page.javascriptDialogOpeningPayload): void {
+  private _onDialog(event: Protocol.Page.JavascriptDialogOpeningEvent): void {
     let dialogType = null;
     const validDialogTypes = new Set<Protocol.Page.DialogType>([
       'alert',
@@ -1307,10 +1307,10 @@ export class Page extends EventEmitter {
   }
 
   async reload(options?: WaitForOptions): Promise<HTTPResponse | null> {
-    const result = await Promise.all<
-      HTTPResponse,
-      Protocol.Page.reloadReturnValue
-    >([this.waitForNavigation(options), this._client.send('Page.reload')]);
+    const result = await Promise.all<HTTPResponse, void>([
+      this.waitForNavigation(options),
+      this._client.send('Page.reload'),
+    ]);
 
     return result[0];
   }
@@ -1386,10 +1386,7 @@ export class Page extends EventEmitter {
     const history = await this._client.send('Page.getNavigationHistory');
     const entry = history.entries[history.currentIndex + delta];
     if (!entry) return null;
-    const result = await Promise.all<
-      HTTPResponse,
-      Protocol.Page.navigateToHistoryEntryReturnValue
-    >([
+    const result = await Promise.all([
       this.waitForNavigation(options),
       this._client.send('Page.navigateToHistoryEntry', { entryId: entry.id }),
     ]);

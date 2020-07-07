@@ -26,3 +26,7 @@ fs.writeFileSync(
   path.join(__dirname, '..', 'package.json'),
   JSON.stringify(package, undefined, 2) + '\n'
 );
+
+console.log(
+  'IMPORTANT: you should update the pinned version of devtools-protocol to match the new revsion.'
+);

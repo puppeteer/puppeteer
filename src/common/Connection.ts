@@ -18,7 +18,8 @@ import { debug } from './Debug';
 const debugProtocolSend = debug('puppeteer:protocol:SEND ►');
 const debugProtocolReceive = debug('puppeteer:protocol:RECV ◀');
 
-import Protocol from '../protocol';
+import { Protocol } from 'devtools-protocol';
+import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping';
 import { ConnectionTransport } from './ConnectionTransport';
 import { EventEmitter } from './EventEmitter';
 
@@ -77,10 +78,10 @@ export class Connection extends EventEmitter {
     return this._url;
   }
 
-  send<T extends keyof Protocol.CommandParameters>(
+  send<T extends keyof ProtocolMapping.Commands>(
     method: T,
-    params?: Protocol.CommandParameters[T]
-  ): Promise<Protocol.CommandReturnValues[T]> {
+    params?: ProtocolMapping.Commands[T]['paramsType'][0]
+  ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     const id = this._rawSend({ method, params });
     return new Promise((resolve, reject) => {
       this._callbacks.set(id, { resolve, reject, error: new Error(), method });
@@ -232,10 +233,10 @@ export class CDPSession extends EventEmitter {
     this._sessionId = sessionId;
   }
 
-  send<T extends keyof Protocol.CommandParameters>(
+  send<T extends keyof ProtocolMapping.Commands>(
     method: T,
-    params?: Protocol.CommandParameters[T]
-  ): Promise<Protocol.CommandReturnValues[T]> {
+    params?: ProtocolMapping.Commands[T]['paramsType'][0]
+  ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     if (!this._connection)
       return Promise.reject(
         new Error(

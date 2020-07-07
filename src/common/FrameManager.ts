@@ -27,7 +27,7 @@ import { JSHandle, ElementHandle } from './JSHandle';
 import { MouseButton } from './Input';
 import { Page } from './Page';
 import { HTTPResponse } from './HTTPResponse';
-import Protocol from '../protocol';
+import { Protocol } from 'devtools-protocol';
 import {
   SerializableOrJSHandle,
   EvaluateHandleFn,
@@ -108,10 +108,7 @@ export class FrameManager extends EventEmitter {
   }
 
   async initialize(): Promise<void> {
-    const result = await Promise.all<
-      Protocol.Page.enableReturnValue,
-      Protocol.Page.getFrameTreeReturnValue
-    >([
+    const result = await Promise.all<{}, Protocol.Page.GetFrameTreeResponse>([
       this._client.send('Page.enable'),
       this._client.send('Page.getFrameTree'),
     ]);
@@ -121,7 +118,7 @@ export class FrameManager extends EventEmitter {
     await Promise.all([
       this._client.send('Page.setLifecycleEventsEnabled', { enabled: true }),
       this._client
-        .send('Runtime.enable', {})
+        .send('Runtime.enable')
         .then(() => this._ensureIsolatedWorld(UTILITY_WORLD_NAME)),
       this._networkManager.initialize(),
     ]);
@@ -210,7 +207,7 @@ export class FrameManager extends EventEmitter {
     return watcher.navigationResponse();
   }
 
-  _onLifecycleEvent(event: Protocol.Page.lifecycleEventPayload): void {
+  _onLifecycleEvent(event: Protocol.Page.LifecycleEventEvent): void {
     const frame = this._frames.get(event.frameId);
     if (!frame) return;
     frame._onLifecycleEvent(event.loaderId, event.name);
