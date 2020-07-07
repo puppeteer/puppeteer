@@ -21,6 +21,7 @@ import { TimeoutError } from './Errors';
 import { FrameManager, Frame } from './FrameManager';
 import { HTTPRequest } from './HTTPRequest';
 import { HTTPResponse } from './HTTPResponse';
+import { NetworkManagerEmittedEvents } from './NetworkManager';
 
 export type PuppeteerLifeCycleEvent =
   | 'load'
@@ -117,7 +118,7 @@ export class LifecycleWatcher {
       ),
       helper.addEventListener(
         this._frameManager.networkManager(),
-        Events.NetworkManager.Request,
+        NetworkManagerEmittedEvents.Request,
         this._onRequest.bind(this)
       ),
     ];

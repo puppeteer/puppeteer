@@ -17,7 +17,6 @@ import { EventEmitter } from './EventEmitter';
 import { assert } from './assert';
 import { helper, debugError } from './helper';
 import Protocol from '../protocol';
-import { Events } from './Events';
 import { CDPSession } from './Connection';
 import { FrameManager } from './FrameManager';
 import { HTTPRequest } from './HTTPRequest';
@@ -30,6 +29,19 @@ export interface Credentials {
   username: string;
   password: string;
 }
+
+/**
+ * We use symbols to prevent any external parties listening to these events.
+ * They are internal to Puppeteer.
+ *
+ * @internal
+ */
+export const NetworkManagerEmittedEvents = {
+  Request: Symbol('NetworkManager.Request'),
+  Response: Symbol('NetworkManager.Response'),
+  RequestFailed: Symbol('NetworkManager.RequestFailed'),
+  RequestFinished: Symbol('NetworkManager.RequestFinished'),
+} as const;
 
 /**
  * @internal
@@ -264,7 +276,7 @@ export class NetworkManager extends EventEmitter {
       redirectChain
     );
     this._requestIdToRequest.set(event.requestId, request);
-    this.emit(Events.NetworkManager.Request, request);
+    this.emit(NetworkManagerEmittedEvents.Request, request);
   }
 
   _onRequestServedFromCache(
@@ -286,8 +298,8 @@ export class NetworkManager extends EventEmitter {
     );
     this._requestIdToRequest.delete(request._requestId);
     this._attemptedAuthentications.delete(request._interceptionId);
-    this.emit(Events.NetworkManager.Response, response);
-    this.emit(Events.NetworkManager.RequestFinished, request);
+    this.emit(NetworkManagerEmittedEvents.Response, response);
+    this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
   }
 
   _onResponseReceived(event: Protocol.Network.responseReceivedPayload): void {
@@ -296,7 +308,7 @@ export class NetworkManager extends EventEmitter {
     if (!request) return;
     const response = new HTTPResponse(this._client, request, event.response);
     request._response = response;
-    this.emit(Events.NetworkManager.Response, response);
+    this.emit(NetworkManagerEmittedEvents.Response, response);
   }
 
   _onLoadingFinished(event: Protocol.Network.loadingFinishedPayload): void {
@@ -310,7 +322,7 @@ export class NetworkManager extends EventEmitter {
     if (request.response()) request.response()._resolveBody(null);
     this._requestIdToRequest.delete(request._requestId);
     this._attemptedAuthentications.delete(request._interceptionId);
-    this.emit(Events.NetworkManager.RequestFinished, request);
+    this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
   }
 
   _onLoadingFailed(event: Protocol.Network.loadingFailedPayload): void {
@@ -323,6 +335,6 @@ export class NetworkManager extends EventEmitter {
     if (response) response._resolveBody(null);
     this._requestIdToRequest.delete(request._requestId);
     this._attemptedAuthentications.delete(request._interceptionId);
-    this.emit(Events.NetworkManager.RequestFailed, request);
+    this.emit(NetworkManagerEmittedEvents.RequestFailed, request);
   }
 }

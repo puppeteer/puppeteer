@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 
+/**
+ * IMPORTANT: we are mid-way through migrating away from this Events.ts file
+ * in favour of defining events next to the class that emits them.
+ *
+ * However we need to maintain this file for now because the legacy DocLint
+ * system relies on them. Be aware in the mean time if you make a change here
+ * you probably need to replicate it in the relevant class. For example if you
+ * add a new Page event, you should update the PageEmittedEvents enum in
+ * src/common/Page.ts.
+ *
+ * Chat to @jackfranklin if you're unsure.
+ */
+
 export const Events = {
   Page: {
     Close: 'close',
