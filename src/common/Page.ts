@@ -33,7 +33,7 @@ import { Browser, BrowserContext } from './Browser';
 import { Target } from './Target';
 import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
 import { Viewport } from './PuppeteerViewport';
-import { Credentials } from './NetworkManager';
+import { Credentials, NetworkManagerEmittedEvents } from './NetworkManager';
 import { HTTPRequest } from './HTTPRequest';
 import { HTTPResponse } from './HTTPResponse';
 import { Accessibility } from './Accessibility';
@@ -486,16 +486,16 @@ export class Page extends EventEmitter {
     );
 
     const networkManager = this._frameManager.networkManager();
-    networkManager.on(Events.NetworkManager.Request, (event) =>
+    networkManager.on(NetworkManagerEmittedEvents.Request, (event) =>
       this.emit(PageEmittedEvents.Request, event)
     );
-    networkManager.on(Events.NetworkManager.Response, (event) =>
+    networkManager.on(NetworkManagerEmittedEvents.Response, (event) =>
       this.emit(PageEmittedEvents.Response, event)
     );
-    networkManager.on(Events.NetworkManager.RequestFailed, (event) =>
+    networkManager.on(NetworkManagerEmittedEvents.RequestFailed, (event) =>
       this.emit(PageEmittedEvents.RequestFailed, event)
     );
-    networkManager.on(Events.NetworkManager.RequestFinished, (event) =>
+    networkManager.on(NetworkManagerEmittedEvents.RequestFinished, (event) =>
       this.emit(PageEmittedEvents.RequestFinished, event)
     );
     this._fileChooserInterceptors = new Set();
@@ -1339,7 +1339,7 @@ export class Page extends EventEmitter {
     const { timeout = this._timeoutSettings.timeout() } = options;
     return helper.waitForEvent(
       this._frameManager.networkManager(),
-      Events.NetworkManager.Request,
+      NetworkManagerEmittedEvents.Request,
       (request) => {
         if (helper.isString(urlOrPredicate))
           return urlOrPredicate === request.url();
@@ -1359,7 +1359,7 @@ export class Page extends EventEmitter {
     const { timeout = this._timeoutSettings.timeout() } = options;
     return helper.waitForEvent(
       this._frameManager.networkManager(),
-      Events.NetworkManager.Response,
+      NetworkManagerEmittedEvents.Response,
       (response) => {
         if (helper.isString(urlOrPredicate))
           return urlOrPredicate === response.url();
