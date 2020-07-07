@@ -297,7 +297,7 @@ export class Browser extends EventEmitter {
 
     if (await target._initializedPromise) {
       this.emit(BrowserEmittedEvents.TargetCreated, target);
-      context.emit(Events.BrowserContext.TargetCreated, target);
+      context.emit(BrowserContextEmittedEvents.TargetCreated, target);
     }
   }
 
@@ -310,7 +310,7 @@ export class Browser extends EventEmitter {
       this.emit(BrowserEmittedEvents.TargetDestroyed, target);
       target
         .browserContext()
-        .emit(Events.BrowserContext.TargetDestroyed, target);
+        .emit(BrowserContextEmittedEvents.TargetDestroyed, target);
     }
   }
 
@@ -324,7 +324,9 @@ export class Browser extends EventEmitter {
     target._targetInfoChanged(event.targetInfo);
     if (wasInitialized && previousURL !== target.url()) {
       this.emit(BrowserEmittedEvents.TargetChanged, target);
-      target.browserContext().emit(Events.BrowserContext.TargetChanged, target);
+      target
+        .browserContext()
+        .emit(BrowserContextEmittedEvents.TargetChanged, target);
     }
   }
 
@@ -504,16 +506,43 @@ export class Browser extends EventEmitter {
   }
 }
 
+export const enum BrowserContextEmittedEvents {
+  /**
+   * Emitted when the url of a target inside the browser context changes.
+   * Contains a {@link Target} instance.
+   */
+  TargetChanged = 'targetchanged',
+
+  /**
+   * Emitted when a target is created within the browser context, for example
+   * when a new page is opened by
+   * {@link https://developer.mozilla.org/en-US/docs/Web/API/Window/open | window.open}
+   * or by {@link BrowserContext.newPage | browserContext.newPage}
+   *
+   * Contains a {@link Target} instance.
+   */
+  TargetCreated = 'targetcreated',
+  /**
+   * Emitted when a target is destroyed within the browser context, for example
+   * when a page is closed. Contains a {@link Target} instance.
+   */
+  TargetDestroyed = 'targetdestroyed',
+}
+
 /**
- * BrowserContexts provide a way to operate multiple independent browser sessions.
- * When a browser is launched, it has a single BrowserContext used by default.
- * The method {@link Browser.newPage | Browser.newPage} creates a page
+ * BrowserContexts provide a way to operate multiple independent browser
+ * sessions. When a browser is launched, it has a single BrowserContext used by
+ * default. The method {@link Browser.newPage | Browser.newPage} creates a page
  * in the default browser context.
  *
  * @remarks
  *
- * If a page opens another page, e.g. with a `window.open` call,
- * the popup will belong to the parent page's browser context.
+ * The Browser class extends from Puppeteer's {@link EventEmitter} class and
+ * will emit various events which are documented in the
+ * {@link BrowserContextEmittedEvents} enum.
+ *
+ * If a page opens another page, e.g. with a `window.open` call, the popup will
+ * belong to the parent page's browser context.
  *
  * Puppeteer allows creation of "incognito" browser contexts with
  * {@link Browser.createIncognitoBrowserContext | Browser.createIncognitoBrowserContext}

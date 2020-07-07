@@ -15,6 +15,8 @@ export declare class BrowserContext extends EventEmitter
 
 ## Remarks
 
+The Browser class extends from Puppeteer's [EventEmitter](./puppeteer.eventemitter.md) class and will emit various events which are documented in the [BrowserContextEmittedEvents](./puppeteer.browsercontextemittedevents.md) enum.
+
 If a page opens another page, e.g. with a `window.open` call, the popup will belong to the parent page's browser context.
 
 Puppeteer allows creation of "incognito" browser contexts with [Browser.createIncognitoBrowserContext](./puppeteer.browser.createincognitobrowsercontext.md) method. "Incognito" browser contexts don't write any browsing data to disk.
