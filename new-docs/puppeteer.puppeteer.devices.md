@@ -12,6 +12,7 @@ get devices(): DevicesMap;
 
 ## Remarks
 
+A list of devices to be used with `page.emulate(options)`<!-- -->. Actual list of devices can be found in [src/common/DeviceDescriptors.ts](https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts)<!-- -->.
 
 ## Example
 
