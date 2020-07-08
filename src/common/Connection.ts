@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { assert } from './assert';
-import { Events } from './Events';
 import { debug } from './Debug';
 const debugProtocolSend = debug('puppeteer:protocol:SEND ►');
 const debugProtocolReceive = debug('puppeteer:protocol:RECV ◀');
@@ -30,6 +29,18 @@ interface ConnectionCallback {
   method: string;
 }
 
+/**
+ * Internal events that the Connection class emits.
+ *
+ * @internal
+ */
+export const ConnectionEmittedEvents = {
+  Disconnected: Symbol('Connection.Disconnected'),
+} as const;
+
+/**
+ * @internal
+ */
 export class Connection extends EventEmitter {
   _url: string;
   _transport: ConnectionTransport;
@@ -137,7 +148,7 @@ export class Connection extends EventEmitter {
     this._callbacks.clear();
     for (const session of this._sessions.values()) session._onClosed();
     this._sessions.clear();
-    this.emit(Events.Connection.Disconnected);
+    this.emit(ConnectionEmittedEvents.Disconnected);
   }
 
   dispose(): void {
@@ -167,6 +178,15 @@ interface CDPSessionOnMessageObject {
   error: { message: string; data: any };
   result?: any;
 }
+
+/**
+ * Internal events that the CDPSession class emits.
+ *
+ * @internal
+ */
+export const CDPSessionEmittedEvents = {
+  Disconnected: Symbol('CDPSession.Disconnected'),
+} as const;
 
 /**
  * The `CDPSession` instances are used to talk raw Chrome Devtools Protocol.
@@ -283,7 +303,7 @@ export class CDPSession extends EventEmitter {
       );
     this._callbacks.clear();
     this._connection = null;
-    this.emit(Events.CDPSession.Disconnected);
+    this.emit(CDPSessionEmittedEvents.Disconnected);
   }
 }
 

@@ -13,7 +13,6 @@
 |  [BrowserContext](./puppeteer.browsercontext.md) | BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has a single BrowserContext used by default. The method [Browser.newPage](./puppeteer.browser.newpage.md) creates a page in the default browser context. |
 |  [BrowserFetcher](./puppeteer.browserfetcher.md) | BrowserFetcher can download and manage different versions of Chromium and Firefox. |
 |  [CDPSession](./puppeteer.cdpsession.md) | The <code>CDPSession</code> instances are used to talk raw Chrome Devtools Protocol. |
-|  [Connection](./puppeteer.connection.md) |  |
 |  [ConsoleMessage](./puppeteer.consolemessage.md) | ConsoleMessage objects are dispatched by page via the 'console' event. |
 |  [Coverage](./puppeteer.coverage.md) | The Coverage class provides methods to gathers information about parts of JavaScript and CSS that were used by the page. |
 |  [Dialog](./puppeteer.dialog.md) | Dialog instances are dispatched by the [Page](./puppeteer.page.md) via the <code>dialog</code> event. |

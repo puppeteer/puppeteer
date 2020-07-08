@@ -22,6 +22,7 @@ import { FrameManager, Frame, FrameManagerEmittedEvents } from './FrameManager';
 import { HTTPRequest } from './HTTPRequest';
 import { HTTPResponse } from './HTTPResponse';
 import { NetworkManagerEmittedEvents } from './NetworkManager';
+import { CDPSessionEmittedEvents } from './Connection';
 
 export type PuppeteerLifeCycleEvent =
   | 'load'
@@ -95,7 +96,7 @@ export class LifecycleWatcher {
     this._eventListeners = [
       helper.addEventListener(
         frameManager._client,
-        Events.CDPSession.Disconnected,
+        CDPSessionEmittedEvents.Disconnected,
         () =>
           this._terminate(
             new Error('Navigation failed because browser has disconnected!')

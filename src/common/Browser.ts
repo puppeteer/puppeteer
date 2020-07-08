@@ -18,9 +18,8 @@ import { assert } from './assert';
 import { helper } from './helper';
 import { Target } from './Target';
 import { EventEmitter } from './EventEmitter';
-import { Events } from './Events';
 import Protocol from '../protocol';
-import { Connection } from './Connection';
+import { Connection, ConnectionEmittedEvents } from './Connection';
 import { Page } from './Page';
 import { ChildProcess } from 'child_process';
 import { Viewport } from './PuppeteerViewport';
@@ -194,7 +193,7 @@ export class Browser extends EventEmitter {
       );
 
     this._targets = new Map();
-    this._connection.on(Events.Connection.Disconnected, () =>
+    this._connection.on(ConnectionEmittedEvents.Disconnected, () =>
       this.emit(BrowserEmittedEvents.Disconnected)
     );
     this._connection.on('Target.targetCreated', this._targetCreated.bind(this));
