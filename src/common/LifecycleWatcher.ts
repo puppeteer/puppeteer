@@ -18,7 +18,7 @@ import { assert } from './assert';
 import { helper, PuppeteerEventListener } from './helper';
 import { Events } from './Events';
 import { TimeoutError } from './Errors';
-import { FrameManager, Frame } from './FrameManager';
+import { FrameManager, Frame, FrameManagerEmittedEvents } from './FrameManager';
 import { HTTPRequest } from './HTTPRequest';
 import { HTTPResponse } from './HTTPResponse';
 import { NetworkManagerEmittedEvents } from './NetworkManager';
@@ -103,17 +103,17 @@ export class LifecycleWatcher {
       ),
       helper.addEventListener(
         this._frameManager,
-        Events.FrameManager.LifecycleEvent,
+        FrameManagerEmittedEvents.LifecycleEvent,
         this._checkLifecycleComplete.bind(this)
       ),
       helper.addEventListener(
         this._frameManager,
-        Events.FrameManager.FrameNavigatedWithinDocument,
+        FrameManagerEmittedEvents.FrameNavigatedWithinDocument,
         this._navigatedWithinDocument.bind(this)
       ),
       helper.addEventListener(
         this._frameManager,
-        Events.FrameManager.FrameDetached,
+        FrameManagerEmittedEvents.FrameDetached,
         this._onFrameDetached.bind(this)
       ),
       helper.addEventListener(
