@@ -16,7 +16,6 @@
 
 import { assert } from './assert';
 import { helper, PuppeteerEventListener } from './helper';
-import { Events } from './Events';
 import { TimeoutError } from './Errors';
 import { FrameManager, Frame, FrameManagerEmittedEvents } from './FrameManager';
 import { HTTPRequest } from './HTTPRequest';

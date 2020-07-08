@@ -18,7 +18,6 @@ import * as fs from 'fs';
 import { promisify } from 'util';
 import { EventEmitter } from './EventEmitter';
 import * as mime from 'mime';
-import { Events } from './Events';
 import { Connection, CDPSession, CDPSessionEmittedEvents } from './Connection';
 import { Dialog } from './Dialog';
 import { EmulationManager } from './EmulationManager';
