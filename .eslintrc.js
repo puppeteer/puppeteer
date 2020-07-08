@@ -84,7 +84,11 @@ module.exports = {
         "mocha/no-exclusive-tests": "error",
 
         // enforce the variable in a catch block is named error
-        "unicorn/catch-error-name": "error"
+        "unicorn/catch-error-name": "error",
+
+        "no-restricted-imports": ["error", {
+            patterns: ["*Events"],
+        }]
     },
     "overrides": [
         {
