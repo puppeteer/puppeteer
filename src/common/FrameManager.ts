@@ -17,7 +17,6 @@
 import { EventEmitter } from './EventEmitter';
 import { assert } from './assert';
 import { helper, debugError } from './helper';
-import { Events } from './Events';
 import { ExecutionContext, EVALUATION_SCRIPT_URL } from './ExecutionContext';
 import { LifecycleWatcher, PuppeteerLifeCycleEvent } from './LifecycleWatcher';
 import { DOMWorld, WaitForSelectorOptions } from './DOMWorld';
@@ -36,6 +35,24 @@ import {
 } from './EvalTypes';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
+
+/**
+ * We use symbols to prevent external parties listening to these events.
+ * They are internal to Puppeteer.
+ *
+ * @internal
+ */
+export const FrameManagerEmittedEvents = {
+  FrameAttached: Symbol('FrameManager.FrameAttached'),
+  FrameNavigated: Symbol('FrameManager.FrameNavigated'),
+  FrameDetached: Symbol('FrameManager.FrameDetached'),
+  LifecycleEvent: Symbol('FrameManager.LifecycleEvent'),
+  FrameNavigatedWithinDocument: Symbol(
+    'FrameManager.FrameNavigatedWithinDocument'
+  ),
+  ExecutionContextCreated: Symbol('FrameManager.ExecutionContextCreated'),
+  ExecutionContextDestroyed: Symbol('FrameManager.ExecutionContextDestroyed'),
+};
 
 /**
  * @internal
@@ -197,14 +214,14 @@ export class FrameManager extends EventEmitter {
     const frame = this._frames.get(event.frameId);
     if (!frame) return;
     frame._onLifecycleEvent(event.loaderId, event.name);
-    this.emit(Events.FrameManager.LifecycleEvent, frame);
+    this.emit(FrameManagerEmittedEvents.LifecycleEvent, frame);
   }
 
   _onFrameStoppedLoading(frameId: string): void {
     const frame = this._frames.get(frameId);
     if (!frame) return;
     frame._onLoadingStopped();
-    this.emit(Events.FrameManager.LifecycleEvent, frame);
+    this.emit(FrameManagerEmittedEvents.LifecycleEvent, frame);
   }
 
   _handleFrameTree(frameTree: Protocol.Page.FrameTree): void {
@@ -238,7 +255,7 @@ export class FrameManager extends EventEmitter {
     const parentFrame = this._frames.get(parentFrameId);
     const frame = new Frame(this, parentFrame, frameId);
     this._frames.set(frame._id, frame);
-    this.emit(Events.FrameManager.FrameAttached, frame);
+    this.emit(FrameManagerEmittedEvents.FrameAttached, frame);
   }
 
   _onFrameNavigated(framePayload: Protocol.Page.Frame): void {
@@ -274,7 +291,7 @@ export class FrameManager extends EventEmitter {
     // Update frame payload.
     frame._navigated(framePayload);
 
-    this.emit(Events.FrameManager.FrameNavigated, frame);
+    this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
   }
 
   async _ensureIsolatedWorld(name: string): Promise<void> {
@@ -301,8 +318,8 @@ export class FrameManager extends EventEmitter {
     const frame = this._frames.get(frameId);
     if (!frame) return;
     frame._navigatedWithinDocument(url);
-    this.emit(Events.FrameManager.FrameNavigatedWithinDocument, frame);
-    this.emit(Events.FrameManager.FrameNavigated, frame);
+    this.emit(FrameManagerEmittedEvents.FrameNavigatedWithinDocument, frame);
+    this.emit(FrameManagerEmittedEvents.FrameNavigated, frame);
   }
 
   _onFrameDetached(frameId: string): void {
@@ -362,7 +379,7 @@ export class FrameManager extends EventEmitter {
       this._removeFramesRecursively(child);
     frame._detach();
     this._frames.delete(frame._id);
-    this.emit(Events.FrameManager.FrameDetached, frame);
+    this.emit(FrameManagerEmittedEvents.FrameDetached, frame);
   }
 }
 

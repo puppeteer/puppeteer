@@ -22,7 +22,7 @@ import { Events } from './Events';
 import { Connection, CDPSession } from './Connection';
 import { Dialog } from './Dialog';
 import { EmulationManager } from './EmulationManager';
-import { Frame, FrameManager } from './FrameManager';
+import { Frame, FrameManager, FrameManagerEmittedEvents } from './FrameManager';
 import { Keyboard, Mouse, Touchscreen, MouseButton } from './Input';
 import { Tracing } from './Tracing';
 import { assert } from './assert';
@@ -475,13 +475,13 @@ export class Page extends EventEmitter {
       this._workers.delete(event.sessionId);
     });
 
-    this._frameManager.on(Events.FrameManager.FrameAttached, (event) =>
+    this._frameManager.on(FrameManagerEmittedEvents.FrameAttached, (event) =>
       this.emit(PageEmittedEvents.FrameAttached, event)
     );
-    this._frameManager.on(Events.FrameManager.FrameDetached, (event) =>
+    this._frameManager.on(FrameManagerEmittedEvents.FrameDetached, (event) =>
       this.emit(PageEmittedEvents.FrameDetached, event)
     );
-    this._frameManager.on(Events.FrameManager.FrameNavigated, (event) =>
+    this._frameManager.on(FrameManagerEmittedEvents.FrameNavigated, (event) =>
       this.emit(PageEmittedEvents.FrameNavigated, event)
     );
 
