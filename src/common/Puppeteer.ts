@@ -202,6 +202,8 @@ export class Puppeteer {
 
   /**
    * @remarks
+   * A list of devices to be used with `page.emulate(options)`. Actual list of devices can be found in {@link https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts | src/common/DeviceDescriptors.ts}.
+   *
    * @example
    *
    * ```js
@@ -218,7 +220,6 @@ export class Puppeteer {
    * })();
    * ```
    *
-   * @returns a list of devices to be used with `page.emulate(options)`. Actual list of devices can be found in {@link https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts | src/common/DeviceDescriptors.ts}.
    */
   get devices(): DevicesMap {
     return devicesMap;
@@ -232,7 +233,8 @@ export class Puppeteer {
    * the selector doesn't match any nodes during the given timeframe.
    *
    * For certain types of errors Puppeteer uses specific error classes.
-   * These classes are available via `puppeteer.errors`
+   * These classes are available via `puppeteer.errors`.
+   *
    * @example
    * An example of handling a timeout error:
    * ```js
