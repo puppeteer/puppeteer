@@ -35,8 +35,11 @@ import {
 import { PUPPETEER_REVISIONS } from '../revisions';
 
 /**
- * The main Puppeteer class
- * Puppeteer module provides a method to launch a browser instance.
+ * The main Puppeteer class. Provides the {@link Puppeteer.launch | launch}
+ * method to launch a browser.
+ *
+ * When you `require` or `import` the Puppeteer npm package you get back an
+ * instance of this class.
  *
  * @remarks
  *
@@ -57,11 +60,14 @@ import { PUPPETEER_REVISIONS } from '../revisions';
  */
 export class Puppeteer {
   private _projectRoot: string;
-  _preferredRevision: string;
-  _isPuppeteerCore: boolean;
-  _changedProduct = false;
-  __productName: string;
+  private _isPuppeteerCore: boolean;
+  private _changedProduct = false;
+  private __productName: string;
   private _lazyLauncher: ProductLauncher;
+  /**
+   * @internal
+   */
+  _preferredRevision: string;
 
   /**
    * @internal
@@ -189,7 +195,7 @@ export class Puppeteer {
   }
 
   /**
-   * @returns The name of the browser that is under automation (`"chrome"` or `"firefox"`)
+   * The name of the browser that is under automation (`"chrome"` or `"firefox"`)
    *
    * @remarks
    * The product is set by the `PUPPETEER_PRODUCT` environment variable or the `product`
