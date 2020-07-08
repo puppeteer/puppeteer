@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-// api.ts has to use module.exports as it's also consumed by DocLint which runs
-// on Node.
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const api = require('./api');
-
+import { classesForAsyncHelpersInstall } from './public-api';
 import { helper } from './common/helper';
 import { Puppeteer } from './common/Puppeteer';
 import { PUPPETEER_REVISIONS } from './revisions';
@@ -27,9 +23,8 @@ import pkgDir from 'pkg-dir';
 export const initializePuppeteer = (packageName: string): Puppeteer => {
   const puppeteerRootDirectory = pkgDir.sync(__dirname);
 
-  for (const className in api) {
-    if (typeof api[className] === 'function')
-      helper.installAsyncStackHooks(api[className]);
+  for (const klass of classesForAsyncHelpersInstall) {
+    helper.installAsyncStackHooks(klass as { prototype: object });
   }
 
   let preferredRevision = PUPPETEER_REVISIONS.chromium;

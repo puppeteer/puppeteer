@@ -32,15 +32,18 @@
 
 const path = require('path');
 const fs = require('fs');
+const { publicPuppeteerClasses } = require('../src/public-api');
 
 /**
  * @param {Map<string, boolean>} apiCoverage
- * @param {Object} events
  * @param {string} className
  * @param {!Object} classType
  */
-function traceAPICoverage(apiCoverage, events, className, classType) {
-  className = className.substring(0, 1).toLowerCase() + className.substring(1);
+function traceAPICoverage(apiCoverage, className, classModulePath) {
+  const module = require(path.resolve(process.cwd(), 'src', classModulePath));
+
+  const classType = module[className];
+
   if (!classType || !classType.prototype) {
     console.error(
       `Coverage error: could not find class for ${className}. Is src/api.ts up to date?`
@@ -63,8 +66,12 @@ function traceAPICoverage(apiCoverage, events, className, classType) {
     });
   }
 
-  if (events[classType.name]) {
-    for (const event of Object.values(events[classType.name])) {
+  const moduleEventsName = `${className}EmittedEvents`;
+
+  if (module[moduleEventsName]) {
+    const events = module[moduleEventsName];
+    console.log('got events', events);
+    for (const event of Object.values(events)) {
       if (typeof event !== 'symbol')
         apiCoverage.set(`${className}.emit(${JSON.stringify(event)})`, false);
     }
@@ -108,10 +115,12 @@ const trackCoverage = () => {
 
   return {
     beforeAll: () => {
-      const api = require('../src/api');
-      const events = require('../src/common/Events');
-      for (const [className, classType] of Object.entries(api))
-        traceAPICoverage(coverageMap, events, className, classType);
+      for (const [
+        className,
+        classModulePath,
+      ] of publicPuppeteerClasses.entries()) {
+        traceAPICoverage(coverageMap, className, classModulePath);
+      }
     },
     afterAll: () => {
       writeCoverage(coverageMap);
