@@ -65,6 +65,7 @@ jobs:
       script:
         - npm run lint
         - npm run ensure-new-docs-up-to-date
+        - npm run ensure-correct-devtools-protocol-package
 
     # This bot runs separately as it changes package.json to test puppeteer-core
     # and we don't want that leaking into other bots and causing issues.

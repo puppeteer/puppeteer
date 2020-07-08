@@ -7,14 +7,14 @@
 <b>Signature:</b>
 
 ```typescript
-deleteCookie(...cookies: Protocol.Network.deleteCookiesParameters[]): Promise<void>;
+deleteCookie(...cookies: Protocol.Network.DeleteCookiesRequest[]): Promise<void>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  cookies | Protocol.Network.deleteCookiesParameters\[\] |  |
+|  cookies | Protocol.Network.DeleteCookiesRequest\[\] |  |
 
 <b>Returns:</b>
 

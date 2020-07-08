@@ -31,7 +31,8 @@
     "test-install": "scripts/test-install.sh",
     "generate-docs": "npm run tsc && api-extractor run --local --verbose && api-documenter markdown -i temp -o new-docs",
     "ensure-new-docs-up-to-date": "npm run generate-docs && exit `git status --porcelain | head -255 | wc -l`",
-    "generate-dependency-graph": "echo 'Requires graphviz installed locally!' && depcruise --exclude 'api.ts' --do-not-follow '^node_modules' --output-type dot src/index.ts | dot -T png > dependency-chart.png"
+    "generate-dependency-graph": "echo 'Requires graphviz installed locally!' && depcruise --exclude 'api.ts' --do-not-follow '^node_modules' --output-type dot src/index.ts | dot -T png > dependency-chart.png",
+    "ensure-correct-devtools-protocol-revision": "ts-node scripts/ensure-correct-devtools-protocol-package"
   },
   "files": [
     "lib/",
@@ -44,7 +45,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "debug": "^4.1.0",
-    "devtools-protocol": "0.0.758979",
+    "devtools-protocol": "0.0.754670",
     "extract-zip": "^2.0.0",
     "https-proxy-agent": "^4.0.0",
     "mime": "^2.0.3",
