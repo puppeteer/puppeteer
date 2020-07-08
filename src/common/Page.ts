@@ -19,7 +19,7 @@ import { promisify } from 'util';
 import { EventEmitter } from './EventEmitter';
 import * as mime from 'mime';
 import { Events } from './Events';
-import { Connection, CDPSession } from './Connection';
+import { Connection, CDPSession, CDPSessionEmittedEvents } from './Connection';
 import { Dialog } from './Dialog';
 import { EmulationManager } from './EmulationManager';
 import { Frame, FrameManager } from './FrameManager';
@@ -1325,7 +1325,7 @@ export class Page extends EventEmitter {
   private _sessionClosePromise(): Promise<Error> {
     if (!this._disconnectPromise)
       this._disconnectPromise = new Promise((fulfill) =>
-        this._client.once(Events.CDPSession.Disconnected, () =>
+        this._client.once(CDPSessionEmittedEvents.Disconnected, () =>
           fulfill(new Error('Target closed'))
         )
       );
