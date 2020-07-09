@@ -4,6 +4,8 @@
 
 ## Puppeteer.product property
 
+The name of the browser that is under automation (`"chrome"` or `"firefox"`<!-- -->)
+
 <b>Signature:</b>
 
 ```typescript

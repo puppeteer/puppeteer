@@ -4,7 +4,9 @@
 
 ## Puppeteer class
 
-The main Puppeteer class Puppeteer module provides a method to launch a browser instance.
+The main Puppeteer class. Provides the [launch](./puppeteer.puppeteer.launch.md) method to launch a browser.
+
+When you `require` or `import` the Puppeteer npm package you get back an instance of this class.
 
 <b>Signature:</b>
 
@@ -37,13 +39,9 @@ const puppeteer = require('puppeteer');
 
 |  Property | Modifiers | Type | Description |
 |  --- | --- | --- | --- |
-|  [\_\_productName](./puppeteer.puppeteer.__productname.md) |  | string |  |
-|  [\_changedProduct](./puppeteer.puppeteer._changedproduct.md) |  | boolean |  |
-|  [\_isPuppeteerCore](./puppeteer.puppeteer._ispuppeteercore.md) |  | boolean |  |
-|  [\_preferredRevision](./puppeteer.puppeteer._preferredrevision.md) |  | string |  |
 |  [devices](./puppeteer.puppeteer.devices.md) |  | [DevicesMap](./puppeteer.devicesmap.md) |  |
 |  [errors](./puppeteer.puppeteer.errors.md) |  | [PuppeteerErrors](./puppeteer.puppeteererrors.md) |  |
-|  [product](./puppeteer.puppeteer.product.md) |  | string |  |
+|  [product](./puppeteer.puppeteer.product.md) |  | string | The name of the browser that is under automation (<code>&quot;chrome&quot;</code> or <code>&quot;firefox&quot;</code>) |
 
 ## Methods
 
