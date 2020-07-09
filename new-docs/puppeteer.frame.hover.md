@@ -4,6 +4,8 @@
 
 ## Frame.hover() method
 
+This method fetches an element with `selector`<!-- -->, scrolls it into view if needed, and then uses [Page.mouse](./puppeteer.page.mouse.md) to hover over the center of the element.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,9 +16,13 @@ hover(selector: string): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  selector | string |  |
+|  selector | string | the selector for the element to hover. If there are multiple elements, the first will be hovered. |
 
 <b>Returns:</b>
 
 Promise&lt;void&gt;
+
+## Remarks
+
+If there's no element matching `selector`<!-- -->, the method throws an
 

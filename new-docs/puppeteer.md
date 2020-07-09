@@ -20,7 +20,7 @@
 |  [EventEmitter](./puppeteer.eventemitter.md) | The EventEmitter class that many Puppeteer classes extend. |
 |  [ExecutionContext](./puppeteer.executioncontext.md) | This class represents a context for JavaScript execution. A \[Page\] might have many execution contexts: - each [frame](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe) has "default" execution context that is always created after frame is attached to DOM. This context is returned by the  method. - [Extension](https://developer.chrome.com/extensions)<!-- -->'s content scripts create additional execution contexts.<!-- -->Besides pages, execution contexts can be found in [workers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API)<!-- -->. |
 |  [FileChooser](./puppeteer.filechooser.md) | File choosers let you react to the page requesting for a file. |
-|  [Frame](./puppeteer.frame.md) |  |
+|  [Frame](./puppeteer.frame.md) | At every point of time, page exposes its current frame tree via the [page.mainFrame](./puppeteer.page.mainframe.md) and [frame.childFrames](./puppeteer.frame.childframes.md) methods. |
 |  [HTTPRequest](./puppeteer.httprequest.md) | Represents an HTTP request sent by a page. |
 |  [HTTPResponse](./puppeteer.httpresponse.md) | The HTTPResponse class represents responses which are received by the [Page](./puppeteer.page.md) class. |
 |  [JSHandle](./puppeteer.jshandle.md) | Represents an in-page JavaScript object. JSHandles can be created with the [page.evaluateHandle](./puppeteer.page.evaluatehandle.md) method. |
@@ -59,6 +59,9 @@
 |  [CoverageEntry](./puppeteer.coverageentry.md) | The CoverageEntry class represents one entry of the coverage report. |
 |  [Credentials](./puppeteer.credentials.md) |  |
 |  [CSSCoverageOptions](./puppeteer.csscoverageoptions.md) | Set of configurable options for CSS coverage. |
+|  [FrameAddScriptTagOptions](./puppeteer.frameaddscripttagoptions.md) |  |
+|  [FrameAddStyleTagOptions](./puppeteer.frameaddstyletagoptions.md) |  |
+|  [FrameWaitForFunctionOptions](./puppeteer.framewaitforfunctionoptions.md) |  |
 |  [GeolocationOptions](./puppeteer.geolocationoptions.md) |  |
 |  [JSCoverageOptions](./puppeteer.jscoverageoptions.md) | Set of configurable options for JS coverage. |
 |  [JSONObject](./puppeteer.jsonobject.md) |  |

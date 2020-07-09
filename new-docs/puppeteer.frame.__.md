@@ -4,6 +4,8 @@
 
 ## Frame.$$() method
 
+This runs `document.querySelectorAll` in the frame and returns the result.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,9 +16,11 @@ $$(selector: string): Promise<ElementHandle[]>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  selector | string |  |
+|  selector | string | a selector to search for |
 
 <b>Returns:</b>
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)<!-- -->\[\]&gt;
+
+An array of element handles pointing to the found frame elements.
 

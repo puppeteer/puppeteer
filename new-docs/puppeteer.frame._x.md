@@ -4,6 +4,8 @@
 
 ## Frame.$x() method
 
+This method evaluates the given XPath expression and returns the results.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,7 +16,7 @@ $x(expression: string): Promise<ElementHandle[]>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  expression | string |  |
+|  expression | string | the XPath expression to evaluate. |
 
 <b>Returns:</b>
 

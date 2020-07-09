@@ -13,3 +13,5 @@ isDetached(): boolean;
 
 boolean
 
+`true` if the frame has been detached, or `false` otherwise.
+

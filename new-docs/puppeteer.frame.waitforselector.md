@@ -14,10 +14,40 @@ waitForSelector(selector: string, options?: WaitForSelectorOptions): Promise<Ele
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  selector | string |  |
-|  options | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) |  |
+|  selector | string | the selector to wait for. |
+|  options | [WaitForSelectorOptions](./puppeteer.waitforselectoroptions.md) | options to define if the element should be visible and how long to wait before timing out. |
 
 <b>Returns:</b>
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md) \| null&gt;
+
+a promise which resolves when an element matching the selector string is added to the DOM.
+
+## Remarks
+
+Wait for the `selector` to appear in page. If at the moment of calling the method the `selector` already exists, the method will return immediately. If the selector doesn't appear after the `timeout` milliseconds of waiting, the function will throw.
+
+This method works across navigations.
+
+## Example
+
+
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  let currentURL;
+  page.mainFrame()
+  .waitForSelector('img')
+  .then(() => console.log('First URL with image: ' + currentURL));
+
+  for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com']) {
+    await page.goto(currentURL);
+  }
+  await browser.close();
+})();
+
+```
 
