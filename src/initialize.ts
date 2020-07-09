@@ -14,23 +14,12 @@
  * limitations under the License.
  */
 
-// api.ts has to use module.exports as it's also consumed by DocLint which runs
-// on Node.
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const api = require('./api');
-
-import { helper } from './common/helper';
 import { Puppeteer } from './common/Puppeteer';
 import { PUPPETEER_REVISIONS } from './revisions';
 import pkgDir from 'pkg-dir';
 
 export const initializePuppeteer = (packageName: string): Puppeteer => {
   const puppeteerRootDirectory = pkgDir.sync(__dirname);
-
-  for (const className in api) {
-    if (typeof api[className] === 'function')
-      helper.installAsyncStackHooks(api[className]);
-  }
 
   let preferredRevision = PUPPETEER_REVISIONS.chromium;
   const isPuppeteerCore = packageName === 'puppeteer-core';
@@ -43,16 +32,10 @@ export const initializePuppeteer = (packageName: string): Puppeteer => {
   if (!isPuppeteerCore && product === 'firefox')
     preferredRevision = PUPPETEER_REVISIONS.firefox;
 
-  const puppeteer = new Puppeteer(
+  return new Puppeteer(
     puppeteerRootDirectory,
     preferredRevision,
     isPuppeteerCore,
     product
   );
-
-  // The introspection in `Helper.installAsyncStackHooks` references
-  // `Puppeteer._launcher` before the Puppeteer ctor is called, such that an
-  // invalid Launcher is selected at import, so we reset it.
-  puppeteer._lazyLauncher = undefined;
-  return puppeteer;
 };

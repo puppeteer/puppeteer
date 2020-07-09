@@ -61,7 +61,7 @@ export class Puppeteer {
   _isPuppeteerCore: boolean;
   _changedProduct = false;
   __productName: string;
-  _lazyLauncher: ProductLauncher;
+  private _lazyLauncher: ProductLauncher;
 
   /**
    * @internal

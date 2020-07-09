@@ -13,13 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-// @ts-nocheck
 
-/* This file is used in two places:
+/* This file is used in one place:
  * 1) the coverage-utils use it to gain a list of all methods we check for test
  *    coverage on
- * 2) index.js uses it to iterate through all methods and call
- *    helper.installAsyncStackHooks on
  */
 module.exports = {
   Accessibility: require('./common/Accessibility').Accessibility,
