@@ -3,6 +3,7 @@
 <!-- GEN:toc -->
 - [Chrome headless doesn't launch on Windows](#chrome-headless-doesnt-launch-on-windows)
 - [Chrome headless doesn't launch on UNIX](#chrome-headless-doesnt-launch-on-unix)
+- [Chrome is downloaded but fails to launch on Node 14](#chrome-is-downloaded-but-fails-to-launch-on-node-14)
 - [Setting Up Chrome Linux Sandbox](#setting-up-chrome-linux-sandbox)
   * [[recommended] Enable user namespace cloning](#recommended-enable-user-namespace-cloning)
   * [[alternative] Setup setuid sandbox](#alternative-setup-setuid-sandbox)
@@ -129,6 +130,18 @@ yum update nss -y
 - [#391](https://github.com/puppeteer/puppeteer/issues/391) - CentOS troubleshooting <br/>
 - [#379](https://github.com/puppeteer/puppeteer/issues/379) - Alpine troubleshooting <br/>
 </details>
+
+## Chrome is downloaded but fails to launch on Node 14
+
+If you get an error that looks like this when trying to launch Chromium:
+
+```
+(node:15505) UnhandledPromiseRejectionWarning: Error: Failed to launch the browser process!
+spawn /Users/.../node_modules/puppeteer/.local-chromium/mac-756035/chrome-mac/Chromium.app/Contents/MacOS/Chromium ENOENT
+```
+
+This means that the browser was downloaded but failed to be extracted correctly. The most common cause is a bug in Node 14.0.0 which broke `extract-zip`, the module Puppeteer uses to extract browser downloads into the right place. The bug was fixed in Node 14.1.0, so please make sure you're ruunning that version or higher. Alternatively, if you cannot upgrade, you could downgrade to Node 12, but we recommend upgrading when possible.
+
 
 ## Setting Up Chrome Linux Sandbox
 
