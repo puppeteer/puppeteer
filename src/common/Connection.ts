@@ -80,7 +80,7 @@ export class Connection extends EventEmitter {
 
   send<T extends keyof ProtocolMapping.Commands>(
     method: T,
-    params?: ProtocolMapping.Commands[T]['paramsType'][0]
+    ...params: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     const id = this._rawSend({ method, params });
     return new Promise((resolve, reject) => {
@@ -235,7 +235,7 @@ export class CDPSession extends EventEmitter {
 
   send<T extends keyof ProtocolMapping.Commands>(
     method: T,
-    params?: ProtocolMapping.Commands[T]['paramsType'][0]
+    ...params: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     if (!this._connection)
       return Promise.reject(
