@@ -131,7 +131,7 @@ yum update nss -y
 - [#379](https://github.com/puppeteer/puppeteer/issues/379) - Alpine troubleshooting <br/>
 </details>
 
-## Chrome is downloaded but fails to launch on Node 14
+## Chrome is downloaded but fails to launch on Node.js 14
 
 If you get an error that looks like this when trying to launch Chromium:
 
