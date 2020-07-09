@@ -119,21 +119,6 @@ describe('Page', function () {
     });
   });
 
-  describeFailsFirefox('Async stacks', () => {
-    it('should work', async () => {
-      const { page, server } = getTestState();
-
-      server.setRoute('/empty.html', (req, res) => {
-        res.statusCode = 204;
-        res.end();
-      });
-      let error = null;
-      await page.goto(server.EMPTY_PAGE).catch((error_) => (error = error_));
-      expect(error).not.toBe(null);
-      expect(error.stack).toContain(__filename);
-    });
-  });
-
   // This test fails on Firefox on CI consistently but cannot be replicated
   // locally. Skipping for now to unblock the Mitt release and given FF support
   // isn't fully done yet but raising an issue to ask the FF folks to have a

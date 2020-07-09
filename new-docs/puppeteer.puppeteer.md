@@ -40,7 +40,6 @@ const puppeteer = require('puppeteer');
 |  [\_\_productName](./puppeteer.puppeteer.__productname.md) |  | string |  |
 |  [\_changedProduct](./puppeteer.puppeteer._changedproduct.md) |  | boolean |  |
 |  [\_isPuppeteerCore](./puppeteer.puppeteer._ispuppeteercore.md) |  | boolean |  |
-|  [\_lazyLauncher](./puppeteer.puppeteer._lazylauncher.md) |  | [ProductLauncher](./puppeteer.productlauncher.md) |  |
 |  [\_preferredRevision](./puppeteer.puppeteer._preferredrevision.md) |  | string |  |
 |  [devices](./puppeteer.puppeteer.devices.md) |  | [DevicesMap](./puppeteer.devicesmap.md) |  |
 |  [errors](./puppeteer.puppeteer.errors.md) |  | [PuppeteerErrors](./puppeteer.puppeteererrors.md) |  |
