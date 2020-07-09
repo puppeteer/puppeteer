@@ -3,7 +3,7 @@
 <!-- GEN:toc -->
 - [Chrome headless doesn't launch on Windows](#chrome-headless-doesnt-launch-on-windows)
 - [Chrome headless doesn't launch on UNIX](#chrome-headless-doesnt-launch-on-unix)
-- [Chrome is downloaded but fails to launch on Node 14](#chrome-is-downloaded-but-fails-to-launch-on-node-14)
+- [Chrome is downloaded but fails to launch on Node.js 14](#chrome-is-downloaded-but-fails-to-launch-on-nodejs-14)
 - [Setting Up Chrome Linux Sandbox](#setting-up-chrome-linux-sandbox)
   * [[recommended] Enable user namespace cloning](#recommended-enable-user-namespace-cloning)
   * [[alternative] Setup setuid sandbox](#alternative-setup-setuid-sandbox)
