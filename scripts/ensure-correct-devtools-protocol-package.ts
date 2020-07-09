@@ -44,7 +44,7 @@ const currentProtocolPackageInstalledVersion =
 /**
  * Ensure that the devtools-protocol version is pinned.
  */
-if (!currentProtocolPackageInstalledVersion[0].match(/[0-9]/)) {
+if (/^[^0-9]/.test(currentProtocolPackageInstalledVersion) {
   console.log(
     `ERROR: devtools-protocol package is not pinned to a specific version.\n`
   );
