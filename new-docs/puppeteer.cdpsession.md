@@ -41,5 +41,5 @@ await client.send('Animation.setPlaybackRate', {
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
 |  [detach()](./puppeteer.cdpsession.detach.md) |  | Detaches the cdpSession from the target. Once detached, the cdpSession object won't emit any events and can't be used to send messages. |
-|  [send(method, params)](./puppeteer.cdpsession.send.md) |  |  |
+|  [send(method, paramArgs)](./puppeteer.cdpsession.send.md) |  |  |
 

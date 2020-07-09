@@ -7,7 +7,7 @@
 <b>Signature:</b>
 
 ```typescript
-send<T extends keyof ProtocolMapping.Commands>(method: T, params?: ProtocolMapping.Commands[T]['paramsType'][0]): Promise<ProtocolMapping.Commands[T]['returnType']>;
+send<T extends keyof ProtocolMapping.Commands>(method: T, ...paramArgs: ProtocolMapping.Commands[T]['paramsType']): Promise<ProtocolMapping.Commands[T]['returnType']>;
 ```
 
 ## Parameters
@@ -15,7 +15,7 @@ send<T extends keyof ProtocolMapping.Commands>(method: T, params?: ProtocolMappi
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  method | T |  |
-|  params | ProtocolMapping.Commands\[T\]\['paramsType'\]\[0\] |  |
+|  paramArgs | ProtocolMapping.Commands\[T\]\['paramsType'\] |  |
 
 <b>Returns:</b>
 
