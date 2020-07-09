@@ -18,6 +18,9 @@ const jsBuilder = require('./JSBuilder');
 const mdBuilder = require('./MDBuilder');
 const Documentation = require('./Documentation');
 const Message = require('../Message');
+const {
+  MODULES_TO_CHECK_FOR_COVERAGE,
+} = require('../../../test/coverage-utils');
 
 const EXCLUDE_PROPERTIES = new Set([
   'Browser.create',
@@ -39,10 +42,7 @@ const EXCLUDE_PROPERTIES = new Set([
 module.exports = async function lint(page, mdSources, jsSources) {
   const mdResult = await mdBuilder(page, mdSources);
   const jsResult = await jsBuilder(jsSources);
-  const jsDocumentation = filterJSDocumentation(
-    jsSources,
-    jsResult.documentation
-  );
+  const jsDocumentation = filterJSDocumentation(jsResult.documentation);
   const mdDocumentation = mdResult.documentation;
 
   const jsErrors = jsResult.errors;
@@ -124,14 +124,11 @@ function checkSorting(doc) {
 }
 
 /**
- * @param {!Array<!Source>} jsSources
  * @param {!Documentation} jsDocumentation
  * @returns {!Documentation}
  */
-function filterJSDocumentation(jsSources, jsDocumentation) {
-  const apijs = jsSources.find((source) => source.name() === 'api.js');
-  let includedClasses = null;
-  if (apijs) includedClasses = new Set(Object.keys(require(apijs.filePath())));
+function filterJSDocumentation(jsDocumentation) {
+  const includedClasses = new Set(Object.keys(MODULES_TO_CHECK_FOR_COVERAGE));
   // Filter private classes and methods.
   const classes = [];
   for (const cls of jsDocumentation.classesArray) {
