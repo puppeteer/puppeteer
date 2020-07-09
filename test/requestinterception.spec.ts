@@ -384,7 +384,7 @@ describe('request interception', function () {
       });
       const dataURL = 'data:text/html,<div>yo</div>';
       const text = await page.evaluate(
-        (url) => fetch(url).then((r) => r.text()),
+        (url: string) => fetch(url).then((r) => r.text()),
         dataURL
       );
       expect(text).toBe('<div>yo</div>');

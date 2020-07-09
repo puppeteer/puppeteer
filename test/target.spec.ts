@@ -81,7 +81,7 @@ describe('Target', function () {
           )
           .then((target) => target.page()),
         page.evaluate(
-          (url) => window.open(url),
+          (url: string) => window.open(url),
           server.CROSS_PROCESS_PREFIX + '/empty.html'
         ),
       ]);
@@ -215,7 +215,7 @@ describe('Target', function () {
       // Open a new page. Use window.open to connect to the page later.
       await Promise.all([
         page.evaluate(
-          (url) => window.open(url),
+          (url: string) => window.open(url),
           server.PREFIX + '/one-style.html'
         ),
         server.waitForRequest('/one-style.css'),

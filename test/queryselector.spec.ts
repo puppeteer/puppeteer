@@ -103,7 +103,7 @@ describe('querySelector', function () {
       const elements = await page.$$('div');
       expect(elements.length).toBe(2);
       const promises = elements.map((element) =>
-        page.evaluate((e) => e.textContent, element)
+        page.evaluate((e: HTMLElement) => e.textContent, element)
       );
       expect(await Promise.all(promises)).toEqual(['A', 'B']);
     });
@@ -151,7 +151,10 @@ describe('querySelector', function () {
       const html = await page.$('html');
       const second = await html.$('.second');
       const inner = await second.$('.inner');
-      const content = await page.evaluate((e) => e.textContent, inner);
+      const content = await page.evaluate(
+        (e: HTMLElement) => e.textContent,
+        inner
+      );
       expect(content).toBe('A');
     });
 
@@ -263,7 +266,7 @@ describe('querySelector', function () {
       const elements = await html.$$('div');
       expect(elements.length).toBe(2);
       const promises = elements.map((element) =>
-        page.evaluate((e) => e.textContent, element)
+        page.evaluate((e: HTMLElement) => e.textContent, element)
       );
       expect(await Promise.all(promises)).toEqual(['A', 'B']);
     });
@@ -291,7 +294,10 @@ describe('querySelector', function () {
       const html = await page.$('html');
       const second = await html.$x(`./body/div[contains(@class, 'second')]`);
       const inner = await second[0].$x(`./div[contains(@class, 'inner')]`);
-      const content = await page.evaluate((e) => e.textContent, inner[0]);
+      const content = await page.evaluate(
+        (e: HTMLElement) => e.textContent,
+        inner[0]
+      );
       expect(content).toBe('A');
     });
 

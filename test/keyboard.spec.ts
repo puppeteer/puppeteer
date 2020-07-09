@@ -387,7 +387,15 @@ describe('Keyboard', function () {
       });
     });
     await page.keyboard.press('Meta');
-    const [key, code, metaKey] = await page.evaluate('result');
+    // Have to do this because we lose a lot of type info when evaluating a
+    // string not a function. This is why functions are recommended rather than
+    // using strings (although we'll leave this test so we have coverage of both
+    // approaches.)
+    const [key, code, metaKey] = (await page.evaluate('result')) as [
+      string,
+      string,
+      boolean
+    ];
     if (isFirefox && os.platform() !== 'darwin') expect(key).toBe('OS');
     else expect(key).toBe('Meta');
 

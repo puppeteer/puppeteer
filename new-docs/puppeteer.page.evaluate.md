@@ -7,19 +7,19 @@
 <b>Signature:</b>
 
 ```typescript
-evaluate<ReturnType extends any>(pageFunction: Function | string, ...args: unknown[]): Promise<ReturnType>;
+evaluate<T extends EvaluateFn>(pageFunction: T, ...args: SerializableOrJSHandle[]): Promise<UnwrapPromiseLike<EvaluateFnReturnType<T>>>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  pageFunction | Function \| string | a function that is run within the page |
-|  args | unknown\[\] | arguments to be passed to the pageFunction |
+|  pageFunction | T | a function that is run within the page |
+|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] | arguments to be passed to the pageFunction |
 
 <b>Returns:</b>
 
-Promise&lt;ReturnType&gt;
+Promise&lt;[UnwrapPromiseLike](./puppeteer.unwrappromiselike.md)<!-- -->&lt;[EvaluateFnReturnType](./puppeteer.evaluatefnreturntype.md)<!-- -->&lt;T&gt;&gt;&gt;
 
 the return value of `pageFunction`<!-- -->.
 
@@ -46,6 +46,12 @@ You can pass a string instead of a function (although functions are recommended 
 
 ```
 const aHandle = await page.evaluate('1 + 2');
+
+```
+To get the best TypeScript experience, you should pass in as the generic the type of `pageFunction`<!-- -->:
+
+```
+const aHandle = await page.evaluate<() => number>(() => 2);
 
 ```
 

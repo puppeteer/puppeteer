@@ -29,6 +29,7 @@ import {
   EvaluateFnReturnType,
   EvaluateHandleFn,
   WrapElementHandle,
+  UnwrapPromiseLike,
 } from './EvalTypes';
 
 export interface BoxModel {
@@ -153,12 +154,10 @@ export class JSHandle {
   async evaluate<T extends EvaluateFn>(
     pageFunction: T | string,
     ...args: SerializableOrJSHandle[]
-  ): Promise<EvaluateFnReturnType<T>> {
-    return await this.executionContext().evaluate<EvaluateFnReturnType<T>>(
-      pageFunction,
-      this,
-      ...args
-    );
+  ): Promise<UnwrapPromiseLike<EvaluateFnReturnType<T>>> {
+    return await this.executionContext().evaluate<
+      UnwrapPromiseLike<EvaluateFnReturnType<T>>
+    >(pageFunction, this, ...args);
   }
 
   /**
@@ -619,7 +618,9 @@ export class ElementHandle<
    * Calls {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus | focus} on the element.
    */
   async focus(): Promise<void> {
-    await this.evaluate((element) => element.focus());
+    await this.evaluate<(element: HTMLElement) => void>((element) =>
+      element.focus()
+    );
   }
 
   /**

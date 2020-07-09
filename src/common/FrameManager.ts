@@ -32,6 +32,9 @@ import {
   SerializableOrJSHandle,
   EvaluateHandleFn,
   WrapElementHandle,
+  EvaluateFn,
+  EvaluateFnReturnType,
+  UnwrapPromiseLike,
 } from './EvalTypes';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
@@ -687,11 +690,11 @@ export class Frame {
    * @param pageFunction - a function that is run within the frame
    * @param args - arguments to be passed to the pageFunction
    */
-  async evaluate<ReturnType extends any>(
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<ReturnType> {
-    return this._mainWorld.evaluate<ReturnType>(pageFunction, ...args);
+  async evaluate<T extends EvaluateFn>(
+    pageFunction: T,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<UnwrapPromiseLike<EvaluateFnReturnType<T>>> {
+    return this._mainWorld.evaluate<T>(pageFunction, ...args);
   }
 
   /**

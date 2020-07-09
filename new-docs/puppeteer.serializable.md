@@ -8,5 +8,5 @@
 <b>Signature:</b>
 
 ```typescript
-export declare type Serializable = number | string | boolean | null | JSONArray | JSONObject;
+export declare type Serializable = number | string | boolean | null | BigInt | JSONArray | JSONObject;
 ```

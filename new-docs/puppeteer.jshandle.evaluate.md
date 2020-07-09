@@ -9,7 +9,7 @@ This method passes this handle as the first argument to `pageFunction`<!-- -->. 
 <b>Signature:</b>
 
 ```typescript
-evaluate<T extends EvaluateFn>(pageFunction: T | string, ...args: SerializableOrJSHandle[]): Promise<EvaluateFnReturnType<T>>;
+evaluate<T extends EvaluateFn>(pageFunction: T | string, ...args: SerializableOrJSHandle[]): Promise<UnwrapPromiseLike<EvaluateFnReturnType<T>>>;
 ```
 
 ## Parameters
@@ -21,7 +21,7 @@ evaluate<T extends EvaluateFn>(pageFunction: T | string, ...args: SerializableOr
 
 <b>Returns:</b>
 
-Promise&lt;[EvaluateFnReturnType](./puppeteer.evaluatefnreturntype.md)<!-- -->&lt;T&gt;&gt;
+Promise&lt;[UnwrapPromiseLike](./puppeteer.unwrappromiselike.md)<!-- -->&lt;[EvaluateFnReturnType](./puppeteer.evaluatefnreturntype.md)<!-- -->&lt;T&gt;&gt;&gt;
 
 ## Example
 

@@ -8,5 +8,5 @@
 <b>Signature:</b>
 
 ```typescript
-export declare type EvaluateFnReturnType<T extends EvaluateFn> = T extends (...args: any[]) => infer R ? R : unknown;
+export declare type EvaluateFnReturnType<T extends EvaluateFn> = T extends (...args: unknown[]) => infer R ? R : unknown;
 ```
