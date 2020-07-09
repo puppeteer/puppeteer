@@ -70,7 +70,7 @@ const bestRevisionFromNpm = output.split(' ')[1].replace(/'|\n/g, '');
 if (currentProtocolPackageInstalledVersion !== bestRevisionFromNpm) {
   console.log(`ERROR: bad devtools-protocol revision detected:
 
-    Current Pptr Chromium revision: ${PUPPETEER_REVISIONS.chromium}
+    Current Puppeteer Chromium revision: ${PUPPETEER_REVISIONS.chromium}
     Current devtools-protocol version in package.json: ${currentProtocolPackageInstalledVersion}
     Expected devtools-protocol version:                ${bestRevisionFromNpm}`);
 
