@@ -80,8 +80,15 @@ export class Connection extends EventEmitter {
 
   send<T extends keyof ProtocolMapping.Commands>(
     method: T,
-    ...params: ProtocolMapping.Commands[T]['paramsType']
+    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
+    // There is only ever 1 param arg passed, but the Protocol defines it as an
+    // array of 0 or 1 items See this comment:
+    // https://github.com/ChromeDevTools/devtools-protocol/pull/113#issuecomment-412603285
+    // which explains why the protocol defines the params this way for better
+    // type-inference.
+    // So now we check if there are any params or not and deal with them accordingly.
+    const params = paramArgs.length ? paramArgs[0] : undefined;
     const id = this._rawSend({ method, params });
     return new Promise((resolve, reject) => {
       this._callbacks.set(id, { resolve, reject, error: new Error(), method });
@@ -235,7 +242,7 @@ export class CDPSession extends EventEmitter {
 
   send<T extends keyof ProtocolMapping.Commands>(
     method: T,
-    ...params: ProtocolMapping.Commands[T]['paramsType']
+    ...paramArgs: ProtocolMapping.Commands[T]['paramsType']
   ): Promise<ProtocolMapping.Commands[T]['returnType']> {
     if (!this._connection)
       return Promise.reject(
@@ -243,6 +250,9 @@ export class CDPSession extends EventEmitter {
           `Protocol error (${method}): Session closed. Most likely the ${this._targetType} has been closed.`
         )
       );
+
+    // See the comment in Connection#send explaining why we do this.
+    const params = paramArgs.length ? paramArgs[0] : undefined;
 
     const id = this._connection._rawSend({
       sessionId: this._sessionId,
