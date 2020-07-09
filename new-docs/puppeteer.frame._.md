@@ -4,6 +4,8 @@
 
 ## Frame.$() method
 
+This method queries the frame for the given selector.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,9 +16,11 @@ $(selector: string): Promise<ElementHandle | null>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  selector | string |  |
+|  selector | string | a selector to query for. |
 
 <b>Returns:</b>
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md) \| null&gt;
+
+A promise which resolves to an `ElementHandle` pointing at the element, or `null` if it was not found.
 

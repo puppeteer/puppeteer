@@ -1494,6 +1494,47 @@ export class Page extends EventEmitter {
     return this._viewport;
   }
 
+  /**
+   * @remarks
+   *
+   * Evaluates a function in the page's context and returns the result.
+   *
+   * If the function passed to `page.evaluteHandle` returns a Promise, the
+   * function will wait for the promise to resolve and return its value.
+   *
+   * @example
+   *
+   * ```js
+   * const result = await frame.evaluate(() => {
+   *   return Promise.resolve(8 * 7);
+   * });
+   * console.log(result); // prints "56"
+   * ```
+   *
+   * You can pass a string instead of a function (although functions are
+   * recommended as they are easier to debug and use with TypeScript):
+   *
+   * @example
+   * ```
+   * const aHandle = await page.evaluate('1 + 2');
+   * ```
+   *
+   * @example
+   *
+   * {@link ElementHandle} instances (including {@link JSHandle}s) can be passed
+   * as arguments to the `pageFunction`:
+   *
+   * ```
+   * const bodyHandle = await page.$('body');
+   * const html = await page.evaluate(body => body.innerHTML, bodyHandle);
+   * await bodyHandle.dispose();
+   * ```
+   *
+   * @param pageFunction - a function that is run within the page
+   * @param args - arguments to be passed to the pageFunction
+   *
+   * @returns the return value of `pageFunction`.
+   */
   async evaluate<ReturnType extends any>(
     pageFunction: Function | string,
     ...args: unknown[]

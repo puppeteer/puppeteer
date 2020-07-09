@@ -4,6 +4,8 @@
 
 ## Frame.focus() method
 
+This method fetches an element with `selector` and focuses it.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,9 +16,13 @@ focus(selector: string): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  selector | string |  |
+|  selector | string | the selector for the element to focus. If there are multiple elements, the first will be focused. |
 
 <b>Returns:</b>
 
 Promise&lt;void&gt;
+
+## Remarks
+
+If there's no element matching `selector`<!-- -->, the method throws an error.
 

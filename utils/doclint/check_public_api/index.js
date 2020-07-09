@@ -770,6 +770,27 @@ function compareDocumentations(actual, expected) {
           expectedName: 'ResponseForRequest',
         },
       ],
+      [
+        'Method Frame.addScriptTag() options',
+        {
+          actualName: 'Object',
+          expectedName: 'FrameAddScriptTagOptions',
+        },
+      ],
+      [
+        'Method Frame.addStyleTag() options',
+        {
+          actualName: 'Object',
+          expectedName: 'FrameAddStyleTagOptions',
+        },
+      ],
+      [
+        'Method Frame.waitForFunction() options',
+        {
+          actualName: 'Object',
+          expectedName: 'FrameWaitForFunctionOptions',
+        },
+      ],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);

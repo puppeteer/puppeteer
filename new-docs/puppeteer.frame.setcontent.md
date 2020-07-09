@@ -4,6 +4,8 @@
 
 ## Frame.setContent() method
 
+Set the content of the frame.
+
 <b>Signature:</b>
 
 ```typescript
@@ -17,8 +19,8 @@ setContent(html: string, options?: {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  html | string |  |
-|  options | { timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)<!-- -->\[\]; } |  |
+|  html | string | HTML markup to assign to the page. |
+|  options | { timeout?: number; waitUntil?: [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md) \| [PuppeteerLifeCycleEvent](./puppeteer.puppeteerlifecycleevent.md)<!-- -->\[\]; } | options to configure how long before timing out and at what point to consider the content setting successful. |
 
 <b>Returns:</b>
 

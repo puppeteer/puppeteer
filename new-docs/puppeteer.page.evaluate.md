@@ -14,10 +14,49 @@ evaluate<ReturnType extends any>(pageFunction: Function | string, ...args: unkno
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  pageFunction | Function \| string |  |
-|  args | unknown\[\] |  |
+|  pageFunction | Function \| string | a function that is run within the page |
+|  args | unknown\[\] | arguments to be passed to the pageFunction |
 
 <b>Returns:</b>
 
 Promise&lt;ReturnType&gt;
+
+the return value of `pageFunction`<!-- -->.
+
+## Remarks
+
+Evaluates a function in the page's context and returns the result.
+
+If the function passed to `page.evaluteHandle` returns a Promise, the function will wait for the promise to resolve and return its value.
+
+## Example 1
+
+
+```js
+const result = await frame.evaluate(() => {
+  return Promise.resolve(8 * 7);
+});
+console.log(result); // prints "56"
+
+```
+You can pass a string instead of a function (although functions are recommended as they are easier to debug and use with TypeScript):
+
+## Example 2
+
+
+```
+const aHandle = await page.evaluate('1 + 2');
+
+```
+
+## Example 3
+
+[ElementHandle](./puppeteer.elementhandle.md) instances (including [JSHandle](./puppeteer.jshandle.md)<!-- -->s) can be passed as arguments to the `pageFunction`<!-- -->:
+
+```
+const bodyHandle = await page.$('body');
+const html = await page.evaluate(body => body.innerHTML, bodyHandle);
+await bodyHandle.dispose();
+
+```
 

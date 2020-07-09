@@ -13,3 +13,5 @@ title(): Promise<string>;
 
 Promise&lt;string&gt;
 
+the frame's title.
+

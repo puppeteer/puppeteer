@@ -4,23 +4,23 @@
 
 ## Frame.addStyleTag() method
 
+Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
+
 <b>Signature:</b>
 
 ```typescript
-addStyleTag(options: {
-        url?: string;
-        path?: string;
-        content?: string;
-    }): Promise<ElementHandle>;
+addStyleTag(options: FrameAddStyleTagOptions): Promise<ElementHandle>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | { url?: string; path?: string; content?: string; } |  |
+|  options | [FrameAddStyleTagOptions](./puppeteer.frameaddstyletagoptions.md) | configure the CSS to add to the page. |
 
 <b>Returns:</b>
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)<!-- -->&gt;
+
+a promise that resolves to the added tag when the stylesheets's `onload` event fires or when the CSS content was injected into the frame.
 

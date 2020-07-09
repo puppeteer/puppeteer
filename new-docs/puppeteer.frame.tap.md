@@ -4,6 +4,8 @@
 
 ## Frame.tap() method
 
+This method fetches an element with `selector`<!-- -->, scrolls it into view if needed, and then uses [Page.touchscreen](./puppeteer.page.touchscreen.md) to tap in the center of the element.
+
 <b>Signature:</b>
 
 ```typescript
@@ -14,9 +16,15 @@ tap(selector: string): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  selector | string |  |
+|  selector | string | the selector to tap. |
 
 <b>Returns:</b>
 
 Promise&lt;void&gt;
+
+a promise that resolves when the element has been tapped.
+
+## Remarks
+
+If there's no element matching `selector`<!-- -->, the method throws an error.
 

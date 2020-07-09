@@ -14,10 +14,14 @@ evaluate<ReturnType extends any>(pageFunction: Function | string, ...args: unkno
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  pageFunction | Function \| string |  |
-|  args | unknown\[\] |  |
+|  pageFunction | Function \| string | a function that is run within the frame |
+|  args | unknown\[\] | arguments to be passed to the pageFunction |
 
 <b>Returns:</b>
 
 Promise&lt;ReturnType&gt;
+
+## Remarks
+
+This method behaves identically to [Page.evaluate()](./puppeteer.page.evaluate.md) except it's run within the context of the `frame`<!-- -->, rather than the entire page.
 
