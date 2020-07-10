@@ -331,7 +331,7 @@
   * [target.worker()](#targetworker)
 - [class: CDPSession](#class-cdpsession)
   * [cdpSession.detach()](#cdpsessiondetach)
-  * [cdpSession.send(method[, params])](#cdpsessionsendmethod-params)
+  * [cdpSession.send(method[, ...paramArgs])](#cdpsessionsendmethod-paramargs)
 - [class: Coverage](#class-coverage)
   * [coverage.startCSSCoverage([options])](#coveragestartcsscoverageoptions)
   * [coverage.startJSCoverage([options])](#coveragestartjscoverageoptions)
@@ -3946,9 +3946,9 @@ await client.send('Animation.setPlaybackRate', {
 Detaches the cdpSession from the target. Once detached, the cdpSession object won't emit any events and can't be used
 to send messages.
 
-#### cdpSession.send(method[, params])
+#### cdpSession.send(method[, ...paramArgs])
 - `method` <[string]> protocol method name
-- `params` <[Object]> Optional method parameters
+- `...paramArgs` <[Object]> Optional method parameters
 - returns: <[Promise]<[Object]>>
 
 ### class: Coverage

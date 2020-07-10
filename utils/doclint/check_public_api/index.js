@@ -251,15 +251,23 @@ function compareDocumentations(actual, expected) {
       const actualArgs = Array.from(actualMethod.args.keys());
       const expectedArgs = Array.from(expectedMethod.args.keys());
       const argsDiff = diff(actualArgs, expectedArgs);
+
       if (argsDiff.extra.length || argsDiff.missing.length) {
-        const text = [
-          `Method ${className}.${methodName}() fails to describe its parameters:`,
-        ];
-        for (const arg of argsDiff.missing)
-          text.push(`- Argument not found: ${arg}`);
-        for (const arg of argsDiff.extra)
-          text.push(`- Non-existing argument found: ${arg}`);
-        errors.push(text.join('\n'));
+        /* Doclint cannot handle the parameter type of the CDPSession send method.
+         * so we just ignore it.
+         */
+        const isCdpSessionSend =
+          className === 'CDPSession' && methodName === 'send';
+        if (!isCdpSessionSend) {
+          const text = [
+            `Method ${className}.${methodName}() fails to describe its parameters:`,
+          ];
+          for (const arg of argsDiff.missing)
+            text.push(`- Argument not found: ${arg}`);
+          for (const arg of argsDiff.extra)
+            text.push(`- Non-existing argument found: ${arg}`);
+          errors.push(text.join('\n'));
+        }
       }
 
       for (const arg of argsDiff.equal)
