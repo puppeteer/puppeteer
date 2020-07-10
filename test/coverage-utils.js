@@ -34,13 +34,43 @@ const path = require('path');
 const fs = require('fs');
 
 /**
- * @param {Map<string, boolean>} apiCoverage
- * @param {Object} events
- * @param {string} className
- * @param {!Object} classType
+ * This object is also used by DocLint to know which classes to check are
+ * documented. It's a pretty hacky solution but DocLint is going away soon as
+ * part of the TSDoc migration.
  */
-function traceAPICoverage(apiCoverage, events, className, classType) {
-  className = className.substring(0, 1).toLowerCase() + className.substring(1);
+const MODULES_TO_CHECK_FOR_COVERAGE = {
+  Accessibility: '../src/common/Accessibility',
+  Browser: '../src/common/Browser',
+  BrowserContext: '../src/common/Browser',
+  BrowserFetcher: '../src/node/BrowserFetcher',
+  CDPSession: '../src/common/Connection',
+  ConsoleMessage: '../src/common/ConsoleMessage',
+  Coverage: '../src/common/Coverage',
+  Dialog: '../src/common/Dialog',
+  ElementHandle: '../src/common/JSHandle',
+  ExecutionContext: '../src/common/ExecutionContext',
+  EventEmitter: '../src/common/EventEmitter',
+  FileChooser: '../src/common/FileChooser',
+  Frame: '../src/common/FrameManager',
+  JSHandle: '../src/common/JSHandle',
+  Keyboard: '../src/common/Input',
+  Mouse: '../src/common/Input',
+  Page: '../src/common/Page',
+  Puppeteer: '../src/common/Puppeteer',
+  HTTPRequest: '../src/common/HTTPRequest',
+  HTTPResponse: '../src/common/HTTPResponse',
+  SecurityDetails: '../src/common/SecurityDetails',
+  Target: '../src/common/Target',
+  TimeoutError: '../src/common/Errors',
+  Touchscreen: '../src/common/Input',
+  Tracing: '../src/common/Tracing',
+  WebWorker: '../src/common/WebWorker',
+};
+
+function traceAPICoverage(apiCoverage, className, modulePath) {
+  const loadedModule = require(modulePath);
+  const classType = loadedModule[className];
+
   if (!classType || !classType.prototype) {
     console.error(
       `Coverage error: could not find class for ${className}. Is src/api.ts up to date?`
@@ -63,8 +93,14 @@ function traceAPICoverage(apiCoverage, events, className, classType) {
     });
   }
 
-  if (events[classType.name]) {
-    for (const event of Object.values(events[classType.name])) {
+  /**
+   * If classes emit events, those events are exposed via an object in the same
+   * module named XEmittedEvents, where X is the name of the class. For example,
+   * the Page module exposes PageEmittedEvents.
+   */
+  const eventsName = `${className}EmittedEvents`;
+  if (loadedModule[eventsName]) {
+    for (const event of Object.values(loadedModule[eventsName])) {
       if (typeof event !== 'symbol')
         apiCoverage.set(`${className}.emit(${JSON.stringify(event)})`, false);
     }
@@ -108,10 +144,11 @@ const trackCoverage = () => {
 
   return {
     beforeAll: () => {
-      const api = require('../src/api');
-      const events = require('../src/common/Events');
-      for (const [className, classType] of Object.entries(api))
-        traceAPICoverage(coverageMap, events, className, classType);
+      for (const [className, moduleFilePath] of Object.entries(
+        MODULES_TO_CHECK_FOR_COVERAGE
+      )) {
+        traceAPICoverage(coverageMap, className, moduleFilePath);
+      }
     },
     afterAll: () => {
       writeCoverage(coverageMap);
@@ -122,4 +159,5 @@ const trackCoverage = () => {
 module.exports = {
   trackCoverage,
   getCoverageResults,
+  MODULES_TO_CHECK_FOR_COVERAGE,
 };

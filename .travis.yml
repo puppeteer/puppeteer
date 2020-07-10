@@ -65,7 +65,6 @@ jobs:
       script:
         - npm run compare-protocol-d-ts
         - npm run lint
-        - npm run test-doclint
         - npm run ensure-new-docs-up-to-date
 
     # This bot runs separately as it changes package.json to test puppeteer-core
