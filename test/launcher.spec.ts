@@ -23,7 +23,7 @@ import {
   itFailsFirefox,
   itOnlyRegularInstall,
   itFailsWindowsUntilDate,
-} from './mocha-utils'; // eslint-disable-line imports/extension
+} from './mocha-utils'; // eslint-disable-line import/extensions
 import utils from './utils.js';
 import expect from 'expect';
 import rimraf from 'rimraf';

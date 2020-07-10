@@ -23,7 +23,7 @@ import {
   getTestState,
   describeChromeOnly,
   itFailsWindows,
-} from './mocha-utils'; // eslint-disable-line imports/extension
+} from './mocha-utils'; // eslint-disable-line import/extensions
 import rimraf from 'rimraf';
 
 const rmAsync = promisify(rimraf);

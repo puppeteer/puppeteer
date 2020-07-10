@@ -22,7 +22,7 @@ import {
   setupTestPageAndContextHooks,
   itFailsFirefox,
   describeFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line imports/extension
+} from './mocha-utils'; // eslint-disable-line import/extensions
 import os from 'os';
 
 describe('navigation', function () {

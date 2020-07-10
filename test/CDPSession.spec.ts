@@ -21,7 +21,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeChromeOnly,
-} from './mocha-utils'; // eslint-disable-line imports/extension
+} from './mocha-utils'; // eslint-disable-line import/extensions
 
 describeChromeOnly('Target.createCDPSession', function () {
   setupTestBrowserHooks();

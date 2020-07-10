@@ -15,7 +15,7 @@
  */
 
 import expect from 'expect';
-import { getTestState, setupTestBrowserHooks } from './mocha-utils'; // eslint-disable-line imports/extension
+import { getTestState, setupTestBrowserHooks } from './mocha-utils'; // eslint-disable-line import/extensions
 
 describe('Browser specs', function () {
   setupTestBrowserHooks();

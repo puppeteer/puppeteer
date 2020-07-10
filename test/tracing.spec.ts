@@ -17,7 +17,7 @@
 import fs from 'fs';
 import path from 'path';
 import expect from 'expect';
-import { getTestState, describeChromeOnly } from './mocha-utils'; // eslint-disable-line imports/extension
+import { getTestState, describeChromeOnly } from './mocha-utils'; // eslint-disable-line import/extensions
 
 describeChromeOnly('Tracing', function () {
   let outputFile;

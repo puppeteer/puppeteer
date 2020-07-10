@@ -19,7 +19,7 @@ import {
   getTestState,
   setupTestBrowserHooks,
   itFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line imports/extension
+} from './mocha-utils'; // eslint-disable-line import/extensions
 import utils from './utils.js';
 
 describe('BrowserContext', function () {

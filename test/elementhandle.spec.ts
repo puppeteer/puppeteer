@@ -21,7 +21,7 @@ import {
   setupTestPageAndContextHooks,
   describeFailsFirefox,
   itFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line imports/extension
+} from './mocha-utils'; // eslint-disable-line import/extensions
 
 import utils from './utils.js';
 import { ElementHandle } from '../lib/cjs/common/JSHandle.js';

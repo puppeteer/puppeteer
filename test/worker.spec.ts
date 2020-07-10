@@ -20,7 +20,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line imports/extension
+} from './mocha-utils'; // eslint-disable-line import/extensions
 import utils from './utils.js';
 import { WebWorker } from '../lib/cjs/common/WebWorker.js';
 import { ConsoleMessage } from '../lib/cjs/common/ConsoleMessage.js';
