@@ -17,7 +17,8 @@
 
 const assert = require('assert');
 const https = require('https');
-const BrowserFetcher = require('../lib/BrowserFetcher').BrowserFetcher;
+// run `npm run dev-install` if lib dir is missing
+const BrowserFetcher = require('../lib/cjs/node/BrowserFetcher').BrowserFetcher;
 
 const SUPPORTER_PLATFORMS = ['linux', 'mac', 'win32', 'win64'];
 const fetchers = SUPPORTER_PLATFORMS.map(
