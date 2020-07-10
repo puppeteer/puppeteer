@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-import { assert } from './assert';
-import { helper, PuppeteerEventListener } from './helper';
-import { TimeoutError } from './Errors';
-import { FrameManager, Frame, FrameManagerEmittedEvents } from './FrameManager';
-import { HTTPRequest } from './HTTPRequest';
-import { HTTPResponse } from './HTTPResponse';
-import { NetworkManagerEmittedEvents } from './NetworkManager';
-import { CDPSessionEmittedEvents } from './Connection';
+import { assert } from './assert.js';
+import { helper, PuppeteerEventListener } from './helper.js';
+import { TimeoutError } from './Errors.js';
+import {
+  FrameManager,
+  Frame,
+  FrameManagerEmittedEvents,
+} from './FrameManager.js';
+import { HTTPRequest } from './HTTPRequest.js';
+import { HTTPResponse } from './HTTPResponse.js';
+import { NetworkManagerEmittedEvents } from './NetworkManager.js';
+import { CDPSessionEmittedEvents } from './Connection.js';
 
 export type PuppeteerLifeCycleEvent =
   | 'load'

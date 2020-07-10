@@ -15,7 +15,7 @@
  */
 
 import expect from 'expect';
-import { getTestState, describeChromeOnly } from './mocha-utils';
+import { getTestState, describeChromeOnly } from './mocha-utils'; // eslint-disable-line imports/extension
 
 describeChromeOnly('OOPIF', function () {
   /* We use a special browser for this test as we need the --site-per-process flag */

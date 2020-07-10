@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { CDPSession } from './Connection';
-import { ElementHandle } from './JSHandle';
+import { CDPSession } from './Connection.js';
+import { ElementHandle } from './JSHandle.js';
 import { Protocol } from 'devtools-protocol';
 
 /**

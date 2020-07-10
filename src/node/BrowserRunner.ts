@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { debug } from '../common/Debug';
+import { debug } from '../common/Debug.js';
 
 import removeFolder from 'rimraf';
 import * as childProcess from 'child_process';
-import { assert } from '../common/assert';
-import { helper, debugError } from '../common/helper';
-import { LaunchOptions } from './LaunchOptions';
-import { Connection } from '../common/Connection';
-import { WebSocketTransport } from '../common/WebSocketTransport';
-import { PipeTransport } from './PipeTransport';
+import { assert } from '../common/assert.js';
+import { helper, debugError } from '../common/helper.js';
+import { LaunchOptions } from './LaunchOptions.js';
+import { Connection } from '../common/Connection.js';
+import { WebSocketTransport } from '../common/WebSocketTransport.js';
+import { PipeTransport } from './PipeTransport.js';
 import * as readline from 'readline';
-import { TimeoutError } from '../common/Errors';
+import { TimeoutError } from '../common/Errors.js';
 import { promisify } from 'util';
 
 const removeFolderAsync = promisify(removeFolder);

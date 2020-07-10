@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CDPSession } from './Connection';
-import { Frame } from './FrameManager';
-import { HTTPRequest } from './HTTPRequest';
-import { SecurityDetails } from './SecurityDetails';
+import { CDPSession } from './Connection.js';
+import { Frame } from './FrameManager.js';
+import { HTTPRequest } from './HTTPRequest.js';
+import { SecurityDetails } from './SecurityDetails.js';
 import { Protocol } from 'devtools-protocol';
 
 /**

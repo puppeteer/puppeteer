@@ -13,26 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Launcher from '../node/Launcher';
+import Launcher from '../node/Launcher.js';
 import {
   LaunchOptions,
   ChromeArgOptions,
   BrowserOptions,
-} from '../node/LaunchOptions';
-import { ProductLauncher } from '../node/Launcher';
-import { BrowserFetcher, BrowserFetcherOptions } from '../node/BrowserFetcher';
-import { puppeteerErrors, PuppeteerErrors } from './Errors';
-import { ConnectionTransport } from './ConnectionTransport';
-import { devicesMap, DevicesMap } from './DeviceDescriptors';
-import { Browser } from './Browser';
+} from '../node/LaunchOptions.js';
+import { ProductLauncher } from '../node/Launcher.js';
+import {
+  BrowserFetcher,
+  BrowserFetcherOptions,
+} from '../node/BrowserFetcher.js';
+import { puppeteerErrors, PuppeteerErrors } from './Errors.js';
+import { ConnectionTransport } from './ConnectionTransport.js';
+import { devicesMap, DevicesMap } from './DeviceDescriptors.js';
+import { Browser } from './Browser.js';
 import {
   registerCustomQueryHandler,
   unregisterCustomQueryHandler,
   customQueryHandlers,
   clearQueryHandlers,
   QueryHandler,
-} from './QueryHandler';
-import { PUPPETEER_REVISIONS } from '../revisions';
+} from './QueryHandler.js';
+import { PUPPETEER_REVISIONS } from '../revisions.js';
 
 /**
  * The main Puppeteer class. Provides the {@link Puppeteer.launch | launch}

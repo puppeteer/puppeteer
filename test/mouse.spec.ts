@@ -20,8 +20,8 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   itFailsFirefox,
-} from './mocha-utils';
-import { KeyInput } from '../src/common/USKeyboardLayout';
+} from './mocha-utils'; // eslint-disable-line imports/extension
+import { KeyInput } from '../lib/cjs/common/USKeyboardLayout.js';
 
 interface Dimensions {
   x: number;

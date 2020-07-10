@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { assert } from './assert';
-import { helper } from './helper';
-import { CDPSession } from './Connection';
+import { assert } from './assert.js';
+import { helper } from './helper.js';
+import { CDPSession } from './Connection.js';
 
 /**
  * @public

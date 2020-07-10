@@ -20,8 +20,8 @@ import {
   setupTestPageAndContextHooks,
   setupTestBrowserHooks,
   itFailsFirefox,
-} from './mocha-utils';
-import utils from './utils';
+} from './mocha-utils'; // eslint-disable-line imports/extension
+import utils from './utils.js';
 
 describe('Page.click', function () {
   setupTestBrowserHooks();

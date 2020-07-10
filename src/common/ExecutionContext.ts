@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { assert } from './assert';
-import { helper } from './helper';
-import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
-import { CDPSession } from './Connection';
-import { DOMWorld } from './DOMWorld';
-import { Frame } from './FrameManager';
+import { assert } from './assert.js';
+import { helper } from './helper.js';
+import { createJSHandle, JSHandle, ElementHandle } from './JSHandle.js';
+import { CDPSession } from './Connection.js';
+import { DOMWorld } from './DOMWorld.js';
+import { Frame } from './FrameManager.js';
 import { Protocol } from 'devtools-protocol';
-import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes';
+import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes.js';
 
 export const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;

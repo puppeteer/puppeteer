@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Puppeteer } from './common/Puppeteer';
-import { PUPPETEER_REVISIONS } from './revisions';
+import { Puppeteer } from './common/Puppeteer.js';
+import { PUPPETEER_REVISIONS } from './revisions.js';
 import pkgDir from 'pkg-dir';
 
 export const initializePuppeteer = (packageName: string): Puppeteer => {

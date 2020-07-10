@@ -10,7 +10,8 @@ module.exports = {
     "plugins": [
         "mocha",
         "@typescript-eslint",
-        "unicorn"
+        "unicorn",
+        "import"
     ],
 
     "extends": [
@@ -88,7 +89,8 @@ module.exports = {
 
         "no-restricted-imports": ["error", {
             patterns: ["*Events"],
-        }]
+        }],
+        "import/extensions": ["error", "ignorePackages"]
     },
     "overrides": [
         {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { JSHandle } from './JSHandle';
+import { JSHandle } from './JSHandle.js';
 
 /**
  * @public

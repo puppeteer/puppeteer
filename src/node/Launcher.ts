@@ -20,14 +20,14 @@ import * as https from 'https';
 import * as URL from 'url';
 import * as fs from 'fs';
 
-import { BrowserFetcher } from './BrowserFetcher';
-import { Connection } from '../common/Connection';
-import { Browser } from '../common/Browser';
-import { assert } from '../common/assert';
-import { debugError } from '../common/helper';
-import { ConnectionTransport } from '../common/ConnectionTransport';
-import { WebSocketTransport } from '../common/WebSocketTransport';
-import { BrowserRunner } from './BrowserRunner';
+import { BrowserFetcher } from './BrowserFetcher.js';
+import { Connection } from '../common/Connection.js';
+import { Browser } from '../common/Browser.js';
+import { assert } from '../common/assert.js';
+import { debugError } from '../common/helper.js';
+import { ConnectionTransport } from '../common/ConnectionTransport.js';
+import { WebSocketTransport } from '../common/WebSocketTransport.js';
+import { BrowserRunner } from './BrowserRunner.js';
 import { promisify } from 'util';
 
 const mkdtempAsync = promisify(fs.mkdtemp);
@@ -37,7 +37,7 @@ import {
   ChromeArgOptions,
   LaunchOptions,
   BrowserOptions,
-} from './LaunchOptions';
+} from './LaunchOptions.js';
 
 /**
  * Describes a launcher - a class that is able to create and launch a browser instance.

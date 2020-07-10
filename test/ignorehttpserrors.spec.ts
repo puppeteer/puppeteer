@@ -19,7 +19,7 @@ import {
   getTestState,
   describeFailsFirefox,
   itFailsFirefox,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line imports/extension
 
 describe('ignoreHTTPSErrors', function () {
   /* Note that this test creates its own browser rather than use

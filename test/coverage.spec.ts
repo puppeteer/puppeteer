@@ -20,7 +20,7 @@ import {
   setupTestPageAndContextHooks,
   setupTestBrowserHooks,
   describeChromeOnly,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line imports/extension
 
 describe('Coverage specs', function () {
   describeChromeOnly('JSCoverage', function () {

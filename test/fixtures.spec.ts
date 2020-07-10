@@ -17,7 +17,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
 import expect from 'expect';
-import { getTestState, itChromeOnly } from './mocha-utils';
+import { getTestState, itChromeOnly } from './mocha-utils'; // eslint-disable-line imports/extension
 
 import path from 'path';
 

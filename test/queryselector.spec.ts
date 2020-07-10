@@ -18,7 +18,7 @@ import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line imports/extension
 
 describe('querySelector', function () {
   setupTestBrowserHooks();

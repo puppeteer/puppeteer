@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-import { assert } from './assert';
-import { helper } from './helper';
-import { LifecycleWatcher, PuppeteerLifeCycleEvent } from './LifecycleWatcher';
-import { TimeoutError } from './Errors';
-import { JSHandle, ElementHandle } from './JSHandle';
-import { ExecutionContext } from './ExecutionContext';
-import { TimeoutSettings } from './TimeoutSettings';
-import { MouseButton } from './Input';
-import { FrameManager, Frame } from './FrameManager';
-import { getQueryHandlerAndSelector, QueryHandler } from './QueryHandler';
+import { assert } from './assert.js';
+import { helper } from './helper.js';
+import {
+  LifecycleWatcher,
+  PuppeteerLifeCycleEvent,
+} from './LifecycleWatcher.js';
+import { TimeoutError } from './Errors.js';
+import { JSHandle, ElementHandle } from './JSHandle.js';
+import { ExecutionContext } from './ExecutionContext.js';
+import { TimeoutSettings } from './TimeoutSettings.js';
+import { MouseButton } from './Input.js';
+import { FrameManager, Frame } from './FrameManager.js';
+import { getQueryHandlerAndSelector, QueryHandler } from './QueryHandler.js';
 import {
   SerializableOrJSHandle,
   EvaluateHandleFn,
@@ -31,8 +34,8 @@ import {
   EvaluateFn,
   EvaluateFnReturnType,
   UnwrapPromiseLike,
-} from './EvalTypes';
-import { isNode } from '../environment';
+} from './EvalTypes.js';
+import { isNode } from '../environment.js';
 
 // This predicateQueryHandler is declared here so that TypeScript knows about it
 // when it is used in the predicate function below.

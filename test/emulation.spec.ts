@@ -21,7 +21,7 @@ import {
   setupTestPageAndContextHooks,
   itFailsFirefox,
   describeFailsFirefox,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line imports/extension
 
 describe('Emulation', () => {
   setupTestBrowserHooks();

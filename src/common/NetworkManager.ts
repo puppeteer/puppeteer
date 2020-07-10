@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EventEmitter } from './EventEmitter';
-import { assert } from './assert';
-import { helper, debugError } from './helper';
+import { EventEmitter } from './EventEmitter.js';
+import { assert } from './assert.js';
+import { helper, debugError } from './helper.js';
 import { Protocol } from 'devtools-protocol';
-import { CDPSession } from './Connection';
-import { FrameManager } from './FrameManager';
-import { HTTPRequest } from './HTTPRequest';
-import { HTTPResponse } from './HTTPResponse';
+import { CDPSession } from './Connection.js';
+import { FrameManager } from './FrameManager.js';
+import { HTTPRequest } from './HTTPRequest.js';
+import { HTTPResponse } from './HTTPResponse.js';
 
 /**
  * @public

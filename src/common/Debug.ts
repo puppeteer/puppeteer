@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isNode } from '../environment';
+import { isNode } from '../environment.js';
 
 /**
  * A debug function that can be used in any environment.

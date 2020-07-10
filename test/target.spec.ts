@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import utils from './utils';
+import utils from './utils.js';
 const { waitEvent } = utils;
 import expect from 'expect';
 import {
@@ -22,8 +22,8 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   itFailsFirefox,
-} from './mocha-utils';
-import { Target } from '../src/common/Target';
+} from './mocha-utils'; // eslint-disable-line imports/extension
+import { Target } from '../lib/cjs/common/Target.js';
 
 describe('Target', function () {
   setupTestBrowserHooks();

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { waitEvent } from './utils';
+import { waitEvent } from './utils.js';
 import expect from 'expect';
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeChromeOnly,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line imports/extension
 
 describeChromeOnly('Target.createCDPSession', function () {
   setupTestBrowserHooks();

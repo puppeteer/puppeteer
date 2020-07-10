@@ -8,7 +8,7 @@
     "node": ">=10.18.1"
   },
   "scripts": {
-    "unit": "tsc --version && mocha --config mocha-config/puppeteer-unit-tests.js",
+    "unit": "npm run tsc-cjs && mocha --config mocha-config/puppeteer-unit-tests.js",
     "unit-with-coverage": "cross-env COVERAGE=1 npm run unit",
     "assert-unit-coverage": "cross-env COVERAGE=1 mocha --config mocha-config/coverage-tests.js",
     "funit": "PUPPETEER_PRODUCT=firefox npm run unit",
@@ -76,6 +76,7 @@
     "dependency-cruiser": "^9.7.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-mocha": "^6.3.0",
     "eslint-plugin-prettier": "^3.1.3",
     "eslint-plugin-unicorn": "^19.0.1",

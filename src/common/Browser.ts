@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { assert } from './assert';
-import { helper } from './helper';
-import { Target } from './Target';
-import { EventEmitter } from './EventEmitter';
-import { Connection, ConnectionEmittedEvents } from './Connection';
+import { assert } from './assert.js';
+import { helper } from './helper.js';
+import { Target } from './Target.js';
+import { EventEmitter } from './EventEmitter.js';
+import { Connection, ConnectionEmittedEvents } from './Connection.js';
 import { Protocol } from 'devtools-protocol';
-import { Page } from './Page';
+import { Page } from './Page.js';
 import { ChildProcess } from 'child_process';
-import { Viewport } from './PuppeteerViewport';
+import { Viewport } from './PuppeteerViewport.js';
 
 type BrowserCloseCallback = () => Promise<void> | void;
 
