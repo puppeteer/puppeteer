@@ -384,7 +384,7 @@ describe('Cookie specs', () => {
         },
       ]);
     });
-    itFailsFirefox('should set cookies from a frame', async () => {
+    it.only('should set cookies from a frame', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/grid.html');
@@ -406,7 +406,9 @@ describe('Cookie specs', () => {
       expect(await page.evaluate('document.cookie')).toBe(
         'localhost-cookie=best'
       );
-      expect(await page.frames()[1].evaluate('document.cookie')).toBe('');
+      expect(await page.frames()[1].evaluate('document.cookie')).toBe(
+        '127-cookie=worst'
+      );
 
       expect(await page.cookies()).toEqual([
         {
