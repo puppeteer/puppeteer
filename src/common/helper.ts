@@ -18,7 +18,7 @@ import { debug } from './Debug';
 import * as fs from 'fs';
 import { CDPSession } from './Connection';
 import { promisify } from 'util';
-import Protocol from '../protocol';
+import { Protocol } from 'devtools-protocol';
 import { CommonEventEmitter } from './EventEmitter';
 import { assert } from './assert';
 

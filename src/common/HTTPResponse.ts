@@ -17,7 +17,7 @@ import { CDPSession } from './Connection';
 import { Frame } from './FrameManager';
 import { HTTPRequest } from './HTTPRequest';
 import { SecurityDetails } from './SecurityDetails';
-import Protocol from '../protocol';
+import { Protocol } from 'devtools-protocol';
 
 /**
  * @public

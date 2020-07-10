@@ -18,7 +18,7 @@ import { Frame } from './FrameManager';
 import { HTTPResponse } from './HTTPResponse';
 import { assert } from './assert';
 import { helper, debugError } from './helper';
-import Protocol from '../protocol';
+import { Protocol } from 'devtools-protocol';
 
 /**
  * @public
@@ -123,7 +123,7 @@ export class HTTPRequest {
     frame: Frame,
     interceptionId: string,
     allowInterception: boolean,
-    event: Protocol.Network.requestWillBeSentPayload,
+    event: Protocol.Network.RequestWillBeSentEvent,
     redirectChain: HTTPRequest[]
   ) {
     this._client = client;

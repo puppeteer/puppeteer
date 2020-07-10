@@ -19,7 +19,7 @@ import { WebWorker } from './WebWorker';
 import { CDPSession } from './Connection';
 import { Browser, BrowserContext } from './Browser';
 import { Viewport } from './PuppeteerViewport';
-import Protocol from '../protocol';
+import { Protocol } from 'devtools-protocol';
 
 /**
  * @public

@@ -18,7 +18,7 @@ import { debugError } from './helper';
 import { ExecutionContext } from './ExecutionContext';
 import { JSHandle } from './JSHandle';
 import { CDPSession } from './Connection';
-import Protocol from '../protocol';
+import { Protocol } from 'devtools-protocol';
 import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes';
 
 /**
@@ -96,7 +96,7 @@ export class WebWorker extends EventEmitter {
     });
 
     // This might fail if the target is closed before we recieve all execution contexts.
-    this._client.send('Runtime.enable', {}).catch(debugError);
+    this._client.send('Runtime.enable').catch(debugError);
     this._client.on('Runtime.consoleAPICalled', (event) =>
       consoleAPICalled(
         event.type,

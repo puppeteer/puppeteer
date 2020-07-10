@@ -22,7 +22,7 @@ import { CDPSession } from './Connection';
 import { KeyInput } from './USKeyboardLayout';
 import { FrameManager, Frame } from './FrameManager';
 import { getQueryHandlerAndSelector } from './QueryHandler';
-import Protocol from '../protocol';
+import { Protocol } from 'devtools-protocol';
 import {
   EvaluateFn,
   SerializableOrJSHandle,
@@ -445,11 +445,12 @@ export class ElementHandle<
     };
   }
 
-  private _getBoxModel(): Promise<void | Protocol.DOM.getBoxModelReturnValue> {
+  private _getBoxModel(): Promise<void | Protocol.DOM.GetBoxModelResponse> {
+    const params: Protocol.DOM.GetBoxModelRequest = {
+      objectId: this._remoteObject.objectId,
+    };
     return this._client
-      .send('DOM.getBoxModel', {
-        objectId: this._remoteObject.objectId,
-      })
+      .send('DOM.getBoxModel', params)
       .catch((error) => debugError(error));
   }
 
