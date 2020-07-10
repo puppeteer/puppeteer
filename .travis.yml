@@ -57,6 +57,13 @@ jobs:
       script:
         - travis_retry npm run unit
 
+    - node_js: "12.16.3"
+      name: 'Browser tests: Linux/Chromium'
+      env:
+        - CHROMIUM=true
+      script:
+        - travis_retry npm run test-browser
+
     # This bot runs all the extra checks that aren't the main Puppeteer unit tests
     - node_js: "10.19.0"
       name: 'Extra tests: Linux/Chromium'

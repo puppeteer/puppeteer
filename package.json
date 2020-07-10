@@ -8,12 +8,14 @@
     "node": ">=10.18.1"
   },
   "scripts": {
+    "test-browser": "wtr",
+    "test-browser-watch": "wtr --watch",
     "unit": "npm run tsc-cjs && mocha --config mocha-config/puppeteer-unit-tests.js",
     "unit-with-coverage": "cross-env COVERAGE=1 npm run unit",
     "assert-unit-coverage": "cross-env COVERAGE=1 mocha --config mocha-config/coverage-tests.js",
     "funit": "PUPPETEER_PRODUCT=firefox npm run unit",
     "debug-unit": "node --inspect-brk test/test.js",
-    "test": "npm run tsc && npm run lint --silent && npm run unit-with-coverage && npm run test-types",
+    "test": "npm run tsc && npm run lint --silent && npm run unit-with-coverage && npm run test-browser && npm run test-types",
     "prepare": "node typescript-if-required.js",
     "prepublishOnly": "npm run tsc",
     "dev-install": "npm run tsc && node install.js",
@@ -69,6 +71,7 @@
     "@types/ws": "^7.2.4",
     "@typescript-eslint/eslint-plugin": "^2.28.0",
     "@typescript-eslint/parser": "^2.28.0",
+    "@web/test-runner": "^0.6.40",
     "commonmark": "^0.28.1",
     "cross-env": "^5.0.5",
     "dependency-cruiser": "^9.7.0",
