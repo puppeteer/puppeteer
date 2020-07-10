@@ -384,7 +384,7 @@ describe('Cookie specs', () => {
         },
       ]);
     });
-    it.only('should set cookies from a frame', async () => {
+    itFailsFirefox('should set cookies from a frame', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/grid.html');
