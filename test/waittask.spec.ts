@@ -264,7 +264,7 @@ describe('waittask specs', function () {
         .waitForFunction((element) => !element.parentElement, {}, div)
         .then(() => (resolved = true));
       expect(resolved).toBe(false);
-      await page.evaluate((element) => element.remove(), div);
+      await page.evaluate((element: HTMLElement) => element.remove(), div);
       await waitForFunction;
     });
     it('should respect timeout', async () => {
@@ -351,9 +351,9 @@ describe('waittask specs', function () {
         page.waitForSelector('.zombo'),
         page.setContent(`<div class='zombo'>anything</div>`),
       ]);
-      expect(await page.evaluate((x) => x.textContent, handle)).toBe(
-        'anything'
-      );
+      expect(
+        await page.evaluate((x: HTMLElement) => x.textContent, handle)
+      ).toBe('anything');
     });
 
     it('should resolve promise when node is added', async () => {
@@ -588,7 +588,10 @@ describe('waittask specs', function () {
       const waitForSelector = page.waitForSelector('.zombo');
       await page.setContent(`<div class='zombo'>anything</div>`);
       expect(
-        await page.evaluate((x) => x.textContent, await waitForSelector)
+        await page.evaluate(
+          (x: HTMLElement) => x.textContent,
+          await waitForSelector
+        )
       ).toBe('anything');
     });
     it('should have correct stack trace for timeout', async () => {
@@ -616,7 +619,10 @@ describe('waittask specs', function () {
         '//p[normalize-space(.)="hello world"]'
       );
       expect(
-        await page.evaluate((x) => x.textContent, await waitForXPath)
+        await page.evaluate(
+          (x: HTMLElement) => x.textContent,
+          await waitForXPath
+        )
       ).toBe('hello  world  ');
     });
     it('should respect timeout', async () => {
@@ -683,7 +689,10 @@ describe('waittask specs', function () {
       const waitForXPath = page.waitForXPath('//*[@class="zombo"]');
       await page.setContent(`<div class='zombo'>anything</div>`);
       expect(
-        await page.evaluate((x) => x.textContent, await waitForXPath)
+        await page.evaluate(
+          (x: HTMLElement) => x.textContent,
+          await waitForXPath
+        )
       ).toBe('anything');
     });
     it('should allow you to select a text node', async () => {
@@ -701,7 +710,10 @@ describe('waittask specs', function () {
       await page.setContent(`<div>some text</div>`);
       const waitForXPath = page.waitForXPath('/html/body/div');
       expect(
-        await page.evaluate((x) => x.textContent, await waitForXPath)
+        await page.evaluate(
+          (x: HTMLElement) => x.textContent,
+          await waitForXPath
+        )
       ).toBe('some text');
     });
   });

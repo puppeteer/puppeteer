@@ -28,6 +28,9 @@ import {
   SerializableOrJSHandle,
   EvaluateHandleFn,
   WrapElementHandle,
+  EvaluateFn,
+  EvaluateFnReturnType,
+  UnwrapPromiseLike,
 } from './EvalTypes';
 import { isNode } from '../environment';
 
@@ -118,12 +121,15 @@ export class DOMWorld {
     return context.evaluateHandle(pageFunction, ...args);
   }
 
-  async evaluate<ReturnType extends any>(
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<ReturnType> {
+  async evaluate<T extends EvaluateFn>(
+    pageFunction: T,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<UnwrapPromiseLike<EvaluateFnReturnType<T>>> {
     const context = await this.executionContext();
-    return context.evaluate<ReturnType>(pageFunction, ...args);
+    return context.evaluate<UnwrapPromiseLike<EvaluateFnReturnType<T>>>(
+      pageFunction,
+      ...args
+    );
   }
 
   async $(selector: string): Promise<ElementHandle | null> {
@@ -206,7 +212,7 @@ export class DOMWorld {
     } = options;
     // We rely upon the fact that document.open() will reset frame lifecycle with "init"
     // lifecycle event. @see https://crrev.com/608658
-    await this.evaluate((html) => {
+    await this.evaluate<(x: string) => void>((html) => {
       document.open();
       document.write(html);
       document.close();

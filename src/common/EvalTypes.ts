@@ -19,12 +19,17 @@ import { JSHandle, ElementHandle } from './JSHandle';
 /**
  * @public
  */
-export type EvaluateFn<T = any> = string | ((arg1: T, ...args: any[]) => any);
+export type EvaluateFn<T = unknown> =
+  | string
+  | ((arg1: T, ...args: unknown[]) => unknown);
+
+export type UnwrapPromiseLike<T> = T extends PromiseLike<infer U> ? U : T;
+
 /**
  * @public
  */
 export type EvaluateFnReturnType<T extends EvaluateFn> = T extends (
-  ...args: any[]
+  ...args: unknown[]
 ) => infer R
   ? R
   : unknown;
@@ -42,6 +47,7 @@ export type Serializable =
   | string
   | boolean
   | null
+  | BigInt
   | JSONArray
   | JSONObject;
 

@@ -67,7 +67,7 @@ describe('ElementHandle specs', function () {
         '<div style="width: 100px; height: 100px">hello</div>'
       );
       const elementHandle = await page.$('div');
-      await page.evaluate(
+      await page.evaluate<(element: HTMLElement) => void>(
         (element) => (element.style.height = '200px'),
         elementHandle
       );
@@ -84,7 +84,7 @@ describe('ElementHandle specs', function () {
       `);
       const element = await page.$('#therect');
       const pptrBoundingBox = await element.boundingBox();
-      const webBoundingBox = await page.evaluate((e) => {
+      const webBoundingBox = await page.evaluate((e: HTMLElement) => {
         const rect = e.getBoundingClientRect();
         return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
       }, element);
@@ -211,7 +211,7 @@ describe('ElementHandle specs', function () {
 
       await page.goto(server.PREFIX + '/input/button.html');
       const button = await page.$('button');
-      await page.evaluate((button) => button.remove(), button);
+      await page.evaluate((button: HTMLElement) => button.remove(), button);
       let error = null;
       await button.click().catch((error_) => (error = error_));
       expect(error.message).toBe('Node is detached from document');
@@ -221,7 +221,10 @@ describe('ElementHandle specs', function () {
 
       await page.goto(server.PREFIX + '/input/button.html');
       const button = await page.$('button');
-      await page.evaluate((button) => (button.style.display = 'none'), button);
+      await page.evaluate(
+        (button: HTMLElement) => (button.style.display = 'none'),
+        button
+      );
       const error = await button.click().catch((error_) => error_);
       expect(error.message).toBe(
         'Node is either not visible or not an HTMLElement'
@@ -233,7 +236,7 @@ describe('ElementHandle specs', function () {
       await page.goto(server.PREFIX + '/input/button.html');
       const button = await page.$('button');
       await page.evaluate(
-        (button) => (button.parentElement.style.display = 'none'),
+        (button: HTMLElement) => (button.parentElement.style.display = 'none'),
         button
       );
       const error = await button.click().catch((error_) => error_);
@@ -295,7 +298,12 @@ describe('ElementHandle specs', function () {
         (element, selector) => document.querySelector(`[id="${selector}"]`)
       );
       const element = await page.$('getById/foo');
-      expect(await page.evaluate((element) => element.id, element)).toBe('foo');
+      expect(
+        await page.evaluate<(element: HTMLElement) => string>(
+          (element) => element.id,
+          element
+        )
+      ).toBe('foo');
 
       // Unregister.
       puppeteer.__experimental_unregisterCustomQueryHandler('getById');
@@ -340,7 +348,10 @@ describe('ElementHandle specs', function () {
       const classNames = await Promise.all(
         elements.map(
           async (element) =>
-            await page.evaluate((element) => element.className, element)
+            await page.evaluate<(element: HTMLElement) => string>(
+              (element) => element.className,
+              element
+            )
         )
       );
 

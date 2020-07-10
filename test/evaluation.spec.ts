@@ -40,7 +40,7 @@ describe('Evaluation specs', function () {
     (bigint ? it : xit)('should transfer BigInt', async () => {
       const { page } = getTestState();
 
-      const result = await page.evaluate((a) => a, BigInt(42));
+      const result = await page.evaluate((a: BigInt) => a, BigInt(42));
       expect(result).toBe(BigInt(42));
     });
     it('should transfer NaN', async () => {
@@ -155,7 +155,11 @@ describe('Evaluation specs', function () {
 
       // Setup inpage callback, which calls Page.evaluate
       await page.exposeFunction('callController', async function (a, b) {
-        return await page.evaluate((a, b) => a * b, a, b);
+        return await page.evaluate<(a: number, b: number) => number>(
+          (a, b) => a * b,
+          a,
+          b
+        );
       });
       const result = await page.evaluate(async function () {
         return await globalThis.callController(9, 3);
@@ -277,7 +281,7 @@ describe('Evaluation specs', function () {
         .jsonValue()
         .catch((error_) => error_.message);
       const error = await page
-        .evaluate<Error>((errorText) => {
+        .evaluate<(errorText: string) => Error>((errorText) => {
           throw new Error(errorText);
         }, errorText)
         .catch((error_) => error_);
@@ -306,7 +310,10 @@ describe('Evaluation specs', function () {
 
       await page.setContent('<section>42</section>');
       const element = await page.$('section');
-      const text = await page.evaluate((e) => e.textContent, element);
+      const text = await page.evaluate<(e: HTMLElement) => string>(
+        (e) => e.textContent,
+        element
+      );
       expect(text).toBe('42');
     });
     it('should throw if underlying element was disposed', async () => {
@@ -318,7 +325,7 @@ describe('Evaluation specs', function () {
       await element.dispose();
       let error = null;
       await page
-        .evaluate((e) => e.textContent, element)
+        .evaluate((e: HTMLElement) => e.textContent, element)
         .catch((error_) => (error = error_));
       expect(error.message).toContain('JSHandle is disposed');
     });
@@ -331,7 +338,7 @@ describe('Evaluation specs', function () {
         const bodyHandle = await page.frames()[1].$('body');
         let error = null;
         await page
-          .evaluate((body) => body.innerHTML, bodyHandle)
+          .evaluate((body: HTMLElement) => body.innerHTML, bodyHandle)
           .catch((error_) => (error = error_));
         expect(error).toBeTruthy();
         expect(error.message).toContain(
@@ -379,7 +386,7 @@ describe('Evaluation specs', function () {
     it('should transfer 100Mb of data from page to node.js', async function () {
       const { page } = getTestState();
 
-      const a = await page.evaluate<any[]>(() =>
+      const a = await page.evaluate<() => string>(() =>
         Array(100 * 1024 * 1024 + 1).join('a')
       );
       expect(a.length).toBe(100 * 1024 * 1024);

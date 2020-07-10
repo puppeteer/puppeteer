@@ -109,5 +109,6 @@
 |  [Serializable](./puppeteer.serializable.md) |  |
 |  [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md) |  |
 |  [UnwrapElementHandle](./puppeteer.unwrapelementhandle.md) | Unwraps a DOM element out of an ElementHandle instance |
+|  [UnwrapPromiseLike](./puppeteer.unwrappromiselike.md) |  |
 |  [WrapElementHandle](./puppeteer.wrapelementhandle.md) | Wraps a DOM element into an ElementHandle instance |
 

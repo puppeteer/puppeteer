@@ -60,7 +60,10 @@ describeFailsFirefox('Workers', function () {
     const workerDestroyedPromise = new Promise((x) =>
       page.once('workerdestroyed', x)
     );
-    await page.evaluate((workerObj) => workerObj.terminate(), workerObj);
+    await page.evaluate(
+      (workerObj: Worker) => workerObj.terminate(),
+      workerObj
+    );
     expect(await workerDestroyedPromise).toBe(worker);
     const error = await workerThisObj
       .getProperty('self')

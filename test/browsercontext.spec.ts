@@ -66,7 +66,10 @@ describe('BrowserContext', function () {
     await page.goto(server.EMPTY_PAGE);
     const [popupTarget] = await Promise.all([
       utils.waitEvent(browser, 'targetcreated'),
-      page.evaluate((url) => window.open(url), server.EMPTY_PAGE),
+      page.evaluate<(url: string) => void>(
+        (url) => window.open(url),
+        server.EMPTY_PAGE
+      ),
     ]);
     expect(popupTarget.browserContext()).toBe(context);
     await context.close();

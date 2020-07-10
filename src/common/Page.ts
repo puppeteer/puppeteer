@@ -45,6 +45,9 @@ import {
   SerializableOrJSHandle,
   EvaluateHandleFn,
   WrapElementHandle,
+  EvaluateFn,
+  EvaluateFnReturnType,
+  UnwrapPromiseLike,
 } from './EvalTypes';
 
 const writeFileAsync = promisify(fs.writeFile);
@@ -1516,6 +1519,13 @@ export class Page extends EventEmitter {
    * const aHandle = await page.evaluate('1 + 2');
    * ```
    *
+   * To get the best TypeScript experience, you should pass in as the
+   * generic the type of `pageFunction`:
+   *
+   * ```
+   * const aHandle = await page.evaluate<() => number>(() => 2);
+   * ```
+   *
    * @example
    *
    * {@link ElementHandle} instances (including {@link JSHandle}s) can be passed
@@ -1532,13 +1542,11 @@ export class Page extends EventEmitter {
    *
    * @returns the return value of `pageFunction`.
    */
-  async evaluate<ReturnType extends any>(
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<ReturnType> {
-    return this._frameManager
-      .mainFrame()
-      .evaluate<ReturnType>(pageFunction, ...args);
+  async evaluate<T extends EvaluateFn>(
+    pageFunction: T,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<UnwrapPromiseLike<EvaluateFnReturnType<T>>> {
+    return this._frameManager.mainFrame().evaluate<T>(pageFunction, ...args);
   }
 
   async evaluateOnNewDocument(

@@ -37,7 +37,10 @@ describe('JSHandle', function () {
       const { page } = getTestState();
 
       const navigatorHandle = await page.evaluateHandle(() => navigator);
-      const text = await page.evaluate((e) => e.userAgent, navigatorHandle);
+      const text = await page.evaluate(
+        (e: Navigator) => e.userAgent,
+        navigatorHandle
+      );
       expect(text).toContain('Mozilla');
     });
     it('should accept object handle to primitive types', async () => {
@@ -75,7 +78,9 @@ describe('JSHandle', function () {
         globalThis.FOO = 123;
         return window;
       });
-      expect(await page.evaluate((e) => e.FOO, aHandle)).toBe(123);
+      expect(await page.evaluate((e: { FOO: number }) => e.FOO, aHandle)).toBe(
+        123
+      );
     });
     it('should work with primitives', async () => {
       const { page } = getTestState();
@@ -84,7 +89,9 @@ describe('JSHandle', function () {
         globalThis.FOO = 123;
         return window;
       });
-      expect(await page.evaluate((e) => e.FOO, aHandle)).toBe(123);
+      expect(await page.evaluate((e: { FOO: number }) => e.FOO, aHandle)).toBe(
+        123
+      );
     });
   });
 
@@ -193,7 +200,10 @@ describe('JSHandle', function () {
       const element = aHandle.asElement();
       expect(element).toBeTruthy();
       expect(
-        await page.evaluate((e) => e.nodeType === Node.TEXT_NODE, element)
+        await page.evaluate(
+          (e: HTMLElement) => e.nodeType === Node.TEXT_NODE,
+          element
+        )
       );
     });
   });

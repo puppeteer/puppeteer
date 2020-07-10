@@ -8,5 +8,5 @@
 <b>Signature:</b>
 
 ```typescript
-export declare type EvaluateFn<T = any> = string | ((arg1: T, ...args: any[]) => any);
+export declare type EvaluateFn<T = unknown> = string | ((arg1: T, ...args: unknown[]) => unknown);
 ```
