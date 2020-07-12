@@ -290,10 +290,10 @@ describe('ElementHandle specs', function () {
       await page.setContent('<div id="not-foo"></div><div id="foo"></div>');
 
       // Register.
-      puppeteer.__experimental_registerCustomQueryHandler(
-        'getById',
-        (element, selector) => document.querySelector(`[id="${selector}"]`)
-      );
+      puppeteer.__experimental_registerCustomQueryHandler('getById', {
+        queryOne: (element, selector) =>
+          document.querySelector(`[id="${selector}"]`),
+      });
       const element = await page.$('getById/foo');
       expect(await page.evaluate((element) => element.id, element)).toBe('foo');
 
@@ -332,10 +332,10 @@ describe('ElementHandle specs', function () {
       await page.setContent(
         '<div id="not-foo"></div><div class="foo">Foo1</div><div class="foo baz">Foo2</div>'
       );
-      puppeteer.__experimental_registerCustomQueryHandler(
-        'getByClass',
-        (element, selector) => document.querySelectorAll(`.${selector}`)
-      );
+      puppeteer.__experimental_registerCustomQueryHandler('getByClass', {
+        queryAll: (element, selector) =>
+          document.querySelectorAll(`.${selector}`),
+      });
       const elements = await page.$$('getByClass/foo');
       const classNames = await Promise.all(
         elements.map(
@@ -351,10 +351,10 @@ describe('ElementHandle specs', function () {
       await page.setContent(
         '<div id="not-foo"></div><div class="foo">Foo1</div><div class="foo baz">Foo2</div>'
       );
-      puppeteer.__experimental_registerCustomQueryHandler(
-        'getByClass',
-        (element, selector) => document.querySelectorAll(`.${selector}`)
-      );
+      puppeteer.__experimental_registerCustomQueryHandler('getByClass', {
+        queryAll: (element, selector) =>
+          document.querySelectorAll(`.${selector}`),
+      });
       const elements = await page.$$eval(
         'getByClass/foo',
         (divs) => divs.length
@@ -364,10 +364,9 @@ describe('ElementHandle specs', function () {
     });
     it('should wait correctly with waitForSelector', async () => {
       const { page, puppeteer } = getTestState();
-      puppeteer.__experimental_registerCustomQueryHandler(
-        'getByClass',
-        (element, selector) => element.querySelector(`.${selector}`)
-      );
+      puppeteer.__experimental_registerCustomQueryHandler('getByClass', {
+        queryOne: (element, selector) => element.querySelector(`.${selector}`),
+      });
       const waitFor = page.waitForSelector('getByClass/foo');
 
       // Set the page content after the waitFor has been started.
@@ -380,10 +379,9 @@ describe('ElementHandle specs', function () {
     });
     it('should wait correctly with waitFor', async () => {
       const { page, puppeteer } = getTestState();
-      puppeteer.__experimental_registerCustomQueryHandler(
-        'getByClass',
-        (element, selector) => element.querySelector(`.${selector}`)
-      );
+      puppeteer.__experimental_registerCustomQueryHandler('getByClass', {
+        queryOne: (element, selector) => element.querySelector(`.${selector}`),
+      });
       const waitFor = page.waitFor('getByClass/foo');
 
       // Set the page content after the waitFor has been started.

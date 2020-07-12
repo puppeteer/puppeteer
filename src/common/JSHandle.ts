@@ -772,14 +772,19 @@ export class ElementHandle<
    * the return value resolves to `null`.
    */
   async $(selector: string): Promise<ElementHandle | null> {
-    const defaultHandler = (element: Element, selector: string) =>
-      element.querySelector(selector);
+    const defaultHandler = {
+      queryOne: (element: Element, selector: string) =>
+        element.querySelector(selector),
+    };
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
       selector,
       defaultHandler
     );
 
-    const handle = await this.evaluateHandle(queryHandler, updatedSelector);
+    const handle = await this.evaluateHandle(
+      queryHandler.queryOne,
+      updatedSelector
+    );
     const element = handle.asElement();
     if (element) return element;
     await handle.dispose();
@@ -791,15 +796,17 @@ export class ElementHandle<
    * the return value resolves to `[]`.
    */
   async $$(selector: string): Promise<ElementHandle[]> {
-    const defaultHandler = (element: Element, selector: string) =>
-      element.querySelectorAll(selector);
+    const defaultHandler = {
+      queryAll: (element: Element, selector: string) =>
+        element.querySelectorAll(selector),
+    };
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
       selector,
       defaultHandler
     );
 
     const arrayHandle = await this.evaluateHandle(
-      queryHandler,
+      queryHandler.queryAll,
       updatedSelector
     );
     const properties = await arrayHandle.getProperties();
@@ -890,15 +897,17 @@ export class ElementHandle<
     ) => ReturnType | Promise<ReturnType>,
     ...args: SerializableOrJSHandle[]
   ): Promise<WrapElementHandle<ReturnType>> {
-    const defaultHandler = (element: Element, selector: string) =>
-      Array.from(element.querySelectorAll(selector));
+    const defaultHandler = {
+      queryAll: (element: Element, selector: string) =>
+        Array.from(element.querySelectorAll(selector)),
+    };
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
       selector,
       defaultHandler
     );
 
     const arrayHandle = await this.evaluateHandle(
-      queryHandler,
+      queryHandler.queryAll,
       updatedSelector
     );
     const result = await arrayHandle.evaluate<

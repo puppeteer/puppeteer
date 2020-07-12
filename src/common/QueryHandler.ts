@@ -15,17 +15,18 @@
  */
 
 export interface QueryHandler {
-  (element: Element | Document, selector: string):
-    | Element
-    | Element[]
-    | NodeListOf<Element>;
+  queryOne?: (element: Element | Document, selector: string) => Element;
+  queryAll?: (
+    element: Element | Document,
+    selector: string
+  ) => Element[] | NodeListOf<Element>;
 }
 
 const _customQueryHandlers = new Map<string, QueryHandler>();
 
 export function registerCustomQueryHandler(
   name: string,
-  handler: Function
+  handler: QueryHandler
 ): void {
   if (_customQueryHandlers.get(name))
     throw new Error(`A custom query handler named "${name}" already exists`);
@@ -34,7 +35,7 @@ export function registerCustomQueryHandler(
   if (!isValidName)
     throw new Error(`Custom query handler names may only contain [a-zA-Z]`);
 
-  _customQueryHandlers.set(name, handler as QueryHandler);
+  _customQueryHandlers.set(name, handler);
 }
 
 /**
