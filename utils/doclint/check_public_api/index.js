@@ -674,56 +674,56 @@ function compareDocumentations(actual, expected) {
         'Method EventEmitter.emit() event',
         {
           actualName: 'string|symbol',
-          expectedName: 'Object',
+          expectedName: 'EventType',
         },
       ],
       [
         'Method EventEmitter.listenerCount() event',
         {
           actualName: 'string|symbol',
-          expectedName: 'Object',
+          expectedName: 'EventType',
         },
       ],
       [
         'Method EventEmitter.off() event',
         {
           actualName: 'string|symbol',
-          expectedName: 'Object',
+          expectedName: 'EventType',
         },
       ],
       [
         'Method EventEmitter.on() event',
         {
           actualName: 'string|symbol',
-          expectedName: 'Object',
+          expectedName: 'EventType',
         },
       ],
       [
         'Method EventEmitter.once() event',
         {
           actualName: 'string|symbol',
-          expectedName: 'Object',
+          expectedName: 'EventType',
         },
       ],
       [
         'Method EventEmitter.removeListener() event',
         {
           actualName: 'string|symbol',
-          expectedName: 'Object',
+          expectedName: 'EventType',
         },
       ],
       [
         'Method EventEmitter.addListener() event',
         {
           actualName: 'string|symbol',
-          expectedName: 'Object',
+          expectedName: 'EventType',
         },
       ],
       [
         'Method EventEmitter.removeAllListeners() event',
         {
           actualName: 'string|symbol',
-          expectedName: 'Object',
+          expectedName: 'EventType',
         },
       ],
       [

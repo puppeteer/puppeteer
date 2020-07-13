@@ -9,6 +9,7 @@
   * [Commit Messages](#commit-messages)
   * [Writing Documentation](#writing-documentation)
   * [Adding New Dependencies](#adding-new-dependencies)
+    - [Vendoring third party dependencies](#vendoring-third-party-dependencies)
   * [Running & Writing Tests](#running--writing-tests)
   * [Public API Coverage](#public-api-coverage)
   * [Debugging Puppeteer](#debugging-puppeteer)
