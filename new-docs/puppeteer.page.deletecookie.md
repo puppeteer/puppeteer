@@ -14,7 +14,7 @@ deleteCookie(...cookies: Protocol.Network.DeleteCookiesRequest[]): Promise<void>
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  cookies | Protocol.Network.DeleteCookiesRequest\[\] |  |
+|  cookies | [Protocol.Network.DeleteCookiesRequest](./puppeteer.protocol.network.deletecookiesrequest.md)<!-- -->\[\] |  |
 
 <b>Returns:</b>
 

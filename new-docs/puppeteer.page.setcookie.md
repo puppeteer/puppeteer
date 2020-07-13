@@ -14,7 +14,7 @@ setCookie(...cookies: Protocol.Network.CookieParam[]): Promise<void>;
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  cookies | Protocol.Network.CookieParam\[\] |  |
+|  cookies | [Protocol.Network.CookieParam](./puppeteer.protocol.network.cookieparam.md)<!-- -->\[\] |  |
 
 <b>Returns:</b>
 

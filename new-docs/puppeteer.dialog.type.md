@@ -11,7 +11,7 @@ type(): Protocol.Page.DialogType;
 ```
 <b>Returns:</b>
 
-Protocol.Page.DialogType
+[Protocol.Page.DialogType](./puppeteer.protocol.page.dialogtype.md)
 
 The type of the dialog.
 

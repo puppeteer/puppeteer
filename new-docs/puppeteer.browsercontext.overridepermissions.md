@@ -15,7 +15,7 @@ overridePermissions(origin: string, permissions: Protocol.Browser.PermissionType
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  origin | string | The origin to grant permissions to, e.g. "https://example.com". |
-|  permissions | Protocol.Browser.PermissionType\[\] | An array of permissions to grant. All permissions that are not listed here will be automatically denied. |
+|  permissions | [Protocol.Browser.PermissionType](./puppeteer.protocol.browser.permissiontype.md)<!-- -->\[\] | An array of permissions to grant. All permissions that are not listed here will be automatically denied. |
 
 <b>Returns:</b>
 
