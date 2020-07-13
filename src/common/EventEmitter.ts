@@ -1,4 +1,8 @@
-import mitt, { Emitter, EventType, Handler } from 'mitt';
+import mitt, {
+  Emitter,
+  EventType,
+  Handler,
+} from './third-party/mitt/src/index.js';
 
 /**
  * @internal

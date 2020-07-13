@@ -10,3 +10,4 @@ lib/
 # We ignore this file because it uses ES imports which we don't yet use
 # in the Puppeteer src, so it trips up the ESLint-TypeScript parser.
 utils/doclint/generate_types/test/test.ts
+src/common/third-party/

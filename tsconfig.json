@@ -13,5 +13,8 @@
   },
   "include": [
     "src"
+  ],
+  "exclude": [
+    "src/common/third-party/mitt/dist"
   ]
 }

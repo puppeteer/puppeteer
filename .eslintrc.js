@@ -87,8 +87,14 @@ module.exports = {
         // enforce the variable in a catch block is named error
         "unicorn/catch-error-name": "error",
 
+
         "no-restricted-imports": ["error", {
             patterns: ["*Events"],
+            paths: [{
+                name: "mitt",
+                message:
+                "Import Mitt from the vendored location: src/common/third-party/mitt/src/index.js",
+            }],
         }],
         "import/extensions": ["error", "ignorePackages"]
     },
