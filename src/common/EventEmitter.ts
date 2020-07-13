@@ -2,7 +2,7 @@ import mitt, {
   Emitter,
   EventType,
   Handler,
-} from './third-party/mitt/src/index.js';
+} from '../../vendor/mitt/src/index.js';
 
 /**
  * @internal

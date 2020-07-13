@@ -1,0 +1,9 @@
+{
+  "extends": "../tsconfig.base.json",
+  "exclude": [
+    "mitt/dist"
+  ],
+  "compilerOptions": {
+    "outDir": "../lib/vendor"
+  }
+}

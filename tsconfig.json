@@ -1,20 +1,10 @@
 {
-  "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "outDir": "./lib/cjs",
-    "target": "ESNext",
-    "moduleResolution": "node",
-    "module": "CommonJS",
-    "declaration": true,
-    "declarationMap": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true
-  },
-  "include": [
-    "src"
+  "references": [
+    { "path": "./src" },
+    { "path": "./vendor" },
   ],
-  "exclude": [
-    "src/common/third-party/mitt/dist"
-  ]
+  "compilerOptions": {
+    "esModuleInterop": true
+  },
+  "files": []
 }
