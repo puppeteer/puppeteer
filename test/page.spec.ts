@@ -1190,7 +1190,7 @@ describe('Page', function () {
 
       await page.goto(server.EMPTY_PAGE);
       await page.addScriptTag({
-        content: `import num from '/es6/es6module.js.js';window.__es6injected = num;`,
+        content: `import num from '/es6/es6module.js';window.__es6injected = num;`,
         type: 'module',
       });
       await page.waitForFunction('window.__es6injected');
