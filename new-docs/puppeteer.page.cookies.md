@@ -20,5 +20,5 @@ cookies(...urls: string[]): Promise<Protocol.Network.Cookie[]>;
 
 <b>Returns:</b>
 
-Promise&lt;Protocol.Network.Cookie\[\]&gt;
+Promise&lt;[Protocol.Network.Cookie](./puppeteer.protocol.network.cookie.md)<!-- -->\[\]&gt;
 

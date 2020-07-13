@@ -56,3 +56,4 @@ export * from './common/USKeyboardLayout.js';
 export * from './common/EvalTypes.js';
 export * from './common/TimeoutSettings.js';
 export * from './common/LifecycleWatcher.js';
+export * from 'devtools-protocol/types/protocol';
