@@ -16,30 +16,38 @@
 
 import * as fs from 'fs';
 import { promisify } from 'util';
-import { EventEmitter } from './EventEmitter';
+import { EventEmitter } from './EventEmitter.js';
 import * as mime from 'mime';
-import { Connection, CDPSession, CDPSessionEmittedEvents } from './Connection';
-import { Dialog } from './Dialog';
-import { EmulationManager } from './EmulationManager';
-import { Frame, FrameManager, FrameManagerEmittedEvents } from './FrameManager';
-import { Keyboard, Mouse, Touchscreen, MouseButton } from './Input';
-import { Tracing } from './Tracing';
-import { assert } from './assert';
-import { helper, debugError } from './helper';
-import { Coverage } from './Coverage';
-import { WebWorker } from './WebWorker';
-import { Browser, BrowserContext } from './Browser';
-import { Target } from './Target';
-import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
-import { Viewport } from './PuppeteerViewport';
-import { Credentials, NetworkManagerEmittedEvents } from './NetworkManager';
-import { HTTPRequest } from './HTTPRequest';
-import { HTTPResponse } from './HTTPResponse';
-import { Accessibility } from './Accessibility';
-import { TimeoutSettings } from './TimeoutSettings';
-import { FileChooser } from './FileChooser';
-import { ConsoleMessage, ConsoleMessageType } from './ConsoleMessage';
-import { PuppeteerLifeCycleEvent } from './LifecycleWatcher';
+import {
+  Connection,
+  CDPSession,
+  CDPSessionEmittedEvents,
+} from './Connection.js';
+import { Dialog } from './Dialog.js';
+import { EmulationManager } from './EmulationManager.js';
+import {
+  Frame,
+  FrameManager,
+  FrameManagerEmittedEvents,
+} from './FrameManager.js';
+import { Keyboard, Mouse, Touchscreen, MouseButton } from './Input.js';
+import { Tracing } from './Tracing.js';
+import { assert } from './assert.js';
+import { helper, debugError } from './helper.js';
+import { Coverage } from './Coverage.js';
+import { WebWorker } from './WebWorker.js';
+import { Browser, BrowserContext } from './Browser.js';
+import { Target } from './Target.js';
+import { createJSHandle, JSHandle, ElementHandle } from './JSHandle.js';
+import { Viewport } from './PuppeteerViewport.js';
+import { Credentials, NetworkManagerEmittedEvents } from './NetworkManager.js';
+import { HTTPRequest } from './HTTPRequest.js';
+import { HTTPResponse } from './HTTPResponse.js';
+import { Accessibility } from './Accessibility.js';
+import { TimeoutSettings } from './TimeoutSettings.js';
+import { FileChooser } from './FileChooser.js';
+import { ConsoleMessage, ConsoleMessageType } from './ConsoleMessage.js';
+import { PuppeteerLifeCycleEvent } from './LifecycleWatcher.js';
 import { Protocol } from 'devtools-protocol';
 import {
   SerializableOrJSHandle,
@@ -48,7 +56,7 @@ import {
   EvaluateFn,
   EvaluateFnReturnType,
   UnwrapPromiseLike,
-} from './EvalTypes';
+} from './EvalTypes.js';
 
 const writeFileAsync = promisify(fs.writeFile);
 

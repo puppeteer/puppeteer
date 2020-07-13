@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { assert } from './assert';
-import { CDPSession } from './Connection';
-import { keyDefinitions, KeyDefinition, KeyInput } from './USKeyboardLayout';
+import { assert } from './assert.js';
+import { CDPSession } from './Connection.js';
+import { keyDefinitions, KeyDefinition, KeyInput } from './USKeyboardLayout.js';
 
 type KeyDescription = Required<
   Pick<KeyDefinition, 'keyCode' | 'key' | 'text' | 'code' | 'location'>

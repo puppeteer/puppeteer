@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Viewport } from '../common/PuppeteerViewport';
+import { Viewport } from '../common/PuppeteerViewport.js';
 
 /**
  * Launcher options that only apply to Chrome.

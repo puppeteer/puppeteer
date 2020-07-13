@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-import { EventEmitter } from './EventEmitter';
-import { assert } from './assert';
-import { helper, debugError } from './helper';
-import { ExecutionContext, EVALUATION_SCRIPT_URL } from './ExecutionContext';
-import { LifecycleWatcher, PuppeteerLifeCycleEvent } from './LifecycleWatcher';
-import { DOMWorld, WaitForSelectorOptions } from './DOMWorld';
-import { NetworkManager } from './NetworkManager';
-import { TimeoutSettings } from './TimeoutSettings';
-import { CDPSession } from './Connection';
-import { JSHandle, ElementHandle } from './JSHandle';
-import { MouseButton } from './Input';
-import { Page } from './Page';
-import { HTTPResponse } from './HTTPResponse';
+import { EventEmitter } from './EventEmitter.js';
+import { assert } from './assert.js';
+import { helper, debugError } from './helper.js';
+import { ExecutionContext, EVALUATION_SCRIPT_URL } from './ExecutionContext.js';
+import {
+  LifecycleWatcher,
+  PuppeteerLifeCycleEvent,
+} from './LifecycleWatcher.js';
+import { DOMWorld, WaitForSelectorOptions } from './DOMWorld.js';
+import { NetworkManager } from './NetworkManager.js';
+import { TimeoutSettings } from './TimeoutSettings.js';
+import { CDPSession } from './Connection.js';
+import { JSHandle, ElementHandle } from './JSHandle.js';
+import { MouseButton } from './Input.js';
+import { Page } from './Page.js';
+import { HTTPResponse } from './HTTPResponse.js';
 import { Protocol } from 'devtools-protocol';
 import {
   SerializableOrJSHandle,
@@ -35,7 +38,7 @@ import {
   EvaluateFn,
   EvaluateFnReturnType,
   UnwrapPromiseLike,
-} from './EvalTypes';
+} from './EvalTypes.js';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 

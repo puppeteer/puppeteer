@@ -23,11 +23,11 @@ import {
   itFailsFirefox,
   itOnlyRegularInstall,
   itFailsWindowsUntilDate,
-} from './mocha-utils';
-import utils from './utils';
+} from './mocha-utils'; // eslint-disable-line import/extensions
+import utils from './utils.js';
 import expect from 'expect';
 import rimraf from 'rimraf';
-import { Page } from '../src/common/Page';
+import { Page } from '../lib/cjs/common/Page.js';
 
 const rmAsync = promisify(rimraf);
 const mkdtempAsync = promisify(fs.mkdtemp);

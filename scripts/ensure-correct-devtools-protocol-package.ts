@@ -33,6 +33,7 @@
  * find the one closest to our Chromium revision.
  */
 
+// eslint-disable-next-line import/extensions
 import { PUPPETEER_REVISIONS } from '../src/revisions';
 import { execSync } from 'child_process';
 

@@ -21,7 +21,7 @@ import {
   setupTestPageAndContextHooks,
   setupTestBrowserHooks,
   itFailsFirefox,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line import/extensions
 
 describe('Page.Events.Dialog', function () {
   setupTestBrowserHooks();

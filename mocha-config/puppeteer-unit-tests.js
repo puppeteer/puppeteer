@@ -18,9 +18,9 @@ const base = require('./base');
 
 module.exports = {
   ...base,
-  require: ['ts-node/register', './test/mocha-utils.ts'],
+  require: ['./test/mocha-ts-require', './test/mocha-utils.ts'],
   spec: 'test/*.spec.ts',
-  extension: ['ts'],
+  extension: ['js', 'ts'],
   parallel: process.env.CI && !process.env.COVERAGE,
   // retry twice more, so we run each test up to 3 times if needed.
   retries: process.env.CI ? 2 : 0,

@@ -20,10 +20,10 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeFailsFirefox,
-} from './mocha-utils';
-import utils from './utils';
-import { WebWorker } from '../src/common/WebWorker';
-import { ConsoleMessage } from '../src/common/ConsoleMessage';
+} from './mocha-utils'; // eslint-disable-line import/extensions
+import utils from './utils.js';
+import { WebWorker } from '../lib/cjs/common/WebWorker.js';
+import { ConsoleMessage } from '../lib/cjs/common/ConsoleMessage.js';
 const { waitEvent } = utils;
 
 describeFailsFirefox('Workers', function () {

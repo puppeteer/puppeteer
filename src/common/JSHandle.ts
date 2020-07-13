@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { assert } from './assert';
-import { helper, debugError } from './helper';
-import { ExecutionContext } from './ExecutionContext';
-import { Page } from './Page';
-import { CDPSession } from './Connection';
-import { KeyInput } from './USKeyboardLayout';
-import { FrameManager, Frame } from './FrameManager';
-import { getQueryHandlerAndSelector } from './QueryHandler';
+import { assert } from './assert.js';
+import { helper, debugError } from './helper.js';
+import { ExecutionContext } from './ExecutionContext.js';
+import { Page } from './Page.js';
+import { CDPSession } from './Connection.js';
+import { KeyInput } from './USKeyboardLayout.js';
+import { FrameManager, Frame } from './FrameManager.js';
+import { getQueryHandlerAndSelector } from './QueryHandler.js';
 import { Protocol } from 'devtools-protocol';
 import {
   EvaluateFn,
@@ -30,7 +30,7 @@ import {
   EvaluateHandleFn,
   WrapElementHandle,
   UnwrapPromiseLike,
-} from './EvalTypes';
+} from './EvalTypes.js';
 
 export interface BoxModel {
   content: Array<{ x: number; y: number }>;

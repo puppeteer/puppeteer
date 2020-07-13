@@ -16,14 +16,14 @@
 
 import fs from 'fs';
 import path from 'path';
-import utils from './utils';
+import utils from './utils.js';
 import expect from 'expect';
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeFailsFirefox,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line import/extensions
 
 describe('request interception', function () {
   setupTestBrowserHooks();

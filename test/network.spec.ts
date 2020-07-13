@@ -16,7 +16,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import utils from './utils';
+import utils from './utils.js';
 import expect from 'expect';
 import {
   getTestState,
@@ -24,7 +24,7 @@ import {
   setupTestPageAndContextHooks,
   itFailsFirefox,
   describeFailsFirefox,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line import/extensions
 
 describe('network', function () {
   setupTestBrowserHooks();

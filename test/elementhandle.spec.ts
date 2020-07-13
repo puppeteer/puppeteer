@@ -21,10 +21,10 @@ import {
   setupTestPageAndContextHooks,
   describeFailsFirefox,
   itFailsFirefox,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line import/extensions
 
-import utils from './utils';
-import { ElementHandle } from '../src/common/JSHandle';
+import utils from './utils.js';
+import { ElementHandle } from '../lib/cjs/common/JSHandle.js';
 
 describe('ElementHandle specs', function () {
   setupTestBrowserHooks();

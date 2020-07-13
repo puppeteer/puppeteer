@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { assert } from './assert';
-import { helper, debugError, PuppeteerEventListener } from './helper';
+import { assert } from './assert.js';
+import { helper, debugError, PuppeteerEventListener } from './helper.js';
 import { Protocol } from 'devtools-protocol';
-import { CDPSession } from './Connection';
+import { CDPSession } from './Connection.js';
 
-import { EVALUATION_SCRIPT_URL } from './ExecutionContext';
+import { EVALUATION_SCRIPT_URL } from './ExecutionContext.js';
 
 /**
  * The CoverageEntry class represents one entry of the coverage report.

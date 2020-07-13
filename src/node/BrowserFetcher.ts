@@ -23,13 +23,13 @@ import * as https from 'https';
 import * as http from 'http';
 
 import extractZip from 'extract-zip';
-import { debug } from '../common/Debug';
+import { debug } from '../common/Debug.js';
 import { promisify } from 'util';
 import removeRecursive from 'rimraf';
 import * as URL from 'url';
 import ProxyAgent from 'https-proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
-import { assert } from '../common/assert';
+import { assert } from '../common/assert.js';
 
 const debugFetcher = debug(`puppeteer:fetcher`);
 

@@ -15,7 +15,7 @@
  */
 import fs from 'fs';
 import path from 'path';
-import utils from './utils';
+import utils from './utils.js';
 const { waitEvent } = utils;
 import expect from 'expect';
 import sinon from 'sinon';
@@ -25,9 +25,9 @@ import {
   setupTestPageAndContextHooks,
   itFailsFirefox,
   describeFailsFirefox,
-} from './mocha-utils';
-import { Page, Metrics } from '../src/common/Page';
-import { JSHandle } from '../src/common/JSHandle';
+} from './mocha-utils'; // eslint-disable-line import/extensions
+import { Page, Metrics } from '../lib/cjs/common/Page.js';
+import { JSHandle } from '../lib/cjs/common/JSHandle.js';
 
 describe('Page', function () {
   setupTestBrowserHooks();

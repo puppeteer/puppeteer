@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TimeoutError } from './Errors';
-import { debug } from './Debug';
+import { TimeoutError } from './Errors.js';
+import { debug } from './Debug.js';
 import * as fs from 'fs';
-import { CDPSession } from './Connection';
+import { CDPSession } from './Connection.js';
 import { promisify } from 'util';
 import { Protocol } from 'devtools-protocol';
-import { CommonEventEmitter } from './EventEmitter';
-import { assert } from './assert';
+import { CommonEventEmitter } from './EventEmitter.js';
+import { assert } from './assert.js';
 
 const openAsync = promisify(fs.open);
 const writeAsync = promisify(fs.write);

@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EventEmitter } from './EventEmitter';
-import { debugError } from './helper';
-import { ExecutionContext } from './ExecutionContext';
-import { JSHandle } from './JSHandle';
-import { CDPSession } from './Connection';
+import { EventEmitter } from './EventEmitter.js';
+import { debugError } from './helper.js';
+import { ExecutionContext } from './ExecutionContext.js';
+import { JSHandle } from './JSHandle.js';
+import { CDPSession } from './Connection.js';
 import { Protocol } from 'devtools-protocol';
-import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes';
+import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes.js';
 
 /**
  * @internal

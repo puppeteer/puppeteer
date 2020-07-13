@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { initializePuppeteer } from './initialize';
+import { initializePuppeteer } from './initialize.js';
 
 const puppeteer = initializePuppeteer('puppeteer');
 export default puppeteer;

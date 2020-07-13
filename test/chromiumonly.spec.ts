@@ -19,7 +19,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeChromeOnly,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line import/extensions
 
 describeChromeOnly('Chromium-Specific Launcher tests', function () {
   describe('Puppeteer.launch |browserURL| option', function () {
