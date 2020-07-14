@@ -93,7 +93,7 @@ module.exports = {
             paths: [{
                 name: "mitt",
                 message:
-                "Import Mitt from the vendored location: src/common/third-party/mitt/src/index.js",
+                "Import Mitt from the vendored location: vendor/mitt/src/index.js",
             }],
         }],
         "import/extensions": ["error", "ignorePackages"]
