@@ -86,6 +86,38 @@ npm run tsc
 
 - Try to avoid the use of `any` when possible. Consider `unknown` as a better alternative. You are able to use `any` if needbe, but it will generate an ESLint warning.
 
+## Project structure and TypeScript compilation
+
+The code in Puppeteer is split primarily into two folders:
+
+- `src` contains all source code
+- `vendor` contains all dependencies that we've vendored into the codebase. See the [`vendor/README.md`](https://github.com/puppeteer/puppeteer/blob/main/vendor/README.md) for details.
+
+We structure these using TypeScript's project references, which lets us treat each folder like a standalone TypeScript project.
+
+### Shipping CJS and ESM bundles
+
+Currently Puppeteer ships two bundles; a CommonJS version for Node and an ESM bundle for the browser. Therefore we maintain two `tsconfig` files for each project; `tsconfig.esm.json` and `tsconfig.cjs.json`. At build time we compile twice, once outputting to CJS and another time to output to ESM.
+
+We compile into the `lib` directory which is what we publish on the npm repository and it's structured like so:
+
+```
+lib
+- cjs
+  - puppeteer <== the output of compiling `src/tsconfig.cjs.json`
+  - vendor <== the output of compiling `vendor/tsconfig.cjs.json`
+- esm
+  - puppeteer <== the output of compiling `src/tsconfig.esm.json`
+  - vendor <== the output of compiling `vendor/tsconfig.esm.json`
+```
+
+The main entry point for the Node module Puppeteer is `cjs-entry.js`. This imports `lib/cjs/puppeteer/index.js` and exposes it to Node users.
+
+### tsconfig for the tests
+
+We also maintain `test/tsconfig.test.json`. This is **only used to compile the unit test `*.spec.ts` files**. When the tests are run, we first compile Puppeteer as normal before running the unit tests **against the compiled output**. Doing this lets the test run against the compiled code we ship to users so it gives us more confidence in our compiled output being correct.
+
+
 ## API guidelines
 
 When authoring new API methods, consider the following:
