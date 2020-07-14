@@ -890,12 +890,11 @@ export class ElementHandle<
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
       selector
     );
-    const queryHandlerToArrayStr = `(element, selector) =>
-      Array.from((${queryHandler.queryAll})(element, selector))`;
-    /* The `eval` ensures that the query handler is inlined
-     * before sending the program text to the browser.
-     */
-    const queryHandlerToArray = eval(queryHandlerToArrayStr);
+    const queryHandlerToArray = Function(
+      'element',
+      'selector',
+      `return Array.from((${queryHandler.queryAll})(element, selector));`
+    );
     const arrayHandle = await this.evaluateHandle(
       queryHandlerToArray,
       updatedSelector
