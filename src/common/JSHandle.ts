@@ -772,13 +772,8 @@ export class ElementHandle<
    * the return value resolves to `null`.
    */
   async $(selector: string): Promise<ElementHandle | null> {
-    const defaultHandler = {
-      queryOne: (element: Element, selector: string) =>
-        element.querySelector(selector),
-    };
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector,
-      defaultHandler
+      selector
     );
 
     const handle = await this.evaluateHandle(
@@ -796,13 +791,8 @@ export class ElementHandle<
    * the return value resolves to `[]`.
    */
   async $$(selector: string): Promise<ElementHandle[]> {
-    const defaultHandler = {
-      queryAll: (element: Element, selector: string) =>
-        element.querySelectorAll(selector),
-    };
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector,
-      defaultHandler
+      selector
     );
 
     const arrayHandle = await this.evaluateHandle(
@@ -897,17 +887,17 @@ export class ElementHandle<
     ) => ReturnType | Promise<ReturnType>,
     ...args: SerializableOrJSHandle[]
   ): Promise<WrapElementHandle<ReturnType>> {
-    const defaultHandler = {
-      queryAll: (element: Element, selector: string) =>
-        Array.from(element.querySelectorAll(selector)),
-    };
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector,
-      defaultHandler
+      selector
     );
-
+    const queryHandlerToArrayStr = `(element, selector) =>
+      Array.from((${queryHandler.queryAll})(element, selector))`;
+    /* The `eval` ensures that the query handler is inlined
+     * before sending the program text to the browser.
+     */
+    const queryHandlerToArray = eval(queryHandlerToArrayStr);
     const arrayHandle = await this.evaluateHandle(
-      queryHandler.queryAll,
+      queryHandlerToArray,
       updatedSelector
     );
     const result = await arrayHandle.evaluate<

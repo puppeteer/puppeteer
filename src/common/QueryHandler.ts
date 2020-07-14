@@ -54,12 +54,17 @@ export function clearQueryHandlers(): void {
 }
 
 export function getQueryHandlerAndSelector(
-  selector: string,
-  defaultQueryHandler: QueryHandler
+  selector: string
 ): { updatedSelector: string; queryHandler: QueryHandler } {
+  const defaultHandler = {
+    queryOne: (element: Element, selector: string) =>
+      element.querySelector(selector),
+    queryAll: (element: Element, selector: string) =>
+      element.querySelectorAll(selector),
+  };
   const hasCustomQueryHandler = /^[a-zA-Z]+\//.test(selector);
   if (!hasCustomQueryHandler)
-    return { updatedSelector: selector, queryHandler: defaultQueryHandler };
+    return { updatedSelector: selector, queryHandler: defaultHandler };
 
   const index = selector.indexOf('/');
   const name = selector.slice(0, index);

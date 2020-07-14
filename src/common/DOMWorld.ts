@@ -497,12 +497,8 @@ export class DOMWorld {
     const title = `${isXPath ? 'XPath' : 'selector'} "${selectorOrXPath}"${
       waitForHidden ? ' to be hidden' : ''
     }`;
-    const defaultHandler = {
-      queryOne: (element, selector) => document.querySelector(selector),
-    };
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selectorOrXPath,
-      defaultHandler
+      selectorOrXPath
     );
     const waitTask = new WaitTask(
       this,
