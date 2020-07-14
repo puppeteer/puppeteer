@@ -1,10 +1,4 @@
 {
-  "references": [
-    { "path": "./src" },
-    { "path": "./vendor" },
-  ],
-  "compilerOptions": {
-    "esModuleInterop": true
-  },
-  "files": []
+  "extends": "./tsconfig.base.json",
+  "include": ["test"]
 }

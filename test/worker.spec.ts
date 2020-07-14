@@ -22,8 +22,8 @@ import {
   describeFailsFirefox,
 } from './mocha-utils'; // eslint-disable-line import/extensions
 import utils from './utils.js';
-import { WebWorker } from '../lib/cjs/common/WebWorker.js';
-import { ConsoleMessage } from '../lib/cjs/common/ConsoleMessage.js';
+import { WebWorker } from '../lib/cjs/puppeteer/common/WebWorker.js';
+import { ConsoleMessage } from '../lib/cjs/puppeteer/common/ConsoleMessage.js';
 const { waitEvent } = utils;
 
 describeFailsFirefox('Workers', function () {

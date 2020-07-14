@@ -24,7 +24,7 @@ import {
 } from './mocha-utils'; // eslint-disable-line import/extensions
 
 import utils from './utils.js';
-import { ElementHandle } from '../lib/cjs/common/JSHandle.js';
+import { ElementHandle } from '../lib/cjs/puppeteer/common/JSHandle.js';
 
 describe('ElementHandle specs', function () {
   setupTestBrowserHooks();

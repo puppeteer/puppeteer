@@ -4,6 +4,8 @@
     "mitt/dist"
   ],
   "compilerOptions": {
-    "outDir": "../lib/vendor"
+    "composite": true,
+    "outDir": "../lib/esm/vendor",
+    "module": "esnext"
   }
 }

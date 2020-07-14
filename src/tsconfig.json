@@ -1,9 +1,0 @@
-{
-  "extends": "../tsconfig.base.json",
-  "compilerOptions": {
-    "outDir": "../lib/puppeteer"
-  },
-  "references": [
-    { "path": "../vendor"}
-  ]
-}

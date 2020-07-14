@@ -23,7 +23,7 @@ import {
   setupTestPageAndContextHooks,
   itFailsFirefox,
 } from './mocha-utils'; // eslint-disable-line import/extensions
-import { Target } from '../lib/cjs/common/Target.js';
+import { Target } from '../lib/cjs/puppeteer/common/Target.js';
 
 describe('Target', function () {
   setupTestBrowserHooks();

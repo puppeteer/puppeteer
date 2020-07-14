@@ -26,8 +26,8 @@ import {
   itFailsFirefox,
   describeFailsFirefox,
 } from './mocha-utils'; // eslint-disable-line import/extensions
-import { Page, Metrics } from '../lib/cjs/common/Page.js';
-import { JSHandle } from '../lib/cjs/common/JSHandle.js';
+import { Page, Metrics } from '../lib/cjs/puppeteer/common/Page.js';
+import { JSHandle } from '../lib/cjs/puppeteer/common/JSHandle.js';
 
 describe('Page', function () {
   setupTestBrowserHooks();

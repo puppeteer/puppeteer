@@ -27,7 +27,7 @@ import {
 import utils from './utils.js';
 import expect from 'expect';
 import rimraf from 'rimraf';
-import { Page } from '../lib/cjs/common/Page.js';
+import { Page } from '../lib/cjs/puppeteer/common/Page.js';
 
 const rmAsync = promisify(rimraf);
 const mkdtempAsync = promisify(fs.mkdtemp);

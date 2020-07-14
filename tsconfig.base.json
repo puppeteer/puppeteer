@@ -5,11 +5,8 @@
     "checkJs": true,
     "target": "ESNext",
     "moduleResolution": "node",
-    "outDir": "./lib",
-    "module": "CommonJS",
     "declaration": true,
     "declarationMap": true,
-    "resolveJsonModule": true,
-    "composite": true,
+    "resolveJsonModule": true
   }
 }
