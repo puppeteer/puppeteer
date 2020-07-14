@@ -846,7 +846,7 @@ export class ElementHandle<
     await elementHandle.dispose();
 
     /**
-     * This as is a little unfortunate but helps TS understand the behavour of
+     * This `as` is a little unfortunate but helps TS understand the behaviour of
      * `elementHandle.evaluate`. If evalute returns an element it will return an
      * ElementHandle instance, rather than the plain object. All the
      * WrapElementHandle type does is wrap ReturnType into
@@ -907,8 +907,8 @@ export class ElementHandle<
       ) => ReturnType | Promise<ReturnType>
     >(pageFunction, ...args);
     await arrayHandle.dispose();
-    /* This as exists for the same reason as the `as` in $eval above.
-     * See the comment there for a ful explanation.
+    /* This `as` exists for the same reason as the `as` in $eval above.
+     * See the comment there for a full explanation.
      */
     return result as WrapElementHandle<ReturnType>;
   }
