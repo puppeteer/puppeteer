@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "../lib/cjs/puppeteer",
+    "module": "CommonJS"
+  },
+  "references": [
+    { "path": "../vendor/tsconfig.cjs.json"}
+  ]
+}

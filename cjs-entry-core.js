@@ -25,5 +25,5 @@
  * This means that we can publish to CJS and ESM whilst maintaining the expected
  * import behaviour for CJS and ESM users.
  */
-const puppeteerExport = require('./lib/cjs/index-core');
+const puppeteerExport = require('./lib/cjs/puppeteer/index-core');
 module.exports = puppeteerExport.default;

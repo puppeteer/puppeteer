@@ -1,3 +1,5 @@
+const path = require('path');
+
 require('ts-node').register({
   /**
    * We ignore the lib/ directory because that's already been TypeScript
@@ -5,4 +7,5 @@ require('ts-node').register({
    * the unit tests.
    */
   ignore: ['lib/*', 'node_modules'],
+  project: path.join(__dirname, 'tsconfig.test.json'),
 });

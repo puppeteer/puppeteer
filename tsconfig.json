@@ -1,17 +1,11 @@
+/**
+ * This configuration only exists for the API Extractor tool. See the details in
+ * CONTRIBUTING.md that describes our TypeScript setup.
+*/
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "outDir": "./lib/cjs",
-    "target": "ESNext",
-    "moduleResolution": "node",
-    "module": "CommonJS",
-    "declaration": true,
-    "declarationMap": true,
-    "esModuleInterop": true,
-    "resolveJsonModule": true
+    "noEmit": true
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

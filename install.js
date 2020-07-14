@@ -29,7 +29,10 @@ const compileTypeScriptIfRequired = require('./typescript-if-required');
 async function download() {
   await compileTypeScriptIfRequired();
   // need to ensure TS is compiled before loading the installer
-  const { downloadBrowser, logPolitely } = require('./lib/cjs/install');
+  const {
+    downloadBrowser,
+    logPolitely,
+  } = require('./lib/cjs/puppeteer/install');
 
   if (process.env.PUPPETEER_SKIP_DOWNLOAD) {
     logPolitely(
