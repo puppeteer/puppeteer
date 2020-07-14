@@ -8,6 +8,7 @@
   * [Project structure and TypeScript compilation](#project-structure-and-typescript-compilation)
     - [Shipping CJS and ESM bundles](#shipping-cjs-and-esm-bundles)
     - [tsconfig for the tests](#tsconfig-for-the-tests)
+    - [Root `tsconfig.json`](#root-tsconfigjson)
   * [API guidelines](#api-guidelines)
   * [Commit Messages](#commit-messages)
   * [Writing Documentation](#writing-documentation)
