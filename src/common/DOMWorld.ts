@@ -33,7 +33,10 @@ import { isNode } from '../environment';
 
 // This predicateQueryHandler is declared here so that TypeScript knows about it
 // when it is used in the predicate function below.
-declare const predicateQueryHandler: Function;
+declare const predicateQueryHandler: (
+  element: Element | Document,
+  selector: string
+) => Element | Element[] | NodeListOf<Element>;
 
 /**
  * @public
