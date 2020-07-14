@@ -1,0 +1,11 @@
+/**
+ * This configuration only exists for the API Extractor tool. See the details in
+ * CONTRIBUTING.md that describes our TypeScript setup.
+*/
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": ["src"]
+}

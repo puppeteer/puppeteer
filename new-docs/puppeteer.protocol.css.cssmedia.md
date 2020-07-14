@@ -18,7 +18,7 @@ export interface CSSMedia
 |  --- | --- | --- |
 |  [mediaList](./puppeteer.protocol.css.cssmedia.medialist.md) | [MediaQuery](./puppeteer.protocol.css.mediaquery.md)<!-- -->\[\] | Array of media queries. |
 |  [range](./puppeteer.protocol.css.cssmedia.range.md) | [SourceRange](./puppeteer.protocol.css.sourcerange.md) | The associated rule (<!-- -->@<!-- -->media or @<!-- -->import) header range in the enclosing stylesheet (if available). |
-|  [source](./puppeteer.protocol.css.cssmedia.source.md) | ('mediaRule' \| 'importRule' \| 'linkedSheet' \| 'inlineSheet') | Source of the media query: "mediaRule" if specified by a  rule, "importRule" if specified by an  rule, "linkedSheet" if specified by a "media" attribute in a linked stylesheet's LINK tag, "inlineSheet" if specified by a "media" attribute in an inline stylesheet's STYLE tag. |
+|  [source](./puppeteer.protocol.css.cssmedia.source.md) | ('mediaRule' \| 'importRule' \| 'linkedSheet' \| 'inlineSheet') | Source of the media query: "mediaRule" if specified by a <code>@media</code> rule, "importRule" if specified by an <code>@import</code> rule, "linkedSheet" if specified by a "media" attribute in a linked stylesheet's LINK tag, "inlineSheet" if specified by a "media" attribute in an inline stylesheet's STYLE tag. |
 |  [sourceURL](./puppeteer.protocol.css.cssmedia.sourceurl.md) | string | URL of the document containing the media query description. |
 |  [styleSheetId](./puppeteer.protocol.css.cssmedia.stylesheetid.md) | [StyleSheetId](./puppeteer.protocol.css.stylesheetid.md) | Identifier of the stylesheet containing this object (if exists). |
 |  [text](./puppeteer.protocol.css.cssmedia.text.md) | string | Media query text. |

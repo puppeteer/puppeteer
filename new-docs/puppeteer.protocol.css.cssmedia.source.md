@@ -4,7 +4,7 @@
 
 ## Protocol.CSS.CSSMedia.source property
 
-Source of the media query: "mediaRule" if specified by a  rule, "importRule" if specified by an  rule, "linkedSheet" if specified by a "media" attribute in a linked stylesheet's LINK tag, "inlineSheet" if specified by a "media" attribute in an inline stylesheet's STYLE tag.
+Source of the media query: "mediaRule" if specified by a `@media` rule, "importRule" if specified by an `@import` rule, "linkedSheet" if specified by a "media" attribute in a linked stylesheet's LINK tag, "inlineSheet" if specified by a "media" attribute in an inline stylesheet's STYLE tag.
 
 <b>Signature:</b>
 

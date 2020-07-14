@@ -119,6 +119,10 @@ The main entry point for the Node module Puppeteer is `cjs-entry.js`. This impor
 
 We also maintain `test/tsconfig.test.json`. This is **only used to compile the unit test `*.spec.ts` files**. When the tests are run, we first compile Puppeteer as normal before running the unit tests **against the compiled output**. Doing this lets the test run against the compiled code we ship to users so it gives us more confidence in our compiled output being correct.
 
+### Root `tsconfig.json`
+
+The root `tsconfig.json` exists for the API Extractor; it has to find a `tsconfig.json` in the project's root directory. It is _not_ used for anything else.
+
 
 ## API guidelines
 
