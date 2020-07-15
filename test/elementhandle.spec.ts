@@ -392,5 +392,44 @@ describe('ElementHandle specs', function () {
 
       expect(element).toBeDefined();
     });
+    it('should work when both queryOne and queryAll is registered', async () => {
+      const { page, puppeteer } = getTestState();
+      await page.setContent(
+        '<div id="not-foo"></div><div class="foo"><div id="nested-foo" class="foo"/></div><div class="foo baz">Foo2</div>'
+      );
+      puppeteer.__experimental_registerCustomQueryHandler('getByClass', {
+        queryOne: (element, selector) => element.querySelector(`.${selector}`),
+        queryAll: (element, selector) =>
+          element.querySelectorAll(`.${selector}`),
+      });
+
+      const element = await page.$('getByClass/foo');
+      expect(element).toBeDefined();
+
+      const elements = await page.$$('getByClass/foo');
+      expect(elements.length).toBe(3);
+    });
+    it('should eval when both queryOne and queryAll is registered', async () => {
+      const { page, puppeteer } = getTestState();
+      await page.setContent(
+        '<div id="not-foo"></div><div class="foo">text</div><div class="foo baz">content</div>'
+      );
+      puppeteer.__experimental_registerCustomQueryHandler('getByClass', {
+        queryOne: (element, selector) => element.querySelector(`.${selector}`),
+        queryAll: (element, selector) =>
+          element.querySelectorAll(`.${selector}`),
+      });
+
+      const txtContent = await page.$eval(
+        'getByClass/foo',
+        (div) => div.textContent
+      );
+      expect(txtContent).toBe('text');
+
+      const txtContents = await page.$$eval('getByClass/foo', (divs) =>
+        divs.map((d) => d.textContent).join('')
+      );
+      expect(txtContents).toBe('textcontent');
+    });
   });
 });
