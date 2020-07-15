@@ -795,12 +795,12 @@ export class ElementHandle<
       selector
     );
 
-    const arrayHandle = await this.evaluateHandle(
+    const handles = await this.evaluateHandle(
       queryHandler.queryAll,
       updatedSelector
     );
-    const properties = await arrayHandle.getProperties();
-    await arrayHandle.dispose();
+    const properties = await handles.getProperties();
+    await handles.dispose();
     const result = [];
     for (const property of properties.values()) {
       const elementHandle = property.asElement();
