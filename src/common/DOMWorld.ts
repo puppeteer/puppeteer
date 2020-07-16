@@ -14,22 +14,28 @@
  * limitations under the License.
  */
 
-import { assert } from './assert';
-import { helper } from './helper';
-import { LifecycleWatcher, PuppeteerLifeCycleEvent } from './LifecycleWatcher';
-import { TimeoutError } from './Errors';
-import { JSHandle, ElementHandle } from './JSHandle';
-import { ExecutionContext } from './ExecutionContext';
-import { TimeoutSettings } from './TimeoutSettings';
-import { MouseButton } from './Input';
-import { FrameManager, Frame } from './FrameManager';
+import { assert } from './assert.js';
+import { helper } from './helper.js';
+import {
+  LifecycleWatcher,
+  PuppeteerLifeCycleEvent,
+} from './LifecycleWatcher.js';
+import { TimeoutError } from './Errors.js';
+import { JSHandle, ElementHandle } from './JSHandle.js';
+import { ExecutionContext } from './ExecutionContext.js';
+import { TimeoutSettings } from './TimeoutSettings.js';
+import { MouseButton } from './Input.js';
+import { FrameManager, Frame } from './FrameManager.js';
 import { getQueryHandlerAndSelector } from './QueryHandler';
 import {
   SerializableOrJSHandle,
   EvaluateHandleFn,
   WrapElementHandle,
-} from './EvalTypes';
-import { isNode } from '../environment';
+  EvaluateFn,
+  EvaluateFnReturnType,
+  UnwrapPromiseLike,
+} from './EvalTypes.js';
+import { isNode } from '../environment.js';
 
 // This predicateQueryHandler is declared here so that TypeScript knows about it
 // when it is used in the predicate function below.
@@ -121,12 +127,15 @@ export class DOMWorld {
     return context.evaluateHandle(pageFunction, ...args);
   }
 
-  async evaluate<ReturnType extends any>(
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<ReturnType> {
+  async evaluate<T extends EvaluateFn>(
+    pageFunction: T,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<UnwrapPromiseLike<EvaluateFnReturnType<T>>> {
     const context = await this.executionContext();
-    return context.evaluate<ReturnType>(pageFunction, ...args);
+    return context.evaluate<UnwrapPromiseLike<EvaluateFnReturnType<T>>>(
+      pageFunction,
+      ...args
+    );
   }
 
   async $(selector: string): Promise<ElementHandle | null> {
@@ -209,7 +218,7 @@ export class DOMWorld {
     } = options;
     // We rely upon the fact that document.open() will reset frame lifecycle with "init"
     // lifecycle event. @see https://crrev.com/608658
-    await this.evaluate((html) => {
+    await this.evaluate<(x: string) => void>((html) => {
       document.open();
       document.write(html);
       document.close();

@@ -10,7 +10,8 @@ module.exports = {
     "plugins": [
         "mocha",
         "@typescript-eslint",
-        "unicorn"
+        "unicorn",
+        "import"
     ],
 
     "extends": [
@@ -86,9 +87,16 @@ module.exports = {
         // enforce the variable in a catch block is named error
         "unicorn/catch-error-name": "error",
 
+
         "no-restricted-imports": ["error", {
             patterns: ["*Events"],
-        }]
+            paths: [{
+                name: "mitt",
+                message:
+                "Import Mitt from the vendored location: vendor/mitt/src/index.js",
+            }],
+        }],
+        "import/extensions": ["error", "ignorePackages"]
     },
     "overrides": [
         {

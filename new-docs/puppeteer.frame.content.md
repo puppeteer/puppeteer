@@ -13,3 +13,5 @@ content(): Promise<string>;
 
 Promise&lt;string&gt;
 
+the full HTML contents of the frame, including the doctype.
+

@@ -20,7 +20,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeFailsFirefox,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line import/extensions
 
 describeFailsFirefox('Accessibility', function () {
   setupTestBrowserHooks();

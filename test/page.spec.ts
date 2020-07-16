@@ -15,7 +15,7 @@
  */
 import fs from 'fs';
 import path from 'path';
-import utils from './utils';
+import utils from './utils.js';
 const { waitEvent } = utils;
 import expect from 'expect';
 import sinon from 'sinon';
@@ -25,8 +25,9 @@ import {
   setupTestPageAndContextHooks,
   itFailsFirefox,
   describeFailsFirefox,
-} from './mocha-utils';
-import { Page, Metrics } from '../src/common/Page';
+} from './mocha-utils'; // eslint-disable-line import/extensions
+import { Page, Metrics } from '../lib/cjs/puppeteer/common/Page.js';
+import { JSHandle } from '../lib/cjs/puppeteer/common/JSHandle.js';
 
 describe('Page', function () {
   setupTestBrowserHooks();
@@ -116,21 +117,6 @@ describe('Page', function () {
         page.goto('about:blank'),
         utils.waitEvent(page, 'load'),
       ]);
-    });
-  });
-
-  describeFailsFirefox('Async stacks', () => {
-    it('should work', async () => {
-      const { page, server } = getTestState();
-
-      server.setRoute('/empty.html', (req, res) => {
-        res.statusCode = 204;
-        res.end();
-      });
-      let error = null;
-      await page.goto(server.EMPTY_PAGE).catch((error_) => (error = error_));
-      expect(error).not.toBe(null);
-      expect(error.stack).toContain(__filename);
     });
   });
 
@@ -412,7 +398,7 @@ describe('Page', function () {
       const prototypeHandle = await page.evaluateHandle(() => Set.prototype);
       const objectsHandle = await page.queryObjects(prototypeHandle);
       const count = await page.evaluate(
-        (objects) => objects.length,
+        (objects: JSHandle[]) => objects.length,
         objectsHandle
       );
       expect(count).toBe(1);
@@ -431,7 +417,7 @@ describe('Page', function () {
       const prototypeHandle = await page.evaluateHandle(() => Set.prototype);
       const objectsHandle = await page.queryObjects(prototypeHandle);
       const count = await page.evaluate(
-        (objects) => objects.length,
+        (objects: JSHandle[]) => objects.length,
         objectsHandle
       );
       expect(count).toBe(1);
@@ -530,7 +516,7 @@ describe('Page', function () {
       const [message] = await Promise.all([
         waitEvent(page, 'console'),
         page.evaluate(
-          async (url) => fetch(url).catch(() => {}),
+          async (url: string) => fetch(url).catch(() => {}),
           server.EMPTY_PAGE
         ),
       ]);
@@ -902,8 +888,8 @@ describe('Page', function () {
       await page.exposeFunction('complexObject', function (a, b) {
         return { x: a.x + b.x };
       });
-      const result = await page.evaluate<{ x: number }>(async () =>
-        globalThis.complexObject({ x: 5 }, { x: 2 })
+      const result = await page.evaluate<() => Promise<{ x: number }>>(
+        async () => globalThis.complexObject({ x: 5 }, { x: 2 })
       );
       expect(result.x).toBe(7);
     });
@@ -1349,7 +1335,7 @@ describe('Page', function () {
       });
       const styleHandle = await page.$('style');
       const styleContent = await page.evaluate(
-        (style) => style.innerHTML,
+        (style: HTMLStyleElement) => style.innerHTML,
         styleHandle
       );
       expect(styleContent).toContain(path.join('assets', 'injectedstyle.css'));

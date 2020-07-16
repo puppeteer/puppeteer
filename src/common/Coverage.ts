@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { assert } from './assert';
-import { helper, debugError, PuppeteerEventListener } from './helper';
-import Protocol from '../protocol';
-import { CDPSession } from './Connection';
+import { assert } from './assert.js';
+import { helper, debugError, PuppeteerEventListener } from './helper.js';
+import { Protocol } from 'devtools-protocol';
+import { CDPSession } from './Connection.js';
 
-import { EVALUATION_SCRIPT_URL } from './ExecutionContext';
+import { EVALUATION_SCRIPT_URL } from './ExecutionContext.js';
 
 /**
  * The CoverageEntry class represents one entry of the coverage report.
@@ -223,7 +223,7 @@ class JSCoverage {
   }
 
   async _onScriptParsed(
-    event: Protocol.Debugger.scriptParsedPayload
+    event: Protocol.Debugger.ScriptParsedEvent
   ): Promise<void> {
     // Ignore puppeteer-injected scripts
     if (event.url === EVALUATION_SCRIPT_URL) return;
@@ -246,10 +246,10 @@ class JSCoverage {
     this._enabled = false;
 
     const result = await Promise.all<
-      Protocol.Profiler.takePreciseCoverageReturnValue,
-      Protocol.Profiler.stopPreciseCoverageReturnValue,
-      Protocol.Profiler.disableReturnValue,
-      Protocol.Debugger.disableReturnValue
+      Protocol.Profiler.TakePreciseCoverageResponse,
+      void,
+      void,
+      void
     >([
       this._client.send('Profiler.takePreciseCoverage'),
       this._client.send('Profiler.stopPreciseCoverage'),
@@ -322,9 +322,7 @@ class CSSCoverage {
     this._stylesheetSources.clear();
   }
 
-  async _onStyleSheet(
-    event: Protocol.CSS.styleSheetAddedPayload
-  ): Promise<void> {
+  async _onStyleSheet(event: Protocol.CSS.StyleSheetAddedEvent): Promise<void> {
     const header = event.header;
     // Ignore anonymous scripts
     if (!header.sourceURL) return;

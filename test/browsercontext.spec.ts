@@ -19,8 +19,8 @@ import {
   getTestState,
   setupTestBrowserHooks,
   itFailsFirefox,
-} from './mocha-utils';
-import utils from './utils';
+} from './mocha-utils'; // eslint-disable-line import/extensions
+import utils from './utils.js';
 
 describe('BrowserContext', function () {
   setupTestBrowserHooks();
@@ -66,7 +66,10 @@ describe('BrowserContext', function () {
     await page.goto(server.EMPTY_PAGE);
     const [popupTarget] = await Promise.all([
       utils.waitEvent(browser, 'targetcreated'),
-      page.evaluate((url) => window.open(url), server.EMPTY_PAGE),
+      page.evaluate<(url: string) => void>(
+        (url) => window.open(url),
+        server.EMPTY_PAGE
+      ),
     ]);
     expect(popupTarget.browserContext()).toBe(context);
     await context.close();

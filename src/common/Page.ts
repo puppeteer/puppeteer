@@ -16,36 +16,47 @@
 
 import * as fs from 'fs';
 import { promisify } from 'util';
-import { EventEmitter } from './EventEmitter';
+import { EventEmitter } from './EventEmitter.js';
 import * as mime from 'mime';
-import { Connection, CDPSession, CDPSessionEmittedEvents } from './Connection';
-import { Dialog } from './Dialog';
-import { EmulationManager } from './EmulationManager';
-import { Frame, FrameManager, FrameManagerEmittedEvents } from './FrameManager';
-import { Keyboard, Mouse, Touchscreen, MouseButton } from './Input';
-import { Tracing } from './Tracing';
-import { assert } from './assert';
-import { helper, debugError } from './helper';
-import { Coverage } from './Coverage';
-import { WebWorker } from './WebWorker';
-import { Browser, BrowserContext } from './Browser';
-import { Target } from './Target';
-import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
-import { Viewport } from './PuppeteerViewport';
-import { Credentials, NetworkManagerEmittedEvents } from './NetworkManager';
-import { HTTPRequest } from './HTTPRequest';
-import { HTTPResponse } from './HTTPResponse';
-import { Accessibility } from './Accessibility';
-import { TimeoutSettings } from './TimeoutSettings';
-import { FileChooser } from './FileChooser';
-import { ConsoleMessage, ConsoleMessageType } from './ConsoleMessage';
-import { PuppeteerLifeCycleEvent } from './LifecycleWatcher';
-import Protocol from '../protocol';
+import {
+  Connection,
+  CDPSession,
+  CDPSessionEmittedEvents,
+} from './Connection.js';
+import { Dialog } from './Dialog.js';
+import { EmulationManager } from './EmulationManager.js';
+import {
+  Frame,
+  FrameManager,
+  FrameManagerEmittedEvents,
+} from './FrameManager.js';
+import { Keyboard, Mouse, Touchscreen, MouseButton } from './Input.js';
+import { Tracing } from './Tracing.js';
+import { assert } from './assert.js';
+import { helper, debugError } from './helper.js';
+import { Coverage } from './Coverage.js';
+import { WebWorker } from './WebWorker.js';
+import { Browser, BrowserContext } from './Browser.js';
+import { Target } from './Target.js';
+import { createJSHandle, JSHandle, ElementHandle } from './JSHandle.js';
+import { Viewport } from './PuppeteerViewport.js';
+import { Credentials, NetworkManagerEmittedEvents } from './NetworkManager.js';
+import { HTTPRequest } from './HTTPRequest.js';
+import { HTTPResponse } from './HTTPResponse.js';
+import { Accessibility } from './Accessibility.js';
+import { TimeoutSettings } from './TimeoutSettings.js';
+import { FileChooser } from './FileChooser.js';
+import { ConsoleMessage, ConsoleMessageType } from './ConsoleMessage.js';
+import { PuppeteerLifeCycleEvent } from './LifecycleWatcher.js';
+import { Protocol } from 'devtools-protocol';
 import {
   SerializableOrJSHandle,
   EvaluateHandleFn,
   WrapElementHandle,
-} from './EvalTypes';
+  EvaluateFn,
+  EvaluateFnReturnType,
+  UnwrapPromiseLike,
+} from './EvalTypes.js';
 
 const writeFileAsync = promisify(fs.writeFile);
 
@@ -527,13 +538,13 @@ export class Page extends EventEmitter {
         waitForDebuggerOnStart: false,
         flatten: true,
       }),
-      this._client.send('Performance.enable', {}),
-      this._client.send('Log.enable', {}),
+      this._client.send('Performance.enable'),
+      this._client.send('Log.enable'),
     ]);
   }
 
   private async _onFileChooser(
-    event: Protocol.Page.fileChooserOpenedPayload
+    event: Protocol.Page.FileChooserOpenedEvent
   ): Promise<void> {
     if (!this._fileChooserInterceptors.size) return;
     const frame = this._frameManager.frame(event.frameId);
@@ -638,7 +649,7 @@ export class Page extends EventEmitter {
     this.emit('error', new Error('Page crashed!'));
   }
 
-  private _onLogEntryAdded(event: Protocol.Log.entryAddedPayload): void {
+  private _onLogEntryAdded(event: Protocol.Log.EntryAddedEvent): void {
     const { level, text, args, source, url, lineNumber } = event.entry;
     if (args) args.map((arg) => helper.releaseObject(this._client, arg));
     if (source !== 'worker')
@@ -1012,7 +1023,7 @@ export class Page extends EventEmitter {
   }
 
   async deleteCookie(
-    ...cookies: Protocol.Network.deleteCookiesParameters[]
+    ...cookies: Protocol.Network.DeleteCookiesRequest[]
   ): Promise<void> {
     const pageURL = this.url();
     for (const cookie of cookies) {
@@ -1121,7 +1132,7 @@ export class Page extends EventEmitter {
     return this._buildMetricsObject(response.metrics);
   }
 
-  private _emitMetrics(event: Protocol.Performance.metricsPayload): void {
+  private _emitMetrics(event: Protocol.Performance.MetricsEvent): void {
     this.emit(PageEmittedEvents.Metrics, {
       title: event.title,
       metrics: this._buildMetricsObject(event.metrics),
@@ -1148,7 +1159,7 @@ export class Page extends EventEmitter {
   }
 
   private async _onConsoleAPI(
-    event: Protocol.Runtime.consoleAPICalledPayload
+    event: Protocol.Runtime.ConsoleAPICalledEvent
   ): Promise<void> {
     if (event.executionContextId === 0) {
       // DevTools protocol stores the last 1000 console messages. These
@@ -1174,7 +1185,7 @@ export class Page extends EventEmitter {
   }
 
   private async _onBindingCalled(
-    event: Protocol.Runtime.bindingCalledPayload
+    event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> {
     const { name, seq, args } = JSON.parse(event.payload);
     let expression = null;
@@ -1264,7 +1275,7 @@ export class Page extends EventEmitter {
     this.emit(PageEmittedEvents.Console, message);
   }
 
-  private _onDialog(event: Protocol.Page.javascriptDialogOpeningPayload): void {
+  private _onDialog(event: Protocol.Page.JavascriptDialogOpeningEvent): void {
     let dialogType = null;
     const validDialogTypes = new Set<Protocol.Page.DialogType>([
       'alert',
@@ -1307,10 +1318,10 @@ export class Page extends EventEmitter {
   }
 
   async reload(options?: WaitForOptions): Promise<HTTPResponse | null> {
-    const result = await Promise.all<
-      HTTPResponse,
-      Protocol.Page.reloadReturnValue
-    >([this.waitForNavigation(options), this._client.send('Page.reload')]);
+    const result = await Promise.all<HTTPResponse, void>([
+      this.waitForNavigation(options),
+      this._client.send('Page.reload'),
+    ]);
 
     return result[0];
   }
@@ -1386,10 +1397,7 @@ export class Page extends EventEmitter {
     const history = await this._client.send('Page.getNavigationHistory');
     const entry = history.entries[history.currentIndex + delta];
     if (!entry) return null;
-    const result = await Promise.all<
-      HTTPResponse,
-      Protocol.Page.navigateToHistoryEntryReturnValue
-    >([
+    const result = await Promise.all([
       this.waitForNavigation(options),
       this._client.send('Page.navigateToHistoryEntry', { entryId: entry.id }),
     ]);
@@ -1494,13 +1502,59 @@ export class Page extends EventEmitter {
     return this._viewport;
   }
 
-  async evaluate<ReturnType extends any>(
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<ReturnType> {
-    return this._frameManager
-      .mainFrame()
-      .evaluate<ReturnType>(pageFunction, ...args);
+  /**
+   * @remarks
+   *
+   * Evaluates a function in the page's context and returns the result.
+   *
+   * If the function passed to `page.evaluteHandle` returns a Promise, the
+   * function will wait for the promise to resolve and return its value.
+   *
+   * @example
+   *
+   * ```js
+   * const result = await frame.evaluate(() => {
+   *   return Promise.resolve(8 * 7);
+   * });
+   * console.log(result); // prints "56"
+   * ```
+   *
+   * You can pass a string instead of a function (although functions are
+   * recommended as they are easier to debug and use with TypeScript):
+   *
+   * @example
+   * ```
+   * const aHandle = await page.evaluate('1 + 2');
+   * ```
+   *
+   * To get the best TypeScript experience, you should pass in as the
+   * generic the type of `pageFunction`:
+   *
+   * ```
+   * const aHandle = await page.evaluate<() => number>(() => 2);
+   * ```
+   *
+   * @example
+   *
+   * {@link ElementHandle} instances (including {@link JSHandle}s) can be passed
+   * as arguments to the `pageFunction`:
+   *
+   * ```
+   * const bodyHandle = await page.$('body');
+   * const html = await page.evaluate(body => body.innerHTML, bodyHandle);
+   * await bodyHandle.dispose();
+   * ```
+   *
+   * @param pageFunction - a function that is run within the page
+   * @param args - arguments to be passed to the pageFunction
+   *
+   * @returns the return value of `pageFunction`.
+   */
+  async evaluate<T extends EvaluateFn>(
+    pageFunction: T,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<UnwrapPromiseLike<EvaluateFnReturnType<T>>> {
+    return this._frameManager.mainFrame().evaluate<T>(pageFunction, ...args);
   }
 
   async evaluateOnNewDocument(

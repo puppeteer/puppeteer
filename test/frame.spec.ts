@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import utils from './utils';
+import utils from './utils.js';
 import expect from 'expect';
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   itFailsFirefox,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line import/extensions
 
 describe('Frame specs', function () {
   setupTestBrowserHooks();
@@ -200,7 +200,7 @@ describe('Frame specs', function () {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/shadow.html');
-      await page.evaluate(async (url) => {
+      await page.evaluate(async (url: string) => {
         const frame = document.createElement('iframe');
         frame.src = url;
         document.body.shadowRoot.appendChild(frame);
@@ -213,7 +213,7 @@ describe('Frame specs', function () {
       const { page, server } = getTestState();
 
       await utils.attachFrame(page, 'theFrameId', server.EMPTY_PAGE);
-      await page.evaluate((url) => {
+      await page.evaluate((url: string) => {
         const frame = document.createElement('iframe');
         frame.name = 'theFrameName';
         frame.src = url;

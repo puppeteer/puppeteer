@@ -19,7 +19,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   itFailsFirefox,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line import/extensions
 
 describe('Cookie specs', () => {
   setupTestBrowserHooks();
@@ -389,9 +389,9 @@ describe('Cookie specs', () => {
 
       await page.goto(server.PREFIX + '/grid.html');
       await page.setCookie({ name: 'localhost-cookie', value: 'best' });
-      await page.evaluate((src) => {
+      await page.evaluate<(src: string) => Promise<void>>((src) => {
         let fulfill;
-        const promise = new Promise((x) => (fulfill = x));
+        const promise = new Promise<void>((x) => (fulfill = x));
         const iframe = document.createElement('iframe');
         document.body.appendChild(iframe);
         iframe.onload = fulfill;
@@ -406,7 +406,9 @@ describe('Cookie specs', () => {
       expect(await page.evaluate('document.cookie')).toBe(
         'localhost-cookie=best'
       );
-      expect(await page.frames()[1].evaluate('document.cookie')).toBe('');
+      expect(await page.frames()[1].evaluate('document.cookie')).toBe(
+        '127-cookie=worst'
+      );
 
       expect(await page.cookies()).toEqual([
         {
@@ -454,9 +456,9 @@ describe('Cookie specs', () => {
 
         try {
           await page.goto(httpsServer.PREFIX + '/grid.html');
-          await page.evaluate((src) => {
+          await page.evaluate<(src: string) => Promise<void>>((src) => {
             let fulfill;
-            const promise = new Promise((x) => (fulfill = x));
+            const promise = new Promise<void>((x) => (fulfill = x));
             const iframe = document.createElement('iframe');
             document.body.appendChild(iframe);
             iframe.onload = fulfill;

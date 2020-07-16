@@ -20,7 +20,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   itFailsFirefox,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line import/extensions
 
 describe('Screenshots', function () {
   setupTestBrowserHooks();
@@ -281,7 +281,10 @@ describe('Screenshots', function () {
 
       await page.setContent('<h1>remove this</h1>');
       const elementHandle = await page.$('h1');
-      await page.evaluate((element) => element.remove(), elementHandle);
+      await page.evaluate(
+        (element: HTMLElement) => element.remove(),
+        elementHandle
+      );
       const screenshotError = await elementHandle
         .screenshot()
         .catch((error) => error);

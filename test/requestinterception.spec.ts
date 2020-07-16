@@ -16,14 +16,14 @@
 
 import fs from 'fs';
 import path from 'path';
-import utils from './utils';
+import utils from './utils.js';
 import expect from 'expect';
 import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeFailsFirefox,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line import/extensions
 
 describe('request interception', function () {
   setupTestBrowserHooks();
@@ -384,7 +384,7 @@ describe('request interception', function () {
       });
       const dataURL = 'data:text/html,<div>yo</div>';
       const text = await page.evaluate(
-        (url) => fetch(url).then((r) => r.text()),
+        (url: string) => fetch(url).then((r) => r.text()),
         dataURL
       );
       expect(text).toBe('<div>yo</div>');

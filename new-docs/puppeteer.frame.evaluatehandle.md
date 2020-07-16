@@ -14,10 +14,16 @@ evaluateHandle<HandlerType extends JSHandle = JSHandle>(pageFunction: EvaluateHa
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  pageFunction | [EvaluateHandleFn](./puppeteer.evaluatehandlefn.md) |  |
-|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] |  |
+|  pageFunction | [EvaluateHandleFn](./puppeteer.evaluatehandlefn.md) | a function that is run within the frame |
+|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] | arguments to be passed to the pageFunction |
 
 <b>Returns:</b>
 
 Promise&lt;HandlerType&gt;
+
+## Remarks
+
+The only difference between [Frame.evaluate()](./puppeteer.frame.evaluate.md) and `frame.evaluateHandle` is that `evaluateHandle` will return the value wrapped in an in-page object.
+
+This method behaves identically to [Page.evaluateHandle()](./puppeteer.page.evaluatehandle.md) except it's run within the context of the `frame`<!-- -->, rather than the entire page.
 

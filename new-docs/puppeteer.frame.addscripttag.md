@@ -4,24 +4,23 @@
 
 ## Frame.addScriptTag() method
 
+Adds a `<script>` tag into the page with the desired url or content.
+
 <b>Signature:</b>
 
 ```typescript
-addScriptTag(options: {
-        url?: string;
-        path?: string;
-        content?: string;
-        type?: string;
-    }): Promise<ElementHandle>;
+addScriptTag(options: FrameAddScriptTagOptions): Promise<ElementHandle>;
 ```
 
 ## Parameters
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | { url?: string; path?: string; content?: string; type?: string; } |  |
+|  options | [FrameAddScriptTagOptions](./puppeteer.frameaddscripttagoptions.md) | configure the script to add to the page. |
 
 <b>Returns:</b>
 
 Promise&lt;[ElementHandle](./puppeteer.elementhandle.md)<!-- -->&gt;
+
+a promise that resolves to the added tag when the script's `onload` event fires or when the script content was injected into the frame.
 

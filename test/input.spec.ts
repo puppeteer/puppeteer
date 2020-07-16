@@ -21,7 +21,7 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeFailsFirefox,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line import/extensions
 
 const FILE_TO_UPLOAD = path.join(__dirname, '/assets/file-to-upload.txt');
 
@@ -36,7 +36,7 @@ describe('input tests', function () {
       await page.goto(server.PREFIX + '/input/fileupload.html');
       const filePath = path.relative(process.cwd(), FILE_TO_UPLOAD);
       const input = await page.$('input');
-      await page.evaluate((e) => {
+      await page.evaluate((e: HTMLElement) => {
         globalThis._inputEvents = [];
         e.addEventListener('change', (ev) =>
           globalThis._inputEvents.push(ev.type)
@@ -46,18 +46,18 @@ describe('input tests', function () {
         );
       }, input);
       await input.uploadFile(filePath);
-      expect(await page.evaluate((e) => e.files[0].name, input)).toBe(
-        'file-to-upload.txt'
-      );
-      expect(await page.evaluate((e) => e.files[0].type, input)).toBe(
-        'text/plain'
-      );
+      expect(
+        await page.evaluate((e: HTMLInputElement) => e.files[0].name, input)
+      ).toBe('file-to-upload.txt');
+      expect(
+        await page.evaluate((e: HTMLInputElement) => e.files[0].type, input)
+      ).toBe('text/plain');
       expect(await page.evaluate(() => globalThis._inputEvents)).toEqual([
         'input',
         'change',
       ]);
       expect(
-        await page.evaluate((e) => {
+        await page.evaluate((e: HTMLInputElement) => {
           const reader = new FileReader();
           const promise = new Promise((fulfill) => (reader.onload = fulfill));
           reader.readAsText(e.files[0]);

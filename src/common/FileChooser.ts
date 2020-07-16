@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ElementHandle } from './JSHandle';
-import Protocol from '../protocol';
-import { assert } from './assert';
+import { ElementHandle } from './JSHandle.js';
+import { Protocol } from 'devtools-protocol';
+import { assert } from './assert.js';
 
 /**
  * File choosers let you react to the page requesting for a file.
@@ -45,7 +45,7 @@ export class FileChooser {
    */
   constructor(
     element: ElementHandle,
-    event: Protocol.Page.fileChooserOpenedPayload
+    event: Protocol.Page.FileChooserOpenedEvent
   ) {
     this._element = element;
     this._multiple = event.mode !== 'selectSingle';

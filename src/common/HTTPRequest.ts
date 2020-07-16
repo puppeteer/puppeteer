@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CDPSession } from './Connection';
-import { Frame } from './FrameManager';
-import { HTTPResponse } from './HTTPResponse';
-import { assert } from './assert';
-import { helper, debugError } from './helper';
-import Protocol from '../protocol';
+import { CDPSession } from './Connection.js';
+import { Frame } from './FrameManager.js';
+import { HTTPResponse } from './HTTPResponse.js';
+import { assert } from './assert.js';
+import { helper, debugError } from './helper.js';
+import { Protocol } from 'devtools-protocol';
 
 /**
  * @public
@@ -123,7 +123,7 @@ export class HTTPRequest {
     frame: Frame,
     interceptionId: string,
     allowInterception: boolean,
-    event: Protocol.Network.requestWillBeSentPayload,
+    event: Protocol.Network.RequestWillBeSentEvent,
     redirectChain: HTTPRequest[]
   ) {
     this._client = client;

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { CDPSession } from './Connection';
-import { ElementHandle } from './JSHandle';
-import Protocol from '../protocol';
+import { CDPSession } from './Connection.js';
+import { ElementHandle } from './JSHandle.js';
+import { Protocol } from 'devtools-protocol';
 
 /**
  * Represents a Node and the properties of it that are relevant to Accessibility.

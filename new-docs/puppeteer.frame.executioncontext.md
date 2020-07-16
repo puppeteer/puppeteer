@@ -13,3 +13,5 @@ executionContext(): Promise<ExecutionContext>;
 
 Promise&lt;[ExecutionContext](./puppeteer.executioncontext.md)<!-- -->&gt;
 
+a promise that resolves to the frame's default execution context.
+

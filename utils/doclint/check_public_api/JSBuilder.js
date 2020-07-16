@@ -128,9 +128,19 @@ function checkSources(sources) {
     );
     const name = symbol.getName();
     if (symbol.valueDeclaration && symbol.valueDeclaration.dotDotDotToken) {
-      const innerType = serializeType(type.typeArguments[0], circular);
-      innerType.name = '...' + innerType.name;
-      return Documentation.Member.createProperty('...' + name, innerType);
+      try {
+        const innerType = serializeType(type.typeArguments[0], circular);
+        innerType.name = '...' + innerType.name;
+        return Documentation.Member.createProperty('...' + name, innerType);
+      } catch (error) {
+        /**
+         * DocLint struggles with the paramArgs type on CDPSession.send because
+         * it uses a complex type from the devtools-protocol method. Doclint
+         * isn't going to be here for much longer so we'll just silence this
+         * warning than try to add support which would warrant a huge rewrite.
+         */
+        if (name !== 'paramArgs') throw error;
+      }
     }
     return Documentation.Member.createProperty(
       name,

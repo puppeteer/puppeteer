@@ -17,8 +17,8 @@
 import os from 'os';
 import https from 'https';
 import ProgressBar from 'progress';
-import puppeteer from './index';
-import { PUPPETEER_REVISIONS } from './revisions';
+import puppeteer from './index.js';
+import { PUPPETEER_REVISIONS } from './revisions.js';
 
 const firefoxVersions =
   'https://product-details.mozilla.org/1.0/firefox_versions.json';

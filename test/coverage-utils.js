@@ -34,13 +34,43 @@ const path = require('path');
 const fs = require('fs');
 
 /**
- * @param {Map<string, boolean>} apiCoverage
- * @param {Object} events
- * @param {string} className
- * @param {!Object} classType
+ * This object is also used by DocLint to know which classes to check are
+ * documented. It's a pretty hacky solution but DocLint is going away soon as
+ * part of the TSDoc migration.
  */
-function traceAPICoverage(apiCoverage, events, className, classType) {
-  className = className.substring(0, 1).toLowerCase() + className.substring(1);
+const MODULES_TO_CHECK_FOR_COVERAGE = {
+  Accessibility: '../lib/cjs/puppeteer/common/Accessibility',
+  Browser: '../lib/cjs/puppeteer/common/Browser',
+  BrowserContext: '../lib/cjs/puppeteer/common/Browser',
+  BrowserFetcher: '../lib/cjs/puppeteer/node/BrowserFetcher',
+  CDPSession: '../lib/cjs/puppeteer/common/Connection',
+  ConsoleMessage: '../lib/cjs/puppeteer/common/ConsoleMessage',
+  Coverage: '../lib/cjs/puppeteer/common/Coverage',
+  Dialog: '../lib/cjs/puppeteer/common/Dialog',
+  ElementHandle: '../lib/cjs/puppeteer/common/JSHandle',
+  ExecutionContext: '../lib/cjs/puppeteer/common/ExecutionContext',
+  EventEmitter: '../lib/cjs/puppeteer/common/EventEmitter',
+  FileChooser: '../lib/cjs/puppeteer/common/FileChooser',
+  Frame: '../lib/cjs/puppeteer/common/FrameManager',
+  JSHandle: '../lib/cjs/puppeteer/common/JSHandle',
+  Keyboard: '../lib/cjs/puppeteer/common/Input',
+  Mouse: '../lib/cjs/puppeteer/common/Input',
+  Page: '../lib/cjs/puppeteer/common/Page',
+  Puppeteer: '../lib/cjs/puppeteer/common/Puppeteer',
+  HTTPRequest: '../lib/cjs/puppeteer/common/HTTPRequest',
+  HTTPResponse: '../lib/cjs/puppeteer/common/HTTPResponse',
+  SecurityDetails: '../lib/cjs/puppeteer/common/SecurityDetails',
+  Target: '../lib/cjs/puppeteer/common/Target',
+  TimeoutError: '../lib/cjs/puppeteer/common/Errors',
+  Touchscreen: '../lib/cjs/puppeteer/common/Input',
+  Tracing: '../lib/cjs/puppeteer/common/Tracing',
+  WebWorker: '../lib/cjs/puppeteer/common/WebWorker',
+};
+
+function traceAPICoverage(apiCoverage, className, modulePath) {
+  const loadedModule = require(modulePath);
+  const classType = loadedModule[className];
+
   if (!classType || !classType.prototype) {
     console.error(
       `Coverage error: could not find class for ${className}. Is src/api.ts up to date?`
@@ -63,8 +93,14 @@ function traceAPICoverage(apiCoverage, events, className, classType) {
     });
   }
 
-  if (events[classType.name]) {
-    for (const event of Object.values(events[classType.name])) {
+  /**
+   * If classes emit events, those events are exposed via an object in the same
+   * module named XEmittedEvents, where X is the name of the class. For example,
+   * the Page module exposes PageEmittedEvents.
+   */
+  const eventsName = `${className}EmittedEvents`;
+  if (loadedModule[eventsName]) {
+    for (const event of Object.values(loadedModule[eventsName])) {
       if (typeof event !== 'symbol')
         apiCoverage.set(`${className}.emit(${JSON.stringify(event)})`, false);
     }
@@ -108,10 +144,11 @@ const trackCoverage = () => {
 
   return {
     beforeAll: () => {
-      const api = require('../src/api');
-      const events = require('../src/common/Events');
-      for (const [className, classType] of Object.entries(api))
-        traceAPICoverage(coverageMap, events, className, classType);
+      for (const [className, moduleFilePath] of Object.entries(
+        MODULES_TO_CHECK_FOR_COVERAGE
+      )) {
+        traceAPICoverage(coverageMap, className, moduleFilePath);
+      }
     },
     afterAll: () => {
       writeCoverage(coverageMap);
@@ -122,4 +159,5 @@ const trackCoverage = () => {
 module.exports = {
   trackCoverage,
   getCoverageResults,
+  MODULES_TO_CHECK_FOR_COVERAGE,
 };

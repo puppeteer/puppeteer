@@ -6,6 +6,7 @@
 - API Translations: [中文|Chinese](https://zhaoqize.github.io/puppeteer-api-zh_CN/#/)
 - Troubleshooting: [troubleshooting.md](https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md)
 - Releases per Chromium Version:
+  * Chromium 84.0.4147.0 - [Puppeteer v5.1.0](https://github.com/puppeteer/puppeteer/blob/v5.1.0/docs/api.md)
   * Chromium 83.0.4103.0 - [Puppeteer v3.1.0](https://github.com/puppeteer/puppeteer/blob/v3.1.0/docs/api.md)
   * Chromium 81.0.4044.0 - [Puppeteer v3.0.0](https://github.com/puppeteer/puppeteer/blob/v3.0.0/docs/api.md)
   * Chromium 80.0.3987.0 - [Puppeteer v2.1.0](https://github.com/puppeteer/puppeteer/blob/v2.1.0/docs/api.md)
@@ -331,7 +332,7 @@
   * [target.worker()](#targetworker)
 - [class: CDPSession](#class-cdpsession)
   * [cdpSession.detach()](#cdpsessiondetach)
-  * [cdpSession.send(method[, params])](#cdpsessionsendmethod-params)
+  * [cdpSession.send(method[, ...paramArgs])](#cdpsessionsendmethod-paramargs)
 - [class: Coverage](#class-coverage)
   * [coverage.startCSSCoverage([options])](#coveragestartcsscoverageoptions)
   * [coverage.startJSCoverage([options])](#coveragestartjscoverageoptions)
@@ -3946,9 +3947,9 @@ await client.send('Animation.setPlaybackRate', {
 Detaches the cdpSession from the target. Once detached, the cdpSession object won't emit any events and can't be used
 to send messages.
 
-#### cdpSession.send(method[, params])
+#### cdpSession.send(method[, ...paramArgs])
 - `method` <[string]> protocol method name
-- `params` <[Object]> Optional method parameters
+- `...paramArgs` <[Object]> Optional method parameters
 - returns: <[Promise]<[Object]>>
 
 ### class: Coverage

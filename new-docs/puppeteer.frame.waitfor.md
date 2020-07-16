@@ -14,11 +14,19 @@ waitFor(selectorOrFunctionOrTimeout: string | number | Function, options?: {}, .
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  selectorOrFunctionOrTimeout | string \| number \| Function |  |
-|  options | {} |  |
-|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] |  |
+|  selectorOrFunctionOrTimeout | string \| number \| Function | a selector, predicate or timeout to wait for. |
+|  options | {} | optional waiting parameters. |
+|  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] | arguments to pass to <code>pageFunction</code>. |
 
 <b>Returns:</b>
 
 Promise&lt;[JSHandle](./puppeteer.jshandle.md) \| null&gt;
+
+## Remarks
+
+This method behaves differently depending on the first parameter. If it's a `string`<!-- -->, it will be treated as a `selector` or `xpath` (if the string starts with `//`<!-- -->). This method then is a shortcut for [Frame.waitForSelector()](./puppeteer.frame.waitforselector.md) or [Frame.waitForXPath()](./puppeteer.frame.waitforxpath.md)<!-- -->.
+
+If the first argument is a function this method is a shortcut for [Frame.waitForFunction()](./puppeteer.frame.waitforfunction.md)<!-- -->.
+
+If the first argument is a `number`<!-- -->, it's treated as a timeout in milliseconds and the method returns a promise which resolves after the timeout.
 

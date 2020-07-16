@@ -20,10 +20,10 @@ import {
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   describeFailsFirefox,
-} from './mocha-utils';
-import utils from './utils';
-import { WebWorker } from '../src/common/WebWorker';
-import { ConsoleMessage } from '../src/common/ConsoleMessage';
+} from './mocha-utils'; // eslint-disable-line import/extensions
+import utils from './utils.js';
+import { WebWorker } from '../lib/cjs/puppeteer/common/WebWorker.js';
+import { ConsoleMessage } from '../lib/cjs/puppeteer/common/ConsoleMessage.js';
 const { waitEvent } = utils;
 
 describeFailsFirefox('Workers', function () {
@@ -60,7 +60,10 @@ describeFailsFirefox('Workers', function () {
     const workerDestroyedPromise = new Promise((x) =>
       page.once('workerdestroyed', x)
     );
-    await page.evaluate((workerObj) => workerObj.terminate(), workerObj);
+    await page.evaluate(
+      (workerObj: Worker) => workerObj.terminate(),
+      workerObj
+    );
     expect(await workerDestroyedPromise).toBe(worker);
     const error = await workerThisObj
       .getProperty('self')

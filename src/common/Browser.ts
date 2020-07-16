@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { assert } from './assert';
-import { helper } from './helper';
-import { Target } from './Target';
-import { EventEmitter } from './EventEmitter';
-import Protocol from '../protocol';
-import { Connection, ConnectionEmittedEvents } from './Connection';
-import { Page } from './Page';
+import { assert } from './assert.js';
+import { helper } from './helper.js';
+import { Target } from './Target.js';
+import { EventEmitter } from './EventEmitter.js';
+import { Connection, ConnectionEmittedEvents } from './Connection.js';
+import { Protocol } from 'devtools-protocol';
+import { Page } from './Page.js';
 import { ChildProcess } from 'child_process';
-import { Viewport } from './PuppeteerViewport';
+import { Viewport } from './PuppeteerViewport.js';
 
 type BrowserCloseCallback = () => Promise<void> | void;
 
@@ -272,7 +272,7 @@ export class Browser extends EventEmitter {
   }
 
   private async _targetCreated(
-    event: Protocol.Target.targetCreatedPayload
+    event: Protocol.Target.TargetCreatedEvent
   ): Promise<void> {
     const targetInfo = event.targetInfo;
     const { browserContextId } = targetInfo;
@@ -314,7 +314,7 @@ export class Browser extends EventEmitter {
   }
 
   private _targetInfoChanged(
-    event: Protocol.Target.targetInfoChangedPayload
+    event: Protocol.Target.TargetInfoChangedEvent
   ): void {
     const target = this._targets.get(event.targetInfo.targetId);
     assert(target, 'target should exist before targetInfoChanged');
@@ -500,7 +500,7 @@ export class Browser extends EventEmitter {
     return !this._connection._closed;
   }
 
-  private _getVersion(): Promise<Protocol.Browser.getVersionReturnValue> {
+  private _getVersion(): Promise<Protocol.Browser.GetVersionResponse> {
     return this._connection.send('Browser.getVersion');
   }
 }

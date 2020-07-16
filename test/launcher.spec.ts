@@ -23,11 +23,11 @@ import {
   itFailsFirefox,
   itOnlyRegularInstall,
   itFailsWindowsUntilDate,
-} from './mocha-utils';
-import utils from './utils';
+} from './mocha-utils'; // eslint-disable-line import/extensions
+import utils from './utils.js';
 import expect from 'expect';
 import rimraf from 'rimraf';
-import { Page } from '../src/common/Page';
+import { Page } from '../lib/cjs/puppeteer/common/Page.js';
 
 const rmAsync = promisify(rimraf);
 const mkdtempAsync = promisify(fs.mkdtemp);
@@ -441,6 +441,11 @@ describe('Launcher specs', function () {
 
       after(async () => {
         const { puppeteer } = getTestState();
+        /* launcher is a private property so we don't want our users doing this
+         * but we need to reset the state fully here for testing different
+         * browser launchers
+         */
+        // @ts-expect-error
         puppeteer._lazyLauncher = undefined;
         puppeteer._productName = productName;
       });

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import utils from './utils';
+import utils from './utils.js';
 import expect from 'expect';
 import {
   getTestState,
@@ -22,7 +22,7 @@ import {
   setupTestPageAndContextHooks,
   itFailsFirefox,
   describeFailsFirefox,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line import/extensions
 import os from 'os';
 
 describe('navigation', function () {
@@ -495,7 +495,7 @@ describe('navigation', function () {
       const [response] = await Promise.all([
         page.waitForNavigation(),
         page.evaluate(
-          (url) => (window.location.href = url),
+          (url: string) => (window.location.href = url),
           server.PREFIX + '/grid.html'
         ),
       ]);
@@ -733,7 +733,7 @@ describe('navigation', function () {
       const [response] = await Promise.all([
         frame.waitForNavigation(),
         frame.evaluate(
-          (url) => (window.location.href = url),
+          (url: string) => (window.location.href = url),
           server.PREFIX + '/grid.html'
         ),
       ]);

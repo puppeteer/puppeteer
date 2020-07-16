@@ -13,30 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Launcher from '../node/Launcher';
+import Launcher from '../node/Launcher.js';
 import {
   LaunchOptions,
   ChromeArgOptions,
   BrowserOptions,
-} from '../node/LaunchOptions';
-import { ProductLauncher } from '../node/Launcher';
-import { BrowserFetcher, BrowserFetcherOptions } from '../node/BrowserFetcher';
-import { puppeteerErrors, PuppeteerErrors } from './Errors';
-import { ConnectionTransport } from './ConnectionTransport';
-import { devicesMap, DevicesMap } from './DeviceDescriptors';
-import { Browser } from './Browser';
+} from '../node/LaunchOptions.js';
+import { ProductLauncher } from '../node/Launcher.js';
+import {
+  BrowserFetcher,
+  BrowserFetcherOptions,
+} from '../node/BrowserFetcher.js';
+import { puppeteerErrors, PuppeteerErrors } from './Errors.js';
+import { ConnectionTransport } from './ConnectionTransport.js';
+import { devicesMap, DevicesMap } from './DeviceDescriptors.js';
+import { Browser } from './Browser.js';
 import {
   registerCustomQueryHandler,
   unregisterCustomQueryHandler,
   customQueryHandlers,
   clearQueryHandlers,
   QueryHandler,
-} from './QueryHandler';
-import { PUPPETEER_REVISIONS } from '../revisions';
+} from './QueryHandler.js';
+import { PUPPETEER_REVISIONS } from '../revisions.js';
 
 /**
- * The main Puppeteer class
- * Puppeteer module provides a method to launch a browser instance.
+ * The main Puppeteer class. Provides the {@link Puppeteer.launch | launch}
+ * method to launch a browser.
+ *
+ * When you `require` or `import` the Puppeteer npm package you get back an
+ * instance of this class.
  *
  * @remarks
  *
@@ -57,11 +63,14 @@ import { PUPPETEER_REVISIONS } from '../revisions';
  */
 export class Puppeteer {
   private _projectRoot: string;
+  private _isPuppeteerCore: boolean;
+  private _changedProduct = false;
+  private __productName: string;
+  private _lazyLauncher: ProductLauncher;
+  /**
+   * @internal
+   */
   _preferredRevision: string;
-  _isPuppeteerCore: boolean;
-  _changedProduct = false;
-  __productName: string;
-  _lazyLauncher: ProductLauncher;
 
   /**
    * @internal
@@ -189,7 +198,7 @@ export class Puppeteer {
   }
 
   /**
-   * @returns The name of the browser that is under automation (`"chrome"` or `"firefox"`)
+   * The name of the browser that is under automation (`"chrome"` or `"firefox"`)
    *
    * @remarks
    * The product is set by the `PUPPETEER_PRODUCT` environment variable or the `product`

@@ -13,3 +13,5 @@ childFrames(): Frame[];
 
 [Frame](./puppeteer.frame.md)<!-- -->\[\]
 
+an array of child frames.
+

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { assert } from './assert';
-import { helper } from './helper';
-import { createJSHandle, JSHandle, ElementHandle } from './JSHandle';
-import { CDPSession } from './Connection';
-import { DOMWorld } from './DOMWorld';
-import { Frame } from './FrameManager';
-import Protocol from '../protocol';
-import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes';
+import { assert } from './assert.js';
+import { helper } from './helper.js';
+import { createJSHandle, JSHandle, ElementHandle } from './JSHandle.js';
+import { CDPSession } from './Connection.js';
+import { DOMWorld } from './DOMWorld.js';
+import { Frame } from './FrameManager.js';
+import { Protocol } from 'devtools-protocol';
+import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes.js';
 
 export const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
@@ -301,7 +301,7 @@ export class ExecutionContext {
       return { value: arg };
     }
 
-    function rewriteError(error: Error): Protocol.Runtime.evaluateReturnValue {
+    function rewriteError(error: Error): Protocol.Runtime.EvaluateResponse {
       if (error.message.includes('Object reference chain is too long'))
         return { result: { type: 'undefined' } };
       if (error.message.includes("Object couldn't be returned by value"))

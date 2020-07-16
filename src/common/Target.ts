@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { Page, PageEmittedEvents } from './Page';
-import { WebWorker } from './WebWorker';
-import { CDPSession } from './Connection';
-import { Browser, BrowserContext } from './Browser';
-import { Viewport } from './PuppeteerViewport';
-import Protocol from '../protocol';
+import { Page, PageEmittedEvents } from './Page.js';
+import { WebWorker } from './WebWorker.js';
+import { CDPSession } from './Connection.js';
+import { Browser, BrowserContext } from './Browser.js';
+import { Viewport } from './PuppeteerViewport.js';
+import { Protocol } from 'devtools-protocol';
 
 /**
  * @public

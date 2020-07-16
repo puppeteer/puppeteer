@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-import { EventEmitter } from './EventEmitter';
-import { assert } from './assert';
-import { helper, debugError } from './helper';
-import { ExecutionContext, EVALUATION_SCRIPT_URL } from './ExecutionContext';
-import { LifecycleWatcher, PuppeteerLifeCycleEvent } from './LifecycleWatcher';
-import { DOMWorld, WaitForSelectorOptions } from './DOMWorld';
-import { NetworkManager } from './NetworkManager';
-import { TimeoutSettings } from './TimeoutSettings';
-import { CDPSession } from './Connection';
-import { JSHandle, ElementHandle } from './JSHandle';
-import { MouseButton } from './Input';
-import { Page } from './Page';
-import { HTTPResponse } from './HTTPResponse';
-import Protocol from '../protocol';
+import { EventEmitter } from './EventEmitter.js';
+import { assert } from './assert.js';
+import { helper, debugError } from './helper.js';
+import { ExecutionContext, EVALUATION_SCRIPT_URL } from './ExecutionContext.js';
+import {
+  LifecycleWatcher,
+  PuppeteerLifeCycleEvent,
+} from './LifecycleWatcher.js';
+import { DOMWorld, WaitForSelectorOptions } from './DOMWorld.js';
+import { NetworkManager } from './NetworkManager.js';
+import { TimeoutSettings } from './TimeoutSettings.js';
+import { CDPSession } from './Connection.js';
+import { JSHandle, ElementHandle } from './JSHandle.js';
+import { MouseButton } from './Input.js';
+import { Page } from './Page.js';
+import { HTTPResponse } from './HTTPResponse.js';
+import { Protocol } from 'devtools-protocol';
 import {
   SerializableOrJSHandle,
   EvaluateHandleFn,
   WrapElementHandle,
-} from './EvalTypes';
+  EvaluateFn,
+  EvaluateFnReturnType,
+  UnwrapPromiseLike,
+} from './EvalTypes.js';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
@@ -108,10 +114,7 @@ export class FrameManager extends EventEmitter {
   }
 
   async initialize(): Promise<void> {
-    const result = await Promise.all<
-      Protocol.Page.enableReturnValue,
-      Protocol.Page.getFrameTreeReturnValue
-    >([
+    const result = await Promise.all<{}, Protocol.Page.GetFrameTreeResponse>([
       this._client.send('Page.enable'),
       this._client.send('Page.getFrameTree'),
     ]);
@@ -121,7 +124,7 @@ export class FrameManager extends EventEmitter {
     await Promise.all([
       this._client.send('Page.setLifecycleEventsEnabled', { enabled: true }),
       this._client
-        .send('Runtime.enable', {})
+        .send('Runtime.enable')
         .then(() => this._ensureIsolatedWorld(UTILITY_WORLD_NAME)),
       this._networkManager.initialize(),
     ]);
@@ -210,7 +213,7 @@ export class FrameManager extends EventEmitter {
     return watcher.navigationResponse();
   }
 
-  _onLifecycleEvent(event: Protocol.Page.lifecycleEventPayload): void {
+  _onLifecycleEvent(event: Protocol.Page.LifecycleEventEvent): void {
     const frame = this._frames.get(event.frameId);
     if (!frame) return;
     frame._onLifecycleEvent(event.loaderId, event.name);
@@ -386,6 +389,123 @@ export class FrameManager extends EventEmitter {
 /**
  * @public
  */
+export interface FrameWaitForFunctionOptions {
+  /**
+   * An interval at which the `pageFunction` is executed, defaults to `raf`. If
+   * `polling` is a number, then it is treated as an interval in milliseconds at
+   * which the function would be executed. If `polling` is a string, then it can
+   * be one of the following values:
+   *
+   * - `raf` - to constantly execute `pageFunction` in `requestAnimationFrame`
+   *   callback. This is the tightest polling mode which is suitable to observe
+   *   styling changes.
+   *
+   * - `mutation` - to execute `pageFunction` on every DOM mutation.
+   */
+  polling?: string | number;
+  /**
+   * Maximum time to wait in milliseconds. Defaults to `30000` (30 seconds).
+   * Pass `0` to disable the timeout. Puppeteer's default timeout can be changed
+   * using {@link Page.setDefaultTimeout}.
+   */
+  timeout?: number;
+}
+
+/**
+ * @public
+ */
+export interface FrameAddScriptTagOptions {
+  /**
+   * the URL of the script to be added.
+   */
+  url?: string;
+  /**
+   * The path to a JavaScript file to be injected into the frame.
+   * @remarks
+   * If `path` is a relative path, it is resolved relative to the current
+   * working directory (`process.cwd()` in Node.js).
+   */
+  path?: string;
+  /**
+   * Raw JavaScript content to be injected into the frame.
+   */
+  content?: string;
+  /**
+   * Set the script's `type`. Use `module` in order to load an ES2015 module.
+   */
+  type?: string;
+}
+
+/**
+ * @public
+ */
+export interface FrameAddStyleTagOptions {
+  /**
+   * the URL of the CSS file to be added.
+   */
+  url?: string;
+  /**
+   * The path to a CSS file to be injected into the frame.
+   * @remarks
+   * If `path` is a relative path, it is resolved relative to the current
+   * working directory (`process.cwd()` in Node.js).
+   */
+  path?: string;
+  /**
+   * Raw CSS content to be injected into the frame.
+   */
+  content?: string;
+}
+
+/**
+ * At every point of time, page exposes its current frame tree via the
+ * {@link Page.mainFrame | page.mainFrame} and
+ * {@link Frame.childFrames | frame.childFrames} methods.
+ *
+ * @remarks
+ *
+ * `Frame` object lifecycles are controlled by three events that are all
+ * dispatched on the page object:
+ *
+ * - {@link PageEmittedEvents.FrameAttached}
+ *
+ * - {@link PageEmittedEvents.FrameNavigated}
+ *
+ * - {@link PageEmittedEvents.FrameDetached}
+ *
+ * @Example
+ * An example of dumping frame tree:
+ *
+ * ```js
+ * const puppeteer = require('puppeteer');
+ *
+ * (async () => {
+ *   const browser = await puppeteer.launch();
+ *   const page = await browser.newPage();
+ *   await page.goto('https://www.google.com/chrome/browser/canary.html');
+ *   dumpFrameTree(page.mainFrame(), '');
+ *   await browser.close();
+ *
+ *   function dumpFrameTree(frame, indent) {
+ *     console.log(indent + frame.url());
+ *     for (const child of frame.childFrames()) {
+ *     dumpFrameTree(child, indent + '  ');
+ *     }
+ *   }
+ * })();
+ * ```
+ *
+ * @Example
+ * An example of getting text from an iframe element:
+ *
+ * ```js
+ * const frame = page.frames().find(frame => frame.name() === 'myframe');
+ * const text = await frame.$eval('.selector', element => element.textContent);
+ * console.log(text);
+ * ```
+ *
+ * @public
+ */
 export class Frame {
   /**
    * @internal
@@ -455,6 +575,44 @@ export class Frame {
     if (this._parentFrame) this._parentFrame._childFrames.add(this);
   }
 
+  /**
+   * @remarks
+   *
+   * `frame.goto` will throw an error if:
+   * - there's an SSL error (e.g. in case of self-signed certificates).
+   *
+   * - target URL is invalid.
+   *
+   * - the `timeout` is exceeded during navigation.
+   *
+   * - the remote server does not respond or is unreachable.
+   *
+   * - the main resource failed to load.
+   *
+   * `frame.goto` will not throw an error when any valid HTTP status code is
+   * returned by the remote server, including 404 "Not Found" and 500 "Internal
+   * Server Error".  The status code for such responses can be retrieved by
+   * calling {@link HTTPResponse.status}.
+   *
+   * NOTE: `frame.goto` either throws an error or returns a main resource
+   * response. The only exceptions are navigation to `about:blank` or
+   * navigation to the same URL with a different hash, which would succeed and
+   * return `null`.
+   *
+   * NOTE: Headless mode doesn't support navigation to a PDF document. See
+   * the {@link https://bugs.chromium.org/p/chromium/issues/detail?id=761295 | upstream
+   * issue}.
+   *
+   * @param url - the URL to navigate the frame to. This should include the
+   * scheme, e.g. `https://`.
+   * @param options - navigation options. `waitUntil` is useful to define when
+   * the navigation should be considered successful - see the docs for
+   * {@link PuppeteerLifeCycleEvent} for more details.
+   *
+   * @returns A promise which resolves to the main resource response. In case of
+   * multiple redirects, the navigation will resolve with the response of the
+   * last redirect.
+   */
   async goto(
     url: string,
     options: {
@@ -466,6 +624,27 @@ export class Frame {
     return await this._frameManager.navigateFrame(this, url, options);
   }
 
+  /**
+   * @remarks
+   *
+   * This resolves when the frame navigates to a new URL. It is useful for when
+   * you run code which will indirectly cause the frame to navigate. Consider
+   * this example:
+   *
+   * ```js
+   * const [response] = await Promise.all([
+   *   // The navigation promise resolves after navigation has finished
+   *   frame.waitForNavigation(),
+   *   // Clicking the link will indirectly cause a navigation
+   *   frame.click('a.my-link'),
+   * ]);
+   * ```
+   *
+   * Usage of the {@link https://developer.mozilla.org/en-US/docs/Web/API/History_API | History API} to change the URL is considered a navigation.
+   *
+   * @param options - options to configure when the navigation is consided finished.
+   * @returns a promise that resolves when the frame navigates to a new URL.
+   */
   async waitForNavigation(
     options: {
       timeout?: number;
@@ -475,10 +654,26 @@ export class Frame {
     return await this._frameManager.waitForFrameNavigation(this, options);
   }
 
+  /**
+   * @returns a promise that resolves to the frame's default execution context.
+   */
   executionContext(): Promise<ExecutionContext> {
     return this._mainWorld.executionContext();
   }
 
+  /**
+   * @remarks
+   *
+   * The only difference between {@link Frame.evaluate} and
+   * `frame.evaluateHandle` is that `evaluateHandle` will return the value
+   * wrapped in an in-page object.
+   *
+   * This method behaves identically to {@link Page.evaluateHandle} except it's
+   * run within the context of the `frame`, rather than the entire page.
+   *
+   * @param pageFunction - a function that is run within the frame
+   * @param args - arguments to be passed to the pageFunction
+   */
   async evaluateHandle<HandlerType extends JSHandle = JSHandle>(
     pageFunction: EvaluateHandleFn,
     ...args: SerializableOrJSHandle[]
@@ -486,21 +681,61 @@ export class Frame {
     return this._mainWorld.evaluateHandle<HandlerType>(pageFunction, ...args);
   }
 
-  async evaluate<ReturnType extends any>(
-    pageFunction: Function | string,
-    ...args: unknown[]
-  ): Promise<ReturnType> {
-    return this._mainWorld.evaluate<ReturnType>(pageFunction, ...args);
+  /**
+   * @remarks
+   *
+   * This method behaves identically to {@link Page.evaluate} except it's run
+   * within the context of the `frame`, rather than the entire page.
+   *
+   * @param pageFunction - a function that is run within the frame
+   * @param args - arguments to be passed to the pageFunction
+   */
+  async evaluate<T extends EvaluateFn>(
+    pageFunction: T,
+    ...args: SerializableOrJSHandle[]
+  ): Promise<UnwrapPromiseLike<EvaluateFnReturnType<T>>> {
+    return this._mainWorld.evaluate<T>(pageFunction, ...args);
   }
 
+  /**
+   * This method queries the frame for the given selector.
+   *
+   * @param selector - a selector to query for.
+   * @returns A promise which resolves to an `ElementHandle` pointing at the
+   * element, or `null` if it was not found.
+   */
   async $(selector: string): Promise<ElementHandle | null> {
     return this._mainWorld.$(selector);
   }
 
+  /**
+   * This method evaluates the given XPath expression and returns the results.
+   *
+   * @param expression - the XPath expression to evaluate.
+   */
   async $x(expression: string): Promise<ElementHandle[]> {
     return this._mainWorld.$x(expression);
   }
 
+  /**
+   * @remarks
+   *
+   * This method runs `document.querySelector` within
+   * the frame and passes it as the first argument to `pageFunction`.
+   *
+   * If `pageFunction` returns a Promise, then `frame.$eval` would wait for
+   * the promise to resolve and return its value.
+   *
+   * @example
+   *
+   * ```js
+   * const searchValue = await frame.$eval('#search', el => el.value);
+   * ```
+   *
+   * @param selector - the selector to query for
+   * @param pageFunction - the function to be evaluated in the frame's context
+   * @param args - additional arguments to pass to `pageFuncton`
+   */
   async $eval<ReturnType>(
     selector: string,
     pageFunction: (
@@ -512,6 +747,25 @@ export class Frame {
     return this._mainWorld.$eval<ReturnType>(selector, pageFunction, ...args);
   }
 
+  /**
+   * @remarks
+   *
+   * This method runs `Array.from(document.querySelectorAll(selector))` within
+   * the frame and passes it as the first argument to `pageFunction`.
+   *
+   * If `pageFunction` returns a Promise, then `frame.$$eval` would wait for
+   * the promise to resolve and return its value.
+   *
+   * @example
+   *
+   * ```js
+   * const divsCounts = await frame.$$eval('div', divs => divs.length);
+   * ```
+   *
+   * @param selector - the selector to query for
+   * @param pageFunction - the function to be evaluated in the frame's context
+   * @param args - additional arguments to pass to `pageFuncton`
+   */
   async $$eval<ReturnType>(
     selector: string,
     pageFunction: (
@@ -523,14 +777,30 @@ export class Frame {
     return this._mainWorld.$$eval<ReturnType>(selector, pageFunction, ...args);
   }
 
+  /**
+   * This runs `document.querySelectorAll` in the frame and returns the result.
+   *
+   * @param selector - a selector to search for
+   * @returns An array of element handles pointing to the found frame elements.
+   */
   async $$(selector: string): Promise<ElementHandle[]> {
     return this._mainWorld.$$(selector);
   }
 
+  /**
+   * @returns the full HTML contents of the frame, including the doctype.
+   */
   async content(): Promise<string> {
     return this._secondaryWorld.content();
   }
 
+  /**
+   * Set the content of the frame.
+   *
+   * @param html - HTML markup to assign to the page.
+   * @param options - options to configure how long before timing out and at
+   * what point to consider the content setting successful.
+   */
   async setContent(
     html: string,
     options: {
@@ -541,43 +811,101 @@ export class Frame {
     return this._secondaryWorld.setContent(html, options);
   }
 
+  /**
+   * @remarks
+   *
+   * If the name is empty, it returns the `id` attribute instead.
+   *
+   * Note: This value is calculated once when the frame is created, and will not
+   * update if the attribute is changed later.
+   *
+   * @returns the frame's `name` attribute as specified in the tag.
+   */
   name(): string {
     return this._name || '';
   }
 
+  /**
+   * @returns the frame's URL.
+   */
   url(): string {
     return this._url;
   }
 
+  /**
+   * @returns the parent `Frame`, if any. Detached and main frames return `null`.
+   */
   parentFrame(): Frame | null {
     return this._parentFrame;
   }
 
+  /**
+   * @returns an array of child frames.
+   */
   childFrames(): Frame[] {
     return Array.from(this._childFrames);
   }
 
+  /**
+   * @returns `true` if the frame has been detached, or `false` otherwise.
+   */
   isDetached(): boolean {
     return this._detached;
   }
 
-  async addScriptTag(options: {
-    url?: string;
-    path?: string;
-    content?: string;
-    type?: string;
-  }): Promise<ElementHandle> {
+  /**
+   * Adds a `<script>` tag into the page with the desired url or content.
+   *
+   * @param options - configure the script to add to the page.
+   *
+   * @returns a promise that resolves to the added tag when the script's
+   * `onload` event fires or when the script content was injected into the
+   * frame.
+   */
+  async addScriptTag(
+    options: FrameAddScriptTagOptions
+  ): Promise<ElementHandle> {
     return this._mainWorld.addScriptTag(options);
   }
 
-  async addStyleTag(options: {
-    url?: string;
-    path?: string;
-    content?: string;
-  }): Promise<ElementHandle> {
+  /**
+   * Adds a `<link rel="stylesheet">` tag into the page with the desired url or
+   * a `<style type="text/css">` tag with the content.
+   *
+   * @param options - configure the CSS to add to the page.
+   *
+   * @returns a promise that resolves to the added tag when the stylesheets's
+   * `onload` event fires or when the CSS content was injected into the
+   * frame.
+   */
+  async addStyleTag(options: FrameAddStyleTagOptions): Promise<ElementHandle> {
     return this._mainWorld.addStyleTag(options);
   }
 
+  /**
+   *
+   * This method clicks the first element found that matches `selector`.
+   *
+   * @remarks
+   *
+   * This method scrolls the element into view if needed, and then uses
+   * {@link Page.mouse} to click in the center of the element. If there's no
+   * element matching `selector`, the method throws an error.
+   *
+   * Bear in mind that if `click()` triggers a navigation event and there's a
+   * separate `page.waitForNavigation()` promise to be resolved, you may end up
+   * with a race condition that yields unexpected results. The correct pattern
+   * for click and wait for navigation is the following:
+   *
+   * ```javascript
+   * const [response] = await Promise.all([
+   *   page.waitForNavigation(waitOptions),
+   *   frame.click(selector, clickOptions),
+   * ]);
+   * ```
+   * @param selector - the selector to search for to click. If there are
+   * multiple elements, the first will be clicked.
+   */
   async click(
     selector: string,
     options: {
@@ -589,22 +917,97 @@ export class Frame {
     return this._secondaryWorld.click(selector, options);
   }
 
+  /**
+   * This method fetches an element with `selector` and focuses it.
+   *
+   * @remarks
+   * If there's no element matching `selector`, the method throws an error.
+   *
+   * @param selector - the selector for the element to focus. If there are
+   * multiple elements, the first will be focused.
+   */
   async focus(selector: string): Promise<void> {
     return this._secondaryWorld.focus(selector);
   }
 
+  /**
+   * This method fetches an element with `selector`, scrolls it into view if
+   * needed, and then uses {@link Page.mouse} to hover over the center of the
+   * element.
+   *
+   * @remarks
+   * If there's no element matching `selector`, the method throws an
+   *
+   * @param selector - the selector for the element to hover. If there are
+   * multiple elements, the first will be hovered.
+   */
   async hover(selector: string): Promise<void> {
     return this._secondaryWorld.hover(selector);
   }
 
+  /**
+   * Triggers a `change` and `input` event once all the provided options have
+   * been selected.
+   *
+   * @remarks
+   *
+   * If there's no `<select>` element matching `selector`, the
+   * method throws an error.
+   *
+   * @example
+   * ```js
+   * frame.select('select#colors', 'blue'); // single selection
+   * frame.select('select#colors', 'red', 'green', 'blue'); // multiple selections
+   * ```
+   *
+   * @param selector - a selector to query the frame for
+   * @param values - an array of values to select. If the `<select>` has the
+   * `multiple` attribute, all values are considered, otherwise only the first
+   * one is taken into account.
+   * @returns the list of values that were successfully selected.
+   */
   select(selector: string, ...values: string[]): Promise<string[]> {
     return this._secondaryWorld.select(selector, ...values);
   }
 
+  /**
+   * This method fetches an element with `selector`, scrolls it into view if
+   * needed, and then uses {@link Page.touchscreen} to tap in the center of the
+   * element.
+   *
+   * @remarks
+   *
+   * If there's no element matching `selector`, the method throws an error.
+   *
+   * @param selector - the selector to tap.
+   * @returns a promise that resolves when the element has been tapped.
+   */
   async tap(selector: string): Promise<void> {
     return this._secondaryWorld.tap(selector);
   }
 
+  /**
+   * Sends a `keydown`, `keypress`/`input`, and `keyup` event for each character
+   * in the text.
+   *
+   * @remarks
+   * To press a special key, like `Control` or `ArrowDown`, use
+   * {@link Keyboard.press}.
+   *
+   * @example
+   * ```js
+   * await frame.type('#mytextarea', 'Hello'); // Types instantly
+   * await frame.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
+   * ```
+   *
+   * @param selector - the selector for the element to type into. If there are
+   * multiple the first will be used.
+   * @param text - text to type into the element
+   * @param options - takes one option, `delay`, which sets the time to wait
+   * between key presses in milliseconds. Defaults to `0`.
+   *
+   * @returns a promise that resolves when the typing is complete.
+   */
   async type(
     selector: string,
     text: string,
@@ -613,6 +1016,26 @@ export class Frame {
     return this._mainWorld.type(selector, text, options);
   }
 
+  /**
+   * @remarks
+   *
+   * This method behaves differently depending on the first parameter. If it's a
+   * `string`, it will be treated as a `selector` or `xpath` (if the string
+   * starts with `//`). This method then is a shortcut for
+   * {@link Frame.waitForSelector} or {@link Frame.waitForXPath}.
+   *
+   * If the first argument is a function this method is a shortcut for
+   * {@link Frame.waitForFunction}.
+   *
+   * If the first argument is a `number`, it's treated as a timeout in
+   * milliseconds and the method returns a promise which resolves after the
+   * timeout.
+   *
+   * @param selectorOrFunctionOrTimeout - a selector, predicate or timeout to
+   * wait for.
+   * @param options - optional waiting parameters.
+   * @param args - arguments to pass to `pageFunction`.
+   */
   waitFor(
     selectorOrFunctionOrTimeout: string | number | Function,
     options: {} = {},
@@ -643,6 +1066,41 @@ export class Frame {
     );
   }
 
+  /**
+   * @remarks
+   *
+   *
+   * Wait for the `selector` to appear in page. If at the moment of calling the
+   * method the `selector` already exists, the method will return immediately.
+   * If the selector doesn't appear after the `timeout` milliseconds of waiting,
+   * the function will throw.
+   *
+   * This method works across navigations.
+   *
+   * @example
+   * ```js
+   * const puppeteer = require('puppeteer');
+   *
+   * (async () => {
+   *   const browser = await puppeteer.launch();
+   *   const page = await browser.newPage();
+   *   let currentURL;
+   *   page.mainFrame()
+   *   .waitForSelector('img')
+   *   .then(() => console.log('First URL with image: ' + currentURL));
+   *
+   *   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com']) {
+   *     await page.goto(currentURL);
+   *   }
+   *   await browser.close();
+   * })();
+   * ```
+   * @param selector - the selector to wait for.
+   * @param options - options to define if the element should be visible and how
+   * long to wait before timing out.
+   * @returns a promise which resolves when an element matching the selector
+   * string is added to the DOM.
+   */
   async waitForSelector(
     selector: string,
     options: WaitForSelectorOptions = {}
@@ -658,6 +1116,21 @@ export class Frame {
     return result;
   }
 
+  /**
+   * @remarks
+   * Wait for the `xpath` to appear in page. If at the moment of calling the
+   * method the `xpath` already exists, the method will return immediately. If
+   * the xpath doesn't appear after the `timeout` milliseconds of waiting, the
+   * function will throw.
+   *
+   * For a code example, see the example for {@link Frame.waitForSelector}. That
+   * function behaves identically other than taking a CSS selector rather than
+   * an XPath.
+   *
+   * @param xpath - the XPath expression to wait for.
+   * @param options  - options to configure the visiblity of the element and how
+   * long to wait before timing out.
+   */
   async waitForXPath(
     xpath: string,
     options: WaitForSelectorOptions = {}
@@ -670,27 +1143,74 @@ export class Frame {
     return result;
   }
 
+  /**
+   * @remarks
+   *
+   * @example
+   *
+   * The `waitForFunction` can be used to observe viewport size change:
+   * ```js
+   * const puppeteer = require('puppeteer');
+   *
+   * (async () => {
+   * .  const browser = await puppeteer.launch();
+   * .  const page = await browser.newPage();
+   * .  const watchDog = page.mainFrame().waitForFunction('window.innerWidth < 100');
+   * .  page.setViewport({width: 50, height: 50});
+   * .  await watchDog;
+   * .  await browser.close();
+   * })();
+   * ```
+   *
+   * To pass arguments from Node.js to the predicate of `page.waitForFunction` function:
+   *
+   * ```js
+   * const selector = '.foo';
+   * await frame.waitForFunction(
+   *   selector => !!document.querySelector(selector),
+   *   {}, // empty options object
+   *   selector
+   *);
+   * ```
+   *
+   * @param pageFunction - the function to evaluate in the frame context.
+   * @param options - options to configure the polling method and timeout.
+   * @param args - arguments to pass to the `pageFunction`.
+   * @returns the promise which resolve when the `pageFunction` returns a truthy value.
+   */
   waitForFunction(
     pageFunction: Function | string,
-    options: { polling?: string | number; timeout?: number } = {},
+    options: FrameWaitForFunctionOptions = {},
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle> {
     return this._mainWorld.waitForFunction(pageFunction, options, ...args);
   }
 
+  /**
+   * @returns the frame's title.
+   */
   async title(): Promise<string> {
     return this._secondaryWorld.title();
   }
 
+  /**
+   * @internal
+   */
   _navigated(framePayload: Protocol.Page.Frame): void {
     this._name = framePayload.name;
     this._url = framePayload.url;
   }
 
+  /**
+   * @internal
+   */
   _navigatedWithinDocument(url: string): void {
     this._url = url;
   }
 
+  /**
+   * @internal
+   */
   _onLifecycleEvent(loaderId: string, name: string): void {
     if (name === 'init') {
       this._loaderId = loaderId;
@@ -699,11 +1219,17 @@ export class Frame {
     this._lifecycleEvents.add(name);
   }
 
+  /**
+   * @internal
+   */
   _onLoadingStopped(): void {
     this._lifecycleEvents.add('DOMContentLoaded');
     this._lifecycleEvents.add('load');
   }
 
+  /**
+   * @internal
+   */
   _detach(): void {
     this._detached = true;
     this._mainWorld._detach();

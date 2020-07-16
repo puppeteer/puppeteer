@@ -21,7 +21,7 @@ import {
   setupTestPageAndContextHooks,
   itFailsFirefox,
   describeFailsFirefox,
-} from './mocha-utils';
+} from './mocha-utils'; // eslint-disable-line import/extensions
 
 describe('Emulation', () => {
   setupTestBrowserHooks();
@@ -138,7 +138,7 @@ describe('Emulation', () => {
       await page.goto(server.PREFIX + '/input/button.html');
       const button = await page.$('button');
       await page.evaluate(
-        (button) => (button.style.marginTop = '200px'),
+        (button: HTMLElement) => (button.style.marginTop = '200px'),
         button
       );
       await button.click();
