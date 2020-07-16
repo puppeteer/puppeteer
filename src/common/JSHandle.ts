@@ -896,7 +896,7 @@ export class ElementHandle<
       'element',
       'selector',
       `return Array.from((${queryHandler.queryAll})(element, selector));`
-    ) as ((...args: unknown[]) => unknown);
+    ) as (...args: unknown[]) => unknown;
     const arrayHandle = await this.evaluateHandle(
       queryHandlerToArray,
       updatedSelector
