@@ -593,7 +593,7 @@ const browser = await puppeteer.launch({
 #### puppeteer.product
 - returns: <[string]> returns the name of the browser that is under automation (`"chrome"` or `"firefox"`)
 
-The product is set by the `PUPPETEER_PRODUCT` environment variable or the `product` option in [puppeteer.launch([options])](#puppeteerlaunchoptions) and defaults to `chrome`. Firefox support is experimental.
+The product is set by the `PUPPETEER_PRODUCT` environment variable or the `product` option in [puppeteer.launch([options])](#puppeteerlaunchoptions) and defaults to `chrome`. Firefox support is experimental and requires to install Puppeteer via `PUPPETEER_PRODUCT=firefox npm i puppeteer`.
 
 
 ### class: BrowserFetcher
