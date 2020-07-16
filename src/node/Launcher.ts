@@ -771,7 +771,7 @@ function resolveExecutablePath(
   }
   const revisionInfo = browserFetcher.revisionInfo(launcher._preferredRevision);
   const missingText = !revisionInfo.local
-    ? `Could not find browser revision ${launcher._preferredRevision}. Run "npm install" or "yarn install" to download a browser binary.`
+    ? `Could not find browser revision ${launcher._preferredRevision}. Run "PUPPETEER_PRODUCT=firefox npm install" or "PUPPETEER_PRODUCT=firefox yarn install" to download a supported Firefox browser binary.`
     : null;
   return { executablePath: revisionInfo.executablePath, missingText };
 }
