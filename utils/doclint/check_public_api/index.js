@@ -653,7 +653,7 @@ function compareDocumentations(actual, expected) {
         'Method Page.emulateVisionDeficiency() type',
         {
           actualName: 'string',
-          expectedName: 'VisionDeficiency',
+          expectedName: 'Object',
         },
       ],
       [
