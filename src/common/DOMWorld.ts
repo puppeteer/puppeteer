@@ -26,7 +26,7 @@ import { ExecutionContext } from './ExecutionContext.js';
 import { TimeoutSettings } from './TimeoutSettings.js';
 import { MouseButton } from './Input.js';
 import { FrameManager, Frame } from './FrameManager.js';
-import { getQueryHandlerAndSelector } from './QueryHandler';
+import { getQueryHandlerAndSelector } from './QueryHandler.js';
 import {
   SerializableOrJSHandle,
   EvaluateHandleFn,
