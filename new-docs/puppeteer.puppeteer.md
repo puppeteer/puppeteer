@@ -34,6 +34,7 @@ const puppeteer = require('puppeteer');
 })();
 
 ```
+Once you have created a `page` you have access to a large API to interact with the page, navigate, or find certain elements in that page. The [\`page\` documentation](./puppeteer.page.md) lists all the available methods.
 
 ## Properties
 

@@ -69,6 +69,8 @@
 |  [Metrics](./puppeteer.metrics.md) |  |
 |  [MouseOptions](./puppeteer.mouseoptions.md) |  |
 |  [MouseWheelOptions](./puppeteer.mousewheeloptions.md) |  |
+|  [PDFMargin](./puppeteer.pdfmargin.md) |  |
+|  [PDFOptions](./puppeteer.pdfoptions.md) | Valid options to configure PDF generation via [Page.pdf()](./puppeteer.page.pdf.md)<!-- -->. |
 |  [PressOptions](./puppeteer.pressoptions.md) |  |
 |  [ProductLauncher](./puppeteer.productlauncher.md) | Describes a launcher - a class that is able to create and launch a browser instance. |
 |  [RemoteAddress](./puppeteer.remoteaddress.md) |  |
@@ -108,6 +110,7 @@
 |  [JSONArray](./puppeteer.jsonarray.md) |  |
 |  [KeyInput](./puppeteer.keyinput.md) | All the valid keys that can be passed to functions that take user input, such as [keyboard.press](./puppeteer.keyboard.press.md) |
 |  [MouseButton](./puppeteer.mousebutton.md) |  |
+|  [PaperFormat](./puppeteer.paperformat.md) | All the valid paper format types when printing a PDF. |
 |  [Platform](./puppeteer.platform.md) | Supported platforms. |
 |  [Product](./puppeteer.product.md) | Supported products. |
 |  [PuppeteerErrors](./puppeteer.puppeteererrors.md) |  |
