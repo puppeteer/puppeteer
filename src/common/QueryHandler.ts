@@ -15,7 +15,7 @@
  */
 
 export interface QueryHandler {
-  queryOne?: (element: Element | Document, selector: string) => Element;
+  queryOne?: (element: Element | Document, selector: string) => Element | null;
   queryAll?: (
     element: Element | Document,
     selector: string

@@ -37,7 +37,7 @@ export type EvaluateFnReturnType<T extends EvaluateFn> = T extends (
 /**
  * @public
  */
-export type EvaluateHandleFn = string | Function;
+export type EvaluateHandleFn = string | ((...args: unknown[]) => unknown);
 
 /**
  * @public
