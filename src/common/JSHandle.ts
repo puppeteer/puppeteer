@@ -846,8 +846,8 @@ export class ElementHandle<
     await elementHandle.dispose();
 
     /**
-     * This `as` is a little unfortunate but helps TS understand the behaviour of
-     * `elementHandle.evaluate`. If evalute returns an element it will return an
+     * This `as` is a little unfortunate but helps TS understand the behavior of
+     * `elementHandle.evaluate`. If evaluate returns an element it will return an
      * ElementHandle instance, rather than the plain object. All the
      * WrapElementHandle type does is wrap ReturnType into
      * ElementHandle<ReturnType> if it is an ElementHandle, or leave it alone as

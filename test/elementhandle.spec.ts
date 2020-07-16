@@ -392,7 +392,7 @@ describe('ElementHandle specs', function () {
 
       expect(element).toBeDefined();
     });
-    it('should work when both queryOne and queryAll is registered', async () => {
+    it('should work when both queryOne and queryAll are registered', async () => {
       const { page, puppeteer } = getTestState();
       await page.setContent(
         '<div id="not-foo"></div><div class="foo"><div id="nested-foo" class="foo"/></div><div class="foo baz">Foo2</div>'
@@ -409,7 +409,7 @@ describe('ElementHandle specs', function () {
       const elements = await page.$$('getByClass/foo');
       expect(elements.length).toBe(3);
     });
-    it('should eval when both queryOne and queryAll is registered', async () => {
+    it('should eval when both queryOne and queryAll are registered', async () => {
       const { page, puppeteer } = getTestState();
       await page.setContent(
         '<div id="not-foo"></div><div class="foo">text</div><div class="foo baz">content</div>'
