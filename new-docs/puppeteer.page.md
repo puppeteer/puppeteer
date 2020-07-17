@@ -107,8 +107,8 @@ page.off('request', logRequest);
 |  [isJavaScriptEnabled()](./puppeteer.page.isjavascriptenabled.md) |  |  |
 |  [mainFrame()](./puppeteer.page.mainframe.md) |  |  |
 |  [metrics()](./puppeteer.page.metrics.md) |  |  |
-|  [pdf(options)](./puppeteer.page.pdf.md) |  |  |
-|  [queryObjects(prototypeHandle)](./puppeteer.page.queryobjects.md) |  |  |
+|  [pdf(options)](./puppeteer.page.pdf.md) |  | Generatees a PDF of the page with the <code>print</code> CSS media type. |
+|  [queryObjects(prototypeHandle)](./puppeteer.page.queryobjects.md) |  | This method iterates the JavaScript heap and finds all objects with the given prototype. |
 |  [reload(options)](./puppeteer.page.reload.md) |  |  |
 |  [screenshot(options)](./puppeteer.page.screenshot.md) |  |  |
 |  [select(selector, values)](./puppeteer.page.select.md) |  |  |

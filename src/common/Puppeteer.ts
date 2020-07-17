@@ -59,6 +59,11 @@ import { PUPPETEER_REVISIONS } from '../revisions.js';
  *   await browser.close();
  * })();
  * ```
+ *
+ * Once you have created a `page` you have access to a large API to interact
+ * with the page, navigate, or find certain elements in that page.
+ * The {@link Page | `page` documentation} lists all the available methods.
+ *
  * @public
  */
 export class Puppeteer {
@@ -270,7 +275,6 @@ export class Puppeteer {
   }
 
   /**
-   *
    * @param options - Set of configurable options to specify the settings
    * of the BrowserFetcher.
    * @returns A new BrowserFetcher instance.

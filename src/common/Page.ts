@@ -57,6 +57,7 @@ import {
   EvaluateFnReturnType,
   UnwrapPromiseLike,
 } from './EvalTypes.js';
+import { PDFOptions, paperFormats } from './PDFOptions.js';
 
 const writeFileAsync = promisify(fs.writeFile);
 
@@ -150,48 +151,6 @@ interface ScreenshotOptions {
   omitBackground?: boolean;
   encoding?: string;
 }
-
-interface PDFMargin {
-  top?: string | number;
-  bottom?: string | number;
-  left?: string | number;
-  right?: string | number;
-}
-
-interface PDFOptions {
-  scale?: number;
-  displayHeaderFooter?: boolean;
-  headerTemplate?: string;
-  footerTemplate?: string;
-  printBackground?: boolean;
-  landscape?: boolean;
-  pageRanges?: string;
-  format?: string;
-  width?: string | number;
-  height?: string | number;
-  preferCSSPageSize?: boolean;
-  margin?: PDFMargin;
-  path?: string;
-}
-
-interface PaperFormat {
-  width: number;
-  height: number;
-}
-
-const paperFormats: Record<string, PaperFormat> = {
-  letter: { width: 8.5, height: 11 },
-  legal: { width: 8.5, height: 14 },
-  tabloid: { width: 11, height: 17 },
-  ledger: { width: 17, height: 11 },
-  a0: { width: 33.1, height: 46.8 },
-  a1: { width: 23.4, height: 33.1 },
-  a2: { width: 16.54, height: 23.4 },
-  a3: { width: 11.7, height: 16.54 },
-  a4: { width: 8.27, height: 11.7 },
-  a5: { width: 5.83, height: 8.27 },
-  a6: { width: 4.13, height: 5.83 },
-} as const;
 
 type VisionDeficiency =
   | 'none'
@@ -832,6 +791,28 @@ export class Page extends EventEmitter {
     return context.evaluateHandle<HandlerType>(pageFunction, ...args);
   }
 
+  /**
+   * This method iterates the JavaScript heap and finds all objects with the
+   * given prototype.
+   *
+   * @remarks
+   *
+   * @example
+   *
+   * ```js
+   * // Create a Map object
+   * await page.evaluate(() => window.map = new Map());
+   * // Get a handle to the Map object prototype
+   * const mapPrototype = await page.evaluateHandle(() => Map.prototype);
+   * // Query all map instances into an array
+   * const mapInstances = await page.queryObjects(mapPrototype);
+   * // Count amount of map objects in heap
+   * const count = await page.evaluate(maps => maps.length, mapInstances);
+   * await mapInstances.dispose();
+   * await mapPrototype.dispose();
+   * ```
+   * @param prototypeHandle - a handle to the object prototype.
+   */
   async queryObjects(prototypeHandle: JSHandle): Promise<JSHandle> {
     const context = await this.mainFrame().executionContext();
     return context.queryObjects(prototypeHandle);
@@ -1718,6 +1699,24 @@ export class Page extends EventEmitter {
     }
   }
 
+  /**
+   * Generatees a PDF of the page with the `print` CSS media type.
+   * @remarks
+   *
+   * IMPORTANT: PDF generation is only supported in Chrome headless mode.
+   *
+   * To generate a PDF with the `screen` media type, call
+   * {@link Page.emulateMediaType | `page.emulateMediaType('screen')`} before
+   * calling `page.pdf()`.
+   *
+   * By default, `page.pdf()` generates a pdf with modified colors for printing.
+   * Use the
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-print-color-adjust | `-webkit-print-color-adjust`}
+   * property to force rendering of exact colors.
+   *
+   *
+   * @param options - options for generating the PDF.
+   */
   async pdf(options: PDFOptions = {}): Promise<Buffer> {
     const {
       scale = 1,
