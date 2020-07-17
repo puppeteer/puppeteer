@@ -774,14 +774,14 @@ export class ElementHandle<
    * the return value resolves to `null`.
    */
   async $(selector: string): Promise<ElementHandle | null> {
-    const defaultHandler = (element: Element, selector: string) =>
-      element.querySelector(selector);
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector,
-      defaultHandler
+      selector
     );
 
-    const handle = await this.evaluateHandle(queryHandler, updatedSelector);
+    const handle = await this.evaluateHandle(
+      queryHandler.queryOne,
+      updatedSelector
+    );
     const element = handle.asElement();
     if (element) return element;
     await handle.dispose();
@@ -793,19 +793,16 @@ export class ElementHandle<
    * the return value resolves to `[]`.
    */
   async $$(selector: string): Promise<ElementHandle[]> {
-    const defaultHandler = (element: Element, selector: string) =>
-      element.querySelectorAll(selector);
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector,
-      defaultHandler
+      selector
     );
 
-    const arrayHandle = await this.evaluateHandle(
-      queryHandler,
+    const handles = await this.evaluateHandle(
+      queryHandler.queryAll,
       updatedSelector
     );
-    const properties = await arrayHandle.getProperties();
-    await arrayHandle.dispose();
+    const properties = await handles.getProperties();
+    await handles.dispose();
     const result = [];
     for (const property of properties.values()) {
       const elementHandle = property.asElement();
@@ -851,8 +848,8 @@ export class ElementHandle<
     await elementHandle.dispose();
 
     /**
-     * This as is a little unfortunate but helps TS understand the behavour of
-     * `elementHandle.evaluate`. If evalute returns an element it will return an
+     * This `as` is a little unfortunate but helps TS understand the behavior of
+     * `elementHandle.evaluate`. If evaluate returns an element it will return an
      * ElementHandle instance, rather than the plain object. All the
      * WrapElementHandle type does is wrap ReturnType into
      * ElementHandle<ReturnType> if it is an ElementHandle, or leave it alone as
@@ -892,15 +889,16 @@ export class ElementHandle<
     ) => ReturnType | Promise<ReturnType>,
     ...args: SerializableOrJSHandle[]
   ): Promise<WrapElementHandle<ReturnType>> {
-    const defaultHandler = (element: Element, selector: string) =>
-      Array.from(element.querySelectorAll(selector));
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector,
-      defaultHandler
+      selector
     );
-
+    const queryHandlerToArray = Function(
+      'element',
+      'selector',
+      `return Array.from((${queryHandler.queryAll})(element, selector));`
+    ) as (...args: unknown[]) => unknown;
     const arrayHandle = await this.evaluateHandle(
-      queryHandler,
+      queryHandlerToArray,
       updatedSelector
     );
     const result = await arrayHandle.evaluate<
@@ -910,8 +908,8 @@ export class ElementHandle<
       ) => ReturnType | Promise<ReturnType>
     >(pageFunction, ...args);
     await arrayHandle.dispose();
-    /* This as exists for the same reason as the `as` in $eval above.
-     * See the comment there for a ful explanation.
+    /* This `as` exists for the same reason as the `as` in $eval above.
+     * See the comment there for a full explanation.
      */
     return result as WrapElementHandle<ReturnType>;
   }

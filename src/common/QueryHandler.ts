@@ -15,17 +15,18 @@
  */
 
 export interface QueryHandler {
-  (element: Element | Document, selector: string):
-    | Element
-    | Element[]
-    | NodeListOf<Element>;
+  queryOne?: (element: Element | Document, selector: string) => Element | null;
+  queryAll?: (
+    element: Element | Document,
+    selector: string
+  ) => Element[] | NodeListOf<Element>;
 }
 
 const _customQueryHandlers = new Map<string, QueryHandler>();
 
 export function registerCustomQueryHandler(
   name: string,
-  handler: Function
+  handler: QueryHandler
 ): void {
   if (_customQueryHandlers.get(name))
     throw new Error(`A custom query handler named "${name}" already exists`);
@@ -34,7 +35,7 @@ export function registerCustomQueryHandler(
   if (!isValidName)
     throw new Error(`Custom query handler names may only contain [a-zA-Z]`);
 
-  _customQueryHandlers.set(name, handler as QueryHandler);
+  _customQueryHandlers.set(name, handler);
 }
 
 /**
@@ -53,12 +54,17 @@ export function clearQueryHandlers(): void {
 }
 
 export function getQueryHandlerAndSelector(
-  selector: string,
-  defaultQueryHandler: QueryHandler
+  selector: string
 ): { updatedSelector: string; queryHandler: QueryHandler } {
+  const defaultHandler = {
+    queryOne: (element: Element, selector: string) =>
+      element.querySelector(selector),
+    queryAll: (element: Element, selector: string) =>
+      element.querySelectorAll(selector),
+  };
   const hasCustomQueryHandler = /^[a-zA-Z]+\//.test(selector);
   if (!hasCustomQueryHandler)
-    return { updatedSelector: selector, queryHandler: defaultQueryHandler };
+    return { updatedSelector: selector, queryHandler: defaultHandler };
 
   const index = selector.indexOf('/');
   const name = selector.slice(0, index);

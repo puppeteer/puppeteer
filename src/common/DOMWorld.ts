@@ -26,7 +26,7 @@ import { ExecutionContext } from './ExecutionContext.js';
 import { TimeoutSettings } from './TimeoutSettings.js';
 import { MouseButton } from './Input.js';
 import { FrameManager, Frame } from './FrameManager.js';
-import { getQueryHandlerAndSelector, QueryHandler } from './QueryHandler.js';
+import { getQueryHandlerAndSelector } from './QueryHandler.js';
 import {
   SerializableOrJSHandle,
   EvaluateHandleFn,
@@ -39,7 +39,10 @@ import { isNode } from '../environment.js';
 
 // This predicateQueryHandler is declared here so that TypeScript knows about it
 // when it is used in the predicate function below.
-declare const predicateQueryHandler: QueryHandler;
+declare const predicateQueryHandler: (
+  element: Element | Document,
+  selector: string
+) => Element | Element[] | NodeListOf<Element>;
 
 /**
  * @public
@@ -506,16 +509,13 @@ export class DOMWorld {
     const title = `${isXPath ? 'XPath' : 'selector'} "${selectorOrXPath}"${
       waitForHidden ? ' to be hidden' : ''
     }`;
-    const {
-      updatedSelector,
-      queryHandler,
-    } = getQueryHandlerAndSelector(selectorOrXPath, (element, selector) =>
-      document.querySelector(selector)
+    const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
+      selectorOrXPath
     );
     const waitTask = new WaitTask(
       this,
       predicate,
-      queryHandler,
+      queryHandler.queryOne,
       title,
       polling,
       timeout,
