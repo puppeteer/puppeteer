@@ -1857,6 +1857,31 @@ export class Page extends EventEmitter {
     return this.mainFrame().type(selector, text, options);
   }
 
+  /**
+   * @remarks
+   *
+   * This method behaves differently depending on the first parameter. If it's a
+   * `string`, it will be treated as a `selector` or `xpath` (if the string
+   * starts with `//`). This method then is a shortcut for
+   * {@link Page.waitForSelector} or {@link Page.waitForXPath}.
+   *
+   * If the first argument is a function this method is a shortcut for
+   * {@link Page.waitForFunction}.
+   *
+   * If the first argument is a `number`, it's treated as a timeout in
+   * milliseconds and the method returns a promise which resolves after the
+   * timeout.
+   *
+   * @param selectorOrFunctionOrTimeout - a selector, predicate or timeout to
+   * wait for.
+   * @param options - optional waiting parameters.
+   * @param args - arguments to pass to `pageFunction`.
+   *
+   * @deprecated don't use this method directly. Instead use the more explicit
+   * methods available: {@link Page.waitForSelector},
+   * {@link Page.waitForXPath}, {@link Page.waitForFunction} or
+   * {@link Page.waitForTimeout}.
+   */
   waitFor(
     selectorOrFunctionOrTimeout: string | number | Function,
     options: {
@@ -1872,6 +1897,29 @@ export class Page extends EventEmitter {
       options,
       ...args
     );
+  }
+
+  /**
+   * Causes your script to wait for the given number of milliseconds.
+   *
+   * @remarks
+   *
+   * It's generally recommended to not wait for a number of seconds, but instead
+   * use {@link Page.waitForSelector}, {@link Page.waitForXPath} or
+   * {@link Page.waitForFunction} to wait for exactly the conditions you want.
+   *
+   * @example
+   *
+   * Wait for 1 second:
+   *
+   * ```
+   * await page.waitForTimeout(1000);
+   * ```
+   *
+   * @param milliseconds - the number of milliseconds to wait.
+   */
+  waitForTimeout(milliseconds: number): Promise<void> {
+    return this.mainFrame().waitForTimeout(milliseconds);
   }
 
   waitForSelector(

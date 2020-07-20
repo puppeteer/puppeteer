@@ -1035,6 +1035,11 @@ export class Frame {
    * wait for.
    * @param options - optional waiting parameters.
    * @param args - arguments to pass to `pageFunction`.
+   *
+   * @deprecated don't use this method directly. Instead use the more explicit
+   * methods available: {@link Frame.waitForSelector},
+   * {@link Frame.waitForXPath}, {@link Frame.waitForFunction} or
+   * {@link Frame.waitForTimeout}.
    */
   waitFor(
     selectorOrFunctionOrTimeout: string | number | Function,
@@ -1042,6 +1047,10 @@ export class Frame {
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle | null> {
     const xPathPattern = '//';
+
+    console.warn(
+      'waitFor is deprecated and will be removed in a future release. See https://github.com/puppeteer/puppeteer/issues/6214 for details and how to migrate your code.'
+    );
 
     if (helper.isString(selectorOrFunctionOrTimeout)) {
       const string = selectorOrFunctionOrTimeout;
@@ -1064,6 +1073,30 @@ export class Frame {
         'Unsupported target type: ' + typeof selectorOrFunctionOrTimeout
       )
     );
+  }
+
+  /**
+   * Causes your script to wait for the given number of milliseconds.
+   *
+   * @remarks
+   * It's generally recommended to not wait for a number of seconds, but instead
+   * use {@link Frame.waitForSelector}, {@link Frame.waitForXPath} or
+   * {@link Frame.waitForFunction} to wait for exactly the conditions you want.
+   *
+   * @example
+   *
+   * Wait for 1 second:
+   *
+   * ```
+   * await frame.waitForTimeout(1000);
+   * ```
+   *
+   * @param milliseconds - the number of milliseconds to wait.
+   */
+  waitForTimeout(milliseconds: number): Promise<void> {
+    return new Promise((resolve) => {
+      setTimeout(resolve, milliseconds);
+    });
   }
 
   /**
