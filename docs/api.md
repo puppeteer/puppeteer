@@ -170,6 +170,7 @@
   * [page.waitForRequest(urlOrPredicate[, options])](#pagewaitforrequesturlorpredicate-options)
   * [page.waitForResponse(urlOrPredicate[, options])](#pagewaitforresponseurlorpredicate-options)
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
+  * [page.waitForTimeout(milliseconds)](#pagewaitfortimeoutmilliseconds)
   * [page.waitForXPath(xpath[, options])](#pagewaitforxpathxpath-options)
   * [page.workers()](#pageworkers)
   * [GeolocationOptions](#geolocationoptions)
@@ -243,6 +244,7 @@
   * [frame.waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args)
   * [frame.waitForNavigation([options])](#framewaitfornavigationoptions)
   * [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
+  * [frame.waitForTimeout(milliseconds)](#framewaitfortimeoutmilliseconds)
   * [frame.waitForXPath(xpath[, options])](#framewaitforxpathxpath-options)
 - [class: ExecutionContext](#class-executioncontext)
   * [executionContext.evaluate(pageFunction[, ...args])](#executioncontextevaluatepagefunction-args)
@@ -2061,6 +2063,13 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[JSHandle]>> Promise which resolves to a JSHandle of the success value
 
+**This method is deprecated**. You should use the more explicit API methods available:
+
+* `page.waitForSelector`
+* `page.waitForXPath`
+* `page.waitForFunction`
+* `page.waitForTimeout`
+
 This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] or [xpath], depending on whether or not it starts with '//', and the method is a shortcut for
   [page.waitForSelector](#pagewaitforselectorselector-options) or [page.waitForXPath](#pagewaitforxpathxpath-options)
@@ -2234,6 +2243,26 @@ const puppeteer = require('puppeteer');
 })();
 ```
 Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options).
+
+#### page.waitForTimeout(milliseconds)
+- `milliseconds` <[number]> The number of milliseconds to wait for.
+- returns: <[Promise]> Promise which resolves after the timeout has completed.
+
+Pauses script execution for the given number of seconds before continuing:
+
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  let currentURL;
+  page.waitForTimeout(1000)
+    .then(() => console.log('Waited a second!'));
+
+  await browser.close();
+})();
+```
 
 #### page.waitForXPath(xpath[, options])
 - `xpath` <[string]> A [xpath] of an element to wait for
@@ -3041,6 +3070,13 @@ Returns frame's url.
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[JSHandle]>> Promise which resolves to a JSHandle of the success value
 
+**This method is deprecated**. You should use the more explicit API methods available:
+
+* `frame.waitForSelector`
+* `frame.waitForXPath`
+* `frame.waitForFunction`
+* `frame.waitForTimeout`
+
 This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] or [xpath], depending on whether or not it starts with '//', and the method is a shortcut for
   [frame.waitForSelector](#framewaitforselectorselector-options) or [frame.waitForXPath](#framewaitforxpathxpath-options)
@@ -3144,6 +3180,27 @@ const puppeteer = require('puppeteer');
   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com']) {
     await page.goto(currentURL);
   }
+  await browser.close();
+})();
+```
+
+#### frame.waitForTimeout(milliseconds)
+- `milliseconds` <[number]> The number of milliseconds to wait for.
+- returns: <[Promise]> Promise which resolves after the timeout has completed.
+
+Pauses script execution for the given number of seconds before continuing:
+
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  let currentURL;
+  page.mainFrame()
+    .waitForTimeout(1000)
+    .then(() => console.log('Waited a second!'));
+
   await browser.close();
 })();
 ```
