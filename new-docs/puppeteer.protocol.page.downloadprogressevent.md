@@ -18,6 +18,6 @@ export interface DownloadProgressEvent
 |  --- | --- | --- |
 |  [guid](./puppeteer.protocol.page.downloadprogressevent.guid.md) | string | Global unique identifier of the download. |
 |  [receivedBytes](./puppeteer.protocol.page.downloadprogressevent.receivedbytes.md) | number | Total bytes received. |
-|  [state](./puppeteer.protocol.page.downloadprogressevent.state.md) | ('inProgress' \| 'completed' \| 'canceled') | Download status. |
+|  [state](./puppeteer.protocol.page.downloadprogressevent.state.md) | ('inProgress' \| 'completed' \| 'canceled') | Download status. (DownloadProgressEventState enum) |
 |  [totalBytes](./puppeteer.protocol.page.downloadprogressevent.totalbytes.md) | number | Total expected bytes to download. |
 

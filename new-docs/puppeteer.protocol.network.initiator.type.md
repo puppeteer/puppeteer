@@ -4,7 +4,7 @@
 
 ## Protocol.Network.Initiator.type property
 
-Type of this initiator.
+Type of this initiator. (InitiatorType enum)
 
 <b>Signature:</b>
 

@@ -12,6 +12,18 @@ Runtime domain exposes JavaScript runtime by means of remote evaluation and mirr
 export namespace Runtime 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [ConsoleAPICalledEventType](./puppeteer.protocol.runtime.consoleapicalledeventtype.md) |  |
+|  [ObjectPreviewSubtype](./puppeteer.protocol.runtime.objectpreviewsubtype.md) |  |
+|  [ObjectPreviewType](./puppeteer.protocol.runtime.objectpreviewtype.md) |  |
+|  [PropertyPreviewSubtype](./puppeteer.protocol.runtime.propertypreviewsubtype.md) |  |
+|  [PropertyPreviewType](./puppeteer.protocol.runtime.propertypreviewtype.md) |  |
+|  [RemoteObjectSubtype](./puppeteer.protocol.runtime.remoteobjectsubtype.md) |  |
+|  [RemoteObjectType](./puppeteer.protocol.runtime.remoteobjecttype.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |

@@ -4,7 +4,7 @@
 
 ## Protocol.Debugger.SetInstrumentationBreakpointRequest.instrumentation property
 
-Instrumentation name.
+Instrumentation name. (SetInstrumentationBreakpointRequestInstrumentation enum)
 
 <b>Signature:</b>
 

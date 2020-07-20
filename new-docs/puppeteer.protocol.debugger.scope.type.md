@@ -4,7 +4,7 @@
 
 ## Protocol.Debugger.Scope.type property
 
-Scope type.
+Scope type. (ScopeType enum)
 
 <b>Signature:</b>
 

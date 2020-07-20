@@ -19,5 +19,5 @@ export interface AuthChallenge
 |  [origin](./puppeteer.protocol.network.authchallenge.origin.md) | string | Origin of the challenger. |
 |  [realm](./puppeteer.protocol.network.authchallenge.realm.md) | string | The realm of the challenge. May be empty. |
 |  [scheme](./puppeteer.protocol.network.authchallenge.scheme.md) | string | The authentication scheme used, such as basic or digest |
-|  [source](./puppeteer.protocol.network.authchallenge.source.md) | ('Server' \| 'Proxy') | Source of the authentication challenge. |
+|  [source](./puppeteer.protocol.network.authchallenge.source.md) | ('Server' \| 'Proxy') | Source of the authentication challenge. (AuthChallengeSource enum) |
 

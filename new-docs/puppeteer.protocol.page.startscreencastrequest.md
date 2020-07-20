@@ -15,7 +15,7 @@ export interface StartScreencastRequest
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [everyNthFrame](./puppeteer.protocol.page.startscreencastrequest.everynthframe.md) | [integer](./puppeteer.protocol.integer.md) | Send every n-th frame. |
-|  [format](./puppeteer.protocol.page.startscreencastrequest.format.md) | ('jpeg' \| 'png') | Image compression format. |
+|  [format](./puppeteer.protocol.page.startscreencastrequest.format.md) | ('jpeg' \| 'png') | Image compression format. (StartScreencastRequestFormat enum) |
 |  [maxHeight](./puppeteer.protocol.page.startscreencastrequest.maxheight.md) | [integer](./puppeteer.protocol.integer.md) | Maximum screenshot height. |
 |  [maxWidth](./puppeteer.protocol.page.startscreencastrequest.maxwidth.md) | [integer](./puppeteer.protocol.integer.md) | Maximum screenshot width. |
 |  [quality](./puppeteer.protocol.page.startscreencastrequest.quality.md) | [integer](./puppeteer.protocol.integer.md) | Compression quality from range \[0..100\]. |

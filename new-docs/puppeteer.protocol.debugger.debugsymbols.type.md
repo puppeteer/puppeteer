@@ -4,7 +4,7 @@
 
 ## Protocol.Debugger.DebugSymbols.type property
 
-Type of the debug symbols.
+Type of the debug symbols. (DebugSymbolsType enum)
 
 <b>Signature:</b>
 

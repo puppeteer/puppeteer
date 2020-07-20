@@ -4,7 +4,7 @@
 
 ## Protocol.Page.DownloadProgressEvent.state property
 
-Download status.
+Download status. (DownloadProgressEventState enum)
 
 <b>Signature:</b>
 

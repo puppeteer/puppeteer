@@ -15,5 +15,5 @@ export interface ContinueToLocationRequest
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [location](./puppeteer.protocol.debugger.continuetolocationrequest.location.md) | [Location](./puppeteer.protocol.debugger.location.md) | Location to continue to. |
-|  [targetCallFrames](./puppeteer.protocol.debugger.continuetolocationrequest.targetcallframes.md) | ('any' \| 'current') |  |
+|  [targetCallFrames](./puppeteer.protocol.debugger.continuetolocationrequest.targetcallframes.md) | ('any' \| 'current') | (ContinueToLocationRequestTargetCallFrames enum) |
 

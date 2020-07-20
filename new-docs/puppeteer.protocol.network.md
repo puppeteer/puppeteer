@@ -12,6 +12,15 @@ Network domain allows tracking network activities of the page. It exposes inform
 export namespace Network 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [AuthChallengeResponseResponse](./puppeteer.protocol.network.authchallengeresponseresponse.md) |  |
+|  [AuthChallengeSource](./puppeteer.protocol.network.authchallengesource.md) |  |
+|  [InitiatorType](./puppeteer.protocol.network.initiatortype.md) |  |
+|  [RequestReferrerPolicy](./puppeteer.protocol.network.requestreferrerpolicy.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |
@@ -109,6 +118,7 @@ export namespace Network
 |  [RequestId](./puppeteer.protocol.network.requestid.md) | Unique request identifier. |
 |  [ResourcePriority](./puppeteer.protocol.network.resourcepriority.md) | Loading priority of a resource request. |
 |  [ResourceType](./puppeteer.protocol.network.resourcetype.md) | Resource type as it was perceived by the rendering engine. |
+|  [ServiceWorkerResponseSource](./puppeteer.protocol.network.serviceworkerresponsesource.md) | Source of serviceworker response. |
 |  [SetCookieBlockedReason](./puppeteer.protocol.network.setcookieblockedreason.md) | Types of reasons why a cookie may not be stored from a response. |
 |  [SignedExchangeErrorField](./puppeteer.protocol.network.signedexchangeerrorfield.md) | Field type for a signed exchange related error. |
 |  [TimeSinceEpoch](./puppeteer.protocol.network.timesinceepoch.md) | UTC time in seconds, counted from January 1, 1970. |

@@ -26,6 +26,7 @@ export interface HighlightConfig
 |  [paddingColor](./puppeteer.protocol.overlay.highlightconfig.paddingcolor.md) | [DOM.RGBA](./puppeteer.protocol.dom.rgba.md) | The padding highlight fill color (default: transparent). |
 |  [shapeColor](./puppeteer.protocol.overlay.highlightconfig.shapecolor.md) | [DOM.RGBA](./puppeteer.protocol.dom.rgba.md) | The shape outside fill color (default: transparent). |
 |  [shapeMarginColor](./puppeteer.protocol.overlay.highlightconfig.shapemargincolor.md) | [DOM.RGBA](./puppeteer.protocol.dom.rgba.md) | The shape margin fill color (default: transparent). |
+|  [showAccessibilityInfo](./puppeteer.protocol.overlay.highlightconfig.showaccessibilityinfo.md) | boolean | Whether the a11y info should be shown (default: true). |
 |  [showExtensionLines](./puppeteer.protocol.overlay.highlightconfig.showextensionlines.md) | boolean | Whether the extension lines from node to the rulers should be shown (default: false). |
 |  [showInfo](./puppeteer.protocol.overlay.highlightconfig.showinfo.md) | boolean | Whether the node info tooltip should be shown (default: false). |
 |  [showRulers](./puppeteer.protocol.overlay.highlightconfig.showrulers.md) | boolean | Whether the rulers should be shown (default: false). |

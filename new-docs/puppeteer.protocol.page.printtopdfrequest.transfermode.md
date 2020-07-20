@@ -4,7 +4,7 @@
 
 ## Protocol.Page.PrintToPDFRequest.transferMode property
 
-return as stream
+return as stream (PrintToPDFRequestTransferMode enum)
 
 <b>Signature:</b>
 

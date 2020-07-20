@@ -4,7 +4,7 @@
 
 ## Protocol.Input.DispatchKeyEventRequest.type property
 
-Type of the key event.
+Type of the key event. (DispatchKeyEventRequestType enum)
 
 <b>Signature:</b>
 

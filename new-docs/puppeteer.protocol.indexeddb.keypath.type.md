@@ -4,7 +4,7 @@
 
 ## Protocol.IndexedDB.KeyPath.type property
 
-Key path type.
+Key path type. (KeyPathType enum)
 
 <b>Signature:</b>
 

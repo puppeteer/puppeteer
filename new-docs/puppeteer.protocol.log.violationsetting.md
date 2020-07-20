@@ -16,6 +16,6 @@ export interface ViolationSetting
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [name](./puppeteer.protocol.log.violationsetting.name.md) | ('longTask' \| 'longLayout' \| 'blockedEvent' \| 'blockedParser' \| 'discouragedAPIUse' \| 'handler' \| 'recurringHandler') | Violation type. |
+|  [name](./puppeteer.protocol.log.violationsetting.name.md) | ('longTask' \| 'longLayout' \| 'blockedEvent' \| 'blockedParser' \| 'discouragedAPIUse' \| 'handler' \| 'recurringHandler') | Violation type. (ViolationSettingName enum) |
 |  [threshold](./puppeteer.protocol.log.violationsetting.threshold.md) | number | Time threshold to trigger upon. |
 

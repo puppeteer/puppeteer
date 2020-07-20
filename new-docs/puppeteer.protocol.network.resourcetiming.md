@@ -30,6 +30,8 @@ export interface ResourceTiming
 |  [sendStart](./puppeteer.protocol.network.resourcetiming.sendstart.md) | number | Started sending request. |
 |  [sslEnd](./puppeteer.protocol.network.resourcetiming.sslend.md) | number | Finished SSL handshake. |
 |  [sslStart](./puppeteer.protocol.network.resourcetiming.sslstart.md) | number | Started SSL handshake. |
+|  [workerFetchStart](./puppeteer.protocol.network.resourcetiming.workerfetchstart.md) | number | Started fetch event. |
 |  [workerReady](./puppeteer.protocol.network.resourcetiming.workerready.md) | number | Finished Starting ServiceWorker. |
+|  [workerRespondWithSettled](./puppeteer.protocol.network.resourcetiming.workerrespondwithsettled.md) | number | Settled fetch event respondWith promise. |
 |  [workerStart](./puppeteer.protocol.network.resourcetiming.workerstart.md) | number | Started running ServiceWorker. |
 

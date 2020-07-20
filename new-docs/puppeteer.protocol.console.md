@@ -12,6 +12,13 @@ This domain is deprecated - use Runtime or Log instead.
 export namespace Console 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [ConsoleMessageLevel](./puppeteer.protocol.console.consolemessagelevel.md) |  |
+|  [ConsoleMessageSource](./puppeteer.protocol.console.consolemessagesource.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |

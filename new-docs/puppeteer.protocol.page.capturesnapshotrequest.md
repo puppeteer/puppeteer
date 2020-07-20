@@ -14,5 +14,5 @@ export interface CaptureSnapshotRequest
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [format](./puppeteer.protocol.page.capturesnapshotrequest.format.md) | ('mhtml') | Format (defaults to mhtml). |
+|  [format](./puppeteer.protocol.page.capturesnapshotrequest.format.md) | ('mhtml') | Format (defaults to mhtml). (CaptureSnapshotRequestFormat enum) |
 

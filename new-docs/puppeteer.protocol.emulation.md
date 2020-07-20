@@ -12,6 +12,14 @@ This domain emulates different environments for the page.
 export namespace Emulation 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [ScreenOrientationType](./puppeteer.protocol.emulation.screenorientationtype.md) |  |
+|  [SetEmitTouchEventsForMouseRequestConfiguration](./puppeteer.protocol.emulation.setemittoucheventsformouserequestconfiguration.md) |  |
+|  [SetEmulatedVisionDeficiencyRequestType](./puppeteer.protocol.emulation.setemulatedvisiondeficiencyrequesttype.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |

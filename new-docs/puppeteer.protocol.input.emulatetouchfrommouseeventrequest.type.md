@@ -4,7 +4,7 @@
 
 ## Protocol.Input.EmulateTouchFromMouseEventRequest.type property
 
-Type of the mouse event.
+Type of the mouse event. (EmulateTouchFromMouseEventRequestType enum)
 
 <b>Signature:</b>
 

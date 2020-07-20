@@ -4,7 +4,7 @@
 
 ## Protocol.Page.SetWebLifecycleStateRequest.state property
 
-Target lifecycle state
+Target lifecycle state (SetWebLifecycleStateRequestState enum)
 
 <b>Signature:</b>
 

@@ -17,6 +17,6 @@ export interface AuthChallengeResponse
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [password](./puppeteer.protocol.network.authchallengeresponse.password.md) | string | The password to provide, possibly empty. Should only be set if response is ProvideCredentials. |
-|  [response](./puppeteer.protocol.network.authchallengeresponse.response.md) | ('Default' \| 'CancelAuth' \| 'ProvideCredentials') | The decision on what to do in response to the authorization challenge. Default means deferring to the default behavior of the net stack, which will likely either the Cancel authentication or display a popup dialog box. |
+|  [response](./puppeteer.protocol.network.authchallengeresponse.response.md) | ('Default' \| 'CancelAuth' \| 'ProvideCredentials') | The decision on what to do in response to the authorization challenge. Default means deferring to the default behavior of the net stack, which will likely either the Cancel authentication or display a popup dialog box. (AuthChallengeResponseResponse enum) |
 |  [username](./puppeteer.protocol.network.authchallengeresponse.username.md) | string | The username to provide, possibly empty. Should only be set if response is ProvideCredentials. |
 

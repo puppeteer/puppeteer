@@ -29,5 +29,5 @@ export interface PrintToPDFRequest
 |  [preferCSSPageSize](./puppeteer.protocol.page.printtopdfrequest.prefercsspagesize.md) | boolean | Whether or not to prefer page size as defined by css. Defaults to false, in which case the content will be scaled to fit the paper size. |
 |  [printBackground](./puppeteer.protocol.page.printtopdfrequest.printbackground.md) | boolean | Print background graphics. Defaults to false. |
 |  [scale](./puppeteer.protocol.page.printtopdfrequest.scale.md) | number | Scale of the webpage rendering. Defaults to 1. |
-|  [transferMode](./puppeteer.protocol.page.printtopdfrequest.transfermode.md) | ('ReturnAsBase64' \| 'ReturnAsStream') | return as stream |
+|  [transferMode](./puppeteer.protocol.page.printtopdfrequest.transfermode.md) | ('ReturnAsBase64' \| 'ReturnAsStream') | return as stream (PrintToPDFRequestTransferMode enum) |
 

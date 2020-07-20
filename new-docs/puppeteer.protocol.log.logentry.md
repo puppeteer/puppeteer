@@ -17,10 +17,10 @@ export interface LogEntry
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [args](./puppeteer.protocol.log.logentry.args.md) | [Runtime.RemoteObject](./puppeteer.protocol.runtime.remoteobject.md)<!-- -->\[\] | Call arguments. |
-|  [level](./puppeteer.protocol.log.logentry.level.md) | ('verbose' \| 'info' \| 'warning' \| 'error') | Log entry severity. |
+|  [level](./puppeteer.protocol.log.logentry.level.md) | ('verbose' \| 'info' \| 'warning' \| 'error') | Log entry severity. (LogEntryLevel enum) |
 |  [lineNumber](./puppeteer.protocol.log.logentry.linenumber.md) | [integer](./puppeteer.protocol.integer.md) | Line number in the resource. |
 |  [networkRequestId](./puppeteer.protocol.log.logentry.networkrequestid.md) | [Network.RequestId](./puppeteer.protocol.network.requestid.md) | Identifier of the network request associated with this entry. |
-|  [source](./puppeteer.protocol.log.logentry.source.md) | ('xml' \| 'javascript' \| 'network' \| 'storage' \| 'appcache' \| 'rendering' \| 'security' \| 'deprecation' \| 'worker' \| 'violation' \| 'intervention' \| 'recommendation' \| 'other') | Log entry source. |
+|  [source](./puppeteer.protocol.log.logentry.source.md) | ('xml' \| 'javascript' \| 'network' \| 'storage' \| 'appcache' \| 'rendering' \| 'security' \| 'deprecation' \| 'worker' \| 'violation' \| 'intervention' \| 'recommendation' \| 'other') | Log entry source. (LogEntrySource enum) |
 |  [stackTrace](./puppeteer.protocol.log.logentry.stacktrace.md) | [Runtime.StackTrace](./puppeteer.protocol.runtime.stacktrace.md) | JavaScript stack trace. |
 |  [text](./puppeteer.protocol.log.logentry.text.md) | string | Logged text. |
 |  [timestamp](./puppeteer.protocol.log.logentry.timestamp.md) | [Runtime.Timestamp](./puppeteer.protocol.runtime.timestamp.md) | Timestamp when this entry was added. |

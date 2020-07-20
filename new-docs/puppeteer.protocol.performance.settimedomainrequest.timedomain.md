@@ -4,7 +4,7 @@
 
 ## Protocol.Performance.SetTimeDomainRequest.timeDomain property
 
-Time domain
+Time domain (SetTimeDomainRequestTimeDomain enum)
 
 <b>Signature:</b>
 

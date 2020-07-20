@@ -20,5 +20,5 @@ export interface StartRequest
 |  [streamCompression](./puppeteer.protocol.tracing.startrequest.streamcompression.md) | [StreamCompression](./puppeteer.protocol.tracing.streamcompression.md) | Compression format to use. This only applies when using <code>ReturnAsStream</code> transfer mode (defaults to <code>none</code>) |
 |  [streamFormat](./puppeteer.protocol.tracing.startrequest.streamformat.md) | [StreamFormat](./puppeteer.protocol.tracing.streamformat.md) | Trace data format to use. This only applies when using <code>ReturnAsStream</code> transfer mode (defaults to <code>json</code>). |
 |  [traceConfig](./puppeteer.protocol.tracing.startrequest.traceconfig.md) | [TraceConfig](./puppeteer.protocol.tracing.traceconfig.md) |  |
-|  [transferMode](./puppeteer.protocol.tracing.startrequest.transfermode.md) | ('ReportEvents' \| 'ReturnAsStream') | Whether to report trace events as series of dataCollected events or to save trace to a stream (defaults to <code>ReportEvents</code>). |
+|  [transferMode](./puppeteer.protocol.tracing.startrequest.transfermode.md) | ('ReportEvents' \| 'ReturnAsStream') | Whether to report trace events as series of dataCollected events or to save trace to a stream (defaults to <code>ReportEvents</code>). (StartRequestTransferMode enum) |
 

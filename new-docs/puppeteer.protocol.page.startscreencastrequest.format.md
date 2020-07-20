@@ -4,7 +4,7 @@
 
 ## Protocol.Page.StartScreencastRequest.format property
 
-Image compression format.
+Image compression format. (StartScreencastRequestFormat enum)
 
 <b>Signature:</b>
 

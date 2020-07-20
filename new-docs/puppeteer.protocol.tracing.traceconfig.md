@@ -20,6 +20,6 @@ export interface TraceConfig
 |  [excludedCategories](./puppeteer.protocol.tracing.traceconfig.excludedcategories.md) | string\[\] | Excluded category filters. |
 |  [includedCategories](./puppeteer.protocol.tracing.traceconfig.includedcategories.md) | string\[\] | Included category filters. |
 |  [memoryDumpConfig](./puppeteer.protocol.tracing.traceconfig.memorydumpconfig.md) | [MemoryDumpConfig](./puppeteer.protocol.tracing.memorydumpconfig.md) | Configuration for memory dump triggers. Used only when "memory-infra" category is enabled. |
-|  [recordMode](./puppeteer.protocol.tracing.traceconfig.recordmode.md) | ('recordUntilFull' \| 'recordContinuously' \| 'recordAsMuchAsPossible' \| 'echoToConsole') | Controls how the trace buffer stores data. |
+|  [recordMode](./puppeteer.protocol.tracing.traceconfig.recordmode.md) | ('recordUntilFull' \| 'recordContinuously' \| 'recordAsMuchAsPossible' \| 'echoToConsole') | Controls how the trace buffer stores data. (TraceConfigRecordMode enum) |
 |  [syntheticDelays](./puppeteer.protocol.tracing.traceconfig.syntheticdelays.md) | string\[\] | Configuration to synthesize the delays in tracing. |
 

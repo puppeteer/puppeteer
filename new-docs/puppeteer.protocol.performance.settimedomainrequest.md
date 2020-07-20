@@ -14,5 +14,5 @@ export interface SetTimeDomainRequest
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [timeDomain](./puppeteer.protocol.performance.settimedomainrequest.timedomain.md) | ('timeTicks' \| 'threadTicks') | Time domain |
+|  [timeDomain](./puppeteer.protocol.performance.settimedomainrequest.timedomain.md) | ('timeTicks' \| 'threadTicks') | Time domain (SetTimeDomainRequestTimeDomain enum) |
 

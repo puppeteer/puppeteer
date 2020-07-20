@@ -10,6 +10,13 @@
 export namespace Performance 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [EnableRequestTimeDomain](./puppeteer.protocol.performance.enablerequesttimedomain.md) |  |
+|  [SetTimeDomainRequestTimeDomain](./puppeteer.protocol.performance.settimedomainrequesttimedomain.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |

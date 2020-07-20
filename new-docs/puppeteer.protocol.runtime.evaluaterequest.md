@@ -14,6 +14,7 @@ export interface EvaluateRequest
 
 |  Property | Type | Description |
 |  --- | --- | --- |
+|  [allowUnsafeEvalBlockedByCSP](./puppeteer.protocol.runtime.evaluaterequest.allowunsafeevalblockedbycsp.md) | boolean | The Content Security Policy (CSP) for the target might block 'unsafe-eval' which includes eval(), Function(), setTimeout() and setInterval() when called with non-callable arguments. This flag bypasses CSP for this evaluation and allows unsafe-eval. Defaults to true. |
 |  [awaitPromise](./puppeteer.protocol.runtime.evaluaterequest.awaitpromise.md) | boolean | Whether execution should <code>await</code> for resulting value and return once awaited promise is resolved. |
 |  [contextId](./puppeteer.protocol.runtime.evaluaterequest.contextid.md) | [ExecutionContextId](./puppeteer.protocol.runtime.executioncontextid.md) | Specifies in which execution context to perform evaluation. If the parameter is omitted the evaluation will be performed in the context of the inspected page. |
 |  [disableBreaks](./puppeteer.protocol.runtime.evaluaterequest.disablebreaks.md) | boolean | Disable breakpoints during execution. |

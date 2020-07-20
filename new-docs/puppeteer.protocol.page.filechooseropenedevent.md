@@ -18,5 +18,5 @@ export interface FileChooserOpenedEvent
 |  --- | --- | --- |
 |  [backendNodeId](./puppeteer.protocol.page.filechooseropenedevent.backendnodeid.md) | [DOM.BackendNodeId](./puppeteer.protocol.dom.backendnodeid.md) | Input node id. |
 |  [frameId](./puppeteer.protocol.page.filechooseropenedevent.frameid.md) | [FrameId](./puppeteer.protocol.page.frameid.md) | Id of the frame containing input node. |
-|  [mode](./puppeteer.protocol.page.filechooseropenedevent.mode.md) | ('selectSingle' \| 'selectMultiple') | Input mode. |
+|  [mode](./puppeteer.protocol.page.filechooseropenedevent.mode.md) | ('selectSingle' \| 'selectMultiple') | Input mode. (FileChooserOpenedEventMode enum) |
 

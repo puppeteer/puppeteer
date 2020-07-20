@@ -4,7 +4,7 @@
 
 ## Protocol.Runtime.ObjectPreview.subtype property
 
-Object subtype hint. Specified for `object` type values only.
+Object subtype hint. Specified for `object` type values only. (ObjectPreviewSubtype enum)
 
 <b>Signature:</b>
 

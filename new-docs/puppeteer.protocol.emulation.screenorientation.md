@@ -17,5 +17,5 @@ export interface ScreenOrientation
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [angle](./puppeteer.protocol.emulation.screenorientation.angle.md) | [integer](./puppeteer.protocol.integer.md) | Orientation angle. |
-|  [type](./puppeteer.protocol.emulation.screenorientation.type.md) | ('portraitPrimary' \| 'portraitSecondary' \| 'landscapePrimary' \| 'landscapeSecondary') | Orientation type. |
+|  [type](./puppeteer.protocol.emulation.screenorientation.type.md) | ('portraitPrimary' \| 'portraitSecondary' \| 'landscapePrimary' \| 'landscapeSecondary') | Orientation type. (ScreenOrientationType enum) |
 

@@ -16,6 +16,7 @@ export interface Response
 
 |  Property | Type | Description |
 |  --- | --- | --- |
+|  [cacheStorageCacheName](./puppeteer.protocol.network.response.cachestoragecachename.md) | string | Cache Storage Cache Name. |
 |  [connectionId](./puppeteer.protocol.network.response.connectionid.md) | number | Physical connection id that was actually used for this request. |
 |  [connectionReused](./puppeteer.protocol.network.response.connectionreused.md) | boolean | Specifies whether physical connection was actually reused for this request. |
 |  [encodedDataLength](./puppeteer.protocol.network.response.encodeddatalength.md) | number | Total number of bytes received for this request so far. |
@@ -30,8 +31,10 @@ export interface Response
 |  [remotePort](./puppeteer.protocol.network.response.remoteport.md) | [integer](./puppeteer.protocol.integer.md) | Remote port. |
 |  [requestHeaders](./puppeteer.protocol.network.response.requestheaders.md) | [Headers](./puppeteer.protocol.network.headers.md) | Refined HTTP request headers that were actually transmitted over the network. |
 |  [requestHeadersText](./puppeteer.protocol.network.response.requestheaderstext.md) | string | HTTP request headers text. |
+|  [responseTime](./puppeteer.protocol.network.response.responsetime.md) | [TimeSinceEpoch](./puppeteer.protocol.network.timesinceepoch.md) | The time at which the returned response was generated. |
 |  [securityDetails](./puppeteer.protocol.network.response.securitydetails.md) | [SecurityDetails](./puppeteer.protocol.network.securitydetails.md) | Security details for the request. |
 |  [securityState](./puppeteer.protocol.network.response.securitystate.md) | [Security.SecurityState](./puppeteer.protocol.security.securitystate.md) | Security state of the request resource. |
+|  [serviceWorkerResponseSource](./puppeteer.protocol.network.response.serviceworkerresponsesource.md) | [ServiceWorkerResponseSource](./puppeteer.protocol.network.serviceworkerresponsesource.md) | Response source of response from ServiceWorker. |
 |  [status](./puppeteer.protocol.network.response.status.md) | [integer](./puppeteer.protocol.integer.md) | HTTP response status code. |
 |  [statusText](./puppeteer.protocol.network.response.statustext.md) | string | HTTP response status text. |
 |  [timing](./puppeteer.protocol.network.response.timing.md) | [ResourceTiming](./puppeteer.protocol.network.resourcetiming.md) | Timing information for the given request. |

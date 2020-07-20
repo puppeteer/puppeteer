@@ -17,9 +17,9 @@ export interface ConsoleMessage
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [column](./puppeteer.protocol.console.consolemessage.column.md) | [integer](./puppeteer.protocol.integer.md) | Column number in the resource that generated this message (1-based). |
-|  [level](./puppeteer.protocol.console.consolemessage.level.md) | ('log' \| 'warning' \| 'error' \| 'debug' \| 'info') | Message severity. |
+|  [level](./puppeteer.protocol.console.consolemessage.level.md) | ('log' \| 'warning' \| 'error' \| 'debug' \| 'info') | Message severity. (ConsoleMessageLevel enum) |
 |  [line](./puppeteer.protocol.console.consolemessage.line.md) | [integer](./puppeteer.protocol.integer.md) | Line number in the resource that generated this message (1-based). |
-|  [source](./puppeteer.protocol.console.consolemessage.source.md) | ('xml' \| 'javascript' \| 'network' \| 'console-api' \| 'storage' \| 'appcache' \| 'rendering' \| 'security' \| 'other' \| 'deprecation' \| 'worker') | Message source. |
+|  [source](./puppeteer.protocol.console.consolemessage.source.md) | ('xml' \| 'javascript' \| 'network' \| 'console-api' \| 'storage' \| 'appcache' \| 'rendering' \| 'security' \| 'other' \| 'deprecation' \| 'worker') | Message source. (ConsoleMessageSource enum) |
 |  [text](./puppeteer.protocol.console.consolemessage.text.md) | string | Message text. |
 |  [url](./puppeteer.protocol.console.consolemessage.url.md) | string | URL of the message origin. |
 

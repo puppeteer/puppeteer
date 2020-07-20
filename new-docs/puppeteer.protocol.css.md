@@ -12,6 +12,12 @@ This domain exposes CSS read/write operations. All CSS objects (stylesheets, rul
 export namespace CSS 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [CSSMediaSource](./puppeteer.protocol.css.cssmediasource.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |

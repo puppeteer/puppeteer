@@ -12,6 +12,13 @@ A domain for letting clients substitute browser's network layer with client code
 export namespace Fetch 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [AuthChallengeResponseResponse](./puppeteer.protocol.fetch.authchallengeresponseresponse.md) |  |
+|  [AuthChallengeSource](./puppeteer.protocol.fetch.authchallengesource.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |

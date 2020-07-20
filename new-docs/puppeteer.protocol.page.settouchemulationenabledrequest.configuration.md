@@ -4,7 +4,7 @@
 
 ## Protocol.Page.SetTouchEmulationEnabledRequest.configuration property
 
-Touch/gesture events configuration. Default: current platform.
+Touch/gesture events configuration. Default: current platform. (SetTouchEmulationEnabledRequestConfiguration enum)
 
 <b>Signature:</b>
 

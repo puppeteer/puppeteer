@@ -4,7 +4,7 @@
 
 ## Protocol.Emulation.SetEmulatedVisionDeficiencyRequest.type property
 
-Vision deficiency to emulate.
+Vision deficiency to emulate. (SetEmulatedVisionDeficiencyRequestType enum)
 
 <b>Signature:</b>
 

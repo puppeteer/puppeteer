@@ -14,5 +14,5 @@ export interface EnableRequest
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [timeDomain](./puppeteer.protocol.performance.enablerequest.timedomain.md) | ('timeTicks' \| 'threadTicks') | Time domain to use for collecting and reporting duration metrics. |
+|  [timeDomain](./puppeteer.protocol.performance.enablerequest.timedomain.md) | ('timeTicks' \| 'threadTicks') | Time domain to use for collecting and reporting duration metrics. (EnableRequestTimeDomain enum) |
 

@@ -14,5 +14,5 @@ export interface SetPauseOnExceptionsRequest
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [state](./puppeteer.protocol.debugger.setpauseonexceptionsrequest.state.md) | ('none' \| 'uncaught' \| 'all') | Pause on exceptions mode. |
+|  [state](./puppeteer.protocol.debugger.setpauseonexceptionsrequest.state.md) | ('none' \| 'uncaught' \| 'all') | Pause on exceptions mode. (SetPauseOnExceptionsRequestState enum) |
 
