@@ -19,12 +19,30 @@ import { isNode } from '../environment.js';
 /**
  * A debug function that can be used in any environment.
  *
+ * @remarks
+ *
  * If used in Node, it falls back to the
  * {@link https://www.npmjs.com/package/debug | debug module}. In the browser it
  * uses `console.log`.
  *
  * @param prefix - this will be prefixed to each log.
  * @returns a function that can be called to log to that debug channel.
+ *
+ * In Node, use the `DEBUG` environment variable to control logging:
+ *
+ * ```
+ * DEBUG=* // logs all channels
+ * DEBUG=foo // logs the `foo` channel
+ * DEBUG=foo* // logs any channels starting with `foo`
+ * ```
+ *
+ * In the browser, set `window.__PUPPETEER_DEBUG` to a string:
+ *
+ * ```
+ * window.__PUPPETEER_DEBUG='*'; // logs all channels
+ * window.__PUPPETEER_DEBUG='foo'; // logs the `foo` channel
+ * window.__PUPPETEER_DEBUG='foo*'; // logs any channels starting with `foo`
+ * ```
  *
  * @example
  * ```
@@ -40,6 +58,26 @@ export const debug = (prefix: string): ((...args: unknown[]) => void) => {
     return require('debug')(prefix);
   }
 
-  // eslint-disable-next-line no-console
-  return (...logArgs: unknown[]): void => console.log(`${prefix}:`, ...logArgs);
+  return (...logArgs: unknown[]): void => {
+    const debugLevel = globalThis.__PUPPETEER_DEBUG as string;
+    if (!debugLevel) return;
+
+    const everythingShouldBeLogged = debugLevel === '*';
+
+    const prefixMatchesDebugLevel =
+      everythingShouldBeLogged ||
+      /**
+       * If the debug level is `foo*`, that means we match any prefix that
+       * starts with `foo`. If the level is `foo`, we match only the prefix
+       * `foo`.
+       */
+      (debugLevel.endsWith('*')
+        ? prefix.startsWith(debugLevel)
+        : prefix === debugLevel);
+
+    if (!prefixMatchesDebugLevel) return;
+
+    // eslint-disable-next-line no-console
+    console.log(`${prefix}:`, ...logArgs);
+  };
 };
