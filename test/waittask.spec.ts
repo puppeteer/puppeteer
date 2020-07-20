@@ -352,6 +352,23 @@ describe('waittask specs', function () {
     });
   });
 
+  describe('Page.waitForTimeout', () => {
+    it('waits for the given timeout before resolving', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      const startTime = Date.now();
+      await page.waitForTimeout(1000);
+      const endTime = Date.now();
+      /* In a perfect world endTime - startTime would be exactly 1000 but we
+       * expect some fluctuations and for it to be off by a little bit. So to
+       * avoid a flaky test we'll make sure it waited for roughly 1 second by
+       * ensuring 900 < endTime - startTime < 1100
+       */
+      expect(endTime - startTime).toBeGreaterThan(900);
+      expect(endTime - startTime).toBeLessThan(1100);
+    });
+  });
+
   describe('Frame.waitForTimeout', () => {
     it('waits for the given timeout before resolving', async () => {
       const { page, server } = getTestState();
