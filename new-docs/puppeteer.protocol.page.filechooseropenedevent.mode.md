@@ -4,7 +4,7 @@
 
 ## Protocol.Page.FileChooserOpenedEvent.mode property
 
-Input mode.
+Input mode. (FileChooserOpenedEventMode enum)
 
 <b>Signature:</b>
 

@@ -4,7 +4,7 @@
 
 ## Protocol.Debugger.SetPauseOnExceptionsRequest.state property
 
-Pause on exceptions mode.
+Pause on exceptions mode. (SetPauseOnExceptionsRequestState enum)
 
 <b>Signature:</b>
 

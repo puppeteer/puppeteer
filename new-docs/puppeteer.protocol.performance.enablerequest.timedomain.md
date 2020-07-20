@@ -4,7 +4,7 @@
 
 ## Protocol.Performance.EnableRequest.timeDomain property
 
-Time domain to use for collecting and reporting duration metrics.
+Time domain to use for collecting and reporting duration metrics. (EnableRequestTimeDomain enum)
 
 <b>Signature:</b>
 

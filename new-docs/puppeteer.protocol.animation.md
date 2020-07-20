@@ -10,6 +10,12 @@
 export namespace Animation 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [AnimationType](./puppeteer.protocol.animation.animationtype.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |

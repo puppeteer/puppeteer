@@ -15,4 +15,6 @@ export interface CreateBrowserContextRequest
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [disposeOnDetach](./puppeteer.protocol.target.createbrowsercontextrequest.disposeondetach.md) | boolean | If specified, disposes this context when debugging session disconnects. |
+|  [proxyBypassList](./puppeteer.protocol.target.createbrowsercontextrequest.proxybypasslist.md) | string | Proxy bypass list, similar to the one passed to --proxy-bypass-list |
+|  [proxyServer](./puppeteer.protocol.target.createbrowsercontextrequest.proxyserver.md) | string | Proxy server, similar to the one passed to --proxy-server |
 

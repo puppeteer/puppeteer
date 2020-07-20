@@ -4,7 +4,7 @@
 
 ## Protocol.Log.ViolationSetting.name property
 
-Violation type.
+Violation type. (ViolationSettingName enum)
 
 <b>Signature:</b>
 

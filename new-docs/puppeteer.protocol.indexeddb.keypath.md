@@ -18,5 +18,5 @@ export interface KeyPath
 |  --- | --- | --- |
 |  [array](./puppeteer.protocol.indexeddb.keypath.array.md) | string\[\] | Array value. |
 |  [string](./puppeteer.protocol.indexeddb.keypath.string.md) | string | String value. |
-|  [type](./puppeteer.protocol.indexeddb.keypath.type.md) | ('null' \| 'string' \| 'array') | Key path type. |
+|  [type](./puppeteer.protocol.indexeddb.keypath.type.md) | ('null' \| 'string' \| 'array') | Key path type. (KeyPathType enum) |
 

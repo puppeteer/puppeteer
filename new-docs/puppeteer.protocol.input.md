@@ -10,6 +10,16 @@
 export namespace Input 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [DispatchKeyEventRequestType](./puppeteer.protocol.input.dispatchkeyeventrequesttype.md) |  |
+|  [DispatchMouseEventRequestPointerType](./puppeteer.protocol.input.dispatchmouseeventrequestpointertype.md) |  |
+|  [DispatchMouseEventRequestType](./puppeteer.protocol.input.dispatchmouseeventrequesttype.md) |  |
+|  [DispatchTouchEventRequestType](./puppeteer.protocol.input.dispatchtoucheventrequesttype.md) |  |
+|  [EmulateTouchFromMouseEventRequestType](./puppeteer.protocol.input.emulatetouchfrommouseeventrequesttype.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |

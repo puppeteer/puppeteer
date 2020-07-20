@@ -4,7 +4,7 @@
 
 ## Protocol.Overlay.GetHighlightObjectForTestRequest.colorFormat property
 
-The color format to get config with (default: hex)
+The color format to get config with (default: hex).
 
 <b>Signature:</b>
 

@@ -4,7 +4,7 @@
 
 ## Protocol.Network.AuthChallengeResponse.response property
 
-The decision on what to do in response to the authorization challenge. Default means deferring to the default behavior of the net stack, which will likely either the Cancel authentication or display a popup dialog box.
+The decision on what to do in response to the authorization challenge. Default means deferring to the default behavior of the net stack, which will likely either the Cancel authentication or display a popup dialog box. (AuthChallengeResponseResponse enum)
 
 <b>Signature:</b>
 

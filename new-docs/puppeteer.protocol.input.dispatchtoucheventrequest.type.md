@@ -4,7 +4,7 @@
 
 ## Protocol.Input.DispatchTouchEventRequest.type property
 
-Type of the touch event. TouchEnd and TouchCancel must not contain any touch points, while TouchStart and TouchMove must contains at least one.
+Type of the touch event. TouchEnd and TouchCancel must not contain any touch points, while TouchStart and TouchMove must contains at least one. (DispatchTouchEventRequestType enum)
 
 <b>Signature:</b>
 

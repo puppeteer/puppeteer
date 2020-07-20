@@ -12,6 +12,14 @@ Provides access to log entries.
 export namespace Log 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [LogEntryLevel](./puppeteer.protocol.log.logentrylevel.md) |  |
+|  [LogEntrySource](./puppeteer.protocol.log.logentrysource.md) |  |
+|  [ViolationSettingName](./puppeteer.protocol.log.violationsettingname.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |

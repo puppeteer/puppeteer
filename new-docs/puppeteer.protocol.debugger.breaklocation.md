@@ -17,5 +17,5 @@ export interface BreakLocation
 |  [columnNumber](./puppeteer.protocol.debugger.breaklocation.columnnumber.md) | [integer](./puppeteer.protocol.integer.md) | Column number in the script (0-based). |
 |  [lineNumber](./puppeteer.protocol.debugger.breaklocation.linenumber.md) | [integer](./puppeteer.protocol.integer.md) | Line number in the script (0-based). |
 |  [scriptId](./puppeteer.protocol.debugger.breaklocation.scriptid.md) | [Runtime.ScriptId](./puppeteer.protocol.runtime.scriptid.md) | Script identifier as reported in the <code>Debugger.scriptParsed</code>. |
-|  [type](./puppeteer.protocol.debugger.breaklocation.type.md) | ('debuggerStatement' \| 'call' \| 'return') |  |
+|  [type](./puppeteer.protocol.debugger.breaklocation.type.md) | ('debuggerStatement' \| 'call' \| 'return') | (BreakLocationType enum) |
 

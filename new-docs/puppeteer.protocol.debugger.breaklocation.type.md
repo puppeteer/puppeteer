@@ -4,6 +4,8 @@
 
 ## Protocol.Debugger.BreakLocation.type property
 
+(BreakLocationType enum)
+
 <b>Signature:</b>
 
 ```typescript

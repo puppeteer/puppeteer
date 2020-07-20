@@ -22,6 +22,7 @@ export interface CSSStyleSheetHeader
 |  [frameId](./puppeteer.protocol.css.cssstylesheetheader.frameid.md) | [Page.FrameId](./puppeteer.protocol.page.frameid.md) | Owner frame identifier. |
 |  [hasSourceURL](./puppeteer.protocol.css.cssstylesheetheader.hassourceurl.md) | boolean | Whether the sourceURL field value comes from the sourceURL comment. |
 |  [isInline](./puppeteer.protocol.css.cssstylesheetheader.isinline.md) | boolean | Whether this stylesheet is created for STYLE tag by parser. This flag is not set for document.written STYLE tags. |
+|  [isMutable](./puppeteer.protocol.css.cssstylesheetheader.ismutable.md) | boolean | Whether this stylesheet is mutable. Inline stylesheets become mutable after they have been modified via CSSOM API. <link> element's stylesheets are never mutable. Constructed stylesheets (new CSSStyleSheet()) are mutable immediately after creation. |
 |  [length](./puppeteer.protocol.css.cssstylesheetheader.length.md) | number | Size of the content (in characters). |
 |  [origin](./puppeteer.protocol.css.cssstylesheetheader.origin.md) | [StyleSheetOrigin](./puppeteer.protocol.css.stylesheetorigin.md) | Stylesheet origin. |
 |  [ownerNode](./puppeteer.protocol.css.cssstylesheetheader.ownernode.md) | [DOM.BackendNodeId](./puppeteer.protocol.dom.backendnodeid.md) | The backend id for the owner node of the stylesheet. |

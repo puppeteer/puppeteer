@@ -12,6 +12,12 @@ This domain provides experimental commands only supported in headless mode.
 export namespace HeadlessExperimental 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [ScreenshotParamsFormat](./puppeteer.protocol.headlessexperimental.screenshotparamsformat.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |

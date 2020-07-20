@@ -4,7 +4,7 @@
 
 ## Protocol.Page.SetDownloadBehaviorRequest.behavior property
 
-Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny).
+Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny). (SetDownloadBehaviorRequestBehavior enum)
 
 <b>Signature:</b>
 

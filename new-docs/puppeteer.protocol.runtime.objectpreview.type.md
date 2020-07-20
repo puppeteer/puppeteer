@@ -4,7 +4,7 @@
 
 ## Protocol.Runtime.ObjectPreview.type property
 
-Object type.
+Object type. (ObjectPreviewType enum)
 
 <b>Signature:</b>
 

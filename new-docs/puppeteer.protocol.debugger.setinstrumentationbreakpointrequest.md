@@ -14,5 +14,5 @@ export interface SetInstrumentationBreakpointRequest
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [instrumentation](./puppeteer.protocol.debugger.setinstrumentationbreakpointrequest.instrumentation.md) | ('beforeScriptExecution' \| 'beforeScriptWithSourceMapExecution') | Instrumentation name. |
+|  [instrumentation](./puppeteer.protocol.debugger.setinstrumentationbreakpointrequest.instrumentation.md) | ('beforeScriptExecution' \| 'beforeScriptWithSourceMapExecution') | Instrumentation name. (SetInstrumentationBreakpointRequestInstrumentation enum) |
 

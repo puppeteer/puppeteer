@@ -22,5 +22,5 @@ export interface PausedEvent
 |  [callFrames](./puppeteer.protocol.debugger.pausedevent.callframes.md) | [CallFrame](./puppeteer.protocol.debugger.callframe.md)<!-- -->\[\] | Call stack the virtual machine stopped on. |
 |  [data](./puppeteer.protocol.debugger.pausedevent.data.md) | any | Object containing break-specific auxiliary properties. |
 |  [hitBreakpoints](./puppeteer.protocol.debugger.pausedevent.hitbreakpoints.md) | string\[\] | Hit breakpoints IDs |
-|  [reason](./puppeteer.protocol.debugger.pausedevent.reason.md) | ('ambiguous' \| 'assert' \| 'debugCommand' \| 'DOM' \| 'EventListener' \| 'exception' \| 'instrumentation' \| 'OOM' \| 'other' \| 'promiseRejection' \| 'XHR') | Pause reason. |
+|  [reason](./puppeteer.protocol.debugger.pausedevent.reason.md) | ('ambiguous' \| 'assert' \| 'debugCommand' \| 'DOM' \| 'EventListener' \| 'exception' \| 'instrumentation' \| 'OOM' \| 'other' \| 'promiseRejection' \| 'XHR') | Pause reason. (PausedEventReason enum) |
 

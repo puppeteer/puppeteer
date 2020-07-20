@@ -4,7 +4,7 @@
 
 ## Protocol.Input.DispatchMouseEventRequest.type property
 
-Type of the mouse event.
+Type of the mouse event. (DispatchMouseEventRequestType enum)
 
 <b>Signature:</b>
 

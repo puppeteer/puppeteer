@@ -4,7 +4,7 @@
 
 ## Protocol.Tracing.TraceConfig.recordMode property
 
-Controls how the trace buffer stores data.
+Controls how the trace buffer stores data. (TraceConfigRecordMode enum)
 
 <b>Signature:</b>
 

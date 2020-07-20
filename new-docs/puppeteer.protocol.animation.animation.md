@@ -25,5 +25,5 @@ export interface Animation
 |  [playState](./puppeteer.protocol.animation.animation.playstate.md) | string | <code>Animation</code>'s play state. |
 |  [source](./puppeteer.protocol.animation.animation.source.md) | [AnimationEffect](./puppeteer.protocol.animation.animationeffect.md) | <code>Animation</code>'s source animation node. |
 |  [startTime](./puppeteer.protocol.animation.animation.starttime.md) | number | <code>Animation</code>'s start time. |
-|  [type](./puppeteer.protocol.animation.animation.type.md) | ('CSSTransition' \| 'CSSAnimation' \| 'WebAnimation') | Animation type of <code>Animation</code>. |
+|  [type](./puppeteer.protocol.animation.animation.type.md) | ('CSSTransition' \| 'CSSAnimation' \| 'WebAnimation') | Animation type of <code>Animation</code>. (AnimationType enum) |
 

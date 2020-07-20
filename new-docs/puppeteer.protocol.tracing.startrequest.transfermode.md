@@ -4,7 +4,7 @@
 
 ## Protocol.Tracing.StartRequest.transferMode property
 
-Whether to report trace events as series of dataCollected events or to save trace to a stream (defaults to `ReportEvents`<!-- -->).
+Whether to report trace events as series of dataCollected events or to save trace to a stream (defaults to `ReportEvents`<!-- -->). (StartRequestTransferMode enum)
 
 <b>Signature:</b>
 

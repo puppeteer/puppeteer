@@ -16,6 +16,6 @@ export interface ScreenshotParams
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [format](./puppeteer.protocol.headlessexperimental.screenshotparams.format.md) | ('jpeg' \| 'png') | Image compression format (defaults to png). |
+|  [format](./puppeteer.protocol.headlessexperimental.screenshotparams.format.md) | ('jpeg' \| 'png') | Image compression format (defaults to png). (ScreenshotParamsFormat enum) |
 |  [quality](./puppeteer.protocol.headlessexperimental.screenshotparams.quality.md) | [integer](./puppeteer.protocol.integer.md) | Compression quality from range \[0..100\] (jpeg only). |
 

@@ -20,6 +20,6 @@ export interface ObjectPreview
 |  [entries](./puppeteer.protocol.runtime.objectpreview.entries.md) | [EntryPreview](./puppeteer.protocol.runtime.entrypreview.md)<!-- -->\[\] | List of the entries. Specified for <code>map</code> and <code>set</code> subtype values only. |
 |  [overflow](./puppeteer.protocol.runtime.objectpreview.overflow.md) | boolean | True iff some of the properties or entries of the original object did not fit. |
 |  [properties](./puppeteer.protocol.runtime.objectpreview.properties.md) | [PropertyPreview](./puppeteer.protocol.runtime.propertypreview.md)<!-- -->\[\] | List of the properties. |
-|  [subtype](./puppeteer.protocol.runtime.objectpreview.subtype.md) | ('array' \| 'null' \| 'node' \| 'regexp' \| 'date' \| 'map' \| 'set' \| 'weakmap' \| 'weakset' \| 'iterator' \| 'generator' \| 'error') | Object subtype hint. Specified for <code>object</code> type values only. |
-|  [type](./puppeteer.protocol.runtime.objectpreview.type.md) | ('object' \| 'function' \| 'undefined' \| 'string' \| 'number' \| 'boolean' \| 'symbol' \| 'bigint') | Object type. |
+|  [subtype](./puppeteer.protocol.runtime.objectpreview.subtype.md) | ('array' \| 'null' \| 'node' \| 'regexp' \| 'date' \| 'map' \| 'set' \| 'weakmap' \| 'weakset' \| 'iterator' \| 'generator' \| 'error') | Object subtype hint. Specified for <code>object</code> type values only. (ObjectPreviewSubtype enum) |
+|  [type](./puppeteer.protocol.runtime.objectpreview.type.md) | ('object' \| 'function' \| 'undefined' \| 'string' \| 'number' \| 'boolean' \| 'symbol' \| 'bigint') | Object type. (ObjectPreviewType enum) |
 

@@ -4,7 +4,7 @@
 
 ## Protocol.Audits.GetEncodedResponseRequest.encoding property
 
-The encoding to use.
+The encoding to use. (GetEncodedResponseRequestEncoding enum)
 
 <b>Signature:</b>
 

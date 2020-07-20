@@ -14,6 +14,6 @@ export interface SetDownloadBehaviorRequest
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [behavior](./puppeteer.protocol.page.setdownloadbehaviorrequest.behavior.md) | ('deny' \| 'allow' \| 'default') | Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny). |
+|  [behavior](./puppeteer.protocol.page.setdownloadbehaviorrequest.behavior.md) | ('deny' \| 'allow' \| 'default') | Whether to allow all or deny all download requests, or use default Chrome behavior if available (otherwise deny). (SetDownloadBehaviorRequestBehavior enum) |
 |  [downloadPath](./puppeteer.protocol.page.setdownloadbehaviorrequest.downloadpath.md) | string | The default path to save downloaded files to. This is requred if behavior is set to 'allow' |
 

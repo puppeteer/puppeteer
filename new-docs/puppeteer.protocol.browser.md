@@ -12,6 +12,12 @@ The Browser domain defines methods and events for browser managing.
 export namespace Browser 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [SetDownloadBehaviorRequestBehavior](./puppeteer.protocol.browser.setdownloadbehaviorrequestbehavior.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |
