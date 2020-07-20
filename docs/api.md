@@ -501,7 +501,7 @@ The default flags that Chromium will be launched with.
 - returns: <[Object]>
 
 Returns a list of devices to be used with [`page.emulate(options)`](#pageemulateoptions). Actual list of
-devices can be found in [src/common/DeviceDescriptors.js](https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts).
+devices can be found in [`src/common/DeviceDescriptors.ts`](https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts).
 
 ```js
 const puppeteer = require('puppeteer');
