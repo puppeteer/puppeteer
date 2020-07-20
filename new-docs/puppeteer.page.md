@@ -138,6 +138,7 @@ page.off('request', logRequest);
 |  [waitForRequest(urlOrPredicate, options)](./puppeteer.page.waitforrequest.md) |  |  |
 |  [waitForResponse(urlOrPredicate, options)](./puppeteer.page.waitforresponse.md) |  |  |
 |  [waitForSelector(selector, options)](./puppeteer.page.waitforselector.md) |  |  |
+|  [waitForTimeout(milliseconds)](./puppeteer.page.waitfortimeout.md) |  | Causes your script to wait for the given number of milliseconds. |
 |  [waitForXPath(xpath, options)](./puppeteer.page.waitforxpath.md) |  |  |
 |  [workers()](./puppeteer.page.workers.md) |  |  |
 

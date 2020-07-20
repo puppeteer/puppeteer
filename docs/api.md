@@ -2256,7 +2256,6 @@ const puppeteer = require('puppeteer');
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  let currentURL;
   page.waitForTimeout(1000)
     .then(() => console.log('Waited a second!'));
 
@@ -3196,7 +3195,6 @@ const puppeteer = require('puppeteer');
 (async () => {
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
-  let currentURL;
   page.mainFrame()
     .waitForTimeout(1000)
     .then(() => console.log('Waited a second!'));

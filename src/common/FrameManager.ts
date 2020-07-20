@@ -1036,7 +1036,7 @@ export class Frame {
    * @param options - optional waiting parameters.
    * @param args - arguments to pass to `pageFunction`.
    *
-   * @deprecated don't use this method directly. Instead use the more explicit
+   * @deprecated Don't use this method directly. Instead use the more explicit
    * methods available: {@link Frame.waitForSelector},
    * {@link Frame.waitForXPath}, {@link Frame.waitForFunction} or
    * {@link Frame.waitForTimeout}.

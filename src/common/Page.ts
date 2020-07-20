@@ -1877,7 +1877,7 @@ export class Page extends EventEmitter {
    * @param options - optional waiting parameters.
    * @param args - arguments to pass to `pageFunction`.
    *
-   * @deprecated don't use this method directly. Instead use the more explicit
+   * @deprecated Don't use this method directly. Instead use the more explicit
    * methods available: {@link Page.waitForSelector},
    * {@link Page.waitForXPath}, {@link Page.waitForFunction} or
    * {@link Page.waitForTimeout}.
