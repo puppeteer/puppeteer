@@ -4,7 +4,7 @@
 
 ## Protocol.Console.ConsoleMessage.source property
 
-Message source.
+Message source. (ConsoleMessageSource enum)
 
 <b>Signature:</b>
 

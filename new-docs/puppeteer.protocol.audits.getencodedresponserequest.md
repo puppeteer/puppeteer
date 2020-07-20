@@ -14,7 +14,7 @@ export interface GetEncodedResponseRequest
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [encoding](./puppeteer.protocol.audits.getencodedresponserequest.encoding.md) | ('webp' \| 'jpeg' \| 'png') | The encoding to use. |
+|  [encoding](./puppeteer.protocol.audits.getencodedresponserequest.encoding.md) | ('webp' \| 'jpeg' \| 'png') | The encoding to use. (GetEncodedResponseRequestEncoding enum) |
 |  [quality](./puppeteer.protocol.audits.getencodedresponserequest.quality.md) | number | The quality of the encoding (0-1). (defaults to 1) |
 |  [requestId](./puppeteer.protocol.audits.getencodedresponserequest.requestid.md) | [Network.RequestId](./puppeteer.protocol.network.requestid.md) | Identifier of the network request to get content for. |
 |  [sizeOnly](./puppeteer.protocol.audits.getencodedresponserequest.sizeonly.md) | boolean | Whether to only return the size information (defaults to false). |

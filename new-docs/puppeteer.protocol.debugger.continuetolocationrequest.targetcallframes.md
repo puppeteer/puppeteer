@@ -4,6 +4,8 @@
 
 ## Protocol.Debugger.ContinueToLocationRequest.targetCallFrames property
 
+(ContinueToLocationRequestTargetCallFrames enum)
+
 <b>Signature:</b>
 
 ```typescript

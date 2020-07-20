@@ -12,6 +12,20 @@ Actions and events related to the inspected page belong to the page domain.
 export namespace Page 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [CaptureScreenshotRequestFormat](./puppeteer.protocol.page.capturescreenshotrequestformat.md) |  |
+|  [CaptureSnapshotRequestFormat](./puppeteer.protocol.page.capturesnapshotrequestformat.md) |  |
+|  [DownloadProgressEventState](./puppeteer.protocol.page.downloadprogresseventstate.md) |  |
+|  [FileChooserOpenedEventMode](./puppeteer.protocol.page.filechooseropenedeventmode.md) |  |
+|  [PrintToPDFRequestTransferMode](./puppeteer.protocol.page.printtopdfrequesttransfermode.md) |  |
+|  [SetDownloadBehaviorRequestBehavior](./puppeteer.protocol.page.setdownloadbehaviorrequestbehavior.md) |  |
+|  [SetTouchEmulationEnabledRequestConfiguration](./puppeteer.protocol.page.settouchemulationenabledrequestconfiguration.md) |  |
+|  [SetWebLifecycleStateRequestState](./puppeteer.protocol.page.setweblifecyclestaterequeststate.md) |  |
+|  [StartScreencastRequestFormat](./puppeteer.protocol.page.startscreencastrequestformat.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |

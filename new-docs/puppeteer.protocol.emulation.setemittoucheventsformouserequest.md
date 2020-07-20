@@ -14,6 +14,6 @@ export interface SetEmitTouchEventsForMouseRequest
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [configuration](./puppeteer.protocol.emulation.setemittoucheventsformouserequest.configuration.md) | ('mobile' \| 'desktop') | Touch/gesture events configuration. Default: current platform. |
+|  [configuration](./puppeteer.protocol.emulation.setemittoucheventsformouserequest.configuration.md) | ('mobile' \| 'desktop') | Touch/gesture events configuration. Default: current platform. (SetEmitTouchEventsForMouseRequestConfiguration enum) |
 |  [enabled](./puppeteer.protocol.emulation.setemittoucheventsformouserequest.enabled.md) | boolean | Whether touch emulation based on mouse input should be enabled. |
 

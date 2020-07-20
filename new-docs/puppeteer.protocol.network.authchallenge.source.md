@@ -4,7 +4,7 @@
 
 ## Protocol.Network.AuthChallenge.source property
 
-Source of the authentication challenge.
+Source of the authentication challenge. (AuthChallengeSource enum)
 
 <b>Signature:</b>
 

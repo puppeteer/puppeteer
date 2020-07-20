@@ -4,7 +4,7 @@
 
 ## Protocol.Runtime.RemoteObject.type property
 
-Object type.
+Object type. (RemoteObjectType enum)
 
 <b>Signature:</b>
 

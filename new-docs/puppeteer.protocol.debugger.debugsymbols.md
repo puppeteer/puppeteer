@@ -17,5 +17,5 @@ export interface DebugSymbols
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [externalURL](./puppeteer.protocol.debugger.debugsymbols.externalurl.md) | string | URL of the external symbol source. |
-|  [type](./puppeteer.protocol.debugger.debugsymbols.type.md) | ('None' \| 'SourceMap' \| 'EmbeddedDWARF' \| 'ExternalDWARF') | Type of the debug symbols. |
+|  [type](./puppeteer.protocol.debugger.debugsymbols.type.md) | ('None' \| 'SourceMap' \| 'EmbeddedDWARF' \| 'ExternalDWARF') | Type of the debug symbols. (DebugSymbolsType enum) |
 

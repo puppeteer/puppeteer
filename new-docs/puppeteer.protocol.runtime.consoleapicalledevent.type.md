@@ -4,7 +4,7 @@
 
 ## Protocol.Runtime.ConsoleAPICalledEvent.type property
 
-Type of the call.
+Type of the call. (ConsoleAPICalledEventType enum)
 
 <b>Signature:</b>
 

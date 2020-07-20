@@ -4,7 +4,7 @@
 
 ## Protocol.Input.DispatchMouseEventRequest.pointerType property
 
-Pointer type (default: "mouse").
+Pointer type (default: "mouse"). (DispatchMouseEventRequestPointerType enum)
 
 <b>Signature:</b>
 

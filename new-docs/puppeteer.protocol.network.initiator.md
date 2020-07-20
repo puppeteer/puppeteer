@@ -18,6 +18,6 @@ export interface Initiator
 |  --- | --- | --- |
 |  [lineNumber](./puppeteer.protocol.network.initiator.linenumber.md) | number | Initiator line number, set for Parser type or for Script type (when script is importing module) (0-based). |
 |  [stack](./puppeteer.protocol.network.initiator.stack.md) | [Runtime.StackTrace](./puppeteer.protocol.runtime.stacktrace.md) | Initiator JavaScript stack trace, set for Script only. |
-|  [type](./puppeteer.protocol.network.initiator.type.md) | ('parser' \| 'script' \| 'preload' \| 'SignedExchange' \| 'other') | Type of this initiator. |
+|  [type](./puppeteer.protocol.network.initiator.type.md) | ('parser' \| 'script' \| 'preload' \| 'SignedExchange' \| 'other') | Type of this initiator. (InitiatorType enum) |
 |  [url](./puppeteer.protocol.network.initiator.url.md) | string | Initiator URL, set for Parser type or for Script type (when script is importing module) or for SignedExchange type. |
 

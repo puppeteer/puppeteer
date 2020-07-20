@@ -12,6 +12,18 @@ Debugger domain exposes JavaScript debugging capabilities. It allows setting and
 export namespace Debugger 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [BreakLocationType](./puppeteer.protocol.debugger.breaklocationtype.md) |  |
+|  [ContinueToLocationRequestTargetCallFrames](./puppeteer.protocol.debugger.continuetolocationrequesttargetcallframes.md) |  |
+|  [DebugSymbolsType](./puppeteer.protocol.debugger.debugsymbolstype.md) |  |
+|  [PausedEventReason](./puppeteer.protocol.debugger.pausedeventreason.md) |  |
+|  [ScopeType](./puppeteer.protocol.debugger.scopetype.md) |  |
+|  [SetInstrumentationBreakpointRequestInstrumentation](./puppeteer.protocol.debugger.setinstrumentationbreakpointrequestinstrumentation.md) |  |
+|  [SetPauseOnExceptionsRequestState](./puppeteer.protocol.debugger.setpauseonexceptionsrequeststate.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |

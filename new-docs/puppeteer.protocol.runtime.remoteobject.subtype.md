@@ -4,10 +4,10 @@
 
 ## Protocol.Runtime.RemoteObject.subtype property
 
-Object subtype hint. Specified for `object` or `wasm` type values only.
+Object subtype hint. Specified for `object` or `wasm` type values only. (RemoteObjectSubtype enum)
 
 <b>Signature:</b>
 
 ```typescript
-subtype?: ('array' | 'null' | 'node' | 'regexp' | 'date' | 'map' | 'set' | 'weakmap' | 'weakset' | 'iterator' | 'generator' | 'error' | 'proxy' | 'promise' | 'typedarray' | 'arraybuffer' | 'dataview' | 'i32' | 'i64' | 'f32' | 'f64' | 'v128' | 'anyref');
+subtype?: ('array' | 'null' | 'node' | 'regexp' | 'date' | 'map' | 'set' | 'weakmap' | 'weakset' | 'iterator' | 'generator' | 'error' | 'proxy' | 'promise' | 'typedarray' | 'arraybuffer' | 'dataview' | 'i32' | 'i64' | 'f32' | 'f64' | 'v128' | 'externref');
 ```

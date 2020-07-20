@@ -10,6 +10,12 @@
 export namespace LayerTree 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [ScrollRectType](./puppeteer.protocol.layertree.scrollrecttype.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |

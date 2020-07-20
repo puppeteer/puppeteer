@@ -4,7 +4,7 @@
 
 ## Protocol.Network.Request.referrerPolicy property
 
-The referrer policy of the request, as defined in https://www.w3.org/TR/referrer-policy/
+The referrer policy of the request, as defined in https://www.w3.org/TR/referrer-policy/ (RequestReferrerPolicy enum)
 
 <b>Signature:</b>
 

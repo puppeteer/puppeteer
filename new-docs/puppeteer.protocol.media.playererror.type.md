@@ -4,6 +4,8 @@
 
 ## Protocol.Media.PlayerError.type property
 
+(PlayerErrorType enum)
+
 <b>Signature:</b>
 
 ```typescript

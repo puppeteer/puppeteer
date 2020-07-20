@@ -4,7 +4,7 @@
 
 ## Protocol.HeadlessExperimental.ScreenshotParams.format property
 
-Image compression format (defaults to png).
+Image compression format (defaults to png). (ScreenshotParamsFormat enum)
 
 <b>Signature:</b>
 

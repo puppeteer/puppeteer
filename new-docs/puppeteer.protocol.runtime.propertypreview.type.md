@@ -4,7 +4,7 @@
 
 ## Protocol.Runtime.PropertyPreview.type property
 
-Object type. Accessor means that the property itself is an accessor property.
+Object type. Accessor means that the property itself is an accessor property. (PropertyPreviewType enum)
 
 <b>Signature:</b>
 

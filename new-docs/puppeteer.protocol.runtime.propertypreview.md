@@ -15,8 +15,8 @@ export interface PropertyPreview
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [name](./puppeteer.protocol.runtime.propertypreview.name.md) | string | Property name. |
-|  [subtype](./puppeteer.protocol.runtime.propertypreview.subtype.md) | ('array' \| 'null' \| 'node' \| 'regexp' \| 'date' \| 'map' \| 'set' \| 'weakmap' \| 'weakset' \| 'iterator' \| 'generator' \| 'error') | Object subtype hint. Specified for <code>object</code> type values only. |
-|  [type](./puppeteer.protocol.runtime.propertypreview.type.md) | ('object' \| 'function' \| 'undefined' \| 'string' \| 'number' \| 'boolean' \| 'symbol' \| 'accessor' \| 'bigint') | Object type. Accessor means that the property itself is an accessor property. |
+|  [subtype](./puppeteer.protocol.runtime.propertypreview.subtype.md) | ('array' \| 'null' \| 'node' \| 'regexp' \| 'date' \| 'map' \| 'set' \| 'weakmap' \| 'weakset' \| 'iterator' \| 'generator' \| 'error') | Object subtype hint. Specified for <code>object</code> type values only. (PropertyPreviewSubtype enum) |
+|  [type](./puppeteer.protocol.runtime.propertypreview.type.md) | ('object' \| 'function' \| 'undefined' \| 'string' \| 'number' \| 'boolean' \| 'symbol' \| 'accessor' \| 'bigint') | Object type. Accessor means that the property itself is an accessor property. (PropertyPreviewType enum) |
 |  [value](./puppeteer.protocol.runtime.propertypreview.value.md) | string | User-friendly property value string. |
 |  [valuePreview](./puppeteer.protocol.runtime.propertypreview.valuepreview.md) | [ObjectPreview](./puppeteer.protocol.runtime.objectpreview.md) | Nested value preview. |
 

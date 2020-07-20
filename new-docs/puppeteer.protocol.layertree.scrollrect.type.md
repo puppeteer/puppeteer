@@ -4,7 +4,7 @@
 
 ## Protocol.LayerTree.ScrollRect.type property
 
-Reason for rectangle to force scrolling on the main thread
+Reason for rectangle to force scrolling on the main thread (ScrollRectType enum)
 
 <b>Signature:</b>
 

@@ -14,8 +14,9 @@ export interface GetHighlightObjectForTestRequest
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [colorFormat](./puppeteer.protocol.overlay.gethighlightobjectfortestrequest.colorformat.md) | [ColorFormat](./puppeteer.protocol.overlay.colorformat.md) | The color format to get config with (default: hex) |
+|  [colorFormat](./puppeteer.protocol.overlay.gethighlightobjectfortestrequest.colorformat.md) | [ColorFormat](./puppeteer.protocol.overlay.colorformat.md) | The color format to get config with (default: hex). |
 |  [includeDistance](./puppeteer.protocol.overlay.gethighlightobjectfortestrequest.includedistance.md) | boolean | Whether to include distance info. |
 |  [includeStyle](./puppeteer.protocol.overlay.gethighlightobjectfortestrequest.includestyle.md) | boolean | Whether to include style info. |
 |  [nodeId](./puppeteer.protocol.overlay.gethighlightobjectfortestrequest.nodeid.md) | [DOM.NodeId](./puppeteer.protocol.dom.nodeid.md) | Id of the node to get highlight object for. |
+|  [showAccessibilityInfo](./puppeteer.protocol.overlay.gethighlightobjectfortestrequest.showaccessibilityinfo.md) | boolean | Whether to show accessibility info (default: true). |
 

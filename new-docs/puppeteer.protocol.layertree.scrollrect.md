@@ -17,5 +17,5 @@ export interface ScrollRect
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [rect](./puppeteer.protocol.layertree.scrollrect.rect.md) | [DOM.Rect](./puppeteer.protocol.dom.rect.md) | Rectangle itself. |
-|  [type](./puppeteer.protocol.layertree.scrollrect.type.md) | ('RepaintsOnScroll' \| 'TouchEventHandler' \| 'WheelEventHandler') | Reason for rectangle to force scrolling on the main thread |
+|  [type](./puppeteer.protocol.layertree.scrollrect.type.md) | ('RepaintsOnScroll' \| 'TouchEventHandler' \| 'WheelEventHandler') | Reason for rectangle to force scrolling on the main thread (ScrollRectType enum) |
 

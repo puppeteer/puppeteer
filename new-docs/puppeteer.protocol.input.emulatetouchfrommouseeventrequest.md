@@ -20,7 +20,7 @@ export interface EmulateTouchFromMouseEventRequest
 |  [deltaY](./puppeteer.protocol.input.emulatetouchfrommouseeventrequest.deltay.md) | number | Y delta in DIP for mouse wheel event (default: 0). |
 |  [modifiers](./puppeteer.protocol.input.emulatetouchfrommouseeventrequest.modifiers.md) | [integer](./puppeteer.protocol.integer.md) | Bit field representing pressed modifier keys. Alt=1, Ctrl=2, Meta/Command=4, Shift=8 (default: 0). |
 |  [timestamp](./puppeteer.protocol.input.emulatetouchfrommouseeventrequest.timestamp.md) | [TimeSinceEpoch](./puppeteer.protocol.input.timesinceepoch.md) | Time at which the event occurred (default: current time). |
-|  [type](./puppeteer.protocol.input.emulatetouchfrommouseeventrequest.type.md) | ('mousePressed' \| 'mouseReleased' \| 'mouseMoved' \| 'mouseWheel') | Type of the mouse event. |
+|  [type](./puppeteer.protocol.input.emulatetouchfrommouseeventrequest.type.md) | ('mousePressed' \| 'mouseReleased' \| 'mouseMoved' \| 'mouseWheel') | Type of the mouse event. (EmulateTouchFromMouseEventRequestType enum) |
 |  [x](./puppeteer.protocol.input.emulatetouchfrommouseeventrequest.x.md) | [integer](./puppeteer.protocol.integer.md) | X coordinate of the mouse pointer in DIP. |
 |  [y](./puppeteer.protocol.input.emulatetouchfrommouseeventrequest.y.md) | [integer](./puppeteer.protocol.integer.md) | Y coordinate of the mouse pointer in DIP. |
 

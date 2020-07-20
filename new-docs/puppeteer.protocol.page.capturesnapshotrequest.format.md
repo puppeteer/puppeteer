@@ -4,7 +4,7 @@
 
 ## Protocol.Page.CaptureSnapshotRequest.format property
 
-Format (defaults to mhtml).
+Format (defaults to mhtml). (CaptureSnapshotRequestFormat enum)
 
 <b>Signature:</b>
 

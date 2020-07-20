@@ -10,6 +10,13 @@
 export namespace IndexedDB 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [KeyPathType](./puppeteer.protocol.indexeddb.keypathtype.md) |  |
+|  [KeyType](./puppeteer.protocol.indexeddb.keytype.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |

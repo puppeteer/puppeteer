@@ -14,5 +14,5 @@ export interface SetEmulatedVisionDeficiencyRequest
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [type](./puppeteer.protocol.emulation.setemulatedvisiondeficiencyrequest.type.md) | ('none' \| 'achromatopsia' \| 'blurredVision' \| 'deuteranopia' \| 'protanopia' \| 'tritanopia') | Vision deficiency to emulate. |
+|  [type](./puppeteer.protocol.emulation.setemulatedvisiondeficiencyrequest.type.md) | ('none' \| 'achromatopsia' \| 'blurredVision' \| 'deuteranopia' \| 'protanopia' \| 'tritanopia') | Vision deficiency to emulate. (SetEmulatedVisionDeficiencyRequestType enum) |
 

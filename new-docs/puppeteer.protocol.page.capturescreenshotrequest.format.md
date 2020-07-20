@@ -4,7 +4,7 @@
 
 ## Protocol.Page.CaptureScreenshotRequest.format property
 
-Image compression format (defaults to png).
+Image compression format (defaults to png). (CaptureScreenshotRequestFormat enum)
 
 <b>Signature:</b>
 

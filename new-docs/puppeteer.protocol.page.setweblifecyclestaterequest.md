@@ -14,5 +14,5 @@ export interface SetWebLifecycleStateRequest
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [state](./puppeteer.protocol.page.setweblifecyclestaterequest.state.md) | ('frozen' \| 'active') | Target lifecycle state |
+|  [state](./puppeteer.protocol.page.setweblifecyclestaterequest.state.md) | ('frozen' \| 'active') | Target lifecycle state (SetWebLifecycleStateRequestState enum) |
 

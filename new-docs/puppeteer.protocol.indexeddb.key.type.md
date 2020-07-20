@@ -4,7 +4,7 @@
 
 ## Protocol.IndexedDB.Key.type property
 
-Key type.
+Key type. (KeyType enum)
 
 <b>Signature:</b>
 

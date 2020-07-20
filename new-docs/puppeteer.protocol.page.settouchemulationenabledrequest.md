@@ -14,6 +14,6 @@ export interface SetTouchEmulationEnabledRequest
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [configuration](./puppeteer.protocol.page.settouchemulationenabledrequest.configuration.md) | ('mobile' \| 'desktop') | Touch/gesture events configuration. Default: current platform. |
+|  [configuration](./puppeteer.protocol.page.settouchemulationenabledrequest.configuration.md) | ('mobile' \| 'desktop') | Touch/gesture events configuration. Default: current platform. (SetTouchEmulationEnabledRequestConfiguration enum) |
 |  [enabled](./puppeteer.protocol.page.settouchemulationenabledrequest.enabled.md) | boolean | Whether the touch event emulation should be enabled. |
 

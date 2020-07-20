@@ -4,7 +4,7 @@
 
 ## Protocol.Console.ConsoleMessage.level property
 
-Message severity.
+Message severity. (ConsoleMessageLevel enum)
 
 <b>Signature:</b>
 

@@ -4,7 +4,7 @@
 
 ## Protocol.Log.LogEntry.source property
 
-Log entry source.
+Log entry source. (LogEntrySource enum)
 
 <b>Signature:</b>
 

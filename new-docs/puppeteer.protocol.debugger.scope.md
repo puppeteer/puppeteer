@@ -20,5 +20,5 @@ export interface Scope
 |  [name](./puppeteer.protocol.debugger.scope.name.md) | string |  |
 |  [object](./puppeteer.protocol.debugger.scope.object.md) | [Runtime.RemoteObject](./puppeteer.protocol.runtime.remoteobject.md) | Object representing the scope. For <code>global</code> and <code>with</code> scopes it represents the actual object; for the rest of the scopes, it is artificial transient object enumerating scope variables as its properties. |
 |  [startLocation](./puppeteer.protocol.debugger.scope.startlocation.md) | [Location](./puppeteer.protocol.debugger.location.md) | Location in the source code where scope starts |
-|  [type](./puppeteer.protocol.debugger.scope.type.md) | ('global' \| 'local' \| 'with' \| 'closure' \| 'catch' \| 'block' \| 'script' \| 'eval' \| 'module' \| 'wasm-expression-stack') | Scope type. |
+|  [type](./puppeteer.protocol.debugger.scope.type.md) | ('global' \| 'local' \| 'with' \| 'closure' \| 'catch' \| 'block' \| 'script' \| 'eval' \| 'module' \| 'wasm-expression-stack') | Scope type. (ScopeType enum) |
 

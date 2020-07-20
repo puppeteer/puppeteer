@@ -4,7 +4,7 @@
 
 ## Protocol.Log.LogEntry.level property
 
-Log entry severity.
+Log entry severity. (LogEntryLevel enum)
 
 <b>Signature:</b>
 

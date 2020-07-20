@@ -9,5 +9,5 @@ A unique identifier for the type of issue. Each type may use one of the optional
 <b>Signature:</b>
 
 ```typescript
-export type InspectorIssueCode = ('SameSiteCookieIssue' | 'MixedContentIssue');
+export type InspectorIssueCode = ('SameSiteCookieIssue' | 'MixedContentIssue' | 'BlockedByResponseIssue' | 'HeavyAdIssue');
 ```

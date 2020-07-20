@@ -4,7 +4,7 @@
 
 ## Protocol.Animation.Animation.type property
 
-Animation type of `Animation`<!-- -->.
+Animation type of `Animation`<!-- -->. (AnimationType enum)
 
 <b>Signature:</b>
 

@@ -10,6 +10,13 @@
 export namespace Tracing 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [StartRequestTransferMode](./puppeteer.protocol.tracing.startrequesttransfermode.md) |  |
+|  [TraceConfigRecordMode](./puppeteer.protocol.tracing.traceconfigrecordmode.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |

@@ -23,7 +23,7 @@ export interface Request
 |  [method](./puppeteer.protocol.network.request.method.md) | string | HTTP request method. |
 |  [mixedContentType](./puppeteer.protocol.network.request.mixedcontenttype.md) | [Security.MixedContentType](./puppeteer.protocol.security.mixedcontenttype.md) | The mixed content type of the request. |
 |  [postData](./puppeteer.protocol.network.request.postdata.md) | string | HTTP POST request data. |
-|  [referrerPolicy](./puppeteer.protocol.network.request.referrerpolicy.md) | ('unsafe-url' \| 'no-referrer-when-downgrade' \| 'no-referrer' \| 'origin' \| 'origin-when-cross-origin' \| 'same-origin' \| 'strict-origin' \| 'strict-origin-when-cross-origin') | The referrer policy of the request, as defined in https://www.w3.org/TR/referrer-policy/ |
+|  [referrerPolicy](./puppeteer.protocol.network.request.referrerpolicy.md) | ('unsafe-url' \| 'no-referrer-when-downgrade' \| 'no-referrer' \| 'origin' \| 'origin-when-cross-origin' \| 'same-origin' \| 'strict-origin' \| 'strict-origin-when-cross-origin') | The referrer policy of the request, as defined in https://www.w3.org/TR/referrer-policy/ (RequestReferrerPolicy enum) |
 |  [url](./puppeteer.protocol.network.request.url.md) | string | Request URL (without fragment). |
 |  [urlFragment](./puppeteer.protocol.network.request.urlfragment.md) | string | Fragment of the requested URL starting with hash, if present. |
 

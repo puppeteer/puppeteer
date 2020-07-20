@@ -4,7 +4,7 @@
 
 ## Protocol.Emulation.ScreenOrientation.type property
 
-Orientation type.
+Orientation type. (ScreenOrientationType enum)
 
 <b>Signature:</b>
 

@@ -12,6 +12,13 @@ This domain allows detailed inspection of media elements
 export namespace Media 
 ```
 
+## Enumerations
+
+|  Enumeration | Description |
+|  --- | --- |
+|  [PlayerErrorType](./puppeteer.protocol.media.playererrortype.md) |  |
+|  [PlayerMessageLevel](./puppeteer.protocol.media.playermessagelevel.md) |  |
+
 ## Interfaces
 
 |  Interface | Description |

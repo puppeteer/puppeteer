@@ -15,7 +15,7 @@ export interface CaptureScreenshotRequest
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [clip](./puppeteer.protocol.page.capturescreenshotrequest.clip.md) | [Viewport](./puppeteer.protocol.page.viewport.md) | Capture the screenshot of a given region only. |
-|  [format](./puppeteer.protocol.page.capturescreenshotrequest.format.md) | ('jpeg' \| 'png') | Image compression format (defaults to png). |
+|  [format](./puppeteer.protocol.page.capturescreenshotrequest.format.md) | ('jpeg' \| 'png') | Image compression format (defaults to png). (CaptureScreenshotRequestFormat enum) |
 |  [fromSurface](./puppeteer.protocol.page.capturescreenshotrequest.fromsurface.md) | boolean | Capture the screenshot from the surface, rather than the view. Defaults to true. |
 |  [quality](./puppeteer.protocol.page.capturescreenshotrequest.quality.md) | [integer](./puppeteer.protocol.integer.md) | Compression quality from range \[0..100\] (jpeg only). |
 

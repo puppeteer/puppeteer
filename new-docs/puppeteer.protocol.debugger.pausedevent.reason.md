@@ -4,7 +4,7 @@
 
 ## Protocol.Debugger.PausedEvent.reason property
 
-Pause reason.
+Pause reason. (PausedEventReason enum)
 
 <b>Signature:</b>
 

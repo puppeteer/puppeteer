@@ -25,4 +25,6 @@ export interface GridHighlightConfig
 |  [rowGapColor](./puppeteer.protocol.overlay.gridhighlightconfig.rowgapcolor.md) | [DOM.RGBA](./puppeteer.protocol.dom.rgba.md) | The row gap highlight fill color (default: transparent). |
 |  [rowHatchColor](./puppeteer.protocol.overlay.gridhighlightconfig.rowhatchcolor.md) | [DOM.RGBA](./puppeteer.protocol.dom.rgba.md) | The row gap hatching fill color (default: transparent). |
 |  [showGridExtensionLines](./puppeteer.protocol.overlay.gridhighlightconfig.showgridextensionlines.md) | boolean | Whether the extension lines from grid cells to the rulers should be shown (default: false). |
+|  [showNegativeLineNumbers](./puppeteer.protocol.overlay.gridhighlightconfig.shownegativelinenumbers.md) | boolean | Show Negative line number labels (default: false). |
+|  [showPositiveLineNumbers](./puppeteer.protocol.overlay.gridhighlightconfig.showpositivelinenumbers.md) | boolean | Show Positive line number labels (default: false). |
 

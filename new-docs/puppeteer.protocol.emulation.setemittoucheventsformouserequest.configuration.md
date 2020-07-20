@@ -4,7 +4,7 @@
 
 ## Protocol.Emulation.SetEmitTouchEventsForMouseRequest.configuration property
 
-Touch/gesture events configuration. Default: current platform.
+Touch/gesture events configuration. Default: current platform. (SetEmitTouchEventsForMouseRequestConfiguration enum)
 
 <b>Signature:</b>
 

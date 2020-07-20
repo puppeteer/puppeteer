@@ -20,5 +20,5 @@ export interface Key
 |  [date](./puppeteer.protocol.indexeddb.key.date.md) | number | Date value. |
 |  [number](./puppeteer.protocol.indexeddb.key.number.md) | number | Number value. |
 |  [string](./puppeteer.protocol.indexeddb.key.string.md) | string | String value. |
-|  [type](./puppeteer.protocol.indexeddb.key.type.md) | ('number' \| 'string' \| 'date' \| 'array') | Key type. |
+|  [type](./puppeteer.protocol.indexeddb.key.type.md) | ('number' \| 'string' \| 'date' \| 'array') | Key type. (KeyType enum) |
 
