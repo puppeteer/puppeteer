@@ -152,14 +152,6 @@ interface ScreenshotOptions {
   encoding?: string;
 }
 
-type VisionDeficiency =
-  | 'none'
-  | 'achromatopsia'
-  | 'blurredVision'
-  | 'deuteranopia'
-  | 'protanopia'
-  | 'tritanopia';
-
 /**
  * All the events that a page instance may emit.
  *
@@ -1451,8 +1443,39 @@ export class Page extends EventEmitter {
     }
   }
 
-  async emulateVisionDeficiency(type?: VisionDeficiency): Promise<void> {
-    const visionDeficiencies = new Set([
+  /**
+   * Simulates the given vision deficiency on the page.
+   *
+   * @example
+   * ```js
+   * const puppeteer = require('puppeteer');
+   *
+   * (async () => {
+   *   const browser = await puppeteer.launch();
+   *   const page = await browser.newPage();
+   *   await page.goto('https://v8.dev/blog/10-years');
+   *
+   *   await page.emulateVisionDeficiency('achromatopsia');
+   *   await page.screenshot({ path: 'achromatopsia.png' });
+   *
+   *   await page.emulateVisionDeficiency('deuteranopia');
+   *   await page.screenshot({ path: 'deuteranopia.png' });
+   *
+   *   await page.emulateVisionDeficiency('blurredVision');
+   *   await page.screenshot({ path: 'blurred-vision.png' });
+   *
+   *   await browser.close();
+   * })();
+   * ```
+   *
+   * @param type - the type of deficiency to simulate, or `'none'` to reset.
+   */
+  async emulateVisionDeficiency(
+    type?: Protocol.Emulation.SetEmulatedVisionDeficiencyRequest['type']
+  ): Promise<void> {
+    const visionDeficiencies = new Set<
+      Protocol.Emulation.SetEmulatedVisionDeficiencyRequest['type']
+    >([
       'none',
       'achromatopsia',
       'blurredVision',

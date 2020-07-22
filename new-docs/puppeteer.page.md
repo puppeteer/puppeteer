@@ -92,7 +92,7 @@ page.off('request', logRequest);
 |  [emulateMediaFeatures(features)](./puppeteer.page.emulatemediafeatures.md) |  |  |
 |  [emulateMediaType(type)](./puppeteer.page.emulatemediatype.md) |  |  |
 |  [emulateTimezone(timezoneId)](./puppeteer.page.emulatetimezone.md) |  |  |
-|  [emulateVisionDeficiency(type)](./puppeteer.page.emulatevisiondeficiency.md) |  |  |
+|  [emulateVisionDeficiency(type)](./puppeteer.page.emulatevisiondeficiency.md) |  | Simulates the given vision deficiency on the page. |
 |  [evaluate(pageFunction, args)](./puppeteer.page.evaluate.md) |  |  |
 |  [evaluateHandle(pageFunction, args)](./puppeteer.page.evaluatehandle.md) |  |  |
 |  [evaluateOnNewDocument(pageFunction, args)](./puppeteer.page.evaluateonnewdocument.md) |  |  |
