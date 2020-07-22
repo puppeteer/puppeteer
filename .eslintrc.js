@@ -125,6 +125,17 @@ module.exports = {
                     "default": "array-simple"
                 }]
             }
+        },
+        {
+            "files": ["test-browser/**/*.js"],
+            "parserOptions": {
+                "sourceType": "module"
+            },
+            "env": {
+                "es6": true,
+                "browser": true,
+                "es2020": true
+            },        
         }
     ]
 };
