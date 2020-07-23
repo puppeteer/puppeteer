@@ -118,4 +118,16 @@ describeChromeOnly('Tracing', function () {
     const trace = await page.tracing.stop();
     expect(trace.toString()).toContain('screenshot');
   });
+
+  it('should properly fail if readProtocolStream errors out', async () => {
+    await page.tracing.start({ path: __dirname });
+
+    let error: Error = null;
+    try {
+      await page.tracing.stop();
+    } catch (error_) {
+      error = error_;
+    }
+    expect(error).toBeDefined();
+  });
 });

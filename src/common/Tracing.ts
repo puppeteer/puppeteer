@@ -101,11 +101,15 @@ export class Tracing {
    */
   async stop(): Promise<Buffer> {
     let fulfill: (value: Buffer) => void;
-    const contentPromise = new Promise<Buffer>((x) => (fulfill = x));
+    let reject: (err: Error) => void;
+    const contentPromise = new Promise<Buffer>((x, y) => {
+      fulfill = x;
+      reject = y;
+    });
     this._client.once('Tracing.tracingComplete', (event) => {
       helper
         .readProtocolStream(this._client, event.stream, this._path)
-        .then(fulfill);
+        .then(fulfill, reject);
     });
     await this._client.send('Tracing.end');
     this._recording = false;
