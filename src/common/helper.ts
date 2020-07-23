@@ -211,7 +211,10 @@ async function readProtocolStream(
   if (path) file = await openAsync(path, 'w');
   const bufs = [];
   while (!eof) {
-    const response = await client.send('IO.read', { handle: handle, size: 102400 });
+    const response = await client.send('IO.read', { 
+      handle: handle, 
+      size: 102400 
+    });
     eof = response.eof;
     const buf = Buffer.from(
       response.data,
