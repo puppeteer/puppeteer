@@ -49,6 +49,7 @@
     "devtools-protocol": "0.0.781568",
     "extract-zip": "^2.0.0",
     "https-proxy-agent": "^4.0.0",
+    "socks-proxy-agent": "^5.0.0",
     "mime": "^2.0.3",
     "pkg-dir": "^4.2.0",
     "progress": "^2.0.1",
