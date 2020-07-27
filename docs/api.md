@@ -3511,11 +3511,11 @@ expect(await tweetHandle.evaluate(node => node.innerText)).toBe('10');
 
 This method passes this handle as the first argument to `pageFunction`.
 
-The only difference between `evaluateHandle.evaluate` and `evaluateHandle.evaluateHandle` is that `executionContext.evaluateHandle` returns in-page object (JSHandle).
+The only difference between `elementHandle.evaluate` and `elementHandle.evaluateHandle` is that `executionContext.evaluateHandle` returns in-page object (JSHandle).
 
 If the function returns an element, the returned handle is an [ElementHandle].
 
-If the function passed to the `evaluateHandle.evaluateHandle` returns a [Promise], then `evaluateHandle.evaluateHandle` would wait for the promise to resolve and return its value.
+If the function passed to the `elementHandle.evaluateHandle` returns a [Promise], then `elementHandle.evaluateHandle` would wait for the promise to resolve and return its value.
 
 See [Page.evaluateHandle](#pageevaluatehandlepagefunction-args) for more details.
 
