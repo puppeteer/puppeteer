@@ -83,7 +83,7 @@
     "eslint-plugin-unicorn": "^19.0.1",
     "esprima": "^4.0.0",
     "expect": "^25.2.7",
-    "jpeg-js": "^0.3.7",
+    "jpeg-js": "^0.4.1",
     "minimist": "^1.2.0",
     "mocha": "^8.0.1",
     "ncp": "^2.0.0",
