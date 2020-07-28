@@ -15,6 +15,7 @@
  */
 
 import utils from './utils.js';
+import sinon from 'sinon';
 import expect from 'expect';
 import {
   getTestState,
@@ -28,6 +29,12 @@ describe('waittask specs', function () {
   setupTestPageAndContextHooks();
 
   describe('Page.waitFor', function () {
+    /* This method is deprecated but we don't want the warnings showing up in
+     * tests. Until we remove this method we still want to ensure we don't break
+     * it.
+     */
+    beforeEach(() => sinon.stub(console, 'warn').callsFake(() => {}));
+
     it('should wait for selector', async () => {
       const { page, server } = getTestState();
 
@@ -95,6 +102,22 @@ describe('waittask specs', function () {
       const { page } = getTestState();
 
       await page.waitFor((arg1, arg2) => arg1 !== arg2, {}, 1, 2);
+    });
+
+    it('should log a deprecation warning', async () => {
+      const { page } = getTestState();
+
+      await page.waitFor(() => true);
+
+      const consoleWarnStub = console.warn as sinon.SinonSpy;
+
+      expect(consoleWarnStub.calledOnce).toBe(true);
+      expect(
+        consoleWarnStub.firstCall.calledWith(
+          'waitFor is deprecated and will be removed in a future release. See https://github.com/puppeteer/puppeteer/issues/6214 for details and how to migrate your code.'
+        )
+      ).toBe(true);
+      expect((console.warn as sinon.SinonSpy).calledOnce).toBe(true);
     });
   });
 
@@ -326,6 +349,41 @@ describe('waittask specs', function () {
       await page.goto(server.PREFIX + '/consolelog.html');
       await page.evaluate(() => (globalThis.__done = true));
       await watchdog;
+    });
+  });
+
+  describe('Page.waitForTimeout', () => {
+    it('waits for the given timeout before resolving', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      const startTime = Date.now();
+      await page.waitForTimeout(1000);
+      const endTime = Date.now();
+      /* In a perfect world endTime - startTime would be exactly 1000 but we
+       * expect some fluctuations and for it to be off by a little bit. So to
+       * avoid a flaky test we'll make sure it waited for roughly 1 second by
+       * ensuring 900 < endTime - startTime < 1100
+       */
+      expect(endTime - startTime).toBeGreaterThan(900);
+      expect(endTime - startTime).toBeLessThan(1100);
+    });
+  });
+
+  describe('Frame.waitForTimeout', () => {
+    it('waits for the given timeout before resolving', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      const frame = page.mainFrame();
+      const startTime = Date.now();
+      await frame.waitForTimeout(1000);
+      const endTime = Date.now();
+      /* In a perfect world endTime - startTime would be exactly 1000 but we
+       * expect some fluctuations and for it to be off by a little bit. So to
+       * avoid a flaky test we'll make sure it waited for roughly 1 second by
+       * ensuring 900 < endTime - startTime < 1100
+       */
+      expect(endTime - startTime).toBeGreaterThan(900);
+      expect(endTime - startTime).toBeLessThan(1100);
     });
   });
 

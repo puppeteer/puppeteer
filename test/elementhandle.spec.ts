@@ -15,6 +15,7 @@
  */
 
 import expect from 'expect';
+import sinon from 'sinon';
 import {
   getTestState,
   setupTestBrowserHooks,
@@ -388,7 +389,10 @@ describe('ElementHandle specs', function () {
 
       expect(element).toBeDefined();
     });
+
     it('should wait correctly with waitFor', async () => {
+      /* page.waitFor is deprecated so we silence the warning to avoid test noise */
+      sinon.stub(console, 'warn').callsFake(() => {});
       const { page, puppeteer } = getTestState();
       puppeteer.__experimental_registerCustomQueryHandler('getByClass', {
         queryOne: (element, selector) => element.querySelector(`.${selector}`),

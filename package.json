@@ -67,6 +67,7 @@
     "@types/node": "^14.0.13",
     "@types/proxy-from-env": "^1.0.1",
     "@types/rimraf": "^2.0.2",
+    "@types/sinon": "^9.0.4",
     "@types/tar-fs": "^1.16.2",
     "@types/ws": "^7.2.4",
     "@typescript-eslint/eslint-plugin": "^2.28.0",
