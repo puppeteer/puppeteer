@@ -3,6 +3,7 @@
   "version": "5.2.1-post",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "main": "./cjs-entry.js",
+  "typings": "./lib/typings/puppeteer.d.ts",
   "repository": "github:puppeteer/puppeteer",
   "engines": {
     "node": ">=10.18.1"
@@ -30,7 +31,8 @@
     "tsc-esm": "tsc -b src/tsconfig.esm.json",
     "apply-next-version": "node utils/apply_next_version.js",
     "test-install": "scripts/test-install.sh",
-    "generate-docs": "npm run tsc && api-extractor run --local --verbose && api-documenter markdown -i temp -o new-docs",
+    "generate-d-ts": "npm run tsc && api-extractor run --local --verbose && ts-node scripts/add-default-export-to-types.ts",
+    "generate-docs": "npm run generate-d-ts && api-documenter markdown -i temp -o new-docs",
     "ensure-new-docs-up-to-date": "npm run generate-docs && git status && exit `git status --porcelain | head -255 | wc -l`",
     "generate-dependency-graph": "echo 'Requires graphviz installed locally!' && depcruise --exclude 'api.ts' --do-not-follow '^node_modules' --output-type dot src/index.ts | dot -T png > dependency-chart.png",
     "ensure-correct-devtools-protocol-revision": "ts-node scripts/ensure-correct-devtools-protocol-package"

@@ -12,7 +12,8 @@
   },
 
   "dtsRollup": {
-    "enabled": false
+    "enabled": true,
+    "untrimmedFilePath": "<projectFolder>/lib/typings/puppeteer.d.ts"
   },
 
   "tsdocMetadata": {
