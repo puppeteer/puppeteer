@@ -461,6 +461,13 @@ describe('Page', function () {
       ]);
       expect(message.text()).toEqual('hello 5 JSHandle@object');
       expect(message.type()).toEqual('log');
+      expect(message.args()).toHaveLength(3);
+      expect(message.location()).toEqual({
+        url: expect.any(String),
+        lineNumber: expect.any(Number),
+        columnNumber: expect.any(Number),
+      });
+
       expect(await message.args()[0].jsonValue()).toEqual('hello');
       expect(await message.args()[1].jsonValue()).toEqual(5);
       expect(await message.args()[2].jsonValue()).toEqual({ foo: 'bar' });
