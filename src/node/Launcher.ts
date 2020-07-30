@@ -467,6 +467,9 @@ class FirefoxLauncher implements ProductLauncher {
 
   defaultArgs(options: ChromeArgOptions = {}): string[] {
     const firefoxArguments = ['--no-remote', '--foreground'];
+    if (os.platform().startsWith('win')) {
+      firefoxArguments.push('--wait-for-browser');
+    }
     const {
       devtools = false,
       headless = !devtools,
