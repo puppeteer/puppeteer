@@ -278,7 +278,7 @@ RUN apt-get update \
 
 # Uncomment to skip the chromium download when installing puppeteer. If you do,
 # you'll need to launch puppeteer with:
-#     browser.launch({executablePath: 'google-chrome-unstable'})
+#     browser.launch({executablePath: 'google-chrome-stable'})
 # ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
 # Install puppeteer so it's available in the container.
@@ -293,7 +293,7 @@ RUN npm i puppeteer \
 # Run everything after as non-privileged user.
 USER pptruser
 
-CMD ["google-chrome-unstable"]
+CMD ["google-chrome-stable"]
 ```
 
 Build the container:
