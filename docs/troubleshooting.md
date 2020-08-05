@@ -166,7 +166,7 @@ kernel privileges.
 sudo sysctl -w kernel.unprivileged_userns_clone=1
 ```
 
-### [alternative] Setup [setuid sandbox](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_suid_sandbox_development.md)
+### [alternative] Setup [setuid sandbox](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/suid_sandbox_development.md)
 
 The setuid sandbox comes as a standalone executable and is located next to the Chromium that Puppeteer downloads. It is
 fine to re-use the same sandbox executable for different Chromium versions, so the following could be
