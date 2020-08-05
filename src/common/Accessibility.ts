@@ -208,13 +208,13 @@ export class Accessibility {
 
   private serializeTree(
     node: AXNode,
-    whitelistedNodes?: Set<AXNode>
+    interestingNodes?: Set<AXNode>
   ): SerializedAXNode[] {
     const children: SerializedAXNode[] = [];
     for (const child of node.children)
-      children.push(...this.serializeTree(child, whitelistedNodes));
+      children.push(...this.serializeTree(child, interestingNodes));
 
-    if (whitelistedNodes && !whitelistedNodes.has(node)) return children;
+    if (interestingNodes && !interestingNodes.has(node)) return children;
 
     const serializedNode = node.serialize();
     if (children.length) serializedNode.children = children;
