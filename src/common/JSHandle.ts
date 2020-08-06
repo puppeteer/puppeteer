@@ -789,6 +789,26 @@ export class ElementHandle<
   }
 
   /**
+   * Runs `element.shadowRoot.querySelector` within the page. If no element matches the selector,
+   * the return value resolves to `null`.
+   */
+  async $shadow(selector: string[]): Promise<ElementHandle | null> {
+    const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
+      selector.join(', ')
+    );
+
+    const handle = await this.evaluateHandle(
+      queryHandler.shadowQueryOne,
+      updatedSelector
+    );
+
+    const element = handle.asElement();
+    if (element) return element;
+    await handle.dispose();
+    return null;
+  }
+
+  /**
    * Runs `element.querySelectorAll` within the page. If no elements match the selector,
    * the return value resolves to `[]`.
    */
@@ -799,6 +819,29 @@ export class ElementHandle<
 
     const handles = await this.evaluateHandle(
       queryHandler.queryAll,
+      updatedSelector
+    );
+    const properties = await handles.getProperties();
+    await handles.dispose();
+    const result = [];
+    for (const property of properties.values()) {
+      const elementHandle = property.asElement();
+      if (elementHandle) result.push(elementHandle);
+    }
+    return result;
+  }
+
+  /**
+   * Runs `element.shadowRoot.querySelectorAll` within the page. If no elements match the selector,
+   * the return value resolves to `[]`.
+   */
+  async shadow$$(selector: string): Promise<ElementHandle[]> {
+    const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
+      selector
+    );
+
+    const handles = await this.evaluateHandle(
+      queryHandler.shadowQueryAll,
       updatedSelector
     );
     const properties = await handles.getProperties();

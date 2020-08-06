@@ -20,6 +20,14 @@ export interface QueryHandler {
     element: Element | Document,
     selector: string
   ) => Element[] | NodeListOf<Element>;
+  shadowQueryOne?: (
+    element: Element | Document,
+    selector: string
+  ) => Element | null;
+  shadowQueryAll?: (
+    element: Element | Document,
+    selector: string
+  ) => Element[] | NodeListOf<Element>;
 }
 
 const _customQueryHandlers = new Map<string, QueryHandler>();
@@ -61,6 +69,36 @@ export function getQueryHandlerAndSelector(
       element.querySelector(selector),
     queryAll: (element: Element, selector: string) =>
       element.querySelectorAll(selector),
+    shadowQueryOne: (element: Element, selector: string) => {
+      const selectors = selector.split(',');
+      let rootElement = element;
+
+      for (const query of selectors) {
+        rootElement = rootElement.shadowRoot.querySelector(query);
+
+        if (!rootElement) {
+          return null;
+        }
+      }
+
+      return rootElement;
+    },
+    shadowQueryAll: (element: Element, selector: string) => {
+      const selectors = selector.split(',');
+      let rootElement = [element];
+
+      for (const query of selectors) {
+        const elements = rootElement[0].shadowRoot.querySelectorAll(query);
+
+        if (elements.length === 0) {
+          return elements;
+        }
+
+        rootElement = [...elements];
+      }
+
+      return rootElement;
+    },
   };
   const hasCustomQueryHandler = /^[a-zA-Z]+\//.test(selector);
   if (!hasCustomQueryHandler)
