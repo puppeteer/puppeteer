@@ -20,9 +20,6 @@ import ProgressBar from 'progress';
 import puppeteer from './index.js';
 import { PUPPETEER_REVISIONS } from './revisions.js';
 
-const firefoxVersions =
-  'https://product-details.mozilla.org/1.0/firefox_versions.json';
-
 const supportedProducts = {
   chrome: 'Chromium',
   firefox: 'Firefox Nightly',
@@ -54,7 +51,7 @@ export async function downloadBrowser() {
       );
     } else if (product === 'firefox') {
       puppeteer._preferredRevision = PUPPETEER_REVISIONS.firefox;
-      return getFirefoxNightlyVersion(browserFetcher.host()).catch((error) => {
+      return getFirefoxNightlyVersion().catch((error) => {
         console.error(error);
         process.exit(1);
       });
@@ -141,10 +138,15 @@ export async function downloadBrowser() {
     return `${Math.round(mb * 10) / 10} Mb`;
   }
 
-  function getFirefoxNightlyVersion(host) {
+  function getFirefoxNightlyVersion() {
+    const firefoxVersions =
+      'https://product-details.mozilla.org/1.0/firefox_versions.json';
+
     const promise = new Promise((resolve, reject) => {
       let data = '';
-      logPolitely(`Requesting latest Firefox Nightly version from ${host}`);
+      logPolitely(
+        `Requesting latest Firefox Nightly version from ${firefoxVersions}`
+      );
       https
         .get(firefoxVersions, (r) => {
           if (r.statusCode >= 400)
