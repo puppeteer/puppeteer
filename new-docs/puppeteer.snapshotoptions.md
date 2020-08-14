@@ -15,6 +15,6 @@ export interface SnapshotOptions
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [interestingOnly](./puppeteer.snapshotoptions.interestingonly.md) | boolean | Prune unintersting nodes from the tree. |
-|  [root](./puppeteer.snapshotoptions.root.md) | [ElementHandle](./puppeteer.elementhandle.md) | Prune unintersting nodes from the tree. |
+|  [interestingOnly](./puppeteer.snapshotoptions.interestingonly.md) | boolean | Prune uninteresting nodes from the tree. |
+|  [root](./puppeteer.snapshotoptions.root.md) | [ElementHandle](./puppeteer.elementhandle.md) | Root node to get the accessibility tree for |
 

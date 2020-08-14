@@ -4,7 +4,7 @@
 
 ## SnapshotOptions.interestingOnly property
 
-Prune unintersting nodes from the tree.
+Prune uninteresting nodes from the tree.
 
 <b>Signature:</b>
 
