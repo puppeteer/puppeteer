@@ -1052,6 +1052,14 @@ export class Page extends EventEmitter {
       throw new Error(
         `Failed to add page binding with name ${name}: window['${name}'] already exists!`
       );
+
+    if (
+      typeof puppeteerFunction !== 'function' &&
+      typeof puppeteerFunction['default'] === 'function'
+    ) {
+      puppeteerFunction = puppeteerFunction['default'];
+    }
+
     this._pageBindings.set(name, puppeteerFunction);
 
     const expression = helper.evaluationString(addPageBinding, name);
