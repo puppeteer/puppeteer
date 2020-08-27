@@ -223,7 +223,7 @@ export class FrameManager extends EventEmitter {
       return;
     }
 
-    // TODO(sadym): Remove debug message once proper OOPIF support is 
+    // TODO(sadym): Remove debug message once proper OOPIF support is
     // implemented: https://github.com/puppeteer/puppeteer/issues/2548
     debug('puppeteer:frame')(
       `The frame '${event.targetInfo.targetId}' moved to another session. ` +
