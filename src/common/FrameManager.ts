@@ -1231,7 +1231,7 @@ export class Frame {
    */
   _navigated(framePayload: Protocol.Page.Frame): void {
     this._name = framePayload.name;
-    this._url = framePayload.url;
+    this._url = `${framePayload.url}${framePayload.urlFragment}`;
   }
 
   /**
