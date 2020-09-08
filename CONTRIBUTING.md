@@ -281,6 +281,14 @@ The following steps are needed to update the Chromium version.
    If it fails, update `package.json` with the expected `devtools-protocol` version.
 1. Run `npm run tsc` and `npm install` and ensure that all tests pass. If a test fails, bisect the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
 
+### Bisecting upstream changes
+
+Sometimes, performing a Chromium roll causes tests to fail. To figure out the cause, you need to bisect Chromium revisions to figure out the earliest possible revision that changed the behavior. The script in `utils/bisect.js` can be helpful here. Given a Node.js script that calls `process.exit(1)` for bad revisions, run this from the Puppeteer repository’s root directory:
+
+```sh
+node utils/bisect.js --good 686378 --bad 706915 script.js
+```
+
 ## Releasing to npm
 
 Releasing to npm consists of the following phases:
