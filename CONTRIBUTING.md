@@ -279,7 +279,7 @@ The following steps are needed to update the Chromium version.
 1. Update `src/revisions.ts` with the found revision number.
 1. Run `npm run ensure-correct-devtools-protocol-revision`.
    If it fails, update `package.json` with the expected `devtools-protocol` version.
-1. Run `npm run tsc` and `npm install` and ensure that all tests pass. If a test fails, bisect the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
+1. Run `npm run tsc` and `npm install` and ensure that all tests pass. If a test fails, [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
 
 ### Bisecting upstream changes
 
