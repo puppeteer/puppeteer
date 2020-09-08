@@ -269,6 +269,18 @@ See [Debugging Tips](README.md#debugging-tips) in the readme.
 
 # For Project Maintainers
 
+## Rolling new Chromium version
+
+The following steps are needed to update the Chromium version.
+
+1. Find a suitable Chromium revision
+   Not all revisions have builds for all platforms, so we need to find one that does.
+   To do so, run `utils/check_availability.js -rb` to find the latest suitable beta Chromium revision (see `utils/check_availability.js -help` for more options).
+1. Update `src/revisions.ts` with the found revision number.
+1. Run `npm run ensure-correct-devtools-protocol-revision`.
+   If it fails, update `package.json` with the expected `devtools-protocol` version.
+1. Run `npm run tsc` and `npm install` and ensure that all tests pass. If a test fails, bisect the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
+
 ## Releasing to npm
 
 Releasing to npm consists of the following phases:
