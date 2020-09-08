@@ -56,16 +56,20 @@ class Table {
 const helpMessage = `
 This script checks availability of prebuilt Chromium snapshots.
 
-Usage: node check_availability.js [<options>] [<browser version(s)>]
+Usage
 
-options
-    -f          full mode checks availability of all the platforms, default mode
-    -r          roll mode checks for the most recent Chromium roll candidate
-    -h          show this help
+Full Mode: checks availability of all the platforms, default mode
+  $ node check_availability.js [-f] [<browser version(s)>]
 
 browser version(s)
     <revision>  single revision number means checking for this specific revision
     <from> <to> checks all the revisions within a given range, inclusively
+
+
+Roll Mode: checks for the most recent Chromium roll candidate in the given channel
+  $ node check_availability.js -r [stable | beta | dev]
+
+The default channel is stable.
 
 Examples
   To check Chromium availability of a certain revision
@@ -73,6 +77,9 @@ Examples
 
   To find a Chromium roll candidate for current Stable Linux version
     node check_availability.js -r
+  
+  To find a Chromium roll candidate for current Beta Linux version
+    node check_availability.js -r beta
 
   To check Chromium availability from the latest revision in a descending order
     node check_availability.js
@@ -97,7 +104,7 @@ function main() {
       case 'f':
         break;
       case 'r':
-        checkRollCandidate();
+        checkRollCandidate(args[1]);
         return;
       default:
         console.log(helpMessage);
@@ -149,18 +156,18 @@ async function checkOmahaProxyAvailability() {
   });
 }
 
-async function checkRollCandidate() {
+async function checkRollCandidate(channel = 'stable') {
   const omahaResponse = await fetch(
-    'https://omahaproxy.appspot.com/all.json?channel=stable&os=linux'
+    `https://omahaproxy.appspot.com/all.json?channel=${channel}&os=linux`
   );
-  const stableLinuxInfo = JSON.parse(omahaResponse)[0];
-  if (!stableLinuxInfo) {
-    console.error('no stable linux information available from omahaproxy');
+  const linuxRevisionInfo = JSON.parse(omahaResponse)[0];
+  if (!linuxRevisionInfo) {
+    console.error(`no ${channel} linux information available from omahaproxy`);
     return;
   }
 
-  const stableLinuxRevision = parseInt(
-    stableLinuxInfo.versions[0].branch_base_position,
+  const linuxRevision = parseInt(
+    linuxRevisionInfo.versions[0].branch_base_position,
     10
   );
   const currentRevision = parseInt(
@@ -169,7 +176,7 @@ async function checkRollCandidate() {
   );
 
   checkRangeAvailability({
-    fromRevision: stableLinuxRevision,
+    fromRevision: linuxRevision,
     toRevision: currentRevision,
     stopWhenAllAvailable: true,
   });
