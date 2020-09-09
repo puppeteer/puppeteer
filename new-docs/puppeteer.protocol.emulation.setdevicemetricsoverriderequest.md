@@ -15,6 +15,7 @@ export interface SetDeviceMetricsOverrideRequest
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [deviceScaleFactor](./puppeteer.protocol.emulation.setdevicemetricsoverriderequest.devicescalefactor.md) | number | Overriding device scale factor value. 0 disables the override. |
+|  [displayFeature](./puppeteer.protocol.emulation.setdevicemetricsoverriderequest.displayfeature.md) | [DisplayFeature](./puppeteer.protocol.emulation.displayfeature.md) | If set, the display feature of a multi-segment screen. If not set, multi-segment support is turned-off. |
 |  [dontSetVisibleSize](./puppeteer.protocol.emulation.setdevicemetricsoverriderequest.dontsetvisiblesize.md) | boolean | Do not set visible view size, rely upon explicit setVisibleSize call. |
 |  [height](./puppeteer.protocol.emulation.setdevicemetricsoverriderequest.height.md) | [integer](./puppeteer.protocol.integer.md) | Overriding height value in pixels (minimum 0, maximum 10000000). 0 disables the override. |
 |  [mobile](./puppeteer.protocol.emulation.setdevicemetricsoverriderequest.mobile.md) | boolean | Whether to emulate mobile device. This includes viewport meta tag, overlay scrollbars, text autosizing and more. |

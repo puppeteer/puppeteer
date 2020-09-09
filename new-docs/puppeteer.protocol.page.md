@@ -121,11 +121,14 @@ export namespace Page
 
 |  Type Alias | Description |
 |  --- | --- |
+|  [AdFrameType](./puppeteer.protocol.page.adframetype.md) | Indicates whether a frame has been identified as an ad. |
 |  [ClientNavigationDisposition](./puppeteer.protocol.page.clientnavigationdisposition.md) |  |
 |  [ClientNavigationReason](./puppeteer.protocol.page.clientnavigationreason.md) |  |
+|  [CrossOriginIsolatedContextType](./puppeteer.protocol.page.crossoriginisolatedcontexttype.md) | Indicates whether the frame is cross-origin isolated and why it is the case. |
 |  [DialogType](./puppeteer.protocol.page.dialogtype.md) | Javascript dialog type. |
 |  [FrameId](./puppeteer.protocol.page.frameid.md) | Unique frame identifier. |
 |  [ReferrerPolicy](./puppeteer.protocol.page.referrerpolicy.md) | The referring-policy used for the navigation. |
 |  [ScriptIdentifier](./puppeteer.protocol.page.scriptidentifier.md) | Unique script identifier. |
+|  [SecureContextType](./puppeteer.protocol.page.securecontexttype.md) | Indicates whether the frame is a secure context and why it is the case. |
 |  [TransitionType](./puppeteer.protocol.page.transitiontype.md) | Transition type. |
 

@@ -48,6 +48,7 @@ export namespace Debugger
 |  [GetWasmBytecodeRequest](./puppeteer.protocol.debugger.getwasmbytecoderequest.md) |  |
 |  [GetWasmBytecodeResponse](./puppeteer.protocol.debugger.getwasmbytecoderesponse.md) |  |
 |  [Location](./puppeteer.protocol.debugger.location.md) | Location in the source code. |
+|  [LocationRange](./puppeteer.protocol.debugger.locationrange.md) | Location range within one script. |
 |  [PausedEvent](./puppeteer.protocol.debugger.pausedevent.md) | Fired when the virtual machine stopped on breakpoint or exception or any other stop criteria. |
 |  [PauseOnAsyncCallRequest](./puppeteer.protocol.debugger.pauseonasynccallrequest.md) |  |
 |  [RemoveBreakpointRequest](./puppeteer.protocol.debugger.removebreakpointrequest.md) |  |
@@ -80,6 +81,7 @@ export namespace Debugger
 |  [SetSkipAllPausesRequest](./puppeteer.protocol.debugger.setskipallpausesrequest.md) |  |
 |  [SetVariableValueRequest](./puppeteer.protocol.debugger.setvariablevaluerequest.md) |  |
 |  [StepIntoRequest](./puppeteer.protocol.debugger.stepintorequest.md) |  |
+|  [StepOverRequest](./puppeteer.protocol.debugger.stepoverrequest.md) |  |
 
 ## Type Aliases
 

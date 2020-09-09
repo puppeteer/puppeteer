@@ -16,14 +16,20 @@ export namespace Overlay
 
 |  Interface | Description |
 |  --- | --- |
+|  [GetGridHighlightObjectsForTestRequest](./puppeteer.protocol.overlay.getgridhighlightobjectsfortestrequest.md) |  |
+|  [GetGridHighlightObjectsForTestResponse](./puppeteer.protocol.overlay.getgridhighlightobjectsfortestresponse.md) |  |
 |  [GetHighlightObjectForTestRequest](./puppeteer.protocol.overlay.gethighlightobjectfortestrequest.md) |  |
 |  [GetHighlightObjectForTestResponse](./puppeteer.protocol.overlay.gethighlightobjectfortestresponse.md) |  |
+|  [GetSourceOrderHighlightObjectForTestRequest](./puppeteer.protocol.overlay.getsourceorderhighlightobjectfortestrequest.md) |  |
+|  [GetSourceOrderHighlightObjectForTestResponse](./puppeteer.protocol.overlay.getsourceorderhighlightobjectfortestresponse.md) |  |
 |  [GridHighlightConfig](./puppeteer.protocol.overlay.gridhighlightconfig.md) | Configuration data for the highlighting of Grid elements. |
+|  [GridNodeHighlightConfig](./puppeteer.protocol.overlay.gridnodehighlightconfig.md) | Configurations for Persistent Grid Highlight |
 |  [HighlightConfig](./puppeteer.protocol.overlay.highlightconfig.md) | Configuration data for the highlighting of page elements. |
 |  [HighlightFrameRequest](./puppeteer.protocol.overlay.highlightframerequest.md) |  |
 |  [HighlightNodeRequest](./puppeteer.protocol.overlay.highlightnoderequest.md) |  |
 |  [HighlightQuadRequest](./puppeteer.protocol.overlay.highlightquadrequest.md) |  |
 |  [HighlightRectRequest](./puppeteer.protocol.overlay.highlightrectrequest.md) |  |
+|  [HighlightSourceOrderRequest](./puppeteer.protocol.overlay.highlightsourceorderrequest.md) |  |
 |  [HingeConfig](./puppeteer.protocol.overlay.hingeconfig.md) | Configuration for dual screen hinge |
 |  [InspectNodeRequestedEvent](./puppeteer.protocol.overlay.inspectnoderequestedevent.md) | Fired when the node should be inspected. This happens after call to <code>setInspectMode</code> or when user manually inspects an element. |
 |  [NodeHighlightRequestedEvent](./puppeteer.protocol.overlay.nodehighlightrequestedevent.md) | Fired when the node should be highlighted. This happens after call to <code>setInspectMode</code>. |
@@ -33,12 +39,14 @@ export namespace Overlay
 |  [SetShowAdHighlightsRequest](./puppeteer.protocol.overlay.setshowadhighlightsrequest.md) |  |
 |  [SetShowDebugBordersRequest](./puppeteer.protocol.overlay.setshowdebugbordersrequest.md) |  |
 |  [SetShowFPSCounterRequest](./puppeteer.protocol.overlay.setshowfpscounterrequest.md) |  |
+|  [SetShowGridOverlaysRequest](./puppeteer.protocol.overlay.setshowgridoverlaysrequest.md) |  |
 |  [SetShowHingeRequest](./puppeteer.protocol.overlay.setshowhingerequest.md) |  |
 |  [SetShowHitTestBordersRequest](./puppeteer.protocol.overlay.setshowhittestbordersrequest.md) |  |
 |  [SetShowLayoutShiftRegionsRequest](./puppeteer.protocol.overlay.setshowlayoutshiftregionsrequest.md) |  |
 |  [SetShowPaintRectsRequest](./puppeteer.protocol.overlay.setshowpaintrectsrequest.md) |  |
 |  [SetShowScrollBottleneckRectsRequest](./puppeteer.protocol.overlay.setshowscrollbottleneckrectsrequest.md) |  |
 |  [SetShowViewportSizeOnResizeRequest](./puppeteer.protocol.overlay.setshowviewportsizeonresizerequest.md) |  |
+|  [SourceOrderConfig](./puppeteer.protocol.overlay.sourceorderconfig.md) | Configuration data for drawing the source order of an elements children. |
 
 ## Type Aliases
 

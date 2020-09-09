@@ -16,7 +16,8 @@ export interface BlockedByResponseIssueDetails
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [frame](./puppeteer.protocol.audits.blockedbyresponseissuedetails.frame.md) | [AffectedFrame](./puppeteer.protocol.audits.affectedframe.md) |  |
+|  [blockedFrame](./puppeteer.protocol.audits.blockedbyresponseissuedetails.blockedframe.md) | [AffectedFrame](./puppeteer.protocol.audits.affectedframe.md) |  |
+|  [parentFrame](./puppeteer.protocol.audits.blockedbyresponseissuedetails.parentframe.md) | [AffectedFrame](./puppeteer.protocol.audits.affectedframe.md) |  |
 |  [reason](./puppeteer.protocol.audits.blockedbyresponseissuedetails.reason.md) | [BlockedByResponseReason](./puppeteer.protocol.audits.blockedbyresponsereason.md) |  |
 |  [request](./puppeteer.protocol.audits.blockedbyresponseissuedetails.request.md) | [AffectedRequest](./puppeteer.protocol.audits.affectedrequest.md) |  |
 

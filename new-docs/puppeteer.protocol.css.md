@@ -36,8 +36,9 @@ export namespace CSS
 |  [CSSRule](./puppeteer.protocol.css.cssrule.md) | CSS rule representation. |
 |  [CSSStyle](./puppeteer.protocol.css.cssstyle.md) | CSS style representation. |
 |  [CSSStyleSheetHeader](./puppeteer.protocol.css.cssstylesheetheader.md) | CSS stylesheet metainformation. |
-|  [FontFace](./puppeteer.protocol.css.fontface.md) | Properties of a web font: https://www.w3.org/TR/2008/REC-CSS2-20080411/fonts.html\#font-descriptions |
+|  [FontFace](./puppeteer.protocol.css.fontface.md) | Properties of a web font: https://www.w3.org/TR/2008/REC-CSS2-20080411/fonts.html\#font-descriptions and additional information such as platformFontFamily and fontVariationAxes. |
 |  [FontsUpdatedEvent](./puppeteer.protocol.css.fontsupdatedevent.md) | Fires whenever a web font is updated. A non-empty font parameter indicates a successfully loaded web font |
+|  [FontVariationAxis](./puppeteer.protocol.css.fontvariationaxis.md) | Information about font variation axes for variable fonts |
 |  [ForcePseudoStateRequest](./puppeteer.protocol.css.forcepseudostaterequest.md) |  |
 |  [GetBackgroundColorsRequest](./puppeteer.protocol.css.getbackgroundcolorsrequest.md) |  |
 |  [GetBackgroundColorsResponse](./puppeteer.protocol.css.getbackgroundcolorsresponse.md) |  |
@@ -63,6 +64,7 @@ export namespace CSS
 |  [SetEffectivePropertyValueForNodeRequest](./puppeteer.protocol.css.seteffectivepropertyvaluefornoderequest.md) |  |
 |  [SetKeyframeKeyRequest](./puppeteer.protocol.css.setkeyframekeyrequest.md) |  |
 |  [SetKeyframeKeyResponse](./puppeteer.protocol.css.setkeyframekeyresponse.md) |  |
+|  [SetLocalFontsEnabledRequest](./puppeteer.protocol.css.setlocalfontsenabledrequest.md) |  |
 |  [SetMediaTextRequest](./puppeteer.protocol.css.setmediatextrequest.md) |  |
 |  [SetMediaTextResponse](./puppeteer.protocol.css.setmediatextresponse.md) |  |
 |  [SetRuleSelectorRequest](./puppeteer.protocol.css.setruleselectorrequest.md) |  |
@@ -78,7 +80,9 @@ export namespace CSS
 |  [StyleSheetAddedEvent](./puppeteer.protocol.css.stylesheetaddedevent.md) | Fired whenever an active document stylesheet is added. |
 |  [StyleSheetChangedEvent](./puppeteer.protocol.css.stylesheetchangedevent.md) | Fired whenever a stylesheet is changed as a result of the client operation. |
 |  [StyleSheetRemovedEvent](./puppeteer.protocol.css.stylesheetremovedevent.md) | Fired whenever an active document stylesheet is removed. |
+|  [TakeComputedStyleUpdatesResponse](./puppeteer.protocol.css.takecomputedstyleupdatesresponse.md) |  |
 |  [TakeCoverageDeltaResponse](./puppeteer.protocol.css.takecoveragedeltaresponse.md) |  |
+|  [TrackComputedStyleUpdatesRequest](./puppeteer.protocol.css.trackcomputedstyleupdatesrequest.md) |  |
 |  [Value](./puppeteer.protocol.css.value.md) | Data for a simple selector (these are delimited by commas in a selector list). |
 
 ## Type Aliases

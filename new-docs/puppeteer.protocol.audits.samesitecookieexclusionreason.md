@@ -7,5 +7,5 @@
 <b>Signature:</b>
 
 ```typescript
-export type SameSiteCookieExclusionReason = ('ExcludeSameSiteUnspecifiedTreatedAsLax' | 'ExcludeSameSiteNoneInsecure');
+export type SameSiteCookieExclusionReason = ('ExcludeSameSiteUnspecifiedTreatedAsLax' | 'ExcludeSameSiteNoneInsecure' | 'ExcludeSameSiteLax' | 'ExcludeSameSiteStrict');
 ```

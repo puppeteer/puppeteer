@@ -28,6 +28,7 @@ export namespace DOM
 |  [CollectClassNamesFromSubtreeResponse](./puppeteer.protocol.dom.collectclassnamesfromsubtreeresponse.md) |  |
 |  [CopyToRequest](./puppeteer.protocol.dom.copytorequest.md) |  |
 |  [CopyToResponse](./puppeteer.protocol.dom.copytoresponse.md) |  |
+|  [CSSComputedStyleProperty](./puppeteer.protocol.dom.csscomputedstyleproperty.md) |  |
 |  [DescribeNodeRequest](./puppeteer.protocol.dom.describenoderequest.md) |  |
 |  [DescribeNodeResponse](./puppeteer.protocol.dom.describenoderesponse.md) |  |
 |  [DiscardSearchResultsRequest](./puppeteer.protocol.dom.discardsearchresultsrequest.md) |  |
@@ -49,6 +50,8 @@ export namespace DOM
 |  [GetFrameOwnerResponse](./puppeteer.protocol.dom.getframeownerresponse.md) |  |
 |  [GetNodeForLocationRequest](./puppeteer.protocol.dom.getnodeforlocationrequest.md) |  |
 |  [GetNodeForLocationResponse](./puppeteer.protocol.dom.getnodeforlocationresponse.md) |  |
+|  [GetNodesForSubtreeByStyleRequest](./puppeteer.protocol.dom.getnodesforsubtreebystylerequest.md) |  |
+|  [GetNodesForSubtreeByStyleResponse](./puppeteer.protocol.dom.getnodesforsubtreebystyleresponse.md) |  |
 |  [GetNodeStackTracesRequest](./puppeteer.protocol.dom.getnodestacktracesrequest.md) |  |
 |  [GetNodeStackTracesResponse](./puppeteer.protocol.dom.getnodestacktracesresponse.md) |  |
 |  [GetOuterHTMLRequest](./puppeteer.protocol.dom.getouterhtmlrequest.md) |  |

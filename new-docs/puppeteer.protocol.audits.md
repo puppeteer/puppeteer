@@ -26,6 +26,7 @@ export namespace Audits
 |  [AffectedFrame](./puppeteer.protocol.audits.affectedframe.md) | Information about the frame affected by an inspector issue. |
 |  [AffectedRequest](./puppeteer.protocol.audits.affectedrequest.md) | Information about a request that is affected by an inspector issue. |
 |  [BlockedByResponseIssueDetails](./puppeteer.protocol.audits.blockedbyresponseissuedetails.md) | Details for a request that has been blocked with the BLOCKED\_BY\_RESPONSE code. Currently only used for COEP/COOP, but may be extended to include some CSP errors in the future. |
+|  [ContentSecurityPolicyIssueDetails](./puppeteer.protocol.audits.contentsecuritypolicyissuedetails.md) |  |
 |  [GetEncodedResponseRequest](./puppeteer.protocol.audits.getencodedresponserequest.md) |  |
 |  [GetEncodedResponseResponse](./puppeteer.protocol.audits.getencodedresponseresponse.md) |  |
 |  [HeavyAdIssueDetails](./puppeteer.protocol.audits.heavyadissuedetails.md) |  |
@@ -34,12 +35,14 @@ export namespace Audits
 |  [IssueAddedEvent](./puppeteer.protocol.audits.issueaddedevent.md) |  |
 |  [MixedContentIssueDetails](./puppeteer.protocol.audits.mixedcontentissuedetails.md) |  |
 |  [SameSiteCookieIssueDetails](./puppeteer.protocol.audits.samesitecookieissuedetails.md) | This information is currently necessary, as the front-end has a difficult time finding a specific cookie. With this, we can convey specific error information without the cookie. |
+|  [SourceCodeLocation](./puppeteer.protocol.audits.sourcecodelocation.md) |  |
 
 ## Type Aliases
 
 |  Type Alias | Description |
 |  --- | --- |
 |  [BlockedByResponseReason](./puppeteer.protocol.audits.blockedbyresponsereason.md) | Enum indicating the reason a response has been blocked. These reasons are refinements of the net error BLOCKED\_BY\_RESPONSE. |
+|  [ContentSecurityPolicyViolationType](./puppeteer.protocol.audits.contentsecuritypolicyviolationtype.md) |  |
 |  [HeavyAdReason](./puppeteer.protocol.audits.heavyadreason.md) |  |
 |  [HeavyAdResolutionStatus](./puppeteer.protocol.audits.heavyadresolutionstatus.md) |  |
 |  [InspectorIssueCode](./puppeteer.protocol.audits.inspectorissuecode.md) | A unique identifier for the type of issue. Each type may use one of the optional fields in InspectorIssueDetails to convey more specific information about the kind of issue. |
