@@ -36,6 +36,8 @@ export namespace Network
 |  [ContinueInterceptedRequestRequest](./puppeteer.protocol.network.continueinterceptedrequestrequest.md) |  |
 |  [Cookie](./puppeteer.protocol.network.cookie.md) | Cookie object |
 |  [CookieParam](./puppeteer.protocol.network.cookieparam.md) | Cookie parameter object |
+|  [CrossOriginEmbedderPolicyStatus](./puppeteer.protocol.network.crossoriginembedderpolicystatus.md) |  |
+|  [CrossOriginOpenerPolicyStatus](./puppeteer.protocol.network.crossoriginopenerpolicystatus.md) |  |
 |  [DataReceivedEvent](./puppeteer.protocol.network.datareceivedevent.md) | Fired when data chunk was received over the network. |
 |  [DeleteCookiesRequest](./puppeteer.protocol.network.deletecookiesrequest.md) |  |
 |  [EmulateNetworkConditionsRequest](./puppeteer.protocol.network.emulatenetworkconditionsrequest.md) |  |
@@ -52,10 +54,13 @@ export namespace Network
 |  [GetResponseBodyForInterceptionResponse](./puppeteer.protocol.network.getresponsebodyforinterceptionresponse.md) |  |
 |  [GetResponseBodyRequest](./puppeteer.protocol.network.getresponsebodyrequest.md) |  |
 |  [GetResponseBodyResponse](./puppeteer.protocol.network.getresponsebodyresponse.md) |  |
+|  [GetSecurityIsolationStatusRequest](./puppeteer.protocol.network.getsecurityisolationstatusrequest.md) |  |
+|  [GetSecurityIsolationStatusResponse](./puppeteer.protocol.network.getsecurityisolationstatusresponse.md) |  |
 |  [Headers](./puppeteer.protocol.network.headers.md) | Request / response headers as keys / values of JSON object. |
 |  [Initiator](./puppeteer.protocol.network.initiator.md) | Information about the request initiator. |
 |  [LoadingFailedEvent](./puppeteer.protocol.network.loadingfailedevent.md) | Fired when HTTP request has failed to load. |
 |  [LoadingFinishedEvent](./puppeteer.protocol.network.loadingfinishedevent.md) | Fired when HTTP request has finished loading. |
+|  [PostDataEntry](./puppeteer.protocol.network.postdataentry.md) | Post data entry for HTTP request |
 |  [ReplayXHRRequest](./puppeteer.protocol.network.replayxhrrequest.md) |  |
 |  [Request](./puppeteer.protocol.network.request.md) | HTTP request data. |
 |  [RequestInterceptedEvent](./puppeteer.protocol.network.requestinterceptedevent.md) | Details of an intercepted HTTP request, which must be either allowed, blocked, modified or mocked. Deprecated, use Fetch.requestPaused instead. |
@@ -71,6 +76,7 @@ export namespace Network
 |  [SearchInResponseBodyRequest](./puppeteer.protocol.network.searchinresponsebodyrequest.md) |  |
 |  [SearchInResponseBodyResponse](./puppeteer.protocol.network.searchinresponsebodyresponse.md) |  |
 |  [SecurityDetails](./puppeteer.protocol.network.securitydetails.md) | Security details about a request. |
+|  [SecurityIsolationStatus](./puppeteer.protocol.network.securityisolationstatus.md) |  |
 |  [SetBlockedURLsRequest](./puppeteer.protocol.network.setblockedurlsrequest.md) |  |
 |  [SetBypassServiceWorkerRequest](./puppeteer.protocol.network.setbypassserviceworkerrequest.md) |  |
 |  [SetCacheDisabledRequest](./puppeteer.protocol.network.setcachedisabledrequest.md) |  |
@@ -110,6 +116,8 @@ export namespace Network
 |  [CookieBlockedReason](./puppeteer.protocol.network.cookieblockedreason.md) | Types of reasons why a cookie may not be sent with a request. |
 |  [CookiePriority](./puppeteer.protocol.network.cookiepriority.md) | Represents the cookie's 'Priority' status: https://tools.ietf.org/html/draft-west-cookie-priority-00 |
 |  [CookieSameSite](./puppeteer.protocol.network.cookiesamesite.md) | Represents the cookie's 'SameSite' status: https://tools.ietf.org/html/draft-west-first-party-cookies |
+|  [CrossOriginEmbedderPolicyValue](./puppeteer.protocol.network.crossoriginembedderpolicyvalue.md) |  |
+|  [CrossOriginOpenerPolicyValue](./puppeteer.protocol.network.crossoriginopenerpolicyvalue.md) |  |
 |  [ErrorReason](./puppeteer.protocol.network.errorreason.md) | Network level fetch failure reason. |
 |  [InterceptionId](./puppeteer.protocol.network.interceptionid.md) | Unique intercepted request identifier. |
 |  [InterceptionStage](./puppeteer.protocol.network.interceptionstage.md) | Stages of the interception to begin intercepting. Request will intercept before the request is sent. Response will intercept after the response is received. |

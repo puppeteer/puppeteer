@@ -17,6 +17,7 @@ export interface ScriptFailedToParseEvent
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [codeOffset](./puppeteer.protocol.debugger.scriptfailedtoparseevent.codeoffset.md) | [integer](./puppeteer.protocol.integer.md) | If the scriptLanguage is WebAssembly, the code section offset in the module. |
+|  [embedderName](./puppeteer.protocol.debugger.scriptfailedtoparseevent.embeddername.md) | string | The name the embedder supplied for this script. |
 |  [endColumn](./puppeteer.protocol.debugger.scriptfailedtoparseevent.endcolumn.md) | [integer](./puppeteer.protocol.integer.md) | Length of the last line of the script. |
 |  [endLine](./puppeteer.protocol.debugger.scriptfailedtoparseevent.endline.md) | [integer](./puppeteer.protocol.integer.md) | Last line of the script. |
 |  [executionContextAuxData](./puppeteer.protocol.debugger.scriptfailedtoparseevent.executioncontextauxdata.md) | any | Embedder-specific auxiliary data. |

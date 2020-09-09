@@ -4,7 +4,7 @@
 
 ## Protocol.Overlay.GridHighlightConfig.cellBorderDash property
 
-Whether the cell border is dashed (default: false).
+Whether the cell border is dashed (default: false). Deprecated, please us rowLineDash and columnLineDash instead.
 
 <b>Signature:</b>
 

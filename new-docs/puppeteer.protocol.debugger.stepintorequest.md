@@ -15,4 +15,5 @@ export interface StepIntoRequest
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [breakOnAsyncCall](./puppeteer.protocol.debugger.stepintorequest.breakonasynccall.md) | boolean | Debugger will pause on the execution of the first async task which was scheduled before next pause. |
+|  [skipList](./puppeteer.protocol.debugger.stepintorequest.skiplist.md) | [LocationRange](./puppeteer.protocol.debugger.locationrange.md)<!-- -->\[\] | The skipList specifies location ranges that should be skipped on step into. |
 

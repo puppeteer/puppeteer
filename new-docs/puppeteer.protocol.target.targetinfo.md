@@ -16,6 +16,7 @@ export interface TargetInfo
 |  --- | --- | --- |
 |  [attached](./puppeteer.protocol.target.targetinfo.attached.md) | boolean | Whether the target has an attached client. |
 |  [browserContextId](./puppeteer.protocol.target.targetinfo.browsercontextid.md) | [Browser.BrowserContextID](./puppeteer.protocol.browser.browsercontextid.md) |  |
+|  [canAccessOpener](./puppeteer.protocol.target.targetinfo.canaccessopener.md) | boolean | Whether the opened window has access to the originating window. |
 |  [openerId](./puppeteer.protocol.target.targetinfo.openerid.md) | [TargetID](./puppeteer.protocol.target.targetid.md) | Opener target Id |
 |  [targetId](./puppeteer.protocol.target.targetinfo.targetid.md) | [TargetID](./puppeteer.protocol.target.targetid.md) |  |
 |  [title](./puppeteer.protocol.target.targetinfo.title.md) | string |  |

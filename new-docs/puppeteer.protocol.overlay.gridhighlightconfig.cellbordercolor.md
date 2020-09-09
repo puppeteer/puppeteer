@@ -4,7 +4,7 @@
 
 ## Protocol.Overlay.GridHighlightConfig.cellBorderColor property
 
-The cell border color (default: transparent).
+The cell border color (default: transparent). Deprecated, please use rowLineColor and columnLineColor instead.
 
 <b>Signature:</b>
 

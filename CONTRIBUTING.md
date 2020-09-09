@@ -17,6 +17,8 @@
   * [Public API Coverage](#public-api-coverage)
   * [Debugging Puppeteer](#debugging-puppeteer)
 - [For Project Maintainers](#for-project-maintainers)
+  * [Rolling new Chromium version](#rolling-new-chromium-version)
+    - [Bisecting upstream changes](#bisecting-upstream-changes)
   * [Releasing to npm](#releasing-to-npm)
   * [Updating npm dist tags](#updating-npm-dist-tags)
 <!-- gen:stop -->

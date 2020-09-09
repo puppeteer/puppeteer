@@ -14,5 +14,5 @@ export interface GetCookiesRequest
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [urls](./puppeteer.protocol.network.getcookiesrequest.urls.md) | string\[\] | The list of URLs for which applicable cookies will be fetched |
+|  [urls](./puppeteer.protocol.network.getcookiesrequest.urls.md) | string\[\] | The list of URLs for which applicable cookies will be fetched. If not specified, it's assumed to be set to the list containing the URLs of the page and all of its subframes. |
 

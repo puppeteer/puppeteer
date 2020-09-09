@@ -16,6 +16,7 @@ export namespace Emulation
 
 |  Enumeration | Description |
 |  --- | --- |
+|  [DisplayFeatureOrientation](./puppeteer.protocol.emulation.displayfeatureorientation.md) |  |
 |  [ScreenOrientationType](./puppeteer.protocol.emulation.screenorientationtype.md) |  |
 |  [SetEmitTouchEventsForMouseRequestConfiguration](./puppeteer.protocol.emulation.setemittoucheventsformouserequestconfiguration.md) |  |
 |  [SetEmulatedVisionDeficiencyRequestType](./puppeteer.protocol.emulation.setemulatedvisiondeficiencyrequesttype.md) |  |
@@ -25,6 +26,7 @@ export namespace Emulation
 |  Interface | Description |
 |  --- | --- |
 |  [CanEmulateResponse](./puppeteer.protocol.emulation.canemulateresponse.md) |  |
+|  [DisplayFeature](./puppeteer.protocol.emulation.displayfeature.md) |  |
 |  [MediaFeature](./puppeteer.protocol.emulation.mediafeature.md) |  |
 |  [ScreenOrientation](./puppeteer.protocol.emulation.screenorientation.md) | Screen orientation. |
 |  [SetCPUThrottlingRateRequest](./puppeteer.protocol.emulation.setcputhrottlingraterequest.md) |  |
@@ -36,6 +38,7 @@ export namespace Emulation
 |  [SetEmulatedVisionDeficiencyRequest](./puppeteer.protocol.emulation.setemulatedvisiondeficiencyrequest.md) |  |
 |  [SetFocusEmulationEnabledRequest](./puppeteer.protocol.emulation.setfocusemulationenabledrequest.md) |  |
 |  [SetGeolocationOverrideRequest](./puppeteer.protocol.emulation.setgeolocationoverriderequest.md) |  |
+|  [SetIdleOverrideRequest](./puppeteer.protocol.emulation.setidleoverriderequest.md) |  |
 |  [SetLocaleOverrideRequest](./puppeteer.protocol.emulation.setlocaleoverriderequest.md) |  |
 |  [SetNavigatorOverridesRequest](./puppeteer.protocol.emulation.setnavigatoroverridesrequest.md) |  |
 |  [SetPageScaleFactorRequest](./puppeteer.protocol.emulation.setpagescalefactorrequest.md) |  |
