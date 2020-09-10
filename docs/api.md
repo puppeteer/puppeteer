@@ -117,6 +117,7 @@
   * [page.coverage](#pagecoverage)
   * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
   * [page.emulate(options)](#pageemulateoptions)
+  * [page.emulateIdleState(options)](#pageemulateidlestateoptions)
   * [page.emulateMediaFeatures(features)](#pageemulatemediafeaturesfeatures)
   * [page.emulateMediaType(type)](#pageemulatemediatypetype)
   * [page.emulateTimezone(timezoneId)](#pageemulatetimezonetimezoneid)
@@ -1340,6 +1341,12 @@ const iPhone = puppeteer.devices['iPhone 6'];
 ```
 
 List of all available devices is available in the source code: [src/common/DeviceDescriptors.ts](https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts).
+
+#### page.emulateIdleState(options)
+- `options` <?[Object]> If not set, clears emulation
+  - `isUserActive` <[boolean]> **required**
+  - `isScreenUnlocked` <[string]> **required**
+- returns: <[Promise]>
 
 #### page.emulateMediaFeatures(features)
 - `features` <?[Array]<[Object]>> Given an array of media feature objects, emulates CSS media features on the page. Each media feature object must have the following properties:

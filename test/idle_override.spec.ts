@@ -19,9 +19,10 @@ import {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
+  describeFailsFirefox,
 } from './mocha-utils'; // eslint-disable-line import/extensions
 
-describe('setIdleOverride', () => {
+describeFailsFirefox('Emulate idle state', () => {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
 
