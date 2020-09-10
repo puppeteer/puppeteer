@@ -191,7 +191,7 @@ class ChromeLauncher implements ProductLauncher {
       '--password-store=basic',
       '--use-mock-keychain',
       '--enable-blink-features=IdleDetection',
-      // TODO sadym: remove '--enable-blink-features=IdleDetection' 
+      // TODO sadym: remove '--enable-blink-features=IdleDetection'
       // after IdleDetection is turned on by default
     ];
     const {
