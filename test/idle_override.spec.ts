@@ -25,11 +25,6 @@ describe('setIdleOverride', () => {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
 
-  after(async () => {
-    const { page } = getTestState();
-    await page.clearIdleOverride();
-  });
-
   async function getIdleState() {
     const { page } = getTestState();
 
@@ -56,19 +51,31 @@ describe('setIdleOverride', () => {
     const initialState = await getIdleState();
 
     // Emulate Idle states and verify IdleDetector updates state accordingly.
-    await page.setIdleOverride(false, false);
+    await page.emulateIdleState({
+      isUserActive: false,
+      isScreenUnlocked: false,
+    });
     await verifyState('Idle state: idle, locked.');
 
-    await page.setIdleOverride(true, false);
+    await page.emulateIdleState({
+      isUserActive: true,
+      isScreenUnlocked: false,
+    });
     await verifyState('Idle state: active, locked.');
 
-    await page.setIdleOverride(true, true);
+    await page.emulateIdleState({
+      isUserActive: true,
+      isScreenUnlocked: true,
+    });
     await verifyState('Idle state: active, unlocked.');
 
-    await page.setIdleOverride(false, true);
+    await page.emulateIdleState({
+      isUserActive: false,
+      isScreenUnlocked: true,
+    });
     await verifyState('Idle state: idle, unlocked.');
 
-    await page.clearIdleOverride();
+    await page.emulateIdleState();
     // Remove Idle emulation and verify IdleDetector is in initial state.
     await verifyState(initialState);
   });
