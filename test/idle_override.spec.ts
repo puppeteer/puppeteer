@@ -29,8 +29,8 @@ describe('setIdleOverride', () => {
     const { page } = getTestState();
 
     const stateElement = await page.$('#state');
-    return await page.evaluate((e: HTMLElement) => {
-      return e.innerText;
+    return await page.evaluate((element: HTMLElement) => {
+      return element.innerText;
     }, stateElement);
   }
 
