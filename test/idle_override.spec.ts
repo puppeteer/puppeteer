@@ -1,0 +1,75 @@
+/**
+ * Copyright 2020 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import expect from 'expect';
+import {
+  getTestState,
+  setupTestBrowserHooks,
+  setupTestPageAndContextHooks,
+} from './mocha-utils'; // eslint-disable-line import/extensions
+
+describe('setIdleOverride', () => {
+  setupTestBrowserHooks();
+  setupTestPageAndContextHooks();
+
+  after(async () => {
+    const { page } = getTestState();
+    await page.clearIdleOverride();
+  });
+
+  async function getIdleState() {
+    const { page } = getTestState();
+
+    const stateElement = await page.$('#state');
+    return await page.evaluate((e: HTMLElement) => {
+      return e.innerText;
+    }, stateElement);
+  }
+
+  async function verifyState(expectedState: string) {
+    const actualState = await getIdleState();
+    expect(actualState).toEqual(expectedState);
+  }
+
+  it('changing idle state emulation causes change of the IdleDetector state', async () => {
+    const { page, server, context } = getTestState();
+    await context.overridePermissions(server.PREFIX + '/idle-detector.html', [
+      'notifications',
+    ]);
+
+    await page.goto(server.PREFIX + '/idle-detector.html');
+
+    // // InitialState can be idle as well.
+    const initialState = await getIdleState();
+
+    // Emulate Idle states and verify IdleDetector updates state accordingly.
+    await page.setIdleOverride(false, false);
+    await verifyState('Idle state: idle, locked.');
+
+    await page.setIdleOverride(true, false);
+    await verifyState('Idle state: active, locked.');
+
+    await page.setIdleOverride(true, true);
+    await verifyState('Idle state: active, unlocked.');
+
+    await page.setIdleOverride(false, true);
+    await verifyState('Idle state: idle, unlocked.');
+
+    await page.clearIdleOverride();
+    // Remove Idle emulation and verify IdleDetector is in initial state.
+    await verifyState(initialState);
+  });
+});

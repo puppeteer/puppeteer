@@ -190,6 +190,7 @@ class ChromeLauncher implements ProductLauncher {
       '--enable-automation',
       '--password-store=basic',
       '--use-mock-keychain',
+      '--enable-blink-features=IdleDetection',
     ];
     const {
       devtools = false,
