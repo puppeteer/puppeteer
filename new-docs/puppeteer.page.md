@@ -83,6 +83,7 @@ page.off('request', logRequest);
 |  [bringToFront()](./puppeteer.page.bringtofront.md) |  |  |
 |  [browser()](./puppeteer.page.browser.md) |  |  |
 |  [browserContext()](./puppeteer.page.browsercontext.md) |  |  |
+|  [clearIdleOverride()](./puppeteer.page.clearidleoverride.md) |  | Clears Idle state overrides. |
 |  [click(selector, options)](./puppeteer.page.click.md) |  |  |
 |  [close(options)](./puppeteer.page.close.md) |  |  |
 |  [content()](./puppeteer.page.content.md) |  |  |
@@ -120,6 +121,7 @@ page.off('request', logRequest);
 |  [setDefaultTimeout(timeout)](./puppeteer.page.setdefaulttimeout.md) |  |  |
 |  [setExtraHTTPHeaders(headers)](./puppeteer.page.setextrahttpheaders.md) |  |  |
 |  [setGeolocation(options)](./puppeteer.page.setgeolocation.md) |  | Sets the page's geolocation. |
+|  [setIdleOverride(isUserActive, isScreenUnlocked)](./puppeteer.page.setidleoverride.md) |  | Overrides the Idle state. |
 |  [setJavaScriptEnabled(enabled)](./puppeteer.page.setjavascriptenabled.md) |  |  |
 |  [setOfflineMode(enabled)](./puppeteer.page.setofflinemode.md) |  |  |
 |  [setRequestInterception(value)](./puppeteer.page.setrequestinterception.md) |  |  |
