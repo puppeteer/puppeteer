@@ -117,7 +117,7 @@
   * [page.coverage](#pagecoverage)
   * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
   * [page.emulate(options)](#pageemulateoptions)
-  * [page.emulateIdleState(options)](#pageemulateidlestateoptions)
+  * [page.emulateIdleState(overrides)](#pageemulateidlestateoverrides)
   * [page.emulateMediaFeatures(features)](#pageemulatemediafeaturesfeatures)
   * [page.emulateMediaType(type)](#pageemulatemediatypetype)
   * [page.emulateTimezone(timezoneId)](#pageemulatetimezonetimezoneid)
@@ -1342,10 +1342,10 @@ const iPhone = puppeteer.devices['iPhone 6'];
 
 List of all available devices is available in the source code: [src/common/DeviceDescriptors.ts](https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts).
 
-#### page.emulateIdleState(options)
-- `options` <?[Object]> If not set, clears emulation
+#### page.emulateIdleState(overrides)
+- `overrides` <?[Object]> If not set, clears emulation
   - `isUserActive` <[boolean]> **required**
-  - `isScreenUnlocked` <[string]> **required**
+  - `isScreenUnlocked` <[boolean]> **required**
 - returns: <[Promise]>
 
 #### page.emulateMediaFeatures(features)
