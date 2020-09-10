@@ -83,13 +83,13 @@ page.off('request', logRequest);
 |  [bringToFront()](./puppeteer.page.bringtofront.md) |  |  |
 |  [browser()](./puppeteer.page.browser.md) |  |  |
 |  [browserContext()](./puppeteer.page.browsercontext.md) |  |  |
-|  [clearIdleOverride()](./puppeteer.page.clearidleoverride.md) |  | Clears Idle state overrides. |
 |  [click(selector, options)](./puppeteer.page.click.md) |  |  |
 |  [close(options)](./puppeteer.page.close.md) |  |  |
 |  [content()](./puppeteer.page.content.md) |  |  |
 |  [cookies(urls)](./puppeteer.page.cookies.md) |  | If no URLs are specified, this method returns cookies for the current page URL. If URLs are specified, only cookies for those URLs are returned. |
 |  [deleteCookie(cookies)](./puppeteer.page.deletecookie.md) |  |  |
 |  [emulate(options)](./puppeteer.page.emulate.md) |  |  |
+|  [emulateIdleState(overrides)](./puppeteer.page.emulateidlestate.md) |  | Emulates the idle state. If no arguments set, clears idle state emulation. |
 |  [emulateMediaFeatures(features)](./puppeteer.page.emulatemediafeatures.md) |  |  |
 |  [emulateMediaType(type)](./puppeteer.page.emulatemediatype.md) |  |  |
 |  [emulateTimezone(timezoneId)](./puppeteer.page.emulatetimezone.md) |  |  |
@@ -121,7 +121,6 @@ page.off('request', logRequest);
 |  [setDefaultTimeout(timeout)](./puppeteer.page.setdefaulttimeout.md) |  |  |
 |  [setExtraHTTPHeaders(headers)](./puppeteer.page.setextrahttpheaders.md) |  |  |
 |  [setGeolocation(options)](./puppeteer.page.setgeolocation.md) |  | Sets the page's geolocation. |
-|  [setIdleOverride(isUserActive, isScreenUnlocked)](./puppeteer.page.setidleoverride.md) |  | Overrides the Idle state. |
 |  [setJavaScriptEnabled(enabled)](./puppeteer.page.setjavascriptenabled.md) |  |  |
 |  [setOfflineMode(enabled)](./puppeteer.page.setofflinemode.md) |  |  |
 |  [setRequestInterception(value)](./puppeteer.page.setrequestinterception.md) |  |  |
