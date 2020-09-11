@@ -296,7 +296,8 @@ node utils/bisect.js --good 686378 --bad 706915 script.js
 Releasing to npm consists of the following phases:
 
 1. Source Code: mark a release.
-    1. Bump `package.json` version following the SEMVER rules.
+    1. Bump `package.json` version following the SEMVER rules. 
+        - **NOTE**: bump major version in case of breaking changes. Bump minor version in case of rolling chrome.
     2. Run `npm run doc` to update the docs accordingly.
     3. Update the “Releases per Chromium Version” list in [`docs/api.md`](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md) to include the new version. Note: only do this when the Chrome revision is different from the previous release.
     4. Send a PR titled `'chore: mark version vXXX.YYY.ZZZ'` ([example](https://github.com/puppeteer/puppeteer/pull/5078)).
