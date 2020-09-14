@@ -80,7 +80,7 @@ describeFailsFirefox('Emulate idle state', () => {
     await page.emulateIdleState();
     await verifyState(initialState);
 
-    // Emulation idle state again after removing emulation
+    // Emulate idle state again after removing emulation.
     await page.emulateIdleState({
       isUserActive: false,
       isScreenUnlocked: false,
