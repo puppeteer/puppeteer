@@ -900,6 +900,21 @@ describe('Page', function () {
       );
       expect(result.x).toBe(7);
     });
+    it('should fallback to default export when passed a module object', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      var moduleObject = {
+        default: function(a, b) {
+                  return a * b;
+                }
+              };
+      // @ts-expect-error
+      await page.exposeFunction('compute', moduleObject);
+      const result = await page.evaluate(async function () {
+        return await globalThis.compute(9, 4);
+      });
+      expect(result).toBe(36);
+    });
   });
 
   describeFailsFirefox('Page.Events.PageError', function () {
@@ -1274,6 +1289,9 @@ describe('Page', function () {
         .catch((error_) => (error = error_));
       expect(error).toBeTruthy();
     });
+
+
+
   });
 
   describe('Page.addStyleTag', function () {
