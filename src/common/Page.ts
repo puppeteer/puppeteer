@@ -17,7 +17,6 @@
 import * as fs from 'fs';
 import { promisify } from 'util';
 import { EventEmitter } from './EventEmitter.js';
-import * as mime from 'mime';
 import {
   Connection,
   CDPSession,
@@ -1623,10 +1622,17 @@ export class Page extends EventEmitter {
       );
       screenshotType = options.type;
     } else if (options.path) {
-      const mimeType = mime.getType(options.path);
-      if (mimeType === 'image/png') screenshotType = 'png';
-      else if (mimeType === 'image/jpeg') screenshotType = 'jpeg';
-      assert(screenshotType, 'Unsupported screenshot mime type: ' + mimeType);
+      const filePath = options.path;
+      const extension = filePath
+        .slice(filePath.lastIndexOf('.') + 1)
+        .toLowerCase();
+      if (extension === 'png') screenshotType = 'png';
+      else if (extension === 'jpg' || extension === 'jpeg')
+        screenshotType = 'jpeg';
+      assert(
+        screenshotType,
+        `Unsupported screenshot type for extension \`.${extension}\``
+      );
     }
 
     if (!screenshotType) screenshotType = 'png';
