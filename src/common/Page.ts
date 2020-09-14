@@ -1444,6 +1444,40 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * Emulates the idle state.
+   * If no arguments set, clears idle state emulation.
+   *
+   * @example
+   * ```js
+   * // set idle emulation
+   * await page.emulateIdleState({isUserActive: true, isScreenUnlocked: false});
+   *
+   * // do some checks here
+   * ...
+   *
+   * // clear idle emulation
+   * await page.emulateIdleState();
+   * ```
+   *
+   * @param overrides Mock idle state. If not set, clears idle overrides
+   * @param isUserActive Mock isUserActive
+   * @param isScreenUnlocked Mock isScreenUnlocked
+   */
+  async emulateIdleState(overrides?: {
+    isUserActive: boolean;
+    isScreenUnlocked: boolean;
+  }): Promise<void> {
+    if (overrides) {
+      await this._client.send('Emulation.setIdleOverride', {
+        isUserActive: overrides.isUserActive,
+        isScreenUnlocked: overrides.isScreenUnlocked,
+      });
+    } else {
+      await this._client.send('Emulation.clearIdleOverride');
+    }
+  }
+
+  /**
    * Simulates the given vision deficiency on the page.
    *
    * @example

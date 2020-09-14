@@ -89,6 +89,7 @@ page.off('request', logRequest);
 |  [cookies(urls)](./puppeteer.page.cookies.md) |  | If no URLs are specified, this method returns cookies for the current page URL. If URLs are specified, only cookies for those URLs are returned. |
 |  [deleteCookie(cookies)](./puppeteer.page.deletecookie.md) |  |  |
 |  [emulate(options)](./puppeteer.page.emulate.md) |  |  |
+|  [emulateIdleState(overrides)](./puppeteer.page.emulateidlestate.md) |  | Emulates the idle state. If no arguments set, clears idle state emulation. |
 |  [emulateMediaFeatures(features)](./puppeteer.page.emulatemediafeatures.md) |  |  |
 |  [emulateMediaType(type)](./puppeteer.page.emulatemediatype.md) |  |  |
 |  [emulateTimezone(timezoneId)](./puppeteer.page.emulatetimezone.md) |  |  |
