@@ -263,7 +263,7 @@ describe('Frame specs', function () {
 
       expect(page.frames().length).toBe(2);
       expect(page.frames()[1].url()).toBe(
-        server.PREFIX + '/frames/frame.html&test=fragment'
+        server.PREFIX + '/frames/frame.html?param=value#fragment'
       );
     });
   });
