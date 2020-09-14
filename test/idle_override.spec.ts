@@ -48,7 +48,7 @@ describeFailsFirefox('Emulate idle state', () => {
 
     await page.goto(server.PREFIX + '/idle-detector.html');
 
-    // // InitialState can be idle as well.
+    // // Store initial state, as soon as it is not guaranteed to be `active, unlocked`.
     const initialState = await getIdleState();
 
     // Emulate Idle states and verify IdleDetector updates state accordingly.
