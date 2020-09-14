@@ -17,7 +17,6 @@
 import * as fs from 'fs';
 import { promisify } from 'util';
 import { EventEmitter } from './EventEmitter.js';
-import * as mime from 'mime';
 import {
   Connection,
   CDPSession,
@@ -60,6 +59,26 @@ import {
 import { PDFOptions, paperFormats } from './PDFOptions.js';
 
 const writeFileAsync = promisify(fs.writeFile);
+
+/**
+ * @param filePath - The desired screenshot file path.
+ * @returns The screenshot type as a string, either 'jpeg' or 'png'.
+ * Throws an exception for unknown JPEG/PNG file extensions.
+ */
+const getScreenshotType = (filePath: string) => {
+  const extension = filePath.slice(filePath.lastIndexOf('.') + 1).toLowerCase();
+  switch (extension) {
+    case 'png':
+      return 'png';
+    case 'jpg':
+    case 'jpeg':
+      return 'jpeg';
+    default:
+      throw new Error(
+        `Unsupported screenshot type for extension: \`.${extension}\``
+      );
+  }
+};
 
 /**
  * @public
@@ -1589,10 +1608,7 @@ export class Page extends EventEmitter {
       );
       screenshotType = options.type;
     } else if (options.path) {
-      const mimeType = mime.getType(options.path);
-      if (mimeType === 'image/png') screenshotType = 'png';
-      else if (mimeType === 'image/jpeg') screenshotType = 'jpeg';
-      assert(screenshotType, 'Unsupported screenshot mime type: ' + mimeType);
+      screenshotType = getScreenshotType(options.path);
     }
 
     if (!screenshotType) screenshotType = 'png';
