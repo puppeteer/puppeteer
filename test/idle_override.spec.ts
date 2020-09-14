@@ -76,8 +76,19 @@ describeFailsFirefox('Emulate idle state', () => {
     });
     await verifyState('Idle state: idle, unlocked.');
 
-    await page.emulateIdleState();
     // Remove Idle emulation and verify IdleDetector is in initial state.
+    await page.emulateIdleState();
+    await verifyState(initialState);
+
+    // Emulation idle state again after removing emulation
+    await page.emulateIdleState({
+      isUserActive: false,
+      isScreenUnlocked: false,
+    });
+    await verifyState('Idle state: idle, locked.');
+
+    // Remove emulation second time
+    await page.emulateIdleState();
     await verifyState(initialState);
   });
 });
