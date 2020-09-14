@@ -87,7 +87,7 @@ describeFailsFirefox('Emulate idle state', () => {
     });
     await verifyState('Idle state: idle, locked.');
 
-    // Remove emulation second time
+    // Remove emulation second time.
     await page.emulateIdleState();
     await verifyState(initialState);
   });
