@@ -61,26 +61,6 @@ import { PDFOptions, paperFormats } from './PDFOptions.js';
 const writeFileAsync = promisify(fs.writeFile);
 
 /**
- * @param filePath - The desired screenshot file path.
- * @returns The screenshot type as a string, either 'jpeg' or 'png'.
- * Throws an exception for unknown JPEG/PNG file extensions.
- */
-const getScreenshotType = (filePath: string) => {
-  const extension = filePath.slice(filePath.lastIndexOf('.') + 1).toLowerCase();
-  switch (extension) {
-    case 'png':
-      return 'png';
-    case 'jpg':
-    case 'jpeg':
-      return 'jpeg';
-    default:
-      throw new Error(
-        `Unsupported screenshot type for extension: \`.${extension}\``
-      );
-  }
-};
-
-/**
  * @public
  */
 export interface Metrics {
@@ -1608,7 +1588,17 @@ export class Page extends EventEmitter {
       );
       screenshotType = options.type;
     } else if (options.path) {
-      screenshotType = getScreenshotType(options.path);
+      const filePath = options.path;
+      const extension = filePath
+        .slice(filePath.lastIndexOf('.') + 1)
+        .toLowerCase();
+      if (extension === 'png') screenshotType = 'png';
+      else if (extension === 'jpg' || extension === 'jpeg')
+        screenshotType = 'jpeg';
+      assert(
+        screenshotType,
+        `Unsupported screenshot type for extension \`.${extension}\``
+      );
     }
 
     if (!screenshotType) screenshotType = 'png';
