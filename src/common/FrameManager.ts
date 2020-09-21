@@ -228,7 +228,7 @@ export class FrameManager extends EventEmitter {
     debug('puppeteer:frame')(
       `The frame '${event.targetInfo.targetId}' moved to another session. ` +
         `Out-of-proccess iFrames (OOPIF) are not supported by Puppeteer yet. ` +
-        `The feature-request: https://github.com/puppeteer/puppeteer/issues/2548`
+        `https://github.com/puppeteer/puppeteer/issues/2548`
     );
   }
 
