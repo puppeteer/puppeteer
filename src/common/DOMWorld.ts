@@ -37,12 +37,17 @@ import {
 } from './EvalTypes.js';
 import { isNode } from '../environment.js';
 
-// This predicateQueryHandler is declared here so that TypeScript knows about it
-// when it is used in the predicate function below.
+// predicateQueryHandler and checkWaitForOptions are declared here so that
+// TypeScript knows about them when used in the predicate function below.
 declare const predicateQueryHandler: (
   element: Element | Document,
   selector: string
 ) => Element | Element[] | NodeListOf<Element>;
+declare const checkWaitForOptions: (
+  node: Node,
+  waitForVisible: boolean,
+  waitForHidden: boolean
+) => Element | null | boolean;
 
 /**
  * @public
@@ -457,48 +462,9 @@ export class DOMWorld {
     await handle.dispose();
   }
 
-  waitForSelector(
+  async waitForSelector(
     selector: string,
     options: WaitForSelectorOptions
-  ): Promise<ElementHandle | null> {
-    return this._waitForSelectorOrXPath(selector, false, options);
-  }
-
-  waitForXPath(
-    xpath: string,
-    options: WaitForSelectorOptions
-  ): Promise<ElementHandle | null> {
-    return this._waitForSelectorOrXPath(xpath, true, options);
-  }
-
-  waitForFunction(
-    pageFunction: Function | string,
-    options: { polling?: string | number; timeout?: number } = {},
-    ...args: SerializableOrJSHandle[]
-  ): Promise<JSHandle> {
-    const {
-      polling = 'raf',
-      timeout = this._timeoutSettings.timeout(),
-    } = options;
-    return new WaitTask(
-      this,
-      pageFunction,
-      undefined,
-      'function',
-      polling,
-      timeout,
-      ...args
-    ).promise;
-  }
-
-  async title(): Promise<string> {
-    return this.evaluate(() => document.title);
-  }
-
-  private async _waitForSelectorOrXPath(
-    selectorOrXPath: string,
-    isXPath: boolean,
-    options: WaitForSelectorOptions = {}
   ): Promise<ElementHandle | null> {
     const {
       visible: waitForVisible = false,
@@ -506,48 +472,103 @@ export class DOMWorld {
       timeout = this._timeoutSettings.timeout(),
     } = options;
     const polling = waitForVisible || waitForHidden ? 'raf' : 'mutation';
-    const title = `${isXPath ? 'XPath' : 'selector'} "${selectorOrXPath}"${
+    const title = `selector \`${selector}\`${
       waitForHidden ? ' to be hidden' : ''
     }`;
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selectorOrXPath
+      selector
     );
+    function predicate(
+      selector: string,
+      waitForVisible: boolean,
+      waitForHidden: boolean
+    ): Node | null | boolean {
+      const node = predicateQueryHandler
+        ? (predicateQueryHandler(document, selector) as Element)
+        : document.querySelector(selector);
+      return checkWaitForOptions(node, waitForVisible, waitForHidden);
+    }
     const waitTask = new WaitTask(
       this,
-      predicate,
-      queryHandler.queryOne,
+      this._makePredicateString(predicate, queryHandler.queryOne),
       title,
       polling,
       timeout,
       updatedSelector,
-      isXPath,
       waitForVisible,
       waitForHidden
     );
-    const handle = await waitTask.promise;
-    if (!handle.asElement()) {
-      await handle.dispose();
+    const jsHandle = await waitTask.promise;
+    const elementHandle = jsHandle.asElement();
+    if (!elementHandle) {
+      await jsHandle.dispose();
       return null;
     }
-    return handle.asElement();
+    return elementHandle;
+  }
 
+  async waitForXPath(
+    xpath: string,
+    options: WaitForSelectorOptions
+  ): Promise<ElementHandle | null> {
+    const {
+      visible: waitForVisible = false,
+      hidden: waitForHidden = false,
+      timeout = this._timeoutSettings.timeout(),
+    } = options;
+    const polling = waitForVisible || waitForHidden ? 'raf' : 'mutation';
+    const title = `XPath \`${xpath}\`${waitForHidden ? ' to be hidden' : ''}`;
     function predicate(
-      selectorOrXPath: string,
-      isXPath: boolean,
+      xpath: string,
       waitForVisible: boolean,
       waitForHidden: boolean
     ): Node | null | boolean {
-      const node = isXPath
-        ? document.evaluate(
-            selectorOrXPath,
-            document,
-            null,
-            XPathResult.FIRST_ORDERED_NODE_TYPE,
-            null
-          ).singleNodeValue
-        : predicateQueryHandler
-        ? (predicateQueryHandler(document, selectorOrXPath) as Element)
-        : document.querySelector(selectorOrXPath);
+      const node = document.evaluate(
+        xpath,
+        document,
+        null,
+        XPathResult.FIRST_ORDERED_NODE_TYPE,
+        null
+      ).singleNodeValue;
+      return checkWaitForOptions(node, waitForVisible, waitForHidden);
+    }
+    const waitTask = new WaitTask(
+      this,
+      this._makePredicateString(predicate),
+      title,
+      polling,
+      timeout,
+      xpath,
+      waitForVisible,
+      waitForHidden
+    );
+    const jsHandle = await waitTask.promise;
+    const elementHandle = jsHandle.asElement();
+    if (!elementHandle) {
+      await jsHandle.dispose();
+      return null;
+    }
+    return elementHandle;
+  }
+
+  private _makePredicateString(
+    predicate: Function,
+    predicateQueryHandler?: Function
+  ): string {
+    const predicateQueryHandlerDef = predicateQueryHandler
+      ? `const predicateQueryHandler = ${predicateQueryHandler};`
+      : '';
+    return `
+    (() => {
+      ${predicateQueryHandlerDef}
+      const checkWaitForOptions = ${checkWaitForOptions};
+      return (${predicate})(...args)
+    })() `;
+    function checkWaitForOptions(
+      node: Node,
+      waitForVisible: boolean,
+      waitForHidden: boolean
+    ): Node | null | boolean {
       if (!node) return waitForHidden;
       if (!waitForVisible && !waitForHidden) return node;
       const element =
@@ -568,6 +589,29 @@ export class DOMWorld {
       }
     }
   }
+
+  waitForFunction(
+    pageFunction: Function | string,
+    options: { polling?: string | number; timeout?: number } = {},
+    ...args: SerializableOrJSHandle[]
+  ): Promise<JSHandle> {
+    const {
+      polling = 'raf',
+      timeout = this._timeoutSettings.timeout(),
+    } = options;
+    return new WaitTask(
+      this,
+      pageFunction,
+      'function',
+      polling,
+      timeout,
+      ...args
+    ).promise;
+  }
+
+  async title(): Promise<string> {
+    return this.evaluate(() => document.title);
+  }
 }
 
 class WaitTask {
@@ -586,7 +630,6 @@ class WaitTask {
   constructor(
     domWorld: DOMWorld,
     predicateBody: Function | string,
-    predicateQueryHandlerBody: Function | string | undefined,
     title: string,
     polling: string | number,
     timeout: number,
@@ -601,28 +644,15 @@ class WaitTask {
       assert(polling > 0, 'Cannot poll with non-positive interval: ' + polling);
     else throw new Error('Unknown polling options: ' + polling);
 
-    function getPredicateBody(
-      predicateBody: Function | string,
-      predicateQueryHandlerBody: Function | string
-    ) {
+    function getPredicateBody(predicateBody: Function | string) {
       if (helper.isString(predicateBody)) return `return (${predicateBody});`;
-      if (predicateQueryHandlerBody) {
-        return `
-          return (function wrapper(args) {
-            const predicateQueryHandler = ${predicateQueryHandlerBody};
-            return (${predicateBody})(...args);
-          })(args);`;
-      }
       return `return (${predicateBody})(...args);`;
     }
 
     this._domWorld = domWorld;
     this._polling = polling;
     this._timeout = timeout;
-    this._predicateBody = getPredicateBody(
-      predicateBody,
-      predicateQueryHandlerBody
-    );
+    this._predicateBody = getPredicateBody(predicateBody);
     this._args = args;
     this._runCount = 0;
     domWorld._waitTasks.add(this);

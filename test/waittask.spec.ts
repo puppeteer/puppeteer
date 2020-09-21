@@ -608,7 +608,7 @@ describe('waittask specs', function () {
         .catch((error_) => (error = error_));
       expect(error).toBeTruthy();
       expect(error.message).toContain(
-        'waiting for selector "div" failed: timeout'
+        'waiting for selector `div` failed: timeout'
       );
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
@@ -622,7 +622,7 @@ describe('waittask specs', function () {
         .catch((error_) => (error = error_));
       expect(error).toBeTruthy();
       expect(error.message).toContain(
-        'waiting for selector "div" to be hidden failed: timeout'
+        'waiting for selector `div` to be hidden failed: timeout'
       );
     });
 
@@ -659,7 +659,7 @@ describe('waittask specs', function () {
       await page
         .waitForSelector('.zombo', { timeout: 10 })
         .catch((error_) => (error = error_));
-      expect(error.stack).toContain('waiting for selector ".zombo" failed');
+      expect(error.stack).toContain('waiting for selector `.zombo` failed');
       // The extension is ts here as Mocha maps back via sourcemaps.
       expect(error.stack).toContain('waittask.spec.ts');
     });
@@ -692,7 +692,7 @@ describe('waittask specs', function () {
         .catch((error_) => (error = error_));
       expect(error).toBeTruthy();
       expect(error.message).toContain(
-        'waiting for XPath "//div" failed: timeout'
+        'waiting for XPath `//div` failed: timeout'
       );
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
