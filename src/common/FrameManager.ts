@@ -42,7 +42,6 @@ import {
   UnwrapPromiseLike,
 } from './EvalTypes.js';
 
-const debugFrames = debug('puppeteer:frame');
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
 /**
@@ -226,9 +225,9 @@ export class FrameManager extends EventEmitter {
 
     // TODO(sadym): Remove debug message oncle the proper OOPIF is implemented:
     // https://github.com/puppeteer/puppeteer/issues/2548
-    debugFrames(
+    debug('puppeteer:frame')(
       `The frame '${event.targetInfo.targetId}' moved to another session. ` +
-        `Out of proccess iFrames (OOPIF) are not supported by Puppeteer yet. ` +
+        `Out-of-proccess iFrames (OOPIF) are not supported by Puppeteer yet. ` +
         `The feature-request: https://github.com/puppeteer/puppeteer/issues/2548`
     );
   }
