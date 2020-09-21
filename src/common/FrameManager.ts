@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { debug } from '../common/Debug.js';
+
 import { EventEmitter } from './EventEmitter.js';
 import { assert } from './assert.js';
 import { helper, debugError } from './helper.js';
@@ -110,6 +112,9 @@ export class FrameManager extends EventEmitter {
     );
     this._client.on('Page.lifecycleEvent', (event) =>
       this._onLifecycleEvent(event)
+    );
+    this._client.on('Target.attachedToTarget', async (event) =>
+      this._onFrameMoved(event)
     );
   }
 
@@ -211,6 +216,20 @@ export class FrameManager extends EventEmitter {
     watcher.dispose();
     if (error) throw error;
     return watcher.navigationResponse();
+  }
+
+  private async _onFrameMoved(event: Protocol.Target.AttachedToTargetEvent) {
+    if (event.targetInfo.type !== 'iframe') {
+      return;
+    }
+
+    // TODO(sadym): Remove debug message once proper OOPIF support is
+    // implemented: https://github.com/puppeteer/puppeteer/issues/2548
+    debug('puppeteer:frame')(
+      `The frame '${event.targetInfo.targetId}' moved to another session. ` +
+        `Out-of-process iframes (OOPIF) are not supported by Puppeteer yet. ` +
+        `https://github.com/puppeteer/puppeteer/issues/2548`
+    );
   }
 
   _onLifecycleEvent(event: Protocol.Page.LifecycleEventEvent): void {
