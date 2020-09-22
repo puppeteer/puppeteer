@@ -672,6 +672,7 @@ export class BrowserContext extends EventEmitter {
       ['clipboard-read', 'clipboardReadWrite'],
       ['clipboard-write', 'clipboardReadWrite'],
       ['payment-handler', 'paymentHandler'],
+      ['idle-detection', 'idleDetection'],
       // chrome-specific permissions we have.
       ['midi-sysex', 'midiSysex'],
     ]);
