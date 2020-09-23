@@ -14,7 +14,33 @@
  * limitations under the License.
  */
 
-export interface QueryHandler {
+import { WaitForSelectorOptions, DOMWorld } from './DOMWorld.js';
+import { ElementHandle, JSHandle } from './JSHandle.js';
+
+/**
+ * @internal
+ */
+interface InternalQueryHandler {
+  queryOne?: (
+    element: ElementHandle,
+    selector: string
+  ) => Promise<ElementHandle | null>;
+  waitFor?: (
+    domWorld: DOMWorld,
+    selector: string,
+    options: WaitForSelectorOptions
+  ) => Promise<ElementHandle | null>;
+  queryAll?: (
+    element: ElementHandle,
+    selector: string
+  ) => Promise<ElementHandle[]>;
+  queryAllArray?: (
+    element: ElementHandle,
+    selector: string
+  ) => Promise<JSHandle>;
+}
+
+export interface CustomQueryHandler {
   queryOne?: (element: Element | Document, selector: string) => Element | null;
   queryAll?: (
     element: Element | Document,
@@ -22,54 +48,103 @@ export interface QueryHandler {
   ) => Element[] | NodeListOf<Element>;
 }
 
-const _customQueryHandlers = new Map<string, QueryHandler>();
+function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
+  const internalHandler: InternalQueryHandler = {};
+
+  if (handler.queryOne) {
+    internalHandler.queryOne = async (element, selector) => {
+      const jsHandle = await element.evaluateHandle(handler.queryOne, selector);
+      const elementHandle = jsHandle.asElement();
+      if (elementHandle) return elementHandle;
+      await jsHandle.dispose();
+      return null;
+    };
+    internalHandler.waitFor = (
+      domWorld: DOMWorld,
+      selector: string,
+      options: WaitForSelectorOptions
+    ) => domWorld.waitForSelectorInPage(handler.queryOne, selector, options);
+  }
+
+  if (handler.queryAll) {
+    internalHandler.queryAll = async (element, selector) => {
+      const jsHandle = await element.evaluateHandle(handler.queryAll, selector);
+      const properties = await jsHandle.getProperties();
+      await jsHandle.dispose();
+      const result = [];
+      for (const property of properties.values()) {
+        const elementHandle = property.asElement();
+        if (elementHandle) result.push(elementHandle);
+      }
+      return result;
+    };
+    internalHandler.queryAllArray = async (element, selector) => {
+      const resultHandle = await element.evaluateHandle(
+        handler.queryAll,
+        selector
+      );
+      const arrayHandle = await resultHandle.evaluateHandle(
+        (res: Element[] | NodeListOf<Element>) => Array.from(res)
+      );
+      return arrayHandle;
+    };
+  }
+
+  return internalHandler;
+}
+
+const _queryHandlers = new Map<string, InternalQueryHandler>();
+const _defaultHandler = makeQueryHandler({
+  queryOne: (element: Element, selector: string) =>
+    element.querySelector(selector),
+  queryAll: (element: Element, selector: string) =>
+    element.querySelectorAll(selector),
+});
 
 export function registerCustomQueryHandler(
   name: string,
-  handler: QueryHandler
+  handler: CustomQueryHandler
 ): void {
-  if (_customQueryHandlers.get(name))
+  if (_queryHandlers.get(name))
     throw new Error(`A custom query handler named "${name}" already exists`);
 
   const isValidName = /^[a-zA-Z]+$/.test(name);
   if (!isValidName)
     throw new Error(`Custom query handler names may only contain [a-zA-Z]`);
 
-  _customQueryHandlers.set(name, handler);
+  const internalHandler = makeQueryHandler(handler);
+
+  _queryHandlers.set(name, internalHandler);
 }
 
 /**
  * @param {string} name
  */
 export function unregisterCustomQueryHandler(name: string): void {
-  _customQueryHandlers.delete(name);
+  if (_queryHandlers.has(name)) {
+    _queryHandlers.delete(name);
+  }
 }
 
-export function customQueryHandlers(): Map<string, QueryHandler> {
-  return _customQueryHandlers;
+export function customQueryHandlerNames(): string[] {
+  return [..._queryHandlers.keys()];
 }
 
-export function clearQueryHandlers(): void {
-  _customQueryHandlers.clear();
+export function clearCustomQueryHandlers(): void {
+  _queryHandlers.clear();
 }
 
 export function getQueryHandlerAndSelector(
   selector: string
-): { updatedSelector: string; queryHandler: QueryHandler } {
-  const defaultHandler = {
-    queryOne: (element: Element, selector: string) =>
-      element.querySelector(selector),
-    queryAll: (element: Element, selector: string) =>
-      element.querySelectorAll(selector),
-  };
+): { updatedSelector: string; queryHandler: InternalQueryHandler } {
   const hasCustomQueryHandler = /^[a-zA-Z]+\//.test(selector);
   if (!hasCustomQueryHandler)
-    return { updatedSelector: selector, queryHandler: defaultHandler };
+    return { updatedSelector: selector, queryHandler: _defaultHandler };
 
   const index = selector.indexOf('/');
   const name = selector.slice(0, index);
   const updatedSelector = selector.slice(index + 1);
-  const queryHandler = customQueryHandlers().get(name);
+  const queryHandler = _queryHandlers.get(name);
   if (!queryHandler)
     throw new Error(
       `Query set to use "${name}", but no query handler of that name was found`
