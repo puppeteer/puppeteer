@@ -466,6 +466,20 @@ export class DOMWorld {
     selector: string,
     options: WaitForSelectorOptions
   ): Promise<ElementHandle | null> {
+    const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
+      selector
+    );
+    return queryHandler.waitFor(this, updatedSelector, options);
+  }
+
+  /**
+   * @internal
+   */
+  async waitForSelectorInPage(
+    queryOne: Function,
+    selector: string,
+    options: WaitForSelectorOptions
+  ): Promise<ElementHandle | null> {
     const {
       visible: waitForVisible = false,
       hidden: waitForHidden = false,
@@ -475,9 +489,6 @@ export class DOMWorld {
     const title = `selector \`${selector}\`${
       waitForHidden ? ' to be hidden' : ''
     }`;
-    const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector
-    );
     function predicate(
       selector: string,
       waitForVisible: boolean,
@@ -490,11 +501,11 @@ export class DOMWorld {
     }
     const waitTask = new WaitTask(
       this,
-      this._makePredicateString(predicate, queryHandler.queryOne),
+      this._makePredicateString(predicate, queryOne),
       title,
       polling,
       timeout,
-      updatedSelector,
+      selector,
       waitForVisible,
       waitForHidden
     );

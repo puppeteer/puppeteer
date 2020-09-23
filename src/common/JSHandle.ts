@@ -777,15 +777,7 @@ export class ElementHandle<
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
       selector
     );
-
-    const handle = await this.evaluateHandle(
-      queryHandler.queryOne,
-      updatedSelector
-    );
-    const element = handle.asElement();
-    if (element) return element;
-    await handle.dispose();
-    return null;
+    return queryHandler.queryOne(this, updatedSelector);
   }
 
   /**
@@ -796,19 +788,7 @@ export class ElementHandle<
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
       selector
     );
-
-    const handles = await this.evaluateHandle(
-      queryHandler.queryAll,
-      updatedSelector
-    );
-    const properties = await handles.getProperties();
-    await handles.dispose();
-    const result = [];
-    for (const property of properties.values()) {
-      const elementHandle = property.asElement();
-      if (elementHandle) result.push(elementHandle);
-    }
-    return result;
+    return queryHandler.queryAll(this, updatedSelector);
   }
 
   /**
@@ -892,15 +872,7 @@ export class ElementHandle<
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
       selector
     );
-    const queryHandlerToArray = Function(
-      'element',
-      'selector',
-      `return Array.from((${queryHandler.queryAll})(element, selector));`
-    ) as (...args: unknown[]) => unknown;
-    const arrayHandle = await this.evaluateHandle(
-      queryHandlerToArray,
-      updatedSelector
-    );
+    const arrayHandle = await queryHandler.queryAllArray(this, updatedSelector);
     const result = await arrayHandle.evaluate<
       (
         elements: Element[],
