@@ -214,6 +214,7 @@
 - [class: ConsoleMessage](#class-consolemessage)
   * [consoleMessage.args()](#consolemessageargs)
   * [consoleMessage.location()](#consolemessagelocation)
+  * [consoleMessage.stackTrace()](#consolemessagestacktrace)
   * [consoleMessage.text()](#consolemessagetext)
   * [consoleMessage.type()](#consolemessagetype)
 - [class: Frame](#class-frame)
@@ -2748,6 +2749,12 @@ const puppeteer = require('puppeteer');
 
 #### consoleMessage.location()
 - returns: <[Object]>
+  - `url` <[string]> URL of the resource if known or `undefined` otherwise.
+  - `lineNumber` <[number]> 0-based line number in the resource if known or `undefined` otherwise.
+  - `columnNumber` <[number]> 0-based column number in the resource if known or `undefined` otherwise.
+
+#### consoleMessage.stackTrace()
+- returns: <[Array]<[Object]>>
   - `url` <[string]> URL of the resource if known or `undefined` otherwise.
   - `lineNumber` <[number]> 0-based line number in the resource if known or `undefined` otherwise.
   - `columnNumber` <[number]> 0-based column number in the resource if known or `undefined` otherwise.

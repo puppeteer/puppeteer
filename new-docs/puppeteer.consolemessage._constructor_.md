@@ -9,7 +9,7 @@ Constructs a new instance of the `ConsoleMessage` class
 <b>Signature:</b>
 
 ```typescript
-constructor(type: ConsoleMessageType, text: string, args: JSHandle[], location?: ConsoleMessageLocation);
+constructor(type: ConsoleMessageType, text: string, args: JSHandle[], stackTraceLocations: ConsoleMessageLocation[]);
 ```
 
 ## Parameters
@@ -19,5 +19,5 @@ constructor(type: ConsoleMessageType, text: string, args: JSHandle[], location?:
 |  type | [ConsoleMessageType](./puppeteer.consolemessagetype.md) |  |
 |  text | string |  |
 |  args | [JSHandle](./puppeteer.jshandle.md)<!-- -->\[\] |  |
-|  location | [ConsoleMessageLocation](./puppeteer.consolemessagelocation.md) |  |
+|  stackTraceLocations | [ConsoleMessageLocation](./puppeteer.consolemessagelocation.md)<!-- -->\[\] |  |
 
