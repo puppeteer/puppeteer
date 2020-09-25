@@ -31,6 +31,7 @@ import {
   WrapElementHandle,
   UnwrapPromiseLike,
 } from './EvalTypes.js';
+import { isNode } from '../environment.js';
 
 export interface BoxModel {
   content: Array<{ x: number; y: number }>;
@@ -556,22 +557,22 @@ export class ElementHandle<
       'Multiple file uploads only work with <input type=file multiple>'
     );
 
+    if (!isNode) {
+      throw new Error(
+        `JSHandle#uploadFile can only be used in Node environments.`
+      );
+    }
     // This import is only needed for `uploadFile`, so keep it scoped here to avoid paying
     // the cost unnecessarily.
+    const path = await import('path');
     // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const path = require('path');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const fs = require('fs');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { promisify } = require('util');
-    const access = promisify(fs.access);
-
+    const fs = await import('fs');
     // Locate all files and confirm that they exist.
     const files = await Promise.all(
       filePaths.map(async (filePath) => {
         const resolvedPath: string = path.resolve(filePath);
         try {
-          await access(resolvedPath, fs.constants.R_OK);
+          await fs.promises.access(resolvedPath, fs.constants.R_OK);
         } catch (error) {
           if (error.code === 'ENOENT')
             throw new Error(`${filePath} does not exist or is not readable`);

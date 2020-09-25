@@ -17,14 +17,9 @@ import { TimeoutError } from './Errors.js';
 import { debug } from './Debug.js';
 import * as fs from 'fs';
 import { CDPSession } from './Connection.js';
-import { promisify } from 'util';
 import { Protocol } from 'devtools-protocol';
 import { CommonEventEmitter } from './EventEmitter.js';
 import { assert } from './assert.js';
-
-const openAsync = promisify(fs.open);
-const writeAsync = promisify(fs.write);
-const closeAsync = promisify(fs.close);
 
 export const debugError = debug('puppeteer:error');
 
@@ -207,8 +202,10 @@ async function readProtocolStream(
   path?: string
 ): Promise<Buffer> {
   let eof = false;
-  let file;
-  if (path) file = await openAsync(path, 'w');
+  let fileHandle: fs.promises.FileHandle;
+  if (path) {
+    fileHandle = await fs.promises.open(path, 'w');
+  }
   const bufs = [];
   while (!eof) {
     const response = await client.send('IO.read', { handle });
@@ -218,9 +215,9 @@ async function readProtocolStream(
       response.base64Encoded ? 'base64' : undefined
     );
     bufs.push(buf);
-    if (path) await writeAsync(file, buf);
+    if (path) await fs.promises.writeFile(fileHandle, buf);
   }
-  if (path) await closeAsync(file);
+  if (path) await fileHandle.close();
   await client.send('IO.close', { handle });
   let resultBuffer = null;
   try {
