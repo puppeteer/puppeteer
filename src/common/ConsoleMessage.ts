@@ -110,7 +110,7 @@ export class ConsoleMessage {
    * @returns The location of the console message.
    */
   location(): ConsoleMessageLocation {
-    return this._stackTraceLocations[0] ?? {};
+    return this._stackTraceLocations.length ? this._stackTraceLocations[0] : {};
   }
 
   /**
