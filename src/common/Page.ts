@@ -605,7 +605,7 @@ export class Page extends EventEmitter {
     if (source !== 'worker')
       this.emit(
         PageEmittedEvents.Console,
-        new ConsoleMessage(level, text, [], { url, lineNumber })
+        new ConsoleMessage(level, text, [], [{ url, lineNumber }])
       );
   }
 
@@ -1230,19 +1230,21 @@ export class Page extends EventEmitter {
       if (remoteObject.objectId) textTokens.push(arg.toString());
       else textTokens.push(helper.valueFromRemoteObject(remoteObject));
     }
-    const location =
-      stackTrace && stackTrace.callFrames.length
-        ? {
-            url: stackTrace.callFrames[0].url,
-            lineNumber: stackTrace.callFrames[0].lineNumber,
-            columnNumber: stackTrace.callFrames[0].columnNumber,
-          }
-        : {};
+    const stackTraceLocations = [];
+    if (stackTrace) {
+      for (const callFrame of stackTrace.callFrames) {
+        stackTraceLocations.push({
+          url: callFrame.url,
+          lineNumber: callFrame.lineNumber,
+          columnNumber: callFrame.columnNumber,
+        });
+      }
+    }
     const message = new ConsoleMessage(
       type,
       textTokens.join(' '),
       args,
-      location
+      stackTraceLocations
     );
     this.emit(PageEmittedEvents.Console, message);
   }

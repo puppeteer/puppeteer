@@ -548,7 +548,7 @@ describe('Page', function () {
         lineNumber: undefined,
       });
     });
-    it('should have location for console API calls', async () => {
+    it('should have location and stack trace for console API calls', async () => {
       const { page, server, isChrome } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
@@ -560,9 +560,26 @@ describe('Page', function () {
       expect(message.type()).toBe('log');
       expect(message.location()).toEqual({
         url: server.PREFIX + '/consolelog.html',
-        lineNumber: 7,
-        columnNumber: isChrome ? 14 : 6, // console.|log vs |console.log
+        lineNumber: 8,
+        columnNumber: isChrome ? 16 : 8, // console.|log vs |console.log
       });
+      expect(message.stackTrace()).toEqual([
+        {
+          url: server.PREFIX + '/consolelog.html',
+          lineNumber: 8,
+          columnNumber: isChrome ? 16 : 8, // console.|log vs |console.log
+        },
+        {
+          url: server.PREFIX + '/consolelog.html',
+          lineNumber: 11,
+          columnNumber: 8,
+        },
+        {
+          url: server.PREFIX + '/consolelog.html',
+          lineNumber: 13,
+          columnNumber: 6,
+        },
+      ]);
     });
     // @see https://github.com/puppeteer/puppeteer/issues/3865
     it('should not throw when there are console messages in detached iframes', async () => {
