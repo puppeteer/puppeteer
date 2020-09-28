@@ -275,12 +275,8 @@ export class DOMWorld {
           'Cannot pass a filepath to addScriptTag in the browser environment.'
         );
       }
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const fs = require('fs');
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { promisify } = require('util');
-      const readFileAsync = promisify(fs.readFile);
-      let contents = await readFileAsync(path, 'utf8');
+      const fs = await import('fs');
+      let contents = await fs.promises.readFile(path, 'utf8');
       contents += '//# sourceURL=' + path.replace(/\n/g, '');
       const context = await this.executionContext();
       return (
@@ -361,12 +357,8 @@ export class DOMWorld {
           'Cannot pass a filepath to addStyleTag in the browser environment.'
         );
       }
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const fs = require('fs');
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const { promisify } = require('util');
-      const readFileAsync = promisify(fs.readFile);
-      let contents = await readFileAsync(path, 'utf8');
+      const fs = await import('fs');
+      let contents = await fs.promises.readFile(path, 'utf8');
       contents += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
       const context = await this.executionContext();
       return (

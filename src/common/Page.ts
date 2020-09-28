@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import * as fs from 'fs';
-import { promisify } from 'util';
 import { EventEmitter } from './EventEmitter.js';
 import {
   Connection,
@@ -57,8 +55,7 @@ import {
   UnwrapPromiseLike,
 } from './EvalTypes.js';
 import { PDFOptions, paperFormats } from './PDFOptions.js';
-
-const writeFileAsync = promisify(fs.writeFile);
+import { isNode } from '../environment.js';
 
 /**
  * @public
@@ -1750,7 +1747,13 @@ export class Page extends EventEmitter {
       options.encoding === 'base64'
         ? result.data
         : Buffer.from(result.data, 'base64');
-    if (options.path) await writeFileAsync(options.path, buffer);
+    if (!isNode && options.path) {
+      throw new Error(
+        'Screenshots can only be written to a file path in a Node environment.'
+      );
+    }
+    const fs = await import('fs');
+    if (options.path) await fs.promises.writeFile(options.path, buffer);
     return buffer;
 
     function processClip(
