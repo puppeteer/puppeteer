@@ -15,7 +15,7 @@
  */
 
 import { assert } from './assert.js';
-import { helper } from './helper.js';
+import { helper, debugError } from './helper.js';
 import {
   LifecycleWatcher,
   PuppeteerLifeCycleEvent,
@@ -36,13 +36,14 @@ import {
   UnwrapPromiseLike,
 } from './EvalTypes.js';
 import { isNode } from '../environment.js';
+import { Protocol } from 'devtools-protocol';
 
 // predicateQueryHandler and checkWaitForOptions are declared here so that
 // TypeScript knows about them when used in the predicate function below.
 declare const predicateQueryHandler: (
   element: Element | Document,
   selector: string
-) => Element | Element[] | NodeListOf<Element>;
+) => Promise<Element | Element[] | NodeListOf<Element>>;
 declare const checkWaitForOptions: (
   node: Node,
   waitForVisible: boolean,
@@ -76,6 +77,8 @@ export class DOMWorld {
    */
   _waitTasks = new Set<WaitTask>();
 
+  private _ctxBindings = new Map<string, Function>();
+
   constructor(
     frameManager: FrameManager,
     frame: Frame,
@@ -85,16 +88,22 @@ export class DOMWorld {
     this._frame = frame;
     this._timeoutSettings = timeoutSettings;
     this._setContext(null);
+    frameManager._client.on('Runtime.bindingCalled', (event) =>
+      this._onBindingCalled(event)
+    );
   }
 
   frame(): Frame {
     return this._frame;
   }
 
-  _setContext(context?: ExecutionContext): void {
+  async _setContext(context?: ExecutionContext): Promise<void> {
     if (context) {
       this._contextResolveCallback.call(null, context);
       this._contextResolveCallback = null;
+      for (const name of this._ctxBindings.keys()) {
+        await this.addBindingToContext(name);
+      }
       for (const waitTask of this._waitTasks) waitTask.rerun();
     } else {
       this._documentPromise = null;
@@ -475,6 +484,73 @@ export class DOMWorld {
   /**
    * @internal
    */
+  async addBindingToContext(name: string) {
+    const expression = helper.pageBindingInitString('internal', name);
+    try {
+      const context = await this.executionContext();
+      await context._client.send('Runtime.addBinding', {
+        name,
+        executionContextId: context._contextId,
+      });
+      await context.evaluate(expression);
+    } catch (error) {
+      // When the page is navigated, the promise is rejected.
+      // We will try again in the new execution context.
+      if (error.message.includes('Execution context was destroyed')) return;
+      // We could have tried to evaluate in a context which was already
+      // destroyed.
+      if (error.message.includes('Cannot find context with specified id'))
+        return;
+      debugError(error);
+    }
+  }
+
+  /**
+   * @internal
+   */
+  async addBinding(name: string, puppeteerFunction: Function): Promise<void> {
+    if (this._ctxBindings.has(name))
+      throw new Error(
+        `Failed to add page binding with name ${name}: window['${name}'] already exists!`
+      );
+    this._ctxBindings.set(name, puppeteerFunction);
+    await this.addBindingToContext(name);
+  }
+
+  /**
+   * @internal
+   */
+  hasBinding(name: string): boolean {
+    return this._ctxBindings.has(name);
+  }
+
+  private async _onBindingCalled(
+    event: Protocol.Runtime.BindingCalledEvent
+  ): Promise<void> {
+    let jsonPayload = null;
+    try {
+      jsonPayload = JSON.parse(event.payload);
+    } catch {
+      // Binding must have been called before initializing the wrapper.
+      // Ignore event for now. TODO: figure out how to avoid this situation
+      return;
+    }
+    const { type, name, seq, args } = jsonPayload;
+    if (type !== 'internal' || !this._ctxBindings.has(name)) return;
+    if (!this._hasContext()) return;
+    const context = await this.executionContext();
+    if (context._contextId !== event.executionContextId) return;
+    const result = await this._ctxBindings.get(name)(...args);
+    context.evaluate(deliverResult, name, seq, result);
+    function deliverResult(name: string, seq: number, result: unknown): void {
+      window[name].callbacks.get(seq).resolve(result);
+      window[name].callbacks.delete(seq);
+    }
+  }
+
+  /**
+   * @internal
+   */
   async waitForSelectorInPage(
     queryOne: Function,
     selector: string,
@@ -489,19 +565,19 @@ export class DOMWorld {
     const title = `selector \`${selector}\`${
       waitForHidden ? ' to be hidden' : ''
     }`;
-    function predicate(
+    async function predicate(
       selector: string,
       waitForVisible: boolean,
       waitForHidden: boolean
-    ): Node | null | boolean {
+    ): Promise<Node | null | boolean> {
       const node = predicateQueryHandler
-        ? (predicateQueryHandler(document, selector) as Element)
+        ? ((await predicateQueryHandler(document, selector)) as Element)
         : document.querySelector(selector);
       return checkWaitForOptions(node, waitForVisible, waitForHidden);
     }
     const waitTask = new WaitTask(
       this,
-      this._makePredicateString(predicate, queryOne),
+      helper.makePredicateString(predicate, queryOne),
       title,
       polling,
       timeout,
@@ -545,7 +621,7 @@ export class DOMWorld {
     }
     const waitTask = new WaitTask(
       this,
-      this._makePredicateString(predicate),
+      helper.makePredicateString(predicate),
       title,
       polling,
       timeout,
@@ -560,45 +636,6 @@ export class DOMWorld {
       return null;
     }
     return elementHandle;
-  }
-
-  private _makePredicateString(
-    predicate: Function,
-    predicateQueryHandler?: Function
-  ): string {
-    const predicateQueryHandlerDef = predicateQueryHandler
-      ? `const predicateQueryHandler = ${predicateQueryHandler};`
-      : '';
-    return `
-    (() => {
-      ${predicateQueryHandlerDef}
-      const checkWaitForOptions = ${checkWaitForOptions};
-      return (${predicate})(...args)
-    })() `;
-    function checkWaitForOptions(
-      node: Node,
-      waitForVisible: boolean,
-      waitForHidden: boolean
-    ): Node | null | boolean {
-      if (!node) return waitForHidden;
-      if (!waitForVisible && !waitForHidden) return node;
-      const element =
-        node.nodeType === Node.TEXT_NODE
-          ? node.parentElement
-          : (node as Element);
-
-      const style = window.getComputedStyle(element);
-      const isVisible =
-        style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
-      const success =
-        waitForVisible === isVisible || waitForHidden === !isVisible;
-      return success ? node : null;
-
-      function hasVisibleBoundingBox(): boolean {
-        const rect = element.getBoundingClientRect();
-        return !!(rect.top || rect.bottom || rect.width || rect.height);
-      }
-    }
   }
 
   waitForFunction(
@@ -625,7 +662,10 @@ export class DOMWorld {
   }
 }
 
-class WaitTask {
+/**
+ * @internal
+ */
+export class WaitTask {
   _domWorld: DOMWorld;
   _polling: string | number;
   _timeout: number;
@@ -723,23 +763,34 @@ class WaitTask {
       await success.dispose();
       return;
     }
+    // When frame is detached the task should have been terminated by the DOMWorld.
+    // This can fail if we were adding this task while the frame was detached,
+    // so we terminate here instead.
+    if (error) {
+      if (
+        error.message.includes(
+          'Execution Context is not available in detached frame'
+        )
+      ) {
+        this.terminate(
+          new Error('waitForFunction failed: frame got detached.')
+        );
+        return;
+      }
 
-    // When the page is navigated, the promise is rejected.
-    // We will try again in the new execution context.
-    if (error && error.message.includes('Execution context was destroyed'))
-      return;
+      // When the page is navigated, the promise is rejected.
+      // We will try again in the new execution context.
+      if (error.message.includes('Execution context was destroyed')) return;
 
-    // We could have tried to evaluate in a context which was already
-    // destroyed.
-    if (
-      error &&
-      error.message.includes('Cannot find context with specified id')
-    )
-      return;
+      // We could have tried to evaluate in a context which was already
+      // destroyed.
+      if (error.message.includes('Cannot find context with specified id'))
+        return;
 
-    if (error) this._reject(error);
-    else this._resolve(success);
-
+      this._reject(error);
+    } else {
+      this._resolve(success);
+    }
     this._cleanup();
   }
 
