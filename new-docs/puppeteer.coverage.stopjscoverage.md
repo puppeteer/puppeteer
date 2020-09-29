@@ -7,11 +7,11 @@
 <b>Signature:</b>
 
 ```typescript
-stopJSCoverage(): Promise<CoverageEntry[]>;
+stopJSCoverage(): Promise<JSCoverageEntry[]>;
 ```
 <b>Returns:</b>
 
-Promise&lt;[CoverageEntry](./puppeteer.coverageentry.md)<!-- -->\[\]&gt;
+Promise&lt;[JSCoverageEntry](./puppeteer.jscoverageentry.md)<!-- -->\[\]&gt;
 
 Promise that resolves to the array of coverage reports for all scripts.
 

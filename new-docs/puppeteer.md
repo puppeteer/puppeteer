@@ -63,6 +63,7 @@
 |  [FrameAddStyleTagOptions](./puppeteer.frameaddstyletagoptions.md) |  |
 |  [FrameWaitForFunctionOptions](./puppeteer.framewaitforfunctionoptions.md) |  |
 |  [GeolocationOptions](./puppeteer.geolocationoptions.md) |  |
+|  [JSCoverageEntry](./puppeteer.jscoverageentry.md) | The CoverageEntry class for JavaScript |
 |  [JSCoverageOptions](./puppeteer.jscoverageoptions.md) | Set of configurable options for JS coverage. |
 |  [JSONObject](./puppeteer.jsonobject.md) |  |
 |  [LaunchOptions](./puppeteer.launchoptions.md) | Generic launch options that can be passed when launching any browser. |
