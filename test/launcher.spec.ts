@@ -478,7 +478,7 @@ describe('Launcher specs', function () {
        * properly with help from the Mozilla folks.
        */
       itFailsWindowsUntilDate(
-        new Date('2020-09-30'),
+        new Date('2020-10-31'),
         'should be able to launch Firefox',
         async function () {
           this.timeout(FIREFOX_TIMEOUT);
