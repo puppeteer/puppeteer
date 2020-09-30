@@ -16,11 +16,12 @@
 
 import { WaitForSelectorOptions, DOMWorld } from './DOMWorld.js';
 import { ElementHandle, JSHandle } from './JSHandle.js';
+import { ariaHandler } from './AriaQueryHandler.js';
 
 /**
  * @internal
  */
-interface InternalQueryHandler {
+export interface InternalQueryHandler {
   queryOne?: (
     element: ElementHandle,
     selector: string
@@ -93,13 +94,18 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
   return internalHandler;
 }
 
-const _queryHandlers = new Map<string, InternalQueryHandler>();
 const _defaultHandler = makeQueryHandler({
   queryOne: (element: Element, selector: string) =>
     element.querySelector(selector),
   queryAll: (element: Element, selector: string) =>
     element.querySelectorAll(selector),
 });
+
+const _builtInHandlers: Array<[string, InternalQueryHandler]> = [
+  ['aria', ariaHandler],
+];
+
+const _queryHandlers = new Map<string, InternalQueryHandler>(_builtInHandlers);
 
 export function registerCustomQueryHandler(
   name: string,
