@@ -15,7 +15,7 @@
  */
 
 import { assert } from './assert.js';
-import { helper } from './helper.js';
+import { helper, debugError } from './helper.js';
 import {
   LifecycleWatcher,
   PuppeteerLifeCycleEvent,
@@ -36,13 +36,14 @@ import {
   UnwrapPromiseLike,
 } from './EvalTypes.js';
 import { isNode } from '../environment.js';
+import { Protocol } from 'devtools-protocol';
 
 // predicateQueryHandler and checkWaitForOptions are declared here so that
 // TypeScript knows about them when used in the predicate function below.
 declare const predicateQueryHandler: (
   element: Element | Document,
   selector: string
-) => Element | Element[] | NodeListOf<Element>;
+) => Promise<Element | Element[] | NodeListOf<Element>>;
 declare const checkWaitForOptions: (
   node: Node,
   waitForVisible: boolean,
@@ -76,6 +77,11 @@ export class DOMWorld {
    */
   _waitTasks = new Set<WaitTask>();
 
+  // Contains mapping from functions that should be bound to Puppeteer functions.
+  private _boundFunctions = new Map<string, Function>();
+  // Set of bindings that have been registered in the current context.
+  private _ctxBindings = new Set<string>();
+
   constructor(
     frameManager: FrameManager,
     frame: Frame,
@@ -85,16 +91,23 @@ export class DOMWorld {
     this._frame = frame;
     this._timeoutSettings = timeoutSettings;
     this._setContext(null);
+    frameManager._client.on('Runtime.bindingCalled', (event) =>
+      this._onBindingCalled(event)
+    );
   }
 
   frame(): Frame {
     return this._frame;
   }
 
-  _setContext(context?: ExecutionContext): void {
+  async _setContext(context?: ExecutionContext): Promise<void> {
     if (context) {
       this._contextResolveCallback.call(null, context);
       this._contextResolveCallback = null;
+      this._ctxBindings.clear();
+      for (const name of this._boundFunctions.keys()) {
+        await this.addBindingToContext(name);
+      }
       for (const waitTask of this._waitTasks) waitTask.rerun();
     } else {
       this._documentPromise = null;
@@ -119,7 +132,7 @@ export class DOMWorld {
   executionContext(): Promise<ExecutionContext> {
     if (this._detached)
       throw new Error(
-        `Execution Context is not available in detached frame "${this._frame.url()}" (are you trying to evaluate?)`
+        `Execution context is not available in detached frame "${this._frame.url()}" (are you trying to evaluate?)`
       );
     return this._contextPromise;
   }
@@ -438,7 +451,6 @@ export class DOMWorld {
 
   async tap(selector: string): Promise<void> {
     const handle = await this.$(selector);
-    assert(handle, 'No node found for selector: ' + selector);
     await handle.tap();
     await handle.dispose();
   }
@@ -464,6 +476,90 @@ export class DOMWorld {
     return queryHandler.waitFor(this, updatedSelector, options);
   }
 
+  // If multiple waitFor are set up asynchronously, we need to wait for the
+  // first one to set up the binding in the page before running the others.
+  private _settingUpBinding: Promise<void> | null = null;
+  /**
+   * @internal
+   */
+  async addBindingToContext(name: string) {
+    // Previous operation added the binding so we are done.
+    if (this._ctxBindings.has(name)) return;
+    // Wait for other operation to finish
+    if (this._settingUpBinding) {
+      await this._settingUpBinding;
+      return this.addBindingToContext(name);
+    }
+
+    const bind = async (name: string) => {
+      const expression = helper.pageBindingInitString('internal', name);
+      try {
+        const context = await this.executionContext();
+        await context._client.send('Runtime.addBinding', {
+          name,
+          executionContextId: context._contextId,
+        });
+        await context.evaluate(expression);
+      } catch (error) {
+        // We could have tried to evaluate in a context which was already
+        // destroyed. This happens, for example, if the page is navigated while
+        // we are trying to add the binding
+        const ctxDestroyed = error.message.includes(
+          'Execution context was destroyed'
+        );
+        const ctxNotFound = error.message.includes(
+          'Cannot find context with specified id'
+        );
+        if (ctxDestroyed || ctxNotFound) {
+          // Retry adding the binding in the next context
+          await bind(name);
+        } else {
+          debugError(error);
+          return;
+        }
+      }
+      this._ctxBindings.add(name);
+    };
+
+    this._settingUpBinding = bind(name);
+    await this._settingUpBinding;
+    this._settingUpBinding = null;
+  }
+
+  /**
+   * @internal
+   */
+  async addBinding(name: string, puppeteerFunction: Function): Promise<void> {
+    this._boundFunctions.set(name, puppeteerFunction);
+    await this.addBindingToContext(name);
+  }
+
+  private async _onBindingCalled(
+    event: Protocol.Runtime.BindingCalledEvent
+  ): Promise<void> {
+    const { type, name, seq, args } = JSON.parse(event.payload);
+    if (type !== 'internal' || !this._ctxBindings.has(name)) return;
+    if (!this._hasContext()) return;
+    const context = await this.executionContext();
+    if (context._contextId !== event.executionContextId) return;
+    try {
+      const result = await this._boundFunctions.get(name)(...args);
+      await context.evaluate(deliverResult, name, seq, result);
+    } catch (error) {
+      // The WaitTask may already have been resolved by timing out, or the
+      // exection context may have been destroyed.
+      // In both caes, the promises above are rejected with a protocol error.
+      // We can safely ignores these, as the WaitTask is re-installed in
+      // the next execution context if needed.
+      if (error.message.includes('Protocol error')) return;
+      debugError(error);
+    }
+    function deliverResult(name: string, seq: number, result: unknown): void {
+      globalThis[name].callbacks.get(seq).resolve(result);
+      globalThis[name].callbacks.delete(seq);
+    }
+  }
+
   /**
    * @internal
    */
@@ -481,19 +577,19 @@ export class DOMWorld {
     const title = `selector \`${selector}\`${
       waitForHidden ? ' to be hidden' : ''
     }`;
-    function predicate(
+    async function predicate(
       selector: string,
       waitForVisible: boolean,
       waitForHidden: boolean
-    ): Node | null | boolean {
+    ): Promise<Node | null | boolean> {
       const node = predicateQueryHandler
-        ? (predicateQueryHandler(document, selector) as Element)
+        ? ((await predicateQueryHandler(document, selector)) as Element)
         : document.querySelector(selector);
       return checkWaitForOptions(node, waitForVisible, waitForHidden);
     }
     const waitTask = new WaitTask(
       this,
-      this._makePredicateString(predicate, queryOne),
+      helper.makePredicateString(predicate, queryOne),
       title,
       polling,
       timeout,
@@ -537,7 +633,7 @@ export class DOMWorld {
     }
     const waitTask = new WaitTask(
       this,
-      this._makePredicateString(predicate),
+      helper.makePredicateString(predicate),
       title,
       polling,
       timeout,
@@ -552,45 +648,6 @@ export class DOMWorld {
       return null;
     }
     return elementHandle;
-  }
-
-  private _makePredicateString(
-    predicate: Function,
-    predicateQueryHandler?: Function
-  ): string {
-    const predicateQueryHandlerDef = predicateQueryHandler
-      ? `const predicateQueryHandler = ${predicateQueryHandler};`
-      : '';
-    return `
-    (() => {
-      ${predicateQueryHandlerDef}
-      const checkWaitForOptions = ${checkWaitForOptions};
-      return (${predicate})(...args)
-    })() `;
-    function checkWaitForOptions(
-      node: Node,
-      waitForVisible: boolean,
-      waitForHidden: boolean
-    ): Node | null | boolean {
-      if (!node) return waitForHidden;
-      if (!waitForVisible && !waitForHidden) return node;
-      const element =
-        node.nodeType === Node.TEXT_NODE
-          ? node.parentElement
-          : (node as Element);
-
-      const style = window.getComputedStyle(element);
-      const isVisible =
-        style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
-      const success =
-        waitForVisible === isVisible || waitForHidden === !isVisible;
-      return success ? node : null;
-
-      function hasVisibleBoundingBox(): boolean {
-        const rect = element.getBoundingClientRect();
-        return !!(rect.top || rect.bottom || rect.width || rect.height);
-      }
-    }
   }
 
   waitForFunction(
@@ -617,7 +674,10 @@ export class DOMWorld {
   }
 }
 
-class WaitTask {
+/**
+ * @internal
+ */
+export class WaitTask {
   _domWorld: DOMWorld;
   _polling: string | number;
   _timeout: number;
@@ -715,23 +775,34 @@ class WaitTask {
       await success.dispose();
       return;
     }
+    // When frame is detached the task should have been terminated by the DOMWorld.
+    // This can fail if we were adding this task while the frame was detached,
+    // so we terminate here instead.
+    if (error) {
+      if (
+        error.message.includes(
+          'Execution context is not available in detached frame'
+        )
+      ) {
+        this.terminate(
+          new Error('waitForFunction failed: frame got detached.')
+        );
+        return;
+      }
 
-    // When the page is navigated, the promise is rejected.
-    // We will try again in the new execution context.
-    if (error && error.message.includes('Execution context was destroyed'))
-      return;
+      // When the page is navigated, the promise is rejected.
+      // We will try again in the new execution context.
+      if (error.message.includes('Execution context was destroyed')) return;
 
-    // We could have tried to evaluate in a context which was already
-    // destroyed.
-    if (
-      error &&
-      error.message.includes('Cannot find context with specified id')
-    )
-      return;
+      // We could have tried to evaluate in a context which was already
+      // destroyed.
+      if (error.message.includes('Cannot find context with specified id'))
+        return;
 
-    if (error) this._reject(error);
-    else this._resolve(success);
-
+      this._reject(error);
+    } else {
+      this._resolve(success);
+    }
     this._cleanup();
   }
 
