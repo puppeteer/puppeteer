@@ -16,7 +16,7 @@ export namespace WebAudio
 
 |  Interface | Description |
 |  --- | --- |
-|  [AudioListener](./puppeteer.protocol.webaudio.audiolistener.md) | Protocol object for AudioListner |
+|  [AudioListener](./puppeteer.protocol.webaudio.audiolistener.md) | Protocol object for AudioListener |
 |  [AudioListenerCreatedEvent](./puppeteer.protocol.webaudio.audiolistenercreatedevent.md) | Notifies that the construction of an AudioListener has finished. |
 |  [AudioListenerWillBeDestroyedEvent](./puppeteer.protocol.webaudio.audiolistenerwillbedestroyedevent.md) | Notifies that a new AudioListener has been created. |
 |  [AudioNode](./puppeteer.protocol.webaudio.audionode.md) | Protocol object for AudioNode |

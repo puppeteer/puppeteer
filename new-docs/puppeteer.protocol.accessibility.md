@@ -22,6 +22,8 @@ export namespace Accessibility
 |  [GetFullAXTreeResponse](./puppeteer.protocol.accessibility.getfullaxtreeresponse.md) |  |
 |  [GetPartialAXTreeRequest](./puppeteer.protocol.accessibility.getpartialaxtreerequest.md) |  |
 |  [GetPartialAXTreeResponse](./puppeteer.protocol.accessibility.getpartialaxtreeresponse.md) |  |
+|  [QueryAXTreeRequest](./puppeteer.protocol.accessibility.queryaxtreerequest.md) |  |
+|  [QueryAXTreeResponse](./puppeteer.protocol.accessibility.queryaxtreeresponse.md) |  |
 
 ## Type Aliases
 

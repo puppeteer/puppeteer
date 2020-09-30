@@ -14,5 +14,8 @@ export interface CrossOriginOpenerPolicyStatus
 
 |  Property | Type | Description |
 |  --- | --- | --- |
+|  [reportingEndpoint](./puppeteer.protocol.network.crossoriginopenerpolicystatus.reportingendpoint.md) | string |  |
+|  [reportOnlyReportingEndpoint](./puppeteer.protocol.network.crossoriginopenerpolicystatus.reportonlyreportingendpoint.md) | string |  |
+|  [reportOnlyValue](./puppeteer.protocol.network.crossoriginopenerpolicystatus.reportonlyvalue.md) | [CrossOriginOpenerPolicyValue](./puppeteer.protocol.network.crossoriginopenerpolicyvalue.md) |  |
 |  [value](./puppeteer.protocol.network.crossoriginopenerpolicystatus.value.md) | [CrossOriginOpenerPolicyValue](./puppeteer.protocol.network.crossoriginopenerpolicyvalue.md) |  |
 

@@ -4,7 +4,7 @@
 
 ## Protocol.CSS.CSSStyleSheetHeader.isMutable property
 
-Whether this stylesheet is mutable. Inline stylesheets become mutable after they have been modified via CSSOM API. <link> element's stylesheets are never mutable. Constructed stylesheets (new CSSStyleSheet()) are mutable immediately after creation.
+Whether this stylesheet is mutable. Inline stylesheets become mutable after they have been modified via CSSOM API. <link> element's stylesheets become mutable only if DevTools modifies them. Constructed stylesheets (new CSSStyleSheet()) are mutable immediately after creation.
 
 <b>Signature:</b>
 
