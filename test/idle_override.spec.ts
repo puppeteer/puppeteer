@@ -43,7 +43,7 @@ describeFailsFirefox('Emulate idle state', () => {
   it('changing idle state emulation causes change of the IdleDetector state', async () => {
     const { page, server, context } = getTestState();
     await context.overridePermissions(server.PREFIX + '/idle-detector.html', [
-      'notifications',
+      'idle-detection',
     ]);
 
     await page.goto(server.PREFIX + '/idle-detector.html');

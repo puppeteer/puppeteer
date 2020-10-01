@@ -14,5 +14,8 @@ export interface CrossOriginEmbedderPolicyStatus
 
 |  Property | Type | Description |
 |  --- | --- | --- |
+|  [reportingEndpoint](./puppeteer.protocol.network.crossoriginembedderpolicystatus.reportingendpoint.md) | string |  |
+|  [reportOnlyReportingEndpoint](./puppeteer.protocol.network.crossoriginembedderpolicystatus.reportonlyreportingendpoint.md) | string |  |
+|  [reportOnlyValue](./puppeteer.protocol.network.crossoriginembedderpolicystatus.reportonlyvalue.md) | [CrossOriginEmbedderPolicyValue](./puppeteer.protocol.network.crossoriginembedderpolicyvalue.md) |  |
 |  [value](./puppeteer.protocol.network.crossoriginembedderpolicystatus.value.md) | [CrossOriginEmbedderPolicyValue](./puppeteer.protocol.network.crossoriginembedderpolicyvalue.md) |  |
 

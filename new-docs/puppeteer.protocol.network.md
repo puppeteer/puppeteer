@@ -77,6 +77,7 @@ export namespace Network
 |  [SearchInResponseBodyResponse](./puppeteer.protocol.network.searchinresponsebodyresponse.md) |  |
 |  [SecurityDetails](./puppeteer.protocol.network.securitydetails.md) | Security details about a request. |
 |  [SecurityIsolationStatus](./puppeteer.protocol.network.securityisolationstatus.md) |  |
+|  [SetAttachDebugHeaderRequest](./puppeteer.protocol.network.setattachdebugheaderrequest.md) |  |
 |  [SetBlockedURLsRequest](./puppeteer.protocol.network.setblockedurlsrequest.md) |  |
 |  [SetBypassServiceWorkerRequest](./puppeteer.protocol.network.setbypassserviceworkerrequest.md) |  |
 |  [SetCacheDisabledRequest](./puppeteer.protocol.network.setcachedisabledrequest.md) |  |

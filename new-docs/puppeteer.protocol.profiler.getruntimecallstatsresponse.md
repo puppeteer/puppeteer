@@ -14,5 +14,5 @@ export interface GetRuntimeCallStatsResponse
 
 |  Property | Type | Description |
 |  --- | --- | --- |
-|  [result](./puppeteer.protocol.profiler.getruntimecallstatsresponse.result.md) | [CounterInfo](./puppeteer.protocol.profiler.counterinfo.md)<!-- -->\[\] | Collected counter information. |
+|  [result](./puppeteer.protocol.profiler.getruntimecallstatsresponse.result.md) | [RuntimeCallCounterInfo](./puppeteer.protocol.profiler.runtimecallcounterinfo.md)<!-- -->\[\] | Collected runtime call counter information. |
 

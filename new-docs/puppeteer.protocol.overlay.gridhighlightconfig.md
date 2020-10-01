@@ -23,6 +23,7 @@ export interface GridHighlightConfig
 |  [columnHatchColor](./puppeteer.protocol.overlay.gridhighlightconfig.columnhatchcolor.md) | [DOM.RGBA](./puppeteer.protocol.dom.rgba.md) | The column gap hatching fill color (default: transparent). |
 |  [columnLineColor](./puppeteer.protocol.overlay.gridhighlightconfig.columnlinecolor.md) | [DOM.RGBA](./puppeteer.protocol.dom.rgba.md) | The column line color (default: transparent). |
 |  [columnLineDash](./puppeteer.protocol.overlay.gridhighlightconfig.columnlinedash.md) | boolean | Whether column lines are dashed (default: false). |
+|  [gridBackgroundColor](./puppeteer.protocol.overlay.gridhighlightconfig.gridbackgroundcolor.md) | [DOM.RGBA](./puppeteer.protocol.dom.rgba.md) | The grid container background color (Default: transparent). |
 |  [gridBorderColor](./puppeteer.protocol.overlay.gridhighlightconfig.gridbordercolor.md) | [DOM.RGBA](./puppeteer.protocol.dom.rgba.md) | The grid container border highlight color (default: transparent). |
 |  [gridBorderDash](./puppeteer.protocol.overlay.gridhighlightconfig.gridborderdash.md) | boolean | Whether the grid border is dashed (default: false). |
 |  [rowGapColor](./puppeteer.protocol.overlay.gridhighlightconfig.rowgapcolor.md) | [DOM.RGBA](./puppeteer.protocol.dom.rgba.md) | The row gap highlight fill color (default: transparent). |
