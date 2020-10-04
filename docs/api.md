@@ -6,6 +6,7 @@
 - API Translations: [中文|Chinese](https://zhaoqize.github.io/puppeteer-api-zh_CN/#/)
 - Troubleshooting: [troubleshooting.md](https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md)
 - Releases per Chromium Version:
+  * Chromium 86.0.4240.0 - [Puppeteer v5.3.0](https://github.com/puppeteer/puppeteer/blob/v5.3.0/docs/api.md)
   * Chromium 85.0.4182.0 - [Puppeteer v5.2.1](https://github.com/puppeteer/puppeteer/blob/v5.2.1/docs/api.md)
   * Chromium 84.0.4147.0 - [Puppeteer v5.1.0](https://github.com/puppeteer/puppeteer/blob/v5.1.0/docs/api.md)
   * Chromium 83.0.4103.0 - [Puppeteer v3.1.0](https://github.com/puppeteer/puppeteer/blob/v3.1.0/docs/api.md)
@@ -117,6 +118,7 @@
   * [page.coverage](#pagecoverage)
   * [page.deleteCookie(...cookies)](#pagedeletecookiecookies)
   * [page.emulate(options)](#pageemulateoptions)
+  * [page.emulateIdleState(overrides)](#pageemulateidlestateoverrides)
   * [page.emulateMediaFeatures(features)](#pageemulatemediafeaturesfeatures)
   * [page.emulateMediaType(type)](#pageemulatemediatypetype)
   * [page.emulateTimezone(timezoneId)](#pageemulatetimezonetimezoneid)
@@ -170,6 +172,7 @@
   * [page.waitForRequest(urlOrPredicate[, options])](#pagewaitforrequesturlorpredicate-options)
   * [page.waitForResponse(urlOrPredicate[, options])](#pagewaitforresponseurlorpredicate-options)
   * [page.waitForSelector(selector[, options])](#pagewaitforselectorselector-options)
+  * [page.waitForTimeout(milliseconds)](#pagewaitfortimeoutmilliseconds)
   * [page.waitForXPath(xpath[, options])](#pagewaitforxpathxpath-options)
   * [page.workers()](#pageworkers)
   * [GeolocationOptions](#geolocationoptions)
@@ -211,6 +214,7 @@
 - [class: ConsoleMessage](#class-consolemessage)
   * [consoleMessage.args()](#consolemessageargs)
   * [consoleMessage.location()](#consolemessagelocation)
+  * [consoleMessage.stackTrace()](#consolemessagestacktrace)
   * [consoleMessage.text()](#consolemessagetext)
   * [consoleMessage.type()](#consolemessagetype)
 - [class: Frame](#class-frame)
@@ -243,6 +247,7 @@
   * [frame.waitForFunction(pageFunction[, options[, ...args]])](#framewaitforfunctionpagefunction-options-args)
   * [frame.waitForNavigation([options])](#framewaitfornavigationoptions)
   * [frame.waitForSelector(selector[, options])](#framewaitforselectorselector-options)
+  * [frame.waitForTimeout(milliseconds)](#framewaitfortimeoutmilliseconds)
   * [frame.waitForXPath(xpath[, options])](#framewaitforxpathxpath-options)
 - [class: ExecutionContext](#class-executioncontext)
   * [executionContext.evaluate(pageFunction[, ...args])](#executioncontextevaluatepagefunction-args)
@@ -409,6 +414,7 @@ If Puppeteer doesn't find them in the environment during the installation step, 
 - `HTTP_PROXY`, `HTTPS_PROXY`, `ALL_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
 - `PUPPETEER_DOWNLOAD_HOST` - overwrite URL prefix that is used to download Chromium. Note: this includes protocol and might even include path prefix. Defaults to `https://storage.googleapis.com`.
+- `PUPPETEER_DOWNLOAD_PATH` - overwrite the path for the downloads folder. Defaults to `<root>/.local-chromium`, where `<root>` is puppeteer's package root.
 - `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of Chromium you'd like Puppeteer to use. See [puppeteer.launch([options])](#puppeteerlaunchoptions) on how executable path is inferred. **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/puppeteer/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
 - `PUPPETEER_EXECUTABLE_PATH` - specify an executable path to be used in `puppeteer.launch`. See [puppeteer.launch([options])](#puppeteerlaunchoptions) on how the executable path is inferred. **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/puppeteer/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
 - `PUPPETEER_PRODUCT` - specify which browser you'd like Puppeteer to use. Must be one of `chrome` or `firefox`. This can also be used during installation to fetch the recommended browser binary. Setting `product` programmatically in [puppeteer.launch([options])](#puppeteerlaunchoptions) supersedes this environment variable. The product is exposed in [`puppeteer.product`](#puppeteerproduct)
@@ -1338,6 +1344,12 @@ const iPhone = puppeteer.devices['iPhone 6'];
 
 List of all available devices is available in the source code: [src/common/DeviceDescriptors.ts](https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts).
 
+#### page.emulateIdleState(overrides)
+- `overrides` <?[Object]> If not set, clears emulation
+  - `isUserActive` <[boolean]> **required**
+  - `isScreenUnlocked` <[boolean]> **required**
+- returns: <[Promise]>
+
 #### page.emulateMediaFeatures(features)
 - `features` <?[Array]<[Object]>> Given an array of media feature objects, emulates CSS media features on the page. Each media feature object must have the following properties:
   - `name` <[string]> The CSS media feature name. Supported names are `'prefers-colors-scheme'` and `'prefers-reduced-motion'`.
@@ -1636,7 +1648,7 @@ Navigate to the next page in history.
 - the remote server does not respond or is unreachable.
 - the main resource failed to load.
 
-`page.goto` will not throw an error when any valid HTTP status code is returned by the remote server, including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling [response.status()](#responsestatus).
+`page.goto` will not throw an error when any valid HTTP status code is returned by the remote server, including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling [response.status()](#httpresponsestatus).
 
 > **NOTE** `page.goto` either throws an error or returns a main resource response. The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
 
@@ -2061,6 +2073,13 @@ This is a shortcut for [page.mainFrame().url()](#frameurl)
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[JSHandle]>> Promise which resolves to a JSHandle of the success value
 
+**This method is deprecated**. You should use the more explicit API methods available:
+
+* `page.waitForSelector`
+* `page.waitForXPath`
+* `page.waitForFunction`
+* `page.waitForTimeout`
+
 This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] or [xpath], depending on whether or not it starts with '//', and the method is a shortcut for
   [page.waitForSelector](#pagewaitforselectorselector-options) or [page.waitForXPath](#pagewaitforxpathxpath-options)
@@ -2234,6 +2253,25 @@ const puppeteer = require('puppeteer');
 })();
 ```
 Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitforselectorselector-options).
+
+#### page.waitForTimeout(milliseconds)
+- `milliseconds` <[number]> The number of milliseconds to wait for.
+- returns: <[Promise]> Promise which resolves after the timeout has completed.
+
+Pauses script execution for the given number of seconds before continuing:
+
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  page.waitForTimeout(1000)
+    .then(() => console.log('Waited a second!'));
+
+  await browser.close();
+})();
+```
 
 #### page.waitForXPath(xpath[, options])
 - `xpath` <[string]> A [xpath] of an element to wait for
@@ -2715,6 +2753,12 @@ const puppeteer = require('puppeteer');
   - `lineNumber` <[number]> 0-based line number in the resource if known or `undefined` otherwise.
   - `columnNumber` <[number]> 0-based column number in the resource if known or `undefined` otherwise.
 
+#### consoleMessage.stackTrace()
+- returns: <[Array]<[Object]>>
+  - `url` <[string]> URL of the resource if known or `undefined` otherwise.
+  - `lineNumber` <[number]> 0-based line number in the resource if known or `undefined` otherwise.
+  - `columnNumber` <[number]> 0-based column number in the resource if known or `undefined` otherwise.
+
 #### consoleMessage.text()
 - returns: <[string]>
 
@@ -2949,7 +2993,7 @@ If there's no element matching `selector`, the method throws an error.
 - the remote server does not respond or is unreachable.
 - the main resource failed to load.
 
-`frame.goto` will not throw an error when any valid HTTP status code is returned by the remote server, including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling [response.status()](#responsestatus).
+`frame.goto` will not throw an error when any valid HTTP status code is returned by the remote server, including 404 "Not Found" and 500 "Internal Server Error".  The status code for such responses can be retrieved by calling [response.status()](#httpresponsestatus).
 
 > **NOTE** `frame.goto` either throws an error or returns a main resource response. The only exceptions are navigation to `about:blank` or navigation to the same URL with a different hash, which would succeed and return `null`.
 
@@ -3040,6 +3084,13 @@ Returns frame's url.
 - `options` <[Object]> Optional waiting parameters
 - `...args` <...[Serializable]|[JSHandle]> Arguments to pass to  `pageFunction`
 - returns: <[Promise]<[JSHandle]>> Promise which resolves to a JSHandle of the success value
+
+**This method is deprecated**. You should use the more explicit API methods available:
+
+* `frame.waitForSelector`
+* `frame.waitForXPath`
+* `frame.waitForFunction`
+* `frame.waitForTimeout`
 
 This method behaves differently with respect to the type of the first parameter:
 - if `selectorOrFunctionOrTimeout` is a `string`, then the first argument is treated as a [selector] or [xpath], depending on whether or not it starts with '//', and the method is a shortcut for
@@ -3144,6 +3195,26 @@ const puppeteer = require('puppeteer');
   for (currentURL of ['https://example.com', 'https://google.com', 'https://bbc.com']) {
     await page.goto(currentURL);
   }
+  await browser.close();
+})();
+```
+
+#### frame.waitForTimeout(milliseconds)
+- `milliseconds` <[number]> The number of milliseconds to wait for.
+- returns: <[Promise]> Promise which resolves after the timeout has completed.
+
+Pauses script execution for the given number of seconds before continuing:
+
+```js
+const puppeteer = require('puppeteer');
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  page.mainFrame()
+    .waitForTimeout(1000)
+    .then(() => console.log('Waited a second!'));
+
   await browser.close();
 })();
 ```
@@ -3511,11 +3582,11 @@ expect(await tweetHandle.evaluate(node => node.innerText)).toBe('10');
 
 This method passes this handle as the first argument to `pageFunction`.
 
-The only difference between `evaluateHandle.evaluate` and `evaluateHandle.evaluateHandle` is that `executionContext.evaluateHandle` returns in-page object (JSHandle).
+The only difference between `elementHandle.evaluate` and `elementHandle.evaluateHandle` is that `executionContext.evaluateHandle` returns in-page object (JSHandle).
 
 If the function returns an element, the returned handle is an [ElementHandle].
 
-If the function passed to the `evaluateHandle.evaluateHandle` returns a [Promise], then `evaluateHandle.evaluateHandle` would wait for the promise to resolve and return its value.
+If the function passed to the `elementHandle.evaluateHandle` returns a [Promise], then `elementHandle.evaluateHandle` would wait for the promise to resolve and return its value.
 
 See [Page.evaluateHandle](#pageevaluatehandlepagefunction-args) for more details.
 

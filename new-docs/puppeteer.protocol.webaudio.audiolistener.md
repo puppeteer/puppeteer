@@ -4,7 +4,7 @@
 
 ## Protocol.WebAudio.AudioListener interface
 
-Protocol object for AudioListner
+Protocol object for AudioListener
 
 <b>Signature:</b>
 

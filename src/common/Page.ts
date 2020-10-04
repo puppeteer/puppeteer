@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import * as fs from 'fs';
-import { promisify } from 'util';
 import { EventEmitter } from './EventEmitter.js';
-import * as mime from 'mime';
 import {
   Connection,
   CDPSession,
@@ -58,8 +55,7 @@ import {
   UnwrapPromiseLike,
 } from './EvalTypes.js';
 import { PDFOptions, paperFormats } from './PDFOptions.js';
-
-const writeFileAsync = promisify(fs.writeFile);
+import { isNode } from '../environment.js';
 
 /**
  * @public
@@ -606,7 +602,7 @@ export class Page extends EventEmitter {
     if (source !== 'worker')
       this.emit(
         PageEmittedEvents.Console,
-        new ConsoleMessage(level, text, [], { url, lineNumber })
+        new ConsoleMessage(level, text, [], [{ url, lineNumber }])
       );
   }
 
@@ -1231,19 +1227,21 @@ export class Page extends EventEmitter {
       if (remoteObject.objectId) textTokens.push(arg.toString());
       else textTokens.push(helper.valueFromRemoteObject(remoteObject));
     }
-    const location =
-      stackTrace && stackTrace.callFrames.length
-        ? {
-            url: stackTrace.callFrames[0].url,
-            lineNumber: stackTrace.callFrames[0].lineNumber,
-            columnNumber: stackTrace.callFrames[0].columnNumber,
-          }
-        : {};
+    const stackTraceLocations = [];
+    if (stackTrace) {
+      for (const callFrame of stackTrace.callFrames) {
+        stackTraceLocations.push({
+          url: callFrame.url,
+          lineNumber: callFrame.lineNumber,
+          columnNumber: callFrame.columnNumber,
+        });
+      }
+    }
     const message = new ConsoleMessage(
       type,
       textTokens.join(' '),
       args,
-      location
+      stackTraceLocations
     );
     this.emit(PageEmittedEvents.Console, message);
   }
@@ -1444,6 +1442,40 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * Emulates the idle state.
+   * If no arguments set, clears idle state emulation.
+   *
+   * @example
+   * ```js
+   * // set idle emulation
+   * await page.emulateIdleState({isUserActive: true, isScreenUnlocked: false});
+   *
+   * // do some checks here
+   * ...
+   *
+   * // clear idle emulation
+   * await page.emulateIdleState();
+   * ```
+   *
+   * @param overrides Mock idle state. If not set, clears idle overrides
+   * @param isUserActive Mock isUserActive
+   * @param isScreenUnlocked Mock isScreenUnlocked
+   */
+  async emulateIdleState(overrides?: {
+    isUserActive: boolean;
+    isScreenUnlocked: boolean;
+  }): Promise<void> {
+    if (overrides) {
+      await this._client.send('Emulation.setIdleOverride', {
+        isUserActive: overrides.isUserActive,
+        isScreenUnlocked: overrides.isScreenUnlocked,
+      });
+    } else {
+      await this._client.send('Emulation.clearIdleOverride');
+    }
+  }
+
+  /**
    * Simulates the given vision deficiency on the page.
    *
    * @example
@@ -1589,10 +1621,17 @@ export class Page extends EventEmitter {
       );
       screenshotType = options.type;
     } else if (options.path) {
-      const mimeType = mime.getType(options.path);
-      if (mimeType === 'image/png') screenshotType = 'png';
-      else if (mimeType === 'image/jpeg') screenshotType = 'jpeg';
-      assert(screenshotType, 'Unsupported screenshot mime type: ' + mimeType);
+      const filePath = options.path;
+      const extension = filePath
+        .slice(filePath.lastIndexOf('.') + 1)
+        .toLowerCase();
+      if (extension === 'png') screenshotType = 'png';
+      else if (extension === 'jpg' || extension === 'jpeg')
+        screenshotType = 'jpeg';
+      assert(
+        screenshotType,
+        `Unsupported screenshot type for extension \`.${extension}\``
+      );
     }
 
     if (!screenshotType) screenshotType = 'png';
@@ -1708,7 +1747,13 @@ export class Page extends EventEmitter {
       options.encoding === 'base64'
         ? result.data
         : Buffer.from(result.data, 'base64');
-    if (options.path) await writeFileAsync(options.path, buffer);
+    if (!isNode && options.path) {
+      throw new Error(
+        'Screenshots can only be written to a file path in a Node environment.'
+      );
+    }
+    const fs = await import('fs');
+    if (options.path) await fs.promises.writeFile(options.path, buffer);
     return buffer;
 
     function processClip(
@@ -1857,6 +1902,31 @@ export class Page extends EventEmitter {
     return this.mainFrame().type(selector, text, options);
   }
 
+  /**
+   * @remarks
+   *
+   * This method behaves differently depending on the first parameter. If it's a
+   * `string`, it will be treated as a `selector` or `xpath` (if the string
+   * starts with `//`). This method then is a shortcut for
+   * {@link Page.waitForSelector} or {@link Page.waitForXPath}.
+   *
+   * If the first argument is a function this method is a shortcut for
+   * {@link Page.waitForFunction}.
+   *
+   * If the first argument is a `number`, it's treated as a timeout in
+   * milliseconds and the method returns a promise which resolves after the
+   * timeout.
+   *
+   * @param selectorOrFunctionOrTimeout - a selector, predicate or timeout to
+   * wait for.
+   * @param options - optional waiting parameters.
+   * @param args - arguments to pass to `pageFunction`.
+   *
+   * @deprecated Don't use this method directly. Instead use the more explicit
+   * methods available: {@link Page.waitForSelector},
+   * {@link Page.waitForXPath}, {@link Page.waitForFunction} or
+   * {@link Page.waitForTimeout}.
+   */
   waitFor(
     selectorOrFunctionOrTimeout: string | number | Function,
     options: {
@@ -1872,6 +1942,29 @@ export class Page extends EventEmitter {
       options,
       ...args
     );
+  }
+
+  /**
+   * Causes your script to wait for the given number of milliseconds.
+   *
+   * @remarks
+   *
+   * It's generally recommended to not wait for a number of seconds, but instead
+   * use {@link Page.waitForSelector}, {@link Page.waitForXPath} or
+   * {@link Page.waitForFunction} to wait for exactly the conditions you want.
+   *
+   * @example
+   *
+   * Wait for 1 second:
+   *
+   * ```
+   * await page.waitForTimeout(1000);
+   * ```
+   *
+   * @param milliseconds - the number of milliseconds to wait.
+   */
+  waitForTimeout(milliseconds: number): Promise<void> {
+    return this.mainFrame().waitForTimeout(milliseconds);
   }
 
   waitForSelector(

@@ -20,9 +20,10 @@ if (require('./package.json').name === 'puppeteer-core')
   return;
 
 const downloadHost = process.env.PUPPETEER_DOWNLOAD_HOST || process.env.npm_config_puppeteer_download_host || process.env.npm_package_config_puppeteer_download_host;
+const downloadPath = process.env.PUPPETEER_DOWNLOAD_PATH || process.env.npm_config_puppeteer_download_path || process.env.npm_package_config_puppeteer_download_path;
 
 const puppeteer = require('./index');
-const browserFetcher = puppeteer.createBrowserFetcher({ host: downloadHost, product: 'firefox' });
+const browserFetcher = puppeteer.createBrowserFetcher({ host: downloadHost, product: 'firefox', path: downloadPath });
 
 const revision = require('./package.json').puppeteer.firefox_revision;
 

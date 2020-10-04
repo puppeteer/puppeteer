@@ -34,9 +34,10 @@ const mkdtempAsync = promisify(fs.mkdtemp);
 const readFileAsync = promisify(fs.readFile);
 const statAsync = promisify(fs.stat);
 const TMP_FOLDER = path.join(os.tmpdir(), 'pptr_tmp_folder-');
+const FIREFOX_TIMEOUT = 30 * 1000;
 
 describe('Launcher specs', function () {
-  if (getTestState().isFirefox) this.timeout(30 * 1000);
+  if (getTestState().isFirefox) this.timeout(FIREFOX_TIMEOUT);
 
   describe('Puppeteer', function () {
     describe('BrowserFetcher', function () {
@@ -477,9 +478,10 @@ describe('Launcher specs', function () {
        * properly with help from the Mozilla folks.
        */
       itFailsWindowsUntilDate(
-        new Date('2020-07-30'),
+        new Date('2020-10-31'),
         'should be able to launch Firefox',
-        async () => {
+        async function () {
+          this.timeout(FIREFOX_TIMEOUT);
           const { puppeteer } = getTestState();
           const browser = await puppeteer.launch({ product: 'firefox' });
           const userAgent = await browser.userAgent();

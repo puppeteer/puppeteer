@@ -4,10 +4,10 @@
 
 ## Protocol.Profiler.GetRuntimeCallStatsResponse.result property
 
-Collected counter information.
+Collected runtime call counter information.
 
 <b>Signature:</b>
 
 ```typescript
-result: CounterInfo[];
+result: RuntimeCallCounterInfo[];
 ```

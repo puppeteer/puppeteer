@@ -31,9 +31,9 @@ import { Browser } from './Browser.js';
 import {
   registerCustomQueryHandler,
   unregisterCustomQueryHandler,
-  customQueryHandlers,
-  clearQueryHandlers,
-  QueryHandler,
+  customQueryHandlerNames,
+  clearCustomQueryHandlers,
+  CustomQueryHandler,
 } from './QueryHandler.js';
 import { PUPPETEER_REVISIONS } from '../revisions.js';
 
@@ -289,7 +289,7 @@ export class Puppeteer {
   // eslint-disable-next-line @typescript-eslint/camelcase
   __experimental_registerCustomQueryHandler(
     name: string,
-    queryHandler: QueryHandler
+    queryHandler: CustomQueryHandler
   ): void {
     registerCustomQueryHandler(name, queryHandler);
   }
@@ -306,8 +306,8 @@ export class Puppeteer {
    * @internal
    */
   // eslint-disable-next-line @typescript-eslint/camelcase
-  __experimental_customQueryHandlers(): Map<string, QueryHandler> {
-    return customQueryHandlers();
+  __experimental_customQueryHandlerNames(): string[] {
+    return customQueryHandlerNames();
   }
 
   /**
@@ -315,6 +315,6 @@ export class Puppeteer {
    */
   // eslint-disable-next-line @typescript-eslint/camelcase
   __experimental_clearQueryHandlers(): void {
-    clearQueryHandlers();
+    clearCustomQueryHandlers();
   }
 }

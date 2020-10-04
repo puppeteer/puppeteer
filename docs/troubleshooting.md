@@ -166,7 +166,7 @@ kernel privileges.
 sudo sysctl -w kernel.unprivileged_userns_clone=1
 ```
 
-### [alternative] Setup [setuid sandbox](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_suid_sandbox_development.md)
+### [alternative] Setup [setuid sandbox](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/suid_sandbox_development.md)
 
 The setuid sandbox comes as a standalone executable and is located next to the Chromium that Puppeteer downloads. It is
 fine to re-use the same sandbox executable for different Chromium versions, so the following could be
@@ -266,7 +266,7 @@ RUN apt-get update \
     && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
     && apt-get update \
-    && apt-get install -y google-chrome-unstable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
+    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
       --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
@@ -278,7 +278,7 @@ RUN apt-get update \
 
 # Uncomment to skip the chromium download when installing puppeteer. If you do,
 # you'll need to launch puppeteer with:
-#     browser.launch({executablePath: 'google-chrome-unstable'})
+#     browser.launch({executablePath: 'google-chrome-stable'})
 # ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 
 # Install puppeteer so it's available in the container.
@@ -293,7 +293,7 @@ RUN npm i puppeteer \
 # Run everything after as non-privileged user.
 USER pptruser
 
-CMD ["google-chrome-unstable"]
+CMD ["google-chrome-stable"]
 ```
 
 Build the container:
@@ -315,7 +315,7 @@ how to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
 ### Running on Alpine
 
-The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 77, which corresponds to [Puppeteer v1.19.0](https://github.com/puppeteer/puppeteer/releases/tag/v1.19.0).
+The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 83, which corresponds to [Puppeteer v3.1.0](https://github.com/puppeteer/puppeteer/releases/tag/v3.1.0).
 
 Example Dockerfile:
 

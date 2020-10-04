@@ -69,6 +69,9 @@ emitter.on('*', (type, e) => console.log(type, e) )
 // fire an event
 emitter.emit('foo', { a: 'b' })
 
+// clearing all events
+emitter.all.clear()
+
 // working with handler references:
 function onFoo() {}
 emitter.on('foo', onFoo)   // listen
@@ -99,6 +102,7 @@ const emitter: mitt.Emitter = mitt();
 #### Table of Contents
 
 -   [mitt](#mitt)
+-   [all](#all)
 -   [on](#on)
     -   [Parameters](#parameters)
 -   [off](#off)
@@ -111,6 +115,10 @@ const emitter: mitt.Emitter = mitt();
 Mitt: Tiny (~200b) functional event emitter / pubsub.
 
 Returns **Mitt** 
+
+### all
+
+A Map of event names to registered handler functions.
 
 ### on
 

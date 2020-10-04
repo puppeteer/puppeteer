@@ -1,26 +1,27 @@
 {
-  "_from": "mitt@^2.0.1",
-  "_id": "mitt@2.0.1",
+  "_from": "mitt@latest",
+  "_id": "mitt@2.1.0",
   "_inBundle": false,
-  "_integrity": "sha512-FhuJY+tYHLnPcBHQhbUFzscD5512HumCPE4URXZUgPi3IvOJi4Xva5IIgy3xX56GqCmw++MAm5UURG6kDBYTdg==",
+  "_integrity": "sha512-ILj2TpLiysu2wkBbWjAmww7TkZb65aiQO+DkVdUTBpBXq+MHYiETENkKFMtsJZX1Lf4pe4QOrTSjIfUwN5lRdg==",
   "_location": "/mitt",
   "_phantomChildren": {},
   "_requested": {
-    "type": "range",
+    "type": "tag",
     "registry": true,
-    "raw": "mitt@^2.0.1",
+    "raw": "mitt@latest",
     "name": "mitt",
     "escapedName": "mitt",
-    "rawSpec": "^2.0.1",
+    "rawSpec": "latest",
     "saveSpec": null,
-    "fetchSpec": "^2.0.1"
+    "fetchSpec": "latest"
   },
   "_requiredBy": [
+    "#USER",
     "/"
   ],
-  "_resolved": "https://registry.npmjs.org/mitt/-/mitt-2.0.1.tgz",
-  "_shasum": "9e8a075b4daae82dd91aac155a0ece40ca7cb393",
-  "_spec": "mitt@^2.0.1",
+  "_resolved": "https://registry.npmjs.org/mitt/-/mitt-2.1.0.tgz",
+  "_shasum": "f740577c23176c6205b121b2973514eade1b2230",
+  "_spec": "mitt@latest",
   "_where": "/Users/jacktfranklin/src/puppeteer",
   "authors": [
     "Jason Miller <jason@developit.ca>"
@@ -43,13 +44,13 @@
     "eslint": "^7.1.0",
     "eslint-config-developit": "^1.2.0",
     "esm": "^3.2.25",
-    "microbundle": "^0.12.0",
-    "mocha": "^7.2.0",
+    "microbundle": "^0.12.3",
+    "mocha": "^8.0.1",
     "npm-run-all": "^4.1.5",
     "rimraf": "^3.0.2",
     "sinon": "^9.0.2",
     "sinon-chai": "^3.5.0",
-    "ts-node": "^8.10.1",
+    "ts-node": "^8.10.2",
     "typescript": "^3.9.3"
   },
   "eslintConfig": {
@@ -84,12 +85,14 @@
     }
   },
   "eslintIgnore": [
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "esmodules": "dist/mitt.modern.js",
   "files": [
     "src",
-    "dist"
+    "dist",
+    "index.d.ts"
   ],
   "homepage": "https://github.com/developit/mitt",
   "jsnext:main": "dist/mitt.es.js",
@@ -101,6 +104,18 @@
   ],
   "license": "MIT",
   "main": "dist/mitt.js",
+  "mocha": {
+    "extension": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register",
+      "esm"
+    ],
+    "spec": [
+      "test/*_test.ts"
+    ]
+  },
   "module": "dist/mitt.es.js",
   "name": "mitt",
   "repository": {
@@ -113,13 +128,14 @@
     "clean": "rimraf dist",
     "docs": "documentation readme src/index.ts --section API -q --parse-extension ts",
     "lint": "eslint src test --ext ts --ext js",
-    "release": "npm run -s build -s && npm t && git commit -m $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish",
-    "test": "npm-run-all --silent typecheck lint testonly",
-    "testonly": "mocha --require esm test/**/*.js",
-    "typecheck": "tsc **/*.ts --noEmit"
+    "mocha": "mocha test",
+    "release": "npm run -s build -s && npm t && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish",
+    "test": "npm-run-all --silent typecheck lint mocha test-types",
+    "test-types": "tsc test/test-types-compilation.ts --noEmit",
+    "typecheck": "tsc --noEmit"
   },
   "source": "src/index.ts",
-  "typings": "dist/index.d.ts",
+  "typings": "index.d.ts",
   "umd:main": "dist/mitt.umd.js",
-  "version": "2.0.1"
+  "version": "2.1.0"
 }

@@ -4,7 +4,7 @@
 
 ## Protocol.CSS.FontFace interface
 
-Properties of a web font: https://www.w3.org/TR/2008/REC-CSS2-20080411/fonts.html\#font-descriptions
+Properties of a web font: https://www.w3.org/TR/2008/REC-CSS2-20080411/fonts.html\#font-descriptions and additional information such as platformFontFamily and fontVariationAxes.
 
 <b>Signature:</b>
 
@@ -20,6 +20,7 @@ export interface FontFace
 |  [fontStretch](./puppeteer.protocol.css.fontface.fontstretch.md) | string | The font-stretch. |
 |  [fontStyle](./puppeteer.protocol.css.fontface.fontstyle.md) | string | The font-style. |
 |  [fontVariant](./puppeteer.protocol.css.fontface.fontvariant.md) | string | The font-variant. |
+|  [fontVariationAxes](./puppeteer.protocol.css.fontface.fontvariationaxes.md) | [FontVariationAxis](./puppeteer.protocol.css.fontvariationaxis.md)<!-- -->\[\] | Available variation settings (a.k.a. "axes"). |
 |  [fontWeight](./puppeteer.protocol.css.fontface.fontweight.md) | string | The font-weight. |
 |  [platformFontFamily](./puppeteer.protocol.css.fontface.platformfontfamily.md) | string | The resolved platform font family |
 |  [src](./puppeteer.protocol.css.fontface.src.md) | string | The src. |

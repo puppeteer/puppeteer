@@ -20,9 +20,6 @@ import ProgressBar from 'progress';
 import puppeteer from './index.js';
 import { PUPPETEER_REVISIONS } from './revisions.js';
 
-const firefoxVersions =
-  'https://product-details.mozilla.org/1.0/firefox_versions.json';
-
 const supportedProducts = {
   chrome: 'Chromium',
   firefox: 'Firefox Nightly',
@@ -38,9 +35,14 @@ export async function downloadBrowser() {
     process.env.npm_config_puppeteer_product ||
     process.env.npm_package_config_puppeteer_product ||
     'chrome';
+  const downloadPath =
+    process.env.PUPPETEER_DOWNLOAD_PATH ||
+    process.env.npm_config_puppeteer_download_path ||
+    process.env.npm_package_config_puppeteer_download_path;
   const browserFetcher = puppeteer.createBrowserFetcher({
     product,
     host: downloadHost,
+    path: downloadPath,
   });
   const revision = await getRevision();
   await fetchBinary(revision);
@@ -54,7 +56,7 @@ export async function downloadBrowser() {
       );
     } else if (product === 'firefox') {
       puppeteer._preferredRevision = PUPPETEER_REVISIONS.firefox;
-      return getFirefoxNightlyVersion(browserFetcher.host()).catch((error) => {
+      return getFirefoxNightlyVersion().catch((error) => {
         console.error(error);
         process.exit(1);
       });
@@ -144,10 +146,15 @@ export async function downloadBrowser() {
     return `${Math.round(mb * 10) / 10} Mb`;
   }
 
-  function getFirefoxNightlyVersion(host) {
+  function getFirefoxNightlyVersion() {
+    const firefoxVersions =
+      'https://product-details.mozilla.org/1.0/firefox_versions.json';
+
     const promise = new Promise((resolve, reject) => {
       let data = '';
-      logPolitely(`Requesting latest Firefox Nightly version from ${host}`);
+      logPolitely(
+        `Requesting latest Firefox Nightly version from ${firefoxVersions}`
+      );
       https
         .get(firefoxVersions, (r) => {
           if (r.statusCode >= 400)

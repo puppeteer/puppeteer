@@ -17,6 +17,7 @@ export interface InspectorIssueDetails
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [blockedByResponseIssueDetails](./puppeteer.protocol.audits.inspectorissuedetails.blockedbyresponseissuedetails.md) | [BlockedByResponseIssueDetails](./puppeteer.protocol.audits.blockedbyresponseissuedetails.md) |  |
+|  [contentSecurityPolicyIssueDetails](./puppeteer.protocol.audits.inspectorissuedetails.contentsecuritypolicyissuedetails.md) | [ContentSecurityPolicyIssueDetails](./puppeteer.protocol.audits.contentsecuritypolicyissuedetails.md) |  |
 |  [heavyAdIssueDetails](./puppeteer.protocol.audits.inspectorissuedetails.heavyadissuedetails.md) | [HeavyAdIssueDetails](./puppeteer.protocol.audits.heavyadissuedetails.md) |  |
 |  [mixedContentIssueDetails](./puppeteer.protocol.audits.inspectorissuedetails.mixedcontentissuedetails.md) | [MixedContentIssueDetails](./puppeteer.protocol.audits.mixedcontentissuedetails.md) |  |
 |  [sameSiteCookieIssueDetails](./puppeteer.protocol.audits.inspectorissuedetails.samesitecookieissuedetails.md) | [SameSiteCookieIssueDetails](./puppeteer.protocol.audits.samesitecookieissuedetails.md) |  |

@@ -92,5 +92,6 @@ console.log(text);
 |  [waitForFunction(pageFunction, options, args)](./puppeteer.frame.waitforfunction.md) |  |  |
 |  [waitForNavigation(options)](./puppeteer.frame.waitfornavigation.md) |  |  |
 |  [waitForSelector(selector, options)](./puppeteer.frame.waitforselector.md) |  |  |
+|  [waitForTimeout(milliseconds)](./puppeteer.frame.waitfortimeout.md) |  | Causes your script to wait for the given number of milliseconds. |
 |  [waitForXPath(xpath, options)](./puppeteer.frame.waitforxpath.md) |  |  |
 

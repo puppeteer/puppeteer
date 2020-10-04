@@ -4,6 +4,11 @@
 
 ## Frame.waitFor() method
 
+> Warning: This API is now obsolete.
+> 
+> Don't use this method directly. Instead use the more explicit methods available: [Frame.waitForSelector()](./puppeteer.frame.waitforselector.md)<!-- -->, [Frame.waitForXPath()](./puppeteer.frame.waitforxpath.md)<!-- -->, [Frame.waitForFunction()](./puppeteer.frame.waitforfunction.md) or [Frame.waitForTimeout()](./puppeteer.frame.waitfortimeout.md)<!-- -->.
+> 
+
 <b>Signature:</b>
 
 ```typescript

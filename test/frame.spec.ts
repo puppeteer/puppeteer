@@ -256,5 +256,15 @@ describe('Frame specs', function () {
         expect(frame1).not.toBe(frame2);
       }
     );
+    it('should support url fragment', async () => {
+      const { page, server } = getTestState();
+
+      await page.goto(server.PREFIX + '/frames/one-frame-url-fragment.html');
+
+      expect(page.frames().length).toBe(2);
+      expect(page.frames()[1].url()).toBe(
+        server.PREFIX + '/frames/frame.html?param=value#fragment'
+      );
+    });
   });
 });

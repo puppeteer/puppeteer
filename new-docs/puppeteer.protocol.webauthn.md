@@ -27,6 +27,7 @@ export namespace WebAuthn
 |  [GetCredentialsResponse](./puppeteer.protocol.webauthn.getcredentialsresponse.md) |  |
 |  [RemoveCredentialRequest](./puppeteer.protocol.webauthn.removecredentialrequest.md) |  |
 |  [RemoveVirtualAuthenticatorRequest](./puppeteer.protocol.webauthn.removevirtualauthenticatorrequest.md) |  |
+|  [SetAutomaticPresenceSimulationRequest](./puppeteer.protocol.webauthn.setautomaticpresencesimulationrequest.md) |  |
 |  [SetUserVerifiedRequest](./puppeteer.protocol.webauthn.setuserverifiedrequest.md) |  |
 |  [VirtualAuthenticatorOptions](./puppeteer.protocol.webauthn.virtualauthenticatoroptions.md) |  |
 

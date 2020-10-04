@@ -4,7 +4,7 @@
 
 ## SnapshotOptions.root property
 
-Prune unintersting nodes from the tree.
+Root node to get the accessibility tree for
 
 <b>Signature:</b>
 

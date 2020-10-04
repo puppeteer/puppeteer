@@ -4,7 +4,7 @@
 
 ## Protocol.Network.GetCookiesRequest.urls property
 
-The list of URLs for which applicable cookies will be fetched
+The list of URLs for which applicable cookies will be fetched. If not specified, it's assumed to be set to the list containing the URLs of the page and all of its subframes.
 
 <b>Signature:</b>
 

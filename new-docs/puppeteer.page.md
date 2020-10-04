@@ -89,6 +89,7 @@ page.off('request', logRequest);
 |  [cookies(urls)](./puppeteer.page.cookies.md) |  | If no URLs are specified, this method returns cookies for the current page URL. If URLs are specified, only cookies for those URLs are returned. |
 |  [deleteCookie(cookies)](./puppeteer.page.deletecookie.md) |  |  |
 |  [emulate(options)](./puppeteer.page.emulate.md) |  |  |
+|  [emulateIdleState(overrides)](./puppeteer.page.emulateidlestate.md) |  | Emulates the idle state. If no arguments set, clears idle state emulation. |
 |  [emulateMediaFeatures(features)](./puppeteer.page.emulatemediafeatures.md) |  |  |
 |  [emulateMediaType(type)](./puppeteer.page.emulatemediatype.md) |  |  |
 |  [emulateTimezone(timezoneId)](./puppeteer.page.emulatetimezone.md) |  |  |
@@ -138,6 +139,7 @@ page.off('request', logRequest);
 |  [waitForRequest(urlOrPredicate, options)](./puppeteer.page.waitforrequest.md) |  |  |
 |  [waitForResponse(urlOrPredicate, options)](./puppeteer.page.waitforresponse.md) |  |  |
 |  [waitForSelector(selector, options)](./puppeteer.page.waitforselector.md) |  |  |
+|  [waitForTimeout(milliseconds)](./puppeteer.page.waitfortimeout.md) |  | Causes your script to wait for the given number of milliseconds. |
 |  [waitForXPath(xpath, options)](./puppeteer.page.waitforxpath.md) |  |  |
 |  [workers()](./puppeteer.page.workers.md) |  |  |
 
