@@ -129,18 +129,15 @@ describe('waittask specs', function () {
       await page.evaluate(() => (globalThis.__FOO = 1));
       await watchdog;
     });
-    itFailsFirefox(
-      'should work when resolved right before execution context disposal',
-      async () => {
-        const { page } = getTestState();
+    it('should work when resolved right before execution context disposal', async () => {
+      const { page } = getTestState();
 
-        await page.evaluateOnNewDocument(() => (globalThis.__RELOADED = true));
-        await page.waitForFunction(() => {
-          if (!globalThis.__RELOADED) window.location.reload();
-          return true;
-        });
-      }
-    );
+      await page.evaluateOnNewDocument(() => (globalThis.__RELOADED = true));
+      await page.waitForFunction(() => {
+        if (!globalThis.__RELOADED) window.location.reload();
+        return true;
+      });
+    });
     it('should poll on interval', async () => {
       const { page } = getTestState();
 
