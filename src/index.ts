@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { initializePuppeteer } from './initialize.js';
+import { initializePuppeteerNode } from './initialize-node.js';
+import { isNode } from './environment.js';
+import { initializePuppeteerWeb } from './initialize-web.js';
 
-const puppeteer = initializePuppeteer('puppeteer');
+const initializeFunc = isNode
+  ? initializePuppeteerNode
+  : initializePuppeteerWeb;
+const puppeteer = initializeFunc('puppeteer');
 export default puppeteer;

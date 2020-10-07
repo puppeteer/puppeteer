@@ -67,7 +67,8 @@ import { PUPPETEER_REVISIONS } from '../revisions.js';
  * @public
  */
 export class Puppeteer {
-  private _projectRoot: string;
+  // Will be undefined in a browser environment
+  private _projectRoot?: string;
   private _isPuppeteerCore: boolean;
   private _changedProduct = false;
   private __productName: string;
