@@ -18,7 +18,7 @@ import { Puppeteer } from './common/Puppeteer.js';
 import { PUPPETEER_REVISIONS } from './revisions.js';
 import pkgDir from 'pkg-dir';
 
-export const initializePuppeteer = (packageName: string): Puppeteer => {
+export const initializePuppeteerNode = (packageName: string): Puppeteer => {
   const puppeteerRootDirectory = pkgDir.sync(__dirname);
 
   let preferredRevision = PUPPETEER_REVISIONS.chromium;
