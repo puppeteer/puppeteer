@@ -41,6 +41,17 @@ export interface InternalQueryHandler {
   ) => Promise<JSHandle>;
 }
 
+/**
+ * Contains two functions `queryOne` and `queryAll` that can
+ * be {@link Puppeteer.__experimental_registerCustomQueryHandler | registered}
+ * as alternative querying strategies. The functions `queryOne` and `queryAll`
+ * are executed in the page context.  `queryOne` should take an `Element` and a
+ * selector string as argument and return a single `Element` or `null` if no
+ * element is found. `queryAll` takes the same arguments but should instead
+ * return a `NodeListOf<Element>` or `Array<Element>` with all the elements
+ * that match the given query selector.
+ * @public
+ */
 export interface CustomQueryHandler {
   queryOne?: (element: Element | Document, selector: string) => Element | null;
   queryAll?: (
@@ -107,6 +118,9 @@ const _builtInHandlers: Array<[string, InternalQueryHandler]> = [
 
 const _queryHandlers = new Map<string, InternalQueryHandler>(_builtInHandlers);
 
+/**
+ * @internal
+ */
 export function registerCustomQueryHandler(
   name: string,
   handler: CustomQueryHandler
@@ -124,7 +138,7 @@ export function registerCustomQueryHandler(
 }
 
 /**
- * @param {string} name
+ * @internal
  */
 export function unregisterCustomQueryHandler(name: string): void {
   if (_queryHandlers.has(name)) {
@@ -132,14 +146,23 @@ export function unregisterCustomQueryHandler(name: string): void {
   }
 }
 
+/**
+ * @internal
+ */
 export function customQueryHandlerNames(): string[] {
   return [..._queryHandlers.keys()];
 }
 
+/**
+ * @internal
+ */
 export function clearCustomQueryHandlers(): void {
   _queryHandlers.clear();
 }
 
+/**
+ * @internal
+ */
 export function getQueryHandlerAndSelector(
   selector: string
 ): { updatedSelector: string; queryHandler: InternalQueryHandler } {

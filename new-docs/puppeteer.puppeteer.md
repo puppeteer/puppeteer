@@ -48,6 +48,10 @@ Once you have created a `page` you have access to a large API to interact with t
 
 |  Method | Modifiers | Description |
 |  --- | --- | --- |
+|  [\_\_experimental\_clearQueryHandlers()](./puppeteer.puppeteer.__experimental_clearqueryhandlers.md) |  | Clears all registered handlers. |
+|  [\_\_experimental\_customQueryHandlerNames()](./puppeteer.puppeteer.__experimental_customqueryhandlernames.md) |  |  |
+|  [\_\_experimental\_registerCustomQueryHandler(name, queryHandler)](./puppeteer.puppeteer.__experimental_registercustomqueryhandler.md) |  | Registers a [custom query handler](./puppeteer.customqueryhandler.md)<!-- -->. After registration, the handler can be used everywhere where a selector is expected by prepending the selection string with <code>&lt;name&gt;/</code>. The name is only allowed to consist of lower- and upper case latin letters. |
+|  [\_\_experimental\_unregisterCustomQueryHandler(name)](./puppeteer.puppeteer.__experimental_unregistercustomqueryhandler.md) |  |  |
 |  [connect(options)](./puppeteer.puppeteer.connect.md) |  | This method attaches Puppeteer to an existing browser instance. |
 |  [createBrowserFetcher(options)](./puppeteer.puppeteer.createbrowserfetcher.md) |  |  |
 |  [defaultArgs(options)](./puppeteer.puppeteer.defaultargs.md) |  |  |

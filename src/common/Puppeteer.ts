@@ -284,7 +284,18 @@ export class Puppeteer {
   }
 
   /**
-   * @internal
+   * Registers a {@link CustomQueryHandler | custom query handler}. After
+   * registration, the handler can be used everywhere where a selector is
+   * expected by prepending the selection string with `<name>/`. The name is
+   * only allowed to consist of lower- and upper case latin letters.
+   * @example
+   * ```
+   * puppeteer.registerCustomQueryHandler('text', { … });
+   * const aHandle = await page.$('text/…');
+   * ```
+   * @param name - The name that the custom query handler will be registered under.
+   * @param queryHandler - The {@link CustomQueryHandler | custom query handler} to
+   * register.
    */
   // eslint-disable-next-line @typescript-eslint/camelcase
   __experimental_registerCustomQueryHandler(
@@ -295,7 +306,7 @@ export class Puppeteer {
   }
 
   /**
-   * @internal
+   * @param name - The name of the query handler to unregistered.
    */
   // eslint-disable-next-line @typescript-eslint/camelcase
   __experimental_unregisterCustomQueryHandler(name: string): void {
@@ -303,7 +314,7 @@ export class Puppeteer {
   }
 
   /**
-   * @internal
+   * @returns a list with the names of all registered custom query handlers.
    */
   // eslint-disable-next-line @typescript-eslint/camelcase
   __experimental_customQueryHandlerNames(): string[] {
@@ -311,7 +322,7 @@ export class Puppeteer {
   }
 
   /**
-   * @internal
+   * Clears all registered handlers.
    */
   // eslint-disable-next-line @typescript-eslint/camelcase
   __experimental_clearQueryHandlers(): void {

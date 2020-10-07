@@ -59,6 +59,7 @@
 |  [CoverageEntry](./puppeteer.coverageentry.md) | The CoverageEntry class represents one entry of the coverage report. |
 |  [Credentials](./puppeteer.credentials.md) |  |
 |  [CSSCoverageOptions](./puppeteer.csscoverageoptions.md) | Set of configurable options for CSS coverage. |
+|  [CustomQueryHandler](./puppeteer.customqueryhandler.md) | Contains two functions <code>queryOne</code> and <code>queryAll</code> that can be [registered](./puppeteer.puppeteer.__experimental_registercustomqueryhandler.md) as alternative querying strategies. The functions <code>queryOne</code> and <code>queryAll</code> are executed in the page context. <code>queryOne</code> should take an <code>Element</code> and a selector string as argument and return a single <code>Element</code> or <code>null</code> if no element is found. <code>queryAll</code> takes the same arguments but should instead return a <code>NodeListOf&lt;Element&gt;</code> or <code>Array&lt;Element&gt;</code> with all the elements that match the given query selector. |
 |  [FrameAddScriptTagOptions](./puppeteer.frameaddscripttagoptions.md) |  |
 |  [FrameAddStyleTagOptions](./puppeteer.frameaddstyletagoptions.md) |  |
 |  [FrameWaitForFunctionOptions](./puppeteer.framewaitforfunctionoptions.md) |  |

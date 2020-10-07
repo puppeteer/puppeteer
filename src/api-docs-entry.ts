@@ -57,4 +57,5 @@ export * from './common/EvalTypes.js';
 export * from './common/PDFOptions.js';
 export * from './common/TimeoutSettings.js';
 export * from './common/LifecycleWatcher.js';
+export * from './common/QueryHandler.js';
 export * from 'devtools-protocol/types/protocol';
