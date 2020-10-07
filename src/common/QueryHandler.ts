@@ -101,11 +101,8 @@ const _defaultHandler = makeQueryHandler({
     element.querySelectorAll(selector),
 });
 
-const _builtInHandlers: Array<[string, InternalQueryHandler]> = [
-  ['aria', ariaHandler],
-];
-
-const _queryHandlers = new Map<string, InternalQueryHandler>(_builtInHandlers);
+const _builtInHandlers = new Map([['aria', ariaHandler]]);
+const _queryHandlers = new Map(_builtInHandlers);
 
 export function registerCustomQueryHandler(
   name: string,
@@ -127,17 +124,19 @@ export function registerCustomQueryHandler(
  * @param {string} name
  */
 export function unregisterCustomQueryHandler(name: string): void {
-  if (_queryHandlers.has(name)) {
+  if (_queryHandlers.has(name) && !_builtInHandlers.has(name)) {
     _queryHandlers.delete(name);
   }
 }
 
 export function customQueryHandlerNames(): string[] {
-  return [..._queryHandlers.keys()];
+  return [..._queryHandlers.keys()].filter(
+    (name) => !_builtInHandlers.has(name)
+  );
 }
 
 export function clearCustomQueryHandlers(): void {
-  _queryHandlers.clear();
+  customQueryHandlerNames().forEach(unregisterCustomQueryHandler);
 }
 
 export function getQueryHandlerAndSelector(
