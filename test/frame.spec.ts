@@ -76,7 +76,7 @@ describe('Frame specs', function () {
       let error = null;
       await frame1.evaluate(() => 7 * 8).catch((error_) => (error = error_));
       expect(error.message).toContain(
-        'Execution Context is not available in detached frame'
+        'Execution context is not available in detached frame'
       );
     });
   });

@@ -23,6 +23,7 @@ import {
 } from './mocha-utils'; // eslint-disable-line import/extensions
 
 import { ElementHandle } from '../lib/cjs/puppeteer/common/JSHandle.js';
+import utils from './utils.js';
 
 describeChromeOnly('AriaQueryHandler', () => {
   setupTestBrowserHooks();
@@ -170,6 +171,302 @@ describeChromeOnly('AriaQueryHandler', () => {
         buttons.reduce((acc, button) => acc + Number(button.textContent), 0)
       );
       expect(sum).toBe(50005000);
+    });
+  });
+
+  describe('waitForSelector (aria)', function () {
+    const addElement = (tag) =>
+      document.body.appendChild(document.createElement(tag));
+
+    it('should immediately resolve promise if node exists', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(addElement, 'button');
+      await page.waitForSelector('aria/[role="button"]');
+    });
+
+    it('should work independently of `exposeFunction`', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      await page.exposeFunction('ariaQuerySelector', (a, b) => a + b);
+      await page.evaluate(addElement, 'button');
+      await page.waitForSelector('aria/[role="button"]');
+      const result = await page.evaluate('globalThis.ariaQuerySelector(2,8)');
+      expect(result).toBe(10);
+    });
+
+    it('should work with removed MutationObserver', async () => {
+      const { page } = getTestState();
+
+      await page.evaluate(() => delete window.MutationObserver);
+      const [handle] = await Promise.all([
+        page.waitForSelector('aria/anything'),
+        page.setContent(`<h1>anything</h1>`),
+      ]);
+      expect(
+        await page.evaluate((x: HTMLElement) => x.textContent, handle)
+      ).toBe('anything');
+    });
+
+    it('should resolve promise when node is added', async () => {
+      const { page, server } = getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const frame = page.mainFrame();
+      const watchdog = frame.waitForSelector('aria/[role="heading"]');
+      await frame.evaluate(addElement, 'br');
+      await frame.evaluate(addElement, 'h1');
+      const elementHandle = await watchdog;
+      const tagName = await elementHandle
+        .getProperty('tagName')
+        .then((element) => element.jsonValue());
+      expect(tagName).toBe('H1');
+    });
+
+    it('should work when node is added through innerHTML', async () => {
+      const { page, server } = getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      const watchdog = page.waitForSelector('aria/name');
+      await page.evaluate(addElement, 'span');
+      await page.evaluate(
+        () =>
+          (document.querySelector('span').innerHTML =
+            '<h3><div aria-label="name"></div></h3>')
+      );
+      await watchdog;
+    });
+
+    it('Page.waitForSelector is shortcut for main frame', async () => {
+      const { page, server } = getTestState();
+
+      await page.goto(server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      const otherFrame = page.frames()[1];
+      const watchdog = page.waitForSelector('aria/[role="button"]');
+      await otherFrame.evaluate(addElement, 'button');
+      await page.evaluate(addElement, 'button');
+      const elementHandle = await watchdog;
+      expect(elementHandle.executionContext().frame()).toBe(page.mainFrame());
+    });
+
+    it('should run in specified frame', async () => {
+      const { page, server } = getTestState();
+
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      await utils.attachFrame(page, 'frame2', server.EMPTY_PAGE);
+      const frame1 = page.frames()[1];
+      const frame2 = page.frames()[2];
+      const waitForSelectorPromise = frame2.waitForSelector(
+        'aria/[role="button"]'
+      );
+      await frame1.evaluate(addElement, 'button');
+      await frame2.evaluate(addElement, 'button');
+      const elementHandle = await waitForSelectorPromise;
+      expect(elementHandle.executionContext().frame()).toBe(frame2);
+    });
+
+    it('should throw when frame is detached', async () => {
+      const { page, server } = getTestState();
+
+      await utils.attachFrame(page, 'frame1', server.EMPTY_PAGE);
+      const frame = page.frames()[1];
+      let waitError = null;
+      const waitPromise = frame
+        .waitForSelector('aria/does-not-exist')
+        .catch((error) => (waitError = error));
+      await utils.detachFrame(page, 'frame1');
+      await waitPromise;
+      expect(waitError).toBeTruthy();
+      expect(waitError.message).toContain(
+        'waitForFunction failed: frame got detached.'
+      );
+    });
+
+    it('should survive cross-process navigation', async () => {
+      const { page, server } = getTestState();
+
+      let imgFound = false;
+      const waitForSelector = page
+        .waitForSelector('aria/[role="img"]')
+        .then(() => (imgFound = true));
+      await page.goto(server.EMPTY_PAGE);
+      expect(imgFound).toBe(false);
+      await page.reload();
+      expect(imgFound).toBe(false);
+      await page.goto(server.CROSS_PROCESS_PREFIX + '/grid.html');
+      await waitForSelector;
+      expect(imgFound).toBe(true);
+    });
+
+    it('should wait for visible', async () => {
+      const { page } = getTestState();
+
+      let divFound = false;
+      const waitForSelector = page
+        .waitForSelector('aria/name', { visible: true })
+        .then(() => (divFound = true));
+      await page.setContent(
+        `<div aria-label='name' style='display: none; visibility: hidden;'>1</div>`
+      );
+      expect(divFound).toBe(false);
+      await page.evaluate(() =>
+        document.querySelector('div').style.removeProperty('display')
+      );
+      expect(divFound).toBe(false);
+      await page.evaluate(() =>
+        document.querySelector('div').style.removeProperty('visibility')
+      );
+      expect(await waitForSelector).toBe(true);
+      expect(divFound).toBe(true);
+    });
+
+    it('should wait for visible recursively', async () => {
+      const { page } = getTestState();
+
+      let divVisible = false;
+      const waitForSelector = page
+        .waitForSelector('aria/inner', { visible: true })
+        .then(() => (divVisible = true));
+      await page.setContent(
+        `<div style='display: none; visibility: hidden;'><div aria-label="inner">hi</div></div>`
+      );
+      expect(divVisible).toBe(false);
+      await page.evaluate(() =>
+        document.querySelector('div').style.removeProperty('display')
+      );
+      expect(divVisible).toBe(false);
+      await page.evaluate(() =>
+        document.querySelector('div').style.removeProperty('visibility')
+      );
+      expect(await waitForSelector).toBe(true);
+      expect(divVisible).toBe(true);
+    });
+
+    it('hidden should wait for visibility: hidden', async () => {
+      const { page } = getTestState();
+
+      let divHidden = false;
+      await page.setContent(
+        `<div role='button' style='display: block;'></div>`
+      );
+      const waitForSelector = page
+        .waitForSelector('aria/[role="button"]', { hidden: true })
+        .then(() => (divHidden = true));
+      await page.waitForSelector('aria/[role="button"]'); // do a round trip
+      expect(divHidden).toBe(false);
+      await page.evaluate(() =>
+        document.querySelector('div').style.setProperty('visibility', 'hidden')
+      );
+      expect(await waitForSelector).toBe(true);
+      expect(divHidden).toBe(true);
+    });
+
+    it('hidden should wait for display: none', async () => {
+      const { page } = getTestState();
+
+      let divHidden = false;
+      await page.setContent(`<div role='main' style='display: block;'></div>`);
+      const waitForSelector = page
+        .waitForSelector('aria/[role="main"]', { hidden: true })
+        .then(() => (divHidden = true));
+      await page.waitForSelector('aria/[role="main"]'); // do a round trip
+      expect(divHidden).toBe(false);
+      await page.evaluate(() =>
+        document.querySelector('div').style.setProperty('display', 'none')
+      );
+      expect(await waitForSelector).toBe(true);
+      expect(divHidden).toBe(true);
+    });
+
+    it('hidden should wait for removal', async () => {
+      const { page } = getTestState();
+
+      await page.setContent(`<div role='main'></div>`);
+      let divRemoved = false;
+      const waitForSelector = page
+        .waitForSelector('aria/[role="main"]', { hidden: true })
+        .then(() => (divRemoved = true));
+      await page.waitForSelector('aria/[role="main"]'); // do a round trip
+      expect(divRemoved).toBe(false);
+      await page.evaluate(() => document.querySelector('div').remove());
+      expect(await waitForSelector).toBe(true);
+      expect(divRemoved).toBe(true);
+    });
+
+    it('should return null if waiting to hide non-existing element', async () => {
+      const { page } = getTestState();
+
+      const handle = await page.waitForSelector('aria/non-existing', {
+        hidden: true,
+      });
+      expect(handle).toBe(null);
+    });
+
+    it('should respect timeout', async () => {
+      const { page, puppeteer } = getTestState();
+
+      let error = null;
+      await page
+        .waitForSelector('aria/[role="button"]', { timeout: 10 })
+        .catch((error_) => (error = error_));
+      expect(error).toBeTruthy();
+      expect(error.message).toContain(
+        'waiting for selector `[role="button"]` failed: timeout'
+      );
+      expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
+    });
+
+    it('should have an error message specifically for awaiting an element to be hidden', async () => {
+      const { page } = getTestState();
+
+      await page.setContent(`<div role='main'></div>`);
+      let error = null;
+      await page
+        .waitForSelector('aria/[role="main"]', { hidden: true, timeout: 10 })
+        .catch((error_) => (error = error_));
+      expect(error).toBeTruthy();
+      expect(error.message).toContain(
+        'waiting for selector `[role="main"]` to be hidden failed: timeout'
+      );
+    });
+
+    it('should respond to node attribute mutation', async () => {
+      const { page } = getTestState();
+
+      let divFound = false;
+      const waitForSelector = page
+        .waitForSelector('aria/zombo')
+        .then(() => (divFound = true));
+      await page.setContent(`<div aria-label='notZombo'></div>`);
+      expect(divFound).toBe(false);
+      await page.evaluate(() =>
+        document.querySelector('div').setAttribute('aria-label', 'zombo')
+      );
+      expect(await waitForSelector).toBe(true);
+    });
+
+    it('should return the element handle', async () => {
+      const { page } = getTestState();
+
+      const waitForSelector = page.waitForSelector('aria/zombo');
+      await page.setContent(`<div aria-label='zombo'>anything</div>`);
+      expect(
+        await page.evaluate(
+          (x: HTMLElement) => x.textContent,
+          await waitForSelector
+        )
+      ).toBe('anything');
+    });
+
+    it('should have correct stack trace for timeout', async () => {
+      const { page } = getTestState();
+
+      let error;
+      await page
+        .waitForSelector('aria/zombo', { timeout: 10 })
+        .catch((error_) => (error = error_));
+      expect(error.stack).toContain('waiting for selector `zombo` failed');
     });
   });
 

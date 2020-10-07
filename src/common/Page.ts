@@ -1050,7 +1050,7 @@ export class Page extends EventEmitter {
       );
     this._pageBindings.set(name, puppeteerFunction);
 
-    const expression = helper.evaluationString(addPageBinding, name);
+    const expression = helper.pageBindingInitString('exposedFun', name);
     await this._client.send('Runtime.addBinding', { name: name });
     await this._client.send('Page.addScriptToEvaluateOnNewDocument', {
       source: expression,
@@ -1058,30 +1058,6 @@ export class Page extends EventEmitter {
     await Promise.all(
       this.frames().map((frame) => frame.evaluate(expression).catch(debugError))
     );
-
-    function addPageBinding(bindingName): void {
-      /* Cast window to any here as we're about to add properties to it
-       * via win[bindingName] which TypeScript doesn't like.
-       */
-      const win = window as any;
-      const binding = win[bindingName];
-
-      win[bindingName] = (...args: unknown[]): Promise<unknown> => {
-        const me = window[bindingName];
-        let callbacks = me['callbacks'];
-        if (!callbacks) {
-          callbacks = new Map();
-          me['callbacks'] = callbacks;
-        }
-        const seq = (me['lastSeq'] || 0) + 1;
-        me['lastSeq'] = seq;
-        const promise = new Promise((resolve, reject) =>
-          callbacks.set(seq, { resolve, reject })
-        );
-        binding(JSON.stringify({ name: bindingName, seq, args }));
-        return promise;
-      };
-    }
   }
 
   async authenticate(credentials: Credentials): Promise<void> {
@@ -1156,23 +1132,22 @@ export class Page extends EventEmitter {
   private async _onBindingCalled(
     event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> {
-    const { name, seq, args } = JSON.parse(event.payload);
+    const { type, name, seq, args } = JSON.parse(event.payload);
+    if (type !== 'exposedFun' || !this._pageBindings.has(name)) return;
     let expression = null;
     try {
       const result = await this._pageBindings.get(name)(...args);
-      expression = helper.evaluationString(deliverResult, name, seq, result);
+      expression = helper.pageBindingDeliverResultString(name, seq, result);
     } catch (error) {
       if (error instanceof Error)
-        expression = helper.evaluationString(
-          deliverError,
+        expression = helper.pageBindingDeliverErrorString(
           name,
           seq,
           error.message,
           error.stack
         );
       else
-        expression = helper.evaluationString(
-          deliverErrorValue,
+        expression = helper.pageBindingDeliverErrorValueString(
           name,
           seq,
           error
@@ -1184,32 +1159,6 @@ export class Page extends EventEmitter {
         contextId: event.executionContextId,
       })
       .catch(debugError);
-
-    function deliverResult(name: string, seq: number, result: unknown): void {
-      window[name]['callbacks'].get(seq).resolve(result);
-      window[name]['callbacks'].delete(seq);
-    }
-
-    function deliverError(
-      name: string,
-      seq: number,
-      message: string,
-      stack: string
-    ): void {
-      const error = new Error(message);
-      error.stack = stack;
-      window[name]['callbacks'].get(seq).reject(error);
-      window[name]['callbacks'].delete(seq);
-    }
-
-    function deliverErrorValue(
-      name: string,
-      seq: number,
-      value: unknown
-    ): void {
-      window[name]['callbacks'].get(seq).reject(value);
-      window[name]['callbacks'].delete(seq);
-    }
   }
 
   private _addConsoleMessage(
