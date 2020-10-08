@@ -333,16 +333,16 @@ describe('Keyboard', function () {
     const { page } = getTestState();
 
     let error = await page.keyboard
-      // @ts-expect-error
+      // @ts-expect-error bad input
       .press('NotARealKey')
       .catch((error_) => error_);
     expect(error.message).toBe('Unknown key: "NotARealKey"');
 
-    // @ts-expect-error
+    // @ts-expect-error bad input
     error = await page.keyboard.press('ё').catch((error_) => error_);
     expect(error && error.message).toBe('Unknown key: "ё"');
 
-    // @ts-expect-error
+    // @ts-expect-error bad input
     error = await page.keyboard.press('😊').catch((error_) => error_);
     expect(error && error.message).toBe('Unknown key: "😊"');
   });

@@ -12,7 +12,7 @@
 <b>Signature:</b>
 
 ```typescript
-waitFor(selectorOrFunctionOrTimeout: string | number | Function, options?: {}, ...args: SerializableOrJSHandle[]): Promise<JSHandle | null>;
+waitFor(selectorOrFunctionOrTimeout: string | number | Function, options?: Record<string, unknown>, ...args: SerializableOrJSHandle[]): Promise<JSHandle | null>;
 ```
 
 ## Parameters
@@ -20,7 +20,7 @@ waitFor(selectorOrFunctionOrTimeout: string | number | Function, options?: {}, .
 |  Parameter | Type | Description |
 |  --- | --- | --- |
 |  selectorOrFunctionOrTimeout | string \| number \| Function | a selector, predicate or timeout to wait for. |
-|  options | {} | optional waiting parameters. |
+|  options | Record&lt;string, unknown&gt; | optional waiting parameters. |
 |  args | [SerializableOrJSHandle](./puppeteer.serializableorjshandle.md)<!-- -->\[\] | arguments to pass to <code>pageFunction</code>. |
 
 <b>Returns:</b>

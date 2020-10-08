@@ -1169,7 +1169,7 @@ describe('Page', function () {
 
       let error = null;
       try {
-        // @ts-expect-error
+        // @ts-expect-error purposefully passing bad options
         await page.addScriptTag('/injectedfile.js');
       } catch (error_) {
         error = error_;
@@ -1298,7 +1298,7 @@ describe('Page', function () {
 
       let error = null;
       try {
-        // @ts-expect-error
+        // @ts-expect-error purposefully passing bad input
         await page.addStyleTag('/injectedstyle.css');
       } catch (error_) {
         error = error_;
@@ -1652,7 +1652,7 @@ describe('Page', function () {
       await page.setContent('<select><option value="12"/></select>');
       let error = null;
       try {
-        // @ts-expect-error
+        // @ts-expect-error purposefully passing bad input
         await page.select('select', 12);
       } catch (error_) {
         error = error_;

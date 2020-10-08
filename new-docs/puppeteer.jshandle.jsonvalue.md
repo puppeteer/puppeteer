@@ -9,11 +9,11 @@ Returns a JSON representation of the object.
 <b>Signature:</b>
 
 ```typescript
-jsonValue(): Promise<{}>;
+jsonValue(): Promise<Record<string, unknown>>;
 ```
 <b>Returns:</b>
 
-Promise&lt;{}&gt;
+Promise&lt;Record&lt;string, unknown&gt;&gt;
 
 ## Remarks
 

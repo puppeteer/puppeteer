@@ -442,11 +442,8 @@ describe('Launcher specs', function () {
 
       after(async () => {
         const { puppeteer } = getTestState();
-        /* launcher is a private property so we don't want our users doing this
-         * but we need to reset the state fully here for testing different
-         * browser launchers
-         */
-        // @ts-expect-error
+        // @ts-expect-error launcher is a private property that users can't
+        // touch, but for testing purposes we need to reset it.
         puppeteer._lazyLauncher = undefined;
         puppeteer._productName = productName;
       });

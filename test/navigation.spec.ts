@@ -193,7 +193,7 @@ describe('navigation', function () {
 
       let error = null;
       await page
-        // @ts-expect-error
+        // @ts-expect-error purposefully passing an old option
         .goto(server.EMPTY_PAGE, { waitUntil: 'networkidle' })
         .catch((error_) => (error = error_));
       expect(error.message).toContain(

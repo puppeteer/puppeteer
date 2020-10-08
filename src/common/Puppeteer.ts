@@ -120,7 +120,10 @@ export class Puppeteer {
   launch(
     options: LaunchOptions &
       ChromeArgOptions &
-      BrowserOptions & { product?: string; extraPrefsFirefox?: {} } = {}
+      BrowserOptions & {
+        product?: string;
+        extraPrefsFirefox?: Record<string, unknown>;
+      } = {}
   ): Promise<Browser> {
     if (options.product) this._productName = options.product;
     return this._launcher.launch(options);
@@ -296,7 +299,6 @@ export class Puppeteer {
    * @param queryHandler - The {@link CustomQueryHandler | custom query handler} to
    * register.
    */
-  // eslint-disable-next-line @typescript-eslint/camelcase
   __experimental_registerCustomQueryHandler(
     name: string,
     queryHandler: CustomQueryHandler
@@ -307,7 +309,6 @@ export class Puppeteer {
   /**
    * @param name - The name of the query handler to unregistered.
    */
-  // eslint-disable-next-line @typescript-eslint/camelcase
   __experimental_unregisterCustomQueryHandler(name: string): void {
     unregisterCustomQueryHandler(name);
   }
@@ -315,7 +316,6 @@ export class Puppeteer {
   /**
    * @returns a list with the names of all registered custom query handlers.
    */
-  // eslint-disable-next-line @typescript-eslint/camelcase
   __experimental_customQueryHandlerNames(): string[] {
     return customQueryHandlerNames();
   }
@@ -323,7 +323,6 @@ export class Puppeteer {
   /**
    * Clears all registered handlers.
    */
-  // eslint-disable-next-line @typescript-eslint/camelcase
   __experimental_clearQueryHandlers(): void {
     clearCustomQueryHandlers();
   }

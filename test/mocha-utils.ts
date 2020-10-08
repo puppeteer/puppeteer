@@ -92,8 +92,11 @@ const defaultBrowserOptions = Object.assign(
       `WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`
     );
   } else {
-    // TODO(jackfranklin): declare updateRevision in some form for the Firefox launcher.
-    // @ts-expect-error
+    // TODO(jackfranklin): declare updateRevision in some form for the Firefox
+    // launcher.
+    // @ts-expect-error _updateRevision is defined on the FF launcher
+    // but not the Chrome one. The types need tidying so that TS can infer that
+    // properly and not error here.
     if (product === 'firefox') await puppeteer._launcher._updateRevision();
     const executablePath = puppeteer.executablePath();
     if (!fs.existsSync(executablePath))
