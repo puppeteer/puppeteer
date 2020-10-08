@@ -7,5 +7,5 @@
 <b>Signature:</b>
 
 ```typescript
-product: string;
+product: Product;
 ```

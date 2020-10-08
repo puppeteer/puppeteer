@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 import Launcher from '../node/Launcher.js';
-import {
-  LaunchOptions,
-  ChromeArgOptions,
-  BrowserOptions,
-} from '../node/LaunchOptions.js';
+import { LaunchOptions, ChromeArgOptions } from '../node/LaunchOptions.js';
 import { ProductLauncher } from '../node/Launcher.js';
 import {
   BrowserFetcher,
@@ -36,6 +32,8 @@ import {
   CustomQueryHandler,
 } from './QueryHandler.js';
 import { PUPPETEER_REVISIONS } from '../revisions.js';
+import { Product } from './Product.js';
+import { connectToBrowser, BrowserOptions } from './BrowserConnector.js';
 
 /**
  * The main Puppeteer class. Provides the {@link Puppeteer.launch | launch}
@@ -141,11 +139,11 @@ export class Puppeteer {
       browserWSEndpoint?: string;
       browserURL?: string;
       transport?: ConnectionTransport;
-      product?: string;
+      product?: Product;
     }
   ): Promise<Browser> {
     if (options.product) this._productName = options.product;
-    return this._launcher.connect(options);
+    return connectToBrowser(options);
   }
 
   /**

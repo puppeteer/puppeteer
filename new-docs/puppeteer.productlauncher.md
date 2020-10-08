@@ -17,13 +17,12 @@ export interface ProductLauncher
 |  Property | Type | Description |
 |  --- | --- | --- |
 |  [executablePath](./puppeteer.productlauncher.executablepath.md) | () =&gt; string |  |
-|  [product](./puppeteer.productlauncher.product.md) | string |  |
+|  [product](./puppeteer.productlauncher.product.md) | [Product](./puppeteer.product.md) |  |
 
 ## Methods
 
 |  Method | Description |
 |  --- | --- |
-|  [connect(object)](./puppeteer.productlauncher.connect.md) |  |
 |  [defaultArgs(object)](./puppeteer.productlauncher.defaultargs.md) |  |
 |  [launch(object)](./puppeteer.productlauncher.launch.md) |  |
 

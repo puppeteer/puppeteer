@@ -50,6 +50,7 @@
     "devtools-protocol": "0.0.809251",
     "extract-zip": "^2.0.0",
     "https-proxy-agent": "^4.0.0",
+    "node-fetch": "^2.6.1",
     "pkg-dir": "^4.2.0",
     "progress": "^2.0.1",
     "proxy-from-env": "^1.0.0",

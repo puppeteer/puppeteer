@@ -803,6 +803,13 @@ function compareDocumentations(actual, expected) {
           expectedName: 'Array<Object>',
         },
       ],
+      [
+        'Method Puppeteer.connect() options.product',
+        {
+          actualName: 'string',
+          expectedName: 'Product',
+        },
+      ],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);

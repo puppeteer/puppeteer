@@ -13,7 +13,7 @@ connect(options: BrowserOptions & {
         browserWSEndpoint?: string;
         browserURL?: string;
         transport?: ConnectionTransport;
-        product?: string;
+        product?: Product;
     }): Promise<Browser>;
 ```
 
@@ -21,7 +21,7 @@ connect(options: BrowserOptions & {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | [BrowserOptions](./puppeteer.browseroptions.md) &amp; { browserWSEndpoint?: string; browserURL?: string; transport?: ConnectionTransport; product?: string; } | Set of configurable options to set on the browser. |
+|  options | [BrowserOptions](./puppeteer.browseroptions.md) &amp; { browserWSEndpoint?: string; browserURL?: string; transport?: ConnectionTransport; product?: [Product](./puppeteer.product.md)<!-- -->; } | Set of configurable options to set on the browser. |
 
 <b>Returns:</b>
 
