@@ -22,7 +22,8 @@
     "install": "node install.js",
     "eslint": "([ \"$CI\" = true ] && eslint --ext js --ext ts --quiet -f codeframe . || eslint --ext js --ext ts .)",
     "eslint-fix": "eslint --ext js --ext ts --fix .",
-    "lint": "npm run eslint && npm run tsc && npm run doc",
+    "commitlint": "commitlint --from=HEAD~1",
+    "lint": "npm run eslint && npm run tsc && npm run doc && npm run commitlint",
     "doc": "node utils/doclint/cli.js",
     "clean-lib": "rm -rf lib",
     "tsc": "npm run clean-lib && tsc --version && npm run tsc-cjs && npm run tsc-esm",
@@ -58,6 +59,8 @@
     "ws": "^7.2.3"
   },
   "devDependencies": {
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
     "@microsoft/api-documenter": "7.8.14",
     "@microsoft/api-extractor": "7.8.12",
     "@types/debug": "0.0.31",
@@ -83,6 +86,7 @@
     "eslint-plugin-unicorn": "^19.0.1",
     "esprima": "^4.0.0",
     "expect": "^25.2.7",
+    "husky": "^4.3.0",
     "jpeg-js": "^0.3.7",
     "mime": "^2.0.3",
     "minimist": "^1.2.0",
@@ -103,5 +107,10 @@
     "child_process": false,
     "rimraf": false,
     "readline": false
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint --env HUSKY_GIT_PARAMS"
+    }
   }
 }
