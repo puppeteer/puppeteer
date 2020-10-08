@@ -17,8 +17,8 @@
 import os from 'os';
 import https from 'https';
 import ProgressBar from 'progress';
-import puppeteer from './index.js';
-import { PUPPETEER_REVISIONS } from './revisions.js';
+import puppeteer from '../index.js';
+import { PUPPETEER_REVISIONS } from '../revisions.js';
 
 const supportedProducts = {
   chrome: 'Chromium',
