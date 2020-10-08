@@ -92,6 +92,7 @@
     "pngjs": "^5.0.0",
     "prettier": "^2.0.5",
     "sinon": "^9.0.2",
+    "source-map-support": "^0.5.19",
     "text-diff": "^1.0.1",
     "ts-node": "^8.10.2",
     "typescript": "3.9.5"

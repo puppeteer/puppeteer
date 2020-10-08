@@ -8,6 +8,7 @@
     "module": "ESNext",
     "declaration": true,
     "declarationMap": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "sourceMap": true,
   }
 }
