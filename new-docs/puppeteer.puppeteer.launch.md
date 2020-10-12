@@ -11,7 +11,7 @@ Launches puppeteer and launches a browser instance with given arguments and opti
 ```typescript
 launch(options?: LaunchOptions & ChromeArgOptions & BrowserOptions & {
         product?: string;
-        extraPrefsFirefox?: {};
+        extraPrefsFirefox?: Record<string, unknown>;
     }): Promise<Browser>;
 ```
 
@@ -19,7 +19,7 @@ launch(options?: LaunchOptions & ChromeArgOptions & BrowserOptions & {
 
 |  Parameter | Type | Description |
 |  --- | --- | --- |
-|  options | [LaunchOptions](./puppeteer.launchoptions.md) &amp; [ChromeArgOptions](./puppeteer.chromeargoptions.md) &amp; [BrowserOptions](./puppeteer.browseroptions.md) &amp; { product?: string; extraPrefsFirefox?: {}; } | Set of configurable options to set on the browser. |
+|  options | [LaunchOptions](./puppeteer.launchoptions.md) &amp; [ChromeArgOptions](./puppeteer.chromeargoptions.md) &amp; [BrowserOptions](./puppeteer.browseroptions.md) &amp; { product?: string; extraPrefsFirefox?: Record&lt;string, unknown&gt;; } | Set of configurable options to set on the browser. |
 
 <b>Returns:</b>
 

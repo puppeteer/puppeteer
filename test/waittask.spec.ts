@@ -94,7 +94,7 @@ describe('waittask specs', function () {
       const { page } = getTestState();
 
       let error = null;
-      // @ts-expect-error
+      // @ts-expect-error purposefully passing bad type for test
       await page.waitFor({ foo: 'bar' }).catch((error_) => (error = error_));
       expect(error.message).toContain('Unsupported target type');
     });

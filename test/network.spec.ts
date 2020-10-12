@@ -516,7 +516,7 @@ describe('network', function () {
 
       let error = null;
       try {
-        // @ts-expect-error
+        // @ts-expect-error purposeful bad input
         await page.setExtraHTTPHeaders({ foo: 1 });
       } catch (error_) {
         error = error_;

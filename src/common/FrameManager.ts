@@ -119,7 +119,7 @@ export class FrameManager extends EventEmitter {
   }
 
   async initialize(): Promise<void> {
-    const result = await Promise.all<{}, Protocol.Page.GetFrameTreeResponse>([
+    const result = await Promise.all([
       this._client.send('Page.enable'),
       this._client.send('Page.getFrameTree'),
     ]);
@@ -1062,7 +1062,7 @@ export class Frame {
    */
   waitFor(
     selectorOrFunctionOrTimeout: string | number | Function,
-    options: {} = {},
+    options: Record<string, unknown> = {},
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle | null> {
     const xPathPattern = '//';

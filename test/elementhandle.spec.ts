@@ -199,11 +199,10 @@ describe('ElementHandle specs', function () {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/input/button.html');
-      const buttonTextNode = await page.evaluateHandle(
+      const buttonTextNode = await page.evaluateHandle<ElementHandle>(
         () => document.querySelector('button').firstChild
       );
       let error = null;
-      // @ts-expect-error
       await buttonTextNode.click().catch((error_) => (error = error_));
       expect(error.message).toBe('Node is not of type HTMLElement');
     });
@@ -322,11 +321,9 @@ describe('ElementHandle specs', function () {
     it('should throw with invalid query names', () => {
       try {
         const { puppeteer } = getTestState();
-        puppeteer.__experimental_registerCustomQueryHandler(
-          '1/2/3',
-          // @ts-expect-error
-          () => {}
-        );
+        puppeteer.__experimental_registerCustomQueryHandler('1/2/3', {
+          queryOne: () => document.querySelector('foo'),
+        });
         throw new Error(
           'Custom query handler name was invalid - throw expected'
         );
