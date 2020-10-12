@@ -9,7 +9,7 @@
 |  Class | Description |
 |  --- | --- |
 |  [Accessibility](./puppeteer.accessibility.md) | The Accessibility class provides methods for inspecting Chromium's accessibility tree. The accessibility tree is used by assistive technology such as [screen readers](https://en.wikipedia.org/wiki/Screen_reader) or [switches](https://en.wikipedia.org/wiki/Switch_access)<!-- -->. |
-|  [Browser](./puppeteer.browser.md) | A Browser is created when Puppeteer connects to a Chromium instance, either through [Puppeteer.launch()](./puppeteer.puppeteer.launch.md) or [Puppeteer.connect()](./puppeteer.puppeteer.connect.md)<!-- -->. |
+|  [Browser](./puppeteer.browser.md) | A Browser is created when Puppeteer connects to a Chromium instance, either through [PuppeteerNode.launch()](./puppeteer.puppeteernode.launch.md) or [Puppeteer.connect()](./puppeteer.puppeteer.connect.md)<!-- -->. |
 |  [BrowserContext](./puppeteer.browsercontext.md) | BrowserContexts provide a way to operate multiple independent browser sessions. When a browser is launched, it has a single BrowserContext used by default. The method [Browser.newPage](./puppeteer.browser.newpage.md) creates a page in the default browser context. |
 |  [BrowserFetcher](./puppeteer.browserfetcher.md) | BrowserFetcher can download and manage different versions of Chromium and Firefox. |
 |  [CDPSession](./puppeteer.cdpsession.md) | The <code>CDPSession</code> instances are used to talk raw Chrome Devtools Protocol. |
@@ -27,7 +27,8 @@
 |  [Keyboard](./puppeteer.keyboard.md) | Keyboard provides an api for managing a virtual keyboard. The high level api is [Keyboard.type()](./puppeteer.keyboard.type.md)<!-- -->, which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page. |
 |  [Mouse](./puppeteer.mouse.md) | The Mouse class operates in main-frame CSS pixels relative to the top-left corner of the viewport. |
 |  [Page](./puppeteer.page.md) | Page provides methods to interact with a single tab or [extension background page](https://developer.chrome.com/extensions/background_pages) in Chromium. |
-|  [Puppeteer](./puppeteer.puppeteer.md) | The main Puppeteer class. Provides the [launch](./puppeteer.puppeteer.launch.md) method to launch a browser.<!-- -->When you <code>require</code> or <code>import</code> the Puppeteer npm package you get back an instance of this class. |
+|  [Puppeteer](./puppeteer.puppeteer.md) | The main Puppeteer class.<!-- -->IMPORTANT: if you are using Puppeteer in a Node environment, you will get an instance of [PuppeteerNode](./puppeteer.puppeteernode.md) when you import or require <code>puppeteer</code>. That class extends <code>Puppeteer</code>, so has all the methods documented below as well as all that are defined on [PuppeteerNode](./puppeteer.puppeteernode.md)<!-- -->. |
+|  [PuppeteerNode](./puppeteer.puppeteernode.md) | Extends the main [Puppeteer](./puppeteer.puppeteer.md) class with Node specific behaviour for fetching and downloading browsers.<!-- -->If you're using Puppeteer in a Node environment, this is the class you'll get when you run <code>require('puppeteer')</code> (or the equivalent ES <code>import</code>). |
 |  [SecurityDetails](./puppeteer.securitydetails.md) | The SecurityDetails class represents the security details of a response that was received over a secure connection. |
 |  [Target](./puppeteer.target.md) |  |
 |  [TimeoutError](./puppeteer.timeouterror.md) | TimeoutError is emitted whenever certain operations are terminated due to timeout. |
@@ -54,6 +55,7 @@
 |  [BrowserOptions](./puppeteer.browseroptions.md) | Generic browser options that can be passed when launching any browser. |
 |  [ChromeArgOptions](./puppeteer.chromeargoptions.md) | Launcher options that only apply to Chrome. |
 |  [ClickOptions](./puppeteer.clickoptions.md) |  |
+|  [ConnectOptions](./puppeteer.connectoptions.md) |  |
 |  [ConsoleMessageLocation](./puppeteer.consolemessagelocation.md) |  |
 |  [ContinueRequestOverrides](./puppeteer.continuerequestoverrides.md) |  |
 |  [CoverageEntry](./puppeteer.coverageentry.md) | The CoverageEntry class represents one entry of the coverage report. |

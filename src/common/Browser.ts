@@ -87,7 +87,7 @@ export const enum BrowserEmittedEvents {
 
 /**
  * A Browser is created when Puppeteer connects to a Chromium instance, either through
- * {@link Puppeteer.launch} or {@link Puppeteer.connect}.
+ * {@link PuppeteerNode.launch} or {@link Puppeteer.connect}.
  *
  * @remarks
  *

@@ -19,13 +19,13 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
 import sinon from 'sinon';
-import puppeteer from '../lib/cjs/puppeteer/index.js';
+import puppeteer from '../lib/cjs/puppeteer/node.js';
 import {
   Browser,
   BrowserContext,
 } from '../lib/cjs/puppeteer/common/Browser.js';
 import { Page } from '../lib/cjs/puppeteer/common/Page.js';
-import { Puppeteer } from '../lib/cjs/puppeteer/common/Puppeteer.js';
+import { PuppeteerNode } from '../lib/cjs/puppeteer/node/Puppeteer.js';
 import utils from './utils.js';
 import rimraf from 'rimraf';
 
@@ -126,7 +126,7 @@ interface PuppeteerTestState {
   browser: Browser;
   context: BrowserContext;
   page: Page;
-  puppeteer: Puppeteer;
+  puppeteer: PuppeteerNode;
   defaultBrowserOptions: {
     [x: string]: any;
   };
