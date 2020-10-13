@@ -68,6 +68,45 @@ describe('querySelector', function () {
     });
   });
 
+  describe('pierceHandler', function () {
+    beforeEach(async () => {
+      const { page } = getTestState();
+      await page.setContent(
+        `<script>
+        const div = document.createElement('div');
+        const shadowRoot = div.attachShadow({mode: 'open'});
+        const div1 = document.createElement('div');
+        div1.textContent = 'Hello';
+        div1.className = 'foo';
+        const div2 = document.createElement('div');
+        div2.textContent = 'World';
+        div2.className = 'foo';
+        shadowRoot.appendChild(div1);
+        shadowRoot.appendChild(div2);
+        document.documentElement.appendChild(div);
+        </script>`
+      );
+    });
+    it('should find first element in shadow', async () => {
+      const { page } = getTestState();
+      const div = await page.$('pierce/.foo');
+      const text = await div.evaluate(
+        (element: Element) => element.textContent
+      );
+      expect(text).toBe('Hello');
+    });
+    it('should find all elements in shadow', async () => {
+      const { page } = getTestState();
+      const divs = await page.$$('pierce/.foo');
+      const text = await Promise.all(
+        divs.map((div) =>
+          div.evaluate((element: Element) => element.textContent)
+        )
+      );
+      expect(text.join(' ')).toBe('Hello World');
+    });
+  });
+
   // The tests for $$eval are repeated later in this file in the test group 'QueryAll'.
   // This is done to also test a query handler where QueryAll returns an Element[]
   // as opposed to NodeListOf<Element>.

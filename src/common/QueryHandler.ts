@@ -112,7 +112,60 @@ const _defaultHandler = makeQueryHandler({
     element.querySelectorAll(selector),
 });
 
-const _builtInHandlers = new Map([['aria', ariaHandler]]);
+const pierceHandler = makeQueryHandler({
+  queryOne: (element, selector) => {
+    let found: Element | null = null;
+    const search = (root: Element | ShadowRoot) => {
+      const iter = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+      do {
+        const currentNode = iter.currentNode as HTMLElement;
+        if (currentNode.shadowRoot) {
+          search(currentNode.shadowRoot);
+        }
+        if (currentNode instanceof ShadowRoot) {
+          continue;
+        }
+        if (!found && currentNode.matches(selector)) {
+          found = currentNode;
+        }
+      } while (!found && iter.nextNode());
+    };
+    if (element instanceof Document) {
+      element = element.documentElement;
+    }
+    search(element);
+    return found;
+  },
+
+  queryAll: (element, selector) => {
+    const result: Element[] = [];
+    const collect = (root: Element | ShadowRoot) => {
+      const iter = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+      do {
+        const currentNode = iter.currentNode as HTMLElement;
+        if (currentNode.shadowRoot) {
+          collect(currentNode.shadowRoot);
+        }
+        if (currentNode instanceof ShadowRoot) {
+          continue;
+        }
+        if (currentNode.matches(selector)) {
+          result.push(currentNode);
+        }
+      } while (iter.nextNode());
+    };
+    if (element instanceof Document) {
+      element = element.documentElement;
+    }
+    collect(element);
+    return result;
+  },
+});
+
+const _builtInHandlers = new Map([
+  ['aria', ariaHandler],
+  ['pierce', pierceHandler],
+]);
 const _queryHandlers = new Map(_builtInHandlers);
 
 /**
