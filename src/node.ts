@@ -16,10 +16,8 @@
 
 import { initializePuppeteerNode } from './initialize-node.js';
 import { isNode } from './environment.js';
-import { initializePuppeteerWeb } from './initialize-web.js';
 
-const initializeFunc = isNode
-  ? initializePuppeteerNode
-  : initializePuppeteerWeb;
-const puppeteer = initializeFunc('puppeteer-core');
-export default puppeteer;
+if (!isNode) {
+  throw new Error('Trying to run Puppeteer-Node in a web environment.');
+}
+export default initializePuppeteerNode('puppeteer');

@@ -17,8 +17,9 @@
 import os from 'os';
 import https from 'https';
 import ProgressBar from 'progress';
-import puppeteer from '../index.js';
+import puppeteer from '../node.js';
 import { PUPPETEER_REVISIONS } from '../revisions.js';
+import { PuppeteerNode } from './Puppeteer.js';
 
 const supportedProducts = {
   chrome: 'Chromium',
@@ -39,7 +40,7 @@ export async function downloadBrowser() {
     process.env.PUPPETEER_DOWNLOAD_PATH ||
     process.env.npm_config_puppeteer_download_path ||
     process.env.npm_package_config_puppeteer_download_path;
-  const browserFetcher = puppeteer.createBrowserFetcher({
+  const browserFetcher = (puppeteer as PuppeteerNode).createBrowserFetcher({
     product,
     host: downloadHost,
     path: downloadPath,
@@ -55,7 +56,8 @@ export async function downloadBrowser() {
         PUPPETEER_REVISIONS.chromium
       );
     } else if (product === 'firefox') {
-      puppeteer._preferredRevision = PUPPETEER_REVISIONS.firefox;
+      (puppeteer as PuppeteerNode)._preferredRevision =
+        PUPPETEER_REVISIONS.firefox;
       return getFirefoxNightlyVersion().catch((error) => {
         console.error(error);
         process.exit(1);

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { Puppeteer } from './common/Puppeteer.js';
+import { initializePuppeteerWeb } from './initialize-web.js';
+import { isNode } from './environment.js';
 
-export const initializePuppeteerWeb = (packageName: string): Puppeteer => {
-  const isPuppeteerCore = packageName === 'puppeteer-core';
-  return new Puppeteer({
-    isPuppeteerCore,
-  });
-};
+if (isNode) {
+  throw new Error('Trying to run Puppeteer-Web in a Node environment');
+}
+
+export default initializePuppeteerWeb('puppeteer');

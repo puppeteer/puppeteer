@@ -459,6 +459,7 @@ describe('Launcher specs', function () {
       it('falls back to launching chrome if there is an unknown product but logs a warning', async () => {
         const { puppeteer } = getTestState();
         const consoleStub = sinon.stub(console, 'warn');
+        // @ts-expect-error purposeful bad input
         const browser = await puppeteer.launch({ product: 'SO_NOT_A_PRODUCT' });
         const userAgent = await browser.userAgent();
         await browser.close();
