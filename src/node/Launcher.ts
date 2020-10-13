@@ -189,7 +189,8 @@ class ChromeLauncher implements ProductLauncher {
       args = [],
       userDataDir = null,
     } = options;
-    if (userDataDir) chromeArguments.push(`--user-data-dir=${userDataDir}`);
+    if (userDataDir)
+      chromeArguments.push(`--user-data-dir=${path.resolve(userDataDir)}`);
     if (devtools) chromeArguments.push('--auto-open-devtools-for-tabs');
     if (headless) {
       chromeArguments.push('--headless', '--hide-scrollbars', '--mute-audio');

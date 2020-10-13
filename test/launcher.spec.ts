@@ -306,7 +306,7 @@ describe('Launcher specs', function () {
             '--headless'
           );
           expect(puppeteer.defaultArgs({ userDataDir: 'foo' })).toContain(
-            '--user-data-dir=foo'
+            `--user-data-dir=${path.resolve('foo')}`
           );
         } else if (isFirefox) {
           expect(puppeteer.defaultArgs()).toContain('--headless');
@@ -330,7 +330,7 @@ describe('Launcher specs', function () {
             '-profile'
           );
           expect(puppeteer.defaultArgs({ userDataDir: 'foo' })).toContain(
-            'foo'
+            path.resolve('foo')
           );
         }
       });
