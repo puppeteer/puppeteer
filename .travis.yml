@@ -71,7 +71,8 @@ jobs:
         - CHROMIUM=true
       script:
         - npm run lint
-        - npm run ensure-new-docs-up-to-date
+        # Ensure that we can generate the new docs without erroring
+        - npm run generate-docs
         - npm run ensure-correct-devtools-protocol-revision
 
     # This bot runs separately as it changes package.json to test puppeteer-core
