@@ -16,11 +16,12 @@
 
 import { WaitForSelectorOptions, DOMWorld } from './DOMWorld.js';
 import { ElementHandle, JSHandle } from './JSHandle.js';
+import { ariaHandler } from './AriaQueryHandler.js';
 
 /**
  * @internal
  */
-interface InternalQueryHandler {
+export interface InternalQueryHandler {
   queryOne?: (
     element: ElementHandle,
     selector: string
@@ -40,6 +41,17 @@ interface InternalQueryHandler {
   ) => Promise<JSHandle>;
 }
 
+/**
+ * Contains two functions `queryOne` and `queryAll` that can
+ * be {@link Puppeteer.__experimental_registerCustomQueryHandler | registered}
+ * as alternative querying strategies. The functions `queryOne` and `queryAll`
+ * are executed in the page context.  `queryOne` should take an `Element` and a
+ * selector string as argument and return a single `Element` or `null` if no
+ * element is found. `queryAll` takes the same arguments but should instead
+ * return a `NodeListOf<Element>` or `Array<Element>` with all the elements
+ * that match the given query selector.
+ * @public
+ */
 export interface CustomQueryHandler {
   queryOne?: (element: Element | Document, selector: string) => Element | null;
   queryAll?: (
@@ -93,7 +105,6 @@ function makeQueryHandler(handler: CustomQueryHandler): InternalQueryHandler {
   return internalHandler;
 }
 
-const _queryHandlers = new Map<string, InternalQueryHandler>();
 const _defaultHandler = makeQueryHandler({
   queryOne: (element: Element, selector: string) =>
     element.querySelector(selector),
@@ -101,6 +112,65 @@ const _defaultHandler = makeQueryHandler({
     element.querySelectorAll(selector),
 });
 
+const pierceHandler = makeQueryHandler({
+  queryOne: (element, selector) => {
+    let found: Element | null = null;
+    const search = (root: Element | ShadowRoot) => {
+      const iter = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+      do {
+        const currentNode = iter.currentNode as HTMLElement;
+        if (currentNode.shadowRoot) {
+          search(currentNode.shadowRoot);
+        }
+        if (currentNode instanceof ShadowRoot) {
+          continue;
+        }
+        if (!found && currentNode.matches(selector)) {
+          found = currentNode;
+        }
+      } while (!found && iter.nextNode());
+    };
+    if (element instanceof Document) {
+      element = element.documentElement;
+    }
+    search(element);
+    return found;
+  },
+
+  queryAll: (element, selector) => {
+    const result: Element[] = [];
+    const collect = (root: Element | ShadowRoot) => {
+      const iter = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+      do {
+        const currentNode = iter.currentNode as HTMLElement;
+        if (currentNode.shadowRoot) {
+          collect(currentNode.shadowRoot);
+        }
+        if (currentNode instanceof ShadowRoot) {
+          continue;
+        }
+        if (currentNode.matches(selector)) {
+          result.push(currentNode);
+        }
+      } while (iter.nextNode());
+    };
+    if (element instanceof Document) {
+      element = element.documentElement;
+    }
+    collect(element);
+    return result;
+  },
+});
+
+const _builtInHandlers = new Map([
+  ['aria', ariaHandler],
+  ['pierce', pierceHandler],
+]);
+const _queryHandlers = new Map(_builtInHandlers);
+
+/**
+ * @internal
+ */
 export function registerCustomQueryHandler(
   name: string,
   handler: CustomQueryHandler
@@ -118,22 +188,33 @@ export function registerCustomQueryHandler(
 }
 
 /**
- * @param {string} name
+ * @internal
  */
 export function unregisterCustomQueryHandler(name: string): void {
-  if (_queryHandlers.has(name)) {
+  if (_queryHandlers.has(name) && !_builtInHandlers.has(name)) {
     _queryHandlers.delete(name);
   }
 }
 
+/**
+ * @internal
+ */
 export function customQueryHandlerNames(): string[] {
-  return [..._queryHandlers.keys()];
+  return [..._queryHandlers.keys()].filter(
+    (name) => !_builtInHandlers.has(name)
+  );
 }
 
+/**
+ * @internal
+ */
 export function clearCustomQueryHandlers(): void {
-  _queryHandlers.clear();
+  customQueryHandlerNames().forEach(unregisterCustomQueryHandler);
 }
 
+/**
+ * @internal
+ */
 export function getQueryHandlerAndSelector(
   selector: string
 ): { updatedSelector: string; queryHandler: InternalQueryHandler } {

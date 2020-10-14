@@ -28,7 +28,7 @@ class CustomError extends Error {
  * @remarks
  *
  * Example operations are {@link Page.waitForSelector | page.waitForSelector}
- * or {@link Puppeteer.launch | puppeteer.launch}.
+ * or {@link PuppeteerNode.launch | puppeteer.launch}.
  *
  * @public
  */

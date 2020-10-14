@@ -139,40 +139,19 @@ When authoring new API methods, consider the following:
 
 ## Commit Messages
 
-Commit messages should follow the Semantic Commit Messages format:
+Commit messages should follow [the Conventional Commits format](https://www.conventionalcommits.org/en/v1.0.0/#summary). This is enforced via `npm run lint`.
 
-```
-label(namespace): title
-
-description
-
-footer
-```
-
-1. *label* is one of the following:
-    - `fix` - puppeteer bug fixes.
-    - `feat` - puppeteer features.
-    - `docs` - changes to docs, e.g. `docs(api.md): ..` to change documentation.
-    - `test` - changes to puppeteer tests infrastructure.
-    - `style` - puppeteer code style: spaces/alignment/wrapping etc.
-    - `chore` - build-related work, e.g. doclint changes / travis / appveyor.
-2. *namespace* is put in parenthesis after label and is optional. Must be lowercase.
-3. *title* is a brief summary of changes.
-4. *description* is **optional**, new-line separated from title and is in present tense.
-5. *footer* is **optional**, new-line separated from *description* and contains "fixes" / "references" attribution to github issues.
-6. *footer* should also include "BREAKING CHANGE" if current API clients will break due to this change. It should explain what changed and how to get the old behavior.
-
-Example:
+In particular, breaking changes should clearly be noted as “BREAKING CHANGE:” in the commit message footer. Example:
 
 ```
 fix(page): fix page.pizza method
 
 This patch fixes page.pizza so that it works with iframes.
 
-Fixes #123, Fixes #234
+Issues: #123, #234
 
 BREAKING CHANGE: page.pizza now delivers pizza at home by default.
-To deliver to a different location, use "deliver" option:
+To deliver to a different location, use the "deliver" option:
   `page.pizza({deliver: 'work'})`.
 ```
 
@@ -296,7 +275,7 @@ node utils/bisect.js --good 686378 --bad 706915 script.js
 Releasing to npm consists of the following phases:
 
 1. Source Code: mark a release.
-    1. Bump `package.json` version following the SEMVER rules. 
+    1. Bump `package.json` version following the SEMVER rules.
         - **NOTE**: bump major version in case of breaking changes. Bump minor version in case of rolling chrome.
     2. Run `npm run doc` to update the docs accordingly.
     3. Update the “Releases per Chromium Version” list in [`docs/api.md`](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md) to include the new version. Note: only do this when the Chrome revision is different from the previous release.

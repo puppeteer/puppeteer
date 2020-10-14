@@ -87,7 +87,7 @@ export const enum BrowserEmittedEvents {
 
 /**
  * A Browser is created when Puppeteer connects to a Chromium instance, either through
- * {@link Puppeteer.launch} or {@link Puppeteer.connect}.
+ * {@link PuppeteerNode.launch} or {@link Puppeteer.connect}.
  *
  * @remarks
  *
@@ -650,7 +650,7 @@ export class BrowserContext extends EventEmitter {
    */
   async overridePermissions(
     origin: string,
-    permissions: Protocol.Browser.PermissionType[]
+    permissions: string[]
   ): Promise<void> {
     const webPermissionToProtocol = new Map<
       string,
@@ -676,7 +676,7 @@ export class BrowserContext extends EventEmitter {
       // chrome-specific permissions we have.
       ['midi-sysex', 'midiSysex'],
     ]);
-    permissions = permissions.map((permission) => {
+    const protocolPermissions = permissions.map((permission) => {
       const protocolPermission = webPermissionToProtocol.get(permission);
       if (!protocolPermission)
         throw new Error('Unknown permission: ' + permission);
@@ -685,7 +685,7 @@ export class BrowserContext extends EventEmitter {
     await this._connection.send('Browser.grantPermissions', {
       origin,
       browserContextId: this._id || undefined,
-      permissions,
+      permissions: protocolPermissions,
     });
   }
 

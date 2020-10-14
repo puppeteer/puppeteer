@@ -13,30 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * Launcher options that only apply to Chrome.
- *
- * @public
- */
-export interface ChromeArgOptions {
-  headless?: boolean;
-  args?: string[];
-  userDataDir?: string;
-  devtools?: boolean;
+
+import { initializePuppeteerWeb } from './initialize-web.js';
+import { isNode } from './environment.js';
+
+if (isNode) {
+  throw new Error('Trying to run Puppeteer-Web in a Node environment');
 }
 
-/**
- * Generic launch options that can be passed when launching any browser.
- * @public
- */
-export interface LaunchOptions {
-  executablePath?: string;
-  ignoreDefaultArgs?: boolean | string[];
-  handleSIGINT?: boolean;
-  handleSIGTERM?: boolean;
-  handleSIGHUP?: boolean;
-  timeout?: number;
-  dumpio?: boolean;
-  env?: Record<string, string | undefined>;
-  pipe?: boolean;
-}
+export default initializePuppeteerWeb('puppeteer');

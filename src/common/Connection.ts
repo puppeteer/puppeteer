@@ -95,11 +95,13 @@ export class Connection extends EventEmitter {
     });
   }
 
-  _rawSend(message: {}): number {
+  _rawSend(message: Record<string, unknown>): number {
     const id = ++this._lastId;
-    message = JSON.stringify(Object.assign({}, message, { id }));
-    debugProtocolSend(message);
-    this._transport.send(message);
+    const stringifiedMessage = JSON.stringify(
+      Object.assign({}, message, { id })
+    );
+    debugProtocolSend(stringifiedMessage);
+    this._transport.send(stringifiedMessage);
     return id;
   }
 
@@ -182,7 +184,7 @@ export class Connection extends EventEmitter {
 interface CDPSessionOnMessageObject {
   id?: number;
   method: string;
-  params: {};
+  params: Record<string, unknown>;
   error: { message: string; data: any };
   result?: any;
 }

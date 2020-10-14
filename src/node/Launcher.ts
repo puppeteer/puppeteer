@@ -15,29 +15,19 @@
  */
 import * as os from 'os';
 import * as path from 'path';
-import * as http from 'http';
-import * as https from 'https';
-import * as URL from 'url';
 import * as fs from 'fs';
 
 import { BrowserFetcher } from './BrowserFetcher.js';
-import { Connection } from '../common/Connection.js';
 import { Browser } from '../common/Browser.js';
-import { assert } from '../common/assert.js';
-import { debugError } from '../common/helper.js';
-import { ConnectionTransport } from '../common/ConnectionTransport.js';
-import { WebSocketTransport } from '../common/WebSocketTransport.js';
 import { BrowserRunner } from './BrowserRunner.js';
 import { promisify } from 'util';
 
 const mkdtempAsync = promisify(fs.mkdtemp);
 const writeFileAsync = promisify(fs.writeFile);
 
-import {
-  ChromeArgOptions,
-  LaunchOptions,
-  BrowserOptions,
-} from './LaunchOptions.js';
+import { ChromeArgOptions, LaunchOptions } from './LaunchOptions.js';
+import { BrowserOptions } from '../common/BrowserConnector.js';
+import { Product } from '../common/Product.js';
 
 /**
  * Describes a launcher - a class that is able to create and launch a browser instance.
@@ -45,10 +35,9 @@ import {
  */
 export interface ProductLauncher {
   launch(object);
-  connect(object);
   executablePath: () => string;
   defaultArgs(object);
-  product: string;
+  product: Product;
 }
 
 /**
@@ -200,7 +189,8 @@ class ChromeLauncher implements ProductLauncher {
       args = [],
       userDataDir = null,
     } = options;
-    if (userDataDir) chromeArguments.push(`--user-data-dir=${userDataDir}`);
+    if (userDataDir)
+      chromeArguments.push(`--user-data-dir=${path.resolve(userDataDir)}`);
     if (devtools) chromeArguments.push('--auto-open-devtools-for-tabs');
     if (headless) {
       chromeArguments.push('--headless', '--hide-scrollbars', '--mute-audio');
@@ -215,65 +205,8 @@ class ChromeLauncher implements ProductLauncher {
     return resolveExecutablePath(this).executablePath;
   }
 
-  get product(): string {
+  get product(): Product {
     return 'chrome';
-  }
-
-  async connect(
-    options: BrowserOptions & {
-      browserWSEndpoint?: string;
-      browserURL?: string;
-      transport?: ConnectionTransport;
-    }
-  ): Promise<Browser> {
-    const {
-      browserWSEndpoint,
-      browserURL,
-      ignoreHTTPSErrors = false,
-      defaultViewport = { width: 800, height: 600 },
-      transport,
-      slowMo = 0,
-    } = options;
-
-    assert(
-      Number(!!browserWSEndpoint) +
-        Number(!!browserURL) +
-        Number(!!transport) ===
-        1,
-      'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
-    );
-
-    let connection = null;
-    if (transport) {
-      connection = new Connection('', transport, slowMo);
-    } else if (browserWSEndpoint) {
-      const connectionTransport = await WebSocketTransport.create(
-        browserWSEndpoint
-      );
-      connection = new Connection(
-        browserWSEndpoint,
-        connectionTransport,
-        slowMo
-      );
-    } else if (browserURL) {
-      const connectionURL = await getWSEndpoint(browserURL);
-      const connectionTransport = await WebSocketTransport.create(
-        connectionURL
-      );
-      connection = new Connection(connectionURL, connectionTransport, slowMo);
-    }
-
-    const { browserContextIds } = await connection.send(
-      'Target.getBrowserContexts'
-    );
-    return Browser.create(
-      connection,
-      browserContextIds,
-      ignoreHTTPSErrors,
-      defaultViewport,
-      null,
-      () => connection.send('Browser.close').catch(debugError)
-    );
   }
 }
 
@@ -392,63 +325,6 @@ class FirefoxLauncher implements ProductLauncher {
     }
   }
 
-  async connect(
-    options: BrowserOptions & {
-      browserWSEndpoint?: string;
-      browserURL?: string;
-      transport?: ConnectionTransport;
-    }
-  ): Promise<Browser> {
-    const {
-      browserWSEndpoint,
-      browserURL,
-      ignoreHTTPSErrors = false,
-      defaultViewport = { width: 800, height: 600 },
-      transport,
-      slowMo = 0,
-    } = options;
-
-    assert(
-      Number(!!browserWSEndpoint) +
-        Number(!!browserURL) +
-        Number(!!transport) ===
-        1,
-      'Exactly one of browserWSEndpoint, browserURL or transport must be passed to puppeteer.connect'
-    );
-
-    let connection = null;
-    if (transport) {
-      connection = new Connection('', transport, slowMo);
-    } else if (browserWSEndpoint) {
-      const connectionTransport = await WebSocketTransport.create(
-        browserWSEndpoint
-      );
-      connection = new Connection(
-        browserWSEndpoint,
-        connectionTransport,
-        slowMo
-      );
-    } else if (browserURL) {
-      const connectionURL = await getWSEndpoint(browserURL);
-      const connectionTransport = await WebSocketTransport.create(
-        connectionURL
-      );
-      connection = new Connection(connectionURL, connectionTransport, slowMo);
-    }
-
-    const { browserContextIds } = await connection.send(
-      'Target.getBrowserContexts'
-    );
-    return Browser.create(
-      connection,
-      browserContextIds,
-      ignoreHTTPSErrors,
-      defaultViewport,
-      null,
-      () => connection.send('Browser.close').catch(debugError)
-    );
-  }
-
   executablePath(): string {
     return resolveExecutablePath(this).executablePath;
   }
@@ -464,7 +340,7 @@ class FirefoxLauncher implements ProductLauncher {
     }
   }
 
-  get product(): string {
+  get product(): Product {
     return 'firefox';
   }
 
@@ -519,7 +395,7 @@ class FirefoxLauncher implements ProductLauncher {
       // https://bugzilla.mozilla.org/show_bug.cgi?id=1543115
       'browser.dom.window.dump.enabled': true,
       // Disable topstories
-      'browser.newtabpage.activity-stream.feeds.section.topstories': false,
+      'browser.newtabpage.activity-stream.feeds.system.topstories': false,
       // Always display a blank page
       'browser.newtabpage.enabled': false,
       // Background thumbnails in particular cause grief: and disabling
@@ -566,16 +442,15 @@ class FirefoxLauncher implements ProductLauncher {
       // Do not warn on quitting Firefox
       'browser.warnOnQuit': false,
 
-      // Do not show datareporting policy notifications which can
-      // interfere with tests
-      'datareporting.healthreport.about.reportUrl': `http://${server}/dummy/abouthealthreport/`,
+      // Defensively disable data reporting systems
       'datareporting.healthreport.documentServerURI': `http://${server}/dummy/healthreport/`,
       'datareporting.healthreport.logging.consoleEnabled': false,
       'datareporting.healthreport.service.enabled': false,
       'datareporting.healthreport.service.firstRun': false,
       'datareporting.healthreport.uploadEnabled': false,
+
+      // Do not show datareporting policy notifications which can interfere with tests
       'datareporting.policy.dataSubmissionEnabled': false,
-      'datareporting.policy.dataSubmissionPolicyAccepted': false,
       'datareporting.policy.dataSubmissionPolicyBypassNotification': true,
 
       // DevTools JSONViewer sometimes fails to load dependencies with its require.js.
@@ -688,8 +563,6 @@ class FirefoxLauncher implements ProductLauncher {
       // Disable browser animations (tabs, fullscreen, sliding alerts)
       'toolkit.cosmeticAnimations.enabled': false,
 
-      // We want to collect telemetry, but we don't want to send in the results
-      'toolkit.telemetry.server': `https://${server}/dummy/telemetry/`,
       // Prevent starting into safe mode after application crashes
       'toolkit.startup.max_resumed_crashes': -1,
     };
@@ -706,42 +579,6 @@ class FirefoxLauncher implements ProductLauncher {
     );
     return profilePath;
   }
-}
-
-function getWSEndpoint(browserURL: string): Promise<string> {
-  let resolve, reject;
-  const promise = new Promise<string>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  const endpointURL = URL.resolve(browserURL, '/json/version');
-  const protocol = endpointURL.startsWith('https') ? https : http;
-  const requestOptions = Object.assign(URL.parse(endpointURL), {
-    method: 'GET',
-  });
-  const request = protocol.request(requestOptions, (res) => {
-    let data = '';
-    if (res.statusCode !== 200) {
-      // Consume response data to free up memory.
-      res.resume();
-      reject(new Error('HTTP ' + res.statusCode));
-      return;
-    }
-    res.setEncoding('utf8');
-    res.on('data', (chunk) => (data += chunk));
-    res.on('end', () => resolve(JSON.parse(data).webSocketDebuggerUrl));
-  });
-
-  request.on('error', reject);
-  request.end();
-
-  return promise.catch((error) => {
-    error.message =
-      `Failed to fetch browser webSocket url from ${endpointURL}: ` +
-      error.message;
-    throw error;
-  });
 }
 
 function resolveExecutablePath(

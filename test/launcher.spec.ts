@@ -306,7 +306,7 @@ describe('Launcher specs', function () {
             '--headless'
           );
           expect(puppeteer.defaultArgs({ userDataDir: 'foo' })).toContain(
-            '--user-data-dir=foo'
+            `--user-data-dir=${path.resolve('foo')}`
           );
         } else if (isFirefox) {
           expect(puppeteer.defaultArgs()).toContain('--headless');
@@ -330,7 +330,7 @@ describe('Launcher specs', function () {
             '-profile'
           );
           expect(puppeteer.defaultArgs({ userDataDir: 'foo' })).toContain(
-            'foo'
+            path.resolve('foo')
           );
         }
       });
@@ -442,11 +442,8 @@ describe('Launcher specs', function () {
 
       after(async () => {
         const { puppeteer } = getTestState();
-        /* launcher is a private property so we don't want our users doing this
-         * but we need to reset the state fully here for testing different
-         * browser launchers
-         */
-        // @ts-expect-error
+        // @ts-expect-error launcher is a private property that users can't
+        // touch, but for testing purposes we need to reset it.
         puppeteer._lazyLauncher = undefined;
         puppeteer._productName = productName;
       });
@@ -462,6 +459,7 @@ describe('Launcher specs', function () {
       it('falls back to launching chrome if there is an unknown product but logs a warning', async () => {
         const { puppeteer } = getTestState();
         const consoleStub = sinon.stub(console, 'warn');
+        // @ts-expect-error purposeful bad input
         const browser = await puppeteer.launch({ product: 'SO_NOT_A_PRODUCT' });
         const userAgent = await browser.userAgent();
         await browser.close();
