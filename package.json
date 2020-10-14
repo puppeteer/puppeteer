@@ -32,7 +32,6 @@
     "apply-next-version": "node utils/apply_next_version.js",
     "test-install": "scripts/test-install.sh",
     "generate-docs": "npm run tsc && api-extractor run --local --verbose && api-documenter markdown -i temp -o new-docs",
-    "ensure-new-docs-up-to-date": "npm run generate-docs && git status && exit `git status --porcelain | head -255 | wc -l`",
     "generate-dependency-graph": "echo 'Requires graphviz installed locally!' && depcruise --exclude 'api.ts' --do-not-follow '^node_modules' --output-type dot src/index.ts | dot -T png > dependency-chart.png",
     "ensure-correct-devtools-protocol-revision": "ts-node -s scripts/ensure-correct-devtools-protocol-package"
   },
