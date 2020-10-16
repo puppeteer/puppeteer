@@ -74,7 +74,7 @@
     "@types/ws": "^7.2.4",
     "@typescript-eslint/eslint-plugin": "^4.4.0",
     "@typescript-eslint/parser": "^4.4.0",
-    "@web/test-runner": "^0.8.4",
+    "@web/test-runner": "^0.9.2",
     "commonmark": "^0.28.1",
     "cross-env": "^7.0.2",
     "dependency-cruiser": "^9.7.0",
