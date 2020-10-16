@@ -19,9 +19,9 @@ import { Browser } from './Browser.js';
 import { assert } from './assert.js';
 import { debugError } from '../common/helper.js';
 import { Connection } from './Connection.js';
-import { WebSocketTransport } from './WebSocketTransport.js';
 import { getFetch } from './fetch.js';
 import { Viewport } from './PuppeteerViewport.js';
+import { isNode } from '../environment.js';
 
 /**
  * Generic browser options that can be passed when launching any browser.
@@ -32,6 +32,13 @@ export interface BrowserOptions {
   defaultViewport?: Viewport;
   slowMo?: number;
 }
+
+const getWebSocketTransportClass = async () => {
+  return isNode
+    ? (await import('../node/NodeWebSocketTransport.js')).NodeWebSocketTransport
+    : (await import('./BrowserWebSocketTransport.js'))
+        .BrowserWebSocketTransport;
+};
 
 /**
  * Users should never call this directly; it's called when calling
@@ -44,7 +51,7 @@ export const connectToBrowser = async (
     browserURL?: string;
     transport?: ConnectionTransport;
   }
-) => {
+): Promise<Browser> => {
   const {
     browserWSEndpoint,
     browserURL,
@@ -64,13 +71,17 @@ export const connectToBrowser = async (
   if (transport) {
     connection = new Connection('', transport, slowMo);
   } else if (browserWSEndpoint) {
-    const connectionTransport = await WebSocketTransport.create(
+    const WebSocketClass = await getWebSocketTransportClass();
+    const connectionTransport: ConnectionTransport = await WebSocketClass.create(
       browserWSEndpoint
     );
     connection = new Connection(browserWSEndpoint, connectionTransport, slowMo);
   } else if (browserURL) {
     const connectionURL = await getWSEndpoint(browserURL);
-    const connectionTransport = await WebSocketTransport.create(connectionURL);
+    const WebSocketClass = await getWebSocketTransportClass();
+    const connectionTransport: ConnectionTransport = await WebSocketClass.create(
+      connectionURL
+    );
     connection = new Connection(connectionURL, connectionTransport, slowMo);
   }
 
