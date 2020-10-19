@@ -15,11 +15,11 @@
  */
 import { TimeoutError } from './Errors.js';
 import { debug } from './Debug.js';
-import * as fs from 'fs';
 import { CDPSession } from './Connection.js';
 import { Protocol } from 'devtools-protocol';
 import { CommonEventEmitter } from './EventEmitter.js';
 import { assert } from './assert.js';
+import { isNode } from '../environment.js';
 
 export const debugError = debug('puppeteer:error');
 
@@ -309,9 +309,16 @@ async function readProtocolStream(
   handle: string,
   path?: string
 ): Promise<Buffer> {
+  if (!isNode && path) {
+    throw new Error('Cannot write to a path outside of Node.js environment.');
+  }
+
+  const fs = isNode ? await import('fs') : null;
+
   let eof = false;
-  let fileHandle: fs.promises.FileHandle;
-  if (path) {
+  let fileHandle: import('fs').promises.FileHandle;
+
+  if (path && fs) {
     fileHandle = await fs.promises.open(path, 'w');
   }
   const bufs = [];
@@ -323,7 +330,9 @@ async function readProtocolStream(
       response.base64Encoded ? 'base64' : undefined
     );
     bufs.push(buf);
-    if (path) await fs.promises.writeFile(fileHandle, buf);
+    if (path && fs) {
+      await fs.promises.writeFile(fileHandle, buf);
+    }
   }
   if (path) await fileHandle.close();
   await client.send('IO.close', { handle });
