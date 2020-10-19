@@ -22,7 +22,7 @@ import { assert } from '../common/assert.js';
 import { helper, debugError } from '../common/helper.js';
 import { LaunchOptions } from './LaunchOptions.js';
 import { Connection } from '../common/Connection.js';
-import { NodeWebSocketTransport as WebSocketTransport } from '../node/NodeWebSocketTransport.js';
+import { WebSocketTransport } from './WebSocketTransport.js';
 import { PipeTransport } from './PipeTransport.js';
 import * as readline from 'readline';
 import { TimeoutError } from '../common/Errors.js';

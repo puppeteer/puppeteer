@@ -16,24 +16,22 @@
 import { ConnectionTransport } from '../common/ConnectionTransport.js';
 import NodeWebSocket from 'ws';
 
-export class NodeWebSocketTransport implements ConnectionTransport {
-  static create(url: string): Promise<NodeWebSocketTransport> {
+export class WebSocketTransport implements ConnectionTransport {
+  static create(url: string): Promise<WebSocketTransport> {
     return new Promise((resolve, reject) => {
       const ws = new NodeWebSocket(url, [], {
         perMessageDeflate: false,
         maxPayload: 256 * 1024 * 1024, // 256Mb
       });
 
-      ws.addEventListener('open', () =>
-        resolve(new NodeWebSocketTransport(ws))
-      );
+      ws.addEventListener('open', () => resolve(new WebSocketTransport(ws)));
       ws.addEventListener('error', reject);
     });
   }
 
   private _ws: NodeWebSocket;
-  onmessage?: (message: string) => void;
-  onclose?: () => void;
+  onmessage?: (message: string) => void = null;
+  onclose?: () => void = null;
 
   constructor(ws: NodeWebSocket) {
     this._ws = ws;
@@ -45,8 +43,6 @@ export class NodeWebSocketTransport implements ConnectionTransport {
     });
     // Silently ignore all errors - we don't know what to do with them.
     this._ws.addEventListener('error', () => {});
-    this.onmessage = null;
-    this.onclose = null;
   }
 
   send(message: string): void {

@@ -35,9 +35,8 @@ export interface BrowserOptions {
 
 const getWebSocketTransportClass = async () => {
   return isNode
-    ? (await import('../node/NodeWebSocketTransport.js')).NodeWebSocketTransport
-    : (await import('./BrowserWebSocketTransport.js'))
-        .BrowserWebSocketTransport;
+    ? (await import('../node/WebSocketTransport.js')).WebSocketTransport
+    : (await import('../web/WebSocketTransport.js')).WebSocketTransport;
 };
 
 /**

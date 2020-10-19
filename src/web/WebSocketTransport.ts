@@ -13,23 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConnectionTransport } from './ConnectionTransport.js';
+import { ConnectionTransport } from '../common/ConnectionTransport.js';
 
-export class BrowserWebSocketTransport implements ConnectionTransport {
-  static create(url: string): Promise<BrowserWebSocketTransport> {
+export class WebSocketTransport implements ConnectionTransport {
+  static create(url: string): Promise<WebSocketTransport> {
     return new Promise((resolve, reject) => {
       const ws = new WebSocket(url);
 
-      ws.addEventListener('open', () =>
-        resolve(new BrowserWebSocketTransport(ws))
-      );
+      ws.addEventListener('open', () => resolve(new WebSocketTransport(ws)));
       ws.addEventListener('error', reject);
     });
   }
 
   private _ws: WebSocket;
-  onmessage?: (message: string) => void;
-  onclose?: () => void;
+  onmessage?: (message: string) => void = null;
+  onclose?: () => void = null;
 
   constructor(ws: WebSocket) {
     this._ws = ws;
@@ -41,8 +39,6 @@ export class BrowserWebSocketTransport implements ConnectionTransport {
     });
     // Silently ignore all errors - we don't know what to do with them.
     this._ws.addEventListener('error', () => {});
-    this.onmessage = null;
-    this.onclose = null;
   }
 
   send(message: string): void {

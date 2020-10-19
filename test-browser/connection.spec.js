@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Connection } from '../lib/esm/puppeteer/common/Connection.js';
-import { BrowserWebSocketTransport } from '../lib/esm/puppeteer/common/BrowserWebSocketTransport.js';
+import { WebSocketTransport } from '../lib/esm/puppeteer/web/WebSocketTransport.js';
 import puppeteer from '../lib/esm/puppeteer/web.js';
 import expect from '../node_modules/expect/build-es5/index.js';
 import { getWebSocketEndpoint } from './helper.js';
@@ -22,7 +22,7 @@ import { getWebSocketEndpoint } from './helper.js';
 describe('creating a Connection', () => {
   it('can create a real connection to the backend and send messages', async () => {
     const wsUrl = getWebSocketEndpoint();
-    const transport = await BrowserWebSocketTransport.create(wsUrl);
+    const transport = await WebSocketTransport.create(wsUrl);
 
     const connection = new Connection(wsUrl, transport);
     const result = await connection.send('Browser.getVersion');
