@@ -21,7 +21,8 @@ module.exports = {
   require: ['./test/mocha-ts-require', './test/mocha-utils.ts'],
   spec: 'test/*.spec.ts',
   extension: ['js', 'ts'],
-  retries: 0,
+  retries: process.env.CI ? 2 : 0,
+  parallel: !!process.env.PARALLEL,
   timeout: 25 * 1000,
   reporter: process.env.CI ? 'list' : 'dot',
 };
