@@ -1132,7 +1132,15 @@ export class Page extends EventEmitter {
   private async _onBindingCalled(
     event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> {
-    const { type, name, seq, args } = JSON.parse(event.payload);
+    let payload: { type: string; name: string; seq: number; args: unknown[] };
+    try {
+      payload = JSON.parse(event.payload);
+    } catch {
+      // The binding was either called by something in the page or it was
+      // called before our wrapper was initialized.
+      return;
+    }
+    const { type, name, seq, args } = payload;
     if (type !== 'exposedFun' || !this._pageBindings.has(name)) return;
     let expression = null;
     try {
