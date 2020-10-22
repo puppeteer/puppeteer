@@ -23,5 +23,5 @@ module.exports = {
   extension: ['js', 'ts'],
   retries: 0,
   timeout: 25 * 1000,
-  reporter: 'list',
+  reporter: process.env.CI ? 'list' : 'dot',
 };
