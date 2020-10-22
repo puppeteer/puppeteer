@@ -24,5 +24,5 @@ module.exports = {
   retries: process.env.CI ? 2 : 0,
   parallel: !!process.env.PARALLEL,
   timeout: 25 * 1000,
-  reporter: process.env.CI ? 'list' : 'dot',
+  reporter: process.env.CI ? 'spec' : 'dot',
 };
