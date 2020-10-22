@@ -21,8 +21,10 @@ module.exports = {
   require: ['./test/mocha-ts-require', './test/mocha-utils.ts'],
   spec: 'test/*.spec.ts',
   extension: ['js', 'ts'],
-  parallel: process.env.CI && !process.env.COVERAGE,
+  // parallel: process.env.CI && !process.env.COVERAGE,
   // retry twice more, so we run each test up to 3 times if needed.
-  retries: process.env.CI ? 2 : 0,
+  // retries: process.env.CI ? 2 : 0,
+  retries: 0,
   timeout: 25 * 1000,
+  reporter: 'list',
 };
