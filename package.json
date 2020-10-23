@@ -26,6 +26,7 @@
     "lint": "npm run eslint && npm run tsc && npm run doc && npm run commitlint",
     "doc": "node utils/doclint/cli.js",
     "clean-lib": "rm -rf lib",
+    "build": "npm run tsc",
     "tsc": "npm run clean-lib && tsc --version && npm run tsc-cjs && npm run tsc-esm",
     "tsc-cjs": "tsc -b src/tsconfig.cjs.json",
     "tsc-esm": "tsc -b src/tsconfig.esm.json",

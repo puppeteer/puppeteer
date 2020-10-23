@@ -286,17 +286,8 @@ Releasing to npm consists of the following phases:
     7. Once merged, publish the release notes using [GitHub's “draft new release tag” option](https://github.com/puppeteer/puppeteer/releases/new).
         - **NOTE**: tag names are prefixed with `'v'`, e.g. for version `1.4.0` the tag is `v1.4.0`.
         - For the “raw notes” section, use `git log --pretty="%h - %s" v2.0.0..HEAD`.
-2. Publish `puppeteer` to npm.
-    1. On your local machine, pull from [upstream](https://github.com/puppeteer/puppeteer) and make sure the last commit is the one just merged.
-    2. Run `git status` and make sure there are no untracked files.
-        - **WHY**: this is to avoid adding unnecessary files to the npm package.
-    3. Run [`npx pkgfiles`](https://www.npmjs.com/package/pkgfiles) to make sure you don't publish anything unnecessary.
-    4. Run `npm publish`. This publishes the `puppeteer` package.
-3. Publish `puppeteer-core` to npm.
-    1. Run `./utils/prepare_puppeteer_core.js`. The script changes the name inside `package.json` to `puppeteer-core`.
-    2. Run `npm publish`. This publishes the `puppeteer-core` package.
-    3. Run `git reset --hard` to reset the changes to `package.json`.
-4. Source Code: mark post-release.
+    8. As soon as the Git tag is created by completing the previous step, our CI automatically `npm publish`es the new releases for both the `puppeteer` and `puppeteer-core` packages.
+2. Source Code: mark post-release.
     1. Bump `package.json` version to `-post` version, run `npm run doc` to update the “released APIs” section at the top of `docs/api.md` accordingly, and send a PR titled `'chore: bump version to vXXX.YYY.ZZZ-post'` ([example](https://github.com/puppeteer/puppeteer/commit/d02440d1eac98028e29f4e1cf55413062a259156))
         - **NOTE**: no other commits should be landed in-between release commit and bump commit.
 
