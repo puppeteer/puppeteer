@@ -537,7 +537,15 @@ export class DOMWorld {
   private async _onBindingCalled(
     event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> {
-    const { type, name, seq, args } = JSON.parse(event.payload);
+    let payload: { type: string; name: string; seq: number; args: unknown[] };
+    try {
+      payload = JSON.parse(event.payload);
+    } catch {
+      // The binding was either called by something in the page or it was
+      // called before our wrapper was initialized.
+      return;
+    }
+    const { type, name, seq, args } = payload;
     if (type !== 'internal' || !this._ctxBindings.has(name)) return;
     if (!this._hasContext()) return;
     const context = await this.executionContext();
