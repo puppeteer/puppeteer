@@ -139,7 +139,7 @@ export class Puppeteer {
    * @param queryHandler - The {@link CustomQueryHandler | custom query handler} to
    * register.
    */
-  __experimental_registerCustomQueryHandler(
+  registerCustomQueryHandler(
     name: string,
     queryHandler: CustomQueryHandler
   ): void {
@@ -149,21 +149,21 @@ export class Puppeteer {
   /**
    * @param name - The name of the query handler to unregistered.
    */
-  __experimental_unregisterCustomQueryHandler(name: string): void {
+  unregisterCustomQueryHandler(name: string): void {
     unregisterCustomQueryHandler(name);
   }
 
   /**
    * @returns a list with the names of all registered custom query handlers.
    */
-  __experimental_customQueryHandlerNames(): string[] {
+  customQueryHandlerNames(): string[] {
     return customQueryHandlerNames();
   }
 
   /**
    * Clears all registered handlers.
    */
-  __experimental_clearQueryHandlers(): void {
+  clearCustomQueryHandlers(): void {
     clearCustomQueryHandlers();
   }
 }
