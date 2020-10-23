@@ -1,11 +1,12 @@
 
-# Puppeteer API <!-- GEN:version -->Tip-Of-Tree<!-- GEN:stop-->
+# Puppeteer API <!-- GEN:version -->v5.4.0<!-- GEN:stop-->
 <!-- GEN:empty-if-release --><!-- GEN:stop -->
 
 - Interactive Documentation: https://pptr.dev
 - API Translations: [中文|Chinese](https://zhaoqize.github.io/puppeteer-api-zh_CN/#/)
 - Troubleshooting: [troubleshooting.md](https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md)
 - Releases per Chromium Version:
+  * Chromium 87.0.4272.0 - [Puppeteer v5.4.0](https://github.com/puppeteer/puppeteer/blob/v5.4.0/docs/api.md)
   * Chromium 86.0.4240.0 - [Puppeteer v5.3.0](https://github.com/puppeteer/puppeteer/blob/v5.3.0/docs/api.md)
   * Chromium 85.0.4182.0 - [Puppeteer v5.2.1](https://github.com/puppeteer/puppeteer/blob/v5.2.1/docs/api.md)
   * Chromium 84.0.4147.0 - [Puppeteer v5.1.0](https://github.com/puppeteer/puppeteer/blob/v5.1.0/docs/api.md)
@@ -30,14 +31,18 @@
 - [Environment Variables](#environment-variables)
 - [Working with Chrome Extensions](#working-with-chrome-extensions)
 - [class: Puppeteer](#class-puppeteer)
+  * [puppeteer.clearCustomQueryHandlers()](#puppeteerclearcustomqueryhandlers)
   * [puppeteer.connect(options)](#puppeteerconnectoptions)
   * [puppeteer.createBrowserFetcher([options])](#puppeteercreatebrowserfetcheroptions)
+  * [puppeteer.customQueryHandlerNames()](#puppeteercustomqueryhandlernames)
   * [puppeteer.defaultArgs([options])](#puppeteerdefaultargsoptions)
   * [puppeteer.devices](#puppeteerdevices)
   * [puppeteer.errors](#puppeteererrors)
   * [puppeteer.executablePath()](#puppeteerexecutablepath)
   * [puppeteer.launch([options])](#puppeteerlaunchoptions)
   * [puppeteer.product](#puppeteerproduct)
+  * [puppeteer.registerCustomQueryHandler(name, queryHandler)](#puppeteerregistercustomqueryhandlername-queryhandler)
+  * [puppeteer.unregisterCustomQueryHandler(name)](#puppeteerunregistercustomqueryhandlername)
 - [class: BrowserFetcher](#class-browserfetcher)
   * [browserFetcher.canDownload(revision)](#browserfetchercandownloadrevision)
   * [browserFetcher.download(revision[, progressCallback])](#browserfetcherdownloadrevision-progresscallback)
@@ -354,6 +359,7 @@
   * [eventEmitter.once(event, handler)](#eventemitteronceevent-handler)
   * [eventEmitter.removeAllListeners([event])](#eventemitterremovealllistenersevent)
   * [eventEmitter.removeListener(event, handler)](#eventemitterremovelistenerevent-handler)
+- [interface: CustomQueryHandler](#interface-customqueryhandler)
 <!-- GEN:stop -->
 
 ### Overview
@@ -466,6 +472,8 @@ const puppeteer = require('puppeteer');
   await browser.close();
 })();
 ```
+#### puppeteer.clearCustomQueryHandlers()
+Clears all registered handlers.
 
 #### puppeteer.connect(options)
 - `options` <[Object]>
@@ -493,6 +501,9 @@ This methods attaches Puppeteer to an existing browser instance.
   - `platform` <"linux"|"mac"|"win32"|"win64"> [string] for the current platform. Possible values are: `mac`, `win32`, `win64`, `linux`. Defaults to the current platform.
   - `product` <"chrome"|"firefox"> [string] for the product to run. Possible values are: `chrome`, `firefox`. Defaults to `chrome`.
 - returns: <[BrowserFetcher]>
+
+#### puppeteer.customQueryHandlerNames()
+- returns: <[[Array]<string>> A list with the names of all registered custom query handlers.
 
 #### puppeteer.defaultArgs([options])
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
@@ -602,6 +613,22 @@ const browser = await puppeteer.launch({
 
 The product is set by the `PUPPETEER_PRODUCT` environment variable or the `product` option in [puppeteer.launch([options])](#puppeteerlaunchoptions) and defaults to `chrome`. Firefox support is experimental and requires to install Puppeteer via `PUPPETEER_PRODUCT=firefox npm i puppeteer`.
 
+#### puppeteer.registerCustomQueryHandler(name, queryHandler)
+- `name` <[string]> The name that the custom query handler will be registered under.
+- `queryHandler` <[CustomQueryHandler]> The [custom query handler](#interface-customqueryhandler) to register.
+
+Registers a [custom query handler](#interface-customqueryhandler). After registration,
+the handler can be used everywhere where a selector is expected by prepending
+the selection string with `<name>/`. The name is only allowed to consist of
+lower- and upper case latin letters.
+Example:
+```
+puppeteer.registerCustomQueryHandler('text', { … });
+const aHandle = await page.$('text/…');
+```
+
+#### puppeteer.unregisterCustomQueryHandler(name)
+- `name` <[string]> The name of the query handler to unregistered.
 
 ### class: BrowserFetcher
 
@@ -4144,6 +4171,17 @@ This method is identical to `on` and maintained for compatibility with Node's Ev
 
 This method is identical to `off` and maintained for compatibility with Node's EventEmitter. We recommend using `off` by default.
 
+### interface: CustomQueryHandler
+
+Contains two functions `queryOne` and `queryAll` that can be
+[registered](#puppeteerregistercustomqueryhandler) as
+alternative querying strategies. The functions `queryOne` and `queryAll` are
+executed in the page context.  `queryOne` should take an `Element` and a
+selector string as argument and return a single `Element` or `null` if no
+element is found. `queryAll` takes the same arguments but should instead return
+a `NodeListOf<Element>` or `Array<Element>` with all the elements that match
+the given query selector.
+
 [AXNode]: #accessibilitysnapshotoptions "AXNode"
 [Accessibility]: #class-accessibility "Accessibility"
 [Array]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array "Array"
@@ -4193,3 +4231,4 @@ This method is identical to `off` and maintained for compatibility with Node's E
 [string]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#String_type "String"
 [symbol]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Symbol_type "Symbol"
 [xpath]: https://developer.mozilla.org/en-US/docs/Web/XPath "xpath"
+[CustomQueryHandler]: #interface-customqueryhandler "CustomQueryHandler"
