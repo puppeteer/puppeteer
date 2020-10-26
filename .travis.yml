@@ -28,7 +28,20 @@ jobs:
         - npm run tsc
         - travis_retry npm run unit
 
-    # Runs unit tests on Linux + Chromium
+    # Node <10.17's fs.promises module was experimental and doesn't behave as
+    # expected. This problem was fixed in Node 10.19, but we run the unit tests
+    # through on 10.15 to make sure we don't cause any regressions when using
+    # fs.promises. See https://github.com/puppeteer/puppeteer/issues/6548 for an
+    # example.
+    - node_js: '10.15.0'
+      name: 'Node 10.15 Unit tests: Linux/Chromium'
+      env:
+        - CHROMIUM=true
+      before_install:
+        - PUPPETEER_PRODUCT=firefox npm install
+      script:
+        - npm run unit
+
     - node_js: '10.19.0'
       name: 'Unit tests [with coverage]: Linux/Chromium'
       env:

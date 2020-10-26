@@ -1709,7 +1709,7 @@ export class Page extends EventEmitter {
         'Screenshots can only be written to a file path in a Node environment.'
       );
     }
-    const fs = await import('fs');
+    const fs = await helper.importFSModule();
     if (options.path) await fs.promises.writeFile(options.path, buffer);
     return buffer;
 
