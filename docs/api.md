@@ -282,7 +282,7 @@
   * [elementHandle.getProperties()](#elementhandlegetproperties)
   * [elementHandle.getProperty(propertyName)](#elementhandlegetpropertypropertyname)
   * [elementHandle.hover()](#elementhandlehover)
-  * [elementHandle.isIntersectingViewport()](#elementhandleisintersectingviewport)
+  * [elementHandle.isIntersectingViewport([options])](#elementhandleisintersectingviewportoptions)
   * [elementHandle.jsonValue()](#elementhandlejsonvalue)
   * [elementHandle.press(key[, options])](#elementhandlepresskey-options)
   * [elementHandle.screenshot([options])](#elementhandlescreenshotoptions)
@@ -3627,7 +3627,9 @@ Fetches a single property from the objectHandle.
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to hover over the center of the element.
 If the element is detached from DOM, the method throws an error.
 
-#### elementHandle.isIntersectingViewport()
+#### elementHandle.isIntersectingViewport([options])
+- `options` <[Object]>
+  - `threshold` <[number]> allow to decrease a error number when the `intersectionRatio` got an infinite decimals .It should pass 0 ~ 1. Defaults to 0.
 - returns: <[Promise]<[boolean]>> Resolves to true if the element is visible in the current viewport.
 
 #### elementHandle.jsonValue()

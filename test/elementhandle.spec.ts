@@ -271,16 +271,34 @@ describe('ElementHandle specs', function () {
   });
 
   describe('ElementHandle.isIntersectingViewport', function () {
+    // eslint-disable-next-line mocha/no-exclusive-tests
     it('should work', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/offscreenbuttons.html');
+
       for (let i = 0; i < 11; ++i) {
         const button = await page.$('#btn' + i);
         // All but last button are visible.
         const visible = i < 10;
+        const ratio = await button.isIntersectingViewport();
+        console.log(ratio);
         expect(await button.isIntersectingViewport()).toBe(visible);
       }
+    });
+    // eslint-disable-next-line mocha/no-exclusive-tests
+    it('should work with threshold', async () => {
+      const { page, server } = getTestState();
+
+      await page.goto(server.PREFIX + '/offscreenbuttons.html');
+      // a button almost cannot be seen
+      // sometimes we expect to return false by isIntersectingViewport1
+      const button = await page.$('#btn11');
+      expect(
+        await button.isIntersectingViewport({
+          threshold: -0.001,
+        })
+      ).toBe(false);
     });
   });
 

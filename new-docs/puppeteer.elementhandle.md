@@ -9,7 +9,7 @@ ElementHandle represents an in-page DOM element.
 <b>Signature:</b>
 
 ```typescript
-export declare class ElementHandle<ElementType extends Element = Element> extends JSHandle 
+export declare class ElementHandle<ElementType extends Element = Element> extends JSHandle
 ```
 <b>Extends:</b> [JSHandle](./puppeteer.jshandle.md)
 
@@ -54,7 +54,7 @@ The constructor for this class is marked as internal. Third-party code should no
 |  [contentFrame()](./puppeteer.elementhandle.contentframe.md) |  | Resolves to the content frame for element handles referencing iframe nodes, or null otherwise |
 |  [focus()](./puppeteer.elementhandle.focus.md) |  | Calls [focus](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus) on the element. |
 |  [hover()](./puppeteer.elementhandle.hover.md) |  | This method scrolls element into view if needed, and then uses [Page.mouse](./puppeteer.page.mouse.md) to hover over the center of the element. If the element is detached from DOM, the method throws an error. |
-|  [isIntersectingViewport()](./puppeteer.elementhandle.isintersectingviewport.md) |  | Resolves to true if the element is visible in the current viewport. |
+|  [isIntersectingViewport(options)](./puppeteer.elementhandle.isintersectingviewport.md) |  | Resolves to true if the element is visible in the current viewport. |
 |  [press(key, options)](./puppeteer.elementhandle.press.md) |  | Focuses the element, and then uses [Keyboard.down()](./puppeteer.keyboard.down.md) and [Keyboard.up()](./puppeteer.keyboard.up.md)<!-- -->. |
 |  [screenshot(options)](./puppeteer.elementhandle.screenshot.md) |  | This method scrolls element into view if needed, and then uses [Page.screenshot()](./puppeteer.page.screenshot.md) to take a screenshot of the element. If the element is detached from DOM, the method throws an error. |
 |  [select(values)](./puppeteer.elementhandle.select.md) |  | Triggers a <code>change</code> and <code>input</code> event once all the provided options have been selected. If there's no <code>&lt;select&gt;</code> element matching <code>selector</code>, the method throws an error. |
