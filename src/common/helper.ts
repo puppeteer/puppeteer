@@ -313,7 +313,7 @@ async function readProtocolStream(
     throw new Error('Cannot write to a path outside of Node.js environment.');
   }
 
-  const fs = isNode ? await import('fs') : null;
+  const fs = isNode ? await importFSModule() : null;
 
   let eof = false;
   let fileHandle: import('fs').promises.FileHandle;
@@ -344,6 +344,30 @@ async function readProtocolStream(
   }
 }
 
+/**
+ * Loads the Node fs promises API. Needed because on Node 10.17 and below,
+ * fs.promises is experimental, and therefore not marked as enumerable. That
+ * means when TypeScript compiles an `import('fs')`, its helper doesn't spot the
+ * promises declaration and therefore on Node <10.17 you get an error as
+ * fs.promises is undefined in compiled TypeScript land.
+ *
+ * See https://github.com/puppeteer/puppeteer/issues/6548 for more details.
+ *
+ * Once Node 10 is no longer supported (April 2021) we can remove this and use
+ * `(await import('fs')).promises`.
+ */
+async function importFSModule(): Promise<typeof import('fs')> {
+  if (!isNode) {
+    throw new Error('Cannot load the fs module API outside of Node.');
+  }
+
+  const fs = await import('fs');
+  if (fs.promises) {
+    return fs;
+  }
+  return fs.default;
+}
+
 export const helper = {
   evaluationString,
   pageBindingInitString,
@@ -356,6 +380,7 @@ export const helper = {
   waitForEvent,
   isString,
   isNumber,
+  importFSModule,
   addEventListener,
   removeEventListeners,
   valueFromRemoteObject,

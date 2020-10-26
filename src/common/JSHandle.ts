@@ -563,8 +563,7 @@ export class ElementHandle<
     // This import is only needed for `uploadFile`, so keep it scoped here to avoid paying
     // the cost unnecessarily.
     const path = await import('path');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const fs = await import('fs');
+    const fs = await helper.importFSModule();
     // Locate all files and confirm that they exist.
     const files = await Promise.all(
       filePaths.map(async (filePath) => {
