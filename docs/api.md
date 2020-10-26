@@ -4174,7 +4174,7 @@ This method is identical to `off` and maintained for compatibility with Node's E
 ### interface: CustomQueryHandler
 
 Contains two functions `queryOne` and `queryAll` that can be
-[registered](#puppeteerregistercustomqueryhandler) as
+[registered](#puppeteerregistercustomqueryhandlername-queryhandler) as
 alternative querying strategies. The functions `queryOne` and `queryAll` are
 executed in the page context.  `queryOne` should take an `Element` and a
 selector string as argument and return a single `Element` or `null` if no
