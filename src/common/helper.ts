@@ -319,7 +319,7 @@ async function readProtocolStream(
   let fileHandle: import('fs').promises.FileHandle;
 
   if (path && fs) {
-    fileHandle = await fs.promises.open(path, 'w');
+    fileHandle = await fs.default.promises.open(path, 'w');
   }
   const bufs = [];
   while (!eof) {
@@ -331,7 +331,7 @@ async function readProtocolStream(
     );
     bufs.push(buf);
     if (path && fs) {
-      await fs.promises.writeFile(fileHandle, buf);
+      await fs.default.promises.writeFile(fileHandle, buf);
     }
   }
   if (path) await fileHandle.close();
