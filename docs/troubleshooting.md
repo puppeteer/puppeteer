@@ -315,14 +315,14 @@ how to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
 ### Running on Alpine
 
-The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 83, which corresponds to [Puppeteer v3.1.0](https://github.com/puppeteer/puppeteer/releases/tag/v3.1.0).
+The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 85, which corresponds to [Puppeteer v5.2.1](https://github.com/puppeteer/puppeteer/releases/tag/v5.2.1).
 
 Example Dockerfile:
 
 ```Dockerfile
 FROM alpine:edge
 
-# Installs latest Chromium (77) package.
+# Installs latest Chromium (85) package.
 RUN apk add --no-cache \
       chromium \
       nss \
@@ -340,8 +340,8 @@ RUN apk add --no-cache \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
     PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
-# Puppeteer v1.19.0 works with Chromium 77.
-RUN yarn add puppeteer@1.19.0
+# Puppeteer v5.2.1 works with Chromium 85.
+RUN yarn add puppeteer@5.2.1
 
 # Add user so we don't need --no-sandbox.
 RUN addgroup -S pptruser && adduser -S -g pptruser pptruser \
