@@ -617,18 +617,24 @@ The product is set by the `PUPPETEER_PRODUCT` environment variable or the `produ
 - `name` <[string]> The name that the custom query handler will be registered under.
 - `queryHandler` <[CustomQueryHandler]> The [custom query handler](#interface-customqueryhandler) to register.
 
-Registers a [custom query handler](#interface-customqueryhandler). After registration,
-the handler can be used everywhere where a selector is expected by prepending
-the selection string with `<name>/`. The name is only allowed to consist of
-lower- and upper case latin letters.
+Registers a [custom query handler](#interface-customqueryhandler). After registration, the handler can be used everywhere where a selector is expected by prepending the selection string with `<name>/`. The name is only allowed to consist of lower- and upper case latin letters.
+
 Example:
-```
-puppeteer.registerCustomQueryHandler('text', { … });
-const aHandle = await page.$('text/…');
+
+```js
+puppeteer.registerCustomQueryHandler('getByClass', {
+  queryOne: (element, selector) => {
+    return element.querySelector(`.${selector}`);
+  },
+  queryAll: (element, selector) => {
+    return element.querySelectorAll(`.${selector}`);
+  },
+});
+const aHandle = await page.$('getByClass/…');
 ```
 
 #### puppeteer.unregisterCustomQueryHandler(name)
-- `name` <[string]> The name of the query handler to unregistered.
+- `name` <[string]> The name of the query handler to unregister.
 
 ### class: BrowserFetcher
 
@@ -4173,14 +4179,7 @@ This method is identical to `off` and maintained for compatibility with Node's E
 
 ### interface: CustomQueryHandler
 
-Contains two functions `queryOne` and `queryAll` that can be
-[registered](#puppeteerregistercustomqueryhandlername-queryhandler) as
-alternative querying strategies. The functions `queryOne` and `queryAll` are
-executed in the page context.  `queryOne` should take an `Element` and a
-selector string as argument and return a single `Element` or `null` if no
-element is found. `queryAll` takes the same arguments but should instead return
-a `NodeListOf<Element>` or `Array<Element>` with all the elements that match
-the given query selector.
+Contains two functions `queryOne` and `queryAll` that can be [registered](#puppeteerregistercustomqueryhandlername-queryhandler) as alternative querying strategies. The functions `queryOne` and `queryAll` are executed in the page context. `queryOne` should take an `Element` and a selector string as argument and return a single `Element` or `null` if no element is found. `queryAll` takes the same arguments but should instead return a `NodeList<Element>` or `Array<Element>` with all the elements that match the given query selector.
 
 [AXNode]: #accessibilitysnapshotoptions "AXNode"
 [Accessibility]: #class-accessibility "Accessibility"
