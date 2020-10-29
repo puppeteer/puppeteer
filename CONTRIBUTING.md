@@ -261,6 +261,8 @@ The following steps are needed to update the Chromium version.
 1. Run `npm run ensure-correct-devtools-protocol-revision`.
    If it fails, update `package.json` with the expected `devtools-protocol` version.
 1. Run `npm run tsc` and `npm install` and ensure that all tests pass. If a test fails, [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
+1. Update `versions.js` with the new Chromium-to-Puppeteer version mapping.
+1. Commit and push your changes and open a pull request.
 
 ### Bisecting upstream changes
 
@@ -277,7 +279,6 @@ Releasing to npm consists of the following phases:
 1. Source Code: mark a release.
     1. Run `npm run release` to bump the version number in `package.json` and populate the changelog.
     1. Run `npm run doc` to update the docs accordingly.
-    1. Update the “Releases per Chromium Version” list in [`docs/api.md`](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md) to include the new version. Note: only do this when the Chrome revision is different from the previous release.
     1. Send a PR titled `'chore(release): mark vXXX.YYY.ZZZ'` ([example](https://github.com/puppeteer/puppeteer/pull/5078)).
     1. Make sure the PR passes **all checks**.
         - **WHY**: there are linters in place that help to avoid unnecessary errors, e.g. [like this](https://github.com/puppeteer/puppeteer/pull/2446)
