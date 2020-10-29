@@ -1,0 +1,3 @@
+{
+  "releaseCommitMessageFormat": "chore(release): mark v{{currentTag}}"
+}
