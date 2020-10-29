@@ -77,6 +77,8 @@ module.exports.runCommands = function (sources, version) {
       newText = generateTableOfContents(
         command.source.text().substring(command.to)
       );
+    else if (command.name === 'versions-per-release')
+      newText = generateVersionsPerRelease();
     if (newText === null)
       messages.push(Message.error(`Unknown command 'gen:${command.name}'`));
     else if (applyCommand(command, newText)) changedSources.add(command.source);
@@ -144,3 +146,20 @@ function generateTableOfContents(mdText) {
     '\n'
   );
 }
+
+const generateVersionsPerRelease = () => {
+  const versionsPerRelease = require('../../../versions.js');
+  const buffer = ['- Releases per Chromium version:'];
+  for (const [chromiumVersion, puppeteerVersion] of versionsPerRelease) {
+    if (puppeteerVersion === 'NEXT') continue;
+    buffer.push(
+      `  * Chromium ${chromiumVersion} - [Puppeteer ${puppeteerVersion}](https://github.com/puppeteer/puppeteer/blob/${puppeteerVersion}/docs/api.md)`
+    );
+  }
+  buffer.push(
+    `  * [All releases](https://github.com/puppeteer/puppeteer/releases)`
+  );
+
+  const output = '\n' + buffer.join('\n') + '\n';
+  return output;
+};

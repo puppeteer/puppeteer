@@ -35,6 +35,14 @@ async function run() {
   const messages = [];
   let changedFiles = false;
 
+  if (!VERSION.endsWith('-post')) {
+    const versions = await Source.readFile(
+      path.join(PROJECT_DIR, 'versions.js')
+    );
+    versions.setText(versions.text().replace(`, 'NEXT'],`, `, '${VERSION}'],`));
+    await versions.save();
+  }
+
   // Documentation checks.
   const readme = await Source.readFile(path.join(PROJECT_DIR, 'README.md'));
   const contributing = await Source.readFile(
