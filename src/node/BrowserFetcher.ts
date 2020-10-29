@@ -28,7 +28,10 @@ import { debug } from '../common/Debug.js';
 import { promisify } from 'util';
 import removeRecursive from 'rimraf';
 import * as URL from 'url';
-import ProxyAgent from 'https-proxy-agent';
+import createHttpsProxyAgent, {
+  HttpsProxyAgent,
+  HttpsProxyAgentOptions,
+} from 'https-proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
 import { assert } from '../common/assert.js';
 
@@ -557,7 +560,7 @@ function httpRequest(
 
   type Options = Partial<URL.UrlWithStringQuery> & {
     method?: string;
-    agent?: ProxyAgent;
+    agent?: HttpsProxyAgent;
     rejectUnauthorized?: boolean;
   };
 
@@ -581,9 +584,9 @@ function httpRequest(
       const proxyOptions = {
         ...parsedProxyURL,
         secureProxy: parsedProxyURL.protocol === 'https:',
-      } as ProxyAgent.HttpsProxyAgentOptions;
+      } as HttpsProxyAgentOptions;
 
-      options.agent = new ProxyAgent(proxyOptions);
+      options.agent = createHttpsProxyAgent(proxyOptions);
       options.rejectUnauthorized = false;
     }
   }
