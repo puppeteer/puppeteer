@@ -18,7 +18,7 @@ import { InternalQueryHandler } from './QueryHandler.js';
 import { ElementHandle, JSHandle } from './JSHandle.js';
 import { Protocol } from 'devtools-protocol';
 import { CDPSession } from './Connection.js';
-import { DOMWorld, WaitForSelectorOptions } from './DOMWorld.js';
+import { DOMWorld, PageBinding, WaitForSelectorOptions } from './DOMWorld.js';
 
 async function queryAXTree(
   client: CDPSession,
@@ -87,12 +87,20 @@ const waitFor = async (
   domWorld: DOMWorld,
   selector: string,
   options: WaitForSelectorOptions
-) => {
-  await addHandlerToWorld(domWorld);
+): Promise<ElementHandle<Element>> => {
+  const binding: PageBinding = {
+    name: 'ariaQuerySelector',
+    pptrFunction: async (selector: string) => {
+      const document = await domWorld._document();
+      const element = await queryOne(document, selector);
+      return element;
+    },
+  };
   return domWorld.waitForSelectorInPage(
     (_: Element, selector: string) => globalThis.ariaQuerySelector(selector),
     selector,
-    options
+    options,
+    binding
   );
 };
 
@@ -120,14 +128,6 @@ const queryAllArray = async (
   );
   return jsHandle;
 };
-
-async function addHandlerToWorld(domWorld: DOMWorld) {
-  await domWorld.addBinding('ariaQuerySelector', async (selector: string) => {
-    const document = await domWorld._document();
-    const element = await queryOne(document, selector);
-    return element;
-  });
-}
 
 /**
  * @internal
