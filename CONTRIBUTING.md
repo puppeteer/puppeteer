@@ -20,7 +20,6 @@
   * [Rolling new Chromium version](#rolling-new-chromium-version)
     - [Bisecting upstream changes](#bisecting-upstream-changes)
   * [Releasing to npm](#releasing-to-npm)
-  * [Updating npm dist tags](#updating-npm-dist-tags)
 <!-- gen:stop -->
 
 # How to Contribute
@@ -289,19 +288,3 @@ Releasing to npm consists of the following phases:
 1. Source Code: mark post-release.
     1. Bump `package.json` version to the `-post` version, run `npm run doc` to update the “released APIs” section at the top of `docs/api.md` accordingly, and send a PR titled `'chore: bump version to vXXX.YYY.ZZZ-post'` ([example](https://github.com/puppeteer/puppeteer/commit/d02440d1eac98028e29f4e1cf55413062a259156))
         - **NOTE**: no other commits should be landed in-between release commit and bump commit.
-
-## Updating npm dist tags
-
-For both `puppeteer` and `puppeteer-core` we maintain `chrome-*` npm dist tags, e.g. `chrome-75` and so on. These tags match the Puppeteer version that corresponds to the `chrome-*` release.
-
-These tags are updated on every Puppeteer release.
-
-Managing tags 101:
-
-```bash
-# List tags
-$ npm dist-tag ls puppeteer
-# Add tags
-$ npm dist-tag add puppeteer@3.0.0 chrome-81
-$ npm dist-tag add puppeteer-core@3.0.0 chrome-81
-```
