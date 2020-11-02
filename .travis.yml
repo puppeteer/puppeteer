@@ -1,11 +1,17 @@
 language: node_js
 services: xvfb
 
+# Throughout this file, the following `node_js` versions are being used:
+#
+# - node_js: '10' # The maintenance LTS version.
+# - node_js: '12' # The oldest major active LTS version.
+# - node_js: '14' # The newest major active LTS version.
+
 jobs:
   include:
     - os: 'osx'
       name: 'Unit tests: macOS/Chromium'
-      node_js: '10.19.0'
+      node_js: '10' # The maintenance LTS version.
       osx_image: xcode11.4
       env:
         - CHROMIUM=true
@@ -18,7 +24,7 @@ jobs:
 
     - os: 'windows'
       name: 'Unit tests: Windows/Chromium'
-      node_js: '10.19.0'
+      node_js: '10' # The maintenance LTS version.
       env:
         - CHROMIUM=true
       before_install:
@@ -42,7 +48,7 @@ jobs:
       script:
         - npm run unit
 
-    - node_js: '10.19.0'
+    - node_js: '10' # The maintenance LTS version.
       name: 'Unit tests [with coverage]: Linux/Chromium'
       env:
         - CHROMIUM=true
@@ -52,7 +58,7 @@ jobs:
         - travis_retry npm run unit-with-coverage
         - npm run assert-unit-coverage
 
-    - node_js: '12.16.3'
+    - node_js: '12' # The oldest major active LTS version.
       name: 'Unit tests [Node 12]: Linux/Chromium'
       env:
         - CHROMIUM=true
@@ -61,7 +67,7 @@ jobs:
       script:
         - npm run unit
 
-    - node_js: '14.2.0'
+    - node_js: '14' # The newest major active LTS version.
       name: 'Unit tests [Node 14]: Linux/Chromium'
       env:
         - CHROMIUM=true
@@ -70,7 +76,7 @@ jobs:
       script:
         - npm run unit
 
-    - node_js: '12.16.3'
+    - node_js: '12' # The oldest major active LTS version.
       name: 'Browser tests: Linux/Chromium'
       addons:
         chrome: stable
@@ -79,8 +85,8 @@ jobs:
       script:
         - npm run test-browser
 
-    # This bot runs all the extra checks that aren't the main Puppeteer unit tests
-    - node_js: '10.19.0'
+    # This bot runs all the extra checks that aren't the main Puppeteer unit tests.
+    - node_js: '10' # The maintenance LTS version.
       name: 'Extra tests: Linux/Chromium'
       env:
         - CHROMIUM=true
@@ -92,15 +98,14 @@ jobs:
 
     # This bot runs separately as it changes package.json to test puppeteer-core
     # and we don't want that leaking into other bots and causing issues.
-    - node_js: '10.19.0'
+    - node_js: '10' # The maintenance LTS version.
       name: 'Test bundling and install of packages'
       env:
         - CHROMIUM=true
       script:
         - npm run test-install
 
-    # Runs unit tests on Linux + Firefox
-    - node_js: '10.19.0'
+    - node_js: '10' # The maintenance LTS version.
       name: 'Unit tests: Linux/Firefox'
       env:
         - FIREFOX=true
