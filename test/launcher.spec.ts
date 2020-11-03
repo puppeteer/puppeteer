@@ -22,7 +22,7 @@ import {
   getTestState,
   itFailsFirefox,
   itOnlyRegularInstall,
-  itFailsWindowsUntilDate,
+  itFailsWindows,
 } from './mocha-utils'; // eslint-disable-line import/extensions
 import utils from './utils.js';
 import expect from 'expect';
@@ -471,22 +471,17 @@ describe('Launcher specs', function () {
       });
 
       /* We think there's a bug in the FF Windows launcher, or some
-       * combo of that plus it running on CI, but we're deferring fixing
-       * this so we can get Windows CI stable and then dig into this
-       * properly with help from the Mozilla folks.
+       * combo of that plus it running on CI, but it's hard to track down.
+       * See comment here: https://github.com/puppeteer/puppeteer/issues/5673#issuecomment-670141377.
        */
-      itFailsWindowsUntilDate(
-        new Date('2020-10-31'),
-        'should be able to launch Firefox',
-        async function () {
-          this.timeout(FIREFOX_TIMEOUT);
-          const { puppeteer } = getTestState();
-          const browser = await puppeteer.launch({ product: 'firefox' });
-          const userAgent = await browser.userAgent();
-          await browser.close();
-          expect(userAgent).toContain('Firefox');
-        }
-      );
+      itFailsWindows('should be able to launch Firefox', async function () {
+        this.timeout(FIREFOX_TIMEOUT);
+        const { puppeteer } = getTestState();
+        const browser = await puppeteer.launch({ product: 'firefox' });
+        const userAgent = await browser.userAgent();
+        await browser.close();
+        expect(userAgent).toContain('Firefox');
+      });
     });
 
     describe('Puppeteer.connect', function () {
