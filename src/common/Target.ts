@@ -44,7 +44,7 @@ export class Target {
   /**
    * @internal
    */
-  _isClosedPromise: Promise<boolean>;
+  _isClosedPromise: Promise<void>;
   /**
    * @internal
    */
@@ -91,7 +91,7 @@ export class Target {
       openerPage.emit(PageEmittedEvents.Popup, popupPage);
       return true;
     });
-    this._isClosedPromise = new Promise<boolean>(
+    this._isClosedPromise = new Promise<void>(
       (fulfill) => (this._closedCallback = fulfill)
     );
     this._isInitialized =
