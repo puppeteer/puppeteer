@@ -16,6 +16,5 @@ yarn.lock
 /lib
 test/coverage.json
 temp/
-dependency-chart.png
 puppeteer-core-*.tgz
 new-docs/
