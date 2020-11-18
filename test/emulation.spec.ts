@@ -258,7 +258,7 @@ describe('Emulation', () => {
     it('should work', async () => {
       const { page } = getTestState();
 
-      page.evaluate(() => {
+      await page.evaluate(() => {
         globalThis.date = new Date(1479579154987);
       });
       await page.emulateTimezone('America/Jamaica');
