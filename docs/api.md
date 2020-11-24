@@ -2293,7 +2293,7 @@ Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitf
 - `milliseconds` <[number]> The number of milliseconds to wait for.
 - returns: <[Promise]> Promise which resolves after the timeout has completed.
 
-Pauses script execution for the given number of seconds before continuing:
+Pauses script execution for the given number of milliseconds before continuing:
 
 ```js
 const puppeteer = require('puppeteer');
