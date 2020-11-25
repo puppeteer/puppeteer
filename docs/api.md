@@ -2255,6 +2255,7 @@ return firstRequest.url();
 ```js
 const firstResponse = await page.waitForResponse('https://example.com/resource');
 const finalResponse = await page.waitForResponse(response => response.url() === 'https://example.com' && response.status() === 200);
+const finalResponse = await page.waitForResponse(async response => { return (await response.text()).includes('<html>') })
 return finalResponse.ok();
 ```
 
