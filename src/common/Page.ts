@@ -1298,11 +1298,11 @@ export class Page extends EventEmitter {
     return helper.waitForEvent(
       this._frameManager.networkManager(),
       NetworkManagerEmittedEvents.Response,
-      (response) => {
+      async (response) => {
         if (helper.isString(urlOrPredicate))
           return urlOrPredicate === response.url();
         if (typeof urlOrPredicate === 'function')
-          return !!urlOrPredicate(response);
+          return !!(await urlOrPredicate(response));
         return false;
       },
       timeout,
