@@ -276,8 +276,7 @@ node utils/bisect.js --good 686378 --bad 706915 script.js
 Releasing to npm consists of the following phases:
 
 1. Source Code: mark a release.
-    1. Run `npm run release` to bump the version number in `package.json` and populate the changelog.
-    1. Run `npm run doc` to update the docs accordingly.
+    1. Run `npm run release` to bump the version number in `package.json`, populate the changelog, and update the docs.
     1. Send a PR titled `'chore(release): mark vXXX.YYY.ZZZ'` ([example](https://github.com/puppeteer/puppeteer/pull/5078)).
     1. Make sure the PR passes **all checks**.
         - **WHY**: there are linters in place that help to avoid unnecessary errors, e.g. [like this](https://github.com/puppeteer/puppeteer/pull/2446)
