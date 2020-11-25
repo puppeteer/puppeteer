@@ -124,7 +124,7 @@ function isNumber(obj: unknown): obj is number {
 async function waitForEvent<T extends any>(
   emitter: CommonEventEmitter,
   eventName: string | symbol,
-  predicate: (event: T) => boolean,
+  predicate: (event: T) => Promise<boolean> | boolean,
   timeout: number,
   abortPromise: Promise<Error>
 ): Promise<T> {
@@ -133,8 +133,8 @@ async function waitForEvent<T extends any>(
     resolveCallback = resolve;
     rejectCallback = reject;
   });
-  const listener = addEventListener(emitter, eventName, (event) => {
-    if (!predicate(event)) return;
+  const listener = addEventListener(emitter, eventName, async (event) => {
+    if (!(await predicate(event))) return;
     resolveCallback(event);
   });
   if (timeout) {
