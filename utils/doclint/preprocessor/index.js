@@ -16,6 +16,8 @@
 
 const Message = require('../Message');
 
+const IS_RELEASE = Boolean(process.env.IS_RELEASE);
+
 module.exports.ensureReleasedAPILinks = function (sources, version) {
   // Release version is everything that doesn't include "-".
   const apiLinkRegex = /https:\/\/github.com\/puppeteer\/puppeteer\/blob\/v[^/]*\/docs\/api.md/gi;
@@ -35,7 +37,7 @@ module.exports.ensureReleasedAPILinks = function (sources, version) {
 
 module.exports.runCommands = function (sources, version) {
   // Release version is everything that doesn't include "-".
-  const isReleaseVersion = !version.includes('-');
+  const isReleaseVersion = IS_RELEASE || !version.includes('-');
 
   const messages = [];
   const commands = [];
@@ -70,7 +72,7 @@ module.exports.runCommands = function (sources, version) {
   for (const command of commands) {
     let newText = null;
     if (command.name === 'version')
-      newText = isReleaseVersion ? 'v' + version : 'Tip-Of-Tree';
+      newText = isReleaseVersion ? `v${version}` : 'Tip-Of-Tree';
     else if (command.name === 'empty-if-release')
       newText = isReleaseVersion ? '' : command.originalText;
     else if (command.name === 'toc')

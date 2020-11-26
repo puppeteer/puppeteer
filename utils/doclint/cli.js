@@ -26,6 +26,8 @@ const RED_COLOR = '\x1b[31m';
 const YELLOW_COLOR = '\x1b[33m';
 const RESET_COLOR = '\x1b[0m';
 
+const IS_RELEASE = Boolean(process.env.IS_RELEASE);
+
 run();
 
 async function run() {
@@ -35,7 +37,7 @@ async function run() {
   const messages = [];
   let changedFiles = false;
 
-  if (!VERSION.endsWith('-post')) {
+  if (IS_RELEASE) {
     const versions = await Source.readFile(
       path.join(PROJECT_DIR, 'versions.js')
     );
@@ -132,5 +134,5 @@ async function run() {
 
   const runningTime = Date.now() - startTime;
   console.log(`DocLint Finished in ${runningTime / 1000} seconds`);
-  process.exit(clearExit ? 0 : 1);
+  process.exit(clearExit || IS_RELEASE ? 0 : 1);
 }
