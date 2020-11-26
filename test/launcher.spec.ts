@@ -589,6 +589,25 @@ describe('Launcher specs', function () {
           await browserOne.close();
         }
       );
+      // @see https://github.com/puppeteer/puppeteer/issues/6527
+      it('should be able to reconnect', async () => {
+        const { puppeteer, server } = getTestState();
+        const browserOne = await puppeteer.launch();
+        const browserWSEndpoint = browserOne.wsEndpoint();
+        const pageOne = await browserOne.newPage();
+        await pageOne.goto(server.EMPTY_PAGE);
+        browserOne.disconnect();
+
+        const browserTwo = await puppeteer.connect({ browserWSEndpoint });
+        const pages = await browserTwo.pages();
+        const pageTwo = pages.find((page) => page.url() === server.EMPTY_PAGE);
+        await pageTwo.reload();
+        const bodyHandle = await pageTwo.waitForSelector('body', {
+          timeout: 10000,
+        });
+        await bodyHandle.dispose();
+        await browserTwo.close();
+      });
     });
     describe('Puppeteer.executablePath', function () {
       itOnlyRegularInstall('should work', async () => {
