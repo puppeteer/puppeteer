@@ -34,7 +34,7 @@
     "test-install": "scripts/test-install.sh",
     "generate-docs": "npm run tsc && api-extractor run --local --verbose && api-documenter markdown -i temp -o new-docs",
     "ensure-correct-devtools-protocol-revision": "ts-node -s scripts/ensure-correct-devtools-protocol-package",
-    "release": "node utils/remove_version_suffix.js && standard-version"
+    "release": "node utils/remove_version_suffix.js && standard-version --commit-all"
   },
   "files": [
     "lib/",
