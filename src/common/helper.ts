@@ -15,11 +15,11 @@
  */
 import { TimeoutError } from './Errors.js';
 import { debug } from './Debug.js';
-import * as fs from 'fs';
 import { CDPSession } from './Connection.js';
 import { Protocol } from 'devtools-protocol';
 import { CommonEventEmitter } from './EventEmitter.js';
 import { assert } from './assert.js';
+import { isNode } from '../environment.js';
 
 export const debugError = debug('puppeteer:error');
 
@@ -124,7 +124,7 @@ function isNumber(obj: unknown): obj is number {
 async function waitForEvent<T extends any>(
   emitter: CommonEventEmitter,
   eventName: string | symbol,
-  predicate: (event: T) => boolean,
+  predicate: (event: T) => Promise<boolean> | boolean,
   timeout: number,
   abortPromise: Promise<Error>
 ): Promise<T> {
@@ -133,8 +133,8 @@ async function waitForEvent<T extends any>(
     resolveCallback = resolve;
     rejectCallback = reject;
   });
-  const listener = addEventListener(emitter, eventName, (event) => {
-    if (!predicate(event)) return;
+  const listener = addEventListener(emitter, eventName, async (event) => {
+    if (!(await predicate(event))) return;
     resolveCallback(event);
   });
   if (timeout) {
@@ -309,9 +309,16 @@ async function readProtocolStream(
   handle: string,
   path?: string
 ): Promise<Buffer> {
+  if (!isNode && path) {
+    throw new Error('Cannot write to a path outside of Node.js environment.');
+  }
+
+  const fs = isNode ? await importFSModule() : null;
+
   let eof = false;
-  let fileHandle: fs.promises.FileHandle;
-  if (path) {
+  let fileHandle: import('fs').promises.FileHandle;
+
+  if (path && fs) {
     fileHandle = await fs.promises.open(path, 'w');
   }
   const bufs = [];
@@ -323,7 +330,9 @@ async function readProtocolStream(
       response.base64Encoded ? 'base64' : undefined
     );
     bufs.push(buf);
-    if (path) await fs.promises.writeFile(fileHandle, buf);
+    if (path && fs) {
+      await fs.promises.writeFile(fileHandle, buf);
+    }
   }
   if (path) await fileHandle.close();
   await client.send('IO.close', { handle });
@@ -333,6 +342,30 @@ async function readProtocolStream(
   } finally {
     return resultBuffer;
   }
+}
+
+/**
+ * Loads the Node fs promises API. Needed because on Node 10.17 and below,
+ * fs.promises is experimental, and therefore not marked as enumerable. That
+ * means when TypeScript compiles an `import('fs')`, its helper doesn't spot the
+ * promises declaration and therefore on Node <10.17 you get an error as
+ * fs.promises is undefined in compiled TypeScript land.
+ *
+ * See https://github.com/puppeteer/puppeteer/issues/6548 for more details.
+ *
+ * Once Node 10 is no longer supported (April 2021) we can remove this and use
+ * `(await import('fs')).promises`.
+ */
+async function importFSModule(): Promise<typeof import('fs')> {
+  if (!isNode) {
+    throw new Error('Cannot load the fs module API outside of Node.');
+  }
+
+  const fs = await import('fs');
+  if (fs.promises) {
+    return fs;
+  }
+  return fs.default;
 }
 
 export const helper = {
@@ -347,6 +380,7 @@ export const helper = {
   waitForEvent,
   isString,
   isNumber,
+  importFSModule,
   addEventListener,
   removeEventListeners,
   valueFromRemoteObject,

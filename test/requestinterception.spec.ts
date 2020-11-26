@@ -391,7 +391,7 @@ describe('request interception', function () {
       expect(requests.length).toBe(1);
       expect(requests[0].url()).toBe(dataURL);
     });
-    it('should navigate to URL with hash and and fire requests without hash', async () => {
+    it('should navigate to URL with hash and fire requests without hash', async () => {
       const { page, server } = getTestState();
 
       await page.setRequestInterception(true);

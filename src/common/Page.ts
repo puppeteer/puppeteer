@@ -1132,7 +1132,15 @@ export class Page extends EventEmitter {
   private async _onBindingCalled(
     event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> {
-    const { type, name, seq, args } = JSON.parse(event.payload);
+    let payload: { type: string; name: string; seq: number; args: unknown[] };
+    try {
+      payload = JSON.parse(event.payload);
+    } catch {
+      // The binding was either called by something in the page or it was
+      // called before our wrapper was initialized.
+      return;
+    }
+    const { type, name, seq, args } = payload;
     if (type !== 'exposedFun' || !this._pageBindings.has(name)) return;
     let expression = null;
     try {
@@ -1290,11 +1298,11 @@ export class Page extends EventEmitter {
     return helper.waitForEvent(
       this._frameManager.networkManager(),
       NetworkManagerEmittedEvents.Response,
-      (response) => {
+      async (response) => {
         if (helper.isString(urlOrPredicate))
           return urlOrPredicate === response.url();
         if (typeof urlOrPredicate === 'function')
-          return !!urlOrPredicate(response);
+          return !!(await urlOrPredicate(response));
         return false;
       },
       timeout,
@@ -1701,7 +1709,7 @@ export class Page extends EventEmitter {
         'Screenshots can only be written to a file path in a Node environment.'
       );
     }
-    const fs = await import('fs');
+    const fs = await helper.importFSModule();
     if (options.path) await fs.promises.writeFile(options.path, buffer);
     return buffer;
 

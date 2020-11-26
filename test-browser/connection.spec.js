@@ -14,48 +14,42 @@
  * limitations under the License.
  */
 import { Connection } from '../lib/esm/puppeteer/common/Connection.js';
+import { BrowserWebSocketTransport } from '../lib/esm/puppeteer/common/BrowserWebSocketTransport.js';
+import puppeteer from '../lib/esm/puppeteer/web.js';
 import expect from '../node_modules/expect/build-es5/index.js';
+import { getWebSocketEndpoint } from './helper.js';
 
-/**
- * A fake transport that echoes the message it got back and pretends to have got a result.
- *
- * In actual pptr code we expect that `result` is returned from the message
- * being sent with some data, so we fake that in the `send` method.
- *
- * We don't define `onmessage` here because Puppeteer's Connection class will
- * define an `onmessage` for us.
- */
-class EchoTransport {
-  send(message) {
-    const object = JSON.parse(message);
-    const fakeMessageResult = {
-      result: `fake-test-result-${object.method}`,
-    };
-    this.onmessage(
-      JSON.stringify({
-        ...object,
-        ...fakeMessageResult,
-      })
-    );
-  }
+describe('creating a Connection', () => {
+  it('can create a real connection to the backend and send messages', async () => {
+    const wsUrl = getWebSocketEndpoint();
+    const transport = await BrowserWebSocketTransport.create(wsUrl);
 
-  close() {}
-}
-
-describe('Connection', () => {
-  it('can be created in the browser and send/receive messages', async () => {
-    let receivedOutput = '';
-    const connection = new Connection('fake-url', new EchoTransport());
-
-    /**
-     * Puppeteer increments a counter from 0 for each
-     * message it sends So we have to register a callback for the object with
-     * the ID of `1` as the message we send will be the first.
+    const connection = new Connection(wsUrl, transport);
+    const result = await connection.send('Browser.getVersion');
+    /* We can't expect exact results as the version of Chrome/CDP might change
+     * and we don't want flakey tests, so let's assert the structure, which is
+     * enough to confirm the result was recieved successfully.
      */
-    connection._callbacks.set(1, {
-      resolve: (data) => (receivedOutput = data),
+    expect(result).toEqual({
+      protocolVersion: expect.any(String),
+      jsVersion: expect.any(String),
+      revision: expect.any(String),
+      userAgent: expect.any(String),
+      product: expect.any(String),
     });
-    connection.send('Browser.getVersion');
-    expect(receivedOutput).toEqual('fake-test-result-Browser.getVersion');
+  });
+});
+
+describe('puppeteer.connect', () => {
+  it('can connect over websocket and make requests to the backend', async () => {
+    const wsUrl = getWebSocketEndpoint();
+    const browser = await puppeteer.connect({
+      browserWSEndpoint: wsUrl,
+    });
+
+    const version = await browser.version();
+    const versionLooksCorrect = /.+Chrome\/\d{2}/.test(version);
+    expect(version).toEqual(expect.any(String));
+    expect(versionLooksCorrect).toEqual(true);
   });
 });

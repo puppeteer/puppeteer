@@ -62,6 +62,14 @@ export interface WaitForSelectorOptions {
 /**
  * @internal
  */
+export interface PageBinding {
+  name: string;
+  pptrFunction: Function;
+}
+
+/**
+ * @internal
+ */
 export class DOMWorld {
   private _frameManager: FrameManager;
   private _frame: Frame;
@@ -73,14 +81,19 @@ export class DOMWorld {
 
   private _detached = false;
   /**
-   * internal
+   * @internal
    */
   _waitTasks = new Set<WaitTask>();
 
-  // Contains mapping from functions that should be bound to Puppeteer functions.
-  private _boundFunctions = new Map<string, Function>();
+  /**
+   * @internal
+   * Contains mapping from functions that should be bound to Puppeteer functions.
+   */
+  _boundFunctions = new Map<string, Function>();
   // Set of bindings that have been registered in the current context.
   private _ctxBindings = new Set<string>();
+  private static bindingIdentifier = (name: string, contextId: number) =>
+    `${name}_${contextId}`;
 
   constructor(
     frameManager: FrameManager,
@@ -104,10 +117,6 @@ export class DOMWorld {
     if (context) {
       this._contextResolveCallback.call(null, context);
       this._contextResolveCallback = null;
-      this._ctxBindings.clear();
-      for (const name of this._boundFunctions.keys()) {
-        await this.addBindingToContext(name);
-      }
       for (const waitTask of this._waitTasks) waitTask.rerun();
     } else {
       this._documentPromise = null;
@@ -288,7 +297,7 @@ export class DOMWorld {
           'Cannot pass a filepath to addScriptTag in the browser environment.'
         );
       }
-      const fs = await import('fs');
+      const fs = await helper.importFSModule();
       let contents = await fs.promises.readFile(path, 'utf8');
       contents += '//# sourceURL=' + path.replace(/\n/g, '');
       const context = await this.executionContext();
@@ -370,7 +379,7 @@ export class DOMWorld {
           'Cannot pass a filepath to addStyleTag in the browser environment.'
         );
       }
-      const fs = await import('fs');
+      const fs = await helper.importFSModule();
       let contents = await fs.promises.readFile(path, 'utf8');
       contents += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
       const context = await this.executionContext();
@@ -482,19 +491,27 @@ export class DOMWorld {
   /**
    * @internal
    */
-  async addBindingToContext(name: string) {
+  async addBindingToContext(
+    context: ExecutionContext,
+    name: string
+  ): Promise<void> {
     // Previous operation added the binding so we are done.
-    if (this._ctxBindings.has(name)) return;
+    if (
+      this._ctxBindings.has(
+        DOMWorld.bindingIdentifier(name, context._contextId)
+      )
+    ) {
+      return;
+    }
     // Wait for other operation to finish
     if (this._settingUpBinding) {
       await this._settingUpBinding;
-      return this.addBindingToContext(name);
+      return this.addBindingToContext(context, name);
     }
 
     const bind = async (name: string) => {
       const expression = helper.pageBindingInitString('internal', name);
       try {
-        const context = await this.executionContext();
         await context._client.send('Runtime.addBinding', {
           name,
           executionContextId: context._contextId,
@@ -511,14 +528,15 @@ export class DOMWorld {
           'Cannot find context with specified id'
         );
         if (ctxDestroyed || ctxNotFound) {
-          // Retry adding the binding in the next context
-          await bind(name);
+          return;
         } else {
           debugError(error);
           return;
         }
       }
-      this._ctxBindings.add(name);
+      this._ctxBindings.add(
+        DOMWorld.bindingIdentifier(name, context._contextId)
+      );
     };
 
     this._settingUpBinding = bind(name);
@@ -526,21 +544,27 @@ export class DOMWorld {
     this._settingUpBinding = null;
   }
 
-  /**
-   * @internal
-   */
-  async addBinding(name: string, puppeteerFunction: Function): Promise<void> {
-    this._boundFunctions.set(name, puppeteerFunction);
-    await this.addBindingToContext(name);
-  }
-
   private async _onBindingCalled(
     event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> {
-    const { type, name, seq, args } = JSON.parse(event.payload);
-    if (type !== 'internal' || !this._ctxBindings.has(name)) return;
+    let payload: { type: string; name: string; seq: number; args: unknown[] };
     if (!this._hasContext()) return;
     const context = await this.executionContext();
+    try {
+      payload = JSON.parse(event.payload);
+    } catch {
+      // The binding was either called by something in the page or it was
+      // called before our wrapper was initialized.
+      return;
+    }
+    const { type, name, seq, args } = payload;
+    if (
+      type !== 'internal' ||
+      !this._ctxBindings.has(
+        DOMWorld.bindingIdentifier(name, context._contextId)
+      )
+    )
+      return;
     if (context._contextId !== event.executionContextId) return;
     try {
       const result = await this._boundFunctions.get(name)(...args);
@@ -566,7 +590,8 @@ export class DOMWorld {
   async waitForSelectorInPage(
     queryOne: Function,
     selector: string,
-    options: WaitForSelectorOptions
+    options: WaitForSelectorOptions,
+    binding?: PageBinding
   ): Promise<ElementHandle | null> {
     const {
       visible: waitForVisible = false,
@@ -587,16 +612,16 @@ export class DOMWorld {
         : document.querySelector(selector);
       return checkWaitForOptions(node, waitForVisible, waitForHidden);
     }
-    const waitTask = new WaitTask(
-      this,
-      helper.makePredicateString(predicate, queryOne),
+    const waitTaskOptions: WaitTaskOptions = {
+      domWorld: this,
+      predicateBody: helper.makePredicateString(predicate, queryOne),
       title,
       polling,
       timeout,
-      selector,
-      waitForVisible,
-      waitForHidden
-    );
+      args: [selector, waitForVisible, waitForHidden],
+      binding,
+    };
+    const waitTask = new WaitTask(waitTaskOptions);
     const jsHandle = await waitTask.promise;
     const elementHandle = jsHandle.asElement();
     if (!elementHandle) {
@@ -631,16 +656,15 @@ export class DOMWorld {
       ).singleNodeValue;
       return checkWaitForOptions(node, waitForVisible, waitForHidden);
     }
-    const waitTask = new WaitTask(
-      this,
-      helper.makePredicateString(predicate),
+    const waitTaskOptions: WaitTaskOptions = {
+      domWorld: this,
+      predicateBody: helper.makePredicateString(predicate),
       title,
       polling,
       timeout,
-      xpath,
-      waitForVisible,
-      waitForHidden
-    );
+      args: [xpath, waitForVisible, waitForHidden],
+    };
+    const waitTask = new WaitTask(waitTaskOptions);
     const jsHandle = await waitTask.promise;
     const elementHandle = jsHandle.asElement();
     if (!elementHandle) {
@@ -659,19 +683,34 @@ export class DOMWorld {
       polling = 'raf',
       timeout = this._timeoutSettings.timeout(),
     } = options;
-    return new WaitTask(
-      this,
-      pageFunction,
-      'function',
+    const waitTaskOptions: WaitTaskOptions = {
+      domWorld: this,
+      predicateBody: pageFunction,
+      title: 'function',
       polling,
       timeout,
-      ...args
-    ).promise;
+      args,
+    };
+    const waitTask = new WaitTask(waitTaskOptions);
+    return waitTask.promise;
   }
 
   async title(): Promise<string> {
     return this.evaluate(() => document.title);
   }
+}
+
+/**
+ * @internal
+ */
+export interface WaitTaskOptions {
+  domWorld: DOMWorld;
+  predicateBody: Function | string;
+  title: string;
+  polling: string | number;
+  timeout: number;
+  binding?: PageBinding;
+  args: SerializableOrJSHandle[];
 }
 
 /**
@@ -683,6 +722,7 @@ export class WaitTask {
   _timeout: number;
   _predicateBody: string;
   _args: SerializableOrJSHandle[];
+  _binding: PageBinding;
   _runCount = 0;
   promise: Promise<JSHandle>;
   _resolve: (x: JSHandle) => void;
@@ -690,48 +730,51 @@ export class WaitTask {
   _timeoutTimer?: NodeJS.Timeout;
   _terminated = false;
 
-  constructor(
-    domWorld: DOMWorld,
-    predicateBody: Function | string,
-    title: string,
-    polling: string | number,
-    timeout: number,
-    ...args: SerializableOrJSHandle[]
-  ) {
-    if (helper.isString(polling))
+  constructor(options: WaitTaskOptions) {
+    if (helper.isString(options.polling))
       assert(
-        polling === 'raf' || polling === 'mutation',
-        'Unknown polling option: ' + polling
+        options.polling === 'raf' || options.polling === 'mutation',
+        'Unknown polling option: ' + options.polling
       );
-    else if (helper.isNumber(polling))
-      assert(polling > 0, 'Cannot poll with non-positive interval: ' + polling);
-    else throw new Error('Unknown polling options: ' + polling);
+    else if (helper.isNumber(options.polling))
+      assert(
+        options.polling > 0,
+        'Cannot poll with non-positive interval: ' + options.polling
+      );
+    else throw new Error('Unknown polling options: ' + options.polling);
 
     function getPredicateBody(predicateBody: Function | string) {
       if (helper.isString(predicateBody)) return `return (${predicateBody});`;
       return `return (${predicateBody})(...args);`;
     }
 
-    this._domWorld = domWorld;
-    this._polling = polling;
-    this._timeout = timeout;
-    this._predicateBody = getPredicateBody(predicateBody);
-    this._args = args;
+    this._domWorld = options.domWorld;
+    this._polling = options.polling;
+    this._timeout = options.timeout;
+    this._predicateBody = getPredicateBody(options.predicateBody);
+    this._args = options.args;
+    this._binding = options.binding;
     this._runCount = 0;
-    domWorld._waitTasks.add(this);
+    this._domWorld._waitTasks.add(this);
+    if (this._binding) {
+      this._domWorld._boundFunctions.set(
+        this._binding.name,
+        this._binding.pptrFunction
+      );
+    }
     this.promise = new Promise<JSHandle>((resolve, reject) => {
       this._resolve = resolve;
       this._reject = reject;
     });
     // Since page navigation requires us to re-install the pageScript, we should track
     // timeout on our end.
-    if (timeout) {
+    if (options.timeout) {
       const timeoutError = new TimeoutError(
-        `waiting for ${title} failed: timeout ${timeout}ms exceeded`
+        `waiting for ${options.title} failed: timeout ${options.timeout}ms exceeded`
       );
       this._timeoutTimer = setTimeout(
         () => this.terminate(timeoutError),
-        timeout
+        options.timeout
       );
     }
     this.rerun();
@@ -745,11 +788,16 @@ export class WaitTask {
 
   async rerun(): Promise<void> {
     const runCount = ++this._runCount;
-    /** @type {?JSHandle} */
-    let success = null;
-    let error = null;
+    let success: JSHandle = null;
+    let error: Error = null;
+    const context = await this._domWorld.executionContext();
+    if (this._terminated || runCount !== this._runCount) return;
+    if (this._binding) {
+      await this._domWorld.addBindingToContext(context, this._binding.name);
+    }
+    if (this._terminated || runCount !== this._runCount) return;
     try {
-      success = await (await this._domWorld.executionContext()).evaluateHandle(
+      success = await context.evaluateHandle(
         waitForPredicatePageFunction,
         this._predicateBody,
         this._polling,
@@ -775,10 +823,13 @@ export class WaitTask {
       await success.dispose();
       return;
     }
-    // When frame is detached the task should have been terminated by the DOMWorld.
-    // This can fail if we were adding this task while the frame was detached,
-    // so we terminate here instead.
     if (error) {
+      if (error.message.includes('TypeError: binding is not a function')) {
+        return this.rerun();
+      }
+      // When frame is detached the task should have been terminated by the DOMWorld.
+      // This can fail if we were adding this task while the frame was detached,
+      // so we terminate here instead.
       if (
         error.message.includes(
           'Execution context is not available in detached frame'

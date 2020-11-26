@@ -22,7 +22,7 @@ import {
   getTestState,
   itFailsFirefox,
   itOnlyRegularInstall,
-  itFailsWindowsUntilDate,
+  itFailsWindows,
 } from './mocha-utils'; // eslint-disable-line import/extensions
 import utils from './utils.js';
 import expect from 'expect';
@@ -306,7 +306,7 @@ describe('Launcher specs', function () {
             '--headless'
           );
           expect(puppeteer.defaultArgs({ userDataDir: 'foo' })).toContain(
-            '--user-data-dir=foo'
+            `--user-data-dir=${path.resolve('foo')}`
           );
         } else if (isFirefox) {
           expect(puppeteer.defaultArgs()).toContain('--headless');
@@ -330,7 +330,7 @@ describe('Launcher specs', function () {
             '-profile'
           );
           expect(puppeteer.defaultArgs({ userDataDir: 'foo' })).toContain(
-            'foo'
+            path.resolve('foo')
           );
         }
       });
@@ -442,11 +442,8 @@ describe('Launcher specs', function () {
 
       after(async () => {
         const { puppeteer } = getTestState();
-        /* launcher is a private property so we don't want our users doing this
-         * but we need to reset the state fully here for testing different
-         * browser launchers
-         */
-        // @ts-expect-error
+        // @ts-expect-error launcher is a private property that users can't
+        // touch, but for testing purposes we need to reset it.
         puppeteer._lazyLauncher = undefined;
         puppeteer._productName = productName;
       });
@@ -462,6 +459,7 @@ describe('Launcher specs', function () {
       it('falls back to launching chrome if there is an unknown product but logs a warning', async () => {
         const { puppeteer } = getTestState();
         const consoleStub = sinon.stub(console, 'warn');
+        // @ts-expect-error purposeful bad input
         const browser = await puppeteer.launch({ product: 'SO_NOT_A_PRODUCT' });
         const userAgent = await browser.userAgent();
         await browser.close();
@@ -473,22 +471,17 @@ describe('Launcher specs', function () {
       });
 
       /* We think there's a bug in the FF Windows launcher, or some
-       * combo of that plus it running on CI, but we're deferring fixing
-       * this so we can get Windows CI stable and then dig into this
-       * properly with help from the Mozilla folks.
+       * combo of that plus it running on CI, but it's hard to track down.
+       * See comment here: https://github.com/puppeteer/puppeteer/issues/5673#issuecomment-670141377.
        */
-      itFailsWindowsUntilDate(
-        new Date('2020-10-31'),
-        'should be able to launch Firefox',
-        async function () {
-          this.timeout(FIREFOX_TIMEOUT);
-          const { puppeteer } = getTestState();
-          const browser = await puppeteer.launch({ product: 'firefox' });
-          const userAgent = await browser.userAgent();
-          await browser.close();
-          expect(userAgent).toContain('Firefox');
-        }
-      );
+      itFailsWindows('should be able to launch Firefox', async function () {
+        this.timeout(FIREFOX_TIMEOUT);
+        const { puppeteer } = getTestState();
+        const browser = await puppeteer.launch({ product: 'firefox' });
+        const userAgent = await browser.userAgent();
+        await browser.close();
+        expect(userAgent).toContain('Firefox');
+      });
     });
 
     describe('Puppeteer.connect', function () {
@@ -596,6 +589,25 @@ describe('Launcher specs', function () {
           await browserOne.close();
         }
       );
+      // @see https://github.com/puppeteer/puppeteer/issues/6527
+      it('should be able to reconnect', async () => {
+        const { puppeteer, server } = getTestState();
+        const browserOne = await puppeteer.launch();
+        const browserWSEndpoint = browserOne.wsEndpoint();
+        const pageOne = await browserOne.newPage();
+        await pageOne.goto(server.EMPTY_PAGE);
+        browserOne.disconnect();
+
+        const browserTwo = await puppeteer.connect({ browserWSEndpoint });
+        const pages = await browserTwo.pages();
+        const pageTwo = pages.find((page) => page.url() === server.EMPTY_PAGE);
+        await pageTwo.reload();
+        const bodyHandle = await pageTwo.waitForSelector('body', {
+          timeout: 10000,
+        });
+        await bodyHandle.dispose();
+        await browserTwo.close();
+      });
     });
     describe('Puppeteer.executablePath', function () {
       itOnlyRegularInstall('should work', async () => {

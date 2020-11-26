@@ -97,9 +97,9 @@ describeChromeOnly('Target.createCDPSession', function () {
     expect(error.message).toContain('ThisCommand.DoesNotExist');
 
     async function theSourceOfTheProblems() {
-      // This fails in TS as it knows that command does not exist but we want to
-      // have this tests for our users who consume in JS not TS.
-      // @ts-expect-error
+      // @ts-expect-error This fails in TS as it knows that command does not
+      // exist but we want to have this tests for our users who consume in JS
+      // not TS.
       await client.send('ThisCommand.DoesNotExist');
     }
   });

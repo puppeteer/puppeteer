@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
-import { Puppeteer } from './common/Puppeteer.js';
+import { PuppeteerNode } from './node/Puppeteer.js';
 import { PUPPETEER_REVISIONS } from './revisions.js';
 import pkgDir from 'pkg-dir';
+import { Product } from './common/Product.js';
 
-export const initializePuppeteerNode = (packageName: string): Puppeteer => {
+export const initializePuppeteerNode = (packageName: string): PuppeteerNode => {
   const puppeteerRootDirectory = pkgDir.sync(__dirname);
 
   let preferredRevision = PUPPETEER_REVISIONS.chromium;
   const isPuppeteerCore = packageName === 'puppeteer-core';
   // puppeteer-core ignores environment variables
-  const product = isPuppeteerCore
+  const productName = isPuppeteerCore
     ? undefined
     : process.env.PUPPETEER_PRODUCT ||
       process.env.npm_config_puppeteer_product ||
       process.env.npm_package_config_puppeteer_product;
-  if (!isPuppeteerCore && product === 'firefox')
+
+  if (!isPuppeteerCore && productName === 'firefox')
     preferredRevision = PUPPETEER_REVISIONS.firefox;
 
-  return new Puppeteer(
-    puppeteerRootDirectory,
+  return new PuppeteerNode({
+    projectRoot: puppeteerRootDirectory,
     preferredRevision,
     isPuppeteerCore,
-    product
-  );
+    productName: productName as Product,
+  });
 };

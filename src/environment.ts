@@ -14,8 +14,4 @@
  * limitations under the License.
  */
 
-export const isNode = !!(
-  typeof process !== 'undefined' &&
-  process.versions &&
-  process.versions.node
-);
+export const isNode = !!(typeof process !== 'undefined' && process.version);
