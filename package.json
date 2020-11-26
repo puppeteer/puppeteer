@@ -96,6 +96,7 @@
     "pngjs": "^5.0.0",
     "prettier": "^2.1.2",
     "sinon": "^9.0.2",
+    "source-map-support": "^0.5.19",
     "standard-version": "^9.0.0",
     "text-diff": "^1.0.1",
     "ts-node": "^9.0.0",
