@@ -17,11 +17,10 @@
 module.exports = {
   releaseCommitMessageFormat: 'chore(release): mark v{{currentTag}}',
   skip: {
-    commit: true,
     tag: true,
   },
   scripts: {
     prerelease: 'node utils/remove_version_suffix.js',
-    postbump: 'IS_RELEASE=true npm run doc',
+    postbump: 'IS_RELEASE=true npm run doc && git add --update',
   },
 };
