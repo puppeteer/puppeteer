@@ -494,6 +494,9 @@ class FirefoxLauncher implements ProductLauncher {
       // Make sure opening about:addons will not hit the network
       'extensions.webservice.discoverURL': `http://${server}/dummy/discoveryURL`,
 
+      // Force disable Fission until the Remote Agent is compatible
+      'fission.autostart': false,
+
       // Allow the application to have focus even it runs in the background
       'focusmanager.testmode': true,
       // Disable useragent updates
