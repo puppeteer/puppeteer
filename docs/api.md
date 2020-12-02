@@ -2658,8 +2658,8 @@ Dispatches a `mouseup` event.
 
 #### mouse.wheel([options])
 - `options` <[Object]>
-  - `deltaX` X delta in CSS pixels for mouse wheel event (default: 0). Positive values emulate a scroll up and negative values a scroll down event.
-  - `deltaY` Y delta in CSS pixels for mouse wheel event (default: 0). Positive values emulate a scroll right and negative values a scroll left event.
+  - `deltaX` X delta in CSS pixels for mouse wheel event (default: 0). Positive values emulate a scroll right and negative values a scroll left event.
+  - `deltaY` Y delta in CSS pixels for mouse wheel event (default: 0). Positive values emulate a scroll down and negative values a scroll up event.
 - returns: <[Promise]>
 
 Dispatches a `mousewheel` event.
