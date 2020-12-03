@@ -16,7 +16,7 @@
 
 'use strict';
 
-const puppeteer = require('puppeteer');
+const puppeteer = require('..');
 const WebSocketServer = require('websocket').server;
 
 const uuid = require('uuid').v4;
