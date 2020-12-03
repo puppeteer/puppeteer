@@ -22,13 +22,15 @@ const WebSocketServer = require('websocket').server;
 const uuid = require('uuid').v4;
 const http = require('http');
 
+const port = process.env.PORT || 8080;
+
 const server = http.createServer(function (request, response) {
   console.log((new Date()) + ' Received request for ' + request.url);
   response.writeHead(404);
   response.end();
 });
-server.listen(8080, function () {
-  console.log((new Date()) + ' Server is listening on port 8080');
+server.listen(port, function () {
+  console.log(`${new Date()} Server is listening on port ${port}`);
 });
 
 const wsServer = new WebSocketServer({
