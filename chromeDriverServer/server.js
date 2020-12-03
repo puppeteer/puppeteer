@@ -97,9 +97,9 @@ wsServer.on('request', function (request) {
       let browser, page;
       switch (parsedMessage.method) {
         case "launch":
-          browser = await puppeteer.launch({ headless: false});
-          // sessionID = uuid();
-          sessionID = "qwe";
+          browser = await puppeteer.launch({ headless: false });
+
+          sessionID = uuid();
           sessions[sessionID] = {
             browser: browser,
             pages: {}
@@ -115,7 +115,7 @@ wsServer.on('request', function (request) {
           browser = sessions[sessionID].browser;
           page = await browser.newPage();
 
-          pageID = "asd";
+          pageID = uuid();
           sessions[sessionID].pages[pageID] = page;
 
           response.pageID = pageID;
