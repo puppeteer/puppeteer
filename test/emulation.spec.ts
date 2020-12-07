@@ -53,7 +53,7 @@ describe('Emulation', () => {
       await page.setViewport({ width: 400, height: 300 });
       expect(await page.evaluate(() => window.innerWidth)).toBe(400);
     });
-    itFailsFirefox('should support touch emulation', async () => {
+    it('should support touch emulation', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/mobile.html');
@@ -77,7 +77,7 @@ describe('Emulation', () => {
         return promise;
       }
     });
-    itFailsFirefox('should be detectable by Modernizr', async () => {
+    it('should be detectable by Modernizr', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.PREFIX + '/detect-touch.html');
@@ -90,18 +90,15 @@ describe('Emulation', () => {
         'YES'
       );
     });
-    itFailsFirefox(
-      'should detect touch when applying viewport with touches',
-      async () => {
-        const { page, server } = getTestState();
+    it('should detect touch when applying viewport with touches', async () => {
+      const { page, server } = getTestState();
 
-        await page.setViewport({ width: 800, height: 600, hasTouch: true });
-        await page.addScriptTag({ url: server.PREFIX + '/modernizr.js' });
-        expect(
-          await page.evaluate(() => globalThis.Modernizr.touchevents)
-        ).toBe(true);
-      }
-    );
+      await page.setViewport({ width: 800, height: 600, hasTouch: true });
+      await page.addScriptTag({ url: server.PREFIX + '/modernizr.js' });
+      expect(await page.evaluate(() => globalThis.Modernizr.touchevents)).toBe(
+        true
+      );
+    });
     itFailsFirefox('should support landscape emulation', async () => {
       const { page, server } = getTestState();
 
@@ -261,7 +258,7 @@ describe('Emulation', () => {
     it('should work', async () => {
       const { page } = getTestState();
 
-      page.evaluate(() => {
+      await page.evaluate(() => {
         globalThis.date = new Date(1479579154987);
       });
       await page.emulateTimezone('America/Jamaica');
