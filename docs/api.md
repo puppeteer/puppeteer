@@ -1960,7 +1960,7 @@ The extra HTTP headers will be sent with every request the page initiates.
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
 #### page.setGeolocation(options)
-- `options` <[GeolocationOptions](####GeolocationOptions)>
+- `options` <[GeolocationOptions](#geolocationoptions)>
 - returns: <[Promise]>
 
 Sets the page's geolocation.
