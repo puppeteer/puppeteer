@@ -166,7 +166,7 @@ class ChromeLauncher implements ProductLauncher {
       '--disable-default-apps',
       '--disable-dev-shm-usage',
       '--disable-extensions',
-      '--disable-features=TranslateUI',
+      '--disable-features=Translate',
       '--disable-hang-monitor',
       '--disable-ipc-flooding-protection',
       '--disable-popup-blocking',
