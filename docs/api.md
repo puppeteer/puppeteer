@@ -505,7 +505,7 @@ This methods attaches Puppeteer to an existing browser instance.
 - returns: <[BrowserFetcher]>
 
 #### puppeteer.customQueryHandlerNames()
-- returns: <[[Array]<string>> A list with the names of all registered custom query handlers.
+- returns: <[Array]<string>> A list with the names of all registered custom query handlers.
 
 #### puppeteer.defaultArgs([options])
 - `options` <[Object]>  Set of configurable options to set on the browser. Can have the following fields:
@@ -1129,7 +1129,7 @@ const [popup] = await Promise.all([
 #### event: 'request'
 - <[HTTPRequest]>
 
-Emitted when a page issues a request. The [request] object is read-only.
+Emitted when a page issues a request. The [HTTPRequest] object is read-only.
 In order to intercept and mutate requests, see `page.setRequestInterception`.
 
 #### event: 'requestfailed'
@@ -1147,15 +1147,15 @@ Emitted when a request finishes successfully.
 #### event: 'response'
 - <[HTTPResponse]>
 
-Emitted when a [response] is received.
+Emitted when a [HTTPResponse] is received.
 
 #### event: 'workercreated'
-- <[Worker]>
+- <[WebWorker]>
 
 Emitted when a dedicated [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) is spawned by the page.
 
 #### event: 'workerdestroyed'
-- <[Worker]>
+- <[WebWorker]>
 
 Emitted when a dedicated [WebWorker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) is terminated.
 
@@ -2341,7 +2341,7 @@ const puppeteer = require('puppeteer');
 Shortcut for [page.mainFrame().waitForXPath(xpath[, options])](#framewaitforxpathxpath-options).
 
 #### page.workers()
-- returns: <[Array]<[Worker]>>
+- returns: <[Array]<[WebWorker]>>
 This method returns all of the dedicated [WebWorkers](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API) associated with the page.
 
 > **NOTE** This does not contain ServiceWorkers
@@ -4222,7 +4222,7 @@ Contains two functions `queryOne` and `queryAll` that can be [registered](#puppe
 [UIEvent.detail]: https://developer.mozilla.org/en-US/docs/Web/API/UIEvent/detail "UIEvent.detail"
 [USKeyboardLayout]: ../src/common/USKeyboardLayout.ts "USKeyboardLayout"
 [UnixTime]: https://en.wikipedia.org/wiki/Unix_time "Unix Time"
-[WebWorker]: #class-worker "Worker"
+[WebWorker]: #class-webworker "Worker"
 [boolean]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures#Boolean_type "Boolean"
 [function]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function "Function"
 [iterator]: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols "Iterator"
