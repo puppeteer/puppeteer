@@ -3,5 +3,6 @@
   "compilerOptions": {
     "outDir": "./lib/esm",
     "module": "ES2015",
+    //edited
   },
 }
