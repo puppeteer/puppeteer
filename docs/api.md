@@ -3905,7 +3905,7 @@ page.on('request', request => {
 [HTTPResponse] class represents responses which are received by page.
 
 #### httpResponse.buffer()
-- returns: <Promise<[Buffer]>> Promise which resolves to a buffer with response body.
+- returns: <[Promise]<[Buffer]>> Promise which resolves to a buffer with response body.
 
 #### httpResponse.frame()
 - returns: <?[Frame]> A [Frame] that initiated this response, or `null` if navigating to error pages.
@@ -3924,7 +3924,7 @@ True if the response was served by a service worker.
 - returns: <[Object]> An object with HTTP headers associated with the response. All header names are lower-case.
 
 #### httpResponse.json()
-- returns: <Promise<[Object]>> Promise which resolves to a JSON representation of response body.
+- returns: <[Promise]<[Object]>> Promise which resolves to a JSON representation of response body.
 
 This method will throw if the response body is not parsable via `JSON.parse`.
 
