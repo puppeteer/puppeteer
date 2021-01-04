@@ -1,0 +1,3 @@
+[submodule "vendor/devtools-protocol"]
+	path = vendor/devtools-protocol
+	url = https://github.com/ChromeDevTools/devtools-protocol
