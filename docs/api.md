@@ -1217,7 +1217,7 @@ Shortcut for [page.mainFrame().$eval(selector, pageFunction)](#frameevalselector
 - `expression` <[string]> Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate).
 - returns: <[Promise]<[Array]<[ElementHandle]>>>
 
-The method evaluates the XPath expression.
+The method evaluates the XPath expression relative to the page document as its context node. If there are no such elements, the method resolves to an empty array.
 
 Shortcut for [page.mainFrame().$x(expression)](#framexexpression)
 
@@ -2845,7 +2845,7 @@ An example of getting text from an iframe element:
 - `selector` <[string]> A [selector] to query frame for
 - returns: <[Promise]<?[ElementHandle]>> Promise which resolves to ElementHandle pointing to the frame element.
 
-The method queries frame for the selector. If there's no such element within the frame, the method will resolve to `null`.
+The method queries frame for the selector. If there's no such element within the frame, the method resolves to `null`.
 
 #### frame.$$(selector)
 - `selector` <[string]> A [selector] to query frame for
@@ -2889,7 +2889,7 @@ const html = await frame.$eval('.main-container', e => e.outerHTML);
 - `expression` <[string]> Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate).
 - returns: <[Promise]<[Array]<[ElementHandle]>>>
 
-The method evaluates the XPath expression.
+The method evaluates the XPath expression relative to the frame document as its context node. If there are no such elements, the method resolves to an empty array.
 
 #### frame.addScriptTag(options)
 - `options` <[Object]>
@@ -3545,7 +3545,13 @@ expect(await tweetHandle.$eval('.retweets', node => node.innerText)).toBe('10');
 - `expression` <[string]> Expression to [evaluate](https://developer.mozilla.org/en-US/docs/Web/API/Document/evaluate).
 - returns: <[Promise]<[Array]<[ElementHandle]>>>
 
-The method evaluates the XPath expression relative to the elementHandle. If there are no such elements, the method will resolve to an empty array.
+The method evaluates the XPath expression relative to the `elementHandle` as its context node. If there are no such elements, the method resolves to an empty array.
+
+The `expression` should have the context node to be evaluated properly:
+
+```js
+const [childHandle] = await parentHandle.$x('./div');
+```
 
 #### elementHandle.asElement()
 - returns: <[ElementHandle]>
