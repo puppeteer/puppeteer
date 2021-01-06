@@ -41,6 +41,7 @@ import {
   EvaluateFnReturnType,
   UnwrapPromiseLike,
 } from './EvalTypes.js';
+import pluggable from './pluggable';
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 
@@ -84,7 +85,11 @@ export class FrameManager extends EventEmitter {
     super();
     this._client = client;
     this._page = page;
-    this._networkManager = new NetworkManager(client, ignoreHTTPSErrors, this);
+    this._networkManager = new (pluggable.NetworkManager.get())(
+      client,
+      ignoreHTTPSErrors,
+      this
+    );
     this._timeoutSettings = timeoutSettings;
     this._client.on('Page.frameAttached', (event) =>
       this._onFrameAttached(event.frameId, event.parentFrameId)
