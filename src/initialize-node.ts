@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+import Config from './Config.js';
+import { NodeWebSocketTransport } from './node/NodeWebSocketTransport.js';
+import fetch from 'node-fetch';
+import fs from './node/fs.js';
+import debug from 'debug';
+
+// config
+Config.WebSocketTransportClass = NodeWebSocketTransport;
+Config.fetch = fetch;
+Config.fs = fs;
+Config.debug = debug;
+
 import { PuppeteerNode } from './node/Puppeteer.js';
 import { PUPPETEER_REVISIONS } from './revisions.js';
 import pkgDir from 'pkg-dir';

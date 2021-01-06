@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import Config from '../Config.js';
 import { assert } from './assert.js';
 import { helper, debugError } from './helper.js';
 import { ExecutionContext } from './ExecutionContext.js';
@@ -31,7 +32,6 @@ import {
   WrapElementHandle,
   UnwrapPromiseLike,
 } from './EvalTypes.js';
-import { isNode } from '../environment.js';
 
 export interface BoxModel {
   content: Array<{ x: number; y: number }>;
@@ -555,7 +555,8 @@ export class ElementHandle<
       'Multiple file uploads only work with <input type=file multiple>'
     );
 
-    if (!isNode) {
+    const fs = Config.fs;
+    if (!fs) {
       throw new Error(
         `JSHandle#uploadFile can only be used in Node environments.`
       );
@@ -563,7 +564,6 @@ export class ElementHandle<
     // This import is only needed for `uploadFile`, so keep it scoped here to avoid paying
     // the cost unnecessarily.
     const path = await import('path');
-    const fs = await helper.importFSModule();
     // Locate all files and confirm that they exist.
     const files = await Promise.all(
       filePaths.map(async (filePath) => {

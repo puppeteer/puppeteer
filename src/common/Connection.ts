@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import Config from '../Config.js';
 import { assert } from './assert.js';
-import { debug } from './Debug.js';
+
+const { debug } = Config;
 const debugProtocolSend = debug('puppeteer:protocol:SEND ►');
 const debugProtocolReceive = debug('puppeteer:protocol:RECV ◀');
 

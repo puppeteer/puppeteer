@@ -14,27 +14,16 @@
  * limitations under the License.
  */
 
-import { isNode } from '../environment.js';
-
 /**
- * A debug function that can be used in any environment.
+ * A debug function that can be used in browser environment.
  *
  * @remarks
  *
- * If used in Node, it falls back to the
- * {@link https://www.npmjs.com/package/debug | debug module}. In the browser it
- * uses `console.log`.
+ * it uses `console.log`, to imitate the node module
+ * {@link https://www.npmjs.com/package/debug | debug module}.
  *
  * @param prefix - this will be prefixed to each log.
  * @returns a function that can be called to log to that debug channel.
- *
- * In Node, use the `DEBUG` environment variable to control logging:
- *
- * ```
- * DEBUG=* // logs all channels
- * DEBUG=foo // logs the `foo` channel
- * DEBUG=foo* // logs any channels starting with `foo`
- * ```
  *
  * In the browser, set `window.__PUPPETEER_DEBUG` to a string:
  *
@@ -52,12 +41,7 @@ import { isNode } from '../environment.js';
  * // logs "Page: new page created"
  * ```
  */
-export const debug = (prefix: string): ((...args: unknown[]) => void) => {
-  if (isNode) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    return require('debug')(prefix);
-  }
-
+export default (prefix: string): ((...args: unknown[]) => void) => {
   return (...logArgs: unknown[]): void => {
     const debugLevel = globalThis.__PUPPETEER_DEBUG as string;
     if (!debugLevel) return;

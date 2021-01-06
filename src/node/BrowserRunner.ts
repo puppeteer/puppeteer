@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { debug } from '../common/Debug.js';
+import Config from '../Config.js';
 
 import removeFolder from 'rimraf';
 import * as childProcess from 'child_process';
@@ -28,6 +28,7 @@ import * as readline from 'readline';
 import { TimeoutError } from '../common/Errors.js';
 import { promisify } from 'util';
 
+const { debug } = Config;
 const removeFolderAsync = promisify(removeFolder);
 const debugLauncher = debug('puppeteer:launcher');
 const PROCESS_ERROR_EXPLANATION = `Puppeteer was unable to kill the process which ran the browser binary.
