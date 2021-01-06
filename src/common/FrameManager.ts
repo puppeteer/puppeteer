@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import Config from './Config.js';
-
+import { debug } from './Debug.js';
 import { EventEmitter } from './EventEmitter.js';
 import { assert } from './assert.js';
 import { helper, debugError } from './helper.js';
@@ -41,8 +40,6 @@ import {
   EvaluateFnReturnType,
   UnwrapPromiseLike,
 } from './EvalTypes.js';
-
-const { debug } = Config;
 
 const UTILITY_WORLD_NAME = '__puppeteer_utility_world__';
 

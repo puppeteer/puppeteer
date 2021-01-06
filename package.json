@@ -1,8 +1,8 @@
 {
-  "name": "puppeteer-core",
+  "name": "puppeteer",
   "version": "5.5.0-post",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
-  "main": "./cjs-entry-core.js",
+  "main": "./cjs-entry.js",
   "repository": "github:puppeteer/puppeteer",
   "engines": {
     "node": ">=10.18.1"
@@ -19,6 +19,7 @@
     "prepare": "node typescript-if-required.js",
     "prepublishOnly": "npm run tsc",
     "dev-install": "npm run tsc && node install.js",
+    "install": "node install.js",
     "eslint": "([ \"$CI\" = true ] && eslint --ext js --ext ts --quiet -f codeframe . || eslint --ext js --ext ts .)",
     "eslint-fix": "eslint --ext js --ext ts --fix .",
     "commitlint": "commitlint --from=HEAD~1",

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 import Config from './Config.js';
+import { debug } from './Debug.js';
 import { TimeoutError } from './Errors.js';
 import { CDPSession } from './Connection.js';
 import { Protocol } from 'devtools-protocol';
 import { CommonEventEmitter } from './EventEmitter.js';
 import { assert } from './assert.js';
 
-export const debugError = Config.debug('puppeteer:error');
+export const debugError = debug('puppeteer:error');
 
 function getExceptionMessage(
   exceptionDetails: Protocol.Runtime.ExceptionDetails

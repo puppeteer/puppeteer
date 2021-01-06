@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google Inc. All rights reserved.
+ * Copyright 2017 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-import Config from './common/Config.js';
-import { BrowserWebSocketTransport } from './web/BrowserWebSocketTransport.js';
-import debug from './web/Debug.js';
-import { Puppeteer } from './common/Puppeteer.js';
+import Config from './Config.js';
 
-// config
-Config.WebSocketTransportClass = BrowserWebSocketTransport;
-Config.fetch = globalThis.fetch;
-Config.debug = debug;
+const _debugs = new Map();
 
-export const initializePuppeteerWeb = (packageName: string): any => {
-  const isPuppeteerCore = packageName === 'puppeteer-core';
-  return new Puppeteer({
-    isPuppeteerCore,
-  });
+export const debug = (prefix: string): ((...args: unknown[]) => void) => {
+  return (...args: unknown[]): void => {
+    let _debug: (...args: unknown[]) => void = _debugs.get(prefix);
+    if (!_debug) {
+      _debug = Config.debug(prefix);
+      _debugs.set(prefix, _debug);
+    }
+    _debug(...args);
+  };
 };
