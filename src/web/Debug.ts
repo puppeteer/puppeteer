@@ -1,0 +1,67 @@
+/**
+ * Copyright 2020 Google Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * A debug function that can be used in browser environment.
+ *
+ * @remarks
+ *
+ * it uses `console.log`, to imitate the node module
+ * {@link https://www.npmjs.com/package/debug | debug module}.
+ *
+ * @param prefix - this will be prefixed to each log.
+ * @returns a function that can be called to log to that debug channel.
+ *
+ * In the browser, set `window.__PUPPETEER_DEBUG` to a string:
+ *
+ * ```
+ * window.__PUPPETEER_DEBUG='*'; // logs all channels
+ * window.__PUPPETEER_DEBUG='foo'; // logs the `foo` channel
+ * window.__PUPPETEER_DEBUG='foo*'; // logs any channels starting with `foo`
+ * ```
+ *
+ * @example
+ * ```
+ * const log = debug('Page');
+ *
+ * log('new page created')
+ * // logs "Page: new page created"
+ * ```
+ */
+export default (prefix: string): ((...args: unknown[]) => void) => {
+  return (...logArgs: unknown[]): void => {
+    const debugLevel = globalThis.__PUPPETEER_DEBUG as string;
+    if (!debugLevel) return;
+
+    const everythingShouldBeLogged = debugLevel === '*';
+
+    const prefixMatchesDebugLevel =
+      everythingShouldBeLogged ||
+      /**
+       * If the debug level is `foo*`, that means we match any prefix that
+       * starts with `foo`. If the level is `foo`, we match only the prefix
+       * `foo`.
+       */
+      (debugLevel.endsWith('*')
+        ? prefix.startsWith(debugLevel)
+        : prefix === debugLevel);
+
+    if (!prefixMatchesDebugLevel) return;
+
+    // eslint-disable-next-line no-console
+    console.log(`${prefix}:`, ...logArgs);
+  };
+};

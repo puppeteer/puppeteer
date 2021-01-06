@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import Config from './Config.js';
 import { assert } from './assert.js';
 import { helper, debugError } from './helper.js';
 import {
@@ -35,7 +36,6 @@ import {
   EvaluateFnReturnType,
   UnwrapPromiseLike,
 } from './EvalTypes.js';
-import { isNode } from '../environment.js';
 import { Protocol } from 'devtools-protocol';
 
 // predicateQueryHandler and checkWaitForOptions are declared here so that
@@ -292,12 +292,12 @@ export class DOMWorld {
     }
 
     if (path !== null) {
-      if (!isNode) {
+      const fs = Config.fs;
+      if (!fs) {
         throw new Error(
           'Cannot pass a filepath to addScriptTag in the browser environment.'
         );
       }
-      const fs = await helper.importFSModule();
       let contents = await fs.promises.readFile(path, 'utf8');
       contents += '//# sourceURL=' + path.replace(/\n/g, '');
       const context = await this.executionContext();
@@ -374,12 +374,12 @@ export class DOMWorld {
     }
 
     if (path !== null) {
-      if (!isNode) {
+      const fs = Config.fs;
+      if (!fs) {
         throw new Error(
           'Cannot pass a filepath to addStyleTag in the browser environment.'
         );
       }
-      const fs = await helper.importFSModule();
       let contents = await fs.promises.readFile(path, 'utf8');
       contents += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
       const context = await this.executionContext();

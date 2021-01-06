@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { debug } from '../common/Debug.js';
-
+import { debug } from './Debug.js';
 import { EventEmitter } from './EventEmitter.js';
 import { assert } from './assert.js';
 import { helper, debugError } from './helper.js';

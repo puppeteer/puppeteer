@@ -14,9 +14,17 @@
  * limitations under the License.
  */
 
+import Config from './common/Config.js';
+import { BrowserWebSocketTransport } from './web/BrowserWebSocketTransport.js';
+import debug from './web/Debug.js';
 import { Puppeteer } from './common/Puppeteer.js';
 
-export const initializePuppeteerWeb = (packageName: string): Puppeteer => {
+// config
+Config.WebSocketTransportClass = BrowserWebSocketTransport;
+Config.fetch = globalThis.fetch;
+Config.debug = debug;
+
+export const initializePuppeteerWeb = (packageName: string): any => {
   const isPuppeteerCore = packageName === 'puppeteer-core';
   return new Puppeteer({
     isPuppeteerCore,

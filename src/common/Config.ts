@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google Inc. All rights reserved.
+ * Copyright 2017 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-import { isNode } from '../environment.js';
+interface Config {
+  WebSocketTransportClass: any;
+  fetch: any;
+  fs: any;
+  path: any;
+  debug: (prefix: string) => (...args: unknown[]) => void;
+}
 
-/* Use the global version if we're in the browser, else load the node-fetch module. */
-export const getFetch = async (): Promise<typeof fetch> => {
-  return isNode ? await import('node-fetch') : globalThis.fetch;
+const config: Config = {
+  WebSocketTransportClass: null,
+  fetch: null,
+  fs: null,
+  path: null,
+  debug: null,
 };
+
+export default config;

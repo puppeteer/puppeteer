@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
+import Config from './common/Config.js';
+import { NodeWebSocketTransport } from './node/NodeWebSocketTransport.js';
+import fetch from 'node-fetch';
+import fs from './node/fs.js';
+import path from 'path';
+import debug from 'debug';
 import { PuppeteerNode } from './node/Puppeteer.js';
 import { PUPPETEER_REVISIONS } from './revisions.js';
 import pkgDir from 'pkg-dir';
 import { Product } from './common/Product.js';
+
+// config
+Config.WebSocketTransportClass = NodeWebSocketTransport;
+Config.fetch = fetch;
+Config.fs = fs;
+Config.path = path;
+Config.debug = debug;
 
 export const initializePuppeteerNode = (packageName: string): PuppeteerNode => {
   const puppeteerRootDirectory = pkgDir.sync(__dirname);

@@ -24,7 +24,6 @@ import * as http from 'http';
 
 import { Product } from '../common/Product.js';
 import extractZip from 'extract-zip';
-import { debug } from '../common/Debug.js';
 import { promisify } from 'util';
 import removeRecursive from 'rimraf';
 import * as URL from 'url';
@@ -34,6 +33,7 @@ import createHttpsProxyAgent, {
 } from 'https-proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
 import { assert } from '../common/assert.js';
+import debug from 'debug';
 
 const debugFetcher = debug(`puppeteer:fetcher`);
 

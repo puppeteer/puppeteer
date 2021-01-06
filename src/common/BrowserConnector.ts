@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
+import Config from './Config.js';
 import { ConnectionTransport } from './ConnectionTransport.js';
 import { Browser } from './Browser.js';
 import { assert } from './assert.js';
-import { debugError } from '../common/helper.js';
+import { debugError } from './helper.js';
 import { Connection } from './Connection.js';
-import { getFetch } from './fetch.js';
 import { Viewport } from './PuppeteerViewport.js';
-import { isNode } from '../environment.js';
 
 /**
  * Generic browser options that can be passed when launching any browser.
@@ -32,13 +31,6 @@ export interface BrowserOptions {
   defaultViewport?: Viewport;
   slowMo?: number;
 }
-
-const getWebSocketTransportClass = async () => {
-  return isNode
-    ? (await import('../node/NodeWebSocketTransport.js')).NodeWebSocketTransport
-    : (await import('./BrowserWebSocketTransport.js'))
-        .BrowserWebSocketTransport;
-};
 
 /**
  * Users should never call this directly; it's called when calling
@@ -71,14 +63,14 @@ export const connectToBrowser = async (
   if (transport) {
     connection = new Connection('', transport, slowMo);
   } else if (browserWSEndpoint) {
-    const WebSocketClass = await getWebSocketTransportClass();
+    const WebSocketClass = Config.WebSocketTransportClass;
     const connectionTransport: ConnectionTransport = await WebSocketClass.create(
       browserWSEndpoint
     );
     connection = new Connection(browserWSEndpoint, connectionTransport, slowMo);
   } else if (browserURL) {
     const connectionURL = await getWSEndpoint(browserURL);
-    const WebSocketClass = await getWebSocketTransportClass();
+    const WebSocketClass = Config.WebSocketTransportClass;
     const connectionTransport: ConnectionTransport = await WebSocketClass.create(
       connectionURL
     );
@@ -101,7 +93,7 @@ export const connectToBrowser = async (
 async function getWSEndpoint(browserURL: string): Promise<string> {
   const endpointURL = new URL('/json/version', browserURL);
 
-  const fetch = await getFetch();
+  const fetch = Config.fetch;
   try {
     const result = await fetch(endpointURL.toString(), {
       method: 'GET',

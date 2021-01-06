@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TimeoutError } from './Errors.js';
+import Config from './Config.js';
 import { debug } from './Debug.js';
+import { TimeoutError } from './Errors.js';
 import { CDPSession } from './Connection.js';
 import { Protocol } from 'devtools-protocol';
 import { CommonEventEmitter } from './EventEmitter.js';
 import { assert } from './assert.js';
-import { isNode } from '../environment.js';
 
 export const debugError = debug('puppeteer:error');
 
@@ -309,11 +309,11 @@ async function readProtocolStream(
   handle: string,
   path?: string
 ): Promise<Buffer> {
-  if (!isNode && path) {
+  const fs = Config.fs;
+
+  if (!fs && path) {
     throw new Error('Cannot write to a path outside of Node.js environment.');
   }
-
-  const fs = isNode ? await importFSModule() : null;
 
   let eof = false;
   let fileHandle: import('fs').promises.FileHandle;
@@ -344,30 +344,6 @@ async function readProtocolStream(
   }
 }
 
-/**
- * Loads the Node fs promises API. Needed because on Node 10.17 and below,
- * fs.promises is experimental, and therefore not marked as enumerable. That
- * means when TypeScript compiles an `import('fs')`, its helper doesn't spot the
- * promises declaration and therefore on Node <10.17 you get an error as
- * fs.promises is undefined in compiled TypeScript land.
- *
- * See https://github.com/puppeteer/puppeteer/issues/6548 for more details.
- *
- * Once Node 10 is no longer supported (April 2021) we can remove this and use
- * `(await import('fs')).promises`.
- */
-async function importFSModule(): Promise<typeof import('fs')> {
-  if (!isNode) {
-    throw new Error('Cannot load the fs module API outside of Node.');
-  }
-
-  const fs = await import('fs');
-  if (fs.promises) {
-    return fs;
-  }
-  return fs.default;
-}
-
 export const helper = {
   evaluationString,
   pageBindingInitString,
@@ -380,7 +356,6 @@ export const helper = {
   waitForEvent,
   isString,
   isNumber,
-  importFSModule,
   addEventListener,
   removeEventListeners,
   valueFromRemoteObject,
