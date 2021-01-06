@@ -114,6 +114,13 @@ export class HTTPRequest {
   private _postData?: string;
   private _headers: Record<string, string> = {};
   private _frame: Frame;
+  private _interceptionRequestOverrides: ContinueRequestOverrides;
+  private _interceptionResponse: ResponseForRequest;
+  private _abortErrorReason: ErrorReasons;
+  private _shouldContinue: boolean;
+  private _shouldRespond: boolean;
+  private _shouldAbort: boolean;
+  private _deferredRequestHandlers: DeferredRequestHandler[];
 
   /**
    * @internal
@@ -124,7 +131,8 @@ export class HTTPRequest {
     interceptionId: string,
     allowInterception: boolean,
     event: Protocol.Network.RequestWillBeSentEvent,
-    redirectChain: HTTPRequest[]
+    redirectChain: HTTPRequest[],
+    deferredRequestHandlersRef: DeferredRequestHandler[]
   ) {
     this._client = client;
     this._requestId = event.requestId;
@@ -138,6 +146,11 @@ export class HTTPRequest {
     this._postData = event.request.postData;
     this._frame = frame;
     this._redirectChain = redirectChain;
+    this._interceptionRequestOverrides = {};
+    this._shouldContinue = true; // Continue by default
+    this._shouldRespond = false;
+    this._shouldAbort = false;
+    this._deferredRequestHandlers = deferredRequestHandlersRef;
 
     for (const key of Object.keys(event.request.headers))
       this._headers[key.toLowerCase()] = event.request.headers[key];
@@ -148,6 +161,76 @@ export class HTTPRequest {
    */
   url(): string {
     return this._url;
+  }
+
+  /**
+   * @returns the current ContinueRequestOverrides that will be applied to this
+   * if it is allowed to continue (ie, abort() isn't called). This is only
+   * available in intercept mode.
+   */
+  interceptionRequestOverrides(): ContinueRequestOverrides {
+    assert(this._allowInterception, 'Request Interception is not enabled!');
+    return this._interceptionRequestOverrides;
+  }
+
+  /**
+   * @returns the current response to send instead of allowing this
+   * request to continue.
+   */
+  interceptionResponse(): ResponseForRequest {
+    assert(this._allowInterception, 'Request Interception is not enabled!');
+    return this._interceptionResponse;
+  }
+
+  /**
+   * @returns the current reason for aborting the request
+   */
+  abortErrorReason(): ErrorReasons {
+    assert(this._allowInterception, 'Request Interception is not enabled!');
+    return this._abortErrorReason;
+  }
+
+  /**
+   * @returns `true` if `continue()` has been called at least once.
+   */
+  shouldContinue(): boolean {
+    assert(this._allowInterception, 'Request Interception is not enabled!');
+    return this._shouldContinue;
+  }
+
+  /**
+   * @returns `true` if `respond()` has been called at least once.
+   */
+  shouldRespond(): boolean {
+    assert(this._allowInterception, 'Request Interception is not enabled!');
+    return this._shouldRespond;
+  }
+
+  /**
+   * @returns `true` if `abort()` has been called at least once.
+   */
+  shouldAbort(): boolean {
+    assert(this._allowInterception, 'Request Interception is not enabled!');
+    return this._shouldAbort;
+  }
+
+  /**
+   * @returns `true` if `abort()`, `continue()`, or `respond()` has been called
+   * at least once.
+   */
+  isInterceptionHandled(): boolean {
+    assert(this._allowInterception, 'Request Interception is not enabled!');
+    return this._interceptionHandled;
+  }
+
+  /**
+   * @returns Adds an async (deferred) request handler to the processing queue.
+   * Deferred handlers are not guaranteed to execute in any particular order,
+   * but they are guarnateed to execute before returning control to Chromium.
+   */
+  defer(fn: DeferredRequestHandler): void {
+    assert(this._allowInterception, 'Request Interception is not enabled!');
+    this._deferredRequestHandlers.push(fn);
   }
 
   /**
@@ -277,6 +360,33 @@ export class HTTPRequest {
    *
    * Exception is immediately thrown if the request interception is not enabled.
    *
+   * Consider that other `page.on('request')`
+   * handlers may have already called `continue()`, `abort()`, or `respond()`,
+   * or may call them after your handler runs.
+   *
+   * Your handler is guaranteed to run regardless of actions by previous
+   * handlers. The ultimate action of the response follows these rules:
+   *
+   * * Use `interceptionRequestOverrides()` to inspect any previous
+   * values other handlers may have written using `continue()`. It is your responsibility
+   * to merge/override existing values when calling `continue()`.
+   *
+   * * Use `interceptionResponse()` to inspect any previous
+   * response other handlers may have written using `respond()`. It is your responsibility
+   * to merge/override existing values when calling `respond()`.
+
+   * * `abort()`: The request will ultimately be aborted, even if some handlers have
+   * called `continue()` or `respond()`.
+   *
+   * * `respond()`:  A custom response will ultimately be sent instead of continuing,
+   * even if some handlers have called `continue()`.
+   *
+   * * `continue()`: The request will be continued only if `abort()` and `respond()` have
+   * not been called by any handler.
+   *
+   * * If no handler has called `abort()`, `respond()`, or `continue()`, Puppeteer will
+   * assume `continue()`.
+   **
    * @example
    * ```js
    * await page.setRequestInterception(true);
@@ -292,14 +402,28 @@ export class HTTPRequest {
    *
    * @param overrides - optional overrides to apply to the request.
    */
-  async continue(overrides: ContinueRequestOverrides = {}): Promise<void> {
+  continue(overrides: ContinueRequestOverrides = {}): void {
     // Request interception is not supported for data: urls.
     if (this._url.startsWith('data:')) return;
     assert(this._allowInterception, 'Request Interception is not enabled!');
-    assert(!this._interceptionHandled, 'Request is already handled!');
-    const { url, method, postData, headers } = overrides;
-    this._interceptionHandled = true;
+    this._interceptionRequestOverrides = overrides;
+    this._shouldContinue = true;
+  }
 
+  async fulfillContinue(): Promise<void> {
+    assert(this._allowInterception, 'Request Interception is not enabled!');
+    assert(
+      !this._interceptionHandled,
+      'Request Interception is already finalized!'
+    );
+
+    this._interceptionHandled = true;
+    const {
+      url,
+      method,
+      postData,
+      headers,
+    } = this._interceptionRequestOverrides;
     const postDataBinaryBase64 = postData
       ? Buffer.from(postData).toString('base64')
       : undefined;
@@ -348,13 +472,25 @@ export class HTTPRequest {
    *
    * @param response - the response to fulfill the request with.
    */
-  async respond(response: ResponseForRequest): Promise<void> {
+  respond(response: ResponseForRequest): void {
     // Mocking responses for dataURL requests is not currently supported.
     if (this._url.startsWith('data:')) return;
     assert(this._allowInterception, 'Request Interception is not enabled!');
-    assert(!this._interceptionHandled, 'Request is already handled!');
+    this._interceptionResponse = response;
+    this._shouldRespond = true;
+  }
+
+  async fulfillRespond(): Promise<void> {
+    assert(this._shouldRespond, `Internal error: respond() was never called!`);
+    if (this._url.startsWith('data:')) return;
+    assert(this._allowInterception, 'Request Interception is not enabled!');
+    assert(
+      !this._interceptionHandled,
+      'Request Interception is already finalized!'
+    );
     this._interceptionHandled = true;
 
+    const response = this._interceptionResponse;
     const responseBody: Buffer | null =
       response.body && helper.isString(response.body)
         ? Buffer.from(response.body)
@@ -398,18 +534,24 @@ export class HTTPRequest {
    *
    * @param errorCode - optional error code to provide.
    */
-  async abort(errorCode: ErrorCode = 'failed'): Promise<void> {
+  abort(errorCode: ErrorCode = 'failed'): void {
     // Request interception is not supported for data: urls.
     if (this._url.startsWith('data:')) return;
     const errorReason = errorReasons[errorCode];
     assert(errorReason, 'Unknown error code: ' + errorCode);
     assert(this._allowInterception, 'Request Interception is not enabled!');
+    this._shouldAbort = true;
+    this._abortErrorReason = errorReason;
+  }
+
+  async fulfillAbort(): Promise<void> {
+    assert(this._shouldAbort, 'Internal error: abort() was never called!');
     assert(!this._interceptionHandled, 'Request is already handled!');
     this._interceptionHandled = true;
     await this._client
       .send('Fetch.failRequest', {
         requestId: this._interceptionId,
-        errorReason,
+        errorReason: this._abortErrorReason,
       })
       .catch((error) => {
         // In certain cases, protocol will return error if the request was
@@ -455,6 +597,10 @@ const errorReasons: Record<ErrorCode, Protocol.Network.ErrorReason> = {
   timedout: 'TimedOut',
   failed: 'Failed',
 } as const;
+
+type ErrorReasons = typeof errorReasons[keyof typeof errorReasons];
+
+export type DeferredRequestHandler = () => PromiseLike<void>;
 
 function headersArray(
   headers: Record<string, string>

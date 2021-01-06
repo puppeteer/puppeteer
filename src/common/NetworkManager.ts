@@ -19,7 +19,7 @@ import { helper, debugError } from './helper.js';
 import { Protocol } from 'devtools-protocol';
 import { CDPSession } from './Connection.js';
 import { FrameManager } from './FrameManager.js';
-import { HTTPRequest } from './HTTPRequest.js';
+import { DeferredRequestHandler, HTTPRequest } from './HTTPRequest.js';
 import { HTTPResponse } from './HTTPResponse.js';
 
 /**
@@ -267,16 +267,31 @@ export class NetworkManager extends EventEmitter {
     const frame = event.frameId
       ? this._frameManager.frame(event.frameId)
       : null;
+    const deferredRequestHandlers: DeferredRequestHandler[] = [];
     const request = new HTTPRequest(
       this._client,
       frame,
       interceptionId,
       this._userRequestInterceptionEnabled,
       event,
-      redirectChain
+      redirectChain,
+      deferredRequestHandlers
     );
     this._requestIdToRequest.set(event.requestId, request);
     this.emit(NetworkManagerEmittedEvents.Request, request);
+    if (this._userRequestInterceptionEnabled) {
+      (() => {
+        Promise.all(deferredRequestHandlers.map((fn) => fn()))
+          .then(() => {
+            if (request.shouldAbort()) return request.fulfillAbort();
+            if (request.shouldRespond()) return request.fulfillRespond();
+            request.fulfillContinue();
+          })
+          .catch((error) => {
+            debugError(error);
+          });
+      })();
+    }
   }
 
   _onRequestServedFromCache(
