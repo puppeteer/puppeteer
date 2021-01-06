@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Config from '../Config.js';
+import Config from './Config.js';
 import { assert } from './assert.js';
 import { helper, debugError } from './helper.js';
 import {

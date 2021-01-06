@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Config from '../Config.js';
+import Config from './Config.js';
 
 import { EventEmitter } from './EventEmitter.js';
 import { assert } from './assert.js';

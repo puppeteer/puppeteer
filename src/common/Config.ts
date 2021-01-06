@@ -18,6 +18,7 @@ interface Config {
   WebSocketTransportClass: any;
   fetch: any;
   fs: any;
+  path: any;
   debug: (prefix: string) => (...args: unknown[]) => void;
 }
 
@@ -25,6 +26,7 @@ const config: Config = {
   WebSocketTransportClass: null,
   fetch: null,
   fs: null,
+  path: null,
   debug: null,
 };
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Config from '../Config.js';
+import Config from './Config.js';
 import { assert } from './assert.js';
 import { helper, debugError } from './helper.js';
 import { ExecutionContext } from './ExecutionContext.js';
@@ -563,7 +563,7 @@ export class ElementHandle<
     }
     // This import is only needed for `uploadFile`, so keep it scoped here to avoid paying
     // the cost unnecessarily.
-    const path = await import('path');
+    const path = Config.path;
     // Locate all files and confirm that they exist.
     const files = await Promise.all(
       filePaths.map(async (filePath) => {

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Config from '../Config.js';
+import Config from './Config.js';
 import { assert } from './assert.js';
 
 const { debug } = Config;

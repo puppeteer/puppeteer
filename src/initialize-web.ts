@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Config from './Config.js';
+import Config from './common/Config.js';
 import { BrowserWebSocketTransport } from './web/BrowserWebSocketTransport.js';
 import debug from './web/Debug.js';
 // config

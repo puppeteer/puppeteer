@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Config from '../Config.js';
+import Config from './Config.js';
 import { ConnectionTransport } from './ConnectionTransport.js';
 import { Browser } from './Browser.js';
 import { assert } from './assert.js';

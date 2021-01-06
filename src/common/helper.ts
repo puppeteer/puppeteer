@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Config from '../Config.js';
+import Config from './Config.js';
 import { TimeoutError } from './Errors.js';
 import { CDPSession } from './Connection.js';
 import { Protocol } from 'devtools-protocol';
