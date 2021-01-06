@@ -367,8 +367,10 @@ export class Browser extends EventEmitter {
       browserContextId: contextId || undefined,
     });
     const target = await this._targets.get(targetId);
-    asert(target, 'Failed to create target for page');
-    assert(await target._initializedPromise,'Failed to create target for page');
+    asert(
+      target && await target._initializedPromise, 
+      'Failed to create target for page'
+    );
     const page = await target.page();
     return page;
   }
