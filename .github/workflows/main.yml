@@ -40,6 +40,12 @@ jobs:
         run: |
           npm run build
 
+      - name: Run code checks
+        run: |
+          npm run lint
+          npm run generate-docs
+          npm run ensure-correct-devtools-protocol-revision
+
       - name: Run unit tests
         env:
           CHROMIUM: true
@@ -62,12 +68,6 @@ jobs:
       - name: Run browser tests
         run: |
           npm run test-browser
-
-      - name: Run extra checks
-        run: |
-          npm run lint
-          npm run generate-docs
-          npm run ensure-correct-devtools-protocol-revision
 
       - name: Test bundling and installation
         env:
