@@ -20,6 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         with:
+          fetch-depth: 2
           ref: ${{ github.head_ref }}
 
       - name: Set up Node.js
