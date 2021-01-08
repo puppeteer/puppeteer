@@ -29,6 +29,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          sudo apt-get install xvfb
           # Ensure both a Chromium and a Firefox binary are available.
           PUPPETEER_PRODUCT=firefox npm install
           npm install
@@ -41,27 +42,21 @@ jobs:
       - name: Run unit tests
         env:
           CHROMIUM: true
-        uses: GabrielBB/xvfb-action@v1
-        with:
-          run: |
-            npm run unit
+        run: |
+          xvfb-run --auto-servernum npm run unit
 
       - name: Run unit tests with coverage
         env:
           CHROMIUM: true
-        uses: GabrielBB/xvfb-action@v1
-        with:
-          run: |
-            npm run unit-with-coverage
-            npm run assert-unit-coverage
+        run: |
+          xvfb-run --auto-servernum npm run unit-with-coverage
+          xvfb-run --auto-servernum npm run assert-unit-coverage
 
       - name: Run unit tests on Firefox
         env:
           FIREFOX: true
-        uses: GabrielBB/xvfb-action@v1
-        with:
-          run: |
-            npm run funit
+        run: |
+          xvfb-run --auto-servernum npm run funit
 
       - name: Run browser tests
         run: |
