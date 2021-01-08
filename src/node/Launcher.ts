@@ -517,6 +517,9 @@ class FirefoxLauncher implements ProductLauncher {
       // jest-puppeteer asserts that no error message is emitted by the console
       'network.cookie.cookieBehavior': 0,
 
+      // Disable experimental feature that is only available in Nightly
+      'network.cookie.sameSite.laxByDefault': false,
+
       // Do not prompt for temporary redirects
       'network.http.prompt-temp-redirect': false,
 
