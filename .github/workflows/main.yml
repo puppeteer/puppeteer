@@ -25,7 +25,6 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
-          # The newest major active LTS version.
           node-version: ${{ matrix.node }}
 
       - name: Install dependencies
@@ -39,10 +38,6 @@ jobs:
         run: |
           npm run build
 
-  unit-tests:
-    needs: set-up
-    runs-on: ubuntu-latest
-    steps:
       - name: Run unit tests
         env:
           CHROMIUM: true
@@ -50,10 +45,6 @@ jobs:
           ls -lsa
           npm run unit
 
-  unit-tests-coverage:
-    needs: set-up
-    runs-on: ubuntu-latest
-    steps:
       - name: Run unit tests with coverage
         env:
           CHROMIUM: true
@@ -61,28 +52,16 @@ jobs:
           npm run unit-with-coverage
           npm run assert-unit-coverage
 
-  unit-tests-firefox:
-    needs: set-up
-    runs-on: ubuntu-latest
-    steps:
       - name: Run unit tests on Firefox
         env:
           FIREFOX: true
         run: |
           npm run funit
 
-  browser-tests:
-    needs: set-up
-    runs-on: ubuntu-latest
-    steps:
       - name: Run browser tests
         run: |
           npm run test-browser
 
-  extra-checks:
-    needs: set-up
-    runs-on: ubuntu-latest
-    steps:
       - name: Run extra checks
         run: |
           npm run lint
