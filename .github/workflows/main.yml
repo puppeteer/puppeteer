@@ -42,7 +42,6 @@ jobs:
         env:
           CHROMIUM: true
         run: |
-          ls -lsa
           npm run unit
 
       - name: Run unit tests with coverage
