@@ -41,21 +41,27 @@ jobs:
       - name: Run unit tests
         env:
           CHROMIUM: true
-        run: |
-          npm run unit
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: |
+            npm run unit
 
       - name: Run unit tests with coverage
         env:
           CHROMIUM: true
-        run: |
-          npm run unit-with-coverage
-          npm run assert-unit-coverage
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: |
+            npm run unit-with-coverage
+            npm run assert-unit-coverage
 
       - name: Run unit tests on Firefox
         env:
           FIREFOX: true
-        run: |
-          npm run funit
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: |
+            npm run funit
 
       - name: Run browser tests
         run: |
