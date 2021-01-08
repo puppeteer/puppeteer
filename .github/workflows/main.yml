@@ -1,0 +1,99 @@
+name: run-checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  set-up:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Include all major maintenance + active LTS Node.js versions.
+        # https://github.com/nodejs/Release#release-schedule
+        node: [10, 12, 14]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          # The newest major active LTS version.
+          node-version: ${{ matrix.node }}
+
+      - name: Install dependencies
+        run: |
+          # Ensure both a Chromium and a Firefox binary are available.
+          PUPPETEER_PRODUCT=firefox npm install
+          npm install
+          ls .local-chromium .local-firefox
+
+      - name: Build
+        run: |
+          npm run build
+
+  unit-tests:
+    needs: set-up
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run unit tests
+        env:
+          CHROMIUM: true
+        run: |
+          ls -lsa
+          npm run unit
+
+  unit-tests-coverage:
+    needs: set-up
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run unit tests with coverage
+        env:
+          CHROMIUM: true
+        run: |
+          npm run unit-with-coverage
+          npm run assert-unit-coverage
+
+  unit-tests-firefox:
+    needs: set-up
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run unit tests on Firefox
+        env:
+          FIREFOX: true
+        run: |
+          npm run funit
+
+  browser-tests:
+    needs: set-up
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run browser tests
+        run: |
+          npm run test-browser
+
+  extra-checks:
+    needs: set-up
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run extra checks
+        run: |
+          npm run lint
+          npm run generate-docs
+          npm run ensure-correct-devtools-protocol-revision
+
+      - name: Test bundling and installation
+        env:
+          CHROMIUM: true
+        run: |
+          # Note: this modifies package.json to test puppeteer-core.
+          npm run test-install
+          # Undo those changes.
+          git checkout --force
