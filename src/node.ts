@@ -15,9 +15,5 @@
  */
 
 import { initializePuppeteerNode } from './initialize-node.js';
-import { isNode } from './environment.js';
 
-if (!isNode) {
-  throw new Error('Trying to run Puppeteer-Node in a web environment.');
-}
 export default initializePuppeteerNode('puppeteer');

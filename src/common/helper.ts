@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import Config from './Config.js';
+import Environment from './Environment.js';
 import { debug } from './Debug.js';
 import { TimeoutError } from './Errors.js';
 import { CDPSession } from './Connection.js';
@@ -309,11 +309,11 @@ async function readProtocolStream(
   handle: string,
   path?: string
 ): Promise<Buffer> {
-  const fs = Config.fs;
-
-  if (!fs && path) {
-    throw new Error('Cannot write to a path outside of Node.js environment.');
+  if (!Environment.fs && path) {
+    throw new Error('Cannot write to a path in fs-less environments.');
   }
+
+  const fs = Environment.fs;
 
   let eof = false;
   let fileHandle: import('fs').promises.FileHandle;

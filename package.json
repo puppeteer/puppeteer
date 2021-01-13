@@ -68,6 +68,7 @@
     "@types/mime": "^2.0.0",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.0.13",
+    "@types/node-fetch": "^2.5.7",
     "@types/proxy-from-env": "^1.0.1",
     "@types/rimraf": "^2.0.2",
     "@types/sinon": "^9.0.4",

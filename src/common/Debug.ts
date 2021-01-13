@@ -1,5 +1,5 @@
 /**
- * Copyright 2017 Google Inc. All rights reserved.
+ * Copyright 2020 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-import Config from './Config.js';
+import Environment, { DebugLogger } from './Environment.js';
 
-const _debugs = new Map();
+// store the debug loggers for prefixes.
+const _debugs: Map<string, DebugLogger> = new Map();
 
-export const debug = (prefix: string): ((...args: unknown[]) => void) => {
+/**
+ * create the logger lazily, then it can be used at the top level of modules
+ * when the Enviroment is not initialized.
+ * @param prefix log prefix
+ */
+export const debug = (prefix: string): DebugLogger => {
   return (...args: unknown[]): void => {
-    let _debug: (...args: unknown[]) => void = _debugs.get(prefix);
+    let _debug = _debugs.get(prefix);
     if (!_debug) {
-      _debug = Config.debug(prefix);
+      _debug = Environment.debug(prefix);
       _debugs.set(prefix, _debug);
     }
     _debug(...args);

@@ -20,3 +20,7 @@ export interface ConnectionTransport {
   onmessage?: (message: string) => void;
   onclose?: () => void;
 }
+
+export type CreateConnectionTransport = (
+  url: string
+) => Promise<ConnectionTransport>;

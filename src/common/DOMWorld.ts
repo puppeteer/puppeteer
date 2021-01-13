@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Config from './Config.js';
+import Environment from './Environment.js';
 import { assert } from './assert.js';
 import { helper, debugError } from './helper.js';
 import {
@@ -292,12 +292,12 @@ export class DOMWorld {
     }
 
     if (path !== null) {
-      const fs = Config.fs;
-      if (!fs) {
+      if (!Environment.fs) {
         throw new Error(
-          'Cannot pass a filepath to addScriptTag in the browser environment.'
+          'Cannot pass a filepath to addScriptTag in fs-less environments.'
         );
       }
+      const fs = Environment.fs;
       let contents = await fs.promises.readFile(path, 'utf8');
       contents += '//# sourceURL=' + path.replace(/\n/g, '');
       const context = await this.executionContext();
@@ -374,12 +374,12 @@ export class DOMWorld {
     }
 
     if (path !== null) {
-      const fs = Config.fs;
-      if (!fs) {
+      if (!Environment.fs) {
         throw new Error(
-          'Cannot pass a filepath to addStyleTag in the browser environment.'
+          'Cannot pass a filepath to addStyleTag in the fs-less environment.'
         );
       }
+      const fs = Environment.fs;
       let contents = await fs.promises.readFile(path, 'utf8');
       contents += '/*# sourceURL=' + path.replace(/\n/g, '') + '*/';
       const context = await this.executionContext();

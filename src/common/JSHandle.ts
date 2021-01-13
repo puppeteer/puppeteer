@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Config from './Config.js';
+import Environment from './Environment.js';
 import { assert } from './assert.js';
 import { helper, debugError } from './helper.js';
 import { ExecutionContext } from './ExecutionContext.js';
@@ -555,15 +555,20 @@ export class ElementHandle<
       'Multiple file uploads only work with <input type=file multiple>'
     );
 
-    const fs = Config.fs;
-    if (!fs) {
+    if (!Environment.fs) {
       throw new Error(
-        `JSHandle#uploadFile can only be used in Node environments.`
+        `JSHandle#uploadFile can not only be used in fs-less environments.`
       );
     }
+    if (!Environment.path) {
+      throw new Error(
+        `JSHandle#uploadFile can not only be used in path-less environments.`
+      );
+    }
+    const fs = Environment.fs;
     // This import is only needed for `uploadFile`, so keep it scoped here to avoid paying
     // the cost unnecessarily.
-    const path = Config.path;
+    const path = Environment.path;
     // Locate all files and confirm that they exist.
     const files = await Promise.all(
       filePaths.map(async (filePath) => {

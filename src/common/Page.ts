@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Config from './Config.js';
+import Environment from './Environment.js';
 import { EventEmitter } from './EventEmitter.js';
 import {
   Connection,
@@ -1704,12 +1704,12 @@ export class Page extends EventEmitter {
       options.encoding === 'base64'
         ? result.data
         : Buffer.from(result.data, 'base64');
-    const fs = Config.fs;
-    if (!fs && options.path) {
+    if (!Environment.fs && options.path) {
       throw new Error(
-        'Screenshots can only be written to a file path in a Node environment.'
+        'Screenshots can only be written to a file path in fs-less environments.'
       );
     }
+    const fs = Environment.fs;
     if (options.path) await fs.promises.writeFile(options.path, buffer);
     return buffer;
 

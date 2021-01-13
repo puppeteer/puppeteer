@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import Config from './Config.js';
+import Environment from './Environment.js';
 import { ConnectionTransport } from './ConnectionTransport.js';
 import { Browser } from './Browser.js';
 import { assert } from './assert.js';
@@ -63,15 +63,15 @@ export const connectToBrowser = async (
   if (transport) {
     connection = new Connection('', transport, slowMo);
   } else if (browserWSEndpoint) {
-    const WebSocketClass = Config.WebSocketTransportClass;
-    const connectionTransport: ConnectionTransport = await WebSocketClass.create(
+    const CreateWebSocket = Environment.CreateWebSocketTransport;
+    const connectionTransport: ConnectionTransport = await CreateWebSocket(
       browserWSEndpoint
     );
     connection = new Connection(browserWSEndpoint, connectionTransport, slowMo);
   } else if (browserURL) {
     const connectionURL = await getWSEndpoint(browserURL);
-    const WebSocketClass = Config.WebSocketTransportClass;
-    const connectionTransport: ConnectionTransport = await WebSocketClass.create(
+    const CreateWebSocket = Environment.CreateWebSocketTransport;
+    const connectionTransport: ConnectionTransport = await CreateWebSocket(
       connectionURL
     );
     connection = new Connection(connectionURL, connectionTransport, slowMo);
@@ -93,7 +93,7 @@ export const connectToBrowser = async (
 async function getWSEndpoint(browserURL: string): Promise<string> {
   const endpointURL = new URL('/json/version', browserURL);
 
-  const fetch = Config.fetch;
+  const fetch = Environment.fetch;
   try {
     const result = await fetch(endpointURL.toString(), {
       method: 'GET',

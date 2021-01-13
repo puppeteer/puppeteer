@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-import Config from './common/Config.js';
+import { Puppeteer } from './common/Puppeteer.js';
+import { setupEnvironment } from './common/Environment.js';
 import { BrowserWebSocketTransport } from './web/BrowserWebSocketTransport.js';
 import debug from './web/Debug.js';
-import { Puppeteer } from './common/Puppeteer.js';
 
-// config
-Config.WebSocketTransportClass = BrowserWebSocketTransport;
-Config.fetch = globalThis.fetch;
-Config.debug = debug;
+setupEnvironment({
+  CreateWebSocketTransport: BrowserWebSocketTransport.create,
+  debug: debug,
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  fetch: globalThis.fetch,
+});
 
 export const initializePuppeteerWeb = (packageName: string): any => {
   const isPuppeteerCore = packageName === 'puppeteer-core';
