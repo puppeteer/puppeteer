@@ -9,6 +9,6 @@
     "declaration": true,
     "declarationMap": true,
     "resolveJsonModule": true,
-    "sourceMap": true,
+    "sourceMap": true
   }
 }
