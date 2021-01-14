@@ -60,7 +60,7 @@ import {
 } from './EvalTypes.js';
 import { PDFOptions, paperFormats } from './PDFOptions.js';
 import { isNode } from '../environment.js';
-import { TaskQueue } from './TaskQueue';
+import { TaskQueue } from './TaskQueue.js';
 
 /**
  * @public

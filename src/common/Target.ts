@@ -20,7 +20,7 @@ import { CDPSession } from './Connection.js';
 import { Browser, BrowserContext } from './Browser.js';
 import { Viewport } from './PuppeteerViewport.js';
 import { Protocol } from 'devtools-protocol';
-import { TaskQueue } from './TaskQueue';
+import { TaskQueue } from './TaskQueue.js';
 
 /**
  * @public

@@ -21,7 +21,7 @@ import { EventEmitter } from './EventEmitter.js';
 import { Connection, ConnectionEmittedEvents } from './Connection.js';
 import { Protocol } from 'devtools-protocol';
 import { Page } from './Page.js';
-import { TaskQueue } from './TaskQueue';
+import { TaskQueue } from './TaskQueue.js';
 import { ChildProcess } from 'child_process';
 import { Viewport } from './PuppeteerViewport.js';
 
