@@ -577,6 +577,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Page.emulateNetworkConditions() networkConditions',
+        {
+          actualName: 'Object',
+          expectedName: 'NetworkConditions',
+        },
+      ],
+      [
         'Method Page.setViewport() options.viewport',
         {
           actualName: 'Object',
