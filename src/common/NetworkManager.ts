@@ -60,6 +60,7 @@ export class NetworkManager extends EventEmitter {
   _credentials?: Credentials = null;
   _attemptedAuthentications = new Set<string>();
   _userRequestInterceptionEnabled = false;
+  _userCooperativeRequestInterceptionModeEnabled = false;
   _protocolRequestInterceptionEnabled = false;
   _userCacheDisabled = false;
   _requestIdToInterceptionId = new Map<string, string>();
@@ -150,8 +151,13 @@ export class NetworkManager extends EventEmitter {
     await this._updateProtocolCacheDisabled();
   }
 
-  async setRequestInterception(value: boolean): Promise<void> {
+  async setRequestInterception(
+    value: boolean,
+    useCooperativeInterceptsMode = false
+  ): Promise<void> {
     this._userRequestInterceptionEnabled = value;
+    this._userCooperativeRequestInterceptionModeEnabled =
+      value && useCooperativeInterceptsMode;
     await this._updateProtocolRequestInterception();
   }
 
@@ -273,10 +279,16 @@ export class NetworkManager extends EventEmitter {
       interceptionId,
       this._userRequestInterceptionEnabled,
       event,
-      redirectChain
+      redirectChain,
+      this._userCooperativeRequestInterceptionModeEnabled
     );
     this._requestIdToRequest.set(event.requestId, request);
     this.emit(NetworkManagerEmittedEvents.Request, request);
+    if (this._userCooperativeRequestInterceptionModeEnabled) {
+      request.finalizeCooperativeInterceptions().catch((error) => {
+        debugError(error);
+      });
+    }
   }
 
   _onRequestServedFromCache(

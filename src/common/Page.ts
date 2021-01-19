@@ -376,6 +376,7 @@ export class Page extends EventEmitter {
   private _viewport: Viewport | null;
   private _screenshotTaskQueue: ScreenshotTaskQueue;
   private _workers = new Map<string, WebWorker>();
+  private _useCooperativeInterceptMode = false;
   // TODO: improve this typedef - it's a function that takes a file chooser or
   // something?
   private _fileChooserInterceptors = new Set<Function>();
@@ -651,14 +652,27 @@ export class Page extends EventEmitter {
 
   /**
    * @param value - Whether to enable request interception.
+   * @param useCooperativeInterceptMode - Whether to enable cooperative request interception.
    *
    * @remarks
    * Activating request interception enables {@link HTTPRequest.abort},
    * {@link HTTPRequest.continue} and {@link HTTPRequest.respond} methods.  This
    * provides the capability to modify network requests that are made by a page.
    *
-   * Once request interception is enabled, every request will stall unless it's
+   * Legacy intercept mode (useCooperativeInterceptMode===false): one handler should
+   * call one of continue(), respond(), or abort(), one time. If any of these
+   * methods are called multiple times or in combination, an error will be
+   * thrown. Once request interception is enabled, every request will stall unless it's
    * continued, responded or aborted.
+   *
+   * Cooperative intercept mode (useCooperativeInterceptMode===true):
+   * Multiple handlers can call continue(), respond(),
+   * or abort() multiple times in any combination.
+   * Page will wait for all async handlers to resovle before resolving
+   * the request. If any handler called abort(), the request will be aborted.
+   * If no handler called abort() but any handler called respond(),
+   * the request will be responded. Otherwise, the request will be continued.
+   * No handler needs to call continue() since this is the default.
    *
    * **NOTE** Enabling request interception disables page caching.
    *
@@ -682,8 +696,14 @@ export class Page extends EventEmitter {
    * })();
    * ```
    */
-  async setRequestInterception(value: boolean): Promise<void> {
-    return this._frameManager.networkManager().setRequestInterception(value);
+  async setRequestInterception(
+    value: boolean,
+    useCooperativeInterceptMode = false
+  ): Promise<void> {
+    this._useCooperativeInterceptMode = value && useCooperativeInterceptMode;
+    return this._frameManager
+      .networkManager()
+      .setRequestInterception(value, this._useCooperativeInterceptMode);
   }
 
   /**
@@ -1955,6 +1975,16 @@ export class Page extends EventEmitter {
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle> {
     return this.mainFrame().waitForFunction(pageFunction, options, ...args);
+  }
+
+  on(event, handler) {
+    if (event !== 'request' || !this._useCooperativeInterceptMode)
+      return super.on(event, handler);
+    return super.on(event, (req: HTTPRequest) => {
+      req.enqueuePendingCooperativeInterceptionHandler(
+        Promise.resolve(handler(req))
+      );
+    });
   }
 }
 
