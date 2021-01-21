@@ -31,6 +31,22 @@ export interface Credentials {
 }
 
 /**
+ * @public
+ */
+export interface NetworkConditions {
+  // Download speed (bytes/s)
+  download: number;
+  // Upload speed (bytes/s)
+  upload: number;
+  // Latency (ms)
+  latency: number;
+}
+
+export interface InternalNetworkConditions extends NetworkConditions {
+  offline: boolean;
+}
+
+/**
  * We use symbols to prevent any external parties listening to these events.
  * They are internal to Puppeteer.
  *
@@ -56,13 +72,18 @@ export class NetworkManager extends EventEmitter {
     Protocol.Network.RequestWillBeSentEvent
   >();
   _extraHTTPHeaders: Record<string, string> = {};
-  _offline = false;
   _credentials?: Credentials = null;
   _attemptedAuthentications = new Set<string>();
   _userRequestInterceptionEnabled = false;
   _protocolRequestInterceptionEnabled = false;
   _userCacheDisabled = false;
   _requestIdToInterceptionId = new Map<string, string>();
+  _emulatedNetworkConditions: InternalNetworkConditions = {
+    offline: false,
+    upload: -1,
+    download: -1,
+    latency: 0,
+  };
 
   constructor(
     client: CDPSession,
@@ -130,14 +151,32 @@ export class NetworkManager extends EventEmitter {
   }
 
   async setOfflineMode(value: boolean): Promise<void> {
-    if (this._offline === value) return;
-    this._offline = value;
+    this._emulatedNetworkConditions.offline = value;
+    await this._updateNetworkConditions();
+  }
+
+  async emulateNetworkConditions(
+    networkConditions: NetworkConditions | null
+  ): Promise<void> {
+    this._emulatedNetworkConditions.upload = networkConditions
+      ? networkConditions.upload
+      : -1;
+    this._emulatedNetworkConditions.download = networkConditions
+      ? networkConditions.download
+      : -1;
+    this._emulatedNetworkConditions.latency = networkConditions
+      ? networkConditions.latency
+      : 0;
+
+    await this._updateNetworkConditions();
+  }
+
+  async _updateNetworkConditions(): Promise<void> {
     await this._client.send('Network.emulateNetworkConditions', {
-      offline: this._offline,
-      // values of 0 remove any active throttling. crbug.com/456324#c9
-      latency: 0,
-      downloadThroughput: -1,
-      uploadThroughput: -1,
+      offline: this._emulatedNetworkConditions.offline,
+      latency: this._emulatedNetworkConditions.latency,
+      uploadThroughput: this._emulatedNetworkConditions.upload,
+      downloadThroughput: this._emulatedNetworkConditions.download,
     });
   }
 

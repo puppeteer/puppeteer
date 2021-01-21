@@ -37,7 +37,11 @@ import { Browser, BrowserContext } from './Browser.js';
 import { Target } from './Target.js';
 import { createJSHandle, JSHandle, ElementHandle } from './JSHandle.js';
 import { Viewport } from './PuppeteerViewport.js';
-import { Credentials, NetworkManagerEmittedEvents } from './NetworkManager.js';
+import {
+  Credentials,
+  NetworkConditions,
+  NetworkManagerEmittedEvents,
+} from './NetworkManager.js';
 import { HTTPRequest } from './HTTPRequest.js';
 import { HTTPResponse } from './HTTPResponse.js';
 import { Accessibility } from './Accessibility.js';
@@ -691,6 +695,14 @@ export class Page extends EventEmitter {
    */
   setOfflineMode(enabled: boolean): Promise<void> {
     return this._frameManager.networkManager().setOfflineMode(enabled);
+  }
+
+  emulateNetworkConditions(
+    networkConditions: NetworkConditions | null
+  ): Promise<void> {
+    return this._frameManager
+      .networkManager()
+      .emulateNetworkConditions(networkConditions);
   }
 
   /**

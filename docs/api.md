@@ -42,6 +42,7 @@
   * [puppeteer.errors](#puppeteererrors)
   * [puppeteer.executablePath()](#puppeteerexecutablepath)
   * [puppeteer.launch([options])](#puppeteerlaunchoptions)
+  * [puppeteer.networkConditions](#puppeteernetworkconditions)
   * [puppeteer.product](#puppeteerproduct)
   * [puppeteer.registerCustomQueryHandler(name, queryHandler)](#puppeteerregistercustomqueryhandlername-queryhandler)
   * [puppeteer.unregisterCustomQueryHandler(name)](#puppeteerunregistercustomqueryhandlername)
@@ -128,6 +129,7 @@
   * [page.emulateIdleState(overrides)](#pageemulateidlestateoverrides)
   * [page.emulateMediaFeatures(features)](#pageemulatemediafeaturesfeatures)
   * [page.emulateMediaType(type)](#pageemulatemediatypetype)
+  * [page.emulateNetworkConditions(networkConditions)](#pageemulatenetworkconditionsnetworkconditions)
   * [page.emulateTimezone(timezoneId)](#pageemulatetimezonetimezoneid)
   * [page.emulateVisionDeficiency(type)](#pageemulatevisiondeficiencytype)
   * [page.evaluate(pageFunction[, ...args])](#pageevaluatepagefunction-args)
@@ -609,6 +611,26 @@ const browser = await puppeteer.launch({
 > In [puppeteer.launch([options])](#puppeteerlaunchoptions) above, any mention of Chromium also applies to Chrome.
 >
 > See [`this article`](https://www.howtogeek.com/202825/what%E2%80%99s-the-difference-between-chromium-and-chrome/) for a description of the differences between Chromium and Chrome. [`This article`](https://chromium.googlesource.com/chromium/src/+/lkgr/docs/chromium_browser_vs_google_chrome.md) describes some differences for Linux users.
+
+#### puppeteer.networkConditions
+- returns: <[Object]>
+
+Returns a list of network conditions to be used with [`page.emulateNetworkConditions(networkConditions)`](#pageemulatenetworkconditionsnetworkconditions). Actual list of
+conditions can be found in [`src/common/NetworkConditions.ts`](https://github.com/puppeteer/puppeteer/blob/main/src/common/NetworkConditions.ts).
+
+```js
+const puppeteer = require('puppeteer');
+const slow3G = puppeteer.networkConditions['Slow 3G'];
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.emulateNetworkConditions(slow3G);
+  await page.goto('https://www.google.com');
+  // other actions...
+  await browser.close();
+})();
+```
 
 #### puppeteer.product
 - returns: <[string]> returns the name of the browser that is under automation (`"chrome"` or `"firefox"`)
@@ -1439,6 +1461,29 @@ await page.evaluate(() => matchMedia('screen').matches);
 // → true
 await page.evaluate(() => matchMedia('print').matches);
 // → false
+```
+
+#### page.emulateNetworkConditions(networkConditions) 
+- `networkConditions` <?[Object]> Passing `null` disables network condition emulation.
+  - `download` <[number]> Download speed (bytes/s), `-1` to disable
+  - `upload` <[number]> Upload speed (bytes/s), `-1` to disable
+  - `latency` <[number]> Latency (ms), `0` to disable
+- returns: <[Promise]>
+
+> **NOTE** This does not affect WebSockets and WebRTC PeerConnections (see https://crbug.com/563644)
+
+```js
+const puppeteer = require('puppeteer');
+const slow3G = puppeteer.networkConditions['Slow 3G'];
+
+(async () => {
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+  await page.emulateNetworkConditions(slow3G);
+  await page.goto('https://www.google.com');
+  // other actions...
+  await browser.close();
+})();
 ```
 
 #### page.emulateTimezone(timezoneId)
