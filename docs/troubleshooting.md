@@ -17,7 +17,7 @@
   * [Running Puppeteer on Google Cloud Functions](#running-puppeteer-on-google-cloud-functions)
   * [Running Puppeteer on Heroku](#running-puppeteer-on-heroku)
   * [Running Puppeteer on AWS Lambda](#running-puppeteer-on-aws-lambda)
-  * [Running Puppeteer on AWS EC 2 instance running Amazon-Linux](#running-puppeteer-on-aws-ec2-instance-running-amazon-linux)
+  * [Running Puppeteer on AWS EC2 instance running Amazon-Linux](#running-puppeteer-on-aws-ec2-instance-running-amazon-linux)
 - [Code Transpilation Issues](#code-transpilation-issues)
 <!-- GEN:stop -->
 
