@@ -17,6 +17,7 @@
   * [Running Puppeteer on Google Cloud Functions](#running-puppeteer-on-google-cloud-functions)
   * [Running Puppeteer on Heroku](#running-puppeteer-on-heroku)
   * [Running Puppeteer on AWS Lambda](#running-puppeteer-on-aws-lambda)
+  * [Running Puppeteer on AWS EC 2 instance running Amazon-Linux](#running-puppeteer-on-aws-ec2-instance-running-amazon-linux)
 - [Code Transpilation Issues](#code-transpilation-issues)
 <!-- GEN:stop -->
 
@@ -414,6 +415,22 @@ AWS Lambda [limits](https://docs.aws.amazon.com/lambda/latest/dg/limits.html) de
 
 - https://github.com/alixaxel/chrome-aws-lambda (kept updated with the latest stable release of puppeteer)
 - https://github.com/adieuadieu/serverless-chrome/blob/master/docs/chrome.md (serverless plugin - outdated)
+
+### Running Puppeteer on AWS EC 2 instance running Amazon-Linux
+If you are using EC2 instance running amazon-linux in your CI/CD pipeline, and if you want to run  Puppeteer tests in amazon-linux. To install chromium, you have to first enable amazon-linux-extras which comes as part of EPEL [Extra Packages for Enterprise Linux](https://aws.amazon.com/premiumsupport/knowledge-center/ec2-enable-epel/) . 
+
+To do that you have to run 
+```
+sudo amazon-linux-extras install epel -y
+```
+
+Next if you install chromium 
+```
+sudo yum install -y chromium
+
+```
+
+Puppeteer can easily launch chromium to run your tests. If you do not enable EPEL and if you continue installing chromium as part of '''npm install''', Puppeteer cannot launch chromium due to unavailablity of libatk-1.0.so.0 and many more packages. 
 
 ## Code Transpilation Issues
 
