@@ -516,7 +516,7 @@ export class DOMWorld {
         await context._client.send('Runtime.addBinding', {
           name,
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore The protocol defintion is not up to date.
+          // @ts-ignore The protocol definition is not up to date.
           executionContextName: context._contextName,
         });
         await context.evaluate(expression);
