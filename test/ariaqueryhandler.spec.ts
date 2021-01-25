@@ -185,6 +185,16 @@ describeChromeOnly('AriaQueryHandler', () => {
       await page.waitForSelector('aria/[role="button"]');
     });
 
+    it('should persist query handler bindings across reloads', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(addElement, 'button');
+      await page.waitForSelector('aria/[role="button"]');
+      await page.reload();
+      await page.evaluate(addElement, 'button');
+      await page.waitForSelector('aria/[role="button"]');
+    });
+
     it('should work independently of `exposeFunction`', async () => {
       const { page, server } = getTestState();
       await page.goto(server.EMPTY_PAGE);
