@@ -135,9 +135,11 @@ jobs:
         run: |
           # Test platform-specific browser binary fetching for both
           # Chromium and Firefox.
-          PUPPETEER_PRODUCT=firefox npm install
+          $env:PUPPETEER_PRODUCT='firefox'
           npm install
-          ls .local-chromium .local-firefox
+          Remove-Item Env:\PUPPETEER_PRODUCT
+          npm install
+          Get-ChildItem -Path .local-chromium,.local-firefox
 
       - name: Build
         run: |
