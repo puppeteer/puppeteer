@@ -192,7 +192,9 @@ describe('Page', function () {
       const { page, server } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
-      await page.setContent('<a target=_blank rel=opener href="/one-style.html">yo</a>');
+      await page.setContent(
+        '<a target=_blank rel=opener href="/one-style.html">yo</a>'
+      );
       const [popup] = await Promise.all([
         new Promise<Page>((x) => page.once('popup', x)),
         page.click('a'),
