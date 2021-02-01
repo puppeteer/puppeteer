@@ -176,7 +176,7 @@ describe('Page', function () {
       expect(await page.evaluate(() => !!window.opener)).toBe(false);
       expect(await popup.evaluate(() => !!window.opener)).toBe(false);
     });
-    it('should work with clicking target=_blank and whithout rel=opener', async () => {
+    it('should work with clicking target=_blank and without rel=opener', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
@@ -188,7 +188,7 @@ describe('Page', function () {
       expect(await page.evaluate(() => !!window.opener)).toBe(false);
       expect(await popup.evaluate(() => !!window.opener)).toBe(false);
     });
-    it('should work with clicking target=_blank and whith rel=opener', async () => {
+    it('should work with clicking target=_blank and with rel=opener', async () => {
       const { page, server } = getTestState();
 
       await page.goto(server.EMPTY_PAGE);
