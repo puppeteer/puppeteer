@@ -52,15 +52,14 @@ describe('Screenshots', function () {
     });
     itFailsFirefox('should clip elements to the viewport size', async () => {
       const { page, server } = getTestState();
-
-      await page.setViewport({ width: 50, height: 50 });
+      await page.setViewport({ width: 100, height: 100 });
       await page.goto(server.PREFIX + '/grid.html');
       const screenshot = await page.screenshot({
         clip: {
-          x: 0,
-          y: 0,
-          width: 100,
-          height: 100,
+          x: 10,
+          y: 10,
+          width: 150,
+          height: 150,
         },
       });
       expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
