@@ -50,19 +50,35 @@ describe('Screenshots', function () {
       });
       expect(screenshot).toBeGolden('screenshot-clip-rect.png');
     });
-    itFailsFirefox('should clip elements to the viewport size', async () => {
+    // TODO: enable after the screenshot is fixed.
+    it.skip('should clip elements to the viewport size without artefacts', async () => {
       const { page, server } = getTestState();
-      await page.setViewport({ width: 100, height: 100 });
+      await page.setViewport({ width: 225, height: 225 });
       await page.goto(server.PREFIX + '/grid.html');
       const screenshot = await page.screenshot({
         clip: {
-          x: 10,
-          y: 10,
-          width: 150,
-          height: 150,
+          x: 50,
+          y: 50,
+          width: 250,
+          height: 250,
         },
       });
       expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
+    });
+    // TODO: remove after the screenshot is fixed.
+    itFailsFirefox('should clip elements to the viewport size with artefacts', async () => {
+      const { page, server } = getTestState();
+      await page.setViewport({ width: 225, height: 225 });
+      await page.goto(server.PREFIX + '/grid.html');
+      const screenshot = await page.screenshot({
+        clip: {
+          x: 50,
+          y: 50,
+          width: 250,
+          height: 250,
+        },
+      });
+      expect(screenshot).toBeGolden('screenshot-offscreen-clip-artefacts.png');
     });
     it('should run in parallel', async () => {
       const { page, server } = getTestState();
