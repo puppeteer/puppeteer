@@ -563,13 +563,13 @@ describeChromeOnly('AriaQueryHandler', () => {
       const { page } = getTestState();
       const found = await page.$$('aria/[role="heading"]');
       const ids = await getIds(found);
-      expect(ids).toEqual(['shown', 'hidden', 'node11', 'node13']);
+      expect(ids).toEqual(['shown', 'node11', 'node13']);
     });
-    it('should find both ignored and unignored', async () => {
+    it('should not find ignored', async () => {
       const { page } = getTestState();
       const found = await page.$$('aria/title');
       const ids = await getIds(found);
-      expect(ids).toEqual(['shown', 'hidden']);
+      expect(ids).toEqual(['shown']);
     });
   });
 });
