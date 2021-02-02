@@ -51,6 +51,7 @@ describe('Screenshots', function () {
       expect(screenshot).toBeGolden('screenshot-clip-rect.png');
     });
     // TODO: enable after the screenshot is fixed.
+    // https://crbug.com/1173457
     it.skip('should clip elements to the viewport size without artefacts', async () => {
       const { page, server } = getTestState();
       await page.setViewport({ width: 225, height: 225 });
@@ -66,6 +67,7 @@ describe('Screenshots', function () {
       expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
     });
     // TODO: remove after the screenshot is fixed.
+    // https://crbug.com/1173457
     itFailsFirefox('should clip elements to the viewport size with artefacts', async () => {
       const { page, server } = getTestState();
       await page.setViewport({ width: 225, height: 225 });
