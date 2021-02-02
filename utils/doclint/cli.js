@@ -41,7 +41,9 @@ async function run() {
     const versions = await Source.readFile(
       path.join(PROJECT_DIR, 'versions.js')
     );
-    versions.setText(versions.text().replace(`, 'NEXT'],`, `, '${VERSION}'],`));
+    versions.setText(
+      versions.text().replace(`, 'NEXT'],`, `, 'v${VERSION}'],`)
+    );
     await versions.save();
   }
 
