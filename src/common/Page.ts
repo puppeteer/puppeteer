@@ -1693,7 +1693,7 @@ export class Page extends EventEmitter {
       format,
       quality: options.quality,
       clip,
-      captureBeyondViewport: true
+      captureBeyondViewport: true,
     });
     if (shouldSetDefaultBackground)
       await this._client.send('Emulation.setDefaultBackgroundColorOverride');
