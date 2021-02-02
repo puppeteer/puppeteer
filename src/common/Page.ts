@@ -1680,20 +1680,8 @@ export class Page extends EventEmitter {
       const width = Math.ceil(metrics.contentSize.width);
       const height = Math.ceil(metrics.contentSize.height);
 
-      // Overwrite clip for full page at all times.
+      // Overwrite clip for full page.
       clip = { x: 0, y: 0, width, height, scale: 1 };
-      const { isMobile = false, deviceScaleFactor = 1, isLandscape = false } =
-        this._viewport || {};
-      const screenOrientation: Protocol.Emulation.ScreenOrientation = isLandscape
-        ? { angle: 90, type: 'landscapePrimary' }
-        : { angle: 0, type: 'portraitPrimary' };
-      await this._client.send('Emulation.setDeviceMetricsOverride', {
-        mobile: isMobile,
-        width,
-        height,
-        deviceScaleFactor,
-        screenOrientation,
-      });
     }
     const shouldSetDefaultBackground =
       options.omitBackground && format === 'png';
@@ -1705,6 +1693,7 @@ export class Page extends EventEmitter {
       format,
       quality: options.quality,
       clip,
+      captureBeyondViewport: true
     });
     if (shouldSetDefaultBackground)
       await this._client.send('Emulation.setDefaultBackgroundColorOverride');
