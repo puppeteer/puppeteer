@@ -68,20 +68,25 @@ describe('Screenshots', function () {
     });
     // TODO: remove after the screenshot is fixed.
     // https://crbug.com/1173457
-    itFailsFirefox('should clip elements to the viewport size with artefacts', async () => {
-      const { page, server } = getTestState();
-      await page.setViewport({ width: 225, height: 225 });
-      await page.goto(server.PREFIX + '/grid.html');
-      const screenshot = await page.screenshot({
-        clip: {
-          x: 50,
-          y: 50,
-          width: 250,
-          height: 250,
-        },
-      });
-      expect(screenshot).toBeGolden('screenshot-offscreen-clip-artefacts.png');
-    });
+    itFailsFirefox(
+      'should clip elements to the viewport size with artefacts',
+      async () => {
+        const { page, server } = getTestState();
+        await page.setViewport({ width: 225, height: 225 });
+        await page.goto(server.PREFIX + '/grid.html');
+        const screenshot = await page.screenshot({
+          clip: {
+            x: 50,
+            y: 50,
+            width: 250,
+            height: 250,
+          },
+        });
+        expect(screenshot).toBeGolden(
+          'screenshot-offscreen-clip-artefacts.png'
+        );
+      }
+    );
     it('should run in parallel', async () => {
       const { page, server } = getTestState();
 
