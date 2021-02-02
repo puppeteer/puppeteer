@@ -54,14 +54,14 @@ describe('Screenshots', function () {
     // https://crbug.com/1173457
     it.skip('should clip elements to the viewport size without artefacts', async () => {
       const { page, server } = getTestState();
-      await page.setViewport({ width: 225, height: 225 });
+      await page.setViewport({ width: 50, height: 50 });
       await page.goto(server.PREFIX + '/grid.html');
       const screenshot = await page.screenshot({
         clip: {
-          x: 50,
-          y: 50,
-          width: 250,
-          height: 250,
+          x: 25,
+          y: 25,
+          width: 100,
+          height: 100,
         },
       });
       expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
@@ -72,14 +72,14 @@ describe('Screenshots', function () {
       'should clip elements to the viewport size with artefacts',
       async () => {
         const { page, server } = getTestState();
-        await page.setViewport({ width: 225, height: 225 });
+        await page.setViewport({ width: 50, height: 50 });
         await page.goto(server.PREFIX + '/grid.html');
         const screenshot = await page.screenshot({
           clip: {
-            x: 50,
-            y: 50,
-            width: 250,
-            height: 250,
+            x: 25,
+            y: 25,
+            width: 100,
+            height: 100,
           },
         });
         expect(screenshot).toBeGolden(
