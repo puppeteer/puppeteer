@@ -51,7 +51,7 @@ describe('Screenshots', function () {
       expect(screenshot).toBeGolden('screenshot-clip-rect.png');
     });
     itFailsFirefox(
-      'should get screenshot bigger then the viewport',
+      'should get screenshot bigger than the viewport',
       async () => {
         const { page, server } = getTestState();
         await page.setViewport({ width: 50, height: 50 });
