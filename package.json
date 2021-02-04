@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "7.0.0-post",
+  "version": "7.0.1",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "main": "./cjs-entry.js",
   "repository": "github:puppeteer/puppeteer",
@@ -44,7 +44,8 @@
     "install.js",
     "typescript-if-required.js",
     "cjs-entry.js",
-    "cjs-entry-core.js"
+    "cjs-entry-core.js",
+    "cjs-entry.d.ts"
   ],
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
