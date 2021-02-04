@@ -615,6 +615,7 @@ function resolveExecutablePath(
     product: launcher.product,
     path: downloadPath,
   });
+
   if (!launcher._isPuppeteerCore && launcher.product === 'chrome') {
     const revision = process.env['PUPPETEER_CHROMIUM_REVISION'];
     if (revision) {
@@ -627,8 +628,13 @@ function resolveExecutablePath(
     }
   }
   const revisionInfo = browserFetcher.revisionInfo(launcher._preferredRevision);
+
+  const firefoxHelp = `Run \`PUPPETEER_PRODUCT=firefox npm install\` to download a supported Firefox browser binary.`;
+  const chromeHelp = `Run \`npm install\` to download the correct Chromium revision (${launcher._preferredRevision}).`;
   const missingText = !revisionInfo.local
-    ? `Could not find browser revision ${launcher._preferredRevision}. Run "PUPPETEER_PRODUCT=firefox npm install" or "PUPPETEER_PRODUCT=firefox yarn install" to download a supported Firefox browser binary.`
+    ? `Could not find expected browser (${launcher.product}) locally. ${
+        launcher.product === 'chrome' ? chromeHelp : firefoxHelp
+      }`
     : null;
   return { executablePath: revisionInfo.executablePath, missingText };
 }
