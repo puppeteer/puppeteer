@@ -629,8 +629,8 @@ function resolveExecutablePath(
   }
   const revisionInfo = browserFetcher.revisionInfo(launcher._preferredRevision);
 
-  const firefoxHelp = `Run "PUPPETEER_PRODUCT=firefox npm install" or "PUPPETEER_PRODUCT=firefox yarn install" to download a supported Firefox browser binary.`;
-  const chromeHelp = `Run npm install or yarn install to download the correct Chromium revision (${launcher._preferredRevision}).`;
+  const firefoxHelp = `Run \`PUPPETEER_PRODUCT=firefox npm install\` to download a supported Firefox browser binary.`;
+  const chromeHelp = `Run \`npm install\` to download the correct Chromium revision (${launcher._preferredRevision}).`;
   const missingText = !revisionInfo.local
     ? `Could not find expected browser (${launcher.product}) locally. ${
         launcher.product === 'chrome' ? chromeHelp : firefoxHelp
