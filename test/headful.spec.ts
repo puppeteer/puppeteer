@@ -71,7 +71,7 @@ describeChromeOnly('headful tests', function () {
     // Currently the test fails on the environments with scale factor != 1.
     // https://github.com/puppeteer/puppeteer/issues/6823
     itFailsFirefox(
-      'headfull with devtools should take fullPage screenshot',
+      'headful with DevTools should take fullPage screenshot',
       async () => {
         const { server, puppeteer } = getTestState();
 
