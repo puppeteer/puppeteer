@@ -22,7 +22,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 2
-          ref: ${{ github.head_ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v1
@@ -87,7 +86,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 2
-          ref: ${{ github.head_ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v1
@@ -122,7 +120,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 2
-          ref: ${{ github.head_ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v1
