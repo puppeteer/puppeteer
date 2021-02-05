@@ -68,41 +68,41 @@ describeChromeOnly('headful tests', function () {
   });
 
   describe('HEADFUL', function () {
-    itFailsFirefox('headfull with devtools should take fullPage screenshot', async () => {
-      const { server, puppeteer } = getTestState();
+    itFailsFirefox(
+      'headfull with devtools should take fullPage screenshot',
+      async () => {
+        const { server, puppeteer } = getTestState();
 
-      const browser = await puppeteer.launch(headfulDevToolsOptions);
-      const page = await browser.newPage();
-      await page.setViewport({ width: 500, height: 500});
-      await page.goto(server.PREFIX + '/grid.html');
+        const browser = await puppeteer.launch(headfulDevToolsOptions);
+        const page = await browser.newPage();
+        await page.setViewport({ width: 500, height: 500 });
+        await page.goto(server.PREFIX + '/grid.html');
 
-      // Sometimes the first screenshot is taken before the size overlay is
-      // shown. 3 screenshots are taken to verify size overlay is not there.
-      const screenshot1 = await page.screenshot({
-        fullPage: true,
-      });
+        // Sometimes the first screenshot is taken before the size overlay is shown.
+        // 3 screenshots are taken to verify size overlay is not there.
+        const screenshot1 = await page.screenshot({
+          fullPage: true,
+        });
 
-      const screenshot2 = await page.screenshot({
-        fullPage: true,
-      });
+        const screenshot2 = await page.screenshot({
+          fullPage: true,
+        });
 
-      const screenshot3 = await page.screenshot({
-        fullPage: true,
-      });
+        const screenshot3 = await page.screenshot({
+          fullPage: true,
+        });
 
-      await browser.close();
+        await browser.close();
 
-      // Assertion is done after the browser is closed.
+        // Assertion is done after the browser is closed.
 
-      // TODO: compare with `screenshot-grid-fullpage.png` after `scale`
-      // issue is fixed: https://github.com/puppeteer/puppeteer/issues/6823
-      expect(screenshot1)
-        .toBeGolden('headful-screenshot-grid-fullpage.png');
-      expect(screenshot2)
-        .toBeGolden('headful-screenshot-grid-fullpage.png');
-      expect(screenshot3)
-        .toBeGolden('headful-screenshot-grid-fullpage.png');
-    });
+        // TODO: compare with `screenshot-grid-fullpage.png` after `scale` issue is fixed.
+        // https://github.com/puppeteer/puppeteer/issues/6823
+        expect(screenshot1).toBeGolden('headful-screenshot-grid-fullpage.png');
+        expect(screenshot2).toBeGolden('headful-screenshot-grid-fullpage.png');
+        expect(screenshot3).toBeGolden('headful-screenshot-grid-fullpage.png');
+      }
+    );
     it('background_page target type should be available', async () => {
       const { puppeteer } = getTestState();
       const browserWithExtension = await puppeteer.launch(extensionOptions);
