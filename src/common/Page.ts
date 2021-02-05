@@ -1686,11 +1686,14 @@ export class Page extends EventEmitter {
         error.message.includes('Overlay.setShowViewportSizeOnResize') &&
         error.message.includes('UnknownMethodError')
       ) {
-        // Skip. Firefox doesn't have method `Overlay.setShowViewportSizeOnResize`. The following exception is expected:
-        // Protocol error(Overlay.setShowViewportSizeOnResize): Overlay.setShowViewportSizeOnResize RemoteAgentError@chrome://remote/content/Error.jsm:25:5
+        // Skip. Firefox doesn't have method `Overlay.setShowViewportSizeOnResize`.
+        // The following exception is expected:
+        //
+        // Protocol error(Overlay.setShowViewportSizeOnResize):
+        // Overlay.setShowViewportSizeOnResize
+        // RemoteAgentError@chrome://remote/content/Error.jsm:25:5
         // ``UnknownMethodError``@chrome://remote/content/Error.jsm:108:7
         // execute@chrome://remote/content/domains/DomainCache.jsm:96:13
-        // receiveMessage@chrome://remote/content/sessions/ContentProcessSession.jsm:86:45
       } else {
         throw error;
       }
