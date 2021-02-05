@@ -1675,6 +1675,11 @@ export class Page extends EventEmitter {
     });
     let clip = options.clip ? processClip(options.clip) : undefined;
 
+    // Not hiding the size overlay will cause unwilling artefacts on the screenshot.
+    await this._client.send('Overlay.setShowViewportSizeOnResize', {
+      show: false,
+    });
+
     if (options.fullPage) {
       const metrics = await this._client.send('Page.getLayoutMetrics');
       const width = Math.ceil(metrics.contentSize.width);
