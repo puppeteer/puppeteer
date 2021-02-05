@@ -102,55 +102,6 @@ describeChromeOnly('headful tests', function () {
         expect(screenshot3).toBeGolden('screenshot-grid-fullpage.png');
       }
     );
-    // Currently the test fails on the environments with scale factor != 1.
-    // https://github.com/puppeteer/puppeteer/issues/6823
-    itFailsFirefox(
-      'headfull with devtools should take clip screenshot',
-      async () => {
-        const { server, puppeteer } = getTestState();
-
-        const browser = await puppeteer.launch(headfulDevToolsOptions);
-        const page = await browser.newPage();
-        await page.setViewport({ width: 500, height: 500 });
-        await page.goto(server.PREFIX + '/grid.html');
-
-        // Sometimes the first screenshot is taken before the size overlay is shown.
-        // 3 screenshots are taken to verify size overlay is not there.
-        const screenshot1 = await page.screenshot({
-          clip: {
-            x: 0,
-            y: 0,
-            width: 500,
-            height: 500,
-          },
-        });
-
-        const screenshot2 = await page.screenshot({
-          clip: {
-            x: 0,
-            y: 0,
-            width: 500,
-            height: 500,
-          },
-        });
-
-        const screenshot3 = await page.screenshot({
-          clip: {
-            x: 0,
-            y: 0,
-            width: 500,
-            height: 500,
-          },
-        });
-
-        await browser.close();
-
-        // Assertion is done after the browser is closed.
-        expect(screenshot1).toBeGolden('screenshot-sanity.png');
-        expect(screenshot2).toBeGolden('screenshot-sanity.png');
-        expect(screenshot3).toBeGolden('screenshot-sanity.png');
-      }
-    );
     it('background_page target type should be available', async () => {
       const { puppeteer } = getTestState();
       const browserWithExtension = await puppeteer.launch(extensionOptions);

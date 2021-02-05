@@ -1675,10 +1675,22 @@ export class Page extends EventEmitter {
     });
     let clip = options.clip ? processClip(options.clip) : undefined;
 
-    // Not hiding the size overlay will cause unwilling artefacts on the screenshot.
-    await this._client.send('Overlay.setShowViewportSizeOnResize', {
-      show: false,
-    });
+    try {
+      // Not hiding the size overlay will cause unwilling artefacts on the screenshot.
+      await this._client.send('Overlay.setShowViewportSizeOnResize', {
+        show: false,
+      });
+    } catch (e) {
+      if (e.message && e.message.includes("Overlay.setShowViewportSizeOnResize") && e.message.includes("UnknownMethodError")) {
+        // Skip. Firefox doesn't have method `Overlay.setShowViewportSizeOnResize`. The following exception is expected:
+        // Protocol error(Overlay.setShowViewportSizeOnResize): Overlay.setShowViewportSizeOnResize RemoteAgentError@chrome://remote/content/Error.jsm:25:5
+        // UnknownMethodError@chrome://remote/content/Error.jsm:108:7
+        // execute@chrome://remote/content/domains/DomainCache.jsm:96:13
+        // receiveMessage@chrome://remote/content/sessions/ContentProcessSession.jsm:86:45
+      } else {
+        throw e;
+      }
+    }
 
     if (options.fullPage) {
       const metrics = await this._client.send('Page.getLayoutMetrics');
