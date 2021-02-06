@@ -15,14 +15,13 @@
  */
 
 import { CreateConnectionTransport } from './ConnectionTransport.js';
-import fetch from 'node-fetch';
 
 export type DebugLogger = (...args: unknown[]) => void;
 
 export interface CommonEnvironment {
   CreateWebSocketTransport?: CreateConnectionTransport;
   debug?: (prefix: string) => DebugLogger;
-  fetch?: typeof fetch | null;
+  fetch?: typeof import('node-fetch') | null;
   fs?: typeof import('fs') | null;
   path?: typeof import('path') | null;
 }
