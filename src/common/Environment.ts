@@ -21,7 +21,7 @@ export type DebugLogger = (...args: unknown[]) => void;
 export interface CommonEnvironment {
   CreateWebSocketTransport?: CreateConnectionTransport;
   debug?: (prefix: string) => DebugLogger;
-  fetch?: typeof import('node-fetch') | null;
+  fetch?: typeof import('node-fetch').default | null;
   fs?: typeof import('fs') | null;
   path?: typeof import('path') | null;
 }
