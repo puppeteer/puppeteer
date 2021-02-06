@@ -111,10 +111,15 @@ function downloadURL(
 function handleArm64(): void {
   fs.stat('/usr/bin/chromium-browser', function (err, stats) {
     if (stats === undefined) {
-      console.error(`The chromium binary is not available for arm64: `);
-      console.error(`If you are on Ubuntu, you can install with: `);
-      console.error(`\n apt-get install chromium-browser\n`);
-      throw new Error();
+      fs.stat('/usr/bin/chromium', function (err, stats) {
+        if (stats === undefined) {
+          console.error(`The chromium binary is not available for arm64.`);
+          console.error(`If you are on Ubuntu, you can install with: `);
+          console.error(`\n sudo apt install chromium\n`);
+          console.error(`\n sudo apt install chromium-browser\n`);
+          throw new Error();
+        }
+      });
     }
   });
 }

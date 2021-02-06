@@ -104,12 +104,14 @@ class ChromeLauncher implements ProductLauncher {
     }
 
     let chromeExecutable = executablePath;
-    if (os.arch() === 'arm64') {
-      chromeExecutable = '/usr/bin/chromium-browser';
-    } else if (!executablePath) {
-      const { missingText, executablePath } = resolveExecutablePath(this);
-      if (missingText) throw new Error(missingText);
-      chromeExecutable = executablePath;
+    if (!executablePath) {
+      if (os.arch() === 'arm64') {
+        chromeExecutable = '/usr/bin/chromium-browser';
+      } else {
+        const { missingText, executablePath } = resolveExecutablePath(this);
+        if (missingText) throw new Error(missingText);
+        chromeExecutable = executablePath;
+      }
     }
 
     const usePipe = chromeArguments.includes('--remote-debugging-pipe');
@@ -517,6 +519,9 @@ class FirefoxLauncher implements ProductLauncher {
       // jest-puppeteer asserts that no error message is emitted by the console
       'network.cookie.cookieBehavior': 0,
 
+      // Disable experimental feature that is only available in Nightly
+      'network.cookie.sameSite.laxByDefault': false,
+
       // Do not prompt for temporary redirects
       'network.http.prompt-temp-redirect': false,
 
@@ -610,6 +615,7 @@ function resolveExecutablePath(
     product: launcher.product,
     path: downloadPath,
   });
+
   if (!launcher._isPuppeteerCore && launcher.product === 'chrome') {
     const revision = process.env['PUPPETEER_CHROMIUM_REVISION'];
     if (revision) {
@@ -622,8 +628,13 @@ function resolveExecutablePath(
     }
   }
   const revisionInfo = browserFetcher.revisionInfo(launcher._preferredRevision);
+
+  const firefoxHelp = `Run \`PUPPETEER_PRODUCT=firefox npm install\` to download a supported Firefox browser binary.`;
+  const chromeHelp = `Run \`npm install\` to download the correct Chromium revision (${launcher._preferredRevision}).`;
   const missingText = !revisionInfo.local
-    ? `Could not find browser revision ${launcher._preferredRevision}. Run "PUPPETEER_PRODUCT=firefox npm install" or "PUPPETEER_PRODUCT=firefox yarn install" to download a supported Firefox browser binary.`
+    ? `Could not find expected browser (${launcher.product}) locally. ${
+        launcher.product === 'chrome' ? chromeHelp : firefoxHelp
+      }`
     : null;
   return { executablePath: revisionInfo.executablePath, missingText };
 }

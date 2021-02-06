@@ -50,21 +50,23 @@ describe('Screenshots', function () {
       });
       expect(screenshot).toBeGolden('screenshot-clip-rect.png');
     });
-    itFailsFirefox('should clip elements to the viewport', async () => {
-      const { page, server } = getTestState();
-
-      await page.setViewport({ width: 500, height: 500 });
-      await page.goto(server.PREFIX + '/grid.html');
-      const screenshot = await page.screenshot({
-        clip: {
-          x: 50,
-          y: 600,
-          width: 100,
-          height: 100,
-        },
-      });
-      expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
-    });
+    itFailsFirefox(
+      'should get screenshot bigger than the viewport',
+      async () => {
+        const { page, server } = getTestState();
+        await page.setViewport({ width: 50, height: 50 });
+        await page.goto(server.PREFIX + '/grid.html');
+        const screenshot = await page.screenshot({
+          clip: {
+            x: 25,
+            y: 25,
+            width: 100,
+            height: 100,
+          },
+        });
+        expect(screenshot).toBeGolden('screenshot-offscreen-clip.png');
+      }
+    );
     it('should run in parallel', async () => {
       const { page, server } = getTestState();
 

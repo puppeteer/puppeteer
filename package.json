@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "5.5.0-post",
+  "version": "7.0.1-post",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "main": "./cjs-entry.js",
   "repository": "github:puppeteer/puppeteer",
@@ -41,19 +41,20 @@
     "install.js",
     "typescript-if-required.js",
     "cjs-entry.js",
-    "cjs-entry-core.js"
+    "cjs-entry-core.js",
+    "cjs-entry.d.ts"
   ],
   "author": "The Chromium Authors",
   "license": "Apache-2.0",
   "dependencies": {
     "debug": "^4.1.0",
-    "devtools-protocol": "0.0.818844",
+    "devtools-protocol": "0.0.847576",
     "extract-zip": "^2.0.0",
     "https-proxy-agent": "^5.0.0",
     "node-fetch": "^2.6.1",
     "pkg-dir": "^4.2.0",
     "progress": "^2.0.1",
-    "proxy-from-env": "^1.0.0",
+    "proxy-from-env": "^1.1.0",
     "rimraf": "^3.0.2",
     "tar-fs": "^2.0.0",
     "unbzip2-stream": "^1.3.3",

@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google Inc. All rights reserved.
+ * Copyright 2021 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
-type Revisions = Readonly<{
-  readonly chromium: string;
-  readonly firefox: string;
-}>;
+import { NetworkConditions } from './NetworkManager.js';
 
-export const PUPPETEER_REVISIONS: Revisions = {
-  chromium: '848005',
-  firefox: 'latest',
+export type PredefinedNetworkConditions = { [name: string]: NetworkConditions };
+
+export const networkConditions: PredefinedNetworkConditions = {
+  'Slow 3G': {
+    download: ((500 * 1000) / 8) * 0.8,
+    upload: ((500 * 1000) / 8) * 0.8,
+    latency: 400 * 5,
+  },
+  'Fast 3G': {
+    download: ((1.6 * 1000 * 1000) / 8) * 0.9,
+    upload: ((750 * 1000) / 8) * 0.9,
+    latency: 150 * 3.75,
+  },
 };

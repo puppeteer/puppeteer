@@ -549,6 +549,84 @@ const devices: Device[] = [
     },
   },
   {
+    name: 'iPhone 11',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 414,
+      height: 828,
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 11 landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 828,
+      height: 414,
+      deviceScaleFactor: 2,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 11 Pro',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 375,
+      height: 812,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 11 Pro landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 812,
+      height: 375,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
+    name: 'iPhone 11 Pro Max',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 414,
+      height: 896,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: false,
+    },
+  },
+  {
+    name: 'iPhone 11 Pro Max landscape',
+    userAgent:
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 13_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1 Mobile/15E148 Safari/604.1',
+    viewport: {
+      width: 896,
+      height: 414,
+      deviceScaleFactor: 3,
+      isMobile: true,
+      hasTouch: true,
+      isLandscape: true,
+    },
+  },
+  {
     name: 'JioPhone 2',
     userAgent:
       'Mozilla/5.0 (Mobile; LYF/F300B/LYF-F300B-001-01-15-130718-i;Android; rv:48.0) Gecko/48.0 Firefox/48.0 KAIOS/2.5',

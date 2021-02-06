@@ -512,9 +512,12 @@ export class DOMWorld {
     const bind = async (name: string) => {
       const expression = helper.pageBindingInitString('internal', name);
       try {
+        // TODO: In theory, it would be enough to call this just once
         await context._client.send('Runtime.addBinding', {
           name,
-          executionContextId: context._contextId,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore The protocol definition is not up to date.
+          executionContextName: context._contextName,
         });
         await context.evaluate(expression);
       } catch (error) {
