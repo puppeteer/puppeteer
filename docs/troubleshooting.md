@@ -194,7 +194,7 @@ export CHROME_DEVEL_SANDBOX=/usr/local/sbin/chrome-devel-sandbox
 
 ## Running Puppeteer on Travis CI
 
-> 👋 We ran our tests for Puppeteer on Travis CI until v6.0.0 (when we’ve migrated to GitHub Actions) - see our historical [`.travis.yml` (v5.5.0)](https://github.com/puppeteer/puppeteer/blob/v5.5.0/.travis.yml) for reference.
+> 👋 We ran our tests for Puppeteer on Travis CI until v6.0.0 (when we've migrated to GitHub Actions) - see our historical [`.travis.yml` (v5.5.0)](https://github.com/puppeteer/puppeteer/blob/v5.5.0/.travis.yml) for reference.
 
 Tips-n-tricks:
 - [xvfb](https://en.wikipedia.org/wiki/Xvfb) service should be launched in order to run Chromium in non-headless mode
