@@ -183,7 +183,7 @@ There are additional considerations for dependencies that are environment agonis
 - Tests should not depend on external services.
 - Tests should work on all three platforms: Mac, Linux and Win. This is especially important for screenshot tests.
 
-Puppeteer tests are located in the test directory ([`test`](https://github.com/puppeteer/puppeteer/blob/main/test/) and are written using Mocha. See [`test/README.md`](https://github.com/puppeteer/puppeteer/blob/main/test/) for more details.
+Puppeteer tests are located in the [`test`](https://github.com/puppeteer/puppeteer/blob/main/test/) directory and are written using Mocha. See [`test/README.md`](https://github.com/puppeteer/puppeteer/blob/main/test/) for more details.
 
 Despite being named 'unit', these are integration tests, making sure public API methods and events work as expected.
 
