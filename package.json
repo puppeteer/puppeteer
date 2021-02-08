@@ -37,7 +37,10 @@
     "release": "node utils/remove_version_suffix.js && standard-version --commit-all"
   },
   "files": [
-    "lib/",
+    "lib/**/*.d.ts",
+    "lib/**/*.d.ts.map",
+    "lib/**/*.js",
+    "lib/**/*.js.map",
     "install.js",
     "typescript-if-required.js",
     "cjs-entry.js",
