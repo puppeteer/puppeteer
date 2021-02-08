@@ -129,7 +129,7 @@ async function run() {
   }
   console.log(`${errors.length} failures, ${warnings.length} warnings.`);
 
-  if (!clearExit && !process.env.TRAVIS)
+  if (!clearExit && !process.env.GITHUB_ACTIONS)
     console.log(
       '\nIs your lib/ directory up to date? You might need to `npm run tsc`.\n'
     );
