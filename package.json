@@ -24,7 +24,7 @@
     "eslint": "([ \"$CI\" = true ] && eslint --ext js --ext ts --quiet -f codeframe . || eslint --ext js --ext ts .)",
     "eslint-fix": "eslint --ext js --ext ts --fix .",
     "commitlint": "commitlint --from=HEAD~1",
-    "lint": "npm run eslint && npm run tsc && npm run doc && npm run commitlint",
+    "lint": "npm run eslint && npm run build && npm run doc && npm run commitlint",
     "doc": "node utils/doclint/cli.js",
     "clean-lib": "rm -rf lib",
     "build": "npm run tsc && npm run generate-d-ts",
