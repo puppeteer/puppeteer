@@ -39,6 +39,7 @@
     "release": "node utils/remove_version_suffix.js && standard-version --commit-all"
   },
   "files": [
+    "lib/types.d.ts",
     "lib/**/*.d.ts",
     "lib/**/*.d.ts.map",
     "lib/**/*.js",
