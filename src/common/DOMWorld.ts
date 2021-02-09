@@ -115,7 +115,7 @@ export class DOMWorld {
 
   async _setContext(context?: ExecutionContext): Promise<void> {
     if (context) {
-      this._ctxBindings = new Set();
+      this._ctxBindings.clear();
       this._contextResolveCallback.call(null, context);
       this._contextResolveCallback = null;
       for (const waitTask of this._waitTasks) waitTask.rerun();
