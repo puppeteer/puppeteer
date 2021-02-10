@@ -3,5 +3,6 @@
     "module": "commonjs",
     "strict": true,
     "noEmit": true
-  }
+  },
+  "files": ["good.ts", "bad.ts"]
 }
