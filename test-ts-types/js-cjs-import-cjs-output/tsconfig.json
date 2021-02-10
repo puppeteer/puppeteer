@@ -4,7 +4,7 @@
     "checkJs": true,
     "allowJs": true,
     "strict": true,
-    "noEmit": true
+    "outDir": "dist"
   },
   "files": ["good.js", "bad.js"]
 }
