@@ -114,17 +114,11 @@ function compileAndCatchErrors(projectLocation) {
 }
 
 function testProject(folder: string) {
-  if (folder.includes(' ')) {
-    console.error('Test project folders may not contain spaces.');
-    process.exit(1);
-  }
-
   console.log('\nTesting:', folder);
-  const projectLocation = path.join(
-    process.cwd(),
-    PROJECT_FOLDERS_ROOT,
-    folder
-  );
+  const projectLocation = path
+    .join(process.cwd(), PROJECT_FOLDERS_ROOT, folder)
+    .replace(/(\s+)/g, '\\$1'); // Escape spaces in the path.
+
   const tarLocation = path.relative(projectLocation, tarPath);
   console.log('===> Installing Puppeteer from tar file');
   execSync(
