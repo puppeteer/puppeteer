@@ -15,8 +15,6 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
-      - name: Test types.d.ts file is correct
-        run: npm run test-types-file
       - name: Publish puppeteer
         env:
           NPM_TOKEN: ${{secrets.NPM_TOKEN_PUPPETEER}}

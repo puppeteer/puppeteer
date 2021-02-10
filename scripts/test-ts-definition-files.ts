@@ -114,6 +114,11 @@ function compileAndCatchErrors(projectLocation) {
 }
 
 function testProject(folder: string) {
+  if (folder.includes(' ')) {
+    console.error('Test project folders may not contain spaces.');
+    process.exit(1);
+  }
+
   console.log('\nTesting:', folder);
   const projectLocation = path.join(
     process.cwd(),
@@ -172,7 +177,7 @@ function testProject(folder: string) {
       process.exit(1);
     }
   });
-  console.log('===> ✅ Type checked correctly.');
+  console.log('===> ✅ Type-checked correctly.');
 }
 
 PROJECT_FOLDERS.forEach((folder) => {
