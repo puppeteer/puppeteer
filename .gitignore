@@ -1,4 +1,5 @@
 /node_modules/
+test-ts-types/**/node_modules
 /test/output-chromium
 /test/output-firefox
 /test/test-user-data-dir*
@@ -18,3 +19,4 @@ test/coverage.json
 temp/
 puppeteer-core-*.tgz
 new-docs/
+puppeteer-*.tgz

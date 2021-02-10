@@ -46,6 +46,10 @@ jobs:
           npm run generate-docs
           npm run ensure-correct-devtools-protocol-revision
 
+      - name: Run check that types.d.ts file is valid and detects errors.
+        run: |
+          npm run test-types-file
+
       - name: Run unit tests
         env:
           CHROMIUM: true

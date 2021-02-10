@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "checkJs": true,
+    "allowJs": true,
+    "strict": true,
+    "noEmit": true
+  }
+}

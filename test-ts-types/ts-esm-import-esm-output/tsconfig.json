@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "module": "esnext",
+    "strict": true,
+    "noEmit": true
+  }
+}
