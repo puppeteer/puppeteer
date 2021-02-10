@@ -83,19 +83,11 @@ function packPuppeteer() {
 const tar = packPuppeteer();
 const tarPath = path.join(process.cwd(), tar);
 
-function cdIntoProjectAndRunCommand(projectLocation: string, command: string) {
-  return spawnSync(
-    'sh',
-    ['-c', [`cd "${projectLocation}"`, command].join('; ')],
-    { encoding: 'utf-8', stdio: 'pipe' }
-  );
-}
-
 function compileAndCatchErrors(projectLocation) {
-  const { status, stdout, stderr } = cdIntoProjectAndRunCommand(
-    projectLocation,
-    'npm run compile'
-  );
+  const { status, stdout, stderr } = spawnSync('npm', ['run', 'compile'], {
+    cwd: projectLocation,
+    encoding: 'utf-8',
+  });
   const tsErrorMesssage = stdout.split('\n');
 
   if (status === 0) {
@@ -121,9 +113,16 @@ function testProject(folder: string) {
 
   const tarLocation = path.relative(projectLocation, tarPath);
   console.log('===> Installing Puppeteer from tar file');
-  const { status, stderr, stdout } = cdIntoProjectAndRunCommand(
-    projectLocation,
-    `PUPPETEER_SKIP_DOWNLOAD=1 npm install --no-package-lock "${tarLocation}"`
+  const { status, stderr, stdout } = spawnSync(
+    'npm',
+    ['install', '--no-package-lock', tarLocation],
+    {
+      env: {
+        PUPPETEER_SKIP_DOWNLOAD: '1',
+      },
+      cwd: projectLocation,
+      encoding: 'utf-8',
+    }
   );
 
   if (status > 0) {
