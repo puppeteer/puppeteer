@@ -2,7 +2,8 @@
   "compilerOptions": {
     "module": "esnext",
     "strict": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "moduleResolution": "node"
   },
   "files": ["good.ts", "bad.ts"]
 }

@@ -135,7 +135,9 @@ function testProject(folder: string) {
     )
   ) {
     console.error(
-      `Error for ${projectLocation} contained unexpected failures in good.ts/good.js:\n${result.tsErrorMesssage}`
+      `Error for ${projectLocation} contained unexpected failures in good.ts/good.js:\n${result.tsErrorMesssage.join(
+        '\n'
+      )}`
     );
     process.exit(1);
   }
