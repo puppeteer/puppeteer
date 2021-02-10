@@ -37,7 +37,7 @@
     "generate-docs": "npm run generate-d-ts && api-documenter markdown -i temp -o new-docs",
     "ensure-correct-devtools-protocol-revision": "ts-node -s scripts/ensure-correct-devtools-protocol-package",
     "test-types-file": "ts-node -s scripts/test-ts-definition-files.ts",
-    "release": "node utils/remove_version_suffix.js && standard-version --commit-all"
+    "release": "node utils/remove_version_suffix.js && standard-version --commit-all && node utils/update_ts_test_case_version_numbers.js && git add test-ts-types && git commit --amend --no-edit"
   },
   "files": [
     "lib/types.d.ts",
