@@ -252,9 +252,7 @@ describe('Emulation', () => {
       expect(
         await page.evaluate(() => matchMedia('(color-gamut: rec2020)').matches)
       ).toBe(false);
-      await page.emulateMediaFeatures([
-        { name: 'color-gamut', value: 'p3' },
-      ]);
+      await page.emulateMediaFeatures([{ name: 'color-gamut', value: 'p3' }]);
       expect(
         await page.evaluate(() => matchMedia('(color-gamut: p3)').matches)
       ).toBe(true);
