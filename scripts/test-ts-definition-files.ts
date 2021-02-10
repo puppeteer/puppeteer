@@ -1,4 +1,4 @@
-import { spawnSync, execSync } from 'child_process';
+import { spawnSync } from 'child_process';
 import { version } from '../package.json';
 import path from 'path';
 const PROJECT_FOLDERS_ROOT = 'test-ts-types';
@@ -83,48 +83,57 @@ function packPuppeteer() {
 const tar = packPuppeteer();
 const tarPath = path.join(process.cwd(), tar);
 
-function compileAndCatchErrors(projectLocation) {
-  let failed = false;
-  let tsErrorMesssage: string[] = [];
-  let result;
-  try {
-    result = execSync(`cd ${projectLocation} && npm run compile`, {
-      encoding: 'utf-8',
-      stdio: 'pipe', // means the output isn't logged by default
-    });
-  } catch (error) {
-    // We expect to always get here, as each project has some typos to test if
-    // our types are used correctly to catch errors;
-    failed = true;
-    tsErrorMesssage = (error.stdout as string).split('\n');
-  }
+function cdIntoProjectAndRunCommand(projectLocation: string, command: string) {
+  return spawnSync(
+    'sh',
+    ['-c', [`cd "${projectLocation}"`, command].join('; ')],
+    { encoding: 'utf-8', stdio: 'pipe' }
+  );
+}
 
-  if (!failed) {
+function compileAndCatchErrors(projectLocation) {
+  const { status, stdout, stderr } = cdIntoProjectAndRunCommand(
+    projectLocation,
+    'npm run compile'
+  );
+  const tsErrorMesssage = stdout.split('\n');
+
+  if (status === 0) {
     console.error(
       `Running tsc on ${projectLocation} succeeded without triggering the expected errors.`
     );
-    console.log(result);
+    console.log(stdout, stderr);
     process.exit(1);
   }
 
   return {
-    failed,
     tsErrorMesssage,
   };
 }
 
 function testProject(folder: string) {
   console.log('\nTesting:', folder);
-  const projectLocation = path
-    .join(process.cwd(), PROJECT_FOLDERS_ROOT, folder)
-    .replace(/(\s+)/g, '\\$1'); // Escape spaces in the path.
+  const projectLocation = path.join(
+    process.cwd(),
+    PROJECT_FOLDERS_ROOT,
+    folder
+  );
 
   const tarLocation = path.relative(projectLocation, tarPath);
   console.log('===> Installing Puppeteer from tar file');
-  execSync(
-    `cd ${projectLocation} && PUPPETEER_SKIP_DOWNLOAD=1 npm install --no-package-lock ${tarLocation}`,
-    { encoding: 'utf-8' }
+  const { status, stderr, stdout } = cdIntoProjectAndRunCommand(
+    projectLocation,
+    `PUPPETEER_SKIP_DOWNLOAD=1 npm install --no-package-lock "${tarLocation}"`
   );
+
+  if (status > 0) {
+    console.error(
+      'Installing the tar file unexpectedly failed',
+      stdout,
+      stderr
+    );
+    process.exit(status);
+  }
   console.log('===> Running compile to ensure expected errors only.');
   const result = compileAndCatchErrors(projectLocation);
   const expectedErrors = EXPECTED_ERRORS.get(folder) || [];
