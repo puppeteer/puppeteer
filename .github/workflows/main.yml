@@ -45,6 +45,7 @@ jobs:
           npm run lint
           npm run generate-docs
           npm run ensure-correct-devtools-protocol-revision
+          npm run test-types-file
 
       - name: Run unit tests
         env:

@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+import { LaunchOptions, ChromeArgOptions } from './node/LaunchOptions.js';
+import { BrowserOptions } from './common/BrowserConnector.js';
+import { Product } from './common/Product.js';
+import { Browser } from './common/Browser.js';
+import { ConnectOptions } from './common/Puppeteer.js';
+import { DevicesMap } from './common/DeviceDescriptors.js';
+import { PuppeteerErrors } from './common/Errors.js';
+import { PredefinedNetworkConditions } from './common/NetworkConditions.js';
+import { CustomQueryHandler } from './common/QueryHandler.js';
+
 /*
  * This file re-exports any APIs that we want to have documentation generated
  * for. It is used by API Extractor to determine what parts of the system to
@@ -62,4 +72,75 @@ export * from './common/PDFOptions.js';
 export * from './common/TimeoutSettings.js';
 export * from './common/LifecycleWatcher.js';
 export * from './common/QueryHandler.js';
+export * from './common/NetworkConditions.js';
 export * from 'devtools-protocol/types/protocol';
+
+/*
+ * We maintain a namespace that emulates the API of the Puppeteer instance you
+ * get when you `import puppeteer from 'puppeteer'.
+ *
+ * We do this as a namespace because export = PuppeteerDefault where
+ * PuppeteerDefault is a namespace seems to make sure that the types work in
+ * both ESM and CJS contexts.
+ *
+ * This namespace must be kept in sync with the public API offered by the
+ * PuppeteerNode class.
+ */
+
+/**
+ * @public
+ * {@inheritDoc PuppeteerNode.launch}
+ */
+export declare function launch(
+  options?: LaunchOptions &
+    ChromeArgOptions &
+    BrowserOptions & {
+      product?: Product;
+      extraPrefsFirefox?: Record<string, unknown>;
+    }
+): Promise<Browser>;
+
+/**
+ * @public
+ * {@inheritDoc PuppeteerNode.connect}
+ */
+export declare function connect(options: ConnectOptions): Promise<Browser>;
+
+/**
+ * @public
+ * {@inheritDoc Puppeteer.devices}
+ */
+export let devices: DevicesMap;
+/**
+ * @public
+ */
+export let errors: PuppeteerErrors;
+/**
+ * @public
+ */
+export let networkConditions: PredefinedNetworkConditions;
+
+/**
+ * @public
+ * {@inheritDoc Puppeteer.registerCustomQueryHandler}
+ */
+export declare function registerCustomQueryHandler(
+  name: string,
+  queryHandler: CustomQueryHandler
+): void;
+
+/**
+ * @public
+ * {@inheritDoc Puppeteer.unregisterCustomQueryHandler}
+ */
+export declare function unregisterCustomQueryHandler(name: string): void;
+/**
+ * @public
+ * {@inheritDoc Puppeteer.customQueryHandlerNames}
+ */
+export declare function customQueryHandlerNames(): string[];
+/**
+ * @public
+ * {@inheritDoc Puppeteer.clearCustomQueryHandlers}
+ */
+export declare function clearCustomQueryHandlers(): void;
