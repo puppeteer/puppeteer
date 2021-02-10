@@ -86,8 +86,9 @@ const tarPath = path.join(process.cwd(), tar);
 function compileAndCatchErrors(projectLocation) {
   let failed = false;
   let tsErrorMesssage: string[] = [];
+  let result;
   try {
-    execSync(`cd ${projectLocation} && npm run compile`, {
+    result = execSync(`cd ${projectLocation} && npm run compile`, {
       encoding: 'utf-8',
       stdio: 'pipe', // means the output isn't logged by default
     });
@@ -102,6 +103,7 @@ function compileAndCatchErrors(projectLocation) {
     console.error(
       `Running tsc on ${projectLocation} succeeded without triggering the expected errors.`
     );
+    console.log(result);
     process.exit(1);
   }
 
