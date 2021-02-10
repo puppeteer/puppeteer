@@ -23,8 +23,6 @@ import { DevicesMap } from './common/DeviceDescriptors.js';
 import { PuppeteerErrors } from './common/Errors.js';
 import { PredefinedNetworkConditions } from './common/NetworkConditions.js';
 import { CustomQueryHandler } from './common/QueryHandler.js';
-import type { Puppeteer } from './common/Puppeteer.js';
-import type { PuppeteerNode } from './node/Puppeteer.js';
 
 /*
  * This file re-exports any APIs that we want to have documentation generated
