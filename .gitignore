@@ -1,5 +1,6 @@
 /node_modules/
 test-ts-types/**/node_modules
+test-ts-types/**/dist/
 /test/output-chromium
 /test/output-firefox
 /test/test-user-data-dir*

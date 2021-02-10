@@ -4,7 +4,7 @@
   "private": true,
   "description": "Test project with TypeScript, ESM output",
   "scripts": {
-    "compile": "../../node_modules/.bin/tsc --build tsconfig.json"
+    "compile": "../../node_modules/.bin/tsc"
   },
   "dependencies": {
     "puppeteer": "file:../../puppeteer-7.0.4-post.tgz"

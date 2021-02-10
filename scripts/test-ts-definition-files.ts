@@ -88,7 +88,7 @@ function compileAndCatchErrors(projectLocation) {
   let tsErrorMesssage: string[] = [];
   let result;
   try {
-    result = execSync(`cd ${projectLocation} && npm run compile -- --verbose`, {
+    result = execSync(`cd ${projectLocation} && npm run compile`, {
       encoding: 'utf-8',
       stdio: 'pipe', // means the output isn't logged by default
     });
@@ -131,7 +131,7 @@ function testProject(folder: string) {
   const expectedErrors = EXPECTED_ERRORS.get(folder) || [];
   if (
     result.tsErrorMesssage.find(
-      (line) => line.includes('good.ts(') || line.includes('good.js(')
+      (line) => line.includes('good.ts') || line.includes('good.js')
     )
   ) {
     console.error(
@@ -140,7 +140,7 @@ function testProject(folder: string) {
     process.exit(1);
   }
   const errorsInTsMessage = result.tsErrorMesssage.filter(
-    (line) => line.includes('bad.ts(') || line.includes('bad.js(')
+    (line) => line.includes('bad.ts') || line.includes('bad.js')
   );
   const expectedErrorsThatHaveOccurred = new Set<string>();
   const unexpectedErrors = errorsInTsMessage.filter((message) => {
