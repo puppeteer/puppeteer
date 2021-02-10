@@ -857,6 +857,13 @@ function compareDocumentations(actual, expected) {
             '"none"|"achromatopsia"|"blurredVision"|"deuteranopia"|"protanopia"|"tritanopia"',
         },
       ],
+      [
+        'Method BrowserContext.overridePermissions() permissions',
+        {
+          actualName: 'Array<string>',
+          expectedName: 'Array<Permission>',
+        },
+      ],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);
