@@ -110,7 +110,7 @@ export declare function connect(options: ConnectOptions): Promise<Browser>;
  * @public
  * {@inheritDoc Puppeteer.devices}
  */
-export let devices: DevicesMap;
+export let goodevices: DevicesMap;
 /**
  * @public
  */
