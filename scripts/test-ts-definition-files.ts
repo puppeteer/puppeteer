@@ -121,7 +121,7 @@ function testProject(folder: string) {
   const tarLocation = path.relative(projectLocation, tarPath);
   console.log('===> Installing Puppeteer from tar file');
   execSync(
-    `cd ${projectLocation} && PUPPETEER_SKIP_DOWNLOAD=1 npm install ${tarLocation}`,
+    `cd ${projectLocation} && PUPPETEER_SKIP_DOWNLOAD=1 npm install --no-package-lock ${tarLocation}`,
     { encoding: 'utf-8' }
   );
   console.log('===> Running compile to ensure expected errors only.');
