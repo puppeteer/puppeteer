@@ -243,7 +243,7 @@ export class JSHandle {
    * on the object in page and consequent {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse | JSON.parse} in puppeteer.
    * **NOTE** The method throws if the referenced object is not stringifiable.
    */
-  async jsonValue(): Promise<Record<string, unknown>> {
+  async jsonValue<T = unknown>(): Promise<T> {
     if (this._remoteObject.objectId) {
       const response = await this._client.send('Runtime.callFunctionOn', {
         functionDeclaration: 'function() { return this; }',
@@ -251,9 +251,9 @@ export class JSHandle {
         returnByValue: true,
         awaitPromise: true,
       });
-      return helper.valueFromRemoteObject(response.result);
+      return helper.valueFromRemoteObject(response.result) as T;
     }
-    return helper.valueFromRemoteObject(this._remoteObject);
+    return helper.valueFromRemoteObject(this._remoteObject) as T;
   }
 
   /**
