@@ -60,11 +60,12 @@ jobs:
           xvfb-run --auto-servernum npm run unit-with-coverage
           xvfb-run --auto-servernum npm run assert-unit-coverage
 
-      - name: Run unit tests on Firefox
-        env:
-          FIREFOX: true
-        run: |
-          xvfb-run --auto-servernum npm run funit
+      # Temporarily disabled due to Firefox Nightly flakes.
+      # - name: Run unit tests on Firefox
+      #   env:
+      #     FIREFOX: true
+      #   run: |
+      #     xvfb-run --auto-servernum npm run funit
 
       - name: Run browser tests
         run: |
