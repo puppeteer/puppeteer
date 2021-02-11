@@ -1411,7 +1411,7 @@ List of all available devices is available in the source code: [src/common/Devic
 
 #### page.emulateMediaFeatures(features)
 - `features` <?[Array]<[Object]>> Given an array of media feature objects, emulates CSS media features on the page. Each media feature object must have the following properties:
-  - `name` <[string]> The CSS media feature name. Supported names are `'prefers-colors-scheme'` and `'prefers-reduced-motion'`.
+  - `name` <[string]> The CSS media feature name. Supported names are `'prefers-colors-scheme'`, `'prefers-reduced-motion'`, and `'color-gamut'`.
   - `value` <[string]> The value for the given CSS media feature.
 - returns: <[Promise]>
 
@@ -1439,6 +1439,16 @@ await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches);
 await page.evaluate(() => matchMedia('(prefers-reduced-motion: reduce)').matches);
 // → true
 await page.evaluate(() => matchMedia('(prefers-reduced-motion: no-preference)').matches);
+// → false
+
+await page.emulateMediaFeatures([
+  { name: 'color-gamut', value: 'p3' },
+]);
+await page.evaluate(() => matchMedia('(color-gamut: srgb)').matches);
+// → true
+await page.evaluate(() => matchMedia('(color-gamut: p3)').matches);
+// → true
+await page.evaluate(() => matchMedia('(color-gamut: rec2020)').matches);
 // → false
 ```
 

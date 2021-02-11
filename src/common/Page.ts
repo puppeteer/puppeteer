@@ -1420,7 +1420,9 @@ export class Page extends EventEmitter {
       features.every((mediaFeature) => {
         const name = mediaFeature.name;
         assert(
-          /^prefers-(?:color-scheme|reduced-motion)$/.test(name),
+          /^(?:prefers-(?:color-scheme|reduced-motion)|color-gamut)$/.test(
+            name
+          ),
           'Unsupported media feature: ' + name
         );
         return true;
