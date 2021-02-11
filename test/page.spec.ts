@@ -260,6 +260,7 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
       let error = null;
       await context
+        // @ts-expect-error purposeful bad input for test
         .overridePermissions(server.EMPTY_PAGE, ['foo'])
         .catch((error_) => (error = error_));
       expect(error.message).toBe('Unknown permission: foo');

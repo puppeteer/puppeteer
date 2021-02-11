@@ -26,6 +26,52 @@ import { Viewport } from './PuppeteerViewport.js';
 
 type BrowserCloseCallback = () => Promise<void> | void;
 
+const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
+  Permission,
+  Protocol.Browser.PermissionType
+>([
+  ['geolocation', 'geolocation'],
+  ['midi', 'midi'],
+  ['notifications', 'notifications'],
+  // TODO: push isn't a valid type?
+  // ['push', 'push'],
+  ['camera', 'videoCapture'],
+  ['microphone', 'audioCapture'],
+  ['background-sync', 'backgroundSync'],
+  ['ambient-light-sensor', 'sensors'],
+  ['accelerometer', 'sensors'],
+  ['gyroscope', 'sensors'],
+  ['magnetometer', 'sensors'],
+  ['accessibility-events', 'accessibilityEvents'],
+  ['clipboard-read', 'clipboardReadWrite'],
+  ['clipboard-write', 'clipboardReadWrite'],
+  ['payment-handler', 'paymentHandler'],
+  ['idle-detection', 'idleDetection'],
+  // chrome-specific permissions we have.
+  ['midi-sysex', 'midiSysex'],
+]);
+
+/**
+ * @public
+ */
+export type Permission =
+  | 'geolocation'
+  | 'midi'
+  | 'notifications'
+  | 'camera'
+  | 'microphone'
+  | 'background-sync'
+  | 'ambient-light-sensor'
+  | 'accelerometer'
+  | 'gyroscope'
+  | 'magnetometer'
+  | 'accessibility-events'
+  | 'clipboard-read'
+  | 'clipboard-write'
+  | 'payment-handler'
+  | 'idle-detection'
+  | 'midi-sysex';
+
 /**
  * @public
  */
@@ -650,34 +696,12 @@ export class BrowserContext extends EventEmitter {
    */
   async overridePermissions(
     origin: string,
-    permissions: string[]
+    permissions: Permission[]
   ): Promise<void> {
-    const webPermissionToProtocol = new Map<
-      string,
-      Protocol.Browser.PermissionType
-    >([
-      ['geolocation', 'geolocation'],
-      ['midi', 'midi'],
-      ['notifications', 'notifications'],
-      // TODO: push isn't a valid type?
-      // ['push', 'push'],
-      ['camera', 'videoCapture'],
-      ['microphone', 'audioCapture'],
-      ['background-sync', 'backgroundSync'],
-      ['ambient-light-sensor', 'sensors'],
-      ['accelerometer', 'sensors'],
-      ['gyroscope', 'sensors'],
-      ['magnetometer', 'sensors'],
-      ['accessibility-events', 'accessibilityEvents'],
-      ['clipboard-read', 'clipboardReadWrite'],
-      ['clipboard-write', 'clipboardReadWrite'],
-      ['payment-handler', 'paymentHandler'],
-      ['idle-detection', 'idleDetection'],
-      // chrome-specific permissions we have.
-      ['midi-sysex', 'midiSysex'],
-    ]);
     const protocolPermissions = permissions.map((permission) => {
-      const protocolPermission = webPermissionToProtocol.get(permission);
+      const protocolPermission = WEB_PERMISSION_TO_PROTOCOL_PERMISSION.get(
+        permission
+      );
       if (!protocolPermission)
         throw new Error('Unknown permission: ' + permission);
       return protocolPermission;
