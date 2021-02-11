@@ -82,7 +82,7 @@
     "@types/ws": "^7.2.4",
     "@typescript-eslint/eslint-plugin": "^4.4.0",
     "@typescript-eslint/parser": "^4.4.0",
-    "@web/test-runner": "^0.9.2",
+    "@web/test-runner": "^0.12.15",
     "commonmark": "^0.28.1",
     "cross-env": "^7.0.2",
     "eslint": "^7.10.0",
