@@ -142,7 +142,7 @@ interface ScreenshotClip {
   height: number;
 }
 
-interface ScreenshotOptions {
+export interface ScreenshotOptions {
   type?: 'png' | 'jpeg';
   path?: string;
   fullPage?: boolean;
