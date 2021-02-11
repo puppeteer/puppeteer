@@ -135,21 +135,54 @@ interface MediaFeature {
   value: string;
 }
 
-interface ScreenshotClip {
+/**
+ * @public
+ */
+export interface ScreenshotClip {
   x: number;
   y: number;
   width: number;
   height: number;
 }
 
-interface ScreenshotOptions {
+/**
+ * @public
+ */
+export interface ScreenshotOptions {
+  /**
+   * @default 'png'
+   */
   type?: 'png' | 'jpeg';
+  /**
+   * The file path to save the image to. The screenshot type will be inferred
+   * from file extension. If path is a relative path, then it is resolved
+   * relative to current working directory. If no path is provided, the image
+   * won't be saved to the disk.
+   */
   path?: string;
+  /**
+   * When true, takes a screenshot of the full page.
+   * @default false
+   */
   fullPage?: boolean;
+  /**
+   * An object which specifies the clipping region of the page.
+   */
   clip?: ScreenshotClip;
+  /**
+   * Quality of the image, between 0-100. Not applicable to `png` images.
+   */
   quality?: number;
+  /**
+   * Hides default white background and allows capturing screenshots with transparency.
+   * @default false
+   */
   omitBackground?: boolean;
-  encoding?: string;
+  /**
+   * Encoding of the image.
+   * @default 'binary'
+   */
+  encoding?: 'base64' | 'binary';
 }
 
 /**
