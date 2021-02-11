@@ -132,7 +132,7 @@ describe('Page.click', function () {
       })
     ).toBe(text);
   });
-  itFailsFirefox('should click offscreen buttons', async () => {
+  it('should click offscreen buttons', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/offscreenbuttons.html');
