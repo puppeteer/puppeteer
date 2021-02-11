@@ -7,6 +7,6 @@
     "compile": "../../node_modules/.bin/tsc"
   },
   "dependencies": {
-    "puppeteer": "file:../../puppeteer-7.0.4-post.tgz"
+    "puppeteer": "file:../../puppeteer.tgz"
   }
 }
