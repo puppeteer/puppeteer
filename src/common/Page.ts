@@ -150,7 +150,7 @@ export interface ScreenshotClip {
  */
 export interface ScreenshotOptions {
   /**
-   * @default 'png'
+   * @defaultValue 'png'
    */
   type?: 'png' | 'jpeg';
   /**
@@ -162,7 +162,7 @@ export interface ScreenshotOptions {
   path?: string;
   /**
    * When true, takes a screenshot of the full page.
-   * @default false
+   * @defaultValue false
    */
   fullPage?: boolean;
   /**
@@ -175,12 +175,12 @@ export interface ScreenshotOptions {
   quality?: number;
   /**
    * Hides default white background and allows capturing screenshots with transparency.
-   * @default false
+   * @defaultValue false
    */
   omitBackground?: boolean;
   /**
    * Encoding of the image.
-   * @default 'binary'
+   * @defaultValue 'binary'
    */
   encoding?: 'base64' | 'binary';
 }
