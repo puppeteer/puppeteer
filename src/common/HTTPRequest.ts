@@ -132,8 +132,7 @@ export class HTTPRequest {
     interceptionId: string,
     allowInterception: boolean,
     event: Protocol.Network.RequestWillBeSentEvent,
-    redirectChain: HTTPRequest[],
-    allowCooperativeInterceptionMode = false
+    redirectChain: HTTPRequest[]
   ) {
     this._client = client;
     this._requestId = event.requestId;
@@ -147,7 +146,7 @@ export class HTTPRequest {
     this._postData = event.request.postData;
     this._frame = frame;
     this._redirectChain = redirectChain;
-    this._allowCooperativeInterceptionMode = allowCooperativeInterceptionMode;
+    this._allowCooperativeInterceptionMode = false;
     this._continueRequestOverrides = {};
     this._shouldContinue = true; // Continue by default
     this._shouldRespond = false;
@@ -163,6 +162,14 @@ export class HTTPRequest {
    */
   url(): string {
     return this._url;
+  }
+
+  hasCooperativeInterceptHandlers(): boolean {
+    return this._pendingCooperativeInterceptionHandlers.length > 0;
+  }
+
+  setAllowCooperativeRequestInterceptionMode(isEnabled: boolean): boolean {
+    return (this._allowCooperativeInterceptionMode = isEnabled);
   }
 
   private _assertCooperativeInterceptionMode(): void {
