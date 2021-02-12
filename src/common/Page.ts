@@ -2020,9 +2020,7 @@ export class Page extends EventEmitter {
   on(event: EventType, handler: Handler<any>): EventEmitter {
     if (event === PageEmittedEvents.CooperativeRequest) {
       return super.on(event, (req: HTTPRequest) => {
-        req.enqueuePendingCooperativeInterceptionHandler(
-          Promise.resolve(handler(req))
-        );
+        req.enqueuePendingCooperativeInterceptionHandler(() => handler(req));
       });
     }
     return super.on(event, handler);

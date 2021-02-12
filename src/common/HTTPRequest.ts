@@ -121,7 +121,9 @@ export class HTTPRequest {
   private _shouldContinue: boolean;
   private _shouldRespond: boolean;
   private _shouldAbort: boolean;
-  private _pendingCooperativeInterceptionHandlers: Array<PromiseLike<any>>;
+  private _pendingCooperativeInterceptionHandlers: Array<
+    () => void | PromiseLike<any>
+  >;
 
   /**
    * @internal
@@ -259,7 +261,7 @@ export class HTTPRequest {
    * is finalized.
    */
   enqueuePendingCooperativeInterceptionHandler(
-    pendingHandler: PromiseLike<any>
+    pendingHandler: () => void | PromiseLike<any>
   ): void {
     this._assertCooperativeInterceptionMode();
     this._pendingCooperativeInterceptionHandlers.push(pendingHandler);
@@ -274,7 +276,10 @@ export class HTTPRequest {
    */
   async finalizeCooperativeInterceptions(): Promise<void> {
     this._assertCooperativeInterceptionMode();
-    await Promise.all(this._pendingCooperativeInterceptionHandlers);
+    await this._pendingCooperativeInterceptionHandlers.reduce(
+      (p, x) => p.then(x),
+      Promise.resolve()
+    );
     this._interceptionHandled = true;
     if (this.shouldAbort()) return this.fulfillAbort();
     if (this.shouldRespond()) return this.fulfillRespond();
