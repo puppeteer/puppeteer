@@ -9,7 +9,8 @@ on:
       - main
 
 jobs:
-  checks:
+  linux-main-checks:
+    # https://github.com/actions/virtual-environments#available-environments
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -21,7 +22,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 2
-          ref: ${{ github.head_ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v1
@@ -45,6 +45,7 @@ jobs:
           npm run lint
           npm run generate-docs
           npm run ensure-correct-devtools-protocol-revision
+          npm run test-types-file
 
       - name: Run unit tests
         env:
@@ -59,11 +60,12 @@ jobs:
           xvfb-run --auto-servernum npm run unit-with-coverage
           xvfb-run --auto-servernum npm run assert-unit-coverage
 
-      - name: Run unit tests on Firefox
-        env:
-          FIREFOX: true
-        run: |
-          xvfb-run --auto-servernum npm run funit
+      # Temporarily disabled due to Firefox Nightly flakes.
+      # - name: Run unit tests on Firefox
+      #   env:
+      #     FIREFOX: true
+      #   run: |
+      #     xvfb-run --auto-servernum npm run funit
 
       - name: Run browser tests
         run: |
@@ -77,3 +79,73 @@ jobs:
           npm run test-install
           # Undo those changes.
           git checkout --force
+
+  macos:
+    # https://github.com/actions/virtual-environments#available-environments
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          # Test only the oldest maintenance LTS Node.js version.
+          # https://github.com/nodejs/Release#release-schedule
+          node-version: 10
+
+      - name: Install dependencies
+        run: |
+          # Test platform-specific browser binary fetching for both
+          # Chromium and Firefox.
+          PUPPETEER_PRODUCT=firefox npm install
+          npm install
+          ls .local-chromium .local-firefox
+
+      - name: Build
+        run: |
+          npm run build
+
+      - name: Run unit tests
+        env:
+          CHROMIUM: true
+        run: |
+          npm run unit
+
+  windows:
+    # https://github.com/actions/virtual-environments#available-environments
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          # Test only the oldest maintenance LTS Node.js version.
+          # https://github.com/nodejs/Release#release-schedule
+          node-version: 10
+
+      - name: Install dependencies
+        run: |
+          # Test platform-specific browser binary fetching for both
+          # Chromium and Firefox.
+          $env:PUPPETEER_PRODUCT='firefox'
+          npm install
+          Remove-Item Env:\PUPPETEER_PRODUCT
+          npm install
+          Get-ChildItem -Path .local-chromium,.local-firefox
+
+      - name: Build
+        run: |
+          npm run build
+
+      - name: Run unit tests
+        env:
+          CHROMIUM: true
+        run: |
+          npm run unit

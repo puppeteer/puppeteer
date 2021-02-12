@@ -185,6 +185,32 @@ describeChromeOnly('AriaQueryHandler', () => {
       await page.waitForSelector('aria/[role="button"]');
     });
 
+    it('should persist query handler bindings across reloads', async () => {
+      const { page, server } = getTestState();
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(addElement, 'button');
+      await page.waitForSelector('aria/[role="button"]');
+      await page.reload();
+      await page.evaluate(addElement, 'button');
+      await page.waitForSelector('aria/[role="button"]');
+    });
+
+    it('should persist query handler bindings across navigations', async () => {
+      const { page, server } = getTestState();
+
+      // Reset page but make sure that execution context ids start with 1.
+      await page.goto('data:text/html,');
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(addElement, 'button');
+      await page.waitForSelector('aria/[role="button"]');
+
+      // Reset page but again make sure that execution context ids start with 1.
+      await page.goto('data:text/html,');
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(addElement, 'button');
+      await page.waitForSelector('aria/[role="button"]');
+    });
+
     it('should work independently of `exposeFunction`', async () => {
       const { page, server } = getTestState();
       await page.goto(server.EMPTY_PAGE);
@@ -553,13 +579,13 @@ describeChromeOnly('AriaQueryHandler', () => {
       const { page } = getTestState();
       const found = await page.$$('aria/[role="heading"]');
       const ids = await getIds(found);
-      expect(ids).toEqual(['shown', 'hidden', 'node11', 'node13']);
+      expect(ids).toEqual(['shown', 'node11', 'node13']);
     });
-    it('should find both ignored and unignored', async () => {
+    it('should not find ignored', async () => {
       const { page } = getTestState();
       const found = await page.$$('aria/title');
       const ids = await getIds(found);
-      expect(ids).toEqual(['shown', 'hidden']);
+      expect(ids).toEqual(['shown']);
     });
   });
 });

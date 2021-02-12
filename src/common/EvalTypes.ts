@@ -19,9 +19,7 @@ import { JSHandle, ElementHandle } from './JSHandle.js';
 /**
  * @public
  */
-export type EvaluateFn<T = unknown> =
-  | string
-  | ((arg1: T, ...args: unknown[]) => unknown);
+export type EvaluateFn<T = any> = string | ((arg1: T, ...args: any[]) => any);
 
 export type UnwrapPromiseLike<T> = T extends PromiseLike<infer U> ? U : T;
 
@@ -29,15 +27,15 @@ export type UnwrapPromiseLike<T> = T extends PromiseLike<infer U> ? U : T;
  * @public
  */
 export type EvaluateFnReturnType<T extends EvaluateFn> = T extends (
-  ...args: unknown[]
+  ...args: any[]
 ) => infer R
   ? R
-  : unknown;
+  : any;
 
 /**
  * @public
  */
-export type EvaluateHandleFn = string | ((...args: unknown[]) => unknown);
+export type EvaluateHandleFn = string | ((...args: any[]) => any);
 
 /**
  * @public

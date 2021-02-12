@@ -37,7 +37,11 @@ import { Browser, BrowserContext } from './Browser.js';
 import { Target } from './Target.js';
 import { createJSHandle, JSHandle, ElementHandle } from './JSHandle.js';
 import { Viewport } from './PuppeteerViewport.js';
-import { Credentials, NetworkManagerEmittedEvents } from './NetworkManager.js';
+import {
+  Credentials,
+  NetworkConditions,
+  NetworkManagerEmittedEvents,
+} from './NetworkManager.js';
 import { HTTPRequest } from './HTTPRequest.js';
 import { HTTPResponse } from './HTTPResponse.js';
 import { Accessibility } from './Accessibility.js';
@@ -131,21 +135,54 @@ interface MediaFeature {
   value: string;
 }
 
-interface ScreenshotClip {
+/**
+ * @public
+ */
+export interface ScreenshotClip {
   x: number;
   y: number;
   width: number;
   height: number;
 }
 
-interface ScreenshotOptions {
+/**
+ * @public
+ */
+export interface ScreenshotOptions {
+  /**
+   * @default 'png'
+   */
   type?: 'png' | 'jpeg';
+  /**
+   * The file path to save the image to. The screenshot type will be inferred
+   * from file extension. If path is a relative path, then it is resolved
+   * relative to current working directory. If no path is provided, the image
+   * won't be saved to the disk.
+   */
   path?: string;
+  /**
+   * When true, takes a screenshot of the full page.
+   * @default false
+   */
   fullPage?: boolean;
+  /**
+   * An object which specifies the clipping region of the page.
+   */
   clip?: ScreenshotClip;
+  /**
+   * Quality of the image, between 0-100. Not applicable to `png` images.
+   */
   quality?: number;
+  /**
+   * Hides default white background and allows capturing screenshots with transparency.
+   * @default false
+   */
   omitBackground?: boolean;
-  encoding?: string;
+  /**
+   * Encoding of the image.
+   * @default 'binary'
+   */
+  encoding?: 'base64' | 'binary';
 }
 
 /**
@@ -711,6 +748,14 @@ export class Page extends EventEmitter {
    */
   setOfflineMode(enabled: boolean): Promise<void> {
     return this._frameManager.networkManager().setOfflineMode(enabled);
+  }
+
+  emulateNetworkConditions(
+    networkConditions: NetworkConditions | null
+  ): Promise<void> {
+    return this._frameManager
+      .networkManager()
+      .emulateNetworkConditions(networkConditions);
   }
 
   /**
@@ -1395,7 +1440,9 @@ export class Page extends EventEmitter {
       features.every((mediaFeature) => {
         const name = mediaFeature.name;
         assert(
-          /^prefers-(?:color-scheme|reduced-motion)$/.test(name),
+          /^(?:prefers-(?:color-scheme|reduced-motion)|color-gamut)$/.test(
+            name
+          ),
           'Unsupported media feature: ' + name
         );
         return true;
@@ -1688,20 +1735,8 @@ export class Page extends EventEmitter {
       const width = Math.ceil(metrics.contentSize.width);
       const height = Math.ceil(metrics.contentSize.height);
 
-      // Overwrite clip for full page at all times.
+      // Overwrite clip for full page.
       clip = { x: 0, y: 0, width, height, scale: 1 };
-      const { isMobile = false, deviceScaleFactor = 1, isLandscape = false } =
-        this._viewport || {};
-      const screenOrientation: Protocol.Emulation.ScreenOrientation = isLandscape
-        ? { angle: 90, type: 'landscapePrimary' }
-        : { angle: 0, type: 'portraitPrimary' };
-      await this._client.send('Emulation.setDeviceMetricsOverride', {
-        mobile: isMobile,
-        width,
-        height,
-        deviceScaleFactor,
-        screenOrientation,
-      });
     }
     const shouldSetDefaultBackground =
       options.omitBackground && format === 'png';
@@ -1713,6 +1748,7 @@ export class Page extends EventEmitter {
       format,
       quality: options.quality,
       clip,
+      captureBeyondViewport: true,
     });
     if (shouldSetDefaultBackground)
       await this._client.send('Emulation.setDefaultBackgroundColorOverride');

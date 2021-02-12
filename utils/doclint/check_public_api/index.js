@@ -577,6 +577,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Page.emulateNetworkConditions() networkConditions',
+        {
+          actualName: 'Object',
+          expectedName: 'NetworkConditions',
+        },
+      ],
+      [
         'Method Page.setViewport() options.viewport',
         {
           actualName: 'Object',
@@ -833,6 +840,28 @@ function compareDocumentations(actual, expected) {
         {
           actualName: 'Object',
           expectedName: 'ConnectOptions',
+        },
+      ],
+      [
+        'Method Page.deleteCookie() ...cookies',
+        {
+          actualName: '...Object',
+          expectedName: '...DeleteCookiesRequest',
+        },
+      ],
+      [
+        'Method Page.emulateVisionDeficiency() type',
+        {
+          actualName: 'string',
+          expectedName:
+            '"none"|"achromatopsia"|"blurredVision"|"deuteranopia"|"protanopia"|"tritanopia"',
+        },
+      ],
+      [
+        'Method BrowserContext.overridePermissions() permissions',
+        {
+          actualName: 'Array<string>',
+          expectedName: 'Array<Permission>',
         },
       ],
     ]);
