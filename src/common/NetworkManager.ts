@@ -319,12 +319,20 @@ export class NetworkManager extends EventEmitter {
     request.setAllowCooperativeRequestInterceptionMode(true);
     this.emit(NetworkManagerEmittedEvents.CooperativeRequest, request);
     if (request.hasCooperativeInterceptHandlers()) {
-      request.finalizeCooperativeInterceptions().catch((error) => {
-        debugError(error);
-      });
+      request
+        .finalizeCooperativeInterceptions()
+        .then(() => {
+          request.setAllowCooperativeRequestInterceptionMode(false);
+          this.emit(NetworkManagerEmittedEvents.Request, request);
+        })
+        .catch((error) => {
+          console.error(error);
+          debugError(error);
+        });
+    } else {
+      request.setAllowCooperativeRequestInterceptionMode(false);
+      this.emit(NetworkManagerEmittedEvents.Request, request);
     }
-    request.setAllowCooperativeRequestInterceptionMode(false);
-    this.emit(NetworkManagerEmittedEvents.Request, request);
   }
 
   _onRequestServedFromCache(

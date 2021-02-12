@@ -2018,16 +2018,6 @@ export class Page extends EventEmitter {
   }
 
   on(event: EventType, handler: Handler<any>): EventEmitter {
-    if (event === PageEmittedEvents.Request) {
-      return super.on(event, (req: HTTPRequest) => {
-        if (req.hasCooperativeInterceptHandlers()) {
-          throw new Error(
-            `Cooperative intercept mode is in use by at least one listener. Legacy request interceptions are not supported in Cooperative mode. All handlers must listen on 'request' or 'cooperative_request', but not both.`
-          );
-        }
-        handler(req);
-      });
-    }
     if (event === PageEmittedEvents.CooperativeRequest) {
       return super.on(event, (req: HTTPRequest) => {
         req.enqueuePendingCooperativeInterceptionHandler(

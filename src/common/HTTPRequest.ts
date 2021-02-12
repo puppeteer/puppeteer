@@ -275,6 +275,7 @@ export class HTTPRequest {
   async finalizeCooperativeInterceptions(): Promise<void> {
     this._assertCooperativeInterceptionMode();
     await Promise.all(this._pendingCooperativeInterceptionHandlers);
+    this._interceptionHandled = true;
     if (this.shouldAbort()) return this.fulfillAbort();
     if (this.shouldRespond()) return this.fulfillRespond();
     return this.fulfillContinue();
@@ -426,6 +427,10 @@ export class HTTPRequest {
     // Request interception is not supported for data: urls.
     if (this._url.startsWith('data:')) return;
     assert(this._allowInterception, 'Request Interception is not enabled!');
+    assert(
+      !this._interceptionHandled,
+      'Request is already handled! Did you mean to use cooperative_request?'
+    );
     this._continueRequestOverrides = overrides;
     this._shouldContinue = true;
     if (this._allowCooperativeInterceptionMode) {
@@ -438,10 +443,6 @@ export class HTTPRequest {
     assert(
       this._shouldContinue,
       `Internal error: continue() was never called!`
-    );
-    assert(
-      !this._interceptionHandled,
-      'Request Interception is already finalized!'
     );
 
     this._interceptionHandled = true;
@@ -498,6 +499,10 @@ export class HTTPRequest {
     // Mocking responses for dataURL requests is not currently supported.
     if (this._url.startsWith('data:')) return;
     assert(this._allowInterception, 'Request Interception is not enabled!');
+    assert(
+      !this._interceptionHandled,
+      'Request is already handled! Did you mean to use cooperative_request?'
+    );
     this._responseForRequest = response;
     this._shouldRespond = true;
     if (this._allowCooperativeInterceptionMode) {
@@ -508,10 +513,6 @@ export class HTTPRequest {
 
   async fulfillRespond(): Promise<void> {
     assert(this._shouldRespond, `Internal error: respond() was never called!`);
-    assert(
-      !this._interceptionHandled,
-      'Request Interception is already finalized!'
-    );
     this._interceptionHandled = true;
 
     const response = this._responseForRequest;
@@ -564,6 +565,10 @@ export class HTTPRequest {
     this._abortErrorReason = errorReasons[errorCode];
     assert(this._abortErrorReason, 'Unknown error code: ' + errorCode);
     assert(this._allowInterception, 'Request Interception is not enabled!');
+    assert(
+      !this._interceptionHandled,
+      'Request is already handled! Did you mean to use cooperative_request?'
+    );
     this._shouldAbort = true;
     if (this._allowCooperativeInterceptionMode) {
       return Promise.resolve();
@@ -573,7 +578,6 @@ export class HTTPRequest {
 
   async fulfillAbort(): Promise<void> {
     assert(this._shouldAbort, 'Internal error: abort() was never called!');
-    assert(!this._interceptionHandled, 'Request is already handled!');
     this._interceptionHandled = true;
     await this._client
       .send('Fetch.failRequest', {
