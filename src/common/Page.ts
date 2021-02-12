@@ -2022,7 +2022,7 @@ export class Page extends EventEmitter {
       return super.on(event, (req: HTTPRequest) => {
         if (req.hasCooperativeInterceptHandlers()) {
           throw new Error(
-            `Cooperative intercept mode is in use by at least one listener. Lecacy request interceptions are not supported in Cooperative mode. All handlers must listen on 'request' or 'cooperative_request', but not both.`
+            `Cooperative intercept mode is in use by at least one listener. Legacy request interceptions are not supported in Cooperative mode. All handlers must listen on 'request' or 'cooperative_request', but not both.`
           );
         }
         handler(req);
