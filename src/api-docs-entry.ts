@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { LaunchOptions, ChromeArgOptions } from './node/LaunchOptions.js';
-import { BrowserOptions } from './common/BrowserConnector.js';
+import {
+  LaunchOptions,
+  BrowserLaunchArgumentOptions,
+} from './node/LaunchOptions.js';
+import { BrowserConnectOptions } from './common/BrowserConnector.js';
 import { Product } from './common/Product.js';
 import { Browser } from './common/Browser.js';
 import { ConnectOptions } from './common/Puppeteer.js';
@@ -95,8 +98,8 @@ export * from 'devtools-protocol/types/protocol';
  */
 export declare function launch(
   options?: LaunchOptions &
-    ChromeArgOptions &
-    BrowserOptions & {
+    BrowserLaunchArgumentOptions &
+    BrowserConnectOptions & {
       product?: Product;
       extraPrefsFirefox?: Record<string, unknown>;
     }
