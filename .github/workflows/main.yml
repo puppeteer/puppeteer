@@ -114,6 +114,13 @@ jobs:
         run: |
           npm run unit
 
+      - name: Run unit tests on Firefox
+        env:
+          FIREFOX: true
+          MOZ_WEBRENDER: 0
+        run: |
+          npm run funit
+
   windows:
     # https://github.com/actions/virtual-environments#available-environments
     runs-on: windows-latest
