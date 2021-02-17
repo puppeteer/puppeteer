@@ -46,6 +46,13 @@ export interface ResponseForRequest {
 }
 
 /**
+ * Resource types for HTTPRequests as perceived by the rendering engine.
+ *
+ * @public
+ */
+export type ResourceType = Lowercase<Protocol.Network.ResourceType>;
+
+/**
  *
  * Represents an HTTP request sent by a page.
  * @remarks
@@ -108,7 +115,7 @@ export class HTTPRequest {
   private _allowInterception: boolean;
   private _interceptionHandled = false;
   private _url: string;
-  private _resourceType: string;
+  private _resourceType: ResourceType;
 
   private _method: string;
   private _postData?: string;
@@ -133,7 +140,7 @@ export class HTTPRequest {
     this._interceptionId = interceptionId;
     this._allowInterception = allowInterception;
     this._url = event.request.url;
-    this._resourceType = event.type.toLowerCase();
+    this._resourceType = event.type.toLowerCase() as ResourceType;
     this._method = event.request.method;
     this._postData = event.request.postData;
     this._frame = frame;
@@ -153,17 +160,8 @@ export class HTTPRequest {
   /**
    * Contains the request's resource type as it was perceived by the rendering
    * engine.
-   * @remarks
-   * @returns one of the following: `document`, `stylesheet`, `image`, `media`,
-   * `font`, `script`, `texttrack`, `xhr`, `fetch`, `eventsource`, `websocket`,
-   * `manifest`, `other`.
    */
-  resourceType(): string {
-    // TODO (@jackfranklin): protocol.d.ts has a type for this, but all the
-    // string values are uppercase. The Puppeteer docs explicitly say the
-    // potential values are all lower case, and the constructor takes the event
-    // type and calls toLowerCase() on it, so we can't reuse the type from the
-    // protocol.d.ts. Why do we lower case?
+  resourceType(): ResourceType {
     return this._resourceType;
   }
 
