@@ -20,8 +20,11 @@ import {
   ConnectOptions,
 } from '../common/Puppeteer.js';
 import { BrowserFetcher, BrowserFetcherOptions } from './BrowserFetcher.js';
-import { LaunchOptions, ChromeArgOptions } from './LaunchOptions.js';
-import { BrowserOptions } from '../common/BrowserConnector.js';
+import {
+  LaunchOptions,
+  BrowserLaunchArgumentOptions,
+} from './LaunchOptions.js';
+import { BrowserConnectOptions } from '../common/BrowserConnector.js';
 import { Browser } from '../common/Browser.js';
 import Launcher, { ProductLauncher } from './Launcher.js';
 import { PUPPETEER_REVISIONS } from '../revisions.js';
@@ -146,8 +149,8 @@ export class PuppeteerNode extends Puppeteer {
    */
   launch(
     options: LaunchOptions &
-      ChromeArgOptions &
-      BrowserOptions & {
+      BrowserLaunchArgumentOptions &
+      BrowserConnectOptions & {
         product?: Product;
         extraPrefsFirefox?: Record<string, unknown>;
       } = {}
@@ -215,7 +218,7 @@ export class PuppeteerNode extends Puppeteer {
    * @param options - Set of configurable options to set on the browser.
    * @returns The default flags that Chromium will be launched with.
    */
-  defaultArgs(options: ChromeArgOptions = {}): string[] {
+  defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     return this._launcher.defaultArgs(options);
   }
 
