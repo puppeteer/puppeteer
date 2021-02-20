@@ -4202,7 +4202,7 @@ TimeoutError is emitted whenever certain operations are terminated due to timeou
 A small EventEmitter class backed by [Mitt](https://github.com/developit/mitt/).
 
 #### eventEmitter.addListener(event, handler)
-- `event` <[string]|[symbol]> the event to remove the handler from.
+- `event` <[string]|[symbol]> the event to add the handler to.
 - `handler` <[Function]> the event listener that will be added.
 - returns: `this` so you can chain method calls
 
