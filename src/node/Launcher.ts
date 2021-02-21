@@ -105,13 +105,9 @@ class ChromeLauncher implements ProductLauncher {
 
     let chromeExecutable = executablePath;
     if (!executablePath) {
-      if (os.arch() === 'arm64') {
-        chromeExecutable = '/usr/bin/chromium-browser';
-      } else {
-        const { missingText, executablePath } = resolveExecutablePath(this);
-        if (missingText) throw new Error(missingText);
-        chromeExecutable = executablePath;
-      }
+      const { missingText, executablePath } = resolveExecutablePath(this);
+      if (missingText) throw new Error(missingText);
+      chromeExecutable = executablePath;
     }
 
     const usePipe = chromeArguments.includes('--remote-debugging-pipe');
