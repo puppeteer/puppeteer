@@ -37,13 +37,17 @@ describe('Page', function () {
       const { context } = getTestState();
 
       const newPage = await context.newPage();
+      const evaluatePromise = newPage
+        .evaluate(() => new Promise(() => {}))
+        .catch((error_) => (error = error_));
+
+      await newPage.evaluate(() =>
+        console.log('make sure that the previous eval got to the browser')
+      );
+
       let error = null;
-      await Promise.all([
-        newPage
-          .evaluate(() => new Promise(() => {}))
-          .catch((error_) => (error = error_)),
-        newPage.close(),
-      ]);
+      await Promise.all([evaluatePromise, newPage.close()]);
+
       expect(error.message).toContain('Protocol error');
     });
     it('should not be visible in browser.pages', async () => {
