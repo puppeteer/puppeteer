@@ -49,6 +49,8 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: false,
           session: true,
+          sourcePort: 8907,
+          sourceScheme: 'NonSecure',
         },
       ]);
     });
@@ -106,6 +108,8 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: false,
           session: true,
+          sourcePort: 8907,
+          sourceScheme: 'NonSecure',
         },
         {
           name: 'username',
@@ -118,6 +122,8 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: false,
           session: true,
+          sourcePort: 8907,
+          sourceScheme: 'NonSecure',
         },
       ]);
     });
@@ -154,6 +160,8 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: true,
           session: true,
+          sourcePort: 443,
+          sourceScheme: 'Secure',
         },
         {
           name: 'doggo',
@@ -166,6 +174,8 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: true,
           session: true,
+          sourcePort: 443,
+          sourceScheme: 'Secure',
         },
       ]);
     });
@@ -259,6 +269,8 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: false,
           session: true,
+          sourcePort: 80,
+          sourceScheme: 'NonSecure',
         },
       ]);
     });
@@ -283,6 +295,8 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: false,
           session: true,
+          sourcePort: 80,
+          sourceScheme: 'NonSecure',
         },
       ]);
       expect(await page.evaluate('document.cookie')).toBe('gridcookie=GRID');
@@ -389,6 +403,8 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: true,
           session: true,
+          sourcePort: 443,
+          sourceScheme: 'Secure',
         },
       ]);
     });
@@ -428,6 +444,8 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: false,
           session: true,
+          sourcePort: 80,
+          sourceScheme: 'NonSecure',
         },
       ]);
 
@@ -443,6 +461,8 @@ describe('Cookie specs', () => {
           httpOnly: false,
           secure: false,
           session: true,
+          sourcePort: 80,
+          sourceScheme: 'NonSecure',
         },
       ]);
     });
@@ -496,6 +516,8 @@ describe('Cookie specs', () => {
               sameSite: 'None',
               secure: true,
               session: true,
+              sourcePort: 443,
+              sourceScheme: 'Secure',
             },
           ]);
         } finally {
