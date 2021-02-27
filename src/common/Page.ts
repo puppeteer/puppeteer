@@ -1740,13 +1740,16 @@ export class Page extends EventEmitter {
       options.encoding === 'base64'
         ? result.data
         : Buffer.from(result.data, 'base64');
-    if (!isNode && options.path) {
-      throw new Error(
-        'Screenshots can only be written to a file path in a Node environment.'
-      );
+
+    if (options.path) {
+      if (!isNode) {
+        throw new Error(
+          'Screenshots can only be written to a file path in a Node environment.'
+        );
+      }
+      const fs = await helper.importFSModule();
+      await fs.promises.writeFile(options.path, buffer);
     }
-    const fs = await helper.importFSModule();
-    if (options.path) await fs.promises.writeFile(options.path, buffer);
     return buffer;
 
     function processClip(
