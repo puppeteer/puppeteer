@@ -2790,7 +2790,6 @@ await fileChooser.accept(['/tmp/myfile.pdf']);
 - returns: <[Promise]>
 
 #### fileChooser.cancel()
-- returns: <[Promise]>
 
 Closes the file chooser without selecting any files.
 

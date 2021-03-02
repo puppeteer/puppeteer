@@ -75,7 +75,7 @@ export class FileChooser {
   /**
    * Closes the file chooser without selecting any files.
    */
-  async cancel(): Promise<void> {
+  cancel() {
     assert(
       !this._handled,
       'Cannot cancel FileChooser which is already handled!'
