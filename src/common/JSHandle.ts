@@ -326,7 +326,7 @@ export class JSHandle {
  */
 export class ElementHandle<
   ElementType extends Element = Element
-> extends JSHandle {
+  > extends JSHandle {
   private _page: Page;
   private _frameManager: FrameManager;
 
@@ -418,7 +418,7 @@ export class ElementHandle<
       this._client.send('Page.getLayoutMetrics'),
     ]);
     if (!result || !result.quads.length)
-      throw new Error('Node is either not visible or not an HTMLElement');
+      throw new Error('Node is either not clickable or not an HTMLElement');
     // Filter out quads that have too small area to click into.
     const { clientWidth, clientHeight } = layoutMetrics.layoutViewport;
     const quads = result.quads
@@ -428,7 +428,7 @@ export class ElementHandle<
       )
       .filter((quad) => computeQuadArea(quad) > 1);
     if (!quads.length)
-      throw new Error('Node is either not visible or not an HTMLElement');
+      throw new Error('Node is either not clickable or not an HTMLElement');
     // Return the middle point of the first quad.
     const quad = quads[0];
     let x = 0;
@@ -513,10 +513,10 @@ export class ElementHandle<
       assert(
         helper.isString(value),
         'Values must be strings. Found value "' +
-          value +
-          '" of type "' +
-          typeof value +
-          '"'
+        value +
+        '" of type "' +
+        typeof value +
+        '"'
       );
 
     return this.evaluate<
