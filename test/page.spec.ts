@@ -35,6 +35,7 @@ describe('Page', function () {
   describe('Page.close', function () {
     it('should reject all promises when page is closed', async () => {
       const { context } = getTestState();
+      let error = null;
 
       const newPage = await context.newPage();
       const evaluatePromise = newPage
@@ -45,7 +46,6 @@ describe('Page', function () {
         console.log('make sure that the previous eval got to the browser')
       );
 
-      let error = null;
       await Promise.all([evaluatePromise, newPage.close()]);
 
       expect(error.message).toContain('Protocol error');
