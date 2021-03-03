@@ -242,6 +242,38 @@ describe('Emulation', () => {
           () => matchMedia('(prefers-color-scheme: dark)').matches
         )
       ).toBe(false);
+      await page.emulateMediaFeatures([{ name: 'color-gamut', value: 'srgb' }]);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: p3)').matches)
+      ).toBe(false);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: srgb)').matches)
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: rec2020)').matches)
+      ).toBe(false);
+      await page.emulateMediaFeatures([{ name: 'color-gamut', value: 'p3' }]);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: p3)').matches)
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: srgb)').matches)
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: rec2020)').matches)
+      ).toBe(false);
+      await page.emulateMediaFeatures([
+        { name: 'color-gamut', value: 'rec2020' },
+      ]);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: p3)').matches)
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: srgb)').matches)
+      ).toBe(true);
+      expect(
+        await page.evaluate(() => matchMedia('(color-gamut: rec2020)').matches)
+      ).toBe(true);
     });
     it('should throw in case of bad argument', async () => {
       const { page } = getTestState();

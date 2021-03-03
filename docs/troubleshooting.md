@@ -194,7 +194,7 @@ export CHROME_DEVEL_SANDBOX=/usr/local/sbin/chrome-devel-sandbox
 
 ## Running Puppeteer on Travis CI
 
-> 👋 We run our tests for Puppeteer on Travis CI - see our [`.travis.yml`](https://github.com/puppeteer/puppeteer/blob/main/.travis.yml) for reference.
+> 👋 We ran our tests for Puppeteer on Travis CI until v6.0.0 (when we've migrated to GitHub Actions) - see our historical [`.travis.yml` (v5.5.0)](https://github.com/puppeteer/puppeteer/blob/v5.5.0/.travis.yml) for reference.
 
 Tips-n-tricks:
 - [xvfb](https://en.wikipedia.org/wiki/Xvfb) service should be launched in order to run Chromium in non-headless mode
@@ -247,7 +247,7 @@ Running Puppeteer smoothly on CircleCI requires the following steps:
 
 ## Running Puppeteer in Docker
 
-> 👋 We use [Cirrus Ci](https://cirrus-ci.org/) to run our tests for Puppeteer in a Docker container - see our [`Dockerfile.linux`](https://github.com/puppeteer/puppeteer/blob/main/.ci/node10/Dockerfile.linux) for reference.
+> 👋 We used [Cirrus Ci](https://cirrus-ci.org/) to run our tests for Puppeteer in a Docker container until v3.0.x - see our historical [`Dockerfile.linux` (v3.0.1)](https://github.com/puppeteer/puppeteer/blob/v3.0.1/.ci/node12/Dockerfile.linux) for reference.
 
 Getting headless Chrome up and running in Docker can be tricky.
 The bundled Chromium that Puppeteer installs is missing the necessary

@@ -25,7 +25,7 @@ import {
   CustomQueryHandler,
 } from './QueryHandler.js';
 import { Product } from './Product.js';
-import { connectToBrowser, BrowserOptions } from './BrowserConnector.js';
+import { connectToBrowser, BrowserConnectOptions } from './BrowserConnector.js';
 import {
   PredefinedNetworkConditions,
   networkConditions,
@@ -39,7 +39,7 @@ export interface CommonPuppeteerSettings {
   isPuppeteerCore: boolean;
 }
 
-export interface ConnectOptions extends BrowserOptions {
+export interface ConnectOptions extends BrowserConnectOptions {
   browserWSEndpoint?: string;
   browserURL?: string;
   transport?: ConnectionTransport;

@@ -43,6 +43,8 @@ describe('DefaultBrowserContext', function () {
         httpOnly: false,
         secure: false,
         session: true,
+        sourcePort: 8907,
+        sourceScheme: 'NonSecure',
       },
     ]);
   });
@@ -69,6 +71,8 @@ describe('DefaultBrowserContext', function () {
         httpOnly: false,
         secure: false,
         session: true,
+        sourcePort: 80,
+        sourceScheme: 'NonSecure',
       },
     ]);
   });
@@ -101,6 +105,8 @@ describe('DefaultBrowserContext', function () {
         httpOnly: false,
         secure: false,
         session: true,
+        sourcePort: 80,
+        sourceScheme: 'NonSecure',
       },
     ]);
   });

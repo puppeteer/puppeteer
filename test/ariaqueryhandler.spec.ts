@@ -195,6 +195,22 @@ describeChromeOnly('AriaQueryHandler', () => {
       await page.waitForSelector('aria/[role="button"]');
     });
 
+    it('should persist query handler bindings across navigations', async () => {
+      const { page, server } = getTestState();
+
+      // Reset page but make sure that execution context ids start with 1.
+      await page.goto('data:text/html,');
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(addElement, 'button');
+      await page.waitForSelector('aria/[role="button"]');
+
+      // Reset page but again make sure that execution context ids start with 1.
+      await page.goto('data:text/html,');
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(addElement, 'button');
+      await page.waitForSelector('aria/[role="button"]');
+    });
+
     it('should work independently of `exposeFunction`', async () => {
       const { page, server } = getTestState();
       await page.goto(server.EMPTY_PAGE);

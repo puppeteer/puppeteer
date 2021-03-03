@@ -114,9 +114,26 @@ describe('JSHandle', function () {
       const { page } = getTestState();
 
       const aHandle = await page.evaluateHandle(() => ({ foo: 'bar' }));
-      const json = await aHandle.jsonValue();
+      const json = await aHandle.jsonValue<Record<string, string>>();
       expect(json).toEqual({ foo: 'bar' });
     });
+
+    it('works with jsonValues that are not objects', async () => {
+      const { page } = getTestState();
+
+      const aHandle = await page.evaluateHandle(() => ['a', 'b']);
+      const json = await aHandle.jsonValue<string[]>();
+      expect(json).toEqual(['a', 'b']);
+    });
+
+    it('works with jsonValues that are primitives', async () => {
+      const { page } = getTestState();
+
+      const aHandle = await page.evaluateHandle(() => 'foo');
+      const json = await aHandle.jsonValue<string>();
+      expect(json).toEqual('foo');
+    });
+
     itFailsFirefox('should not work with dates', async () => {
       const { page } = getTestState();
 

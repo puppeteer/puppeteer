@@ -842,6 +842,28 @@ function compareDocumentations(actual, expected) {
           expectedName: 'ConnectOptions',
         },
       ],
+      [
+        'Method Page.deleteCookie() ...cookies',
+        {
+          actualName: '...Object',
+          expectedName: '...DeleteCookiesRequest',
+        },
+      ],
+      [
+        'Method Page.emulateVisionDeficiency() type',
+        {
+          actualName: 'string',
+          expectedName:
+            '"none"|"achromatopsia"|"blurredVision"|"deuteranopia"|"protanopia"|"tritanopia"',
+        },
+      ],
+      [
+        'Method BrowserContext.overridePermissions() permissions',
+        {
+          actualName: 'Array<string>',
+          expectedName: 'Array<Permission>',
+        },
+      ],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);

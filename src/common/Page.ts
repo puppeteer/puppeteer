@@ -135,21 +135,54 @@ interface MediaFeature {
   value: string;
 }
 
-interface ScreenshotClip {
+/**
+ * @public
+ */
+export interface ScreenshotClip {
   x: number;
   y: number;
   width: number;
   height: number;
 }
 
-interface ScreenshotOptions {
+/**
+ * @public
+ */
+export interface ScreenshotOptions {
+  /**
+   * @defaultValue 'png'
+   */
   type?: 'png' | 'jpeg';
+  /**
+   * The file path to save the image to. The screenshot type will be inferred
+   * from file extension. If path is a relative path, then it is resolved
+   * relative to current working directory. If no path is provided, the image
+   * won't be saved to the disk.
+   */
   path?: string;
+  /**
+   * When true, takes a screenshot of the full page.
+   * @defaultValue false
+   */
   fullPage?: boolean;
+  /**
+   * An object which specifies the clipping region of the page.
+   */
   clip?: ScreenshotClip;
+  /**
+   * Quality of the image, between 0-100. Not applicable to `png` images.
+   */
   quality?: number;
+  /**
+   * Hides default white background and allows capturing screenshots with transparency.
+   * @defaultValue false
+   */
   omitBackground?: boolean;
-  encoding?: string;
+  /**
+   * Encoding of the image.
+   * @defaultValue 'binary'
+   */
+  encoding?: 'base64' | 'binary';
 }
 
 /**
@@ -1387,7 +1420,9 @@ export class Page extends EventEmitter {
       features.every((mediaFeature) => {
         const name = mediaFeature.name;
         assert(
-          /^prefers-(?:color-scheme|reduced-motion)$/.test(name),
+          /^(?:prefers-(?:color-scheme|reduced-motion)|color-gamut)$/.test(
+            name
+          ),
           'Unsupported media feature: ' + name
         );
         return true;
