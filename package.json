@@ -15,7 +15,7 @@
     "unit-debug": "npm run tsc-cjs && mocha --inspect-brk --config mocha-config/puppeteer-unit-tests.js",
     "unit-with-coverage": "cross-env COVERAGE=1 npm run unit",
     "assert-unit-coverage": "cross-env COVERAGE=1 mocha --config mocha-config/coverage-tests.js",
-    "funit": "PUPPETEER_PRODUCT=firefox npm run unit",
+    "funit": "cross-env PUPPETEER_PRODUCT=firefox npm run unit",
     "test": "npm run tsc && npm run lint --silent && npm run unit-with-coverage && npm run test-browser",
     "prepare": "node typescript-if-required.js",
     "prepublishOnly": "npm run build",
