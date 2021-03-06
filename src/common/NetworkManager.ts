@@ -217,7 +217,7 @@ export class NetworkManager extends EventEmitter {
   async _updateProtocolCacheDisabled(): Promise<void> {
     await this._client.send('Network.setCacheDisabled', {
       cacheDisabled:
-        this._userCacheDisabled || this._protocolRequestInterceptionEnabled,
+        this._userCacheDisabled || this._userRequestInterceptionEnabled,
     });
   }
 
