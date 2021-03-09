@@ -59,7 +59,7 @@ function parseAriaSelector(selector: string): ariaQueryOption {
       attribute = attribute.trim();
       if (!knownAttributes.has(attribute))
         throw new Error(
-          'Unkown aria attribute "${groups.attribute}" in selector'
+          'Unknown aria attribute "${groups.attribute}" in selector'
         );
       queryOptions[attribute] = normalize(value);
       return '';
