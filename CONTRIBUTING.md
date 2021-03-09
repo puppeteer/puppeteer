@@ -261,8 +261,8 @@ The following steps are needed to update the Chromium version.
 1. Run `npm run ensure-correct-devtools-protocol-revision`.
    If it fails, update `package.json` with the expected `devtools-protocol` version.
 1. Run `npm run tsc` and `npm install` and ensure that all tests pass. If a test fails, [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
-1. Commit and push your changes and open a pull request.
-1. In `CHANGELOG.md`, name the version using the following format to make sure [pptr.dev](https://pptr.dev/) can parse it correctly: `Chromium <version> (<revision>)`, e.g. _"Chromium 90.0.4427.0 (r856583)"_ for version `v8.0.0.`.
+1. Commit and push your changes and open a pull request. 
+   The commit message should contain the version in `Chromium <version> (<revision>)` format to ensure that [pptr.dev](https://pptr.dev/) can parse it correctly, e.g. `'feat(chromium): roll to Chromium 90.0.4427.0 (r856583)'`.
 
 ### Bisecting upstream changes
 
@@ -284,7 +284,6 @@ Releasing to npm consists of the following phases:
     1. Merge the PR.
     1. Once merged, publish the release notes from `CHANGELOG.md` using [GitHub’s “draft new release tag” option](https://github.com/puppeteer/puppeteer/releases/new).
         - **NOTE**: tag names are prefixed with `'v'`, e.g. for version `1.4.0` the tag is `v1.4.0`.
-        - **NOTE**: in the case of Chromium roll, make sure to use `Chromium <version> (<revision>)` format, e.g. _"Chromium 90.0.4427.0 (r856583)"_ for version `v8.0.0.`.
     1. As soon as the Git tag is created by completing the previous step, our CI automatically `npm publish`es the new releases for both the `puppeteer` and `puppeteer-core` packages.
 1. Source Code: mark post-release.
     1. Bump `package.json` version to the `-post` version, run `npm run doc` to update the “released APIs” section at the top of `docs/api.md` accordingly, and send a PR titled `'chore: bump version to vXXX.YYY.ZZZ-post'` ([example](https://github.com/puppeteer/puppeteer/pull/6808))
