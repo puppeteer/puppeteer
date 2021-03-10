@@ -224,7 +224,7 @@ export class NetworkManager extends EventEmitter {
   _onRequestWillBeSent(event: Protocol.Network.RequestWillBeSentEvent): void {
     // Request interception doesn't happen for data URLs with Network Service.
     if (
-      this._protocolRequestInterceptionEnabled &&
+      this._userRequestInterceptionEnabled &&
       !event.request.url.startsWith('data:')
     ) {
       const requestId = event.requestId;
