@@ -581,11 +581,7 @@ describe('network', function () {
       });
 
       const responses = new Map();
-      page.on(
-        'response',
-        (r) =>
-          responses.set(r.url().split('/').pop(), r)
-      );
+      page.on('response', (r) => responses.set(r.url().split('/').pop(), r));
 
       // Load and re-load to make sure it's cached.
       await page.goto(server.PREFIX + '/cached/one-style.html');
