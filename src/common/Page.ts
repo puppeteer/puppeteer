@@ -688,6 +688,8 @@ export class Page extends EventEmitter {
 
   /**
    * @param value - Whether to enable request interception.
+   * @param cacheSafe - Whether to trust browser caching. If set to false,
+   * enabling request interception disables page caching. Defaults to false.
    *
    * @remarks
    * Activating request interception enables {@link HTTPRequest.abort},
@@ -695,9 +697,7 @@ export class Page extends EventEmitter {
    * provides the capability to modify network requests that are made by a page.
    *
    * Once request interception is enabled, every request will stall unless it's
-   * continued, responded or aborted.
-   *
-   * **NOTE** Enabling request interception disables page caching.
+   * continued, responded or aborted; or completed using the browser cache.
    *
    * @example
    * An example of a naïve request interceptor that aborts all image requests:
@@ -719,8 +719,8 @@ export class Page extends EventEmitter {
    * })();
    * ```
    */
-  async setRequestInterception(value: boolean): Promise<void> {
-    return this._frameManager.networkManager().setRequestInterception(value);
+  async setRequestInterception(value: boolean, cacheSafe: boolean = false): Promise<void> {
+    return this._frameManager.networkManager().setRequestInterception(value, cacheSafe);
   }
 
   /**
