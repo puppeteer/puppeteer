@@ -190,7 +190,10 @@ export class NetworkManager extends EventEmitter {
     await this._updateProtocolCacheDisabled();
   }
 
-  async setRequestInterception(value: boolean, cacheSafe: boolean = false): Promise<void> {
+  async setRequestInterception(
+    value: boolean,
+    cacheSafe = false
+  ): Promise<void> {
     this._userRequestInterceptionEnabled = value;
     this._userRequestInterceptionCacheSafe = cacheSafe;
     await this._updateProtocolRequestInterception();
@@ -219,7 +222,9 @@ export class NetworkManager extends EventEmitter {
   async _updateProtocolCacheDisabled(): Promise<void> {
     await this._client.send('Network.setCacheDisabled', {
       cacheDisabled:
-        this._userCacheDisabled || (this._userRequestInterceptionEnabled && !this._userRequestInterceptionCacheSafe),
+        this._userCacheDisabled ||
+        (this._userRequestInterceptionEnabled &&
+          !this._userRequestInterceptionCacheSafe),
     });
   }
 

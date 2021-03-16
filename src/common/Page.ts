@@ -719,8 +719,13 @@ export class Page extends EventEmitter {
    * })();
    * ```
    */
-  async setRequestInterception(value: boolean, cacheSafe: boolean = false): Promise<void> {
-    return this._frameManager.networkManager().setRequestInterception(value, cacheSafe);
+  async setRequestInterception(
+    value: boolean,
+    cacheSafe = false
+  ): Promise<void> {
+    return this._frameManager
+      .networkManager()
+      .setRequestInterception(value, cacheSafe);
   }
 
   /**
