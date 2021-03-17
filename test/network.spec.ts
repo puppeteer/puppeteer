@@ -355,6 +355,18 @@ describe('network', function () {
       expect(requests[0].frame() === page.mainFrame()).toBe(true);
       expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
     });
+    it('Page.Events.RequestServedFromCache', async () => {
+      const { page, server } = getTestState();
+
+      let cached = [];
+      page.on('requestservedfromcache', (r) => cached.push(r.url().split('/').pop()));
+
+      await page.goto(server.PREFIX + '/cached/one-style.html');
+      expect(cached).toEqual([]);
+
+      await page.reload();
+      expect(cached).toEqual(['one-style.css']);
+    });
     it('Page.Events.Response', async () => {
       const { page, server } = getTestState();
 
