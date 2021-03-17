@@ -217,14 +217,14 @@ export class NetworkManager extends EventEmitter {
   async _updateProtocolCacheDisabled(): Promise<void> {
     await this._client.send('Network.setCacheDisabled', {
       cacheDisabled:
-        this._userCacheDisabled || this._protocolRequestInterceptionEnabled,
+        this._userCacheDisabled || this._userRequestInterceptionEnabled,
     });
   }
 
   _onRequestWillBeSent(event: Protocol.Network.RequestWillBeSentEvent): void {
     // Request interception doesn't happen for data URLs with Network Service.
     if (
-      this._protocolRequestInterceptionEnabled &&
+      this._userRequestInterceptionEnabled &&
       !event.request.url.startsWith('data:')
     ) {
       const requestId = event.requestId;
