@@ -54,6 +54,7 @@ export interface InternalNetworkConditions extends NetworkConditions {
  */
 export const NetworkManagerEmittedEvents = {
   Request: Symbol('NetworkManager.Request'),
+  RequestServedFromCache: Symbol('NetworkManager.RequestServedFromCache'),
   Response: Symbol('NetworkManager.Response'),
   RequestFailed: Symbol('NetworkManager.RequestFailed'),
   RequestFinished: Symbol('NetworkManager.RequestFinished'),
@@ -330,6 +331,7 @@ export class NetworkManager extends EventEmitter {
   ): void {
     const request = this._requestIdToRequest.get(event.requestId);
     if (request) request._fromMemoryCache = true;
+    this.emit(NetworkManagerEmittedEvents.RequestServedFromCache, request);
   }
 
   _handleRequestRedirect(

@@ -288,6 +288,14 @@ export const enum PageEmittedEvents {
    */
   Request = 'request',
   /**
+   * Emitted when a request ended up loading from cache. Contains a {@link HTTPRequest}.
+   *
+   * @remarks
+   * For certain requests, might contain undefined.
+   * @see https://crbug.com/750469
+   */
+  RequestServedFromCache = 'requestservedfromcache',
+  /**
    * Emitted when a request fails, for example by timing out.
    *
    * Contains a {@link HTTPRequest}.
@@ -482,6 +490,9 @@ export class Page extends EventEmitter {
     const networkManager = this._frameManager.networkManager();
     networkManager.on(NetworkManagerEmittedEvents.Request, (event) =>
       this.emit(PageEmittedEvents.Request, event)
+    );
+    networkManager.on(NetworkManagerEmittedEvents.RequestServedFromCache, (event) =>
+      this.emit(PageEmittedEvents.RequestServedFromCache, event)
     );
     networkManager.on(NetworkManagerEmittedEvents.Response, (event) =>
       this.emit(PageEmittedEvents.Response, event)
