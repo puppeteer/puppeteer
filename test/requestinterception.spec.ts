@@ -504,7 +504,7 @@ describe('request interception', function () {
       await page.setRequestInterception(true, false);
       page.on('request', (request) => request.continue());
 
-      let cached = [];
+      const cached = [];
       page.on('requestservedfromcache', (r) => cached.push(r));
 
       await page.reload();
@@ -519,7 +519,7 @@ describe('request interception', function () {
       await page.setRequestInterception(true, true);
       page.on('request', (request) => request.continue());
 
-      let cached = [];
+      const cached = [];
       page.on('requestservedfromcache', (r) => cached.push(r));
 
       await page.reload();

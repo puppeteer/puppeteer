@@ -491,8 +491,9 @@ export class Page extends EventEmitter {
     networkManager.on(NetworkManagerEmittedEvents.Request, (event) =>
       this.emit(PageEmittedEvents.Request, event)
     );
-    networkManager.on(NetworkManagerEmittedEvents.RequestServedFromCache, (event) =>
-      this.emit(PageEmittedEvents.RequestServedFromCache, event)
+    networkManager.on(
+      NetworkManagerEmittedEvents.RequestServedFromCache,
+      (event) => this.emit(PageEmittedEvents.RequestServedFromCache, event)
     );
     networkManager.on(NetworkManagerEmittedEvents.Response, (event) =>
       this.emit(PageEmittedEvents.Response, event)

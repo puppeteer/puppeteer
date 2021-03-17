@@ -358,8 +358,10 @@ describe('network', function () {
     it('Page.Events.RequestServedFromCache', async () => {
       const { page, server } = getTestState();
 
-      let cached = [];
-      page.on('requestservedfromcache', (r) => cached.push(r.url().split('/').pop()));
+      const cached = [];
+      page.on('requestservedfromcache', (r) =>
+        cached.push(r.url().split('/').pop())
+      );
 
       await page.goto(server.PREFIX + '/cached/one-style.html');
       expect(cached).toEqual([]);
