@@ -151,6 +151,11 @@ export interface PDFOptions {
    * @defaultValue the empty string, which means the PDF will not be written to disk.
    */
   path?: string;
+  /**
+   * Hides default white background and allows generating pdfs with transparency.
+   * @defaultValue false
+   */
+  omitBackground?: boolean;
 }
 
 /**
