@@ -540,6 +540,7 @@ export class Browser extends EventEmitter {
   }
 
   /**
+   * @public
    * Indicates that the browser is connected.
    */
   isConnected(): boolean {
