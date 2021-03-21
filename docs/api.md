@@ -427,7 +427,7 @@ If Puppeteer doesn't find them in the environment during the installation step, 
 - `HTTP_PROXY`, `HTTPS_PROXY`, `NO_PROXY` - defines HTTP proxy settings that are used to download and run Chromium.
 - `PUPPETEER_SKIP_CHROMIUM_DOWNLOAD` - do not download bundled Chromium during installation step.
 - `PUPPETEER_DOWNLOAD_HOST` - overwrite URL prefix that is used to download Chromium. Note: this includes protocol and might even include path prefix. Defaults to `https://storage.googleapis.com`.
-- `PUPPETEER_DOWNLOAD_PATH` - overwrite the path for the downloads folder. Defaults to `<root>/.local-chromium`, where `<root>` is puppeteer's package root.
+- `PUPPETEER_DOWNLOAD_PATH` - overwrite the path for the downloads folder. Defaults to `<root>/.local-chromium`, where `<root>` is Puppeteer's package root.
 - `PUPPETEER_CHROMIUM_REVISION` - specify a certain version of Chromium you'd like Puppeteer to use. See [puppeteer.launch([options])](#puppeteerlaunchoptions) on how executable path is inferred. **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/puppeteer/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
 - `PUPPETEER_EXECUTABLE_PATH` - specify an executable path to be used in `puppeteer.launch`. See [puppeteer.launch([options])](#puppeteerlaunchoptions) on how the executable path is inferred. **BEWARE**: Puppeteer is only [guaranteed to work](https://github.com/puppeteer/puppeteer/#q-why-doesnt-puppeteer-vxxx-work-with-chromium-vyyy) with the bundled Chromium, use at your own risk.
 - `PUPPETEER_PRODUCT` - specify which browser you'd like Puppeteer to use. Must be one of `chrome` or `firefox`. This can also be used during installation to fetch the recommended browser binary. Setting `product` programmatically in [puppeteer.launch([options])](#puppeteerlaunchoptions) supersedes this environment variable. The product is exposed in [`puppeteer.product`](#puppeteerproduct)
@@ -485,12 +485,12 @@ Clears all registered handlers.
 #### puppeteer.connect(options)
 - `options` <[Object]>
   - `browserWSEndpoint` <?[string]> a [browser websocket endpoint](#browserwsendpoint) to connect to.
-  - `browserURL` <?[string]> a browser url to connect to, in format `http://${host}:${port}`. Use interchangeably with `browserWSEndpoint` to let Puppeteer fetch it from [metadata endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
+  - `browserURL` <?[string]> a browser URL to connect to, in format `http://${host}:${port}`. Use interchangeably with `browserWSEndpoint` to let Puppeteer fetch it from [metadata endpoint](https://chromedevtools.github.io/devtools-protocol/#how-do-i-access-the-browser-target).
   - `ignoreHTTPSErrors` <[boolean]> Whether to ignore HTTPS errors during navigation. Defaults to `false`.
   - `defaultViewport` <?[Object]> Sets a consistent viewport for each page. Defaults to an 800x600 viewport. `null` disables the default viewport.
     - `width` <[number]> page width in pixels.
     - `height` <[number]> page height in pixels.
-    - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
+    - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as DPR). Defaults to `1`.
     - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
     - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
     - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
@@ -504,7 +504,7 @@ This methods attaches Puppeteer to an existing browser instance.
 #### puppeteer.createBrowserFetcher([options])
 - `options` <[Object]>
   - `host` <[string]> A download host to be used. Defaults to `https://storage.googleapis.com`. If the `product` is `firefox`, this defaults to `https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central`.
-  - `path` <[string]> A path for the downloads folder. Defaults to `<root>/.local-chromium`, where `<root>` is puppeteer's package root. If the `product` is `firefox`, this defaults to `<root>/.local-firefox`.
+  - `path` <[string]> A path for the downloads folder. Defaults to `<root>/.local-chromium`, where `<root>` is Puppeteer's package root. If the `product` is `firefox`, this defaults to `<root>/.local-firefox`.
   - `platform` <"linux"|"mac"|"win32"|"win64"> [string] for the current platform. Possible values are: `mac`, `win32`, `win64`, `linux`. Defaults to the current platform.
   - `product` <"chrome"|"firefox"> [string] for the product to run. Possible values are: `chrome`, `firefox`. Defaults to `chrome`.
 - returns: <[BrowserFetcher]>
@@ -581,7 +581,7 @@ try {
   - `defaultViewport` <?[Object]> Sets a consistent viewport for each page. Defaults to an 800x600 viewport. `null` disables the default viewport.
     - `width` <[number]> page width in pixels.
     - `height` <[number]> page height in pixels.
-    - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
+    - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as DPR). Defaults to `1`.
     - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
     - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
     - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
@@ -644,7 +644,7 @@ The product is set by the `PUPPETEER_PRODUCT` environment variable or the `produ
 - `name` <[string]> The name that the custom query handler will be registered under.
 - `queryHandler` <[CustomQueryHandler]> The [custom query handler](#interface-customqueryhandler) to register.
 
-Registers a [custom query handler](#interface-customqueryhandler). After registration, the handler can be used everywhere where a selector is expected by prepending the selection string with `<name>/`. The name is only allowed to consist of lower- and upper case latin letters.
+Registers a [custom query handler](#interface-customqueryhandler). After registration, the handler can be used everywhere where a selector is expected by prepending the selection string with `<name>/`. The name is only allowed to consist of lower and upper case Latin letters.
 
 Example:
 
@@ -693,7 +693,7 @@ The method initiates a HEAD request to check if the revision is available.
 - `revision` <[string]> a revision to download.
 - `progressCallback` <[function]([number], [number])> A function that will be called with two arguments:
   - `downloadedBytes` <[number]> how many bytes have been downloaded
-  - `totalBytes` <[number]> how large is the total download.
+  - `totalBytes` <[number]> how large is the total download
 - returns: <[Promise]<[Object]>> Resolves with revision information when the revision is downloaded and extracted
   - `revision` <[string]> the revision the info was created from
   - `folderPath` <[string]> path to the extracted revision folder
@@ -775,7 +775,7 @@ Emitted when Puppeteer gets disconnected from the Chromium instance. This might 
 #### event: 'targetchanged'
 - <[Target]>
 
-Emitted when the url of a target changes.
+Emitted when the URL of a target changes.
 
 > **NOTE** This includes target changes in incognito browser contexts.
 
@@ -829,7 +829,7 @@ Returns the default browser context. The default browser context can not be clos
 
 #### browser.disconnect()
 
-Disconnects Puppeteer from the browser, but leaves the Chromium process running. After calling `disconnect`, the [Browser] object is considered disposed and cannot be used anymore.
+Disconnects Puppeteer from the browser but leaves the Chromium process running. After calling `disconnect`, the [Browser] object is considered disposed and cannot be used anymore.
 
 #### browser.isConnected()
 
@@ -887,7 +887,7 @@ const newWindowTarget = await browser.waitForTarget(target => target.url() === '
 ```
 
 #### browser.wsEndpoint()
-- returns: <[string]> Browser websocket url.
+- returns: <[string]> Browser websocket URL.
 
 Browser websocket endpoint which can be used as an argument to
 [puppeteer.connect](#puppeteerconnectoptions). The format is `ws://${host}:${port}/devtools/browser/<id>`
@@ -921,7 +921,7 @@ await context.close();
 #### event: 'targetchanged'
 - <[Target]>
 
-Emitted when the url of a target inside the browser context changes.
+Emitted when the URL of a target inside the browser context changes.
 
 #### event: 'targetcreated'
 - <[Target]>
@@ -1112,7 +1112,7 @@ Emitted when a frame is detached.
 #### event: 'framenavigated'
 - <[Frame]>
 
-Emitted when a frame is navigated to a new url.
+Emitted when a frame is navigated to a new URL.
 
 #### event: 'load'
 
@@ -1254,10 +1254,10 @@ Shortcut for [page.mainFrame().$x(expression)](#framexexpression)
   - `url` <[string]> URL of a script to be added.
   - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `content` <[string]> Raw JavaScript content to be injected into frame.
-  - `type` <[string]> Script type. Use 'module' in order to load a Javascript ES6 module. See [script](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script) for more details.
+  - `type` <[string]> Script type. Use 'module' in order to load a JavaScript ES6 module. See [script](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script) for more details.
 - returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
 
-Adds a `<script>` tag into the page with the desired url or content.
+Adds a `<script>` tag into the page with the desired URL or content.
 
 Shortcut for [page.mainFrame().addScriptTag(options)](#frameaddscripttagoptions).
 
@@ -1268,7 +1268,7 @@ Shortcut for [page.mainFrame().addScriptTag(options)](#frameaddscripttagoptions)
   - `content` <[string]> Raw CSS content to be injected into frame.
 - returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame.
 
-Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
+Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<style type="text/css">` tag with the content.
 
 Shortcut for [page.mainFrame().addStyleTag(options)](#frameaddstyletagoptions).
 
@@ -1373,7 +1373,7 @@ If URLs are specified, only cookies for those URLs are returned.
   - `viewport` <[Object]>
     - `width` <[number]> page width in pixels.
     - `height` <[number]> page height in pixels.
-    - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
+    - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as DPR). Defaults to `1`.
     - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
     - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
     - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
@@ -1384,7 +1384,7 @@ Emulates given device metrics and user agent. This method is a shortcut for call
 - [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
 - [page.setViewport(viewport)](#pagesetviewportviewport)
 
-To aid emulation, puppeteer provides a list of device descriptors which can be obtained via the [`puppeteer.devices`](#puppeteerdevices).
+To aid emulation, Puppeteer provides a list of device descriptors that can be obtained via the [`puppeteer.devices`](#puppeteerdevices).
 
 `page.emulate` will resize the page. A lot of websites don't expect phones to change size, so you should emulate before navigating to the page.
 
@@ -1723,7 +1723,7 @@ can not go forward, resolves to `null`.
 Navigate to the next page in history.
 
 #### page.goto(url[, options])
-- `url` <[string]> URL to navigate page to. The url should include scheme, e.g. `https://`.
+- `url` <[string]> URL to navigate page to. The URL should include scheme, e.g. `https://`.
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) or [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout) methods.
   - `waitUntil` <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleMethod>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
@@ -1830,7 +1830,7 @@ Page is guaranteed to have a main frame which persists during navigations.
 
 > **NOTE** Generating a pdf is currently only supported in Chrome headless.
 
-`page.pdf()` generates a pdf of the page with `print` css media. To generate a pdf with `screen` media, call [page.emulateMediaType('screen')](#pageemulatemediatypetype) before calling `page.pdf()`:
+`page.pdf()` generates a pdf of the page with `print` CSS media. To generate a pdf with `screen` media, call [page.emulateMediaType('screen')](#pageemulatemediatypetype) before calling `page.pdf()`:
 
 > **NOTE** By default, `page.pdf()` generates a pdf with modified colors for printing. Use the [`-webkit-print-color-adjust`](https://developer.mozilla.org/en-US/docs/Web/CSS/-webkit-print-color-adjust) property to force rendering of exact colors.
 
@@ -1939,7 +1939,7 @@ Shortcut for [page.mainFrame().select()](#frameselectselector-values)
 
 Toggles bypassing page's Content-Security-Policy.
 
-> **NOTE** CSP bypassing happens at the moment of CSP initialization rather then evaluation. Usually this means
+> **NOTE** CSP bypassing happens at the moment of CSP initialization rather than evaluation. Usually, this means
 that `page.setBypassCSP` should be called before navigating to the domain.
 
 #### page.setCacheEnabled([enabled])
@@ -1950,7 +1950,7 @@ Toggles ignoring cache for each request based on the enabled state. By default, 
 
 #### page.setContent(html[, options])
 - `html` <[string]> HTML markup to assign to the page.
-- `options` <[Object]> Parameters which might have the following properties:
+- `options` <[Object]> Parameters that might have the following properties:
   - `timeout` <[number]> Maximum time in milliseconds for resources to load, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) or [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout) methods.
   - `waitUntil` <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleMethod>> When to consider setting markup succeeded, defaults to `load`. Given an array of event strings, setting content is considered to be successful after all events have been fired. Events can be either:
     - `load` - consider setting content to be finished when the `load` event is fired.
@@ -2079,7 +2079,7 @@ const puppeteer = require('puppeteer');
 - `viewport` <[Object]>
   - `width` <[number]> page width in pixels. **required**
   - `height` <[number]> page height in pixels. **required**
-  - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as dpr). Defaults to `1`.
+  - `deviceScaleFactor` <[number]> Specify device scale factor (can be thought of as DPR). Defaults to `1`.
   - `isMobile` <[boolean]> Whether the `meta viewport` tag is taken into account. Defaults to `false`.
   - `hasTouch`<[boolean]> Specifies if viewport supports touch events. Defaults to `false`
   - `isLandscape` <[boolean]> Specifies if viewport is in landscape mode. Defaults to `false`.
@@ -2207,7 +2207,7 @@ Shortcut for [page.mainFrame().waitFor(selectorOrFunctionOrTimeout[, options[, .
 > **NOTE** In non-headless Chromium, this method results in the native file picker dialog **not showing up** for the user.
 
 This method is typically coupled with an action that triggers file choosing.
-The following example clicks a button that issues a file chooser, and then
+The following example clicks a button that issues a file chooser and then
 responds with `/tmp/myfile.pdf` as if a user has selected this file.
 
 ```js
@@ -2280,8 +2280,8 @@ Shortcut for [page.mainFrame().waitForFunction(pageFunction[, options[, ...args]
     - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
 - returns: <[Promise]<?[HTTPResponse]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
 
-This resolves when the page navigates to a new URL or reloads. It is useful for when you run code
-which will indirectly cause the page to navigate. Consider this example:
+This resolves when the page navigates to a new URL or reloads. It is useful when you run code
+that will indirectly cause the page to navigate. Consider this example:
 
 ```js
 const [response] = await Promise.all([
@@ -2352,7 +2352,7 @@ Shortcut for [page.mainFrame().waitForSelector(selector[, options])](#framewaitf
 
 #### page.waitForTimeout(milliseconds)
 - `milliseconds` <[number]> The number of milliseconds to wait for.
-- returns: <[Promise]> Promise which resolves after the timeout has completed.
+- returns: <[Promise]> Promise which resolves after the timeout has been completed.
 
 Pauses script execution for the given number of milliseconds before continuing:
 
@@ -2490,7 +2490,7 @@ Most of the accessibility tree gets filtered out when converting from Blink AX T
   - `modal` <[boolean]> Whether the node is [modal](https://en.wikipedia.org/wiki/Modal_window).
   - `multiline` <[boolean]> Whether the node text input supports multiline.
   - `multiselectable` <[boolean]> Whether more than one child can be selected.
-  - `readonly` <[boolean]> Whether the node is read only.
+  - `readonly` <[boolean]> Whether the node is read-only.
   - `required` <[boolean]> Whether the node is required.
   - `selected` <[boolean]> Whether the node is selected in its parent node.
   - `checked` <[boolean]|"mixed"> Whether the checkbox is checked, or "mixed".
@@ -2535,7 +2535,7 @@ function findFocusedNode(node) {
 
 ### class: Keyboard
 
-Keyboard provides an api for managing a virtual keyboard. The high level api is [`keyboard.type`](#keyboardtypetext-options), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
+Keyboard provides an API for managing a virtual keyboard. The high-level API is [`keyboard.type`](#keyboardtypetext-options), which takes raw characters and generates proper keydown, keypress/input, and keyup events on your page.
 
 For finer control, you can use [`keyboard.down`](#keyboarddownkey-options), [`keyboard.up`](#keyboardupkey), and [`keyboard.sendCharacter`](#keyboardsendcharacterchar) to manually fire events as if they were generated from a real keyboard.
 
@@ -2560,7 +2560,7 @@ await page.keyboard.press('KeyA');
 await page.keyboard.up('Shift');
 ```
 
-> **NOTE** On MacOS, keyboard shortcuts like `⌘ A` -> Select All do not work. See [#1313](https://github.com/puppeteer/puppeteer/issues/1313)
+> **NOTE** On macOS, keyboard shortcuts like `⌘ A` -> Select All dooes not work. See [#1313](https://github.com/puppeteer/puppeteer/issues/1313)
 
 #### keyboard.down(key[, options])
 - `key` <[string]> Name of key to press, such as `ArrowLeft`. See [USKeyboardLayout] for a list of all key names.
@@ -2570,7 +2570,7 @@ await page.keyboard.up('Shift');
 
 Dispatches a `keydown` event.
 
-If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also generated. The `text` option can be specified to force an input event to be generated.
+If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also be generated. The `text` option can be specified to force an input event to be generated.
 
 If `key` is a modifier key, `Shift`, `Meta`, `Control`, or `Alt`, subsequent key presses will be sent with that modifier active. To release the modifier key, use [`keyboard.up`](#keyboardupkey).
 
@@ -2585,7 +2585,7 @@ After the key is pressed once, subsequent calls to [`keyboard.down`](#keyboarddo
   - `delay` <[number]> Time to wait between `keydown` and `keyup` in milliseconds. Defaults to 0.
 - returns: <[Promise]>
 
-If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also generated. The `text` option can be specified to force an input event to be generated.
+If `key` is a single character and no modifier keys besides `Shift` are being held down, a `keypress`/`input` event will also be generated. The `text` option can be specified to force an input event to be generated.
 
 > **NOTE** Modifier keys DO affect `keyboard.press`. Holding down `Shift` will type the text in upper case.
 
@@ -2661,10 +2661,10 @@ await page.evaluate((from, to) => {
 }, fromJSHandle, toJSHandle);
 ```
 
-If you then would want to copy-paste your selection, you can use the clipboard api:
+If you then would want to copy-paste your selection, you can use the clipboard API:
 
 ```js
-// The clipboard api does not allow you to copy, unless the tab is focused.
+// The clipboard API does not allow you to copy, unless the tab is focused.
 await page.bringToFront();
 await page.evaluate(() => {
   // Copy the selected content to the clipboard
@@ -2955,10 +2955,10 @@ The method evaluates the XPath expression relative to the frame document as its 
   - `url` <[string]> URL of a script to be added.
   - `path` <[string]> Path to the JavaScript file to be injected into frame. If `path` is a relative path, then it is resolved relative to [current working directory](https://nodejs.org/api/process.html#process_process_cwd).
   - `content` <[string]> Raw JavaScript content to be injected into frame.
-  - `type` <[string]> Script type. Use 'module' in order to load a Javascript ES6 module. See [script](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script) for more details.
+  - `type` <[string]> Script type. Use 'module' in order to load a JavaScript ES6 module. See [script](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/script) for more details.
 - returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the script's onload fires or when the script content was injected into frame.
 
-Adds a `<script>` tag into the page with the desired url or content.
+Adds a `<script>` tag into the page with the desired URL or content.
 
 #### frame.addStyleTag(options)
 - `options` <[Object]>
@@ -2967,7 +2967,7 @@ Adds a `<script>` tag into the page with the desired url or content.
   - `content` <[string]> Raw CSS content to be injected into frame.
 - returns: <[Promise]<[ElementHandle]>> which resolves to the added tag when the stylesheet's onload fires or when the CSS content was injected into frame.
 
-Adds a `<link rel="stylesheet">` tag into the page with the desired url or a `<style type="text/css">` tag with the content.
+Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a `<style type="text/css">` tag with the content.
 
 #### frame.childFrames()
 - returns: <[Array]<[Frame]>>
@@ -3070,7 +3070,7 @@ This method fetches an element with `selector` and focuses it.
 If there's no element matching `selector`, the method throws an error.
 
 #### frame.goto(url[, options])
-- `url` <[string]> URL to navigate frame to. The url should include scheme, e.g. `https://`.
+- `url` <[string]> URL to navigate frame to. The URL should include scheme, e.g. `https://`.
 - `options` <[Object]> Navigation parameters which might have the following properties:
   - `timeout` <[number]> Maximum navigation time in milliseconds, defaults to 30 seconds, pass `0` to disable timeout. The default value can be changed by using the [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout) or [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout) methods.
   - `waitUntil` <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array<PuppeteerLifeCycleMethod>> When to consider navigation succeeded, defaults to `load`. Given an array of event strings, navigation is considered to be successful after all events have been fired. Events can be either:
@@ -3172,7 +3172,7 @@ await frame.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a 
 #### frame.url()
 - returns: <[string]>
 
-Returns frame's url.
+Returns frame's URL.
 
 #### frame.waitFor(selectorOrFunctionOrTimeout[, options[, ...args]])
 - `selectorOrFunctionOrTimeout` <[string]|[number]|[function]> A [selector], predicate or timeout to wait for
@@ -3251,8 +3251,8 @@ await page.waitForFunction(selector => !!document.querySelector(selector), {}, s
     - `networkidle2` - consider navigation to be finished when there are no more than 2 network connections for at least `500` ms.
 - returns: <[Promise]<?[HTTPResponse]>> Promise which resolves to the main resource response. In case of multiple redirects, the navigation will resolve with the response of the last redirect. In case of navigation to a different anchor or navigation due to History API usage, the navigation will resolve with `null`.
 
-This resolves when the frame navigates to a new URL. It is useful for when you run code
-which will indirectly cause the frame to navigate. Consider this example:
+This resolves when the frame navigates to a new URL. It is useful when you run code
+that will indirectly cause the frame to navigate. Consider this example:
 
 ```js
 const [response] = await Promise.all([
@@ -3296,7 +3296,7 @@ const puppeteer = require('puppeteer');
 
 #### frame.waitForTimeout(milliseconds)
 - `milliseconds` <[number]> The number of milliseconds to wait for.
-- returns: <[Promise]> Promise which resolves after the timeout has completed.
+- returns: <[Promise]> Promise which resolves after the timeout has been completed.
 
 Pauses script execution for the given number of seconds before continuing:
 
@@ -3450,14 +3450,14 @@ const windowHandle = await page.evaluateHandle(() => window);
 // ...
 ```
 
-JSHandle prevents the referenced JavaScript object being garbage collected unless the handle is [disposed](#jshandledispose). JSHandles are auto-disposed when their origin frame gets navigated or the parent context gets destroyed.
+JSHandle prevents the referenced JavaScript object from garbage collection unless the handle is [disposed](#jshandledispose). JSHandles are auto-disposed when their origin frame gets navigated or the parent context gets destroyed.
 
 JSHandle instances can be used as arguments in [`page.$eval()`](#pageevalselector-pagefunction-args), [`page.evaluate()`](#pageevaluatepagefunction-args) and [`page.evaluateHandle`](#pageevaluatehandlepagefunction-args) methods.
 
 #### jsHandle.asElement()
 - returns: <?[ElementHandle]>
 
-Returns either `null` or the object handle itself, if the object handle is an instance of [ElementHandle].
+Returns either `null` or the object handle itself if the object handle is an instance of [ElementHandle].
 
 #### jsHandle.dispose()
 - returns: <[Promise]> Promise which resolves when the object handle is successfully disposed.
@@ -3809,7 +3809,7 @@ This method expects `elementHandle` to point to an [input element](https://devel
 
 ### class: HTTPRequest
 
-Whenever the page sends a request, such as for a network resource, the following events are emitted by puppeteer's page:
+Whenever the page sends a request, such as for a network resource, the following events are emitted by Puppeteer's page:
 - [`'request'`](#event-request) emitted when the request is issued by the page.
 - [`'response'`](#event-response) emitted when/if the response is received for the request.
 - [`'requestfinished'`](#event-requestfinished) emitted when the response body is downloaded and the request is complete.
@@ -3818,13 +3818,13 @@ If request fails at some point, then instead of `'requestfinished'` event (and p
 
 > **NOTE** HTTP Error responses, such as 404 or 503, are still successful responses from HTTP standpoint, so request will complete with `'requestfinished'` event.
 
-If request gets a 'redirect' response, the request is successfully finished with the 'requestfinished' event, and a new request is  issued to a redirected url.
+If request gets a 'redirect' response, the request is successfully finished with the 'requestfinished' event, and a new request is  issued to a redirected URL.
 
 #### httpRequest.abort([errorCode])
 - `errorCode` <[string]> Optional error code. Defaults to `failed`, could be
   one of the following:
-  - `aborted` - An operation was aborted (due to user action)
-  - `accessdenied` - Permission to access a resource, other than the network, was denied
+  - `aborted` - An operation was aborted (due to user action).
+  - `accessdenied` - Permission to access a resource, other than the network, was denied.
   - `addressunreachable` - The IP address is unreachable. This usually means
     that there is no route to the specified host or network.
   - `blockedbyclient` - The client chose to block the request.
@@ -3845,9 +3845,9 @@ Exception is immediately thrown if the request interception is not enabled.
 
 #### httpRequest.continue([overrides])
 - `overrides` <[Object]> Optional request overwrites, which can be one of the following:
-  - `url` <[string]> If set, the request url will be changed. This is not a redirect. The request will be silently forwarded to the new url. For example, the address bar will show the original url.
-  - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`)
-  - `postData` <[string]> If set changes the post data of request
+  - `url` <[string]> If set changes the request URL. This is not a redirect. The request will be silently forwarded to the new URL. For example, the address bar will show the original URL.
+  - `method` <[string]> If set changes the request method (e.g. `GET` or `POST`).
+  - `postData` <[string]> If set changes the post data of request.
   - `headers` <[Object]> If set changes the request HTTP headers. Header values will be converted to a string.
 - returns: <[Promise]>
 
@@ -4170,7 +4170,7 @@ _To output coverage in a form consumable by [Istanbul](https://github.com/istanb
   - `reportAnonymousScripts` <[boolean]> Whether anonymous scripts generated by the page should be reported. Defaults to `false`.
 - returns: <[Promise]> Promise that resolves when coverage is started
 
-> **NOTE** Anonymous scripts are ones that don't have an associated url. These are scripts that are dynamically created on the page using `eval` or `new Function`. If `reportAnonymousScripts` is set to `true`, anonymous scripts will have `__puppeteer_evaluation_script__` as their URL.
+> **NOTE** Anonymous scripts are ones that don't have an associated URL. These are scripts that are dynamically created on the page using `eval` or `new Function`. If `reportAnonymousScripts` is set to `true`, anonymous scripts will have `__puppeteer_evaluation_script__` as their URL.
 
 #### coverage.stopCSSCoverage()
 - returns: <[Promise]<[Array]<[Object]>>> Promise that resolves to the array of coverage reports for all stylesheets
