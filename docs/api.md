@@ -1610,9 +1610,9 @@ An example of overriding the navigator.languages property before the page loads:
 // preload.js
 
 // overwrite the `languages` property to use a custom getter
-Object.defineProperty(navigator, "languages", {
+Object.defineProperty(navigator, 'languages', {
   get: function() {
-    return ["en-US", "en", "bn"];
+    return ['en-US', 'en', 'bn'];
   }
 });
 
