@@ -7,6 +7,7 @@
 - Troubleshooting: [troubleshooting.md](https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md)
 <!-- GEN:versions-per-release -->
 - Releases per Chromium version:
+  * Chromium 90.0.4427.0 - [Puppeteer v8.0.0](https://github.com/puppeteer/puppeteer/blob/v8.0.0/docs/api.md)
   * Chromium 90.0.4403.0 - [Puppeteer v7.0.0](https://github.com/puppeteer/puppeteer/blob/v7.0.0/docs/api.md)
   * Chromium 89.0.4389.0 - [Puppeteer v6.0.0](https://github.com/puppeteer/puppeteer/blob/v6.0.0/docs/api.md)
   * Chromium 88.0.4298.0 - [Puppeteer v5.5.0](https://github.com/puppeteer/puppeteer/blob/v5.5.0/docs/api.md)
@@ -165,7 +166,7 @@
   * [page.setGeolocation(options)](#pagesetgeolocationoptions)
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
-  * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
+  * [page.setRequestInterception(value[, cacheSafe])](#pagesetrequestinterceptionvalue-cachesafe)
   * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
   * [page.setViewport(viewport)](#pagesetviewportviewport)
   * [page.tap(selector)](#pagetapselector)
@@ -1824,6 +1825,7 @@ Page is guaranteed to have a main frame which persists during navigations.
     - `bottom` <[string]|[number]> Bottom margin, accepts values labeled with units.
     - `left` <[string]|[number]> Left margin, accepts values labeled with units.
   - `preferCSSPageSize` <[boolean]> Give any CSS `@page` size declared in the page priority over what is declared in `width` and `height` or `format` options. Defaults to `false`, which will scale the content to fit the paper size.
+  - `omitBackground` <[boolean]> Hides default white background and allows capturing screenshots with transparency. Defaults to `false`.
 - returns: <[Promise]<[Buffer]>> Promise which resolves with PDF buffer.
 
 > **NOTE** Generating a pdf is currently only supported in Chrome headless.
@@ -2038,8 +2040,9 @@ await page.setGeolocation({latitude: 59.95, longitude: 30.31667});
 - `enabled` <[boolean]> When `true`, enables offline mode for the page.
 - returns: <[Promise]>
 
-#### page.setRequestInterception(value)
+#### page.setRequestInterception(value[, cacheSafe])
 - `value` <[boolean]> Whether to enable request interception.
+- `cacheSafe` <[boolean]> Whether to trust browser caching. If set to false, enabling request interception disables page caching. Defaults to false.
 - returns: <[Promise]>
 
 Activating request interception enables `request.abort`, `request.continue` and
