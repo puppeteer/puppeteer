@@ -4,19 +4,18 @@ Unit tests in Puppeteer are written using [Mocha] as the test runner and [Expect
 
 ## Test state
 
-
 We have some common setup that runs before each test and is defined in `mocha-utils.js`.
 
 You can use the `getTestState` function to read state. It exposes the following that you can use in your tests. These will be reset/tidied between tests automatically for you:
 
-* `puppeteer`: an instance of the Puppeteer library. This is exactly what you'd get if you ran `require('puppeteer')`.
-* `puppeteerPath`: the path to the root source file for Puppeteer.
-* `defaultBrowserOptions`: the default options the Puppeteer browser is launched from in test mode, so tests can use them and override if required.
-* `server`: a dummy test server instance (see `utils/testserver` for more).
-* `httpsServer`: a dummy test server HTTPS instance (see `utils/testserver` for more).
-* `isFirefox`: true if running in Firefox.
-* `isChrome`: true if running Chromium.
-* `isHeadless`: true if the test is in headless mode.
+- `puppeteer`: an instance of the Puppeteer library. This is exactly what you'd get if you ran `require('puppeteer')`.
+- `puppeteerPath`: the path to the root source file for Puppeteer.
+- `defaultBrowserOptions`: the default options the Puppeteer browser is launched from in test mode, so tests can use them and override if required.
+- `server`: a dummy test server instance (see `utils/testserver` for more).
+- `httpsServer`: a dummy test server HTTPS instance (see `utils/testserver` for more).
+- `isFirefox`: true if running in Firefox.
+- `isChrome`: true if running Chromium.
+- `isHeadless`: true if the test is in headless mode.
 
 If your test needs a browser instance, you can use the `setupTestBrowserHooks()` function which will automatically configure a browser that will be cleaned between each test suite run. You access this via `getTestState()`.
 
@@ -33,8 +32,8 @@ There is also `describeChromeOnly` and `itChromeOnly` which will only execute th
 There are also tests that assume a normal install flow, with browser binaries ending up in `.local-<browser>`, for example. Such tests are skipped with
 `itOnlyRegularInstall` which checks `BINARY` and `PUPPETEER_ALT_INSTALL` environment variables.
 
-[Mocha]: https://mochajs.org/
-[Expect]: https://www.npmjs.com/package/expect
+[mocha]: https://mochajs.org/
+[expect]: https://www.npmjs.com/package/expect
 
 ## Running tests
 
@@ -46,7 +45,7 @@ Despite being named 'unit', these are integration tests, making sure public API 
 npm run unit
 ```
 
-- __Important__: don't forget to first run TypeScript if you're testing local changes:
+- **Important**: don't forget to first run TypeScript if you're testing local changes:
 
 ```bash
 npm run tsc && npm run unit
@@ -63,7 +62,7 @@ npm run tsc && npm run unit
   });
 ```
 
-- To disable a specific test, substitute the `it` with `xit` (mnemonic rule: '*cross it*'):
+- To disable a specific test, substitute the `it` with `xit` (mnemonic rule: '_cross it_'):
 
 ```js
   ...
