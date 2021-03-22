@@ -165,6 +165,12 @@ To run the documentation linter, use:
 npm run doc
 ```
 
+To format the documentation markdown and its code snippets, use:
+
+```bash
+npm run markdownlint-fix
+```
+
 ## Adding New Dependencies
 
 For all dependencies (both installation and development):
