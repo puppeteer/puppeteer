@@ -1,24 +1,23 @@
 # Troubleshooting
 
 <!-- GEN:toc -->
-
 - [Chrome headless doesn't launch on Windows](#chrome-headless-doesnt-launch-on-windows)
 - [Chrome headless doesn't launch on UNIX](#chrome-headless-doesnt-launch-on-unix)
 - [Chrome is downloaded but fails to launch on Node.js 14](#chrome-is-downloaded-but-fails-to-launch-on-nodejs-14)
 - [Setting Up Chrome Linux Sandbox](#setting-up-chrome-linux-sandbox)
-  - [[recommended] Enable user namespace cloning](#recommended-enable-user-namespace-cloning)
-  - [[alternative] Setup setuid sandbox](#alternative-setup-setuid-sandbox)
+  * [[recommended] Enable user namespace cloning](#recommended-enable-user-namespace-cloning)
+  * [[alternative] Setup setuid sandbox](#alternative-setup-setuid-sandbox)
 - [Running Puppeteer on Travis CI](#running-puppeteer-on-travis-ci)
 - [Running Puppeteer on CircleCI](#running-puppeteer-on-circleci)
 - [Running Puppeteer in Docker](#running-puppeteer-in-docker)
-  - [Running on Alpine](#running-on-alpine)
+  * [Running on Alpine](#running-on-alpine)
     - [Tips](#tips)
 - [Running Puppeteer in the cloud](#running-puppeteer-in-the-cloud)
-  - [Running Puppeteer on Google App Engine](#running-puppeteer-on-google-app-engine)
-  - [Running Puppeteer on Google Cloud Functions](#running-puppeteer-on-google-cloud-functions)
-  - [Running Puppeteer on Heroku](#running-puppeteer-on-heroku)
-  - [Running Puppeteer on AWS Lambda](#running-puppeteer-on-aws-lambda)
-  - [Running Puppeteer on AWS EC2 instance running Amazon-Linux](#running-puppeteer-on-aws-ec2-instance-running-amazon-linux)
+  * [Running Puppeteer on Google App Engine](#running-puppeteer-on-google-app-engine)
+  * [Running Puppeteer on Google Cloud Functions](#running-puppeteer-on-google-cloud-functions)
+  * [Running Puppeteer on Heroku](#running-puppeteer-on-heroku)
+  * [Running Puppeteer on AWS Lambda](#running-puppeteer-on-aws-lambda)
+  * [Running Puppeteer on AWS EC2 instance running Amazon-Linux](#running-puppeteer-on-aws-ec2-instance-running-amazon-linux)
 - [Code Transpilation Issues](#code-transpilation-issues)
 <!-- GEN:stop -->
 
@@ -86,7 +85,6 @@ lsb-release
 wget
 xdg-utils
 ```
-
 </details>
 
 <details>
@@ -120,7 +118,6 @@ After installing dependencies you need to update nss library using this command
 ```
 yum update nss -y
 ```
-
 </details>
 
 <details>
@@ -142,6 +139,7 @@ spawn /Users/.../node_modules/puppeteer/.local-chromium/mac-756035/chrome-mac/Ch
 
 This means that the browser was downloaded but failed to be extracted correctly. The most common cause is a bug in Node.js v14.0.0 which broke `extract-zip`, the module Puppeteer uses to extract browser downloads into the right place. The bug was fixed in Node.js v14.1.0, so please make sure you're running that version or higher. Alternatively, if you cannot upgrade, you could downgrade to Node.js v12, but we recommend upgrading when possible.
 
+
 ## Setting Up Chrome Linux Sandbox
 
 In order to protect the host environment from untrusted web content, Chrome uses [multiple layers of sandboxing](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/sandboxing.md). For this to work properly,
@@ -152,9 +150,7 @@ If you **absolutely trust** the content you open in Chrome, you can launch Chrom
 with the `--no-sandbox` argument:
 
 ```js
-const browser = await puppeteer.launch({
-  args: ['--no-sandbox', '--disable-setuid-sandbox'],
-});
+const browser = await puppeteer.launch({args: ['--no-sandbox', '--disable-setuid-sandbox']});
 ```
 
 > **NOTE**: Running without a sandbox is **strongly discouraged**. Consider configuring a sandbox instead.
@@ -195,12 +191,12 @@ or `.zshenv`:
 export CHROME_DEVEL_SANDBOX=/usr/local/sbin/chrome-devel-sandbox
 ```
 
+
 ## Running Puppeteer on Travis CI
 
 > 👋 We ran our tests for Puppeteer on Travis CI until v6.0.0 (when we've migrated to GitHub Actions) - see our historical [`.travis.yml` (v5.5.0)](https://github.com/puppeteer/puppeteer/blob/v5.5.0/.travis.yml) for reference.
 
 Tips-n-tricks:
-
 - [xvfb](https://en.wikipedia.org/wiki/Xvfb) service should be launched in order to run Chromium in non-headless mode
 - Runs on Xenial Linux on Travis by default
 - Runs `npm install` by default
@@ -370,7 +366,7 @@ longer necessary. Instead, launch the browser with the `--disable-dev-shm-usage`
 
 ```js
 const browser = await puppeteer.launch({
-  args: ['--disable-dev-shm-usage'],
+  args: ['--disable-dev-shm-usage']
 });
 ```
 
@@ -426,17 +422,17 @@ If you are using an EC2 instance running amazon-linux in your CI/CD pipeline, an
 
 1. To install Chromium, you have to first enable `amazon-linux-extras` which comes as part of [EPEL (Extra Packages for Enterprise Linux)](https://aws.amazon.com/premiumsupport/knowledge-center/ec2-enable-epel/):
 
-   ```sh
-   sudo amazon-linux-extras install epel -y
-   ```
+    ```sh
+    sudo amazon-linux-extras install epel -y
+    ```
 
 1. Next, install Chromium:
 
-   ```sh
-   sudo yum install -y chromium
-   ```
+    ```sh
+    sudo yum install -y chromium
+    ```
 
-Now Puppeteer can launch Chromium to run your tests. If you do not enable EPEL and if you continue installing chromium as part of `npm install`, Puppeteer cannot launch Chromium due to unavailablity of `libatk-1.0.so.0` and many more packages.
+Now Puppeteer can launch Chromium to run your tests. If you do not enable EPEL and if you continue installing chromium as part of `npm install`, Puppeteer cannot launch Chromium due to unavailablity of `libatk-1.0.so.0` and many more packages. 
 
 ## Code Transpilation Issues
 
