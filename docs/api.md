@@ -677,7 +677,7 @@ Puppeteer against it:
 ```js
 const browserFetcher = puppeteer.createBrowserFetcher();
 const revisionInfo = await browserFetcher.download('533271');
-const browser = await puppeteer.launch({executablePath: revisionInfo.executablePath})
+const browser = await puppeteer.launch({ executablePath: revisionInfo.executablePath });
 ```
 
 > **NOTE** BrowserFetcher is not designed to work concurrently with other
@@ -762,7 +762,7 @@ const puppeteer = require('puppeteer');
   browser.disconnect();
 
   // Use the endpoint to reestablish a connection
-  const browser2 = await puppeteer.connect({browserWSEndpoint});
+  const browser2 = await puppeteer.connect({ browserWSEndpoint });
   // Close Chromium
   await browser2.close();
 })();
@@ -1038,7 +1038,7 @@ const puppeteer = require('puppeteer');
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   await page.goto('https://example.com');
-  await page.screenshot({path: 'screenshot.png'});
+  await page.screenshot({ path: 'screenshot.png' });
   await browser.close();
 })();
 ```
@@ -1080,7 +1080,7 @@ page.on('console', msg => {
   for (let i = 0; i < msg.args().length; ++i)
     console.log(`${i}: ${msg.args()[i]}`);
 });
-page.evaluate(() => console.log('hello', 5, {foo: 'bar'}));
+page.evaluate(() => console.log('hello', 5, { foo: 'bar' }));
 ```
 
 #### event: 'dialog'
@@ -1313,7 +1313,7 @@ If there's no element matching `selector`, the method throws an error.
 
 Bear in mind that if `click()` triggers a navigation event and there's a separate `page.waitForNavigation()` promise to be resolved, you may end up with a race condition that yields unexpected results. The correct pattern for click and wait for navigation is the following:
 
-```javascript
+```js
 const [response] = await Promise.all([
   page.waitForNavigation(waitOptions),
   page.click(selector, clickOptions),
@@ -1586,7 +1586,7 @@ await resultHandle.dispose();
 This function will return a [JSHandle] by default, however if your `pageFunction` returns an HTML element you will get back an `ElementHandle`:
 
 ```js
-const button = await page.evaluateHandle(() => document.querySelector('button'))
+const button = await page.evaluateHandle(() => document.querySelector('button'));
 // button is an ElementHandle, so you can call methods such as click:
 await button.click();
 ```
@@ -1610,9 +1610,9 @@ An example of overriding the navigator.languages property before the page loads:
 // preload.js
 
 // overwrite the `languages` property to use a custom getter
-Object.defineProperty(navigator, "languages", {
+Object.defineProperty(navigator, 'languages', {
   get: function() {
-    return ["en-US", "en", "bn"];
+    return ['en-US', 'en', 'bn'];
   }
 });
 
@@ -1837,15 +1837,15 @@ Page is guaranteed to have a main frame which persists during navigations.
 ```js
 // Generates a PDF with 'screen' media type.
 await page.emulateMediaType('screen');
-await page.pdf({path: 'page.pdf'});
+await page.pdf({ path: 'page.pdf' });
 ```
 
 The `width`, `height`, and `margin` options accept values labeled with units. Unlabeled values are treated as pixels.
 
 A few examples:
-- `page.pdf({width: 100})` - prints with width set to 100 pixels
-- `page.pdf({width: '100px'})` - prints with width set to 100 pixels
-- `page.pdf({width: '10cm'})` - prints with width set to 10 centimeters.
+- `page.pdf({ width: 100 })` - prints with width set to 100 pixels
+- `page.pdf({ width: '100px' })` - prints with width set to 100 pixels
+- `page.pdf({ width: '10cm' })` - prints with width set to 10 centimeters.
 
 All possible units are:
 - `px` - pixel
@@ -2025,7 +2025,7 @@ The extra HTTP headers will be sent with every request the page initiates.
 Sets the page's geolocation.
 
 ```js
-await page.setGeolocation({latitude: 59.95, longitude: 30.31667});
+await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
 ```
 
 > **NOTE** Consider using [browserContext.overridePermissions](#browsercontextoverridepermissionsorigin-permissions) to grant permissions for the page to read its geolocation.
@@ -2137,7 +2137,7 @@ To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#k
 
 ```js
 await page.type('#mytextarea', 'Hello'); // Types instantly
-await page.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
+await page.type('#mytextarea', 'World', { delay: 100 }); // Types slower, like a user
 ```
 
 Shortcut for [page.mainFrame().type(selector, text[, options])](#frametypeselector-text-options).
@@ -2239,7 +2239,7 @@ const puppeteer = require('puppeteer');
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   const watchDog = page.waitForFunction('window.innerWidth < 100');
-  await page.setViewport({width: 50, height: 50});
+  await page.setViewport({ width: 50, height: 50 });
   await watchDog;
   await browser.close();
 })();
@@ -2315,7 +2315,7 @@ return firstRequest.url();
 ```js
 const firstResponse = await page.waitForResponse('https://example.com/resource');
 const finalResponse = await page.waitForResponse(response => response.url() === 'https://example.com' && response.status() === 200);
-const finalResponse = await page.waitForResponse(async response => { return (await response.text()).includes('<html>') })
+const finalResponse = await page.waitForResponse(async response => { return (await response.text()).includes('<html>') });
 return finalResponse.ok();
 ```
 
@@ -2615,7 +2615,7 @@ To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#k
 
 ```js
 await page.keyboard.type('Hello'); // Types instantly
-await page.keyboard.type('World', {delay: 100}); // Types slower, like a user
+await page.keyboard.type('World', { delay: 100 }); // Types slower, like a user
 ```
 
 > **NOTE** Modifier keys DO NOT affect `keyboard.type`. Holding down `Shift` will not type the text in upper case.
@@ -2735,7 +2735,7 @@ await page.mouse.move(
   boundingBox.y + boundingBox.height / 2
 );
 
-await page.mouse.wheel({ deltaY: -100 })
+await page.mouse.wheel({ deltaY: -100 });
 ```
 
 ### class: Touchscreen
@@ -2752,7 +2752,7 @@ Dispatches a `touchstart` and `touchend` event.
 You can use [`tracing.start`](#tracingstartoptions) and [`tracing.stop`](#tracingstop) to create a trace file which can be opened in Chrome DevTools or [timeline viewer](https://chromedevtools.github.io/timeline-viewer/).
 
 ```js
-await page.tracing.start({path: 'trace.json'});
+await page.tracing.start({ path: 'trace.json' });
 await page.goto('https://www.google.com');
 await page.tracing.stop();
 ```
@@ -2985,7 +2985,7 @@ If there's no element matching `selector`, the method throws an error.
 
 Bear in mind that if `click()` triggers a navigation event and there's a separate `page.waitForNavigation()` promise to be resolved, you may end up with a race condition that yields unexpected results. The correct pattern for click and wait for navigation is the following:
 
-```javascript
+```js
 const [response] = await Promise.all([
   page.waitForNavigation(waitOptions),
   frame.click(selector, clickOptions),
@@ -3166,7 +3166,7 @@ To press a special key, like `Control` or `ArrowDown`, use [`keyboard.press`](#k
 
 ```js
 await frame.type('#mytextarea', 'Hello'); // Types instantly
-await frame.type('#mytextarea', 'World', {delay: 100}); // Types slower, like a user
+await frame.type('#mytextarea', 'World', { delay: 100 }); // Types slower, like a user
 ```
 
 #### frame.url()
@@ -3228,7 +3228,7 @@ const puppeteer = require('puppeteer');
   const browser = await puppeteer.launch();
   const page = await browser.newPage();
   const watchDog = page.mainFrame().waitForFunction('window.innerWidth < 100');
-  page.setViewport({width: 50, height: 50});
+  page.setViewport({ width: 50, height: 50 });
   await watchDog;
   await browser.close();
 })();
@@ -3505,7 +3505,7 @@ Returns execution context the handle belongs to.
 The method returns a map with property names as keys and JSHandle instances for the property values.
 
 ```js
-const handle = await page.evaluateHandle(() => ({window, document}));
+const handle = await page.evaluateHandle(() => ({ window, document }));
 const properties = await handle.getProperties();
 const windowHandle = properties.get('window');
 const documentHandle = properties.get('document');
@@ -3791,7 +3791,7 @@ To press a special key, like `Control` or `ArrowDown`, use [`elementHandle.press
 
 ```js
 await elementHandle.type('Hello'); // Types instantly
-await elementHandle.type('World', {delay: 100}); // Types slower, like a user
+await elementHandle.type('World', { delay: 100 }); // Types slower, like a user
 ```
 
 An example of typing into a text field and then submitting the form:
@@ -3862,7 +3862,7 @@ page.on('request', request => {
     foo: 'bar', // set "foo" header
     origin: undefined, // remove "origin" header
   });
-  request.continue({headers});
+  request.continue({ headers });
 });
 ```
 
