@@ -221,7 +221,7 @@ Puppeteer creates its own browser user profile which it **cleans up on every run
     This is also handy when debugging code in `page.evaluate()`:
 
     ```js
-    page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
+    page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
     await page.evaluate(() => console.log(`url is ${location.href}`));
     ```
