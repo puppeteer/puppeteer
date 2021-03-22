@@ -73,6 +73,7 @@ information on using pull requests.
 - It's recommended to set-up Prettier into your editor, or you can run `npm run eslint-fix` to automatically format any files.
 - If you're working in a JS file, code should be annotated with [closure annotations](https://github.com/google/closure-compiler/wiki/Annotating-JavaScript-for-the-Closure-Compiler).
 - If you're working in a TS file, you should explicitly type all variables and return types. You'll get ESLint warnings if you don't so if you're not sure use them as guidelines, and feel free to ask us for help!
+- If you are adding a code example in docs, you can run `npm run markdownlint-fix` to automatically format the content of the snippets.
 
 To run ESLint, use:
 
