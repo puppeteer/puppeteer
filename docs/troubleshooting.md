@@ -1,5 +1,5 @@
 # Troubleshooting
-
+<!-- prettier-ignore-start -->
 <!-- GEN:toc -->
 - [Chrome headless doesn't launch on Windows](#chrome-headless-doesnt-launch-on-windows)
 - [Chrome headless doesn't launch on UNIX](#chrome-headless-doesnt-launch-on-unix)
@@ -20,7 +20,7 @@
   * [Running Puppeteer on AWS EC2 instance running Amazon-Linux](#running-puppeteer-on-aws-ec2-instance-running-amazon-linux)
 - [Code Transpilation Issues](#code-transpilation-issues)
 <!-- GEN:stop -->
-
+<!-- prettier-ignore-end -->
 ## Chrome headless doesn't launch on Windows
 
 Some [chrome policies](https://support.google.com/chrome/a/answer/7532015) might enforce running Chrome/Chromium

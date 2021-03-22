@@ -1,4 +1,4 @@
-
+<!-- prettier-ignore-start -->
 # Puppeteer API <!-- GEN:version -->Tip-Of-Tree<!-- GEN:stop-->
 <!-- GEN:empty-if-release --><!-- GEN:stop -->
 
@@ -368,6 +368,7 @@
   * [eventEmitter.removeListener(event, handler)](#eventemitterremovelistenerevent-handler)
 - [interface: CustomQueryHandler](#interface-customqueryhandler)
 <!-- GEN:stop -->
+<!-- prettier-ignore-end -->
 
 ### Overview
 
