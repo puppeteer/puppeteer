@@ -1,6 +1,6 @@
 node_modules/
 lib/
-third_party/*
+third_party/
 vendor/
 
 package-lock.json
