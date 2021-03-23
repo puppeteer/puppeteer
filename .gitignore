@@ -15,8 +15,8 @@ package-lock.json
 yarn.lock
 /node6
 /utils/browser/puppeteer-web.js
-/lib
+
 test/coverage.json
 temp/
-new-docs/
+
 puppeteer.tgz

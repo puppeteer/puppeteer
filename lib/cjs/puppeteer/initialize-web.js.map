@@ -1,0 +1,1 @@
+{"version":3,"file":"initialize-web.js","sourceRoot":"","sources":["../../../src/initialize-web.ts"],"names":[],"mappings":";AAAA;;;;;;;;;;;;;;GAcG;;;AAEH,wDAAkD;AAE3C,MAAM,sBAAsB,GAAG,CAAC,WAAmB,EAAa,EAAE;IACvE,MAAM,eAAe,GAAG,WAAW,KAAK,gBAAgB,CAAC;IACzD,OAAO,IAAI,wBAAS,CAAC;QACnB,eAAe;KAChB,CAAC,CAAC;AACL,CAAC,CAAC;AALW,QAAA,sBAAsB,0BAKjC"}

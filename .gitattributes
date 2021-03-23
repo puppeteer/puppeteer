@@ -1,2 +1,3 @@
 # Declare files that will always have LF line endings on checkout.
 *.txt eol=lf
+*.json  linguist-language=JSON-with-Comments

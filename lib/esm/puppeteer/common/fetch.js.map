@@ -1,0 +1,1 @@
+{"version":3,"file":"fetch.js","sourceRoot":"","sources":["../../../../src/common/fetch.ts"],"names":[],"mappings":"AAAA;;;;;;;;;;;;;;GAcG;AAEH,OAAO,EAAE,MAAM,EAAE,MAAM,mBAAmB,CAAC;AAE3C,sFAAsF;AACtF,MAAM,CAAC,MAAM,QAAQ,GAAG,KAAK,IAA2B,EAAE;IACxD,OAAO,MAAM,CAAC,CAAC,CAAC,MAAM,MAAM,CAAC,YAAY,CAAC,CAAC,CAAC,CAAC,UAAU,CAAC,KAAK,CAAC;AAChE,CAAC,CAAC"}
