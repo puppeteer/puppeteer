@@ -1,5 +1,3 @@
-<!-- prettier-ignore-start -->
-
 <p align="center">
   <img src="https://i.imgur.com/BqsX9NT.png" width="300" height="300" alt="mitt">
   <br>
@@ -179,5 +177,3 @@ Pull requests are the greatest contributions, so be sure they are focused in sco
 ## License
 
 [MIT License](https://opensource.org/licenses/MIT) © [Jason Miller](https://jasonformat.com/)
-
-<!-- prettier-ignore-end -->
