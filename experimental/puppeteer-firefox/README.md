@@ -21,7 +21,7 @@ Note: When you install puppeteer-firefox, it downloads a [custom-built Firefox](
 
 ### Usage
 
-**Example** - navigating to https://example.com and saving a screenshot as _example.png_:
+**Example** - navigating to https://example.com and saving a screenshot as `example.png`:
 
 Save file as **example.js**
 
