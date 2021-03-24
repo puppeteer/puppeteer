@@ -1,3 +1,4 @@
+<!-- prettier-ignore-start -->
 <!-- gen:toc -->
 - [How to Contribute](#how-to-contribute)
   * [Contributor License Agreement](#contributor-license-agreement)
@@ -21,7 +22,7 @@
     - [Bisecting upstream changes](#bisecting-upstream-changes)
   * [Releasing to npm](#releasing-to-npm)
 <!-- gen:stop -->
-
+<!-- prettier-ignore-end -->
 # How to Contribute
 
 First of all, thank you for your interest in Puppeteer!
@@ -162,6 +163,12 @@ To run the documentation linter, use:
 
 ```bash
 npm run doc
+```
+
+To format the documentation markdown and its code snippets, use:
+
+```bash
+npm run markdownlint-fix
 ```
 
 ## Adding New Dependencies
