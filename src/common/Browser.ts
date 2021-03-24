@@ -184,7 +184,7 @@ export class Browser extends EventEmitter {
     connection: Connection,
     contextIds: string[],
     ignoreHTTPSErrors: boolean,
-    defaultViewport?: Viewport,
+    defaultViewport?: Viewport | null,
     process?: ChildProcess,
     closeCallback?: BrowserCloseCallback
   ): Promise<Browser> {
@@ -200,7 +200,7 @@ export class Browser extends EventEmitter {
     return browser;
   }
   private _ignoreHTTPSErrors: boolean;
-  private _defaultViewport?: Viewport;
+  private _defaultViewport?: Viewport | null;
   private _process?: ChildProcess;
   private _connection: Connection;
   private _closeCallback: BrowserCloseCallback;
@@ -219,7 +219,7 @@ export class Browser extends EventEmitter {
     connection: Connection,
     contextIds: string[],
     ignoreHTTPSErrors: boolean,
-    defaultViewport?: Viewport,
+    defaultViewport?: Viewport | null,
     process?: ChildProcess,
     closeCallback?: BrowserCloseCallback
   ) {
