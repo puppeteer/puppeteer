@@ -495,6 +495,36 @@ describe('request interception', function () {
       expect(urls.has('one-style.html')).toBe(true);
       expect(urls.has('one-style.css')).toBe(true);
     });
+    it('should not cache if not cache-safe', async () => {
+      const { page, server } = getTestState();
+
+      // Load and re-load to make sure it's cached.
+      await page.goto(server.PREFIX + '/cached/one-style.html');
+
+      await page.setRequestInterception(true, false);
+      page.on('request', (request) => request.continue());
+
+      const cached = [];
+      page.on('requestservedfromcache', (r) => cached.push(r));
+
+      await page.reload();
+      expect(cached.length).toBe(0);
+    });
+    it('should cache if cache-safe', async () => {
+      const { page, server } = getTestState();
+
+      // Load and re-load to make sure it's cached.
+      await page.goto(server.PREFIX + '/cached/one-style.html');
+
+      await page.setRequestInterception(true, true);
+      page.on('request', (request) => request.continue());
+
+      const cached = [];
+      page.on('requestservedfromcache', (r) => cached.push(r));
+
+      await page.reload();
+      expect(cached.length).toBe(1);
+    });
   });
 
   describeFailsFirefox('Request.continue', function () {

@@ -28,6 +28,7 @@ import { Page } from '../lib/cjs/puppeteer/common/Page.js';
 import { PuppeteerNode } from '../lib/cjs/puppeteer/node/Puppeteer.js';
 import utils from './utils.js';
 import rimraf from 'rimraf';
+import expect from 'expect';
 
 import { trackCoverage } from './coverage-utils.js';
 
@@ -276,4 +277,26 @@ export const mochaHooks = {
   afterEach: () => {
     sinon.restore();
   },
+};
+
+export const expectCookieEquals = (cookies, expectedCookies) => {
+  const { isChrome } = getTestState();
+  if (!isChrome) {
+    // Only keep standard properties when testing on a browser other than Chrome.
+    expectedCookies = expectedCookies.map((cookie) => {
+      return {
+        domain: cookie.domain,
+        expires: cookie.expires,
+        httpOnly: cookie.httpOnly,
+        name: cookie.name,
+        path: cookie.path,
+        secure: cookie.secure,
+        session: cookie.session,
+        size: cookie.size,
+        value: cookie.value,
+      };
+    });
+  }
+
+  expect(cookies).toEqual(expectedCookies);
 };
