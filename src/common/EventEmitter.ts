@@ -40,7 +40,7 @@ export class EventEmitter implements CommonEventEmitter {
   private eventsMap = new Map<EventType, Handler[]>();
 
   /**
-   * @internal
+   * @defaultValue
    */
   constructor() {
     this.emitter = mitt(this.eventsMap);

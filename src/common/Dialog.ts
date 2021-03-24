@@ -22,7 +22,7 @@ import { Protocol } from 'devtools-protocol';
  * Dialog instances are dispatched by the {@link Page} via the `dialog` event.
  *
  * @remarks
- *
+ * @defaultValue
  * @example
  * ```js
  * const puppeteer = require('puppeteer');

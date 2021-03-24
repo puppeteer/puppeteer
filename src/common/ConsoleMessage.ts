@@ -37,6 +37,7 @@ export interface ConsoleMessageLocation {
 }
 
 /**
+ * @defaultValue
  * The supported types for console messages.
  */
 export type ConsoleMessageType =

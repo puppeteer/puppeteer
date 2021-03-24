@@ -19,6 +19,7 @@ import { Protocol } from 'devtools-protocol';
 import { assert } from './assert.js';
 
 /**
+ * @defaultValue
  * File choosers let you react to the page requesting for a file.
  * @remarks
  * `FileChooser` objects are returned via the `page.waitForFileChooser` method.
