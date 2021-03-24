@@ -37,7 +37,7 @@ export interface BrowserConnectOptions {
   /**
    * Sets the viewport for each page.
    */
-  defaultViewport?: Viewport;
+  defaultViewport?: Viewport | null;
   /**
    * Slows down Puppeteer operations by the specified amount of milliseconds to
    * aid debugging.
