@@ -460,7 +460,8 @@ function headersArray(
   const result = [];
   for (const name in headers) {
     if (!Object.is(headers[name], undefined))
-      result.push({ name, value: headers[name] + '' });
+      const header = (headers[name] + '').split("\n").map(value=>({name,value}));
+      result.push(...header);
   }
   return result;
 }
