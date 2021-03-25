@@ -434,7 +434,7 @@ describeFailsFirefox('Accessibility', function () {
 
         await page.setContent(`<button>My Button</button>`);
 
-        const button = await page.$('button');
+        const button = await page.$<HTMLButtonElement>('button');
         expect(await page.accessibility.snapshot({ root: button })).toEqual({
           role: 'button',
           name: 'My Button',

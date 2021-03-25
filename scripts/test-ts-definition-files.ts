@@ -34,7 +34,7 @@ const EXPECTED_ERRORS = new Map<string, string[]>([
       "bad.js(5,35): error TS2551: Property 'launh' does not exist on type",
       "bad.js(7,29): error TS2551: Property 'devics' does not exist on type",
       'bad.js(11,39): error TS2554: Expected 0 arguments, but got 1.',
-      "bad.js(15,9): error TS2322: Type 'ElementHandle<Element> | null' is not assignable to type 'ElementHandle<HTMLElement>'",
+      "bad.js(15,9): error TS2322: Type 'ElementHandle<HTMLElement> | null' is not assignable to type 'ElementHandle<HTMLElement>'",
     ],
   ],
   [
@@ -43,7 +43,7 @@ const EXPECTED_ERRORS = new Map<string, string[]>([
       "bad.js(5,35): error TS2551: Property 'launh' does not exist on type",
       "bad.js(7,29): error TS2551: Property 'devics' does not exist on type",
       'bad.js(11,39): error TS2554: Expected 0 arguments, but got 1.',
-      "bad.js(15,9): error TS2322: Type 'ElementHandle<Element> | null' is not assignable to type 'ElementHandle<HTMLElement>'",
+      "bad.js(15,9): error TS2322: Type 'ElementHandle<HTMLElement> | null' is not assignable to type 'ElementHandle<HTMLElement>'",
     ],
   ],
   [
@@ -52,7 +52,7 @@ const EXPECTED_ERRORS = new Map<string, string[]>([
       "bad.js(5,35): error TS2551: Property 'launh' does not exist on type",
       "bad.js(7,29): error TS2551: Property 'devics' does not exist on type",
       'bad.js(11,39): error TS2554: Expected 0 arguments, but got 1.',
-      "bad.js(15,9): error TS2322: Type 'ElementHandle<Element> | null' is not assignable to type 'ElementHandle<HTMLElement>'",
+      "bad.js(15,9): error TS2322: Type 'ElementHandle<HTMLElement> | null' is not assignable to type 'ElementHandle<HTMLElement>'",
     ],
   ],
   [
@@ -61,7 +61,7 @@ const EXPECTED_ERRORS = new Map<string, string[]>([
       "bad.js(5,35): error TS2551: Property 'launh' does not exist on type",
       "bad.js(7,29): error TS2551: Property 'devics' does not exist on type",
       'bad.js(11,39): error TS2554: Expected 0 arguments, but got 1.',
-      "bad.js(15,9): error TS2322: Type 'ElementHandle<Element> | null' is not assignable to type 'ElementHandle<HTMLElement>'",
+      "bad.js(15,9): error TS2322: Type 'ElementHandle<HTMLElement> | null' is not assignable to type 'ElementHandle<HTMLElement>'",
     ],
   ],
 ]);
