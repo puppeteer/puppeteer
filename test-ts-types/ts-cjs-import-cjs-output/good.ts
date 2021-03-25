@@ -5,6 +5,9 @@ async function run() {
   const devices = puppeteer.devices;
   console.log(devices);
   const page = await browser.newPage();
+  page.on('request', (request) => {
+    const resourceType = request.resourceType();
+  });
   const div = (await page.$('div')) as puppeteer.ElementHandle<
     HTMLAnchorElement
   >;

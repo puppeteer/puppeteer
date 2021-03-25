@@ -329,6 +329,35 @@ export const enum PageEmittedEvents {
   WorkerDestroyed = 'workerdestroyed',
 }
 
+/**
+ * Denotes the objects received by callback functions for page events.
+ *
+ * See {@link PageEmittedEvents} for more detail on the events and when they are
+ * emitted.
+ * @public
+ */
+export interface PageEventObject {
+  close: never;
+  console: ConsoleMessage;
+  dialog: Dialog;
+  domcontentloaded: never;
+  error: Error;
+  frameattached: Frame;
+  framedetached: Frame;
+  framenavigated: Frame;
+  load: never;
+  metrics: { title: string; metrics: Metrics };
+  pageerror: Error;
+  popup: Page;
+  request: HTTPRequest;
+  response: HTTPResponse;
+  requestfailed: HTTPRequest;
+  requestfinished: HTTPRequest;
+  requestservedfromcache: HTTPRequest;
+  workercreated: WebWorker;
+  workerdestroyed: WebWorker;
+}
+
 class ScreenshotTaskQueue {
   _chain: Promise<Buffer | string | void>;
 
@@ -557,6 +586,27 @@ export class Page extends EventEmitter {
    */
   public isJavaScriptEnabled(): boolean {
     return this._javascriptEnabled;
+  }
+
+  /**
+   * Listen to page events.
+   */
+  public on<K extends keyof PageEventObject>(
+    eventName: K,
+    handler: (event: PageEventObject[K]) => void
+  ): EventEmitter {
+    // Note: this method only exists to define the types; we delegate the impl
+    // to EventEmitter.
+    return super.on(eventName, handler);
+  }
+
+  public once<K extends keyof PageEventObject>(
+    eventName: K,
+    handler: (event: PageEventObject[K]) => void
+  ): EventEmitter {
+    // Note: this method only exists to define the types; we delegate the impl
+    // to EventEmitter.
+    return super.once(eventName, handler);
   }
 
   /**
