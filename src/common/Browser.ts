@@ -412,7 +412,7 @@ export class Browser extends EventEmitter {
       url: 'about:blank',
       browserContextId: contextId || undefined,
     });
-    const target = await this._targets.get(targetId);
+    const target = this._targets.get(targetId);
     assert(
       await target._initializedPromise,
       'Failed to create target for page'
@@ -540,6 +540,7 @@ export class Browser extends EventEmitter {
   }
 
   /**
+   * @public
    * Indicates that the browser is connected.
    */
   isConnected(): boolean {
