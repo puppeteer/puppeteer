@@ -288,6 +288,14 @@ export const enum PageEmittedEvents {
    */
   Request = 'request',
   /**
+   * Emitted when a request ended up loading from cache. Contains a {@link HTTPRequest}.
+   *
+   * @remarks
+   * For certain requests, might contain undefined.
+   * @see https://crbug.com/750469
+   */
+  RequestServedFromCache = 'requestservedfromcache',
+  /**
    * Emitted when a request fails, for example by timing out.
    *
    * Contains a {@link HTTPRequest}.
@@ -319,6 +327,35 @@ export const enum PageEmittedEvents {
    * is destroyed by the page.
    */
   WorkerDestroyed = 'workerdestroyed',
+}
+
+/**
+ * Denotes the objects received by callback functions for page events.
+ *
+ * See {@link PageEmittedEvents} for more detail on the events and when they are
+ * emitted.
+ * @public
+ */
+export interface PageEventObject {
+  close: never;
+  console: ConsoleMessage;
+  dialog: Dialog;
+  domcontentloaded: never;
+  error: Error;
+  frameattached: Frame;
+  framedetached: Frame;
+  framenavigated: Frame;
+  load: never;
+  metrics: { title: string; metrics: Metrics };
+  pageerror: Error;
+  popup: Page;
+  request: HTTPRequest;
+  response: HTTPResponse;
+  requestfailed: HTTPRequest;
+  requestfinished: HTTPRequest;
+  requestservedfromcache: HTTPRequest;
+  workercreated: WebWorker;
+  workerdestroyed: WebWorker;
 }
 
 class ScreenshotTaskQueue {
@@ -483,6 +520,10 @@ export class Page extends EventEmitter {
     networkManager.on(NetworkManagerEmittedEvents.Request, (event) =>
       this.emit(PageEmittedEvents.Request, event)
     );
+    networkManager.on(
+      NetworkManagerEmittedEvents.RequestServedFromCache,
+      (event) => this.emit(PageEmittedEvents.RequestServedFromCache, event)
+    );
     networkManager.on(NetworkManagerEmittedEvents.Response, (event) =>
       this.emit(PageEmittedEvents.Response, event)
     );
@@ -545,6 +586,27 @@ export class Page extends EventEmitter {
    */
   public isJavaScriptEnabled(): boolean {
     return this._javascriptEnabled;
+  }
+
+  /**
+   * Listen to page events.
+   */
+  public on<K extends keyof PageEventObject>(
+    eventName: K,
+    handler: (event: PageEventObject[K]) => void
+  ): EventEmitter {
+    // Note: this method only exists to define the types; we delegate the impl
+    // to EventEmitter.
+    return super.on(eventName, handler);
+  }
+
+  public once<K extends keyof PageEventObject>(
+    eventName: K,
+    handler: (event: PageEventObject[K]) => void
+  ): EventEmitter {
+    // Note: this method only exists to define the types; we delegate the impl
+    // to EventEmitter.
+    return super.once(eventName, handler);
   }
 
   /**
@@ -688,6 +750,8 @@ export class Page extends EventEmitter {
 
   /**
    * @param value - Whether to enable request interception.
+   * @param cacheSafe - Whether to trust browser caching. If set to false,
+   * enabling request interception disables page caching. Defaults to false.
    *
    * @remarks
    * Activating request interception enables {@link HTTPRequest.abort},
@@ -695,9 +759,7 @@ export class Page extends EventEmitter {
    * provides the capability to modify network requests that are made by a page.
    *
    * Once request interception is enabled, every request will stall unless it's
-   * continued, responded or aborted.
-   *
-   * **NOTE** Enabling request interception disables page caching.
+   * continued, responded or aborted; or completed using the browser cache.
    *
    * @example
    * An example of a naïve request interceptor that aborts all image requests:
@@ -719,8 +781,13 @@ export class Page extends EventEmitter {
    * })();
    * ```
    */
-  async setRequestInterception(value: boolean): Promise<void> {
-    return this._frameManager.networkManager().setRequestInterception(value);
+  async setRequestInterception(
+    value: boolean,
+    cacheSafe = false
+  ): Promise<void> {
+    return this._frameManager
+      .networkManager()
+      .setRequestInterception(value, cacheSafe);
   }
 
   /**
@@ -763,8 +830,10 @@ export class Page extends EventEmitter {
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query page for.
    */
-  async $(selector: string): Promise<ElementHandle | null> {
-    return this.mainFrame().$(selector);
+  async $<T extends Element = Element>(
+    selector: string
+  ): Promise<ElementHandle<T> | null> {
+    return this.mainFrame().$<T>(selector);
   }
 
   /**
@@ -1007,8 +1076,10 @@ export class Page extends EventEmitter {
     return this.mainFrame().$$eval<ReturnType>(selector, pageFunction, ...args);
   }
 
-  async $$(selector: string): Promise<ElementHandle[]> {
-    return this.mainFrame().$$(selector);
+  async $$<T extends Element = Element>(
+    selector: string
+  ): Promise<Array<ElementHandle<T>>> {
+    return this.mainFrame().$$<T>(selector);
   }
 
   async $x(expression: string): Promise<ElementHandle[]> {
@@ -1269,6 +1340,22 @@ export class Page extends EventEmitter {
       event.defaultPrompt
     );
     this.emit(PageEmittedEvents.Dialog, dialog);
+  }
+
+  /**
+   * Resets default white background
+   */
+  private async _resetDefaultBackgroundColor() {
+    await this._client.send('Emulation.setDefaultBackgroundColorOverride');
+  }
+
+  /**
+   * Hides default white background
+   */
+  private async _setTransparentBackgroundColor(): Promise<void> {
+    await this._client.send('Emulation.setDefaultBackgroundColorOverride', {
+      color: { r: 0, g: 0, b: 0, a: 0 },
+    });
   }
 
   url(): string {
@@ -1720,18 +1807,18 @@ export class Page extends EventEmitter {
     }
     const shouldSetDefaultBackground =
       options.omitBackground && format === 'png';
-    if (shouldSetDefaultBackground)
-      await this._client.send('Emulation.setDefaultBackgroundColorOverride', {
-        color: { r: 0, g: 0, b: 0, a: 0 },
-      });
+    if (shouldSetDefaultBackground) {
+      await this._setTransparentBackgroundColor();
+    }
     const result = await this._client.send('Page.captureScreenshot', {
       format,
       quality: options.quality,
       clip,
       captureBeyondViewport: true,
     });
-    if (shouldSetDefaultBackground)
-      await this._client.send('Emulation.setDefaultBackgroundColorOverride');
+    if (shouldSetDefaultBackground) {
+      await this._resetDefaultBackgroundColor();
+    }
 
     if (options.fullPage && this._viewport)
       await this.setViewport(this._viewport);
@@ -1740,13 +1827,16 @@ export class Page extends EventEmitter {
       options.encoding === 'base64'
         ? result.data
         : Buffer.from(result.data, 'base64');
-    if (!isNode && options.path) {
-      throw new Error(
-        'Screenshots can only be written to a file path in a Node environment.'
-      );
+
+    if (options.path) {
+      if (!isNode) {
+        throw new Error(
+          'Screenshots can only be written to a file path in a Node environment.'
+        );
+      }
+      const fs = await helper.importFSModule();
+      await fs.promises.writeFile(options.path, buffer);
     }
-    const fs = await helper.importFSModule();
-    if (options.path) await fs.promises.writeFile(options.path, buffer);
     return buffer;
 
     function processClip(
@@ -1790,6 +1880,7 @@ export class Page extends EventEmitter {
       preferCSSPageSize = false,
       margin = {},
       path = null,
+      omitBackground = false,
     } = options;
 
     let paperWidth = 8.5;
@@ -1810,6 +1901,10 @@ export class Page extends EventEmitter {
     const marginBottom = convertPrintParameterToInches(margin.bottom) || 0;
     const marginRight = convertPrintParameterToInches(margin.right) || 0;
 
+    if (omitBackground) {
+      await this._setTransparentBackgroundColor();
+    }
+
     const result = await this._client.send('Page.printToPDF', {
       transferMode: 'ReturnAsStream',
       landscape,
@@ -1827,6 +1922,11 @@ export class Page extends EventEmitter {
       pageRanges,
       preferCSSPageSize,
     });
+
+    if (omitBackground) {
+      await this._resetDefaultBackgroundColor();
+    }
+
     return await helper.readProtocolStream(this._client, result.stream, path);
   }
 
