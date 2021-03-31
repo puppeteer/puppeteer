@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import * as fs from 'fs';
-import { promisify } from 'util';
 import { EventEmitter } from './EventEmitter.js';
-import * as mime from 'mime';
 import {
   Connection,
   CDPSession,
@@ -40,7 +37,11 @@ import { Browser, BrowserContext } from './Browser.js';
 import { Target } from './Target.js';
 import { createJSHandle, JSHandle, ElementHandle } from './JSHandle.js';
 import { Viewport } from './PuppeteerViewport.js';
-import { Credentials, NetworkManagerEmittedEvents } from './NetworkManager.js';
+import {
+  Credentials,
+  NetworkConditions,
+  NetworkManagerEmittedEvents,
+} from './NetworkManager.js';
 import { HTTPRequest } from './HTTPRequest.js';
 import { HTTPResponse } from './HTTPResponse.js';
 import { Accessibility } from './Accessibility.js';
@@ -58,8 +59,7 @@ import {
   UnwrapPromiseLike,
 } from './EvalTypes.js';
 import { PDFOptions, paperFormats } from './PDFOptions.js';
-
-const writeFileAsync = promisify(fs.writeFile);
+import { isNode } from '../environment.js';
 
 /**
  * @public
@@ -135,21 +135,54 @@ interface MediaFeature {
   value: string;
 }
 
-interface ScreenshotClip {
+/**
+ * @public
+ */
+export interface ScreenshotClip {
   x: number;
   y: number;
   width: number;
   height: number;
 }
 
-interface ScreenshotOptions {
+/**
+ * @public
+ */
+export interface ScreenshotOptions {
+  /**
+   * @defaultValue 'png'
+   */
   type?: 'png' | 'jpeg';
+  /**
+   * The file path to save the image to. The screenshot type will be inferred
+   * from file extension. If path is a relative path, then it is resolved
+   * relative to current working directory. If no path is provided, the image
+   * won't be saved to the disk.
+   */
   path?: string;
+  /**
+   * When true, takes a screenshot of the full page.
+   * @defaultValue false
+   */
   fullPage?: boolean;
+  /**
+   * An object which specifies the clipping region of the page.
+   */
   clip?: ScreenshotClip;
+  /**
+   * Quality of the image, between 0-100. Not applicable to `png` images.
+   */
   quality?: number;
+  /**
+   * Hides default white background and allows capturing screenshots with transparency.
+   * @defaultValue false
+   */
   omitBackground?: boolean;
-  encoding?: string;
+  /**
+   * Encoding of the image.
+   * @defaultValue 'binary'
+   */
+  encoding?: 'base64' | 'binary';
 }
 
 /**
@@ -255,6 +288,14 @@ export const enum PageEmittedEvents {
    */
   Request = 'request',
   /**
+   * Emitted when a request ended up loading from cache. Contains a {@link HTTPRequest}.
+   *
+   * @remarks
+   * For certain requests, might contain undefined.
+   * @see https://crbug.com/750469
+   */
+  RequestServedFromCache = 'requestservedfromcache',
+  /**
    * Emitted when a request fails, for example by timing out.
    *
    * Contains a {@link HTTPRequest}.
@@ -286,6 +327,35 @@ export const enum PageEmittedEvents {
    * is destroyed by the page.
    */
   WorkerDestroyed = 'workerdestroyed',
+}
+
+/**
+ * Denotes the objects received by callback functions for page events.
+ *
+ * See {@link PageEmittedEvents} for more detail on the events and when they are
+ * emitted.
+ * @public
+ */
+export interface PageEventObject {
+  close: never;
+  console: ConsoleMessage;
+  dialog: Dialog;
+  domcontentloaded: never;
+  error: Error;
+  frameattached: Frame;
+  framedetached: Frame;
+  framenavigated: Frame;
+  load: never;
+  metrics: { title: string; metrics: Metrics };
+  pageerror: Error;
+  popup: Page;
+  request: HTTPRequest;
+  response: HTTPResponse;
+  requestfailed: HTTPRequest;
+  requestfinished: HTTPRequest;
+  requestservedfromcache: HTTPRequest;
+  workercreated: WebWorker;
+  workerdestroyed: WebWorker;
 }
 
 class ScreenshotTaskQueue {
@@ -450,6 +520,10 @@ export class Page extends EventEmitter {
     networkManager.on(NetworkManagerEmittedEvents.Request, (event) =>
       this.emit(PageEmittedEvents.Request, event)
     );
+    networkManager.on(
+      NetworkManagerEmittedEvents.RequestServedFromCache,
+      (event) => this.emit(PageEmittedEvents.RequestServedFromCache, event)
+    );
     networkManager.on(NetworkManagerEmittedEvents.Response, (event) =>
       this.emit(PageEmittedEvents.Response, event)
     );
@@ -512,6 +586,27 @@ export class Page extends EventEmitter {
    */
   public isJavaScriptEnabled(): boolean {
     return this._javascriptEnabled;
+  }
+
+  /**
+   * Listen to page events.
+   */
+  public on<K extends keyof PageEventObject>(
+    eventName: K,
+    handler: (event: PageEventObject[K]) => void
+  ): EventEmitter {
+    // Note: this method only exists to define the types; we delegate the impl
+    // to EventEmitter.
+    return super.on(eventName, handler);
+  }
+
+  public once<K extends keyof PageEventObject>(
+    eventName: K,
+    handler: (event: PageEventObject[K]) => void
+  ): EventEmitter {
+    // Note: this method only exists to define the types; we delegate the impl
+    // to EventEmitter.
+    return super.once(eventName, handler);
   }
 
   /**
@@ -606,7 +701,7 @@ export class Page extends EventEmitter {
     if (source !== 'worker')
       this.emit(
         PageEmittedEvents.Console,
-        new ConsoleMessage(level, text, [], { url, lineNumber })
+        new ConsoleMessage(level, text, [], [{ url, lineNumber }])
       );
   }
 
@@ -655,6 +750,8 @@ export class Page extends EventEmitter {
 
   /**
    * @param value - Whether to enable request interception.
+   * @param cacheSafe - Whether to trust browser caching. If set to false,
+   * enabling request interception disables page caching. Defaults to false.
    *
    * @remarks
    * Activating request interception enables {@link HTTPRequest.abort},
@@ -662,9 +759,7 @@ export class Page extends EventEmitter {
    * provides the capability to modify network requests that are made by a page.
    *
    * Once request interception is enabled, every request will stall unless it's
-   * continued, responded or aborted.
-   *
-   * **NOTE** Enabling request interception disables page caching.
+   * continued, responded or aborted; or completed using the browser cache.
    *
    * @example
    * An example of a naïve request interceptor that aborts all image requests:
@@ -686,8 +781,13 @@ export class Page extends EventEmitter {
    * })();
    * ```
    */
-  async setRequestInterception(value: boolean): Promise<void> {
-    return this._frameManager.networkManager().setRequestInterception(value);
+  async setRequestInterception(
+    value: boolean,
+    cacheSafe = false
+  ): Promise<void> {
+    return this._frameManager
+      .networkManager()
+      .setRequestInterception(value, cacheSafe);
   }
 
   /**
@@ -695,6 +795,14 @@ export class Page extends EventEmitter {
    */
   setOfflineMode(enabled: boolean): Promise<void> {
     return this._frameManager.networkManager().setOfflineMode(enabled);
+  }
+
+  emulateNetworkConditions(
+    networkConditions: NetworkConditions | null
+  ): Promise<void> {
+    return this._frameManager
+      .networkManager()
+      .emulateNetworkConditions(networkConditions);
   }
 
   /**
@@ -722,8 +830,10 @@ export class Page extends EventEmitter {
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query page for.
    */
-  async $(selector: string): Promise<ElementHandle | null> {
-    return this.mainFrame().$(selector);
+  async $<T extends Element = Element>(
+    selector: string
+  ): Promise<ElementHandle<T> | null> {
+    return this.mainFrame().$<T>(selector);
   }
 
   /**
@@ -966,8 +1076,10 @@ export class Page extends EventEmitter {
     return this.mainFrame().$$eval<ReturnType>(selector, pageFunction, ...args);
   }
 
-  async $$(selector: string): Promise<ElementHandle[]> {
-    return this.mainFrame().$$(selector);
+  async $$<T extends Element = Element>(
+    selector: string
+  ): Promise<Array<ElementHandle<T>>> {
+    return this.mainFrame().$$<T>(selector);
   }
 
   async $x(expression: string): Promise<ElementHandle[]> {
@@ -1062,7 +1174,7 @@ export class Page extends EventEmitter {
 
     this._pageBindings.set(name, puppeteerFunction);
 
-    const expression = helper.evaluationString(addPageBinding, name);
+    const expression = helper.pageBindingInitString('exposedFun', name);
     await this._client.send('Runtime.addBinding', { name: name });
     await this._client.send('Page.addScriptToEvaluateOnNewDocument', {
       source: expression,
@@ -1070,30 +1182,6 @@ export class Page extends EventEmitter {
     await Promise.all(
       this.frames().map((frame) => frame.evaluate(expression).catch(debugError))
     );
-
-    function addPageBinding(bindingName): void {
-      /* Cast window to any here as we're about to add properties to it
-       * via win[bindingName] which TypeScript doesn't like.
-       */
-      const win = window as any;
-      const binding = win[bindingName];
-
-      win[bindingName] = (...args: unknown[]): Promise<unknown> => {
-        const me = window[bindingName];
-        let callbacks = me['callbacks'];
-        if (!callbacks) {
-          callbacks = new Map();
-          me['callbacks'] = callbacks;
-        }
-        const seq = (me['lastSeq'] || 0) + 1;
-        me['lastSeq'] = seq;
-        const promise = new Promise((resolve, reject) =>
-          callbacks.set(seq, { resolve, reject })
-        );
-        binding(JSON.stringify({ name: bindingName, seq, args }));
-        return promise;
-      };
-    }
   }
 
   async authenticate(credentials: Credentials): Promise<void> {
@@ -1168,23 +1256,30 @@ export class Page extends EventEmitter {
   private async _onBindingCalled(
     event: Protocol.Runtime.BindingCalledEvent
   ): Promise<void> {
-    const { name, seq, args } = JSON.parse(event.payload);
+    let payload: { type: string; name: string; seq: number; args: unknown[] };
+    try {
+      payload = JSON.parse(event.payload);
+    } catch {
+      // The binding was either called by something in the page or it was
+      // called before our wrapper was initialized.
+      return;
+    }
+    const { type, name, seq, args } = payload;
+    if (type !== 'exposedFun' || !this._pageBindings.has(name)) return;
     let expression = null;
     try {
       const result = await this._pageBindings.get(name)(...args);
-      expression = helper.evaluationString(deliverResult, name, seq, result);
+      expression = helper.pageBindingDeliverResultString(name, seq, result);
     } catch (error) {
       if (error instanceof Error)
-        expression = helper.evaluationString(
-          deliverError,
+        expression = helper.pageBindingDeliverErrorString(
           name,
           seq,
           error.message,
           error.stack
         );
       else
-        expression = helper.evaluationString(
-          deliverErrorValue,
+        expression = helper.pageBindingDeliverErrorValueString(
           name,
           seq,
           error
@@ -1196,32 +1291,6 @@ export class Page extends EventEmitter {
         contextId: event.executionContextId,
       })
       .catch(debugError);
-
-    function deliverResult(name: string, seq: number, result: unknown): void {
-      window[name]['callbacks'].get(seq).resolve(result);
-      window[name]['callbacks'].delete(seq);
-    }
-
-    function deliverError(
-      name: string,
-      seq: number,
-      message: string,
-      stack: string
-    ): void {
-      const error = new Error(message);
-      error.stack = stack;
-      window[name]['callbacks'].get(seq).reject(error);
-      window[name]['callbacks'].delete(seq);
-    }
-
-    function deliverErrorValue(
-      name: string,
-      seq: number,
-      value: unknown
-    ): void {
-      window[name]['callbacks'].get(seq).reject(value);
-      window[name]['callbacks'].delete(seq);
-    }
   }
 
   private _addConsoleMessage(
@@ -1239,19 +1308,21 @@ export class Page extends EventEmitter {
       if (remoteObject.objectId) textTokens.push(arg.toString());
       else textTokens.push(helper.valueFromRemoteObject(remoteObject));
     }
-    const location =
-      stackTrace && stackTrace.callFrames.length
-        ? {
-            url: stackTrace.callFrames[0].url,
-            lineNumber: stackTrace.callFrames[0].lineNumber,
-            columnNumber: stackTrace.callFrames[0].columnNumber,
-          }
-        : {};
+    const stackTraceLocations = [];
+    if (stackTrace) {
+      for (const callFrame of stackTrace.callFrames) {
+        stackTraceLocations.push({
+          url: callFrame.url,
+          lineNumber: callFrame.lineNumber,
+          columnNumber: callFrame.columnNumber,
+        });
+      }
+    }
     const message = new ConsoleMessage(
       type,
       textTokens.join(' '),
       args,
-      location
+      stackTraceLocations
     );
     this.emit(PageEmittedEvents.Console, message);
   }
@@ -1277,6 +1348,22 @@ export class Page extends EventEmitter {
       event.defaultPrompt
     );
     this.emit(PageEmittedEvents.Dialog, dialog);
+  }
+
+  /**
+   * Resets default white background
+   */
+  private async _resetDefaultBackgroundColor() {
+    await this._client.send('Emulation.setDefaultBackgroundColorOverride');
+  }
+
+  /**
+   * Hides default white background
+   */
+  private async _setTransparentBackgroundColor(): Promise<void> {
+    await this._client.send('Emulation.setDefaultBackgroundColorOverride', {
+      color: { r: 0, g: 0, b: 0, a: 0 },
+    });
   }
 
   url(): string {
@@ -1351,11 +1438,11 @@ export class Page extends EventEmitter {
     return helper.waitForEvent(
       this._frameManager.networkManager(),
       NetworkManagerEmittedEvents.Response,
-      (response) => {
+      async (response) => {
         if (helper.isString(urlOrPredicate))
           return urlOrPredicate === response.url();
         if (typeof urlOrPredicate === 'function')
-          return !!urlOrPredicate(response);
+          return !!(await urlOrPredicate(response));
         return false;
       },
       timeout,
@@ -1428,7 +1515,9 @@ export class Page extends EventEmitter {
       features.every((mediaFeature) => {
         const name = mediaFeature.name;
         assert(
-          /^prefers-(?:color-scheme|reduced-motion)$/.test(name),
+          /^(?:prefers-(?:color-scheme|reduced-motion)|color-gamut)$/.test(
+            name
+          ),
           'Unsupported media feature: ' + name
         );
         return true;
@@ -1448,6 +1537,40 @@ export class Page extends EventEmitter {
       if (error.message.includes('Invalid timezone'))
         throw new Error(`Invalid timezone ID: ${timezoneId}`);
       throw error;
+    }
+  }
+
+  /**
+   * Emulates the idle state.
+   * If no arguments set, clears idle state emulation.
+   *
+   * @example
+   * ```js
+   * // set idle emulation
+   * await page.emulateIdleState({isUserActive: true, isScreenUnlocked: false});
+   *
+   * // do some checks here
+   * ...
+   *
+   * // clear idle emulation
+   * await page.emulateIdleState();
+   * ```
+   *
+   * @param overrides Mock idle state. If not set, clears idle overrides
+   * @param isUserActive Mock isUserActive
+   * @param isScreenUnlocked Mock isScreenUnlocked
+   */
+  async emulateIdleState(overrides?: {
+    isUserActive: boolean;
+    isScreenUnlocked: boolean;
+  }): Promise<void> {
+    if (overrides) {
+      await this._client.send('Emulation.setIdleOverride', {
+        isUserActive: overrides.isUserActive,
+        isScreenUnlocked: overrides.isScreenUnlocked,
+      });
+    } else {
+      await this._client.send('Emulation.clearIdleOverride');
     }
   }
 
@@ -1597,10 +1720,17 @@ export class Page extends EventEmitter {
       );
       screenshotType = options.type;
     } else if (options.path) {
-      const mimeType = mime.getType(options.path);
-      if (mimeType === 'image/png') screenshotType = 'png';
-      else if (mimeType === 'image/jpeg') screenshotType = 'jpeg';
-      assert(screenshotType, 'Unsupported screenshot mime type: ' + mimeType);
+      const filePath = options.path;
+      const extension = filePath
+        .slice(filePath.lastIndexOf('.') + 1)
+        .toLowerCase();
+      if (extension === 'png') screenshotType = 'png';
+      else if (extension === 'jpg' || extension === 'jpeg')
+        screenshotType = 'jpeg';
+      assert(
+        screenshotType,
+        `Unsupported screenshot type for extension \`.${extension}\``
+      );
     }
 
     if (!screenshotType) screenshotType = 'png';
@@ -1680,34 +1810,23 @@ export class Page extends EventEmitter {
       const width = Math.ceil(metrics.contentSize.width);
       const height = Math.ceil(metrics.contentSize.height);
 
-      // Overwrite clip for full page at all times.
+      // Overwrite clip for full page.
       clip = { x: 0, y: 0, width, height, scale: 1 };
-      const { isMobile = false, deviceScaleFactor = 1, isLandscape = false } =
-        this._viewport || {};
-      const screenOrientation: Protocol.Emulation.ScreenOrientation = isLandscape
-        ? { angle: 90, type: 'landscapePrimary' }
-        : { angle: 0, type: 'portraitPrimary' };
-      await this._client.send('Emulation.setDeviceMetricsOverride', {
-        mobile: isMobile,
-        width,
-        height,
-        deviceScaleFactor,
-        screenOrientation,
-      });
     }
     const shouldSetDefaultBackground =
       options.omitBackground && format === 'png';
-    if (shouldSetDefaultBackground)
-      await this._client.send('Emulation.setDefaultBackgroundColorOverride', {
-        color: { r: 0, g: 0, b: 0, a: 0 },
-      });
+    if (shouldSetDefaultBackground) {
+      await this._setTransparentBackgroundColor();
+    }
     const result = await this._client.send('Page.captureScreenshot', {
       format,
       quality: options.quality,
       clip,
+      captureBeyondViewport: true,
     });
-    if (shouldSetDefaultBackground)
-      await this._client.send('Emulation.setDefaultBackgroundColorOverride');
+    if (shouldSetDefaultBackground) {
+      await this._resetDefaultBackgroundColor();
+    }
 
     if (options.fullPage && this._viewport)
       await this.setViewport(this._viewport);
@@ -1716,7 +1835,16 @@ export class Page extends EventEmitter {
       options.encoding === 'base64'
         ? result.data
         : Buffer.from(result.data, 'base64');
-    if (options.path) await writeFileAsync(options.path, buffer);
+
+    if (options.path) {
+      if (!isNode) {
+        throw new Error(
+          'Screenshots can only be written to a file path in a Node environment.'
+        );
+      }
+      const fs = await helper.importFSModule();
+      await fs.promises.writeFile(options.path, buffer);
+    }
     return buffer;
 
     function processClip(
@@ -1760,6 +1888,7 @@ export class Page extends EventEmitter {
       preferCSSPageSize = false,
       margin = {},
       path = null,
+      omitBackground = false,
     } = options;
 
     let paperWidth = 8.5;
@@ -1780,6 +1909,10 @@ export class Page extends EventEmitter {
     const marginBottom = convertPrintParameterToInches(margin.bottom) || 0;
     const marginRight = convertPrintParameterToInches(margin.right) || 0;
 
+    if (omitBackground) {
+      await this._setTransparentBackgroundColor();
+    }
+
     const result = await this._client.send('Page.printToPDF', {
       transferMode: 'ReturnAsStream',
       landscape,
@@ -1797,6 +1930,11 @@ export class Page extends EventEmitter {
       pageRanges,
       preferCSSPageSize,
     });
+
+    if (omitBackground) {
+      await this._resetDefaultBackgroundColor();
+    }
+
     return await helper.readProtocolStream(this._client, result.stream, path);
   }
 

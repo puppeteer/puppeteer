@@ -22,12 +22,16 @@ import * as childProcess from 'child_process';
 import * as https from 'https';
 import * as http from 'http';
 
+import { Product } from '../common/Product.js';
 import extractZip from 'extract-zip';
 import { debug } from '../common/Debug.js';
 import { promisify } from 'util';
 import removeRecursive from 'rimraf';
 import * as URL from 'url';
-import ProxyAgent from 'https-proxy-agent';
+import createHttpsProxyAgent, {
+  HttpsProxyAgent,
+  HttpsProxyAgentOptions,
+} from 'https-proxy-agent';
 import { getProxyForUrl } from 'proxy-from-env';
 import { assert } from '../common/assert.js';
 
@@ -65,11 +69,6 @@ const browserConfig = {
  * @public
  */
 export type Platform = 'linux' | 'mac' | 'win32' | 'win64';
-/**
- * Supported products.
- * @public
- */
-export type Product = 'chrome' | 'firefox';
 
 function archiveName(
   product: Product,
@@ -112,10 +111,15 @@ function downloadURL(
 function handleArm64(): void {
   fs.stat('/usr/bin/chromium-browser', function (err, stats) {
     if (stats === undefined) {
-      console.error(`The chromium binary is not available for arm64: `);
-      console.error(`If you are on Ubuntu, you can install with: `);
-      console.error(`\n apt-get install chromium-browser\n`);
-      throw new Error();
+      fs.stat('/usr/bin/chromium', function (err, stats) {
+        if (stats === undefined) {
+          console.error(`The chromium binary is not available for arm64.`);
+          console.error(`If you are on Ubuntu, you can install with: `);
+          console.error(`\n sudo apt install chromium\n`);
+          console.error(`\n sudo apt install chromium-browser\n`);
+          throw new Error();
+        }
+      });
     }
   });
 }
@@ -561,7 +565,7 @@ function httpRequest(
 
   type Options = Partial<URL.UrlWithStringQuery> & {
     method?: string;
-    agent?: ProxyAgent;
+    agent?: HttpsProxyAgent;
     rejectUnauthorized?: boolean;
   };
 
@@ -585,9 +589,9 @@ function httpRequest(
       const proxyOptions = {
         ...parsedProxyURL,
         secureProxy: parsedProxyURL.protocol === 'https:',
-      } as ProxyAgent.HttpsProxyAgentOptions;
+      } as HttpsProxyAgentOptions;
 
-      options.agent = new ProxyAgent(proxyOptions);
+      options.agent = createHttpsProxyAgent(proxyOptions);
       options.rejectUnauthorized = false;
     }
   }

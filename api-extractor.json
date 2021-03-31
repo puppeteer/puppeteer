@@ -1,7 +1,7 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
   "mainEntryPointFilePath": "<projectFolder>/lib/cjs/puppeteer/api-docs-entry.d.ts",
-  "bundledPackages": [ "devtools-protocol" ],
+  "bundledPackages": ["devtools-protocol"],
 
   "apiReport": {
     "enabled": false
@@ -12,7 +12,8 @@
   },
 
   "dtsRollup": {
-    "enabled": false
+    "enabled": true,
+    "untrimmedFilePath": "lib/types.d.ts"
   },
 
   "tsdocMetadata": {
@@ -41,5 +42,4 @@
       }
     }
   }
-
 }

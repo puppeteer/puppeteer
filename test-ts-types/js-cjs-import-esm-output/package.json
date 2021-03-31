@@ -1,0 +1,15 @@
+{
+  "name": "test-ts-types-ts-esm",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Test project with TypeScript, ESM output",
+  "scripts": {
+    "compile": "../../node_modules/.bin/tsc"
+  },
+  "devDependencies": {
+    "typescript": "^4.1.3"
+  },
+  "dependencies": {
+    "puppeteer": "file:../../puppeteer.tgz"
+  }
+}

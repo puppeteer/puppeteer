@@ -206,10 +206,25 @@ function compareDocumentations(actual, expected) {
   const expectedClasses = Array.from(expected.classes.keys()).sort();
   const classesDiff = diff(actualClasses, expectedClasses);
 
+  /* These have been moved onto PuppeteerNode but we want to document them under
+   * Puppeteer. See https://github.com/puppeteer/puppeteer/pull/6504 for details.
+   */
+  const expectedPuppeteerClassMissingMethods = new Set([
+    'createBrowserFetcher',
+    'defaultArgs',
+    'executablePath',
+    'launch',
+  ]);
+
   for (const className of classesDiff.extra)
     errors.push(`Non-existing class found: ${className}`);
-  for (const className of classesDiff.missing)
+
+  for (const className of classesDiff.missing) {
+    if (className === 'PuppeteerNode') {
+      continue;
+    }
     errors.push(`Class not found: ${className}`);
+  }
 
   for (const className of classesDiff.equal) {
     const actualClass = actual.classes.get(className);
@@ -219,6 +234,12 @@ function compareDocumentations(actual, expected) {
     const methodDiff = diff(actualMethods, expectedMethods);
 
     for (const methodName of methodDiff.extra) {
+      if (
+        expectedPuppeteerClassMissingMethods.has(methodName) &&
+        actualClass.name === 'Puppeteer'
+      ) {
+        continue;
+      }
       errors.push(`Non-existing method found: ${className}.${methodName}()`);
     }
 
@@ -282,8 +303,12 @@ function compareDocumentations(actual, expected) {
       expectedClass.properties.keys()
     ).sort();
     const propertyDiff = diff(actualProperties, expectedProperties);
-    for (const propertyName of propertyDiff.extra)
+    for (const propertyName of propertyDiff.extra) {
+      if (className === 'Puppeteer' && propertyName === 'product') {
+        continue;
+      }
       errors.push(`Non-existing property found: ${className}.${propertyName}`);
+    }
     for (const propertyName of propertyDiff.missing)
       errors.push(`Property not found: ${className}.${propertyName}`);
 
@@ -552,6 +577,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method Page.emulateNetworkConditions() networkConditions',
+        {
+          actualName: 'Object',
+          expectedName: 'NetworkConditions',
+        },
+      ],
+      [
         'Method Page.setViewport() options.viewport',
         {
           actualName: 'Object',
@@ -803,6 +835,56 @@ function compareDocumentations(actual, expected) {
           expectedName: 'Array<Object>',
         },
       ],
+      [
+        'Method Puppeteer.connect() options',
+        {
+          actualName: 'Object',
+          expectedName: 'ConnectOptions',
+        },
+      ],
+      [
+        'Method Page.deleteCookie() ...cookies',
+        {
+          actualName: '...Object',
+          expectedName: '...DeleteCookiesRequest',
+        },
+      ],
+      [
+        'Method Page.emulateVisionDeficiency() type',
+        {
+          actualName: 'string',
+          expectedName:
+            '"none"|"achromatopsia"|"blurredVision"|"deuteranopia"|"protanopia"|"tritanopia"',
+        },
+      ],
+      [
+        'Method BrowserContext.overridePermissions() permissions',
+        {
+          actualName: 'Array<string>',
+          expectedName: 'Array<Permission>',
+        },
+      ],
+      [
+        'Method HTTPRequest.respond() response.body',
+        {
+          actualName: 'string|Buffer',
+          expectedName: 'Object',
+        },
+      ],
+      [
+        'Method HTTPRequest.respond() response.contentType',
+        {
+          actualName: 'string',
+          expectedName: 'Object',
+        },
+      ],
+      [
+        'Method HTTPRequest.respond() response.status',
+        {
+          actualName: 'number',
+          expectedName: 'Object',
+        },
+      ],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);
@@ -847,6 +929,7 @@ function compareDocumentations(actual, expected) {
     const skipPropertyChecksOnMethods = new Set([
       'Method Page.deleteCookie() ...cookies',
       'Method Page.setCookie() ...cookies',
+      'Method Puppeteer.connect() options',
     ]);
     if (skipPropertyChecksOnMethods.has(source)) return;
 

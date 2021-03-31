@@ -253,18 +253,31 @@ describe('Target', function () {
 
   describe('Browser.waitForTarget', () => {
     itFailsFirefox('should wait for a target', async () => {
-      const { browser, server } = getTestState();
+      const { browser, puppeteer, server } = getTestState();
 
       let resolved = false;
       const targetPromise = browser.waitForTarget(
         (target) => target.url() === server.EMPTY_PAGE
       );
-      targetPromise.then(() => (resolved = true));
+      targetPromise
+        .then(() => (resolved = true))
+        .catch((error) => {
+          resolved = true;
+          if (error instanceof puppeteer.errors.TimeoutError) {
+            console.error(error);
+          } else throw error;
+        });
       const page = await browser.newPage();
       expect(resolved).toBe(false);
       await page.goto(server.EMPTY_PAGE);
-      const target = await targetPromise;
-      expect(await target.page()).toBe(page);
+      try {
+        const target = await targetPromise;
+        expect(await target.page()).toBe(page);
+      } catch (error) {
+        if (error instanceof puppeteer.errors.TimeoutError) {
+          console.error(error);
+        } else throw error;
+      }
       await page.close();
     });
     it('should timeout waiting for a non-existent target', async () => {

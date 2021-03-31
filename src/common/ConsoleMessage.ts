@@ -68,7 +68,7 @@ export class ConsoleMessage {
   private _type: ConsoleMessageType;
   private _text: string;
   private _args: JSHandle[];
-  private _location: ConsoleMessageLocation;
+  private _stackTraceLocations: ConsoleMessageLocation[];
 
   /**
    * @public
@@ -77,12 +77,12 @@ export class ConsoleMessage {
     type: ConsoleMessageType,
     text: string,
     args: JSHandle[],
-    location: ConsoleMessageLocation = {}
+    stackTraceLocations: ConsoleMessageLocation[]
   ) {
     this._type = type;
     this._text = text;
     this._args = args;
-    this._location = location;
+    this._stackTraceLocations = stackTraceLocations;
   }
 
   /**
@@ -110,6 +110,13 @@ export class ConsoleMessage {
    * @returns The location of the console message.
    */
   location(): ConsoleMessageLocation {
-    return this._location;
+    return this._stackTraceLocations.length ? this._stackTraceLocations[0] : {};
+  }
+
+  /**
+   * @returns The array of locations on the stack of the console message.
+   */
+  stackTrace(): ConsoleMessageLocation[] {
+    return this._stackTraceLocations;
   }
 }

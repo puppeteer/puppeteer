@@ -94,7 +94,7 @@ describe('waittask specs', function () {
       const { page } = getTestState();
 
       let error = null;
-      // @ts-expect-error
+      // @ts-expect-error purposefully passing bad type for test
       await page.waitFor({ foo: 'bar' }).catch((error_) => (error = error_));
       expect(error.message).toContain('Unsupported target type');
     });
@@ -129,18 +129,15 @@ describe('waittask specs', function () {
       await page.evaluate(() => (globalThis.__FOO = 1));
       await watchdog;
     });
-    itFailsFirefox(
-      'should work when resolved right before execution context disposal',
-      async () => {
-        const { page } = getTestState();
+    it('should work when resolved right before execution context disposal', async () => {
+      const { page } = getTestState();
 
-        await page.evaluateOnNewDocument(() => (globalThis.__RELOADED = true));
-        await page.waitForFunction(() => {
-          if (!globalThis.__RELOADED) window.location.reload();
-          return true;
-        });
-      }
-    );
+      await page.evaluateOnNewDocument(() => (globalThis.__RELOADED = true));
+      await page.waitForFunction(() => {
+        if (!globalThis.__RELOADED) window.location.reload();
+        return true;
+      });
+    });
     it('should poll on interval', async () => {
       const { page } = getTestState();
 
@@ -608,7 +605,7 @@ describe('waittask specs', function () {
         .catch((error_) => (error = error_));
       expect(error).toBeTruthy();
       expect(error.message).toContain(
-        'waiting for selector "div" failed: timeout'
+        'waiting for selector `div` failed: timeout'
       );
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });
@@ -622,7 +619,7 @@ describe('waittask specs', function () {
         .catch((error_) => (error = error_));
       expect(error).toBeTruthy();
       expect(error.message).toContain(
-        'waiting for selector "div" to be hidden failed: timeout'
+        'waiting for selector `div` to be hidden failed: timeout'
       );
     });
 
@@ -659,7 +656,7 @@ describe('waittask specs', function () {
       await page
         .waitForSelector('.zombo', { timeout: 10 })
         .catch((error_) => (error = error_));
-      expect(error.stack).toContain('waiting for selector ".zombo" failed');
+      expect(error.stack).toContain('waiting for selector `.zombo` failed');
       // The extension is ts here as Mocha maps back via sourcemaps.
       expect(error.stack).toContain('waittask.spec.ts');
     });
@@ -692,7 +689,7 @@ describe('waittask specs', function () {
         .catch((error_) => (error = error_));
       expect(error).toBeTruthy();
       expect(error.message).toContain(
-        'waiting for XPath "//div" failed: timeout'
+        'waiting for XPath `//div` failed: timeout'
       );
       expect(error).toBeInstanceOf(puppeteer.errors.TimeoutError);
     });

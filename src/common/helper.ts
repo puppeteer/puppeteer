@@ -15,16 +15,11 @@
  */
 import { TimeoutError } from './Errors.js';
 import { debug } from './Debug.js';
-import * as fs from 'fs';
 import { CDPSession } from './Connection.js';
-import { promisify } from 'util';
 import { Protocol } from 'devtools-protocol';
 import { CommonEventEmitter } from './EventEmitter.js';
 import { assert } from './assert.js';
-
-const openAsync = promisify(fs.open);
-const writeAsync = promisify(fs.write);
-const closeAsync = promisify(fs.close);
+import { isNode } from '../environment.js';
 
 export const debugError = debug('puppeteer:error');
 
@@ -129,7 +124,7 @@ function isNumber(obj: unknown): obj is number {
 async function waitForEvent<T extends any>(
   emitter: CommonEventEmitter,
   eventName: string | symbol,
-  predicate: (event: T) => boolean,
+  predicate: (event: T) => Promise<boolean> | boolean,
   timeout: number,
   abortPromise: Promise<Error>
 ): Promise<T> {
@@ -138,8 +133,8 @@ async function waitForEvent<T extends any>(
     resolveCallback = resolve;
     rejectCallback = reject;
   });
-  const listener = addEventListener(emitter, eventName, (event) => {
-    if (!predicate(event)) return;
+  const listener = addEventListener(emitter, eventName, async (event) => {
+    if (!(await predicate(event))) return;
     resolveCallback(event);
   });
   if (timeout) {
@@ -182,6 +177,114 @@ function evaluationString(fun: Function | string, ...args: unknown[]): string {
   return `(${fun})(${args.map(serializeArgument).join(',')})`;
 }
 
+function pageBindingInitString(type: string, name: string): string {
+  function addPageBinding(type: string, bindingName: string): void {
+    /* Cast window to any here as we're about to add properties to it
+     * via win[bindingName] which TypeScript doesn't like.
+     */
+    const win = window as any;
+    const binding = win[bindingName];
+
+    win[bindingName] = (...args: unknown[]): Promise<unknown> => {
+      const me = window[bindingName];
+      let callbacks = me.callbacks;
+      if (!callbacks) {
+        callbacks = new Map();
+        me.callbacks = callbacks;
+      }
+      const seq = (me.lastSeq || 0) + 1;
+      me.lastSeq = seq;
+      const promise = new Promise((resolve, reject) =>
+        callbacks.set(seq, { resolve, reject })
+      );
+      binding(JSON.stringify({ type, name: bindingName, seq, args }));
+      return promise;
+    };
+  }
+  return evaluationString(addPageBinding, type, name);
+}
+
+function pageBindingDeliverResultString(
+  name: string,
+  seq: number,
+  result: unknown
+): string {
+  function deliverResult(name: string, seq: number, result: unknown): void {
+    window[name].callbacks.get(seq).resolve(result);
+    window[name].callbacks.delete(seq);
+  }
+  return evaluationString(deliverResult, name, seq, result);
+}
+
+function pageBindingDeliverErrorString(
+  name: string,
+  seq: number,
+  message: string,
+  stack: string
+): string {
+  function deliverError(
+    name: string,
+    seq: number,
+    message: string,
+    stack: string
+  ): void {
+    const error = new Error(message);
+    error.stack = stack;
+    window[name].callbacks.get(seq).reject(error);
+    window[name].callbacks.delete(seq);
+  }
+  return evaluationString(deliverError, name, seq, message, stack);
+}
+
+function pageBindingDeliverErrorValueString(
+  name: string,
+  seq: number,
+  value: unknown
+): string {
+  function deliverErrorValue(name: string, seq: number, value: unknown): void {
+    window[name].callbacks.get(seq).reject(value);
+    window[name].callbacks.delete(seq);
+  }
+  return evaluationString(deliverErrorValue, name, seq, value);
+}
+
+function makePredicateString(
+  predicate: Function,
+  predicateQueryHandler?: Function
+): string {
+  function checkWaitForOptions(
+    node: Node,
+    waitForVisible: boolean,
+    waitForHidden: boolean
+  ): Node | null | boolean {
+    if (!node) return waitForHidden;
+    if (!waitForVisible && !waitForHidden) return node;
+    const element =
+      node.nodeType === Node.TEXT_NODE ? node.parentElement : (node as Element);
+
+    const style = window.getComputedStyle(element);
+    const isVisible =
+      style && style.visibility !== 'hidden' && hasVisibleBoundingBox();
+    const success =
+      waitForVisible === isVisible || waitForHidden === !isVisible;
+    return success ? node : null;
+
+    function hasVisibleBoundingBox(): boolean {
+      const rect = element.getBoundingClientRect();
+      return !!(rect.top || rect.bottom || rect.width || rect.height);
+    }
+  }
+  const predicateQueryHandlerDef = predicateQueryHandler
+    ? `const predicateQueryHandler = ${predicateQueryHandler};`
+    : '';
+  return `
+    (() => {
+      ${predicateQueryHandlerDef}
+      const checkWaitForOptions = ${checkWaitForOptions};
+      return (${predicate})(...args)
+    })() `;
+}
+
 async function waitWithTimeout<T extends any>(
   promise: Promise<T>,
   taskName: string,
@@ -206,9 +309,18 @@ async function readProtocolStream(
   handle: string,
   path?: string
 ): Promise<Buffer> {
+  if (!isNode && path) {
+    throw new Error('Cannot write to a path outside of Node.js environment.');
+  }
+
+  const fs = isNode ? await importFSModule() : null;
+
   let eof = false;
-  let file;
-  if (path) file = await openAsync(path, 'w');
+  let fileHandle: import('fs').promises.FileHandle;
+
+  if (path && fs) {
+    fileHandle = await fs.promises.open(path, 'w');
+  }
   const bufs = [];
   while (!eof) {
     const response = await client.send('IO.read', { handle });
@@ -218,9 +330,11 @@ async function readProtocolStream(
       response.base64Encoded ? 'base64' : undefined
     );
     bufs.push(buf);
-    if (path) await writeAsync(file, buf);
+    if (path && fs) {
+      await fs.promises.writeFile(fileHandle, buf);
+    }
   }
-  if (path) await closeAsync(file);
+  if (path) await fileHandle.close();
   await client.send('IO.close', { handle });
   let resultBuffer = null;
   try {
@@ -230,13 +344,43 @@ async function readProtocolStream(
   }
 }
 
+/**
+ * Loads the Node fs promises API. Needed because on Node 10.17 and below,
+ * fs.promises is experimental, and therefore not marked as enumerable. That
+ * means when TypeScript compiles an `import('fs')`, its helper doesn't spot the
+ * promises declaration and therefore on Node <10.17 you get an error as
+ * fs.promises is undefined in compiled TypeScript land.
+ *
+ * See https://github.com/puppeteer/puppeteer/issues/6548 for more details.
+ *
+ * Once Node 10 is no longer supported (April 2021) we can remove this and use
+ * `(await import('fs')).promises`.
+ */
+async function importFSModule(): Promise<typeof import('fs')> {
+  if (!isNode) {
+    throw new Error('Cannot load the fs module API outside of Node.');
+  }
+
+  const fs = await import('fs');
+  if (fs.promises) {
+    return fs;
+  }
+  return fs.default;
+}
+
 export const helper = {
   evaluationString,
+  pageBindingInitString,
+  pageBindingDeliverResultString,
+  pageBindingDeliverErrorString,
+  pageBindingDeliverErrorValueString,
+  makePredicateString,
   readProtocolStream,
   waitWithTimeout,
   waitForEvent,
   isString,
   isNumber,
+  importFSModule,
   addEventListener,
   removeEventListeners,
   valueFromRemoteObject,

@@ -31,6 +31,7 @@ import {
   WrapElementHandle,
   UnwrapPromiseLike,
 } from './EvalTypes.js';
+import { isNode } from '../environment.js';
 
 export interface BoxModel {
   content: Array<{ x: number; y: number }>;
@@ -242,7 +243,7 @@ export class JSHandle {
    * on the object in page and consequent {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse | JSON.parse} in puppeteer.
    * **NOTE** The method throws if the referenced object is not stringifiable.
    */
-  async jsonValue(): Promise<{}> {
+  async jsonValue<T = unknown>(): Promise<T> {
     if (this._remoteObject.objectId) {
       const response = await this._client.send('Runtime.callFunctionOn', {
         functionDeclaration: 'function() { return this; }',
@@ -250,9 +251,9 @@ export class JSHandle {
         returnByValue: true,
         awaitPromise: true,
       });
-      return helper.valueFromRemoteObject(response.result);
+      return helper.valueFromRemoteObject(response.result) as T;
     }
-    return helper.valueFromRemoteObject(this._remoteObject);
+    return helper.valueFromRemoteObject(this._remoteObject) as T;
   }
 
   /**
@@ -377,10 +378,9 @@ export class ElementHandle<
         element.scrollIntoView({
           block: 'center',
           inline: 'center',
-          // Chrome still supports behavior: instant but it's not in the spec
-          // so TS shouts We don't want to make this breaking change in
-          // Puppeteer yet so we'll ignore the line.
-          // @ts-ignore
+          // @ts-expect-error Chrome still supports behavior: instant but
+          // it's not in the spec so TS shouts We don't want to make this
+          // breaking change in Puppeteer yet so we'll ignore the line.
           behavior: 'instant',
         });
         return false;
@@ -396,10 +396,9 @@ export class ElementHandle<
         element.scrollIntoView({
           block: 'center',
           inline: 'center',
-          // Chrome still supports behavior: instant but it's not in the spec
-          // so TS shouts We don't want to make this breaking change in
-          // Puppeteer yet so we'll ignore the line.
-          // @ts-ignore
+          // @ts-expect-error Chrome still supports behavior: instant but
+          // it's not in the spec so TS shouts We don't want to make this
+          // breaking change in Puppeteer yet so we'll ignore the line.
           behavior: 'instant',
         });
       }
@@ -556,22 +555,21 @@ export class ElementHandle<
       'Multiple file uploads only work with <input type=file multiple>'
     );
 
+    if (!isNode) {
+      throw new Error(
+        `JSHandle#uploadFile can only be used in Node environments.`
+      );
+    }
     // This import is only needed for `uploadFile`, so keep it scoped here to avoid paying
     // the cost unnecessarily.
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const path = require('path');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const fs = require('fs');
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { promisify } = require('util');
-    const access = promisify(fs.access);
-
+    const path = await import('path');
+    const fs = await helper.importFSModule();
     // Locate all files and confirm that they exist.
     const files = await Promise.all(
       filePaths.map(async (filePath) => {
         const resolvedPath: string = path.resolve(filePath);
         try {
-          await access(resolvedPath, fs.constants.R_OK);
+          await fs.promises.access(resolvedPath, fs.constants.R_OK);
         } catch (error) {
           if (error.code === 'ENOENT')
             throw new Error(`${filePath} does not exist or is not readable`);
@@ -773,42 +771,26 @@ export class ElementHandle<
    * Runs `element.querySelector` within the page. If no element matches the selector,
    * the return value resolves to `null`.
    */
-  async $(selector: string): Promise<ElementHandle | null> {
+  async $<T extends Element = Element>(
+    selector: string
+  ): Promise<ElementHandle<T> | null> {
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
       selector
     );
-
-    const handle = await this.evaluateHandle(
-      queryHandler.queryOne,
-      updatedSelector
-    );
-    const element = handle.asElement();
-    if (element) return element;
-    await handle.dispose();
-    return null;
+    return queryHandler.queryOne(this, updatedSelector);
   }
 
   /**
    * Runs `element.querySelectorAll` within the page. If no elements match the selector,
    * the return value resolves to `[]`.
    */
-  async $$(selector: string): Promise<ElementHandle[]> {
+  async $$<T extends Element = Element>(
+    selector: string
+  ): Promise<Array<ElementHandle<T>>> {
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
       selector
     );
-
-    const handles = await this.evaluateHandle(
-      queryHandler.queryAll,
-      updatedSelector
-    );
-    const properties = await handles.getProperties();
-    await handles.dispose();
-    const result = [];
-    for (const property of properties.values()) {
-      const elementHandle = property.asElement();
-      if (elementHandle) result.push(elementHandle);
-    }
-    return result;
+    return queryHandler.queryAll(this, updatedSelector);
   }
 
   /**
@@ -892,15 +874,7 @@ export class ElementHandle<
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
       selector
     );
-    const queryHandlerToArray = Function(
-      'element',
-      'selector',
-      `return Array.from((${queryHandler.queryAll})(element, selector));`
-    ) as (...args: unknown[]) => unknown;
-    const arrayHandle = await this.evaluateHandle(
-      queryHandlerToArray,
-      updatedSelector
-    );
+    const arrayHandle = await queryHandler.queryAllArray(this, updatedSelector);
     const result = await arrayHandle.evaluate<
       (
         elements: Element[],

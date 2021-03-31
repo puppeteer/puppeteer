@@ -84,7 +84,7 @@ describeChromeOnly('Chromium-Specific Launcher tests', function () {
         .connect({ browserURL })
         .catch((error_) => (error = error_));
       expect(error.message).toContain(
-        'Failed to fetch browser webSocket url from'
+        'Failed to fetch browser webSocket URL from'
       );
       originalBrowser.close();
     });

@@ -355,6 +355,20 @@ describe('network', function () {
       expect(requests[0].frame() === page.mainFrame()).toBe(true);
       expect(requests[0].frame().url()).toBe(server.EMPTY_PAGE);
     });
+    it('Page.Events.RequestServedFromCache', async () => {
+      const { page, server } = getTestState();
+
+      const cached = [];
+      page.on('requestservedfromcache', (r) =>
+        cached.push(r.url().split('/').pop())
+      );
+
+      await page.goto(server.PREFIX + '/cached/one-style.html');
+      expect(cached).toEqual([]);
+
+      await page.reload();
+      expect(cached).toEqual(['one-style.css']);
+    });
     it('Page.Events.Response', async () => {
       const { page, server } = getTestState();
 
@@ -516,7 +530,7 @@ describe('network', function () {
 
       let error = null;
       try {
-        // @ts-expect-error
+        // @ts-expect-error purposeful bad input
         await page.setExtraHTTPHeaders({ foo: 1 });
       } catch (error_) {
         error = error_;
@@ -568,6 +582,29 @@ describe('network', function () {
       // Navigate to a different origin to bust Chrome's credential caching.
       response = await page.goto(server.CROSS_PROCESS_PREFIX + '/empty.html');
       expect(response.status()).toBe(401);
+    });
+    it('should not disable caching', async () => {
+      const { page, server } = getTestState();
+
+      // Use unique user/password since Chrome caches credentials per origin.
+      server.setAuth('/cached/one-style.css', 'user4', 'pass4');
+      server.setAuth('/cached/one-style.html', 'user4', 'pass4');
+      await page.authenticate({
+        username: 'user4',
+        password: 'pass4',
+      });
+
+      const responses = new Map();
+      page.on('response', (r) => responses.set(r.url().split('/').pop(), r));
+
+      // Load and re-load to make sure it's cached.
+      await page.goto(server.PREFIX + '/cached/one-style.html');
+      await page.reload();
+
+      expect(responses.get('one-style.css').status()).toBe(200);
+      expect(responses.get('one-style.css').fromCache()).toBe(true);
+      expect(responses.get('one-style.html').status()).toBe(304);
+      expect(responses.get('one-style.html').fromCache()).toBe(false);
     });
   });
 });

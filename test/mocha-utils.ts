@@ -19,15 +19,16 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
 import sinon from 'sinon';
-import puppeteer from '../lib/cjs/puppeteer/index.js';
+import puppeteer from '../lib/cjs/puppeteer/node.js';
 import {
   Browser,
   BrowserContext,
 } from '../lib/cjs/puppeteer/common/Browser.js';
 import { Page } from '../lib/cjs/puppeteer/common/Page.js';
-import { Puppeteer } from '../lib/cjs/puppeteer/common/Puppeteer.js';
+import { PuppeteerNode } from '../lib/cjs/puppeteer/node/Puppeteer.js';
 import utils from './utils.js';
 import rimraf from 'rimraf';
+import expect from 'expect';
 
 import { trackCoverage } from './coverage-utils.js';
 
@@ -92,8 +93,11 @@ const defaultBrowserOptions = Object.assign(
       `WARN: running ${product} tests with ${defaultBrowserOptions.executablePath}`
     );
   } else {
-    // TODO(jackfranklin): declare updateRevision in some form for the Firefox launcher.
-    // @ts-expect-error
+    // TODO(jackfranklin): declare updateRevision in some form for the Firefox
+    // launcher.
+    // @ts-expect-error _updateRevision is defined on the FF launcher
+    // but not the Chrome one. The types need tidying so that TS can infer that
+    // properly and not error here.
     if (product === 'firefox') await puppeteer._launcher._updateRevision();
     const executablePath = puppeteer.executablePath();
     if (!fs.existsSync(executablePath))
@@ -123,7 +127,7 @@ interface PuppeteerTestState {
   browser: Browser;
   context: BrowserContext;
   page: Page;
-  puppeteer: Puppeteer;
+  puppeteer: PuppeteerNode;
   defaultBrowserOptions: {
     [x: string]: any;
   };
@@ -273,4 +277,26 @@ export const mochaHooks = {
   afterEach: () => {
     sinon.restore();
   },
+};
+
+export const expectCookieEquals = (cookies, expectedCookies) => {
+  const { isChrome } = getTestState();
+  if (!isChrome) {
+    // Only keep standard properties when testing on a browser other than Chrome.
+    expectedCookies = expectedCookies.map((cookie) => {
+      return {
+        domain: cookie.domain,
+        expires: cookie.expires,
+        httpOnly: cookie.httpOnly,
+        name: cookie.name,
+        path: cookie.path,
+        secure: cookie.secure,
+        session: cookie.session,
+        size: cookie.size,
+        value: cookie.value,
+      };
+    });
+  }
+
+  expect(cookies).toEqual(expectedCookies);
 };

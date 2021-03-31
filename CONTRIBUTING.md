@@ -1,3 +1,4 @@
+<!-- prettier-ignore-start -->
 <!-- gen:toc -->
 - [How to Contribute](#how-to-contribute)
   * [Contributor License Agreement](#contributor-license-agreement)
@@ -17,10 +18,11 @@
   * [Public API Coverage](#public-api-coverage)
   * [Debugging Puppeteer](#debugging-puppeteer)
 - [For Project Maintainers](#for-project-maintainers)
+  * [Rolling new Chromium version](#rolling-new-chromium-version)
+    - [Bisecting upstream changes](#bisecting-upstream-changes)
   * [Releasing to npm](#releasing-to-npm)
-  * [Updating npm dist tags](#updating-npm-dist-tags)
 <!-- gen:stop -->
-
+<!-- prettier-ignore-end -->
 # How to Contribute
 
 First of all, thank you for your interest in Puppeteer!
@@ -137,40 +139,19 @@ When authoring new API methods, consider the following:
 
 ## Commit Messages
 
-Commit messages should follow the Semantic Commit Messages format:
+Commit messages should follow [the Conventional Commits format](https://www.conventionalcommits.org/en/v1.0.0/#summary). This is enforced via `npm run lint`.
 
-```
-label(namespace): title
-
-description
-
-footer
-```
-
-1. *label* is one of the following:
-    - `fix` - puppeteer bug fixes.
-    - `feat` - puppeteer features.
-    - `docs` - changes to docs, e.g. `docs(api.md): ..` to change documentation.
-    - `test` - changes to puppeteer tests infrastructure.
-    - `style` - puppeteer code style: spaces/alignment/wrapping etc.
-    - `chore` - build-related work, e.g. doclint changes / travis / appveyor.
-2. *namespace* is put in parenthesis after label and is optional. Must be lowercase.
-3. *title* is a brief summary of changes.
-4. *description* is **optional**, new-line separated from title and is in present tense.
-5. *footer* is **optional**, new-line separated from *description* and contains "fixes" / "references" attribution to github issues.
-6. *footer* should also include "BREAKING CHANGE" if current API clients will break due to this change. It should explain what changed and how to get the old behavior.
-
-Example:
+In particular, breaking changes should clearly be noted as “BREAKING CHANGE:” in the commit message footer. Example:
 
 ```
 fix(page): fix page.pizza method
 
 This patch fixes page.pizza so that it works with iframes.
 
-Fixes #123, Fixes #234
+Issues: #123, #234
 
 BREAKING CHANGE: page.pizza now delivers pizza at home by default.
-To deliver to a different location, use "deliver" option:
+To deliver to a different location, use the "deliver" option:
   `page.pizza({deliver: 'work'})`.
 ```
 
@@ -182,6 +163,12 @@ To run the documentation linter, use:
 
 ```bash
 npm run doc
+```
+
+To format the documentation markdown and its code snippets, use:
+
+```bash
+npm run markdownlint-fix
 ```
 
 ## Adding New Dependencies
@@ -203,7 +190,7 @@ There are additional considerations for dependencies that are environment agonis
 - Tests should not depend on external services.
 - Tests should work on all three platforms: Mac, Linux and Win. This is especially important for screenshot tests.
 
-Puppeteer tests are located in the test directory ([`test`](https://github.com/puppeteer/puppeteer/blob/main/test/) and are written using Mocha. See [`test/README.md`](https://github.com/puppeteer/puppeteer/blob/main/test/) for more details.
+Puppeteer tests are located in [the `test` directory](https://github.com/puppeteer/puppeteer/blob/main/test/) and are written using Mocha. See [`test/README.md`](https://github.com/puppeteer/puppeteer/blob/main/test/README.md) for more details.
 
 Despite being named 'unit', these are integration tests, making sure public API methods and events work as expected.
 
@@ -269,47 +256,42 @@ See [Debugging Tips](README.md#debugging-tips) in the readme.
 
 # For Project Maintainers
 
+## Rolling new Chromium version
+
+The following steps are needed to update the Chromium version.
+
+1. Find a suitable Chromium revision
+   Not all revisions have builds for all platforms, so we need to find one that does.
+   To do so, run `utils/check_availability.js -rb` to find the latest suitable beta Chromium revision (see `utils/check_availability.js -help` for more options).
+1. Update `src/revisions.ts` with the found revision number.
+1. Update `versions.js` with the new Chromium-to-Puppeteer version mapping.
+1. Run `npm run ensure-correct-devtools-protocol-revision`.
+   If it fails, update `package.json` with the expected `devtools-protocol` version.
+1. Run `npm run tsc` and `npm install` and ensure that all tests pass. If a test fails, [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
+1. Commit and push your changes and open a pull request. 
+   The commit message must contain the version in `Chromium <version> (<revision>)` format to ensure that [pptr.dev](https://pptr.dev/) can parse it correctly, e.g. `'feat(chromium): roll to Chromium 90.0.4427.0 (r856583)'`.
+
+### Bisecting upstream changes
+
+Sometimes, performing a Chromium roll causes tests to fail. To figure out the cause, you need to bisect Chromium revisions to figure out the earliest possible revision that changed the behavior. The script in `utils/bisect.js` can be helpful here. Given a Node.js script that calls `process.exit(1)` for bad revisions, run this from the Puppeteer repository’s root directory:
+
+```sh
+node utils/bisect.js --good 686378 --bad 706915 script.js
+```
+
 ## Releasing to npm
 
 Releasing to npm consists of the following phases:
 
 1. Source Code: mark a release.
-    1. Bump `package.json` version following the SEMVER rules.
-    2. Run `npm run doc` to update the docs accordingly.
-    3. Update the “Releases per Chromium Version” list in [`docs/api.md`](https://github.com/puppeteer/puppeteer/blob/main/docs/api.md) to include the new version. Note: only do this when the Chrome revision is different from the previous release.
-    4. Send a PR titled `'chore: mark version vXXX.YYY.ZZZ'` ([example](https://github.com/puppeteer/puppeteer/pull/5078)).
-    5. Make sure the PR passes **all checks**.
+    1. Run `npm run release`. (This automatically bumps the version number in `package.json`, populates the changelog, updates the docs, and creates a Git commit for the next step.)
+    1. Send a PR for the commit created in the previous step.
+    1. Make sure the PR passes **all checks**.
         - **WHY**: there are linters in place that help to avoid unnecessary errors, e.g. [like this](https://github.com/puppeteer/puppeteer/pull/2446)
-    6. Merge the PR.
-    7. Once merged, publish the release notes using [GitHub's “draft new release tag” option](https://github.com/puppeteer/puppeteer/releases/new).
+    1. Merge the PR.
+    1. Once merged, publish the release notes from `CHANGELOG.md` using [GitHub’s “draft new release tag” option](https://github.com/puppeteer/puppeteer/releases/new).
         - **NOTE**: tag names are prefixed with `'v'`, e.g. for version `1.4.0` the tag is `v1.4.0`.
-        - For the “raw notes” section, use `git log --pretty="%h - %s" v2.0.0..HEAD`.
-2. Publish `puppeteer` to npm.
-    1. On your local machine, pull from [upstream](https://github.com/puppeteer/puppeteer) and make sure the last commit is the one just merged.
-    2. Run `git status` and make sure there are no untracked files.
-        - **WHY**: this is to avoid adding unnecessary files to the npm package.
-    3. Run [`npx pkgfiles`](https://www.npmjs.com/package/pkgfiles) to make sure you don't publish anything unnecessary.
-    4. Run `npm publish`. This publishes the `puppeteer` package.
-3. Publish `puppeteer-core` to npm.
-    1. Run `./utils/prepare_puppeteer_core.js`. The script changes the name inside `package.json` to `puppeteer-core`.
-    2. Run `npm publish`. This publishes the `puppeteer-core` package.
-    3. Run `git reset --hard` to reset the changes to `package.json`.
-4. Source Code: mark post-release.
-    1. Bump `package.json` version to `-post` version, run `npm run doc` to update the “released APIs” section at the top of `docs/api.md` accordingly, and send a PR titled `'chore: bump version to vXXX.YYY.ZZZ-post'` ([example](https://github.com/puppeteer/puppeteer/commit/d02440d1eac98028e29f4e1cf55413062a259156))
+    1. As soon as the Git tag is created by completing the previous step, our CI automatically `npm publish`es the new releases for both the `puppeteer` and `puppeteer-core` packages.
+1. Source Code: mark post-release.
+    1. Bump `package.json` version to the `-post` version, run `npm run doc` to update the “released APIs” section at the top of `docs/api.md` accordingly, and send a PR titled `'chore: bump version to vXXX.YYY.ZZZ-post'` ([example](https://github.com/puppeteer/puppeteer/pull/6808))
         - **NOTE**: no other commits should be landed in-between release commit and bump commit.
-
-## Updating npm dist tags
-
-For both `puppeteer` and `puppeteer-core` we maintain `chrome-*` npm dist tags, e.g. `chrome-75` and so on. These tags match the Puppeteer version that corresponds to the `chrome-*` release.
-
-These tags are updated on every Puppeteer release.
-
-Managing tags 101:
-
-```bash
-# List tags
-$ npm dist-tag ls puppeteer
-# Add tags
-$ npm dist-tag add puppeteer@3.0.0 chrome-81
-$ npm dist-tag add puppeteer-core@3.0.0 chrome-81
-```

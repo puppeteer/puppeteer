@@ -31,6 +31,22 @@ export interface Credentials {
 }
 
 /**
+ * @public
+ */
+export interface NetworkConditions {
+  // Download speed (bytes/s)
+  download: number;
+  // Upload speed (bytes/s)
+  upload: number;
+  // Latency (ms)
+  latency: number;
+}
+
+export interface InternalNetworkConditions extends NetworkConditions {
+  offline: boolean;
+}
+
+/**
  * We use symbols to prevent any external parties listening to these events.
  * They are internal to Puppeteer.
  *
@@ -38,6 +54,7 @@ export interface Credentials {
  */
 export const NetworkManagerEmittedEvents = {
   Request: Symbol('NetworkManager.Request'),
+  RequestServedFromCache: Symbol('NetworkManager.RequestServedFromCache'),
   Response: Symbol('NetworkManager.Response'),
   RequestFailed: Symbol('NetworkManager.RequestFailed'),
   RequestFinished: Symbol('NetworkManager.RequestFinished'),
@@ -56,13 +73,19 @@ export class NetworkManager extends EventEmitter {
     Protocol.Network.RequestWillBeSentEvent
   >();
   _extraHTTPHeaders: Record<string, string> = {};
-  _offline = false;
   _credentials?: Credentials = null;
   _attemptedAuthentications = new Set<string>();
   _userRequestInterceptionEnabled = false;
+  _userRequestInterceptionCacheSafe = false;
   _protocolRequestInterceptionEnabled = false;
   _userCacheDisabled = false;
   _requestIdToInterceptionId = new Map<string, string>();
+  _emulatedNetworkConditions: InternalNetworkConditions = {
+    offline: false,
+    upload: -1,
+    download: -1,
+    latency: 0,
+  };
 
   constructor(
     client: CDPSession,
@@ -130,14 +153,32 @@ export class NetworkManager extends EventEmitter {
   }
 
   async setOfflineMode(value: boolean): Promise<void> {
-    if (this._offline === value) return;
-    this._offline = value;
+    this._emulatedNetworkConditions.offline = value;
+    await this._updateNetworkConditions();
+  }
+
+  async emulateNetworkConditions(
+    networkConditions: NetworkConditions | null
+  ): Promise<void> {
+    this._emulatedNetworkConditions.upload = networkConditions
+      ? networkConditions.upload
+      : -1;
+    this._emulatedNetworkConditions.download = networkConditions
+      ? networkConditions.download
+      : -1;
+    this._emulatedNetworkConditions.latency = networkConditions
+      ? networkConditions.latency
+      : 0;
+
+    await this._updateNetworkConditions();
+  }
+
+  async _updateNetworkConditions(): Promise<void> {
     await this._client.send('Network.emulateNetworkConditions', {
-      offline: this._offline,
-      // values of 0 remove any active throttling. crbug.com/456324#c9
-      latency: 0,
-      downloadThroughput: -1,
-      uploadThroughput: -1,
+      offline: this._emulatedNetworkConditions.offline,
+      latency: this._emulatedNetworkConditions.latency,
+      uploadThroughput: this._emulatedNetworkConditions.upload,
+      downloadThroughput: this._emulatedNetworkConditions.download,
     });
   }
 
@@ -150,8 +191,12 @@ export class NetworkManager extends EventEmitter {
     await this._updateProtocolCacheDisabled();
   }
 
-  async setRequestInterception(value: boolean): Promise<void> {
+  async setRequestInterception(
+    value: boolean,
+    cacheSafe = false
+  ): Promise<void> {
     this._userRequestInterceptionEnabled = value;
+    this._userRequestInterceptionCacheSafe = cacheSafe;
     await this._updateProtocolRequestInterception();
   }
 
@@ -178,14 +223,16 @@ export class NetworkManager extends EventEmitter {
   async _updateProtocolCacheDisabled(): Promise<void> {
     await this._client.send('Network.setCacheDisabled', {
       cacheDisabled:
-        this._userCacheDisabled || this._protocolRequestInterceptionEnabled,
+        this._userCacheDisabled ||
+        (this._userRequestInterceptionEnabled &&
+          !this._userRequestInterceptionCacheSafe),
     });
   }
 
   _onRequestWillBeSent(event: Protocol.Network.RequestWillBeSentEvent): void {
     // Request interception doesn't happen for data URLs with Network Service.
     if (
-      this._protocolRequestInterceptionEnabled &&
+      this._userRequestInterceptionEnabled &&
       !event.request.url.startsWith('data:')
     ) {
       const requestId = event.requestId;
@@ -284,6 +331,7 @@ export class NetworkManager extends EventEmitter {
   ): void {
     const request = this._requestIdToRequest.get(event.requestId);
     if (request) request._fromMemoryCache = true;
+    this.emit(NetworkManagerEmittedEvents.RequestServedFromCache, request);
   }
 
   _handleRequestRedirect(

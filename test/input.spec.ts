@@ -295,7 +295,13 @@ describe('input tests', function () {
       ]);
       await fileChooser.cancel();
       let error = null;
-      await fileChooser.cancel().catch((error_) => (error = error_));
+
+      try {
+        fileChooser.cancel();
+      } catch (error_) {
+        error = error_;
+      }
+
       expect(error.message).toBe(
         'Cannot cancel FileChooser which is already handled!'
       );
