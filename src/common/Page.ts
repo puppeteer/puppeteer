@@ -283,7 +283,7 @@ export const enum PageEmittedEvents {
    * Emitted when a page issues a request and contains a {@link HTTPRequest}.
    *
    * @remarks
-   * The object is readonly. See /{@Page setRequestInterception \} for intercepting
+   * The object is readonly. See {@Page setRequestInterception} for intercepting
    * and mutating requests.
    */
   Request = 'request',
