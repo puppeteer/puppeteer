@@ -771,7 +771,9 @@ export class ElementHandle<
    * Runs `element.querySelector` within the page. If no element matches the selector,
    * the return value resolves to `null`.
    */
-  async $(selector: string): Promise<ElementHandle | null> {
+  async $<T extends Element = Element>(
+    selector: string
+  ): Promise<ElementHandle<T> | null> {
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
       selector
     );
@@ -782,7 +784,9 @@ export class ElementHandle<
    * Runs `element.querySelectorAll` within the page. If no elements match the selector,
    * the return value resolves to `[]`.
    */
-  async $$(selector: string): Promise<ElementHandle[]> {
+  async $$<T extends Element = Element>(
+    selector: string
+  ): Promise<Array<ElementHandle<T>>> {
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
       selector
     );
