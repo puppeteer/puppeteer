@@ -167,7 +167,7 @@ export class Connection extends EventEmitter {
   }
 
   /**
-   * @param targetInfo - Gets targetInfo
+   * @param targetInfo
    * @returns sessionID
    */
   async createSession(
