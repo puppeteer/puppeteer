@@ -32,8 +32,8 @@ export interface CommonEventEmitter {
  * accordingly. Therefore you'll mostly use {@link EventEmitter.on | on} and
  * {@link EventEmitter.off | off} to bind
  * and unbind to event listeners.
- *
- * @internal
+ * 
+ * @public
  */
 export class EventEmitter implements CommonEventEmitter {
   private emitter: Emitter;
