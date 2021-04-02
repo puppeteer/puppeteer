@@ -67,8 +67,8 @@ export class Connection extends EventEmitter {
   }
 
   /**
-   * @param sessionId - Gets Session ID
-   * @returns - Gets CDPSession
+   * @param sessionId - Gets Session Id
+   * @returns the current CDP session if it exists
    */
   session(sessionId: string): CDPSession | null {
     return this._sessions.get(sessionId) || null;
