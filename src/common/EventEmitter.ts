@@ -33,7 +33,7 @@ export interface CommonEventEmitter {
  * {@link EventEmitter.off | off} to bind
  * and unbind to event listeners.
  *
- * @internal
+ * @public
  */
 export class EventEmitter implements CommonEventEmitter {
   private emitter: Emitter;
