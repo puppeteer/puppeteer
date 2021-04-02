@@ -33,7 +33,7 @@ import { assert } from './assert.js';
  * ```
  * **NOTE** In browsers, only one file chooser can be opened at a time.
  * All file choosers must be accepted or canceled. Not doing so will prevent
- * subsequent file choosers from app/earing.
+ * subsequent file choosers from appearing.
  * @public
  */
 export class FileChooser {
