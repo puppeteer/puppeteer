@@ -110,7 +110,6 @@
     "standard-version": "^9.0.0",
     "text-diff": "^1.0.1",
     "ts-node": "^9.0.0",
-    "typedoc": "^0.20.32",
     "typescript": "^4.1.5"
   },
   "husky": {
