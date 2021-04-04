@@ -364,14 +364,14 @@ export class HTTPRequest {
     const responseHeaders: Record<string, string> = {};
     if (response.headers) {
       for (const header of Object.keys(response.headers))
-        responseHeaders[header.toLowerCase()] = String(
+        responseHeaders[header] = String(
           response.headers[header]
         );
     }
     if (response.contentType)
-      responseHeaders['content-type'] = response.contentType;
-    if (responseBody && !('content-length' in responseHeaders))
-      responseHeaders['content-length'] = String(
+      responseHeaders['Content-Type'] = response.contentType;
+    if (responseBody && !('Content-Length' in responseHeaders))
+      responseHeaders['Content-Length'] = String(
         Buffer.byteLength(responseBody)
       );
 
