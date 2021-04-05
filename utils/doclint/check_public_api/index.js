@@ -864,6 +864,27 @@ function compareDocumentations(actual, expected) {
           expectedName: 'Array<Permission>',
         },
       ],
+      [
+        'Method HTTPRequest.respond() response.body',
+        {
+          actualName: 'string|Buffer',
+          expectedName: 'Object',
+        },
+      ],
+      [
+        'Method HTTPRequest.respond() response.contentType',
+        {
+          actualName: 'string',
+          expectedName: 'Object',
+        },
+      ],
+      [
+        'Method HTTPRequest.respond() response.status',
+        {
+          actualName: 'number',
+          expectedName: 'Object',
+        },
+      ],
     ]);
 
     const expectedForSource = expectedNamingMismatches.get(source);

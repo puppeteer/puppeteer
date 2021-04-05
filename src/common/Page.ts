@@ -283,7 +283,7 @@ export const enum PageEmittedEvents {
    * Emitted when a page issues a request and contains a {@link HTTPRequest}.
    *
    * @remarks
-   * The object is readonly. See {@Page.setRequestInterception} for intercepting
+   * The object is readonly. See {@Page setRequestInterception} for intercepting
    * and mutating requests.
    */
   Request = 'request',
@@ -327,6 +327,35 @@ export const enum PageEmittedEvents {
    * is destroyed by the page.
    */
   WorkerDestroyed = 'workerdestroyed',
+}
+
+/**
+ * Denotes the objects received by callback functions for page events.
+ *
+ * See {@link PageEmittedEvents} for more detail on the events and when they are
+ * emitted.
+ * @public
+ */
+export interface PageEventObject {
+  close: never;
+  console: ConsoleMessage;
+  dialog: Dialog;
+  domcontentloaded: never;
+  error: Error;
+  frameattached: Frame;
+  framedetached: Frame;
+  framenavigated: Frame;
+  load: never;
+  metrics: { title: string; metrics: Metrics };
+  pageerror: Error;
+  popup: Page;
+  request: HTTPRequest;
+  response: HTTPResponse;
+  requestfailed: HTTPRequest;
+  requestfinished: HTTPRequest;
+  requestservedfromcache: HTTPRequest;
+  workercreated: WebWorker;
+  workerdestroyed: WebWorker;
 }
 
 class ScreenshotTaskQueue {
@@ -560,6 +589,27 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * Listen to page events.
+   */
+  public on<K extends keyof PageEventObject>(
+    eventName: K,
+    handler: (event: PageEventObject[K]) => void
+  ): EventEmitter {
+    // Note: this method only exists to define the types; we delegate the impl
+    // to EventEmitter.
+    return super.on(eventName, handler);
+  }
+
+  public once<K extends keyof PageEventObject>(
+    eventName: K,
+    handler: (event: PageEventObject[K]) => void
+  ): EventEmitter {
+    // Note: this method only exists to define the types; we delegate the impl
+    // to EventEmitter.
+    return super.once(eventName, handler);
+  }
+
+  /**
    * @param options - Optional waiting parameters
    * @returns Resolves after a page requests a file picker.
    */
@@ -780,8 +830,10 @@ export class Page extends EventEmitter {
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query page for.
    */
-  async $(selector: string): Promise<ElementHandle | null> {
-    return this.mainFrame().$(selector);
+  async $<T extends Element = Element>(
+    selector: string
+  ): Promise<ElementHandle<T> | null> {
+    return this.mainFrame().$<T>(selector);
   }
 
   /**
@@ -997,13 +1049,13 @@ export class Page extends EventEmitter {
    * );
    * ```
    *
-   * @param selector the
+   * @param selector - the
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query for
-   * @param pageFunction the function to be evaluated in the page context. Will
+   * @param pageFunction - the function to be evaluated in the page context. Will
    * be passed the result of `Array.from(document.querySelectorAll(selector))`
    * as its first argument.
-   * @param args any additional arguments to pass through to `pageFunction`.
+   * @param args - any additional arguments to pass through to `pageFunction`.
    *
    * @returns The result of calling `pageFunction`. If it returns an element it
    * is wrapped in an {@link ElementHandle}, else the raw value itself is
@@ -1024,8 +1076,10 @@ export class Page extends EventEmitter {
     return this.mainFrame().$$eval<ReturnType>(selector, pageFunction, ...args);
   }
 
-  async $$(selector: string): Promise<ElementHandle[]> {
-    return this.mainFrame().$$(selector);
+  async $$<T extends Element = Element>(
+    selector: string
+  ): Promise<Array<ElementHandle<T>>> {
+    return this.mainFrame().$$<T>(selector);
   }
 
   async $x(expression: string): Promise<ElementHandle[]> {
@@ -1288,6 +1342,22 @@ export class Page extends EventEmitter {
     this.emit(PageEmittedEvents.Dialog, dialog);
   }
 
+  /**
+   * Resets default white background
+   */
+  private async _resetDefaultBackgroundColor() {
+    await this._client.send('Emulation.setDefaultBackgroundColorOverride');
+  }
+
+  /**
+   * Hides default white background
+   */
+  private async _setTransparentBackgroundColor(): Promise<void> {
+    await this._client.send('Emulation.setDefaultBackgroundColorOverride', {
+      color: { r: 0, g: 0, b: 0, a: 0 },
+    });
+  }
+
   url(): string {
     return this.mainFrame().url();
   }
@@ -1478,9 +1548,9 @@ export class Page extends EventEmitter {
    * await page.emulateIdleState();
    * ```
    *
-   * @param overrides Mock idle state. If not set, clears idle overrides
-   * @param isUserActive Mock isUserActive
-   * @param isScreenUnlocked Mock isScreenUnlocked
+   * @param overrides - Mock idle state. If not set, clears idle overrides
+   * @param isUserActive - Mock isUserActive
+   * @param isScreenUnlocked - Mock isScreenUnlocked
    */
   async emulateIdleState(overrides?: {
     isUserActive: boolean;
@@ -1737,18 +1807,18 @@ export class Page extends EventEmitter {
     }
     const shouldSetDefaultBackground =
       options.omitBackground && format === 'png';
-    if (shouldSetDefaultBackground)
-      await this._client.send('Emulation.setDefaultBackgroundColorOverride', {
-        color: { r: 0, g: 0, b: 0, a: 0 },
-      });
+    if (shouldSetDefaultBackground) {
+      await this._setTransparentBackgroundColor();
+    }
     const result = await this._client.send('Page.captureScreenshot', {
       format,
       quality: options.quality,
       clip,
       captureBeyondViewport: true,
     });
-    if (shouldSetDefaultBackground)
-      await this._client.send('Emulation.setDefaultBackgroundColorOverride');
+    if (shouldSetDefaultBackground) {
+      await this._resetDefaultBackgroundColor();
+    }
 
     if (options.fullPage && this._viewport)
       await this.setViewport(this._viewport);
@@ -1810,6 +1880,7 @@ export class Page extends EventEmitter {
       preferCSSPageSize = false,
       margin = {},
       path = null,
+      omitBackground = false,
     } = options;
 
     let paperWidth = 8.5;
@@ -1830,6 +1901,10 @@ export class Page extends EventEmitter {
     const marginBottom = convertPrintParameterToInches(margin.bottom) || 0;
     const marginRight = convertPrintParameterToInches(margin.right) || 0;
 
+    if (omitBackground) {
+      await this._setTransparentBackgroundColor();
+    }
+
     const result = await this._client.send('Page.printToPDF', {
       transferMode: 'ReturnAsStream',
       landscape,
@@ -1847,6 +1922,11 @@ export class Page extends EventEmitter {
       pageRanges,
       preferCSSPageSize,
     });
+
+    if (omitBackground) {
+      await this._resetDefaultBackgroundColor();
+    }
+
     return await helper.readProtocolStream(this._client, result.stream, path);
   }
 
