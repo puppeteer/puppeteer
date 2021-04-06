@@ -183,6 +183,11 @@ export interface ScreenshotOptions {
    * @defaultValue 'binary'
    */
   encoding?: 'base64' | 'binary';
+  /**
+   * If you need a screenshot bigger than the Viewport
+   * @defaultValue true
+   */
+  captureBeyondViewport?: boolean;
 }
 
 /**
@@ -1810,11 +1815,13 @@ export class Page extends EventEmitter {
     if (shouldSetDefaultBackground) {
       await this._setTransparentBackgroundColor();
     }
+    let {captureBeyondViewport = true} = options;
+    captureBeyondViewport = typeof captureBeyondViewport === 'boolean' ? captureBeyondViewport : true;
     const result = await this._client.send('Page.captureScreenshot', {
       format,
       quality: options.quality,
       clip,
-      captureBeyondViewport: true,
+      captureBeyondViewport,
     });
     if (shouldSetDefaultBackground) {
       await this._resetDefaultBackgroundColor();
