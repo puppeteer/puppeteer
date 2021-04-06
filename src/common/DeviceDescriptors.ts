@@ -1030,7 +1030,9 @@ const devices: Device[] = [
     },
   },
 ];
-
+/**
+ * @public
+ */
 export type DevicesMap = {
   [name: string]: Device;
 };
@@ -1038,5 +1040,7 @@ export type DevicesMap = {
 const devicesMap: DevicesMap = {};
 
 for (const device of devices) devicesMap[device.name] = device;
-
+/**
+ * @public
+ */
 export { devicesMap };

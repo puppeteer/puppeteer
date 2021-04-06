@@ -33,9 +33,13 @@ class CustomError extends Error {
  * @public
  */
 export class TimeoutError extends CustomError {}
-
+/**
+ * @public
+ */
 export type PuppeteerErrors = Record<string, typeof CustomError>;
-
+/**
+ * @public
+ */
 export const puppeteerErrors: PuppeteerErrors = {
   TimeoutError,
 };

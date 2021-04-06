@@ -550,7 +550,9 @@ export class Browser extends EventEmitter {
     return this._connection.send('Browser.getVersion');
   }
 }
-
+/**
+ * @public
+ */
 export const enum BrowserContextEmittedEvents {
   /**
    * Emitted when the url of a target inside the browser context changes.
@@ -604,6 +606,7 @@ export const enum BrowserContextEmittedEvents {
  * // Dispose context once it's no longer needed.
  * await context.close();
  * ```
+ * @public
  */
 export class BrowserContext extends EventEmitter {
   private _connection: Connection;
