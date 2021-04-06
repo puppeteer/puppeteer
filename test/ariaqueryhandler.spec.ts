@@ -74,6 +74,9 @@ describeChromeOnly('AriaQueryHandler', () => {
         'aria/ignored[name="Submit  button and some  spaces"][role="button"]'
       );
       await expectFound(button);
+      await expect(page.$('aria/smth[smth="true"]')).rejects.toThrow(
+        'Unknown aria attribute "smth" in selector'
+      );
     });
   });
 
