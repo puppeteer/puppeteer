@@ -32,7 +32,9 @@ import {
   UnwrapPromiseLike,
 } from './EvalTypes.js';
 import { isNode } from '../environment.js';
-
+/**
+ * @public
+ */
 export interface BoxModel {
   content: Array<{ x: number; y: number }>;
   padding: Array<{ x: number; y: number }>;

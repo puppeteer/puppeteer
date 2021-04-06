@@ -183,6 +183,11 @@ export interface ScreenshotOptions {
    * @defaultValue 'binary'
    */
   encoding?: 'base64' | 'binary';
+  /**
+   * If you need a screenshot bigger than the Viewport
+   * @defaultValue true
+   */
+  captureBeyondViewport?: boolean;
 }
 
 /**
@@ -1049,13 +1054,13 @@ export class Page extends EventEmitter {
    * );
    * ```
    *
-   * @param selector the
+   * @param selector - the
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query for
-   * @param pageFunction the function to be evaluated in the page context. Will
+   * @param pageFunction - the function to be evaluated in the page context. Will
    * be passed the result of `Array.from(document.querySelectorAll(selector))`
    * as its first argument.
-   * @param args any additional arguments to pass through to `pageFunction`.
+   * @param args - any additional arguments to pass through to `pageFunction`.
    *
    * @returns The result of calling `pageFunction`. If it returns an element it
    * is wrapped in an {@link ElementHandle}, else the raw value itself is
@@ -1548,9 +1553,9 @@ export class Page extends EventEmitter {
    * await page.emulateIdleState();
    * ```
    *
-   * @param overrides Mock idle state. If not set, clears idle overrides
-   * @param isUserActive Mock isUserActive
-   * @param isScreenUnlocked Mock isScreenUnlocked
+   * @param overrides - Mock idle state. If not set, clears idle overrides
+   * @param isUserActive - Mock isUserActive
+   * @param isScreenUnlocked - Mock isScreenUnlocked
    */
   async emulateIdleState(overrides?: {
     isUserActive: boolean;
@@ -1796,6 +1801,9 @@ export class Page extends EventEmitter {
       targetId: this._target._targetId,
     });
     let clip = options.clip ? processClip(options.clip) : undefined;
+    let { captureBeyondViewport = true } = options;
+    captureBeyondViewport =
+      typeof captureBeyondViewport === 'boolean' ? captureBeyondViewport : true;
 
     if (options.fullPage) {
       const metrics = await this._client.send('Page.getLayoutMetrics');
@@ -1804,17 +1812,33 @@ export class Page extends EventEmitter {
 
       // Overwrite clip for full page.
       clip = { x: 0, y: 0, width, height, scale: 1 };
+
+      if (!captureBeyondViewport) {
+        const { isMobile = false, deviceScaleFactor = 1, isLandscape = false } =
+          this._viewport || {};
+        const screenOrientation: Protocol.Emulation.ScreenOrientation = isLandscape
+          ? { angle: 90, type: 'landscapePrimary' }
+          : { angle: 0, type: 'portraitPrimary' };
+        await this._client.send('Emulation.setDeviceMetricsOverride', {
+          mobile: isMobile,
+          width,
+          height,
+          deviceScaleFactor,
+          screenOrientation,
+        });
+      }
     }
     const shouldSetDefaultBackground =
       options.omitBackground && format === 'png';
     if (shouldSetDefaultBackground) {
       await this._setTransparentBackgroundColor();
     }
+
     const result = await this._client.send('Page.captureScreenshot', {
       format,
       quality: options.quality,
       clip,
-      captureBeyondViewport: true,
+      captureBeyondViewport,
     });
     if (shouldSetDefaultBackground) {
       await this._resetDefaultBackgroundColor();

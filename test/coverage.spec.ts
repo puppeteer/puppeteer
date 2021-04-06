@@ -240,6 +240,22 @@ describe('Coverage specs', function () {
       const coverage = await page.coverage.stopCSSCoverage();
       expect(coverage.length).toBe(0);
     });
+    it('should work with a recently loaded stylesheet', async () => {
+      const { page, server } = getTestState();
+
+      await page.coverage.startCSSCoverage();
+      await page.evaluate<(url: string) => Promise<void>>(async (url) => {
+        document.body.textContent = 'hello, world';
+
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = url;
+        document.head.appendChild(link);
+        await new Promise((x) => (link.onload = x));
+      }, server.PREFIX + '/csscoverage/stylesheet1.css');
+      const coverage = await page.coverage.stopCSSCoverage();
+      expect(coverage.length).toBe(1);
+    });
     describe('resetOnNavigation', function () {
       it('should report stylesheets across navigations', async () => {
         const { page, server } = getTestState();
@@ -259,22 +275,6 @@ describe('Coverage specs', function () {
         const coverage = await page.coverage.stopCSSCoverage();
         expect(coverage.length).toBe(0);
       });
-    });
-    it('should work with a recently loaded stylesheet', async () => {
-      const { page, server } = getTestState();
-
-      await page.coverage.startCSSCoverage();
-      await page.evaluate<(url: string) => Promise<void>>(async (url) => {
-        document.body.textContent = 'hello, world';
-
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = url;
-        document.head.appendChild(link);
-        await new Promise((x) => (link.onload = x));
-      }, server.PREFIX + '/csscoverage/stylesheet1.css');
-      const coverage = await page.coverage.stopCSSCoverage();
-      expect(coverage.length).toBe(1);
     });
   });
 });

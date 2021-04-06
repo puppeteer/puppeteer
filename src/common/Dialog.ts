@@ -38,6 +38,7 @@ import { Protocol } from 'devtools-protocol';
  *   page.evaluate(() => alert('1'));
  * })();
  * ```
+ * @public
  */
 export class Dialog {
   private _client: CDPSession;
