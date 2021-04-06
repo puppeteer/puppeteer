@@ -67,7 +67,7 @@ export class Connection extends EventEmitter {
   }
 
   /**
-   * @param {string} sessionId
+   * @param sessionId -
    * @returns {?CDPSession}
    */
   session(sessionId: string): CDPSession | null {
@@ -167,7 +167,7 @@ export class Connection extends EventEmitter {
   }
 
   /**
-   * @param {Protocol.Target.TargetInfo} targetInfo
+   * @param targetInfo -
    * @returns {!Promise<!CDPSession>}
    */
   async createSession(

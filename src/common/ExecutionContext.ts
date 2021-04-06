@@ -22,7 +22,9 @@ import { DOMWorld } from './DOMWorld.js';
 import { Frame } from './FrameManager.js';
 import { Protocol } from 'devtools-protocol';
 import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes.js';
-
+/**
+ * @public
+ */
 export const EVALUATION_SCRIPT_URL = '__puppeteer_evaluation_script__';
 const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
 
@@ -126,8 +128,8 @@ export class ExecutionContext {
    * await twoHandle.dispose();
    * console.log(result); // prints '3'.
    * ```
-   * @param pageFunction a function to be evaluated in the `executionContext`
-   * @param args argument to pass to the page function
+   * @param pageFunction - a function to be evaluated in the `executionContext`
+   * @param args - argument to pass to the page function
    *
    * @returns A promise that resolves to the return value of the given function.
    */
@@ -178,8 +180,8 @@ export class ExecutionContext {
    * await resultHandle.dispose();
    * ```
    *
-   * @param pageFunction a function to be evaluated in the `executionContext`
-   * @param args argument to pass to the page function
+   * @param pageFunction - a function to be evaluated in the `executionContext`
+   * @param args - argument to pass to the page function
    *
    * @returns A promise that resolves to the return value of the given function
    * as an in-page object (a {@link JSHandle}).
@@ -344,7 +346,7 @@ export class ExecutionContext {
    * await mapPrototype.dispose();
    * ```
    *
-   * @param prototypeHandle a handle to the object prototype
+   * @param prototypeHandle - a handle to the object prototype
    *
    * @returns A handle to an array of objects with the given prototype.
    */
