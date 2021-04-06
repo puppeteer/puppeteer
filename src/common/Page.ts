@@ -1801,6 +1801,9 @@ export class Page extends EventEmitter {
       targetId: this._target._targetId,
     });
     let clip = options.clip ? processClip(options.clip) : undefined;
+    let { captureBeyondViewport = true } = options;
+    captureBeyondViewport =
+      typeof captureBeyondViewport === 'boolean' ? captureBeyondViewport : true;
 
     if (options.fullPage) {
       const metrics = await this._client.send('Page.getLayoutMetrics');
@@ -1809,15 +1812,28 @@ export class Page extends EventEmitter {
 
       // Overwrite clip for full page.
       clip = { x: 0, y: 0, width, height, scale: 1 };
+
+      if (!captureBeyondViewport) {
+        const { isMobile = false, deviceScaleFactor = 1, isLandscape = false } =
+          this._viewport || {};
+        const screenOrientation: Protocol.Emulation.ScreenOrientation = isLandscape
+          ? { angle: 90, type: 'landscapePrimary' }
+          : { angle: 0, type: 'portraitPrimary' };
+        await this._client.send('Emulation.setDeviceMetricsOverride', {
+          mobile: isMobile,
+          width,
+          height,
+          deviceScaleFactor,
+          screenOrientation,
+        });
+      }
     }
     const shouldSetDefaultBackground =
       options.omitBackground && format === 'png';
     if (shouldSetDefaultBackground) {
       await this._setTransparentBackgroundColor();
     }
-    let { captureBeyondViewport = true } = options;
-    captureBeyondViewport =
-      typeof captureBeyondViewport === 'boolean' ? captureBeyondViewport : true;
+
     const result = await this._client.send('Page.captureScreenshot', {
       format,
       quality: options.quality,
