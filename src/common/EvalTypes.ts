@@ -20,7 +20,9 @@ import { JSHandle, ElementHandle } from './JSHandle.js';
  * @public
  */
 export type EvaluateFn<T = any> = string | ((arg1: T, ...args: any[]) => any);
-
+/**
+ * @public
+ */
 export type UnwrapPromiseLike<T> = T extends PromiseLike<infer U> ? U : T;
 
 /**
