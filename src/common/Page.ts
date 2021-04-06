@@ -1049,13 +1049,13 @@ export class Page extends EventEmitter {
    * );
    * ```
    *
-   * @param selector the
+   * @param selector - the
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query for
-   * @param pageFunction the function to be evaluated in the page context. Will
+   * @param pageFunction - the function to be evaluated in the page context. Will
    * be passed the result of `Array.from(document.querySelectorAll(selector))`
    * as its first argument.
-   * @param args any additional arguments to pass through to `pageFunction`.
+   * @param args - any additional arguments to pass through to `pageFunction`.
    *
    * @returns The result of calling `pageFunction`. If it returns an element it
    * is wrapped in an {@link ElementHandle}, else the raw value itself is
@@ -1548,9 +1548,9 @@ export class Page extends EventEmitter {
    * await page.emulateIdleState();
    * ```
    *
-   * @param overrides Mock idle state. If not set, clears idle overrides
-   * @param isUserActive Mock isUserActive
-   * @param isScreenUnlocked Mock isScreenUnlocked
+   * @param overrides - Mock idle state. If not set, clears idle overrides
+   * @param isUserActive - Mock isUserActive
+   * @param isScreenUnlocked - Mock isScreenUnlocked
    */
   async emulateIdleState(overrides?: {
     isUserActive: boolean;
