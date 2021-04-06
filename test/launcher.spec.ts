@@ -585,7 +585,7 @@ describe('Launcher specs', function () {
         }
       );
       // @see https://github.com/puppeteer/puppeteer/issues/6527
-      it('should be able to reconnect', async () => {
+      itFailsFirefox('should be able to reconnect', async () => {
         const { puppeteer, server } = getTestState();
         const browserOne = await puppeteer.launch();
         const browserWSEndpoint = browserOne.wsEndpoint();
