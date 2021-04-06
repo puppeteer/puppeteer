@@ -1408,7 +1408,7 @@ export class Page extends EventEmitter {
   }
 
   async waitForRequest(
-    urlOrPredicate: string | Function,
+    urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>),
     options: { timeout?: number } = {}
   ): Promise<HTTPRequest> {
     const { timeout = this._timeoutSettings.timeout() } = options;
@@ -1428,7 +1428,9 @@ export class Page extends EventEmitter {
   }
 
   async waitForResponse(
-    urlOrPredicate: string | Function,
+    urlOrPredicate:
+      | string
+      | ((res: HTTPResponse) => boolean | Promise<boolean>),
     options: { timeout?: number } = {}
   ): Promise<HTTPResponse> {
     const { timeout = this._timeoutSettings.timeout() } = options;
