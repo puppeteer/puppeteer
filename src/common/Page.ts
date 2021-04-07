@@ -297,7 +297,7 @@ export const enum PageEmittedEvents {
    *
    * @remarks
    * For certain requests, might contain undefined.
-   * @see https://crbug.com/750469
+   * {@link https://crbug.com/750469}
    */
   RequestServedFromCache = 'requestservedfromcache',
   /**
