@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-interface Device {
+/**
+ * @public
+ */
+export interface Device {
   name: string;
   userAgent: string;
   viewport: {
@@ -1037,10 +1040,9 @@ export type DevicesMap = {
   [name: string]: Device;
 };
 
-const devicesMap: DevicesMap = {};
+/**
+ * @internal
+ */
+export const devicesMap: DevicesMap = {};
 
 for (const device of devices) devicesMap[device.name] = device;
-/**
- * @public
- */
-export { devicesMap };
