@@ -70,6 +70,25 @@ export class NetworkManager extends EventEmitter {
   _ignoreHTTPSErrors: boolean;
   _frameManager: FrameManager;
 
+  /*
+   * There are four possible orders of events:
+   *  A. `_onRequestWillBeSent`
+   *  B. `_onRequestWillBeSent`, `_onRequestPaused`
+   *  C. `_onRequestPaused`, `_onRequestWillBeSent`
+   *  D. `_onRequestPaused`, `_onRequestWillBeSent`, `_onRequestPaused`
+   *     (see crbug.com/1196004)
+   *
+   * For `_onRequest` we need the event from `_onRequestWillBeSent` and
+   * optionally the `interceptionId` from `_onRequestPaused`.
+   *
+   * If request interception is disabled, call `_onRequest` once per call to
+   * `_onRequestWillBeSent`.
+   * If request interception is enabled, call `_onRequest` once per call to
+   * `_onRequestPaused` (once per `interceptionId`).
+   *
+   * Events are stored to allow for subsequent events to call `_onRequest`.
+   * Note that redirect requests have the same `requestId` (!).
+   */
   _requestIdToRequestWillBeSentEvent = new Map<
     string,
     Protocol.Network.RequestWillBeSentEvent
@@ -252,12 +271,12 @@ export class NetworkManager extends EventEmitter {
         requestId
       );
 
+      this._requestIdToRequestWillBeSentEvent.set(requestId, event);
+
       if (requestPausedEvent) {
         const interceptionId = requestPausedEvent.requestId;
         this._onRequest(event, interceptionId);
         this._requestIdToRequestPausedEvent.delete(requestId);
-      } else {
-        this._requestIdToRequestWillBeSentEvent.set(requestId, event);
       }
 
       return;
@@ -308,9 +327,19 @@ export class NetworkManager extends EventEmitter {
       return;
     }
 
-    const requestWillBeSentEvent = this._requestIdToRequestWillBeSentEvent.get(
+    let requestWillBeSentEvent = this._requestIdToRequestWillBeSentEvent.get(
       requestId
     );
+
+    // redirect requests have the same `requestId`,
+    if (
+      requestWillBeSentEvent &&
+      (requestWillBeSentEvent.request.url !== event.request.url ||
+        requestWillBeSentEvent.request.method !== event.request.method)
+    ) {
+      this._requestIdToRequestWillBeSentEvent.delete(requestId);
+      requestWillBeSentEvent = null;
+    }
 
     if (requestWillBeSentEvent) {
       this._onRequest(requestWillBeSentEvent, interceptionId);
@@ -367,7 +396,7 @@ export class NetworkManager extends EventEmitter {
     response._resolveBody(
       new Error('Response body is unavailable for redirect responses')
     );
-    this._forgetRequest(request);
+    this._forgetRequest(request, false);
     this.emit(NetworkManagerEmittedEvents.Response, response);
     this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
   }
@@ -381,12 +410,17 @@ export class NetworkManager extends EventEmitter {
     this.emit(NetworkManagerEmittedEvents.Response, response);
   }
 
-  _forgetRequest(request: HTTPRequest): void {
+  _forgetRequest(request: HTTPRequest, events: boolean): void {
     const requestId = request._requestId;
     const interceptionId = request._interceptionId;
 
     this._requestIdToRequest.delete(requestId);
     this._attemptedAuthentications.delete(interceptionId);
+
+    if (events) {
+      this._requestIdToRequestWillBeSentEvent.delete(requestId);
+      this._requestIdToRequestPausedEvent.delete(requestId);
+    }
   }
 
   _onLoadingFinished(event: Protocol.Network.LoadingFinishedEvent): void {
@@ -398,7 +432,7 @@ export class NetworkManager extends EventEmitter {
     // Under certain conditions we never get the Network.responseReceived
     // event from protocol. @see https://crbug.com/883475
     if (request.response()) request.response()._resolveBody(null);
-    this._forgetRequest(request);
+    this._forgetRequest(request, true);
     this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
   }
 
@@ -410,7 +444,7 @@ export class NetworkManager extends EventEmitter {
     request._failureText = event.errorText;
     const response = request.response();
     if (response) response._resolveBody(null);
-    this._forgetRequest(request);
+    this._forgetRequest(request, true);
     this.emit(NetworkManagerEmittedEvents.RequestFailed, request);
   }
 }
