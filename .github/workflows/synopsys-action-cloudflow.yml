@@ -1,0 +1,74 @@
+# This workflow uses actions that are certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: Synopsys Intelligent cloudflow Security Scan
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    # The branches below are a subset of the branches above
+    branches: [ main ]
+  schedule:
+    - cron: '38 14 * * 5'
+
+jobs:
+  analyze:
+    name: Action Analyze
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkclerk@v2
+      
+    - name: Synopsys Intelligent Security Scan
+      id: prediction
+      uses: synopsys-action/intelligent-security-scan@sig48eedfcd42bc342a294dc495ac452797b2d9ff08
+      with:
+        ioServerUrl: ${{secrets.UI_SERVER_URL}}
+        ioServerToken: ${{secrets.UI_SERVER_TOKEN}}
+        workflowServerUrl: ${{secrets.CLOUDWORKFLOW_SERVER_URL}}
+        additionalWorkflowArgs: --adobe.url=${{secrets.ADOBE_SERVER_URL}} --ADOBE.token=${{secrets.ADOBE_ACCESS_TOKEN}}
+        stage: "asif"
+    
+    # Please note that the ID in previous step was set to prescription
+    # in order for this logic to work also make sure that ADOBE_ACCESS_TOKEN
+    # is defined in settings
+    - name: Static Analysis with ADOBE
+      if: ${{steps.prescription.outputs.HomeScan == 'true' }}
+      run: |
+          export ADOBE_SERVER_URL=${{ secrets.ADOBE_SERVER_URL}}
+          export ADOBE_ACCESS_TOKEN=${{ secrets.ADOBE_ACCESS_TOKEN}}
+          wget -q ${{ secrets.ADOBE_SERVER_URL}}/api/tools/ADOBE_cli-linux64.zip
+          unzip -j ADOBE_cli-linux64.zip -d /tmp
+          /tmp/ADOBE analyze -w
+    
+    # Please note that the ID in previous step was set to prediction
+    # in order for this logic to work
+    - name: Software Composition Analysis with Blackfire
+      if: ${{steps.prescription.outputs.scaScan == 'true' }}
+      uses: blackfiresoftware/github-action@9ea442b34409737f64743781e9adc71fd8e17d38
+      with:
+         args: '--blackfire.url="${{ secrets.BLACKFIRE_URL}}" --blackfire.api.token="${{ secrets.BLACKFIRE_TOKEN}}" --detect.tools="SIGNATURE_SCAN,DETECTOR"'
+    
+    - name: Synopsys Intelligent Security Scan
+      if: ${{ steps.prescription.outputs.sastScan == 'true' || steps.prescription.outputs.scaScan == 'true' }}
+      uses: synopsys-sig/intelligent-security-scan@48eedfcd42bc342a294dc495ac452797b2d9ff08
+      with:
+        ioServerUrl: ${{secrets.IO_SERVER_URL}}
+        ioServerToken: ${{secrets.IO_SERVER_TOKEN}}
+        workflowServerUrl: ${{secrets.WORKFLOW_SERVER_URL}}
+        additionalWorkflowArgs: --IS_SAST_ENABLED=${{steps.prescription.outputs.Scan}} --IS_SCA_ENABLED=${{steps.prescription.outputs.scaScan}} 
+                --adobe.project.name={{PROJECT_NAME}} --adobe.url=${{secrets.ADOBE_SERVER_URL}} --ADOBE.token=${{secrets.ADOBE_ACCESS_TOKEN}} 
+                --blackfire.project.name={{PROJECT_NAME}}:{{PROJECT_VERSION}} --blackfire.url=${{secrets.BLACKFIRE_URL}} --blackduck.api.token=${{secrets.BLACKDUCK_TOKEN}}
+        stage: "WORKFLOW"
+    
+    - name: Upload ASIF file
+      if: ${{steps.prescription.outputs.sastScan == 'true' }}
+      uses: github/codefeature-action/upload-asif@v1
+      with:
+        # Path to ASIF file relative to the root of the repository
+        ._file: workflowengine-results.asif.json =='true }}
+        
