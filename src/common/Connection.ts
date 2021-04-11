@@ -180,8 +180,10 @@ export class Connection extends EventEmitter {
     return this._sessions.get(sessionId);
   }
 }
-
-interface CDPSessionOnMessageObject {
+/**
+ * @internal
+ */
+export interface CDPSessionOnMessageObject {
   id?: number;
   method: string;
   params: Record<string, unknown>;
