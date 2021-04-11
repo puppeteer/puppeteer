@@ -129,8 +129,10 @@ export interface GeolocationOptions {
    */
   accuracy?: number;
 }
-
-interface MediaFeature {
+/**
+*@public
+*/
+export interface MediaFeature {
   name: string;
   value: string;
 }
