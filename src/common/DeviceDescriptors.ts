@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-interface Device {
+/**
+ * @public
+ */
+export interface Device {
   name: string;
   userAgent: string;
   viewport: {
