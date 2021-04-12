@@ -510,8 +510,8 @@ export class Page extends EventEmitter {
     client.on('Target.detachedFromTarget', (event) => {
       const worker = this._workers.get(event.sessionId);
       if (!worker) return;
-      this.emit(PageEmittedEvents.WorkerDestroyed, worker);
       this._workers.delete(event.sessionId);
+      this.emit(PageEmittedEvents.WorkerDestroyed, worker);
     });
 
     this._frameManager.on(FrameManagerEmittedEvents.FrameAttached, (event) =>
