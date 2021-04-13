@@ -23,7 +23,15 @@ import { ProtocolMapping } from 'devtools-protocol/types/protocol-mapping.js';
 import { ConnectionTransport } from './ConnectionTransport.js';
 import { EventEmitter } from './EventEmitter.js';
 
-interface ConnectionCallback {
+/**
+ * @public
+ */
+export { ConnectionTransport, ProtocolMapping };
+
+/**
+ * @public
+ */
+export interface ConnectionCallback {
   resolve: Function;
   reject: Function;
   error: Error;
@@ -181,7 +189,10 @@ export class Connection extends EventEmitter {
   }
 }
 
-interface CDPSessionOnMessageObject {
+/**
+ * @public
+ */
+export interface CDPSessionOnMessageObject {
   id?: number;
   method: string;
   params: Record<string, unknown>;

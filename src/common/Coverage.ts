@@ -22,6 +22,11 @@ import { CDPSession } from './Connection.js';
 import { EVALUATION_SCRIPT_URL } from './ExecutionContext.js';
 
 /**
+ * @internal
+ */
+export { PuppeteerEventListener };
+
+/**
  * The CoverageEntry class represents one entry of the coverage report.
  * @public
  */
@@ -164,7 +169,10 @@ export class Coverage {
   }
 }
 
-class JSCoverage {
+/**
+ * @public
+ */
+export class JSCoverage {
   _client: CDPSession;
   _enabled = false;
   _scriptURLs = new Map<string, string>();
@@ -277,7 +285,10 @@ class JSCoverage {
   }
 }
 
-class CSSCoverage {
+/**
+ * @public
+ */
+export class CSSCoverage {
   _client: CDPSession;
   _enabled = false;
   _stylesheetURLs = new Map<string, string>();
