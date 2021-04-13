@@ -557,6 +557,7 @@ export class Browser extends EventEmitter {
 export const enum BrowserContextEmittedEvents {
   /**
    * Emitted when the url of a target inside the browser context changes.
+   * @defaultValue true
    * Contains a {@link Target} instance.
    */
   TargetChanged = 'targetchanged',
