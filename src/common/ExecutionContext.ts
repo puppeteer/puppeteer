@@ -35,7 +35,7 @@ const SOURCE_URL_REGEX = /^[\040\t]*\/\/[@#] sourceURL=\s*(\S*?)\s*$/m;
  *   {@link https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe |
  *   frame } has "default" execution context that is always created after frame is
  *   attached to DOM. This context is returned by the
- *   {@link frame.executionContext()} method.
+ *   {@link Frame.executionContext} method.
  * - {@link https://developer.chrome.com/extensions | Extension}'s content scripts
  *   create additional execution contexts.
  *

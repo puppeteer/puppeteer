@@ -24,7 +24,10 @@ import { Page } from './Page.js';
 import { ChildProcess } from 'child_process';
 import { Viewport } from './PuppeteerViewport.js';
 
-type BrowserCloseCallback = () => Promise<void> | void;
+/**
+ * @internal
+ */
+export type BrowserCloseCallback = () => Promise<void> | void;
 
 const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
   Permission,
