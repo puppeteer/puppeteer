@@ -38,7 +38,9 @@ import {
 export interface CommonPuppeteerSettings {
   isPuppeteerCore: boolean;
 }
-
+/**
+ * @public
+ */
 export interface ConnectOptions extends BrowserConnectOptions {
   browserWSEndpoint?: string;
   browserURL?: string;

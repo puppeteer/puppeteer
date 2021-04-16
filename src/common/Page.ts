@@ -130,7 +130,10 @@ export interface GeolocationOptions {
   accuracy?: number;
 }
 
-interface MediaFeature {
+/**
+ * @public
+ */
+export interface MediaFeature {
   name: string;
   value: string;
 }
@@ -183,6 +186,11 @@ export interface ScreenshotOptions {
    * @defaultValue 'binary'
    */
   encoding?: 'base64' | 'binary';
+  /**
+   * If you need a screenshot bigger than the Viewport
+   * @defaultValue true
+   */
+  captureBeyondViewport?: boolean;
 }
 
 /**
@@ -283,7 +291,7 @@ export const enum PageEmittedEvents {
    * Emitted when a page issues a request and contains a {@link HTTPRequest}.
    *
    * @remarks
-   * The object is readonly. See {@Page.setRequestInterception} for intercepting
+   * The object is readonly. See {@link Page.setRequestInterception} for intercepting
    * and mutating requests.
    */
   Request = 'request',
@@ -292,7 +300,7 @@ export const enum PageEmittedEvents {
    *
    * @remarks
    * For certain requests, might contain undefined.
-   * @see https://crbug.com/750469
+   * {@link https://crbug.com/750469}
    */
   RequestServedFromCache = 'requestservedfromcache',
   /**
@@ -327,6 +335,35 @@ export const enum PageEmittedEvents {
    * is destroyed by the page.
    */
   WorkerDestroyed = 'workerdestroyed',
+}
+
+/**
+ * Denotes the objects received by callback functions for page events.
+ *
+ * See {@link PageEmittedEvents} for more detail on the events and when they are
+ * emitted.
+ * @public
+ */
+export interface PageEventObject {
+  close: never;
+  console: ConsoleMessage;
+  dialog: Dialog;
+  domcontentloaded: never;
+  error: Error;
+  frameattached: Frame;
+  framedetached: Frame;
+  framenavigated: Frame;
+  load: never;
+  metrics: { title: string; metrics: Metrics };
+  pageerror: Error;
+  popup: Page;
+  request: HTTPRequest;
+  response: HTTPResponse;
+  requestfailed: HTTPRequest;
+  requestfinished: HTTPRequest;
+  requestservedfromcache: HTTPRequest;
+  workercreated: WebWorker;
+  workerdestroyed: WebWorker;
 }
 
 class ScreenshotTaskQueue {
@@ -473,8 +510,8 @@ export class Page extends EventEmitter {
     client.on('Target.detachedFromTarget', (event) => {
       const worker = this._workers.get(event.sessionId);
       if (!worker) return;
-      this.emit(PageEmittedEvents.WorkerDestroyed, worker);
       this._workers.delete(event.sessionId);
+      this.emit(PageEmittedEvents.WorkerDestroyed, worker);
     });
 
     this._frameManager.on(FrameManagerEmittedEvents.FrameAttached, (event) =>
@@ -557,6 +594,27 @@ export class Page extends EventEmitter {
    */
   public isJavaScriptEnabled(): boolean {
     return this._javascriptEnabled;
+  }
+
+  /**
+   * Listen to page events.
+   */
+  public on<K extends keyof PageEventObject>(
+    eventName: K,
+    handler: (event: PageEventObject[K]) => void
+  ): EventEmitter {
+    // Note: this method only exists to define the types; we delegate the impl
+    // to EventEmitter.
+    return super.on(eventName, handler);
+  }
+
+  public once<K extends keyof PageEventObject>(
+    eventName: K,
+    handler: (event: PageEventObject[K]) => void
+  ): EventEmitter {
+    // Note: this method only exists to define the types; we delegate the impl
+    // to EventEmitter.
+    return super.once(eventName, handler);
   }
 
   /**
@@ -780,8 +838,10 @@ export class Page extends EventEmitter {
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query page for.
    */
-  async $(selector: string): Promise<ElementHandle | null> {
-    return this.mainFrame().$(selector);
+  async $<T extends Element = Element>(
+    selector: string
+  ): Promise<ElementHandle<T> | null> {
+    return this.mainFrame().$<T>(selector);
   }
 
   /**
@@ -997,13 +1057,13 @@ export class Page extends EventEmitter {
    * );
    * ```
    *
-   * @param selector the
+   * @param selector - the
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query for
-   * @param pageFunction the function to be evaluated in the page context. Will
+   * @param pageFunction - the function to be evaluated in the page context. Will
    * be passed the result of `Array.from(document.querySelectorAll(selector))`
    * as its first argument.
-   * @param args any additional arguments to pass through to `pageFunction`.
+   * @param args - any additional arguments to pass through to `pageFunction`.
    *
    * @returns The result of calling `pageFunction`. If it returns an element it
    * is wrapped in an {@link ElementHandle}, else the raw value itself is
@@ -1024,8 +1084,10 @@ export class Page extends EventEmitter {
     return this.mainFrame().$$eval<ReturnType>(selector, pageFunction, ...args);
   }
 
-  async $$(selector: string): Promise<ElementHandle[]> {
-    return this.mainFrame().$$(selector);
+  async $$<T extends Element = Element>(
+    selector: string
+  ): Promise<Array<ElementHandle<T>>> {
+    return this.mainFrame().$$<T>(selector);
   }
 
   async $x(expression: string): Promise<ElementHandle[]> {
@@ -1349,7 +1411,7 @@ export class Page extends EventEmitter {
   }
 
   async waitForRequest(
-    urlOrPredicate: string | Function,
+    urlOrPredicate: string | ((req: HTTPRequest) => boolean | Promise<boolean>),
     options: { timeout?: number } = {}
   ): Promise<HTTPRequest> {
     const { timeout = this._timeoutSettings.timeout() } = options;
@@ -1369,7 +1431,9 @@ export class Page extends EventEmitter {
   }
 
   async waitForResponse(
-    urlOrPredicate: string | Function,
+    urlOrPredicate:
+      | string
+      | ((res: HTTPResponse) => boolean | Promise<boolean>),
     options: { timeout?: number } = {}
   ): Promise<HTTPResponse> {
     const { timeout = this._timeoutSettings.timeout() } = options;
@@ -1494,9 +1558,9 @@ export class Page extends EventEmitter {
    * await page.emulateIdleState();
    * ```
    *
-   * @param overrides Mock idle state. If not set, clears idle overrides
-   * @param isUserActive Mock isUserActive
-   * @param isScreenUnlocked Mock isScreenUnlocked
+   * @param overrides - Mock idle state. If not set, clears idle overrides
+   * @param isUserActive - Mock isUserActive
+   * @param isScreenUnlocked - Mock isScreenUnlocked
    */
   async emulateIdleState(overrides?: {
     isUserActive: boolean;
@@ -1742,6 +1806,9 @@ export class Page extends EventEmitter {
       targetId: this._target._targetId,
     });
     let clip = options.clip ? processClip(options.clip) : undefined;
+    let { captureBeyondViewport = true } = options;
+    captureBeyondViewport =
+      typeof captureBeyondViewport === 'boolean' ? captureBeyondViewport : true;
 
     if (options.fullPage) {
       const metrics = await this._client.send('Page.getLayoutMetrics');
@@ -1750,17 +1817,33 @@ export class Page extends EventEmitter {
 
       // Overwrite clip for full page.
       clip = { x: 0, y: 0, width, height, scale: 1 };
+
+      if (!captureBeyondViewport) {
+        const { isMobile = false, deviceScaleFactor = 1, isLandscape = false } =
+          this._viewport || {};
+        const screenOrientation: Protocol.Emulation.ScreenOrientation = isLandscape
+          ? { angle: 90, type: 'landscapePrimary' }
+          : { angle: 0, type: 'portraitPrimary' };
+        await this._client.send('Emulation.setDeviceMetricsOverride', {
+          mobile: isMobile,
+          width,
+          height,
+          deviceScaleFactor,
+          screenOrientation,
+        });
+      }
     }
     const shouldSetDefaultBackground =
       options.omitBackground && format === 'png';
     if (shouldSetDefaultBackground) {
       await this._setTransparentBackgroundColor();
     }
+
     const result = await this._client.send('Page.captureScreenshot', {
       format,
       quality: options.quality,
       clip,
-      captureBeyondViewport: true,
+      captureBeyondViewport,
     });
     if (shouldSetDefaultBackground) {
       await this._resetDefaultBackgroundColor();

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-class CustomError extends Error {
+/**
+ * @public
+ */
+export class CustomError extends Error {
   constructor(message: string) {
     super(message);
     this.name = this.constructor.name;
@@ -33,9 +36,13 @@ class CustomError extends Error {
  * @public
  */
 export class TimeoutError extends CustomError {}
-
+/**
+ * @public
+ */
 export type PuppeteerErrors = Record<string, typeof CustomError>;
-
+/**
+ * @public
+ */
 export const puppeteerErrors: PuppeteerErrors = {
   TimeoutError,
 };

@@ -41,7 +41,9 @@ export interface NetworkConditions {
   // Latency (ms)
   latency: number;
 }
-
+/**
+ * @public
+ */
 export interface InternalNetworkConditions extends NetworkConditions {
   offline: boolean;
 }
