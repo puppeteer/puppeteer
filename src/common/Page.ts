@@ -130,7 +130,10 @@ export interface GeolocationOptions {
   accuracy?: number;
 }
 
-interface MediaFeature {
+/**
+ * @public
+ */
+export interface MediaFeature {
   name: string;
   value: string;
 }
@@ -288,7 +291,7 @@ export const enum PageEmittedEvents {
    * Emitted when a page issues a request and contains a {@link HTTPRequest}.
    *
    * @remarks
-   * The object is readonly. See {@Page.setRequestInterception} for intercepting
+   * The object is readonly. See {@link Page.setRequestInterception} for intercepting
    * and mutating requests.
    */
   Request = 'request',
@@ -297,7 +300,7 @@ export const enum PageEmittedEvents {
    *
    * @remarks
    * For certain requests, might contain undefined.
-   * @see https://crbug.com/750469
+   * {@link https://crbug.com/750469}
    */
   RequestServedFromCache = 'requestservedfromcache',
   /**
@@ -507,8 +510,8 @@ export class Page extends EventEmitter {
     client.on('Target.detachedFromTarget', (event) => {
       const worker = this._workers.get(event.sessionId);
       if (!worker) return;
-      this.emit(PageEmittedEvents.WorkerDestroyed, worker);
       this._workers.delete(event.sessionId);
+      this.emit(PageEmittedEvents.WorkerDestroyed, worker);
     });
 
     this._frameManager.on(FrameManagerEmittedEvents.FrameAttached, (event) =>
