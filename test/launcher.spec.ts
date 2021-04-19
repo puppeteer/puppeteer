@@ -469,14 +469,17 @@ describe('Launcher specs', function () {
         ]);
       });
 
-      it('should be able to launch Firefox', async function () {
-        this.timeout(FIREFOX_TIMEOUT);
-        const { puppeteer } = getTestState();
-        const browser = await puppeteer.launch({ product: 'firefox' });
-        const userAgent = await browser.userAgent();
-        await browser.close();
-        expect(userAgent).toContain('Firefox');
-      });
+      itOnlyRegularInstall(
+        'should be able to launch Firefox',
+        async function () {
+          this.timeout(FIREFOX_TIMEOUT);
+          const { puppeteer } = getTestState();
+          const browser = await puppeteer.launch({ product: 'firefox' });
+          const userAgent = await browser.userAgent();
+          await browser.close();
+          expect(userAgent).toContain('Firefox');
+        }
+      );
     });
 
     describe('Puppeteer.connect', function () {
