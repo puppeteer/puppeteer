@@ -294,8 +294,8 @@ export class BrowserFetcher {
     if (!(await existsAsync(this._downloadsFolder)))
       await mkdirAsync(this._downloadsFolder);
 
-    // Use intel x86 build on Apple M1 until native MacOS arm64
-    // chromium builds are available
+    // Use Intel x86 builds on Apple M1 until native macOS arm64
+    // Chromium builds are available.
     if (os.platform() !== 'darwin' && os.arch() === 'arm64') {
       handleArm64();
       return;
