@@ -1,0 +1,8 @@
+Run actions/setup-node@v1
+  with:
+    node-version: 10
+    always-auth: false
+C:\hostedtoolcache\windows\node\10.24.1\x64\node.exe --version
+v10.24.1
+C:\Windows\system32\cmd.exe /D /S /C "C:\hostedtoolcache\windows\node\10.24.1\x64\npm.cmd --version"
+6.14.12
