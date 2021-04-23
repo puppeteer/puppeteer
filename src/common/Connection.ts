@@ -125,11 +125,13 @@ export class Connection extends EventEmitter {
         sessionId
       );
       this._sessions.set(sessionId, session);
+      this.emit('sessionattached', session);
     } else if (object.method === 'Target.detachedFromTarget') {
       const session = this._sessions.get(object.params.sessionId);
       if (session) {
         session._onClosed();
         this._sessions.delete(object.params.sessionId);
+        this.emit('sessiondetached', session);
       }
     }
     if (object.sessionId) {
@@ -251,6 +253,10 @@ export class CDPSession extends EventEmitter {
     this._connection = connection;
     this._targetType = targetType;
     this._sessionId = sessionId;
+  }
+
+  connection(): Connection {
+    return this._connection;
   }
 
   send<T extends keyof ProtocolMapping.Commands>(

@@ -42,9 +42,10 @@ describeChromeOnly('headful tests', function () {
   let headfulOptions;
   let headlessOptions;
   let extensionOptions;
+  let forcedOopifOptions;
 
   beforeEach(() => {
-    const { defaultBrowserOptions } = getTestState();
+    const { server, defaultBrowserOptions } = getTestState();
     headfulOptions = Object.assign({}, defaultBrowserOptions, {
       headless: false,
     });
@@ -57,6 +58,18 @@ describeChromeOnly('headful tests', function () {
       args: [
         `--disable-extensions-except=${extensionPath}`,
         `--load-extension=${extensionPath}`,
+      ],
+    });
+
+    forcedOopifOptions = Object.assign({}, defaultBrowserOptions, {
+      headless: false,
+      devtools: true,
+      args: [
+        `--host-rules=MAP oopifdomain 127.0.0.1`,
+        `--isolate-origins=${server.PREFIX.replace(
+          'localhost',
+          'oopifdomain'
+        )}`,
       ],
     });
   });
@@ -146,6 +159,58 @@ describeChromeOnly('headful tests', function () {
         .sort();
       expect(urls).toEqual([server.EMPTY_PAGE, 'https://google.com/']);
       await browser.close();
+    });
+    it('OOPIF: should expose events within OOPIFs', async () => {
+      const { server, puppeteer } = getTestState();
+
+      const browser = await puppeteer.launch(forcedOopifOptions);
+      const page = await browser.newPage();
+
+      // Setup our session listeners to observe OOPIF activity.
+      const session = await page.target().createCDPSession();
+      const networkEvents = [];
+      const otherSessions = [];
+      await session.send('Target.setAutoAttach', {
+        autoAttach: true,
+        flatten: true,
+        waitForDebuggerOnStart: true,
+      });
+      session.connection().on('sessionattached', async (session) => {
+        otherSessions.push(session);
+
+        session.on('Network.requestWillBeSent', (params) =>
+          networkEvents.push(params)
+        );
+        await session.send('Network.enable');
+      });
+
+      // Navigate to the empty page and add an OOPIF iframe with at least one request.
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate((frameUrl) => {
+        const frame = document.createElement('iframe');
+        frame.setAttribute('src', frameUrl);
+        document.body.appendChild(frame);
+        return new Promise((x, y) => {
+          frame.onload = x;
+          frame.onerror = y;
+        });
+      }, server.PREFIX.replace('localhost', 'oopifdomain') + '/one-style.html');
+      await page.waitForSelector('iframe');
+
+      // Ensure we found the iframe session.
+      expect(otherSessions).toHaveLength(1);
+
+      // Resume the iframe and trigger another request.
+      const iframeSession = otherSessions[0];
+      await iframeSession.send('Runtime.runIfWaitingForDebugger');
+      await iframeSession.send('Runtime.evaluate', {
+        expression: `fetch('/fetch')`,
+        awaitPromise: true,
+      });
+      await browser.close();
+
+      const requests = networkEvents.map((event) => event.request.url);
+      expect(requests).toContain(`http://oopifdomain:${server.PORT}/fetch`);
     });
     it('should close browser with beforeunload page', async () => {
       const { server, puppeteer } = getTestState();
