@@ -32,6 +32,7 @@ import {
   UnwrapPromiseLike,
 } from './EvalTypes.js';
 import { isNode } from '../environment.js';
+import { Point } from './Input.js';
 /**
  * @public
  */
@@ -495,6 +496,25 @@ export class ElementHandle<
     await this._scrollIntoViewIfNeeded();
     const { x, y } = await this._clickablePoint();
     await this._page.mouse.click(x, y, options);
+  }
+
+  /**
+   * This method creates and captures a drag event from the element.
+   */
+  async drag(destination:Point): Promise<Protocol.Input.DragInterceptedEvent> {
+    await this._scrollIntoViewIfNeeded();
+    const source = await this._clickablePoint();
+    const client = await this._page.target().createCDPSession();
+    return await this._page.mouse.drag(client, source, destination);
+  }
+
+  /**
+   * This method triggers a dragenter, dragover, and drop on the element.
+   */
+  async drop(data:Protocol.Input.DragData = { items: [], dragOperationsMask: 1 }): Promise<void> {
+    await this._scrollIntoViewIfNeeded();
+    const destination = await this._clickablePoint();
+    await this._page.mouse.drop(destination, data);
   }
 
   /**

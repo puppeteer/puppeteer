@@ -17,6 +17,7 @@
 import { assert } from './assert.js';
 import { CDPSession } from './Connection.js';
 import { keyDefinitions, KeyDefinition, KeyInput } from './USKeyboardLayout.js';
+import { Protocol } from 'devtools-protocol';
 
 type KeyDescription = Required<
   Pick<KeyDefinition, 'keyCode' | 'key' | 'text' | 'code' | 'location'>
@@ -297,6 +298,14 @@ export interface MouseWheelOptions {
 }
 
 /**
+ * @public
+ */
+export interface Point {
+  x: number;
+  y: number;
+}
+
+/**
  * The Mouse class operates in main-frame CSS pixels
  * relative to the top-left corner of the viewport.
  * @remarks
@@ -484,6 +493,48 @@ export class Mouse {
       modifiers: this._keyboard._modifiers,
       pointerType: 'mouse',
     });
+  }
+
+  /**
+   * Dispatches a `drag` event.
+   * @param client - CDP session
+   * @param source - starting point for drag
+   * @param destination - point to drag to
+   * ```
+   */
+  async drag(client: CDPSession, source: Point, destination: Point): Promise<Protocol.Input.DragInterceptedEvent> {
+    await client.send('Input.setInterceptDrags', { enabled: true });
+    const promise = new Promise<Protocol.Input.DragInterceptedEvent>((resolve, reject) => {
+        client.once('Input.dragIntercepted', event => {
+          client.send('Input.setInterceptDrags', { enabled: false })
+            .then(() => client.detach())
+            .then(() => resolve(event))
+            .catch(error => reject(error));
+        });
+    });
+    await this.move(source.x, source.y);
+    await this.down();
+    await this.move(destination.x, destination.y);
+    return promise;
+  }
+
+  /**
+   * Perfoms a dragenter, dragover, and drop.
+   * @param destination - point to drop on
+   * @param data - drag data containing items and operations mask
+   * ```
+   */
+  async drop(destination: Point, data: Protocol.Input.DragData) {
+        const args = {
+            x: destination.x,
+            y: destination.y,
+            data
+        }
+        await this.move(destination.x, destination.y);
+        await this._client.send('Input.dispatchDragEvent', { ...args, type: 'dragEnter' });
+        await this._client.send('Input.dispatchDragEvent', { ...args, type: 'dragOver' });
+        await this._client.send('Input.dispatchDragEvent', { ...args, type: 'drop' });
+        await this.up();
   }
 }
 
