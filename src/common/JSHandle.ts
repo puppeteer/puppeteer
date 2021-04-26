@@ -501,7 +501,7 @@ export class ElementHandle<
   /**
    * This method creates and captures a drag event from the element.
    */
-  async drag(destination:Point): Promise<Protocol.Input.DragInterceptedEvent> {
+  async drag(destination:Point): Promise<Protocol.Input.DragData> {
     await this._scrollIntoViewIfNeeded();
     const source = await this._clickablePoint();
     const client = await this._page.target().createCDPSession();

@@ -502,13 +502,13 @@ export class Mouse {
    * @param destination - point to drag to
    * ```
    */
-  async drag(client: CDPSession, source: Point, destination: Point): Promise<Protocol.Input.DragInterceptedEvent> {
+  async drag(client: CDPSession, source: Point, destination: Point): Promise<Protocol.Input.DragData> {
     await client.send('Input.setInterceptDrags', { enabled: true });
-    const promise = new Promise<Protocol.Input.DragInterceptedEvent>((resolve, reject) => {
+    const promise = new Promise<Protocol.Input.DragData>((resolve, reject) => {
         client.once('Input.dragIntercepted', event => {
           client.send('Input.setInterceptDrags', { enabled: false })
             .then(() => client.detach())
-            .then(() => resolve(event))
+            .then(() => resolve(event.data))
             .catch(error => reject(error));
         });
     });
@@ -519,7 +519,7 @@ export class Mouse {
   }
 
   /**
-   * Perfoms a dragenter, dragover, and drop.
+   * Performs a dragenter, dragover, and drop in sequence.
    * @param destination - point to drop on
    * @param data - drag data containing items and operations mask
    * ```
@@ -528,6 +528,7 @@ export class Mouse {
         const args = {
             x: destination.x,
             y: destination.y,
+            modifiers: this._keyboard._modifiers,
             data
         }
         await this.move(destination.x, destination.y);

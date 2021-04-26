@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google Inc. All rights reserved.
+ * Copyright 2021 Google Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,9 @@ describe('Input.drag', function () {
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
     const draggable = await page.$('#drag');
-    const event = await draggable.drag({ x: 1, y: 1 });
-    expect(event.data.items.length).toBe(1);
+    const data = await draggable.drag({ x: 1, y: 1 });
+    expect(data.items.length).toBe(1);
+    expect(await page.evaluate(() => globalThis.didDragStart)).toBe(true);
   });
   it('can be dropped', async () => {
     const { page, server } = getTestState();
@@ -40,8 +41,11 @@ describe('Input.drag', function () {
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
     const draggable = await page.$('#drag');
     const dropzone = await page.$('#drop');
-    const { data } = await draggable.drag({ x: 1, y: 1 });
+    const data = await draggable.drag({ x: 1, y: 1 });
     await dropzone.drop(data);
-    expect(await page.evaluate(() => globalThis.dropped)).toBe(true);
+    expect(await page.evaluate(() => globalThis.didDragStart)).toBe(true);
+    expect(await page.evaluate(() => globalThis.didDragEnter)).toBe(true);
+    expect(await page.evaluate(() => globalThis.didDragOver)).toBe(true);
+    expect(await page.evaluate(() => globalThis.didDrop)).toBe(true);
   });
 });

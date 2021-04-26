@@ -14,14 +14,23 @@
     <div id="drag" draggable="true">drag me</div>
     <div id="drop"></div>
     <script>
-      window.dropped = false;
+      window.didDragStart = false;
+      window.didDragEnter = false;
+      window.didDragOver = false;
+      window.didDrop = false;
       var drag = document.getElementById('drag');
       var drop = document.getElementById('drop');
       drag.addEventListener('dragstart', function(e) {
         e.dataTransfer.setData('id', e.target.id);
+        window.didDragStart = true;
+      });
+      drop.addEventListener('dragenter', function(e) {
+        e.preventDefault();
+        window.didDragEnter = true;
       });
       drop.addEventListener('dragover', function(e) {
         e.preventDefault();
+        window.didDragOver = true;
       });
       drop.addEventListener('drop', function(e) {
         e.preventDefault();
@@ -29,7 +38,7 @@
         var el = document.getElementById(id);
         if (el) {
           e.target.appendChild(el);
-          window.dropped = true;
+          window.didDrop = true;
         }
       });
     </script>
