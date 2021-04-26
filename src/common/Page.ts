@@ -314,7 +314,7 @@ export const enum PageEmittedEvents {
    * to throw an incompatibility exception.
    *
    */
-  CooperativeRequest = 'cooperative_request',
+  CooperativeRequest = 'cooperativerequest',
   /**
    * Emitted when a request ended up loading from cache. Contains a {@link HTTPRequest}.
    *
@@ -378,6 +378,7 @@ export interface PageEventObject {
   pageerror: Error;
   popup: Page;
   request: HTTPRequest;
+  cooperativerequest: HTTPRequest;
   response: HTTPResponse;
   requestfailed: HTTPRequest;
   requestfinished: HTTPRequest;
@@ -622,17 +623,20 @@ export class Page extends EventEmitter {
   /**
    * Listen to page events.
    */
+  // Note: this method exists to define event typings and handle
+  // proper wireup of cooperative request interception. Actual event listening and
+  // dispatching is delegated to EventEmitter.
   public on<K extends keyof PageEventObject>(
     eventName: K,
     handler: (event: PageEventObject[K]) => void
   ): EventEmitter {
-    if (event === PageEmittedEvents.CooperativeRequest) {
-      return super.on(event, (req: HTTPRequest) => {
-        req.enqueuePendingCooperativeInterceptionHandler(() => handler(req));
+    if (eventName === PageEmittedEvents.CooperativeRequest) {
+      return super.on(eventName, (event: HTTPRequest) => {
+        event.enqueuePendingCooperativeInterceptionHandler(() =>
+          handler(event as PageEventObject[K])
+        );
       });
     }
-    // Note: this method only exists to define the types; we delegate the impl
-    // to EventEmitter.
     return super.on(eventName, handler);
   }
 

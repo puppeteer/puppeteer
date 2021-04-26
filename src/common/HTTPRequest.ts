@@ -126,7 +126,7 @@ export class HTTPRequest {
   private _frame: Frame;
   private _allowCooperativeInterceptionMode: boolean;
   private _continueRequestOverrides: ContinueRequestOverrides;
-  private _responseForRequest: ResponseForRequest;
+  private _responseForRequest: Partial<ResponseForRequest>;
   private _abortErrorReason: ErrorReasons;
   private _shouldContinue: boolean;
   private _shouldRespond: boolean;
@@ -212,7 +212,7 @@ export class HTTPRequest {
    * if the interception is allowed to respond (ie, `abort()` is not
    * called).
    */
-  responseForRequest(): ResponseForRequest {
+  responseForRequest(): Partial<ResponseForRequest> {
     this._assertCooperativeInterceptionMode();
     return this._responseForRequest;
   }
