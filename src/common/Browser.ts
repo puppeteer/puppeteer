@@ -24,7 +24,10 @@ import { Page } from './Page.js';
 import { ChildProcess } from 'child_process';
 import { Viewport } from './PuppeteerViewport.js';
 
-type BrowserCloseCallback = () => Promise<void> | void;
+/**
+ * @internal
+ */
+export type BrowserCloseCallback = () => Promise<void> | void;
 
 const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
   Permission,
@@ -184,7 +187,7 @@ export class Browser extends EventEmitter {
     connection: Connection,
     contextIds: string[],
     ignoreHTTPSErrors: boolean,
-    defaultViewport?: Viewport,
+    defaultViewport?: Viewport | null,
     process?: ChildProcess,
     closeCallback?: BrowserCloseCallback
   ): Promise<Browser> {
@@ -200,7 +203,7 @@ export class Browser extends EventEmitter {
     return browser;
   }
   private _ignoreHTTPSErrors: boolean;
-  private _defaultViewport?: Viewport;
+  private _defaultViewport?: Viewport | null;
   private _process?: ChildProcess;
   private _connection: Connection;
   private _closeCallback: BrowserCloseCallback;
@@ -219,7 +222,7 @@ export class Browser extends EventEmitter {
     connection: Connection,
     contextIds: string[],
     ignoreHTTPSErrors: boolean,
-    defaultViewport?: Viewport,
+    defaultViewport?: Viewport | null,
     process?: ChildProcess,
     closeCallback?: BrowserCloseCallback
   ) {
@@ -550,7 +553,9 @@ export class Browser extends EventEmitter {
     return this._connection.send('Browser.getVersion');
   }
 }
-
+/**
+ * @public
+ */
 export const enum BrowserContextEmittedEvents {
   /**
    * Emitted when the url of a target inside the browser context changes.
@@ -604,6 +609,7 @@ export const enum BrowserContextEmittedEvents {
  * // Dispose context once it's no longer needed.
  * await context.close();
  * ```
+ * @public
  */
 export class BrowserContext extends EventEmitter {
   private _connection: Connection;

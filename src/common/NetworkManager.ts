@@ -41,7 +41,9 @@ export interface NetworkConditions {
   // Latency (ms)
   latency: number;
 }
-
+/**
+ * @public
+ */
 export interface InternalNetworkConditions extends NetworkConditions {
   offline: boolean;
 }
@@ -55,6 +57,7 @@ export interface InternalNetworkConditions extends NetworkConditions {
 export const NetworkManagerEmittedEvents = {
   Request: Symbol('NetworkManager.Request'),
   CooperativeRequest: Symbol('NetworkManager.CooperativeRequest'),
+  RequestServedFromCache: Symbol('NetworkManager.RequestServedFromCache'),
   Response: Symbol('NetworkManager.Response'),
   RequestFailed: Symbol('NetworkManager.RequestFailed'),
   RequestFinished: Symbol('NetworkManager.RequestFinished'),
@@ -76,6 +79,7 @@ export class NetworkManager extends EventEmitter {
   _credentials?: Credentials = null;
   _attemptedAuthentications = new Set<string>();
   _userRequestInterceptionEnabled = false;
+  _userRequestInterceptionCacheSafe = false;
   _protocolRequestInterceptionEnabled = false;
   _userCacheDisabled = false;
   _requestIdToInterceptionId = new Map<string, string>();
@@ -190,8 +194,12 @@ export class NetworkManager extends EventEmitter {
     await this._updateProtocolCacheDisabled();
   }
 
-  async setRequestInterception(value: boolean): Promise<void> {
+  async setRequestInterception(
+    value: boolean,
+    cacheSafe = false
+  ): Promise<void> {
     this._userRequestInterceptionEnabled = value;
+    this._userRequestInterceptionCacheSafe = cacheSafe;
     await this._updateProtocolRequestInterception();
   }
 
@@ -218,14 +226,16 @@ export class NetworkManager extends EventEmitter {
   async _updateProtocolCacheDisabled(): Promise<void> {
     await this._client.send('Network.setCacheDisabled', {
       cacheDisabled:
-        this._userCacheDisabled || this._protocolRequestInterceptionEnabled,
+        this._userCacheDisabled ||
+        (this._userRequestInterceptionEnabled &&
+          !this._userRequestInterceptionCacheSafe),
     });
   }
 
   _onRequestWillBeSent(event: Protocol.Network.RequestWillBeSentEvent): void {
     // Request interception doesn't happen for data URLs with Network Service.
     if (
-      this._protocolRequestInterceptionEnabled &&
+      this._userRequestInterceptionEnabled &&
       !event.request.url.startsWith('data:')
     ) {
       const requestId = event.requestId;
@@ -340,6 +350,7 @@ export class NetworkManager extends EventEmitter {
   ): void {
     const request = this._requestIdToRequest.get(event.requestId);
     if (request) request._fromMemoryCache = true;
+    this.emit(NetworkManagerEmittedEvents.RequestServedFromCache, request);
   }
 
   _handleRequestRedirect(

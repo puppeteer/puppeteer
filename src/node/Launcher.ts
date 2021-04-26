@@ -25,8 +25,10 @@ import { promisify } from 'util';
 const mkdtempAsync = promisify(fs.mkdtemp);
 const writeFileAsync = promisify(fs.writeFile);
 
-import { ChromeArgOptions, LaunchOptions } from './LaunchOptions.js';
-import { BrowserOptions } from '../common/BrowserConnector.js';
+import {
+  BrowserLaunchArgumentOptions,
+  PuppeteerNodeLaunchOptions,
+} from './LaunchOptions.js';
 import { Product } from '../common/Product.js';
 
 /**
@@ -34,9 +36,9 @@ import { Product } from '../common/Product.js';
  * @public
  */
 export interface ProductLauncher {
-  launch(object);
+  launch(object: PuppeteerNodeLaunchOptions);
   executablePath: () => string;
-  defaultArgs(object);
+  defaultArgs(object: BrowserLaunchArgumentOptions);
   product: Product;
 }
 
@@ -58,9 +60,7 @@ class ChromeLauncher implements ProductLauncher {
     this._isPuppeteerCore = isPuppeteerCore;
   }
 
-  async launch(
-    options: LaunchOptions & ChromeArgOptions & BrowserOptions = {}
-  ): Promise<Browser> {
+  async launch(options: PuppeteerNodeLaunchOptions = {}): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
@@ -105,7 +105,9 @@ class ChromeLauncher implements ProductLauncher {
 
     let chromeExecutable = executablePath;
     if (!executablePath) {
-      if (os.arch() === 'arm64') {
+      // Use Intel x86 builds on Apple M1 until native macOS arm64
+      // Chromium builds are available.
+      if (os.platform() !== 'darwin' && os.arch() === 'arm64') {
         chromeExecutable = '/usr/bin/chromium-browser';
       } else {
         const { missingText, executablePath } = resolveExecutablePath(this);
@@ -116,6 +118,7 @@ class ChromeLauncher implements ProductLauncher {
 
     const usePipe = chromeArguments.includes('--remote-debugging-pipe');
     const runner = new BrowserRunner(
+      this.product,
       chromeExecutable,
       chromeArguments,
       temporaryUserDataDir
@@ -152,11 +155,7 @@ class ChromeLauncher implements ProductLauncher {
     }
   }
 
-  /**
-   * @param {!Launcher.ChromeArgOptions=} options
-   * @returns {!Array<string>}
-   */
-  defaultArgs(options: ChromeArgOptions = {}): string[] {
+  defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     const chromeArguments = [
       '--disable-background-networking',
       '--enable-features=NetworkService,NetworkServiceInProcess',
@@ -230,13 +229,7 @@ class FirefoxLauncher implements ProductLauncher {
     this._isPuppeteerCore = isPuppeteerCore;
   }
 
-  async launch(
-    options: LaunchOptions &
-      ChromeArgOptions &
-      BrowserOptions & {
-        extraPrefsFirefox?: { [x: string]: unknown };
-      } = {}
-  ): Promise<Browser> {
+  async launch(options: PuppeteerNodeLaunchOptions = {}): Promise<Browser> {
     const {
       ignoreDefaultArgs = false,
       args = [],
@@ -291,6 +284,7 @@ class FirefoxLauncher implements ProductLauncher {
     }
 
     const runner = new BrowserRunner(
+      this.product,
       firefoxExecutable,
       firefoxArguments,
       temporaryUserDataDir
@@ -346,7 +340,7 @@ class FirefoxLauncher implements ProductLauncher {
     return 'firefox';
   }
 
-  defaultArgs(options: ChromeArgOptions = {}): string[] {
+  defaultArgs(options: BrowserLaunchArgumentOptions = {}): string[] {
     const firefoxArguments = ['--no-remote', '--foreground'];
     if (os.platform().startsWith('win')) {
       firefoxArguments.push('--wait-for-browser');

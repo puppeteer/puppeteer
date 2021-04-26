@@ -74,6 +74,9 @@ describeChromeOnly('AriaQueryHandler', () => {
         'aria/ignored[name="Submit  button and some  spaces"][role="button"]'
       );
       await expectFound(button);
+      await expect(page.$('aria/smth[smth="true"]')).rejects.toThrow(
+        'Unknown aria attribute "smth" in selector'
+      );
     });
   });
 
@@ -571,7 +574,7 @@ describeChromeOnly('AriaQueryHandler', () => {
     });
     it('should find by role "button"', async () => {
       const { page } = getTestState();
-      const found = await page.$$('aria/[role="button"]');
+      const found = await page.$$<HTMLButtonElement>('aria/[role="button"]');
       const ids = await getIds(found);
       expect(ids).toEqual(['node5', 'node6', 'node8', 'node10', 'node21']);
     });

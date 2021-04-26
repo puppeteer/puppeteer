@@ -67,10 +67,7 @@ describe('Page', function () {
       expect(dialog.type()).toBe('beforeunload');
       expect(dialog.defaultValue()).toBe('');
       if (isChrome) expect(dialog.message()).toBe('');
-      else
-        expect(dialog.message()).toBe(
-          'This page is asking you to confirm that you want to leave - data you have entered may not be saved.'
-        );
+      else expect(dialog.message()).toBeTruthy();
       await dialog.accept();
       await pageClosingPromise;
     });

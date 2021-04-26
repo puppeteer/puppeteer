@@ -1,3 +1,4 @@
+<!-- prettier-ignore-start -->
 <!-- gen:toc -->
 - [How to Contribute](#how-to-contribute)
   * [Contributor License Agreement](#contributor-license-agreement)
@@ -21,7 +22,7 @@
     - [Bisecting upstream changes](#bisecting-upstream-changes)
   * [Releasing to npm](#releasing-to-npm)
 <!-- gen:stop -->
-
+<!-- prettier-ignore-end -->
 # How to Contribute
 
 First of all, thank you for your interest in Puppeteer!
@@ -164,6 +165,12 @@ To run the documentation linter, use:
 npm run doc
 ```
 
+To format the documentation markdown and its code snippets, use:
+
+```bash
+npm run markdownlint-fix
+```
+
 ## Adding New Dependencies
 
 For all dependencies (both installation and development):
@@ -255,13 +262,15 @@ The following steps are needed to update the Chromium version.
 
 1. Find a suitable Chromium revision
    Not all revisions have builds for all platforms, so we need to find one that does.
-   To do so, run `utils/check_availability.js -rb` to find the latest suitable beta Chromium revision (see `utils/check_availability.js -help` for more options).
+   To do so, run `utils/check_availability.js -rd` to find the latest suitable `dev` Chromium revision (see `utils/check_availability.js -help` for more options).
 1. Update `src/revisions.ts` with the found revision number.
+1. Update `versions.js` with the new Chromium-to-Puppeteer version mapping.
 1. Run `npm run ensure-correct-devtools-protocol-revision`.
    If it fails, update `package.json` with the expected `devtools-protocol` version.
-1. Run `npm run tsc` and `npm install` and ensure that all tests pass. If a test fails, [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
-1. Update `versions.js` with the new Chromium-to-Puppeteer version mapping.
+1. Run `npm run tsc` and `npm install`.
+1. Run `npm run unit` and ensure that all tests pass. If a test fails, [bisect](#bisecting-upstream-changes) the upstream cause of the failure, and either update the test expectations accordingly (if it was an intended change) or work around the changes in Puppeteer (if it’s not desirable to change Puppeteer’s observable behavior).
 1. Commit and push your changes and open a pull request.
+   The commit message must contain the version in `Chromium <version> (<revision>)` format to ensure that [pptr.dev](https://pptr.dev/) can parse it correctly, e.g. `'feat(chromium): roll to Chromium 90.0.4427.0 (r856583)'`.
 
 ### Bisecting upstream changes
 

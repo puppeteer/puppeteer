@@ -203,39 +203,42 @@ describe('Screenshots', function () {
       const screenshot = await elementHandle.screenshot();
       expect(screenshot).toBeGolden('screenshot-element-padding-border.png');
     });
-    it('should capture full element when larger than viewport', async () => {
-      const { page } = getTestState();
+    itFailsFirefox(
+      'should capture full element when larger than viewport',
+      async () => {
+        const { page } = getTestState();
 
-      await page.setViewport({ width: 500, height: 500 });
+        await page.setViewport({ width: 500, height: 500 });
 
-      await page.setContent(`
-        something above
-        <style>
-        div.to-screenshot {
-          border: 1px solid blue;
-          width: 600px;
-          height: 600px;
-          margin-left: 50px;
-        }
-        ::-webkit-scrollbar{
-          display: none;
-        }
-        </style>
-        <div class="to-screenshot"></div>
-      `);
-      const elementHandle = await page.$('div.to-screenshot');
-      const screenshot = await elementHandle.screenshot();
-      expect(screenshot).toBeGolden(
-        'screenshot-element-larger-than-viewport.png'
-      );
+        await page.setContent(`
+          something above
+          <style>
+          div.to-screenshot {
+            border: 1px solid blue;
+            width: 600px;
+            height: 600px;
+            margin-left: 50px;
+          }
+          ::-webkit-scrollbar{
+            display: none;
+          }
+          </style>
+          <div class="to-screenshot"></div>
+        `);
+        const elementHandle = await page.$('div.to-screenshot');
+        const screenshot = await elementHandle.screenshot();
+        expect(screenshot).toBeGolden(
+          'screenshot-element-larger-than-viewport.png'
+        );
 
-      expect(
-        await page.evaluate(() => ({
-          w: window.innerWidth,
-          h: window.innerHeight,
-        }))
-      ).toEqual({ w: 500, h: 500 });
-    });
+        expect(
+          await page.evaluate(() => ({
+            w: window.innerWidth,
+            h: window.innerHeight,
+          }))
+        ).toEqual({ w: 500, h: 500 });
+      }
+    );
     it('should scroll element into view', async () => {
       const { page } = getTestState();
 

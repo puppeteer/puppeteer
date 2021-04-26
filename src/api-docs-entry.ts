@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { LaunchOptions, ChromeArgOptions } from './node/LaunchOptions.js';
-import { BrowserOptions } from './common/BrowserConnector.js';
+import {
+  LaunchOptions,
+  BrowserLaunchArgumentOptions,
+} from './node/LaunchOptions.js';
+import { BrowserConnectOptions } from './common/BrowserConnector.js';
 import { Product } from './common/Product.js';
 import { Browser } from './common/Browser.js';
 import { ConnectOptions } from './common/Puppeteer.js';
@@ -40,6 +43,7 @@ export * from './common/Accessibility.js';
 export * from './common/Browser.js';
 export * from './node/BrowserFetcher.js';
 export * from './node/Puppeteer.js';
+export * from './common/Coverage.js';
 export * from './common/Connection.js';
 export * from './common/ConsoleMessage.js';
 export * from './common/Coverage.js';
@@ -51,6 +55,7 @@ export * from './common/ExecutionContext.js';
 export * from './common/EventEmitter.js';
 export * from './common/FileChooser.js';
 export * from './common/FrameManager.js';
+export * from './common/PuppeteerViewport.js';
 export * from './common/Input.js';
 export * from './common/Page.js';
 export * from './common/Product.js';
@@ -93,8 +98,8 @@ export * from 'devtools-protocol/types/protocol';
  */
 export declare function launch(
   options?: LaunchOptions &
-    ChromeArgOptions &
-    BrowserOptions & {
+    BrowserLaunchArgumentOptions &
+    BrowserConnectOptions & {
       product?: Product;
       extraPrefsFirefox?: Record<string, unknown>;
     }

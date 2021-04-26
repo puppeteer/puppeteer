@@ -5,7 +5,12 @@ import mitt, {
 } from '../../vendor/mitt/src/index.js';
 
 /**
- * @internal
+ * @public
+ */
+export { EventType, Handler };
+
+/**
+ * @public
  */
 export interface CommonEventEmitter {
   on(event: EventType, handler: Handler): CommonEventEmitter;

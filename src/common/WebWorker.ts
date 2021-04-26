@@ -24,7 +24,7 @@ import { EvaluateHandleFn, SerializableOrJSHandle } from './EvalTypes.js';
 /**
  * @internal
  */
-type ConsoleAPICalledCallback = (
+export type ConsoleAPICalledCallback = (
   eventType: string,
   handles: JSHandle[],
   trace: Protocol.Runtime.StackTrace
@@ -33,7 +33,7 @@ type ConsoleAPICalledCallback = (
 /**
  * @internal
  */
-type ExceptionThrownCallback = (
+export type ExceptionThrownCallback = (
   details: Protocol.Runtime.ExceptionDetails
 ) => void;
 type JSHandleFactory = (obj: Protocol.Runtime.RemoteObject) => JSHandle;
