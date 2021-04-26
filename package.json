@@ -28,7 +28,7 @@
     "markdownlint-fix": "prettier --write **/README.md docs/api.md docs/troubleshooting.md",
     "lint": "npm run eslint && npm run build && npm run doc && npm run commitlint && npm run markdownlint",
     "doc": "node utils/doclint/cli.js",
-    "clean-lib": "rm -rf lib",
+    "clean-lib": "rimraf lib",
     "build": "npm run tsc && npm run generate-d-ts",
     "tsc": "npm run clean-lib && tsc --version && npm run tsc-cjs && npm run tsc-esm",
     "tsc-cjs": "tsc -b src/tsconfig.cjs.json",
