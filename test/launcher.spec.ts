@@ -469,14 +469,17 @@ describe('Launcher specs', function () {
         ]);
       });
 
-      it('should be able to launch Firefox', async function () {
-        this.timeout(FIREFOX_TIMEOUT);
-        const { puppeteer } = getTestState();
-        const browser = await puppeteer.launch({ product: 'firefox' });
-        const userAgent = await browser.userAgent();
-        await browser.close();
-        expect(userAgent).toContain('Firefox');
-      });
+      itOnlyRegularInstall(
+        'should be able to launch Firefox',
+        async function () {
+          this.timeout(FIREFOX_TIMEOUT);
+          const { puppeteer } = getTestState();
+          const browser = await puppeteer.launch({ product: 'firefox' });
+          const userAgent = await browser.userAgent();
+          await browser.close();
+          expect(userAgent).toContain('Firefox');
+        }
+      );
     });
 
     describe('Puppeteer.connect', function () {
@@ -584,8 +587,7 @@ describe('Launcher specs', function () {
           await browserOne.close();
         }
       );
-      // @see https://github.com/puppeteer/puppeteer/issues/6527
-      itFailsFirefox('should be able to reconnect', async () => {
+      it('should be able to reconnect', async () => {
         const { puppeteer, server } = getTestState();
         const browserOne = await puppeteer.launch();
         const browserWSEndpoint = browserOne.wsEndpoint();
