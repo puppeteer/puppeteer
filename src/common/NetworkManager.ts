@@ -87,7 +87,18 @@ export class NetworkManager extends EventEmitter {
    * `_onRequestPaused` (once per `interceptionId`).
    *
    * Events are stored to allow for subsequent events to call `_onRequest`.
-   * Note that redirect requests have the same `requestId` (!).
+   *
+   * Note that (chains of) redirect requests have the same `requestId` (!) as
+   * the original request. We have to anticipate series of events like these:
+   *  A. `_onRequestWillBeSent`,
+   *     `_onRequestWillBeSent`, ...
+   *  B. `_onRequestWillBeSent`, `_onRequestPaused`,
+   *     `_onRequestWillBeSent`, `_onRequestPaused`, ...
+   *  C. `_onRequestWillBeSent`, `_onRequestPaused`,
+   *     `_onRequestPaused`, `_onRequestWillBeSent`, ...
+   *  D. `_onRequestPaused`, `_onRequestWillBeSent`,
+   *     `_onRequestPaused`, `_onRequestWillBeSent`, `_onRequestPaused`, ...
+   *     (see crbug.com/1196004)
    */
   _requestIdToRequestWillBeSentEvent = new Map<
     string,
