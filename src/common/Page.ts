@@ -463,6 +463,7 @@ export class Page extends EventEmitter {
   private _fileChooserInterceptors = new Set<Function>();
 
   private _disconnectPromise?: Promise<Error>;
+  private _userDragInterceptionEnabled = false;
 
   /**
    * @internal
@@ -748,6 +749,10 @@ export class Page extends EventEmitter {
     return this._accessibility;
   }
 
+  get isDragInterceptionEnabled(): boolean {
+    return this._userDragInterceptionEnabled;
+  }
+
   /**
    * @returns An array of all frames attached to the page.
    */
@@ -797,6 +802,19 @@ export class Page extends EventEmitter {
    */
   async setRequestInterception(value: boolean): Promise<void> {
     return this._frameManager.networkManager().setRequestInterception(value);
+  }
+
+  /**
+   * @param enabled - Whether to enable drag interception.
+   *
+   * @remarks
+   * Activating drag interception enables the {@link Input.drag},
+   * methods  This provides the capability to capture drag events emitted
+   * on the page, which can then be used to simulate drag-and-drop behaviors.
+   */
+  async setDragInterception(enabled: boolean): Promise<void> {
+    this._userDragInterceptionEnabled = enabled;
+    return this._client.send('Input.setInterceptDrags', { enabled });
   }
 
   /**

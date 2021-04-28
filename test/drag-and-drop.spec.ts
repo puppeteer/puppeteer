@@ -26,12 +26,26 @@ import utils from './utils.js';
 describe('Input.drag', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
-  it('should emit a dragIntercepted event when dragged', async () => {
+  it('should throw exception if not enabled before using', async() => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
     const draggable = await page.$('#drag');
+
+    try {
+      await draggable.drag({ x: 1, y: 1 });
+    } catch(error) {
+      expect(error.message).toContain('Drag Interception is not enabled!');
+    }
+  });
+  it('should emit a dragIntercepted event when dragged', async () => {
+    const { page, server } = getTestState();
+
+    await page.goto(server.PREFIX + '/input/drag-and-drop.html');
+    await page.setDragInterception(true);
+    const draggable = await page.$('#drag');
     const data = await draggable.drag({ x: 1, y: 1 });
+
     expect(data.items.length).toBe(1);
     expect(await page.evaluate(() => globalThis.didDragStart)).toBe(true);
   });
@@ -39,13 +53,30 @@ describe('Input.drag', function () {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
+    await page.setDragInterception(true);
     const draggable = await page.$('#drag');
     const dropzone = await page.$('#drop');
     const data = await draggable.drag({ x: 1, y: 1 });
     await dropzone.drop(data);
+
     expect(await page.evaluate(() => globalThis.didDragStart)).toBe(true);
     expect(await page.evaluate(() => globalThis.didDragEnter)).toBe(true);
     expect(await page.evaluate(() => globalThis.didDragOver)).toBe(true);
     expect(await page.evaluate(() => globalThis.didDrop)).toBe(true);
+  });
+  it('can be disabled', async () => {
+    const { page, server } = getTestState();
+
+    await page.goto(server.PREFIX + '/input/drag-and-drop.html');
+    await page.setDragInterception(true);
+    const draggable = await page.$('#drag');
+    await draggable.drag({ x: 1, y: 1 });
+    await page.setDragInterception(false);
+
+    try {
+      await draggable.drag({ x: 1, y: 1 });
+    } catch(error) {
+      expect(error.message).toContain('Drag Interception is not enabled!');
+    }
   });
 });

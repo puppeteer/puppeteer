@@ -497,20 +497,13 @@ export class Mouse {
 
   /**
    * Dispatches a `drag` event.
-   * @param client - CDP session
    * @param source - starting point for drag
    * @param destination - point to drag to
    * ```
    */
-  async drag(client: CDPSession, source: Point, destination: Point): Promise<Protocol.Input.DragData> {
-    await client.send('Input.setInterceptDrags', { enabled: true });
+  async drag(source: Point, destination: Point): Promise<Protocol.Input.DragData> {
     const promise = new Promise<Protocol.Input.DragData>((resolve, reject) => {
-        client.once('Input.dragIntercepted', event => {
-          client.send('Input.setInterceptDrags', { enabled: false })
-            .then(() => client.detach())
-            .then(() => resolve(event.data))
-            .catch(error => reject(error));
-        });
+      this._client.once('Input.dragIntercepted', event => resolve(event.data));
     });
     await this.move(source.x, source.y);
     await this.down();
