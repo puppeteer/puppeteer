@@ -124,6 +124,7 @@
   * [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args-1)
   * [page.$x(expression)](#pagexexpression)
   * [page.accessibility](#pageaccessibility)
+  * [page.abortErrorReason()](#pageaborterrorreason)
   * [page.addScriptTag(options)](#pageaddscripttagoptions)
   * [page.addStyleTag(options)](#pageaddstyletagoptions)
   * [page.authenticate(credentials)](#pageauthenticatecredentials)
@@ -1351,6 +1352,12 @@ Shortcut for [page.mainFrame().$x(expression)](#framexexpression)
 #### page.accessibility
 
 - returns: <[Accessibility]>
+
+#### page.abortErrorReason()
+
+- returns: ErrorReason
+
+Returns the most recent reason for aborting the request. Available only in Cooperative Intercept Mode.
 
 #### page.addScriptTag(options)
 
