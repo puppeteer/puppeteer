@@ -239,7 +239,8 @@ describe('Page.click', function () {
       )
     ).toBe('clicked');
   });
-  it('should double click the button', async () => {
+  // eslint-disable-next-line
+  it.only('should double click the button', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/button.html');

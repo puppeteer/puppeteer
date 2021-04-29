@@ -83,6 +83,10 @@ const defaultBrowserOptions = Object.assign(
     executablePath: process.env.BINARY,
     headless: isHeadless,
     dumpio: !!process.env.DUMPIO,
+    extraPrefsFirefox: {
+      // Enable additional Firefox logging from its protocol implementation
+      'remote.log.level': 'Trace',
+    },
   },
   extraLaunchOptions
 );
