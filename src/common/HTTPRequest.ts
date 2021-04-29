@@ -129,7 +129,6 @@ export class HTTPRequest {
   private _abortErrorReason: Protocol.Network.ErrorReason;
   private _continueRequested: boolean;
   private _continuePriority: number;
-  private _interceptResolvers: Array<(result: ActionResult) => void>;
   private _respondRequested: boolean;
   private _respondPriority: number;
   private _abortRequested: boolean;
@@ -166,7 +165,6 @@ export class HTTPRequest {
     this._respondPriority = 10;
     this._abortRequested = false;
     this._abortPriority = 10;
-    this._interceptResolvers = [];
     this._interceptActions = [];
 
     for (const key of Object.keys(event.request.headers))
@@ -292,15 +290,12 @@ export class HTTPRequest {
     );
     if (this.shouldAbort()) {
       await this._abort(this._abortErrorReason);
-      this._interceptResolvers.forEach((resolve) => resolve('abort'));
     }
     if (this.shouldRespond()) {
       await this._respond(this._responseForRequest);
-      this._interceptResolvers.forEach((resolve) => resolve('respond'));
     }
     if (this.shouldContinue()) {
       await this._continue(this._continueRequestOverrides);
-      this._interceptResolvers.forEach((resolve) => resolve('continue'));
     }
   }
 
@@ -444,7 +439,7 @@ export class HTTPRequest {
   async requestContinue(
     overrides: ContinueRequestOverrides = {},
     priority = 10
-  ): Promise<ActionResult> {
+  ): Promise<void> {
     // Request interception is not supported for data: urls.
     if (this._url.startsWith('data:')) return;
     assert(this._allowInterception, 'Request Interception is not enabled!');
@@ -452,9 +447,6 @@ export class HTTPRequest {
     this._continueRequestOverrides = overrides;
     this._continueRequested = true;
     this._continuePriority = Math.min(this._continuePriority, priority);
-    return new Promise<ActionResult>((resolve) => {
-      this._interceptResolvers.push(resolve);
-    });
   }
 
   /**
@@ -549,7 +541,7 @@ export class HTTPRequest {
   async requestRespond(
     response: Partial<ResponseForRequest>,
     priority = 10
-  ): Promise<ActionResult> {
+  ): Promise<void> {
     // Mocking responses for dataURL requests is not currently supported.
     if (this._url.startsWith('data:')) return;
     assert(this._allowInterception, 'Request Interception is not enabled!');
@@ -557,9 +549,6 @@ export class HTTPRequest {
     this._responseForRequest = response;
     this._respondRequested = true;
     this._respondPriority = Math.min(this._respondPriority, priority);
-    return new Promise<ActionResult>((resolve) => {
-      this._interceptResolvers.push(resolve);
-    });
   }
 
   /**
@@ -651,7 +640,7 @@ export class HTTPRequest {
   async requestAbort(
     errorCode: ErrorCode = 'failed',
     priority = 10
-  ): Promise<ActionResult> {
+  ): Promise<void> {
     // Request interception is not supported for data: urls.
     if (this._url.startsWith('data:')) return;
     const errorReason = errorReasons[errorCode];
@@ -661,9 +650,6 @@ export class HTTPRequest {
     assert(!this._interceptionHandled, 'Request is already handled!');
     this._abortRequested = true;
     this._abortPriority = Math.min(this._abortPriority, priority);
-    return new Promise<ActionResult>((resolve) => {
-      this._interceptResolvers.push(resolve);
-    });
   }
 
   /**

@@ -36,37 +36,54 @@ describe('request interception', function () {
       it(`should cooperatively ${expectedAction} by priority`, async () => {
         const { page, server } = getTestState();
 
-        let expectedActionCount = 0;
-        let unexpectedActionCount = 0;
-        const finalizeAction = (finalAction: ActionResult) => {
-          if (finalAction === expectedAction) ++expectedActionCount;
-          else ++unexpectedActionCount;
-        };
         await page.setRequestInterception(true);
         page.on('request', (request) => {
           if (request.url().endsWith('.css'))
-            request
-              .requestContinue({}, expectedAction === 'continue' ? 9 : 10)
-              .then(finalizeAction);
-        });
-        page.on('request', (request) => {
-          if (request.url().endsWith('.css'))
-            request
-              .requestRespond({}, expectedAction === 'respond' ? 9 : 10)
-              .then(finalizeAction);
+            request.requestContinue(
+              { headers: { ...request.headers(), xaction: 'continue' } },
+              expectedAction === 'continue' ? 9 : 10
+            );
           else request.requestContinue();
         });
         page.on('request', (request) => {
           if (request.url().endsWith('.css'))
-            request
-              .requestAbort('aborted', expectedAction === 'abort' ? 9 : 10)
-              .then(finalizeAction);
+            request.requestRespond(
+              { headers: { xaction: 'respond' } },
+              expectedAction === 'respond' ? 9 : 10
+            );
           else request.requestContinue();
         });
-        const response = await page.goto(server.PREFIX + '/one-style.html');
+        page.on('request', (request) => {
+          if (request.url().endsWith('.css'))
+            request.requestAbort(
+              'aborted',
+              expectedAction === 'abort' ? 9 : 10
+            );
+          else request.requestContinue();
+        });
+        page.on('response', (response) => {
+          if (response.url().endsWith('.css'))
+            expect(response.headers().xaction).toBe(expectedAction);
+        });
+        page.on('requestfailed', (request) => {
+          if (request.url().endsWith('.css'))
+            expect(expectedAction).toBe('abort');
+        });
+
+        const response = await (async () => {
+          if (expectedAction === 'continue') {
+            const [serverRequest, response] = await Promise.all([
+              server.waitForRequest('/one-style.css'),
+              page.goto(server.PREFIX + '/one-style.html'),
+            ]);
+            expect(serverRequest.headers.xaction).toBe('continue');
+            return response;
+          } else {
+            return await page.goto(server.EMPTY_PAGE);
+          }
+        })();
+
         expect(response.ok()).toBe(true);
-        expect(expectedActionCount).toBe(3);
-        expect(unexpectedActionCount).toBe(0);
       });
     }
 
