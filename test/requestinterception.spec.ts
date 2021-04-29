@@ -63,7 +63,7 @@ describe('request interception', function () {
         <form action='/rredirect' method='post'>
           <input type="hidden" id="foo" name="foo" value="FOOBAR">
         </form>
-       `);
+      `);
       await Promise.all([
         page.$eval('form', (form: HTMLFormElement) => form.submit()),
         page.waitForNavigation(),
