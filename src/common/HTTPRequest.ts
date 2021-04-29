@@ -179,43 +179,38 @@ export class HTTPRequest {
   }
 
   /**
-   * @remarks
-   * Available only in Cooperative Intercept Mode.
-   *
    * @returns the `ContinueRequestOverrides` that will be used
    * if the interception is allowed to continue (ie, `abort()` and
    * `respond()` aren't called).
    */
   continueRequestOverrides(): ContinueRequestOverrides {
+    assert(this._allowInterception, 'Request Interception is not enabled!');
     return this._continueRequestOverrides;
   }
 
   /**
-   * @remarks
-   * Available only in Cooperative Intercept Mode.
-   *
    * @returns the `ResponseForRequest` that will be used
    * if the interception is allowed to respond (ie, `abort()` is not
    * called).
    */
   responseForRequest(): Partial<ResponseForRequest> {
+    assert(this._allowInterception, 'Request Interception is not enabled!');
     return this._responseForRequest;
   }
 
   /**
-   * @remarks
-   * Available only in Cooperative Intercept Mode.
-   *
    * @returns the most recent reason for aborting the request
    */
   abortErrorReason(): Protocol.Network.ErrorReason {
+    assert(this._allowInterception, 'Request Interception is not enabled!');
     return this._abortErrorReason;
   }
 
   /**
-   * @returns `true` if `continue()` has been called at least once.
+   * @returns `true` if `continue` is currently the highest priority intercept resolution
    */
-  shouldContinue(): boolean {
+  private shouldContinue(): boolean {
+    if (!this._allowInterception) return false;
     if (this._interceptionHandled) return false;
     if (!this._continueRequested) return false;
     if (this._abortRequested && this._abortPriority >= this._continuePriority)
@@ -229,9 +224,10 @@ export class HTTPRequest {
   }
 
   /**
-   * @returns `true` if `respond()` has been called at least once.
+   * @returns `true` if `respond` is currently the highest priority intercept resolution
    */
-  shouldRespond(): boolean {
+  private shouldRespond(): boolean {
+    if (!this._allowInterception) return false;
     if (this._interceptionHandled) return false;
     if (!this._respondRequested) return false;
     if (
@@ -245,9 +241,10 @@ export class HTTPRequest {
   }
 
   /**
-   * @returns `true` if `abort()` has been called at least once.
+   * @returns `true` if `abort` is currently the highest priority intercept resolution
    */
-  shouldAbort(): boolean {
+  private shouldAbort(): boolean {
+    if (!this._allowInterception) return false;
     if (this._interceptionHandled) return false;
     if (!this._abortRequested) return false;
     if (this._respondRequested && this._respondPriority > this._abortPriority)
@@ -258,9 +255,6 @@ export class HTTPRequest {
   }
 
   /**
-   * @remarks
-   * Available only in Cooperative Intercept Mode.
-
    * Adds an async request handler to the processing queue.
    * Deferred handlers are not guaranteed to execute in any particular order,
    * but they are guarnateed to resolve before the request interception
@@ -271,9 +265,6 @@ export class HTTPRequest {
   }
 
   /**
-   * @remarks
-   * Available only in Cooperative Intercept Mode.
-
    * Awaits pending interception handlers and then decides how to fulfill
    * the request interception.
    */
