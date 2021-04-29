@@ -160,11 +160,11 @@ export class HTTPRequest {
     this._redirectChain = redirectChain;
     this._continueRequestOverrides = {};
     this._continueRequested = false;
-    this._continuePriority = 10;
+    this._continuePriority = DEFAULT_INTERCEPT_PRIORITY;
     this._respondRequested = false;
-    this._respondPriority = 10;
+    this._respondPriority = DEFAULT_INTERCEPT_PRIORITY;
     this._abortRequested = false;
-    this._abortPriority = 10;
+    this._abortPriority = DEFAULT_INTERCEPT_PRIORITY;
     this._interceptActions = [];
 
     for (const key of Object.keys(event.request.headers))
@@ -218,11 +218,11 @@ export class HTTPRequest {
   shouldContinue(): boolean {
     if (this._interceptionHandled) return false;
     if (!this._continueRequested) return false;
-    if (this._abortRequested && this._abortPriority <= this._continuePriority)
+    if (this._abortRequested && this._abortPriority >= this._continuePriority)
       return false;
     if (
       this._respondRequested &&
-      this._respondPriority <= this._continuePriority
+      this._respondPriority >= this._continuePriority
     )
       return false;
     return true;
@@ -236,10 +236,10 @@ export class HTTPRequest {
     if (!this._respondRequested) return false;
     if (
       this._continueRequested &&
-      this._continuePriority < this._respondPriority
+      this._continuePriority > this._respondPriority
     )
       return false;
-    if (this._abortRequested && this._abortPriority <= this._respondPriority)
+    if (this._abortRequested && this._abortPriority >= this._respondPriority)
       return false;
     return true;
   }
@@ -250,9 +250,9 @@ export class HTTPRequest {
   shouldAbort(): boolean {
     if (this._interceptionHandled) return false;
     if (!this._abortRequested) return false;
-    if (this._respondRequested && this._respondPriority < this._abortPriority)
+    if (this._respondRequested && this._respondPriority > this._abortPriority)
       return false;
-    if (this._continueRequested && this._continuePriority < this._abortPriority)
+    if (this._continueRequested && this._continuePriority > this._abortPriority)
       return false;
     return true;
   }
@@ -438,7 +438,7 @@ export class HTTPRequest {
    */
   async requestContinue(
     overrides: ContinueRequestOverrides = {},
-    priority = 10
+    priority = DEFAULT_INTERCEPT_PRIORITY
   ): Promise<void> {
     // Request interception is not supported for data: urls.
     if (this._url.startsWith('data:')) return;
@@ -446,7 +446,7 @@ export class HTTPRequest {
     assert(!this._interceptionHandled, 'Request is already handled!');
     this._continueRequestOverrides = overrides;
     this._continueRequested = true;
-    this._continuePriority = Math.min(this._continuePriority, priority);
+    this._continuePriority = Math.max(this._continuePriority, priority);
   }
 
   /**
@@ -540,7 +540,7 @@ export class HTTPRequest {
    */
   async requestRespond(
     response: Partial<ResponseForRequest>,
-    priority = 10
+    priority = DEFAULT_INTERCEPT_PRIORITY
   ): Promise<void> {
     // Mocking responses for dataURL requests is not currently supported.
     if (this._url.startsWith('data:')) return;
@@ -548,7 +548,7 @@ export class HTTPRequest {
     assert(!this._interceptionHandled, 'Request is already handled!');
     this._responseForRequest = response;
     this._respondRequested = true;
-    this._respondPriority = Math.min(this._respondPriority, priority);
+    this._respondPriority = Math.max(this._respondPriority, priority);
   }
 
   /**
@@ -639,7 +639,7 @@ export class HTTPRequest {
    */
   async requestAbort(
     errorCode: ErrorCode = 'failed',
-    priority = 10
+    priority = DEFAULT_INTERCEPT_PRIORITY
   ): Promise<void> {
     // Request interception is not supported for data: urls.
     if (this._url.startsWith('data:')) return;
@@ -649,7 +649,7 @@ export class HTTPRequest {
     assert(this._allowInterception, 'Request Interception is not enabled!');
     assert(!this._interceptionHandled, 'Request is already handled!');
     this._abortRequested = true;
-    this._abortPriority = Math.min(this._abortPriority, priority);
+    this._abortPriority = Math.max(this._abortPriority, priority);
   }
 
   /**
@@ -727,6 +727,7 @@ const errorReasons: Record<ErrorCode, Protocol.Network.ErrorReason> = {
 } as const;
 
 export type ActionResult = 'continue' | 'abort' | 'respond';
+export const DEFAULT_INTERCEPT_PRIORITY = 0;
 
 function headersArray(
   headers: Record<string, string>

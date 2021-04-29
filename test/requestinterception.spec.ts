@@ -36,12 +36,13 @@ describe('request interception', function () {
       it(`should cooperatively ${expectedAction} by priority`, async () => {
         const { page, server } = getTestState();
 
+        const actionResults: ActionResult[] = [];
         await page.setRequestInterception(true);
         page.on('request', (request) => {
           if (request.url().endsWith('.css'))
             request.requestContinue(
               { headers: { ...request.headers(), xaction: 'continue' } },
-              expectedAction === 'continue' ? 9 : 10
+              expectedAction === 'continue' ? 1 : undefined
             );
           else request.requestContinue();
         });
@@ -49,25 +50,26 @@ describe('request interception', function () {
           if (request.url().endsWith('.css'))
             request.requestRespond(
               { headers: { xaction: 'respond' } },
-              expectedAction === 'respond' ? 9 : 10
+              expectedAction === 'respond' ? 1 : undefined
             );
           else request.requestContinue();
         });
         page.on('request', (request) => {
+          console.log(expectedAction === 'abort');
           if (request.url().endsWith('.css'))
             request.requestAbort(
               'aborted',
-              expectedAction === 'abort' ? 9 : 10
+              expectedAction === 'abort' ? 1 : undefined
             );
           else request.requestContinue();
         });
         page.on('response', (response) => {
-          if (response.url().endsWith('.css'))
-            expect(response.headers().xaction).toBe(expectedAction);
+          const { xaction } = response.headers();
+          if (response.url().endsWith('.css') && !!xaction)
+            actionResults.push(xaction as ActionResult);
         });
         page.on('requestfailed', (request) => {
-          if (request.url().endsWith('.css'))
-            expect(expectedAction).toBe('abort');
+          if (request.url().endsWith('.css')) actionResults.push('abort');
         });
 
         const response = await (async () => {
@@ -76,13 +78,15 @@ describe('request interception', function () {
               server.waitForRequest('/one-style.css'),
               page.goto(server.PREFIX + '/one-style.html'),
             ]);
-            expect(serverRequest.headers.xaction).toBe('continue');
+            actionResults.push(serverRequest.headers.xaction as ActionResult);
             return response;
           } else {
-            return await page.goto(server.EMPTY_PAGE);
+            return await page.goto(server.PREFIX + '/one-style.html');
           }
         })();
 
+        expect(actionResults.length).toBe(1);
+        expect(actionResults[0]).toBe(expectedAction);
         expect(response.ok()).toBe(true);
       });
     }
