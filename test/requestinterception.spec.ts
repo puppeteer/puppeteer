@@ -60,9 +60,9 @@ describe('request interception', function () {
       await page.setRequestInterception(true);
       page.on('request', (request) => request.continue());
       await page.setContent(`
-         <form action='/rredirect' method='post'>
-           <input type="hidden" id="foo" name="foo" value="FOOBAR">
-         </form>
+        <form action='/rredirect' method='post'>
+          <input type="hidden" id="foo" name="foo" value="FOOBAR">
+        </form>
        `);
       await Promise.all([
         page.$eval('form', (form: HTMLFormElement) => form.submit()),
