@@ -600,6 +600,7 @@ export class HTTPRequest {
   private async _respond(response: Partial<ResponseForRequest>): Promise<void> {
     assert(!this._interceptionHandled, 'Request is already handled!');
     this._interceptionHandled = true;
+
     const responseBody: Buffer | null =
       response.body && helper.isString(response.body)
         ? Buffer.from(response.body)
