@@ -44,7 +44,6 @@ jobs:
         env:
           FIREFOX: true
           MOZ_WEBRENDER: 0
-          DUMPIO: true
         run: |
           xvfb-run --auto-servernum npm run funit
 
@@ -113,7 +112,6 @@ jobs:
         env:
           FIREFOX: true
           MOZ_WEBRENDER: 0
-          DUMPIO: true
         run: |
           npm run funit
 
@@ -159,7 +157,6 @@ jobs:
         env:
           FIREFOX: true
           MOZ_WEBRENDER: 0
-          DUMPIO: true
         run: |
           npm run funit
 
@@ -169,4 +166,3 @@ jobs:
         run: |
           npm run unit
 
-      
