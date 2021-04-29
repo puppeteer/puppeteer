@@ -129,12 +129,12 @@ export class HTTPRequest {
   private _abortErrorReason: Protocol.Network.ErrorReason;
   private _continueRequested: boolean;
   private _continuePriority: number;
-  private _actionCallbacks: Array<(result: ActionResult) => void>;
+  private _interceptResolvers: Array<(result: ActionResult) => void>;
   private _respondRequested: boolean;
   private _respondPriority: number;
   private _abortRequested: boolean;
   private _abortPriority: number;
-  private _pendingInterceptActions: Array<() => void | PromiseLike<any>>;
+  private _interceptActions: Array<() => void | PromiseLike<any>>;
 
   /**
    * @internal
@@ -166,8 +166,8 @@ export class HTTPRequest {
     this._respondPriority = 10;
     this._abortRequested = false;
     this._abortPriority = 10;
-    this._actionCallbacks = [];
-    this._pendingInterceptActions = [];
+    this._interceptResolvers = [];
+    this._interceptActions = [];
 
     for (const key of Object.keys(event.request.headers))
       this._headers[key.toLowerCase()] = event.request.headers[key];
@@ -269,7 +269,7 @@ export class HTTPRequest {
    * is finalized.
    */
   enqueueInterceptAction(pendingHandler: () => void | PromiseLike<any>): void {
-    this._pendingInterceptActions.push(pendingHandler);
+    this._interceptActions.push(pendingHandler);
   }
 
   /**
@@ -280,9 +280,9 @@ export class HTTPRequest {
    * the request interception.
    */
   async finalizeInterceptions(): Promise<void> {
-    await this._pendingInterceptActions.reduce(
-      (p, x) =>
-        p.then(x).catch((error) => {
+    await this._interceptActions.reduce(
+      (promiseChain, interceptAction) =>
+        promiseChain.then(interceptAction).catch((error) => {
           // This is here so cooperative handlers that fail do not stop other handlers
           // from running
           console.error(error);
@@ -292,15 +292,15 @@ export class HTTPRequest {
     );
     if (this.shouldAbort()) {
       await this._abort(this._abortErrorReason);
-      this._actionCallbacks.forEach((resolve) => resolve('abort'));
+      this._interceptResolvers.forEach((resolve) => resolve('abort'));
     }
     if (this.shouldRespond()) {
       await this._respond(this._responseForRequest);
-      this._actionCallbacks.forEach((resolve) => resolve('respond'));
+      this._interceptResolvers.forEach((resolve) => resolve('respond'));
     }
     if (this.shouldContinue()) {
       await this._continue(this._continueRequestOverrides);
-      this._actionCallbacks.forEach((resolve) => resolve('continue'));
+      this._interceptResolvers.forEach((resolve) => resolve('continue'));
     }
   }
 
@@ -453,7 +453,7 @@ export class HTTPRequest {
     this._continueRequested = true;
     this._continuePriority = Math.min(this._continuePriority, priority);
     return new Promise<ActionResult>((resolve) => {
-      this._actionCallbacks.push(resolve);
+      this._interceptResolvers.push(resolve);
     });
   }
 
@@ -558,7 +558,7 @@ export class HTTPRequest {
     this._respondRequested = true;
     this._respondPriority = Math.min(this._respondPriority, priority);
     return new Promise<ActionResult>((resolve) => {
-      this._actionCallbacks.push(resolve);
+      this._interceptResolvers.push(resolve);
     });
   }
 
@@ -662,7 +662,7 @@ export class HTTPRequest {
     this._abortRequested = true;
     this._abortPriority = Math.min(this._abortPriority, priority);
     return new Promise<ActionResult>((resolve) => {
-      this._actionCallbacks.push(resolve);
+      this._interceptResolvers.push(resolve);
     });
   }
 
