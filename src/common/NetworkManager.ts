@@ -56,7 +56,6 @@ export interface InternalNetworkConditions extends NetworkConditions {
  */
 export const NetworkManagerEmittedEvents = {
   Request: Symbol('NetworkManager.Request'),
-  CooperativeRequest: Symbol('NetworkManager.CooperativeRequest'),
   RequestServedFromCache: Symbol('NetworkManager.RequestServedFromCache'),
   Response: Symbol('NetworkManager.Response'),
   RequestFailed: Symbol('NetworkManager.RequestFailed'),
@@ -326,23 +325,12 @@ export class NetworkManager extends EventEmitter {
       redirectChain
     );
     this._requestIdToRequest.set(event.requestId, request);
-    request.setAllowCooperativeRequestInterceptionMode(true);
-    this.emit(NetworkManagerEmittedEvents.CooperativeRequest, request);
-    if (request.hasCooperativeInterceptHandlers()) {
-      request
-        .finalizeCooperativeInterceptions()
-        .then(() => {
-          request.setAllowCooperativeRequestInterceptionMode(false);
-          this.emit(NetworkManagerEmittedEvents.Request, request);
-        })
-        .catch((error) => {
-          console.error(error);
-          debugError(error);
-        });
-    } else {
-      request.setAllowCooperativeRequestInterceptionMode(false);
-      this.emit(NetworkManagerEmittedEvents.Request, request);
-    }
+    this.emit(NetworkManagerEmittedEvents.Request, request);
+    request.finalizeInterceptions().catch((error) => {
+      // This should never happen, but catch just in case
+      console.error(error);
+      debugError(error);
+    });
   }
 
   _onRequestServedFromCache(

@@ -296,26 +296,6 @@ export const enum PageEmittedEvents {
    */
   Request = 'request',
   /**
-   * Emitted when a page issues a request and contains a {@link HTTPRequest}.
-   *
-   * @remarks
-   * The object is readonly. See {@Page.setRequestInterception} for intercepting
-   * and mutating requests.
-   *
-   * Cooperative intercept mode allows multiple handlers to call continue(),
-   * respond(), or abort() multiple times in any combination.
-   * Page will wait for all async handlers to resovle before resolving
-   * the request. If any handler called abort(), the request will be aborted.
-   * If no handler called abort() but any handler called respond(),
-   * the request will be responded. Otherwise, the request will be continued.
-   * No handler needs to call continue() since this is the default.
-   *
-   * Listening for this event will cause any listener of the `Request` event
-   * to throw an incompatibility exception.
-   *
-   */
-  CooperativeRequest = 'cooperativerequest',
-  /**
    * Emitted when a request ended up loading from cache. Contains a {@link HTTPRequest}.
    *
    * @remarks
@@ -378,7 +358,6 @@ export interface PageEventObject {
   pageerror: Error;
   popup: Page;
   request: HTTPRequest;
-  cooperativerequest: HTTPRequest;
   response: HTTPResponse;
   requestfailed: HTTPRequest;
   requestfinished: HTTPRequest;
@@ -549,9 +528,6 @@ export class Page extends EventEmitter {
     networkManager.on(NetworkManagerEmittedEvents.Request, (event) =>
       this.emit(PageEmittedEvents.Request, event)
     );
-    networkManager.on(NetworkManagerEmittedEvents.CooperativeRequest, (event) =>
-      this.emit(PageEmittedEvents.CooperativeRequest, event)
-    );
     networkManager.on(
       NetworkManagerEmittedEvents.RequestServedFromCache,
       (event) => this.emit(PageEmittedEvents.RequestServedFromCache, event)
@@ -630,9 +606,9 @@ export class Page extends EventEmitter {
     eventName: K,
     handler: (event: PageEventObject[K]) => void
   ): EventEmitter {
-    if (eventName === PageEmittedEvents.CooperativeRequest) {
+    if (eventName === 'request') {
       return super.on(eventName, (event: HTTPRequest) => {
-        event.enqueuePendingCooperativeInterceptionHandler(() =>
+        event.enqueueInterceptAction(() =>
           handler(event as PageEventObject[K])
         );
       });

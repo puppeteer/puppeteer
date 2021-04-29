@@ -24,11 +24,52 @@ import {
   setupTestPageAndContextHooks,
   describeFailsFirefox,
 } from './mocha-utils'; // eslint-disable-line import/extensions
+import { ActionResult } from '../lib/cjs/puppeteer/api-docs-entry.js';
 
 describe('request interception', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
   describeFailsFirefox('Page.setRequestInterception', function () {
+    const expectedActions: ActionResult[] = ['abort', 'continue', 'respond'];
+    while (expectedActions.length > 0) {
+      const expectedAction = expectedActions.pop();
+      it(`should cooperatively ${expectedAction} by priority`, async () => {
+        const { page, server } = getTestState();
+
+        let expectedActionCount = 0;
+        let unexpectedActionCount = 0;
+        const finalizeAction = (finalAction: ActionResult) => {
+          if (finalAction === expectedAction) ++expectedActionCount;
+          else ++unexpectedActionCount;
+        };
+        await page.setRequestInterception(true);
+        page.on('request', (request) => {
+          if (request.url().endsWith('.css'))
+            request
+              .requestContinue({}, expectedAction === 'continue' ? 9 : 10)
+              .then(finalizeAction);
+        });
+        page.on('request', (request) => {
+          if (request.url().endsWith('.css'))
+            request
+              .requestRespond({}, expectedAction === 'respond' ? 9 : 10)
+              .then(finalizeAction);
+          else request.requestContinue();
+        });
+        page.on('request', (request) => {
+          if (request.url().endsWith('.css'))
+            request
+              .requestAbort('aborted', expectedAction === 'abort' ? 9 : 10)
+              .then(finalizeAction);
+          else request.requestContinue();
+        });
+        const response = await page.goto(server.PREFIX + '/one-style.html');
+        expect(response.ok()).toBe(true);
+        expect(expectedActionCount).toBe(3);
+        expect(unexpectedActionCount).toBe(0);
+      });
+    }
+
     it('should intercept', async () => {
       const { page, server } = getTestState();
 
