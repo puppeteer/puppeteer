@@ -239,8 +239,8 @@ describe('Page.click', function () {
       )
     ).toBe('clicked');
   });
-  // eslint-disable-next-line
-  it.only('should double click the button', async () => {
+  // See https://github.com/puppeteer/puppeteer/issues/7175
+  itFailsFirefox('should double click the button', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/button.html');
