@@ -243,7 +243,7 @@ export class Browser extends EventEmitter {
     this._process = process;
     this._connection = connection;
     this._closeCallback = closeCallback || function (): void {};
-    this._targetFilterCallback = targetFilterCallback || ((): boolean => false);
+    this._targetFilterCallback = targetFilterCallback || ((): boolean => true);
 
     this._defaultContext = new BrowserContext(this._connection, this, null);
     this._contexts = new Map();
@@ -342,8 +342,8 @@ export class Browser extends EventEmitter {
         ? this._contexts.get(browserContextId)
         : this._defaultContext;
 
-    const shouldIgnoreTarget = await this._targetFilterCallback(targetInfo);
-    if (shouldIgnoreTarget) {
+    const shouldAttachToTarget = await this._targetFilterCallback(targetInfo);
+    if (!shouldAttachToTarget) {
       return;
     }
 
