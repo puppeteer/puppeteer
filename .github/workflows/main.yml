@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Include all major maintenance + active LTS Node.js versions.
+        # Include all major maintenance + active LTS + current Node.js versions.
         # https://github.com/nodejs/Release#release-schedule
-        node: [10, 12, 14]
+        node: [12, 14, 16]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -93,7 +93,7 @@ jobs:
         with:
           # Test only the oldest maintenance LTS Node.js version.
           # https://github.com/nodejs/Release#release-schedule
-          node-version: 10
+          node-version: 12
 
       - name: Install dependencies
         run: |
@@ -134,7 +134,7 @@ jobs:
         with:
           # Test only the oldest maintenance LTS Node.js version.
           # https://github.com/nodejs/Release#release-schedule
-          node-version: 10
+          node-version: 12
 
       - name: Install dependencies
         run: |
