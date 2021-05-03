@@ -516,7 +516,7 @@ Clears all registered handlers.
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
   - `transport` <[ConnectionTransport]> **Experimental** Specify a custom transport object for Puppeteer to use.
   - `product` <[string]> Possible values are: `chrome`, `firefox`. Defaults to `chrome`.
-  - `targetFilter` <?[function]\([Protocol.Target.TargetInfo]\):[Promise]<[boolean]>|[boolean]> Use this function to decide if Puppeteer should connect to the given target. By default, puppeteer will connect to all available targets.
+  - `targetFilter` <?[function]\([Protocol.Target.TargetInfo]\):[Promise]<[boolean]>|[boolean]> Use this function to decide if Puppeteer should connect to the given target. If a `targetFilter` is provided, Puppeteer only connects to targets for which `targetFilter` returns `true`. By default, Puppeteer connects to all available targets.
 - returns: <[Promise]<[Browser]>>
 
 This methods attaches Puppeteer to an existing browser instance.
