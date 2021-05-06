@@ -285,6 +285,7 @@ export const enum PageEmittedEvents {
    *   page.evaluate(() => window.open('https://example.com')),
    * ]);
    * ```
+   *
    */
   Popup = 'popup',
   /**
@@ -980,6 +981,7 @@ export class Page extends EventEmitter {
    * @param pageFunction - the function to be evaluated in the page context.
    * Will be passed the result of `document.querySelector(selector)` as its
    * first argument.
+   *
    * @param args - any additional arguments to pass through to `pageFunction`.
    *
    * @returns The result of calling `pageFunction`. If it returns an element it
