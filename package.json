@@ -1,6 +1,6 @@
 {
   "name": "puppeteer",
-  "version": "8.0.0-post",
+  "version": "9.1.1-post",
   "description": "A high-level API to control headless Chrome over the DevTools Protocol",
   "main": "./cjs-entry.js",
   "types": "lib/types.d.ts",
@@ -28,7 +28,7 @@
     "markdownlint-fix": "prettier --write **/README.md docs/api.md docs/troubleshooting.md",
     "lint": "npm run eslint && npm run build && npm run doc && npm run commitlint && npm run markdownlint",
     "doc": "node utils/doclint/cli.js",
-    "clean-lib": "rm -rf lib",
+    "clean-lib": "rimraf lib",
     "build": "npm run tsc && npm run generate-d-ts",
     "tsc": "npm run clean-lib && tsc --version && npm run tsc-cjs && npm run tsc-esm",
     "tsc-cjs": "tsc -b src/tsconfig.cjs.json",
@@ -56,7 +56,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "debug": "^4.1.0",
-    "devtools-protocol": "0.0.854822",
+    "devtools-protocol": "0.0.869402",
     "extract-zip": "^2.0.0",
     "https-proxy-agent": "^5.0.0",
     "node-fetch": "^2.6.1",
