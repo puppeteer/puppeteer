@@ -39,6 +39,7 @@ export interface CommonPuppeteerSettings {
   isPuppeteerCore: boolean;
 }
 /**
+ * ConnectOptions
  * @public
  */
 export interface ConnectOptions extends BrowserConnectOptions {
