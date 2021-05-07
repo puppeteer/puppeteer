@@ -114,7 +114,7 @@ export class NetworkManager extends EventEmitter {
   _credentials?: Credentials = null;
   _attemptedAuthentications = new Set<string>();
   _userRequestInterceptionEnabled = false;
-  _userRequestInterceptionCacheSafe = false;
+  _userRequestInterceptionCacheSafe = true;
   _protocolRequestInterceptionEnabled = false;
   _userCacheDisabled = false;
   _emulatedNetworkConditions: InternalNetworkConditions = {
@@ -230,7 +230,7 @@ export class NetworkManager extends EventEmitter {
 
   async setRequestInterception(
     value: boolean,
-    cacheSafe = false
+    cacheSafe = true
   ): Promise<void> {
     this._userRequestInterceptionEnabled = value;
     this._userRequestInterceptionCacheSafe = cacheSafe;

@@ -2219,7 +2219,7 @@ await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
 #### page.setRequestInterception(value[, cacheSafe])
 
 - `value` <[boolean]> Whether to enable request interception.
-- `cacheSafe` <[boolean]> Whether to trust browser caching. If set to false, enabling request interception disables page caching. Defaults to false.
+- `cacheSafe` <[boolean]> Whether to trust browser caching. If set to false, enabling request interception disables page caching. Defaults to true.
 - returns: <[Promise]>
 
 Activating request interception enables `request.abort`, `request.continue` and
