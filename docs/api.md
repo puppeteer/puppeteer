@@ -214,6 +214,7 @@
 - [class: Mouse](#class-mouse)
   * [mouse.click(x, y[, options])](#mouseclickx-y-options)
   * [mouse.down([options])](#mousedownoptions)
+  * [mouse.drag(start, target)](#mousedragstart-target)
   * [mouse.move(x, y[, options])](#mousemovex-y-options)
   * [mouse.up([options])](#mouseupoptions)
   * [mouse.wheel([options])](#mousewheeloptions)
@@ -296,6 +297,7 @@
   * [elementHandle.click([options])](#elementhandleclickoptions)
   * [elementHandle.contentFrame()](#elementhandlecontentframe)
   * [elementHandle.dispose()](#elementhandledispose)
+  * [elementHandle.drag(target)](#elementhandledragtarget)
   * [elementHandle.evaluate(pageFunction[, ...args])](#elementhandleevaluatepagefunction-args)
   * [elementHandle.evaluateHandle(pageFunction[, ...args])](#elementhandleevaluatehandlepagefunction-args)
   * [elementHandle.executionContext()](#elementhandleexecutioncontext)
@@ -2960,6 +2962,18 @@ Shortcut for [`mouse.move`](#mousemovex-y-options), [`mouse.down`](#mousedownopt
 
 Dispatches a `mousedown` event.
 
+#### mouse.drag(start, target)
+
+- `start` <[Object]>
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- `target` <[Object]>
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- returns: <[Promise<[DragData]>]>
+
+This method creates and captures a dragevent from a given point.
+
 #### mouse.move(x, y[, options])
 
 - `x` <[number]>
@@ -4044,6 +4058,15 @@ If the element is detached from DOM, the method throws an error.
 - returns: <[Promise]> Promise which resolves when the element handle is successfully disposed.
 
 The `elementHandle.dispose` method stops referencing the element handle.
+
+#### elementHandle.drag(target)
+
+- `target` <[Object]>
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- returns: <[Promise<[DragData]>]>
+
+This method creates and captures a dragevent from the element.
 
 #### elementHandle.evaluate(pageFunction[, ...args])
 

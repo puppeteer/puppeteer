@@ -386,6 +386,13 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method ElementHandle.drag() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
         'Method Keyboard.down() key',
         {
           actualName: 'string',
@@ -411,6 +418,20 @@ function compareDocumentations(actual, expected) {
         {
           actualName: 'Object',
           expectedName: 'MouseOptions',
+        },
+      ],
+      [
+        'Method Mouse.drag() start',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.drag() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
         },
       ],
       [

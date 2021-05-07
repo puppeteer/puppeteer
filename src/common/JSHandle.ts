@@ -499,22 +499,50 @@ export class ElementHandle<
   }
 
   /**
-   * This method creates and captures a drag event from the element.
+   * This method creates and captures a dragevent from the element.
    */
-  async drag(destination:Point): Promise<Protocol.Input.DragData> {
-    assert(this._page.isDragInterceptionEnabled, 'Drag Interception is not enabled!');
+  async drag(target: Point): Promise<Protocol.Input.DragData> {
+    assert(
+      this._page.isDragInterceptionEnabled,
+      'Drag Interception is not enabled!'
+    );
     await this._scrollIntoViewIfNeeded();
-    const source = await this._clickablePoint();
-    return await this._page.mouse.drag(source, destination);
+    const start = await this._clickablePoint();
+    return await this._page.mouse.drag(start, target);
+  }
+
+  /**
+   * This method creates a `dragenter` event on the element.
+   */
+  async dragEnter(
+    data: Protocol.Input.DragData = { items: [], dragOperationsMask: 1 }
+  ): Promise<void> {
+    await this._scrollIntoViewIfNeeded();
+    const target = await this._clickablePoint();
+    await this._page.mouse.dragEnter(target, data);
+  }
+
+  /**
+   * This method creates a `dragover` event on the element.
+   */
+  async dragOver(
+    data: Protocol.Input.DragData = { items: [], dragOperationsMask: 1 }
+  ): Promise<void> {
+    await this._scrollIntoViewIfNeeded();
+    const target = await this._clickablePoint();
+    await this._page.mouse.dragOver(target, data);
   }
 
   /**
    * This method triggers a dragenter, dragover, and drop on the element.
    */
-  async drop(data:Protocol.Input.DragData = { items: [], dragOperationsMask: 1 }): Promise<void> {
+  async drop(
+    data: Protocol.Input.DragData = { items: [], dragOperationsMask: 1 },
+    options?: { delay: number }
+  ): Promise<void> {
     await this._scrollIntoViewIfNeeded();
     const destination = await this._clickablePoint();
-    await this._page.mouse.drop(destination, data);
+    await this._page.mouse.drop(destination, data, options);
   }
 
   /**

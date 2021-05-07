@@ -497,38 +497,83 @@ export class Mouse {
 
   /**
    * Dispatches a `drag` event.
-   * @param source - starting point for drag
-   * @param destination - point to drag to
+   * @param start - starting point for drag
+   * @param target - point to drag to
    * ```
    */
-  async drag(source: Point, destination: Point): Promise<Protocol.Input.DragData> {
-    const promise = new Promise<Protocol.Input.DragData>((resolve, reject) => {
-      this._client.once('Input.dragIntercepted', event => resolve(event.data));
+  async drag(start: Point, target: Point): Promise<Protocol.Input.DragData> {
+    const promise = new Promise<Protocol.Input.DragData>((resolve) => {
+      this._client.once('Input.dragIntercepted', (event) =>
+        resolve(event.data)
+      );
     });
-    await this.move(source.x, source.y);
+    await this.move(start.x, start.y);
     await this.down();
-    await this.move(destination.x, destination.y);
+    await this.move(target.x, target.y);
     return promise;
   }
 
   /**
-   * Performs a dragenter, dragover, and drop in sequence.
-   * @param destination - point to drop on
-   * @param data - drag data containing items and operations mask
+   * Dispatches a `dragenter` event.
+   * @param target - point for emitting `dragenter` event
    * ```
    */
-  async drop(destination: Point, data: Protocol.Input.DragData) {
-        const args = {
-            x: destination.x,
-            y: destination.y,
-            modifiers: this._keyboard._modifiers,
-            data
-        }
-        await this.move(destination.x, destination.y);
-        await this._client.send('Input.dispatchDragEvent', { ...args, type: 'dragEnter' });
-        await this._client.send('Input.dispatchDragEvent', { ...args, type: 'dragOver' });
-        await this._client.send('Input.dispatchDragEvent', { ...args, type: 'drop' });
-        await this.up();
+  async dragEnter(target: Point, data: Protocol.Input.DragData): Promise<void> {
+    await this.move(target.x, target.y);
+    await this._client.send('Input.dispatchDragEvent', {
+      type: 'dragEnter',
+      x: target.x,
+      y: target.y,
+      modifiers: this._keyboard._modifiers,
+      data,
+    });
+  }
+
+  /**
+   * Dispatches a `dragover` event.
+   * @param target - point for emitting `dragover` event
+   * ```
+   */
+  async dragOver(target: Point, data: Protocol.Input.DragData): Promise<void> {
+    await this.move(target.x, target.y);
+    await this._client.send('Input.dispatchDragEvent', {
+      type: 'dragOver',
+      x: target.x,
+      y: target.y,
+      modifiers: this._keyboard._modifiers,
+      data,
+    });
+  }
+
+  /**
+   * Performs a dragenter, dragover, and drop in sequence.
+   * @param target - point to drop on
+   * @param data - drag data containing items and operations mask
+   * @param options - An object of options. Accepts delay which,
+   * if specified, is the time to wait between `dragover` and `drop` in milliseconds.
+   * Defaults to 0.
+   * ```
+   */
+  async drop(
+    target: Point,
+    data: Protocol.Input.DragData,
+    options: { delay?: number } = {}
+  ): Promise<void> {
+    const { delay = null } = options;
+    await this.move(target.x, target.y);
+    await this.dragEnter(target, data);
+    await this.dragOver(target, data);
+    if (delay) {
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+    await this._client.send('Input.dispatchDragEvent', {
+      type: 'drop',
+      x: target.x,
+      y: target.y,
+      modifiers: this._keyboard._modifiers,
+      data,
+    });
+    await this.up();
   }
 }
 
