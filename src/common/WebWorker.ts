@@ -95,7 +95,7 @@ export class WebWorker extends EventEmitter {
       this._executionContextCallback(executionContext);
     });
 
-    // This might fail if the target is closed before we recieve all execution contexts.
+    // This might fail if the target is closed before we receive all execution contexts.
     this._client.send('Runtime.enable').catch(debugError);
     this._client.on('Runtime.consoleAPICalled', (event) =>
       consoleAPICalled(
