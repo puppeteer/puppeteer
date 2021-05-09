@@ -525,6 +525,15 @@ describe('request interception', function () {
       await page.reload();
       expect(cached.length).toBe(1);
     });
+    it('should load fonts if cache-safe', async () => {
+      const { page, server } = getTestState();
+
+      await page.setRequestInterception(true, true);
+      page.on('request', (request) => request.continue());
+
+      await page.goto(server.PREFIX + '/cached/one-style-font.html');
+      await page.waitForResponse((r) => r.url().endsWith('/one-style.woff'));
+    });
   });
 
   describeFailsFirefox('Request.continue', function () {

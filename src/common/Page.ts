@@ -489,8 +489,16 @@ export class Page extends EventEmitter {
     this._viewport = null;
 
     client.on('Target.attachedToTarget', (event) => {
-      if (event.targetInfo.type !== 'worker') {
+      if (
+        event.targetInfo.type !== 'worker' &&
+        event.targetInfo.type !== 'iframe'
+      ) {
         // If we don't detach from service workers, they will never die.
+        // We still want to attach to workers for emitting events.
+        // We still want to attach to iframes so sessions may interact with them.
+        // We detach from all other types out of an abundance of caution.
+        // See https://source.chromium.org/chromium/chromium/src/+/master:content/browser/devtools/devtools_agent_host_impl.cc?q=f:devtools%20-f:out%20%22::kTypePage%5B%5D%22&ss=chromium
+        // for the complete list of available types.
         client
           .send('Target.detachFromTarget', {
             sessionId: event.sessionId,

@@ -357,6 +357,7 @@
   * [target.url()](#targeturl)
   * [target.worker()](#targetworker)
 - [class: CDPSession](#class-cdpsession)
+  * [cdpSession.connection()](#cdpsessionconnection)
   * [cdpSession.detach()](#cdpsessiondetach)
   * [cdpSession.send(method[, ...paramArgs])](#cdpsessionsendmethod-paramargs)
 - [class: Coverage](#class-coverage)
@@ -625,6 +626,7 @@ try {
   - `pipe` <[boolean]> Connects to the browser over a pipe instead of a WebSocket. Defaults to `false`.
   - `extraPrefsFirefox` <[Object]> Additional [preferences](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/Preference_reference) that can be passed to Firefox (see `PUPPETEER_PRODUCT`)
   - `targetFilter` <?[function]\([Protocol.Target.TargetInfo]\):[boolean]> Use this function to decide if Puppeteer should connect to the given target. If a `targetFilter` is provided, Puppeteer only connects to targets for which `targetFilter` returns `true`. By default, Puppeteer connects to all available targets.
+  - `waitForInitialPage` <[boolean]> Whether to wait for the initial page to be ready. Defaults to `true`.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
 
 You can use `ignoreDefaultArgs` to filter out `--mute-audio` from default arguments:
@@ -4556,6 +4558,12 @@ await client.send('Animation.setPlaybackRate', {
   playbackRate: response.playbackRate / 2,
 });
 ```
+
+#### cdpSession.connection()
+
+- returns: <[Connection]>
+
+Returns the underlying connection associated with the session. Can be used to obtain other related sessions.
 
 #### cdpSession.detach()
 
