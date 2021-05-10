@@ -2189,6 +2189,8 @@ This setting will change the default maximum time for the following methods and 
 
 The extra HTTP headers will be sent with every request the page initiates.
 
+> **NOTE** All headers are lowercased, since HTTP headers are case insensitive.
+
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
 #### page.setGeolocation(options)
