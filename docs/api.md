@@ -2189,7 +2189,7 @@ This setting will change the default maximum time for the following methods and 
 
 The extra HTTP headers will be sent with every request the page initiates.
 
-> **NOTE** All headers are lowercased, since HTTP headers are case insensitive.
+> **NOTE** All HTTP header names are lowercased. (HTTP headers are case-insensitive, so this shouldn’t impact your server code.)
 
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
