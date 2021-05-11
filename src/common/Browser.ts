@@ -24,7 +24,63 @@ import { Page } from './Page.js';
 import { ChildProcess } from 'child_process';
 import { Viewport } from './PuppeteerViewport.js';
 
-type BrowserCloseCallback = () => Promise<void> | void;
+/**
+ * @internal
+ */
+export type BrowserCloseCallback = () => Promise<void> | void;
+
+/**
+ * @public
+ */
+export type TargetFilterCallback = (
+  target: Protocol.Target.TargetInfo
+) => boolean;
+
+const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
+  Permission,
+  Protocol.Browser.PermissionType
+>([
+  ['geolocation', 'geolocation'],
+  ['midi', 'midi'],
+  ['notifications', 'notifications'],
+  // TODO: push isn't a valid type?
+  // ['push', 'push'],
+  ['camera', 'videoCapture'],
+  ['microphone', 'audioCapture'],
+  ['background-sync', 'backgroundSync'],
+  ['ambient-light-sensor', 'sensors'],
+  ['accelerometer', 'sensors'],
+  ['gyroscope', 'sensors'],
+  ['magnetometer', 'sensors'],
+  ['accessibility-events', 'accessibilityEvents'],
+  ['clipboard-read', 'clipboardReadWrite'],
+  ['clipboard-write', 'clipboardReadWrite'],
+  ['payment-handler', 'paymentHandler'],
+  ['idle-detection', 'idleDetection'],
+  // chrome-specific permissions we have.
+  ['midi-sysex', 'midiSysex'],
+]);
+
+/**
+ * @public
+ */
+export type Permission =
+  | 'geolocation'
+  | 'midi'
+  | 'notifications'
+  | 'camera'
+  | 'microphone'
+  | 'background-sync'
+  | 'ambient-light-sensor'
+  | 'accelerometer'
+  | 'gyroscope'
+  | 'magnetometer'
+  | 'accessibility-events'
+  | 'clipboard-read'
+  | 'clipboard-write'
+  | 'payment-handler'
+  | 'idle-detection'
+  | 'midi-sysex';
 
 /**
  * @public
@@ -138,9 +194,10 @@ export class Browser extends EventEmitter {
     connection: Connection,
     contextIds: string[],
     ignoreHTTPSErrors: boolean,
-    defaultViewport?: Viewport,
+    defaultViewport?: Viewport | null,
     process?: ChildProcess,
-    closeCallback?: BrowserCloseCallback
+    closeCallback?: BrowserCloseCallback,
+    targetFilterCallback?: TargetFilterCallback
   ): Promise<Browser> {
     const browser = new Browser(
       connection,
@@ -148,16 +205,18 @@ export class Browser extends EventEmitter {
       ignoreHTTPSErrors,
       defaultViewport,
       process,
-      closeCallback
+      closeCallback,
+      targetFilterCallback
     );
     await connection.send('Target.setDiscoverTargets', { discover: true });
     return browser;
   }
   private _ignoreHTTPSErrors: boolean;
-  private _defaultViewport?: Viewport;
+  private _defaultViewport?: Viewport | null;
   private _process?: ChildProcess;
   private _connection: Connection;
   private _closeCallback: BrowserCloseCallback;
+  private _targetFilterCallback: TargetFilterCallback;
   private _defaultContext: BrowserContext;
   private _contexts: Map<string, BrowserContext>;
   /**
@@ -173,9 +232,10 @@ export class Browser extends EventEmitter {
     connection: Connection,
     contextIds: string[],
     ignoreHTTPSErrors: boolean,
-    defaultViewport?: Viewport,
+    defaultViewport?: Viewport | null,
     process?: ChildProcess,
-    closeCallback?: BrowserCloseCallback
+    closeCallback?: BrowserCloseCallback,
+    targetFilterCallback?: TargetFilterCallback
   ) {
     super();
     this._ignoreHTTPSErrors = ignoreHTTPSErrors;
@@ -183,6 +243,7 @@ export class Browser extends EventEmitter {
     this._process = process;
     this._connection = connection;
     this._closeCallback = closeCallback || function (): void {};
+    this._targetFilterCallback = targetFilterCallback || ((): boolean => true);
 
     this._defaultContext = new BrowserContext(this._connection, this, null);
     this._contexts = new Map();
@@ -280,6 +341,11 @@ export class Browser extends EventEmitter {
       browserContextId && this._contexts.has(browserContextId)
         ? this._contexts.get(browserContextId)
         : this._defaultContext;
+
+    const shouldAttachToTarget = this._targetFilterCallback(targetInfo);
+    if (!shouldAttachToTarget) {
+      return;
+    }
 
     const target = new Target(
       targetInfo,
@@ -504,7 +570,9 @@ export class Browser extends EventEmitter {
     return this._connection.send('Browser.getVersion');
   }
 }
-
+/**
+ * @public
+ */
 export const enum BrowserContextEmittedEvents {
   /**
    * Emitted when the url of a target inside the browser context changes.
@@ -558,6 +626,7 @@ export const enum BrowserContextEmittedEvents {
  * // Dispose context once it's no longer needed.
  * await context.close();
  * ```
+ * @public
  */
 export class BrowserContext extends EventEmitter {
   private _connection: Connection;
@@ -650,34 +719,12 @@ export class BrowserContext extends EventEmitter {
    */
   async overridePermissions(
     origin: string,
-    permissions: string[]
+    permissions: Permission[]
   ): Promise<void> {
-    const webPermissionToProtocol = new Map<
-      string,
-      Protocol.Browser.PermissionType
-    >([
-      ['geolocation', 'geolocation'],
-      ['midi', 'midi'],
-      ['notifications', 'notifications'],
-      // TODO: push isn't a valid type?
-      // ['push', 'push'],
-      ['camera', 'videoCapture'],
-      ['microphone', 'audioCapture'],
-      ['background-sync', 'backgroundSync'],
-      ['ambient-light-sensor', 'sensors'],
-      ['accelerometer', 'sensors'],
-      ['gyroscope', 'sensors'],
-      ['magnetometer', 'sensors'],
-      ['accessibility-events', 'accessibilityEvents'],
-      ['clipboard-read', 'clipboardReadWrite'],
-      ['clipboard-write', 'clipboardReadWrite'],
-      ['payment-handler', 'paymentHandler'],
-      ['idle-detection', 'idleDetection'],
-      // chrome-specific permissions we have.
-      ['midi-sysex', 'midiSysex'],
-    ]);
     const protocolPermissions = permissions.map((permission) => {
-      const protocolPermission = webPermissionToProtocol.get(permission);
+      const protocolPermission = WEB_PERMISSION_TO_PROTOCOL_PERMISSION.get(
+        permission
+      );
       if (!protocolPermission)
         throw new Error('Unknown permission: ' + permission);
       return protocolPermission;

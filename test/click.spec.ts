@@ -132,7 +132,7 @@ describe('Page.click', function () {
       })
     ).toBe(text);
   });
-  itFailsFirefox('should click offscreen buttons', async () => {
+  it('should click offscreen buttons', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/offscreenbuttons.html');
@@ -239,7 +239,8 @@ describe('Page.click', function () {
       )
     ).toBe('clicked');
   });
-  it('should double click the button', async () => {
+  // See https://github.com/puppeteer/puppeteer/issues/7175
+  itFailsFirefox('should double click the button', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/button.html');

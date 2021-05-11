@@ -12,3 +12,4 @@ lib/
 utils/doclint/generate_types/test/test.ts
 vendor/
 web-test-runner.config.mjs
+test-ts-types/

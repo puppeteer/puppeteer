@@ -31,6 +31,24 @@ export interface Credentials {
 }
 
 /**
+ * @public
+ */
+export interface NetworkConditions {
+  // Download speed (bytes/s)
+  download: number;
+  // Upload speed (bytes/s)
+  upload: number;
+  // Latency (ms)
+  latency: number;
+}
+/**
+ * @public
+ */
+export interface InternalNetworkConditions extends NetworkConditions {
+  offline: boolean;
+}
+
+/**
  * We use symbols to prevent any external parties listening to these events.
  * They are internal to Puppeteer.
  *
@@ -38,6 +56,7 @@ export interface Credentials {
  */
 export const NetworkManagerEmittedEvents = {
   Request: Symbol('NetworkManager.Request'),
+  RequestServedFromCache: Symbol('NetworkManager.RequestServedFromCache'),
   Response: Symbol('NetworkManager.Response'),
   RequestFailed: Symbol('NetworkManager.RequestFailed'),
   RequestFinished: Symbol('NetworkManager.RequestFinished'),
@@ -50,19 +69,60 @@ export class NetworkManager extends EventEmitter {
   _client: CDPSession;
   _ignoreHTTPSErrors: boolean;
   _frameManager: FrameManager;
-  _requestIdToRequest = new Map<string, HTTPRequest>();
+
+  /*
+   * There are four possible orders of events:
+   *  A. `_onRequestWillBeSent`
+   *  B. `_onRequestWillBeSent`, `_onRequestPaused`
+   *  C. `_onRequestPaused`, `_onRequestWillBeSent`
+   *  D. `_onRequestPaused`, `_onRequestWillBeSent`, `_onRequestPaused`
+   *     (see crbug.com/1196004)
+   *
+   * For `_onRequest` we need the event from `_onRequestWillBeSent` and
+   * optionally the `interceptionId` from `_onRequestPaused`.
+   *
+   * If request interception is disabled, call `_onRequest` once per call to
+   * `_onRequestWillBeSent`.
+   * If request interception is enabled, call `_onRequest` once per call to
+   * `_onRequestPaused` (once per `interceptionId`).
+   *
+   * Events are stored to allow for subsequent events to call `_onRequest`.
+   *
+   * Note that (chains of) redirect requests have the same `requestId` (!) as
+   * the original request. We have to anticipate series of events like these:
+   *  A. `_onRequestWillBeSent`,
+   *     `_onRequestWillBeSent`, ...
+   *  B. `_onRequestWillBeSent`, `_onRequestPaused`,
+   *     `_onRequestWillBeSent`, `_onRequestPaused`, ...
+   *  C. `_onRequestWillBeSent`, `_onRequestPaused`,
+   *     `_onRequestPaused`, `_onRequestWillBeSent`, ...
+   *  D. `_onRequestPaused`, `_onRequestWillBeSent`,
+   *     `_onRequestPaused`, `_onRequestWillBeSent`, `_onRequestPaused`, ...
+   *     (see crbug.com/1196004)
+   */
   _requestIdToRequestWillBeSentEvent = new Map<
     string,
     Protocol.Network.RequestWillBeSentEvent
   >();
+  _requestIdToRequestPausedEvent = new Map<
+    string,
+    Protocol.Fetch.RequestPausedEvent
+  >();
+  _requestIdToRequest = new Map<string, HTTPRequest>();
+
   _extraHTTPHeaders: Record<string, string> = {};
-  _offline = false;
   _credentials?: Credentials = null;
   _attemptedAuthentications = new Set<string>();
   _userRequestInterceptionEnabled = false;
+  _userRequestInterceptionCacheSafe = false;
   _protocolRequestInterceptionEnabled = false;
   _userCacheDisabled = false;
-  _requestIdToInterceptionId = new Map<string, string>();
+  _emulatedNetworkConditions: InternalNetworkConditions = {
+    offline: false,
+    upload: -1,
+    download: -1,
+    latency: 0,
+  };
 
   constructor(
     client: CDPSession,
@@ -130,14 +190,32 @@ export class NetworkManager extends EventEmitter {
   }
 
   async setOfflineMode(value: boolean): Promise<void> {
-    if (this._offline === value) return;
-    this._offline = value;
+    this._emulatedNetworkConditions.offline = value;
+    await this._updateNetworkConditions();
+  }
+
+  async emulateNetworkConditions(
+    networkConditions: NetworkConditions | null
+  ): Promise<void> {
+    this._emulatedNetworkConditions.upload = networkConditions
+      ? networkConditions.upload
+      : -1;
+    this._emulatedNetworkConditions.download = networkConditions
+      ? networkConditions.download
+      : -1;
+    this._emulatedNetworkConditions.latency = networkConditions
+      ? networkConditions.latency
+      : 0;
+
+    await this._updateNetworkConditions();
+  }
+
+  async _updateNetworkConditions(): Promise<void> {
     await this._client.send('Network.emulateNetworkConditions', {
-      offline: this._offline,
-      // values of 0 remove any active throttling. crbug.com/456324#c9
-      latency: 0,
-      downloadThroughput: -1,
-      uploadThroughput: -1,
+      offline: this._emulatedNetworkConditions.offline,
+      latency: this._emulatedNetworkConditions.latency,
+      uploadThroughput: this._emulatedNetworkConditions.upload,
+      downloadThroughput: this._emulatedNetworkConditions.download,
     });
   }
 
@@ -150,8 +228,12 @@ export class NetworkManager extends EventEmitter {
     await this._updateProtocolCacheDisabled();
   }
 
-  async setRequestInterception(value: boolean): Promise<void> {
+  async setRequestInterception(
+    value: boolean,
+    cacheSafe = false
+  ): Promise<void> {
     this._userRequestInterceptionEnabled = value;
+    this._userRequestInterceptionCacheSafe = cacheSafe;
     await this._updateProtocolRequestInterception();
   }
 
@@ -175,27 +257,39 @@ export class NetworkManager extends EventEmitter {
     }
   }
 
+  _cacheDisabled(): boolean {
+    return (
+      this._userCacheDisabled ||
+      (this._userRequestInterceptionEnabled &&
+        !this._userRequestInterceptionCacheSafe)
+    );
+  }
+
   async _updateProtocolCacheDisabled(): Promise<void> {
     await this._client.send('Network.setCacheDisabled', {
-      cacheDisabled:
-        this._userCacheDisabled || this._protocolRequestInterceptionEnabled,
+      cacheDisabled: this._cacheDisabled(),
     });
   }
 
   _onRequestWillBeSent(event: Protocol.Network.RequestWillBeSentEvent): void {
     // Request interception doesn't happen for data URLs with Network Service.
     if (
-      this._protocolRequestInterceptionEnabled &&
+      this._userRequestInterceptionEnabled &&
       !event.request.url.startsWith('data:')
     ) {
       const requestId = event.requestId;
-      const interceptionId = this._requestIdToInterceptionId.get(requestId);
-      if (interceptionId) {
+      const requestPausedEvent = this._requestIdToRequestPausedEvent.get(
+        requestId
+      );
+
+      this._requestIdToRequestWillBeSentEvent.set(requestId, event);
+
+      if (requestPausedEvent) {
+        const interceptionId = requestPausedEvent.requestId;
         this._onRequest(event, interceptionId);
-        this._requestIdToInterceptionId.delete(requestId);
-      } else {
-        this._requestIdToRequestWillBeSentEvent.set(event.requestId, event);
+        this._requestIdToRequestPausedEvent.delete(requestId);
       }
+
       return;
     }
     this._onRequest(event, null);
@@ -239,14 +333,30 @@ export class NetworkManager extends EventEmitter {
 
     const requestId = event.networkId;
     const interceptionId = event.requestId;
-    if (requestId && this._requestIdToRequestWillBeSentEvent.has(requestId)) {
-      const requestWillBeSentEvent = this._requestIdToRequestWillBeSentEvent.get(
-        requestId
-      );
+
+    if (!requestId) {
+      return;
+    }
+
+    let requestWillBeSentEvent = this._requestIdToRequestWillBeSentEvent.get(
+      requestId
+    );
+
+    // redirect requests have the same `requestId`,
+    if (
+      requestWillBeSentEvent &&
+      (requestWillBeSentEvent.request.url !== event.request.url ||
+        requestWillBeSentEvent.request.method !== event.request.method)
+    ) {
+      this._requestIdToRequestWillBeSentEvent.delete(requestId);
+      requestWillBeSentEvent = null;
+    }
+
+    if (requestWillBeSentEvent) {
       this._onRequest(requestWillBeSentEvent, interceptionId);
       this._requestIdToRequestWillBeSentEvent.delete(requestId);
     } else {
-      this._requestIdToInterceptionId.set(requestId, interceptionId);
+      this._requestIdToRequestPausedEvent.set(requestId, event);
     }
   }
 
@@ -284,6 +394,7 @@ export class NetworkManager extends EventEmitter {
   ): void {
     const request = this._requestIdToRequest.get(event.requestId);
     if (request) request._fromMemoryCache = true;
+    this.emit(NetworkManagerEmittedEvents.RequestServedFromCache, request);
   }
 
   _handleRequestRedirect(
@@ -296,8 +407,7 @@ export class NetworkManager extends EventEmitter {
     response._resolveBody(
       new Error('Response body is unavailable for redirect responses')
     );
-    this._requestIdToRequest.delete(request._requestId);
-    this._attemptedAuthentications.delete(request._interceptionId);
+    this._forgetRequest(request, false);
     this.emit(NetworkManagerEmittedEvents.Response, response);
     this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
   }
@@ -311,6 +421,19 @@ export class NetworkManager extends EventEmitter {
     this.emit(NetworkManagerEmittedEvents.Response, response);
   }
 
+  _forgetRequest(request: HTTPRequest, events: boolean): void {
+    const requestId = request._requestId;
+    const interceptionId = request._interceptionId;
+
+    this._requestIdToRequest.delete(requestId);
+    this._attemptedAuthentications.delete(interceptionId);
+
+    if (events) {
+      this._requestIdToRequestWillBeSentEvent.delete(requestId);
+      this._requestIdToRequestPausedEvent.delete(requestId);
+    }
+  }
+
   _onLoadingFinished(event: Protocol.Network.LoadingFinishedEvent): void {
     const request = this._requestIdToRequest.get(event.requestId);
     // For certain requestIds we never receive requestWillBeSent event.
@@ -320,8 +443,7 @@ export class NetworkManager extends EventEmitter {
     // Under certain conditions we never get the Network.responseReceived
     // event from protocol. @see https://crbug.com/883475
     if (request.response()) request.response()._resolveBody(null);
-    this._requestIdToRequest.delete(request._requestId);
-    this._attemptedAuthentications.delete(request._interceptionId);
+    this._forgetRequest(request, true);
     this.emit(NetworkManagerEmittedEvents.RequestFinished, request);
   }
 
@@ -333,8 +455,7 @@ export class NetworkManager extends EventEmitter {
     request._failureText = event.errorText;
     const response = request.response();
     if (response) response._resolveBody(null);
-    this._requestIdToRequest.delete(request._requestId);
-    this._attemptedAuthentications.delete(request._interceptionId);
+    this._forgetRequest(request, true);
     this.emit(NetworkManagerEmittedEvents.RequestFailed, request);
   }
 }

@@ -32,7 +32,9 @@ import {
   UnwrapPromiseLike,
 } from './EvalTypes.js';
 import { isNode } from '../environment.js';
-
+/**
+ * @public
+ */
 export interface BoxModel {
   content: Array<{ x: number; y: number }>;
   padding: Array<{ x: number; y: number }>;
@@ -243,7 +245,7 @@ export class JSHandle {
    * on the object in page and consequent {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse | JSON.parse} in puppeteer.
    * **NOTE** The method throws if the referenced object is not stringifiable.
    */
-  async jsonValue(): Promise<Record<string, unknown>> {
+  async jsonValue<T = unknown>(): Promise<T> {
     if (this._remoteObject.objectId) {
       const response = await this._client.send('Runtime.callFunctionOn', {
         functionDeclaration: 'function() { return this; }',
@@ -251,9 +253,9 @@ export class JSHandle {
         returnByValue: true,
         awaitPromise: true,
       });
-      return helper.valueFromRemoteObject(response.result);
+      return helper.valueFromRemoteObject(response.result) as T;
     }
-    return helper.valueFromRemoteObject(this._remoteObject);
+    return helper.valueFromRemoteObject(this._remoteObject) as T;
   }
 
   /**
@@ -771,7 +773,9 @@ export class ElementHandle<
    * Runs `element.querySelector` within the page. If no element matches the selector,
    * the return value resolves to `null`.
    */
-  async $(selector: string): Promise<ElementHandle | null> {
+  async $<T extends Element = Element>(
+    selector: string
+  ): Promise<ElementHandle<T> | null> {
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
       selector
     );
@@ -782,7 +786,9 @@ export class ElementHandle<
    * Runs `element.querySelectorAll` within the page. If no elements match the selector,
    * the return value resolves to `[]`.
    */
-  async $$(selector: string): Promise<ElementHandle[]> {
+  async $$<T extends Element = Element>(
+    selector: string
+  ): Promise<Array<ElementHandle<T>>> {
     const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
       selector
     );
