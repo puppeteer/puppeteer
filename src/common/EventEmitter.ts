@@ -98,7 +98,7 @@ export class EventEmitter implements CommonEventEmitter {
    * @param eventData - any data you'd like to emit with the event
    * @returns `true` if there are any listeners, `false` if there are not.
    */
-  emit(event: EventType, eventData?: any): boolean {
+  emit(event: EventType, eventData?: unknown): boolean {
     this.emitter.emit(event, eventData);
     return this.eventListenersCount(event) > 0;
   }
