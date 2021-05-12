@@ -276,7 +276,7 @@ export class CDPSession extends EventEmitter {
     const id = this._connection._rawSend({
       sessionId: this._sessionId,
       method,
-      params
+      params,
     });
 
     return new Promise((resolve, reject) => {
