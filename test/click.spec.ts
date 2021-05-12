@@ -74,10 +74,9 @@ describe('Page.click', function () {
     const { page } = getTestState();
 
     const newPage = await page.browser().newPage();
-    await Promise.all([
-      newPage.close(),
-      newPage.mouse.click(1, 2),
-    ]).catch(() => {});
+    await Promise.all([newPage.close(), newPage.mouse.click(1, 2)]).catch(
+      () => {}
+    );
   });
   it('should click the button after navigation ', async () => {
     const { page, server } = getTestState();

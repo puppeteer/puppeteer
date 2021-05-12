@@ -776,9 +776,8 @@ export class ElementHandle<
   async $<T extends Element = Element>(
     selector: string
   ): Promise<ElementHandle<T> | null> {
-    const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector
-    );
+    const { updatedSelector, queryHandler } =
+      getQueryHandlerAndSelector(selector);
     return queryHandler.queryOne(this, updatedSelector);
   }
 
@@ -789,9 +788,8 @@ export class ElementHandle<
   async $$<T extends Element = Element>(
     selector: string
   ): Promise<Array<ElementHandle<T>>> {
-    const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector
-    );
+    const { updatedSelector, queryHandler } =
+      getQueryHandlerAndSelector(selector);
     return queryHandler.queryAll(this, updatedSelector);
   }
 
@@ -873,9 +871,8 @@ export class ElementHandle<
     ) => ReturnType | Promise<ReturnType>,
     ...args: SerializableOrJSHandle[]
   ): Promise<WrapElementHandle<ReturnType>> {
-    const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector
-    );
+    const { updatedSelector, queryHandler } =
+      getQueryHandlerAndSelector(selector);
     const arrayHandle = await queryHandler.queryAllArray(this, updatedSelector);
     const result = await arrayHandle.evaluate<
       (

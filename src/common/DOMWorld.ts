@@ -484,9 +484,8 @@ export class DOMWorld {
     selector: string,
     options: WaitForSelectorOptions
   ): Promise<ElementHandle | null> {
-    const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector
-    );
+    const { updatedSelector, queryHandler } =
+      getQueryHandlerAndSelector(selector);
     return queryHandler.waitFor(this, updatedSelector, options);
   }
 
@@ -687,10 +686,8 @@ export class DOMWorld {
     options: { polling?: string | number; timeout?: number } = {},
     ...args: SerializableOrJSHandle[]
   ): Promise<JSHandle> {
-    const {
-      polling = 'raf',
-      timeout = this._timeoutSettings.timeout(),
-    } = options;
+    const { polling = 'raf', timeout = this._timeoutSettings.timeout() } =
+      options;
     const waitTaskOptions: WaitTaskOptions = {
       domWorld: this,
       predicateBody: pageFunction,
