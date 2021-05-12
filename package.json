@@ -72,7 +72,7 @@
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-conventional": "^11.0.0",
     "@microsoft/api-documenter": "^7.12.7",
-    "@microsoft/api-extractor": "^7.13.1",
+    "@microsoft/api-extractor": "7.15.1",
     "@types/debug": "0.0.31",
     "@types/mime": "^2.0.0",
     "@types/mocha": "^7.0.2",
@@ -82,8 +82,8 @@
     "@types/sinon": "^9.0.4",
     "@types/tar-fs": "^1.16.2",
     "@types/ws": "^7.2.4",
-    "@typescript-eslint/eslint-plugin": "^4.4.0",
-    "@typescript-eslint/parser": "^4.4.0",
+    "@typescript-eslint/eslint-plugin": "4.23.0",
+    "@typescript-eslint/parser": "4.23.0",
     "@web/test-runner": "^0.12.15",
     "commonmark": "^0.28.1",
     "cross-env": "^7.0.2",
@@ -109,7 +109,7 @@
     "standard-version": "^9.0.0",
     "text-diff": "^1.0.1",
     "ts-node": "^9.0.0",
-    "typescript": "^4.1.5"
+    "typescript": "4.2.4"
   },
   "husky": {
     "hooks": {

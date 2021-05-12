@@ -76,7 +76,7 @@ export class FileChooser {
   /**
    * Closes the file chooser without selecting any files.
    */
-  cancel() {
+  cancel(): void {
     assert(
       !this._handled,
       'Cannot cancel FileChooser which is already handled!'
