@@ -21,7 +21,7 @@ export interface CommonEventEmitter {
    */
   addListener(event: EventType, handler: Handler): CommonEventEmitter;
   removeListener(event: EventType, handler: Handler): CommonEventEmitter;
-  emit(event: EventType, eventData?: any): boolean;
+  emit(event: EventType, eventData?: unknown): boolean;
   once(event: EventType, handler: Handler): CommonEventEmitter;
   listenerCount(event: string): number;
 

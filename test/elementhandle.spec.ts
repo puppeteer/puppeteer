@@ -320,7 +320,8 @@ describe('ElementHandle specs', function () {
           )
         );
       }
-      const handlerNamesAfterUnregistering = puppeteer.customQueryHandlerNames();
+      const handlerNamesAfterUnregistering =
+        puppeteer.customQueryHandlerNames();
       expect(handlerNamesAfterUnregistering.includes('getById')).toBeFalsy();
     });
     it('should throw with invalid query names', () => {

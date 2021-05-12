@@ -474,11 +474,8 @@ describe('Cookie specs', () => {
     itFailsFirefox(
       'should set secure same-site cookies from a frame',
       async () => {
-        const {
-          httpsServer,
-          puppeteer,
-          defaultBrowserOptions,
-        } = getTestState();
+        const { httpsServer, puppeteer, defaultBrowserOptions } =
+          getTestState();
 
         const browser = await puppeteer.launch({
           ...defaultBrowserOptions,

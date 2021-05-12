@@ -31,9 +31,10 @@ export class EmulationManager {
     const width = viewport.width;
     const height = viewport.height;
     const deviceScaleFactor = viewport.deviceScaleFactor || 1;
-    const screenOrientation: Protocol.Emulation.ScreenOrientation = viewport.isLandscape
-      ? { angle: 90, type: 'landscapePrimary' }
-      : { angle: 0, type: 'portraitPrimary' };
+    const screenOrientation: Protocol.Emulation.ScreenOrientation =
+      viewport.isLandscape
+        ? { angle: 90, type: 'landscapePrimary' }
+        : { angle: 0, type: 'portraitPrimary' };
     const hasTouch = viewport.hasTouch || false;
 
     await Promise.all([

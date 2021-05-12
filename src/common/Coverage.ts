@@ -192,10 +192,8 @@ export class JSCoverage {
     } = {}
   ): Promise<void> {
     assert(!this._enabled, 'JSCoverage is already enabled');
-    const {
-      resetOnNavigation = true,
-      reportAnonymousScripts = false,
-    } = options;
+    const { resetOnNavigation = true, reportAnonymousScripts = false } =
+      options;
     this._resetOnNavigation = resetOnNavigation;
     this._reportAnonymousScripts = reportAnonymousScripts;
     this._enabled = true;

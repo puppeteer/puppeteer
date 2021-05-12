@@ -587,9 +587,10 @@ class FirefoxLauncher implements ProductLauncher {
   }
 }
 
-function resolveExecutablePath(
-  launcher: ChromeLauncher | FirefoxLauncher
-): { executablePath: string; missingText?: string } {
+function resolveExecutablePath(launcher: ChromeLauncher | FirefoxLauncher): {
+  executablePath: string;
+  missingText?: string;
+} {
   let downloadPath: string;
   // puppeteer-core doesn't take into account PUPPETEER_* env variables.
   if (!launcher._isPuppeteerCore) {
