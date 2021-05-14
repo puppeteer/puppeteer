@@ -114,7 +114,8 @@
   },
   "husky": {
     "hooks": {
-      "commit-msg": "commitlint --env HUSKY_GIT_PARAMS"
+      "commit-msg": "commitlint --env HUSKY_GIT_PARAMS",
+      "pre-push": "npm run ensure-pinned-deps"
     }
   }
 }
