@@ -321,6 +321,50 @@ Run the container by passing `node -e "<yourscript.js content as a string>"` as 
 There's a full example at https://github.com/ebidel/try-puppeteer that shows
 how to run this Dockerfile from a webserver running on App Engine Flex (Node).
 
+### Running Firefox in Docker
+
+Adapted for the Chromium equivalent. Only tested with example.js doing a screen capture of example.com.
+
+Note that Firefox headless does not seem tu support WebGL. 
+
+```Dockerfile
+FROM node:12-slim
+
+# Install latest Firefox Nightly and fonts to support major charsets (Chinese, Japanese, Arabic, Hebrew, Thai and a few others)
+# Note: this installs the necessary libs to make the bundled version of Chromium that Puppeteer
+# installs, work.
+RUN apt-get update \
+    && apt-get install -y wget gnupg \
+    && apt-get update \
+    && apt-get install -y fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 \
+    && apt-get install -y libgtk-3-0 libdbus-glib-1-2 libxt6 \
+      --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
+# If running Docker >= 1.13.0 use docker run's --init arg to reap zombie processes, otherwise
+# uncomment the following lines to have `dumb-init` as PID 1
+# ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_x86_64 /usr/local/bin/dumb-init
+# RUN chmod +x /usr/local/bin/dumb-init
+# ENTRYPOINT ["dumb-init", "--"]
+
+ENV PUPPETEER_PRODUCT firefox
+
+# Install puppeteer so it's available in the container.
+RUN npm i puppeteer\
+    # Add user to be coherent with existing Chromium equivalent
+    # same layer as npm install to keep re-chowned files from using up several hundred MBs more space
+    && groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
+    && mkdir -p /home/pptruser/Downloads \
+    && chown -R pptruser:pptruser /home/pptruser \
+    && chown -R pptruser:pptruser /node_modules
+
+# Run everything after as non-privileged user.
+USER pptruser
+
+#CMD ["google-chrome-stable"]
+#run in interactive or add your own command
+```
+
 ### Running on Alpine
 
 The [newest Chromium package](https://pkgs.alpinelinux.org/package/edge/community/x86_64/chromium) supported on Alpine is 89, which corresponds to [Puppeteer v6.0.0](https://github.com/puppeteer/puppeteer/releases/tag/v6.0.0).
