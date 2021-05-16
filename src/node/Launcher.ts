@@ -370,7 +370,7 @@ class FirefoxLauncher implements ProductLauncher {
 
   async _createProfile(extraPrefs: { [x: string]: unknown }): Promise<string> {
     const profilePath = await mkdtempAsync(
-      path.join(os.tmpdir(), 'puppeteer_dev_firefox_profile-')
+      path.join(tmpdir(), 'puppeteer_dev_firefox_profile-')
     );
     const prefsJS = [];
     const userJS = [];
