@@ -18,6 +18,7 @@ import { assert } from './assert.js';
 import { CDPSession } from './Connection.js';
 import { keyDefinitions, KeyDefinition, KeyInput } from './USKeyboardLayout.js';
 import { Protocol } from 'devtools-protocol';
+import { ElementHandle, Point } from './JSHandle.js';
 
 type KeyDescription = Required<
   Pick<KeyDefinition, 'keyCode' | 'key' | 'text' | 'code' | 'location'>
@@ -298,14 +299,6 @@ export interface MouseWheelOptions {
 }
 
 /**
- * @public
- */
-export interface Point {
-  x: number;
-  y: number;
-}
-
-/**
  * The Mouse class operates in main-frame CSS pixels
  * relative to the top-left corner of the viewport.
  * @remarks
@@ -519,7 +512,6 @@ export class Mouse {
    * ```
    */
   async dragEnter(target: Point, data: Protocol.Input.DragData): Promise<void> {
-    await this.move(target.x, target.y);
     await this._client.send('Input.dispatchDragEvent', {
       type: 'dragEnter',
       x: target.x,
@@ -535,7 +527,6 @@ export class Mouse {
    * ```
    */
   async dragOver(target: Point, data: Protocol.Input.DragData): Promise<void> {
-    await this.move(target.x, target.y);
     await this._client.send('Input.dispatchDragEvent', {
       type: 'dragOver',
       x: target.x,
@@ -556,16 +547,8 @@ export class Mouse {
    */
   async drop(
     target: Point,
-    data: Protocol.Input.DragData,
-    options: { delay?: number } = {}
+    data: Protocol.Input.DragData
   ): Promise<void> {
-    const { delay = null } = options;
-    await this.move(target.x, target.y);
-    await this.dragEnter(target, data);
-    await this.dragOver(target, data);
-    if (delay) {
-      await new Promise((resolve) => setTimeout(resolve, delay));
-    }
     await this._client.send('Input.dispatchDragEvent', {
       type: 'drop',
       x: target.x,
@@ -573,6 +556,30 @@ export class Mouse {
       modifiers: this._keyboard._modifiers,
       data,
     });
+  }
+
+  /**
+   * Performs a drag, dragenter, dragover, and drop in sequence.
+   * @param target - point to drag from
+   * @param target - point to drop on
+   * @param options - An object of options. Accepts delay which,
+   * if specified, is the time to wait between `dragover` and `drop` in milliseconds.
+   * Defaults to 0.
+   * ```
+   */
+  async dragAndDrop(
+    start: Point,
+    target: Point,
+    options: { delay?: number } = {}
+  ): Promise<void> {
+    const { delay = null } = options;
+    const data = await this.drag(start, target);
+    await this.dragEnter(target, data);
+    await this.dragOver(target, data);
+    if (delay) {
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+    await this.drop(target, data);
     await this.up();
   }
 }

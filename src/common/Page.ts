@@ -810,7 +810,7 @@ export class Page extends EventEmitter {
    * @remarks
    * Activating drag interception enables the {@link Input.drag},
    * methods  This provides the capability to capture drag events emitted
-   * on the page, which can then be used to simulate drag-and-drop behaviors.
+   * on the page, which can then be used to simulate drag-and-drop.
    */
   async setDragInterception(enabled: boolean): Promise<void> {
     this._userDragInterceptionEnabled = enabled;

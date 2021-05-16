@@ -99,10 +99,7 @@ describe('Input.drag', function () {
     await page.setDragInterception(true);
     const draggable = await page.$('#drag');
     const dropzone = await page.$('#drop');
-    const data = await draggable.drag({ x: 1, y: 1 });
-    await dropzone.dragEnter(data);
-    await dropzone.dragOver(data);
-    await dropzone.drop(data);
+    await draggable.dragAndDrop(dropzone);
 
     expect(await page.evaluate(() => globalThis.didDragStart)).toBe(true);
     expect(await page.evaluate(() => globalThis.didDragEnter)).toBe(true);

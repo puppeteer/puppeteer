@@ -32,7 +32,6 @@ import {
   UnwrapPromiseLike,
 } from './EvalTypes.js';
 import { isNode } from '../environment.js';
-import { Point } from './Input.js';
 /**
  * @public
  */
@@ -412,7 +411,7 @@ export class ElementHandle<
     if (error) throw new Error(error);
   }
 
-  private async _clickablePoint(): Promise<{ x: number; y: number }> {
+  async clickablePoint(): Promise<Point> {
     const [result, layoutMetrics] = await Promise.all([
       this._client
         .send('DOM.getContentQuads', {
@@ -483,7 +482,7 @@ export class ElementHandle<
    */
   async hover(): Promise<void> {
     await this._scrollIntoViewIfNeeded();
-    const { x, y } = await this._clickablePoint();
+    const { x, y } = await this.clickablePoint();
     await this._page.mouse.move(x, y);
   }
 
@@ -494,7 +493,7 @@ export class ElementHandle<
    */
   async click(options: ClickOptions = {}): Promise<void> {
     await this._scrollIntoViewIfNeeded();
-    const { x, y } = await this._clickablePoint();
+    const { x, y } = await this.clickablePoint();
     await this._page.mouse.click(x, y, options);
   }
 
@@ -507,7 +506,7 @@ export class ElementHandle<
       'Drag Interception is not enabled!'
     );
     await this._scrollIntoViewIfNeeded();
-    const start = await this._clickablePoint();
+    const start = await this.clickablePoint();
     return await this._page.mouse.drag(start, target);
   }
 
@@ -518,7 +517,7 @@ export class ElementHandle<
     data: Protocol.Input.DragData = { items: [], dragOperationsMask: 1 }
   ): Promise<void> {
     await this._scrollIntoViewIfNeeded();
-    const target = await this._clickablePoint();
+    const target = await this.clickablePoint();
     await this._page.mouse.dragEnter(target, data);
   }
 
@@ -529,20 +528,33 @@ export class ElementHandle<
     data: Protocol.Input.DragData = { items: [], dragOperationsMask: 1 }
   ): Promise<void> {
     await this._scrollIntoViewIfNeeded();
-    const target = await this._clickablePoint();
+    const target = await this.clickablePoint();
     await this._page.mouse.dragOver(target, data);
+  }
+
+  /**
+   * This method triggers a drop on the element.
+   */
+  async drop(
+    data: Protocol.Input.DragData = { items: [], dragOperationsMask: 1 }
+  ): Promise<void> {
+    await this._scrollIntoViewIfNeeded();
+    const destination = await this.clickablePoint();
+    await this._page.mouse.drop(destination, data);
   }
 
   /**
    * This method triggers a dragenter, dragover, and drop on the element.
    */
-  async drop(
-    data: Protocol.Input.DragData = { items: [], dragOperationsMask: 1 },
+  async dragAndDrop(
+    target: ElementHandle,
     options?: { delay: number }
   ): Promise<void> {
     await this._scrollIntoViewIfNeeded();
-    const destination = await this._clickablePoint();
-    await this._page.mouse.drop(destination, data, options);
+    const destination = await this.clickablePoint();
+    const startPoint = await this.clickablePoint();
+    const targetPoint = await target.clickablePoint();
+    await this._page.mouse.dragAndDrop(startPoint, targetPoint, options);
   }
 
   /**
@@ -669,7 +681,7 @@ export class ElementHandle<
    */
   async tap(): Promise<void> {
     await this._scrollIntoViewIfNeeded();
-    const { x, y } = await this._clickablePoint();
+    const { x, y } = await this.clickablePoint();
     await this._page.touchscreen.tap(x, y);
   }
 
@@ -1028,6 +1040,14 @@ export interface PressOptions {
    * If specified, generates an input event with this text.
    */
   text?: string;
+}
+
+/**
+ * @public
+ */
+export interface Point {
+  x: number;
+  y: number;
 }
 
 function computeQuadArea(quad: Array<{ x: number; y: number }>): number {
