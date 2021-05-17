@@ -751,7 +751,6 @@ describe('Page', function () {
       await page.goto(server.EMPTY_PAGE);
       const [response] = await Promise.all([
         page.waitForResponse(async (response) => {
-          console.log(response.url());
           return response.url() === server.PREFIX + '/digits/2.png';
         }),
         page.evaluate(() => {
