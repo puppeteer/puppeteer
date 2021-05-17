@@ -3,7 +3,7 @@ name: run-checks
 on:
   push:
     branches:
-      - main
+      - mains
   pull_request:
     branches:
       - main
