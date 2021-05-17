@@ -73,13 +73,13 @@ class ChromeLauncher implements ProductLauncher {
       handleSIGHUP = true,
       ignoreHTTPSErrors = false,
       defaultViewport = { width: 800, height: 600 },
-      tmpdir = os.tmpdir,
+      tmpDir = os.tmpdir,
       slowMo = 0,
       timeout = 30000,
       waitForInitialPage = true,
     } = options;
 
-    const profilePath = path.join(tmpdir(), 'puppeteer_dev_chrome_profile-');
+    const profilePath = path.join(tmpDir(), 'puppeteer_dev_chrome_profile-');
     const chromeArguments = [];
     if (!ignoreDefaultArgs) chromeArguments.push(...this.defaultArgs(options));
     else if (Array.isArray(ignoreDefaultArgs))
@@ -370,7 +370,7 @@ class FirefoxLauncher implements ProductLauncher {
 
   async _createProfile(extraPrefs: { [x: string]: unknown }): Promise<string> {
     const profilePath = await mkdtempAsync(
-      path.join(tmpdir(), 'puppeteer_dev_firefox_profile-')
+      path.join(tmpDir(), 'puppeteer_dev_firefox_profile-')
     );
     const prefsJS = [];
     const userJS = [];
