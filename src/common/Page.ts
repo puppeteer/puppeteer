@@ -1827,11 +1827,15 @@ export class Page extends EventEmitter {
       clip = { x: 0, y: 0, width, height, scale: 1 };
 
       if (!captureBeyondViewport) {
-        const { isMobile = false, deviceScaleFactor = 1, isLandscape = false } =
-          this._viewport || {};
-        const screenOrientation: Protocol.Emulation.ScreenOrientation = isLandscape
-          ? { angle: 90, type: 'landscapePrimary' }
-          : { angle: 0, type: 'portraitPrimary' };
+        const {
+          isMobile = false,
+          deviceScaleFactor = 1,
+          isLandscape = false,
+        } = this._viewport || {};
+        const screenOrientation: Protocol.Emulation.ScreenOrientation =
+          isLandscape
+            ? { angle: 90, type: 'landscapePrimary' }
+            : { angle: 0, type: 'portraitPrimary' };
         await this._client.send('Emulation.setDeviceMetricsOverride', {
           mobile: isMobile,
           width,
