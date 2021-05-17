@@ -434,7 +434,7 @@ export class Browser extends EventEmitter {
     });
     const target = await this._targets.get(targetId);
     assert(
-      target && await target._initializedPromise, 
+      target && (await target._initializedPromise),
       'Failed to create target for page'
     );
     const page = await target.page();
