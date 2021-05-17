@@ -42,6 +42,7 @@ jobs:
 
       - name: Run code checks
         run: |
+          npm run ensure-pinned-deps
           npm run lint
           npm run generate-docs
           npm run ensure-correct-devtools-protocol-revision

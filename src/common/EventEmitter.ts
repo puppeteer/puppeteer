@@ -21,7 +21,7 @@ export interface CommonEventEmitter {
    */
   addListener(event: EventType, handler: Handler): CommonEventEmitter;
   removeListener(event: EventType, handler: Handler): CommonEventEmitter;
-  emit(event: EventType, eventData?: any): boolean;
+  emit(event: EventType, eventData?: unknown): boolean;
   once(event: EventType, handler: Handler): CommonEventEmitter;
   listenerCount(event: string): number;
 
@@ -98,7 +98,7 @@ export class EventEmitter implements CommonEventEmitter {
    * @param eventData - any data you'd like to emit with the event
    * @returns `true` if there are any listeners, `false` if there are not.
    */
-  emit(event: EventType, eventData?: any): boolean {
+  emit(event: EventType, eventData?: unknown): boolean {
     this.emitter.emit(event, eventData);
     return this.eventListenersCount(event) > 0;
   }
