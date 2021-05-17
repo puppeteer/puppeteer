@@ -276,11 +276,7 @@ export class CDPSession extends EventEmitter {
     const id = this._connection._rawSend({
       sessionId: this._sessionId,
       method,
-      /* TODO(jacktfranklin@): once this Firefox bug is solved
-       * we no longer need the `|| {}` check
-       * https://bugzilla.mozilla.org/show_bug.cgi?id=1631570
-       */
-      params: params || {},
+      params,
     });
 
     return new Promise((resolve, reject) => {

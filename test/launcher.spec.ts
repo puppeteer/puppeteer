@@ -531,11 +531,8 @@ describe('Launcher specs', function () {
         ]);
       });
       it('should support ignoreHTTPSErrors option', async () => {
-        const {
-          httpsServer,
-          puppeteer,
-          defaultBrowserOptions,
-        } = getTestState();
+        const { httpsServer, puppeteer, defaultBrowserOptions } =
+          getTestState();
 
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const browserWSEndpoint = originalBrowser.wsEndpoint();

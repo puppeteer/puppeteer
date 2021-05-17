@@ -278,9 +278,8 @@ export class NetworkManager extends EventEmitter {
       !event.request.url.startsWith('data:')
     ) {
       const requestId = event.requestId;
-      const requestPausedEvent = this._requestIdToRequestPausedEvent.get(
-        requestId
-      );
+      const requestPausedEvent =
+        this._requestIdToRequestPausedEvent.get(requestId);
 
       this._requestIdToRequestWillBeSentEvent.set(requestId, event);
 
@@ -338,9 +337,8 @@ export class NetworkManager extends EventEmitter {
       return;
     }
 
-    let requestWillBeSentEvent = this._requestIdToRequestWillBeSentEvent.get(
-      requestId
-    );
+    let requestWillBeSentEvent =
+      this._requestIdToRequestWillBeSentEvent.get(requestId);
 
     // redirect requests have the same `requestId`,
     if (

@@ -215,9 +215,10 @@ export function clearCustomQueryHandlers(): void {
 /**
  * @internal
  */
-export function getQueryHandlerAndSelector(
-  selector: string
-): { updatedSelector: string; queryHandler: InternalQueryHandler } {
+export function getQueryHandlerAndSelector(selector: string): {
+  updatedSelector: string;
+  queryHandler: InternalQueryHandler;
+} {
   const hasCustomQueryHandler = /^[a-zA-Z]+\//.test(selector);
   if (!hasCustomQueryHandler)
     return { updatedSelector: selector, queryHandler: _defaultHandler };
