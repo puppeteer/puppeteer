@@ -29,7 +29,10 @@ import {
   BrowserLaunchArgumentOptions,
   PuppeteerNodeLaunchOptions,
 } from './LaunchOptions.js';
+
 import { Product } from '../common/Product.js';
+
+const tmpDir = () => process.env.PUPPETEER_TMP_DIR || os.tmpdir()
 
 /**
  * Describes a launcher - a class that is able to create and launch a browser instance.
@@ -73,7 +76,6 @@ class ChromeLauncher implements ProductLauncher {
       handleSIGHUP = true,
       ignoreHTTPSErrors = false,
       defaultViewport = { width: 800, height: 600 },
-      tmpDir = os.tmpdir,
       slowMo = 0,
       timeout = 30000,
       waitForInitialPage = true,
