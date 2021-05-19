@@ -18,7 +18,7 @@ import { assert } from './assert.js';
 import { CDPSession } from './Connection.js';
 import { keyDefinitions, KeyDefinition, KeyInput } from './USKeyboardLayout.js';
 import { Protocol } from 'devtools-protocol';
-import { ElementHandle, Point } from './JSHandle.js';
+import { Point } from './JSHandle.js';
 
 type KeyDescription = Required<
   Pick<KeyDefinition, 'keyCode' | 'key' | 'text' | 'code' | 'location'>
@@ -545,10 +545,7 @@ export class Mouse {
    * Defaults to 0.
    * ```
    */
-  async drop(
-    target: Point,
-    data: Protocol.Input.DragData
-  ): Promise<void> {
+  async drop(target: Point, data: Protocol.Input.DragData): Promise<void> {
     await this._client.send('Input.dispatchDragEvent', {
       type: 'drop',
       x: target.x,
