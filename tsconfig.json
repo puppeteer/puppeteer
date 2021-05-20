@@ -5,7 +5,8 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "noEmit": true
+    "noEmit": true,
+    "module": "esnext"
   },
   "include": ["src"]
 }
