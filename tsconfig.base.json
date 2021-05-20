@@ -5,7 +5,6 @@
     "checkJs": true,
     "target": "ES2019",
     "moduleResolution": "node",
-    "module": "ES2015",
     "declaration": true,
     "declarationMap": true,
     "resolveJsonModule": true,
