@@ -551,7 +551,6 @@ export class ElementHandle<
     options?: { delay: number }
   ): Promise<void> {
     await this._scrollIntoViewIfNeeded();
-    const destination = await this.clickablePoint();
     const startPoint = await this.clickablePoint();
     const targetPoint = await target.clickablePoint();
     await this._page.mouse.dragAndDrop(startPoint, targetPoint, options);
