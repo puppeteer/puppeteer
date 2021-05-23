@@ -21,6 +21,7 @@ import { promisify } from 'util';
 import Protocol from 'devtools-protocol';
 import {
   getTestState,
+  itChromeOnly,
   itFailsFirefox,
   itOnlyRegularInstall,
 } from './mocha-utils'; // eslint-disable-line import/extensions
@@ -430,6 +431,24 @@ describe('Launcher specs', function () {
         expect(screenshot).toBeInstanceOf(Buffer);
         await browser.close();
       });
+      itChromeOnly(
+        'should launch Chrome properly with --no-startup-window and waitForInitialPage=false',
+        async () => {
+          const { defaultBrowserOptions, puppeteer } = getTestState();
+          const options = {
+            args: ['--no-startup-window'],
+            waitForInitialPage: false,
+            // This is needed to prevent Puppeteer from adding an initial blank page.
+            // See also https://github.com/puppeteer/puppeteer/blob/ad6b736039436fcc5c0a262e5b575aa041427be3/src/node/Launcher.ts#L200
+            ignoreDefaultArgs: true,
+            ...defaultBrowserOptions,
+          };
+          const browser = await puppeteer.launch(options);
+          const pages = await browser.pages();
+          expect(pages.length).toBe(0);
+          await browser.close();
+        }
+      );
     });
 
     describe('Puppeteer.launch', function () {
@@ -512,11 +531,8 @@ describe('Launcher specs', function () {
         ]);
       });
       it('should support ignoreHTTPSErrors option', async () => {
-        const {
-          httpsServer,
-          puppeteer,
-          defaultBrowserOptions,
-        } = getTestState();
+        const { httpsServer, puppeteer, defaultBrowserOptions } =
+          getTestState();
 
         const originalBrowser = await puppeteer.launch(defaultBrowserOptions);
         const browserWSEndpoint = originalBrowser.wsEndpoint();

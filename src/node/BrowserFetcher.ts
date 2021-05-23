@@ -58,8 +58,7 @@ const browserConfig = {
     destination: '.local-chromium',
   },
   firefox: {
-    host:
-      'https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central',
+    host: 'https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central',
     destination: '.local-firefox',
   },
 } as const;

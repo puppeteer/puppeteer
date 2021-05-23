@@ -34,7 +34,7 @@ export type BrowserCloseCallback = () => Promise<void> | void;
  */
 export type TargetFilterCallback = (
   target: Protocol.Target.TargetInfo
-) => Promise<boolean> | boolean;
+) => boolean;
 
 const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
   Permission,
@@ -342,7 +342,7 @@ export class Browser extends EventEmitter {
         ? this._contexts.get(browserContextId)
         : this._defaultContext;
 
-    const shouldAttachToTarget = await this._targetFilterCallback(targetInfo);
+    const shouldAttachToTarget = this._targetFilterCallback(targetInfo);
     if (!shouldAttachToTarget) {
       return;
     }
@@ -722,9 +722,8 @@ export class BrowserContext extends EventEmitter {
     permissions: Permission[]
   ): Promise<void> {
     const protocolPermissions = permissions.map((permission) => {
-      const protocolPermission = WEB_PERMISSION_TO_PROTOCOL_PERMISSION.get(
-        permission
-      );
+      const protocolPermission =
+        WEB_PERMISSION_TO_PROTOCOL_PERMISSION.get(permission);
       if (!protocolPermission)
         throw new Error('Unknown permission: ' + permission);
       return protocolPermission;

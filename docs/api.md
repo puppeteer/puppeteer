@@ -175,7 +175,7 @@
   * [page.setGeolocation(options)](#pagesetgeolocationoptions)
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
   * [page.setOfflineMode(enabled)](#pagesetofflinemodeenabled)
-  * [page.setRequestInterception(value[, cacheSafe])](#pagesetrequestinterceptionvalue-cachesafe)
+  * [page.setRequestInterception(value)](#pagesetrequestinterceptionvalue)
   * [page.setUserAgent(userAgent)](#pagesetuseragentuseragent)
   * [page.setViewport(viewport)](#pagesetviewportviewport)
   * [page.tap(selector)](#pagetapselector)
@@ -358,6 +358,7 @@
   * [target.url()](#targeturl)
   * [target.worker()](#targetworker)
 - [class: CDPSession](#class-cdpsession)
+  * [cdpSession.connection()](#cdpsessionconnection)
   * [cdpSession.detach()](#cdpsessiondetach)
   * [cdpSession.send(method[, ...paramArgs])](#cdpsessionsendmethod-paramargs)
 - [class: Coverage](#class-coverage)
@@ -517,7 +518,7 @@ Clears all registered handlers.
   - `slowMo` <[number]> Slows down Puppeteer operations by the specified amount of milliseconds. Useful so that you can see what is going on.
   - `transport` <[ConnectionTransport]> **Experimental** Specify a custom transport object for Puppeteer to use.
   - `product` <[string]> Possible values are: `chrome`, `firefox`. Defaults to `chrome`.
-  - `targetFilter` <?[function]\([Protocol.Target.TargetInfo]\):[Promise]<[boolean]>|[boolean]> Use this function to decide if Puppeteer should connect to the given target. If a `targetFilter` is provided, Puppeteer only connects to targets for which `targetFilter` returns `true`. By default, Puppeteer connects to all available targets.
+  - `targetFilter` <?[function]\([Protocol.Target.TargetInfo]\):[boolean]> Use this function to decide if Puppeteer should connect to the given target. If a `targetFilter` is provided, Puppeteer only connects to targets for which `targetFilter` returns `true`. By default, Puppeteer connects to all available targets.
 - returns: <[Promise]<[Browser]>>
 
 This methods attaches Puppeteer to an existing browser instance.
@@ -625,7 +626,8 @@ try {
   - `devtools` <[boolean]> Whether to auto-open a DevTools panel for each tab. If this option is `true`, the `headless` option will be set `false`.
   - `pipe` <[boolean]> Connects to the browser over a pipe instead of a WebSocket. Defaults to `false`.
   - `extraPrefsFirefox` <[Object]> Additional [preferences](https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/Preference_reference) that can be passed to Firefox (see `PUPPETEER_PRODUCT`)
-  - `targetFilter` <?[function]\([Protocol.Target.TargetInfo]\):[Promise]<[boolean]>|[boolean]> Use this function to decide if Puppeteer should connect to the given target. If a `targetFilter` is provided, Puppeteer only connects to targets for which `targetFilter` returns `true`. By default, Puppeteer connects to all available targets.
+  - `targetFilter` <?[function]\([Protocol.Target.TargetInfo]\):[boolean]> Use this function to decide if Puppeteer should connect to the given target. If a `targetFilter` is provided, Puppeteer only connects to targets for which `targetFilter` returns `true`. By default, Puppeteer connects to all available targets.
+  - `waitForInitialPage` <[boolean]> Whether to wait for the initial page to be ready. Defaults to `true`.
 - returns: <[Promise]<[Browser]>> Promise which resolves to browser instance.
 
 You can use `ignoreDefaultArgs` to filter out `--mute-audio` from default arguments:
@@ -2194,6 +2196,8 @@ This setting will change the default maximum time for the following methods and 
 
 The extra HTTP headers will be sent with every request the page initiates.
 
+> **NOTE** All HTTP header names are lowercased. (HTTP headers are case-insensitive, so this shouldn’t impact your server code.)
+
 > **NOTE** page.setExtraHTTPHeaders does not guarantee the order of headers in the outgoing requests.
 
 #### page.setGeolocation(options)
@@ -2221,10 +2225,9 @@ await page.setGeolocation({ latitude: 59.95, longitude: 30.31667 });
 - `enabled` <[boolean]> When `true`, enables offline mode for the page.
 - returns: <[Promise]>
 
-#### page.setRequestInterception(value[, cacheSafe])
+#### page.setRequestInterception(value)
 
 - `value` <[boolean]> Whether to enable request interception.
-- `cacheSafe` <[boolean]> Whether to trust browser caching. If set to false, enabling request interception disables page caching. Defaults to false.
 - returns: <[Promise]>
 
 Activating request interception enables `request.abort`, `request.continue` and
@@ -4563,6 +4566,12 @@ await client.send('Animation.setPlaybackRate', {
   playbackRate: response.playbackRate / 2,
 });
 ```
+
+#### cdpSession.connection()
+
+- returns: <[Connection]>
+
+Returns the underlying connection associated with the session. Can be used to obtain other related sessions.
 
 #### cdpSession.detach()
 
