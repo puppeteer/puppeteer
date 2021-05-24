@@ -220,16 +220,14 @@ export class BrowserFetcher {
   }
 
   /**
-   * @returns Returns the current `Platform`, which is one of `mac`, `linux`,
-   * `win32` or `win64`.
+   * @returns Returns the current `Platform`.
    */
   platform(): Platform {
     return this._platform;
   }
 
   /**
-   * @returns Returns the current `Product`, which is one of `chrome` or
-   * `firefox`.
+   * @returns Returns the current `Product`.
    */
   product(): Product {
     return this._product;

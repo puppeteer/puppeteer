@@ -7,9 +7,8 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    /*  This module setting is just for VSCode so it doesn't throw error when we
-        use dynamic imports.
-     */
+    // This module setting is just for VSCode so it doesn't error when we use
+    // dynamic imports.
     "module": "esnext"
   },
   "include": ["src"]
