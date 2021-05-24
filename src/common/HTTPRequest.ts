@@ -435,7 +435,7 @@ export class HTTPRequest {
    */
   async continue(
     overrides: ContinueRequestOverrides = {},
-    priority = DEFAULT_INTERCEPT_PRIORITY
+    priority = LEGACYY_DEFAULT_INTERCEPT_PRIORITY
   ): Promise<void> {
     // Request interception is not supported for data: urls.
     if (this._url.startsWith('data:')) return;
@@ -508,7 +508,7 @@ export class HTTPRequest {
    */
   async respond(
     response: Partial<ResponseForRequest>,
-    priority = DEFAULT_INTERCEPT_PRIORITY
+    priority = LEGACYY_DEFAULT_INTERCEPT_PRIORITY
   ): Promise<void> {
     // Mocking responses for dataURL requests is not currently supported.
     if (this._url.startsWith('data:')) return;
@@ -575,7 +575,7 @@ export class HTTPRequest {
    */
   async abort(
     errorCode: ErrorCode = 'failed',
-    priority = DEFAULT_INTERCEPT_PRIORITY
+    priority = LEGACYY_DEFAULT_INTERCEPT_PRIORITY
   ): Promise<void> {
     // Request interception is not supported for data: urls.
     if (this._url.startsWith('data:')) return;
@@ -646,7 +646,8 @@ const errorReasons: Record<ErrorCode, Protocol.Network.ErrorReason> = {
 } as const;
 
 export type ActionResult = 'continue' | 'abort' | 'respond';
-export const DEFAULT_INTERCEPT_PRIORITY = 0; // Immediate
+export const DEFAULT_INTERCEPT_PRIORITY = 10;
+export const LEGACYY_DEFAULT_INTERCEPT_PRIORITY = 0; // Immediate
 
 function headersArray(
   headers: Record<string, string>

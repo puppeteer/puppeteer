@@ -124,7 +124,6 @@
   * [page.$eval(selector, pageFunction[, ...args])](#pageevalselector-pagefunction-args-1)
   * [page.$x(expression)](#pagexexpression)
   * [page.accessibility](#pageaccessibility)
-  * [page.abortErrorReason()](#pageaborterrorreason)
   * [page.addScriptTag(options)](#pageaddscripttagoptions)
   * [page.addStyleTag(options)](#pageaddstyletagoptions)
   * [page.authenticate(credentials)](#pageauthenticatecredentials)
@@ -314,8 +313,12 @@
   * [elementHandle.uploadFile(...filePaths)](#elementhandleuploadfilefilepaths)
 - [class: HTTPRequest](#class-httprequest)
   * [httpRequest.abort([errorCode])](#httprequestaborterrorcode)
+  * [httpRequest.abortErrorReason()](#httprequestaborterrorreason)
   * [httpRequest.continue([overrides])](#httprequestcontinueoverrides)
+  * [httpRequest.continueRequestOverrides()](#httprequestcontinuerequestoverrides)
+  * [httpRequest.enqueueInterceptAction()](#httprequestnequeueinterceptaction)
   * [httpRequest.failure()](#httprequestfailure)
+  * [httpRequest.finalizeInterceptions()](#httprequestfinalizeinterceptions)
   * [httpRequest.frame()](#httprequestframe)
   * [httpRequest.headers()](#httprequestheaders)
   * [httpRequest.isNavigationRequest()](#httprequestisnavigationrequest)
@@ -325,6 +328,10 @@
   * [httpRequest.resourceType()](#httprequestresourcetype)
   * [httpRequest.respond(response)](#httprequestrespondresponse)
   * [httpRequest.response()](#httprequestresponse)
+  * [httpRequest.responseForRequest()](#httprequestresponseforrequest)
+  * [httpRequest.shouldAbort()](#httprequestshouldabort)
+  * [httpRequest.shouldContinue()](#httprequestshouldcontinue)
+  * [httpRequest.shouldRespond()](#httprequestshouldrespond)
   * [httpRequest.url()](#httprequesturl)
 - [class: HTTPResponse](#class-httpresponse)
   * [httpResponse.buffer()](#httpresponsebuffer)
@@ -1356,12 +1363,6 @@ Shortcut for [page.mainFrame().$x(expression)](#framexexpression)
 #### page.accessibility
 
 - returns: <[Accessibility]>
-
-#### page.abortErrorReason()
-
-- returns: ErrorReason
-
-Returns the most recent reason for aborting the request. Available only in Cooperative Intercept Mode.
 
 #### page.addScriptTag(options)
 
@@ -3693,6 +3694,14 @@ const puppeteer = require('puppeteer');
 })();
 ```
 
+### type: ErrorReason
+
+One of:
+
+```
+'Failed' | 'Aborted' | 'TimedOut' | 'AccessDenied' | 'ConnectionClosed' | 'ConnectionReset' | 'ConnectionRefused' | 'ConnectionAborted' | 'ConnectionFailed' | 'NameNotResolved' | 'InternetDisconnected' | 'AddressUnreachable' | 'BlockedByClient' | 'BlockedByResponse'
+```
+
 ### class: ExecutionContext
 
 The class represents a context for JavaScript execution. A [Page] might have many execution contexts:
@@ -4251,6 +4260,12 @@ If request gets a 'redirect' response, the request is successfully finished with
 
 Aborts request. To use this, request interception should be enabled with `page.setRequestInterception`.
 Exception is immediately thrown if the request interception is not enabled.
+
+#### httpRequest.abortErrorReason()
+
+- returns: <[string]> of type `Protocol.Network.ErrorReason`.
+
+Returns the most recent reason for aborting the request.
 
 #### httpRequest.continue([overrides])
 
