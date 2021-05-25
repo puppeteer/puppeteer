@@ -136,8 +136,7 @@ export class JSHandle {
     this._remoteObject = remoteObject;
   }
 
-  /** 
-   * Returns the execution context the handle belongs to.
+  /** Returns the execution context the handle belongs to.
    */
   executionContext(): ExecutionContext {
     return this._context;
