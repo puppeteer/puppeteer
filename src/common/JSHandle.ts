@@ -259,7 +259,7 @@ export class JSHandle {
   }
 
   /**
-   * @returns return either `null` or the object handle itself, if the object
+   * @returns Either `null` or the object handle itself, if the object
    * handle is an instance of {@link ElementHandle}.
    */
   asElement(): ElementHandle | null {
