@@ -28,10 +28,12 @@ const EXCLUDE_PROPERTIES = new Set([
   'Page.create',
   'JSHandle.toString',
   'TimeoutError.name',
-  /* This isn't an actual property, but a TypeScript generic.
+  /* These are not actual properties, but a TypeScript generic.
    * DocLint incorrectly parses it as a property.
    */
   'ElementHandle.ElementType',
+  'ElementHandle.HandleObjectType',
+  'JSHandle.HandleObjectType',
 ]);
 
 /**
@@ -883,6 +885,20 @@ function compareDocumentations(actual, expected) {
         {
           actualName: 'Object',
           expectedName: 'unknown',
+        },
+      ],
+      [
+        'Method Page.queryObjects() prototypeHandle',
+        {
+          actualName: 'JSHandle',
+          expectedName: 'JSHandle<unknown>',
+        },
+      ],
+      [
+        'Method ExecutionContext.queryObjects() prototypeHandle',
+        {
+          actualName: 'JSHandle',
+          expectedName: 'JSHandle<unknown>',
         },
       ],
     ]);
