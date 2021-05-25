@@ -191,6 +191,9 @@ export class Target {
     return this._browserContext.browser();
   }
 
+  /**
+   * Get the browser context the target belongs to.
+   */
   browserContext(): BrowserContext {
     return this._browserContext;
   }

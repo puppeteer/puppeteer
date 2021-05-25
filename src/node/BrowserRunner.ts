@@ -62,14 +62,8 @@ export class BrowserRunner {
   }
 
   start(options: LaunchOptions): void {
-    const {
-      handleSIGINT,
-      handleSIGTERM,
-      handleSIGHUP,
-      dumpio,
-      env,
-      pipe,
-    } = options;
+    const { handleSIGINT, handleSIGTERM, handleSIGHUP, dumpio, env, pipe } =
+      options;
     let stdio: Array<'ignore' | 'pipe'> = ['pipe', 'pipe', 'pipe'];
     if (pipe) {
       if (dumpio) stdio = ['ignore', 'pipe', 'pipe', 'pipe', 'pipe'];

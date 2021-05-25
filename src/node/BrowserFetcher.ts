@@ -58,8 +58,7 @@ const browserConfig = {
     destination: '.local-chromium',
   },
   firefox: {
-    host:
-      'https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central',
+    host: 'https://archive.mozilla.org/pub/firefox/nightly/latest-mozilla-central',
     destination: '.local-firefox',
   },
 } as const;
@@ -221,14 +220,16 @@ export class BrowserFetcher {
   }
 
   /**
-   * @returns Returns the current `Platform`.
+   * @returns Returns the current `Platform`, which is one of `mac`, `linux`,
+   * `win32` or `win64`.
    */
   platform(): Platform {
     return this._platform;
   }
 
   /**
-   * @returns Returns the current `Product`.
+   * @returns Returns the current `Product`, which is one of `chrome` or
+   * `firefox`.
    */
   product(): Product {
     return this._product;

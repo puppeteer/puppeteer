@@ -125,6 +125,17 @@ describe('Coverage specs', function () {
         JSON.stringify(coverage, null, 2).replace(/:\d{4}\//g, ':<PORT>/')
       ).toBeGolden('jscoverage-involved.txt');
     });
+    // @see https://crbug.com/990945
+    xit('should not hang when there is a debugger statement', async () => {
+      const { page, server } = getTestState();
+
+      await page.coverage.startJSCoverage();
+      await page.goto(server.EMPTY_PAGE);
+      await page.evaluate(() => {
+        debugger; // eslint-disable-line no-debugger
+      });
+      await page.coverage.stopJSCoverage();
+    });
     describe('resetOnNavigation', function () {
       it('should report scripts across navigations when disabled', async () => {
         const { page, server } = getTestState();
@@ -145,17 +156,6 @@ describe('Coverage specs', function () {
         const coverage = await page.coverage.stopJSCoverage();
         expect(coverage.length).toBe(0);
       });
-    });
-    // @see https://crbug.com/990945
-    xit('should not hang when there is a debugger statement', async () => {
-      const { page, server } = getTestState();
-
-      await page.coverage.startJSCoverage();
-      await page.goto(server.EMPTY_PAGE);
-      await page.evaluate(() => {
-        debugger; // eslint-disable-line no-debugger
-      });
-      await page.coverage.stopJSCoverage();
     });
   });
 
