@@ -84,12 +84,8 @@ export class PuppeteerNode extends Puppeteer {
       productName?: Product;
     } & CommonPuppeteerSettings
   ) {
-    const {
-      projectRoot,
-      preferredRevision,
-      productName,
-      ...commonSettings
-    } = settings;
+    const { projectRoot, preferredRevision, productName, ...commonSettings } =
+      settings;
     super(commonSettings);
     this._projectRoot = projectRoot;
     this.__productName = productName;

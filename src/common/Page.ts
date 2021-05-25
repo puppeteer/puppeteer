@@ -130,7 +130,10 @@ export interface GeolocationOptions {
   accuracy?: number;
 }
 
-interface MediaFeature {
+/**
+ * @public
+ */
+export interface MediaFeature {
   name: string;
   value: string;
 }
@@ -288,7 +291,7 @@ export const enum PageEmittedEvents {
    * Emitted when a page issues a request and contains a {@link HTTPRequest}.
    *
    * @remarks
-   * The object is readonly. See {@Page.setRequestInterception} for intercepting
+   * The object is readonly. See {@link Page.setRequestInterception} for intercepting
    * and mutating requests.
    */
   Request = 'request',
@@ -297,7 +300,7 @@ export const enum PageEmittedEvents {
    *
    * @remarks
    * For certain requests, might contain undefined.
-   * @see https://crbug.com/750469
+   * {@link https://crbug.com/750469}
    */
   RequestServedFromCache = 'requestservedfromcache',
   /**
@@ -485,8 +488,16 @@ export class Page extends EventEmitter {
     this._viewport = null;
 
     client.on('Target.attachedToTarget', (event) => {
-      if (event.targetInfo.type !== 'worker') {
+      if (
+        event.targetInfo.type !== 'worker' &&
+        event.targetInfo.type !== 'iframe'
+      ) {
         // If we don't detach from service workers, they will never die.
+        // We still want to attach to workers for emitting events.
+        // We still want to attach to iframes so sessions may interact with them.
+        // We detach from all other types out of an abundance of caution.
+        // See https://source.chromium.org/chromium/chromium/src/+/master:content/browser/devtools/devtools_agent_host_impl.cc?q=f:devtools%20-f:out%20%22::kTypePage%5B%5D%22&ss=chromium
+        // for the complete list of available types.
         client
           .send('Target.detachFromTarget', {
             sessionId: event.sessionId,
@@ -507,8 +518,8 @@ export class Page extends EventEmitter {
     client.on('Target.detachedFromTarget', (event) => {
       const worker = this._workers.get(event.sessionId);
       if (!worker) return;
-      this.emit(PageEmittedEvents.WorkerDestroyed, worker);
       this._workers.delete(event.sessionId);
+      this.emit(PageEmittedEvents.WorkerDestroyed, worker);
     });
 
     this._frameManager.on(FrameManagerEmittedEvents.FrameAttached, (event) =>
@@ -755,8 +766,6 @@ export class Page extends EventEmitter {
 
   /**
    * @param value - Whether to enable request interception.
-   * @param cacheSafe - Whether to trust browser caching. If set to false,
-   * enabling request interception disables page caching. Defaults to false.
    *
    * @remarks
    * Activating request interception enables {@link HTTPRequest.abort},
@@ -786,13 +795,8 @@ export class Page extends EventEmitter {
    * })();
    * ```
    */
-  async setRequestInterception(
-    value: boolean,
-    cacheSafe = false
-  ): Promise<void> {
-    return this._frameManager
-      .networkManager()
-      .setRequestInterception(value, cacheSafe);
+  async setRequestInterception(value: boolean): Promise<void> {
+    return this._frameManager.networkManager().setRequestInterception(value);
   }
 
   /**
@@ -1816,11 +1820,15 @@ export class Page extends EventEmitter {
       clip = { x: 0, y: 0, width, height, scale: 1 };
 
       if (!captureBeyondViewport) {
-        const { isMobile = false, deviceScaleFactor = 1, isLandscape = false } =
-          this._viewport || {};
-        const screenOrientation: Protocol.Emulation.ScreenOrientation = isLandscape
-          ? { angle: 90, type: 'landscapePrimary' }
-          : { angle: 0, type: 'portraitPrimary' };
+        const {
+          isMobile = false,
+          deviceScaleFactor = 1,
+          isLandscape = false,
+        } = this._viewport || {};
+        const screenOrientation: Protocol.Emulation.ScreenOrientation =
+          isLandscape
+            ? { angle: 90, type: 'landscapePrimary' }
+            : { angle: 0, type: 'portraitPrimary' };
         await this._client.send('Emulation.setDeviceMetricsOverride', {
           mobile: isMobile,
           width,

@@ -24,7 +24,17 @@ import { Page } from './Page.js';
 import { ChildProcess } from 'child_process';
 import { Viewport } from './PuppeteerViewport.js';
 
-type BrowserCloseCallback = () => Promise<void> | void;
+/**
+ * @internal
+ */
+export type BrowserCloseCallback = () => Promise<void> | void;
+
+/**
+ * @public
+ */
+export type TargetFilterCallback = (
+  target: Protocol.Target.TargetInfo
+) => boolean;
 
 const WEB_PERMISSION_TO_PROTOCOL_PERMISSION = new Map<
   Permission,
@@ -186,7 +196,8 @@ export class Browser extends EventEmitter {
     ignoreHTTPSErrors: boolean,
     defaultViewport?: Viewport | null,
     process?: ChildProcess,
-    closeCallback?: BrowserCloseCallback
+    closeCallback?: BrowserCloseCallback,
+    targetFilterCallback?: TargetFilterCallback
   ): Promise<Browser> {
     const browser = new Browser(
       connection,
@@ -194,7 +205,8 @@ export class Browser extends EventEmitter {
       ignoreHTTPSErrors,
       defaultViewport,
       process,
-      closeCallback
+      closeCallback,
+      targetFilterCallback
     );
     await connection.send('Target.setDiscoverTargets', { discover: true });
     return browser;
@@ -204,6 +216,7 @@ export class Browser extends EventEmitter {
   private _process?: ChildProcess;
   private _connection: Connection;
   private _closeCallback: BrowserCloseCallback;
+  private _targetFilterCallback: TargetFilterCallback;
   private _defaultContext: BrowserContext;
   private _contexts: Map<string, BrowserContext>;
   /**
@@ -221,7 +234,8 @@ export class Browser extends EventEmitter {
     ignoreHTTPSErrors: boolean,
     defaultViewport?: Viewport | null,
     process?: ChildProcess,
-    closeCallback?: BrowserCloseCallback
+    closeCallback?: BrowserCloseCallback,
+    targetFilterCallback?: TargetFilterCallback
   ) {
     super();
     this._ignoreHTTPSErrors = ignoreHTTPSErrors;
@@ -229,6 +243,7 @@ export class Browser extends EventEmitter {
     this._process = process;
     this._connection = connection;
     this._closeCallback = closeCallback || function (): void {};
+    this._targetFilterCallback = targetFilterCallback || ((): boolean => true);
 
     this._defaultContext = new BrowserContext(this._connection, this, null);
     this._contexts = new Map();
@@ -327,6 +342,11 @@ export class Browser extends EventEmitter {
         ? this._contexts.get(browserContextId)
         : this._defaultContext;
 
+    const shouldAttachToTarget = this._targetFilterCallback(targetInfo);
+    if (!shouldAttachToTarget) {
+      return;
+    }
+
     const target = new Target(
       targetInfo,
       context,
@@ -397,7 +417,8 @@ export class Browser extends EventEmitter {
   }
 
   /**
-   * Creates a {@link Page} in the default browser context.
+   * Promise which resolves to a new {@link Page} object. The Page is created in
+   * a default browser context.
    */
   async newPage(): Promise<Page> {
     return this._defaultContext.newPage();
@@ -702,9 +723,8 @@ export class BrowserContext extends EventEmitter {
     permissions: Permission[]
   ): Promise<void> {
     const protocolPermissions = permissions.map((permission) => {
-      const protocolPermission = WEB_PERMISSION_TO_PROTOCOL_PERMISSION.get(
-        permission
-      );
+      const protocolPermission =
+        WEB_PERMISSION_TO_PROTOCOL_PERMISSION.get(permission);
       if (!protocolPermission)
         throw new Error('Unknown permission: ' + permission);
       return protocolPermission;
