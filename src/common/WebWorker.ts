@@ -151,7 +151,7 @@ export class WebWorker extends EventEmitter {
   /**
    * The only difference between `worker.evaluate` and `worker.evaluateHandle`
    * is that `worker.evaluateHandle` returns in-page object (JSHandle). If the
-   * function passed to the `worker.evaluateHandle` returns a [Promise], then
+   * function passed to the `worker.evaluateHandle` returns a `Promise`, then
    * `worker.evaluateHandle` would wait for the promise to resolve and return
    * its value. Shortcut for
    * `await worker.executionContext()).evaluateHandle(pageFunction, ...args)`

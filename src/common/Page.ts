@@ -835,7 +835,7 @@ export class Page extends EventEmitter {
    * @remarks
    * Shortcut for {@link Frame.$ | Page.mainFrame().$(selector) }.
    *
-   * @param selector - A
+   * @param selector - A `selector` to query page for
    * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
    * to query page for.
    */
