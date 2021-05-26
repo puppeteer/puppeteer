@@ -15,13 +15,12 @@
  */
 
 /**
- * @public
- */
-export interface Device {
+ * 
+ *  Device {
   name: string;
   userAgent: string;
   viewport: {
-    width: number;
+    : number;
     height: number;
     deviceScaleFactor: number;
     isMobile: boolean;
@@ -30,7 +29,7 @@ export interface Device {
   };
 }
 
-const devices: Device[] = [
+ devices: Device[] = [
   {
     name: 'Blackberry PlayBook',
     userAgent:
@@ -1164,15 +1163,14 @@ const devices: Device[] = [
   },
 ];
 /**
- * @public
+ *
  */
-export type DevicesMap = {
+ DevicesMap  { 
   [name: string]: Device;
 };
 
 /**
- * @internal
- */
-export const devicesMap: DevicesMap = {};
+ *
+ */ devicesMap: DevicesMap {}
 
-for (const device of devices) devicesMap[device.name] = device;
+ ( device of devices) devicesMap[device.name] = device;
