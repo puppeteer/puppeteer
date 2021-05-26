@@ -1,4 +1,4 @@
-const path = require('path');
+ path = require('path');
 
 require('ts-node').register({
   /**
