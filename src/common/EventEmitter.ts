@@ -75,7 +75,7 @@ export class EventEmitter implements CommonEventEmitter {
 
   /**
    * Remove an event listener.
-   * @deprecated please use `off` instead.
+   * @deprecated please use {@link EventEmitter.off} instead.
    */
   removeListener(event: EventType, handler: Handler): EventEmitter {
     this.off(event, handler);
@@ -84,7 +84,7 @@ export class EventEmitter implements CommonEventEmitter {
 
   /**
    * Add an event listener.
-   * @deprecated please use `on` instead.
+   * @deprecated please use {@link EventEmitter.on} instead.
    */
   addListener(event: EventType, handler: Handler): EventEmitter {
     this.on(event, handler);
