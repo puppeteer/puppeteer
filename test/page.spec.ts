@@ -314,7 +314,7 @@ describe('Page', function () {
       ]);
     });
     itFailsFirefox(
-      'should isolate permissions between browser contexs',
+      'should isolate permissions between browser contexts',
       async () => {
         const { page, server, context, browser } = getTestState();
 
