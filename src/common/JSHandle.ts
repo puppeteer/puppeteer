@@ -105,7 +105,7 @@ export function createJSHandle(
  *
  * @public
  */
-export class JSHandle {
+export class JSHandle<HandleObjectType = unknown> {
   /**
    * @internal
    */
@@ -154,7 +154,7 @@ export class JSHandle {
    * ```
    */
 
-  async evaluate<T extends EvaluateFn>(
+  async evaluate<T extends EvaluateFn<HandleObjectType>>(
     pageFunction: T | string,
     ...args: SerializableOrJSHandle[]
   ): Promise<UnwrapPromiseLike<EvaluateFnReturnType<T>>> {
@@ -193,7 +193,7 @@ export class JSHandle {
    */
   async getProperty(propertyName: string): Promise<JSHandle | undefined> {
     const objectHandle = await this.evaluateHandle(
-      (object: HTMLElement, propertyName: string) => {
+      (object: Element, propertyName: string) => {
         const result = { __proto__: null };
         result[propertyName] = object[propertyName];
         return result;
@@ -328,7 +328,7 @@ export class JSHandle {
  */
 export class ElementHandle<
   ElementType extends Element = Element
-> extends JSHandle {
+> extends JSHandle<ElementType> {
   private _page: Page;
   private _frameManager: FrameManager;
 
@@ -521,24 +521,25 @@ export class ElementHandle<
           '"'
       );
 
-    return this.evaluate<
-      (element: HTMLSelectElement, values: string[]) => string[]
-    >((element, values) => {
-      if (element.nodeName.toLowerCase() !== 'select')
-        throw new Error('Element is not a <select> element.');
+    return this.evaluate<(element: Element, values: string[]) => string[]>(
+      (element, values) => {
+        if (!(element instanceof HTMLSelectElement))
+          throw new Error('Element is not a <select> element.');
 
-      const options = Array.from(element.options);
-      element.value = undefined;
-      for (const option of options) {
-        option.selected = values.includes(option.value);
-        if (option.selected && !element.multiple) break;
-      }
-      element.dispatchEvent(new Event('input', { bubbles: true }));
-      element.dispatchEvent(new Event('change', { bubbles: true }));
-      return options
-        .filter((option) => option.selected)
-        .map((option) => option.value);
-    }, values);
+        const options = Array.from(element.options);
+        element.value = undefined;
+        for (const option of options) {
+          option.selected = values.includes(option.value);
+          if (option.selected && !element.multiple) break;
+        }
+        element.dispatchEvent(new Event('input', { bubbles: true }));
+        element.dispatchEvent(new Event('change', { bubbles: true }));
+        return options
+          .filter((option) => option.selected)
+          .map((option) => option.value);
+      },
+      values
+    );
   }
 
   /**
@@ -549,9 +550,14 @@ export class ElementHandle<
    *    relative to the {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}
    */
   async uploadFile(...filePaths: string[]): Promise<void> {
-    const isMultiple = await this.evaluate<
-      (element: HTMLInputElement) => boolean
-    >((element) => element.multiple);
+    const isMultiple = await this.evaluate<(element: Element) => boolean>(
+      (element) => {
+        if (!(element instanceof HTMLInputElement)) {
+          throw new Error('uploadFile can only be called on an input element.');
+        }
+        return element.multiple;
+      }
+    );
     assert(
       filePaths.length <= 1 || isMultiple,
       'Multiple file uploads only work with <input type=file multiple>'
@@ -588,7 +594,7 @@ export class ElementHandle<
     // not actually update the files in that case, so the solution is to eval the element
     // value to a new FileList directly.
     if (files.length === 0) {
-      await this.evaluate<(element: HTMLInputElement) => void>((element) => {
+      await (this as ElementHandle<HTMLInputElement>).evaluate((element) => {
         element.files = new DataTransfer().files;
 
         // Dispatch events for this case because it should behave akin to a user action.
@@ -619,7 +625,7 @@ export class ElementHandle<
    * Calls {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus | focus} on the element.
    */
   async focus(): Promise<void> {
-    await this.evaluate<(element: HTMLElement) => void>((element) =>
+    await (this as ElementHandle<HTMLElement>).evaluate((element) =>
       element.focus()
     );
   }
@@ -776,9 +782,8 @@ export class ElementHandle<
   async $<T extends Element = Element>(
     selector: string
   ): Promise<ElementHandle<T> | null> {
-    const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector
-    );
+    const { updatedSelector, queryHandler } =
+      getQueryHandlerAndSelector(selector);
     return queryHandler.queryOne(this, updatedSelector);
   }
 
@@ -789,9 +794,8 @@ export class ElementHandle<
   async $$<T extends Element = Element>(
     selector: string
   ): Promise<Array<ElementHandle<T>>> {
-    const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector
-    );
+    const { updatedSelector, queryHandler } =
+      getQueryHandlerAndSelector(selector);
     return queryHandler.queryAll(this, updatedSelector);
   }
 
@@ -873,9 +877,8 @@ export class ElementHandle<
     ) => ReturnType | Promise<ReturnType>,
     ...args: SerializableOrJSHandle[]
   ): Promise<WrapElementHandle<ReturnType>> {
-    const { updatedSelector, queryHandler } = getQueryHandlerAndSelector(
-      selector
-    );
+    const { updatedSelector, queryHandler } =
+      getQueryHandlerAndSelector(selector);
     const arrayHandle = await queryHandler.queryAllArray(this, updatedSelector);
     const result = await arrayHandle.evaluate<
       (

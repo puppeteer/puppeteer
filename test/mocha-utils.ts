@@ -31,6 +31,7 @@ import rimraf from 'rimraf';
 import expect from 'expect';
 
 import { trackCoverage } from './coverage-utils.js';
+import Protocol from 'devtools-protocol';
 
 const setupServer = async () => {
   const assetsPath = path.join(__dirname, 'assets');
@@ -177,7 +178,10 @@ export const itFailsWindowsUntilDate = (
   return it(description, body);
 };
 
-export const itFailsWindows = (description: string, body: Mocha.Func) => {
+export const itFailsWindows = (
+  description: string,
+  body: Mocha.Func
+): Mocha.Test => {
   if (os.platform() === 'win32') {
     return xit(description, body);
   }
@@ -217,7 +221,7 @@ console.log(
   }`
 );
 
-export const setupTestBrowserHooks = () => {
+export const setupTestBrowserHooks = (): void => {
   before(async () => {
     const browser = await puppeteer.launch(defaultBrowserOptions);
     state.browser = browser;
@@ -229,7 +233,7 @@ export const setupTestBrowserHooks = () => {
   });
 };
 
-export const setupTestPageAndContextHooks = () => {
+export const setupTestPageAndContextHooks = (): void => {
   beforeEach(async () => {
     state.context = await state.browser.createIncognitoBrowserContext();
     state.page = await state.context.newPage();
@@ -244,7 +248,7 @@ export const setupTestPageAndContextHooks = () => {
 
 export const mochaHooks = {
   beforeAll: [
-    async () => {
+    async (): Promise<void> => {
       const { server, httpsServer } = await setupServer();
 
       state.puppeteer = puppeteer;
@@ -259,13 +263,13 @@ export const mochaHooks = {
     coverageHooks.beforeAll,
   ],
 
-  beforeEach: async () => {
+  beforeEach: async (): Promise<void> => {
     state.server.reset();
     state.httpsServer.reset();
   },
 
   afterAll: [
-    async () => {
+    async (): Promise<void> => {
       await state.server.stop();
       state.server = null;
       await state.httpsServer.stop();
@@ -274,12 +278,15 @@ export const mochaHooks = {
     coverageHooks.afterAll,
   ],
 
-  afterEach: () => {
+  afterEach: (): void => {
     sinon.restore();
   },
 };
 
-export const expectCookieEquals = (cookies, expectedCookies) => {
+export const expectCookieEquals = (
+  cookies: Protocol.Network.Cookie[],
+  expectedCookies: Array<Partial<Protocol.Network.Cookie>>
+): void => {
   const { isChrome } = getTestState();
   if (!isChrome) {
     // Only keep standard properties when testing on a browser other than Chrome.

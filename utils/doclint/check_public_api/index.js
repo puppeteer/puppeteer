@@ -28,10 +28,12 @@ const EXCLUDE_PROPERTIES = new Set([
   'Page.create',
   'JSHandle.toString',
   'TimeoutError.name',
-  /* This isn't an actual property, but a TypeScript generic.
+  /* These are not actual properties, but a TypeScript generic.
    * DocLint incorrectly parses it as a property.
    */
   'ElementHandle.ElementType',
+  'ElementHandle.HandleObjectType',
+  'JSHandle.HandleObjectType',
 ]);
 
 /**
@@ -685,7 +687,8 @@ function compareDocumentations(actual, expected) {
         'Method Page.emulateVisionDeficiency() type',
         {
           actualName: 'string',
-          expectedName: 'Object',
+          expectedName:
+            '"none"|"achromatopsia"|"blurredVision"|"deuteranopia"|"protanopia"|"tritanopia"',
         },
       ],
       [
@@ -850,14 +853,6 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
-        'Method Page.emulateVisionDeficiency() type',
-        {
-          actualName: 'string',
-          expectedName:
-            '"none"|"achromatopsia"|"blurredVision"|"deuteranopia"|"protanopia"|"tritanopia"',
-        },
-      ],
-      [
         'Method BrowserContext.overridePermissions() permissions',
         {
           actualName: 'Array<string>',
@@ -883,6 +878,27 @@ function compareDocumentations(actual, expected) {
         {
           actualName: 'number',
           expectedName: 'Object',
+        },
+      ],
+      [
+        'Method EventEmitter.emit() eventData',
+        {
+          actualName: 'Object',
+          expectedName: 'unknown',
+        },
+      ],
+      [
+        'Method Page.queryObjects() prototypeHandle',
+        {
+          actualName: 'JSHandle',
+          expectedName: 'JSHandle<unknown>',
+        },
+      ],
+      [
+        'Method ExecutionContext.queryObjects() prototypeHandle',
+        {
+          actualName: 'JSHandle',
+          expectedName: 'JSHandle<unknown>',
         },
       ],
     ]);

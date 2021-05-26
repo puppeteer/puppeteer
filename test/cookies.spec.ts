@@ -231,13 +231,12 @@ describe('Cookie specs', () => {
           value: 'bar',
         }
       );
-      expectCookieEquals(
-        await page.evaluate(() => {
-          const cookies = document.cookie.split(';');
-          return cookies.map((cookie) => cookie.trim()).sort();
-        }),
-        ['foo=bar', 'password=123456']
-      );
+      const cookieStrings = await page.evaluate(() => {
+        const cookies = document.cookie.split(';');
+        return cookies.map((cookie) => cookie.trim()).sort();
+      });
+
+      expect(cookieStrings).toEqual(['foo=bar', 'password=123456']);
     });
     it('should have |expires| set to |-1| for session cookies', async () => {
       const { page, server } = getTestState();
@@ -475,11 +474,8 @@ describe('Cookie specs', () => {
     itFailsFirefox(
       'should set secure same-site cookies from a frame',
       async () => {
-        const {
-          httpsServer,
-          puppeteer,
-          defaultBrowserOptions,
-        } = getTestState();
+        const { httpsServer, puppeteer, defaultBrowserOptions } =
+          getTestState();
 
         const browser = await puppeteer.launch({
           ...defaultBrowserOptions,

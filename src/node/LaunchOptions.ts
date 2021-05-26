@@ -110,6 +110,12 @@ export interface LaunchOptions {
    * {@link https://developer.mozilla.org/en-US/docs/Mozilla/Preferences/Preference_reference | Additional preferences } that can be passed when launching with Firefox.
    */
   extraPrefsFirefox?: Record<string, unknown>;
+  /**
+   * Whether to wait for the initial page to be ready.
+   * Useful when a user explicitly disables that (e.g. `--no-startup-window` for Chrome).
+   * @defaultValue true
+   */
+  waitForInitialPage?: boolean;
 }
 
 /**
