@@ -1088,11 +1088,9 @@ export class Page extends EventEmitter {
   /**
    * The method runs `document.querySelectorAll` within the page. If no elements
    * match the selector, the return value resolves to `[]`.
-   * 
    * @remarks
    * Shortcut for {@link Frame.$$ | Page.mainFrame().$$(selector) }.
    * @param selector - A `selector` to query page for
-   * @returns 
    */
   async $$<T extends Element = Element>(
     selector: string
@@ -1107,7 +1105,6 @@ export class Page extends EventEmitter {
    * @remarks
    * Shortcut for {@link Frame.$x | Page.mainFrame().$x(expression) }.
    * @param expression - Expression to evaluate
-   * @returns 
    */
   async $x(expression: string): Promise<ElementHandle[]> {
     return this.mainFrame().$x(expression);
@@ -1218,9 +1215,7 @@ export class Page extends EventEmitter {
 
   /**
    * Provide credentials for `HTTP authentication`.
-   * @remarks 
-   * To disable authentication, pass `null`.
-   * @returns 
+   * @remarks To disable authentication, pass `null`.
    */
   async authenticate(credentials: Credentials): Promise<void> {
     return this._frameManager.networkManager().authenticate(credentials);
@@ -2039,7 +2034,6 @@ export class Page extends EventEmitter {
    * needed, and then uses {@link page.mouse} to click in the center of the
    * element. If there's no element matching `selector`, the method throws an
    * error.
-   * 
    * @remarks Bear in mind that if `click()` triggers a navigation event and
    * there's a separate `page.waitForNavigation()` promise to be resolved, you
    * may end up with a race condition that yields unexpected results. The
@@ -2051,11 +2045,9 @@ export class Page extends EventEmitter {
    * ]);
    * ```
    * Shortcut for {@link Frame.click | page.mainFrame().click(selector[, options]) }.
-   * 
    * @param selector - A `selector` to search for element to click. If there are
    * multiple elements satisfying the `selector`, the first will be clicked
    * @param options - `Object`
-   * 
    * @returns Promise which resolves when the element matching `selector` is
    * successfully clicked. The Promise will be rejected if there is no element
    * matching `selector`.
