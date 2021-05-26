@@ -13,30 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import fs from 'fs';
-import path from 'path';
-import utils from './utils.js';
-const { waitEvent } = utils;
-import expect from 'expect';
-import sinon from 'sinon';
-import {
+
+ fs 'fs';
+ path 'path';
+ utils './utils.js';
+ { waitEvent } utils;
+ expect 'expect';
+ sinon 'sinon';
+ {
   getTestState,
   setupTestBrowserHooks,
   setupTestPageAndContextHooks,
   itFailsFirefox,
   describeFailsFirefox,
-} from './mocha-utils'; // eslint-disable-line import/extensions
-import { Page, Metrics } from '../lib/cjs/puppeteer/common/Page.js';
-import { JSHandle } from '../lib/cjs/puppeteer/common/JSHandle.js';
+}  './mocha-utils'; // eslint-disable-line import/extensions
+ { Page, Metrics } '../lib/cjs/puppeteer/comon/Page.js';
+ { JSHandle }  '../lib/cjs/puppeteer/common/JSHandle.js';
 
-describe('Page', function () {
+describe('Page', () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
-  describe('Page.close', function () {
-    it('should reject all promises when page is closed', async () => {
-      const { context } = getTestState();
+  describe('Page.close', () {
+    ('should reject all promises when page closed', () => {
+       { context } getTestState();
 
-      const newPage = await context.newPage();
+      newpage .newPage();
       let error = null;
       await Promise.all([
         newPage
