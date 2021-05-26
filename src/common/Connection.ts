@@ -126,12 +126,20 @@ export class Connection extends EventEmitter {
       );
       this._sessions.set(sessionId, session);
       this.emit('sessionattached', session);
+      const parentSession = this._sessions.get(object.sessionId);
+      if (parentSession) {
+        parentSession.emit('sessionattached', session);
+      }
     } else if (object.method === 'Target.detachedFromTarget') {
       const session = this._sessions.get(object.params.sessionId);
       if (session) {
         session._onClosed();
         this._sessions.delete(object.params.sessionId);
         this.emit('sessiondetached', session);
+        const parentSession = this._sessions.get(object.sessionId);
+        if (parentSession) {
+          parentSession.emit('sessiondetached', session);
+        }
       }
     }
     if (object.sessionId) {

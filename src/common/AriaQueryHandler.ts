@@ -32,7 +32,7 @@ async function queryAXTree(
     role,
   });
   const filteredNodes: Protocol.Accessibility.AXNode[] = nodes.filter(
-    (node: Protocol.Accessibility.AXNode) => node.role.value !== 'text'
+    (node: Protocol.Accessibility.AXNode) => node.role.value !== 'StaticText'
   );
   return filteredNodes;
 }
