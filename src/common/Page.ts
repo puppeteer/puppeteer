@@ -1086,7 +1086,7 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * The method runs document.querySelectorAll within the page. If no elements
+   * The method runs `document.querySelectorAll` within the page. If no elements
    * match the selector, the return value resolves to `[]`.
    * 
    * @remarks
@@ -1218,7 +1218,8 @@ export class Page extends EventEmitter {
 
   /**
    * Provide credentials for `HTTP authentication`.
-   * @remarks To disable authentication, pass `null`.
+   * @remarks 
+   * To disable authentication, pass `null`.
    * @returns 
    */
   async authenticate(credentials: Credentials): Promise<void> {
@@ -2049,10 +2050,10 @@ export class Page extends EventEmitter {
    * page.click(selector, clickOptions),
    * ]);
    * ```
-   * Shortcut for {@link Frame.click | page.mainFrame().click(selector,options) }.
+   * Shortcut for {@link Frame.click | page.mainFrame().click(selector[, options]) }.
    * 
    * @param selector - A `selector` to search for element to click. If there are
-   * multiple elements satisfying the selector, the first will be clicked
+   * multiple elements satisfying the `selector`, the first will be clicked
    * @param options - `Object`
    * 
    * @returns Promise which resolves when the element matching `selector` is
