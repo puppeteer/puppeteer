@@ -55,6 +55,7 @@ jobs:
         with:
           max_attempts: 3
           command: xvfb-run --auto-servernum npm run unit
+          timeout_minutes: 10
 
       - name: Run unit tests with coverage
         env:
@@ -70,6 +71,7 @@ jobs:
           MOZ_WEBRENDER: 0
         with:
           max_attempts: 3
+          timeout_minutes: 10
           command: xvfb-run --auto-servernum npm run funit
 
       - name: Run browser tests
@@ -121,11 +123,9 @@ jobs:
 
       - name: Run unit tests on Firefox
         uses: nick-invision/retry@v2
-        env:
-          FIREFOX: true
-          MOZ_WEBRENDER: 0
         with:
           max_attempts: 3
+          timeout_minutes: 10
           command: npm run funit
 
   windows:
@@ -171,4 +171,5 @@ jobs:
           MOZ_WEBRENDER: 0
         with:
           max_attempts: 3
+          timeout_minutes: 10
           command: npm run funit
