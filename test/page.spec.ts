@@ -1761,7 +1761,7 @@ describe('Page', function () {
   });
 
   describe('Page.browserContext', function () {
-    it('should return the correct browser instance', async () => {
+    it('should return the correct browser context instance', async () => {
       const { page, context } = getTestState();
 
       expect(page.browserContext()).toBe(context);
