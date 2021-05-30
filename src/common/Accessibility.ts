@@ -437,10 +437,11 @@ class AXNode {
       properties.get(key) as boolean;
 
     for (const booleanProperty of booleanProperties) {
-      // WebArea's treat focus differently than other nodes. They report whether
+      // RootWebArea's treat focus differently than other nodes. They report whether
       // their frame  has focus, not whether focus is specifically on the root
       // node.
-      if (booleanProperty === 'focused' && this._role === 'WebArea') continue;
+      if (booleanProperty === 'focused' && this._role === 'RootWebArea')
+        continue;
       const value = getBooleanPropertyValue(booleanProperty);
       if (!value) continue;
       node[booleanProperty] = getBooleanPropertyValue(booleanProperty);
