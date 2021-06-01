@@ -19,12 +19,13 @@ import {
   getTestState,
   setupTestPageAndContextHooks,
   setupTestBrowserHooks,
+  itChromeOnly,
 } from './mocha-utils'; // eslint-disable-line import/extensions
 
 describe('Input.drag', function () {
   setupTestBrowserHooks();
   setupTestPageAndContextHooks();
-  it('should throw an exception if not enabled before usage', async () => {
+  itChromeOnly('should throw an exception if not enabled before usage', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
@@ -36,7 +37,7 @@ describe('Input.drag', function () {
       expect(error.message).toContain('Drag Interception is not enabled!');
     }
   });
-  it('should emit a dragIntercepted event when dragged', async () => {
+  itChromeOnly('should emit a dragIntercepted event when dragged', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
@@ -47,7 +48,7 @@ describe('Input.drag', function () {
     expect(data.items.length).toBe(1);
     expect(await page.evaluate(() => globalThis.didDragStart)).toBe(true);
   });
-  it('should emit a dragEnter', async () => {
+  itChromeOnly('should emit a dragEnter', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
@@ -60,7 +61,7 @@ describe('Input.drag', function () {
     expect(await page.evaluate(() => globalThis.didDragStart)).toBe(true);
     expect(await page.evaluate(() => globalThis.didDragEnter)).toBe(true);
   });
-  it('should emit a dragOver event', async () => {
+  itChromeOnly('should emit a dragOver event', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
@@ -75,7 +76,7 @@ describe('Input.drag', function () {
     expect(await page.evaluate(() => globalThis.didDragEnter)).toBe(true);
     expect(await page.evaluate(() => globalThis.didDragOver)).toBe(true);
   });
-  it('can be dropped', async () => {
+  itChromeOnly('can be dropped', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
@@ -92,7 +93,7 @@ describe('Input.drag', function () {
     expect(await page.evaluate(() => globalThis.didDragOver)).toBe(true);
     expect(await page.evaluate(() => globalThis.didDrop)).toBe(true);
   });
-  it('can be dragged and dropped with a single function', async () => {
+  itChromeOnly('can be dragged and dropped with a single function', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
@@ -106,7 +107,7 @@ describe('Input.drag', function () {
     expect(await page.evaluate(() => globalThis.didDragOver)).toBe(true);
     expect(await page.evaluate(() => globalThis.didDrop)).toBe(true);
   });
-  it('can be disabled', async () => {
+  itChromeOnly('can be disabled', async () => {
     const { page, server } = getTestState();
 
     await page.goto(server.PREFIX + '/input/drag-and-drop.html');
