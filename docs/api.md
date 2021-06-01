@@ -2988,10 +2988,10 @@ Dispatches a `mousedown` event.
 
 #### mouse.drag(start, target)
 
-- `start` <[Object]>
+- `start` <[Object]> the position to start dragging from
   - `x` <[number]> x coordinate
   - `y` <[number]> y coordinate
-- `target` <[Object]>
+- `target` <[Object]> the position to drag to
   - `x` <[number]> x coordinate
   - `y` <[number]> y coordinate
 - returns: <[Promise<[DragData]>]>
@@ -4142,7 +4142,7 @@ This method creates and captures a drag event from the element.
 
 #### elementHandle.dragAndDrop(target[, options])
 
-- `target` <[Object]>
+- `target` <[ElementHandle]>
 - `options` <[Object]>
   - `delay` <[number]> how long to delay before dropping onto the target element
 - returns: <[Promise]>

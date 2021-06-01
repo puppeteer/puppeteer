@@ -395,7 +395,7 @@ function compareDocumentations(actual, expected) {
       [
         'Method ElementHandle.dragAndDrop() target',
         {
-          actualName: 'Object',
+          actualName: 'ElementHandle',
           expectedName: 'ElementHandle<Element>',
         },
       ],
