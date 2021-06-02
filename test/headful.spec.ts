@@ -200,13 +200,14 @@ describeChromeOnly('headful tests', function () {
         flatten: true,
         waitForDebuggerOnStart: true,
       });
-      session.connection().on('sessionattached', async (session) => {
+      session.on('sessionattached', async (session) => {
         otherSessions.push(session);
 
         session.on('Network.requestWillBeSent', (params) =>
           networkEvents.push(params)
         );
         await session.send('Network.enable');
+        await session.send('Runtime.runIfWaitingForDebugger');
       });
 
       // Navigate to the empty page and add an OOPIF iframe with at least one request.
@@ -227,7 +228,6 @@ describeChromeOnly('headful tests', function () {
 
       // Resume the iframe and trigger another request.
       const iframeSession = otherSessions[0];
-      await iframeSession.send('Runtime.runIfWaitingForDebugger');
       await iframeSession.send('Runtime.evaluate', {
         expression: `fetch('/fetch')`,
         awaitPromise: true,
@@ -258,7 +258,7 @@ describeChromeOnly('headful tests', function () {
       const context = await browser.createIncognitoBrowserContext();
       await Promise.all([
         context.newPage(),
-        context.waitForTarget((target) => target.url().includes('devtools://')),
+        browser.waitForTarget((target) => target.url().includes('devtools://')),
       ]);
       await browser.close();
     });
