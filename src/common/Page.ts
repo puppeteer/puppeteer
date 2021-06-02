@@ -1525,7 +1525,6 @@ export class Page extends EventEmitter {
    * ```js
    * const puppeteer = require('puppeteer');
    * const iPhone = puppeteer.devices['iPhone 6'];
-   * 
    * (async () => {
    * const browser = await puppeteer.launch();
    * const page = await browser.newPage();
@@ -1535,10 +1534,8 @@ export class Page extends EventEmitter {
    * await browser.close();
    * })();
    * ```
-   * 
    * @remarks List of all available devices is available in the source code:
    * {@link https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts | src/common/DeviceDescriptors.ts}.
-   * @param options 
    */
   async emulate(options: {
     viewport: Viewport;
