@@ -20,3 +20,4 @@ test/coverage.json
 temp/
 new-docs/
 puppeteer.tgz
+docs-api-json/
