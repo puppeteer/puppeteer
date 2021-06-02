@@ -1514,6 +1514,32 @@ export class Page extends EventEmitter {
     await this._client.send('Page.bringToFront');
   }
 
+  /**
+   * Emulates given device metrics and user agent. This method is a shortcut for
+   * calling two methods: {@link page.setUserAgent} and {@link page.setViewport}
+   * To aid emulation, Puppeteer provides a list of device descriptors that can
+   * be obtained via the {@link puppeteer.devices} `page.emulate` will resize
+   * the page. A lot of websites don't expect phones to change size, so you
+   * should emulate before navigating to the page.
+   * @example
+   * ```js
+   * const puppeteer = require('puppeteer');
+   * const iPhone = puppeteer.devices['iPhone 6'];
+   * 
+   * (async () => {
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * await page.emulate(iPhone);
+   * await page.goto('https://www.google.com');
+   * // other actions...
+   * await browser.close();
+   * })();
+   * ```
+   * 
+   * @remarks List of all available devices is available in the source code:
+   * {@link https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts | src/common/DeviceDescriptors.ts}.
+   * @param options 
+   */
   async emulate(options: {
     viewport: Viewport;
     userAgent: string;
@@ -1546,6 +1572,58 @@ export class Page extends EventEmitter {
     });
   }
 
+  /**
+   * @param features - `<?Array<Object>>` Given an array of media feature
+   * objects, emulates CSS media features on the page. Each media feature object
+   * must have the following properties:
+   * @example
+   * ```js
+   * await page.emulateMediaFeatures([
+   * { name: 'prefers-color-scheme', value: 'dark' },
+   * ]);
+   * await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches);
+   * // → true
+   * await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches);
+   * // → false
+   *
+   * await page.emulateMediaFeatures([
+   * { name: 'prefers-reduced-motion', value: 'reduce' },
+   * ]);
+   * await page.evaluate(
+   * () => matchMedia('(prefers-reduced-motion: reduce)').matches
+   * );
+   * // → true
+   * await page.evaluate(
+   * () => matchMedia('(prefers-reduced-motion: no-preference)').matches
+   * );
+   * // → false
+   *
+   * await page.emulateMediaFeatures([
+   * { name: 'prefers-color-scheme', value: 'dark' },
+   * { name: 'prefers-reduced-motion', value: 'reduce' },
+   * ]);
+   * await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches);
+   * // → true
+   * await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches);
+   * // → false
+   * await page.evaluate(
+   * () => matchMedia('(prefers-reduced-motion: reduce)').matches
+   * );
+   * // → true
+   * await page.evaluate(
+   * () => matchMedia('(prefers-reduced-motion: no-preference)').matches
+   * );
+   * // → false
+   *
+   * await page.emulateMediaFeatures([{ name: 'color-gamut', value: 'p3' }]);
+   * await page.evaluate(() => matchMedia('(color-gamut: srgb)').matches);
+   * // → true
+   * await page.evaluate(() => matchMedia('(color-gamut: p3)').matches);
+   * // → true
+   * await page.evaluate(() => matchMedia('(color-gamut: rec2020)').matches);
+   * // → false
+   * ```
+   */
   async emulateMediaFeatures(features?: MediaFeature[]): Promise<void> {
     if (features === null)
       await this._client.send('Emulation.setEmulatedMedia', { features: null });
@@ -1595,8 +1673,6 @@ export class Page extends EventEmitter {
    * ```
    *
    * @param overrides - Mock idle state. If not set, clears idle overrides
-   * @param isUserActive - Mock isUserActive
-   * @param isScreenUnlocked - Mock isScreenUnlocked
    */
   async emulateIdleState(overrides?: {
     isUserActive: boolean;
