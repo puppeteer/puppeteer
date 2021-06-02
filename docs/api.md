@@ -2276,8 +2276,6 @@ const puppeteer = require('puppeteer');
 })();
 ```
 
-> **NOTE** Enabling request interception disables page caching.
-
 #### page.setUserAgent(userAgent)
 
 - `userAgent` <[string]> Specific user agent to use in this page
