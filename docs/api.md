@@ -155,6 +155,7 @@
   * [page.goto(url[, options])](#pagegotourl-options)
   * [page.hover(selector)](#pagehoverselector)
   * [page.isClosed()](#pageisclosed)
+  * [page.isDragInterceptionEnabled](#pageisdraginterceptionenabled)
   * [page.isJavaScriptEnabled()](#pageisjavascriptenabled)
   * [page.keyboard](#pagekeyboard)
   * [page.mainFrame()](#pagemainframe)
@@ -171,6 +172,7 @@
   * [page.setCookie(...cookies)](#pagesetcookiecookies)
   * [page.setDefaultNavigationTimeout(timeout)](#pagesetdefaultnavigationtimeouttimeout)
   * [page.setDefaultTimeout(timeout)](#pagesetdefaulttimeouttimeout)
+  * [page.setDragInterception(enabled)](#pagesetdraginterceptionenabled)
   * [page.setExtraHTTPHeaders(headers)](#pagesetextrahttpheadersheaders)
   * [page.setGeolocation(options)](#pagesetgeolocationoptions)
   * [page.setJavaScriptEnabled(enabled)](#pagesetjavascriptenabledenabled)
@@ -214,6 +216,11 @@
 - [class: Mouse](#class-mouse)
   * [mouse.click(x, y[, options])](#mouseclickx-y-options)
   * [mouse.down([options])](#mousedownoptions)
+  * [mouse.drag(start, target)](#mousedragstart-target)
+  * [mouse.dragAndDrop(start, target[, options])](#mousedraganddropstart-target-options)
+  * [mouse.dragEnter(target, data)](#mousedragentertarget-data)
+  * [mouse.dragOver(target, data)](#mousedragovertarget-data)
+  * [mouse.drop(target, data)](#mousedroptarget-data)
   * [mouse.move(x, y[, options])](#mousemovex-y-options)
   * [mouse.up([options])](#mouseupoptions)
   * [mouse.wheel([options])](#mousewheeloptions)
@@ -294,8 +301,14 @@
   * [elementHandle.boundingBox()](#elementhandleboundingbox)
   * [elementHandle.boxModel()](#elementhandleboxmodel)
   * [elementHandle.click([options])](#elementhandleclickoptions)
+  * [elementHandle.clickablePoint()](#elementhandleclickablepoint)
   * [elementHandle.contentFrame()](#elementhandlecontentframe)
   * [elementHandle.dispose()](#elementhandledispose)
+  * [elementHandle.drag(target)](#elementhandledragtarget)
+  * [elementHandle.dragAndDrop(target[, options])](#elementhandledraganddroptarget-options)
+  * [elementHandle.dragEnter([data])](#elementhandledragenterdata)
+  * [elementHandle.dragOver([data])](#elementhandledragoverdata)
+  * [elementHandle.drop([data])](#elementhandledropdata)
   * [elementHandle.evaluate(pageFunction[, ...args])](#elementhandleevaluatepagefunction-args)
   * [elementHandle.evaluateHandle(pageFunction[, ...args])](#elementhandleevaluatehandlepagefunction-args)
   * [elementHandle.executionContext()](#elementhandleexecutioncontext)
@@ -1919,6 +1932,12 @@ Shortcut for [page.mainFrame().hover(selector)](#framehoverselector).
 
 Indicates that the page has been closed.
 
+#### page.isDragInterceptionEnabled
+
+- returns: <[boolean]>
+
+Indicates that drag events are being intercepted.
+
 #### page.isJavaScriptEnabled()
 
 - returns: <[boolean]>
@@ -2182,6 +2201,13 @@ This setting will change the default maximum time for the following methods and 
 - [page.waitForXPath(xpath[, options])](#pagewaitforxpathxpath-options)
 
 > **NOTE** [`page.setDefaultNavigationTimeout`](#pagesetdefaultnavigationtimeouttimeout) takes priority over [`page.setDefaultTimeout`](#pagesetdefaulttimeouttimeout)
+
+#### page.setDragInterception(enabled)
+
+- `enabled` <[boolean]>
+- returns: <[Promise]>
+
+Enables the Input.drag methods. This provides the capability to cpature drag events emitted on the page, which can then be used to simulate drag-and-drop.
 
 #### page.setExtraHTTPHeaders(headers)
 
@@ -2957,6 +2983,62 @@ Shortcut for [`mouse.move`](#mousemovex-y-options), [`mouse.down`](#mousedownopt
 - returns: <[Promise]>
 
 Dispatches a `mousedown` event.
+
+#### mouse.drag(start, target)
+
+- `start` <[Object]> the position to start dragging from
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- `target` <[Object]> the position to drag to
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- returns: <[Promise<[DragData]>]>
+
+This method creates and captures a dragevent from a given point.
+
+#### mouse.dragAndDrop(start, target[, options])
+
+- `start` <[Object]>
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- `target` <[Object]>
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- `options` <[Object]>
+  - `delay` <[number]> how long to delay before dropping onto the target point
+- returns: <[Promise<[DragData]>]>
+
+This method drags from a given start point and drops onto a target point.
+
+#### mouse.dragEnter(target, data)
+
+- `target` <[Object]>
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- `data` <[Object]>
+- returns: <[Promise]]>
+
+This method triggers a dragenter event from the target point.
+
+#### mouse.dragOver(target, data)
+
+- `target` <[Object]>
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- `data` <[Object]>
+- returns: <[Promise]]>
+
+This method triggers a dragover event from the target point.
+
+#### mouse.drop(target, data)
+
+- `target` <[Object]>
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- `data` <[Object]>
+- returns: <[Promise]]>
+
+This method triggers a drop event from the target point.
 
 #### mouse.move(x, y[, options])
 
@@ -4033,6 +4115,10 @@ This method returns boxes of the element, or `null` if the element is not visibl
 This method scrolls element into view if needed, and then uses [page.mouse](#pagemouse) to click in the center of the element.
 If the element is detached from DOM, the method throws an error.
 
+#### elementHandle.clickablePoint()
+
+- returns: <[Promise<[Point]>]> Resolves to the x, y point that describes the element's position.
+
 #### elementHandle.contentFrame()
 
 - returns: <[Promise]<?[Frame]>> Resolves to the content frame for element handles referencing iframe nodes, or null otherwise
@@ -4042,6 +4128,45 @@ If the element is detached from DOM, the method throws an error.
 - returns: <[Promise]> Promise which resolves when the element handle is successfully disposed.
 
 The `elementHandle.dispose` method stops referencing the element handle.
+
+#### elementHandle.drag(target)
+
+- `target` <[Object]>
+  - `x` <[number]> x coordinate
+  - `y` <[number]> y coordinate
+- returns: <[Promise<[DragData]>]>
+
+This method creates and captures a drag event from the element.
+
+#### elementHandle.dragAndDrop(target[, options])
+
+- `target` <[ElementHandle]>
+- `options` <[Object]>
+  - `delay` <[number]> how long to delay before dropping onto the target element
+- returns: <[Promise]>
+
+This method will drag a given element and drop it onto a target element.
+
+#### elementHandle.dragEnter([data])
+
+- `data` <[Object]> drag data created from `element.drag`
+- returns: <[Promise]>
+
+This method will trigger a dragenter event from the given element.
+
+#### elementHandle.dragOver([data])
+
+- `data` <[Object]> drag data created from `element.drag`
+- returns: <[Promise]>
+
+This method will trigger a dragover event from the given element.
+
+#### elementHandle.drop([data])
+
+- `data` <[Object]> drag data created from `element.drag`
+- returns: <[Promise]>
+
+This method will trigger a drop event from the given element.
 
 #### elementHandle.evaluate(pageFunction[, ...args])
 
