@@ -386,6 +386,41 @@ function compareDocumentations(actual, expected) {
         },
       ],
       [
+        'Method ElementHandle.drag() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method ElementHandle.dragAndDrop() target',
+        {
+          actualName: 'ElementHandle',
+          expectedName: 'ElementHandle<Element>',
+        },
+      ],
+      [
+        'Method ElementHandle.dragEnter() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method ElementHandle.dragOver() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method ElementHandle.drop() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
         'Method Keyboard.down() key',
         {
           actualName: 'string',
@@ -411,6 +446,83 @@ function compareDocumentations(actual, expected) {
         {
           actualName: 'Object',
           expectedName: 'MouseOptions',
+        },
+      ],
+      [
+        'Method Mouse.drag() start',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.drag() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragAndDrop() start',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragAndDrop() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragAndDrop() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragEnter() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragEnter() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method Mouse.dragOver() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.dragOver() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
+        },
+      ],
+      [
+        'Method Mouse.drop() target',
+        {
+          actualName: 'Object',
+          expectedName: 'Point',
+        },
+      ],
+      [
+        'Method Mouse.drop() data',
+        {
+          actualName: 'Object',
+          expectedName: 'DragData',
         },
       ],
       [
