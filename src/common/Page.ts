@@ -824,6 +824,26 @@ export class Page extends EventEmitter {
     return this._frameManager.networkManager().setOfflineMode(enabled);
   }
 
+  /**
+   * @param networkConditions - Passing `null` disables network condition emulation.
+   * @example
+   * ```js
+   * const puppeteer = require('puppeteer');
+   * const slow3G = puppeteer.networkConditions['Slow 3G'];
+   *
+   * (async () => {
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * await page.emulateNetworkConditions(slow3G);
+   * await page.goto('https://www.google.com');
+   * // other actions...
+   * await browser.close();
+   * })();
+   * ```
+   * @remarks
+   * NOTE: This does not affect WebSockets and WebRTC PeerConnections (see
+   * https://crbug.com/563644)
+   */
   emulateNetworkConditions(
     networkConditions: NetworkConditions | null
   ): Promise<void> {
@@ -1211,6 +1231,65 @@ export class Page extends EventEmitter {
     return this.mainFrame().addStyleTag(options);
   }
 
+  /**
+   * The method adds a function called `name` on the page's `window` object. When
+   * called, the function executes `puppeteerFunction` in node.js and returns a
+   * `Promise` which resolves to the return value of `puppeteerFunction`.
+   * 
+   * If the puppeteerFunction returns a `Promise`, it will be awaited.
+   * 
+   * NOTE: Functions installed via `page.exposeFunction` survive navigations.
+   * @param name - Name of the function on the window object
+   * @param puppeteerFunction -  Callback function which will be called in
+   * Puppeteer's context.
+   * @example
+   * An example of adding an `md5` function into the page:
+   * ```js
+   * const puppeteer = require('puppeteer');
+   * const crypto = require('crypto');
+   *
+   * (async () => {
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * page.on('console', (msg) => console.log(msg.text()));
+   * await page.exposeFunction('md5', (text) =>
+   * crypto.createHash('md5').update(text).digest('hex')
+   * );
+   * await page.evaluate(async () => {
+   * // use window.md5 to compute hashes
+   * const myString = 'PUPPETEER';
+   * const myHash = await window.md5(myString);
+   * console.log(`md5 of ${myString} is ${myHash}`);
+   * });
+   * await browser.close();
+   * })();
+   * ```
+   * An example of adding a `window.readfile` function into the page:
+   * ```js
+   * const puppeteer = require('puppeteer');
+   * const fs = require('fs');
+   *
+   * (async () => {
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * page.on('console', (msg) => console.log(msg.text()));
+   * await page.exposeFunction('readfile', async (filePath) => {
+   * return new Promise((resolve, reject) => {
+   * fs.readFile(filePath, 'utf8', (err, text) => {
+   *    if (err) reject(err);
+   *    else resolve(text);
+   *  });
+   * });
+   * });
+   * await page.evaluate(async () => {
+   * // use window.readfile to read contents of a file
+   * const content = await window.readfile('/etc/hosts');
+   * console.log(content);
+   * });
+   * await browser.close();
+   * })();
+   * ```
+   */
   async exposeFunction(
     name: string,
     puppeteerFunction: Function
@@ -1577,6 +1656,30 @@ export class Page extends EventEmitter {
     await this._client.send('Page.setBypassCSP', { enabled });
   }
 
+  /**
+   * @param type - Changes the CSS media type of the page. The only allowed
+   * values are `screen`, `print` and `null`. Passing `null` disables CSS media
+   * emulation.
+   * @example
+   * ```
+   * await page.evaluate(() => matchMedia('screen').matches);
+   * // → true
+   * await page.evaluate(() => matchMedia('print').matches);
+   * // → false
+   *
+   * await page.emulateMediaType('print');
+   * await page.evaluate(() => matchMedia('screen').matches);
+   * // → false
+   * await page.evaluate(() => matchMedia('print').matches);
+   * // → true
+   * 
+   * await page.emulateMediaType(null);
+   * await page.evaluate(() => matchMedia('screen').matches);
+   * // → true
+   * await page.evaluate(() => matchMedia('print').matches);
+   * // → false   
+   * ```   
+   */
   async emulateMediaType(type?: string): Promise<void> {
     assert(
       type === 'screen' || type === 'print' || type === null,
@@ -1659,6 +1762,12 @@ export class Page extends EventEmitter {
     }
   }
 
+  /**
+   * @param timezoneId - Changes the timezone of the page. See
+   * {@link https://source.chromium.org/chromium/chromium/deps/icu.git/+/faee8bc70570192d82d2978a71e2a615788597d1:source/data/misc/metaZones.txt | ICU’s metaZones.txt}
+   * for a list of supported timezone IDs. Passing
+   * `null` disables timezone emulation.
+   */
   async emulateTimezone(timezoneId?: string): Promise<void> {
     try {
       await this._client.send('Emulation.setTimezoneOverride', {
@@ -1821,6 +1930,36 @@ export class Page extends EventEmitter {
     return this._frameManager.mainFrame().evaluate<T>(pageFunction, ...args);
   }
 
+  /**
+   * Adds a function which would be invoked in one of the following scenarios:
+   * 
+   * - whenever the page is navigated
+   * 
+   * - whenever the child frame is attached or navigated. In this case, the
+   * function is invoked in the context of the newly attached frame.
+   * 
+   * The function is invoked after the document was created but before any of
+   * its scripts were run. This is useful to amend the JavaScript environment,
+   * e.g. to seed `Math.random`.
+   * @param pageFunction - Function to be evaluated in browser context
+   * @param args - Arguments to pass to `pageFunction`
+   * @example 
+   * An example of overriding the navigator.languages property before the page loads:
+   * ```js
+   * // preload.js
+   * 
+   * // overwrite the `languages` property to use a custom getter
+   * Object.defineProperty(navigator, 'languages', {
+   * get: function () {
+   * return ['en-US', 'en', 'bn'];
+   * },
+   * });
+   * 
+   * // In your puppeteer script, assuming the preload.js file is in same folder of our script
+   * const preloadFile = fs.readFileSync('./preload.js', 'utf8');
+   * await page.evaluateOnNewDocument(preloadFile);
+   * ```
+   */
   async evaluateOnNewDocument(
     pageFunction: Function | string,
     ...args: unknown[]
