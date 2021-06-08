@@ -463,6 +463,7 @@ export class Page extends EventEmitter {
   private _fileChooserInterceptors = new Set<Function>();
 
   private _disconnectPromise?: Promise<Error>;
+  private _userDragInterceptionEnabled = false;
 
   /**
    * @internal
@@ -702,14 +703,14 @@ export class Page extends EventEmitter {
   }
 
   /**
-   * @returns The browser this page belongs to.
+   * Get the browser the page belongs to.
    */
   browser(): Browser {
     return this._target.browser();
   }
 
   /**
-   * @returns The browser context that the page belongs to
+   * Get the browser context that the page belongs to.
    */
   browserContext(): BrowserContext {
     return this._target.browserContext();
@@ -754,6 +755,10 @@ export class Page extends EventEmitter {
 
   get accessibility(): Accessibility {
     return this._accessibility;
+  }
+
+  get isDragInterceptionEnabled(): boolean {
+    return this._userDragInterceptionEnabled;
   }
 
   /**
@@ -805,6 +810,19 @@ export class Page extends EventEmitter {
    */
   async setRequestInterception(value: boolean): Promise<void> {
     return this._frameManager.networkManager().setRequestInterception(value);
+  }
+
+  /**
+   * @param enabled - Whether to enable drag interception.
+   *
+   * @remarks
+   * Activating drag interception enables the {@link Input.drag},
+   * methods  This provides the capability to capture drag events emitted
+   * on the page, which can then be used to simulate drag-and-drop.
+   */
+  async setDragInterception(enabled: boolean): Promise<void> {
+    this._userDragInterceptionEnabled = enabled;
+    return this._client.send('Input.setInterceptDrags', { enabled });
   }
 
   /**
@@ -1093,12 +1111,27 @@ export class Page extends EventEmitter {
     return this.mainFrame().$$eval<ReturnType>(selector, pageFunction, ...args);
   }
 
+  /**
+   * The method runs `document.querySelectorAll` within the page. If no elements
+   * match the selector, the return value resolves to `[]`.
+   * @remarks
+   * Shortcut for {@link Frame.$$ | Page.mainFrame().$$(selector) }.
+   * @param selector - A `selector` to query page for
+   */
   async $$<T extends Element = Element>(
     selector: string
   ): Promise<Array<ElementHandle<T>>> {
     return this.mainFrame().$$<T>(selector);
   }
 
+  /**
+   * The method evaluates the XPath expression relative to the page document as
+   * its context node. If there are no such elements, the method resolves to an
+   * empty array.
+   * @remarks
+   * Shortcut for {@link Frame.$x | Page.mainFrame().$x(expression) }.
+   * @param expression - Expression to evaluate
+   */
   async $x(expression: string): Promise<ElementHandle[]> {
     return this.mainFrame().$x(expression);
   }
@@ -1156,6 +1189,13 @@ export class Page extends EventEmitter {
       await this._client.send('Network.setCookies', { cookies: items });
   }
 
+  /**
+   * Adds a `<script>` tag into the page with the desired URL or content.
+   * @remarks
+   * Shortcut for {@link Frame.addScriptTag | page.mainFrame().addScriptTag(options) }.
+   * @returns Promise which resolves to the added tag when the script's onload fires or
+   * when the script content was injected into frame.
+   */
   async addScriptTag(options: {
     url?: string;
     path?: string;
@@ -1165,6 +1205,12 @@ export class Page extends EventEmitter {
     return this.mainFrame().addScriptTag(options);
   }
 
+  /**
+   * Adds a `<link rel="stylesheet">` tag into the page with the desired URL or a
+   * `<style type="text/css">` tag with the content.
+   * @returns Promise which resolves to the added tag when the stylesheet's
+   * onload fires or when the CSS content was injected into frame.
+   */
   async addStyleTag(options: {
     url?: string;
     path?: string;
@@ -1193,6 +1239,10 @@ export class Page extends EventEmitter {
     );
   }
 
+  /**
+   * Provide credentials for `HTTP authentication`.
+   * @remarks To disable authentication, pass `null`.
+   */
   async authenticate(credentials: Credentials): Promise<void> {
     return this._frameManager.networkManager().authenticate(credentials);
   }
@@ -1483,10 +1533,36 @@ export class Page extends EventEmitter {
     return result[0];
   }
 
+  /**
+   * Brings page to front (activates tab).
+   */
   async bringToFront(): Promise<void> {
     await this._client.send('Page.bringToFront');
   }
 
+  /**
+   * Emulates given device metrics and user agent. This method is a shortcut for
+   * calling two methods: {@link page.setUserAgent} and {@link page.setViewport}
+   * To aid emulation, Puppeteer provides a list of device descriptors that can
+   * be obtained via the {@link puppeteer.devices} `page.emulate` will resize
+   * the page. A lot of websites don't expect phones to change size, so you
+   * should emulate before navigating to the page.
+   * @example
+   * ```js
+   * const puppeteer = require('puppeteer');
+   * const iPhone = puppeteer.devices['iPhone 6'];
+   * (async () => {
+   * const browser = await puppeteer.launch();
+   * const page = await browser.newPage();
+   * await page.emulate(iPhone);
+   * await page.goto('https://www.google.com');
+   * // other actions...
+   * await browser.close();
+   * })();
+   * ```
+   * @remarks List of all available devices is available in the source code:
+   * {@link https://github.com/puppeteer/puppeteer/blob/main/src/common/DeviceDescriptors.ts | src/common/DeviceDescriptors.ts}.
+   */
   async emulate(options: {
     viewport: Viewport;
     userAgent: string;
@@ -1519,6 +1595,58 @@ export class Page extends EventEmitter {
     });
   }
 
+  /**
+   * @param features - `<?Array<Object>>` Given an array of media feature
+   * objects, emulates CSS media features on the page. Each media feature object
+   * must have the following properties:
+   * @example
+   * ```js
+   * await page.emulateMediaFeatures([
+   * { name: 'prefers-color-scheme', value: 'dark' },
+   * ]);
+   * await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches);
+   * // → true
+   * await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches);
+   * // → false
+   *
+   * await page.emulateMediaFeatures([
+   * { name: 'prefers-reduced-motion', value: 'reduce' },
+   * ]);
+   * await page.evaluate(
+   * () => matchMedia('(prefers-reduced-motion: reduce)').matches
+   * );
+   * // → true
+   * await page.evaluate(
+   * () => matchMedia('(prefers-reduced-motion: no-preference)').matches
+   * );
+   * // → false
+   *
+   * await page.emulateMediaFeatures([
+   * { name: 'prefers-color-scheme', value: 'dark' },
+   * { name: 'prefers-reduced-motion', value: 'reduce' },
+   * ]);
+   * await page.evaluate(() => matchMedia('(prefers-color-scheme: dark)').matches);
+   * // → true
+   * await page.evaluate(() => matchMedia('(prefers-color-scheme: light)').matches);
+   * // → false
+   * await page.evaluate(
+   * () => matchMedia('(prefers-reduced-motion: reduce)').matches
+   * );
+   * // → true
+   * await page.evaluate(
+   * () => matchMedia('(prefers-reduced-motion: no-preference)').matches
+   * );
+   * // → false
+   *
+   * await page.emulateMediaFeatures([{ name: 'color-gamut', value: 'p3' }]);
+   * await page.evaluate(() => matchMedia('(color-gamut: srgb)').matches);
+   * // → true
+   * await page.evaluate(() => matchMedia('(color-gamut: p3)').matches);
+   * // → true
+   * await page.evaluate(() => matchMedia('(color-gamut: rec2020)').matches);
+   * // → false
+   * ```
+   */
   async emulateMediaFeatures(features?: MediaFeature[]): Promise<void> {
     if (features === null)
       await this._client.send('Emulation.setEmulatedMedia', { features: null });
@@ -1568,8 +1696,6 @@ export class Page extends EventEmitter {
    * ```
    *
    * @param overrides - Mock idle state. If not set, clears idle overrides
-   * @param isUserActive - Mock isUserActive
-   * @param isScreenUnlocked - Mock isScreenUnlocked
    */
   async emulateIdleState(overrides?: {
     isUserActive: boolean;
@@ -2002,6 +2128,29 @@ export class Page extends EventEmitter {
     return this._mouse;
   }
 
+  /**
+   * This method fetches an element with `selector`, scrolls it into view if
+   * needed, and then uses {@link page.mouse} to click in the center of the
+   * element. If there's no element matching `selector`, the method throws an
+   * error.
+   * @remarks Bear in mind that if `click()` triggers a navigation event and
+   * there's a separate `page.waitForNavigation()` promise to be resolved, you
+   * may end up with a race condition that yields unexpected results. The
+   * correct pattern for click and wait for navigation is the following:
+   * ```js
+   * const [response] = await Promise.all([
+   * page.waitForNavigation(waitOptions),
+   * page.click(selector, clickOptions),
+   * ]);
+   * ```
+   * Shortcut for {@link Frame.click | page.mainFrame().click(selector[, options]) }.
+   * @param selector - A `selector` to search for element to click. If there are
+   * multiple elements satisfying the `selector`, the first will be clicked
+   * @param options - `Object`
+   * @returns Promise which resolves when the element matching `selector` is
+   * successfully clicked. The Promise will be rejected if there is no element
+   * matching `selector`.
+   */
   click(
     selector: string,
     options: {
