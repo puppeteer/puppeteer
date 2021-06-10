@@ -1235,9 +1235,9 @@ export class Page extends EventEmitter {
    * The method adds a function called `name` on the page's `window` object. When
    * called, the function executes `puppeteerFunction` in node.js and returns a
    * `Promise` which resolves to the return value of `puppeteerFunction`.
-   * 
+   *
    * If the puppeteerFunction returns a `Promise`, it will be awaited.
-   * 
+   *
    * NOTE: Functions installed via `page.exposeFunction` survive navigations.
    * @param name - Name of the function on the window object
    * @param puppeteerFunction -  Callback function which will be called in
@@ -1672,13 +1672,13 @@ export class Page extends EventEmitter {
    * // → false
    * await page.evaluate(() => matchMedia('print').matches);
    * // → true
-   * 
+   *
    * await page.emulateMediaType(null);
    * await page.evaluate(() => matchMedia('screen').matches);
    * // → true
    * await page.evaluate(() => matchMedia('print').matches);
-   * // → false   
-   * ```   
+   * // → false
+   * ```
    */
   async emulateMediaType(type?: string): Promise<void> {
     assert(
@@ -1932,29 +1932,29 @@ export class Page extends EventEmitter {
 
   /**
    * Adds a function which would be invoked in one of the following scenarios:
-   * 
+   *
    * - whenever the page is navigated
-   * 
+   *
    * - whenever the child frame is attached or navigated. In this case, the
    * function is invoked in the context of the newly attached frame.
-   * 
+   *
    * The function is invoked after the document was created but before any of
    * its scripts were run. This is useful to amend the JavaScript environment,
    * e.g. to seed `Math.random`.
    * @param pageFunction - Function to be evaluated in browser context
    * @param args - Arguments to pass to `pageFunction`
-   * @example 
+   * @example
    * An example of overriding the navigator.languages property before the page loads:
    * ```js
    * // preload.js
-   * 
+   *
    * // overwrite the `languages` property to use a custom getter
    * Object.defineProperty(navigator, 'languages', {
    * get: function () {
    * return ['en-US', 'en', 'bn'];
    * },
    * });
-   * 
+   *
    * // In your puppeteer script, assuming the preload.js file is in same folder of our script
    * const preloadFile = fs.readFileSync('./preload.js', 'utf8');
    * await page.evaluateOnNewDocument(preloadFile);
