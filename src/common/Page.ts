@@ -947,7 +947,9 @@ export class Page extends EventEmitter {
    * given prototype.
    *
    * @remarks
-   * Shortcut for {@link ExecutionContext.queryObjects | page.mainFrame().executionContext().queryObjects(prototypeHandle)}.
+   * Shortcut for
+   * {@link ExecutionContext.queryObjects |
+   * page.mainFrame().executionContext().queryObjects(prototypeHandle)}.
    *
    * @example
    *
@@ -1350,7 +1352,8 @@ export class Page extends EventEmitter {
    *
    * - `LayoutDuration` : <number> Combined durations of all page layouts.
    *
-   * - `RecalcStyleDuration` : <number> Combined duration of all page style recalculations.
+   * - `RecalcStyleDuration` : <number> Combined duration of all page style
+   *   recalculations.
    *
    * - `ScriptDuration` : <number> Combined duration of JavaScript execution.
    *
@@ -1558,7 +1561,8 @@ export class Page extends EventEmitter {
    * - `timeout` : Maximum navigation time in milliseconds, defaults to 30
    *   seconds, pass 0 to disable timeout. The default value can be changed by
    *   using the
-   *   {@link Page.setDefaultNavigationTimeout | page.setDefaultNavigationTimeout(timeout)}
+   *   {@link Page.setDefaultNavigationTimeout |
+   *   page.setDefaultNavigationTimeout(timeout)}
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
@@ -1620,7 +1624,8 @@ export class Page extends EventEmitter {
    * - `timeout` : Maximum navigation time in milliseconds, defaults to 30
    *   seconds, pass 0 to disable timeout. The default value can be changed by
    *   using the
-   *   {@link Page.setDefaultNavigationTimeout | page.setDefaultNavigationTimeout(timeout)}
+   *   {@link Page.setDefaultNavigationTimeout |
+   *   page.setDefaultNavigationTimeout(timeout)}
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
@@ -1747,7 +1752,8 @@ export class Page extends EventEmitter {
    * - `timeout` : Maximum navigation time in milliseconds, defaults to 30
    *   seconds, pass 0 to disable timeout. The default value can be changed by
    *   using the
-   *   {@link Page.setDefaultNavigationTimeout | page.setDefaultNavigationTimeout(timeout)}
+   *   {@link Page.setDefaultNavigationTimeout
+   *   | page.setDefaultNavigationTimeout(timeout)}
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
