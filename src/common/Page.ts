@@ -1601,7 +1601,8 @@ export class Page extends EventEmitter {
    * to the same URL with a different hash, which would succeed and return null.
    *
    * NOTE: Headless mode doesn't support navigation to a PDF document. See the
-   * {@link https://bugs.chromium.org/p/chromium/issues/detail?id=761295 | upstream issue}.
+   * {@link https://bugs.chromium.org/p/chromium/issues/detail?id=761295
+   * | upstream issue}.
    *
    * Shortcut for {@link Frame.goto | page.mainFrame().goto(url, options)}.
    */
@@ -1720,7 +1721,8 @@ export class Page extends EventEmitter {
    * - `timeout` : Maximum navigation time in milliseconds, defaults to 30
    *   seconds, pass 0 to disable timeout. The default value can be changed by
    *   using the
-   *   {@link Page.setDefaultNavigationTimeout | page.setDefaultNavigationTimeout(timeout)}
+   *   {@link Page.setDefaultNavigationTimeout
+   *   | page.setDefaultNavigationTimeout(timeout)}
    *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
    *   methods.
    *
@@ -2165,7 +2167,8 @@ export class Page extends EventEmitter {
    * - `path` : <string> The file path to save the image to. The screenshot type
    *   will be inferred from file extension. If `path` is a relative path, then
    *   it is resolved relative to
-   *   {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}.
+   *   {@link https://nodejs.org/api/process.html#process_process_cwd
+   *   | current working directory}.
    *   If no path is provided, the image won't be saved to the disk.
    *
    * - `type` : <string> Specify screenshot type, can be either `jpeg` or `png`.
