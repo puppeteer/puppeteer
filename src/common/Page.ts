@@ -724,6 +724,8 @@ export class Page extends EventEmitter {
 
   /**
    * @returns The page's main frame.
+   * @remarks
+   * Page is guaranteed to have a main frame which persists during navigations.
    */
   mainFrame(): Frame {
     return this._frameManager.mainFrame();
@@ -945,6 +947,7 @@ export class Page extends EventEmitter {
    * given prototype.
    *
    * @remarks
+   * Shortcut for {@link ExecutionContext.queryObjects | page.mainFrame().executionContext().queryObjects(prototypeHandle)}.
    *
    * @example
    *
@@ -961,6 +964,8 @@ export class Page extends EventEmitter {
    * await mapPrototype.dispose();
    * ```
    * @param prototypeHandle - a handle to the object prototype.
+   * @returns Promise which resolves to a handle to an array of objects with
+   * this prototype.
    */
   async queryObjects(prototypeHandle: JSHandle): Promise<JSHandle> {
     const context = await this.mainFrame().executionContext();
@@ -1326,6 +1331,38 @@ export class Page extends EventEmitter {
     return this._frameManager.networkManager().setUserAgent(userAgent);
   }
 
+  /**
+   * @returns Object containing metrics as key/value pairs.
+   *
+   * - `Timestamp` : <number> The timestamp when the metrics sample was taken.
+   *
+   * - `Documents` : <number> Number of documents in the page.
+   *
+   * - `Frames` : <number> Number of frames in the page.
+   *
+   * - `JSEventListeners` : <number> Number of events in the page.
+   *
+   * - `Nodes` : <number> Number of DOM nodes in the page.
+   *
+   * - `LayoutCount` : <number> Total number of full or partial page layout.
+   *
+   * - `RecalcStyleCount` : <number> Total number of page style recalculations.
+   *
+   * - `LayoutDuration` : <number> Combined durations of all page layouts.
+   *
+   * - `RecalcStyleDuration` : <number> Combined duration of all page style recalculations.
+   *
+   * - `ScriptDuration` : <number> Combined duration of JavaScript execution.
+   *
+   * - `TaskDuration` : <number> Combined duration of all tasks performed by the browser.
+   *
+   * - `JSHeapUsedSize` : <number> Used JavaScript heap size.
+   *
+   * - `JSHeapTotalSize` : <number> Total JavaScript heap size.
+   * @remarks
+   * NOTE: All timestamps are in monotonic time: monotonically increasing time
+   * in seconds since an arbitrary point in the past.
+   */
   async metrics(): Promise<Metrics> {
     const response = await this._client.send('Performance.getMetrics');
     return this._buildMetricsObject(response.metrics);
@@ -1508,6 +1545,62 @@ export class Page extends EventEmitter {
     await this._frameManager.mainFrame().setContent(html, options);
   }
 
+  /**
+   * @param url - URL to navigate page to. The URL should include scheme, e.g.
+   * `https://`
+   * @param options - Navigation Parameter
+   * @returns Promise which resolves to the main resource response. In case of
+   * multiple redirects, the navigation will resolve with the response of the
+   * last redirect.
+   * @remarks
+   * The argument `options` might have the following properties:
+   *
+   * - `timeout` : Maximum navigation time in milliseconds, defaults to 30
+   *   seconds, pass 0 to disable timeout. The default value can be changed by
+   *   using the
+   *   {@link Page.setDefaultNavigationTimeout | page.setDefaultNavigationTimeout(timeout)}
+   *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
+   *   methods.
+   *
+   * - `waitUntil`:
+   *   <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array> When to
+   *   consider navigation succeeded, defaults to `load`. Given an array of
+   *   event strings, navigation is considered to be successful after all events
+   *   have been fired. Events can be either:<br/>
+   *  - `load` : consider navigation to be finished when the load event is
+   *    fired.<br/>
+   *  - `domcontentloaded` : consider navigation to be finished when the
+   *    DOMContentLoaded event is fired.<br/>
+   *  - `networkidle0` : consider navigation to be finished when there are no
+   *    more than 0 network connections for at least `500` ms.<br/>
+   *  - `networkidle2` : consider navigation to be finished when there are no
+   *    more than 2 network connections for at least `500` ms.
+   *
+   * - `referer` : Referer header value. If provided it will take preference
+   *   over the referer header value set by
+   *   {@link page.setExtraHTTPHeaders |page.setExtraHTTPHeaders()}.
+   *
+   * `page.goto` will throw an error if:
+   * - there's an SSL error (e.g. in case of self-signed certificates).
+   * - target URL is invalid.
+   * - the timeout is exceeded during navigation.
+   * - the remote server does not respond or is unreachable.
+   * - the main resource failed to load.
+   *
+   * `page.goto` will not throw an error when any valid HTTP status code is
+   *   returned by the remote server, including 404 "Not Found" and 500
+   *   "Internal Server Error". The status code for such responses can be
+   *   retrieved by calling response.status().
+   *
+   * NOTE: `page.goto` either throws an error or returns a main resource
+   * response. The only exceptions are navigation to about:blank or navigation
+   * to the same URL with a different hash, which would succeed and return null.
+   *
+   * NOTE: Headless mode doesn't support navigation to a PDF document. See the
+   * {@link https://bugs.chromium.org/p/chromium/issues/detail?id=761295 | upstream issue}.
+   *
+   * Shortcut for {@link Frame.goto | page.mainFrame().goto(url, options)}.
+   */
   async goto(
     url: string,
     options: WaitForOptions & { referer?: string } = {}
@@ -1515,6 +1608,34 @@ export class Page extends EventEmitter {
     return await this._frameManager.mainFrame().goto(url, options);
   }
 
+  /**
+   * @param options - Navigation parameters which might have the following
+   * properties:
+   * @returns Promise which resolves to the main resource response. In case of
+   * multiple redirects, the navigation will resolve with the response of the
+   * last redirect.
+   * @remarks
+   * The argument `options` might have the following properties:
+   *
+   * - `timeout` : Maximum navigation time in milliseconds, defaults to 30
+   *   seconds, pass 0 to disable timeout. The default value can be changed by
+   *   using the
+   *   {@link Page.setDefaultNavigationTimeout | page.setDefaultNavigationTimeout(timeout)}
+   *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
+   *   methods.
+   *
+   * - `waitUntil`: <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array>
+   *   When to consider navigation succeeded, defaults to `load`. Given an array
+   *   of event strings, navigation is considered to be successful after all
+   *   events have been fired. Events can be either:<br/>
+   *  - `load` : consider navigation to be finished when the load event is fired.<br/>
+   *  - `domcontentloaded` : consider navigation to be finished when the
+   *   DOMContentLoaded event is fired.<br/>
+   *  - `networkidle0` : consider navigation to be finished when there are no
+   *   more than 0 network connections for at least `500` ms.<br/>
+   *  - `networkidle2` : consider navigation to be finished when there are no
+   *   more than 2 network connections for at least `500` ms.
+   */
   async reload(options?: WaitForOptions): Promise<HTTPResponse | null> {
     const result = await Promise.all<HTTPResponse, void>([
       this.waitForNavigation(options),
@@ -1582,10 +1703,66 @@ export class Page extends EventEmitter {
     );
   }
 
+  /**
+   * This method navigate to the previous page in history.
+   * @param options - Navigation parameters
+   * @returns Promise which resolves to the main resource response. In case of
+   * multiple redirects, the navigation will resolve with the response of the
+   * last redirect. If can not go back, resolves to `null`.
+   * @remarks
+   * The argument `options` might have the following properties:
+   *
+   * - `timeout` : Maximum navigation time in milliseconds, defaults to 30
+   *   seconds, pass 0 to disable timeout. The default value can be changed by
+   *   using the
+   *   {@link Page.setDefaultNavigationTimeout | page.setDefaultNavigationTimeout(timeout)}
+   *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
+   *   methods.
+   *
+   * - `waitUntil` : <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array>
+   *   When to consider navigation succeeded, defaults to `load`. Given an array
+   *   of event strings, navigation is considered to be successful after all
+   *   events have been fired. Events can be either:<br/>
+   *  - `load` : consider navigation to be finished when the load event is fired.<br/>
+   *  - `domcontentloaded` : consider navigation to be finished when the
+   *   DOMContentLoaded event is fired.<br/>
+   *  - `networkidle0` : consider navigation to be finished when there are no
+   *   more than 0 network connections for at least `500` ms.<br/>
+   *  - `networkidle2` : consider navigation to be finished when there are no
+   *   more than 2 network connections for at least `500` ms.
+   */
   async goBack(options: WaitForOptions = {}): Promise<HTTPResponse | null> {
     return this._go(-1, options);
   }
 
+  /**
+   * This method navigate to the next page in history.
+   * @param options - Navigation Parameter
+   * @returns Promise which resolves to the main resource response. In case of
+   * multiple redirects, the navigation will resolve with the response of the
+   * last redirect. If can not go forward, resolves to `null`.
+   * @remarks
+   * The argument `options` might have the following properties:
+   *
+   * - `timeout` : Maximum navigation time in milliseconds, defaults to 30
+   *   seconds, pass 0 to disable timeout. The default value can be changed by
+   *   using the
+   *   {@link Page.setDefaultNavigationTimeout | page.setDefaultNavigationTimeout(timeout)}
+   *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
+   *   methods.
+   *
+   * - `waitUntil`: <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array>
+   *   When to consider navigation succeeded, defaults to `load`. Given an array
+   *   of event strings, navigation is considered to be successful after all
+   *   events have been fired. Events can be either:<br/>
+   *  - `load` : consider navigation to be finished when the load event is fired.<br/>
+   *  - `domcontentloaded` : consider navigation to be finished when the
+   *   DOMContentLoaded event is fired.<br/>
+   *  - `networkidle0` : consider navigation to be finished when there are no
+   *   more than 0 network connections for at least `500` ms.<br/>
+   *  - `networkidle2` : consider navigation to be finished when there are no
+   *   more than 2 network connections for at least `500` ms.
+   */
   async goForward(options: WaitForOptions = {}): Promise<HTTPResponse | null> {
     return this._go(+1, options);
   }
@@ -1975,6 +2152,44 @@ export class Page extends EventEmitter {
     await this._frameManager.networkManager().setCacheEnabled(enabled);
   }
 
+  /**
+   * @remarks
+   * Options object which might have the following properties:
+   *
+   * - `path` : <string> The file path to save the image to. The screenshot type
+   *   will be inferred from file extension. If `path` is a relative path, then
+   *   it is resolved relative to
+   *   {@link https://nodejs.org/api/process.html#process_process_cwd | current working directory}.
+   *   If no path is provided, the image won't be saved to the disk.
+   *
+   * - `type` : <string> Specify screenshot type, can be either `jpeg` or `png`.
+   *   Defaults to 'png'.
+   *
+   * - `quality` : <number> The quality of the image, between 0-100. Not
+   *   applicable to `png` images.
+   *
+   * - `fullPage` : <boolean> When true, takes a screenshot of the full
+   *   scrollable page. Defaults to `false`
+   *
+   * - `clip` : <Object> An object which specifies clipping region of the page.
+   *   Should have the following fields:<br/>
+   *  - `x` : <number> x-coordinate of top-left corner of clip area.<br/>
+   *  - `y` :  <number> y-coordinate of top-left corner of clip area.<br/>
+   *  - `width` : <number> width of clipping area.<br/>
+   *  - `height` : <number> height of clipping area.
+   *
+   * - `omitBackground` : <boolean> Hides default white background and allows
+   *   capturing screenshots with transparency. Defaults to `false`
+   *
+   * - `encoding` : <string> The encoding of the image, can be either base64 or
+   *   binary. Defaults to `binary`.
+   *
+   *
+   * NOTE: Screenshots take at least 1/6 second on OS X. See
+   * {@link https://crbug.com/741689} for discussion.
+   * @returns Promise which resolves to buffer or a base64 string (depending on
+   * the value of `encoding`) with captured screenshot.
+   */
   async screenshot(
     options: ScreenshotOptions = {}
   ): Promise<Buffer | string | void> {
@@ -2154,7 +2369,7 @@ export class Page extends EventEmitter {
    * Generatees a PDF of the page with the `print` CSS media type.
    * @remarks
    *
-   * IMPORTANT: PDF generation is only supported in Chrome headless mode.
+   * NOTE: PDF generation is only supported in Chrome headless mode.
    *
    * To generate a PDF with the `screen` media type, call
    * {@link Page.emulateMediaType | `page.emulateMediaType('screen')`} before
@@ -2252,6 +2467,10 @@ export class Page extends EventEmitter {
     }
   }
 
+  /**
+   * Indicates that the page has been closed.
+   * @returns
+   */
   isClosed(): boolean {
     return this._closed;
   }
@@ -2294,10 +2513,37 @@ export class Page extends EventEmitter {
     return this.mainFrame().click(selector, options);
   }
 
+  /**
+   * This method fetches an element with `selector` and focuses it. If there's no
+   * element matching `selector`, the method throws an error.
+   * @param selector - A
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector }
+   * of an element to focus. If there are multiple elements satisfying the
+   * selector, the first will be focused.
+   * @returns  Promise which resolves when the element matching selector is
+   * successfully focused. The promise will be rejected if there is no element
+   * matching selector.
+   * @remarks
+   * Shortcut for {@link Frame.focus | page.mainFrame().focus(selector)}.
+   */
   focus(selector: string): Promise<void> {
     return this.mainFrame().focus(selector);
   }
 
+  /**
+   * This method fetches an element with `selector`, scrolls it into view if
+   * needed, and then uses {@link page.mouse} to hover over the center of the element.
+   * If there's no element matching `selector`, the method throws an error.
+   * @param selector - A
+   * {@link https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors | selector}
+   * to search for element to hover. If there are multiple elements satisfying
+   * the selector, the first will be hovered.
+   * @returns Promise which resolves when the element matching `selector` is
+   * successfully hovered. Promise gets rejected if there's no element matching
+   * `selector`.
+   * @remarks
+   * Shortcut for {@link Page.hover | page.mainFrame().hover(selector)}.
+   */
   hover(selector: string): Promise<void> {
     return this.mainFrame().hover(selector);
   }
