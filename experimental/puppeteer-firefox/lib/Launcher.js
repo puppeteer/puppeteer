@@ -32,7 +32,7 @@ const removeFolderAsync = util.promisify(removeFolder);
 
 const tmpDir = () => process.env.PUPPETEER_TMP_DIR || os.tmpdir();
 
-const FIREFOX_PROFILE_PATH = path.join(tmpDir(), 'puppeteer_firefox_profile-');
+const FIREFOX_PROFILE_PATH = path.join(tmpDir(),'puppeteer_firefox_profile-');
 
 const DEFAULT_ARGS = [
   '-no-remote',
