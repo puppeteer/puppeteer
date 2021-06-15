@@ -32,7 +32,7 @@ import {
 
 import { Product } from '../common/Product.js';
 
-const tmpDir = () => process.env.PUPPETEER_TMP_DIR || os.tmpdir()
+const tmpDir = () => process.env.PUPPETEER_TMP_DIR || os.tmpdir();
 
 /**
  * Describes a launcher - a class that is able to create and launch a browser instance.
