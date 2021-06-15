@@ -541,8 +541,8 @@ class FirefoxLauncher implements ProductLauncher {
 
       'privacy.trackingprotection.enabled': false,
 
-      // Enable Remote Agent
-      // https://bugzilla.mozilla.org/show_bug.cgi?id=1544393
+      // Can be removed once Firefox 89 is no longer supported
+      // https://bugzilla.mozilla.org/show_bug.cgi?id=1710839
       'remote.enabled': true,
 
       // Don't do network connections for mitm priming
