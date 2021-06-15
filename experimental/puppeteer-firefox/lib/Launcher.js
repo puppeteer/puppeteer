@@ -30,7 +30,7 @@ const WebSocketTransport = require('./WebSocketTransport');
 const mkdtempAsync = util.promisify(fs.mkdtemp);
 const removeFolderAsync = util.promisify(removeFolder);
 
-const tmpDir = () => process.env.PUPPETEER_TMP_DIR || os.tmpdir()
+const tmpDir = () => process.env.PUPPETEER_TMP_DIR || os.tmpdir();
 
 const FIREFOX_PROFILE_PATH = path.join(tmpDir(), 'puppeteer_firefox_profile-');
 
