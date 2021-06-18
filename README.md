@@ -41,7 +41,7 @@ npm i puppeteer
 # or "yarn add puppeteer"
 ```
 
-Note: When you install Puppeteer, it downloads a recent version of Chromium (~170MB Mac, ~282MB Linux, ~280MB Win) that is guaranteed to work with the API. To skip the download, or to download a different browser, see [Environment variables](https://github.com/puppeteer/puppeteer/blob/v10.0.0/docs/api.md#environment-variables).
+Note: When you install Puppeteer, it downloads a recent version of Chromium (~170MB Mac, ~282MB Linux, ~280MB Win) that is guaranteed to work with the API. To skip the download, download into another path, or download a different browser, see [Environment variables](https://github.com/puppeteer/puppeteer/blob/v10.0.0/docs/api.md#environment-variables).
 
 ### puppeteer-core
 
@@ -439,6 +439,27 @@ You may find that Puppeteer does not behave as expected when controlling pages t
 #### Q: I am having trouble installing / running Puppeteer in my test environment. Where should I look for help?
 
 We have a [troubleshooting](https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md) guide for various operating systems that lists the required dependencies.
+
+#### Q: Chromium gets downloaded on every `npm ci` run. How can I cache the download?
+
+The default download path is `node_modules/puppeteer/.local-chromium`. However, you can change that path with the `PUPPETTER_DOWNLOAD_PATH` environment variable.
+
+Puppeteer will use that variable to resolve the Chromium executable location during launch, so you don't need to specify `PUPPETTER_EXECUTABLE_PATH` too.
+
+For example, if you wish to keep the Chromium download in `~/.npm/chromium` export the `PUPPETEER_DOWNLOAD_PATH` in your shell.
+
+```bash
+export PUPPETEER_DOWNLOAD_PATH=~/.npm/chromium
+npm ci
+
+# by default the Chromium executable path is inferred
+# from the download path
+npm test
+
+# a new run of npm ci will check for the existence of
+# Chromium in ~/.npm/chromium
+npm ci
+```
 
 #### Q: How do I try/test a prerelease version of Puppeteer?
 
