@@ -656,11 +656,9 @@ export class Page extends EventEmitter {
 
   /**
    * Sets the page's geolocation.
-   *
    * @remarks
-   * Consider using {@link BrowserContext.overridePermissions} to grant
+   * NOTE: Consider using {@link BrowserContext.overridePermissions} to grant
    * permissions for the page to read its geolocation.
-   *
    * @example
    * ```js
    * await page.setGeolocation({latitude: 59.95, longitude: 30.31667});
@@ -801,6 +799,7 @@ export class Page extends EventEmitter {
    *   await browser.close();
    * })();
    * ```
+   * NOTE: Enabling request interception disables page caching.
    */
   async setRequestInterception(value: boolean): Promise<void> {
     return this._frameManager.networkManager().setRequestInterception(value);
@@ -855,6 +854,20 @@ export class Page extends EventEmitter {
   }
 
   /**
+   * This setting will change the default maximum navigation time for the
+   * following methods and related shortcuts:
+   *
+   * - {@link Page.goBack | page.goBack(options)}
+   *
+   * - {@link Page.goForward | page.goForward(options)}
+   *
+   * - {@link Page.goto | page.goto(url,options)}
+   *
+   * - {@link Page.reload | page.reload(options)}
+   *
+   * - {@link Page.setContent | page.setContent(html,options)}
+   *
+   * - {@link Page.waitForNavigation | page.waitForNavigation(options)}
    * @param timeout - Maximum navigation time in milliseconds.
    */
   setDefaultNavigationTimeout(timeout: number): void {
@@ -1187,6 +1200,12 @@ export class Page extends EventEmitter {
     }
   }
 
+  /**
+   * @example
+   * ```js
+   * await page.setCookie(cookieObject1, cookieObject2);
+   * ```
+   */
   async setCookie(...cookies: Protocol.Network.CookieParam[]): Promise<void> {
     const pageURL = this.url();
     const startsWithHTTP = pageURL.startsWith('http');
@@ -1325,10 +1344,24 @@ export class Page extends EventEmitter {
     return this._frameManager.networkManager().authenticate(credentials);
   }
 
+  /**
+   * The extra HTTP headers will be sent with every request the page initiates.
+   * NOTE: All HTTP header names are lowercased. (HTTP headers are
+   * case-insensitive, so this shouldn’t impact your server code.)
+   * NOTE: page.setExtraHTTPHeaders does not guarantee the order of headers in
+   * the outgoing requests.
+   * @param headers - An object containing additional HTTP headers to be sent
+   * with every request. All header values must be strings.
+   * @returns
+   */
   async setExtraHTTPHeaders(headers: Record<string, string>): Promise<void> {
     return this._frameManager.networkManager().setExtraHTTPHeaders(headers);
   }
 
+  /**
+   * @param userAgent - Specific user agent to use in this page
+   * @returns Promise which resolves when the user agent is set.
+   */
   async setUserAgent(userAgent: string): Promise<void> {
     return this._frameManager.networkManager().setUserAgent(userAgent);
   }
@@ -1544,6 +1577,33 @@ export class Page extends EventEmitter {
     return await this._frameManager.mainFrame().content();
   }
 
+  /**
+   * @param html - HTML markup to assign to the page.
+   * @param options - Parameters that has some properties.
+   * @remarks
+   * The parameter `options` might have the following options.
+   *
+   * - `timeout` : Maximum time in milliseconds for resources to load, defaults
+   *   to 30 seconds, pass `0` to disable timeout. The default value can be
+   *   changed by using the
+   *   {@link Page.setDefaultNavigationTimeout |
+   *   page.setDefaultNavigationTimeout(timeout)}
+   *   or {@link Page.setDefaultTimeout | page.setDefaultTimeout(timeout)}
+   *   methods.
+   *
+   * - `waitUntil`: <"load"|"domcontentloaded"|"networkidle0"|"networkidle2"|Array>
+   *   When to consider setting markup succeeded, defaults to `load`. Given an
+   *   array of event strings, setting content is considered to be successful
+   *   after all events have been fired. Events can be either:<br/>
+   *  - `load` : consider setting content to be finished when the `load` event is
+   *    fired.<br/>
+   *  - `domcontentloaded` : consider setting content to be finished when the
+   *   `DOMContentLoaded` event is fired.<br/>
+   *  - `networkidle0` : consider setting content to be finished when there are no
+   *   more than 0 network connections for at least `500` ms.<br/>
+   *  - `networkidle2` : consider setting content to be finished when there are no
+   *   more than 2 network connections for at least `500` ms.
+   */
   async setContent(html: string, options: WaitForOptions = {}): Promise<void> {
     await this._frameManager.mainFrame().setContent(html, options);
   }
@@ -1829,6 +1889,13 @@ export class Page extends EventEmitter {
     ]);
   }
 
+  /**
+   * @param enabled - Whether or not to enable JavaScript on the page.
+   * @returns
+   * @remarks
+   * NOTE: changing this value won't affect scripts that have already been run.
+   * It will take full effect on the next navigation.
+   */
   async setJavaScriptEnabled(enabled: boolean): Promise<void> {
     if (this._javascriptEnabled === enabled) return;
     this._javascriptEnabled = enabled;
@@ -1837,6 +1904,14 @@ export class Page extends EventEmitter {
     });
   }
 
+  /**
+   * Toggles bypassing page's Content-Security-Policy.
+   * @param enabled - sets bypassing of page's Content-Security-Policy.
+   * @remarks
+   * NOTE: CSP bypassing happens at the moment of CSP initialization rather than
+   * evaluation. Usually, this means that `page.setBypassCSP` should be called
+   * before navigating to the domain.
+   */
   async setBypassCSP(enabled: boolean): Promise<void> {
     await this._client.send('Page.setBypassCSP', { enabled });
   }
@@ -2156,6 +2231,11 @@ export class Page extends EventEmitter {
     });
   }
 
+  /**
+   * Toggles ignoring cache for each request based on the enabled state. By
+   * default, caching is enabled.
+   * @param enabled - sets the `enabled` state of cache
+   */
   async setCacheEnabled(enabled = true): Promise<void> {
     await this._frameManager.networkManager().setCacheEnabled(enabled);
   }
@@ -2557,6 +2637,26 @@ export class Page extends EventEmitter {
     return this.mainFrame().hover(selector);
   }
 
+  /**
+   * Triggers a `change` and `input` event once all the provided options have been
+   * selected. If there's no `<select>` element matching `selector`, the method
+   * throws an error.
+   *
+   * @examples
+   * ```js
+   * page.select('select#colors', 'blue'); // single selection
+   * page.select('select#colors', 'red', 'green', 'blue'); // multiple selections
+   * ```
+   * @param selector - A {@link https://developer.mozilla.org/en-US/docs/Web/CSS/
+   * CSS_Selectors | Selector} to query the page for
+   * @param values - Values of options to select. If the `<select>` has the
+   * `multiple` attribute, all values are considered, otherwise only the first one
+   * is taken into account.
+   * @returns
+   *
+   * @remarks
+   * Shortcut for {@link Frame.select | page.mainFrame().select()}
+   */
   select(selector: string, ...values: string[]): Promise<string[]> {
     return this.mainFrame().select(selector, ...values);
   }
