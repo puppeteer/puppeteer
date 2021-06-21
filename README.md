@@ -448,7 +448,7 @@ Puppeteer uses that variable to resolve the Chromium executable location during 
 
 For example, if you wish to keep the Chromium download in `~/.npm/chromium`:
 
-```bash
+```sh
 export PUPPETEER_DOWNLOAD_PATH=~/.npm/chromium
 npm ci
 
