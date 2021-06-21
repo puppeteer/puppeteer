@@ -1514,6 +1514,20 @@ describe('Page', function () {
       expect(fs.readFileSync(outputFile).byteLength).toBeGreaterThan(0);
       fs.unlinkSync(outputFile);
     });
+
+    it('can print to PDF and stream the result', async () => {
+      // Printing to pdf is currently only supported in headless
+      const { isHeadless, page } = getTestState();
+
+      if (!isHeadless) return;
+
+      const stream = await page.createPDFStream();
+      let size = 0;
+      for await (const chunk of stream) {
+        size += chunk.size;
+      }
+      expect(size).toBeGreaterThan(0);
+    });
   });
 
   describe('Page.title', function () {

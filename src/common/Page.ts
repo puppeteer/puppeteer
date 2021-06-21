@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { Readable } from 'stream';
+
 import { EventEmitter } from './EventEmitter.js';
 import {
   Connection,
@@ -2028,7 +2030,7 @@ export class Page extends EventEmitter {
    *
    * @param options - options for generating the PDF.
    */
-  async pdf(options: PDFOptions = {}): Promise<Buffer> {
+  async createPDFStream(options: PDFOptions = {}): Promise<Readable> {
     const {
       scale = 1,
       displayHeaderFooter = false,
@@ -2039,7 +2041,6 @@ export class Page extends EventEmitter {
       pageRanges = '',
       preferCSSPageSize = false,
       margin = {},
-      path = null,
       omitBackground = false,
     } = options;
 
@@ -2087,7 +2088,17 @@ export class Page extends EventEmitter {
       await this._resetDefaultBackgroundColor();
     }
 
-    return await helper.readProtocolStream(this._client, result.stream, path);
+    return helper.getReadableFromProtocolStream(this._client, result.stream);
+  }
+
+  /**
+   * @param {!PDFOptions=} options
+   * @return {!Promise<!Buffer>}
+   */
+  async pdf(options: PDFOptions = {}): Promise<Buffer> {
+    const { path = undefined } = options;
+    const readable = await this.createPDFStream(options);
+    return await helper.getReadableAsBuffer(readable, path);
   }
 
   async title(): Promise<string> {
