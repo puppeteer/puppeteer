@@ -444,7 +444,7 @@ We have a [troubleshooting](https://github.com/puppeteer/puppeteer/blob/main/doc
 
 The default download path is `node_modules/puppeteer/.local-chromium`. However, you can change that path with the `PUPPETTER_DOWNLOAD_PATH` environment variable.
 
-Puppeteer will use that variable to resolve the Chromium executable location during launch, so you don't need to specify `PUPPETTER_EXECUTABLE_PATH` too.
+Puppeteer uses that variable to resolve the Chromium executable location during launch, so you don’t need to specify `PUPPETEER_EXECUTABLE_PATH` as well.
 
 For example, if you wish to keep the Chromium download in `~/.npm/chromium` export the `PUPPETEER_DOWNLOAD_PATH` in your shell.
 
